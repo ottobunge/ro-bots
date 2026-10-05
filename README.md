@@ -56,6 +56,8 @@ Key properties:
 ## Layout
 
 ```
+rathena/            fork of rathena/rathena (submodule, branch bot-infra) — server-side
+                    bot support lands here; upstream tracked via `upstream` remote
 spikes/
   001-clef-local/    Clef-Flash running locally behind /v1/systemone + latency bench
   002-rathena-up/    rAthena + MariaDB via nix flake devShell + clientless handshake test
