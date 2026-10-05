@@ -39,31 +39,17 @@
       });
 
       packages = forAll (pkgs: {
-        llama-cpp-clef = pkgs.stdenv.mkDerivation {
+        # Reuse nixpkgs' llama-cpp packaging (static BLAS backend, proven 10x
+        # faster than a plain ggml-cpu build on this host) with the Clef-capable
+        # master source (a7fb71f). nixpkgs 0.5.0 predates the Clef merge.
+        llama-cpp-clef = (pkgs.llama-cpp.override {
+          # keep nixpkgs' own feature switches; add nothing CPU-arch specific
+        }).overrideAttrs (old: {
           pname = "llama-cpp-clef";
           version = "0.5.0-clef-a7fb71f";
-          src = ./llama.cpp;
-          nativeBuildInputs = with pkgs; [ cmake ninja pkg-config python3 ];
-          # CPU build for this host; GGML_NATIVE targets the local CPU (Ryzen AI 9 HX 370).
-          cmakeFlags = [
-            "-DCMAKE_BUILD_TYPE=Release"
-            "-DGGML_NATIVE=ON"
-            "-DLLAMA_BUILD_TESTS=OFF"
-            "-DLLAMA_BUILD_EXAMPLES=OFF"   # keep llama-server + libs only
-            "-DLLAMA_BUILD_TOOLS=ON"
-          ];
-          installPhase = ''
-            runHook preInstall
-            mkdir -p $out/bin
-            cp bin/llama-server bin/llama-cli $out/bin/ 2>/dev/null || true
-            cp bin/* $out/bin/ || true
-            runHook postInstall
-          '';
-          meta = with pkgs.lib; {
-            description = "llama.cpp with Clef decision-model support (/v1/systemone), CPU build";
-            license = licenses.mit;
-          };
-        };
+          src = pkgs.lib.cleanSource ./llama.cpp;
+          # nixpkgs' derivation derives the version from the tag; keep theirs.
+        });
       });
     };
 }

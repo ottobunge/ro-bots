@@ -35,6 +35,34 @@ Views (MVP):
    (ADR-004 lines, zoomable), Clef context-selection log (ADR-006),
    reputation ledger (ADR-005).
 
+## Build system
+
+Decision for how the dashboard is built, checked, and run:
+
+- **Layout**: a self-contained **Cargo workspace** at `dashboard/` (the
+  Python repo root stays untouched) with two crates:
+  - `world-feed` — the `WorldFeed` contract library: serde types
+    (`AgentStatus`, `ChatLine`, `WorldEventFeedItem`, `AgentDetail`), the
+    stream/query API, and a seeded `MockWorldFeed` so the UI is demoable
+    and testable offline.
+  - `dashboard-app` — the Axum server + views (roster `/`, agent inspector
+    `/agent/:id`, live feed), no DB, state from `WorldFeed`.
+- **Toolchain source**: cargo/rustc/clippy come from **nix** (per-user
+  profile / devShell), per the host convention that dependencies are managed
+  by nix flakes — not `rustup`. Auxiliary audit tools (`cargo-audit`,
+  `cargo-machete`) are nixpkgs packages first; `cargo install` is only a
+  fallback and must be noted in the README if used (first attempt to
+  `cargo install` both failed in the sandboxed scratch build dir — the nix
+  path avoids that class of failure).
+- **Entry points**: `dashboard/Taskfile.yml` exposes `dashboard:check` (the
+  full static-analysis gate, see Consequences) and `dashboard:serve`
+  (`cargo run --release`, binds 127.0.0.1:8400), mirroring the root
+  Taskfile's role for Python.
+- **Contract over coupling**: the only shared artifact between the Rust
+  dashboard and the Python runtime is the WorldFeed JSON schema, documented
+  in `dashboard/README.md`. Either side can evolve internally (or be
+  replaced — framework fallback below) as long as the schema holds.
+
 ## Consequences
 - Python side stays the source of truth; Rust touches only presentation.
 - Rust static analysis matches the Python pipeline's comprehensiveness:
