@@ -1,0 +1,94 @@
+version: '3'
+
+env:
+  UV: uv
+
+tasks:
+  default:
+    desc: List available tasks
+    cmds:
+      - task --list
+
+  sync:
+    desc: Create/refresh the uv-managed virtualenv with all deps
+    cmds:
+      - uv sync --all-groups
+
+  format:
+    desc: Format code (black) and fix imports/order (ruff)
+    cmds:
+      - uv run black src tests
+      - uv run ruff check --fix --unsafe-fixes src tests
+
+  lint:ruff:
+    desc: Ruff lint (style, bugs, complexity, unused, noqa hygiene)
+    cmds:
+      - uv run ruff check src tests
+
+  lint:mypy:
+    desc: mypy strict type check
+    cmds:
+      - uv run mypy
+
+  lint:dead:
+    desc: Dead code / unused code detection (vulture)
+    cmds:
+      - uv run vulture src vulture_whitelist.py
+
+  lint:complexity:
+    desc: Complexity guard (xenon, fail above B/6/60)
+    cmds:
+      - uv run xenon src --max-absolute B --max-modules B --max-average A
+
+  lint:dup:
+    desc: Duplicate code detection (pylint duplicate-code)
+    cmds:
+      - uv run pylint --disable=all --enable=duplicate-code --ignore-paths=tests src
+
+  lint:security:
+    desc: Security lint (bandit)
+    cmds:
+      - uv run bandit -q -c pyproject.toml -r src
+
+  audit:
+    desc: Audit dependencies for known CVEs (pip-audit)
+    cmds:
+      - uv export --format requirements-txt --all-groups --no-emit-project -o .audit-requirements.txt
+      - uv run --with-requirements .audit-requirements.txt pip-audit --strict --disable-pip -r .audit-requirements.txt
+      - rm -f .audit-requirements.txt
+
+  lint:
+    desc: All static analysis
+    deps:
+      - lint:ruff
+      - lint:mypy
+      - lint:dead
+      - lint:complexity
+      - lint:dup
+      - lint:security
+
+  test:
+    desc: Unit tests with coverage
+    cmds:
+      - uv run pytest --cov=src/robots --cov-report=term-missing --cov-fail-under=85
+
+  quality:
+    desc: format + lint + test + audit (run before every commit/push)
+    cmds:
+      - task: format
+      - task: lint
+      - task: test
+      - task: audit
+
+  check:
+    desc: Non-mutating gate for CI (no --fix, no rewrite)
+    cmds:
+      - uv run black --check src tests
+      - task: lint
+      - task: test
+
+  run:clef:
+    desc: Start the local Clef SystemOne service (spike 001)
+    dir: spikes/001-clef-local
+    cmds:
+      - ./serve.sh
