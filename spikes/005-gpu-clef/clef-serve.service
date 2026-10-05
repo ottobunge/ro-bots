@@ -1,0 +1,13 @@
+[Unit]
+Description=Clef decision servers (llama.cpp CUDA) on ports 8091/8092
+After=network-online.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+WorkingDirectory=/datamirror/otto/repos/framework-agents
+ExecStart=/datamirror/otto/repos/framework-agents/serve.sh
+ExecStop=/run/current-system/sw/bin/pkill -f llama-server
+
+[Install]
+WantedBy=default.target

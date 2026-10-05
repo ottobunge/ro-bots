@@ -1,0 +1,19 @@
+target: http://192.168.1.156:8091/v1/systemone
+
+questions per request: 18 (choice=8, noul=7, score=3)
+cold decision (first request, warm model): 3051 ms
+usage reported by server: {'input_tokens': 2390, 'output_tokens': 0}
+sample answer next_action: idle_town  (p=0.498)
+sample answer hp_low: {'type': 'noul', 'noul': 0.02391634257400188}
+
+warm single decision over 20 runs:
+  p50 = 1114 ms   p95 = 3521 ms   mean = 1582 ms   min = 1059   max = 3528
+batch trial 0: wall=8637 ms for 8 bots (= 1080 ms/bot), slowest call 8636 ms
+batch trial 1: wall=8692 ms for 8 bots (= 1086 ms/bot), slowest call 8690 ms
+batch trial 2: wall=8714 ms for 8 bots (= 1089 ms/bot), slowest call 8713 ms
+batch trial 3: wall=8777 ms for 8 bots (= 1097 ms/bot), slowest call 8775 ms
+batch trial 4: wall=8818 ms for 8 bots (= 1102 ms/bot), slowest call 8816 ms
+
+batched throughput: 8 bots in 8637 ms wall -> 0.9 decisions/s (vs single-bot rate 0.9/s at p50)
+
+NOTE: 'cold' above is first-request-of-process with model already loaded. True cold start (model load) is measured by bench_cold.py / README procedure.

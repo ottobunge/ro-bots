@@ -1,0 +1,35 @@
+# Benchmarks — spike 005-gpu-clef (raw tool output)
+
+All runs against heavengraph (2x Quadro RTX 8000), llama.cpp @ a7fb71f CUDA build,
+`-ngl 99`, 18-question / 2390-input-token realistic RO decision (bench.py from
+spike 001). CPU comparison numbers from spike 001 bench_results.txt.
+
+## Clef-Flash Q4_K_M — GPU 0, port 8091 (bench_flash.txt)
+cold decision: 2863 ms
+warm 20 runs: p50 1118 ms, p95 3363 ms, mean 1549, min 1075, max 3434
+8-bot batch: 8773–9157 ms wall for 8 concurrent decisions (~1.1 s/bot), 0 errors
+LCP warm (lcp_flash.txt): first-call p50 1182 ms, second-call p50 1195 ms
+  (no second-call benefit measured — prefix cache not hit at this request size)
+
+## Clef-27B Q4_K_M — GPU 1, port 8092 (bench_27b.txt)
+cold decision: 5078 ms
+warm 20 runs: p50 3575 ms, p95 5766 ms, mean 3967, min 3395, max 5957
+8-bot batch: 28588–28944 ms wall for 8 concurrent decisions (~3.6 s/bot), 0 errors
+LCP warm (lcp_27b.txt): first-call p50 3758 ms, second-call p50 3756 ms
+
+## CPU baseline (spike 001, same request, same server code)
+cold: 68112 ms; warm p50 64909 ms, p95 77139 ms
+8-bot batch: 4–5 of 8 requests exceeded 300 s timeout on every trial
+
+## GPU utilization during a full decision (sampled over SSH, ~0.5 s interval)
+Decision 3137 ms; GPU0 (Clef-Flash): max 100%, mean 25%; GPU1: max 73%, mean 18%
+(pre-pinning config where both models split across both GPUs; final config pins
+Flash→GPU0, 27B→GPU1).
+
+## End-to-end escalation-path check
+- Remote GPU Clef-Flash decision (3 questions, small state): 205–430 ms
+- Local Qwen3-4B chat completion (127.0.0.1:8092): 1925 ms, sensible reply
+- Both ran back-to-back in one process — combination works.
+
+## llama-bench (Clef-Flash Q4_K_M, -ngl 99, single GPU)
+pp512 = 2319.79 ± 82.82 tok/s (CUDA)  [CPU BLAS build: 27.2 tok/s — ~85x faster prefill]
