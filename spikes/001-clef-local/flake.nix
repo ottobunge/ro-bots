@@ -48,7 +48,18 @@
           pname = "llama-cpp-clef";
           version = "0.5.0-clef-a7fb71f";
           src = pkgs.lib.cleanSource ./llama.cpp;
-          # nixpkgs' derivation derives the version from the tag; keep theirs.
+          # master's webui package-lock differs from 0.5.0's pinned npmDepsHash.
+          # We run with --no-webui, so drop the npm ui build entirely.
+          cmakeFlags = (old.cmakeFlags or []) ++ [
+            "-DLLAMA_BUILD_WEBUI=OFF"
+            "-DLLAMA_BUILD_UI=OFF"
+          ];
+          preConfigure = null;
+          npmDepsHash = "sha256-a17M+L3nLdRnN6WMB6imPFmwqG2g8uv+gwN0XTAUrf8=";
+          npmRoot = "tools/ui";
+          # bypass npmConfigHook entirely (webui npm deps dropped with the UI)
+          nativeBuildInputs = builtins.filter (p: (p.pname or "") != "npm-config-hook")
+            (old.nativeBuildInputs or []);
         });
       });
     };

@@ -262,7 +262,7 @@ def make_bot(bot_id: int, rng: random.Random) -> dict:
 
 # ---------------------------------------------------------------- helpers
 
-def post(url: str, body: dict, timeout: float = 120.0) -> tuple[dict, float]:
+def post(url: str, body: dict, timeout: float = 300.0) -> tuple[dict, float]:
     data = json.dumps(body).encode()
     req = urllib.request.Request(
         url, data=data, headers={"Content-Type": "application/json"}, method="POST"

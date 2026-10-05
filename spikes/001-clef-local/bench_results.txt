@@ -1,0 +1,17 @@
+target: http://127.0.0.1:8091/v1/systemone
+
+questions per request: 18 (choice=8, noul=7, score=3)
+cold decision (first request, warm model): 68112 ms
+usage reported by server: {'input_tokens': 2390, 'output_tokens': 0}
+sample answer next_action: idle_town  (p=0.535)
+sample answer hp_low: {'type': 'noul', 'noul': 0.024718430059869578}
+
+warm single decision over 20 runs:
+  p50 = 64909 ms   p95 = 77139 ms   mean = 65990 ms   min = 56971   max = 81306
+batch trial 0: 4 errors: TimeoutError('timed out')
+batch trial 1: 4 errors: TimeoutError('timed out')
+batch trial 2: 4 errors: TimeoutError('timed out')
+batch trial 3: 4 errors: TimeoutError('timed out')
+batch trial 4: 5 errors: TimeoutError('timed out')
+
+NOTE: 'cold' above is first-request-of-process with model already loaded. True cold start (model load) is measured by bench_cold.py / README procedure.
