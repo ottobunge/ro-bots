@@ -1,0 +1,57 @@
+version: '3'
+
+tasks:
+  dashboard:fmt:
+    desc: Format check (rustfmt)
+    dir: dashboard
+    cmds:
+      - cargo fmt --all -- --check
+
+  dashboard:clippy:
+    desc: Clippy, pedantic group, all targets/features, deny warnings
+    dir: dashboard
+    cmds:
+      - cargo clippy --all-targets --all-features -- -D warnings
+
+  dashboard:test:
+    desc: Unit tests (contract round-trips, determinism, HTTP API)
+    dir: dashboard
+    cmds:
+      - cargo test
+
+  dashboard:audit:
+    desc: Dependency audit (cargo-audit; installs it on first run if missing)
+    dir: dashboard
+    cmds: |
+      command -v cargo-audit >/dev/null 2>&1 || cargo install cargo-audit --locked
+      cargo audit -D warnings
+
+  dashboard:machete:
+    desc: Unused-dependency check (cargo-machete; installs it on first run if missing)
+    dir: dashboard
+    cmds: |
+      command -v cargo-machete >/dev/null 2>&1 || cargo install cargo-machete --locked
+      cargo machete
+
+  dashboard:doc:
+    desc: Prove docs build (rustdoc, no deps)
+    dir: dashboard
+    cmds:
+      - cargo doc --no-deps
+
+  dashboard:check:
+    desc: All quality gates (fmt + clippy + test + audit + machete + doc)
+    dir: dashboard
+    deps:
+      - dashboard:fmt
+      - dashboard:clippy
+      - dashboard:test
+      - dashboard:audit
+      - dashboard:machete
+      - dashboard:doc
+
+  dashboard:serve:
+    desc: Run the dashboard locally on 127.0.0.1:8400
+    dir: dashboard
+    cmds:
+      - cargo run --release

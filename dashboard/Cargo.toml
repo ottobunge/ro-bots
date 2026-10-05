@@ -1,0 +1,39 @@
+[workspace]
+resolver = "2"
+members = ["crates/world-feed", "crates/dashboard-app"]
+
+[workspace.package]
+edition = "2021"
+version = "0.1.0"
+license = "MIT"
+
+[workspace.dependencies]
+serde = { version = "1.0.229", features = ["derive"] }
+serde_json = "1.0.151"
+rand = { version = "0.10.3", features = ["std", "std_rng"] }
+rand_pcg = "0.10.2"
+tokio = { version = "1.53", features = ["rt-multi-thread", "macros", "time", "signal"] }
+axum = { version = "0.8.9", features = ["ws"] }
+dioxus = { version = "0.7.10", default-features = false, features = ["macro", "html", "signals", "hooks"] }
+dioxus-liveview = { version = "0.7.10", default-features = false, features = ["axum"] }
+futures-util = { version = "0.3.34", default-features = false, features = ["std", "sink"] }
+tokio-stream = { version = "0.1.19", features = ["sync", "net"] }
+thiserror = "2.0.21"
+
+[workspace.lints.rust]
+unsafe_code = "deny"
+missing_docs = "warn"
+
+[workspace.lints.clippy]
+pedantic = { level = "warn", priority = -1 }
+unwrap_used = "deny"
+expect_used = "deny"
+panic = "deny"
+indexing_slicing = "deny"
+integer_division = "warn"
+unimplemented = "deny"
+todo = "deny"
+
+[profile.release]
+strip = true
+lto = "thin"

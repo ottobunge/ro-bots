@@ -63,6 +63,8 @@ spikes/
   002-rathena-up/    rAthena + MariaDB via nix flake devShell + clientless handshake test
   003-clientless-limbs/  (pending) move/attack/loot/chat/party over raw packets
   004-brain-loop/    (pending) 5-10 bots with full Clef tick-loop brains
+dashboard/          Rust web dashboard (own Cargo workspace) — observer + control
+                    plane over the WorldFeed contract (ADR-007/008)
 ```
 
 Each spike has its own `README.md` ending in a `## Verdict:` block.
