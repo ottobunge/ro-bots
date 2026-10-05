@@ -26,3 +26,4 @@
 ## Concepts
 - [[decision-flow]] — mermaid map of the whole loop: events, scripts, Clef, LLM escalation
 - [[escalation-policy]] — when a decision leaves Clef and reaches the LLM
+- [[goals-ledger]] — living checklist mapping every standing goal to ADRs and status
