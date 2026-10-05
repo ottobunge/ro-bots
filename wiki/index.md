@@ -14,6 +14,8 @@
   solo outsiders, SocialGraph affinity, human reputation with damped propagation
 - [[adr-006-clef-context-selector]] — Clef ranks memory-line relevance (one pass, ≤64
   score questions) to pick the context view on busy ticks; tree-cover stays the default
+- [[adr-007-rust-dashboard]] — Rust dashboard (Dioxus LiveView on Axum; no WASM) consuming
+  a WorldFeed SSE/JSON contract; roster, live feed, agent inspector views
 
 ## Concepts
 - [[decision-flow]] — mermaid map of the whole loop: events, scripts, Clef, LLM escalation
