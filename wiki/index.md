@@ -22,6 +22,9 @@
 - [[adr-009-character-builds-item-cognition]] — agents author builds (class path, stats,
   skills, equip goals) via Clef; MechanicsPort pre-calculates item/skill digests so
   item decisions (equip/store/sell) are one Clef pass over normalized comparisons
+- [[adr-010-worlds-volumes-e2e]] — debug/test/prod-NAME worlds on isolated volumes;
+  `task e2e` wipes+seeds the test world, runs scheduled bots with real brains and
+  asserts goal-directed behavior; `KEEP=1` playground mode
 
 ## Concepts
 - [[decision-flow]] — mermaid map of the whole loop: events, scripts, Clef, LLM escalation
