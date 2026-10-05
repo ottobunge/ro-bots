@@ -1,0 +1,182 @@
+# ADR-010: templated world isolation.
+#
+# One compose file, three world classes. The WORLD_KIND env var selects the
+# world; every world's data lives in its own named volume, so worlds cannot
+# mix data:
+#
+#   WORLD_KIND      volume                    lifecycle
+#   -------------   -----------------------   --------------------------------
+#   debug           ro-bots-world-debug       live dev; persists across restarts
+#   test            ro-bots-world-test        wiped + re-inited on every e2e run
+#   prod-<name>     ro-bots-world-prod-<name> persists; never wiped without FORCE=1
+#
+# The volume key uses the literal env-interpolation form
+# ${WORLD_KIND:-debug}; volumes are declared `external: true` and are
+# created by scripts/world.sh (`docker volume create`) before `up`, so a
+# `down -v` against one world can never touch another world's volume.
+#
+# Usage (or just use scripts/world.sh / the Taskfile tasks, which wrap this):
+#   WORLD_KIND=test docker compose -f docker-compose.worlds.yml \
+#     -p ro-bots-test up -d
+#
+# Project-name note: always pass -p ro-bots-$WORLD_KIND so container and
+# network names are namespaced per world (scripts/world.sh does this).
+
+x-world-env: &world-env
+  WORLD_KIND: ${WORLD_KIND:-debug}
+
+services:
+  mariadb:
+    image: mariadb:11.4
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_general_ci
+    environment:
+      <<: *world-env
+      MARIADB_ROOT_PASSWORD: ragnarok
+      MARIADB_DATABASE: ragnarok
+      MARIADB_USER: ragnarok
+      MARIADB_PASSWORD: ragnarok
+    volumes:
+      - ro-bots-world-${WORLD_KIND:-debug}:/var/lib/mysql
+    ports: []
+      # localhost-only when enabled. Left disabled by default: the native
+      # spike mysqld owns 127.0.0.1:3306 today (ADR-010 native-mode rAthena);
+      # uncomment to expose the container DB to host tools:
+      # - "127.0.0.1:3306:3306"
+      # (yaml: `ports: []` + indented comments keeps the key an array)
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 3s
+      timeout: 5s
+      retries: 30
+      start_period: 10s
+    networks:
+      - world-local
+
+  rathena-login:
+    build:
+      context: .
+      dockerfile: docker/rathena.Dockerfile
+      args:
+        PACKETVER: "20180704"
+        PRERE: "yes"
+    image: ro-bots/rathena:latest
+    command: ["login-server"]
+    environment:
+      <<: *world-env
+      MARIA_ADDR: mariadb
+    depends_on:
+      mariadb:
+        condition: service_healthy
+    ports:
+      - "127.0.0.1:6900:6900"
+    networks:
+      - world-local
+    profiles: ["rathena"]
+
+  rathena-char:
+    image: ro-bots/rathena:latest
+    build:
+      context: .
+      dockerfile: docker/rathena.Dockerfile
+      args:
+        PACKETVER: "20180704"
+        PRERE: "yes"
+    command: ["char-server"]
+    environment:
+      <<: *world-env
+      MARIA_ADDR: mariadb
+    depends_on:
+      mariadb:
+        condition: service_healthy
+    ports:
+      - "127.0.0.1:6121:6121"
+    networks:
+      - world-local
+    profiles: ["rathena"]
+
+  rathena-map:
+    image: ro-bots/rathena:latest
+    build:
+      context: .
+      dockerfile: docker/rathena.Dockerfile
+      args:
+        PACKETVER: "20180704"
+        PRERE: "yes"
+    command: ["map-server"]
+    environment:
+      <<: *world-env
+      MARIA_ADDR: mariadb
+    depends_on:
+      mariadb:
+        condition: service_healthy
+    ports:
+      - "127.0.0.1:5121:5121"
+    networks:
+      - world-local
+    profiles: ["rathena"]
+
+  worldfeed:
+    build:
+      context: .
+      dockerfile: docker/worldfeed.Dockerfile
+    image: ro-bots/worldfeed:latest
+    environment:
+      <<: *world-env
+      WORLDFEED_PORT: "8400"
+    volumes:
+      # graceful degradation: if src/robots is importable inside the image the
+      # real WorldFeedServer (src/robots.adapters.worldfeed_server) serves the
+      # ADR-007 contract; otherwise the image's stub serves the same shape.
+      - ./src:/app/src:ro
+    ports:
+      - "127.0.0.1:8400:8400"
+    networks:
+      - world-local
+
+  dashboard:
+    build:
+      context: ./dashboard
+      dockerfile: Dockerfile
+      # dashboard/Cargo.toml needs edition2024 (cargo >= 1.85); rust:1.84
+      # pinned in dashboard/Dockerfile cannot build it. rust:slim tracks
+      # the latest stable. (Follow-up: bump dashboard/Dockerfile itself.)
+      args:
+        BASE_IMAGE: rust:slim
+    image: ro-bots/dashboard:latest
+    environment:
+      <<: *world-env
+      # 0.0.0.0 in-container (rootlessport needs it); host publish stays
+      # 127.0.0.1-bound, so the dashboard is still localhost-only.
+      DASHBOARD_BIND: 0.0.0.0:8400
+    ports:
+      - "127.0.0.1:8401:8400"
+    networks:
+      - world-local
+
+volumes:
+  # THE isolation point: one volume per world kind. The key is the literal
+  # ${WORLD_KIND:-debug} form; because every referenced volume is declared
+  # external with a fixed name, compose validates per world and each
+  # world's data stays in exactly one named volume. Create them with:
+  #   docker volume create ro-bots-world-<kind>   (scripts/world.sh does this)
+  ro-bots-world-debug:
+    external: true
+    name: ro-bots-world-debug
+  ro-bots-world-test:
+    external: true
+    name: ro-bots-world-test
+  ro-bots-world-prod-default:
+    external: true
+    name: ro-bots-world-prod-default
+  # prod-* worlds are nameable; every used name must be declared here AND
+  # the volume must exist (`scripts/world.sh up` creates both). Add one
+  # stanza per prod name you run, e.g.:
+  ro-bots-world-prod-myserver:
+    external: true
+    name: ro-bots-world-prod-myserver
+
+networks:
+  world-local:
+    # local-only: every published port above is bound to 127.0.0.1 so no
+    # world service is reachable from off-host.
+    driver: bridge

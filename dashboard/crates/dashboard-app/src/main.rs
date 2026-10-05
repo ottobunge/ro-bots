@@ -147,15 +147,20 @@ pub fn build_router(state: AppState) -> Router {
         .with_state(state)
 }
 
-/// Bind `127.0.0.1:8400` and serve until stopped.
+/// Bind and serve until stopped.
+///
+/// The bind address defaults to `127.0.0.1:8400` for native runs; in
+/// containers (docker-compose.worlds.yml) DASHBOARD_BIND=0.0.0.0:8400 is
+/// set because rootless docker's rootlessport proxy cannot reach a
+/// 127.0.0.1-bound service — the host-side publish stays 127.0.0.1-bound.
 ///
 /// # Errors
 ///
 /// Returns the underlying `std::io::Error` when the listener cannot be bound
 /// or the accept loop fails.
 pub async fn serve(state: AppState) -> std::io::Result<()> {
-    let addr = std::net::SocketAddr::from(([127, 0, 0, 1], 8400));
-    let listener = tokio::net::TcpListener::bind(addr).await?;
+    let addr = std::env::var("DASHBOARD_BIND").unwrap_or_else(|_| "127.0.0.1:8400".into());
+    let listener = tokio::net::TcpListener::bind(addr.as_str()).await?;
     println!("dashboard listening on http://{addr}");
     axum::serve(listener, build_router(state)).await
 }

@@ -1,5 +1,8 @@
 # Multi-stage build: compile in a full toolchain image, ship the bare binary.
-FROM rust:1.84-slim AS builder
+# BASE_IMAGE is overridable by docker-compose.worlds.yml (dashboard needs
+# cargo >= 1.85 for edition2024; rust:slim tracks the latest stable).
+ARG BASE_IMAGE=rust:1.84-slim
+FROM ${BASE_IMAGE} AS builder
 WORKDIR /build
 # Cache dependencies first: only recompiles when manifests change.
 COPY Cargo.toml Cargo.lock ./
