@@ -37,6 +37,7 @@ slice lands. This page is the checklist the wiki drives the code against.
 | 4 | Pre-calculated mechanics: agents see item digests, Clef decides equip/store/sell/discard | adr-009 | **landed** (MechanicsPort + StubMechanics; YamlMechanics over rAthena item_db pending) |
 | 5 | `task e2e`: clean server + seeded default test agents (builds/playstyles/groups) + goal-directed behavior assertions + KEEP=1 playground mode | adr-010 | **in flight** (docker-compose.worlds.yml, scripts/e2e.sh, seed_test_agents.py) |
 | 5 | Three isolated world volumes: debug (dev), test (wiped per e2e), prod-NAME (default prod-default) | adr-010 | **in flight** (compose-level isolation via WORLD_KIND; prod wipe protected by FORCE=1 gate) |
+| 6 | Benchmark framework: local GPU, Cloudflare hosted, Heavengraph GPU | adr-012 | **partially landed** — framework + Taskfile task + RESULTS.md pushed; cloudflare-flash (p50 0.24s, $0.215/1k) and cloudflare-27b (p50 0.73s, $0.574/1k) measured live; heavengraph rows pending spike 005; local-GPU (890M Vulkan) explicitly out — CPU numbers stand in via LCP-warm path |
 
 ## In-flight / next (kept current)
 
