@@ -92,3 +92,51 @@ tasks:
     dir: spikes/001-clef-local
     cmds:
       - ./serve.sh
+
+  # ---- ADR-010: worlds / volumes / e2e playground -------------------------
+  # world= is the WORLD_KIND: debug (default) | test | prod-NAME.
+
+  world:up:
+    desc: 'Compose up the world stack (MariaDB + worldfeed [+ rAthena profile]) for world= (default debug)'
+    cmds:
+      - WORLD_KIND='{{.world|default "debug"}}' bash scripts/world.sh up
+    vars:
+      world: '{{.world|default "debug"}}'
+
+  world:down:
+    desc: Compose down the world stack (volume kept)
+    cmds:
+      - WORLD_KIND='{{.world|default "debug"}}' bash scripts/world.sh down
+
+  world:wipe:
+    desc: 'Wipe a world (down -v + volume rm); REFUSES prod-* unless FORCE=1'
+    cmds:
+      - WORLD_KIND='{{.world|default "debug"}}' FORCE='${FORCE:-0}' bash scripts/world.sh wipe
+
+  world:status:
+    desc: Show world stack status (services, volume, ports)
+    cmds:
+      - WORLD_KIND='{{.world|default "debug"}}' bash scripts/world.sh status
+
+  e2e:
+    desc: 'Full-stack e2e (ADR-010 criterion 5): clean test world -> seed -> bots -> ticks -> assertions. TICKS=120 KEEP=0 CLEF_URL= '
+    cmds:
+      - bash scripts/e2e.sh
+
+  playground:
+    desc: e2e with KEEP=1, then point you at the dashboard (fast dev loop)
+    cmds:
+      - KEEP=1 bash scripts/e2e.sh
+      - echo
+      - echo "Playground is up ->"
+      - echo "  dashboard (Rust, mock feed) http://127.0.0.1:8401"
+      - echo "  worldfeed (Python, live)    http://127.0.0.1:8400"
+
+  bench:decisions:
+    desc: Benchmark decision backends (ADR-012). Vars, e.g. backends=cloudflare-flash,cloudflare-27b runs=10
+    vars:
+      BACKENDS: "{{.backends | default \"cloudflare-flash,cloudflare-27b\"}}"
+      RUNS: "{{.runs | default \"10\"}}"
+    cmds:
+      - cd spikes/bench && python3 bench_framework.py --backends {{.BACKENDS}} --runs {{.RUNS}} --json-out RESULTS.json
+      - echo "Compare with spikes/bench/RESULTS.md (append notable rows there)"
