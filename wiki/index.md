@@ -16,6 +16,12 @@
   score questions) to pick the context view on busy ticks; tree-cover stays the default
 - [[adr-007-rust-dashboard]] — Rust dashboard (Dioxus LiveView on Axum; no WASM) consuming
   a WorldFeed SSE/JSON contract; roster, live feed, agent inspector views
+- [[adr-008-dashboard-control-plane]] — dashboard grows configurator (counts, ranges,
+  generate), persona editing, force-action commands, character tracker; write path via
+  a Command API on the WorldFeed contract; local Docker deployment
+- [[adr-009-character-builds-item-cognition]] — agents author builds (class path, stats,
+  skills, equip goals) via Clef; MechanicsPort pre-calculates item/skill digests so
+  item decisions (equip/store/sell) are one Clef pass over normalized comparisons
 
 ## Concepts
 - [[decision-flow]] — mermaid map of the whole loop: events, scripts, Clef, LLM escalation
