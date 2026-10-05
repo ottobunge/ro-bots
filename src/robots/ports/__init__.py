@@ -8,8 +8,10 @@ where tests need isinstance).
 from typing import Any, Protocol, runtime_checkable
 
 from robots.domain.actions import GameAction
+from robots.domain.build import Build, BuildProgress, ItemDigest, SkillDigest
 from robots.domain.farm import MobInfo
 from robots.domain.model import BotState
+from robots.ports.mechanics import MechanicsPort
 
 
 @runtime_checkable
@@ -80,3 +82,18 @@ class MobDatabase(Protocol):
     def by_name(self, name: str) -> MobInfo | None:
         """Look one mob up by name; None if unknown."""
         ...
+
+
+__all__ = [
+    "ActionAdvisor",
+    "Build",
+    "BuildProgress",
+    "ChatGenerator",
+    "DecisionModel",
+    "GameClient",
+    "ItemDigest",
+    "MechanicsPort",
+    "MobDatabase",
+    "SkillDigest",
+    "TickClock",
+]

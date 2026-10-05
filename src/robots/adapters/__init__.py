@@ -9,6 +9,7 @@
 
 from robots.adapters.chat import ChatRemote, LocalChatServer, StaticChatGenerator
 from robots.adapters.decision import ClefLocal, ClefRemote, ScriptedDecisionModel
+from robots.adapters.mechanics_stub import StubMechanics, YamlMechanics
 
 __all__ = [
     "ChatRemote",
@@ -17,4 +18,6 @@ __all__ = [
     "LocalChatServer",
     "ScriptedDecisionModel",
     "StaticChatGenerator",
+    "StubMechanics",
+    "YamlMechanics",
 ]
