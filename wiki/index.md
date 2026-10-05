@@ -25,6 +25,10 @@
 - [[adr-010-worlds-volumes-e2e]] — debug/test/prod-NAME worlds on isolated volumes;
   `task e2e` wipes+seeds the test world, runs scheduled bots with real brains and
   asserts goal-directed behavior; `KEEP=1` playground mode
+- [[adr-011-decision-runtime-strategy]] — spike 001 verdict: Clef-Flash on CPU is
+  ~65s/decision (LCP-warm: 0.94s) → Clef becomes the amortized planner (Tier 3);
+  reflexes via scripts + rule-based triage (Tiers 1-2); Qwen chat ~2s (Tier 4);
+  prefix-stable serialization + DecisionModel port keep remote Clef swappable
 
 ## Concepts
 - [[decision-flow]] — mermaid map of the whole loop: events, scripts, Clef, LLM escalation
