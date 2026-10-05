@@ -193,11 +193,31 @@ def render_view(
     if n == 0:
         return []
     lines = [_view_line(log, level, index, now) for level, index in _minimal_cover(n)]
-    while lines and len("\n".join(lines)) > budget_chars:
+    while lines and _len_join(lines) > budget_chars:
         lines.pop(0)  # sacrifice the oldest, coarsest line first
     if lines and len(lines[0]) > budget_chars:
         lines[0] = lines[0][:budget_chars]
     return lines
+
+
+def _len_join(lines: list[str]) -> int:
+    return len("\n".join(lines))
+
+
+def fit_budget(lines: list[str], budget_chars: int) -> list[str]:
+    """Fewest oldest lines dropped so ``'\\n'.join(lines)`` fits the budget.
+
+    Same discipline as ``render_view``: the oldest lines go first, the newest
+    is truncated only if it alone exceeds the budget. Pure; never crashes.
+    """
+    out = list(lines)
+    if budget_chars <= 0:
+        return []
+    while out and _len_join(out) > budget_chars:
+        out.pop(0)
+    if out and len(out[0]) > budget_chars:
+        out[0] = out[0][:budget_chars]
+    return out
 
 
 def zoom(log: MemoryLog, view: list[str], node_id: str) -> list[str]:

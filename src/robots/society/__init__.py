@@ -9,6 +9,7 @@ from robots.society.memory import (
     QwenSummarizer,
     StubSummarizer,
     Summarizer,
+    fit_budget,
     render_view,
     zoom,
 )
@@ -54,6 +55,7 @@ __all__ = [
     "SocietyRoster",
     "StubSummarizer",
     "Summarizer",
+    "fit_budget",
     "render_view",
     "zoom",
 ]
