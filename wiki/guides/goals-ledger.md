@@ -35,6 +35,8 @@ slice lands. This page is the checklist the wiki drives the code against.
 | 3 | Edit personas; force actions on agents; see generated characters | adr-008 | **landed on mock** (edit_persona/force_action commands, operator_forced tagging) |
 | 4 | Agents assign builds (final equip/skills/abilities as goals) chosen by play-style | adr-009 | **landed** (BuildAuthor via Clef; Build + BuildProgress) |
 | 4 | Pre-calculated mechanics: agents see item digests, Clef decides equip/store/sell/discard | adr-009 | **landed** (MechanicsPort + StubMechanics; YamlMechanics over rAthena item_db pending) |
+| 5 | `task e2e`: clean server + seeded default test agents (builds/playstyles/groups) + goal-directed behavior assertions + KEEP=1 playground mode | adr-010 | **in flight** (docker-compose.worlds.yml, scripts/e2e.sh, seed_test_agents.py) |
+| 5 | Three isolated world volumes: debug (dev), test (wiped per e2e), prod-NAME (default prod-default) | adr-010 | **in flight** (compose-level isolation via WORLD_KIND; prod wipe protected by FORCE=1 gate) |
 
 ## In-flight / next (kept current)
 
