@@ -12,6 +12,8 @@
   summary tree, fixed-size view, zoom; schedules as experiences
 - [[adr-005-society-groups-reputation]] — personas, friend groups + overlapping schedules,
   solo outsiders, SocialGraph affinity, human reputation with damped propagation
+- [[adr-006-clef-context-selector]] — Clef ranks memory-line relevance (one pass, ≤64
+  score questions) to pick the context view on busy ticks; tree-cover stays the default
 
 ## Concepts
 - [[decision-flow]] — mermaid map of the whole loop: events, scripts, Clef, LLM escalation
