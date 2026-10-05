@@ -8,6 +8,10 @@
 - [[adr-001-event-driven-brain]] — scripts execute; Clef fires on events/reviews, never per tick
 - [[adr-002-randomized-timers]] — time-based triggers with random delays (5–20 min class)
 - [[adr-003-farm-plans]] — Clef authors farming sessions (duration, target mobs, interrupt rules)
+- [[adr-004-isolated-agents-optchat-memory]] — per-agent OptChat memory: append-only log,
+  summary tree, fixed-size view, zoom; schedules as experiences
+- [[adr-005-society-groups-reputation]] — personas, friend groups + overlapping schedules,
+  solo outsiders, SocialGraph affinity, human reputation with damped propagation
 
 ## Concepts
 - [[decision-flow]] — mermaid map of the whole loop: events, scripts, Clef, LLM escalation
