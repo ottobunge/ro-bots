@@ -3,6 +3,27 @@
 Validate that Cloudflare's Clef-Flash decision model runs locally fast enough to
 drive Ragnarok Online bot decisions, exposed behind a SystemOne-compatible HTTP API.
 
+## Addendum (2026-10-05): hosted Workers AI benchmark — VALIDATED
+
+`bench_cloudflare.py` runs the identical 2390-token decision request against
+the hosted models (auth via wrangler OAuth, token stays in local keyring):
+
+| runtime | cold | p50 | p95 | in_tokens | cost/decision |
+|---|---|---|---|---|---|
+| local CPU (above) | — | 64.9s | 77.1s | 2390 | — |
+| local CPU LCP-warm | — | 0.94s | — | ~249 | — |
+| **@cf/cloudflare/clef-flash** | 0.30s | **0.26s** | **0.31s** | 2390 | **$0.000215** |
+| **@cf/cloudflare/clef (27B)** | 0.71s | **0.91s** | **1.36s** | 2390 | **$0.000574** |
+
+Gotchas: the request's `model` field must be `clef`/`clef-flash` to match the
+URL's model (422 otherwise); answers are nested under `result.answers`.
+
+**Verdict for hosted runtime: VALIDATED.** Per-event Clef decisions are
+practical again — p50 0.26s (flash) / 0.91s (27B) at ~$0.22–0.57 per 1000
+decisions. ADR-011's Tier-3 limitation is lifted: see ADR-011 addendum for
+the revised tiering (hosted Clef becomes the default `DecisionModel`, local
+CPU/LCP-warm path remains the offline fallback, GPU spike 005 still pending).
+
 ## Verdict: PARTIAL
 
 The full stack works — llama.cpp master (a7fb71f) has a **native `POST /v1/systemone`
