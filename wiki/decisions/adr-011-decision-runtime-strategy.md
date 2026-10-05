@@ -50,6 +50,27 @@ the stub so tests never wait on model latency. `CLEF_URL` enables real
 decisions when available.
 
 ## Consequences
+
+**ADDENDUM (2026-10-05, after hosted benchmark — spike 001 README addendum):**
+Cloudflare Workers AI hosted Clef measured on the identical 2390-token
+request: **clef-flash p50 0.26s / 27B p50 0.91s**, at $0.000215 / $0.000574
+per decision. Tiering revised:
+
+- `ClefRemote` (hosted) becomes the **default `DecisionModel`** — per-event
+  decisions are practical again, including monster/damage reactions.
+- Tier-2 rules remain as the offline/fallback path (API outage, budget cap,
+  air-gapped demo) and as sub-100ms reflexes for movement/attack that need
+  no model call at all.
+- Local CPU llama.cpp Clef survives only via the LCP-warm path (0.94s) for
+  air-gapped runs; ADR-002/003 amortization stays good practice.
+- Spike 005 (Heavengraph GPU) still pending — if near-hosted latency, it
+  becomes the zero-marginal-cost self-hosted option.
+
+The `DecisionModel` port is unchanged by all of this — only the wiring
+default changes.
+
+Original CPU-era analysis, kept for the record:
+
 - Event reactions stay sub-second regardless of model speed (Tier 1/2 are pure CPU).
 - The "how fast can the world feel" metric becomes: Tier-2 rules for
   reflexes + Clef-reviewed plans at minutes cadence + Qwen chat at ~2s —
