@@ -1,0 +1,59 @@
+"""Society layer (ADR-004 episodic memory, ADR-005 groups & reputation)."""
+
+from robots.society.memory import (
+    VIEW_BUDGET_CHARS,
+    ExperienceNote,
+    Memory,
+    MemoryLog,
+    NoteKind,
+    QwenSummarizer,
+    StubSummarizer,
+    Summarizer,
+    render_view,
+    zoom,
+)
+from robots.society.models import (
+    Attitude,
+    FriendGroup,
+    Playstyle,
+    Schedule,
+    ScheduleFactory,
+    ScheduleWindow,
+    SocietyClock,
+    SocietyPersona,
+)
+from robots.society.society import (
+    PROPAGATION_FACTOR,
+    PROPAGATION_THRESHOLD,
+    ReputationEvent,
+    ReputationStore,
+    SocialGraph,
+    SocietyRoster,
+)
+
+__all__ = [
+    "PROPAGATION_FACTOR",
+    "PROPAGATION_THRESHOLD",
+    "VIEW_BUDGET_CHARS",
+    "Attitude",
+    "ExperienceNote",
+    "FriendGroup",
+    "Memory",
+    "MemoryLog",
+    "NoteKind",
+    "Playstyle",
+    "QwenSummarizer",
+    "ReputationEvent",
+    "ReputationStore",
+    "Schedule",
+    "ScheduleFactory",
+    "ScheduleWindow",
+    "SocialGraph",
+    "SocietyClock",
+    "SocietyPersona",
+    "SocietyRoster",
+    "StubSummarizer",
+    "Summarizer",
+    "render_view",
+    "zoom",
+]

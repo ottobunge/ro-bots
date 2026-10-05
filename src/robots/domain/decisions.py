@@ -32,8 +32,15 @@ def _goal_criterion(goal: Goal) -> str:
     }[goal]
 
 
-def build_decision_request(state: BotState) -> dict[str, Any]:
-    """Build the SystemOne question schema for one tick of a bot's brain."""
+def build_decision_request(
+    state: BotState, memory_lines: list[str] | None = None
+) -> dict[str, Any]:
+    """Build the SystemOne question schema for one tick of a bot's brain.
+
+    ``memory_lines`` (ADR-004): the OptChat-style memory view; when provided
+    it is injected as ``state['memory_view']`` so the decision model sees the
+    agent's whole past at bounded size. Absent key otherwise.
+    """
     nearby_desc = ", ".join(f"{a.name}({a.kind}, d={a.distance:.0f})" for a in state.nearby[:10])
     chat_desc = " | ".join(f"[{c.channel}] {c.sender}: {c.text}" for c in state.recent_chat[-3:])
     invites = ", ".join(i.from_name for i in state.pending_invites) or "none"
@@ -56,6 +63,8 @@ def build_decision_request(state: BotState) -> dict[str, Any]:
         "pending_party_invites": invites,
         "recent_chat": chat_desc,
     }
+    if memory_lines is not None:
+        json_state["memory_view"] = "\n".join(memory_lines[:40])
 
     questions: dict[str, dict[str, Any]] = {
         "next_action": {
