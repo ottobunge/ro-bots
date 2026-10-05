@@ -37,8 +37,12 @@ Views (MVP):
 
 ## Consequences
 - Python side stays the source of truth; Rust touches only presentation.
-- `task dashboard:check` (fmt + clippy -D warnings + cargo test) joins the
-  quality gates; `task dashboard:serve` runs it locally.
+- Rust static analysis matches the Python pipeline's comprehensiveness:
+  `task dashboard:check` runs **fmt, clippy (pedantic, `-D warnings`), tests,
+  cargo-audit (CVEs), unused-dependency check, and `cargo doc`**; workspace
+  lints deny `unsafe_code`, `unwrap_used`, `expect_used`, `panic`, and
+  `indexing_slicing` — the observer must never crash the loop it watches.
+- `task dashboard:serve` runs it locally.
 - If Dioxus LiveView proves unmaintained, fall back to Axum+htmx — the
   WorldFeed contract is the stable boundary either way.
 
