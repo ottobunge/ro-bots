@@ -1,0 +1,11 @@
+{
+  "record": "GRIND_WINDOW65_BOTH_STALL_JOIN_LOTTERY_AND_COUNTER_BINDINGS_STILL_PRE_RECONNECT",
+  "date": "2026-10-20 (~13:0x)",
+  "shape": "Both agents: own_pos 0, walks 0, decides full cadence (233/213) \u2014 no engagements, the inventory/XP unchanged (the w63/64 loot remains: 915 Chrysalis, 935 Clover).",
+  "open_threads_for_next_session": [
+    "1. JOIN RELIABILITY: the windows alternate between full engagement (w63 fx1: 365 walks/1 kill/71xp; w64 fx1: 138 walks/43xp) and both-stall (w65). The join lottery is THE infra blocker \u2014 dig the w65 receipt's handshake/tracker fields + the runtime logs; the pattern smells like a reconnect between the capture construction and the live agent, leaving BOTH the counters (the operator's counter bindings may accumulate into the pre-reconnect tracker objects \u2014 the LiveAgentRef shim covered the capture's brain only) and possibly the runtime dispatch re-bound to stale objects.",
+    "2. THE COUNTER BINDINGS: audit EVERY place the emission operator holds a client/tracker/brain reference across the window start; ALL must resolve live (the LiveAgentRef pattern) \u2014 the w63's fx0 receipt-zeros were the artifact; the w65's zeros may be BOTH (the artifact + the real stall) \u2014 the DB writebacks (the inventory/XP/position) are the ground truth to separate them.",
+    "3. THE ECONOMY LEG UNTOUCHED YET: the agents hold 915/935 sellables, the zeny 0 \u2014 the merchant drive needs the zeny>=50 OR the sellable stock (the MERCHANT_ROUTE + the sell C5/C7/C9/CB landed) \u2014 the next engaged window should show the prt_in trip; watch the zeny.",
+    "4. THE CHAT BACKEND: the local Qwen relaunch deferred (the load thrashed under the window load) \u2014 the clean relaunch when no window runs, or serve the chat from the heavengraph if a chat-capable model lands there."
+  ]
+}
