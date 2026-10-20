@@ -34,6 +34,8 @@ from itertools import combinations
 from pathlib import Path
 from typing import Any, Final, TypeVar, final
 
+from robots.society.objectives import GroupObjectiveBook, objective_goal
+
 _T = TypeVar("_T")
 
 RELATION_MIN: Final = -1.0
@@ -108,6 +110,7 @@ class RelationshipLedger:
         self._chat_exchanges: dict[str, int] = {}
         self._human_scores: dict[str, float] = {}
         self._group_reputation: dict[str, dict[str, float]] = {}
+        self._objectives = GroupObjectiveBook()
         self._last_decay_ts: float | None = None
         if path is not None and path.exists():
             data = json.loads(path.read_text())
@@ -150,6 +153,11 @@ class RelationshipLedger:
     def persona_of(self, display_name: str) -> str | None:
         """The persona id behind an in-game character name (recognizing the inviter)."""
         return self._persona_by_name.get(display_name)
+
+    @property
+    def objectives(self) -> GroupObjectiveBook:
+        """This agent's group-objective book (persisted with the ledger JSON)."""
+        return self._objectives
 
     # -- registration ----------------------------------------------------------
 
@@ -305,17 +313,21 @@ class RelationshipLedger:
         viewer_id: str,
         *,
         active_group_ids: Sequence[str] = (),
+        online_members: Sequence[str] = (),
         max_lines: int = SOCIAL_CONTEXT_MAX_LINES,
     ) -> list[str]:
-        """Bounded decide-context lines: bonds, human scores, gossip, drift.
+        """Bounded decide-context lines: objectives, bonds, humans, gossip, drift.
 
-        Solo outsiders get drift hints naming the currently active groups (a
-        goal hint for the plan/context — never a teleport). Group members get
-        their own group's bonds so accept_invite/premade_pick can prefer
-        friends and high-affinity groups.
+        Objective lines come first (most actionable): the leader's formation
+        suggestion when the group's schedule-overlap window opens, a member's
+        invited/active lines. Solo outsiders get drift hints naming the
+        currently active groups (a goal hint for the plan/context — never a
+        teleport). Group members get their own group's bonds so
+        accept_invite/premade_pick can prefer friends and high-affinity groups.
         """
         own_group = self._member_group.get(viewer_id)
         lines: list[str] = []
+        lines.extend(self._objective_lines(viewer_id, online_members))
         if own_group is not None:
             lines.append(self._group_line(viewer_id, own_group))
         lines.extend(self._friend_lines(viewer_id, own_group))
@@ -324,6 +336,70 @@ class RelationshipLedger:
         if own_group is None:
             lines.extend(self._drift_lines(active_group_ids))
         return lines[:max_lines]
+
+    def _objective_lines(self, viewer_id: str, online_members: Sequence[str]) -> list[str]:
+        """The group-objective facts: invited/active offers, the leader's window."""
+        lines: list[str] = []
+        live = self._objectives.live_objectives()
+        for objective in live:
+            if objective.leader_id == viewer_id:
+                lines.append(self._leader_objective_line(objective))
+            elif viewer_id in objective.invited and viewer_id not in objective.accepted:
+                lines.append(self._member_invited_line(objective))
+            elif viewer_id in objective.accepted:
+                lines.append(self._member_active_line(objective))
+        if any(obj.group_id == self._member_group.get(viewer_id) for obj in live):
+            return lines
+        lines.extend(self._formation_line(viewer_id, online_members))
+        return lines
+
+    def _leader_objective_line(self, objective: Any) -> str:
+        subject = self._objective_subject(objective)
+        return (
+            f"your objective: {subject} ({len(objective.invited)} invited, "
+            f"{len(objective.accepted)} joined)"
+        )
+
+    def _member_invited_line(self, objective: Any) -> str:
+        subject = self._objective_subject(objective)
+        leader = self.display_name(objective.leader_id)
+        return f"invited: {subject} by {leader} - accept the party invite"
+
+    def _member_active_line(self, objective: Any) -> str:
+        subject = self._objective_subject(objective)
+        goal = objective_goal(objective.kind)
+        return (
+            f"active objective: {subject} with {objective.group_id} "
+            f"({len(objective.accepted)} joined) - your goal aligns ({goal.value})"
+        )
+
+    @staticmethod
+    def _objective_subject(objective: Any) -> str:
+        subject = objective.kind
+        if objective.target:
+            subject = f"{subject} {objective.target}"
+        return f"{subject} on {objective.map_name}"
+
+    def _formation_line(self, viewer_id: str, online_members: Sequence[str]) -> list[str]:
+        """The leader's open schedule-overlap window (party_formation speaks)."""
+        if not online_members:
+            return []
+        own_group = self._member_group.get(viewer_id)
+        if own_group is None:
+            return []
+        members = self._groups.get(own_group, ())
+        online = set(online_members) & set(members)
+        if len(online) < 2:
+            return []
+        for plan in self.party_formation(online_members):
+            if plan.leader_id != viewer_id:
+                continue
+            names = ", ".join(self.display_name(m) for m in plan.invitee_ids)
+            return [
+                f"your group {own_group} is online ({len(online)}/{len(members)}); "
+                f"you lead; party_formation suggests inviting {names}"
+            ]
+        return []
 
     def _display(self, persona_id: str) -> str:
         return self._names.get(persona_id, persona_id)
@@ -398,6 +474,7 @@ class RelationshipLedger:
             "chat_exchanges": dict(self._chat_exchanges),
             "human_scores": dict(self._human_scores),
             "group_reputation": {gid: dict(row) for gid, row in self._group_reputation.items()},
+            "objectives": self._objectives.to_dict(),
         }
 
     @classmethod
@@ -418,6 +495,7 @@ class RelationshipLedger:
             str(k): float(v) for k, v in dict(data.get("human_scores", {})).items()
         }
         ledger._group_reputation = cls._reputation_section(data)
+        ledger._objectives = GroupObjectiveBook.from_dict(dict(data.get("objectives", {})))
         return ledger
 
     @classmethod
@@ -474,4 +552,5 @@ class RelationshipLedger:
         self._chat_exchanges = other._chat_exchanges
         self._human_scores = other._human_scores
         self._group_reputation = other._group_reputation
+        self._objectives = other._objectives
         self._last_decay_ts = other._last_decay_ts

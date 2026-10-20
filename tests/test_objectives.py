@@ -269,6 +269,109 @@ def test_seed_roster_leaves_solos_registered_but_ungrouped() -> None:
     assert ledger.group_of(solo.persona_id) is None
 
 
+# -- the ledger carries the book (reconnect continuity) -------------------------
+
+
+def test_ledger_json_carries_objectives_across_reconnect(tmp_path) -> None:
+    population = pop_2_2_1()
+    leader = next(p for p in population.personas if p.group_id is not None)
+    ledger = RelationshipLedger(persona_id=leader.persona_id)
+    seed_roster(ledger, population)
+    member = next(m for m in ledger.group_members(leader.group_id) if m != leader.persona_id)
+    ledger.objectives.propose(
+        "obj-1",
+        leader.group_id,
+        leader.persona_id,
+        "hunt",
+        "prt_fild08",
+        target="porings",
+        invited=(member,),
+    )
+    ledger.objectives.mark_invited("obj-1", (member,))
+    path = tmp_path / "relations.json"
+    ledger.save(path)
+    restored = RelationshipLedger(path=path)
+    objective = restored.objectives.objective("obj-1")
+    assert objective is not None
+    assert objective.status == OBJECTIVE_INVITED
+    assert objective.target == "porings"
+
+
+def test_a_fresh_ledger_has_an_empty_book() -> None:
+    ledger = RelationshipLedger()
+    assert ledger.objectives.joined_objectives() == ()
+    assert RelationshipLedger.from_dict(ledger.to_dict()).to_dict() == ledger.to_dict()
+
+
+# -- decide-context objective lines ----------------------------------------------
+
+
+def test_leader_context_suggests_formation_when_window_opens() -> None:
+    ledger = RelationshipLedger()
+    ledger.register_persona("lead", "PartyLeader")
+    ledger.register_persona("mate", "VelDrop")
+    ledger.seed_group("g01", ("lead", "mate"), save_map="prt_fild08")
+    lines = ledger.context_lines("lead", online_members=("lead", "mate"))
+    suggestion = [line for line in lines if "you lead" in line]
+    assert len(suggestion) == 1
+    assert "your group g01 is online (2/2)" in suggestion[0]
+    assert "suggests inviting VelDrop" in suggestion[0]
+
+
+def test_no_formation_suggestion_without_copresent_friends() -> None:
+    ledger = RelationshipLedger()
+    ledger.register_persona("lead", "PartyLeader")
+    ledger.register_persona("mate", "VelDrop")
+    ledger.seed_group("g01", ("lead", "mate"))
+    assert not any("you lead" in line for line in ledger.context_lines("lead"))
+    assert not any(
+        "you lead" in line
+        for line in ledger.context_lines("lead", online_members=("lead", "stranger"))
+    )
+
+
+def test_live_objective_replaces_the_formation_suggestion() -> None:
+    ledger = RelationshipLedger()
+    ledger.register_persona("lead", "PartyLeader")
+    ledger.register_persona("mate", "VelDrop")
+    ledger.seed_group("g01", ("lead", "mate"))
+    ledger.objectives.propose("obj-1", "g01", "lead", "hunt", "prt_fild08", target="porings")
+    lines = ledger.context_lines("lead", online_members=("lead", "mate"))
+    assert not any("suggests inviting" in line for line in lines)
+    assert any("your objective: hunt porings on prt_fild08" in line for line in lines)
+
+
+def test_member_context_shows_invited_then_active_lines() -> None:
+    ledger = RelationshipLedger()
+    ledger.register_persona("lead", "PartyLeader")
+    ledger.register_persona("mate", "VelDrop")
+    ledger.seed_group("g01", ("lead", "mate"))
+    ledger.objectives.propose("obj-1", "g01", "lead", "hunt", "prt_fild08", target="porings")
+    ledger.objectives.mark_invited("obj-1", ("mate",))
+    invited_lines = [line for line in ledger.context_lines("mate") if "invited" in line]
+    assert any("hunt porings on prt_fild08 by PartyLeader" in line for line in invited_lines)
+    assert any("accept the party invite" in line for line in invited_lines)
+    ledger.objectives.record_join("obj-1", "mate")
+    active_lines = [line for line in ledger.context_lines("mate") if "active objective" in line]
+    assert any("hunt porings on prt_fild08" in line for line in active_lines)
+    assert any("your goal aligns" in line for line in active_lines)
+
+
+def test_objective_lines_survive_the_context_cap() -> None:
+    ledger = RelationshipLedger()
+    ledger.register_persona("lead", "PartyLeader")
+    ledger.register_persona("mate", "VelDrop")
+    ledger.seed_group("g01", ("lead", "mate"))
+    for i in range(20):
+        ledger.register_persona(f"p{i:02d}", f"Peer{i:02d}")
+        ledger.record_chat_exchange(f"p{i:02d}", "mate", ts=0.0)
+    ledger.objectives.propose("obj-1", "g01", "lead", "hunt", "prt_fild08", target="porings")
+    ledger.objectives.mark_invited("obj-1", ("mate",))
+    lines = ledger.context_lines("mate", max_lines=3)
+    assert len(lines) == 3
+    assert any("invited" in line for line in lines)
+
+
 # -- the no-telepathy guard -------------------------------------------------------
 
 

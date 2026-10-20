@@ -287,6 +287,15 @@ class GroupObjectiveBook:
             and (snapshot := self.objective(objective_id)) is not None
         )
 
+    def live_objectives(self) -> tuple[GroupObjective, ...]:
+        """Every not-yet-dissolved objective this book tracks."""
+        return tuple(
+            snapshot
+            for objective_id in self._objectives
+            if self._objectives[objective_id]["status"] in LIVE_STATUSES
+            and (snapshot := self.objective(objective_id)) is not None
+        )
+
     def _row(self, objective_id: str) -> dict[str, Any]:
         row = self._objectives.get(objective_id)
         if row is None:
