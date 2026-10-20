@@ -73,5 +73,11 @@
   ],
   "offline_twin_debug": [
     "THE DUMP: dispatched {attack: 0, moveTo: 72, loot: 0} in a 4s/80-tick replay \u2014 the APPROACH loop spams MoveTo every tick because the FakeWire never advances the agent's position (no walk-ack feedback), so the in-range check never passes. The live wire advances positions; the replay fake does not. The reconcile options: (a) the FakeWire gains the walk-feedback (the move ack advances the position \u2014 the honest replay), or (b) the test asserts the approach MoveTos instead of the Attacks. Option (a) is the better replay fidelity."
+  ],
+  "fake_wire_feedback": [
+    "THE 0x0091 feedback added to the FakeWire.move (the honest walk confirm) \u2014 still moveTo:72: the walk-pending release likely needs the 0x0087 MOVE-END frame (the runtime's pending-walk machinery releases on the walk-end, not the map-position). NEXT: the FakeWire.move emits the 0x0087 walk-end (the start/end coords per the wire contract) instead of/in addition to the 0x0091; re-dump; expect the approach to converge (the attack >=1)."
+  ],
+  "fake_wire_debug_2": [
+    "The 0x0091 feedback IS ingested correctly (the self-position parser handles it). The remaining explanation for moveTo:72/attack:0: the FakeWire injects the monster ONCE at the opening \u2014 the tracker's actor-freshness purge expires it, so the state oscillates: the empty view (the roam fires) vs the brief re-see. The real wire refreshes the actor frames continuously. THE FAKE NEEDS: the periodic monster_frame re-adds (the actor refresh) in addition to the walk feedback. The next session: add the monster refresh to the FakeWire (a tick-hook or the pre-refreshed frames), then the reconcile lands and the validation window runs."
   ]
 }
