@@ -598,6 +598,7 @@ class PlayingClient:
             capacity_receipt=self._capacity.receipt,
             weight=self._capacity.weight_count,
             max_weight=self._capacity.max_weight_count,
+            received_stats=tuple(view.stats) if view.stats else None,
             inventory_known=view.inventory_known,
             inventory_slots=self._server_slot_allowance(),
             server_self_slots=self._server_self_slots,

@@ -118,7 +118,8 @@ class TestCorporaReaders:
 
     def test_item_fields_items_section_only(self, fake_corpora: None) -> None:
         # id 1201 is Knife among items AND Rybio among monsters; section filter wins.
-        assert corpora.item_fields(1201)["type"] == "Weapon"
+        knife = corpora.item_fields(1201)
+        assert knife is not None and knife["type"] == "Weapon"
 
     def test_monster_fields_by_name(self, fake_corpora: None) -> None:
         fields = corpora.monster_fields("Poring")
@@ -127,7 +128,9 @@ class TestCorporaReaders:
         assert fields["drops"][0]["name"] == "Jellopy"
 
     def test_monster_context_line_shape(self, fake_corpora: None) -> None:
-        line = corpora.monster_context_line(corpora.monster_fields("Poring"))
+        poring = corpora.monster_fields("Poring")
+        assert poring is not None
+        line = corpora.monster_context_line(poring)
         assert line.startswith("Poring:")
         assert "HP 60" in line
         assert "exp 27/20" in line

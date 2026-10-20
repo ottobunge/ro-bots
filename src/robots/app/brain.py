@@ -47,6 +47,7 @@ from robots.domain.events import (
 )
 from robots.domain.farm import FARM_DURATION_S, INTERRUPT_LEVEL_MARGIN, FarmPlan
 from robots.domain.model import Goal
+from robots.knowledge.game_context import decide_knowledge_lines
 from robots.society.relations import SOCIAL_CONTEXT_MAX_LINES, party_event_premade
 
 if TYPE_CHECKING:
@@ -268,7 +269,9 @@ class EventDrivenBrain:
             return TickResult((), {})
         self._npc_menu_seen = key
         request = build_decision_request(
-            state, self.memory.view() if self.memory is not None else None
+            state,
+            self.memory.view() if self.memory is not None else None,
+            knowledge_lines=decide_knowledge_lines(state),
         )
         criteria = {str(i): text for i, text in dialog.options}
         criteria["cancel"] = "Cancel this menu (255)."
@@ -299,7 +302,9 @@ class EventDrivenBrain:
                 ts=event.line.at,
             )
         request = build_decision_request(
-            state, self.memory.view() if self.memory is not None else None
+            state,
+            self.memory.view() if self.memory is not None else None,
+            knowledge_lines=decide_knowledge_lines(state),
         )
         request["state"] = {**request["state"], "event": event_summary(event)}
         self._augment_request_for_event(event, request)
