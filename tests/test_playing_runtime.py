@@ -138,6 +138,18 @@ def test_standing_recovery_rearms_indefinitely_and_names_block() -> None:
     assert any("standing" in str(r) for r in reasons), reasons
 
 
+def test_last_built_state_reads_without_reobserving() -> None:
+    """w65-67 root cause: an instrumentation read that re-observes advances
+    the metadata cursor and empties the runtime's event windows. The cached
+    accessor must return the same state object without a second observe."""
+    wire = Wire()
+    wire.add(map_frame())
+    client = runtime.PlayingClient(wire)
+    assert client.last_built_state is None  # nothing built yet
+    state = client.build_native_state(Goal.GRIND)
+    assert client.last_built_state is state
+
+
 def test_wire_state_not_persona_truth():
     client = runtime.PlayingClient(Wire())
     state = client.build_native_state(Goal.GRIND)

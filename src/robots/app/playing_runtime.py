@@ -221,6 +221,7 @@ class PlayingClient:
         self._metadata_cursor = 0
         self._authenticated_baseline = False
         self._standing: bool | None = None
+        self._last_built_state: BotState | None = None
         self._stand_pending: tuple[int, float, float, int] | None = None
         self._patrol: _FieldPatrol | None = None
         self._keepalive_at: float | None = None
@@ -555,6 +556,16 @@ class PlayingClient:
         map_name = self._map_identity(view.map_name or self.wire.map_name)
         self._validate_npc_context(view, map_name, view.position)
 
+    @property
+    def last_built_state(self) -> BotState | None:
+        """The most recent build_native_state result, WITHOUT re-observing.
+
+        Instrumentation must read this, never call build_native_state: an
+        observing read advances the metadata cursor and empties the runtime's
+        event windows (the w65-67 double-consumer stall).
+        """
+        return self._last_built_state
+
     def build_native_state(self, goal: Goal) -> BotState:
         tracker = self._observe()
         wire, view = self.wire, tracker.view
@@ -574,7 +585,7 @@ class PlayingClient:
         nearby = self._nearby(view, pos, map_name)
         self._validate_npc_context(view, map_name, pos)
         invites = (PartyInvite(wire.party_invite_from, pos.at),) if wire.party_invite_pid else ()
-        return BotState(
+        state = BotState(
             name=wire.char_name,
             job=progression.job,
             base_level=progression.base_level,
@@ -613,6 +624,8 @@ class PlayingClient:
             progression_source=progression.base_source,
             recent_encounters=self._encounters.records if self._encounters is not None else (),
         )
+        self._last_built_state = state
+        return state
 
     def _validate_npc_context(
         self, view: NativeGameplayView, map_name: str, pos: ObservedPosition
