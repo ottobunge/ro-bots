@@ -13,7 +13,19 @@ from robots.app.brain import EventDrivenBrain
 from robots.domain.decisions import build_decision_request
 from robots.domain.events import Heartbeat
 from robots.domain.model import Goal
+from robots.knowledge import game_context
 from tests.conftest import make_state
+
+
+def _expected_decide_state(state, base_state: dict) -> dict:
+    """Strict pin: decide state = base + event, plus the brain's bounded
+    game-knowledge lines when the corpora are present (absent -> legacy
+    schema unchanged)."""
+    expected = {**base_state, "event": "periodic review #1"}
+    knowledge = game_context.decide_knowledge_lines(state)
+    if knowledge:
+        expected["game_knowledge"] = knowledge
+    return expected
 
 
 @pytest.mark.parametrize("provider_kind", ["flash", "hosted", "local", "private"])
@@ -79,7 +91,7 @@ def test_heartbeat_request_crosses_strict_systemone_boundary(monkeypatch, provid
     assert sent["state"] == original["state"]
     assert sent["questions"] == original["questions"]
     base = build_decision_request(state)
-    assert original["state"] == {**base["state"], "event": "periodic review #1"}
+    assert original["state"] == _expected_decide_state(state, base["state"])
     assert {k: v for k, v in original["questions"].items() if k != "change_goal"} == base[
         "questions"
     ]
