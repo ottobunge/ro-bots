@@ -80,7 +80,8 @@ def test_every_legacy_mapping_is_preserved() -> None:
 
     expected (888, the migration baseline) + 0x00C0 (npc-dialogue) +
     0x00B6 (npc-close) + additions (6, npc receive) + presentation (0x01B3)
-    + char_page (0x099D) + 0x00BC (criterion-9 stat ack) == PACKET_DB (899).
+    + char_page (0x099D) + 0x00BC (criterion-9 stat ack) + 0x00BE
+    (stat-change point-cost updates) == PACKET_DB (900).
     """
     packetdb = packet_module()
     baseline = json.loads(
@@ -96,9 +97,10 @@ def test_every_legacy_mapping_is_preserved() -> None:
     } == additions
     presentation = {0x01B3: 67}
     char_page = {0x099D: -1}  # charlist-per-page framing (pinned common/packets.hpp:621-626)
+    stat_change = {0x00BE: 5}  # ZC_STATUS_CHANGE SP_U* point-cost updates (clif.cpp:3774)
     assert packetdb.PACKET_DB[0x01B3] == 67
     prior_889 = expected | {0x00C0: 7}
     prior_890 = prior_889 | {0x00B6: 6}
     prior_891 = prior_890 | {0x00BC: 6}
-    assert prior_891 | additions | presentation | char_page == packetdb.PACKET_DB
-    assert len(packetdb.PACKET_DB) == 899
+    assert prior_891 | additions | presentation | char_page | stat_change == packetdb.PACKET_DB
+    assert len(packetdb.PACKET_DB) == 900

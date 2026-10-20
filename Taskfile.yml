@@ -156,10 +156,45 @@ tasks:
     cmds:
       - bash scripts/world.sh status --world "$WORLD"
 
-  e2e:
-    desc: 'BLOCKED: clean-world seeding/reset and gameplay assertions are not accepted'
+  e2e-prepare:
+    desc: 'Stage the private e2e world files (runtime confs at ports 26900/26121/25121, bootstrap SQL, secrets, compose inputs); no containers'
     cmds:
-      - bash scripts/e2e.sh
+      - bash scripts/e2e/prepare.sh
+
+  e2e-up:
+    desc: 'Clean isolated e2e world: compose project ro-bots-e2e + volume ro-bots-e2e-world + ports 26900/26121/25121; refuses non-fresh state, verifies journal/DB/ports before returning'
+    cmds:
+      - bash scripts/e2e/up.sh
+
+  e2e-init:
+    desc: 'Verify imported schema + seed the default two-agent novice population (status_point 48, skill_point 9) with fresh DB readback'
+    cmds:
+      - bash scripts/e2e/init.sh
+
+  e2e-run:
+    desc: 'ONE bounded 300s agent window against the isolated world (window34 composition, heavengraph Clef, pacer 6s); receipt lands in .work/playing-grind-emission/evidence/'
+    cmds:
+      - bash scripts/e2e/run.sh
+
+  e2e-assert:
+    desc: 'Modest first bar over the newest receipt: exists, logins landed, a position changed OR decides happened; prints what ran'
+    cmds:
+      - bash scripts/e2e/assert.sh
+
+  e2e-down:
+    desc: 'Remove the e2e compose project + volume and verify both are gone (never touches ro-bots-test)'
+    cmds:
+      - bash scripts/e2e/down.sh
+
+  e2e:
+    desc: 'Full e2e cycle: clean world up -> init -> bounded run -> assert -> verified teardown'
+    cmds:
+      - task: e2e-down
+      - task: e2e-up
+      - task: e2e-init
+      - task: e2e-run
+      - task: e2e-assert
+      - task: e2e-down
 
   playground:
     desc: 'BLOCKED: playground depends on a verified clean-world executor'

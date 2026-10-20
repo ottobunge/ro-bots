@@ -735,6 +735,16 @@ PACKET_DB.update({0x00B4: -1, 0x00B5: 6, 0x00B7: -1,
 PACKET_DB.update({0x01B3: 67})
 
 
+# Narrow source/compiler-proven status-change receive addition. Preserve all
+# prior entries and strict unknown rejection. ZC_STATUS_CHANGE 0x00BE
+# (<statusID>.W <value>.B, 5B packed — packets_struct.hpp:368-373, oracle
+# sizeof=5) is the SP_U* point-cost update the pinned server sends during the
+# login status calc and after every stat spend (clif.cpp:3774); without it the
+# reader dies mid-login-burst and the session starves. Executed pinned-include
+# oracle: .work/e2e-run/evidence/oracle_zc_status_change.log
+PACKET_DB.update({0x00BE: 5})
+
+
 def parse_stream(buf: bytes) -> tuple[list[tuple[int, bytes]], bytes]:
     """
     Split a byte stream into complete (pid, raw) packets.

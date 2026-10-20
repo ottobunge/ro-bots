@@ -8,10 +8,35 @@ import yaml
 TASKFILE = Path(__file__).resolve().parents[1] / "Taskfile.yml"
 
 
-@pytest.mark.parametrize("task_name", ["e2e", "playground"])
+@pytest.mark.parametrize("task_name", ["playground"])
 def test_unfinished_e2e_tasks_are_explicitly_labeled(task_name: str) -> None:
     tasks = yaml.safe_load(TASKFILE.read_text(encoding="utf-8"))["tasks"]
     assert "blocked" in tasks[task_name]["desc"].lower()
+
+
+def test_e2e_chain_is_no_longer_blocked_and_runs_the_verified_cycle() -> None:
+    """The e2e chain completed end-to-end (2026-10-20, ports 26900/26121/25121).
+
+    The task must not advertise itself as blocked anymore; its command list is
+    the verified clean-world cycle: teardown -> up -> init -> run -> assert ->
+    teardown, each step owned by scripts/e2e/.
+    """
+    tasks = yaml.safe_load(TASKFILE.read_text(encoding="utf-8"))["tasks"]
+    e2e = tasks["e2e"]
+    assert "blocked" not in e2e["desc"].lower()
+    chain = [entry["task"] for entry in e2e["cmds"]]
+    assert chain == [
+        "e2e-down",
+        "e2e-up",
+        "e2e-init",
+        "e2e-run",
+        "e2e-assert",
+        "e2e-down",
+    ]
+    for name in dict.fromkeys(chain):
+        step = tasks[name]
+        assert "blocked" not in step["desc"].lower()
+        assert step["cmds"] == [f"bash scripts/e2e/{name.removeprefix('e2e-')}.sh"]
 
 
 def test_taskfile_offers_fixed_read_only_test_world_inspection() -> None:

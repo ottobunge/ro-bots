@@ -137,18 +137,22 @@ def test_all_889_mappings_macros_and_parser_preserved_bitexact() -> None:
     } == additions
     presentation = {0x01B3: 67}
     char_page = {0x099D: -1}  # charlist-per-page framing (pinned common/packets.hpp:621-626)
+    stat_change = {0x00BE: 5}  # ZC_STATUS_CHANGE SP_U* point-cost updates (clif.cpp:3774)
     assert module.PACKET_DB[0x01B3] == 67
     prior_891 = {
         key: value
         for key, value in module.PACKET_DB.items()
-        if key not in additions and key not in presentation and key not in char_page
+        if key not in additions
+        and key not in presentation
+        and key not in char_page
+        and key not in stat_change
     }
     assert old | {0x00B6: 6, 0x00BC: 6} == prior_891
     assert len(prior_891) == 891
     assert not additions.keys() & prior_891.keys()
     assert not char_page.keys() & prior_891.keys()
-    assert prior_891 | additions | presentation | char_page == module.PACKET_DB
-    assert len(module.PACKET_DB) == 899
+    assert prior_891 | additions | presentation | char_page | stat_change == module.PACKET_DB
+    assert len(module.PACKET_DB) == 900
     raw = (ROOT / "spikes/003-clientless-limbs/packetdb.py").read_bytes()
     cutin_block = (
         b"# Source/compiler-measured cut-in presentation only; no NPC/gameplay authority.\n"
@@ -157,6 +161,18 @@ def test_all_889_mappings_macros_and_parser_preserved_bitexact() -> None:
     )
     assert raw.count(cutin_block) == 1
     raw = raw.replace(cutin_block, b"", 1)
+    stat_change_block = (
+        b"# Narrow source/compiler-proven status-change receive addition. Preserve all\n"
+        b"# prior entries and strict unknown rejection. ZC_STATUS_CHANGE 0x00BE\n"
+        b"# (<statusID>.W <value>.B, 5B packed \xe2\x80\x94 packets_struct.hpp:368-373, oracle\n"
+        b"# sizeof=5) is the SP_U* point-cost update the pinned server sends during the\n"
+        b"# login status calc and after every stat spend (clif.cpp:3774); without it the\n"
+        b"# reader dies mid-login-burst and the session starves. Executed pinned-include\n"
+        b"# oracle: .work/e2e-run/evidence/oracle_zc_status_change.log\n"
+        b"PACKET_DB.update({0x00BE: 5})\n\n\n"
+    )
+    assert raw.count(stat_change_block) == 1
+    raw = raw.replace(stat_change_block, b"", 1)
     block = (
         b"# Narrow source/compiler-proven NPC receive additions. Preserve all 890 prior\n"
         b"# entries and strict unknown rejection. See protocol/...-npc-dialogue.json.\n"

@@ -171,6 +171,18 @@ CHAR_PAGE_BLOCK = (
     b"    # HEADER=0x099d, base sizeof=4, len word @2. 0x0B72 needs MAIN>=20201007.\n"
     b"    0x099D: -1,     # HC_ACK_CHARINFO_PER_PAGE: len word @2, 155B/char entry\n"
 )
+# Reviewed status-change receive entry (see
+# .work/e2e-run/evidence/oracle_zc_status_change.log).
+STAT_CHANGE_BLOCK = (
+    b"# Narrow source/compiler-proven status-change receive addition. Preserve all\n"
+    b"# prior entries and strict unknown rejection. ZC_STATUS_CHANGE 0x00BE\n"
+    b"# (<statusID>.W <value>.B, 5B packed \xe2\x80\x94 packets_struct.hpp:368-373, oracle\n"
+    b"# sizeof=5) is the SP_U* point-cost update the pinned server sends during the\n"
+    b"# login status calc and after every stat spend (clif.cpp:3774); without it the\n"
+    b"# reader dies mid-login-burst and the session starves. Executed pinned-include\n"
+    b"# oracle: .work/e2e-run/evidence/oracle_zc_status_change.log\n"
+    b"PACKET_DB.update({0x00BE: 5})\n\n\n"
+)
 SELF = struct.pack("<HHi", 0x00B0, 5, 42)
 CLOCK = struct.pack("<HI", 0x007F, 123)
 CLOSE = struct.pack("<HI", 0x00B6, 0x12345678)
@@ -247,11 +259,18 @@ def validate_exact_addition(table: dict[int, int], raw: bytes) -> None:
     # Criterion-9 stat ack (0x00BC, the stat-allocation slice): the only
     # addition after the cutin-era final table.
     prior_899 = prior_898 | {0x00BC: 6}
-    assert len(table) == 899
-    assert table == prior_899
+    # ZC_STATUS_CHANGE point-cost updates (0x00BE, the e2e-world slice).
+    prior_900 = prior_899 | {0x00BE: 5}
+    assert len(table) == 900
+    assert table == prior_900
     assert raw.count(CUTIN_BLOCK) == 1
     assert raw.count(CHAR_PAGE_BLOCK) == 1
-    stripped = raw.replace(CUTIN_BLOCK, b"", 1).replace(CHAR_PAGE_BLOCK, b"", 1)
+    assert raw.count(STAT_CHANGE_BLOCK) == 1
+    stripped = (
+        raw.replace(CUTIN_BLOCK, b"", 1)
+        .replace(CHAR_PAGE_BLOCK, b"", 1)
+        .replace(STAT_CHANGE_BLOCK, b"", 1)
+    )
     current_hash = hashlib.sha256(stripped).hexdigest()
     historical = prior["files"]["spikes/003-clientless-limbs/packetdb.py"]
     # The criterion-9 lane added the 0x00BC entry to the PACKET_DB literal
