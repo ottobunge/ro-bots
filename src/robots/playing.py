@@ -18,7 +18,7 @@ from robots.adapters.native_navigation import MapCache
 from robots.adapters.planning_llm import LocalPlanningModel
 from robots.adapters.playing_backends import make_local_chat, make_private_decision
 from robots.adapters.skill_knowledge import load_skill_knowledge
-from robots.app import agent_runtime
+from robots.app import agent_runtime, command_poller
 from robots.app.agent_runtime import AgentHost, ManifestEntry, PersonaClock
 from robots.app.planning_brain import PlannedBrain
 from robots.app.playing_runtime import ObservedMobDatabase, PlayingClient
@@ -44,6 +44,7 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--duration", type=float)
     parser.add_argument("--playground", action="store_true")
     parser.add_argument("--schedule-file", type=Path)
+    parser.add_argument("--command-root", type=Path, default=None)
     parser.add_argument("--skill-knowledge", type=Path, default=None)
     parser.add_argument("--solo", action="store_true")
     parser.add_argument("--seed", type=int, default=0)
@@ -170,12 +171,15 @@ def build_host(args: argparse.Namespace) -> AgentHost:
     )
 
 
-def run_host(host: AgentHost, duration: float | None) -> None:
+def run_host(host: AgentHost, duration: float | None, command_root: Path | None = None) -> None:
+    """Run the scheduling loop; with ``command_root``, poll dashboard commands."""
     deadline = time.monotonic() + duration if duration is not None else None
     try:
         host.start_worldfeed()
         while deadline is None or time.monotonic() < deadline:
             host.step()
+            if command_root is not None:
+                command_poller.poll_once(host, command_root)
             time.sleep(min(1.0, max(0.0, deadline - time.monotonic())) if deadline else 1.0)
     except BaseException as origin:
         try:
@@ -194,7 +198,7 @@ def run_host(host: AgentHost, duration: float | None) -> None:
 def main(argv: list[str] | None = None) -> int:
     args = parse_args(argv)
     try:
-        run_host(build_host(args), args.duration)
+        run_host(build_host(args), args.duration, getattr(args, "command_root", None))
     except KeyboardInterrupt:
         return 0
     except Exception:
