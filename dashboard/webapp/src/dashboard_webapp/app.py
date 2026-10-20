@@ -18,6 +18,10 @@ from pydantic import BaseModel, Field
 from dashboard_webapp import __version__
 from dashboard_webapp.commands import CommandQueue, InMemoryCommandQueue, QueuedCommandNotFound
 from dashboard_webapp.config import AppConfig
+from dashboard_webapp.decisions import (
+    DECISIONS_LIMIT_DEFAULT,
+    agent_decision_history,
+)
 from dashboard_webapp.memory_view import MemoryViewer
 from dashboard_webapp.models import (
     agent_json,
@@ -112,6 +116,14 @@ def create_app(
             "stats": detail.stats,
             "memory": {"root": root, "files": files},
         }
+
+    @app.get("/api/agents/{char_id}/decisions")
+    async def get_agent_decisions(
+        char_id: int, limit: int = DECISIONS_LIMIT_DEFAULT
+    ) -> dict[str, Any]:
+        runs_source = _require(runs, "run source")
+        agent_source = _require(agents, "agent source")
+        return agent_decision_history(runs_source, agent_source, char_id, limit)
 
     @app.get("/api/runs")
     async def get_runs() -> dict[str, Any]:
