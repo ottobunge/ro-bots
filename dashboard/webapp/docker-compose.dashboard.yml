@@ -1,0 +1,59 @@
+# ro-bots web dashboard (FastAPI) — agent tracking + run visibility.
+#
+# Joins the WORLD stack's compose network so it can reach the world's MariaDB
+# (which publishes no host port) and the worldfeed service by name. Read-only:
+# the DB connection opens SET SESSION TRANSACTION READ ONLY, receipts/memory
+# are bind-mounted :ro, and the db password comes from the db-root secret file
+# at runtime (never echoed, never logged).
+#
+# Required env:
+#   RECEIPTS_DIR         receipts directory, e.g. .work/playing-grind-emission/evidence
+#   MEMORY_DIR           world memory dir, e.g. run/worlds/test-first-live-86e7c36895db/memory
+#   DB_ROOT_SECRET_FILE  world secret file, e.g. run/worlds/test-first-live-86e7c36895db/secrets/db-root
+# Optional env:
+#   DASHBOARD_PORT  host port (default 8401 — the Rust dashboard in the world
+#                   stack binds the same host port; run one at a time or override)
+#   WORLD_NETWORK   compose network of the world stack (default ro-bots-test_default)
+#   WORLDFEED_URL   default http://worldfeed:8400 (in-network service name)
+#   DB_HOST/DB_PORT/DB_NAME/DB_USER  default mariadb/3306/ragnarok/root
+
+name: ro-bots-dashboard-webapp
+
+services:
+  dashboard:
+    build: .
+    image: ro-bots-dashboard-webapp:latest
+    ports:
+      - "127.0.0.1:${DASHBOARD_PORT:-8401}:8401"
+    environment:
+      DASHBOARD_BIND: 0.0.0.0:8401
+      WORLDFEED_URL: ${WORLDFEED_URL:-http://worldfeed:8400}
+      RECEIPTS_GLOB: /data/receipts/receipt-*.json
+      AGENT_MEMORY_ROOT: /data/memory
+      DB_HOST: ${DB_HOST:-mariadb}
+      DB_PORT: ${DB_PORT:-3306}
+      DB_NAME: ${DB_NAME:-ragnarok}
+      DB_USER: ${DB_USER:-root}
+      DB_ROOT_SECRET_FILE: /run/secrets/db-root
+    secrets:
+      - source: db-root
+        target: db-root
+    volumes:
+      - type: bind
+        source: ${RECEIPTS_DIR:?set RECEIPTS_DIR to the window receipts directory}
+        target: /data/receipts
+        read_only: true
+      - type: bind
+        source: ${MEMORY_DIR:?set MEMORY_DIR to the world memory directory}
+        target: /data/memory
+        read_only: true
+    restart: unless-stopped
+
+networks:
+  default:
+    name: ${WORLD_NETWORK:-ro-bots-test_default}
+    external: true
+
+secrets:
+  db-root:
+    file: ${DB_ROOT_SECRET_FILE:?set DB_ROOT_SECRET_FILE to the world secrets/db-root file}

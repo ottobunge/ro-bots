@@ -1,0 +1,300 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ro-bots dashboard</title>
+<style>
+  :root {
+    --bg: #0d1117; --panel: #161b22; --border: #30363d; --text: #e6edf3;
+    --muted: #8b949e; --accent: #58a6ff; --ok: #3fb950; --bad: #f85149;
+    --warn: #d29922; --mono: ui-monospace, SFMono-Regular, Menlo, monospace;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text);
+         font: 14px/1.45 system-ui, -apple-system, sans-serif; }
+  header { display: flex; align-items: baseline; gap: 12px; padding: 12px 18px;
+           border-bottom: 1px solid var(--border); }
+  header h1 { font-size: 16px; margin: 0; color: var(--accent); }
+  header .sub { color: var(--muted); font-size: 12px; }
+  header .dot { width: 9px; height: 9px; border-radius: 50%; background: var(--bad);
+                display: inline-block; margin-right: 4px; }
+  main { display: grid; grid-template-columns: 1.2fr 1fr; gap: 14px; padding: 14px 18px; }
+  @media (max-width: 1000px) { main { grid-template-columns: 1fr; } }
+  section { background: var(--panel); border: 1px solid var(--border);
+            border-radius: 8px; padding: 12px 14px; min-width: 0; }
+  section h2 { font-size: 13px; text-transform: uppercase; letter-spacing: .06em;
+               color: var(--muted); margin: 0 0 10px; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th, td { text-align: left; padding: 5px 8px; border-bottom: 1px solid var(--border);
+           white-space: nowrap; }
+  th { color: var(--muted); font-weight: 500; }
+  td.num, th.num { text-align: right; font-family: var(--mono); }
+  tr.clickable { cursor: pointer; }
+  tr.clickable:hover td { background: #1c2129; }
+  .badge { display: inline-block; padding: 1px 8px; border-radius: 10px;
+           font-size: 11px; font-weight: 600; }
+  .pass { background: rgba(63,185,80,.15); color: var(--ok); }
+  .fail { background: rgba(248,81,73,.15); color: var(--bad); }
+  .on   { color: var(--ok); }
+  .off  { color: var(--muted); }
+  .chip { display: inline-block; margin: 2px 4px 2px 0; padding: 1px 8px;
+          border-radius: 4px; background: #21262d; border: 1px solid var(--border);
+          font-family: var(--mono); font-size: 11px; }
+  pre { background: #0a0d12; border: 1px solid var(--border); border-radius: 6px;
+        padding: 8px 10px; overflow: auto; max-height: 240px; font-size: 12px; }
+  .row { display: flex; gap: 8px; align-items: center; margin-top: 8px; }
+  input[type=text] { flex: 1; background: #0a0d12; border: 1px solid var(--border);
+                     color: var(--text); border-radius: 6px; padding: 6px 9px;
+                     font-family: var(--mono); }
+  button { background: #21262d; color: var(--text); border: 1px solid var(--border);
+           border-radius: 6px; padding: 6px 12px; cursor: pointer; }
+  button:hover { border-color: var(--accent); }
+  .muted { color: var(--muted); }
+  .err { color: var(--bad); font-family: var(--mono); font-size: 12px; }
+  .kv { font-family: var(--mono); font-size: 12px; color: var(--muted); }
+  #runDetail .agent-block { border: 1px solid var(--border); border-radius: 6px;
+                            padding: 8px 10px; margin-bottom: 10px; }
+  #runDetail h3 { margin: 2px 0 8px; font-size: 13px; }
+  .hidden { display: none; }
+  .event { padding: 3px 0; border-bottom: 1px solid #21262d; font-size: 12.5px; }
+  .event .kind { color: var(--accent); font-family: var(--mono); }
+  .event .forced { color: var(--warn); }
+</style>
+</head>
+<body>
+<header>
+  <h1>ro-bots dashboard</h1>
+  <span class="sub">agents &middot; world feed &middot; 30-min window receipts</span>
+  <span style="margin-left:auto" class="sub"><span class="dot" id="healthDot"></span><span id="healthText">checking…</span></span>
+</header>
+<main>
+  <section>
+    <h2>Agents</h2>
+    <table id="agentTable">
+      <thead><tr>
+        <th>ID</th><th>Name</th><th>Class</th><th class="num">Base</th><th class="num">Job</th>
+        <th class="num">HP/SP</th><th>Position</th><th>Online</th><th>Goal</th><th>Command</th>
+      </tr></thead>
+      <tbody></tbody>
+    </table>
+    <div id="agentError" class="err"></div>
+    <p class="muted" style="margin-bottom:0">Click a row for inventory, stats and memory files.</p>
+  </section>
+
+  <section>
+    <h2>Runs (window receipts, newest first)</h2>
+    <table id="runTable">
+      <thead><tr>
+        <th>Run</th><th>Result</th><th class="num">Agents</th><th class="num">Decisions</th>
+        <th class="num">Walks</th><th class="num">Kills</th><th class="num">XP</th>
+      </tr></thead>
+      <tbody></tbody>
+    </table>
+    <div id="runError" class="err"></div>
+  </section>
+
+  <section>
+    <h2>World feed (recent events)</h2>
+    <div id="feedStatus" class="kv"></div>
+    <div id="eventList" style="max-height:260px;overflow:auto"></div>
+  </section>
+
+  <section id="runDetail" class="hidden">
+    <h2>Run detail <span id="runDetailId" class="kv"></span>
+      <button style="float:right" onclick="closeRun()">close</button></h2>
+    <div id="runMeta" class="kv"></div>
+    <div id="runAgents"></div>
+  </section>
+
+  <section id="agentDetail" class="hidden">
+    <h2>Agent detail <span id="agentDetailId" class="kv"></span>
+      <button style="float:right" onclick="document.getElementById('agentDetail').classList.add('hidden')">close</button></h2>
+    <div id="agentDetailBody"></div>
+  </section>
+</main>
+<script>
+"use strict";
+const $ = (id) => document.getElementById(id);
+const esc = (s) => { const d = document.createElement("span"); d.textContent = s == null ? "" : String(s); return d.innerHTML; };
+const num = (v) => (v == null ? "–" : String(v));
+const clsName = (c) => c === 0 ? "Novice" : c == null ? "–" : "class " + c;
+
+async function api(path, opts) {
+  const res = await fetch(path, opts);
+  const body = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(body.detail || (res.status + " " + res.statusText));
+  return body;
+}
+
+async function refreshHealth() {
+  try {
+    const h = await api("/api/health");
+    $("healthDot").style.background = "var(--ok)";
+    const bits = ["db:" + (h.config.db_configured ? "configured" : "off")];
+    $("healthText").textContent = "v" + h.version + " · " + bits.join(" ");
+  } catch (e) {
+    $("healthDot").style.background = "var(--bad)";
+    $("healthText").textContent = "health: " + e.message;
+  }
+}
+
+async function refreshAgents() {
+  try {
+    const body = await api("/api/agents");
+    $("agentError").textContent = body.source && body.source.goals_error
+      ? "goal feed: " + body.source.goals_error : "";
+    const tbody = $("agentTable").tBodies[0];
+    tbody.innerHTML = "";
+    for (const a of body.agents) {
+      const tr = document.createElement("tr");
+      tr.className = "clickable";
+      tr.innerHTML =
+        `<td>${esc(a.char_id)}</td><td>${esc(a.name)}</td><td>${esc(clsName(a.class))}</td>` +
+        `<td class="num">${num(a.base_level)}</td><td class="num">${num(a.job_level)}</td>` +
+        `<td class="num">${num(a.hp)}/${num(a.sp)}</td>` +
+        `<td class="kv">${esc(a.map)} ${num(a.x)},${num(a.y)}</td>` +
+        `<td class="${a.online ? "on" : "off"}">${a.online ? "online" : "offline"}</td>` +
+        `<td>${esc(a.goal || "–")}${a.plan ? ` <span class="muted">${esc(a.plan)}</span>` : ""}</td>` +
+        `<td><input type="text" maxlength="500" placeholder="/command" style="width:110px">` +
+        `<button data-cmd="${esc(a.char_id)}">send</button></td>`;
+      tr.addEventListener("click", (ev) => {
+        if (ev.target.tagName === "INPUT" || ev.target.tagName === "BUTTON") return;
+        showAgent(a.char_id);
+      });
+      const input = tr.querySelector("input");
+      tr.querySelector("button").addEventListener("click", () => sendCommand(a.char_id, input.value, tr));
+      tbody.appendChild(tr);
+    }
+  } catch (e) { $("agentError").textContent = "agents: " + e.message; }
+}
+
+async function sendCommand(charId, text, tr) {
+  const button = tr.querySelector("button"), old = button.textContent;
+  button.textContent = "…";
+  try {
+    const res = await api(`/api/agents/${charId}/command`, {
+      method: "POST", headers: { "content-type": "application/json" },
+      body: JSON.stringify({ command: text }),
+    });
+    button.textContent = "queued";
+    tr.title = `${res.id} — ${res.note}`;
+    input_reset(tr);
+  } catch (e) {
+    button.textContent = "failed";
+    tr.title = e.message;
+  }
+  setTimeout(() => { button.textContent = old; }, 2500);
+}
+function input_reset(tr) { const i = tr.querySelector("input"); i.value = ""; }
+window.input_reset = input_reset;
+
+async function refreshRuns() {
+  try {
+    const body = await api("/api/runs");
+    $("runError").textContent = "";
+    const tbody = $("runTable").tBodies[0];
+    tbody.innerHTML = "";
+    for (const r of body.runs) {
+      const tr = document.createElement("tr");
+      tr.className = "clickable";
+      tr.innerHTML =
+        `<td class="kv">${esc(r.run_id)}</td>` +
+        `<td><span class="badge ${r.passed ? "pass" : "fail"}">${r.passed ? "PASS" : "FAIL"}</span></td>` +
+        `<td class="num">${r.agents_passed}/${r.agent_count}</td>` +
+        `<td class="num">${num(r.headline.decision_calls)}</td>` +
+        `<td class="num">${num(r.headline.walk_sends)}</td>` +
+        `<td class="num">${num(r.headline.attributed_attacks)}</td>` +
+        `<td class="num">${num(r.headline.xp_gain_total)}</td>`;
+      tr.addEventListener("click", () => showRun(r.run_id));
+      tbody.appendChild(tr);
+    }
+  } catch (e) { $("runError").textContent = "runs: " + e.message; }
+}
+
+async function showRun(runId) {
+  try {
+    const r = await api("/api/runs/" + encodeURIComponent(runId));
+    $("runDetailId").textContent = runId;
+    const meta = r.meta || {};
+    $("runMeta").textContent =
+      `${r.passed ? "PASS" : "FAIL"} · ${meta.scenario || "?"} · ${num(r.elapsed_s)}s` +
+      ` · operator ${meta.operator || "?"}`;
+    const wrap = $("runAgents");
+    wrap.innerHTML = "";
+    for (const [name, a] of Object.entries(r.agents || {})) {
+      const em = a.emission || {};
+      const fc = a.frame_counters || {};
+      const block = document.createElement("div");
+      block.className = "agent-block";
+      const chips = (list) => (list || []).map((x) => `<span class="chip">${esc(typeof x === "string" ? x : JSON.stringify(x))}</span>`).join("") || `<span class="muted">none recorded</span>`;
+      const tail = (list) => `<pre>${esc((list || []).slice(-40).map((x) => JSON.stringify(x)).join("\n") || "(not supplied)")}</pre>`;
+      block.innerHTML =
+        `<h3>${esc(name)} <span class="badge ${a.passed ? "pass" : "fail"}">${a.passed ? "PASS" : "FAIL"}</span>` +
+        ` <span class="kv">engagement floor: ${esc(a.engagement_floor || "?")}</span></h3>` +
+        `<table><tr><th>decisions</th><th>walks</th><th>walk acks</th><th>pos ingests</th>` +
+        `<th>attackable max</th><th>attributed attacks</th><th>bot dmg</th><th>target deaths</th><th>XP total</th></tr>` +
+        `<tr><td class="num">${num((a.decision_calls || {}).count)}</td>` +
+        `<td class="num">${num(fc.walk_sends)}</td><td class="num">${num(fc.walk_acks)}</td>` +
+        `<td class="num">${num(fc.own_position_ingests)}</td><td class="num">${num(fc.attackable_actors_max)}</td>` +
+        `<td class="num">${num((em.killcommit || {}).attributed_attacks)}</td>` +
+        `<td class="num">${num((em.killcommit || {}).bot_dealt_damage)}</td>` +
+        `<td class="num">${num((em.killcommit || {}).attacked_target_deaths)}</td>` +
+        `<td class="num">${num(em.xp_gain_total)}</td></tr></table>` +
+        `<p class="muted" style="margin:6px 0 2px">phases: ${esc(JSON.stringify(em.phases || {}))} · gates: ${esc(JSON.stringify(em.gates || {}))}</p>` +
+        `<p style="margin:4px 0 2px"><b>move-gate reasons</b></p>${chips(em.move_gate_reasons)}` +
+        `<p style="margin:8px 0 2px"><b>decide tail (last 40)</b></p>${tail(em.decision_tail)}` +
+        `<p style="margin:8px 0 2px"><b>script tail (last 40)</b></p>${tail(em.script_tail)}`;
+      wrap.appendChild(block);
+    }
+    const omitted = (r.omitted || []).join(", ");
+    $("runAgents").insertAdjacentHTML("beforeend",
+      `<p class="muted">omitted bulky diagnostics: ${esc(omitted || "none")}</p>`);
+    $("runDetail").classList.remove("hidden");
+  } catch (e) { $("runMeta").textContent = "run detail failed: " + e.message; }
+}
+window.closeRun = () => $("runDetail").classList.add("hidden");
+
+async function showAgent(charId) {
+  try {
+    const d = await api("/api/agents/" + encodeURIComponent(charId));
+    $("agentDetailId").textContent = `${d.agent.name} (#${d.agent.char_id})`;
+    const inv = (d.inventory || []).map((i) =>
+      `<tr><td class="num">${num(i.nameid)}</td><td class="num">${num(i.amount)}</td>` +
+      `<td class="num">${num(i.refine)}</td><td class="num">${num(i.equip)}</td></tr>`).join("");
+    const stats = Object.entries(d.stats || {}).map(([k, v]) => `<span class="chip">${esc(k)}: ${num(v)}</span>`).join("");
+    const mem = (d.memory.files || []).map((f) =>
+      `<tr><td class="kv">${esc(f.path)}</td><td class="num">${f.size_bytes} B</td>` +
+      `<td class="num">${new Date(f.modified_ts * 1000).toISOString().replace("T", " ").slice(0, 19)}</td></tr>`).join("");
+    $("agentDetailBody").innerHTML =
+      `<p>${stats || '<span class="muted">no stats</span>'}</p>` +
+      `<p style="margin:4px 0 2px"><b>Inventory</b></p>` +
+      `<table><tr><th>item</th><th>qty</th><th>refine</th><th>equip</th></tr>${inv || '<tr><td colspan="4" class="muted">empty</td></tr>'}</table>` +
+      `<p style="margin:8px 0 2px"><b>Memory files</b> <span class="kv">(root: ${esc(d.memory.root || "not configured")})</span></p>` +
+      `<table><tr><th>path</th><th>size</th><th>modified</th></tr>${mem || '<tr><td colspan="3" class="muted">none found</td></tr>'}</table>`;
+    $("agentDetail").classList.remove("hidden");
+  } catch (e) { $("agentDetailBody").textContent = "agent detail failed: " + e.message; }
+}
+
+async function refreshEvents() {
+  try {
+    const body = await api("/api/events?limit=50");
+    $("feedStatus").textContent = body.upstream.ok
+      ? `upstream ${body.upstream.url} · ${body.events.length} recent`
+      : "upstream error: " + body.upstream.error;
+    $("feedStatus").className = body.upstream.ok ? "kv" : "err";
+    $("eventList").innerHTML = body.events.slice().reverse().map((e) =>
+      `<div class="event"><span class="kind">#${e.id}</span> ` +
+      `${e.operator_forced ? '<span class="forced">[forced]</span> ' : ""}` +
+      `<span class="kind">${esc(e.kind || "?")}</span> ${esc(e.summary || "")}</div>`).join("");
+  } catch (e) { $("feedStatus").textContent = "events: " + e.message; $("feedStatus").className = "err"; }
+}
+
+refreshHealth(); refreshAgents(); refreshRuns(); refreshEvents();
+setInterval(refreshHealth, 10000);
+setInterval(refreshAgents, 5000);
+setInterval(refreshRuns, 15000);
+setInterval(refreshEvents, 5000);
+</script>
+</body>
+</html>
