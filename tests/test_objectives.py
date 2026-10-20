@@ -9,6 +9,7 @@ names + character names), which is how friends FIND each other in-game.
 """
 
 import inspect
+from collections.abc import Sequence
 from typing import Any, Literal
 
 import pytest
@@ -64,7 +65,7 @@ def test_objective_premade_texts_are_the_game_channel_vocabulary() -> None:
 
 def test_objective_premade_rejects_unknown_kind() -> None:
     with pytest.raises(ValueError, match="kind"):
-        objective_premade("wedding", "prontera")  # type: ignore[arg-type]
+        objective_premade("wedding", "prontera")
 
 
 def test_objective_premade_round_trips_through_the_parser() -> None:
@@ -283,12 +284,14 @@ def test_seed_roster_leaves_solos_registered_but_ungrouped() -> None:
 def test_ledger_json_carries_objectives_across_reconnect(tmp_path) -> None:
     population = pop_2_2_1()
     leader = next(p for p in population.personas if p.group_id is not None)
+    group_id = leader.group_id
+    assert group_id is not None
     ledger = RelationshipLedger(persona_id=leader.persona_id)
     seed_roster(ledger, population)
-    member = next(m for m in ledger.group_members(leader.group_id) if m != leader.persona_id)
+    member = next(m for m in ledger.group_members(group_id) if m != leader.persona_id)
     ledger.objectives.propose(
         "obj-1",
-        leader.group_id,
+        group_id,
         leader.persona_id,
         "hunt",
         "prt_fild08",
@@ -456,7 +459,7 @@ def test_form_in_party_uses_party_chat_not_public_say() -> None:
 
 
 def test_form_records_meet_whisper_for_offline_members_only() -> None:
-    ledger, leader, mate = make_pair()
+    ledger, leader, _ = make_pair()
     ledger.register_persona("late", "LateComer")
     ledger.seed_group("g01", ("lead", "mate", "late"), save_map="prt_fild08")
     objective, actions = leader.form(
@@ -588,7 +591,7 @@ def test_group_members_are_not_outsiders() -> None:
 def test_every_emission_is_a_game_packet() -> None:
     """Emission purity: coordination leaves an agent ONLY as wire packets."""
     packet_types = {InviteToParty, PartyChat, Say, WhisperTo}
-    ledger, leader, mate = make_pair()
+    ledger, leader, _ = make_pair()
     ledger.register_persona("solo", "Lorawing")
     solo = GroupCoordinator(ledger, "solo")
     outsider = solo.outsider_reply(join_call(), in_party=False, job="Swordsman", level=42)
@@ -750,7 +753,8 @@ def test_brain_pins_the_goal_while_an_objective_is_active() -> None:
     # The model said "town" but the ACTIVE objective wins for its duration.
     notes = " | ".join(result.notes)
     assert "objective alignment" in notes
-    assert "hunt" in notes and "prt_fild08" in notes
+    assert "hunt" in notes
+    assert "prt_fild08" in notes
 
 
 def test_brain_farm_plan_targets_the_objective_map() -> None:
@@ -905,7 +909,7 @@ class FakePacketBus:
 class AgentRig:
     """One agent's host: its ledger, coordinator, brain and mutable state."""
 
-    def __init__(self, bus: FakePacketBus, persona: Any, answers: list[dict[str, Any]]) -> None:
+    def __init__(self, bus: FakePacketBus, persona: Any, answers: dict[str, Any]) -> None:
         self.persona_id = persona.persona_id
         self.name = persona.name
         self.group_id = persona.group_id
@@ -1017,7 +1021,8 @@ def test_seed7_week_full_loop_coordination_through_game_socials() -> None:
     objective = lead.coordinator.book.objectives_for_group(g_a, statuses=(OBJECTIVE_ACTIVE,))
     assert len(objective) == 1
     assert objective[0].accepted == (mate.persona_id,)
-    assert mate.in_party and lead.in_party
+    assert mate.in_party
+    assert lead.in_party
     assert any("accepts" in line for line in bus.trace)
 
     # t2: the member's goal review ADOPTS the objective (the model said town).
@@ -1038,7 +1043,8 @@ def test_seed7_week_full_loop_coordination_through_game_socials() -> None:
     assert mate_b.in_party
 
     # The welcome premade fired at each join transition.
-    assert sum(f"party chat: {lead.name}: welcome, {mate.name}!" in l for l in bus.trace) == 1
+    welcome_a = f"party chat: {lead.name}: welcome, {mate.name}!"
+    assert sum(welcome_a in line for line in bus.trace) == 1
     assert sum(f"welcome, {mate_b.name}!" in line for line in bus.trace) == 1
 
     # t4: the schedule window closes (only the leaders stay online).

@@ -436,17 +436,39 @@ class GroupCoordinator:
         )
         if suggestion.invitee_ids:
             objective = self.book.mark_invited(objective.objective_id, suggestion.invitee_ids)
+        self._record_meet_whispers(objective.objective_id, away_members, meet_where, meet_when)
+        return objective, self._formation_packets(
+            kind, map_name, target, suggestion.invitee_ids, in_party
+        )
+
+    def _record_meet_whispers(
+        self,
+        objective_id: str,
+        away_members: Sequence[str],
+        meet_where: str | None,
+        meet_when: str | None,
+    ) -> None:
+        """The offline members' rendezvous: recorded, never telepathised."""
+        if meet_where is None or meet_when is None:
+            return
         for member in away_members:
-            if meet_where is not None and meet_when is not None:
-                self.book.record_whisper(
-                    objective.objective_id, member, meet_premade(meet_where, meet_when)
-                )
+            self.book.record_whisper(objective_id, member, meet_premade(meet_where, meet_when))
+
+    def _formation_packets(
+        self,
+        kind: str,
+        map_name: str,
+        target: str,
+        invitee_ids: Sequence[str],
+        in_party: bool,
+    ) -> tuple[GameAction, ...]:
+        """The join call + the inviting premade + the invite packets, in order."""
         channel = PartyChat if in_party else Say
         actions: list[GameAction] = [channel(objective_premade(kind, map_name, target))]
-        names = ", ".join(self._ledger.display_name(m) for m in suggestion.invitee_ids)
+        names = ", ".join(self._ledger.display_name(m) for m in invitee_ids)
         actions.append(channel(f"inviting {names}"))
-        actions.extend(InviteToParty(self._ledger.display_name(m)) for m in suggestion.invitee_ids)
-        return objective, tuple(actions)
+        actions.extend(InviteToParty(self._ledger.display_name(m)) for m in invitee_ids)
+        return tuple(actions)
 
     def deliver_whispers(self, online_members: Sequence[str]) -> tuple[GameAction, ...]:
         """The recorded meet whispers whose target is online now (sent once)."""

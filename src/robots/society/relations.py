@@ -396,8 +396,10 @@ class RelationshipLedger:
                 continue
             names = ", ".join(self.display_name(m) for m in plan.invitee_ids)
             return [
-                f"your group {own_group} is online ({len(online)}/{len(members)}); "
-                f"you lead; party_formation suggests inviting {names}"
+                (
+                    f"your group {own_group} is online ({len(online)}/{len(members)}); "
+                    f"you lead; party_formation suggests inviting {names}"
+                )
             ]
         return []
 
