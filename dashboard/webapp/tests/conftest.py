@@ -7,7 +7,12 @@ WorldFeed upstream (offline TDD, no live server needed).
 
 from __future__ import annotations
 
+import sys
+from collections.abc import Iterator
+from pathlib import Path
 from typing import Any
+
+import pytest
 
 from dashboard_webapp.models import (
     AgentDetail,
@@ -96,6 +101,22 @@ class FakeAgentSource(AgentSource):
         if detail is None:
             raise UnknownAgentError(f"unknown agent: {char_id}")
         return detail
+
+
+REPO_SRC = Path(__file__).resolve().parents[3] / "src"
+
+
+@pytest.fixture(scope="session")
+def repo_src() -> Iterator[Path]:
+    """Make the repo's ``src`` importable (robots.popgen / command_poller).
+
+    ``robots.popgen`` and ``robots.app.command_poller`` are stdlib-only at
+    import time, so the dashboard tests can exercise the real generator and
+    the real host-side poller without the root project's dependencies.
+    """
+    if str(REPO_SRC) not in sys.path:
+        sys.path.insert(0, str(REPO_SRC))
+    return REPO_SRC
 
 
 class FakeGoals:

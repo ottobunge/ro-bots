@@ -13,6 +13,8 @@ from pathlib import Path
 DEFAULT_BIND = "127.0.0.1:8401"
 DEFAULT_WORLDFEED_URL = "http://127.0.0.1:8400"
 DEFAULT_RECEIPTS_GLOB = ".work/playing-grind-emission/evidence/receipt-*.json"
+DEFAULT_WORLDS_ROOT = "run/worlds"
+DEFAULT_COMMAND_RUNTIME_ROOT = ".work/runtime/ro-bots-test/commands"
 
 
 class SecretFileError(Exception):
@@ -42,6 +44,8 @@ class AppConfig:
     db_user: str = "root"
     db_root_secret_file: str | None = None
     events_deadline_s: float = 2.0
+    worlds_root: str = DEFAULT_WORLDS_ROOT
+    command_runtime_root: str = DEFAULT_COMMAND_RUNTIME_ROOT
 
     @classmethod
     def from_env(cls, env: dict[str, str] | None = None) -> AppConfig:
@@ -57,6 +61,8 @@ class AppConfig:
             db_user=source.get("DB_USER", "root"),
             db_root_secret_file=source.get("DB_ROOT_SECRET_FILE"),
             events_deadline_s=float(source.get("EVENTS_DEADLINE_S", "2.0")),
+            worlds_root=source.get("WORLDS_ROOT", DEFAULT_WORLDS_ROOT),
+            command_runtime_root=source.get("COMMAND_RUNTIME_ROOT", DEFAULT_COMMAND_RUNTIME_ROOT),
         )
 
     @property

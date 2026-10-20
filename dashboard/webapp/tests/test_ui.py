@@ -76,3 +76,32 @@ def test_health_reports_config_without_secrets() -> None:
     assert body["config"]["worldfeed_url"] == "http://127.0.0.1:8400"
     assert body["config"]["receipts_glob"] == ".work/playing-grind-emission/evidence/receipt-*.json"
     assert body["config"]["db_configured"] is False
+    assert body["config"]["command_runtime_root"] == ".work/runtime/ro-bots-test/commands"
+
+
+def test_index_has_population_generation_tab_with_form_and_result_panel() -> None:
+    html = _client().get("/").text
+
+    assert 'data-view="population"' in html
+    assert "POST /api/population" in html or '"/api/population"' in html
+    # the PopulationSpec fields
+    assert 'id="popWorld"' in html
+    assert 'id="popGroups"' in html
+    assert 'id="popFriendsMin"' in html
+    assert 'id="popFriendsMax"' in html
+    assert 'id="popSolo"' in html
+    assert 'id="popSeed"' in html
+    # the result panel + the explicit apply step
+    assert 'id="popResult"' in html
+    assert "/api/population/" in html
+    assert "/apply" in html
+
+
+def test_index_command_box_targets_allowlist_and_shows_applied_status() -> None:
+    html = _client().get("/").text
+
+    # the send path hits the real command endpoint and polls the status
+    assert "/api/commands/" in html
+    assert "say " in html
+    assert "goal " in html
+    assert "applied" in html
