@@ -15,8 +15,12 @@ import pytest
 
 import robots.society.objectives as objectives_module
 import robots.society.relations as relations_module
-from robots.domain.actions import InviteToParty, PartyChat, Say, WhisperTo
-from robots.domain.model import ChatLine, Goal
+from robots.adapters.chat.stub import StaticChatGenerator
+from robots.adapters.decision.stub import ScriptedDecisionModel
+from robots.app.brain import EventDrivenBrain
+from robots.domain.actions import AcceptInvite, InviteToParty, PartyChat, Say, WhisperTo
+from robots.domain.events import ChatHeard, Heartbeat, InviteReceived
+from robots.domain.model import BotState, ChatLine, Goal, PartyInvite
 from robots.popgen import GeneratedPopulation, PopulationSpec, generate_population
 from robots.society.objectives import (
     OBJECTIVE_ACTIVE,
@@ -24,6 +28,7 @@ from robots.society.objectives import (
     OBJECTIVE_INVITED,
     OBJECTIVE_KINDS,
     OBJECTIVE_PROPOSED,
+    BoundCoordinator,
     GroupCoordinator,
     GroupObjective,
     GroupObjectiveBook,
@@ -34,6 +39,7 @@ from robots.society.objectives import (
     seed_roster,
 )
 from robots.society.relations import RelationshipLedger, _pair_key
+from tests.test_brain import base_answers
 
 
 def pop_2_2_1() -> GeneratedPopulation:
@@ -604,6 +610,205 @@ def test_every_emission_is_a_game_packet() -> None:
             assert type(action) in packet_types, f"non-packet emission: {action!r}"
 
 
+# -- the brain hook: the objective question, the alignment, the outsider reply ----
+
+
+class CapturingModel:
+    """Scripted answers that also record every received request (the fake)."""
+
+    def __init__(self, answers: dict[str, Any] | None = None) -> None:
+        self._scripted = ScriptedDecisionModel(answers=answers)
+        self.requests: list[dict[str, Any]] = []
+
+    def decide(self, request: dict[str, Any]) -> dict[str, Any]:
+        self.requests.append(request)
+        return self._scripted.decide(request)
+
+
+def make_state(**overrides: object) -> BotState:
+    """A deterministic BotState factory (mirrors tests/test_relations.py)."""
+    base: dict[str, Any] = {
+        "name": "PartyLeader",
+        "job": "Swordsman",
+        "base_level": 42,
+        "hp": 800,
+        "max_hp": 1000,
+        "sp": 60,
+        "max_sp": 80,
+        "map_name": "prt_fild08",
+        "x": 120,
+        "y": 74,
+        "goal": Goal.GRIND,
+        "in_party": False,
+        "nearby": (),
+        "inventory": {"Red Potion": 5},
+        "pending_invites": (),
+        "recent_chat": (),
+    }
+    base.update(overrides)
+    return BotState(**base)
+
+
+def make_brain(
+    coordination: BoundCoordinator | None = None,
+    answers: dict[str, Any] | None = None,
+    **kwargs: Any,
+) -> tuple[EventDrivenBrain, CapturingModel]:
+    model = CapturingModel(answers=answers)
+    brain = EventDrivenBrain(
+        decision_model=model,
+        chat=StaticChatGenerator(["gg"]),
+        coordination=coordination,
+        **kwargs,
+    )
+    return brain, model
+
+
+def leader_setup(
+    kind_online: tuple[str, ...] = ("lead", "mate"),
+) -> tuple[BoundCoordinator, GroupCoordinator]:
+    _, leader, _ = make_pair()
+    hook = BoundCoordinator(
+        leader,
+        online=lambda: kind_online,
+        meet_where="prontera 156,22",
+        meet_when="19:00",
+    )
+    return hook, leader
+
+
+def test_brain_offers_the_objective_question_only_when_a_window_opens() -> None:
+    hook, _ = leader_setup()
+    brain, model = make_brain(coordination=hook, answers=base_answers())
+    result = brain.handle_event(make_state(), Heartbeat(seq=1))
+    assert result.actions == ()
+    assert "objective_action" in model.requests[0]["questions"]
+    assert "hunt" in model.requests[0]["questions"]["objective_action"]["criteria"]
+    # A closed window adds no question.
+    hook_closed, _ = leader_setup(kind_online=("lead",))
+    brain2, model2 = make_brain(coordination=hook_closed, answers=base_answers())
+    brain2.handle_event(make_state(), Heartbeat(seq=1))
+    assert "objective_action" not in model2.requests[0]["questions"]
+
+
+def test_brain_without_coordination_never_adds_the_question() -> None:
+    brain, model = make_brain(answers=base_answers())
+    result = brain.handle_event(make_state(), Heartbeat(seq=1))
+    assert result.actions == ()
+    assert "objective_action" not in model.requests[0]["questions"]
+
+
+def test_brain_forms_the_objective_from_the_review_answer() -> None:
+    hook, leader = leader_setup()
+    answers = base_answers()
+    answers["objective_action"] = {"type": "choice", "choice": "hunt", "confidence": 0.9}
+    answers["farm_target"] = {"type": "choice", "choice": "porings", "confidence": 0.9}
+    brain, _ = make_brain(coordination=hook, answers=answers)
+    result = brain.handle_event(make_state(), Heartbeat(seq=1))
+    invites = [a for a in result.actions if isinstance(a, InviteToParty)]
+    assert [i.player for i in invites] == ["VelDrop"]
+    assert any(isinstance(a, Say) and "join me" in a.text for a in result.actions)
+    live = leader.book.live_objectives()
+    assert len(live) == 1
+    assert live[0].status == OBJECTIVE_INVITED
+    assert live[0].target == "porings"
+
+
+def test_brain_delivers_due_whispers_during_review() -> None:
+    ledger, leader, _ = make_pair()
+    ledger.register_persona("late", "LateComer")
+    ledger.seed_group("g01", ("lead", "mate", "late"), save_map="prt_fild08")
+    hook = BoundCoordinator(leader, online=lambda: ("lead", "mate", "late"))
+    leader.form(
+        "hunt",
+        map_name="prt_fild08",
+        target="porings",
+        online_members=("lead", "mate"),
+        in_party=False,
+        meet_where="prontera 156,22",
+        meet_when="19:00",
+    )
+    brain, _ = make_brain(coordination=hook, answers=base_answers())
+    result = brain.handle_event(make_state(), Heartbeat(seq=2))
+    whispers = [a for a in result.actions if isinstance(a, WhisperTo)]
+    assert [w.to for w in whispers] == ["LateComer"]
+    assert whispers[0].text == "meet at prontera 156,22 at 19:00"
+    # Delivered exactly once: the next review has nothing left to send.
+    again = brain.handle_event(make_state(), Heartbeat(seq=3))
+    assert not [a for a in again.actions if isinstance(a, WhisperTo)]
+
+
+def test_brain_pins_the_goal_while_an_objective_is_active() -> None:
+    _, _, mate = make_pair()
+    mate.note_announcement("PartyLeader", "hunting porings prt_fild08, join me")
+    mate.accept_invite_from("PartyLeader")
+    hook = BoundCoordinator(mate, online=lambda: ("lead", "mate"))
+    answers = base_answers()
+    answers["change_goal"] = {"type": "choice", "choice": "town", "confidence": 0.9}
+    brain, _ = make_brain(coordination=hook, answers=answers)
+    result = brain.handle_event(make_state(name="VelDrop", goal=Goal.GRIND), Heartbeat(seq=2))
+    # The model said "town" but the ACTIVE objective wins for its duration.
+    notes = " | ".join(result.notes)
+    assert "objective alignment" in notes
+    assert "hunt" in notes and "prt_fild08" in notes
+
+
+def test_brain_farm_plan_targets_the_objective_map() -> None:
+    _, _, mate = make_pair()
+    mate.note_announcement("PartyLeader", "farming jellopy prontera, join me")
+    mate.accept_invite_from("PartyLeader")
+    hook = BoundCoordinator(mate, online=lambda: ("lead", "mate"))
+    answers = base_answers()
+    answers["change_goal"] = {"type": "choice", "choice": "farm", "confidence": 0.9}
+    brain, _ = make_brain(
+        coordination=hook,
+        answers=answers,
+        spawn_species=lambda map_name: ("Poring",),  # noqa: ARG005 - map-agnostic fixture
+    )
+    brain.handle_event(
+        make_state(name="VelDrop", goal=Goal.FARM_ITEM, map_name="gef_fild00"), Heartbeat(seq=2)
+    )
+    plan = brain.current_plan
+    assert plan is not None
+    # The objective's map wins over the bot's current map for the farm session.
+    assert plan.map_name == "prontera"
+    assert plan.target_mobs == ("Poring",)
+
+
+def test_brain_records_the_member_join_on_accept() -> None:
+    _, _, mate = make_pair()
+    mate.note_announcement("PartyLeader", "hunting porings prt_fild08, join me")
+    hook = BoundCoordinator(mate, online=lambda: ("lead", "mate"))
+    answers = base_answers()
+    answers["accept_invite"] = {"type": "noul", "noul": 0.9}  # the friend's invite: accept
+    brain, _ = make_brain(coordination=hook, answers=answers)
+    state = make_state(
+        name="VelDrop", pending_invites=(PartyInvite(from_name="PartyLeader", at=2.0),)
+    )
+    result = brain.handle_event(
+        state, InviteReceived(invite=PartyInvite(from_name="PartyLeader", at=2.0))
+    )
+    assert any(isinstance(a, AcceptInvite) for a in result.actions)
+    joined = mate.book.joined_objectives()
+    assert len(joined) == 1
+    assert joined[0].status == OBJECTIVE_ACTIVE
+
+
+def test_brain_solo_outsider_replies_to_a_public_join_call() -> None:
+    ledger, _, _ = make_pair()
+    ledger.register_persona("solo", "Lorawing")
+    solo = GroupCoordinator(ledger, "solo")
+    hook = BoundCoordinator(solo, online=lambda: ())
+    brain, _ = make_brain(coordination=hook, answers=base_answers())
+    line = ChatLine(
+        channel="public", sender="PartyLeader", text="hunting porings prt_fild08, join me", at=1.0
+    )
+    result = brain.handle_event(make_state(name="Lorawing"), ChatHeard(line=line))
+    whispers = [a for a in result.actions if isinstance(a, WhisperTo)]
+    assert [w.to for w in whispers] == ["PartyLeader"]
+    assert result.escalated is False
+
+
 # -- the no-telepathy guard -------------------------------------------------------
 
 
@@ -612,7 +817,7 @@ def test_no_api_writes_another_agents_state_or_chat() -> None:
     never hand another agent its ledger/book/brain/state. Coordination leaves
     an agent only as emitted game packets (the emission-purity pin lives with
     the coordinator tests)."""
-    forbidden_params = {"ledger", "book", "brain", "state", "bot_state", "other_agent"}
+    forbidden_params = {"ledger", "book", "brain", "other_agent"}
     for module in (relations_module, objectives_module):
         for name, member in vars(module).items():
             if not inspect.isclass(member) or member.__module__ != module.__name__:

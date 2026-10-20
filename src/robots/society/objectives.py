@@ -27,12 +27,12 @@ Pure stdlib; deterministic; ``ts`` values are caller-supplied floats.
 
 from __future__ import annotations
 
-from collections.abc import Mapping, Sequence
+from collections.abc import Callable, Mapping, Sequence
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any, Final, final
 
 from robots.domain.actions import GameAction, InviteToParty, PartyChat, Say, WhisperTo
-from robots.domain.model import ChatLine, Goal
+from robots.domain.model import BotState, ChatLine, Goal
 
 if TYPE_CHECKING:
     from robots.popgen import GeneratedPopulation
@@ -545,6 +545,112 @@ class GroupCoordinator:
 
     # -- helpers -------------------------------------------------------------
 
+    def suggestion_line(
+        self, suggestion: FormationSuggestion, online_members: Sequence[str]
+    ) -> str:
+        """The decide-context sentence for an open window (names + counts)."""
+        members = self._ledger.group_members(suggestion.group_id)
+        online = [m for m in members if m in set(online_members)]
+        names = ", ".join(self._ledger.display_name(m) for m in suggestion.invitee_ids)
+        return (
+            f"your group {suggestion.group_id} is online ({len(online)}/{len(members)}); "
+            f"you lead; party_formation suggests inviting {names}"
+        )
+
     def _mint_id(self, group_id: str, kind: str) -> str:
         taken = sum(1 for o in self.book.live_objectives() if o.group_id == group_id)
         return f"{group_id}-{kind}-{taken + 1}"
+
+
+@final
+class BoundCoordinator:
+    """The brain-facing adapter: the coordinator bound to the online provider.
+
+    The runtime owns the connection facts (who is online, the rendezvous
+    point); the brain must not. This adapter closes over them so the brain's
+    coordination calls stay parameter-free, and turns the model's
+    ``objective_action`` review answer into the packet emission.
+    """
+
+    def __init__(
+        self,
+        coordinator: GroupCoordinator,
+        *,
+        online: Callable[[], Sequence[str]],
+        meet_where: str | None = None,
+        meet_when: str | None = None,
+    ) -> None:
+        self._coordinator = coordinator
+        self._online = online
+        self._meet_where = meet_where
+        self._meet_when = meet_when
+
+    @property
+    def book(self) -> GroupObjectiveBook:
+        return self._coordinator.book
+
+    def formation_question(self) -> dict[str, Any] | None:
+        """The objective_action review question when the leader's window is open."""
+        online = self._online()
+        suggestion = self._coordinator.formation_suggestion(online)
+        if suggestion is None:
+            return None
+        return {
+            "type": "choice",
+            "instructions": (
+                f"{self._coordinator.suggestion_line(suggestion, online)}. "
+                "Form a group objective? The invites and the join call go out in-game."
+            ),
+            "criteria": {
+                "none": "Not now - keep the current plan.",
+                "hunt": "Form the group objective: hunt together (party invites + join call).",
+                "farm": "Form the group objective: farm together (party invites + join call).",
+                "town": "Form the group objective: idle in town together.",
+            },
+        }
+
+    def review_actions(self, state: BotState, answers: Mapping[str, Any]) -> tuple[GameAction, ...]:
+        """One review's coordination packets: form on the answer, deliver, guard."""
+        actions: list[GameAction] = []
+        kind = str(answers.get("objective_action", {}).get("choice", "none"))
+        window_open = self._coordinator.formation_suggestion(self._online()) is not None
+        if kind in OBJECTIVE_KINDS and window_open:
+            target = str(answers.get("farm_target", {}).get("choice", "")) if kind != "town" else ""
+            _objective, formed = self._coordinator.form(
+                kind,
+                map_name=state.map_name,
+                target=target,
+                online_members=self._online(),
+                in_party=state.in_party,
+                meet_where=self._meet_where,
+                meet_when=self._meet_when,
+            )
+            actions.extend(formed)
+        actions.extend(self._coordinator.deliver_whispers(self._online()))
+        actions.extend(self._coordinator.tick(self._online(), in_party=state.in_party))
+        return tuple(actions)
+
+    def active_objective(self) -> GroupObjective | None:
+        """The objective this agent joined (the alignment source), if any."""
+        joined = self._coordinator.book.joined_objectives()
+        return joined[0] if joined else None
+
+    def aligned_goal(self) -> Goal | None:
+        """The drive the active objective pins, or None when free to choose."""
+        objective = self.active_objective()
+        return objective_goal(objective.kind) if objective is not None else None
+
+    def objective_map(self) -> str | None:
+        """The active objective's map (the farm-plan alignment), or None."""
+        objective = self.active_objective()
+        return objective.map_name if objective is not None else None
+
+    def on_invite_accepted(self, leader_name: str) -> GroupObjective | None:
+        """MY accept of the in-game invite: record the join in MY book."""
+        return self._coordinator.accept_invite_from(leader_name)
+
+    def outsider_reply(self, line: ChatLine, state: BotState) -> GameAction | None:
+        """The solo's affinity-gated whisper answering a public join call."""
+        return self._coordinator.outsider_reply(
+            line, in_party=state.in_party, job=state.job, level=state.base_level
+        )

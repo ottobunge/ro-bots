@@ -46,7 +46,8 @@ from robots.domain.events import (
     event_summary,
 )
 from robots.domain.farm import FARM_DURATION_S, INTERRUPT_LEVEL_MARGIN, FarmPlan
-from robots.domain.model import Goal
+from robots.domain.model import ChatLine, Goal
+from robots.society.objectives import BoundCoordinator
 from robots.society.relations import SOCIAL_CONTEXT_MAX_LINES, party_event_premade
 
 if TYPE_CHECKING:
@@ -94,10 +95,14 @@ class EventDrivenBrain:
         memory: Memory | None = None,
         recovery_hp_ratio: float = 0.75,
         social_view: Callable[[], Sequence[str]] | None = None,
+        coordination: BoundCoordinator | None = None,
     ) -> None:
         """``social_view`` feeds relationship facts into every decide context
         (the RelationshipLedger's lines): accept_invite/premade_pick can then
-        prefer friends and high-affinity groups over strangers."""
+        prefer friends and high-affinity groups over strangers. ``coordination``
+        (the BoundCoordinator) adds the group-objective layer: the leader's
+        objective_action review question, the packet emission, the member's
+        goal alignment and the solo outsider reply — all in-game channels only."""
         if (
             type(recovery_hp_ratio) not in (int, float)
             or not math.isfinite(recovery_hp_ratio)
@@ -125,6 +130,7 @@ class EventDrivenBrain:
         self._dialogue_block_steps = 0
         self._dialogue_cleared_stages: set[str] = set()
         self._social_view = social_view
+        self._coordination = coordination
         self._social_level: int | None = None
         self._social_in_party: bool | None = None
         self._pending_party_event: str | None = None
@@ -221,6 +227,7 @@ class EventDrivenBrain:
                 if self._noul(answers, "accept_invite"):
                     actions.append(AcceptInvite())
                     notes.append(f"accepted invite from {event.invite.from_name}")
+                    self._record_member_join(event.invite.from_name)
             case PlanExpired():
                 notes.append("farm plan ended; goal review on next heartbeat")
                 self._plan = None
@@ -331,22 +338,58 @@ class EventDrivenBrain:
         self, state: BotState, answers: dict[str, Any], notes: list[str]
     ) -> list[GameAction]:
         """Heartbeat: goal review, farm-plan authoring, optional announcement."""
-        goal = self._review_goal(state, answers, notes)
+        goal = self._aligned_goal(self._review_goal(state, answers, notes), notes)
         if self.is_recovering and self._choice(answers, "change_goal", "") == "keep":
-            return []
+            return self._coordination_review(state, answers, notes)
         plan = self._setup_farm_plan(state, answers, notes) if self._wants_farming(goal) else None
         self._plan = plan
         self._script = FarmScript(plan) if plan is not None else script_for(goal, state)
         notes.append(f"script->{type(self._script).__name__}")
-        event_actions = self._party_event_announce(state, answers, notes)
-        if event_actions:
-            return event_actions
-        announce = self._premade_text(state, answers, min_urgency=URGENCY_TALK)
-        if announce is None:
+        review_actions: list[GameAction] = list(self._party_event_announce(state, answers, notes))
+        if not review_actions:
+            announce = self._premade_text(state, answers, min_urgency=URGENCY_TALK)
+            if announce is not None:
+                text, is_party = announce
+                notes.append("announce")
+                review_actions = [PartyChat(text) if is_party else Say(text)]
+        review_actions.extend(self._coordination_review(state, answers, notes))
+        return review_actions
+
+    def _aligned_goal(self, goal: Goal, notes: list[str]) -> Goal:
+        """An ACTIVE group objective pins the drive for its duration."""
+        if self._coordination is None:
+            return goal
+        aligned = self._coordination.aligned_goal()
+        objective = self._coordination.active_objective()
+        if aligned is None or objective is None or aligned == goal:
+            return goal
+        notes.append(
+            f"objective alignment: {objective.kind} on {objective.map_name} "
+            f"(goal {goal.value}->{aligned.value})"
+        )
+        return aligned
+
+    def _coordination_review(
+        self, state: BotState, answers: dict[str, Any], notes: list[str]
+    ) -> list[GameAction]:
+        """The review's coordination packets (form on the answer, whispers, guard)."""
+        if self._coordination is None:
             return []
-        text, is_party = announce
-        notes.append("announce")
-        return [PartyChat(text) if is_party else Say(text)]
+        formed = self._coordination.review_actions(state, answers)
+        if formed:
+            notes.append("objective coordination packets")
+        return list(formed)
+
+    def _record_member_join(self, leader_name: str) -> None:
+        """MY accept becomes MY objective record (the goal-alignment source)."""
+        if self._coordination is not None:
+            self._coordination.on_invite_accepted(leader_name)
+
+    def _coordination_outsider(self, line: ChatLine, state: BotState) -> GameAction | None:
+        """The solo's affinity-gated whisper answering a public join call."""
+        if self._coordination is None:
+            return None
+        return self._coordination.outsider_reply(line, state)
 
     def _party_event_announce(
         self, state: BotState, answers: dict[str, Any], notes: list[str]
@@ -579,6 +622,9 @@ class EventDrivenBrain:
             if self.memory is not None:
                 prompt += "\n\nMy private memory:\n" + "\n".join(self.memory.view())
             return [Say(self._chat.generate_chat(prompt))], True
+        outsider = self._coordination_outsider(event.line, state)
+        if outsider is not None:
+            return [outsider], False
         premade = self._premade_text(state, answers, min_urgency=None)
         if premade is not None:
             text, is_party = premade
@@ -622,9 +668,24 @@ class EventDrivenBrain:
                         m.name: f"Level {m.level}{' (MVP)' if m.is_mvp else ''}" for m in mobs
                     },
                 }
+        self._add_objective_question(request)
+
+    def _add_objective_question(self, request: dict[str, Any]) -> None:
+        """The leader's open window offers the in-game objective authoring."""
+        if self._coordination is None:
+            return
+        question = self._coordination.formation_question()
+        if question is not None:
+            request["questions"]["objective_action"] = question
 
     def _wants_farming(self, goal: Goal) -> bool:
         return goal in (Goal.GRIND, Goal.FARM_ITEM)
+
+    def _coordination_map(self) -> str | None:
+        """The active objective's map wins for the session plan (alignment)."""
+        if self._coordination is None:
+            return None
+        return self._coordination.objective_map()
 
     def _setup_farm_plan(
         self, state: BotState, answers: dict[str, Any], notes: list[str]
@@ -648,7 +709,7 @@ class EventDrivenBrain:
             return None
         plan = FarmPlan(
             plan_id=self._plan_seq,
-            map_name=state.map_name,
+            map_name=self._coordination_map() or state.map_name,
             target_mobs=tuple(targets),
             duration_s=duration,
             interrupt_level_above=state.base_level,
