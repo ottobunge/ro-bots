@@ -19,5 +19,23 @@
     "clue_fx0": "The plans ['Lunatic','Pupa'] authored (the spawn index \u2713), no decide errors, the script route 'script', the steps ran \u2014 but ZERO actions dispatched. The healthy-looking no-dispatch: the brain's TickResult actions never reach perform_native.",
     "clue_fx1": "The route NULL \u2014 no script ran at all. The instructions_received TRUE + the town spawn (the prontera 152,150): fx1 stands in town and NEVER TRAVELED to the field (the w63's engaged fx1 DID the town->field travel).",
     "bisect_plan": "The w63/64 ran the PRE-competence/pre-coordination brain; every window since (the w65 launch overlapped the competence merge; the w66/67 = the post-both) stalled. THE BISECT: launch the window from a worktree at the w64-era commit (git worktree add /tmp/wt-bisect <w64-commit>; the same composition) \u2014 if it ENGAGES, the regression is in the competence/coordination brain changes; then bisect the two merges. PRIME SUSPECTS in the brain diff: (a) decide_knowledge_lines in both the request paths (the corpora FTS queries per decide \u2014 the latency/the shape), (b) the coordination's objective_action review question + the member goal-pinning hook (the alignment may pin the goals wrongly for the non-members)."
-  }
+  },
+  "BISECT_VERDICT": [
+    "THE OLD CODE (86e5eedb) STALLS IDENTICALLY with the current lanes \u2014 the code version is EXONERATED. The w65-67 + the bisect all share ONE thing the engaged w63/64 lack: THE CURRENT EMISSION LANES."
+  ],
+  "ROOT_CAUSE_NARROWED": [
+    "THE LIVEAGENTREF SHIM CREATED A DOUBLE-CONSUMER: before the shim, the capture read the construction-time (possibly stale) objects \u2014 NEVER touching the live ring \u2014 so the runtime owned the cursor and the agents ENGAGED (w63/64). After the shim, the capture calls build_native_state() on the LIVE client per tick, which ADVANCES the seq-strict ring cursor \u2014 the runtime's own reads starve, every perform drops silently, the brains keep ticking (the decides run before the native drain). Fits ALL the evidence: the time-correlation (the shim landed between w64 and w65), the code-independence (the bisect copied the CURRENT lanes), the zero warnings (the reads 'succeed' empty), the fx0's healthy-looking-but-zero counters, the world's health."
+  ],
+  "FIX_SHAPE_NEXT_SESSION": [
+    "(1) The capture must read WITHOUT consuming: a non-consuming snapshot (the tracker view, not the ring) or the build_native_state with the peek/no-advance semantics. (2) TDD: the test asserting the capture's reads do NOT advance the client's metadata cursor (the cursor before == after across the capture.summary()); the paired test that the runtime's own drain still advances. (3) Re-run the window: expect BOTH agents' counters live AND engagement restored (the w63/64 shape). (4) The lesson: the instrumentation must never share a consuming cursor with the observed runtime \u2014 the read-only views only."
+  ],
+  "w68_outcome": [
+    "THE DOUBLE-CONSUMER FIX DID NOT RESOLVE IT: the window stalled identically (own_pos 0 both, the decides full cadence). TWO theories disproven by the live windows today (the standing, the double-consumer). The honest evidence table: the code exonerated (the bisect at 86e5eedb), the accumulated state exonerated (the w67 fresh dirs), the world exonerated (the bare probe 13:08), the standing disproven (the w66), the cursor starvation disproven (the w68 \u2014 the fix landed, no change)."
+  ],
+  "what_remains": [
+    "THE COMPOSITION'S TICK PATH NEEDS DIRECT OBSERVATION: the script steps run (the tails prove it), the decides run, but the actions never reach perform_native \u2014 in EVERY post-12:00 window, any code version, any state freshness. The next session: instrument ONE agent's tick INSIDE the composition (the verbose trace: the script outcome -> the actions -> the runtime dispatch -> the perform -> the wire, with the drop points logged), run 10 minutes, and read exactly where the actions die. The chat backend's death (~11:30, the port dead) is also a suspect again: every post-11:30 window stalled; the w63/64 ran while the chat was ALIVE. The chat-call path (the escalation/the planning hook) blocking or poisoning the tick deserves a first-class test: relaunch the chat CLEANLY (the machine idle) or point --chat-url at a dead-port-detecting stub, and re-window."
+  ],
+  "chat_suspect_elevated": [
+    "THE CHAT CORRELATION: the w63/64 (engaged) ran with the chat :8300 ALIVE; the chat died ~11:30; EVERY window since stalled. The failed-chat behavior inside the tick (the retry/the hang/the exception path) was never tested as the stall source. FIRST ACTION next session: a clean chat relaunch (no window running) + the window; if still stalled, the in-composition trace."
+  ]
 }
