@@ -5,6 +5,7 @@ Decision-model calls happen ONLY here — on world events or periodic heartbeats
 """
 
 import math
+from collections.abc import Callable, Sequence
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Any, final
 
@@ -46,6 +47,7 @@ from robots.domain.events import (
 )
 from robots.domain.farm import FARM_DURATION_S, INTERRUPT_LEVEL_MARGIN, FarmPlan
 from robots.domain.model import Goal
+from robots.society.relations import SOCIAL_CONTEXT_MAX_LINES, party_event_premade
 
 if TYPE_CHECKING:
     from robots.domain.model import BotState
@@ -91,7 +93,11 @@ class EventDrivenBrain:
         spawn_species: Any | None = None,
         memory: Memory | None = None,
         recovery_hp_ratio: float = 0.75,
+        social_view: Callable[[], Sequence[str]] | None = None,
     ) -> None:
+        """``social_view`` feeds relationship facts into every decide context
+        (the RelationshipLedger's lines): accept_invite/premade_pick can then
+        prefer friends and high-affinity groups over strangers."""
         if (
             type(recovery_hp_ratio) not in (int, float)
             or not math.isfinite(recovery_hp_ratio)
@@ -118,6 +124,10 @@ class EventDrivenBrain:
         self._dialogue_block_session: tuple[int, str, int, int] | None = None
         self._dialogue_block_steps = 0
         self._dialogue_cleared_stages: set[str] = set()
+        self._social_view = social_view
+        self._social_level: int | None = None
+        self._social_in_party: bool | None = None
+        self._pending_party_event: str | None = None
         self.decision_count = 0
         self.escalation_count = 0
 
@@ -295,7 +305,27 @@ class EventDrivenBrain:
         self._augment_request_for_event(event, request)
         if isinstance(event, Heartbeat):
             self._augment_request_for_review(state, request)
+        if self._social_view is not None:
+            lines = list(self._social_view())[:SOCIAL_CONTEXT_MAX_LINES]
+            if lines:
+                request["state"]["social_relations"] = "\n".join(lines)
+        self._pending_party_event = self._party_event_kind(state)
         return request
+
+    def _party_event_kind(self, state: BotState) -> str | None:
+        """Diff the last decision snapshot into a party/group event kind.
+
+        joined/left come from the in_party transition, level-up from a rising
+        base level; a decline or a level drop is not a social event.
+        """
+        kind: str | None = None
+        if self._social_level is not None and state.base_level > self._social_level:
+            kind = "level_up"
+        if self._social_in_party is not None and state.in_party != self._social_in_party:
+            kind = "party_joined" if state.in_party else "party_left"
+        self._social_level = state.base_level
+        self._social_in_party = state.in_party
+        return kind
 
     def _run_review(
         self, state: BotState, answers: dict[str, Any], notes: list[str]
@@ -308,12 +338,35 @@ class EventDrivenBrain:
         self._plan = plan
         self._script = FarmScript(plan) if plan is not None else script_for(goal, state)
         notes.append(f"script->{type(self._script).__name__}")
+        event_actions = self._party_event_announce(state, answers, notes)
+        if event_actions:
+            return event_actions
         announce = self._premade_text(state, answers, min_urgency=URGENCY_TALK)
         if announce is None:
             return []
         text, is_party = announce
         notes.append("announce")
         return [PartyChat(text) if is_party else Say(text)]
+
+    def _party_event_announce(
+        self, state: BotState, answers: dict[str, Any], notes: list[str]
+    ) -> list[GameAction]:
+        """Policy premade on a party/group event: chat_urgency fires + event key.
+
+        The escalation policy sends the CLEF-layer premade (zero LLM cost); the
+        LLM stays reserved for the open conversation (existing escalation path).
+        """
+        kind = self._pending_party_event
+        self._pending_party_event = None
+        text = party_event_premade(kind) if kind is not None else None
+        if text is None:
+            return []
+        urgency = float(answers.get("chat_urgency", {}).get("score", 0.0))
+        if urgency < URGENCY_TALK:
+            return []
+        notes.append(f"party-event chat ({kind})")
+        expanded = self._expand_premade(text, state)
+        return [PartyChat(expanded) if state.in_party else Say(expanded)]
 
     def _augment_request_for_event(self, event: WorldEvent, request: dict[str, Any]) -> None:
         """Add event-specific questions to the request (react_monster etc.)."""
@@ -638,13 +691,16 @@ class EventDrivenBrain:
         premade = self._choice(answers, "premade_pick", "none")
         if premade == "none" or premade not in PREMADE_CHAT:
             return None
-        text = (
-            PREMADE_CHAT[premade]
-            .replace("%job", state.job)
+        return self._expand_premade(PREMADE_CHAT[premade], state), state.in_party
+
+    @staticmethod
+    def _expand_premade(text: str, state: BotState) -> str:
+        """Fill the %job/%level/%item placeholders with the bot's own facts."""
+        return (
+            text.replace("%job", state.job)
             .replace("%level", str(state.base_level))
             .replace("%item", next(iter(state.inventory), "stuff"))
         )
-        return text, state.in_party
 
     def _choice(self, answers: dict[str, Any], qid: str, default: str) -> str:
         return str(answers.get(qid, {}).get("choice", default))
