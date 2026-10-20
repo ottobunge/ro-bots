@@ -1011,6 +1011,7 @@ class AgentHost:
         rng: random.Random | None = None,
         client_factory: Any | None = None,
         mob_db_factory: Any | None = None,
+        spawn_species_factory: Any | None = None,
         world_state: WorldState | None = None,
         memory_root: Path | None = None,
         summary_cache_world: str | None = None,
@@ -1028,6 +1029,7 @@ class AgentHost:
         self.tick_seconds = tick_seconds
         self.client_factory = client_factory
         self._mob_db_factory = mob_db_factory
+        self._spawn_species_factory = spawn_species_factory
         self._brain_factory = brain_factory
         self.memory_root = memory_root
         self.summary_cache_world = summary_cache_world
@@ -1127,6 +1129,7 @@ class AgentHost:
                             if self._mob_db_factory
                             else None
                         ),
+                        spawn_species=self._spawn_species_factory,
                     )
                 ),
                 memory=memory,

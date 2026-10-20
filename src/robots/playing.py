@@ -109,6 +109,13 @@ def build_host(args: argparse.Namespace) -> AgentHost:
     cache = MapCache.load(root / "db/map_cache.dat", root / "db/pre-re/map_cache.dat")
     catalog = ObservedMobDatabase.load(root / "db/pre-re/mob_db.yml")
     databases = {pid: ObservedMobDatabase(catalog.catalog.values()) for pid in entries}
+
+    from robots.adapters.spawn_species import spawn_species as _spawn_species  # noqa: PLC0415
+
+    def spawn_species_for(map_name: str) -> tuple[str, ...]:
+        """Declared species for the map (criterion-10 knowledge; w59)."""
+        return _spawn_species(Path("rathena/npc/pre-re/mobs/fields") / f"{map_name}.txt", map_name)
+
     chat = make_local_chat(args.chat_url)
     decision = make_private_decision(args.decision_url)
 
@@ -141,6 +148,7 @@ def build_host(args: argparse.Namespace) -> AgentHost:
         chat_generator=chat,
         client_factory=client_factory,
         mob_db_factory=databases.__getitem__,
+        spawn_species_factory=spawn_species_for,
         memory_root=args.memory_root,
         worldfeed_port=args.worldfeed_port,
         brain_factory=(

@@ -199,6 +199,34 @@ def test_step_script_runs_without_model_calls(state) -> None:
     assert brain.decision_count == count_before
 
 
+def test_plan_authors_from_spawn_knowledge_when_observation_empty(state) -> None:
+    """Criterion-10 (w59): a mobless login patch must not deadlock plan
+    authoring — the declared species for the map seed the farm plan before
+    any observation."""
+    answers = dict(base_answers())
+    answers["farm_target"] = {"type": "choice", "choice": "Poring", "confidence": 0.9}
+    seen_maps: list[str] = []
+
+    def spawn_species(map_name: str) -> tuple[str, ...]:
+        seen_maps.append(map_name)
+        return ("Poring", "Lunatic")
+
+    brain = make_brain(answers=answers, spawn_species=spawn_species)
+    plan = brain._setup_farm_plan(state, answers, [])
+    assert plan is not None
+    assert plan.target_mobs == ("Poring",)
+    assert seen_maps == [state.map_name]
+
+
+def test_plan_none_without_spawn_knowledge_and_empty_observation(state) -> None:
+    """No observation and no spawn knowledge: authoring stays None (the
+    honest answer), and the GrindScript path takes over."""
+    answers = dict(base_answers())
+    brain = make_brain(answers=answers)
+    plan = brain._setup_farm_plan(state, answers, [])
+    assert plan is None
+
+
 def test_goal_enum_values() -> None:
     assert {g.value for g in Goal} >= {"grind", "farm_item", "idle_town", "quest", "social"}
 

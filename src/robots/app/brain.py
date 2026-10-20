@@ -85,10 +85,11 @@ class EventDrivenBrain:
         self,
         decision_model: DecisionModel,
         chat: ChatGenerator,
+        *,
         policy: EscalationPolicy | None = None,
         mob_db: MobDatabase | None = None,
+        spawn_species: Any | None = None,
         memory: Memory | None = None,
-        *,
         recovery_hp_ratio: float = 0.75,
     ) -> None:
         if (
@@ -110,6 +111,7 @@ class EventDrivenBrain:
         self._plan: FarmPlan | None = None
         self._plan_seq = 0
         self._mob_db: MobDatabase | None = mob_db
+        self._spawn_species = spawn_species
         self._npc_menu_seen: tuple[int, int, int] | None = None
         self._npc_memory_session: tuple[int, str, int, int] | None = None
         self._npc_memory_pages = 0
@@ -583,6 +585,12 @@ class EventDrivenBrain:
         target = self._choice(answers, "farm_target", "")
         mobs = list(self._mob_db.mobs_on_map(state.map_name)) if self._mob_db else []
         targets = [target] if target in {m.name for m in mobs} else [m.name for m in mobs[:2]]
+        if not targets and self._spawn_species is not None:
+            # Criterion-10 knowledge: the declared species for this map are
+            # known BEFORE any observation. A mobless login patch must not
+            # leave the plan unauthored (the stand-and-wait deadlock, w59).
+            known = tuple(self._spawn_species(state.map_name))
+            targets = [target] if target in known else list(known[:2])
         if not targets:
             return None
         plan = FarmPlan(
