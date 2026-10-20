@@ -15,7 +15,8 @@ import pytest
 
 import robots.society.objectives as objectives_module
 import robots.society.relations as relations_module
-from robots.domain.model import Goal
+from robots.domain.actions import InviteToParty, PartyChat, Say, WhisperTo
+from robots.domain.model import ChatLine, Goal
 from robots.popgen import GeneratedPopulation, PopulationSpec, generate_population
 from robots.society.objectives import (
     OBJECTIVE_ACTIVE,
@@ -23,6 +24,7 @@ from robots.society.objectives import (
     OBJECTIVE_INVITED,
     OBJECTIVE_KINDS,
     OBJECTIVE_PROPOSED,
+    GroupCoordinator,
     GroupObjective,
     GroupObjectiveBook,
     meet_premade,
@@ -31,7 +33,7 @@ from robots.society.objectives import (
     parse_objective_premade,
     seed_roster,
 )
-from robots.society.relations import RelationshipLedger
+from robots.society.relations import RelationshipLedger, _pair_key
 
 
 def pop_2_2_1() -> GeneratedPopulation:
@@ -370,6 +372,236 @@ def test_objective_lines_survive_the_context_cap() -> None:
     lines = ledger.context_lines("mate", max_lines=3)
     assert len(lines) == 3
     assert any("invited" in line for line in lines)
+
+
+# -- the coordinator: emissions are the ONLY channel ------------------------------
+
+
+def make_pair(
+    leader_id: str = "lead", mate_id: str = "mate", group_id: str = "g01"
+) -> tuple[RelationshipLedger, GroupCoordinator, GroupCoordinator]:
+    """A seeded 2-member group: PER-AGENT ledgers (own views) + coordinators."""
+    roster = ((leader_id, "PartyLeader"), (mate_id, "VelDrop"))
+
+    def build_viewer_ledger() -> RelationshipLedger:
+        ledger = RelationshipLedger()
+        for persona_id, name in roster:
+            ledger.register_persona(persona_id, name)
+        ledger.seed_group(group_id, (leader_id, mate_id), save_map="prt_fild08")
+        return ledger
+
+    leader_ledger = build_viewer_ledger()
+    return (
+        leader_ledger,
+        GroupCoordinator(leader_ledger, leader_id),
+        GroupCoordinator(build_viewer_ledger(), mate_id),
+    )
+
+
+def join_call() -> ChatLine:
+    return ChatLine(
+        channel="public", sender="PartyLeader", text="hunting porings prt_fild08, join me", at=1.0
+    )
+
+
+def test_formation_suggestion_names_the_online_friends() -> None:
+    _, leader, mate = make_pair()
+    suggestion = leader.formation_suggestion(("lead", "mate"))
+    assert suggestion is not None
+    assert suggestion.group_id == "g01"
+    assert suggestion.invitee_ids == ("mate",)
+    # Nobody but the formation leader gets a suggestion.
+    assert mate.formation_suggestion(("lead", "mate")) is None
+    # A lone online member is no window at all.
+    assert leader.formation_suggestion(("lead",)) is None
+    assert leader.formation_suggestion(("stranger", "mate")) is None
+
+
+def test_form_emits_only_in_game_packets() -> None:
+    _, leader, _ = make_pair()
+    objective, actions = leader.form(
+        "hunt",
+        map_name="prt_fild08",
+        target="porings",
+        online_members=("lead", "mate"),
+        in_party=False,
+    )
+    assert objective.status == OBJECTIVE_INVITED
+    assert {type(action) for action in actions} <= {InviteToParty, PartyChat, Say, WhisperTo}
+    invites = [a for a in actions if isinstance(a, InviteToParty)]
+    assert [i.player for i in invites] == ["VelDrop"]  # invited by the KNOWN character name
+    announcement = next(a for a in actions if isinstance(a, Say))
+    assert announcement.text == "hunting porings prt_fild08, join me"
+    inviting = [a for a in actions if isinstance(a, (Say, PartyChat)) and "inviting" in a.text]
+    assert any("VelDrop" in a.text for a in inviting)
+
+
+def test_form_in_party_uses_party_chat_not_public_say() -> None:
+    _, leader, _ = make_pair()
+    _, actions = leader.form(
+        "hunt",
+        map_name="prt_fild08",
+        target="porings",
+        online_members=("lead", "mate"),
+        in_party=True,
+    )
+    assert any("join me" in c.text for c in actions if isinstance(c, PartyChat))
+    assert [a for a in actions if isinstance(a, Say)] == []
+
+
+def test_form_records_meet_whisper_for_offline_members_only() -> None:
+    ledger, leader, mate = make_pair()
+    ledger.register_persona("late", "LateComer")
+    ledger.seed_group("g01", ("lead", "mate", "late"), save_map="prt_fild08")
+    objective, actions = leader.form(
+        "farm",
+        map_name="prontera",
+        target="jellopy",
+        online_members=("lead", "mate"),
+        in_party=False,
+        meet_where="prontera 156,22",
+        meet_when="19:00",
+    )
+    assert objective.status == OBJECTIVE_INVITED
+    # Only the ONLINE mate gets an invite packet; the offline member gets none.
+    assert [a.player for a in actions if isinstance(a, InviteToParty)] == ["VelDrop"]
+    assert not [a for a in actions if isinstance(a, WhisperTo)]
+    # The meet whisper stays recorded until BOTH are online, then delivers once.
+    assert leader.deliver_whispers(("lead", "mate")) == ()
+    delivered = leader.deliver_whispers(("lead", "mate", "late"))
+    assert len(delivered) == 1
+    whisper = delivered[0]
+    assert isinstance(whisper, WhisperTo)
+    assert whisper.to == "LateComer"
+    assert whisper.text == "meet at prontera 156,22 at 19:00"
+    assert leader.deliver_whispers(("lead", "mate", "late")) == ()
+
+
+def test_member_joins_through_the_in_game_invite_only() -> None:
+    _, leader, mate = make_pair()
+    _, actions = leader.form(
+        "hunt",
+        map_name="prt_fild08",
+        target="porings",
+        online_members=("lead", "mate"),
+        in_party=False,
+    )
+    # The member's own view: it HEARD the public announcement and got the invite.
+    announcement = next(a for a in actions if isinstance(a, Say))
+    mate.note_announcement("PartyLeader", announcement.text)
+    joined = mate.accept_invite_from("PartyLeader")
+    assert joined is not None
+    assert joined.status == OBJECTIVE_ACTIVE
+    assert joined.accepted == ("mate",)
+    # The leader observes the party join (in-game event) and welcomes.
+    welcome = leader.record_party_join("VelDrop")
+    assert any(isinstance(a, PartyChat) and "VelDrop" in a.text for a in welcome)
+    objective = leader.book.objectives_for_group("g01", statuses=(OBJECTIVE_ACTIVE,))[0]
+    assert objective.accepted == ("mate",)
+
+
+def test_member_without_the_announcement_joins_unaligned() -> None:
+    _, _, mate = make_pair()
+    # An invite alone (no heard announcement) cannot invent an objective.
+    assert mate.accept_invite_from("PartyLeader") is None
+
+
+def test_schedule_close_dissolves_and_says_goodbye() -> None:
+    _, leader, mate = make_pair()
+    leader.form(
+        "hunt",
+        map_name="prt_fild08",
+        target="porings",
+        online_members=("lead", "mate"),
+        in_party=False,
+    )
+    mate.note_announcement("PartyLeader", "hunting porings prt_fild08, join me")
+    mate.accept_invite_from("PartyLeader")
+    leader.record_party_join("VelDrop")
+    # The window closes: the mate disconnects.
+    gone = leader.tick(("lead",), in_party=False)
+    assert any(isinstance(a, Say) and a.text == "gg wp" for a in gone)
+    objective = leader.book.objectives_for_group("g01", statuses=(OBJECTIVE_DISSOLVED,))[0]
+    assert objective.reason == "schedule window closed"
+    member_gone = mate.tick(("lead",), in_party=False)
+    assert any(isinstance(a, Say) and a.text == "gg wp" for a in member_gone)
+    assert mate.book.joined_objectives() == ()
+    # An open window keeps everything alive.
+    ledger2, leader2, _ = make_pair()
+    del ledger2
+    leader2.form(
+        "hunt",
+        map_name="prt_fild08",
+        target="porings",
+        online_members=("lead", "mate"),
+        in_party=False,
+    )
+    assert leader2.tick(("lead", "mate"), in_party=False) == ()
+
+
+def test_solo_drift_responds_to_public_join_call_affinity_gated() -> None:
+    ledger, _, _ = make_pair()
+    ledger.register_persona("solo", "Lorawing")
+    solo = GroupCoordinator(ledger, "solo")
+    # Neutral stranger announcing a hunt: the solo may whisper a join request.
+    reply = solo.outsider_reply(join_call(), in_party=False, job="Swordsman", level=42)
+    assert isinstance(reply, WhisperTo)
+    assert reply.to == "PartyLeader"
+    assert reply.text == "can I join? Swordsman lvl 42"
+    # Already in a party: no outsider channel.
+    assert solo.outsider_reply(join_call(), in_party=True, job="Swordsman", level=42) is None
+
+
+def test_solo_with_bad_history_never_whispers() -> None:
+    ledger, _, _ = make_pair()
+    ledger.register_persona("solo", "Lorawing")
+    # A griefer: the solo's friendship with the announcer is negative. No
+    # production path yields negative agent-agent friendship yet (dead-weight
+    # and gossip are human-directed); this boundary pin holds the gate closed
+    # for the first negative producer.
+    ledger._friendship[_pair_key("solo", "lead")] = -0.6
+    solo = GroupCoordinator(ledger, "solo")
+    assert solo.outsider_reply(join_call(), in_party=False, job="Swordsman", level=42) is None
+    # Everyday chat never triggers the outsider channel either.
+    everyday = ChatLine(channel="public", sender="PartyLeader", text="gg wp", at=2.0)
+    assert solo.outsider_reply(everyday, in_party=False, job="Swordsman", level=42) is None
+    # Unknown senders (not in the injected roster) are treated as neutral.
+    stranger_line = ChatLine(
+        channel="public", sender="Mystery", text="hunting porings prt_fild08, join me", at=3.0
+    )
+    reply = solo.outsider_reply(stranger_line, in_party=False, job="Swordsman", level=42)
+    assert isinstance(reply, WhisperTo)
+    assert reply.to == "Mystery"
+
+
+def test_group_members_are_not_outsiders() -> None:
+    _, _, mate = make_pair()
+    assert mate.outsider_reply(join_call(), in_party=False, job="Swordsman", level=42) is None
+
+
+def test_every_emission_is_a_game_packet() -> None:
+    """Emission purity: coordination leaves an agent ONLY as wire packets."""
+    packet_types = {InviteToParty, PartyChat, Say, WhisperTo}
+    ledger, leader, mate = make_pair()
+    ledger.register_persona("solo", "Lorawing")
+    solo = GroupCoordinator(ledger, "solo")
+    outsider = solo.outsider_reply(join_call(), in_party=False, job="Swordsman", level=42)
+    emissions = [
+        leader.form(
+            "hunt",
+            map_name="prt_fild08",
+            target="porings",
+            online_members=("lead", "mate"),
+            in_party=False,
+        )[1],
+        leader.deliver_whispers(("lead", "mate")),
+        leader.record_party_join("VelDrop"),
+        leader.tick((), in_party=False),
+        (outsider,) if outsider is not None else (),
+    ]
+    for emission in emissions:
+        for action in emission or ():
+            assert type(action) in packet_types, f"non-packet emission: {action!r}"
 
 
 # -- the no-telepathy guard -------------------------------------------------------

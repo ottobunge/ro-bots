@@ -31,7 +31,8 @@ from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any, Final, final
 
-from robots.domain.model import Goal
+from robots.domain.actions import GameAction, InviteToParty, PartyChat, Say, WhisperTo
+from robots.domain.model import ChatLine, Goal
 
 if TYPE_CHECKING:
     from robots.popgen import GeneratedPopulation
@@ -51,6 +52,11 @@ _GOALS: Final = {
     "town": Goal.IDLE_TOWN,
 }
 _JOIN_ME: Final = ", join me"
+WELCOME_PREMADE: Final = "welcome, {name}!"
+DISSOLVE_PREMADE: Final = "gg wp"
+OUTSIDER_PREMADE: Final = "can I join? {job} lvl {level}"
+OUTSIDER_FLOOR: Final = 0.0  # the solo answers neutral-to-positive senders only
+MIN_WINDOW_MEMBERS: Final = 2  # a schedule window needs co-present friends
 
 
 def objective_premade(kind: str, map_name: str, target: str = "") -> str:
@@ -339,3 +345,206 @@ class GroupObjectiveBook:
         for objective_id, rows in dict(data.get("pending_whispers", {})).items():
             book._pending_whispers[str(objective_id)] = [dict(w) for w in rows]
         return book
+
+
+@final
+@dataclass(frozen=True, slots=True)
+class FormationSuggestion:
+    """The leader's open schedule-overlap window (party_formation's plan)."""
+
+    group_id: str
+    leader_id: str
+    invitee_ids: tuple[str, ...]
+
+
+@final
+class GroupCoordinator:
+    """One agent's coordination view: its OWN ledger + book, emitting packets.
+
+    This is the ONLY channel between agents: everything this class returns is
+    in-game packets (party invites, party chat, public chat, whispers) that the
+    caller dispatches over the wire. It never mutates another agent — members
+    join by accepting the in-game invite through their own brain, and their own
+    goal review then aligns with the objective. The roster (persona ids +
+    character names) is injected knowledge from ``seed_roster``; the packets
+    address friends by their known character name.
+    """
+
+    def __init__(self, ledger: RelationshipLedger, persona_id: str) -> None:
+        self._ledger = ledger
+        self._persona_id = persona_id
+        self._offers: dict[str, ObjectiveAnnouncement] = {}
+
+    @property
+    def book(self) -> GroupObjectiveBook:
+        return self._ledger.objectives
+
+    # -- the leader's side -----------------------------------------------------
+
+    def formation_suggestion(self, online_members: Sequence[str]) -> FormationSuggestion | None:
+        """The open window for THIS leader, or None (member / no overlap / live objective)."""
+        own_group = self._ledger.group_of(self._persona_id)
+        if own_group is None:
+            return None
+        if any(o.group_id == own_group for o in self.book.live_objectives()):
+            return None
+        for plan in self._ledger.party_formation(online_members):
+            if plan.leader_id == self._persona_id:
+                return FormationSuggestion(
+                    group_id=own_group, leader_id=plan.leader_id, invitee_ids=plan.invitee_ids
+                )
+        return None
+
+    def form(
+        self,
+        kind: str,
+        *,
+        map_name: str,
+        target: str = "",
+        online_members: Sequence[str],
+        in_party: bool,
+        meet_where: str | None = None,
+        meet_when: str | None = None,
+    ) -> tuple[GroupObjective, tuple[GameAction, ...]]:
+        """Open the objective and emit its formation packets (the only channel).
+
+        Emits exactly: one InviteToParty per ONLINE invitee (by the known
+        character name), the join-call premade, the ``inviting ...`` premade —
+        as party chat when already in a party, public chat otherwise (so solos
+        can hear the call). Offline group members get NO packet now: their
+        ``meet at ...`` whisper is recorded and delivered as a real in-game
+        whisper once both are online (``deliver_whispers``).
+        """
+        suggestion = self.formation_suggestion(online_members)
+        if suggestion is None:
+            msg = f"no open formation window for {self._persona_id!r}"
+            raise ValueError(msg)
+        online = set(online_members)
+        away_members = tuple(
+            m
+            for m in self._ledger.group_members(suggestion.group_id)
+            if m not in online and m != self._persona_id
+        )
+        objective = self.book.propose(
+            self._mint_id(suggestion.group_id, kind),
+            suggestion.group_id,
+            self._persona_id,
+            kind,
+            map_name,
+            target=target or None,
+            invited=suggestion.invitee_ids,
+        )
+        if suggestion.invitee_ids:
+            objective = self.book.mark_invited(objective.objective_id, suggestion.invitee_ids)
+        for member in away_members:
+            if meet_where is not None and meet_when is not None:
+                self.book.record_whisper(
+                    objective.objective_id, member, meet_premade(meet_where, meet_when)
+                )
+        channel = PartyChat if in_party else Say
+        actions: list[GameAction] = [
+            InviteToParty(self._ledger.display_name(m)) for m in suggestion.invitee_ids
+        ]
+        actions.append(channel(objective_premade(kind, map_name, target)))
+        names = ", ".join(self._ledger.display_name(m) for m in suggestion.invitee_ids)
+        actions.append(channel(f"inviting {names}"))
+        return objective, tuple(actions)
+
+    def deliver_whispers(self, online_members: Sequence[str]) -> tuple[GameAction, ...]:
+        """The recorded meet whispers whose target is online now (sent once)."""
+        actions: list[GameAction] = []
+        for objective in self.book.live_objectives():
+            for member_id, text in self.book.due_whispers(objective.objective_id, online_members):
+                actions.append(WhisperTo(self._ledger.display_name(member_id), text))
+        return tuple(actions)
+
+    def record_party_join(self, joiner_name: str) -> tuple[GameAction, ...]:
+        """A member joined my party in-game: the objective activates + welcome."""
+        joiner = self._ledger.persona_of(joiner_name)
+        if joiner is None:
+            return ()
+        joiner_group = self._ledger.group_of(joiner)
+        for objective in self.book.live_objectives():
+            if objective.leader_id != self._persona_id or objective.group_id != joiner_group:
+                continue
+            self.book.record_join(objective.objective_id, joiner)
+            return (PartyChat(WELCOME_PREMADE.format(name=joiner_name)),)
+        return ()
+
+    def tick(
+        self, online_members: Sequence[str], *, in_party: bool = False
+    ) -> tuple[GameAction, ...]:
+        """The schedule-window guard: a closed window dissolves + says goodbye."""
+        actions: list[GameAction] = []
+        online = set(online_members)
+        for objective in self.book.live_objectives():
+            members = self._ledger.group_members(objective.group_id)
+            if len(online & set(members)) >= MIN_WINDOW_MEMBERS:
+                continue
+            self.book.dissolve(objective.objective_id, reason="schedule window closed")
+            actions.append(PartyChat(DISSOLVE_PREMADE) if in_party else Say(DISSOLVE_PREMADE))
+        return tuple(actions)
+
+    # -- the member's side -----------------------------------------------------
+
+    def note_announcement(self, sender_name: str, text: str) -> bool:
+        """Heard a join call in-game: remember the offer made by that character."""
+        announcement = parse_objective_premade(text)
+        if announcement is None:
+            return False
+        self._offers[sender_name] = announcement
+        return True
+
+    def accept_invite_from(self, leader_name: str) -> GroupObjective | None:
+        """MY OWN accept of the in-game invite: the offer becomes my objective.
+
+        Records the join in MY book only (no cross-agent write) — the leader
+        learns of it by observing the party join in-game. An invite without a
+        heard announcement aligns nothing (there is no invented objective).
+        """
+        offer = self._offers.get(leader_name)
+        if offer is None:
+            return None
+        leader_persona = self._ledger.persona_of(leader_name)
+        group_id = (
+            self._ledger.group_of(leader_persona)
+            if leader_persona is not None
+            else self._ledger.group_of(self._persona_id)
+        )
+        objective = self.book.propose(
+            self._mint_id(group_id or "unknown", offer.kind),
+            group_id or "unknown",
+            leader_persona or "",
+            offer.kind,
+            offer.map_name,
+            target=offer.target,
+            invited=(self._persona_id,),
+        )
+        return self.book.record_join(objective.objective_id, self._persona_id)
+
+    # -- the solo outsider's side ------------------------------------------------
+
+    def outsider_reply(
+        self, line: ChatLine, *, in_party: bool, job: str = "", level: int | None = None
+    ) -> GameAction | None:
+        """Affinity-gated whisper answering a public join call (the outsider).
+
+        Solos only, never while in a party, and only for recognised join-call
+        premades: neutral-to-positive senders get the join-request whisper,
+        bad-reputation senders (negative friendship) get nothing.
+        """
+        if in_party or self._ledger.group_of(self._persona_id) is not None:
+            return None
+        if parse_objective_premade(line.text) is None:
+            return None
+        sender = self._ledger.persona_of(line.sender)
+        affinity = self._ledger.friendship(self._persona_id, sender) if sender is not None else 0.0
+        if affinity < OUTSIDER_FLOOR:
+            return None
+        return WhisperTo(line.sender, OUTSIDER_PREMADE.format(job=job, level=level))
+
+    # -- helpers -------------------------------------------------------------
+
+    def _mint_id(self, group_id: str, kind: str) -> str:
+        taken = sum(1 for o in self.book.live_objectives() if o.group_id == group_id)
+        return f"{group_id}-{kind}-{taken + 1}"
