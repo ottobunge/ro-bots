@@ -20,7 +20,7 @@ import sqlite3
 from pathlib import Path
 from typing import Any
 
-from robots.knowledge.calculators import equip_projection
+from robots.knowledge.calculators import equip_projection, leading_int
 
 DEFAULT_IRO_DB = Path("run/knowledge/iro-db/iro-db.db")
 DEFAULT_IRO_WIKI = Path("run/knowledge/iro-wiki/iro-wiki.db")
@@ -103,25 +103,11 @@ def monster_fields(monster: str | int) -> dict[str, Any] | None:
     return fields
 
 
-def _leading_int(raw: Any) -> int | None:
-    if isinstance(raw, int):
-        return raw
-    if not isinstance(raw, str):
-        return None
-    digits = ""
-    for char in raw.replace(",", ""):
-        if char.isdigit():
-            digits += char
-        elif digits:
-            break
-    return int(digits) if digits else None
-
-
 def item_weapon_attack(fields: dict[str, Any]) -> int | None:
     """The parsed weapon attack from an iro-db item row (``atk``/``attack``)."""
     for key in ("atk", "attack", "Attack", "ATK"):
         if key in fields:
-            value = _leading_int(fields[key])
+            value = leading_int(fields[key])
             if value is not None:
                 return value
     return None
@@ -144,9 +130,9 @@ def monster_context_line(fields: dict[str, Any]) -> str:
     ``"Poring: HP 60, exp 27/20, drops Jellopy 70%, Apple 10%, Sticky Mucus 4%…"``.
     """
     name = str(fields.get("name", "?"))
-    hp = _leading_int(fields.get("hp"))
-    base_exp = _leading_int(fields.get("base_exp"))
-    job_exp = _leading_int(fields.get("job_exp"))
+    hp = leading_int(fields.get("hp"))
+    base_exp = leading_int(fields.get("base_exp"))
+    job_exp = leading_int(fields.get("job_exp"))
     parts: list[str] = []
     if hp is not None:
         parts.append(f"HP {hp}")

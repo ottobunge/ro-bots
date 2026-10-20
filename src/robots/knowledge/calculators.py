@@ -130,15 +130,19 @@ _USABLE_TYPES = {"healing", "usable", "ammo"}
 _NO_BONUS_KIND = "misc"
 
 
-def _first_int(raw: Any) -> int | None:
-    """First integer in a field value: 8, "4 Z (4 Z)" -> 4, "--" -> None."""
+def leading_int(raw: Any) -> int | None:
+    """First integer in a field value: 8, "4 Z (4 Z)" -> 4, "--" -> None.
+
+    Shared numeric scraper for iro-db/sidecar price and stat fields; corpora
+    and the projections both go through this one implementation.
+    """
     if isinstance(raw, bool):
         return None
     if isinstance(raw, int):
         return raw
     if isinstance(raw, str):
         digits = ""
-        for char in raw:
+        for char in raw.replace(",", ""):
             if char.isdigit():
                 digits += char
             elif digits:
@@ -174,8 +178,8 @@ def _item_kind(item: dict[str, Any]) -> str:
 
 
 def _item_prices(item: dict[str, Any]) -> tuple[int | None, int | None]:
-    buy = _first_int(_item_field(item, "buying_price", "Buy"))
-    sell = _first_int(_item_field(item, "selling_price", "Sell"))
+    buy = leading_int(_item_field(item, "buying_price", "Buy"))
+    sell = leading_int(_item_field(item, "selling_price", "Sell"))
     if sell is None and buy is not None:
         sell = buy // 2  # rathena default sell value is half the buy value
     return buy, sell
@@ -201,7 +205,7 @@ def equip_projection(item: dict[str, Any], stats: dict[str, int] | None = None) 
     delta: dict[str, int] = {}
     projected_atk: int | None = None
     if kind == "weapon":
-        weapon_atk = _first_int(_item_field(item, "attack", "Attack", "atk", "ATK"))
+        weapon_atk = leading_int(_item_field(item, "attack", "Attack", "atk", "ATK"))
         if weapon_atk is not None:
             delta["atk"] = weapon_atk
             if stats:
@@ -213,7 +217,7 @@ def equip_projection(item: dict[str, Any], stats: dict[str, int] | None = None) 
                     equip_atk=stats.get("equip_atk", 0),
                 )
     elif kind == "armor":
-        defense = _first_int(_item_field(item, "defense", "Defense", "def", "Def"))
+        defense = leading_int(_item_field(item, "defense", "Defense", "def", "Def"))
         if defense is not None:
             delta["def"] = defense
 
