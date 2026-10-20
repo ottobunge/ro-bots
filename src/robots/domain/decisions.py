@@ -42,13 +42,22 @@ def _goal_criterion(goal: Goal) -> str:
 
 
 def build_decision_request(
-    state: BotState, memory_lines: list[str] | None = None
+    state: BotState,
+    memory_lines: list[str] | None = None,
+    *,
+    knowledge_lines: list[str] | None = None,
 ) -> dict[str, Any]:
     """Build the SystemOne question schema for one tick of a bot's brain.
 
     ``memory_lines`` (ADR-004): the OptChat-style memory view; when provided
     it is injected as ``state['memory_view']`` so the decision model sees the
     agent's whole past at bounded size. Absent key otherwise.
+
+    ``knowledge_lines``: bounded game-knowledge lines (stat projections, item
+    equip/sell projections, wiki context) composed by
+    ``robots.knowledge.game_context``; injected as ``state['game_knowledge']``
+    (capped, keeping the decide payload under its token budget). Absent key
+    otherwise.
     """
     nearby_desc = ", ".join(f"{a.name}({a.kind}, d={a.distance:.0f})" for a in state.nearby[:10])
     chat_desc = " | ".join(f"[{c.channel}] {c.sender}: {c.text}" for c in state.recent_chat[-3:])
@@ -84,6 +93,7 @@ def build_decision_request(
     _add_encounters(json_state, state)
     _add_npc_context(json_state, state)
     _add_skill_context(json_state, state)
+    _add_game_knowledge(json_state, knowledge_lines)
 
     if memory_lines is not None:
         json_state["memory_view"] = "\n".join(memory_lines[:40])
@@ -156,6 +166,16 @@ def build_decision_request(
         "state": json_state,
         "questions": questions,
     }
+
+
+def _add_game_knowledge(json_state: dict[str, Any], knowledge_lines: list[str] | None) -> None:
+    """Bounded game-knowledge lines (criterion 4/10); absent keeps legacy shape.
+
+    game_context.MAX_DECIDE_LINES is the composition-side cap; re-capped here
+    so no caller path can exceed the decide payload budget.
+    """
+    if knowledge_lines:
+        json_state["game_knowledge"] = list(knowledge_lines[:6])
 
 
 def _add_npc_context(json_state: dict[str, Any], state: BotState) -> None:

@@ -103,6 +103,7 @@ class BotState:
     capacity_receipt: ReceivedCapacity | None = None
     inventory_slots: int | None = None
     server_self_slots: ServerSelfSlots | None = None
+    received_stats: tuple[int, ...] | None = None  # 0x00BD: str agi vit int dex luk
 
     @property
     def hp_ratio(self) -> float:
