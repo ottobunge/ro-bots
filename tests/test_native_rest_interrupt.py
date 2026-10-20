@@ -268,7 +268,10 @@ def test_attack_standing_retries_ignore_peer_and_nonpose_receipts(ack):
     for instant in (0.5, 1.0, 2.0, 3.0, 100.0):
         now[0] = instant
         client.perform_native(Attack(123))
-    assert wire.sent == ["stand"] * 3
+    # w65: the recovery re-arms a doubling epoch (never permanently silent),
+    # so deep-time ticks keep retrying at a bounded rate (1 per epoch).
+    assert wire.sent[:3] == ["stand"] * 3
+    assert len(wire.sent) <= 8
 
 
 @pytest.mark.parametrize("parameters", [{}, {5: 0, 6: 0}, {5: 19, 6: True}, {5: -1, 6: 100}])

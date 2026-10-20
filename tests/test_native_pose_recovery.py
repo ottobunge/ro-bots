@@ -59,7 +59,10 @@ def test_standing_requests_are_paced_and_bounded_without_ack():
         now[0] = instant
         wire.add(pose())  # Repeated sit receipt must not reset the retry budget.
         client.perform_native(MoveTo(43, 37))
-    assert wire.sent == ["stand"] * 3
+    # w65: the recovery re-arms a doubling epoch (never permanently silent),
+    # so deep-time ticks keep retrying — bounded by one stand per tick.
+    assert wire.sent[:3] == ["stand"] * 3
+    assert len(wire.sent) <= 9
     assert not wire.moves
     wire.add(pose(kind=3))
     client.perform_native(MoveTo(43, 37))

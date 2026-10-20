@@ -1439,6 +1439,7 @@ class PlayingClient:
             return "no_position_or_dead"
         pos = view.position
         if not self._require_standing():
+            self._note_move_gate("not_standing")
             return "not_standing"
         if self._await_pending(view, pos):
             return "await_pending"
@@ -1841,8 +1842,16 @@ class PlayingClient:
             self.wire.stand()
         else:
             seq, started, last_sent, attempts = pending
-            if attempts < 3 and now - last_sent >= 1.0 and now - started < 3.0:
+            epoch = max(3.0, 3.0 * (2 ** min(attempts // 3, 3)))
+            if attempts < 3 and now - last_sent >= 1.0 and now - started < epoch:
                 self._stand_pending = (seq, started, now, attempts + 1)
+                self.wire.stand()
+            elif now - started >= epoch:
+                # w65: a join-era sit pose can flip standing off; the old
+                # recovery went permanently silent after the first 3s epoch,
+                # dropping every action for the rest of the window. Re-arm a
+                # longer epoch instead of giving up while the agent is alive.
+                self._stand_pending = (self._metadata_cursor, now, now, 3)
                 self.wire.stand()
         return False
 

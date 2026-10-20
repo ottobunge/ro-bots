@@ -98,6 +98,46 @@ class Wire:
         self.sent.append("stand")
 
 
+def test_standing_recovery_rearms_indefinitely_and_names_block() -> None:
+    """w65: a join-era sit pose (0x08C8 raw[29]==2) can flip standing False
+    after the 0x02EB baseline. The old recovery sent wire.stand() three
+    times within a 3s window, then went permanently silent — every perform
+    dropped as not_standing for the rest of the window with no telemetry.
+    The recovery must keep re-arming (bounded backoff, unbounded epochs)
+    while the agent is alive, and expose a stall reason."""
+    wire = Wire()
+    wire.add(map_frame())
+    clock = {"t": 100.0}
+    client = runtime.PlayingClient(wire)
+    client._now = lambda: clock["t"]
+    client.build_native_state(Goal.GRIND)
+    # the join-era sit pose flips standing off AFTER the entry baseline
+    sit = bytearray(34)
+    struct.pack_into("<HI", sit, 0, 0x08C8, wire.aid)
+    sit[29] = 2
+    wire.add(bytes(sit))
+    client.drain_native_events()
+
+    # three recovery attempts exhaust the first epoch; the old code stopped here
+    for i in range(3):
+        if i:
+            clock["t"] += 1.1
+        client.perform_native(MoveTo(46, 41))
+    sent_after_first_epoch = len([f for f in wire.sent if f == "stand"])
+    assert sent_after_first_epoch >= 3
+
+    # a later epoch still re-arms: the recovery is never permanently silent
+    for _ in range(3):
+        clock["t"] += 4.0
+        client.perform_native(MoveTo(46, 41))
+    sent_after_second_epoch = len([f for f in wire.sent if f == "stand"])
+    assert sent_after_second_epoch > sent_after_first_epoch
+
+    # the block NAMES itself in the movement telemetry
+    reasons = getattr(client, "_move_gate_reasons", ()) or ()
+    assert any("standing" in str(r) for r in reasons), reasons
+
+
 def test_wire_state_not_persona_truth():
     client = runtime.PlayingClient(Wire())
     state = client.build_native_state(Goal.GRIND)
