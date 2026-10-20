@@ -70,5 +70,8 @@
   ],
   "offline_twin_reconcile_state": [
     "The 2 offline-twin failures (the healthy-target case): the replans==0 assertion PASSES (the watcher's cache read works), but counts['attack']>=1 FAILS \u2014 the FarmScript's attack dispatch produced 0 in the replay. The suspects narrowed to today's runtime changes in the attack path: (a) the standing re-arm's epoch math (the FakeWire's clock interplay), (b) the knowledge-lines decide payload shifting the scripted answers' handling, (c) the GrindScript roam leaking into the FarmScript path (unlikely \u2014 the separate class). The debug: run test_offline_twin_healthy_target_never_replans with the receipt's diagnostics dumped (the payload['agents']['fx0'] has the dispatched/gates/diagnostics fields \u2014 print them) and compare against the pre-change receipt shape. NOTE: the .work lane is git-ignored so git stash cannot isolate the watcher change \u2014 the manual revert is the only A/B."
+  ],
+  "offline_twin_debug": [
+    "THE DUMP: dispatched {attack: 0, moveTo: 72, loot: 0} in a 4s/80-tick replay \u2014 the APPROACH loop spams MoveTo every tick because the FakeWire never advances the agent's position (no walk-ack feedback), so the in-range check never passes. The live wire advances positions; the replay fake does not. The reconcile options: (a) the FakeWire gains the walk-feedback (the move ack advances the position \u2014 the honest replay), or (b) the test asserts the approach MoveTos instead of the Attacks. Option (a) is the better replay fidelity."
   ]
 }
