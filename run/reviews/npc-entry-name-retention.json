@@ -1,0 +1,170 @@
+{
+  "schema": "npc-entry-name-retention/v1",
+  "status": "OFFLINE_FEATURE_PASS_BROADER_REGRESSION_BLOCKED",
+  "scope": "Fresh received-only projection feature scope 1/1; no pilot budget reset",
+  "native_authority": "REVOKED; no native, network, inference, SQL, Git, world or lifecycle operations performed",
+  "changed_files": {
+    "src/robots/adapters/native_actor_presentation.py": "495c3880aee4e2d3f8095636e805396c854f2449903ef373bb6020b2cd937c70",
+    "src/robots/app/playing_runtime.py": "4cffa5b60dba17166e4af3a0363a800be9c168e5ae4faa2147c57d3776af993c",
+    "tests/test_native_entry_npc_names.py": "9bcba5571cf354ac56668a610a12a64c998419158b975b461fa9e418e2b43954"
+  },
+  "baseline": {
+    "actual": {
+      "src/robots/adapters/native_actor_presentation.py": "81140e814a682ea44742880dd9a3a7a19e165eb2098debfa657d24615fe5b730",
+      "src/robots/app/playing_runtime.py": "369171823465b1cc0149bfea789606bc7a9e9b8071dd0c2594e06080bddf45f9",
+      "tests/test_native_entry_npc_names.py": "53fdc4da50b013d92078e9ffb5e249d40e2e6f0cb63f0162958255bf5701aa6f",
+      ".work/npc-entry-names-parent-red.xml": "5c7259570842d0609d47baf983c2ec525f33fa3fadcedd57b19bbc84b0066f12"
+    },
+    "original_source": {
+      "src/robots/adapters/native_actor_presentation.py": "81140e814a682ea44742880dd9a3a7a19e165eb2098debfa657d24615fe5b730",
+      "src/robots/app/playing_runtime.py": "369171823465b1cc0149bfea789606bc7a9e9b8071dd0c2594e06080bddf45f9"
+    }
+  },
+  "source_authority": {
+    "profile": "MAIN/pre-re PACKETVER 20180704",
+    "qualified_source": "run/public-source/callback-qualified-e985006171d2",
+    "layout": "packets_struct.hpp:687-902: packed spawn/walking/idle end in name[NAME_LENGTH]; common/mmo.hpp:154 NAME_LENGTH=(23+1)",
+    "offsets": {
+      "0x09FD": 86,
+      "0x09FE": 79,
+      "0x09FF": 80
+    },
+    "lengths": {
+      "0x09FD": 110,
+      "0x09FE": 103,
+      "0x09FF": 104
+    },
+    "sender": "clif.cpp:1193/1448 supplies status_get_name via safestrncpy; source-backed synthetic tests, not native receipts"
+  },
+  "chronology": [
+    "Parent exact tracer RED retained unchanged, one behavioral NPC#444 != Bard#brising failure",
+    "Worker reproduced tracer RED before editing production",
+    "Minimal pure name extraction plus PlayingClient metadata projection: tracer GREEN 1/1",
+    "Next vertical slice: malformed/empty replacement retained old name, RED two parameterized failures",
+    "Clear old name at every validated new entry, then GREEN 3/3",
+    "Remaining profile, type, malformed, UTF-8, boundary, ordering and isolation cases are already-green characterization, not additional manufactured RED history",
+    "Configured mypy found a test-only heterogeneous-dict inference error; explicit dict value annotation fixed it, final fresh-cache mypy PASS"
+  ],
+  "semantics": [
+    "Received tracker consumes and validates each exact frame before owner-local metadata retention",
+    "Only presentations 6/12 with matching currently perceived NPC can acquire an entry name",
+    "A validated new entry clears prior entry/0ADF name for its actor ID; malformed/empty name is UNKNOWN via existing NPC#id fallback",
+    "Malformed packet shape denies state through existing continuity guard; malformed text alone preserves actor and clears its prior name",
+    "0ADF remains unchanged: a later valid reply replaces current name; invalid reply does not replace a known name",
+    "Strict bounded UTF-8, first NUL, nonempty policy matches 0ADF; controls are retained under the existing policy, not newly sanitized",
+    "Walking remains walking; names do not establish self pose, arrival, permission, native identity or attack authority",
+    "Map/vanish/session and wire replacement guards remain; duplicate old sequence cannot alter projection; clients retain independent names",
+    "No additional queries or wire sends; no hidden NPC registry or invented fallback introduced"
+  ],
+  "verification": {
+    "final_feature_receipt": ".work/npc-entry-names/final-feature-green.xml",
+    "final_feature": {
+      "sha256": "7095ad784ee36e1b1c0c0805bf2a7d3601b1b93586e509e264af777db8e17291",
+      "total": 44,
+      "unique": 44,
+      "failed": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "root_feature_cases": 38,
+    "pilot_cases": 6,
+    "pilot": "AST-load only received_actor/received_ready from exact fixed probe; real PlayingClient projection, no executor import/effects",
+    "gates": [
+      {
+        "command": [
+          ".venv/bin/python",
+          "-B",
+          "-m",
+          "pytest",
+          "-q",
+          "-o",
+          "addopts=",
+          "-p",
+          "no:cacheprovider",
+          "--junitxml=.work/npc-entry-names/final-feature-green.xml",
+          "tests/test_native_entry_npc_names.py",
+          ".work/npc-entry-names/test_pilot_projection.py"
+        ],
+        "exit": 0,
+        "output": "............................................                             [100%]\n44 passed in 0.39s\n"
+      },
+      {
+        "command": [
+          ".venv/bin/black",
+          "--check",
+          "src/robots/adapters/native_actor_presentation.py",
+          "src/robots/app/playing_runtime.py",
+          "tests/test_native_entry_npc_names.py"
+        ],
+        "exit": 0,
+        "output": "All done! \u2728 \ud83c\udf70 \u2728\n3 files would be left unchanged.\n"
+      },
+      {
+        "command": [
+          ".venv/bin/ruff",
+          "check",
+          "src/robots/adapters/native_actor_presentation.py",
+          "src/robots/app/playing_runtime.py",
+          "tests/test_native_entry_npc_names.py"
+        ],
+        "exit": 0,
+        "output": "All checks passed!\n"
+      },
+      {
+        "command": [
+          ".venv/bin/mypy",
+          "--cache-dir=.work/npc-entry-names/mypy-cache"
+        ],
+        "exit": 0,
+        "output": "Success: no issues found in 248 source files\n"
+      },
+      {
+        "command": [
+          ".venv/bin/xenon",
+          "src",
+          "--max-absolute",
+          "B",
+          "--max-modules",
+          "B",
+          "--max-average",
+          "A"
+        ],
+        "exit": 0,
+        "output": ""
+      },
+      {
+        "command": [
+          ".venv/bin/pylint",
+          "--disable=all",
+          "--enable=duplicate-code",
+          "--ignore-paths=tests",
+          "src"
+        ],
+        "exit": 0,
+        "output": "\n--------------------------------------------------------------------\nYour code has been rated at 10.00/10 (previous run: 10.00/10, +0.00)\n\n"
+      }
+    ],
+    "broader_regression_receipt": ".work/npc-entry-names/scoped-green.xml",
+    "broader_regression": {
+      "sha256": "f76a21c08233de5f378722f54c2e38f65dd23af409e9f899fe528c13975161b3",
+      "total": 1279,
+      "unique": 1279,
+      "failed": 2,
+      "errors": 0,
+      "skipped": 0
+    },
+    "broader_regression_blocker": "Two unchanged NPC source-binding tests fail with missing historical configured source: /home/otto/.hermes/cache/scratch/callback-package-hut2_cuz/configured-variant/3rdparty/CMakeLists.txt. No source recovery/authority or unowned test edits attempted.",
+    "full_root_task_check_audit": "Not run; parent owns whole-root verification and source-evolution binding"
+  },
+  "freeze": {
+    "path": ".work/npc-entry-names/completed-freeze.json",
+    "sha256": "7a5df304df817645e45e490227708f02915721ed6e92b6a43432e464e6ab4a2b",
+    "entries": 259,
+    "limits": "Current source/test/public authority bytes describe this candidate, not native activation approval. Prior immutable 420 freeze and active authority unchanged."
+  },
+  "remaining": [
+    "Parent independent completed-snapshot review and whole-root task check/audit",
+    "Resolve historical configured-source missing dependency under separate parent-owned scope",
+    "Separately authorized native run remains pending; this does not explain the entire earlier pilot failure; original failed native predicate remains UNKNOWN"
+  ]
+}

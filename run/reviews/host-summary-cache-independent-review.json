@@ -1,0 +1,341 @@
+{
+  "passed": true,
+  "security_concerns": [],
+  "logic_errors": [],
+  "summary": "Independent scoped offline approval of explicit AgentHost/CLI summary-cache wiring, preflight, shared private context, restart reuse and dual-store lifecycle; no supported new security or logic defect found.",
+  "date": "2026-10-06",
+  "scope": "Host/CLI optional cache configuration and wiring only. Real private fixture files, local subprocesses, joined local worker/inspector threads and FakeGameClient; no native/provider/world acceptance.",
+  "review_method": {
+    "new_source_read": [
+      "src/robots/app/agent_runtime.py",
+      "src/robots/__main__.py",
+      "src/robots/app/host_memory_factory.py"
+    ],
+    "new_tests_read": "tests/test_host_summary_cache.py",
+    "accepted_dependencies": "Memory and raw/cache backends unchanged; inspected ownership and integration behavior, did not independently re-review all unchanged cache parsers. Prior independent 210-case cache approval read only for boundaries; none of its cases counted here.",
+    "runtime": "Existing pinned nix develop --offline --no-write-lock-file -c uv run --offline --no-sync. No installs, pin edits, baseline stash, source fixes, staging, commit or push.",
+    "offline_guards": "Selected test runner replaces host chat autodetection with StaticChatGenerator and denies socket.create_connection, CLI.main and AgentHost.run. Fresh harness additionally denies native BotClient. Fixture fake inspector threads do not serve sockets. Valid CLI build_host allocates cached memories but never calls main/run.",
+    "isolation": "Owned COVERAGE_FILE, basetemp, mypy/Pylint caches, no pytest cacheprovider, PYTHONDONTWRITEBYTECODE=1; only new report plus own scratch written.",
+    "tdd": "Historical implementation RED claims were read, not independently rerun. Behavioral raw-only restart seven-regeneration evidence is distinct from API missing-keyword RED and CLI/preflight RED; fresh review does not infer tests-first history from current passing counts."
+  },
+  "verification": {
+    "distinct_current_review_cases": 330,
+    "selected_current_feature_and_regressions": {
+      "cases": 318,
+      "distinct": 318,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "sha256": "2e6eccf670ab0fa37320af3df745a3ebf7bfdc487995312f297d45a26e7892d0"
+    },
+    "fresh_independent_cases": {
+      "cases": 12,
+      "distinct": 12,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "sha256": "7e94ac6c2f1072815a6c583c3c1539d1561b71060f35f92148d0f80210577395"
+    },
+    "selected_files": [
+      "tests/test_host_summary_cache.py",
+      "tests/test_agent_host.py",
+      "tests/test_host_memory.py",
+      "tests/test_core_interruption_cleanup.py",
+      "tests/test_host_storage_failure.py",
+      "tests/test_host_chat_commands.py",
+      "tests/test_host_chat_interruptions.py",
+      "tests/test_memory_summary_cache.py",
+      "tests/test_memory_storage.py",
+      "tests/test_memory_concurrency.py",
+      "tests/test_memory_journal_boundary.py",
+      "tests/test_memory_journal_failures.py"
+    ],
+    "new_host_cache_cases_in_selected": 72,
+    "repeat_runs_not_added_to_distinct_total": true,
+    "selected_exit": 0,
+    "fresh_exit": 0,
+    "coverage": {
+      "scope": "Three scoped source modules, not project-wide or per-file >=85; CLI.main/AgentHost.run intentionally excluded from execution. Autodetection patched to prevent actual socket attempts.",
+      "total": {
+        "covered_lines": 531,
+        "num_statements": 599,
+        "percent_covered": 88.64774624373956,
+        "percent_covered_display": "89",
+        "missing_lines": 68,
+        "excluded_lines": 12,
+        "percent_statements_covered": 88.64774624373956,
+        "percent_statements_covered_display": "89"
+      },
+      "files": {
+        "src/robots/__main__.py": {
+          "covered_lines": 34,
+          "num_statements": 47,
+          "percent_covered": 72.34042553191489,
+          "percent_covered_display": "72",
+          "missing_lines": 13,
+          "excluded_lines": 0,
+          "percent_statements_covered": 72.34042553191489,
+          "percent_statements_covered_display": "72"
+        },
+        "src/robots/app/agent_runtime.py": {
+          "covered_lines": 485,
+          "num_statements": 540,
+          "percent_covered": 89.81481481481481,
+          "percent_covered_display": "90",
+          "missing_lines": 55,
+          "excluded_lines": 12,
+          "percent_statements_covered": 89.81481481481481,
+          "percent_statements_covered_display": "90"
+        },
+        "src/robots/app/host_memory_factory.py": {
+          "covered_lines": 12,
+          "num_statements": 12,
+          "percent_covered": 100.0,
+          "percent_covered_display": "100",
+          "missing_lines": 0,
+          "excluded_lines": 0,
+          "percent_statements_covered": 100.0,
+          "percent_statements_covered_display": "100"
+        }
+      },
+      "global_scoped_threshold": 85,
+      "threshold_met": true
+    },
+    "static_checks": {
+      "black": {
+        "exit": 0,
+        "command": [
+          "uv",
+          "run",
+          "--offline",
+          "--no-sync",
+          "black",
+          "--check",
+          "src/robots/app/agent_runtime.py",
+          "src/robots/__main__.py",
+          "src/robots/app/host_memory_factory.py",
+          "tests/test_host_summary_cache.py"
+        ]
+      },
+      "ruff": {
+        "exit": 0,
+        "command": [
+          "uv",
+          "run",
+          "--offline",
+          "--no-sync",
+          "ruff",
+          "check",
+          "--no-cache",
+          "src/robots/app/agent_runtime.py",
+          "src/robots/__main__.py",
+          "src/robots/app/host_memory_factory.py",
+          "tests/test_host_summary_cache.py"
+        ]
+      },
+      "mypy": {
+        "exit": 0,
+        "command": [
+          "uv",
+          "run",
+          "--offline",
+          "--no-sync",
+          "mypy",
+          "--cache-dir=/home/otto/.hermes/cache/scratch/host-cache-independent-20261006/mypy-cache",
+          "src/robots/app/agent_runtime.py",
+          "src/robots/__main__.py",
+          "src/robots/app/host_memory_factory.py",
+          "tests/test_host_summary_cache.py"
+        ]
+      },
+      "bandit": {
+        "exit": 0,
+        "command": [
+          "uv",
+          "run",
+          "--offline",
+          "--no-sync",
+          "bandit",
+          "-q",
+          "-c",
+          "pyproject.toml",
+          "src/robots/app/agent_runtime.py",
+          "src/robots/__main__.py",
+          "src/robots/app/host_memory_factory.py"
+        ]
+      },
+      "vulture": {
+        "exit": 0,
+        "command": [
+          "uv",
+          "run",
+          "--offline",
+          "--no-sync",
+          "vulture",
+          "src",
+          "vulture_whitelist.py"
+        ]
+      },
+      "xenon": {
+        "exit": 0,
+        "command": [
+          "uv",
+          "run",
+          "--offline",
+          "--no-sync",
+          "xenon",
+          "src",
+          "--max-absolute",
+          "B",
+          "--max-modules",
+          "B",
+          "--max-average",
+          "A"
+        ]
+      },
+      "duplicate": {
+        "exit": 0,
+        "command": [
+          "uv",
+          "run",
+          "--offline",
+          "--no-sync",
+          "pylint",
+          "--persistent=n",
+          "--disable=all",
+          "--enable=duplicate-code",
+          "--ignore-paths=tests",
+          "src"
+        ]
+      },
+      "manual_static_matches": {
+        "shell": [],
+        "eval": [],
+        "pickle": [],
+        "secret": []
+      }
+    },
+    "full_combined_gate": "Not run; parent-owned. Scoped static Black/Ruff/strict mypy/Bandit pass; whole-source Vulture, Xenon B/B/A and duplicate-code pass on an unchanged 56-module source snapshot. No gates weakened.",
+    "warnings": "Existing FastAPI TestClient StarletteDeprecationWarning; no dependency changes."
+  },
+  "positive_controls_and_reached_probes": {
+    "preflight": "Fresh valid host and CLI configs hit earliest RNG sentinel; invalid literal IDs/string subclass then reach none of RNG, manifest, roster, chat detection, raw or cache effect spies. Exact 128-byte ASCII IDs accepted; str subclass overrides not invoked. Existing 72 host-cache cases include pair/root and argparse exit-2 guards.",
+    "summarizer_allocation_order": "Fresh injected StubSummarizer constructor KeyboardInterrupt preserves exact origin before any raw root exists.",
+    "cli": "Fresh parse-derived Namespace builds actual host and two private cache files with exact world/policy labels and no client/native session; no-cache defaults have neither durable store.",
+    "restart_notes_view_zoom": "Fresh two-persona real-file host builds 14 nodes, seven per four-note persona. A new local process with exploding summarizer verifies exact raw notes, views, zoom, inspector source-log identity and zero old-summary calls. Fifth note on reconstruction requires exactly one leaf summarization.",
+    "shared_private_context": "Fresh cached facade is the identical brain memory and inspector MemoryLog. Fake-client chat callback drives both scripted decision context and static LLM prompt path. Owned notes present, foreign-persona marker absent; prompt private-memory segment remains <=4000 characters. No actual LLM inference.",
+    "schedule_and_dual_locks": "Fresh schedule-on/off/on/off passes connect/disconnect FakeGameClients while retaining same facade. Separate local process denied both lifetime locks for both personas after disconnect; normal stop permits reopen and stopped step cannot reconnect.",
+    "constructor_cleanup": "Fresh supported second-persona decision_factory failure exercises real raw/cache stores. Four stores each close exactly once even when each raises after release; separate process reopens all. OSError/Unnotable OSError/KeyboardInterrupt origins retain object, errno where applicable and decision traceback frame; failing add_note and secondary private strings cannot replace/leak into diagnostics. Selected current tests separately cover cache allocation, raw/cache restore, bind and ScheduledAgent failure with all previously completed personas.",
+    "stop_cleanup": "Fresh simultaneous session append OSError and raw release-before-SystemExit produces original errors in BaseExceptionGroup only after both fake clients disconnect and all raw/cache files reopen in separate process. Selected current tests exercise worker and inspector joins before either store closes and session failure cleanup.",
+    "actual_pre_release_interruption": "Two fresh probes reach inherited backend os.close before releasing raw or cache file fd during host.stop. Exact KeyboardInterrupt propagated with incomplete-release note; backend fd slot already -1 but os.fstat(saved fd) and writer-lock denial prove residual ownership BEFORE fixture recovery. Every other raw/cache store releases. Only exact saved fixture descriptor manually recovered afterward, no production retry/kill/recovery claim.",
+    "identity_source_and_world": "Executed selected integration tests refuse wrong world/persona/policy, copied-policy and altered raw-prefix bindings without fallback. Explicit two-world positive controls use different caller-selected raw roots AND cache labels; no automatic raw-root world partition inferred."
+  },
+  "source_authority": {
+    "preflight": [
+      "src/robots/app/host_memory_factory.py:7-20",
+      "src/robots/app/agent_runtime.py:643-665",
+      "src/robots/__main__.py:89-114"
+    ],
+    "allocation_cleanup": [
+      "src/robots/app/agent_runtime.py:142-148",
+      "src/robots/app/agent_runtime.py:670-680",
+      "src/robots/app/agent_runtime.py:728-770"
+    ],
+    "shared_context": [
+      "src/robots/app/agent_runtime.py:728-743",
+      "src/robots/app/brain.py:151-158",
+      "src/robots/app/brain.py:251-253",
+      "src/robots/app/world_state.py:152-166"
+    ],
+    "lifecycle": [
+      "src/robots/app/agent_runtime.py:296-343",
+      "src/robots/app/agent_runtime.py:803-834",
+      "src/robots/app/agent_runtime.py:854-862"
+    ],
+    "inherited_interrupt_limit": [
+      "src/robots/adapters/memory_journal.py:163-174",
+      "src/robots/society/memory.py:174-198"
+    ]
+  },
+  "suggestions": [
+    {
+      "priority": "non-blocking",
+      "subject": "CLI builder Namespace contract",
+      "detail": "Existing old/new tests use parse_args-produced namespaces; build_host directly requires newly added attributes. Arbitrary hand-built old Namespaces missing those fields are not demonstrated public compatibility. Clarify parse-derived Namespace contract if exposing builder more broadly."
+    }
+  ],
+  "limitations": [
+    "Memory root remains explicitly caller-selected world-specific Path; cache world is an identity label, not raw ownership proof, automatic routing, deployment capability or world-start authority. Wrong-type memory_root outside annotated API is not elevated to a security claim.",
+    "Summary backend remains StubSummarizer at 120 characters. Opaque policy label is not model/provider proof; no Qwen/provider parity or billing acceptance.",
+    "Inherited pre-release close interruption can leave physical fd/flock retained despite cleared slots. Attempts and generic diagnostics are not universal release guarantees; no targeted production fix or recovery added.",
+    "Unchanged accepted backend repeated source-prefix hashing remains quadratic with finite admission caps; no scalability/performance acceptance.",
+    "No SQL, engine/socket/provider/network/native/private-human/gateway sessions, CLI.main/host.run, server/inference, world mutation or full OptChat/player-memory acceptance. User end goal and native/full-world milestones remain open.",
+    "No unrelated runtime publication journal ownership APIs conflated with Memory cleanup. Other journal review read-only; no new writers or source changes."
+  ],
+  "frozen_inputs": {
+    "unchanged_before_after": true,
+    "changed_paths": [],
+    "all_18_implementation_after_hashes_matched": true,
+    "reviewed_input_count": 30,
+    "sha256_before_and_after": {
+      "Taskfile.yml": "63616950e21c15c455c2b6f90be4d588b77f31a62181fd7a93253d164a64a7fd",
+      "flake.lock": "c9c0bac69415b99a29ef3fe149b6f04ef54d291989bdf7218cf819ed52edf2a0",
+      "flake.nix": "185e4a4babf62a40484c347f59653bd11b79ce847316a3a90349c8545d38a359",
+      "pyproject.toml": "e8ae0849a413bc3d705f081f609b92dae702bbd3e491b2c3aeb5d8665c458fba",
+      "run/reviews/host-summary-cache-wiring.json": "abbd38c6864861a7a7ab1d98487143dc4900023c3c5d28a8cd6513758b28a1cf",
+      "src/robots/__main__.py": "a1396e7ed4f3480f1534d1dc156ca277a479dae899d8ef91424e378537a2da08",
+      "src/robots/adapters/chat/stub.py": "780d993734e9e498dbc0ad8e89ff97143aba3e5a281f3eefd8880412f02e6666",
+      "src/robots/adapters/memory_journal.py": "043f109ba8e637b4b26a7a4cd601e64bffa3512815ea0cfbca8c2737c3fb3a00",
+      "src/robots/adapters/memory_summary_cache.py": "05fb8a1063bfda2d02835497c26bcc45817f39e7753dd8c369135c745de67e97",
+      "src/robots/app/agent_runtime.py": "5dc8dc0967b0e849617b1436609524f18154b60c683e85405ef5cba442d58fed",
+      "src/robots/app/brain.py": "e67e13169fb19c1fea9e27e6fd2857a11989328210d899c0b8c8ee1e8c932ed2",
+      "src/robots/app/host_commands.py": "023af553c24b7ec2fc5d6d5e21d361f1d541b6d499f06d18a0039df7f3a1407b",
+      "src/robots/app/host_memory_factory.py": "c3488a284e29332ced59f6f1f05032e1cc98d4065b4033311812790c3cc54e49",
+      "src/robots/app/world_state.py": "61f4daebc1383fd9ee8b9bda27111ed5b1b94c7ccf43099c0d892b7799ce9d0d",
+      "src/robots/society/memory.py": "10f0508d2fd08da1a6fa4aede6f1d5658a7adf982be0d0eecc5c9017760b039f",
+      "tests/test_agent_host.py": "effeba83435fb43c76a1578d17e190b93219991dbab491786df56ef02bb808f7",
+      "tests/test_core_interruption_cleanup.py": "e985a3f00adebc4161378b6fbe8a7e4e91b6f282e725faee0eef54440f50b3bf",
+      "tests/test_host_chat_commands.py": "c92969013f656ad8e7fa103bb8662a9acfe6ab7be12dc896b86db26f1785e58c",
+      "tests/test_host_chat_interruptions.py": "cc921d40237a16332fbb9434db3c242a4fe1078214868d4a0199f717a138d826",
+      "tests/test_host_memory.py": "db28d20ea1d0afa27bc49c5475144f5bd2197cf81c0c147baa91a5bab3bf6d5d",
+      "tests/test_host_storage_failure.py": "0f473837dbcaf1461e4b9d7d73090639361d2e0f9d08a1a2489bb9c06e5cb42f",
+      "tests/test_host_summary_cache.py": "031349e898c80056eb71b22b0b1e1dba84723b8644acd5ba9e7331f969d037ac",
+      "tests/test_memory_concurrency.py": "b3023d86a987dbb701cd4767814473fb5330cda50055f70a062ba67d2b1239d3",
+      "tests/test_memory_journal_boundary.py": "d5754f1a9e5eacfeabba031118d980fae8ada3df5426983e509ebcd0d10ff56a",
+      "tests/test_memory_journal_failures.py": "13e7cc87bfb390dbf4f8fd24e82f3932c1333dc0db35ee350f5c9f9e3160957e",
+      "tests/test_memory_storage.py": "1b5ea2b86b922adaef75c560680eb309a3674873abab2cfd7e1fdfba0e4a069b",
+      "tests/test_memory_summary_cache.py": "8a08fef45815f7e7e1169544843155057fba2be17e3eb5f7061cbf61b29c9229",
+      "uv.lock": "2d7b4c187078488d7625e4fd4fa982745cab8d6a65b2ff3e382ffa286f1df245",
+      "vulture_whitelist.py": "872286fe8d1fb50ef67cab45cd96e5c2936549f8cbdb4bb31cd292b97617b673",
+      "wiki/guides/host-summary-cache.md": "b9423be98547f485901694a449e51cdf3fb56bbc0d94cc7bfedf8596faa6799a"
+    },
+    "whole_source_static_module_count": 56,
+    "whole_source_static_changed_paths": [],
+    "whole_source_snapshot_sha256": "21f609b76690297cc47225a1ba9468d7620ff2f0f2ce87363468428ccc834e25",
+    "invalidated_if_reviewed_inputs_change": true
+  },
+  "artifacts": {
+    "report": "run/reviews/host-summary-cache-independent-review.json",
+    "owned_scratch": "/home/otto/.hermes/cache/scratch/host-cache-independent-20261006",
+    "selected_junit": "/home/otto/.hermes/cache/scratch/host-cache-independent-20261006/selected.xml",
+    "fresh_final_junit": "/home/otto/.hermes/cache/scratch/host-cache-independent-20261006/fresh-final.xml",
+    "coverage": "/home/otto/.hermes/cache/scratch/host-cache-independent-20261006/coverage.json",
+    "harnesses": [
+      "/home/otto/.hermes/cache/scratch/host-cache-independent-20261006/run_selected.py",
+      "/home/otto/.hermes/cache/scratch/host-cache-independent-20261006/test_independent_host.py",
+      "/home/otto/.hermes/cache/scratch/host-cache-independent-20261006/test_fresh_cleanup.py",
+      "/home/otto/.hermes/cache/scratch/host-cache-independent-20261006/static_checks.py"
+    ],
+    "scratch_lifetime": "May be pruned after idle retention; counts/fingerprints and scoped verdict retained here."
+  },
+  "harness_issues_corrected_without_source_changes": [
+    "First selected coverage run imported reviewed modules before coverage startup, undercounting import/definition lines and failing measurement threshold despite 318 passing tests. Moved imports inside pytest fixture; rerun 318 pass, 88.65% scoped coverage, threshold unchanged.",
+    "Initial external scratch pytest collection lacked tests import path due Nix environment/rootdir behavior. Explicit env PYTHONPATH inside pinned nix command plus project root/config corrected collection; final 12 fresh cases passed. These harness failures are not source defects."
+  ],
+  "files_created": [
+    "run/reviews/host-summary-cache-independent-review.json",
+    "new owned scratch only"
+  ],
+  "source_old_tests_reports_guides_gates_locks_whitelists_pins_modified": false,
+  "review_elapsed_seconds_since_snapshot": 358.9
+}

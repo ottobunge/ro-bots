@@ -1,0 +1,25 @@
+{
+  "status": "LIVE_V2_TABLE_HEALTH_RECEIPT_CAPTURED_AND_PREDICATE_ACCEPTED",
+  "receipt": "run/reviews/native-current-db-health-v2.json",
+  "receipt_sha256": "2003d441add8e4c9281e2d1d3a2285293f9660d5657d92e5d3669561e4037440",
+  "status_field": "BOUNDED_CURRENT_TABLE_CHECKS_OK",
+  "observed_at_utc": "2026-10-14T15:47:16.962895+00:00",
+  "same_database_lifetime": true,
+  "metadata_after": "12 tables, all ragnarok/MyISAM, names identical to pinned historical receipt",
+  "historical_faults_carried_verbatim": true,
+  "collector_corrected_sha256": "62eb1ae8fb0da16cebca2cdc9fbfcbed5a2d6e2b6222aed8d4b59b6d921eec4a",
+  "collector_corrections": [
+    "qualified compose service labels (rathena-login/rathena-char/rathena-map)",
+    "native-role world mount /world RW (mariadb-only /var/lib/* mounts)"
+  ],
+  "refused_attempts_preserved": [
+    "run/reviews/native-current-db-health-v2-live-denied.json",
+    "run/reviews/native-current-db-health-v2-live-denied-2.json"
+  ],
+  "both_refusals_pre_effect": true,
+  "tests_after_corrections": "15/15 GREEN qualified toolchain (green_pytest_after_service_fix.xml, green_pytest_after_mount_fix.xml)",
+  "predicate_check": "successor live_recovery.table_health accepts fresh v2 receipt, denies 25h-stale (DeniedError)",
+  "engine_bookkeeping_disclosed": "CHECK TABLE QUICK updated check_time bookkeeping fields; no repair, no DML/DDL, DB epoch unchanged",
+  "scope": "bounded maintenance on owned test world under original lock per autonomous maintenance authority",
+  "native_authority": "UNCHANGED_REVOKED"
+}

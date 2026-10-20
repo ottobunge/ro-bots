@@ -1,0 +1,323 @@
+{
+  "passed": true,
+  "status": "independent-repair-review-passed",
+  "repair_cycle": 1,
+  "scope": "Bounded offline private source-bound view-store filesystem component only",
+  "security_concerns": [],
+  "logic_errors": [],
+  "quality_blockers": [],
+  "suggestions": [],
+  "summary": "Original three failure-origin regressions closed; safe builtin owner handoff, close-once, publication and poison contracts independently pass on unchanged freeze.",
+  "freeze": {
+    "manifest": "/home/otto/.hermes/cache/scratch/optchat-view-store-repair1-independent-freeze.json",
+    "sha256": "a9123d5f8805f787af7100314056064f47554f13f7a3bd92c4478c26cf6ff276",
+    "before": {
+      "count": 264,
+      "drift": [],
+      "artifact": "/home/otto/.hermes/cache/scratch/optchat-view-store-repair1-independent-review/before.json"
+    },
+    "after": {
+      "count": 264,
+      "drift": [],
+      "artifact": "/home/otto/.hermes/cache/scratch/optchat-view-store-repair1-independent-review/after.json"
+    },
+    "before_after_hashes_exact": true,
+    "manifest_unchanged": true
+  },
+  "tests": {
+    "combined": {
+      "path": "/home/otto/.hermes/cache/scratch/optchat-view-store-repair1-independent-review/review.xml",
+      "sha256": "c40938226525bfbd72fa5211f9995782326b01efe695007e84dca0329da43360",
+      "cases": 356,
+      "unique_cases": 356,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "failed_case_names": []
+    },
+    "class_counts": {
+      "tests.test_optchat_view_store": 76,
+      "tests.test_optchat_view": 50,
+      "tests.test_host_memory": 16,
+      "tests.test_host_summary_cache": 72,
+      "tests.test_memory_concurrency": 3,
+      "tests.test_memory_journal_boundary": 14,
+      "tests.test_memory_journal_failures": 9,
+      "tests.test_memory_storage": 21,
+      "tests.test_memory_summary_cache": 68,
+      "": 27
+    },
+    "existing_store": 76,
+    "existing_core": 50,
+    "existing_legacy": 203,
+    "unchanged_original_independent": 20,
+    "fresh_independent": 7,
+    "unique_cases": 356,
+    "overlapping_runs_not_summed": true
+  },
+  "original_failure_origins_closed": [
+    "test_custom_exception_dict_preserves_origin_on_cleanup_failure[oserror]",
+    "test_custom_exception_dict_preserves_origin_on_cleanup_failure[keyboard]",
+    "test_custom_exception_dict_preserves_origin_on_cleanup_failure[exit]"
+  ],
+  "original_independent_test": {
+    "path": "/home/otto/.hermes/cache/scratch/optchat-view-store-independent-review/test_independent.py",
+    "sha256": "365c3d8c46e53fa36b8bd9a27d3eda20c76ed58d94b55571455a0568051f14e1",
+    "unchanged": true
+  },
+  "execution": {
+    "tests": {
+      "command": [
+        ".venv/bin/python",
+        "-m",
+        "pytest",
+        "tests/test_optchat_view_store.py",
+        "tests/test_optchat_view.py",
+        "tests/test_host_memory.py",
+        "tests/test_host_summary_cache.py",
+        "tests/test_memory_concurrency.py",
+        "tests/test_memory_journal_boundary.py",
+        "tests/test_memory_journal_failures.py",
+        "tests/test_memory_storage.py",
+        "tests/test_memory_summary_cache.py",
+        "/home/otto/.hermes/cache/scratch/optchat-view-store-independent-review/test_independent.py",
+        "/home/otto/.hermes/cache/scratch/optchat-view-store-repair1-independent-review/test_repair_review.py",
+        "-p",
+        "no:cacheprovider",
+        "-o",
+        "addopts=",
+        "--strict-markers",
+        "--basetemp=/home/otto/.hermes/cache/scratch/optchat-view-store-repair1-independent-review/fresh-fs",
+        "--tb=short",
+        "--junitxml=/home/otto/.hermes/cache/scratch/optchat-view-store-repair1-independent-review/review.xml"
+      ],
+      "exit_code": 0,
+      "seconds": 8.922833027994784,
+      "log": "/home/otto/.hermes/cache/scratch/optchat-view-store-repair1-independent-review/tests.log",
+      "sha256": "66e2d0ad462808b163c41f79cc4af679d6d9570747430eab49e0dc153bf44ac3"
+    },
+    "black": {
+      "command": [
+        ".venv/bin/black",
+        "--check",
+        "--workers",
+        "1",
+        "src/robots/adapters/optchat_view_store.py",
+        "tests/test_optchat_view_store.py"
+      ],
+      "exit_code": 0,
+      "seconds": 0.4503937560002669,
+      "log": "/home/otto/.hermes/cache/scratch/optchat-view-store-repair1-independent-review/black.log",
+      "sha256": "b9cf511501d306d2bd8355ccb165c8ddc0a6fdd62d7c72c4a7b1795cf8934c8c"
+    },
+    "ruff": {
+      "command": [
+        ".venv/bin/ruff",
+        "check",
+        "--no-cache",
+        "src/robots/adapters/optchat_view_store.py",
+        "tests/test_optchat_view_store.py"
+      ],
+      "exit_code": 0,
+      "seconds": 0.01237437799863983,
+      "log": "/home/otto/.hermes/cache/scratch/optchat-view-store-repair1-independent-review/ruff.log",
+      "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
+    },
+    "mypy": {
+      "command": [
+        ".venv/bin/mypy",
+        "--strict",
+        "--cache-dir=/home/otto/.hermes/cache/scratch/optchat-view-store-repair1-independent-review/mypy-cache",
+        "src/robots/adapters/optchat_view_store.py",
+        "tests/test_optchat_view_store.py"
+      ],
+      "exit_code": 0,
+      "seconds": 2.722590986995783,
+      "log": "/home/otto/.hermes/cache/scratch/optchat-view-store-repair1-independent-review/mypy.log",
+      "sha256": "f9b031e5c45aa702cd4fef028d465551cb20a2c4698e0913c7b00766b20ac4d8"
+    },
+    "xenon-whole": {
+      "command": [
+        ".venv/bin/xenon",
+        "--max-absolute",
+        "B",
+        "--max-modules",
+        "B",
+        "--max-average",
+        "A",
+        "src"
+      ],
+      "exit_code": 0,
+      "seconds": 0.571787275999668,
+      "log": "/home/otto/.hermes/cache/scratch/optchat-view-store-repair1-independent-review/xenon-whole.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "duplicates-whole": {
+      "command": [
+        ".venv/bin/pylint",
+        "--disable=all",
+        "--enable=duplicate-code",
+        "--ignore-paths=tests",
+        "src"
+      ],
+      "exit_code": 0,
+      "seconds": 3.7135794529967825,
+      "log": "/home/otto/.hermes/cache/scratch/optchat-view-store-repair1-independent-review/duplicates-whole.log",
+      "sha256": "bbb6ffa7d7107b760478161908c009d3b85b078b80d54e3ad8dcd57bfe91a142"
+    }
+  },
+  "candidate_xml_verified": [
+    {
+      "path": "/home/otto/.hermes/cache/scratch/optchat-view-store-repair1/01-red.xml",
+      "sha256": "7848380368be800d86fdfbdbaf7d90a1151d9bbea6411f0898ecb912a17bc512",
+      "cases": 3,
+      "unique_cases": 3,
+      "failures": 3,
+      "errors": 0,
+      "skips": 0,
+      "failed_case_names": [
+        "test_custom_exception_dict_preserves_origin_on_cleanup_failure[oserror]",
+        "test_custom_exception_dict_preserves_origin_on_cleanup_failure[keyboard]",
+        "test_custom_exception_dict_preserves_origin_on_cleanup_failure[exit]"
+      ]
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/optchat-view-store-repair1/02-owned-red.xml",
+      "sha256": "f07b216de0c3b021004c99a201621f80a0b53dc61f95dbd7786c490a4d51f10b",
+      "cases": 12,
+      "unique_cases": 12,
+      "failures": 12,
+      "errors": 0,
+      "skips": 0,
+      "failed_case_names": [
+        "test_custom_origin_safe_owner_handoff[load-property-OSError]",
+        "test_custom_origin_safe_owner_handoff[load-property-KeyboardInterrupt]",
+        "test_custom_origin_safe_owner_handoff[load-property-SystemExit]",
+        "test_custom_origin_safe_owner_handoff[load-hooks-OSError]",
+        "test_custom_origin_safe_owner_handoff[load-hooks-KeyboardInterrupt]",
+        "test_custom_origin_safe_owner_handoff[load-hooks-SystemExit]",
+        "test_custom_origin_safe_owner_handoff[constructor-property-OSError]",
+        "test_custom_origin_safe_owner_handoff[constructor-property-KeyboardInterrupt]",
+        "test_custom_origin_safe_owner_handoff[constructor-property-SystemExit]",
+        "test_custom_origin_safe_owner_handoff[constructor-hooks-OSError]",
+        "test_custom_origin_safe_owner_handoff[constructor-hooks-KeyboardInterrupt]",
+        "test_custom_origin_safe_owner_handoff[constructor-hooks-SystemExit]"
+      ]
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/optchat-view-store-repair1/03-reached-red.xml",
+      "sha256": "fc4e5184f9e93618ea0037ca8b72d79e362ed0057175609368adfa98f2337e50",
+      "cases": 12,
+      "unique_cases": 12,
+      "failures": 12,
+      "errors": 0,
+      "skips": 0,
+      "failed_case_names": [
+        "test_custom_origin_safe_owner_handoff[load-property-OSError]",
+        "test_custom_origin_safe_owner_handoff[load-property-KeyboardInterrupt]",
+        "test_custom_origin_safe_owner_handoff[load-property-SystemExit]",
+        "test_custom_origin_safe_owner_handoff[load-hooks-OSError]",
+        "test_custom_origin_safe_owner_handoff[load-hooks-KeyboardInterrupt]",
+        "test_custom_origin_safe_owner_handoff[load-hooks-SystemExit]",
+        "test_custom_origin_safe_owner_handoff[constructor-property-OSError]",
+        "test_custom_origin_safe_owner_handoff[constructor-property-KeyboardInterrupt]",
+        "test_custom_origin_safe_owner_handoff[constructor-property-SystemExit]",
+        "test_custom_origin_safe_owner_handoff[constructor-hooks-OSError]",
+        "test_custom_origin_safe_owner_handoff[constructor-hooks-KeyboardInterrupt]",
+        "test_custom_origin_safe_owner_handoff[constructor-hooks-SystemExit]"
+      ]
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/optchat-view-store-repair1/04-green.xml",
+      "sha256": "5303044f185d9c60cec64cface50d0f23bacc3d322290cd7dcb3cb1217571ce3",
+      "cases": 346,
+      "unique_cases": 346,
+      "failures": 6,
+      "errors": 0,
+      "skips": 0,
+      "failed_case_names": [
+        "test_custom_origin_safe_owner_handoff[constructor-property-OSError]",
+        "test_custom_origin_safe_owner_handoff[constructor-property-KeyboardInterrupt]",
+        "test_custom_origin_safe_owner_handoff[constructor-property-SystemExit]",
+        "test_custom_origin_safe_owner_handoff[constructor-hooks-OSError]",
+        "test_custom_origin_safe_owner_handoff[constructor-hooks-KeyboardInterrupt]",
+        "test_custom_origin_safe_owner_handoff[constructor-hooks-SystemExit]"
+      ]
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/optchat-view-store-repair1/05-final.xml",
+      "sha256": "5920fd151494fc6b273064faeff7f87f664e01f4126f26a2a6cbd53b47b3aba2",
+      "cases": 349,
+      "unique_cases": 349,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "failed_case_names": []
+    }
+  ],
+  "candidate_report": {
+    "path": "/home/otto/dev/ro-bots/run/reviews/optchat-view-store-repair1.json",
+    "sha256": "57c0438072fda53af31907e64ba19405d3967b6c0f55f78fcd12a80ab4d61ef4"
+  },
+  "verified_effects": [
+    "Actual constructor-after-flock and load node callbacks propagate exact OSError/KeyboardInterrupt/SystemExit subclass instances and original deepest callback frames with hostile __dict__ property, __getattribute__, __setattr__, add_note, and dict-subclass insertion hooks.",
+    "Builtin descriptor retrieval returns the exact returned store or constructor frame self; actual fd fstat/proc visibility and second-process writer refusal observed before explicit fixture-only recovery.",
+    "Six new hostile-origin constructor/load probes pass; seventh probe confirms completed normal callback cleanup releases writer lock and creates no unconfirmed-owner handoff.",
+    "Unchanged original close probes physically distinguish interrupted-before-release and release-before-raise; no uncertain descriptor retry, directory closes once, truthful unconfirmed ownership remains.",
+    "Existing independent and owned save/load probes preserve exact state, schema/prefix/node bindings, file/directory sync ordering, retained pending files, pre/post-publication committed state and poison until explicit reopen.",
+    "Production diff is solely _cleanup_origin diagnostic handoff and documentation; root helper, core, raw journal and persisted format unchanged.",
+    "Scoped Black, Ruff and fresh strict mypy; whole source Xenon B/B/A and duplicate-code gates all exit zero."
+  ],
+  "process_debt_not_waived": {
+    "author_elapsed_seconds": 344.7896659374237,
+    "author_target_seconds": 192,
+    "author_budget_overrun_not_waived": true,
+    "historical_initial_constructor_injection_and_fd_count_harness_failures_preserved": true,
+    "secondary_metadata_guard_tests_are_followup_regressions_not_separate_RED": true
+  },
+  "limits": [
+    "Caller-verified owned raw-prefix binding and immutable original-node closure remain caller contracts; shape validation conveys no source authority.",
+    "One-attempt close is not universal physical release; known physically held test descriptors are recovered only by the fixture harness.",
+    "Diagnostic allocation failure preserves origin and returned-store ownership status but universal constructor handoff under memory faults is explicitly not guaranteed.",
+    "Trusted same-UID boundary, inherited private-root helper limitations and 1 MiB MVP limit unchanged; no untrusted-Python sandbox or universal allocation/power-loss claim.",
+    "No source repairs, staging, dependencies installs, shared cache/state flags, raw existing journal reads, SQL, inference, provider activation, native/live effects, migration or adoption.",
+    "Parent owns final full-root check/audit and actual artifact verification. No full memory compliance or goal closure; literal-versus-scaled adoption unresolved and nine legacy conformance REDs remain."
+  ],
+  "source_modified": false,
+  "activation": false,
+  "artifacts": [
+    "/home/otto/.hermes/cache/scratch/optchat-view-store-repair1-independent-review/before.json",
+    "/home/otto/.hermes/cache/scratch/optchat-view-store-repair1-independent-review/after.json",
+    "/home/otto/.hermes/cache/scratch/optchat-view-store-repair1-independent-review/production.diff",
+    "/home/otto/.hermes/cache/scratch/optchat-view-store-repair1-independent-review/static-scan.json",
+    "/home/otto/.hermes/cache/scratch/optchat-view-store-repair1-independent-review/test_repair_review.py",
+    "/home/otto/.hermes/cache/scratch/optchat-view-store-repair1-independent-review/verify.py",
+    "/home/otto/.hermes/cache/scratch/optchat-view-store-repair1-independent-review/execution.json",
+    "/home/otto/.hermes/cache/scratch/optchat-view-store-repair1-independent-review/test-counts.json",
+    "/home/otto/.hermes/cache/scratch/optchat-view-store-repair1-independent-review/review.xml",
+    "/home/otto/.hermes/cache/scratch/optchat-view-store-repair1-independent-review/tests.log",
+    "/home/otto/.hermes/cache/scratch/optchat-view-store-repair1-independent-review/black.log",
+    "/home/otto/.hermes/cache/scratch/optchat-view-store-repair1-independent-review/ruff.log",
+    "/home/otto/.hermes/cache/scratch/optchat-view-store-repair1-independent-review/mypy.log",
+    "/home/otto/.hermes/cache/scratch/optchat-view-store-repair1-independent-review/xenon-whole.log",
+    "/home/otto/.hermes/cache/scratch/optchat-view-store-repair1-independent-review/duplicates-whole.log"
+  ],
+  "artifact_hashes": {
+    "/home/otto/.hermes/cache/scratch/optchat-view-store-repair1-independent-review/before.json": "515eb9e81ad6a8f528ed460403eaf5cc3a7ce3a4a62266af28560ebdb38ece8c",
+    "/home/otto/.hermes/cache/scratch/optchat-view-store-repair1-independent-review/after.json": "e700c89d0847cd595bc0bc734f6fddca0711a501aa63fd7f115fbaa9fbbede6d",
+    "/home/otto/.hermes/cache/scratch/optchat-view-store-repair1-independent-review/production.diff": "81344dc08ed840d4038b67ca324511275fc8d50b9c1ef651241a9f5443840321",
+    "/home/otto/.hermes/cache/scratch/optchat-view-store-repair1-independent-review/static-scan.json": "304c59ad2612e0091a2cc06a31e9c7d863cb364c92de5fda3155c84365810776",
+    "/home/otto/.hermes/cache/scratch/optchat-view-store-repair1-independent-review/test_repair_review.py": "7f989b1f3132f6914652ba78a452ae8a02e195f39b446af068e2133a2c2d7ca1",
+    "/home/otto/.hermes/cache/scratch/optchat-view-store-repair1-independent-review/verify.py": "669658970a5efec6fb6d7401db49098f3356d5a069208fe86f5f06f4863caf65",
+    "/home/otto/.hermes/cache/scratch/optchat-view-store-repair1-independent-review/execution.json": "0d2d5f5303da4d4fd4a8c7a1546f0ae1fc2bdaf898628296372bff6028d82d87",
+    "/home/otto/.hermes/cache/scratch/optchat-view-store-repair1-independent-review/test-counts.json": "71574628140ca08073c7f49b9afd7c83857370376efc7a62b5e9eb76a1b3c27c",
+    "/home/otto/.hermes/cache/scratch/optchat-view-store-repair1-independent-review/review.xml": "c40938226525bfbd72fa5211f9995782326b01efe695007e84dca0329da43360",
+    "/home/otto/.hermes/cache/scratch/optchat-view-store-repair1-independent-review/tests.log": "66e2d0ad462808b163c41f79cc4af679d6d9570747430eab49e0dc153bf44ac3",
+    "/home/otto/.hermes/cache/scratch/optchat-view-store-repair1-independent-review/black.log": "b9cf511501d306d2bd8355ccb165c8ddc0a6fdd62d7c72c4a7b1795cf8934c8c",
+    "/home/otto/.hermes/cache/scratch/optchat-view-store-repair1-independent-review/ruff.log": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+    "/home/otto/.hermes/cache/scratch/optchat-view-store-repair1-independent-review/mypy.log": "f9b031e5c45aa702cd4fef028d465551cb20a2c4698e0913c7b00766b20ac4d8",
+    "/home/otto/.hermes/cache/scratch/optchat-view-store-repair1-independent-review/xenon-whole.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/optchat-view-store-repair1-independent-review/duplicates-whole.log": "bbb6ffa7d7107b760478161908c009d3b85b078b80d54e3ad8dcd57bfe91a142"
+  },
+  "elapsed_since_before_freeze_seconds": 119.81522169899836
+}

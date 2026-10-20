@@ -1,0 +1,1037 @@
+{
+  "feature": "Criterion9 received encounter context vertical integration",
+  "status": "OFFLINE_INTEGRATION_GREEN",
+  "independent_approval": false,
+  "live_gameplay_acceptance": false,
+  "root_check_or_audit_run_by_delegate": false,
+  "owned_files": [
+    "src/robots/adapters/native_encounter_stream.py",
+    "src/robots/app/playing_runtime.py",
+    "src/robots/domain/model.py",
+    "src/robots/domain/decisions.py",
+    "tests/test_native_encounter_stream.py",
+    "tests/test_native_encounter_request.py",
+    "run/reviews/playing-mvp-native-encounter-request-integration.json"
+  ],
+  "original_source_sha256": {
+    "src/robots/app/playing_runtime.py": "c78eb0278e98de8eda5ef31544356164e74fea491bf540ab2da587a9d2d731f0",
+    "src/robots/domain/model.py": "ad311ac53e1d3a24bf7fe34cb96461b342d8f3ff12a2397d7d43725221538dbf",
+    "src/robots/domain/decisions.py": "fdbe5e0b4ea0e11a78746961873e168512613e5b6a252835aecb8700078dab3f",
+    "src/robots/adapters/native_encounter_context.py": "1bb5e71378d1f68a0bd54a2e294c85650cb1f4fcc25882648a57bfe8acdb7dc7",
+    "src/robots/adapters/native_gameplay.py": "c7e9f16750bf117ba3a4843264e215d2e653c0376c70acd7ac45e00a6b2100f9"
+  },
+  "final_source_sha256": {
+    "src/robots/adapters/native_encounter_stream.py": "fd67733cb31272183cff5bd049506c380654347a9d6daeb566f0e0c18cff2ee0",
+    "src/robots/app/playing_runtime.py": "fd1912b1e6282eceb2985c3736356dee50e286ef41081725fc0628ef49a28440",
+    "src/robots/domain/model.py": "de0fdb909243c97b7e1c1cf9cfd76501aa4d1f22be8eaed145f67db3a60b69e5",
+    "src/robots/domain/decisions.py": "13833517dc092fe4e58d0f2c62c6f32f1c15566032b57a02da1cdb2452fe9ff8",
+    "tests/test_native_encounter_stream.py": "7d8ad66b0d986b6c3fba464c362dde13ded578c90dfc6afe8a8ffe04c60c1f0d",
+    "tests/test_native_encounter_request.py": "c6ed3e22da2f6db62885c1033592b1b4df8a671cdd49b26e659c23264e6ee21f"
+  },
+  "unchanged_public_python_files_verified": 188,
+  "unauthorized_source_drift": [],
+  "approved_context_and_tracker_unchanged": true,
+  "pipeline": "PlayingClient._observe: health -> snapshot -> epoch reset -> existing full tracker validation -> ordered stream consuming tracker.view.damage -> metadata -> build_native_state -> copied BotState.recent_encounters -> copied optional Clef state.recent_encounters",
+  "baseline_authority": "require_native_session_progression with empty level mapping, matching selected character/class/selection-map-native epochs; selection sequence 0; no persona/status-latest/SQL baseline",
+  "ordered_updates": "Only raw ordered SELF B0 parameter11 updates; invalid count replaces old capture and leaves hit level null; live state progression guard still denies invalid received status",
+  "temporal_trace_actual_offline_request": {
+    "current_bot_level": 11,
+    "facts": [
+      {
+        "epoch": 1,
+        "sequence": 4,
+        "actor_id": 123,
+        "damage": 5,
+        "damage2": 0,
+        "species_id": 1002,
+        "species_sequence": 3,
+        "self_level_then": 10,
+        "level_sequence": 0,
+        "level_source": "selection",
+        "level_binding": "e985006/MAIN/preRE20180704/CHARACTER_INFO"
+      },
+      {
+        "epoch": 1,
+        "sequence": 6,
+        "actor_id": 123,
+        "damage": 7,
+        "damage2": 0,
+        "species_id": 1002,
+        "species_sequence": 3,
+        "self_level_then": 11,
+        "level_sequence": 5,
+        "level_source": "native_level11",
+        "level_binding": "e985006/MAIN/preRE20180704/0x00B0/11"
+      }
+    ],
+    "sends": [],
+    "moves": []
+  },
+  "budget_actual_offline_request": {
+    "input_hits": 20,
+    "retained_facts": 8,
+    "compact_utf8_bytes_including_provenance": 1849,
+    "limits": {
+      "facts": 8,
+      "compact_utf8_bytes": 2048
+    },
+    "source": "unchanged approved HitHistory",
+    "last_sequence": 23
+  },
+  "tdd_cycles": [
+    {
+      "red": "red1",
+      "green": "green1-fixed",
+      "behavior": "actual request missing history -> full species/self-hit/selected-level request"
+    },
+    {
+      "red": "red2",
+      "green": "green2",
+      "behavior": "coalesced hit-before-level/hit-after-level: first stays10, second captures11@5"
+    },
+    {
+      "red": "red3",
+      "green": "green3",
+      "behavior": "vanish/equal ID reuse requires fresh appearance, immutable old fact"
+    },
+    {
+      "red": "red4",
+      "green": "green4",
+      "behavior": "map boundary clears associations/windows but retains experience"
+    },
+    {
+      "red": "red5",
+      "green": "green5",
+      "behavior": "signed-negative/non-monster replacement appearance invalidates prior species join"
+    },
+    {
+      "red": "red6",
+      "green": "green6",
+      "behavior": "gap/malformed/stopped reader deny request and drop exposed stream"
+    },
+    {
+      "red": "red7",
+      "green": "green7",
+      "behavior": "close/reconnect resets history even if fake transport reuses epoch"
+    }
+  ],
+  "new_end_to_end_test_cases": 25,
+  "final_scoped_tests": {
+    "tests": 460,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "final_quality_labels": [
+    "final-scoped",
+    "final-black",
+    "final-ruff",
+    "final-mypy",
+    "final-xenon",
+    "final-dup"
+  ],
+  "physical_receipts": [
+    {
+      "label": "early-dup",
+      "command": [
+        "nix",
+        "develop",
+        "--offline",
+        "--no-write-lock-file",
+        "path:./spikes/007-native-packet-ast/toolchain",
+        "-c",
+        ".venv/bin/pylint",
+        "--disable=all",
+        "--enable=duplicate-code",
+        "--ignore-paths=tests",
+        "src"
+      ],
+      "exit_code": 0,
+      "seconds": 2.711220865996438,
+      "record_path": "/home/otto/.hermes/cache/scratch/encounter-request-integration/early-dup.json",
+      "log_path": "/home/otto/.hermes/cache/scratch/encounter-request-integration/early-dup.log",
+      "log_sha256": "8cbfc8cd0b04a4858b0b78b74c6df9631a1695e105e6911d4b57fbcc43b218b5"
+    },
+    {
+      "label": "early-xenon-fixed",
+      "command": [
+        "nix",
+        "develop",
+        "--offline",
+        "--no-write-lock-file",
+        "path:./spikes/007-native-packet-ast/toolchain",
+        "-c",
+        ".venv/bin/xenon",
+        "src",
+        "--max-absolute",
+        "B",
+        "--max-modules",
+        "B",
+        "--max-average",
+        "A"
+      ],
+      "exit_code": 0,
+      "seconds": 0.400948320995667,
+      "record_path": "/home/otto/.hermes/cache/scratch/encounter-request-integration/early-xenon-fixed.json",
+      "log_path": "/home/otto/.hermes/cache/scratch/encounter-request-integration/early-xenon-fixed.log",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "early-xenon",
+      "command": [
+        "nix",
+        "develop",
+        "--offline",
+        "--no-write-lock-file",
+        "path:./spikes/007-native-packet-ast/toolchain",
+        "-c",
+        ".venv/bin/xenon",
+        "src",
+        "--max-absolute",
+        "B",
+        "--max-modules",
+        "B",
+        "--max-average",
+        "A"
+      ],
+      "exit_code": 1,
+      "seconds": 0.37705659501079936,
+      "record_path": "/home/otto/.hermes/cache/scratch/encounter-request-integration/early-xenon.json",
+      "log_path": "/home/otto/.hermes/cache/scratch/encounter-request-integration/early-xenon.log",
+      "log_sha256": "050d543ab3b48dc7f79e2c2c305abbfaf0de47d2400a3f9127914919751fa6bd"
+    },
+    {
+      "label": "final-black",
+      "command": [
+        "nix",
+        "develop",
+        "--offline",
+        "--no-write-lock-file",
+        "path:./spikes/007-native-packet-ast/toolchain",
+        "-c",
+        ".venv/bin/black",
+        "--check",
+        "--workers",
+        "1",
+        "src/robots/adapters/native_encounter_stream.py",
+        "src/robots/app/playing_runtime.py",
+        "src/robots/domain/model.py",
+        "src/robots/domain/decisions.py",
+        "tests/test_native_encounter_stream.py",
+        "tests/test_native_encounter_request.py"
+      ],
+      "exit_code": 0,
+      "seconds": 0.2884523709944915,
+      "record_path": "/home/otto/.hermes/cache/scratch/encounter-request-integration/final-black.json",
+      "log_path": "/home/otto/.hermes/cache/scratch/encounter-request-integration/final-black.log",
+      "log_sha256": "7657c5ec367da2c8d4deead1b5f1f8eca9c1b89120ad13df7f855ca4005696b6"
+    },
+    {
+      "label": "final-dup",
+      "command": [
+        "nix",
+        "develop",
+        "--offline",
+        "--no-write-lock-file",
+        "path:./spikes/007-native-packet-ast/toolchain",
+        "-c",
+        ".venv/bin/pylint",
+        "--disable=all",
+        "--enable=duplicate-code",
+        "--ignore-paths=tests",
+        "src"
+      ],
+      "exit_code": 0,
+      "seconds": 2.4171132070041494,
+      "record_path": "/home/otto/.hermes/cache/scratch/encounter-request-integration/final-dup.json",
+      "log_path": "/home/otto/.hermes/cache/scratch/encounter-request-integration/final-dup.log",
+      "log_sha256": "8cbfc8cd0b04a4858b0b78b74c6df9631a1695e105e6911d4b57fbcc43b218b5"
+    },
+    {
+      "label": "final-mypy",
+      "command": [
+        "nix",
+        "develop",
+        "--offline",
+        "--no-write-lock-file",
+        "path:./spikes/007-native-packet-ast/toolchain",
+        "-c",
+        ".venv/bin/mypy",
+        "--cache-dir",
+        "/home/otto/.hermes/cache/scratch/encounter-request-integration/mypy-cache",
+        "src/robots/adapters/native_encounter_stream.py",
+        "src/robots/app/playing_runtime.py",
+        "src/robots/domain/model.py",
+        "src/robots/domain/decisions.py",
+        "tests/test_native_encounter_stream.py",
+        "tests/test_native_encounter_request.py"
+      ],
+      "exit_code": 0,
+      "seconds": 0.27007728700118605,
+      "record_path": "/home/otto/.hermes/cache/scratch/encounter-request-integration/final-mypy.json",
+      "log_path": "/home/otto/.hermes/cache/scratch/encounter-request-integration/final-mypy.log",
+      "log_sha256": "ab35ee42183d4d6d3ba483825ab037d18a5a15622d03be01d82220b1564851ff"
+    },
+    {
+      "label": "final-ruff",
+      "command": [
+        "nix",
+        "develop",
+        "--offline",
+        "--no-write-lock-file",
+        "path:./spikes/007-native-packet-ast/toolchain",
+        "-c",
+        ".venv/bin/ruff",
+        "check",
+        "src/robots/adapters/native_encounter_stream.py",
+        "src/robots/app/playing_runtime.py",
+        "src/robots/domain/model.py",
+        "src/robots/domain/decisions.py",
+        "tests/test_native_encounter_stream.py",
+        "tests/test_native_encounter_request.py"
+      ],
+      "exit_code": 0,
+      "seconds": 0.13638870300201233,
+      "record_path": "/home/otto/.hermes/cache/scratch/encounter-request-integration/final-ruff.json",
+      "log_path": "/home/otto/.hermes/cache/scratch/encounter-request-integration/final-ruff.log",
+      "log_sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
+    },
+    {
+      "label": "final-scoped",
+      "command": [
+        "nix",
+        "develop",
+        "--offline",
+        "--no-write-lock-file",
+        "path:./spikes/007-native-packet-ast/toolchain",
+        "-c",
+        ".venv/bin/pytest",
+        "tests/test_native_encounter_request.py",
+        "tests/test_native_encounter_stream.py",
+        "tests/test_native_encounter_context.py",
+        "tests/test_native_gameplay.py",
+        "tests/test_native_gameplay_repairs.py",
+        "tests/test_native_progression.py",
+        "tests/test_native_session_progression.py",
+        "tests/test_client_native_progression.py",
+        "tests/test_playing_runtime.py",
+        "tests/test_native_pose_recovery.py",
+        "tests/test_native_rest_interrupt.py",
+        "tests/test_native_playing_keepalive.py",
+        "tests/test_native_chat_text.py",
+        "tests/test_playing_backends.py",
+        "-v",
+        "--basetemp=/home/otto/.hermes/cache/scratch/encounter-request-integration/final-scoped-tmp",
+        "--junitxml=/home/otto/.hermes/cache/scratch/encounter-request-integration/final-scoped.xml",
+        "-o",
+        "cache_dir=/home/otto/.hermes/cache/scratch/encounter-request-integration/pytest-cache"
+      ],
+      "exit_code": 0,
+      "seconds": 1.3684729970118497,
+      "record_path": "/home/otto/.hermes/cache/scratch/encounter-request-integration/final-scoped.json",
+      "log_path": "/home/otto/.hermes/cache/scratch/encounter-request-integration/final-scoped.log",
+      "log_sha256": "f9ae338ecb978d0e9d100a7a8e11871770e4da6f64ef85b5db7970cbc3374988",
+      "xml_path": "/home/otto/.hermes/cache/scratch/encounter-request-integration/final-scoped.xml",
+      "xml_sha256": "75e663ee0ae67767a851ef3576ae7743e231039e0ccd4f7a8f68e2522a9496b3",
+      "counts": {
+        "tests": 460,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      }
+    },
+    {
+      "label": "final-xenon",
+      "command": [
+        "nix",
+        "develop",
+        "--offline",
+        "--no-write-lock-file",
+        "path:./spikes/007-native-packet-ast/toolchain",
+        "-c",
+        ".venv/bin/xenon",
+        "src",
+        "--max-absolute",
+        "B",
+        "--max-modules",
+        "B",
+        "--max-average",
+        "A"
+      ],
+      "exit_code": 0,
+      "seconds": 0.382146425996325,
+      "record_path": "/home/otto/.hermes/cache/scratch/encounter-request-integration/final-xenon.json",
+      "log_path": "/home/otto/.hermes/cache/scratch/encounter-request-integration/final-xenon.log",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "format-owned",
+      "command": [
+        "nix",
+        "develop",
+        "--offline",
+        "--no-write-lock-file",
+        "path:./spikes/007-native-packet-ast/toolchain",
+        "-c",
+        ".venv/bin/black",
+        "--workers",
+        "1",
+        "src/robots/adapters/native_encounter_stream.py",
+        "src/robots/app/playing_runtime.py",
+        "src/robots/domain/model.py",
+        "src/robots/domain/decisions.py",
+        "tests/test_native_encounter_stream.py",
+        "tests/test_native_encounter_request.py"
+      ],
+      "exit_code": 0,
+      "seconds": 0.5508373209886486,
+      "record_path": "/home/otto/.hermes/cache/scratch/encounter-request-integration/format-owned.json",
+      "log_path": "/home/otto/.hermes/cache/scratch/encounter-request-integration/format-owned.log",
+      "log_sha256": "9beb9188937206810d6fd3b417242e5e2b8845193c3cd4d45268c524b41e6163"
+    },
+    {
+      "label": "green1-fixed",
+      "command": [
+        "nix",
+        "develop",
+        "--offline",
+        "--no-write-lock-file",
+        "path:./spikes/007-native-packet-ast/toolchain",
+        "-c",
+        ".venv/bin/pytest",
+        "tests/test_native_encounter_request.py",
+        "tests/test_playing_runtime.py",
+        "-v",
+        "--basetemp=/home/otto/.hermes/cache/scratch/encounter-request-integration/green1-fixed-tmp",
+        "--junitxml=/home/otto/.hermes/cache/scratch/encounter-request-integration/green1-fixed.xml",
+        "-o",
+        "cache_dir=/home/otto/.hermes/cache/scratch/encounter-request-integration/pytest-cache"
+      ],
+      "exit_code": 0,
+      "seconds": 1.251354038991849,
+      "record_path": "/home/otto/.hermes/cache/scratch/encounter-request-integration/green1-fixed.json",
+      "log_path": "/home/otto/.hermes/cache/scratch/encounter-request-integration/green1-fixed.log",
+      "log_sha256": "2acff1b81887729681433cffc40e3cbeefd9e16f800587e7d3893c573406fa6b",
+      "xml_path": "/home/otto/.hermes/cache/scratch/encounter-request-integration/green1-fixed.xml",
+      "xml_sha256": "5a31766e98408106d846e683ccb8da65f91d8328187a5d6443f6e1dc0dda3234",
+      "counts": {
+        "tests": 92,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      }
+    },
+    {
+      "label": "green1",
+      "command": [
+        "nix",
+        "develop",
+        "--offline",
+        "--no-write-lock-file",
+        "path:./spikes/007-native-packet-ast/toolchain",
+        "-c",
+        ".venv/bin/pytest",
+        "tests/test_native_encounter_request.py",
+        "tests/test_playing_runtime.py",
+        "-v",
+        "--basetemp=/home/otto/.hermes/cache/scratch/encounter-request-integration/green1-tmp",
+        "--junitxml=/home/otto/.hermes/cache/scratch/encounter-request-integration/green1.xml",
+        "-o",
+        "cache_dir=/home/otto/.hermes/cache/scratch/encounter-request-integration/pytest-cache"
+      ],
+      "exit_code": 1,
+      "seconds": 1.0956479979940923,
+      "record_path": "/home/otto/.hermes/cache/scratch/encounter-request-integration/green1.json",
+      "log_path": "/home/otto/.hermes/cache/scratch/encounter-request-integration/green1.log",
+      "log_sha256": "be6ddd45dd0bbef1dbe30db0c033865717031cfc8c763a59276567dcf9632cc4",
+      "xml_path": "/home/otto/.hermes/cache/scratch/encounter-request-integration/green1.xml",
+      "xml_sha256": "eb9085bf589c0a8e028ac88a0addd2069dd18664ff2df93881e165d4dc197e50",
+      "counts": {
+        "tests": 92,
+        "failures": 1,
+        "errors": 0,
+        "skipped": 0
+      }
+    },
+    {
+      "label": "green2",
+      "command": [
+        "nix",
+        "develop",
+        "--offline",
+        "--no-write-lock-file",
+        "path:./spikes/007-native-packet-ast/toolchain",
+        "-c",
+        ".venv/bin/pytest",
+        "tests/test_native_encounter_request.py",
+        "tests/test_playing_runtime.py",
+        "-v",
+        "--basetemp=/home/otto/.hermes/cache/scratch/encounter-request-integration/green2-tmp",
+        "--junitxml=/home/otto/.hermes/cache/scratch/encounter-request-integration/green2.xml",
+        "-o",
+        "cache_dir=/home/otto/.hermes/cache/scratch/encounter-request-integration/pytest-cache"
+      ],
+      "exit_code": 0,
+      "seconds": 1.1543598090065643,
+      "record_path": "/home/otto/.hermes/cache/scratch/encounter-request-integration/green2.json",
+      "log_path": "/home/otto/.hermes/cache/scratch/encounter-request-integration/green2.log",
+      "log_sha256": "ad8913b4cdf2125f403504ee690bfda367c79b3f42a135934addfc7143addd1b",
+      "xml_path": "/home/otto/.hermes/cache/scratch/encounter-request-integration/green2.xml",
+      "xml_sha256": "7fe6070aefa0e9008613349f8959d1cb89f57b66ade25997478c1ff12092c9b5",
+      "counts": {
+        "tests": 93,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      }
+    },
+    {
+      "label": "green3",
+      "command": [
+        "nix",
+        "develop",
+        "--offline",
+        "--no-write-lock-file",
+        "path:./spikes/007-native-packet-ast/toolchain",
+        "-c",
+        ".venv/bin/pytest",
+        "tests/test_native_encounter_request.py",
+        "tests/test_native_encounter_stream.py",
+        "-v",
+        "--basetemp=/home/otto/.hermes/cache/scratch/encounter-request-integration/green3-tmp",
+        "--junitxml=/home/otto/.hermes/cache/scratch/encounter-request-integration/green3.xml",
+        "-o",
+        "cache_dir=/home/otto/.hermes/cache/scratch/encounter-request-integration/pytest-cache"
+      ],
+      "exit_code": 0,
+      "seconds": 0.7508605729963165,
+      "record_path": "/home/otto/.hermes/cache/scratch/encounter-request-integration/green3.json",
+      "log_path": "/home/otto/.hermes/cache/scratch/encounter-request-integration/green3.log",
+      "log_sha256": "2c4d2b8d87af1078497eb7a82d1fa457930eb48f5fdbdb4b9ee5277cc229a240",
+      "xml_path": "/home/otto/.hermes/cache/scratch/encounter-request-integration/green3.xml",
+      "xml_sha256": "a19c0f1f1c838ec79ba2bf7c2820d374bcf7233d8d41f2a85fc0be1d31fa018f",
+      "counts": {
+        "tests": 3,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      }
+    },
+    {
+      "label": "green4",
+      "command": [
+        "nix",
+        "develop",
+        "--offline",
+        "--no-write-lock-file",
+        "path:./spikes/007-native-packet-ast/toolchain",
+        "-c",
+        ".venv/bin/pytest",
+        "tests/test_native_encounter_request.py",
+        "tests/test_native_encounter_stream.py",
+        "-v",
+        "--basetemp=/home/otto/.hermes/cache/scratch/encounter-request-integration/green4-tmp",
+        "--junitxml=/home/otto/.hermes/cache/scratch/encounter-request-integration/green4.xml",
+        "-o",
+        "cache_dir=/home/otto/.hermes/cache/scratch/encounter-request-integration/pytest-cache"
+      ],
+      "exit_code": 0,
+      "seconds": 0.8056183289882028,
+      "record_path": "/home/otto/.hermes/cache/scratch/encounter-request-integration/green4.json",
+      "log_path": "/home/otto/.hermes/cache/scratch/encounter-request-integration/green4.log",
+      "log_sha256": "f65bccce66553e8649884fc24f3f24fb996a990f7b481c0a1ce60454c212244f",
+      "xml_path": "/home/otto/.hermes/cache/scratch/encounter-request-integration/green4.xml",
+      "xml_sha256": "16aadd52e02aceed2b3e987f5a4e1bbb9d9935f66baa86dfe300bc3379dc0193",
+      "counts": {
+        "tests": 4,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      }
+    },
+    {
+      "label": "green5",
+      "command": [
+        "nix",
+        "develop",
+        "--offline",
+        "--no-write-lock-file",
+        "path:./spikes/007-native-packet-ast/toolchain",
+        "-c",
+        ".venv/bin/pytest",
+        "tests/test_native_encounter_request.py",
+        "tests/test_native_encounter_stream.py",
+        "-v",
+        "--basetemp=/home/otto/.hermes/cache/scratch/encounter-request-integration/green5-tmp",
+        "--junitxml=/home/otto/.hermes/cache/scratch/encounter-request-integration/green5.xml",
+        "-o",
+        "cache_dir=/home/otto/.hermes/cache/scratch/encounter-request-integration/pytest-cache"
+      ],
+      "exit_code": 0,
+      "seconds": 0.8566218610067153,
+      "record_path": "/home/otto/.hermes/cache/scratch/encounter-request-integration/green5.json",
+      "log_path": "/home/otto/.hermes/cache/scratch/encounter-request-integration/green5.log",
+      "log_sha256": "732b0718e65fdd9ab589a15a02a86986ffdfc3fc032cb2c31684d728b9b73e0e",
+      "xml_path": "/home/otto/.hermes/cache/scratch/encounter-request-integration/green5.xml",
+      "xml_sha256": "e5413e6b901b223e8835633c6fbcb352a680cf0e1cd8e1f16fb6a3a8b690486a",
+      "counts": {
+        "tests": 7,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      }
+    },
+    {
+      "label": "green6",
+      "command": [
+        "nix",
+        "develop",
+        "--offline",
+        "--no-write-lock-file",
+        "path:./spikes/007-native-packet-ast/toolchain",
+        "-c",
+        ".venv/bin/pytest",
+        "tests/test_native_encounter_request.py",
+        "tests/test_native_encounter_stream.py",
+        "tests/test_playing_runtime.py",
+        "-v",
+        "--basetemp=/home/otto/.hermes/cache/scratch/encounter-request-integration/green6-tmp",
+        "--junitxml=/home/otto/.hermes/cache/scratch/encounter-request-integration/green6.xml",
+        "-o",
+        "cache_dir=/home/otto/.hermes/cache/scratch/encounter-request-integration/pytest-cache"
+      ],
+      "exit_code": 0,
+      "seconds": 1.0705917930026772,
+      "record_path": "/home/otto/.hermes/cache/scratch/encounter-request-integration/green6.json",
+      "log_path": "/home/otto/.hermes/cache/scratch/encounter-request-integration/green6.log",
+      "log_sha256": "078ea45e4b61222831e7c32fb88565c08ae219834cf4ae57895ea796b245f98a",
+      "xml_path": "/home/otto/.hermes/cache/scratch/encounter-request-integration/green6.xml",
+      "xml_sha256": "1fefb1b528fb8d3bf1a31a8bf0b43c6ba0509f61803f6620579d3769f5eef306",
+      "counts": {
+        "tests": 101,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      }
+    },
+    {
+      "label": "green7",
+      "command": [
+        "nix",
+        "develop",
+        "--offline",
+        "--no-write-lock-file",
+        "path:./spikes/007-native-packet-ast/toolchain",
+        "-c",
+        ".venv/bin/pytest",
+        "tests/test_native_encounter_request.py",
+        "tests/test_native_encounter_stream.py",
+        "tests/test_playing_runtime.py",
+        "-v",
+        "--basetemp=/home/otto/.hermes/cache/scratch/encounter-request-integration/green7-tmp",
+        "--junitxml=/home/otto/.hermes/cache/scratch/encounter-request-integration/green7.xml",
+        "-o",
+        "cache_dir=/home/otto/.hermes/cache/scratch/encounter-request-integration/pytest-cache"
+      ],
+      "exit_code": 0,
+      "seconds": 1.0368021649919683,
+      "record_path": "/home/otto/.hermes/cache/scratch/encounter-request-integration/green7.json",
+      "log_path": "/home/otto/.hermes/cache/scratch/encounter-request-integration/green7.log",
+      "log_sha256": "5f6b0c7c6c683786d39dddd73cc87eb0e61c1a1a7b925405f29c98d7075a429b",
+      "xml_path": "/home/otto/.hermes/cache/scratch/encounter-request-integration/green7.xml",
+      "xml_sha256": "1977ff5f3cd4a37a32de48270384b5bd5144d71061c00dba439ce3f4c191dd74",
+      "counts": {
+        "tests": 102,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      }
+    },
+    {
+      "label": "invariant-tests",
+      "command": [
+        "nix",
+        "develop",
+        "--offline",
+        "--no-write-lock-file",
+        "path:./spikes/007-native-packet-ast/toolchain",
+        "-c",
+        ".venv/bin/pytest",
+        "tests/test_native_encounter_request.py",
+        "tests/test_native_encounter_stream.py",
+        "-v",
+        "--basetemp=/home/otto/.hermes/cache/scratch/encounter-request-integration/invariant-tests-tmp",
+        "--junitxml=/home/otto/.hermes/cache/scratch/encounter-request-integration/invariant-tests.xml",
+        "-o",
+        "cache_dir=/home/otto/.hermes/cache/scratch/encounter-request-integration/pytest-cache"
+      ],
+      "exit_code": 0,
+      "seconds": 0.9411593389959307,
+      "record_path": "/home/otto/.hermes/cache/scratch/encounter-request-integration/invariant-tests.json",
+      "log_path": "/home/otto/.hermes/cache/scratch/encounter-request-integration/invariant-tests.log",
+      "log_sha256": "9c020316a7b892443d95d5763036a22b619352c016d7ecd3be905a1ef56e57f7",
+      "xml_path": "/home/otto/.hermes/cache/scratch/encounter-request-integration/invariant-tests.xml",
+      "xml_sha256": "bc2d5077dfa0a35dc5f154845536ef508a71189afb5518a3e4202ad7b1a13911",
+      "counts": {
+        "tests": 25,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      }
+    },
+    {
+      "label": "lint-owned",
+      "command": [
+        "nix",
+        "develop",
+        "--offline",
+        "--no-write-lock-file",
+        "path:./spikes/007-native-packet-ast/toolchain",
+        "-c",
+        ".venv/bin/ruff",
+        "check",
+        "src/robots/adapters/native_encounter_stream.py",
+        "src/robots/app/playing_runtime.py",
+        "src/robots/domain/model.py",
+        "src/robots/domain/decisions.py",
+        "tests/test_native_encounter_stream.py",
+        "tests/test_native_encounter_request.py"
+      ],
+      "exit_code": 1,
+      "seconds": 0.13829188099771272,
+      "record_path": "/home/otto/.hermes/cache/scratch/encounter-request-integration/lint-owned.json",
+      "log_path": "/home/otto/.hermes/cache/scratch/encounter-request-integration/lint-owned.log",
+      "log_sha256": "d4911b0870ef45ce62e2c7f7f9c21e514600f6700d67b27623b743014f2ef1df"
+    },
+    {
+      "label": "mid-xenon",
+      "command": [
+        "nix",
+        "develop",
+        "--offline",
+        "--no-write-lock-file",
+        "path:./spikes/007-native-packet-ast/toolchain",
+        "-c",
+        ".venv/bin/xenon",
+        "src",
+        "--max-absolute",
+        "B",
+        "--max-modules",
+        "B",
+        "--max-average",
+        "A"
+      ],
+      "exit_code": 1,
+      "seconds": 0.4586743760009995,
+      "record_path": "/home/otto/.hermes/cache/scratch/encounter-request-integration/mid-xenon.json",
+      "log_path": "/home/otto/.hermes/cache/scratch/encounter-request-integration/mid-xenon.log",
+      "log_sha256": "d96c11d9c618f4a34dffbc214ee12d9375a3cae893f12bfde2a1ff8e266cf0cc"
+    },
+    {
+      "label": "red1",
+      "command": [
+        "nix",
+        "develop",
+        "--offline",
+        "--no-write-lock-file",
+        "path:./spikes/007-native-packet-ast/toolchain",
+        "-c",
+        ".venv/bin/pytest",
+        "tests/test_native_encounter_request.py",
+        "-v",
+        "--basetemp=/home/otto/.hermes/cache/scratch/encounter-request-integration/red1-tmp",
+        "--junitxml=/home/otto/.hermes/cache/scratch/encounter-request-integration/red1.xml",
+        "-o",
+        "cache_dir=/home/otto/.hermes/cache/scratch/encounter-request-integration/pytest-cache"
+      ],
+      "exit_code": 1,
+      "seconds": 0.8017677640018519,
+      "record_path": "/home/otto/.hermes/cache/scratch/encounter-request-integration/red1.json",
+      "log_path": "/home/otto/.hermes/cache/scratch/encounter-request-integration/red1.log",
+      "log_sha256": "b0d99cd3aceb1843d99f379e53ab86f5becacd07acce74df334448025f36a2ba",
+      "xml_path": "/home/otto/.hermes/cache/scratch/encounter-request-integration/red1.xml",
+      "xml_sha256": "7584ca863a239c84cb1206f35bdef7728570d742f276aa947237bb20fb3e8ee4",
+      "counts": {
+        "tests": 1,
+        "failures": 1,
+        "errors": 0,
+        "skipped": 0
+      }
+    },
+    {
+      "label": "red2",
+      "command": [
+        "nix",
+        "develop",
+        "--offline",
+        "--no-write-lock-file",
+        "path:./spikes/007-native-packet-ast/toolchain",
+        "-c",
+        ".venv/bin/pytest",
+        "tests/test_native_encounter_request.py::test_coalesced_future_level_never_rewrites_earlier_hit",
+        "-v",
+        "--basetemp=/home/otto/.hermes/cache/scratch/encounter-request-integration/red2-tmp",
+        "--junitxml=/home/otto/.hermes/cache/scratch/encounter-request-integration/red2.xml",
+        "-o",
+        "cache_dir=/home/otto/.hermes/cache/scratch/encounter-request-integration/pytest-cache"
+      ],
+      "exit_code": 1,
+      "seconds": 1.015568748000078,
+      "record_path": "/home/otto/.hermes/cache/scratch/encounter-request-integration/red2.json",
+      "log_path": "/home/otto/.hermes/cache/scratch/encounter-request-integration/red2.log",
+      "log_sha256": "b2774645700810de3f2a4c189cec6544afcd386aeb6e934a56829940d9ef293b",
+      "xml_path": "/home/otto/.hermes/cache/scratch/encounter-request-integration/red2.xml",
+      "xml_sha256": "7f841119bd03003ae36b172dab9b61717a476ec93c91a058d626e8b74ac82033",
+      "counts": {
+        "tests": 1,
+        "failures": 1,
+        "errors": 0,
+        "skipped": 0
+      }
+    },
+    {
+      "label": "red3",
+      "command": [
+        "nix",
+        "develop",
+        "--offline",
+        "--no-write-lock-file",
+        "path:./spikes/007-native-packet-ast/toolchain",
+        "-c",
+        ".venv/bin/pytest",
+        "tests/test_native_encounter_stream.py",
+        "-v",
+        "--basetemp=/home/otto/.hermes/cache/scratch/encounter-request-integration/red3-tmp",
+        "--junitxml=/home/otto/.hermes/cache/scratch/encounter-request-integration/red3.xml",
+        "-o",
+        "cache_dir=/home/otto/.hermes/cache/scratch/encounter-request-integration/pytest-cache"
+      ],
+      "exit_code": 1,
+      "seconds": 0.8185981040005572,
+      "record_path": "/home/otto/.hermes/cache/scratch/encounter-request-integration/red3.json",
+      "log_path": "/home/otto/.hermes/cache/scratch/encounter-request-integration/red3.log",
+      "log_sha256": "3824c14543d968eb19d93bb6561c07555f475fbc422d06deb3207396fbf6b12d",
+      "xml_path": "/home/otto/.hermes/cache/scratch/encounter-request-integration/red3.xml",
+      "xml_sha256": "7d2199d02762a2b34bd437a817c8e2775488e41f951155492ddffb1fa47a9109",
+      "counts": {
+        "tests": 1,
+        "failures": 1,
+        "errors": 0,
+        "skipped": 0
+      }
+    },
+    {
+      "label": "red4",
+      "command": [
+        "nix",
+        "develop",
+        "--offline",
+        "--no-write-lock-file",
+        "path:./spikes/007-native-packet-ast/toolchain",
+        "-c",
+        ".venv/bin/pytest",
+        "tests/test_native_encounter_stream.py::test_map_change_clears_joins_not_immutable_experience",
+        "-v",
+        "--basetemp=/home/otto/.hermes/cache/scratch/encounter-request-integration/red4-tmp",
+        "--junitxml=/home/otto/.hermes/cache/scratch/encounter-request-integration/red4.xml",
+        "-o",
+        "cache_dir=/home/otto/.hermes/cache/scratch/encounter-request-integration/pytest-cache"
+      ],
+      "exit_code": 1,
+      "seconds": 0.8784856169950217,
+      "record_path": "/home/otto/.hermes/cache/scratch/encounter-request-integration/red4.json",
+      "log_path": "/home/otto/.hermes/cache/scratch/encounter-request-integration/red4.log",
+      "log_sha256": "ef7822b74a1f8500270e64b5ee8714a981807e4f7ea02c314b90c73919fe92fc",
+      "xml_path": "/home/otto/.hermes/cache/scratch/encounter-request-integration/red4.xml",
+      "xml_sha256": "a23da08191f735eb07b19175d23458a1a61a0098373aecd772cbaf98e2659eaf",
+      "counts": {
+        "tests": 1,
+        "failures": 1,
+        "errors": 0,
+        "skipped": 0
+      }
+    },
+    {
+      "label": "red5",
+      "command": [
+        "nix",
+        "develop",
+        "--offline",
+        "--no-write-lock-file",
+        "path:./spikes/007-native-packet-ast/toolchain",
+        "-c",
+        ".venv/bin/pytest",
+        "tests/test_native_encounter_stream.py::test_non_species_appearance_invalidates_old_join",
+        "-v",
+        "--basetemp=/home/otto/.hermes/cache/scratch/encounter-request-integration/red5-tmp",
+        "--junitxml=/home/otto/.hermes/cache/scratch/encounter-request-integration/red5.xml",
+        "-o",
+        "cache_dir=/home/otto/.hermes/cache/scratch/encounter-request-integration/pytest-cache"
+      ],
+      "exit_code": 1,
+      "seconds": 0.7713405350077664,
+      "record_path": "/home/otto/.hermes/cache/scratch/encounter-request-integration/red5.json",
+      "log_path": "/home/otto/.hermes/cache/scratch/encounter-request-integration/red5.log",
+      "log_sha256": "dc156760a6d1ff30727bbc54f3532e32a1fc463836df5df895e3f00d53309396",
+      "xml_path": "/home/otto/.hermes/cache/scratch/encounter-request-integration/red5.xml",
+      "xml_sha256": "0b1d5003a1ef8760852716a965707c031420c0af610e6c182a1eac017059a703",
+      "counts": {
+        "tests": 3,
+        "failures": 3,
+        "errors": 0,
+        "skipped": 0
+      }
+    },
+    {
+      "label": "red6",
+      "command": [
+        "nix",
+        "develop",
+        "--offline",
+        "--no-write-lock-file",
+        "path:./spikes/007-native-packet-ast/toolchain",
+        "-c",
+        ".venv/bin/pytest",
+        "tests/test_native_encounter_stream.py::test_native_safety_denies_request_and_invalidates_stream",
+        "-v",
+        "--basetemp=/home/otto/.hermes/cache/scratch/encounter-request-integration/red6-tmp",
+        "--junitxml=/home/otto/.hermes/cache/scratch/encounter-request-integration/red6.xml",
+        "-o",
+        "cache_dir=/home/otto/.hermes/cache/scratch/encounter-request-integration/pytest-cache"
+      ],
+      "exit_code": 1,
+      "seconds": 0.9198616779904114,
+      "record_path": "/home/otto/.hermes/cache/scratch/encounter-request-integration/red6.json",
+      "log_path": "/home/otto/.hermes/cache/scratch/encounter-request-integration/red6.log",
+      "log_sha256": "7b0d0edd90c9fa9963e8f2275adc7c7c73a94a4a1e6d968f9a94f7c682ffcc6b",
+      "xml_path": "/home/otto/.hermes/cache/scratch/encounter-request-integration/red6.xml",
+      "xml_sha256": "588965295e72531fec34bcb9674a995f1a76cd9c6b632e8ea85f83e7f958b7fb",
+      "counts": {
+        "tests": 3,
+        "failures": 3,
+        "errors": 0,
+        "skipped": 0
+      }
+    },
+    {
+      "label": "red7",
+      "command": [
+        "nix",
+        "develop",
+        "--offline",
+        "--no-write-lock-file",
+        "path:./spikes/007-native-packet-ast/toolchain",
+        "-c",
+        ".venv/bin/pytest",
+        "tests/test_native_encounter_stream.py::test_close_reconnect_discards_history_even_with_reused_epoch",
+        "-v",
+        "--basetemp=/home/otto/.hermes/cache/scratch/encounter-request-integration/red7-tmp",
+        "--junitxml=/home/otto/.hermes/cache/scratch/encounter-request-integration/red7.xml",
+        "-o",
+        "cache_dir=/home/otto/.hermes/cache/scratch/encounter-request-integration/pytest-cache"
+      ],
+      "exit_code": 1,
+      "seconds": 0.8661219109926606,
+      "record_path": "/home/otto/.hermes/cache/scratch/encounter-request-integration/red7.json",
+      "log_path": "/home/otto/.hermes/cache/scratch/encounter-request-integration/red7.log",
+      "log_sha256": "6491838591c52a3955341d1b1af71421703fb19c4d08033103fa80278f878148",
+      "xml_path": "/home/otto/.hermes/cache/scratch/encounter-request-integration/red7.xml",
+      "xml_sha256": "9fa7d356274e8baaa754b3dee8f8be26ac4933a89f350d7ff09cc4ecb755aeb4",
+      "counts": {
+        "tests": 1,
+        "failures": 1,
+        "errors": 0,
+        "skipped": 0
+      }
+    },
+    {
+      "label": "refactor-xenon",
+      "command": [
+        "nix",
+        "develop",
+        "--offline",
+        "--no-write-lock-file",
+        "path:./spikes/007-native-packet-ast/toolchain",
+        "-c",
+        ".venv/bin/xenon",
+        "src",
+        "--max-absolute",
+        "B",
+        "--max-modules",
+        "B",
+        "--max-average",
+        "A"
+      ],
+      "exit_code": 0,
+      "seconds": 0.39022677300090436,
+      "record_path": "/home/otto/.hermes/cache/scratch/encounter-request-integration/refactor-xenon.json",
+      "log_path": "/home/otto/.hermes/cache/scratch/encounter-request-integration/refactor-xenon.log",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "types-owned",
+      "command": [
+        "nix",
+        "develop",
+        "--offline",
+        "--no-write-lock-file",
+        "path:./spikes/007-native-packet-ast/toolchain",
+        "-c",
+        ".venv/bin/mypy",
+        "--cache-dir",
+        "/home/otto/.hermes/cache/scratch/encounter-request-integration/mypy-cache",
+        "src/robots/adapters/native_encounter_stream.py",
+        "src/robots/app/playing_runtime.py",
+        "src/robots/domain/model.py",
+        "src/robots/domain/decisions.py",
+        "tests/test_native_encounter_stream.py",
+        "tests/test_native_encounter_request.py"
+      ],
+      "exit_code": 0,
+      "seconds": 3.0397030120075215,
+      "record_path": "/home/otto/.hermes/cache/scratch/encounter-request-integration/types-owned.json",
+      "log_path": "/home/otto/.hermes/cache/scratch/encounter-request-integration/types-owned.log",
+      "log_sha256": "ab35ee42183d4d6d3ba483825ab037d18a5a15622d03be01d82220b1564851ff"
+    }
+  ],
+  "additional_green_regressions": [
+    "future appearance cannot retrojoin",
+    "unmatched selection leaves level null",
+    "invalid received level never restores baseline",
+    "new epoch resets level/history/species",
+    "peer/NPC/heal/SP/sit/stand do not become SELF HP-hit facts",
+    "duplicate getters and request/state dictionaries do not alias retained records",
+    "two bot objects do not share experience",
+    "tracker-evicted damage is not parsed again or invented",
+    "whole old request except optional history remains equal including exact vitals, memory, inventory and questions"
+  ],
+  "encounter_boundaries": "Vanish invalidates own actor window; new appearance replaces join; map clears current joins/windows only; close/connect/epoch clears history; health or continuity denial drops stream. Gap remains poisoned by existing tracker until new epoch.",
+  "issues_preserved": [
+    "First GREEN regression exposed invalid epoch0 helper ValueError; fixed without weakening old NativeTelemetryUnavailable assertion",
+    "Initial whole-source Xenon found Clef builder rankC; extracted narrow optional payload hook, unchanged thresholds",
+    "Intermediate stream consume rankC; split ordered observation and capture responsibilities without behavior changes",
+    "Ruff PT018 combined test assertions split; all final strict checks pass"
+  ],
+  "remaining_blockers": [],
+  "remaining_acceptance_work_owned_by_parent": [
+    "independent frozen-source review",
+    "configured root check and audit",
+    "separately authorized actual native SELF-hit request receipt/gameplay acceptance"
+  ],
+  "limits": [
+    "Synthetic source-shaped Wire frames and selection, not live native evidence",
+    "Current-session bounded experience, not durable memory",
+    "NativeGameplayTracker retained damage can omit earlier batch hits; stream never invents them",
+    "Domain scalar dictionaries are detached copies, not recursively immutable user data",
+    "No added stats/skills/gear truth, name/class corrections, guide wiring, provider questions or mechanics authority"
+  ],
+  "effects": {
+    "native_actions": false,
+    "model_calls": false,
+    "network": false,
+    "SQL": false,
+    "services": false,
+    "Git": false,
+    "historical_receipts_overwritten": false
+  }
+}

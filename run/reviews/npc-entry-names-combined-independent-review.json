@@ -1,0 +1,278 @@
+{
+  "schema": "npc-entry-names-combined-independent-review/v1",
+  "verdict": "BOUNDED_OFFLINE_COMBINED_SNAPSHOT_PASS",
+  "blocking_findings": [],
+  "scope": "Finite completed-source review: NPC received-name retention, safe cached diagnostics, exact source evolution and repository-local test locators. No live effects.",
+  "freeze": {
+    "path": ".work/npc-entry-names/parent-combined-review-freeze.json",
+    "sha256": "8e5592a52803117f9197bd741d4c0451691ed20fa50a1ba476816125569cd78d",
+    "entries": 266,
+    "drift_before": [],
+    "drift_after": []
+  },
+  "independent_tests": {
+    "command": [
+      ".venv/bin/python",
+      "-B",
+      "-m",
+      "pytest",
+      "-q",
+      "-o",
+      "addopts=",
+      "-p",
+      "no:cacheprovider",
+      "--junitxml=.work/npc-entry-names-independent-review/combined.xml",
+      "tests/test_native_entry_npc_names.py",
+      ".work/npc-entry-names/test_pilot_projection.py",
+      ".work/npc-startup-safe-diagnostics/test_cached_readiness.py",
+      ".work/npc-entry-names/test_source_evolution.py"
+    ],
+    "exit": 0,
+    "output": ".................................................                        [100%]\n49 passed in 0.34s\n",
+    "receipt": {
+      "sha256": "de2fa995005ad55d7847074d802ec89378cd24fd035184ef7c1022e38b18e7bf",
+      "total": 49,
+      "unique": 49,
+      "failed": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "exact_parent_ids_match": true
+  },
+  "independent_receipt_path": ".work/npc-entry-names-independent-review/combined.xml",
+  "receipt_registry_verified": 7,
+  "receipts": {
+    ".work/npc-entry-names/parent-final-combined.xml": {
+      "sha256": "de9722416b90243a2c7bd4a3c8a4cb8a4eac256ffdf43636c7debd014e1f4bab",
+      "total": 49,
+      "unique": 49,
+      "failed": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    ".work/npc-entry-names/source-evolution-red.xml": {
+      "sha256": "10eee495937a58db358292119b1f0cc71afbd7431b583b9d49de8bcdff8c405d",
+      "total": 1,
+      "unique": 1,
+      "failed": 1,
+      "errors": 0,
+      "skipped": 0
+    },
+    ".work/npc-startup-safe-diagnostics/final.xml": {
+      "sha256": "2e77ebf3abebdc2bb83e12620323005fbc06e176d38f9a189437a53749ca1f1b",
+      "total": 4,
+      "unique": 4,
+      "failed": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    ".work/configured-source-reference-migration/all-source-consumers-green.xml": {
+      "sha256": "8d0b5604b6b5ded0482963b1f153988d69e552f25b8dfd372772dc148cbd3eb7",
+      "total": 549,
+      "unique": 549,
+      "failed": 0,
+      "errors": 0,
+      "skipped": 0
+    }
+  },
+  "source_evolution": {
+    "old_sha256": "156860cfd8a73951b8d5d66c6636d541cf3d90166ac13ca0490d211d3b982daf",
+    "new_sha256": "869ed4df62633360e918ef62338ed41c1200e5e92b274715fcdca6ca6f10cff1",
+    "changed": [
+      "src/robots/adapters/native_actor_presentation.py",
+      "src/robots/app/playing_runtime.py"
+    ],
+    "unchanged": 418
+  },
+  "guard": {
+    "sha256": "0e8a87b4117a7ae3e339fddd7a9b941cc09affe837104d1f3cc7bcf480a4fcb3",
+    "normalized_old_identical": true,
+    "runtime_bindings": 160,
+    "physical_runtime_inputs": 158,
+    "audit_bindings": 260,
+    "source_keys": 102,
+    "active_authority_status": "REVOKED_AFTER_REPO_LOCAL_SINGLE_ATTEMPT"
+  },
+  "diagnostic_original_ast": {
+    "unchanged_original_definitions": [
+      "select_actor",
+      "received_actor",
+      "received_ready",
+      "startup_vitals",
+      "startup_snapshot",
+      "startup_transport",
+      "Budget",
+      "BoundedPlanning",
+      "BoundedDecision",
+      "CleanupBudget",
+      "helper",
+      "Pilot"
+    ],
+    "only_existing_change": "one startup_snapshot cached_readiness field",
+    "added_functions": [
+      "_cached_actor_counts",
+      "_cached_canonical_map",
+      "_cached_flag",
+      "_cached_map_expected",
+      "_cached_name_counts",
+      "_cached_pending",
+      "_cached_range_count",
+      "_cached_within3",
+      "startup_readiness"
+    ]
+  },
+  "test_locators": {
+    "tests/test_native_protocol_manifest.py": {
+      "source_assignment_only_verified_against_immutable_old_hash": true,
+      "original_sha256": "e13eff6c7ae84daa17259304017366510d76a7d7683d6b9ff2b541087ae253cf",
+      "current_sha256": "92f3e55ddc24e508b094c228df19d3e5fd0a21e7965e105c179a7126612b4cf4"
+    },
+    "tests/test_native_npc_close_framing.py": {
+      "source_assignment_only_verified_against_immutable_old_hash": true,
+      "original_sha256": "69644fc2bc925883af9cee42a8f052bc7f02ada5c27b49ef0d48d050a895a907",
+      "current_sha256": "82f09db2115eb8be42e2d94f07eb2338e973d679d854db27ba75cbbe3a2a78a9"
+    },
+    "tests/test_native_equipment.py": {
+      "source_assignment_only_verified_against_immutable_old_hash": true,
+      "original_sha256": "08f1863fe0031c7a0d693213d794f8ac89ec06bd7be424ad9802558a12c6c959",
+      "current_sha256": "3916492e3f2c128833382a66af33290ec61c659934c7549648abc45fbe9b1b85"
+    }
+  },
+  "qualified_source_mirror": {
+    "physical_files": 3233,
+    "expected_digest_matches": true
+  },
+  "quality": {
+    "cached_whole_root": [
+      {
+        "command": [
+          ".venv/bin/black",
+          "--check",
+          "src/robots/adapters/native_actor_presentation.py",
+          "src/robots/app/playing_runtime.py",
+          "tests/test_native_entry_npc_names.py"
+        ],
+        "exit": 0,
+        "output": "All done! \u2728 \ud83c\udf70 \u2728\n3 files would be left unchanged.\n"
+      },
+      {
+        "command": [
+          ".venv/bin/ruff",
+          "check",
+          "src/robots/adapters/native_actor_presentation.py",
+          "src/robots/app/playing_runtime.py",
+          "tests/test_native_entry_npc_names.py"
+        ],
+        "exit": 0,
+        "output": "All checks passed!\n"
+      },
+      {
+        "command": [
+          ".venv/bin/mypy",
+          "--cache-dir=.work/npc-entry-names/mypy-cache"
+        ],
+        "exit": 0,
+        "output": "Success: no issues found in 248 source files\n"
+      },
+      {
+        "command": [
+          ".venv/bin/xenon",
+          "src",
+          "--max-absolute",
+          "B",
+          "--max-modules",
+          "B",
+          "--max-average",
+          "A"
+        ],
+        "exit": 0,
+        "output": ""
+      },
+      {
+        "command": [
+          ".venv/bin/pylint",
+          "--disable=all",
+          "--enable=duplicate-code",
+          "--ignore-paths=tests",
+          "src"
+        ],
+        "exit": 0,
+        "output": "\n--------------------------------------------------------------------\nYour code has been rated at 10.00/10 (previous run: 10.00/10, +0.00)\n\n"
+      }
+    ],
+    "cached_diagnostic_scope": "All final declared pilot/test checks exit 0; commands and log hashes retained in .work/npc-entry-names-independent-review/verification.json",
+    "whole_root_mypy_sources": 248,
+    "whole_src_xenon_limits": "B/B/A",
+    "inherited_observer_helper_debt": "Reported unchanged Ruff 30 / mypy 7 outside feature scope remains documented, not waived."
+  },
+  "findings": [
+    {
+      "status": "PASS",
+      "source": "src/robots/adapters/native_actor_presentation.py; src/robots/app/playing_runtime.py:283-307,1087-1122",
+      "finding": "Exact profile frames and bounded 24-byte strict UTF-8 name extraction for presentations 6/12 only. Existing received tracker validates before owner-local metadata; current perceived NPC required. New entry clears earlier entry/reply name; malformed text UNKNOWN. Valid later 0ADF precedence and map/vanish/epoch/wire replacement/duplicate sequence/isolation controls preserved. No new sends/queries; names confer neither native identity nor life/pose/arrival/action authority."
+    },
+    {
+      "status": "PASS",
+      "source": ".work/operators/npc-native-host-pilot/probe.py:99-225",
+      "finding": "New projection reads typed cached dictionaries/strings and parsed actors without state-builder/view/consume/motion callbacks. At most 32 actors scanned, 16 NPC name/range projections; overflow aggregates UNKNOWN. Coordinates checked before bounded arithmetic. Outputs only boolean/count/null; no raw bytes, credentials, IDs/names/coordinates. Entire original Pilot/predicates/budgets/actions/cleanup AST unchanged except one snapshot field. Existing original exception/frame and cleanup preserved."
+    },
+    {
+      "status": "PASS",
+      "source": ".work/operators/npc-native-host-pilot/guards.py",
+      "finding": "Reverting three manifest references and one immutable digest reproduces exact old guard bytes. Versioned 420 manifest retains 418 entries, updates exactly two reviewed runtime sources; 160 runtime bindings / 158 physical files, 260 audit bindings and 102 source keys preserved. No authority/schema/expiry/private/helper/scenario/budget expansion. Actual source-evolution RED retained; source-drift/manifest-drift/revoked denial controls pass, not extra RED cases."
+    },
+    {
+      "status": "PASS",
+      "source": "tests/test_native_protocol_manifest.py:30; tests/test_native_npc_close_framing.py:22; tests/test_native_equipment.py:231",
+      "finding": "Reverting only three SOURCE/source assignments reproduces each immutable prior whole-file digest. All other assertions/compiler flags/protocol provenance unchanged. Durable mirror exactly matches 3233 files. Six full source-consumer modules receipt has 549 unique passing cases."
+    }
+  ],
+  "full_root_gate": {
+    "receipt": ".work/npc-entry-names/parent-full-repo-source.xml",
+    "sha256": "448761b8f421cfd8a458c4a38088b771a626bb7eb12e52d220a3e2f933e6d8d7",
+    "unique_physical_cases": 5576,
+    "failures": 0,
+    "errors": 0,
+    "skips": 0,
+    "passing_subtests": 65,
+    "coverage_reported_percent": 96,
+    "coverage_actual_percent": 95.55,
+    "check_exit_parent_confirmed": 0,
+    "audit_exit_parent_confirmed": 0,
+    "logs_sha256": {
+      ".work/npc-entry-names/parent-full-repo-source-check.log": "38b977fe3c49a8ec870c4474e47ad0624c5d643638f04ff97cbd5d9a772cf8cc",
+      ".work/npc-entry-names/parent-full-repo-source-audit.log": "12efd8d5b788d7b9815c963992e71d963bd5e1f644f07efbd7df75b3abc6f46e"
+    }
+  },
+  "full_root_condition": "SATISFIED. Parent confirmed completed task check/audit exit 0; reviewer independently verified exact XML/digest, passing log summaries and unchanged 266-path source snapshot. No full-suite rerun.",
+  "limits": [
+    "49 reviewer cases use synthetic received frames through actual PlayingClient and AST-selected pilot logic, not native reception; full-root framing cases are separate coverage.",
+    "Cached diagnostics are best-effort last-known metadata, not atomic/current readiness or admission. Life/progression remain UNKNOWN.",
+    "Historical native failed predicate remains UNKNOWN; discarded entry-name channel is not asserted as sole cause.",
+    "Native gameplay, quest/reward, effect acceptance and full goals remain separate."
+  ],
+  "authority": "REVOKED_AFTER_REPO_LOCAL_SINGLE_ATTEMPT; unchanged; no issuance",
+  "effects": {
+    "native_sessions": 0,
+    "inference_calls": 0,
+    "network_sql_config_authority_git_dependency_changes": false,
+    "implementation_changes": false
+  },
+  "evidence_hashes": {
+    "run/reviews/npc-entry-names-combined-candidate.json": "f847f8000de85f49fe9b0d391f2bb561b6d26b75c00007b9dc547946ea7edad8",
+    "run/reviews/npc-entry-name-retention.json": "1783f3b873dfefb3e6b9974796189557e710251cbed2295d52c1cfdb4e3b41a7",
+    "run/reviews/npc-pilot-safe-readiness-diagnostics.json": "e2c1b9a5bf35f516a1a0b063846dae671f711504b69a896a5d9616203258921f",
+    "run/reviews/npc-pilot-repo-startup-readiness-diagnosis.json": "0f470b1762aa924bf322ef381c6c6acd12ae79c61c28a03c16b6831a3f681372",
+    ".work/npc-entry-names/final-gates.json": "3c87f578e1d67b2f15d2f808d033a28cfd5acb4bd2556297f91b582cfc8ceddc",
+    ".work/npc-entry-names/receipt-identities.json": "00c393f671724b33c6ad87765ae9be350fd13abf136df3ebcb077fdc2dcb69d8",
+    ".work/npc-startup-safe-diagnostics/verification.json": "a6a432fd9c0b9ab35172d05898a1334250cb06d567fa2afe75c67dd1026417e5",
+    ".work/npc-startup-safe-diagnostics/quality-final.json": "840f202a7233a7621844037c17e4d93327331cf4e2f23b62c467897213227fe8",
+    ".work/configured-source-reference-migration/inventory-comparison.json": "c3433d2b50fb3394be0626b92c9d8ed21ccc54eed8b1bdcb7519e36bde1a2c2b"
+  },
+  "evidence_directory": ".work/npc-entry-names-independent-review/",
+  "reviewer_issues": [
+    "Initial local-assignment introspection and old-literal reconstruction missed equipment original Path(manifest[\"configured_source\"]). Historical failure text resolved it; exact prior digest reproduced. Preliminary mismatch records retained, superseded by final-verification.json.",
+    "Large verification JSON exceeded terminal output and single-page read limits; compact programmatic aggregation resolved it. Reviewer harness issues only, no candidate changes."
+  ],
+  "remaining": "Parent owns separate effect acceptance and any separately authorized first received pilot. No offline review blocker remains."
+}

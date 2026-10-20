@@ -1,0 +1,140 @@
+warning: Git tree '/home/otto/dev/ro-bots' is dirty
+ro-bots dev shell — try: task --list
+........................................................................ [ 12%]
+........................................................................ [ 24%]
+........................................................................ [ 36%]
+........................................................................ [ 49%]
+........................................................................ [ 61%]
+.....................FFFF...................................................... [ 75%]
+........................................................................ [ 87%]
+.................................F...................................... [ 99%]
+.                                                                        [100%]
+=================================== FAILURES ===================================
+_ test_invalid_population_configuration_is_rejected_without_replacing_state[patch0] _
+
+patch = {'groups': -1}
+
+    @pytest.mark.parametrize(
+        "patch",
+        [
+            {"groups": -1},
+            {"solos": -1},
+            {"groups": 0, "solos": 0},
+            {"friends_min": 1},
+            {"friends_max": 1},
+        ],
+    )
+    def test_invalid_population_configuration_is_rejected_without_replacing_state(patch) -> None:
+        state = make_state()
+        original = state.roster
+        body = {"type": "regenerate_roster", "seed": 17, "groups": 2, "solos": 1}
+        body.update(patch)
+        with TestClient(create_app(state)) as client:
+            response = client.post("/commands", json=body)
+>       assert response.status_code == 400
+E       assert 200 == 400
+E        +  where 200 = <Response [200 OK]>.status_code
+
+tests/test_population_config.py:56: AssertionError
+_ test_invalid_population_configuration_is_rejected_without_replacing_state[patch1] _
+
+patch = {'solos': -1}
+
+    @pytest.mark.parametrize(
+        "patch",
+        [
+            {"groups": -1},
+            {"solos": -1},
+            {"groups": 0, "solos": 0},
+            {"friends_min": 1},
+            {"friends_max": 1},
+        ],
+    )
+    def test_invalid_population_configuration_is_rejected_without_replacing_state(patch) -> None:
+        state = make_state()
+        original = state.roster
+        body = {"type": "regenerate_roster", "seed": 17, "groups": 2, "solos": 1}
+        body.update(patch)
+        with TestClient(create_app(state)) as client:
+            response = client.post("/commands", json=body)
+>       assert response.status_code == 400
+E       assert 200 == 400
+E        +  where 200 = <Response [200 OK]>.status_code
+
+tests/test_population_config.py:56: AssertionError
+_ test_invalid_population_configuration_is_rejected_without_replacing_state[patch2] _
+
+patch = {'groups': 0, 'solos': 0}
+
+    @pytest.mark.parametrize(
+        "patch",
+        [
+            {"groups": -1},
+            {"solos": -1},
+            {"groups": 0, "solos": 0},
+            {"friends_min": 1},
+            {"friends_max": 1},
+        ],
+    )
+    def test_invalid_population_configuration_is_rejected_without_replacing_state(patch) -> None:
+        state = make_state()
+        original = state.roster
+        body = {"type": "regenerate_roster", "seed": 17, "groups": 2, "solos": 1}
+        body.update(patch)
+        with TestClient(create_app(state)) as client:
+            response = client.post("/commands", json=body)
+>       assert response.status_code == 400
+E       assert 200 == 400
+E        +  where 200 = <Response [200 OK]>.status_code
+
+tests/test_population_config.py:56: AssertionError
+_ test_invalid_population_configuration_is_rejected_without_replacing_state[patch3] _
+
+patch = {'friends_min': 1}
+
+    @pytest.mark.parametrize(
+        "patch",
+        [
+            {"groups": -1},
+            {"solos": -1},
+            {"groups": 0, "solos": 0},
+            {"friends_min": 1},
+            {"friends_max": 1},
+        ],
+    )
+    def test_invalid_population_configuration_is_rejected_without_replacing_state(patch) -> None:
+        state = make_state()
+        original = state.roster
+        body = {"type": "regenerate_roster", "seed": 17, "groups": 2, "solos": 1}
+        body.update(patch)
+        with TestClient(create_app(state)) as client:
+            response = client.post("/commands", json=body)
+>       assert response.status_code == 400
+E       assert 200 == 400
+E        +  where 200 = <Response [200 OK]>.status_code
+
+tests/test_population_config.py:56: AssertionError
+__________________ test_regenerate_roster_rejects_bad_params ___________________
+
+    def test_regenerate_roster_rejects_bad_params() -> None:
+        ws = make_state()
+        with pytest.raises(CommandError, match="groups"):
+            ws.apply_command({"type": "regenerate_roster", "seed": 1, "groups": "many"})
+>       with pytest.raises(CommandError, match="solos"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE CommandError
+
+tests/test_world_state.py:122: Failed
+=============================== warnings summary ===============================
+.venv/lib/python3.14/site-packages/fastapi/testclient.py:1
+  /home/otto/dev/ro-bots/.venv/lib/python3.14/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+    from starlette.testclient import TestClient as TestClient  # noqa
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/test_population_config.py::test_invalid_population_configuration_is_rejected_without_replacing_state[patch0]
+FAILED tests/test_population_config.py::test_invalid_population_configuration_is_rejected_without_replacing_state[patch1]
+FAILED tests/test_population_config.py::test_invalid_population_configuration_is_rejected_without_replacing_state[patch2]
+FAILED tests/test_population_config.py::test_invalid_population_configuration_is_rejected_without_replacing_state[patch3]
+FAILED tests/test_world_state.py::test_regenerate_roster_rejects_bad_params
+5 failed, 579 passed, 1 warning, 65 subtests passed in 22.13s

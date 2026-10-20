@@ -1,0 +1,12 @@
+{
+  "status": "GRIND_WINDOW10_ZERO_CONTACT_ROOT_CAUSE_WORLD_HAS_NO_MOB_SPAWNS",
+  "completed_at": "2026-10-15T19:34:54.441310+00:00",
+  "raw_receipt": "run/reviews/playing-grind-operator-live-window10.json",
+  "decisive_finding": {
+    "evidence": "deployed /world/runtime/npc/pre-re/scripts_athena.conf lines 130-131 comment out the mobs imports (//npc: npc/pre-re/mobs/...) while the spawn FILE exists with prt_fild08 declarations (Lunatic x40, Pupa x20, Poring x70, Drops x10) - read back from the container via docker cp",
+    "implication": "the owned world loads NO monster spawns; fields are empty; agent-side contact is impossible regardless of movement/travel/evaluation (explains windows 9-10 zero contact; earlier sparse sightings were the few non-commented or event-only paths)",
+    "fixture_0_anyway": "918 walks/918 matched acks roaming committed cells; 2293 MoveTo dispatched - movement chain rock solid"
+  },
+  "fix": "guarded publication slice: enable npc/pre-re/mobs/fields/prontera.txt import in the deployed scripts_athena.conf via the established reviewed publication flow (map stop, write, readback, restart) - extends the import target machinery to this second config file (before 4fb0a403 -> new after digest)",
+  "native_authority": "UNCHANGED_REVOKED"
+}

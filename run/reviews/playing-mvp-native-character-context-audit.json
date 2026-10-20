@@ -1,0 +1,792 @@
+{
+  "schema": "native-character-context-audit/v1",
+  "criterion": 9,
+  "status": "OPEN_SOURCE_TO_REQUEST_GAPS",
+  "scope": {
+    "read_only_runtime": true,
+    "only_new_artifact": "/home/otto/dev/ro-bots/run/reviews/playing-mvp-native-character-context-audit.json",
+    "code_changes": false,
+    "native_sessions_opened": 0,
+    "stat_skill_equipment_requests_sent": 0,
+    "sql_queries": 0,
+    "model_provider_calls": 0,
+    "whole_root_gate_run": false,
+    "synthetic_packets_or_observations_created": false,
+    "parallel_worker_modules_not_modified_or_hash_frozen": true
+  },
+  "authority": {
+    "revision": "e985006171d2eb320ee512a653f4c83aea3d81b6",
+    "configured_source": "/home/otto/.hermes/cache/scratch/callback-package-hut2_cuz/configured-variant",
+    "profile": {
+      "role": "map",
+      "packetver": 20180704,
+      "client_family": "MAIN",
+      "ruleset": "pre-re",
+      "obfuscation": "ABSENT"
+    },
+    "manifest_provenance": {
+      "revision": "e985006171d2eb320ee512a653f4c83aea3d81b6",
+      "package": "/nix/store/0w1nfsmj8gaipcidhgx2nkg4axqxcbbr-rathena-playable-callback-qualified-20180704-e985006171d2-callback-qualified",
+      "package_nar_hash": "sha256-hIVo2RvlabG8Jw362W7PxdXkQx2CDYihvHKwhZjP0Es=",
+      "variant": "callback-qualified",
+      "profiles_sha256": "ee2af351afee975ad4145d0e38412dfac0779cd123435f318f8c876349bc0148",
+      "configured_source_sha256": "1fd585266bbcf2268b2cec9e901100fad68b904a8b2a8c049c5869c56af43e12",
+      "qualified_clif_sha256": "ace16f15be3b60f730522d620b73a68a9f2cc384016aadce9c985888aea9a1ac",
+      "map_cppflags_sha256": "7986f2fdeb11e55ee707ac27eb4701a64b90361ce1636bb728025fb92a99291d",
+      "map_compile_recipe_sha256": "8488711230e38fb3a48a9d19dca18b50b3a93780fd9287775768723af9358878"
+    },
+    "public_advice_is_not_native_telemetry_or_legal_validator": true
+  },
+  "shared_projection_and_request_evidence": [
+    {"path": "/home/otto/dev/ro-bots/src/robots/domain/model.py", "lines": [26, 78], "finding": "ActorRef id/name/kind/distance and BotState native vitals/progression/inventory; no stats, free points, learned skills, gear or encounters."},
+    {"path": "/home/otto/dev/ro-bots/src/robots/domain/decisions.py", "lines": [44, 71], "finding": "Request carries bot name/job/base level/ratios/map/position/goal/party, top10 actor name-kind-distance string, inventory quantities and bounded memory; native_epoch/progression_source and encounter mechanics omitted."},
+    {"path": "/home/otto/dev/ro-bots/src/robots/app/playing_runtime.py", "lines": [189, 225], "finding": "Received vitals and session progression feed host state; item-count projection drops inventory indices and gear details. Read-only observation of parallel-worker module, no hash freeze or modification."},
+    {"path": "/home/otto/.hermes/cache/scratch/callback-package-hut2_cuz/configured-variant/src/map/packets.hpp", "lines": [489, 497], "finding": "010E packed header, skillId, level, SP, range uint16 and bool upFlag declaration;11 is current table length, not new compiler measurement."}
+  ],
+  "field_gap_table": [
+    {
+      "field": "base_stats_and_aggregate_bonus",
+      "wire": {
+        "full_snapshot": "0x00bd PACKET_ZC_STATUS; framing table 44 bytes; point uint16@2, six base/cost uint8 pairs beginning@4; source-derived offsets not compiler-admitted here",
+        "updates": "0x0141 PACKET_ZC_COUPLESTATUS 14 bytes; uint32 statID@2, signed int32 base@6, signed int32 bonus@10",
+        "stat_ids": {
+          "STR": 13,
+          "AGI": 14,
+          "VIT": 15,
+          "INT": 16,
+          "DEX": 17,
+          "LUK": 18
+        },
+        "meaning": "bonus = battle_status stat minus status base; aggregate effects, NOT individually equipment-attributed"
+      },
+      "source": [
+        {
+          "path": "/home/otto/.hermes/cache/scratch/callback-package-hut2_cuz/configured-variant/src/map/map.hpp",
+          "lines": [
+            498,
+            505
+          ]
+        },
+        {
+          "path": "/home/otto/.hermes/cache/scratch/callback-package-hut2_cuz/configured-variant/src/map/packets.hpp",
+          "lines": [
+            909,
+            939
+          ]
+        },
+        {
+          "path": "/home/otto/.hermes/cache/scratch/callback-package-hut2_cuz/configured-variant/src/map/packets_struct.hpp",
+          "lines": [
+            390,
+            396
+          ]
+        },
+        {
+          "path": "/home/otto/.hermes/cache/scratch/callback-package-hut2_cuz/configured-variant/src/map/clif.cpp",
+          "lines": [
+            3610,
+            3619
+          ]
+        },
+        {
+          "path": "/home/otto/.hermes/cache/scratch/callback-package-hut2_cuz/configured-variant/src/map/clif.cpp",
+          "lines": [
+            3781,
+            3797
+          ]
+        },
+        {
+          "path": "/home/otto/.hermes/cache/scratch/callback-package-hut2_cuz/configured-variant/src/map/clif.cpp",
+          "lines": [
+            4123,
+            4171
+          ]
+        }
+      ],
+      "received_retention": "Real run counted 0x00bd once and 0x0141 twelve times for fixture0; raw bodies/decoded character values not captured in report. Client has no BD/141 semantic branch; gameplay tracker does not retain them as stats. Raw bounded frame history is not a current complete snapshot.",
+      "projection_and_request": "BotState has no stats/bonus fields; decision request omits them. Character-selection stat bytes are historical, not runtime-fresh.",
+      "action_and_ack": "No character stat actuator/ACK retention in reviewed path; see stat allocation row.",
+      "compiler_or_native_status": "SOURCE_AND_FRAMING_ONLY; no targeted full-header compiler measurement or native decoded stat capture performed in this audit."
+    },
+    {
+      "field": "available_stat_skill_points_and_next_stat_cost",
+      "wire": {
+        "available": "0x00b0 signed int32 count@4, uint16 parameter@2; stat points9, skill points12",
+        "costs": "0x00bd six standard* cost bytes; 0x00be uint16 statusID@2 uint8 cost@4 (source packed5); cost IDs32..37"
+      },
+      "source": [
+        {
+          "path": "/home/otto/.hermes/cache/scratch/callback-package-hut2_cuz/configured-variant/src/map/map.hpp",
+          "lines": [
+            498,
+            505
+          ]
+        },
+        {
+          "path": "/home/otto/.hermes/cache/scratch/callback-package-hut2_cuz/configured-variant/src/map/packets_struct.hpp",
+          "lines": [
+            354,
+            373
+          ]
+        },
+        {
+          "path": "/home/otto/.hermes/cache/scratch/callback-package-hut2_cuz/configured-variant/src/map/clif.cpp",
+          "lines": [
+            3662,
+            3667
+          ]
+        },
+        {
+          "path": "/home/otto/.hermes/cache/scratch/callback-package-hut2_cuz/configured-variant/src/map/clif.cpp",
+          "lines": [
+            3765,
+            3775
+          ]
+        },
+        {
+          "path": "/home/otto/.hermes/cache/scratch/callback-package-hut2_cuz/configured-variant/src/map/clif.cpp",
+          "lines": [
+            4128,
+            4140
+          ]
+        },
+        {
+          "path": "/home/otto/dev/ro-bots/spikes/003-clientless-limbs/client.py",
+          "lines": [
+            734,
+            741
+          ]
+        }
+      ],
+      "received_retention": "B0 currently retains ONLY5,6,7,8,11,55; drops9/12. 00BE is absent from actual PACKET_DB (offline interrogation), so parser fails before any collector.",
+      "projection_and_request": "No current/free points or received next-cost projection/request. Missing is UNKNOWN, never zero.",
+      "action_and_ack": "No spending permitted from persona/build/corpus. Need source-backed00BE registration plus stream regression first.",
+      "compiler_or_native_status": "B0 source exact8 and existing framing; BE5 is source-derived, unmeasured by compiler here; no point values claimed."
+    },
+    {
+      "field": "learned_and_available_skills",
+      "wire": {
+        "snapshot": "0x010f variable length word@2; prefix4 plus SKILLDATA entries; active MAIN form uint16 id, C++ int inf, uint16 level/sp/range2, NAME_LENGTH name, uint8 upFlag",
+        "updates": "0x0111 add (table39), 0x010e level/sp/range/upFlag update (table11), 0x07e1 inf/level/sp/range/upFlag (table15), 0x0441 delete(table4)",
+        "meaning": "positive received level proves current received usable skill level, not underlying permanent/temporary/plagiarized storage flag. upFlag is a server-derived upgradability hint. Level0 entry is available tree entry, not learned level."
+      },
+      "source": [
+        {
+          "path": "/home/otto/.hermes/cache/scratch/callback-package-hut2_cuz/configured-variant/src/map/packets_struct.hpp",
+          "lines": [
+            4250,
+            4304
+          ]
+        },
+        {
+          "path": "/home/otto/.hermes/cache/scratch/callback-package-hut2_cuz/configured-variant/src/map/clif.cpp",
+          "lines": [
+            5696,
+            5750
+          ]
+        },
+        {
+          "path": "/home/otto/.hermes/cache/scratch/callback-package-hut2_cuz/configured-variant/src/map/clif.cpp",
+          "lines": [
+            5832,
+            5848
+          ]
+        },
+        {
+          "path": "/home/otto/.hermes/cache/scratch/callback-package-hut2_cuz/configured-variant/src/map/pc.cpp",
+          "lines": [
+            9129,
+            9180
+          ]
+        },
+        {
+          "path": "/home/otto/dev/ro-bots/spikes/003-clientless-limbs/packetdb.py",
+          "lines": [
+            290,
+            316
+          ]
+        }
+      ],
+      "received_retention": "Real run counted010F once; no raw learned-level snapshot extracted. Client/gameplay collector has no learned skill state. Historical SQL Basic Skill9 is not observed authority.",
+      "projection_and_request": "BotState/request no numeric skill levels/flags/SP costs/prerequisites. Reuse YamlMechanics.skills_for_class for tagged public tree declarations, not learned telemetry. Numeric wire ID-to-Aegis mapping needs explicit catalog seam: current SkillDigest.skill_id is Aegis string.",
+      "action_and_ack": "0112 uint16 skillID@2 fixed4; server pc_skillup succeeds only with free point, known permanent entry and below class cap, spends one point; success010E + B0/12 + often010F. Failure may silently return: no universal negative ACK. Requests do not establish learning.",
+      "compiler_or_native_status": "Lengths above are current audited table claims, NOT newly compiled oracle results. Full-header SKILLDATA layout/NAME_LENGTH plus mutation semantics remain targeted compiler/offline frontier."
+    },
+    {
+      "field": "equipped_inventory_indices_masks_refine_cards_options",
+      "wire": {
+        "snapshot": "0x0a0d variable equip list; current collector row57 bytes, prefix4",
+        "entry_source": "EQUIPITEM_INFO int16 index, uint16 ITID(active MAIN), uint8 type, uint32 location, uint32 WearState, uint8 refine, four uint16 cards, signed32 expiry, uint16 bind/sprite, option count and ItemOptions(index int16,value int16,param uint8), flags bitfield",
+        "important": "location = permitted slot mask from pc_equippoint; WearState = actual it->equip. client_index=server_index+2; inventory index is NOT item ID or actor ID."
+      },
+      "source": [
+        {
+          "path": "/home/otto/.hermes/cache/scratch/callback-package-hut2_cuz/configured-variant/src/map/packets_struct.hpp",
+          "lines": [
+            148,
+            162
+          ]
+        },
+        {
+          "path": "/home/otto/.hermes/cache/scratch/callback-package-hut2_cuz/configured-variant/src/map/packets_struct.hpp",
+          "lines": [
+            410,
+            416
+          ]
+        },
+        {
+          "path": "/home/otto/.hermes/cache/scratch/callback-package-hut2_cuz/configured-variant/src/map/packets_struct.hpp",
+          "lines": [
+            450,
+            507
+          ]
+        },
+        {
+          "path": "/home/otto/.hermes/cache/scratch/callback-package-hut2_cuz/configured-variant/src/map/clif.cpp",
+          "lines": [
+            122,
+            127
+          ]
+        },
+        {
+          "path": "/home/otto/.hermes/cache/scratch/callback-package-hut2_cuz/configured-variant/src/map/clif.cpp",
+          "lines": [
+            2932,
+            2948
+          ]
+        },
+        {
+          "path": "/home/otto/.hermes/cache/scratch/callback-package-hut2_cuz/configured-variant/src/map/clif.cpp",
+          "lines": [
+            3080,
+            3093
+          ]
+        },
+        {
+          "path": "/home/otto/dev/ro-bots/src/robots/adapters/native_gameplay.py",
+          "lines": [
+            281,
+            294
+          ]
+        }
+      ],
+      "received_retention": "Collector retains index -> (itemID,count) only; discards WearState/location/refine/cards/options/flags; view aggregates counts by itemID; host projects string itemID->count. Inventory-known does not prove gear-known. Empty SQL inventory cannot establish native equipped state.",
+      "projection_and_request": "No equipped indices or gear bonuses in BotState/request. Reuse item_by_id/Aegis YamlMechanics source digests; unknown scripts/combo/refine/card effects remain unknown, not0. Aggregate received stat bonus cannot assign item causality.",
+      "action_and_ack": "0998 packed8 source request(index uint16@2,position uint32@4); equip0999 packed11 source ACK(index@2,wear@4,sprite@8,result@10), active result0OK/1levelFail/2fail. Unequip00AB4 ->099A source9(index@2,wear@4,flag@8), active flag0success. 0998/0999/099A all absent from current PACKET_DB; C->S need not be receive-registered, but ACKs must be before actuator use. Server may early-return without ACK.",
+      "compiler_or_native_status": "Row57 is current decoder contract, not new compiler evidence. Targeted full unchanged-header oracle required for row/bitfield+ACK layouts before admission; no equipment requests sent."
+    },
+    {
+      "field": "observed_species_and_monster_level",
+      "wire": {
+        "actor_entries": "09FD/09FE/09FF lengths110/103/104; actor AID uint32@5, separate GID@9, job field C++ signed int16@23",
+        "identity": "job is vd->look[LOOK_BASE], not actor numeric ID and not unconditional biological species/class identity. Only eligible observed monster presentation can anchor catalog lookup.",
+        "monster_level": "Public MobDB species metadata may be attached after observed key lookup; wire clevel needs separate profile/semantic audit, not assumed."
+      },
+      "source": [
+        {
+          "path": "/home/otto/.hermes/cache/scratch/callback-package-hut2_cuz/configured-variant/src/map/packets_struct.hpp",
+          "lines": [
+            687,
+            713
+          ]
+        },
+        {
+          "path": "/home/otto/.hermes/cache/scratch/callback-package-hut2_cuz/configured-variant/src/map/packets_struct.hpp",
+          "lines": [
+            758,
+            785
+          ]
+        },
+        {
+          "path": "/home/otto/.hermes/cache/scratch/callback-package-hut2_cuz/configured-variant/src/map/packets_struct.hpp",
+          "lines": [
+            832,
+            858
+          ]
+        },
+        {
+          "path": "/home/otto/.hermes/cache/scratch/callback-package-hut2_cuz/configured-variant/src/map/clif.cpp",
+          "lines": [
+            1369,
+            1393
+          ]
+        },
+        {
+          "path": "/home/otto/dev/ro-bots/spikes/003-clientless-limbs/client.py",
+          "lines": [
+            850,
+            891
+          ]
+        },
+        {
+          "path": "/home/otto/dev/ro-bots/src/robots/app/playing_runtime.py",
+          "lines": [
+            428,
+            447
+          ]
+        },
+        {
+          "path": "/home/otto/dev/ro-bots/src/robots/app/playing_runtime.py",
+          "lines": [
+            584,
+            606
+          ]
+        }
+      ],
+      "received_retention": "Existing _species reads raw23:25 unsigned little-endian and actor5:9; cleared on epoch/map0091 and vanish. It already uses MobDB to publish name for attackable actor; client uses unsigned<H although pinned declaration signed int16: do not copy this as compiled type. Only previously observed actors are candidates.",
+      "projection_and_request": "ActorRef keeps id/name/kind/distance only. Request flattens top10 to name(kind,distance); loses actor identity, speciesID and level. Species missing currently fallback0/name monster#0: future explicit null instead.",
+      "action_and_ack": "Read-only enrichment first; no global spawn-position/population/reputation lookup. Species catalog never grants hidden visibility.",
+      "compiler_or_native_status": "Existing gcc-layout-run.stdout confirms only actor SIZES, not job offsets. Source conditional derivation and client comments support23 but independently executed offsetof(job) result was not recovered: named targeted compiler frontier, not invented proof."
+    },
+    {
+      "field": "recent_damage_by_encounter_with_own_received_level",
+      "wire": {
+        "native": "08C8 fixed34; src uint32@2,target uint32@6,tick@10,damage signed32@22,isSP byte@26,div uint16@27,type byte@29,damage2 signed32@30",
+        "retained": "ObservedDamage(seq,at,sourceID,targetID,type,damage,damage2,isSP); bounded1024 events. Source seq/at are actual receiver receipt provenance, not DPS."
+      },
+      "source": [
+        {
+          "path": "/home/otto/dev/ro-bots/spikes/003-clientless-limbs/client.py",
+          "lines": [
+            766,
+            774
+          ]
+        },
+        {
+          "path": "/home/otto/dev/ro-bots/src/robots/adapters/native_gameplay.py",
+          "lines": [
+            102,
+            110
+          ]
+        },
+        {
+          "path": "/home/otto/dev/ro-bots/src/robots/adapters/native_gameplay.py",
+          "lines": [
+            168,
+            179
+          ]
+        },
+        {
+          "path": "/home/otto/dev/ro-bots/src/robots/adapters/native_gameplay.py",
+          "lines": [
+            350,
+            367
+          ]
+        },
+        {
+          "path": "/home/otto/dev/ro-bots/src/robots/app/playing_runtime.py",
+          "lines": [
+            548,
+            560
+          ]
+        },
+        {
+          "path": "/home/otto/dev/ro-bots/src/robots/adapters/native_session_progression.py",
+          "lines": [
+            20,
+            65
+          ]
+        }
+      ],
+      "received_retention": "Tracker has raw structured damage; legacy client tuple loses second damage/SP/provenance. Host converts incoming positive HP damage only into DamageTaken(amount,sourceID); outgoing self damage not projected to request. No contemporaneous join species/session actor incarnation/own received base level.",
+      "projection_and_request": "Request has own numeric base level currently but omits provenance/job level/raw native HP/encounter damage; selection fallback has distinct source. Do not attach present level retrospectively to old hits.",
+      "action_and_ack": "First slice create read-only encounter observations at receipt time; key world/session epoch/map transition/actor incarnation+observed species, retain own level source/time and receiptseq. Match actual SELF srcAID or exact disguise alias; preserve damage type/SP and raw components; cannot infer DPS, weakness or weapon formula.",
+      "compiler_or_native_status": "Real run independently parsed30 positive SELF HP damage receipts; every combined amount1. Species association/own-level-at-hit not captured in report: UNKNOWN, no SQL/persona join or target-ID-as-species."
+    },
+    {
+      "field": "stat_spend_and_legal_budget",
+      "wire": {
+        "request": "00BB fixed5 uint16 statID@2,uint8 requested amount@4",
+        "ack": "00BC source packed6 uint16 statID@2,uint8 ok@4,uint8 resulting base@5; value capped255; success can be capped below requested amount; later0141 covers >255",
+        "updates": "00BE nextcost, B0/9 remaining points; recalc may send bonus updates"
+      },
+      "source": [
+        {
+          "path": "/home/otto/.hermes/cache/scratch/callback-package-hut2_cuz/configured-variant/src/map/clif_packetdb.hpp",
+          "lines": [
+            65,
+            65
+          ]
+        },
+        {
+          "path": "/home/otto/.hermes/cache/scratch/callback-package-hut2_cuz/configured-variant/src/map/clif.cpp",
+          "lines": [
+            12716,
+            12732
+          ]
+        },
+        {
+          "path": "/home/otto/.hermes/cache/scratch/callback-package-hut2_cuz/configured-variant/src/map/packets_struct.hpp",
+          "lines": [
+            4219,
+            4225
+          ]
+        },
+        {
+          "path": "/home/otto/.hermes/cache/scratch/callback-package-hut2_cuz/configured-variant/src/map/clif.cpp",
+          "lines": [
+            4291,
+            4299
+          ]
+        },
+        {
+          "path": "/home/otto/.hermes/cache/scratch/callback-package-hut2_cuz/configured-variant/src/map/pc.cpp",
+          "lines": [
+            8798,
+            8830
+          ]
+        },
+        {
+          "path": "/home/otto/.hermes/cache/scratch/callback-package-hut2_cuz/configured-variant/src/map/pc.cpp",
+          "lines": [
+            8872,
+            8919
+          ]
+        }
+      ],
+      "received_retention": "00BC and00BE absent from current table. No retained stat mutation ACK.",
+      "projection_and_request": "No actionable spending schema; planned build targets must remain distinct from received current base/bonus/points.",
+      "action_and_ack": "Pre-re source formula PC_STATUS_POINT_COST(low)=(1+(low+9)/10) using C++ integer arithmetic; legal cap comes pc_maxparameter(class/job/config), not generic guide99 cap. Confirm active RENEWAL_STAT/config and job-db provenance before deterministic budget; reconcile observed changed stat+points, not send count. Actuator remains blocked.",
+      "compiler_or_native_status": "Source rules only; no numerical planning applied, no live/stat write, no compiler macro proof newly produced."
+    }
+  ],
+  "offline_verification": {
+    "method": "runpy.run_path(packetdb.py,run_name=offline_context_audit) followed by PACKET_DB membership/length_of; stdlib imports only, no __main__ test and no connections",
+    "result": [
+      {
+        "id": "0x00b0",
+        "registered": true,
+        "length": 8
+      },
+      {
+        "id": "0x00bd",
+        "registered": true,
+        "length": 44
+      },
+      {
+        "id": "0x0141",
+        "registered": true,
+        "length": 14
+      },
+      {
+        "id": "0x00be",
+        "registered": false,
+        "length": null
+      },
+      {
+        "id": "0x00bc",
+        "registered": false,
+        "length": null
+      },
+      {
+        "id": "0x010f",
+        "registered": true,
+        "length": -1
+      },
+      {
+        "id": "0x0111",
+        "registered": true,
+        "length": 39
+      },
+      {
+        "id": "0x010e",
+        "registered": true,
+        "length": 11
+      },
+      {
+        "id": "0x07e1",
+        "registered": true,
+        "length": 15
+      },
+      {
+        "id": "0x0441",
+        "registered": true,
+        "length": 4
+      },
+      {
+        "id": "0x0a0d",
+        "registered": true,
+        "length": -1
+      },
+      {
+        "id": "0x0998",
+        "registered": false,
+        "length": null
+      },
+      {
+        "id": "0x0999",
+        "registered": false,
+        "length": null
+      },
+      {
+        "id": "0x099a",
+        "registered": false,
+        "length": null
+      },
+      {
+        "id": "0x00bb",
+        "registered": true,
+        "length": 5
+      },
+      {
+        "id": "0x0112",
+        "registered": true,
+        "length": 4
+      },
+      {
+        "id": "0x00ab",
+        "registered": true,
+        "length": 4
+      }
+    ],
+    "not_a_stream_regression": "No synthetic packets created; future helpers must run existing parse_stream tests individually/coalesced/incremental and retain unknown rejection before collector admission.",
+    "compiler_existing_output": {
+      "source": {
+        "path": "/home/otto/.hermes/cache/scratch/callback-package-hut2_cuz/gcc-layout-run.stdout",
+        "lines": [
+          1,
+          1
+        ]
+      },
+      "value": {
+        "emotion": {
+          "id": 192,
+          "size": 7,
+          "offsets": [
+            0,
+            2,
+            6
+          ]
+        },
+        "stopmove": {
+          "id": 136,
+          "size": 10,
+          "offsets": [
+            0,
+            2,
+            6,
+            8
+          ]
+        },
+        "actors": {
+          "walking": 110,
+          "idle": 104,
+          "spawn": 103
+        }
+      },
+      "limit": "Measures emotion/stopmove offsets and actor sizes only. Does not certify new stats/skills/equip fields or actor job offset. No compiler launched."
+    }
+  },
+  "live_evidence": {
+    "report": "/home/otto/dev/ro-bots/run/reviews/playing-mvp-live-after-keep-goal.json",
+    "report_sha256": "92d3290e336ff80181ed92f90713eb5c85b9b0bf22e284202bcd194b22903c9a",
+    "frontier": "/home/otto/dev/ro-bots/run/reviews/playing-mvp-live-after-keep-goal-frontier.json",
+    "elapsed_s": 51.937035823008046,
+    "positive_self_damage_receipts": 30,
+    "positive_amounts": [
+      1
+    ],
+    "full_raw_stats_skills_equip_to_request_capture": false,
+    "outcome": "52s run failed historic00B6; later framing repair is not a rerun. No XP gain/loot acceptance. No causal unarmed/weak target conclusion. 90s acceptance pending REST worker; all milestones remain OPEN."
+  },
+  "compact_context_example": {
+    "kind": "PROPOSED_SCHEMA_USING_REAL_REPORT_VALUES_NOT_AN_ACTUAL_MODEL_REQUEST",
+    "source": {
+      "report": "playing-mvp-live-after-keep-goal.json",
+      "fixture_index": 0,
+      "state_index": 0,
+      "damage_receipt_seq": 301,
+      "damage_received_at_monotonic": 97417.882730608
+    },
+    "self": {
+      "hp": 86,
+      "max_hp": null,
+      "base_level_at_damage": null,
+      "base_level_source": null,
+      "stats": null,
+      "stat_points": null,
+      "skill_points": null,
+      "learned_skills": null,
+      "equipped_items": null,
+      "aggregate_bonus": null,
+      "field_status": "UNKNOWN for uncaptured fields; HP is first native host-state report value, not contemporaneous hit HP"
+    },
+    "encounter": {
+      "actor_id": 110016356,
+      "species_id": null,
+      "species_level": null,
+      "native_epoch": null,
+      "recent_self_damage": {
+        "seq": 301,
+        "at": 97417.882730608,
+        "damage": 1,
+        "damage2": 0,
+        "is_sp_damage": false,
+        "damage_type": 0
+      },
+      "join_status": "UNKNOWN: report lacks raw species/frame epoch and own-level-at-hit; never infer numeric actorID as species"
+    }
+  },
+  "context_budget_proposal": {
+    "max_visible_actor_rows": 10,
+    "max_recent_encounters": 3,
+    "max_receipts_per_encounter": 3,
+    "max_context_json_utf8_bytes": 4096,
+    "priority": "self vitals/base-level provenance; visible target species; recent exact receipt summaries; current stats/free points; relevant learned skill/equip rows; selected public digests only",
+    "overflow": "Report truncation/has_more explicitly; truncate optional advice first, never replace absent/stale data with0 or use omission as a negative learned/equipped fact. Limits are design proposal, not measured production budget."
+  },
+  "minimal_implementation_order": [
+    {
+      "step": 1,
+      "slice": "Read-only observed species + outgoing self damage + own received level/source at receipt",
+      "reuse": "NativeGameplayTracker.ObservedDamage, _species received23:25 and per-session MobDB, SessionProgression; enrich ActorRef/BotState/request with typed IDs and provenance; no new formula or actuator",
+      "acceptance": "Stable source check targeted offsetof(job) active full headers; explicit source signedness and eligible presentation; epoch/map/vanish/actor reuse and past hit level tests; exact serialized bounded request capture; unknown joins null."
+    },
+    {
+      "step": 2,
+      "slice": "Initial/read-only current stats, aggregate bonuses, stat/skill free points and nextcost",
+      "reuse": "B0 status retention + pure typed BD/141/BE/BC decoder/collector proposal; no code created here",
+      "acceptance": "Targeted unchanged full-header compiler oracle/profile proof; reviewed BE framing before stream tests; signed bonuses, complete6stats, point0 vsUNKNOWN, snapshot truncation, disconnect/gap freshness and request serialization tests. New live receipt capture separately authorized."
+    },
+    {
+      "step": 3,
+      "slice": "Received learned skill snapshot/deltas/deletions",
+      "reuse": "010F/0111/010E/07E1/0441 framing; YamlMechanics source-hashed class tree digests with explicit wireID mapping",
+      "acceptance": "Complete snapshot structural row width, level0vslearned, mutation ordering/reset, SP cost/upgradable vs permanent flag, no SQL Basic9 fallback; unknown casting constraints stay unknown."
+    },
+    {
+      "step": 4,
+      "slice": "Received equipped index/WearState/item details with separately qualified effect knowledge",
+      "reuse": "Existing inventory parser extend typed retention not counts replacement; YamlMechanics.item_by_id and unknown_effects",
+      "acceptance": "Exact compiled equip row/bitfields and ACK sizes; source-backed0999/099A stream admission; complete inventory + unsupported-mutation invalidation; distinguish location/WearState, itemID/index and aggregate-vs-item bonus."
+    },
+    {
+      "step": 5,
+      "slice": "Only then separately authorize stat learn/equip/cast actuators",
+      "acceptance": "Pinned deterministic legal validators with server job/config/skill/cast requirement provenance; retain plans vs telemetry; bounded pending effects with native matching ACK/state reconciliation; rejection/noACK/partial capped success handled; no public guide autoapply."
+    }
+  ],
+  "mechanics_reuse": {
+    "sources": [
+      {
+        "path": "/home/otto/dev/ro-bots/src/robots/ports/mechanics.py",
+        "lines": [
+          1,
+          32
+        ]
+      },
+      {
+        "path": "/home/otto/dev/ro-bots/src/robots/adapters/mechanics_yaml.py",
+        "lines": [
+          1,
+          6
+        ]
+      },
+      {
+        "path": "/home/otto/dev/ro-bots/src/robots/adapters/mechanics_yaml.py",
+        "lines": [
+          310,
+          378
+        ]
+      },
+      {
+        "path": "/home/otto/dev/ro-bots/src/robots/adapters/mechanics_yaml.py",
+        "lines": [
+          400,
+          454
+        ]
+      },
+      {
+        "path": "/home/otto/dev/ro-bots/src/robots/adapters/mechanics_yaml.py",
+        "lines": [
+          550,
+          596
+        ]
+      }
+    ],
+    "limits": "Existing typed source-hashed base metadata deliberately excludes master Footer/imports, scripts, combos/refine/card calculation/server job caps/cast constraints. Reuse and extend explicitly, not parallel formula parser. Passive learned skill telemetry independent of digest advice. Public rules can explain mechanics; not authorize effects."
+  },
+  "frontiers": [
+    "New-family full-header targeted compiler/layout evidence not produced; exact actor job offsetof independently unrecovered despite known actor sizes.",
+    "Raw received stats/free points/learned skills/equipped rows and actual serialized native context not captured in existing live report.",
+    "Species+epoch+own received level at each hit not joinable from report alone.",
+    "00BE/00BC/0999/099A receive framing absent; collector-only decoding would not suffice.",
+    "Full ruleset/config legal cap/cast/equipment validation remains distinct work; no numeric guide caps autoapplied."
+  ],
+  "source_hashes": [
+    {
+      "path": "/home/otto/.hermes/cache/scratch/callback-package-hut2_cuz/configured-variant/src/map/map.hpp",
+      "sha256": "1cb428d1145ec9c4045b2ae58c163be24bf1bd374fc8eea07eaf0c266621fe2b",
+      "bytes": 40894
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/callback-package-hut2_cuz/configured-variant/src/map/packets.hpp",
+      "sha256": "b4959224a48e1febb811d7c1474f2c1b703d324ae4db7e3a1053a85b80da57bc",
+      "bytes": 55863
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/callback-package-hut2_cuz/configured-variant/src/map/packets_struct.hpp",
+      "sha256": "5ab5ef13d2a1cdc60d84dcaf2e3be0b6e316b9630e61c3ac7ba0f930d4d31287",
+      "bytes": 157544
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/callback-package-hut2_cuz/configured-variant/src/map/clif.cpp",
+      "sha256": "ace16f15be3b60f730522d620b73a68a9f2cc384016aadce9c985888aea9a1ac",
+      "bytes": 776024
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/callback-package-hut2_cuz/configured-variant/src/map/clif.hpp",
+      "sha256": "3a9c9531ba63ded135885d69c378ebc818cfbdcf8d4e4ccbcd9bb75d8a42019c",
+      "bytes": 60208
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/callback-package-hut2_cuz/configured-variant/src/map/clif_packetdb.hpp",
+      "sha256": "51c8a9ebd591e0dd4f444f829253a14d449615425405cb8a95f28a6dea460e66",
+      "bytes": 79471
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/callback-package-hut2_cuz/configured-variant/src/map/pc.cpp",
+      "sha256": "d12704c1ef7f8321c255175b6f61aa396209b931e2b1687fbbd16963d1def652",
+      "bytes": 498055
+    },
+    {
+      "path": "/home/otto/dev/ro-bots/src/robots/domain/model.py",
+      "sha256": "ad311ac53e1d3a24bf7fe34cb96461b342d8f3ff12a2397d7d43725221538dbf",
+      "bytes": 2072
+    },
+    {
+      "path": "/home/otto/dev/ro-bots/src/robots/domain/decisions.py",
+      "sha256": "9b32f1fad0ef0ff98c670092757742a68808846b845cbf1c469ff8bf8d2227f2",
+      "bytes": 5537
+    },
+    {
+      "path": "/home/otto/dev/ro-bots/src/robots/domain/build.py",
+      "sha256": "0ead8793772d3a7aacdb33c8e0087f700e54c8bdcd1a49c4cfc913dd5b3ddd18",
+      "bytes": 5428
+    },
+    {
+      "path": "/home/otto/dev/ro-bots/src/robots/ports/mechanics.py",
+      "sha256": "1db9f8a72c11d5c9b6006723e7ceed1d1950e46bac4a602274ff436961d73aae",
+      "bytes": 1115
+    },
+    {
+      "path": "/home/otto/dev/ro-bots/src/robots/adapters/mechanics_yaml.py",
+      "sha256": "c5991bd78af95b213b4fb9a2ca87b065f5b76e826edb84eac593498a80f64b58",
+      "bytes": 20135
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/callback-package-hut2_cuz/gcc-layout-run.stdout",
+      "sha256": "d79dfefd4be7efe0d6fbf3fd8cf7bfb135853dfe8935b39d758e7d99b3140ebf",
+      "bytes": 150
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/callback-package-hut2_cuz/layout.cpp",
+      "sha256": "9d0f3b45e18d83fe275ac2aacbc3385338e39e6e0e954b2eff24f8af514ddc73",
+      "bytes": 1882
+    }
+  ],
+  "issues_encountered": [
+    "Initial lookup packets.py absent; actual framing module discovered as packetdb.py.",
+    "One bounded source excerpt exceeded EOF; retried with min(len(lines)) without any file/runtime mutation."
+  ]
+}

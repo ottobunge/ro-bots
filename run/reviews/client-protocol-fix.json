@@ -1,0 +1,77 @@
+{
+  "status": "offline_client_blockers_fixed; full_shared_suite_has_unrelated_failures",
+  "scope": [
+    "spikes/003-clientless-limbs/client.py",
+    "tests/test_client_protocol.py"
+  ],
+  "report_path": "run/reviews/client-protocol-fix.json",
+  "native_acceptance": false,
+  "live_connections": false,
+  "server_or_database_writes": false,
+  "commits_or_staging": false,
+  "fixes": [
+    "Per-socket persistent exact-read and frame buffers; per-socket FIFO retains every coalesced frame.",
+    "Context-managed login/char sockets remove framing state on success and all exceptions.",
+    "Connect failures close map socket; close shuts down and joins reader; failed/unstarted readers are safe; non-stopping readers retain identity and block reuse.",
+    "Wire actor ID at offset 5 indexes actors and matches vanish; character ID at offset 9 is separately retained.",
+    "Only the receive reader dispatches; drain discards already-dispatched queue observations.",
+    "Absolute monotonic connection deadline spans login, char, map, TCP setup and handshake writes; default 35s budget; cleared after connect.",
+    "Receive EOF/framing/socket failures and dispatch failures are retained for harness health checks; map EOF cannot be accepted as handshake success.",
+    "Unsupported character creation fails closed with NotImplementedError before any wire write.",
+    "CLI requires a private explicit JSON account manifest; no reusable credential defaults or credential command-line flags."
+  ],
+  "coordination_api": {
+    "connect": "connect(*, deadline: float | None = None) -> BotClient; deadline is absolute time.monotonic(); None uses a 35-second total budget.",
+    "receive_health": "rx_error: Exception | None (None on intentional close); running and connected_map clear on reader failure.",
+    "dispatch_health": "dispatch_errors: list[tuple[int, str]]; nonempty means unhealthy even if reader remains alive.",
+    "retry": "close must finish reader shutdown/join before connect resets state; stuck reader raises RuntimeError and remains referenced. Join capped at 2 seconds and remaining connection budget.",
+    "actor_identity": "actors[wire_id][\"gid\"] == wire_id; [\"char_id\"] holds separate character ID; self.gid remains selected character ID.",
+    "creation": "create_flag retained; missing character + create_flag=True reaches _create_char and fails closed; provision existing characters separately.",
+    "cli_manifest": "python client.py /private/path/account.json; one object with user/password, optional char_name/login_ip/login_port; owner-only regular file, no leaf symlinks."
+  },
+  "tdd": {
+    "method": "Strict vertical RED/GREEN offline cycles, real implementation driven by deterministic fake sockets, events and monotonic clocks.",
+    "red_observations": [
+      "partial exact read lost bytes",
+      "coalesced stream needed extra reads / cross-socket buffers contaminated",
+      "actors indexed by character ID",
+      "drain duplicated chat",
+      "temporary and map socket leaks",
+      "close failed to interrupt/join; retry reused reader",
+      "health failure attributes absent",
+      "deadline keyword missing and login lacked bounded timeout retries",
+      "unsupported creation emitted wire request",
+      "credential defaults present / manifest loading absent",
+      "map EOF after accept falsely succeeded",
+      "char loop swallowed expired shared deadline",
+      "handshake writes did not clamp remaining budget",
+      "unstarted reader cleanup masked original failure"
+    ],
+    "existing_behavior_checks": "Some timeout offsets and EOF tests already passed after the first exact-read fix; recorded as regression coverage, not independently red failures."
+  },
+  "verification": {
+    "focused_command": "nix develop -c uv run --no-sync pytest tests/test_client_protocol.py spikes/003-clientless-limbs/test_packetdb.py -q --tb=short -o faulthandler_timeout=10",
+    "focused_passed": 49,
+    "owned_client_tests": 42,
+    "existing_packet_tests": 7,
+    "full_command": "nix develop -c uv run --no-sync pytest tests/ spikes/003-clientless-limbs/test_packetdb.py -q --tb=short -o faulthandler_timeout=15 --junitxml=/home/otto/.hermes/cache/scratch/client-protocol-final.xml",
+    "full_total": 557,
+    "full_passed": 555,
+    "full_failures": 2,
+    "full_errors": 0,
+    "full_skipped": 0,
+    "full_failure_names": [
+      "tests.test_classic_build_validity::test_catalog_does_not_claim_unsourced_market_prices",
+      "tests.test_classic_build_validity::test_bard_notes_match_normal_attack_speed_buff"
+    ],
+    "warning": "Existing FastAPI/Starlette httpx TestClient deprecation warning.",
+    "format": "nix develop -c ruff format on both owned Python files; focused suite passed after formatting."
+  },
+  "remaining_blockers": [
+    "Native creation-response layout remains unsupported, intentionally disabled rather than guessed.",
+    "No live/native acceptance attempted or claimed.",
+    "Full shared working-tree suite has two build-catalog failures outside ownership: unsourced price notes and incorrect Bard normal-attack buff notes. Those files were not modified.",
+    "Other reusable defaults in harness/SQL/README are owned by the harness child; this change only removes client.py CLI defaults."
+  ],
+  "elapsed_seconds": 1202.478
+}

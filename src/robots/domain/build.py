@@ -22,11 +22,20 @@ class ItemDigest:
     slot: str
     stat_effects: tuple[tuple[str, int], ...]
     required_level: int
-    price_tier: int  # 0-3, market value band
-    digest_text: str  # pre-rendered one-liner, e.g. "+4 STR, lvl req 45, sells ~2k"
+    price_tier: int | None  # 0-3 market band; None means market value is unknown
+    digest_text: str  # pre-rendered metadata, not a character damage calculation
+    aegis_name: str | None = None
+    ruleset: str | None = None
+    locations: tuple[str, ...] = ()  # exact rAthena location flags, including Both_Hand
+    jobs: tuple[tuple[str, bool], ...] = ()  # raw permission masks, not expanded job families
+    classes: tuple[tuple[str, bool], ...] = ()
+    gender: str | None = None
+    maximum_level: int | None = None
+    card_slots: int | None = None
+    unknown_effects: tuple[str, ...] = ()
 
     def __post_init__(self) -> None:
-        if not 0 <= self.price_tier <= 3:
+        if self.price_tier is not None and not 0 <= self.price_tier <= 3:
             msg = f"price_tier must be 0-3, got {self.price_tier}"
             raise ValueError(msg)
 
@@ -38,8 +47,16 @@ class SkillDigest:
 
     skill_id: str
     name: str
-    required_level: int
+    required_level: int  # legacy; YAML adapter mirrors declared BaseLevel, not learn order
     digest_text: str
+    max_level: int | None = None  # selected class tree capped against skill DB
+    database_max_level: int | None = None
+    required_base_level: int | None = None
+    required_job_level: int | None = None
+    prerequisites: tuple[tuple[str, int], ...] = ()
+    class_name: str | None = None
+    ruleset: str | None = None
+    unknown_effects: tuple[str, ...] = ()
 
     def __post_init__(self) -> None:
         if not self.skill_id or not self.name:
@@ -60,6 +77,9 @@ class Build:
     skill_goals: tuple[str, ...]
     equip_goals: dict[str, str]  # slot -> target item name
     milestone_levels: tuple[int, ...]
+    skill_levels: dict[str, int] = field(default_factory=dict)
+    ruleset: str = "unvalidated"
+    validation_issues: tuple[str, ...] = ("Executable build validity has not been established.",)
 
     def goal_for_slot(self, slot: str) -> str | None:
         """Target item name for ``slot``, or None if the build doesn't care."""
@@ -95,6 +115,7 @@ class CharacterSheet:
     level: int
     learned_skills: frozenset[str] = field(default=frozenset())
     equipped: dict[str, str] = field(default_factory=dict)  # slot -> item name
+    skill_levels: dict[str, int] = field(default_factory=dict)
 
     def progress_for(self, build: Build) -> BuildProgress:
         """Compare this sheet against ``build`` (pure; no model calls)."""
@@ -102,7 +123,7 @@ class CharacterSheet:
             s for s, item in build.equip_goals.items() if self.equipped.get(s) == item
         )
         equip_missed = tuple(s for s in build.equip_goals if s not in equip_met)
-        skills = sum(1 for s in build.skill_goals if s in self.learned_skills)
+        skills = sum(_skill_goal_met(s, self, build) for s in build.skill_goals)
         reached = sum(1 for m in build.milestone_levels if self.level >= m)
         return BuildProgress(
             build=build,
@@ -111,3 +132,9 @@ class CharacterSheet:
             skills_learned=skills,
             milestone_index=max(0, reached - 1),
         )
+
+
+def _skill_goal_met(name: str, sheet: CharacterSheet, build: Build) -> bool:
+    if name in build.skill_levels:
+        return sheet.skill_levels.get(name, 0) >= build.skill_levels[name]
+    return name in sheet.learned_skills

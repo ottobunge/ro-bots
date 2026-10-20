@@ -1,0 +1,113 @@
+{
+  "passed": true,
+  "security_concerns": [],
+  "logic_errors": [],
+  "summary": "Independent isolated offline source review accepts the post-warp LoadEndAck and bounded arrival-confirmation repair; this does not authorize live activation.",
+  "scope": "Read-only production and existing tests. Only this new review report and scratch probes/XML/coverage/freezes were written. No native, model, SQL, engine, credentials, endpoint, Git or source modifications.",
+  "isolated_source_scope": {
+    "freeze_before": "/home/otto/.hermes/cache/scratch/native-map-independent/freeze-before.json",
+    "freeze_after": "/home/otto/.hermes/cache/scratch/native-map-independent/freeze-after.json",
+    "files": 20,
+    "dependency_drift": [],
+    "includes": "client, packetdb, playing_runtime, session/gameplay/navigation/vitals/progression/actor helpers, adapter import boundary, model/actions/events/farm, map lifecycle tests and reused test helpers, pyproject and pinned Nix configuration",
+    "excluded_concurrent_work": "decisions.py, test_decisions.py and test_systemone_request_contract.py are owned by another delegate. Their unrelated intermediate schema change is not a map-repair approval gate. The coordinator owns final stable combined whole-project gates.",
+    "native_source_scope": "Pinned pc.cpp, clif.cpp and unit.cpp lifecycle/SELF movement excerpts, not the whole native source forest"
+  },
+  "frozen_critical_sha256": {
+    "spikes/003-clientless-limbs/client.py": "2f57a0adc0b43a20235835290499ca0043966c5def208642598afb0dc49807fd",
+    "spikes/003-clientless-limbs/packetdb.py": "2b2236689b7e2637699e7ca42d63a98ccb527640be164ba9cc301581dff53228",
+    "src/robots/app/playing_runtime.py": "0a3e92d97d540c3496de561074edd42dc64143915f850bda9c1efd2de9298d5f",
+    "src/robots/adapters/native_gameplay.py": "c7e9f16750bf117ba3a4843264e215d2e653c0376c70acd7ac45e00a6b2100f9",
+    "src/robots/adapters/native_session_progression.py": "c7ec4880115c14960642487b34e9ad05ea3ab1718ed0cd54748d361ae84dd55f",
+    "tests/test_native_map_lifecycle.py": "4108fdc3c075e3c5f6f94767881f518837400cacf215bf02efb7247be80a5b37",
+    "/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source/src/map/pc.cpp": "d12704c1ef7f8321c255175b6f61aa396209b931e2b1687fbbd16963d1def652",
+    "/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source/src/map/clif.cpp": "0b1db098158c240b090c6edb8417978ba495957c8a2df4cd9a0ab4cb39884ac5",
+    "/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source/src/map/unit.cpp": "e042d781fbceeb21b802a5ec44ae2cab234b673bd415a0488fa8853d8497af29"
+  },
+  "independent_self_review": {
+    "production_AST_changes_only": {
+      "spikes/003-clientless-limbs/client.py": ["_dispatch_world"],
+      "src/robots/app/playing_runtime.py": ["_await_pending"]
+    },
+    "baseline": "Compared actual method ASTs to original scratch client.py and playing_runtime.py supplied by repair author; all other function/method ASTs match.",
+    "security": "Reviewed actual added production lines: no secrets, dynamic evaluation, deserialization, shell/SQL injection or new filesystem/network destinations.",
+    "ACK_contract": "client.py:827-844 validates exact bytes/header/length before retaining map/position. Only same-server0091 on connected_map=True, running=True and a non-null socket sends007D. Metadata precedes send; frame publication follows successful dispatch. Send exceptions retain exact origin and prevent publishing successful frames. Initial02EB ACK remains unchanged; malformed/cross-server/inactive paths do not ACK. Neither class freshness nor epoch validity is manufactured.",
+    "native_LoadEndAck_authority": "Pinned pc.cpp:7116-7125 removes PC before clif_changemap and updates current/requested coordinates. clif.cpp:10752-10753 ignores duplicates for already-added PC,10768 clears warping,10815 adds map block,10848-10850 publishes nearby objects. clif.cpp:25794-25797 rejects other handlers while sd.prev is null. Walk requests are not implicit LoadEndAck.",
+    "arrival_authority": "Pinned unit.cpp:186-192 emits SELF walkok even for an already-at-target PC when sendMove=true;317 invokes that next-cell path with true. A requested destination alone is not current arrival.",
+    "bounded_confirmation": "playing_runtime.py:335-353 preserves strict newer received current-position matching plus arrival_confirmed. No-feedback requests retry the same pending point, at most three retries one second apart. After the final one-second wait, NativeTelemetryUnavailable is raised with pending retained. Late actual matching receipts reconcile; actual0091 metadata legitimately resets pending. No send, destination-only reply, stale sequence or unrelated position advances optimistically.",
+    "life_safety": "A received SELF death remains dead after0091. Warp does not promote alive, class freshness or authentication authority. Existing pose/session readiness gates remain in force."
+  },
+  "verification": {
+    "execution": "Pinned nix develop --offline, uv run --offline pytest; no installs or native connections",
+    "selected_existing_and_new_regression": {
+      "physical_XML": "/home/otto/.hermes/cache/scratch/native-map-independent/regression.xml",
+      "sha256": "37937c00e524086339f70545291b48dab1e12f1f76f30fdf42432d8f550f58f0",
+      "tests": 582,
+      "existing_selected_tests": 564,
+      "independent_adversarial_cases": 18,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "runtime_coverage_percent": 91.72413793103448,
+      "changed_runtime_lines_covered": [341,348,349,350],
+      "coverage_artifact": "/home/otto/.hermes/cache/scratch/native-map-independent/coverage.json"
+    },
+    "independent_probes": {
+      "source": "/home/otto/.hermes/cache/scratch/native-map-independent/test_independent_map.py",
+      "sha256": "907973616059de173160694a956a2cb94869ab9bb287d23771170e9e6a4fb12f",
+      "physical_XML": "/home/otto/.hermes/cache/scratch/native-map-independent/probes-green.xml",
+      "tests": 18,
+      "failures": 0,
+      "errors": 0,
+      "cases": [
+        "ACK send observes retained metadata before frame publication",
+        "OSError send preserves exact origin and prevents frame publication",
+        "KeyboardInterrupt send preserves exact origin and prevents frame publication",
+        "disconnected map does not ACK",
+        "stopped client does not ACK",
+        "null socket does not ACK",
+        "wrong packet header does not mutate metadata or publish",
+        "oversized packet does not mutate metadata or publish",
+        "non-bytes packet does not mutate metadata or publish",
+        "0092 invalidates route/class without ACK",
+        "0AC7 invalidates route/class without ACK",
+        "initial coalesced0091 has no ACK before authenticated entry, retains exactly one initial ACK",
+        "subsecond pacing, no-feedback exhaustion, retained pending and late actual arrival reconciliation",
+        "exhausted pending recovers on actual map refresh",
+        "destination-only and unrelated positions never release pending",
+        "stale matching sequence cannot confirm arrival",
+        "retry send error preserves origin and pending budget",
+        "map refresh cannot revive received SELF death"
+      ]
+    },
+    "author_TDD_physical_artifacts_inspected": {
+      "directory": "/home/otto/.hermes/cache/scratch/native-map-lifecycle",
+      "ack-red.xml": {"tests":1,"failures":1,"errors":0},
+      "ack-green.xml": {"tests":1,"failures":0,"errors":0},
+      "movement-red.xml": {"tests":2,"failures":1,"errors":0},
+      "movement-green.xml": {"tests":2,"failures":0,"errors":0},
+      "exhaustion-red.xml": {"tests":3,"failures":1,"errors":0},
+      "scoped.xml": {"tests":14,"failures":0,"errors":0}
+    },
+    "configured_statics": "Author report records seven configured src static gates green. Not rerun as whole-tree acceptance by this isolated reviewer; coordinator must run final stable combined gates. Complexity rules were not changed by this repair.",
+    "harness_issue": "Separate scratch-only invocation initially selected /home/otto as pytest root and failed collection (ModuleNotFoundError: tests). Failed XML retained as probes.xml. Corrected invocation explicitly selects repository pyproject and process-local repository/src PYTHONPATH; all18 pass. Combined582-test run already passed before that harness-only failure."
+  },
+  "numerical_debt_retained": {
+    "Ruff_before": 46,
+    "Ruff_after": 46,
+    "dispatch_world_branches_before": 26,
+    "dispatch_world_branches_after": 27,
+    "dispatch_world_statements_before": 94,
+    "dispatch_world_statements_after": 96,
+    "inherited_mypy_client": 13,
+    "inherited_mypy_packetdb": 2,
+    "qualification": "Ruff JSON totals independently counted; complexity and mypy numbers retained from repair artifacts. Configured src success is not a whole-spike green claim and does not waive increased numeric debt."
+  },
+  "activation_boundary": {
+    "live_activation_permission": false,
+    "new_ACK_real_play_run_verified": false,
+    "prior_native_observation": "Coordinator context reports real travel and warp, followed by post-warp stall with XP0/loot0; not independently rerun here.",
+    "remaining": "Coordinator must complete the stable combined whole-project gate and fresh exact fixture ownership/offline preflight before the already-authorized two-agent real playing run. Capture actual post-warp007D/SELF0087, subsequent native position/perception, cleanup and saved coordinates. Offline repair approval is not live combat, XP, loot or full-goal acceptance."
+  },
+  "private_values": "[REDACTED]"
+}

@@ -1,0 +1,260 @@
+{
+  "slice": "ReceivedSkillContextReadOnly",
+  "status": "PARTIAL_OFFLINE_INTEGRATION_NOT_SELF_APPROVED",
+  "scope": "Offline synthetic only; no network, inference, SQL or live effects",
+  "commands": [
+    {
+      "command": [
+        ".venv/bin/ruff",
+        "check",
+        "--fix",
+        "src/robots/adapters/native_skills.py",
+        "src/robots/domain/skills.py",
+        "src/robots/app/playing_runtime.py",
+        "src/robots/domain/model.py",
+        "src/robots/domain/decisions.py",
+        "tests/test_native_skill_context.py"
+      ],
+      "exit": 0,
+      "log": "/home/otto/.hermes/cache/scratch/native-skill-context/final2-00.log"
+    },
+    {
+      "command": [
+        ".venv/bin/black",
+        "--workers",
+        "1",
+        "src/robots/adapters/native_skills.py",
+        "src/robots/domain/skills.py",
+        "src/robots/app/playing_runtime.py",
+        "src/robots/domain/model.py",
+        "src/robots/domain/decisions.py",
+        "tests/test_native_skill_context.py"
+      ],
+      "exit": 0,
+      "log": "/home/otto/.hermes/cache/scratch/native-skill-context/final2-01.log"
+    },
+    {
+      "command": [
+        ".venv/bin/ruff",
+        "check",
+        "src/robots/adapters/native_skills.py",
+        "src/robots/domain/skills.py",
+        "src/robots/app/playing_runtime.py",
+        "src/robots/domain/model.py",
+        "src/robots/domain/decisions.py",
+        "tests/test_native_skill_context.py"
+      ],
+      "exit": 0,
+      "log": "/home/otto/.hermes/cache/scratch/native-skill-context/final2-02.log"
+    },
+    {
+      "command": [
+        ".venv/bin/black",
+        "--check",
+        "--workers",
+        "1",
+        "src/robots/adapters/native_skills.py",
+        "src/robots/domain/skills.py",
+        "src/robots/app/playing_runtime.py",
+        "src/robots/domain/model.py",
+        "src/robots/domain/decisions.py",
+        "tests/test_native_skill_context.py"
+      ],
+      "exit": 0,
+      "log": "/home/otto/.hermes/cache/scratch/native-skill-context/final2-03.log"
+    },
+    {
+      "command": [
+        ".venv/bin/mypy",
+        "--cache-dir",
+        "/home/otto/.hermes/cache/scratch/native-skill-context/mypy-final",
+        "src/robots/adapters/native_skills.py",
+        "src/robots/domain/skills.py",
+        "src/robots/app/playing_runtime.py",
+        "src/robots/domain/model.py",
+        "src/robots/domain/decisions.py",
+        "tests/test_native_skill_context.py"
+      ],
+      "exit": 0,
+      "log": "/home/otto/.hermes/cache/scratch/native-skill-context/final2-04.log"
+    },
+    {
+      "command": [
+        ".venv/bin/xenon",
+        "--max-absolute",
+        "B",
+        "--max-modules",
+        "B",
+        "--max-average",
+        "A",
+        "src"
+      ],
+      "exit": 0,
+      "log": "/home/otto/.hermes/cache/scratch/native-skill-context/final2-05.log"
+    },
+    {
+      "command": [
+        ".venv/bin/vulture",
+        "src",
+        "vulture_whitelist.py"
+      ],
+      "exit": 0,
+      "log": "/home/otto/.hermes/cache/scratch/native-skill-context/final2-06.log"
+    },
+    {
+      "command": [
+        ".venv/bin/bandit",
+        "-c",
+        "pyproject.toml",
+        "-r",
+        "src"
+      ],
+      "exit": 0,
+      "log": "/home/otto/.hermes/cache/scratch/native-skill-context/final2-07.log"
+    },
+    {
+      "command": [
+        ".venv/bin/pylint",
+        "--disable=all",
+        "--enable=duplicate-code",
+        "src"
+      ],
+      "exit": 0,
+      "log": "/home/otto/.hermes/cache/scratch/native-skill-context/final2-08.log"
+    },
+    {
+      "command": [
+        ".venv/bin/python",
+        "-m",
+        "pytest",
+        "tests/test_native_skill_context.py",
+        "tests/test_playing_runtime.py",
+        "tests/test_native_encounter_request.py",
+        "tests/test_native_npc_cancel_recovery.py",
+        "tests/test_native_pose_recovery.py",
+        "tests/test_systemone_request_contract.py",
+        "tests/test_native_protocol_manifest.py::test_immutable_source_profile_sender_binding",
+        "--junitxml=/home/otto/.hermes/cache/scratch/native-skill-context/green04.xml"
+      ],
+      "exit": 0,
+      "log": "/home/otto/.hermes/cache/scratch/native-skill-context/final2-09.log"
+    }
+  ],
+  "tests": {
+    "cases": 214,
+    "unique_cases": 214,
+    "failures": 0,
+    "errors": 0,
+    "skips": 0
+  },
+  "baseline": {
+    "file": "/home/otto/.hermes/cache/scratch/optchat-view-store-repair1-independent-freeze.json",
+    "sha256": "a9123d5f8805f787af7100314056064f47554f13f7a3bd92c4478c26cf6ff276",
+    "count": 264,
+    "changed": [
+      "src/robots/domain/decisions.py",
+      "src/robots/domain/model.py",
+      "src/robots/app/playing_runtime.py"
+    ],
+    "unchanged": 261,
+    "only_allowed_existing_changed": true
+  },
+  "originals": {
+    "src/robots/app/playing_runtime.py": "f811dcc64edc7175d20805ca08869a14f2f1584fd88337dbc1cd3261e3303003",
+    "src/robots/domain/model.py": "4b65f18758741526d0c59b9431392c30369b4af158194f3be930b1ee7fbac375",
+    "src/robots/domain/decisions.py": "19ffc2b9f69cf290cff7cfc3c4eae2129898d84389feb5baf1c42e1e1b6cdaf7"
+  },
+  "owned_hashes": {
+    "src/robots/adapters/native_skills.py": "164724cb472536b3194f89b74c1cd10704b45e458e50a7508f27bbaa3fa3c2fb",
+    "src/robots/domain/skills.py": "e468b5e01c02351c1fae38d14a985cca65f21aaa2abbcf165aabd2ca32b491c4",
+    "src/robots/app/playing_runtime.py": "c12ea50f8778e9aea0ab4afd80dddcc0be4ab7fe1ae457e5a289fc18929a3338",
+    "src/robots/domain/model.py": "be622769712b09f7b8ea6d521c1ce4e071782fdc181b08ec723dcb0bca12b07d",
+    "src/robots/domain/decisions.py": "3ee5cd587812d8d7505330daf63b47a502356311dc9feb4197d3dd012083de81",
+    "tests/test_native_skill_context.py": "333522f4021b32da98c4bb47aa7f20b08979c3ef42751b469ad7142387bb4892",
+    "protocol/main-20180704-pre-re-skills.json": "185febef3cd103b9b46132389fbde7af9903af9c769c392fd8cdf6113098e0c5"
+  },
+  "proof_registry": {
+    "/home/otto/.hermes/cache/scratch/native-skill-context/final2-02.log": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+    "/home/otto/.hermes/cache/scratch/native-skill-context/final2-04.log": "ab35ee42183d4d6d3ba483825ab037d18a5a15622d03be01d82220b1564851ff",
+    "/home/otto/.hermes/cache/scratch/native-skill-context/green01.xml": "8c9bd0711469de006542ab5c13ea62a081f28b1f20c1bfad5336d8c0a3664b37",
+    "/home/otto/.hermes/cache/scratch/native-skill-context/xenon01.log": "8a0ec1c5aaf135d7b1a64caa774f0aff24f8db34e2d29b880141d24ef410b80b",
+    "/home/otto/.hermes/cache/scratch/native-skill-context/final2-09.log": "451c7e1eeacffb76423a57ac8e35b49ee6da2f5d1c0d562440f0d373fc4507b3",
+    "/home/otto/.hermes/cache/scratch/native-skill-context/final2-08.log": "8cbfc8cd0b04a4858b0b78b74c6df9631a1695e105e6911d4b57fbcc43b218b5",
+    "/home/otto/.hermes/cache/scratch/native-skill-context/final-05.log": "663bd1d16eb08c76c35dab5679ad54a3c83e9715dba24abf7a34aa756b15af7b",
+    "/home/otto/.hermes/cache/scratch/native-skill-context/final-09.log": "f01a72b4b9316568bfb4f29fd4775b47a359e698b16f0f37e446b8d49dcf55a4",
+    "/home/otto/.hermes/cache/scratch/native-skill-context/final2-00.log": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+    "/home/otto/.hermes/cache/scratch/native-skill-context/final-00.log": "51edbd24ae4f09d9715e6089b6059d2d007f89bdd7376270f8cb577c798f0c4b",
+    "/home/otto/.hermes/cache/scratch/native-skill-context/final-01.log": "f3d0246bd999b0532e63ce863bfb3c276fdc19cf3a4e0cb53636750b840d7248",
+    "/home/otto/.hermes/cache/scratch/native-skill-context/red02.log": "8fe9e4d421e38cf41721603a793eaec48d96cac23d8015c9a385b92155cf5118",
+    "/home/otto/.hermes/cache/scratch/native-skill-context/commands-first.json": "840e4cbb260da5191f56cec163b1bccc8cc86151fd17c0b5e2994891f93c78ce",
+    "/home/otto/.hermes/cache/scratch/native-skill-context/final2-07.log": "0ce8734cfce892b0fa1c923751b6608ef919bf3f2251df7571242d3b896299a8",
+    "/home/otto/.hermes/cache/scratch/native-skill-context/final2-06.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-skill-context/green02.log": "9162706c18c5ac9af91bd90213be5372a08ea06110cb81a69c381d4d7bee4180",
+    "/home/otto/.hermes/cache/scratch/native-skill-context/red03.log": "71fe74aceb46ef3b1691c8f0b66bc464a0db93a93109ecfd9ee4e51acd905c81",
+    "/home/otto/.hermes/cache/scratch/native-skill-context/report-first.json": "1eddcbeff2ede4dee84cd0619d473ac08b3959bd7fed6287b76937588969dd55",
+    "/home/otto/.hermes/cache/scratch/native-skill-context/green04.xml": "e903a7eeb98293c2a68e2b45705332c882ffddfa08b83af974d427d3248b4bff",
+    "/home/otto/.hermes/cache/scratch/native-skill-context/green03.xml": "c2d020974c1bbc15132daa8577acef35fd1b19ce009e27da11aeb0a6011b5a2c",
+    "/home/otto/.hermes/cache/scratch/native-skill-context/final2-05.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-skill-context/final2-01.log": "d75dd1a51e8d2d9735398f4274cf2526a8603f3573a1fc8f9e156e785a565610",
+    "/home/otto/.hermes/cache/scratch/native-skill-context/final-07.log": "98bdf640842b34c445f2d5306a34d0506d4222b2f534150c400ee171b978af06",
+    "/home/otto/.hermes/cache/scratch/native-skill-context/final-04.log": "69fce72e10036cd74e86dd5e66a65248de0f2b1985fcf4a40bb14f9c9f62304f",
+    "/home/otto/.hermes/cache/scratch/native-skill-context/final2-03.log": "7657c5ec367da2c8d4deead1b5f1f8eca9c1b89120ad13df7f855ca4005696b6",
+    "/home/otto/.hermes/cache/scratch/native-skill-context/final-08.log": "8cbfc8cd0b04a4858b0b78b74c6df9631a1695e105e6911d4b57fbcc43b218b5",
+    "/home/otto/.hermes/cache/scratch/native-skill-context/black01.log": "4eeb79b3ae4b9e2f287bb3863c0f31ab6fd7954e1d39b213c227511b3de0cd09",
+    "/home/otto/.hermes/cache/scratch/native-skill-context/green01.log": "e9ef6abfc2928b452b34f188e5085d7f871f641fa8d731512eaadcc274d38efe",
+    "/home/otto/.hermes/cache/scratch/native-skill-context/red04.log": "bb0c1f87591d687346e4af2636ece5e767edfc02027267b909dbff4011b5c098",
+    "/home/otto/.hermes/cache/scratch/native-skill-context/green02.xml": "78ce172a7c7f6eba61b40ccf7d24a83d16e0f721c29a8da6b4c0eedad363d308",
+    "/home/otto/.hermes/cache/scratch/native-skill-context/harness01.log": "0a21fe3028528dcb83e39d06dd10bf72812ad88949f29c55ab0e430d1171ad3e",
+    "/home/otto/.hermes/cache/scratch/native-skill-context/red03.xml": "44272218f5ab29ba0dcb8d25e338e85c37cf6de5a700885a9d50018286d320d4",
+    "/home/otto/.hermes/cache/scratch/native-skill-context/final-06.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-skill-context/red02.xml": "0b9f4ed5de38d263fc716e116500b0339b25ec0691a38f1c83718a745ffd2831",
+    "/home/otto/.hermes/cache/scratch/native-skill-context/verify.py": "e4ea41640ab982a2d7db2dee9ea52d8adc2e50a95a337afaf1cd0fc2a161917a",
+    "/home/otto/.hermes/cache/scratch/native-skill-context/red04.xml": "9fda19dec4256adefb45508b568e020a860a1d92f37b4fd56aea40420cb79a30",
+    "/home/otto/.hermes/cache/scratch/native-skill-context/commands.json": "abde0ab0edb53cd85d07c573eb9a04cf936396a92b8d13e0a760b2d5d581b5e3",
+    "/home/otto/.hermes/cache/scratch/native-skill-context/final-03.log": "7657c5ec367da2c8d4deead1b5f1f8eca9c1b89120ad13df7f855ca4005696b6",
+    "/home/otto/.hermes/cache/scratch/native-skill-context/final-02.log": "d6981a61042484f169a9c8912f2417d98c67b8d4d488ee76163a6f82e101752d",
+    "/home/otto/.hermes/cache/scratch/native-skill-context/mypy01.log": "ab35ee42183d4d6d3ba483825ab037d18a5a15622d03be01d82220b1564851ff",
+    "/home/otto/.hermes/cache/scratch/native-skill-context/ruff01.log": "ac8db4135f2d27e67bed5814f1cc9e9df27c7ab3b06648bad4a09761b06fb692"
+  },
+  "preserved_source_proofs": {
+    "/home/otto/.hermes/cache/scratch/native-learned-skill-receipt/pytest.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-learned-skill-receipt/probe.py": "93c17c369082ec2f8170d26f276418213762fc627d95fc1bd2a335748d768e08",
+    "/home/otto/.hermes/cache/scratch/native-learned-skill-receipt/layout-gpp.stdout": "2f5668eb6c0d71223bd24cb721989e7e7e5fb300061bc0d4b7c92798f3ce1cf5",
+    "/home/otto/.hermes/cache/scratch/native-learned-skill-receipt/layout-gpp.compile.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-learned-skill-receipt/pytest.stdout": "f89aac72f1644b3c8424564a7a9dd9c97296225d527ee2742dae6f266d0a3d54",
+    "/home/otto/.hermes/cache/scratch/native-learned-skill-receipt/layout-clangpp": "d7f497fb8bbcc2f0b5f9e6e25e160b7d1d7fd0e8fd8bd30f31c0943a3266302e",
+    "/home/otto/.hermes/cache/scratch/native-learned-skill-receipt/layout-gpp.compile.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-learned-skill-receipt/source-shaped-skill-receipts.junit.xml": "88a7184c54f3817d093e49c3ee991e5466724324fdf185b8aa9ad210cd2677c4",
+    "/home/otto/.hermes/cache/scratch/native-learned-skill-receipt/layout-gpp": "a5d1d2b161ad6ada4dd9457086c745024b6b9c78942fd3d0bf7a19e8fc84d6cf",
+    "/home/otto/.hermes/cache/scratch/native-learned-skill-receipt/layout-clangpp.stdout": "2f5668eb6c0d71223bd24cb721989e7e7e5fb300061bc0d4b7c92798f3ce1cf5",
+    "/home/otto/.hermes/cache/scratch/native-learned-skill-receipt/layout-clangpp.compile.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-learned-skill-receipt/layout-clangpp.compile.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-learned-skill-receipt/layout.cpp": "e3f2059da6da68dee6cc52e1dffde4a614daaf6cfd7e3bcc0c99661857b72f5b"
+  },
+  "source_guard": "Actual unchanged test_immutable_source_profile_sender_binding; exact bind_source symbol absent as already recorded in handoff",
+  "tdd": {
+    "vertical_red": "red02.xml",
+    "vertical_green": "green01.xml",
+    "update_red": "red03.xml",
+    "update_green": "red04.xml (update case passed; independent boolean timestamp RED)",
+    "timestamp_red": "red04.xml",
+    "final_green": "green04.xml",
+    "limit": "Not every ancillary lifecycle/codec constraint has an individual tests-first RED; final contract coverage is incomplete."
+  },
+  "remaining": [
+    "Add source-shaped PlayingClient map/gap/reconnect/epoch/client-identity lifecycle regressions; current gap/delete coverage is collector-only.",
+    "Expand strict boolean API, malformed-input and legacy-default contract tests.",
+    "Independent frozen review and parent unchanged combined full gate not run by this delegate.",
+    "No current whole4772+65/95.59 baseline-pass claim after these changes.",
+    "All six milestones, full criterion9 and UniiChat conformance remain OPEN."
+  ],
+  "semantics": {
+    "levels": "Reported effective levels, including zero tree entries; permanent, copied and temporary ownership UNKNOWN.",
+    "complete": "UNKNOWN even for empty LIST; partner and overflow ADD/UPDATE continuations are possible.",
+    "upgrade": "All uint8 values opaque; 1 is an upgrade hint, never spend/prerequisite/casting authority.",
+    "free_points": "Independent received status, never evidence of skill absence.",
+    "delete": "0x0441 invalidates conservatively using existing framing; no added lengths.",
+    "retention": "256 observed rows maximum; overflow poisons UNKNOWN rather than fabricating absence.",
+    "decision": "At most 8 numeric rows, explicit displayed subset/truncation; compact skills section <=2048 UTF-8 bytes."
+  }
+}

@@ -1,0 +1,41 @@
+{
+  "status": "PUBLICATION_PRECONDITION_FRONTIER_IDENTIFIED_NO_SCOPE_ISSUED",
+  "read_phase_verified": "run/reviews/native-item-guide-parent-read-phase-verified.json",
+  "blockers": [
+    {
+      "id": "TABLE_HEALTH_PROOF_EXPIRED",
+      "pinned_receipt": "run/reviews/native-current-db-health.json",
+      "pinned_sha256": "7aed8c66bbff2e261916653c1fac1f904e9e1dd9d00ce4d83b79cee5dc06fe1e",
+      "observed_at_utc": "2026-10-12T19:38:12.711930+00:00",
+      "age_hours_rounded": 42.8,
+      "window_hours": 24,
+      "source_predicate": "live_recovery.table_health current_table_health_expired",
+      "resolution": "Separately reviewed bounded CHECK TABLE receipt refresh under the original lock plus a versioned source successor binding the new receipt; no silent hash rebind, no repair mode."
+    },
+    {
+      "id": "MAP_ERROR_INVENTORY_PINNED_TO_HISTORICAL_EPOCH",
+      "pinned_epoch": "2026-10-08T15:08:31.458528082Z",
+      "pinned_faults": 3,
+      "current_captured_map_epoch": "2026-10-12T23:18:15.345459707Z",
+      "current_captured_map_errors": 0,
+      "source_predicate": "live_recovery.validate_error_inventory historical_map_epoch/fixed_map_error_inventory",
+      "resolution": "Reviewed source successor admitting the captured current-epoch clean baseline while preserving historical faults as immutable history; current capture alone is not admission."
+    },
+    {
+      "id": "RUNTIME_MAP_INCLUDES_IMPORT_TARGET_KEY",
+      "present_keys": [
+        "container:map:/world/runtime/npc/scripts_custom.conf"
+      ],
+      "source_predicate": "publication.validate_request content_guarded_transition_not_qualified",
+      "resolution": "No source change needed: future content approval rebuilds runtime hashes without the two public target keys, which are not mandatory dependencies. Exact current target bytes stay qualified through fresh probes inside the content request."
+    }
+  ],
+  "not_blockers": {
+    "guide_absence": "UNKNOWN still; future in-request probe decides",
+    "current_world_running_stable": "Fresh role metadata captured under lock this phase",
+    "private_inputs": "Two exact hashes captured and verified"
+  },
+  "publication_calls": 0,
+  "execution_approval_issued": false,
+  "native_authority": "UNCHANGED_REVOKED"
+}

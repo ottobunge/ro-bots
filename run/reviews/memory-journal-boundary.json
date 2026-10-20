@@ -1,0 +1,136 @@
+{
+  "task": "Bounded TDD follow-up for durable journal namespace sync, hardlink refusal, and descriptor ownership cleanup",
+  "date": "2026-10-05",
+  "repository": "/home/otto/dev/ro-bots",
+  "status": "owned_journal_changes_verified; full_task_check_blocked_by_concurrent_runtime_test_edits",
+  "files_modified": [
+    "src/robots/adapters/memory_journal.py"
+  ],
+  "files_created": [
+    "tests/test_memory_journal_boundary.py",
+    "run/reviews/memory-journal-boundary.json"
+  ],
+  "scope": {
+    "source_ownership": ["src/robots/adapters/memory_journal.py", "tests/test_memory_journal_boundary.py"],
+    "public_api_preserved": ["constructor(root, persona_id)", "path", "load()", "append(note)", "close()"],
+    "other_sources_existing_tests_runtime_wiki_edited": false,
+    "live_game_or_provider_calls": false,
+    "credentials_used": false,
+    "commits_or_pushes": false,
+    "environment": "All project execution used nix develop and the existing project toolchain; no dependency changes or outside-Nix installs."
+  },
+  "implementation": [
+    "The fd-relative O_NOFOLLOW ancestor walk syncs each parent directory before releasing its descriptor. This includes parents of newly created directories and resyncs existing ancestors that may have been left by an earlier failed constructor.",
+    "After opening, validating, and locking the journal inode, construction fsyncs the private journal directory before returning. Append retains its existing flush plus journal-inode fsync before successful return. A directory-sync failure prevents construction and therefore prevents any note acknowledgement.",
+    "Regular journal validation now requires st_nlink == 1. Validation runs both during construction and again against the opened descriptor immediately before append's write. A link added after opening is rejected without writing and poisons the active writer.",
+    "Text conversion uses closefd=False so the store retains explicit raw-descriptor ownership even during partial text-wrapper initialization failure. Successful stores retain that raw descriptor until close, preserving the lifetime flock.",
+    "Constructor, ancestor-walk, and close cleanup attempt each owned descriptor independently while suppressing secondary syscall-close OSErrors. Originating exceptions remain unchanged. Close invalidates stored descriptor numbers before cleanup so repeated close does not close descriptors subsequently reused by another store."
+  ],
+  "tdd": {
+    "method": "Vertical RED then minimal GREEN slices; no production change preceded its corresponding failing test. Existing invariant checks added afterward are explicitly regression coverage, not novel RED claims.",
+    "command_prefix": "nix develop -c uv run pytest tests/test_memory_journal_boundary.py",
+    "slices": [
+      {
+        "behavior": "Sync new ancestor and journal directory entries before append acknowledgement",
+        "red_command_suffix": "-vv -o faulthandler_timeout=10",
+        "red": "1 failed: the syscall event list had no fsync of a created ancestor's parent.",
+        "green": "1 passed after parent-directory and journal-directory syncs were introduced."
+      },
+      {
+        "behavior": "Reject journals hardlinked before construction or after opening",
+        "red_command_suffix": "-k 'hardlinked or link_added' -vv -o faulthandler_timeout=10",
+        "red": "2 failed: both expected PermissionErrors were absent.",
+        "green": "3 boundary cases passed after exact link-count validation at construction and append."
+      },
+      {
+        "behavior": "Preserve conversion failure after partial wrapper ownership transfer",
+        "red_command_suffix": "-k conversion -vv -o faulthandler_timeout=10",
+        "red": "1 failed, 1 passed: conversion after a real wrapper was created/closed produced EBADF from a duplicate raw close instead of the original RuntimeError.",
+        "green": "5 boundary cases passed after closefd=False and explicit successful-store raw-fd ownership."
+      },
+      {
+        "behavior": "Preserve directory-sync error while releasing all descriptors despite secondary cleanup errors",
+        "red_command_suffix": "-k cleanup_error -vv -o faulthandler_timeout=10",
+        "red": "2 failed: ancestor-sync and journal-directory-sync exceptions were replaced by secondary close failures.",
+        "green": "7 boundary cases passed after independent best-effort constructor and traversal cleanup."
+      },
+      {
+        "behavior": "Explicit reopen must sync an ancestor entry left by an earlier failed constructor",
+        "red_command_suffix": "-k retry_syncs -vv -o faulthandler_timeout=10",
+        "red": "1 failed: reopened store appended successfully without fsync of the parent containing the previously created ancestor.",
+        "green": "8 boundary cases passed after syncing every walked parent, with ownership transferred before parent cleanup."
+      },
+      {
+        "behavior": "Close failure must release owned descriptors without masking its originating error",
+        "red_command_suffix": "-k close_failure -vv -o faulthandler_timeout=10",
+        "red": "1 failed, 1 passed: injected secondary raw descriptor-close failures replaced the original text-close RuntimeError.",
+        "green": "10 boundary cases passed after independent best-effort raw descriptor cleanup in close."
+      }
+    ],
+    "additional_existing_behavior_regressions": [
+      "Constructor file-open failure closes all tracked descriptors and permits reopen.",
+      "Constructor file-validation failure closes all tracked descriptors and permits reopen.",
+      "Failure after a real flock acquisition closes the lock-owning descriptor and permits reopen.",
+      "Append-inode-sync failure preserves exception identity, poisons reads/appends, leaves bytes unchanged on blocked retry, retains the writer lock until explicit close, and releases both owned descriptors on close."
+    ]
+  },
+  "verification": {
+    "new_boundary_cases": 14,
+    "focused": {
+      "command": "nix develop -c uv run pytest tests/test_memory_journal_boundary.py tests/test_memory_journal_failures.py tests/test_memory_storage.py tests/test_memory_concurrency.py -vv -o faulthandler_timeout=10",
+      "exit_code": 0,
+      "result": "47 passed in 1.24s; includes all new boundary cases, the previous failure cases, storage/fresh-process replay, and concurrency regressions."
+    },
+    "owned_static_gates": [
+      {
+        "command": "nix develop -c uv run black --check src/robots/adapters/memory_journal.py tests/test_memory_journal_boundary.py",
+        "exit_code": 0,
+        "result": "2 files left unchanged."
+      },
+      {
+        "command": "nix develop -c uv run ruff check src/robots/adapters/memory_journal.py tests/test_memory_journal_boundary.py",
+        "exit_code": 0,
+        "result": "All checks passed."
+      },
+      {
+        "command": "nix develop -c uv run mypy --follow-imports=silent src/robots/adapters/memory_journal.py tests/test_memory_journal_boundary.py",
+        "exit_code": 0,
+        "result": "Success: no issues found in 2 source files."
+      }
+    ],
+    "full_test_gate": {
+      "command": "nix develop -c task test",
+      "exit_code": 0,
+      "result": "284 passed, 1 warning in 4.42s",
+      "coverage_percent": 92.77,
+      "required_coverage_percent": 85,
+      "journal_reported_rounded_coverage_percent": 99,
+      "warning": "Existing StarletteDeprecationWarning: using httpx with starlette.testclient is deprecated."
+    },
+    "audit": {
+      "command": "nix develop -c task audit",
+      "exit_code": 0,
+      "result": "No known vulnerabilities found; task removed its generated .audit-requirements.txt."
+    },
+    "full_check_gate": {
+      "command": "nix develop -c task check",
+      "exit_code": 201,
+      "latest_result": "Blocked at Black: tests/test_host_storage_failure.py would be reformatted; 64 other files unchanged. This file belongs to the concurrent runtime child and was not edited by this journal task.",
+      "intermediate_result": "A preceding task check passed Black but was blocked by Ruff and mypy errors confined to src/robots/app/agent_runtime.py and tests/test_host_storage_failure.py. An initial test run also caught 2 concurrent runtime RED tests; the later full test gate passed all 284 cases.",
+      "parent_action": "Rerun task check after the runtime child completes formatting and type/lint cleanup."
+    }
+  },
+  "evidence_and_limits": [
+    "Success-path syscall spies invoke the real mkdir and fsync on actual temporary filesystem directories and the journal inode, record their resolved descriptor targets, and assert namespace/data syncs precede append's successful return.",
+    "Failure-path injections operate on real open descriptors, real file wrappers, real hardlinks, and real flocks. Cleanup injections close the actual descriptor before reporting a secondary error. Tests check EBADF on all tracked descriptors and successful fresh writer acquisition afterward.",
+    "This exercises syscall ordering, fail-closed return behavior, exception identity, descriptor cleanup, and lock release on this Linux filesystem. It is not a power-loss simulation and does not establish physical power-loss tolerance, controller/cache behavior, or crash consistency on every filesystem.",
+    "No exactly-once retry guarantee is claimed. An append whose fsync fails can already have reached disk; a failed or lost acknowledgement can leave an uncertain outcome. A poisoned writer blocks automatic continuation; explicit inspection/repair/reopen remains necessary, and blindly retrying the same logical note may duplicate it.",
+    "The pre-append fstat detects an existing hardlink at that boundary, including links created after constructor success. It does not claim atomic protection against a malicious same-UID process linking the inode concurrently after validation.",
+    "All walked parents are synced at construction to cover failed-constructor leftovers. Startup latency was not benchmarked; unsupported or failed directory fsync remains fail-closed rather than being silently ignored."
+  ],
+  "issues_encountered": [
+    "The new test initially referenced memory_journal.fcntl, which strict mypy treated as an unexported module attribute. The test now imports fcntl directly; both owned-file Ruff and mypy gates pass.",
+    "Full quality runs overlap another child's active runtime changes. Full test and audit gates passed on the latest exercised tree, but the final task check still stopped at the runtime child's test formatting. No out-of-scope files were altered to make that gate pass."
+  ],
+  "handoff": "Parent owns documentation, combined quality rerun, and independent re-review. No commits were made."
+}

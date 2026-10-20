@@ -210,7 +210,16 @@ fn build_roster(
     solos: u32,
     fpg_min: u32,
     fpg_max: u32,
-) -> (Vec<MockGroup>, Vec<MockAgent>) {
+) -> Result<(Vec<MockGroup>, Vec<MockAgent>), CommandError> {
+    // Admission precedes RNG setup, roster allocations and generation loops.
+    Command::RegenerateRoster {
+        seed,
+        friend_groups,
+        solos,
+        friends_per_group_min: fpg_min,
+        friends_per_group_max: fpg_max,
+    }
+    .validate()?;
     let mut rng = Pcg64::new(u128::from(seed), 0xA0F1_5AFE_1234_5678_9ABC_DEF0_1357_2468);
     let mut groups = Vec::new();
     let mut agents = Vec::new();
@@ -392,17 +401,19 @@ fn build_roster(
             let last_at = EPOCH_START + (i as f64 + 1.0) * 600.0;
             agent.reputation.push(ReputationEntry {
                 human: (*h).to_string(),
-                score: clamp1(chat_rng.random_range(-0.8..0.9)),
+                score: Some(clamp1(chat_rng.random_range(-0.8..0.9))),
+                agent_score: None,
+                group_score: None,
                 last_reason: if up {
                     pick(&REASONS_UP, chat_rng.random_range(0..REASONS_UP.len())).to_string()
                 } else {
                     pick(&REASONS_DOWN, chat_rng.random_range(0..REASONS_DOWN.len())).to_string()
                 },
-                last_at,
+                last_at: Some(last_at),
             });
         }
     }
-    (groups, agents)
+    Ok((groups, agents))
 }
 
 /// Unreachable: `last_mut` after a push in the same block.
@@ -424,19 +435,21 @@ impl MockWorldFeed {
     #[must_use]
     pub fn new(seed: u64) -> Self {
         Self::with_shape(seed, 3, 1, 2, 4)
+            .unwrap_or_else(|_| unreachable!("constant default roster shape is valid"))
     }
 
-    /// Create a mock world with an explicit shape.
-    #[must_use]
+    /// Create a mock world with an explicit, resource-bounded shape.
+    /// # Errors
+    /// Rejects invalid/oversized shapes before allocating a roster or channel.
     pub fn with_shape(
         seed: u64,
         friend_groups: u32,
         solos: u32,
         fpg_min: u32,
         fpg_max: u32,
-    ) -> Self {
+    ) -> Result<Self, CommandError> {
+        let (groups, agents) = build_roster(seed, friend_groups, solos, fpg_min, fpg_max)?;
         let (tx, _rx) = tokio::sync::broadcast::channel(CHANNEL_CAP);
-        let (groups, agents) = build_roster(seed, friend_groups, solos, fpg_min, fpg_max);
         let mut world = World {
             seed,
             tick: EPOCH_START,
@@ -451,7 +464,7 @@ impl MockWorldFeed {
         for ev in initial {
             let _ = feed.tx.send(ev);
         }
-        feed
+        Ok(feed)
     }
 
     /// Advance the world one tick: schedule ticking, a burst of chat and
@@ -629,15 +642,17 @@ fn mock_tick_events(world: &mut World, seed: u64) -> Vec<WorldEvent> {
                 let agent = &world.agents[i];
                 ReputationEntry {
                     human: human.to_string(),
-                    score: clamp1(
+                    score: Some(clamp1(
                         agent
                             .reputation
                             .iter()
                             .find(|r| r.human == human)
-                            .map_or(delta, |r| r.score + delta),
-                    ),
+                            .map_or(delta, |r| r.score.unwrap_or_default() + delta),
+                    )),
+                    agent_score: None,
+                    group_score: None,
                     last_reason: reason.to_string(),
-                    last_at: now,
+                    last_at: Some(now),
                 }
             };
             {
@@ -688,7 +703,7 @@ impl WorldFeed for MockWorldFeed {
             Err(e) => e.into_inner(),
         };
         RosterSnapshot {
-            seed: world.seed,
+            seed: Some(world.seed),
             groups: world
                 .groups
                 .iter()
@@ -744,8 +759,8 @@ impl WorldFeed for MockWorldFeed {
                     .memory
                     .iter()
                     .map(|(lvl, idx, text)| MemoryViewLine {
-                        level: *lvl,
-                        index: *idx,
+                        level: Some(*lvl),
+                        index: Some(*idx),
                         summary: text.clone(),
                     })
                     .collect(),
@@ -757,7 +772,7 @@ impl WorldFeed for MockWorldFeed {
                         name: c.name.clone(),
                         class_path: c.class_path.clone(),
                         build_summary: c.build.clone(),
-                        level: c.level,
+                        level: Some(c.level),
                     })
                     .collect(),
                 personal_goal: a.personal_goal.clone(),
@@ -793,7 +808,7 @@ impl WorldFeed for MockWorldFeed {
                     solos,
                     friends_per_group_min,
                     friends_per_group_max,
-                );
+                )?;
                 world.seed = seed;
                 world.groups = groups;
                 world.agents = agents;

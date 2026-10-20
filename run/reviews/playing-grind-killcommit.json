@@ -1,0 +1,82 @@
+{
+  "status": "KILLCOMMIT_COMPLETE_OFFLINE_PRODUCTION_TDD_FULL_GATES_GREEN",
+  "completed_at": "2026-10-17T00:00:00Z",
+  "lane": "playing-grind-killcommit",
+  "namespace": ".work/playing-grind-killcommit/",
+  "goal": "Close window 22's last gap (no actual kill -> no XP delta, no floor drop, no pickup): concentrate the ~1-damage Novice hits on one committed target until death, and give window 23 an honest XP/loot observation overlay with packet ids verified at the pinned server.",
+  "production_change": {
+    "file": "src/robots/app/scripts.py",
+    "what": "KILL_COMMIT_WINDOW = 30 bounded target commitment for GrindScript and FarmScript via a per-bot-name registry (_KillCommitment/_kill_commitment/_engage/_release_commitment): keep attacking the most recently attacked, still-visible id; landed attacks rearm the window; approach evaluations consume it; release on target vanish (id leaves the received state), rest, loot, or window exhaustion. The commitment survives the brain's heartbeat script re-installation (brain.py:305/460) because it is keyed by bot name, not script instance.",
+    "guards_kept": [
+      "hp-rest precedence unchanged (rest checked first, commitment released there)",
+      "FarmScript holds only ids passing its CURRENT effective plan filter (strict targeting + bounded widening unchanged; out-of-filter ids are never adopted)",
+      "commitment releases on loot emission",
+      "non-grasp goals (IdleTownScript/NpcGuidanceScript/script_for) untouched",
+      "per-bot isolation (two agents never share a commitment)",
+      "positionless committed target keeps the fail-closed honest attack"
+    ],
+    "tdd": {
+      "red": {
+        "receipt": ".work/playing-grind-killcommit/evidence/RED-commitment.xml",
+        "result": "12 failed / 1 passed (behavioral, against the unchanged window-22 source)",
+        "pre_change_source_sha256": "c25dc5431f9d4ce29c0884f7c77bcbd22d0ebc6da6d50c5e5408251ef3957b24",
+        "pre_change_copy": ".work/playing-grind-killcommit/evidence/scripts.py.pre-killcommit",
+        "test_file_sha256_at_red": "c13160f1da783fd99af608983b3648a2b3a8bcfb907c746cbf6c6e3edbe5c44b"
+      },
+      "green": {
+        "receipt": ".work/playing-grind-killcommit/evidence/GREEN-commitment-final.xml",
+        "result": "13 passed / 0 failed",
+        "sibling_scoped": ".work/playing-grind-killcommit/evidence/GREEN-commitment-scoped.xml",
+        "sibling_scoped_result": "96 passed / 0 failed (approach + widening + empty-plan + recorded-goal + rest-recovery + explicit-goal suites, no regressions)"
+      }
+    }
+  },
+  "observation_overlay": {
+    "modules": [
+      ".work/playing-grind-killcommit/killcommit_capture.py",
+      ".work/playing-grind-killcommit/killcommit_window23.py"
+    ],
+    "reuse_read_only": ".work/playing-grind-killchain (KillchainAttributor 0x8C8 attribution) + emission namespace composition pattern; no file in any other namespace modified",
+    "tdd": {
+      "red": ".work/playing-grind-killcommit/evidence/RED-killcommit-overlay.xml (module-absence, 2 collection errors on unchanged tree)",
+      "green": ".work/playing-grind-killcommit/evidence/GREEN-killcommit-overlay-final.xml (15 passed / 0 failed)"
+    },
+    "receipt_fields": "killchain_counters gains a killcommit block: xp_deltas_by_param/xp_events (named SP_BASEEXP/SP_JOBEXP), floor_items_seen/floor_item_sights/floor_items_visible/floor_items_disappeared, pickup_sends/pickup_dispatched, attack_sends_by_target, damage_by_target/max_damage_single_target, kill_damage_at_or_above_pinned_hp, kill_commit_acceptance{committed_kill_damage, attacked_target_death, xp_delta_positive, pickup_dispatched}"
+  },
+  "protocol_verification_at_pin": {
+    "pin": "rathena e985006171d2eb320ee512a653f4c83aea3d81b6, MAIN/pre-re 20180704 (repo checkout ./rathena at that rev; flake.nix:10-16)",
+    "xp": "SP_BASEEXP/SP_JOBEXP ride ZC_LONGLONGPAR_CHANGE 0x0ACB <HHq> (clif.cpp:3738-3741 #if PACKETVER >= 20170830 -> clif_longlongpar_change; map.hpp:499 _sp enum SP_SPEED,SP_BASEEXP,SP_JOBEXP=0,1,2; packets_struct.hpp:399-404 DEFINE_PACKET_ID 0x0acb). The brief's '0x00B0 params 1/2' is wrong at this pin; 0x00B0 (packets_struct.hpp:359) is the pre-20170830 fallback and is decoded+named anyway.",
+    "floor_item_entry": "ZC_ITEM_ENTRY 0x009D, 17 bytes packed <HIHBHHHBB> with uint16 itemId on MAIN < 20181121 (clif.cpp:5389-5405 clif_getareachar_item -> PACKET_ZC_ITEM_ENTRY; packets_struct.hpp:2350-2364; spike packetdb '0x009D: 17 audited MAIN20180704'). The brief's '0x00C4' is wrong at this pin. Disappear: ZC_ITEM_DISAPPEAR 0x00A1 6B (packets.hpp:615).",
+    "pickup_send": "CZ_ITEM_PICKUP2 0x0362 <id>.L (clif.cpp:12003-12004) - exactly native_gameplay.pickup()'s payload (0x0362 + u32 floor-item id); observed on the wrapped wire _send seam.",
+    "attack_sends": "0x0437 CZ_REQUEST_ACT2 with target u32 at offset 2 (window-22 wire histogram).",
+    "poring_hp": "Pinned server db/pre-re/mob_db.yml:134-140 'Id: 1002 ... Hp: 50, BaseExp: 2, JobExp: 1'. The brief's 60 HP came from the official-iRO DB (run/knowledge/iro-db, hp 60/exp 27/20) and does not describe this server; the kill gate is calibrated to 50 and both figures are recorded."
+  },
+  "window23_loot_blocker": {
+    "finding": "The production tracker ingests floor items only on 0x0ADD (src/robots/adapters/native_gameplay.py:255-256,272, size 22 at :272) which this pinned server never sends; clif_getareachar_item emits 0x009D 17B unconditionally (src/map/packets.hpp:2211, no other floor-entry sender in clif.cpp). tracker.view.floor_items therefore stays empty live, playing_runtime._loot (playing_runtime.py:887-900) never sends 0x0362, and the pickup leg cannot close on current bytes.",
+    "scope_decision": "native_gameplay.py is outside this lane's named production files (scripts.py only), so the decode fix is NOT made here. The minimal tracker-lane fix: ingest 0x009D (size 17 in _validate) into self._floor with the <HIHBHHHBB> layout, keeping the 0x0ADD branch for other pins. The overlay decodes 0x009D from raw frames independently, so window 23's receipt shows floor sight + XP deltas regardless; only pickup_dispatched depends on the tracker fix.",
+    "honest_fallback": "Without the tracker fix the window-23 receipt records pickup_dispatched:false plus floor_items_seen>0 sight events - a named blocker, not fabricated zeros."
+  },
+  "gates": {
+    "root": "nix develop -c task check rc=0: 5940 passed + 65 subtests (= 5927+65 baseline + 13 new repo contracts), coverage 95.78% >= 85% (log .work/playing-grind-killcommit/evidence/root-task-check.log)",
+    "format": "black --check clean on src/robots/app/scripts.py + tests/test_grind_target_commitment.py + .work/playing-grind-killcommit/ (explicitly re-verified after the root gate; the previous lane's format failure not repeated)",
+    "scoped_quality": "ruff clean, mypy --strict clean (MYPYPATH=killcommit:killchain:emission:src, --follow-imports=silent), xenon rc=0 (B/B/A) on src/robots/app/scripts.py",
+    "scoped_tests": "13 commitment + 15 overlay = 28 passed (final-snapshot receipts evidence/*-final.xml); 96 scripts-adjacent sibling tests green"
+  },
+  "digests": {
+    "final": ".work/playing-grind-killcommit/evidence/final-sha256.txt",
+    "production_scripts_py": "cb9d56957df75b1292dec7b5bfeddfbf1c41ba30e96c42f5c8e135dae1da92ff",
+    "repo_test_file": "53df82d787e847c440143e5899ee684f8f0556d8d01c7ffed394c87b1a3e81b8",
+    "killcommit_capture_py": "3a85cb331c7d1ecbe3ab2e9f3873e7fec4877df94af143cfd2442074451085c1",
+    "killcommit_window23_py": "018c7d190f036db1dbdbf58bbf920d2b0876295f08c7d31b209247bebf55a7b4"
+  },
+  "ready_to_run": ".work/playing-grind-operator/READY-TO-RUN.md 'Window 23' section (live command with killcommit namespace on PYTHONPATH, entrypoint killcommit_window23.main, acceptance gates, loot blocker)",
+  "files_touched": [
+    "src/robots/app/scripts.py (named production file)",
+    "tests/test_grind_target_commitment.py (new repo contracts, +13)",
+    ".work/playing-grind-killcommit/** (namespace: modules, tests, evidence)",
+    ".work/playing-grind-operator/READY-TO-RUN.md (Window-23 section only)",
+    "run/reviews/playing-grind-killcommit.json (this receipt)"
+  ],
+  "native_authority": "UNCHANGED_REVOKED",
+  "live_execution": "NONE (prohibited; parent runs window 23)"
+}

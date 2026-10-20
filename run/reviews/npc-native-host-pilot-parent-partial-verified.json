@@ -1,0 +1,49 @@
+{
+  "status": "PARTIAL_CANDIDATE_VERIFIED_NOT_APPROVED_FOR_NATIVE",
+  "initial_report": {
+    "path": "/home/otto/dev/ro-bots/run/reviews/npc-native-host-pilot-preparation.json",
+    "sha256": "974a7c7c6305e9cefa7265d1fff4cdf34d60a29d089fca58c9d621b9c980540a"
+  },
+  "current_cases": 24,
+  "candidate_files": 9,
+  "artifact_bindings_verified": 56,
+  "protected_bindings": 430,
+  "protected_distinct_paths": 428,
+  "initial_candidate_archive": "/home/otto/.hermes/cache/scratch/npc-native-host-pilot/initial-candidate-history",
+  "quality_blockers": {
+    "black": {
+      "exit": 0,
+      "files": 9
+    },
+    "strict_mypy": {
+      "exit": 0,
+      "files": 9,
+      "follow_imports": "silent; explicit scratch module/test scope, unchanged imported source already parent-qualified"
+    },
+    "ruff": {
+      "exit": 1,
+      "remaining_findings": 40
+    },
+    "xenon_B_B_A": {
+      "exit": 1,
+      "blocking_functions": [
+        "guards.guard C",
+        "native_launcher.validate_private D",
+        "probe.select_actor C",
+        "probe.Pilot._guarded_perform C",
+        "probe.Pilot._drive C",
+        "probe.Pilot.run C",
+        "test_probe.test_default_actual_host_http_and_native_boundary_roundtrip D"
+      ]
+    },
+    "combined_duplicate_check_new_modules_current_src_old_launcher": {
+      "exit": 8,
+      "findings": "Three duplicated private-file permission/count guard spans versus the old launcher; unresolved"
+    },
+    "waivers_ignores_skips_threshold_changes": false
+  },
+  "completion_scope": "Named quality, complete helper chain, integrated retained ownership/timeout/release, optimized entry, paced keepalive and immutable per-run authoring evidence; no new scenario or authority widening",
+  "new_completion_budget": "Named native-pilot completion1/2; old passive helper/generic budgets unchanged",
+  "native_execution_authorized": false,
+  "full_goals": "OPEN"
+}

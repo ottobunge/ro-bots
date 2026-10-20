@@ -1,0 +1,19 @@
+{
+  "status": "GRIND_WINDOWS_30_31_OPERATIONAL_ENTRY_CHURN_DIAGNOSIS_RECORD",
+  "completed_at": "2026-10-18T05:06:19+00:00",
+  "finding": "three consecutive windows (w30, w31a, w31b) show the entry churn: agents log in, receive their map + own position, send LoadEndAck (0x7D x29 = one per 60s cycle), receive NOTHING (no vitals/actors), and are kicked at the 60s stall - reconnect loop. Began at receipt-1792283854 BEFORE any restart and with no code change; survived simultaneous AND sequential restarts AND container recreation.",
+  "world_recovery_state": {
+    "containers": "recreated via docker compose up with the resolved inputs (compose-inputs.json: ports 16900/16121/15121, volume ro-bots-world-test, project ro-bots-test); mariadb recreated unhealthy-looking (healthcheck lacks the root password) but functional - fixture data verified intact; rathena trio started manually and listening",
+    "publications": "intact (feabfbd0 spawns verified post-restart)",
+    "readback": "fixed to reference the mariadb container by NAME (the recreate changed the container id)"
+  },
+  "client_side_eliminations": [
+    "ports accept raw sockets (16900/16121/15121 all verified)",
+    "not the playground schedule (--playground pins the window by construction)",
+    "not the pin/plan (window 26 proved the full chain on the same world pre-churn)"
+  ],
+  "the_one_clean_reset_NOT_yet_tried": "none - simultaneous restart, sequential restart, and container recreation all attempted; the churn survives all three, which points INSIDE the map-server session state machine (LoadEndAck -> unit spawn path) or the char-server session list",
+  "recommended_next": "enable rAthena server-side login visibility: copy the world conf, set the console/log output (log.conf / msg logging), restart in dependency order, run a 180s probe login, and read the kick reason from the map-server log - the kick reason names the fix. This needs the guarded world-conf publication path or a direct conf edit in the owned runtime mirror.",
+  "receipt": "run/reviews/playing-grind-operator-live-window30.json (w30), window31.json (w31)",
+  "native_authority": "UNCHANGED_REVOKED"
+}

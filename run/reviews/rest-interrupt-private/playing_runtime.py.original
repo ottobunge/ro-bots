@@ -1,0 +1,589 @@
+"""Strict received-wire bridge for the existing scheduled host.
+
+No hidden population, persona progression, optimistic position or stub providers.
+Initial life uses fresh authenticated map-session source authority; SELF death
+overrides it until an explicit resurrection receipt. Warp alone never revives.
+"""
+
+import math
+import random
+import time
+from collections.abc import Callable, Iterable
+from dataclasses import dataclass
+from pathlib import Path
+from typing import Any
+
+import yaml
+
+from robots.adapters.native_gameplay import (
+    NativeGameplayTracker,
+    NativeGameplayView,
+    ObservedPosition,
+    attack,
+    party_chat,
+    pickup,
+)
+from robots.adapters.native_navigation import MapCache, NoRoute, shortest_path, starter_route
+from robots.adapters.native_session_progression import (
+    SessionProgression,
+    require_native_session_progression,
+)
+from robots.adapters.native_vitals import NativeTelemetryUnavailable, require_native_vitals
+from robots.domain.actions import (
+    AcceptInvite,
+    Attack,
+    GameAction,
+    InviteToParty,
+    Loot,
+    MoveTo,
+    PartyChat,
+    Rest,
+    Say,
+)
+from robots.domain.events import DamageTaken, InviteReceived, MonsterSpotted, WorldEvent
+from robots.domain.farm import MobInfo
+from robots.domain.model import ActorRef, BotState, ChatLine, Goal, PartyInvite
+
+# e985 socket.cpp235,396,1016-1022; conf/packet_athena.conf22: inbound
+# inactivity closes client sessions after >60s. Leave two intervals of slack.
+KEEPALIVE_INTERVAL_S = 20.0
+
+
+class ObservedMobDatabase:
+    """Public species mechanics; map membership comes only from this agent."""
+
+    def __init__(self, catalog: Iterable[MobInfo] = ()) -> None:
+        self.catalog = {mob.id: mob for mob in catalog}
+        self._map = ""
+        self._visible: tuple[MobInfo, ...] = ()
+
+    @classmethod
+    def load(cls, path: Path) -> ObservedMobDatabase:
+        data = yaml.safe_load(path.read_text())
+        return cls(
+            MobInfo(
+                row["Id"],
+                row["Name"],
+                row.get("Level", 1),
+                bool(row.get("MvpExp", 0) or row.get("MvpDrops")),
+            )
+            for row in data["Body"]
+        )
+
+    def observe(self, map_name: str, species: Iterable[int]) -> None:
+        self._map = map_name
+        self._visible = tuple(
+            sorted(
+                (self.catalog[key] for key in set(species) if key in self.catalog),
+                key=lambda mob: (mob.level, mob.id),
+            )
+        )
+
+    def mobs_on_map(self, map_name: str) -> tuple[MobInfo, ...]:
+        return self._visible if map_name == self._map else ()
+
+    def by_name(self, name: str) -> MobInfo | None:
+        return next((mob for mob in self.catalog.values() if mob.name == name), None)
+
+
+@dataclass(frozen=True)
+class _FieldPatrol:
+    target: tuple[int, int]
+    receipt_baseline: int
+    context: tuple[str, int | None, Goal]
+    deadline: float
+
+
+class PlayingClient:
+    """Wrap native limbs while retaining AgentHost's client lifecycle contract."""
+
+    def __init__(
+        self,
+        wire: Any,
+        mob_db: ObservedMobDatabase | None = None,
+        *,
+        cache: MapCache | None = None,
+        monotonic: Callable[[], float] = time.monotonic,
+    ) -> None:
+        self.wire = wire
+        self.cache = cache
+        self._now = monotonic
+        self._pending: tuple[tuple[int, int], int, float, int] | None = None
+        self._event_cursor = 0
+        self._seen_actors: set[int] = set()
+        self._invite = 0
+        self._rng = random.Random(wire.char_name)
+        self.mob_db = mob_db or ObservedMobDatabase()
+        self._tracker: NativeGameplayTracker | None = None
+        self._epoch: int | None = None
+        self._species: dict[int, int] = {}
+        self._metadata_cursor = 0
+        self._authenticated_baseline = False
+        self._standing: bool | None = None
+        self._stand_pending: tuple[int, float, float, int] | None = None
+        self._patrol: _FieldPatrol | None = None
+        self._keepalive_at: float | None = None
+        self._keepalive_failed = False
+
+    def connect(self, *args: Any, **kwargs: Any) -> Any:
+        self._patrol = None
+        self._keepalive_at = None
+        result = self.wire.connect(*args, **kwargs)
+        self._keepalive_failed = False
+        return result
+
+    def close(self, *args: Any, **kwargs: Any) -> Any:
+        self._patrol = None
+        self._keepalive_at = None
+        result = self.wire.close(*args, **kwargs)
+        self._keepalive_failed = False
+        return result
+
+    def __getattr__(self, name: str) -> Any:
+        return getattr(self.wire, name)
+
+    def _health(self) -> None:
+        if self._keepalive_failed:
+            message = "native keepalive send failed; transport release required"
+            raise NativeTelemetryUnavailable(message)
+        wire = self.wire
+        if (
+            wire.running is not True
+            or wire.connected_map is not True
+            or wire.sock is None
+            or wire.rx_thread is None
+            or wire.rx_thread.is_alive() is not True
+            or wire.rx_error
+            or wire.dispatch_errors
+        ):
+            message = "native playing transport unavailable"
+            raise NativeTelemetryUnavailable(message)
+
+    def _observe(self) -> NativeGameplayTracker:
+        self._health()
+        epoch, base, frames = self.wire.native_frame_snapshot()
+        if epoch != self._epoch:
+            self._reset_epoch(epoch, base)
+        tracker = self._tracker
+        if tracker is None or not tracker.consume_snapshot(epoch, base, frames):
+            message = "native playing frame continuity unavailable"
+            raise NativeTelemetryUnavailable(message)
+        self._consume_metadata(frames)
+        return tracker
+
+    def build_native_state(self, goal: Goal) -> BotState:
+        tracker = self._observe()
+        wire, view = self.wire, tracker.view
+        vitals = require_native_vitals(wire.status_params)
+        progression = self._progression()
+        pos = view.position
+        if not view.perception_ready or pos is None:
+            message = "native playing position unavailable"
+            raise NativeTelemetryUnavailable(message)
+        map_name = self._map_identity(view.map_name or wire.map_name)
+        nearby = self._nearby(view, pos, map_name)
+        invites = (PartyInvite(wire.party_invite_from, pos.at),) if wire.party_invite_pid else ()
+        return BotState(
+            name=wire.char_name,
+            job=progression.job,
+            base_level=progression.base_level,
+            hp=vitals.hp,
+            max_hp=vitals.max_hp,
+            sp=vitals.sp,
+            max_sp=vitals.max_sp,
+            map_name=map_name,
+            x=pos.x,
+            y=pos.y,
+            goal=goal,
+            in_party=self._in_party(),
+            nearby=tuple(nearby),
+            inventory={str(key): count for key, count in (view.inventory_counts or ())},
+            pending_invites=invites,
+            recent_chat=tuple(
+                ChatLine("public", str(aid), text, pos.at) for aid, text in wire.chat[-5:]
+            ),
+            inventory_known=view.inventory_known,
+            alive_known=self._life(view) is not None,
+            alive=self._life(view),
+            native_epoch=wire.native_epoch,
+            progression_source=progression.base_source,
+        )
+
+    def _map_identity(self, wire_name: str) -> str:
+        """Derive a cache key, retaining the literal name in the received view.
+
+        Pinned mapindex.cpp43-69/clif.cpp2159 append the .gat wire suffix.
+        Only a derived identity present in this world's cache is usable.
+        """
+        if self.cache is None:
+            return wire_name
+        key = wire_name[:-4] if wire_name.endswith(".gat") else wire_name
+        if key not in self.cache.maps:
+            message = "received map has no public cache identity"
+            raise NativeTelemetryUnavailable(message)
+        return key
+
+    def perform_native(self, action: GameAction) -> None:
+        state = self.build_native_state(Goal.GRIND)
+        match action:
+            case Attack(target_id=target):
+                if state.alive is True and any(
+                    actor.id == target for actor in state.nearby_monsters
+                ):
+                    self.wire._send(attack(target))
+            case Loot():
+                self._loot(state)
+            case MoveTo(x=x, y=y):
+                self._move(state, (x, y))
+            case _:
+                self._social(state, action)
+
+    def _social(self, state: BotState, action: GameAction) -> None:
+        match action:
+            case PartyChat(text=text):
+                if state.in_party:
+                    self.wire._send(party_chat(text, speaker_name=self.wire.char_name))
+            case Say(text=text):
+                self.wire.say(text)
+            case Rest():
+                self.wire.sit()
+            case AcceptInvite():
+                if self.wire.party_invite_pid:
+                    self.wire.party_reply(self.wire.party_invite_pid, True)
+            case InviteToParty(player=player):
+                self.wire.party_invite(player)
+            case _:
+                message = "unsupported native playing action"
+                raise ValueError(message)
+
+    def _loot(self, state: BotState) -> None:
+        tracker = self._tracker
+        if tracker is None or state.alive is not True:
+            return
+        items = sorted(
+            tracker.view.floor_items,
+            key=lambda item: math.hypot(item.position.x - state.x, item.position.y - state.y),
+        )
+        if items:
+            item = items[0]
+            if math.hypot(item.position.x - state.x, item.position.y - state.y) <= 2:
+                self.wire._send(pickup(item.floor_item_id))
+            else:
+                self._move(state, (item.position.x, item.position.y))
+
+    def _move(self, state: BotState, target: tuple[int, int]) -> None:
+        tracker = self._tracker
+        if tracker is None or tracker.view.position is None or state.alive is False:
+            return
+        view = tracker.view
+        pos = view.position
+        if pos is None:
+            return
+        if not self._require_standing():
+            return
+        if self._await_pending(view, pos):
+            return
+        if self.cache is None:
+            return
+        try:
+            path = shortest_path(self.cache.get(state.map_name), (state.x, state.y), target)
+        except NoRoute:
+            self._fail_patrol(target)
+            return
+        if len(path) > 1:
+            point = path[1]
+            self.wire.move(*point)
+            self._pending = (point, pos.seq, self._now(), 0)
+
+    def mechanical_actions(
+        self, state: BotState, actions: tuple[GameAction, ...]
+    ) -> tuple[GameAction, ...]:
+        self._sync_patrol_context(state)
+        if state.goal not in (Goal.GRIND, Goal.FARM_ITEM) or actions or self.cache is None:
+            return actions
+        tracker = self._tracker
+        if tracker is not None and tracker.view.floor_items:
+            return (Loot(),)
+        if state.nearby_monsters or state.alive is False:
+            return actions
+        try:
+            field = self._field_target(state)
+            route = starter_route(
+                self.cache, state.map_name, (state.x, state.y), field_target=field
+            )
+        except NoRoute:
+            self._fail_patrol()
+            return actions
+        point = route.next_waypoint
+        return (MoveTo(*point),) if point is not None else ()
+
+    def drain_native_events(self) -> tuple[WorldEvent, ...]:
+        state = self.build_native_state(Goal.GRIND)
+        self._keepalive()
+        tracker = self._tracker
+        if tracker is None:
+            return ()
+        events: list[WorldEvent] = []
+        visible = {actor.id for actor in state.nearby_monsters}
+        events.extend(
+            MonsterSpotted(actor)
+            for actor in state.nearby_monsters
+            if actor.id not in self._seen_actors
+        )
+        self._seen_actors = visible
+        events.extend(self._damage_events(tracker.view))
+        self._event_cursor = self._metadata_cursor
+        if self.wire.party_invite_pid and self.wire.party_invite_pid != self._invite:
+            events.append(InviteReceived(state.pending_invites[0]))
+        self._invite = self.wire.party_invite_pid
+        return tuple(events)
+
+    def _keepalive(self) -> None:
+        """Pump before host cognition; getters/state projection never send.
+
+        Called only after strict received state readiness. Inference shares the
+        host thread: this is pacing, not a guarantee against >60s blocked ticks.
+        The wire owns the existing packet encoding and send-failure semantics.
+        """
+        now = self._now()
+        previous = self._keepalive_at
+        if not math.isfinite(now) or (previous is not None and now < previous):
+            message = "native keepalive clock unavailable"
+            raise NativeTelemetryUnavailable(message)
+        if previous is None:
+            self._keepalive_at = now
+        elif now - previous >= KEEPALIVE_INTERVAL_S:
+            # Poison before the fallible send; retain exact exception/ownership.
+            self._keepalive_failed = True
+            self.wire.keepalive()
+            self._keepalive_failed = False
+            self._keepalive_at = now
+
+    def _in_party(self) -> bool:
+        return bool(self.wire.party_id) or any(
+            member.get("aid") == self.wire.aid for member in self.wire.party_members
+        )
+
+    def _life(self, view: NativeGameplayView) -> bool | None:
+        if view.alive_known:
+            return view.alive
+        return True if self._authenticated_baseline else None
+
+    def _nearby(
+        self, view: NativeGameplayView, pos: ObservedPosition, map_name: str
+    ) -> tuple[ActorRef, ...]:
+        nearby = []
+        species = []
+        for actor in view.actors:
+            if actor.attackable:
+                key = self._species.get(actor.actor_id, 0)
+                species.append(key)
+                info = self.mob_db.catalog.get(key)
+                nearby.append(
+                    ActorRef(
+                        actor.actor_id,
+                        info.name if info else f"monster#{key}",
+                        "monster",
+                        math.hypot(actor.position.x - pos.x, actor.position.y - pos.y),
+                    )
+                )
+        self.mob_db.observe(map_name, species)
+        return tuple(nearby)
+
+    def _await_pending(self, view: NativeGameplayView, pos: ObservedPosition) -> bool:
+        pending = self._pending
+        if pending is not None:
+            point, seq, sent, retries = pending
+            if view.arrival_confirmed and pos.seq > seq and (pos.x, pos.y) == point:
+                self._pending = None
+            elif self._now() - sent >= 1.0 and retries < 3:
+                # unit.cpp186-192,317 sends SELF walkok even for a zero-cell
+                # path. Missing feedback must not suppress bounded requests;
+                # only the received current/from coordinate can prove arrival.
+                self.wire.move(*point)
+                self._pending = (point, pos.seq, self._now(), retries + 1)
+                return True
+            elif retries >= 3 and self._now() - sent >= 1.0:
+                message = "native movement arrival confirmation exhausted"
+                raise NativeTelemetryUnavailable(message)
+            else:
+                return True
+        return False
+
+    def _field_target(self, state: BotState) -> tuple[int, int] | None:
+        self._sync_patrol_context(state)
+        if self.cache is None or state.map_name != "prt_fild08":
+            return None
+        grid = self.cache.get(state.map_name)
+        patrol = self._patrol
+        if patrol is not None and not self._patrol_replan(patrol):
+            return patrol.target
+        self._patrol = None
+        candidates = [
+            (state.x + self._rng.randint(-8, 8), state.y + self._rng.randint(-8, 8))
+            for _ in range(16)
+        ]
+        target = next((point for point in candidates if grid.walkable(point)), None)
+        if target is not None:
+            self._patrol = _FieldPatrol(
+                target,
+                self._metadata_cursor,
+                (state.map_name, state.native_epoch, state.goal),
+                self._now() + 120.0,  # bounded policy, not an inferred travel time
+            )
+        return target
+
+    def _sync_patrol_context(self, state: BotState) -> None:
+        patrol = self._patrol
+        context = (state.map_name, state.native_epoch, state.goal)
+        if self.cache is None or (patrol is not None and patrol.context != context):
+            self._patrol = None
+
+    def _fail_patrol(self, target: tuple[int, int] | None = None) -> None:
+        patrol = self._patrol
+        if (
+            self._pending is None
+            and patrol is not None
+            and (target is None or target == patrol.target)
+        ):
+            self._patrol = None
+
+    def _patrol_replan(self, patrol: _FieldPatrol) -> bool:
+        pending = self._pending
+        if pending is not None:
+            tracker = self._tracker
+            if tracker is None or tracker.view.position is None:
+                return False
+            view, pos = tracker.view, tracker.view.position
+            point, seq, _, _ = pending
+            if not view.arrival_confirmed or pos.seq <= seq or (pos.x, pos.y) != point:
+                return False
+        return self._patrol_arrived(patrol) or self._now() >= patrol.deadline
+
+    def _patrol_arrived(self, patrol: _FieldPatrol) -> bool:
+        tracker = self._tracker
+        if tracker is None:
+            return False
+        view = tracker.view
+        pos = view.position
+        return bool(
+            view.arrival_confirmed
+            and pos is not None
+            and pos.seq > patrol.receipt_baseline
+            and (pos.x, pos.y) == patrol.target
+        )
+
+    def _require_standing(self) -> bool:
+        """Only received SELF pose, not HP or send intent, authorizes recovery."""
+        if self._standing is True:
+            return True
+        now = self._now()
+        pending = self._stand_pending
+        if pending is None:
+            self._stand_pending = (self._metadata_cursor, now, now, 1)
+            self.wire.stand()
+        else:
+            seq, started, last_sent, attempts = pending
+            if attempts < 3 and now - last_sent >= 1.0 and now - started < 3.0:
+                self._stand_pending = (seq, started, now, attempts + 1)
+                self.wire.stand()
+        return False
+
+    def _damage_events(self, view: NativeGameplayView) -> tuple[WorldEvent, ...]:
+        events: list[WorldEvent] = []
+        own = (self.wire.aid, (-self.wire.aid) & 0xFFFFFFFF)
+        for damage in view.damage:
+            if (
+                damage.seq > self._event_cursor
+                and damage.target_id in own
+                and not damage.is_sp_damage
+            ):
+                amount = max(0, damage.damage) + max(0, damage.damage2)
+                if amount:
+                    events.append(DamageTaken(amount, damage.source_id))
+        return tuple(events)
+
+    def say(self, text: str) -> None:
+        self.perform_native(Say(text))
+
+    def _reset_epoch(self, epoch: int, base: int) -> None:
+        self._keepalive_at = None
+        self._keepalive_failed = False
+        self._patrol = None
+        self._tracker = NativeGameplayTracker(self.wire.aid)
+        self._epoch = epoch
+        self._species.clear()
+        self._metadata_cursor = base
+        self._authenticated_baseline = False
+        self._pending = None
+        self._standing = None
+        self._stand_pending = None
+        self._event_cursor = base
+        self._seen_actors.clear()
+        self._invite = 0
+
+    def _consume_metadata(self, frames: tuple[tuple[int, float, int, bytes], ...]) -> None:
+        for seq, _, pid, raw in frames:
+            if seq <= self._metadata_cursor:
+                continue
+            if pid == 0x0091:
+                self._patrol = None
+                self._species.clear()
+                self._pending = None
+            elif pid == 0x02EB:
+                # e985 clif.cpp10721-29 fresh zero allocation; pc_setnewpc,
+                # pc_authok and pc_setpos do not set dead_sit before auth.
+                # pc.hpp1150 defines dead_sit==1 as death, not display HP.
+                self._authenticated_baseline = True
+                self._standing = True
+                self._stand_pending = None
+            elif pid == 0x08C8:
+                self._receive_pose(seq, raw)
+            elif pid in (0x09FD, 0x09FE, 0x09FF):
+                self._species[int.from_bytes(raw[5:9], "little")] = int.from_bytes(
+                    raw[23:25], "little"
+                )
+            elif pid == 0x0080:
+                self._species.pop(int.from_bytes(raw[2:6], "little"), None)
+                if (
+                    int.from_bytes(raw[2:6], "little")
+                    in (self.wire.aid, (-self.wire.aid) & 0xFFFFFFFF)
+                    and raw[6] == 1
+                ):
+                    self._standing = None
+                    self._stand_pending = None
+            self._metadata_cursor = seq
+
+    def _receive_pose(self, seq: int, raw: bytes) -> None:
+        """Validated ACT3: packed type@29, SELF srcID, target0.
+
+        Pinned packets.hpp1412-26 and clif.cpp5329-58; negative source is
+        the exact disguised SELF alias, never an arbitrary peer/NPC.
+        """
+        own = (self.wire.aid, (-self.wire.aid) & 0xFFFFFFFF)
+        if (
+            int.from_bytes(raw[2:6], "little") not in own
+            or int.from_bytes(raw[6:10], "little") != 0
+        ):
+            return
+        if raw[29] == 2:
+            if self._standing is not False:
+                self._stand_pending = None
+            self._standing = False
+        elif raw[29] == 3:
+            pending = self._stand_pending
+            if pending is None or seq > pending[0]:
+                self._standing = True
+                self._stand_pending = None
+
+    def _progression(self) -> SessionProgression:
+        wire = self.wire
+        return require_native_session_progression(
+            wire.selected_character_snapshot,
+            wire.status_params,
+            class_fresh=wire.class_fresh,
+            selection_epoch=wire.selection_epoch,
+            map_epoch=wire.map_epoch,
+            native_epoch=wire.native_epoch,
+            char_id=wire.gid,
+        )

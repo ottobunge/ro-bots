@@ -1,0 +1,68 @@
+{
+  "worker": "playing-grind-replan (window 5 packaging delegate)",
+  "status": "COMPLETE_OFFLINE_TDD_GATES_GREEN_LIVE_LEFT_TO_PARENT",
+  "completed_at_source": "see digest_bindings for evidence identity",
+  "scope": {
+    "owned_namespace": ".work/playing-grind-replan/",
+    "report_path": "run/reviews/playing-grind-replan.json",
+    "production_src_edits": 0,
+    "spike_edits": 0,
+    "git_actions": 0,
+    "live_execution": 0
+  },
+  "frontier_addressed": {
+    "window4_finding": "run/reviews/playing-grind-operator-live-window4-analysis.json: walk chain closed, 45/56 samples with attackable mobs, zero attacks because plan-driven FarmScript holds fire on non-target species (plan: farm Pupa; observed Poring/Lunatic/Drops)",
+    "design_decision": "strict targeting is CORRECT; added ADR-021 bounded replanning in the OPERATOR namespace by REUSING existing production seams (no parallel framework): brain.current_plan episode tracking, brain.memory (decision-request context), PlanExpired via ScheduledAgent.deliver_event (production plan-lifecycle retirement), one Heartbeat review (production goal/farm re-authoring via decision model farm_target)",
+    "production_seams_reused": [
+      "src/robots/app/brain.py EventDrivenBrain.current_plan/_setup_farm_plan/PlanExpired handler",
+      "src/robots/app/agent_runtime.py ScheduledAgent.deliver_event/heartbeat_seq",
+      "src/robots/society/memory.py Memory.remember/view (request-context seam)",
+      "src/robots/app/scripts.py FarmScript (UNCHANGED - strict targeting preserved)"
+    ]
+  },
+  "tdd_chronology": {
+    "RED_module_absence": "nix develop -c uv run pytest .work/playing-grind-replan/tests -> ModuleNotFoundError: No module named 'replan_watcher' / 'replan_operator' (2 collection errors, named new modules absent)",
+    "RED_behavioral": "after modules first written: 4 behavioral failures (successor_unmet suppressed by over-broad anti-flap set; memory view truncation hid observed-species context; integration client lacked species catalog so state names resolved to monster#1002) \u2014 all four were NAMED CONTRACT failures fixed in source/test pairs",
+    "GREEN": "10/10 namespace contracts pass after fixes"
+  },
+  "named_contracts": [
+    "replan fires once after bounded budget with observed-species context (PlanExpired+Heartbeat via deliver_event, memory note injected and visible in decision-request seam)",
+    "default policy bounded: budget 60s, max 1 replan; invalid configs denied",
+    "target species received-visible ends stale episode without replan",
+    "anti-flap: successor stale -> one successor_unmet/no_progress record, never loops, no second PlanExpired/Heartbeat",
+    "uncertain transport accumulates nothing (no fabricated zero credit)",
+    "missing client/plan observed uncertain; fresh plan starts fresh episode without back-credit",
+    "successor verdict: retargeted vs no_progress by intersection with observed species",
+    "no delivery seam records blocked_no_delivery_seam without fabricating success",
+    "offline twin integration: Pupa plan + received Poring -> replan -> Poring plan -> Attack dispatched at received actor via perform_native, attack packet in wire.sent",
+    "offline twin healthy control: plan targeting observed species attacks directly with replans==0"
+  ],
+  "verification": {
+    "namespace_suite": "nix develop -c uv run pytest .work/playing-grind-replan/tests -q -p no:cacheprovider -> 10 passed",
+    "combined_scoped_suites": "operator+travel+framediag+replan namespaces -> 62 passed (regression: zero failures outside owned namespace)",
+    "scoped_ruff": "nix develop -c uv run ruff check .work/playing-grind-replan/ -> All checks passed",
+    "scoped_mypy": "MYPYPATH=four grind namespaces nix develop -c uv run mypy replan_watcher.py replan_operator.py -> Success: no issues found in 2 source files",
+    "scoped_black": "uv run black --check .work/playing-grind-replan/ -> no-op (.work excluded by project formatter config, matching sibling namespaces)",
+    "root_gate": "nix develop -c task check dispatched from repo root; namespace is .work scratch (not collected by root suite) so src baseline must hold unchanged - result recorded in gate_result"
+  },
+  "gate_result": {
+    "command": "cd /home/otto/dev/ro-bots && nix develop -c task check",
+    "exit_code": 0,
+    "result": "5892 passed, 1 warning, 65 subtests passed (baseline 5892+65 holds unchanged; owned namespace is .work scratch, not collected by the root suite)",
+    "coverage": "95.71% (85% required)",
+    "evidence": ".work/playing-grind-replan/evidence/root-gate.txt"
+  },
+  "window5_packaging": {
+    "ready_to_run": ".work/playing-grind-replan/READY-TO-RUN.md (Window-5 section: same command shape as window 4, acceptance = replan event with observed-species context -> successor plan targeting observed species -> attacks 0x437 dispatched at that species -> damage/death/XP/loot receipts, OR honest blocker evidence)",
+    "live_entrypoint": "python -m replan_operator (same args as grind_operator; --playground --duration N required per playing-live-windows reference)",
+    "anti_flap": "max 1 replan per window; successor unmet records no_progress honestly, never loops"
+  },
+  "honest_limits": [
+    "offline twin uses a static brain-side mob catalog (public species) so the first plan can target Pupa; live uses ObservedMobDatabase fed by received species (production behavior unchanged)",
+    "offline twin proves replan->retarget->attack dispatch + wire packet; damage/death/XP/loot receipts on the real wire remain window-5 live acceptance",
+    "successor target choice remains CLEF's decision (memory context + farm_target criteria); a non-observed successor target is recorded no_progress, never forced"
+  ],
+  "digest_bindings": {
+    "see": "digests.json"
+  }
+}

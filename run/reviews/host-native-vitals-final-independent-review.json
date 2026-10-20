@@ -1,0 +1,343 @@
+{
+  "passed": true,
+  "functional_contracts_passed": true,
+  "security_concerns": [],
+  "logic_errors": [],
+  "quality_failures": [],
+  "summary": "Single helper extraction preserves the authenticated historical AST after expansion, callback/read ordering, and offline host/self-chat contracts; all scoped gates pass.",
+  "scope": "OFFLINE_HOST_READINESS_SELFCHAT_ONLY; independent final re-review",
+  "acceptance_status": "OFFLINE_CONTRACT_APPROVAL_ONLY; all native/model/gameplay/full-goal milestones remain OPEN",
+  "source_freeze": {
+    "files_before": 149,
+    "files_after": 149,
+    "changed_during_review": [],
+    "changes_since_failed_review": [
+      "src/robots/app/agent_runtime.py"
+    ],
+    "current_agent_runtime_sha256": "4c99c3a952c5a96d1446c196b7b3aa737107601d69aa9ddaa7d7b0af6fcb4e60",
+    "before_artifact": "/home/otto/.hermes/cache/scratch/hvf-k65124xh/before.json",
+    "after_artifact": "/home/otto/.hermes/cache/scratch/hvf-k65124xh/after.json",
+    "closure_sha256": "a0852cd5806842d39c66fa6b1e24effc293c71790f1000df868a8e60f02f26f2",
+    "inventory_note": "Own exact 149-file closure from failed review; parent inventory is not claimed identical.",
+    "supplemental_whitelist_before_after_sha256": "872286fe8d1fb50ef67cab45cd96e5c2936549f8cbdb4bb31cd292b97617b673",
+    "old_failed_review_preserved": true
+  },
+  "preservation": {
+    "authenticated_old_sha256": "d79ce299c615e5d332774c608d1688a76551883cb9c6f595c4d84a0f5fb7d7a8",
+    "current_sha256": "4c99c3a952c5a96d1446c196b7b3aa737107601d69aa9ddaa7d7b0af6fcb4e60",
+    "expanded_entire_ast_matches_authenticated_old": true,
+    "helper_constant_message_identical": true,
+    "sole_helper_reference_and_argument_verified": true,
+    "drain_events_exact_sha256": "bf7e8f6fd8a8fec9a92e63ed0f6c9dda0ac9346e02ae6597404f29b5f6ab1ffc",
+    "old_metrics": {
+      "_native_vitals": {
+        "complexity": 13,
+        "rank": "C"
+      }
+    },
+    "new_metrics": {
+      "_require_native_session": {
+        "complexity": 8,
+        "rank": "B"
+      },
+      "_native_vitals": {
+        "complexity": 6,
+        "rank": "B"
+      }
+    },
+    "diff_artifact": "/home/otto/.hermes/cache/scratch/hvf-k65124xh/refactor.diff"
+  },
+  "verification": {
+    "execution_environment": "Pinned nix develop --offline --no-write-lock-file; uv run --offline --no-sync; private process-only TMPDIR/caches/coverage; pytest plugin autoload retained.",
+    "gates": {
+      "black": {
+        "command": [
+          "uv",
+          "run",
+          "--offline",
+          "--no-sync",
+          "black",
+          "--check",
+          "src",
+          "tests"
+        ],
+        "exit_code": 0,
+        "seconds": 1.12,
+        "log": "/home/otto/.hermes/cache/scratch/hvf-k65124xh/black.log"
+      },
+      "ruff": {
+        "command": [
+          "uv",
+          "run",
+          "--offline",
+          "--no-sync",
+          "ruff",
+          "check",
+          "--no-cache",
+          "src",
+          "tests"
+        ],
+        "exit_code": 0,
+        "seconds": 0.12,
+        "log": "/home/otto/.hermes/cache/scratch/hvf-k65124xh/ruff.log"
+      },
+      "mypy": {
+        "command": [
+          "uv",
+          "run",
+          "--offline",
+          "--no-sync",
+          "mypy"
+        ],
+        "exit_code": 0,
+        "seconds": 5.79,
+        "log": "/home/otto/.hermes/cache/scratch/hvf-k65124xh/mypy.log"
+      },
+      "bandit": {
+        "command": [
+          "uv",
+          "run",
+          "--offline",
+          "--no-sync",
+          "bandit",
+          "-q",
+          "-c",
+          "pyproject.toml",
+          "-r",
+          "src"
+        ],
+        "exit_code": 0,
+        "seconds": 1.07,
+        "log": "/home/otto/.hermes/cache/scratch/hvf-k65124xh/bandit.log"
+      },
+      "vulture": {
+        "command": [
+          "uv",
+          "run",
+          "--offline",
+          "--no-sync",
+          "vulture",
+          "src",
+          "vulture_whitelist.py"
+        ],
+        "exit_code": 0,
+        "seconds": 0.26,
+        "log": "/home/otto/.hermes/cache/scratch/hvf-k65124xh/vulture.log"
+      },
+      "xenon": {
+        "command": [
+          "uv",
+          "run",
+          "--offline",
+          "--no-sync",
+          "xenon",
+          "src",
+          "--max-absolute",
+          "B",
+          "--max-modules",
+          "B",
+          "--max-average",
+          "A"
+        ],
+        "exit_code": 0,
+        "seconds": 0.45,
+        "log": "/home/otto/.hermes/cache/scratch/hvf-k65124xh/xenon.log"
+      },
+      "duplicate": {
+        "command": [
+          "uv",
+          "run",
+          "--offline",
+          "--no-sync",
+          "pylint",
+          "--disable=all",
+          "--enable=duplicate-code",
+          "--ignore-paths=tests",
+          "src"
+        ],
+        "exit_code": 0,
+        "seconds": 2.72,
+        "log": "/home/otto/.hermes/cache/scratch/hvf-k65124xh/duplicate.log"
+      },
+      "regression": {
+        "command": [
+          "uv",
+          "run",
+          "--offline",
+          "--no-sync",
+          "pytest",
+          "tests/test_agent_host.py",
+          "tests/test_host_native_transport.py",
+          "tests/test_host_self_chat.py",
+          "tests/test_host_memory.py",
+          "tests/test_host_chat_commands.py",
+          "tests/test_host_chat_interruptions.py",
+          "tests/test_core_interruption_cleanup.py",
+          "tests/test_host_storage_failure.py",
+          "tests/test_host_summary_cache.py",
+          "tests/test_native_vitals.py",
+          "tests/test_host_native_vitals.py",
+          "/home/otto/.hermes/cache/scratch/hv-cfw2maev/test_independent.py",
+          "--cov=robots.app.agent_runtime",
+          "--cov=robots.adapters.native_vitals",
+          "--cov-report=term-missing",
+          "--cov-report=json:/home/otto/.hermes/cache/scratch/hvf-k65124xh/coverage.json",
+          "--cov-fail-under=85",
+          "--basetemp=/home/otto/.hermes/cache/scratch/hvf-k65124xh/regression-tmp",
+          "--junitxml=/home/otto/.hermes/cache/scratch/hvf-k65124xh/regression.xml",
+          "-o",
+          "cache_dir=/home/otto/.hermes/cache/scratch/hvf-k65124xh/pytest-cache",
+          "-q"
+        ],
+        "exit_code": 0,
+        "seconds": 6.44,
+        "log": "/home/otto/.hermes/cache/scratch/hvf-k65124xh/regression.log"
+      },
+      "client": {
+        "command": [
+          "uv",
+          "run",
+          "--offline",
+          "--no-sync",
+          "pytest",
+          "tests/test_client_protocol.py",
+          "tests/test_client_pincode.py",
+          "tests/test_temporary_handshake_cleanup.py",
+          "--no-cov",
+          "--basetemp=/home/otto/.hermes/cache/scratch/hvf-k65124xh/client-tmp",
+          "--junitxml=/home/otto/.hermes/cache/scratch/hvf-k65124xh/client.xml",
+          "-o",
+          "cache_dir=/home/otto/.hermes/cache/scratch/hvf-k65124xh/pytest-client-cache",
+          "-q"
+        ],
+        "exit_code": 0,
+        "seconds": 0.47,
+        "log": "/home/otto/.hermes/cache/scratch/hvf-k65124xh/client.log"
+      }
+    },
+    "junit": {
+      "regression": {
+        "raw_cases": 375,
+        "unique_cases": 375,
+        "duplicates": 0,
+        "failure": 0,
+        "error": 0,
+        "skipped": 0,
+        "by_module": {
+          "tests.test_agent_host": 17,
+          "tests.test_host_native_transport": 31,
+          "tests.test_host_self_chat": 12,
+          "tests.test_host_memory": 16,
+          "tests.test_host_chat_commands": 38,
+          "tests.test_host_chat_interruptions": 20,
+          "tests.test_core_interruption_cleanup": 25,
+          "tests.test_host_storage_failure": 15,
+          "tests.test_host_summary_cache": 72,
+          "tests.test_native_vitals": 38,
+          "tests.test_host_native_vitals": 41,
+          "": 50
+        },
+        "artifact": "/home/otto/.hermes/cache/scratch/hvf-k65124xh/regression.xml"
+      },
+      "client": {
+        "raw_cases": 104,
+        "unique_cases": 104,
+        "duplicates": 0,
+        "failure": 0,
+        "error": 0,
+        "skipped": 0,
+        "by_module": {
+          "tests.test_client_protocol": 42,
+          "tests.test_client_pincode": 41,
+          "tests.test_temporary_handshake_cleanup": 21
+        },
+        "artifact": "/home/otto/.hermes/cache/scratch/hvf-k65124xh/client.xml"
+      },
+      "order": {
+        "raw_cases": 10,
+        "unique_cases": 10,
+        "duplicates": 0,
+        "failure": 0,
+        "error": 0,
+        "skipped": 0,
+        "by_module": {
+          ".hermes.cache.scratch.hvf-k65124xh.test_order": 10
+        },
+        "artifact": "/home/otto/.hermes/cache/scratch/hvf-k65124xh/order.xml"
+      }
+    },
+    "requested_regression_unique_cases": 479,
+    "supplemental_differential_unique_cases": 10,
+    "combined_unique_cases": 489,
+    "coverage": {
+      "combined_percent": 93.11424100156495,
+      "required_percent": 85,
+      "native_vitals_percent": 100.0,
+      "helper_executed_lines": [
+        292,
+        294,
+        295,
+        296,
+        297,
+        298,
+        299,
+        300,
+        301,
+        302,
+        303,
+        304
+      ],
+      "helper_missing_lines": [],
+      "helper_line_percent": 100,
+      "artifact": "/home/otto/.hermes/cache/scratch/hvf-k65124xh/coverage.json"
+    },
+    "supplemental_order_command": "uv run --offline --no-sync pytest /home/otto/.hermes/cache/scratch/hvf-k65124xh/test_order.py --no-cov --junitxml=/home/otto/.hermes/cache/scratch/hvf-k65124xh/order.xml",
+    "supplemental_order_exit_code": 0,
+    "whitelist_rerun_exit_code": 0
+  },
+  "functional_findings": [
+    "Independent expansion of the sole helper call, omitting only its docstring and identical constant msg assignment, matches the entire authenticated old AST. No replacing the old method body to assume equivalence.",
+    "All tests and 148 other closure files byte-unchanged from failed functional review; _drain_events exact source hash unchanged. No assertion weakening or gate/threshold changes.",
+    "Ten differential historical/current cases verify exact attribute read order, health/reader invocation order, fault short-circuit precedence, identical outputs, and original KeyboardInterrupt identity/callback traceback frame.",
+    "Complete exact-int received quartet required; zero SP preserved; omitted synthetic-adapter attributes accepted through sentinel semantics; explicit flags must literally be True; null socket, missing/dead exposed reader, receive/dispatch errors and false hook deny retained quartet.",
+    "Startup readiness budgets 0..5 seconds, gradual receipt, ordinary timeout cleanup before brain/thread startup, incomplete/dead-reader cognitive tick exclusion and brain=None idle behavior pass unchanged. Manual operator dispatch remains before the cognition health gate.",
+    "Synthetic real-client wire dispatch plus host drain suppresses account-ID self and legacy character-ID self tags while retaining peer names/delivery and advancing cursor exactly once; missing identity policy unchanged.",
+    "Added-line security review of authenticated diff finds only the private guard extraction and call; no secrets, network/DB/provider calls, eval, shell, resource allocation, state cache or class/fake bypass introduced."
+  ],
+  "native_source_authority": {
+    "root": "/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source",
+    "profile": "Provided MAIN/pre-re 20180704 compiled pin, not a fresh compilation or native execution",
+    "hashes_verified": {
+      "/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source/src/map/map.hpp": "1cb428d1145ec9c4045b2ae58c163be24bf1bd374fc8eea07eaf0c266621fe2b",
+      "/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source/src/map/packets_struct.hpp": "5ab5ef13d2a1cdc60d84dcaf2e3be0b6e316b9630e61c3ac7ba0f930d4d31287",
+      "/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source/src/map/clif.cpp": "0b1db098158c240b090c6edb8417978ba495957c8a2df4cd9a0ab4cb39884ac5",
+      "/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source/src/map/pc.cpp": "d12704c1ef7f8321c255175b6f61aa396209b931e2b1687fbbd16963d1def652"
+    },
+    "references": [
+      "src/map/map.hpp:498-505 IDs5/6/7/8",
+      "src/map/packets_struct.hpp:350-359 packed i16/u16/i32 and header 0x00b0",
+      "src/map/clif.cpp:3548-3557 SELF parameter send",
+      "src/map/clif.cpp:3683-3693 positive client HP can be presented on death",
+      "src/map/pc.cpp:1444-1446 PC wire id=account_id; separate char_id",
+      "src/map/clif.cpp:6753-6774 public chat sender bl.id",
+      "spikes/003-clientless-limbs/client.py:622-633 0x008D sender and senderless 0x008E char-ID tag"
+    ]
+  },
+  "limits": [
+    "Readiness observational/non-atomic; no universal property/callback containment, transport race exclusion or physical FD-release proof.",
+    "Positive client HP is not death/alive truth. Job/base-level/player-kind/fixed-distance/inventory placeholders unchanged; actual brains remain OFF.",
+    "Self-chat is bounded known-ID filtering, not complete provenance or server-observed self-reply-loop acceptance. Legacy senderless system messages and peer-account/self-character numeric collisions remain limitations.",
+    "Whole configured suite is parent-owned; not independently rerun here. No legacy/spike lint or 70-percent coverage debt waived. Dependency CVE audit not performed offline.",
+    "No native execution, engine/world activation, sockets to native services, SQL, private fixtures, provider/model inference, credential inspection, staging, commit or push."
+  ],
+  "warnings": [
+    "Existing FastAPI/Starlette TestClient deprecation",
+    "Existing unrelated Bandit nosec notices",
+    "Nix dirty-tree notice"
+  ],
+  "files_created": [
+    "run/reviews/host-native-vitals-final-independent-review.json"
+  ],
+  "source_files_modified": [],
+  "scratch_artifacts_directory": "/home/otto/.hermes/cache/scratch/hvf-k65124xh"
+}

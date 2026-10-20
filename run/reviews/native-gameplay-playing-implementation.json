@@ -1,0 +1,123 @@
+{
+  "scope": "Offline received-wire collector and native encoders only; no client/app/domain integration, engine, SQL, native connection or inference",
+  "native_acceptance": false,
+  "gameplay_acceptance": false,
+  "source": {
+    "root": "/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source",
+    "revision": "e985006171d2eb320ee512a653f4c83aea3d81b6",
+    "profile": "MAIN/pre-re PACKETVER20180704",
+    "flags_authority": "/nix/store/1sqxljh35rzdnhwn6sviqdjmjxqqrgy4-rathena-runtime-core-offline-20180704-e985006171d2/share/rathena-runtime-core/map-cppflags.txt"
+  },
+  "api": {
+    "constructor": "NativeGameplayTracker(own_actor_id: int)",
+    "pump": "consume_snapshot(*client.native_frame_snapshot()) -> bool; base_seq denotes last seq before retained frames",
+    "raw": "ingest(seq, at, pid, raw); direct ingestion is caller-ordered, snapshot API provides gap/replay protection",
+    "view": "frozen NativeGameplayView; observed positions carry seq and receipt time; actor wireID distinct from characterID",
+    "encoders": [
+      "attack(target_id, continuous=False)",
+      "pickup(floor_item_id)",
+      "party_chat(text, speaker_name=exact_selected_name)",
+      "respawn()"
+    ],
+    "effects": "Collector never sends; parent may call client._send(encoded) under its own policy"
+  },
+  "compiled_oracle": {
+    "script": "/home/otto/.hermes/cache/scratch/gameplay-oracle-build.py",
+    "layout": "/home/otto/.hermes/cache/scratch/gameplay-oracle.cpp",
+    "registration": "/home/otto/.hermes/cache/scratch/gameplay-registration.cpp",
+    "compiler": "existing Nix-profile clang++, no installs",
+    "method": "Exact packed source excerpts with pinned common/packets.hpp, -DPACKETVER=20180704 -DPRERE; static_assert MAIN20180704. Numeric registration oracle executes active guards and final shuffle overwrites; unrelated sizeof-based entries omitted, not assigned guessed values.",
+    "output": [
+      "NORMALITEM_INFO 24 index=0 ITID=2 count=5",
+      "EQUIPITEM_INFO 57 index=0 ITID=2",
+      "PACKET_ZC_ITEM_PICKUP_ACK 59 Index=2 count=4 nameid=6 type=23 result=24",
+      "packet_dropflooritem 22 ITAID=2 ITID=6 type=8 xPos=11 yPos=13 count=17",
+      "packet_itemlist_normal list=4",
+      "packet_itemlist_equip list=4",
+      "PACKET_ZC_NOTIFY_ACT 34 srcID=2 targetID=6 damage=22 damage2=30 type=29 isSPDamage=26",
+      "PACKET_ZC_NOTIFY_PLAYERMOVE 12 moveData=6",
+      "PACKET_ZC_ACCEPT_ENTER 13 posDir=6",
+      "PACKET_ZC_NPCACK_MAPMOVE 22 xPos=18 yPos=20",
+      "ack=a37 act=8c8 auth=2eb",
+      "b2 3 clif_parse_Restart",
+      "108 -1 clif_parse_PartyMessage",
+      "362 6 clif_parse_TakeItem",
+      "437 7 clif_parse_ActionRequest"
+    ]
+  },
+  "packet_contracts": {
+    "attack": "0437 size7 targetuint32@2 action@6 normal0/repeat7; clif.cpp11697-11830",
+    "pickup": "0362 size6 flooruint32@2 final registration",
+    "party_chat": "0108 variable name : text, no terminal NUL for this profile; clif.cpp10442-10555/13970; NAME_LENGTH24, CHAT_SIZE_MAX256, UTF8 message <=254 bytes",
+    "respawn": "00B2 size3 type0; clif.cpp11834-11844",
+    "inventory_normal": "0991 variable header4 row24",
+    "inventory_equipment": "0A0D variable header4 row57, each nonstackable row count1; not0992",
+    "floor": "0ADD size22; not legacy009E/084B",
+    "pickup_ack": "0A37 size59; not00A0/0A0C; result0 only. Actual count declaration is uint16; implementation conservatively accepts signed-positive range1..32767 and rejects zero/high-bit quantities",
+    "damage": "08C8 size34; signed damage and damage2 retained exactly, may be presentation modified by hallucination/WOE/disguise, NOT guaranteed real HP loss",
+    "xp": "0ACB signed64 params1(baseXP)/2(jobXP); raw difference, including negative reset deltas, not attributed kill reward; legacy B1 receipt supported",
+    "self_position": "02EB@6;0091 map16@2 x/y@18/20;0087 from@6 and destination from MoveData bytes2..4 via WBUFPOS2 clif.cpp182-189; from==to alone marks arrival",
+    "life": "0080 reason1 death,0148 self resurrection. HP presentation never establishes alive"
+  },
+  "attackability_proof": {
+    "source": "clif.cpp345-383 and1197-1209,1343-1360,1453-1465",
+    "guard": "objecttype5 AND aid != ownAID AND aid != uint32(-ownAID). Ordinary clif_bl_type emits5 for ordinary non-PC-sprite BL_MOB; NPC emits6/12, pet7, unsupported omitted from combat; type5 disguised-PC override is SELF-only with exact own alias",
+    "limits": "Eligibility is source-derived kind discriminator only; not alive/range/permission proof. Type0 ambiguous, not blindly player. No job/name/ID-threshold/private-data heuristics."
+  },
+  "inventory_knowledge": {
+    "barrier": "Pinned LoadEndAck emits inventorylist then pc_checkitem then WEIGHT status24 (clif.cpp10782-10794). Only observed auth02EB opens initial-list window. Missing barrier leaves unknown. consume_snapshot corrupt/gapped sequence poisons and clears state until new epoch; no empty-by-absence.",
+    "limits": "Bounded initialization ordering contract, not universal refresh transaction. Later list refresh completion and item consumption/deletion updates are not fully implemented. 00AF/07FA invalidate inventory knowledge rather than pretending stale counts remain complete. observed_inventory_counts are historical/partial; acquired_counts are receipt totals, not current inventory."
+  },
+  "verification": {
+    "tests": 82,
+    "coverage_percent": 96.65,
+    "helper_statements": 209,
+    "helper_missed": 7,
+    "red_green": [
+      "actor/ID/start-coordinate -> actual normal attack bytes: missing-module RED then37 GREEN",
+      "floor/pickup/inventory receipt:13 expected RED then50 GREEN",
+      "snapshot/map/death/damage/XP/chat:11 expected RED then70 GREEN",
+      "exact packed0087 arrival: nonzero coordinate RED thenGREEN",
+      "inventory invalidation: expected RED thenGREEN"
+    ],
+    "passed": [
+      "scoped pytest82",
+      "Ruff owned module/tests",
+      "Black owned module/tests",
+      "mypy strict owned module",
+      "Bandit configured module",
+      "Vulture85 module/tests",
+      "Xenon whole src B/B/A",
+      "pylint duplicate-code whole src"
+    ],
+    "not_run": [
+      "evolving full-root suite",
+      "native gameplay",
+      "SQL verification",
+      "independent reviewer"
+    ],
+    "dependencies": "existing UV-managed project .venv with pinned uv.lock/flake.lock; no install or lock edits"
+  },
+  "hashes_sha256": {
+    "src/robots/adapters/native_gameplay.py": "fd9a41c0514d9ce276f2883fa5dc07fb3a10320b06d3c9230bdad4e5ada47b85",
+    "tests/test_native_gameplay.py": "61c1db76174db04dab538ce2f07383aa22430a4f52db64a7b57d49d4ff6d3734",
+    "src/robots/adapters/native_actor_presentation.py": "81140e814a682ea44742880dd9a3a7a19e165eb2098debfa657d24615fe5b730",
+    "pyproject.toml": "e8ae0849a413bc3d705f081f609b92dae702bbd3e491b2c3aeb5d8665c458fba",
+    "uv.lock": "2d7b4c187078488d7625e4fd4fa982745cab8d6a65b2ff3e382ffa286f1df245",
+    "flake.lock": "c9c0bac69415b99a29ef3fe149b6f04ef54d291989bdf7218cf819ed52edf2a0"
+  },
+  "remaining_blockers": [
+    "Initial auth does not prove alive; alive_known stays false until SELF resurrection or death receipt. Parent MUST deny defensive combat until reviewed initial alive authority exists.",
+    "Normal respawn can use0091 mapmove rather than0148; mapmove does NOT itself prove revival in this implementation. Respawn send is not respawn success.",
+    "No host wiring or live playing population verified.",
+    "Parent must use observed own/actor start coordinates, not destination/current-world assertions or fake distance1.",
+    "Complete current inventory mutation tracking and refresh transaction support remain unfinished; unsafe knowledge invalidated.",
+    "Damage receipt may be presentation adjusted; XP differences and pickup ACKs are receipts, not causal kill/drop attribution.",
+    "Event/floor caches currently epoch-scoped but not bounded; actor cache bounded4096.",
+    "Strict framing remains BotClient responsibility; unhandled already-framed packetIDs are ignored by collector, not made-up facts."
+  ],
+  "oracle_hashes_sha256": {
+    "/home/otto/.hermes/cache/scratch/gameplay-oracle.cpp": "eb015a95a7a46a395d7b701d596c507ecd3f53d7ba9fbb980d26eac3c57ee0fe",
+    "/home/otto/.hermes/cache/scratch/gameplay-registration.cpp": "582d4e7317f012817d3c2dce84ea33f6baf5d91831c587f525ab61d6444f1790"
+  }
+}

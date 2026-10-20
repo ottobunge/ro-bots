@@ -1,0 +1,25 @@
+{
+  "record": "GRIND_WINDOW32_33_WORLD_RECOVERED_ENGAGEMENT_BLOCKED_AT_PLAN_LAYER",
+  "date": "2026-10-18",
+  "world_recovery": "VERIFIED LIVE: pin-restart piano restored the triangle; window 32 (proc_d06b13c0a95b, 1800s) completed with logins landing, chars at their save points, gate passing",
+  "window_32_receipt": "receipt-1792304761.json: map_loads 29/agent, own_position 58, timeline 30, dispatched 0, decisions 0, actor_frames_ingested 0",
+  "thirty_second_cycle_explained": {
+    "finding": "The 30s logoff/login alternation in the journal is NORMAL MAP-CHANGE logging: the agents walk the warp route (prt_in -> prontera -> prt_fild08), each warp logs as a clean logoff+login pair. The two agents alternate 30s slots by trip offset. NOT a churn, NOT a kick.",
+    "evidence": "diag_gate_log.jsonl: telemetry gate passes (status_params fills 50ms after the tick's first check; vitals_ok hp=86/86 sp=20/20); the 30s tick spacing equals the operator travel legs"
+  },
+  "probe_evidence_world_is_healthy": [
+    "Bare BotClient probe (fixture_0 char) at prt_in [168,128]: full frame stream (0x9FF actors x6 = warp sprite/Item Guide/dealers, 0xB0 x20, 0xACB), stayed connected",
+    "Bare BotClient probe (fixture_1 char) at prt_fild08 [167,352]: Poring x2 + Drops x1 visible (0x9FD/0x9FF), 0x80 vanishes, mobs broadcasting at the exact cells where the agents report none",
+    "Production PlayingClient on the live wire: drain_native_events returns 3 MonsterSpotted events; status_params {hp:86,max:86,sp:20,max:20}; require_native_vitals PASSES"
+  ],
+  "current_blocker": {
+    "summary": "The agents travel (2 map loads per 150s diag window, gate green) but the brain produces ZERO decisions and ZERO dispatched actions: the goal scripts never fire, no mob engagement, the capture sees no monsters (monster_names_seen=[], attack_authored=False, actor_frames_ingested=0 in the WINDOW while the same wire outside the window ingests actors fine).",
+    "leading_hypothesis": "The out-of-operator char DB re-init reset the agents to Novice + empty inventory + 0 zeny, making the pinned w23-era plan unsatisfiable: merchant_drive_cell's precondition (zeny>=50 OR sellable stock) cannot bootstrap, and the plan/farm layer holds fire \u2014 the same decision-layer class as the w23-25 plan-authoring variance and the documented guidance-starvation condition (Novice + empty inventory).",
+    "next_step": "Decision-layer slice (offline TDD, .work lane): reproduce the brain tick against a live-shaped client fixture with reset-char state (Novice/0 zeny/empty inventory/actors present), find the gate that holds the goal scripts, and re-pin the plan for the reset starting state."
+  },
+  "diag_artifacts": [
+    ".work/playing-grind-killcommit/diag_window33.py (gate-logging composition, scratch lane)",
+    ".work/playing-grind-killcommit/diag_gate_log.jsonl",
+    "receipt-1792305576.json (150s diag window)"
+  ]
+}

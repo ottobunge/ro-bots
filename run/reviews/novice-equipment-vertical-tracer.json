@@ -1,0 +1,173 @@
+{
+  "schema": "offline-actual-client-shop-frontier/v1",
+  "status": "BEHAVIORAL_RED_REACHED_NO_IMPLEMENTATION",
+  "evidence_kind": "public synthetic frames through actual constructors/framer/dispatch/PlayingClient, never native observations",
+  "command": "env PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=src:. .venv/bin/python -m pytest .work/novice-equipment-vertical-tracer/test_actual_client_shop_frontier.py -vv -o cache_dir=.work/novice-equipment-vertical-tracer/pytest-cache --junitxml=.work/novice-equipment-vertical-tracer/tracer.xml",
+  "workdir": "/home/otto/dev/ro-bots",
+  "exit_code": 1,
+  "junit_counts": {
+    "cases": 3,
+    "passed": 2,
+    "failures": 1,
+    "errors": 0,
+    "skips": 0
+  },
+  "red_test": "test_received_shop_buy_intent_must_dispatch_c5",
+  "red_assertion": "sent == [LoadEndAck007D, NpcClicked0090(123), BuySelection00C5(123,type=0)]",
+  "actual_sent": [
+    "7d00",
+    "90007b00000001"
+  ],
+  "expected_additional_send": "c5007b00000000",
+  "actual_rejection": "unsupported native playing action",
+  "first_missing_boundary": "Already actor/epoch/map/sequence-bound received C4 unsupported_shop -> concrete typed buy-selection action -> PlayingClient native dispatch -> C5. Not a missing C4 context reader.",
+  "authoritative_paths": {
+    "receive": "spikes/003-clientless-limbs/client.py:700-717 BotClient._dispatch/native_frame_snapshot",
+    "received_shop": "src/robots/adapters/native_npc_dialogue.py:20-27,108-119,134-147 NativeNpcDialogue.consume/_receive maps C4 to unsupported_shop",
+    "event_projection": "src/robots/app/playing_runtime.py:259-307,796-819 _observe/_consume_received_snapshot/drain_native_events",
+    "host_dispatch": "src/robots/app/agent_runtime.py:762-787 ScheduledAgent.execute_actions/_perform delegates perform_native",
+    "missing_action": "src/robots/domain/actions.py:98-115 GameAction has no buy/purchase/equip type",
+    "missing_dispatch": "src/robots/app/playing_runtime.py:399-415,425-437,521-537 perform_native/_npc_action/_social reject proposed buy action",
+    "existing_encoder": "src/robots/adapters/native_shop.py:102-105 encode_buy_selection",
+    "native_authority": "run/public-source/callback-qualified-e985006171d2/src/map/clif.cpp:2222-2230,12255-12270 C4 sender/C5 handler"
+  },
+  "characterizations": [
+    "Actual BotClient construction allocates no native session. Synthetic map dispatch emits expected 007D through the send spy; actual TalkToNpc emits 0090.",
+    "Existing equipment-list -> gameplay collector -> BotState current inventory count works after received WEIGHT completion; private collector retains owned index9=(1201,1). Slot/wear metadata is not projected by that collector.",
+    "C4 becomes actor-bound NpcDialogue(stage=unsupported_shop) and NpcDialogueReceived; this primitive already works, not a new RED.",
+    "C6 and B1/Zeny20 are framed/ring retained and cursors advance; codecs decode synthetic price73/discount61/balance100, but runtime does not retain a shop offer/currency state. C6 injection characterizes consumption only, not a legally completed C5 exchange."
+  ],
+  "smallest_tdd_slice": {
+    "scope": "One zero-model, zero-spend buy-selection transition: existing bound received C4 -> concrete typed action -> guarded C5 send -> bounded wait. Stop before purchase C8, ownership/equip, stat/skill/quest implementation.",
+    "acceptance": [
+      "Replace test-local ProposedBuyShop with concrete typed GameAction only when implemented; bind exact actor/epoch/current UI sequence and owner-local client/wire/session references, using existing controller identity/life/context/motion/transport guards.",
+      "Valid freshly received matching C4 for current perceived NPC emits exactly one encode_buy_selection(npc_id) C5(type0), never a guessed NPC or implicit direct codec send.",
+      "Consume the marker once; repeated tick/action cannot resend. Preserve existing NPC request count/deadline/absolute cap, and bounded wait without model calls.",
+      "Foreign/stale marker, wrong UI sequence, session/client/wire replacement, map/actor vanish/reuse, death, motion/readiness loss, expiry, frame gap or unhealthy transport denies before send.",
+      "Send failure preserves original exception and poisons pending intent; no issued/progress success on denied/failed dispatch. A later C6 may establish list receipt only, not a purchase/acquisition.",
+      "No preparation phase/schema/capability advertising and no spending/equip permission. Keep all missing mechanical facts UNKNOWN; no new executor or native activation."
+    ],
+    "budget": "One action/controller/dispatch transition, at most 10 targeted contract cases, at most 2 repair iterations; escalate missing phase/authority instead of expanding scope.",
+    "phase_seam_question": "Actual PhaseKind is travel/grind/farm/rest/idle/npc; PlanningBrain advertises only IDLE, eligible REST and received actionable NPC; NpcOperation is NEXT/CHOOSE. Which concrete typed phase seam should eventually carry unadvertised preparation? No new phase was added here.",
+    "explicit_later_slices": "C6 plus current B1 Zeny -> guarded C8 purchase -> result/acquisition/index correlation; then owned-index/equipment-intent ->0998 ->0999 tracker. Distinct tests and authority; do not bundle into first C5 slice."
+  },
+  "native_equipment_ack_authority": {
+    "profile": "MAIN20180704/pre-re callback-qualified e985006171d2eb320ee512a653f4c83aea3d81b6",
+    "source": "src/map/clif.hpp:523-532",
+    "values": {
+      "success": 0,
+      "level_failure": 1,
+      "failure": 2
+    },
+    "manifest_source_hash_bindings": {
+      "src/config/core.hpp": {
+        "expected": "ba04ee9f32d9d334f59b345326105864ddc5fed296ebbaf9d599c26e48aea7ae",
+        "actual": "ba04ee9f32d9d334f59b345326105864ddc5fed296ebbaf9d599c26e48aea7ae",
+        "matches": true
+      },
+      "src/map/packets.hpp": {
+        "expected": "b4959224a48e1febb811d7c1474f2c1b703d324ae4db7e3a1053a85b80da57bc",
+        "actual": "b4959224a48e1febb811d7c1474f2c1b703d324ae4db7e3a1053a85b80da57bc",
+        "matches": true
+      },
+      "src/map/packets_struct.hpp": {
+        "expected": "5ab5ef13d2a1cdc60d84dcaf2e3be0b6e316b9630e61c3ac7ba0f930d4d31287",
+        "actual": "5ab5ef13d2a1cdc60d84dcaf2e3be0b6e316b9630e61c3ac7ba0f930d4d31287",
+        "matches": true
+      },
+      "src/map/map.hpp": {
+        "expected": "1cb428d1145ec9c4045b2ae58c163be24bf1bd374fc8eea07eaf0c266621fe2b",
+        "actual": "1cb428d1145ec9c4045b2ae58c163be24bf1bd374fc8eea07eaf0c266621fe2b",
+        "matches": true
+      },
+      "src/map/clif.hpp": {
+        "expected": "3a9c9531ba63ded135885d69c378ebc818cfbdcf8d4e4ccbcd9bb75d8a42019c",
+        "actual": "3a9c9531ba63ded135885d69c378ebc818cfbdcf8d4e4ccbcd9bb75d8a42019c",
+        "matches": true
+      },
+      "src/map/clif.cpp": {
+        "expected": "ace16f15be3b60f730522d620b73a68a9f2cc384016aadce9c985888aea9a1ac",
+        "actual": "ace16f15be3b60f730522d620b73a68a9f2cc384016aadce9c985888aea9a1ac",
+        "matches": true
+      },
+      "src/map/pc.cpp": {
+        "expected": "d12704c1ef7f8321c255175b6f61aa396209b931e2b1687fbbd16963d1def652",
+        "actual": "d12704c1ef7f8321c255175b6f61aa396209b931e2b1687fbbd16963d1def652",
+        "matches": true
+      },
+      "src/map/clif_packetdb.hpp": {
+        "expected": "51c8a9ebd591e0dd4f444f829253a14d449615425405cb8a95f28a6dea460e66",
+        "actual": "51c8a9ebd591e0dd4f444f829253a14d449615425405cb8a95f28a6dea460e66",
+        "matches": true
+      }
+    },
+    "qualification": "Existing measured manifest and all 8 local qualified header/sender bindings verified; compiler and native sessions not rerun."
+  },
+  "unknown_denied": [
+    "real current price and Zeny",
+    "real current owned inventory/index",
+    "exchange legality",
+    "required slot/class/level eligibility",
+    "actual wearing after equip ACK"
+  ],
+  "scope_limits": [
+    "No source/test/operator/manifest/config/authority/private changes",
+    "No native session, provider inference, network, SQL, world lifecycle or Git effects",
+    "No possession/wearing/reward/XP/full-goal claim",
+    "No whole-root gate or strict scratch quality approval"
+  ],
+  "issues": [
+    "Attempt1 harness oracle omitted actual synthetic-map LoadEndAck007D; retained, corrected without changing production.",
+    "Attempt2 oracle wrongly assumed C4 remained opening and proposed redundant received_shop getter; actual run showed existing unsupported_shop projection. Retained and replaced with first true missing typed C5 dispatch assertion.",
+    "Editor type diagnostics are expected for the intentionally test-local non-GameAction proposal; no production API or type suppression was inserted."
+  ],
+  "source_sha256": {
+    "spikes/003-clientless-limbs/client.py": "2f57a0adc0b43a20235835290499ca0043966c5def208642598afb0dc49807fd",
+    "spikes/003-clientless-limbs/packetdb.py": "497375189d242eda3072e3d86cbff1d98d736ec3742feee7035d84c3d129005b",
+    "src/robots/app/playing_runtime.py": "4cffa5b60dba17166e4af3a0363a800be9c168e5ae4faa2147c57d3776af993c",
+    "src/robots/app/agent_runtime.py": "5d266e7a0bb290855f56be5bb688172fa4ed0b13d005c246289c83185cb7e744",
+    "src/robots/app/planning_brain.py": "9eefac0e5274fa52d8fd601521857a17c0a6228280b26da4b2d8e8300a913e23",
+    "src/robots/adapters/native_gameplay.py": "c7e9f16750bf117ba3a4843264e215d2e653c0376c70acd7ac45e00a6b2100f9",
+    "src/robots/adapters/native_npc_dialogue.py": "978fa5ff01a33615a4533fc37de0d152db7691c0630047b9dea96c611a6d76de",
+    "src/robots/adapters/native_shop.py": "85c24a75df5dd070446d4f45347af8fc6422638b3359503797709fcac8d2c1c9",
+    "src/robots/adapters/native_equipment.py": "b00c9efa6f47258b4889c478c4587fe261c5b3678474e072666e3614b3701eac",
+    "src/robots/domain/actions.py": "238cbf0b8af1de3e1c272e0678f58ddc14d23dcab49914abb1fe1bf0b7e5e48a",
+    "src/robots/domain/events.py": "90c1fcf91a139762e8a7a81ac84fab13e5f136f48a2ff3f217a71a7542305a05",
+    "src/robots/domain/planning.py": "98109f5bd161bdcfa171e0f81e6e75932c07edd6c870e340f6a4140efa7113b7",
+    "tests/test_playing_runtime.py": "abaa1506bdf961556e186402b43c24659d4beeb0a4ac7b9ca094f357d4a07bda",
+    "tests/test_native_equipment.py": "3916492e3f2c128833382a66af33290ec61c659934c7549648abc45fbe9b1b85",
+    "protocol/main-20180704-pre-re-equipment.json": "c3e34b0a01ed9af39848426f80b035585549aaa3573a3ef9bd76b7d67f0a356a"
+  },
+  "artifacts": {
+    ".work/novice-equipment-vertical-tracer/attempt1-invocation.json": {
+      "sha256": "21c002f21857a98937be9a045b5216fc1967db28f8602224e53f36216402d9e4"
+    },
+    ".work/novice-equipment-vertical-tracer/attempt1-tracer.log": {
+      "sha256": "ce31989324671727970a6f9e12528438b92cf85275bdd38fb25da4d32ef6b3e1"
+    },
+    ".work/novice-equipment-vertical-tracer/attempt1-tracer.xml": {
+      "sha256": "0d4715e48bd892b5a7e575e348b313800eac49f85049bccd7efe83f781bd44a4"
+    },
+    ".work/novice-equipment-vertical-tracer/attempt2-test_actual_client_shop_frontier.py": {
+      "sha256": "eba0dbc5f708030bdfcded7d944631ac876a35969a67855498b273daa541c3d6"
+    },
+    ".work/novice-equipment-vertical-tracer/attempt2-tracer.log": {
+      "sha256": "f586be3218fb252e3e7d10842fbf41a642a13e092f631565261dd985be13a8d2"
+    },
+    ".work/novice-equipment-vertical-tracer/attempt2-tracer.xml": {
+      "sha256": "a86330cf75bdc5379d0d941bbfefa49eb501fc6a5569ca7ec24c880249662378"
+    },
+    ".work/novice-equipment-vertical-tracer/invocation.json": {
+      "sha256": "21c002f21857a98937be9a045b5216fc1967db28f8602224e53f36216402d9e4"
+    },
+    ".work/novice-equipment-vertical-tracer/test_actual_client_shop_frontier.py": {
+      "sha256": "89bb4755ed72aab1ad63e2bfba0a52157c2c17a2a386c9667c33cee90149f340"
+    },
+    ".work/novice-equipment-vertical-tracer/tracer.log": {
+      "sha256": "e0dec6e5857e3b2f849dd6383c0b41c8310af58812eca3724825e25472209adc"
+    },
+    ".work/novice-equipment-vertical-tracer/tracer.xml": {
+      "sha256": "08918460d69421b884650e775aaeff6c266aed7b8e462c67b762a114beb1ccb8"
+    }
+  }
+}

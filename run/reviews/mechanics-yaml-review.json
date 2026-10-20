@@ -1,0 +1,351 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-10-05T11:22:49.475496+00:00",
+  "passed": false,
+  "review_mode": "read-only independent offline review; only this report is written in repository",
+  "rathena_revision_expected": "e985006171d2eb320ee512a653f4c83aea3d81b6",
+  "rathena_revision_actual": "e985006171d2eb320ee512a653f4c83aea3d81b6",
+  "source_hashes_sha256": {
+    "src/robots/adapters/mechanics_yaml.py": "8c528a479470f3543dd9a7e49e7b574eca767b5208f611da3b185836cd958e2b",
+    "src/robots/domain/build.py": "0ead8793772d3a7aacdb33c8e0087f700e54c8bdcd1a49c4cfc913dd5b3ddd18",
+    "src/robots/app/builds.py": "564926dbbbecf631b3e02f542698f9ae5c00e1ad54bec1d05323c1a17edafa28",
+    "tests/test_mechanics_yaml.py": "78bcf41aa78f201db735730e622eee0ed7835e4a683cd32f762828037765802b",
+    "tests/test_build_catalog_integration.py": "bb672f83aaeb2fb0cd613cf719ec3b5da30eeb58e878122a3878142c0a09b9bd",
+    "tests/test_builds.py": "87f460fc7c1d77276bbbf236a8812b2a7f35a06c047bc4ee5af12f90f113b4a4",
+    "pyproject.toml": "e8ae0849a413bc3d705f081f609b92dae702bbd3e491b2c3aeb5d8665c458fba",
+    "uv.lock": "2d7b4c187078488d7625e4fd4fa982745cab8d6a65b2ff3e382ffa286f1df245",
+    "rathena/src/map/itemdb.cpp": "3b51a2bbcb44c5ffbdb5dc04683dd4f567c2da92f56a4bc0008aa9a93de5efe5",
+    "rathena/src/common/database.cpp": "03d394aa9ed809557fb4ce50419776e34214220504ef1229ec864a4b10be0011",
+    "rathena/src/map/skill.cpp": "aad3c2f3968e0ddf38b89aff953d77a4cae66a0aa54b539a47723dd5f25b6c04",
+    "rathena/src/map/skill.hpp": "ea112b585e8b33228f064bcd22ebc55d7e55274fff29280d7276e435e2b00513",
+    "rathena/src/map/pc.cpp": "d12704c1ef7f8321c255175b6f61aa396209b931e2b1687fbbd16963d1def652",
+    "rathena/db/pre-re/item_db_equip.yml": "2536c42cc9414f4935e7304f5969228740a5f0308b1acdb2581e5891d25450f7",
+    "rathena/db/pre-re/skill_db.yml": "f9846f5fe3074451c87930a451df80390e8fbadf692b9e67e388b67c07340541",
+    "rathena/db/pre-re/skill_tree.yml": "fafe80390ac7c4ad79b4fb258614684250ccc9b72155d9218ea4ee7c063c7f54",
+    "rathena/db/re/item_db_equip.yml": "0ded923764d64ad81ad6fae14880f6c0946d91a91ab931d18cce7d4dbcf75f5f",
+    "rathena/db/re/skill_db.yml": "e7d6748fc042f2c569083865774f91934ce2fcf8ec3bf201ff18e942e5bc0fdb",
+    "rathena/db/re/skill_tree.yml": "9f093dad42651580b9c349dabed68e2cf13e46dbec3d4ada79d326661d863f09"
+  },
+  "security_concerns": [],
+  "logic_errors": [
+    {
+      "id": "null-jobs",
+      "severity": "medium",
+      "title": "Explicit null Jobs is converted into all-allowed instead of rejected",
+      "locations": [
+        "src/robots/adapters/mechanics_yaml.py:283-287"
+      ],
+      "reproduction": {
+        "command": "nix develop -c uv run --offline python -c 'import json, os, tempfile; from pathlib import Path; import yaml; from dataclasses import asdict; from robots.adapters.mechanics_yaml import YamlMechanics\nspec = json.loads('\"'\"'{\"items\": [{\"Id\": 1101, \"AegisName\": \"Sword\", \"Name\": \"Sword\", \"Type\": \"Weapon\", \"Attack\": 25, \"Locations\": {\"Right_Hand\": true}, \"Jobs\": null}], \"ruleset\": \"pre-re\", \"also_present_in_pinned_renewal_item_ids\": [410447, 410448]}'\"'\"')\nwith tempfile.TemporaryDirectory(dir=os.environ['\"'\"'TMPDIR'\"'\"']) as tmp:\n root=Path(tmp); selected=root/'\"'\"'pre-re'\"'\"'; selected.mkdir()\n for name,kind,version,key in [('\"'\"'item_db_equip'\"'\"','\"'\"'ITEM_DB'\"'\"',3,'\"'\"'items'\"'\"'),('\"'\"'skill_db'\"'\"','\"'\"'SKILL_DB'\"'\"',4,'\"'\"'skills'\"'\"'),('\"'\"'skill_tree'\"'\"','\"'\"'SKILL_TREE_DB'\"'\"',1,'\"'\"'trees'\"'\"')]:\n  (selected/(name+'\"'\"'.yml'\"'\"')).write_text(yaml.safe_dump({'\"'\"'Header'\"'\"':{'\"'\"'Type'\"'\"':kind,'\"'\"'Version'\"'\"':version},'\"'\"'Body'\"'\"':spec.get(key,[])}, sort_keys=False))\n cat=YamlMechanics(root,ruleset='\"'\"'pre-re'\"'\"')\n print(json.dumps({'\"'\"'item'\"'\"':asdict(cat.item_by_id(1101)) if cat.item_by_id(1101) else None,'\"'\"'skills'\"'\"':[asdict(s) for s in cat.skills_for_class('\"'\"'Swordman'\"'\"')]}))\n'",
+        "fixture": {
+          "items": [
+            {
+              "Id": 1101,
+              "AegisName": "Sword",
+              "Name": "Sword",
+              "Type": "Weapon",
+              "Attack": 25,
+              "Locations": {
+                "Right_Hand": true
+              },
+              "Jobs": null
+            }
+          ],
+          "ruleset": "pre-re",
+          "also_present_in_pinned_renewal_item_ids": [
+            410447,
+            410448
+          ]
+        },
+        "observed": {
+          "accepted": true,
+          "projected_permissions": [
+            [
+              "All",
+              true
+            ]
+          ]
+        },
+        "actual_execution_exit_code": 0,
+        "actual_execution_stdout": "{\"item\": {\"item_id\": 1101, \"name\": \"Sword\", \"slot\": \"weapon\", \"stat_effects\": [[\"atk\", 25], [\"def\", 0], [\"matk\", 0]], \"required_level\": 0, \"price_tier\": null, \"digest_text\": \"Sword [Sword, 1101, pre-re]: base metadata (('atk', 25), ('def', 0), ('matk', 0)); base level 0..unlimited; locations ('Right_Hand',); jobs (('All', True),); classes (('All', True),); gender Both; market price unknown; effects unknown: combo effects not loaded; raw restriction masks; compatibility not evaluated; no character damage/defense calculation\", \"aegis_name\": \"Sword\", \"ruleset\": \"pre-re\", \"locations\": [\"Right_Hand\"], \"jobs\": [[\"All\", true]], \"classes\": [[\"All\", true]], \"gender\": \"Both\", \"maximum_level\": null, \"card_slots\": 0, \"unknown_effects\": [\"combo effects not loaded\"]}, \"skills\": []}\n",
+        "expected": "Reject/quarantine explicit-null projected permission mappings, or preserve an explicitly empty/non-all declaration; never conflate explicit null with absent All:true default."
+      },
+      "authority": "rathena/src/map/itemdb.cpp:330; common/database.cpp:15-16 treats a present null key as existing; Jobs branch resets masks and has no children to activate, unlike omitted Jobs."
+    },
+    {
+      "id": "null-classes",
+      "severity": "medium",
+      "title": "Explicit null Classes is converted into all-allowed instead of rejected",
+      "locations": [
+        "src/robots/adapters/mechanics_yaml.py:283-287"
+      ],
+      "reproduction": {
+        "command": "nix develop -c uv run --offline python -c 'import json, os, tempfile; from pathlib import Path; import yaml; from dataclasses import asdict; from robots.adapters.mechanics_yaml import YamlMechanics\nspec = json.loads('\"'\"'{\"items\": [{\"Id\": 1101, \"AegisName\": \"Sword\", \"Name\": \"Sword\", \"Type\": \"Weapon\", \"Attack\": 25, \"Locations\": {\"Right_Hand\": true}, \"Classes\": null}], \"ruleset\": \"pre-re\", \"also_present_in_pinned_renewal_item_ids\": []}'\"'\"')\nwith tempfile.TemporaryDirectory(dir=os.environ['\"'\"'TMPDIR'\"'\"']) as tmp:\n root=Path(tmp); selected=root/'\"'\"'pre-re'\"'\"'; selected.mkdir()\n for name,kind,version,key in [('\"'\"'item_db_equip'\"'\"','\"'\"'ITEM_DB'\"'\"',3,'\"'\"'items'\"'\"'),('\"'\"'skill_db'\"'\"','\"'\"'SKILL_DB'\"'\"',4,'\"'\"'skills'\"'\"'),('\"'\"'skill_tree'\"'\"','\"'\"'SKILL_TREE_DB'\"'\"',1,'\"'\"'trees'\"'\"')]:\n  (selected/(name+'\"'\"'.yml'\"'\"')).write_text(yaml.safe_dump({'\"'\"'Header'\"'\"':{'\"'\"'Type'\"'\"':kind,'\"'\"'Version'\"'\"':version},'\"'\"'Body'\"'\"':spec.get(key,[])}, sort_keys=False))\n cat=YamlMechanics(root,ruleset='\"'\"'pre-re'\"'\"')\n print(json.dumps({'\"'\"'item'\"'\"':asdict(cat.item_by_id(1101)) if cat.item_by_id(1101) else None,'\"'\"'skills'\"'\"':[asdict(s) for s in cat.skills_for_class('\"'\"'Swordman'\"'\"')]}))\n'",
+        "fixture": {
+          "items": [
+            {
+              "Id": 1101,
+              "AegisName": "Sword",
+              "Name": "Sword",
+              "Type": "Weapon",
+              "Attack": 25,
+              "Locations": {
+                "Right_Hand": true
+              },
+              "Classes": null
+            }
+          ],
+          "ruleset": "pre-re",
+          "also_present_in_pinned_renewal_item_ids": []
+        },
+        "observed": {
+          "accepted": true,
+          "projected_permissions": [
+            [
+              "All",
+              true
+            ]
+          ]
+        },
+        "actual_execution_exit_code": 0,
+        "actual_execution_stdout": "{\"item\": {\"item_id\": 1101, \"name\": \"Sword\", \"slot\": \"weapon\", \"stat_effects\": [[\"atk\", 25], [\"def\", 0], [\"matk\", 0]], \"required_level\": 0, \"price_tier\": null, \"digest_text\": \"Sword [Sword, 1101, pre-re]: base metadata (('atk', 25), ('def', 0), ('matk', 0)); base level 0..unlimited; locations ('Right_Hand',); jobs (('All', True),); classes (('All', True),); gender Both; market price unknown; effects unknown: combo effects not loaded; raw restriction masks; compatibility not evaluated; no character damage/defense calculation\", \"aegis_name\": \"Sword\", \"ruleset\": \"pre-re\", \"locations\": [\"Right_Hand\"], \"jobs\": [[\"All\", true]], \"classes\": [[\"All\", true]], \"gender\": \"Both\", \"maximum_level\": null, \"card_slots\": 0, \"unknown_effects\": [\"combo effects not loaded\"]}, \"skills\": []}\n",
+        "expected": "Reject/quarantine explicit-null projected permission mappings, or preserve an explicitly empty/non-all declaration; never conflate explicit null with absent All:true default."
+      },
+      "authority": "rathena/src/map/itemdb.cpp:376; common/database.cpp:15-16 treats a present null key as existing; Jobs branch resets masks and has no children to activate, unlike omitted Jobs."
+    },
+    {
+      "id": "native-skill-level-limit",
+      "severity": "medium",
+      "title": "Tree MaxLevel/Requires Level beyond pinned MAX_SKILL_LEVEL is silently capped, but native parser rejects before DB-cap logic",
+      "locations": [
+        "src/robots/adapters/mechanics_yaml.py:384",
+        "src/robots/adapters/mechanics_yaml.py:398",
+        "tests/test_mechanics_yaml.py:148-172"
+      ],
+      "reproduction": {
+        "command": "nix develop -c uv run --offline python -c 'import json, os, tempfile; from pathlib import Path; import yaml; from dataclasses import asdict; from robots.adapters.mechanics_yaml import YamlMechanics\nspec = json.loads('\"'\"'{\"skills\": [{\"Id\": 5, \"Name\": \"SM_BASH\", \"Description\": \"Bash\", \"MaxLevel\": 10}, {\"Id\": 1, \"Name\": \"NV_BASIC\", \"Description\": \"Basic Skill\", \"MaxLevel\": 9}], \"trees\": [{\"Job\": \"Swordman\", \"Tree\": [{\"Name\": \"SM_BASH\", \"MaxLevel\": 20, \"Requires\": [{\"Name\": \"NV_BASIC\", \"Level\": 20}]}]}], \"ruleset\": \"pre-re\"}'\"'\"')\nwith tempfile.TemporaryDirectory(dir=os.environ['\"'\"'TMPDIR'\"'\"']) as tmp:\n root=Path(tmp); selected=root/'\"'\"'pre-re'\"'\"'; selected.mkdir()\n for name,kind,version,key in [('\"'\"'item_db_equip'\"'\"','\"'\"'ITEM_DB'\"'\"',3,'\"'\"'items'\"'\"'),('\"'\"'skill_db'\"'\"','\"'\"'SKILL_DB'\"'\"',4,'\"'\"'skills'\"'\"'),('\"'\"'skill_tree'\"'\"','\"'\"'SKILL_TREE_DB'\"'\"',1,'\"'\"'trees'\"'\"')]:\n  (selected/(name+'\"'\"'.yml'\"'\"')).write_text(yaml.safe_dump({'\"'\"'Header'\"'\"':{'\"'\"'Type'\"'\"':kind,'\"'\"'Version'\"'\"':version},'\"'\"'Body'\"'\"':spec.get(key,[])}, sort_keys=False))\n cat=YamlMechanics(root,ruleset='\"'\"'pre-re'\"'\"')\n print(json.dumps({'\"'\"'item'\"'\"':asdict(cat.item_by_id(1101)) if cat.item_by_id(1101) else None,'\"'\"'skills'\"'\"':[asdict(s) for s in cat.skills_for_class('\"'\"'Swordman'\"'\"')]}))\n'",
+        "fixture": {
+          "skills": [
+            {
+              "Id": 5,
+              "Name": "SM_BASH",
+              "Description": "Bash",
+              "MaxLevel": 10
+            },
+            {
+              "Id": 1,
+              "Name": "NV_BASIC",
+              "Description": "Basic Skill",
+              "MaxLevel": 9
+            }
+          ],
+          "trees": [
+            {
+              "Job": "Swordman",
+              "Tree": [
+                {
+                  "Name": "SM_BASH",
+                  "MaxLevel": 20,
+                  "Requires": [
+                    {
+                      "Name": "NV_BASIC",
+                      "Level": 20
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "ruleset": "pre-re"
+        },
+        "observed": {
+          "accepted": true,
+          "max_level": 10,
+          "prerequisites": [
+            [
+              "NV_BASIC",
+              9
+            ]
+          ]
+        },
+        "actual_execution_exit_code": 0,
+        "actual_execution_stdout": "{\"item\": null, \"skills\": [{\"skill_id\": \"SM_BASH\", \"name\": \"Bash\", \"required_level\": 0, \"digest_text\": \"SM_BASH (Bash) [Swordman, pre-re]: max 10 (DB max 10); declared base level 0, job level 0; prerequisites (('NV_BASIC', 9),); effects/formulas unknown; server job caps/configuration not applied; not a calculated learn level\", \"max_level\": 10, \"database_max_level\": 10, \"required_base_level\": 0, \"required_job_level\": 0, \"prerequisites\": [[\"NV_BASIC\", 9]], \"class_name\": \"Swordman\", \"ruleset\": \"pre-re\", \"unknown_effects\": [\"effects/formulas\", \"casting requirements\", \"server job caps/configuration not applied\"]}]}\n",
+        "expected": "Reject source tree MaxLevel or prerequisite Level > 13 before capping to referenced DB maximum; likewise reject skill-db MaxLevel > 13."
+      },
+      "authority": "rathena/src/map/skill.hpp:43; pc.cpp:13507-13517,13587-13597; skill.cpp:14822-14831"
+    },
+    {
+      "id": "duplicate-id-filter-bypass",
+      "severity": "medium",
+      "title": "Duplicate identities are validated only after excluded rows are filtered out",
+      "locations": [
+        "src/robots/adapters/mechanics_yaml.py:313-314",
+        "src/robots/adapters/mechanics_yaml.py:534-539"
+      ],
+      "reproduction": {
+        "command": "nix develop -c uv run --offline python -c 'import json, os, tempfile; from pathlib import Path; import yaml; from dataclasses import asdict; from robots.adapters.mechanics_yaml import YamlMechanics\nspec = json.loads('\"'\"'{\"items\": [{\"Id\": 1101, \"AegisName\": \"Sword\", \"Name\": \"Sword\", \"Type\": \"Weapon\", \"Attack\": 25, \"Locations\": {\"Right_Hand\": true}}, {\"Id\": 1101, \"AegisName\": \"PetDuplicate\", \"Name\": \"Pet duplicate\", \"Type\": \"PetArmor\", \"Attack\": 25, \"Locations\": {\"Right_Hand\": true}}], \"ruleset\": \"pre-re\"}'\"'\"')\nwith tempfile.TemporaryDirectory(dir=os.environ['\"'\"'TMPDIR'\"'\"']) as tmp:\n root=Path(tmp); selected=root/'\"'\"'pre-re'\"'\"'; selected.mkdir()\n for name,kind,version,key in [('\"'\"'item_db_equip'\"'\"','\"'\"'ITEM_DB'\"'\"',3,'\"'\"'items'\"'\"'),('\"'\"'skill_db'\"'\"','\"'\"'SKILL_DB'\"'\"',4,'\"'\"'skills'\"'\"'),('\"'\"'skill_tree'\"'\"','\"'\"'SKILL_TREE_DB'\"'\"',1,'\"'\"'trees'\"'\"')]:\n  (selected/(name+'\"'\"'.yml'\"'\"')).write_text(yaml.safe_dump({'\"'\"'Header'\"'\"':{'\"'\"'Type'\"'\"':kind,'\"'\"'Version'\"'\"':version},'\"'\"'Body'\"'\"':spec.get(key,[])}, sort_keys=False))\n cat=YamlMechanics(root,ruleset='\"'\"'pre-re'\"'\"')\n print(json.dumps({'\"'\"'item'\"'\"':asdict(cat.item_by_id(1101)) if cat.item_by_id(1101) else None,'\"'\"'skills'\"'\"':[asdict(s) for s in cat.skills_for_class('\"'\"'Swordman'\"'\"')]}))\n'",
+        "fixture": {
+          "items": [
+            {
+              "Id": 1101,
+              "AegisName": "Sword",
+              "Name": "Sword",
+              "Type": "Weapon",
+              "Attack": 25,
+              "Locations": {
+                "Right_Hand": true
+              }
+            },
+            {
+              "Id": 1101,
+              "AegisName": "PetDuplicate",
+              "Name": "Pet duplicate",
+              "Type": "PetArmor",
+              "Attack": 25,
+              "Locations": {
+                "Right_Hand": true
+              }
+            }
+          ],
+          "ruleset": "pre-re"
+        },
+        "observed": {
+          "accepted": true,
+          "item_by_id_1101": "Sword"
+        },
+        "actual_execution_exit_code": 0,
+        "actual_execution_stdout": "{\"item\": {\"item_id\": 1101, \"name\": \"Sword\", \"slot\": \"weapon\", \"stat_effects\": [[\"atk\", 25], [\"def\", 0], [\"matk\", 0]], \"required_level\": 0, \"price_tier\": null, \"digest_text\": \"Sword [Sword, 1101, pre-re]: base metadata (('atk', 25), ('def', 0), ('matk', 0)); base level 0..unlimited; locations ('Right_Hand',); jobs (('All', True),); classes (('All', True),); gender Both; market price unknown; effects unknown: combo effects not loaded; raw restriction masks; compatibility not evaluated; no character damage/defense calculation\", \"aegis_name\": \"Sword\", \"ruleset\": \"pre-re\", \"locations\": [\"Right_Hand\"], \"jobs\": [[\"All\", true]], \"classes\": [[\"All\", true]], \"gender\": \"Both\", \"maximum_level\": null, \"card_slots\": 0, \"unknown_effects\": [\"combo effects not loaded\"]}, \"skills\": []}\n",
+        "expected": "Reject duplicate Id/AegisName across source rows before player/Pet/Trade quarantine filtering, or explicitly narrow identity-guarantee to retained rows."
+      },
+      "authority": "Advertised duplicate ID fail-closed guarantee; native itemdb.cpp:ItemDatabase::parseBodyNode identifies database rows by Id before applying Type."
+    }
+  ],
+  "suggestions": [
+    "Add fixture tests for null projected masks, source-native level bound rejection and duplicate identity collisions involving excluded rows; do not weaken the new unpriced consumer tests.",
+    "Clarify that Jobs/Classes/Gender/Locations are raw declarations. itemdb.cpp:1227-1247 forces instruments male, whips female and wedding rings by ID; adapter does not normalize these, which is acceptable only under its explicit no-compatibility claim.",
+    "Path check blocks cross-directory/ruleset file symlinks and symlink ruleset directories, but allows a leaf symlink resolving within the selected ruleset directory. Avoid claiming universal symlink rejection.",
+    "Exact class Job strings are not validated against native JOB constants (pc.cpp:13429-13433). Unknown reference handling is strict, but unknown standalone Job is outside verified source semantics.",
+    "Direct parent precedence and excluded parent-entry semantics are implemented correctly, but a dedicated multi-parent precedence regression fixture would strengthen existing tests."
+  ],
+  "checks": [
+    {
+      "command": "nix develop -c uv run --offline pytest -v tests/test_mechanics_yaml.py tests/test_build_catalog_integration.py tests/test_builds.py",
+      "exit_code": 0,
+      "stdout": "============================= test session starts ==============================\nplatform linux -- Python 3.14.7, pytest-9.1.1, pluggy-1.6.0\nrootdir: /home/otto/dev/ro-bots\nconfigfile: pyproject.toml\nplugins: cov-7.1.0, anyio-4.15.1, platformdirs-4.12.3\ncollected 48 items\n\ntests/test_mechanics_yaml.py .................................           [ 68%]\ntests/test_build_catalog_integration.py ..                               [ 72%]\ntests/test_builds.py .............                                       [100%]\n\n============================= 48 passed in 24.13s ==============================\n",
+      "stderr": ""
+    },
+    {
+      "command": "nix develop -c uv run --offline ruff check src/robots/adapters/mechanics_yaml.py src/robots/domain/build.py src/robots/app/builds.py tests/test_mechanics_yaml.py tests/test_build_catalog_integration.py",
+      "exit_code": 0,
+      "stdout": "All checks passed!\n",
+      "stderr": ""
+    },
+    {
+      "command": "nix develop -c uv run --offline mypy src/robots/adapters/mechanics_yaml.py src/robots/domain/build.py src/robots/app/builds.py tests/test_mechanics_yaml.py tests/test_build_catalog_integration.py",
+      "exit_code": 0,
+      "stdout": "Success: no issues found in 5 source files\n",
+      "stderr": ""
+    },
+    {
+      "command": "nix develop -c uv run --offline black --check src/robots/adapters/mechanics_yaml.py src/robots/domain/build.py src/robots/app/builds.py tests/test_mechanics_yaml.py tests/test_build_catalog_integration.py",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "All done! \u2728 \ud83c\udf70 \u2728\n5 files would be left unchanged.\n"
+    }
+  ],
+  "catalogs": {
+    "pre-re": {
+      "counts": {
+        "equipment_rows": 2017,
+        "player_equipment": 1923,
+        "skill_rows": 1228,
+        "class_trees": 77
+      },
+      "independently_checked_item_digests": 1923,
+      "independently_checked_class_trees": 77,
+      "independently_checked_class_skill_digests": 2121,
+      "projection_mismatches": [],
+      "duplicate_top_level_item_key_rows": [],
+      "excluded_items": [],
+      "ambiguous_display_name_count": 299,
+      "all_projected_prices_unknown": true,
+      "pinned_tree_levels_above_native_max_13": [],
+      "interpretation": "Raw declaration projections match except the explicitly listed null Jobs fail-open mismatches. No job-db caps, defaultGender normalization, final combined equipment bitmask, formulas or compatibility evaluated."
+    },
+    "re": {
+      "counts": {
+        "equipment_rows": 12982,
+        "player_equipment": 12787,
+        "skill_rows": 1635,
+        "class_trees": 175
+      },
+      "independently_checked_item_digests": 12787,
+      "independently_checked_class_trees": 175,
+      "independently_checked_class_skill_digests": 8122,
+      "projection_mismatches": [
+        {
+          "item_id": 410447,
+          "field": "jobs",
+          "expected": [],
+          "actual": [
+            [
+              "All",
+              true
+            ]
+          ]
+        },
+        {
+          "item_id": 410448,
+          "field": "jobs",
+          "expected": [],
+          "actual": [
+            [
+              "All",
+              true
+            ]
+          ]
+        }
+      ],
+      "duplicate_top_level_item_key_rows": [
+        {
+          "item_id": 400276,
+          "duplicate_keys": [
+            "Trade"
+          ]
+        }
+      ],
+      "excluded_items": [
+        [
+          400276,
+          "duplicate Trade field"
+        ]
+      ],
+      "ambiguous_display_name_count": 794,
+      "all_projected_prices_unknown": true,
+      "pinned_tree_levels_above_native_max_13": [],
+      "interpretation": "Raw declaration projections match except the explicitly listed null Jobs fail-open mismatches. No job-db caps, defaultGender normalization, final combined equipment bitmask, formulas or compatibility evaluated."
+    }
+  },
+  "live_integration": false,
+  "acceptance_scope": "Base YAML projections and unpriced-item affordability consumer only; not full formulas, builds, source-engine equivalence, native compilation or live integration.",
+  "consumer_verification": {
+    "passed": true,
+    "mixed_known_unknown_goals": {
+      "weapon": "KnownReachable"
+    },
+    "unreachable_known_fallback_goals": {
+      "weapon": "KnownReachable"
+    },
+    "all_unknown_goals": {},
+    "unknown_item_price_unchanged": null,
+    "existing_stub_prices_remain_integers": true,
+    "real_ruleset_consumer_tests": [
+      "pre-re",
+      "re"
+    ],
+    "note": "Affordability filter only; not build legality or gameplay evidence."
+  },
+  "source_hashes_unchanged_during_review": true,
+  "rathena_source_clean": true,
+  "summary": "Pinned skill/base-metadata projections and unpriced consumer pass offline checks, except two Renewal null Jobs rows incorrectly become All:true; fail-closed approval withheld for permission/schema, identity and native-skill-bound defects."
+}

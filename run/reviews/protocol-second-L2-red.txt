@@ -1,0 +1,312 @@
+FF..FF..FF..FF..                                                         [100%]
+=================================== FAILURES ===================================
+____ test_every_failed_attempt_preserves_lock_across_limbs[0-char-OSError] _____
+
+limbs = <module 'rereview_limbs' from '/home/otto/dev/ro-bots/spikes/003-clientless-limbs/test_limbs.py'>
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7ffff5cce8b0>
+error_type = <class 'OSError'>, stage = 'char', retries = 0
+
+    @pytest.mark.parametrize("error_type", [OSError, ValueError, ConnectionError, RuntimeError])
+    @pytest.mark.parametrize("stage", ["char", "map"])
+    @pytest.mark.parametrize("retries", [0, 1])
+    def test_every_failed_attempt_preserves_lock_across_limbs(
+        limbs, monkeypatch, error_type, stage, retries
+    ):
+        clock = Clock()
+        budget = limbs.Budget(59, clock=clock.monotonic, sleep=clock.sleep)
+        seen = []
+        monkeypatch.setattr(limbs.time, "monotonic", clock.monotonic)
+        monkeypatch.setattr(limbs, "fixture", fixture_document())
+    
+        def login(bot):
+            bot.aid, bot.gid = 11, 21
+            seen.append(clock.now)
+            return "127.0.0.1", 1
+    
+        def fail(*_args):
+            raise error_type()
+    
+        monkeypatch.setattr(limbs.FixtureClient, "_login_server", login)
+        monkeypatch.setattr(limbs.FixtureClient, "_char_server", fail if stage == "char"
+                            else lambda *_: ("127.0.0.1", 1))
+        monkeypatch.setattr(limbs.FixtureClient, "_map_server", fail)
+        limbs.run_limb("first", limbs.connect_pair, budget, retries=retries)
+        assert seen == ([100.0] if retries == 0 else [100.0, 130.0])
+>       assert budget.connect_not_before >= seen[-1] + 30
+E       assert 103.0 >= (100.0 + 30)
+E        +  where 103.0 = <rereview_limbs.Budget object at 0x7ffff5a48ec0>.connect_not_before
+
+tests/test_protocol_rereview_repairs.py:139: AssertionError
+___ test_every_failed_attempt_preserves_lock_across_limbs[0-char-ValueError] ___
+
+limbs = <module 'rereview_limbs' from '/home/otto/dev/ro-bots/spikes/003-clientless-limbs/test_limbs.py'>
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7ffff5cce9e0>
+error_type = <class 'ValueError'>, stage = 'char', retries = 0
+
+    @pytest.mark.parametrize("error_type", [OSError, ValueError, ConnectionError, RuntimeError])
+    @pytest.mark.parametrize("stage", ["char", "map"])
+    @pytest.mark.parametrize("retries", [0, 1])
+    def test_every_failed_attempt_preserves_lock_across_limbs(
+        limbs, monkeypatch, error_type, stage, retries
+    ):
+        clock = Clock()
+        budget = limbs.Budget(59, clock=clock.monotonic, sleep=clock.sleep)
+        seen = []
+        monkeypatch.setattr(limbs.time, "monotonic", clock.monotonic)
+        monkeypatch.setattr(limbs, "fixture", fixture_document())
+    
+        def login(bot):
+            bot.aid, bot.gid = 11, 21
+            seen.append(clock.now)
+            return "127.0.0.1", 1
+    
+        def fail(*_args):
+            raise error_type()
+    
+        monkeypatch.setattr(limbs.FixtureClient, "_login_server", login)
+        monkeypatch.setattr(limbs.FixtureClient, "_char_server", fail if stage == "char"
+                            else lambda *_: ("127.0.0.1", 1))
+        monkeypatch.setattr(limbs.FixtureClient, "_map_server", fail)
+        limbs.run_limb("first", limbs.connect_pair, budget, retries=retries)
+        assert seen == ([100.0] if retries == 0 else [100.0, 130.0])
+>       assert budget.connect_not_before >= seen[-1] + 30
+E       assert 103.0 >= (100.0 + 30)
+E        +  where 103.0 = <rereview_limbs.Budget object at 0x7ffff5a481a0>.connect_not_before
+
+tests/test_protocol_rereview_repairs.py:139: AssertionError
+_____ test_every_failed_attempt_preserves_lock_across_limbs[0-map-OSError] _____
+
+limbs = <module 'rereview_limbs' from '/home/otto/dev/ro-bots/spikes/003-clientless-limbs/test_limbs.py'>
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7ffff5d06140>
+error_type = <class 'OSError'>, stage = 'map', retries = 0
+
+    @pytest.mark.parametrize("error_type", [OSError, ValueError, ConnectionError, RuntimeError])
+    @pytest.mark.parametrize("stage", ["char", "map"])
+    @pytest.mark.parametrize("retries", [0, 1])
+    def test_every_failed_attempt_preserves_lock_across_limbs(
+        limbs, monkeypatch, error_type, stage, retries
+    ):
+        clock = Clock()
+        budget = limbs.Budget(59, clock=clock.monotonic, sleep=clock.sleep)
+        seen = []
+        monkeypatch.setattr(limbs.time, "monotonic", clock.monotonic)
+        monkeypatch.setattr(limbs, "fixture", fixture_document())
+    
+        def login(bot):
+            bot.aid, bot.gid = 11, 21
+            seen.append(clock.now)
+            return "127.0.0.1", 1
+    
+        def fail(*_args):
+            raise error_type()
+    
+        monkeypatch.setattr(limbs.FixtureClient, "_login_server", login)
+        monkeypatch.setattr(limbs.FixtureClient, "_char_server", fail if stage == "char"
+                            else lambda *_: ("127.0.0.1", 1))
+        monkeypatch.setattr(limbs.FixtureClient, "_map_server", fail)
+        limbs.run_limb("first", limbs.connect_pair, budget, retries=retries)
+        assert seen == ([100.0] if retries == 0 else [100.0, 130.0])
+>       assert budget.connect_not_before >= seen[-1] + 30
+E       assert 103.0 >= (100.0 + 30)
+E        +  where 103.0 = <rereview_limbs.Budget object at 0x7ffff5a4b0e0>.connect_not_before
+
+tests/test_protocol_rereview_repairs.py:139: AssertionError
+___ test_every_failed_attempt_preserves_lock_across_limbs[0-map-ValueError] ____
+
+limbs = <module 'rereview_limbs' from '/home/otto/dev/ro-bots/spikes/003-clientless-limbs/test_limbs.py'>
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7ffff5bcc550>
+error_type = <class 'ValueError'>, stage = 'map', retries = 0
+
+    @pytest.mark.parametrize("error_type", [OSError, ValueError, ConnectionError, RuntimeError])
+    @pytest.mark.parametrize("stage", ["char", "map"])
+    @pytest.mark.parametrize("retries", [0, 1])
+    def test_every_failed_attempt_preserves_lock_across_limbs(
+        limbs, monkeypatch, error_type, stage, retries
+    ):
+        clock = Clock()
+        budget = limbs.Budget(59, clock=clock.monotonic, sleep=clock.sleep)
+        seen = []
+        monkeypatch.setattr(limbs.time, "monotonic", clock.monotonic)
+        monkeypatch.setattr(limbs, "fixture", fixture_document())
+    
+        def login(bot):
+            bot.aid, bot.gid = 11, 21
+            seen.append(clock.now)
+            return "127.0.0.1", 1
+    
+        def fail(*_args):
+            raise error_type()
+    
+        monkeypatch.setattr(limbs.FixtureClient, "_login_server", login)
+        monkeypatch.setattr(limbs.FixtureClient, "_char_server", fail if stage == "char"
+                            else lambda *_: ("127.0.0.1", 1))
+        monkeypatch.setattr(limbs.FixtureClient, "_map_server", fail)
+        limbs.run_limb("first", limbs.connect_pair, budget, retries=retries)
+        assert seen == ([100.0] if retries == 0 else [100.0, 130.0])
+>       assert budget.connect_not_before >= seen[-1] + 30
+E       assert 103.0 >= (100.0 + 30)
+E        +  where 103.0 = <rereview_limbs.Budget object at 0x7ffff5a4aa50>.connect_not_before
+
+tests/test_protocol_rereview_repairs.py:139: AssertionError
+____ test_every_failed_attempt_preserves_lock_across_limbs[1-char-OSError] _____
+
+limbs = <module 'rereview_limbs' from '/home/otto/dev/ro-bots/spikes/003-clientless-limbs/test_limbs.py'>
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7ffff5a3c500>
+error_type = <class 'OSError'>, stage = 'char', retries = 1
+
+    @pytest.mark.parametrize("error_type", [OSError, ValueError, ConnectionError, RuntimeError])
+    @pytest.mark.parametrize("stage", ["char", "map"])
+    @pytest.mark.parametrize("retries", [0, 1])
+    def test_every_failed_attempt_preserves_lock_across_limbs(
+        limbs, monkeypatch, error_type, stage, retries
+    ):
+        clock = Clock()
+        budget = limbs.Budget(59, clock=clock.monotonic, sleep=clock.sleep)
+        seen = []
+        monkeypatch.setattr(limbs.time, "monotonic", clock.monotonic)
+        monkeypatch.setattr(limbs, "fixture", fixture_document())
+    
+        def login(bot):
+            bot.aid, bot.gid = 11, 21
+            seen.append(clock.now)
+            return "127.0.0.1", 1
+    
+        def fail(*_args):
+            raise error_type()
+    
+        monkeypatch.setattr(limbs.FixtureClient, "_login_server", login)
+        monkeypatch.setattr(limbs.FixtureClient, "_char_server", fail if stage == "char"
+                            else lambda *_: ("127.0.0.1", 1))
+        monkeypatch.setattr(limbs.FixtureClient, "_map_server", fail)
+        limbs.run_limb("first", limbs.connect_pair, budget, retries=retries)
+>       assert seen == ([100.0] if retries == 0 else [100.0, 130.0])
+E       assert [100.0, 106.0] == [100.0, 130.0]
+E         
+E         At index 1 diff: 106.0 != 130.0
+E         Use -v to get more diff
+
+tests/test_protocol_rereview_repairs.py:138: AssertionError
+___ test_every_failed_attempt_preserves_lock_across_limbs[1-char-ValueError] ___
+
+limbs = <module 'rereview_limbs' from '/home/otto/dev/ro-bots/spikes/003-clientless-limbs/test_limbs.py'>
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7ffff5a64210>
+error_type = <class 'ValueError'>, stage = 'char', retries = 1
+
+    @pytest.mark.parametrize("error_type", [OSError, ValueError, ConnectionError, RuntimeError])
+    @pytest.mark.parametrize("stage", ["char", "map"])
+    @pytest.mark.parametrize("retries", [0, 1])
+    def test_every_failed_attempt_preserves_lock_across_limbs(
+        limbs, monkeypatch, error_type, stage, retries
+    ):
+        clock = Clock()
+        budget = limbs.Budget(59, clock=clock.monotonic, sleep=clock.sleep)
+        seen = []
+        monkeypatch.setattr(limbs.time, "monotonic", clock.monotonic)
+        monkeypatch.setattr(limbs, "fixture", fixture_document())
+    
+        def login(bot):
+            bot.aid, bot.gid = 11, 21
+            seen.append(clock.now)
+            return "127.0.0.1", 1
+    
+        def fail(*_args):
+            raise error_type()
+    
+        monkeypatch.setattr(limbs.FixtureClient, "_login_server", login)
+        monkeypatch.setattr(limbs.FixtureClient, "_char_server", fail if stage == "char"
+                            else lambda *_: ("127.0.0.1", 1))
+        monkeypatch.setattr(limbs.FixtureClient, "_map_server", fail)
+        limbs.run_limb("first", limbs.connect_pair, budget, retries=retries)
+>       assert seen == ([100.0] if retries == 0 else [100.0, 130.0])
+E       assert [100.0, 106.0] == [100.0, 130.0]
+E         
+E         At index 1 diff: 106.0 != 130.0
+E         Use -v to get more diff
+
+tests/test_protocol_rereview_repairs.py:138: AssertionError
+_____ test_every_failed_attempt_preserves_lock_across_limbs[1-map-OSError] _____
+
+limbs = <module 'rereview_limbs' from '/home/otto/dev/ro-bots/spikes/003-clientless-limbs/test_limbs.py'>
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7ffff5cd5010>
+error_type = <class 'OSError'>, stage = 'map', retries = 1
+
+    @pytest.mark.parametrize("error_type", [OSError, ValueError, ConnectionError, RuntimeError])
+    @pytest.mark.parametrize("stage", ["char", "map"])
+    @pytest.mark.parametrize("retries", [0, 1])
+    def test_every_failed_attempt_preserves_lock_across_limbs(
+        limbs, monkeypatch, error_type, stage, retries
+    ):
+        clock = Clock()
+        budget = limbs.Budget(59, clock=clock.monotonic, sleep=clock.sleep)
+        seen = []
+        monkeypatch.setattr(limbs.time, "monotonic", clock.monotonic)
+        monkeypatch.setattr(limbs, "fixture", fixture_document())
+    
+        def login(bot):
+            bot.aid, bot.gid = 11, 21
+            seen.append(clock.now)
+            return "127.0.0.1", 1
+    
+        def fail(*_args):
+            raise error_type()
+    
+        monkeypatch.setattr(limbs.FixtureClient, "_login_server", login)
+        monkeypatch.setattr(limbs.FixtureClient, "_char_server", fail if stage == "char"
+                            else lambda *_: ("127.0.0.1", 1))
+        monkeypatch.setattr(limbs.FixtureClient, "_map_server", fail)
+        limbs.run_limb("first", limbs.connect_pair, budget, retries=retries)
+>       assert seen == ([100.0] if retries == 0 else [100.0, 130.0])
+E       assert [100.0, 106.0] == [100.0, 130.0]
+E         
+E         At index 1 diff: 106.0 != 130.0
+E         Use -v to get more diff
+
+tests/test_protocol_rereview_repairs.py:138: AssertionError
+___ test_every_failed_attempt_preserves_lock_across_limbs[1-map-ValueError] ____
+
+limbs = <module 'rereview_limbs' from '/home/otto/dev/ro-bots/spikes/003-clientless-limbs/test_limbs.py'>
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7ffff5cd4c50>
+error_type = <class 'ValueError'>, stage = 'map', retries = 1
+
+    @pytest.mark.parametrize("error_type", [OSError, ValueError, ConnectionError, RuntimeError])
+    @pytest.mark.parametrize("stage", ["char", "map"])
+    @pytest.mark.parametrize("retries", [0, 1])
+    def test_every_failed_attempt_preserves_lock_across_limbs(
+        limbs, monkeypatch, error_type, stage, retries
+    ):
+        clock = Clock()
+        budget = limbs.Budget(59, clock=clock.monotonic, sleep=clock.sleep)
+        seen = []
+        monkeypatch.setattr(limbs.time, "monotonic", clock.monotonic)
+        monkeypatch.setattr(limbs, "fixture", fixture_document())
+    
+        def login(bot):
+            bot.aid, bot.gid = 11, 21
+            seen.append(clock.now)
+            return "127.0.0.1", 1
+    
+        def fail(*_args):
+            raise error_type()
+    
+        monkeypatch.setattr(limbs.FixtureClient, "_login_server", login)
+        monkeypatch.setattr(limbs.FixtureClient, "_char_server", fail if stage == "char"
+                            else lambda *_: ("127.0.0.1", 1))
+        monkeypatch.setattr(limbs.FixtureClient, "_map_server", fail)
+        limbs.run_limb("first", limbs.connect_pair, budget, retries=retries)
+>       assert seen == ([100.0] if retries == 0 else [100.0, 130.0])
+E       assert [100.0, 106.0] == [100.0, 130.0]
+E         
+E         At index 1 diff: 106.0 != 130.0
+E         Use -v to get more diff
+
+tests/test_protocol_rereview_repairs.py:138: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_protocol_rereview_repairs.py::test_every_failed_attempt_preserves_lock_across_limbs[0-char-OSError]
+FAILED tests/test_protocol_rereview_repairs.py::test_every_failed_attempt_preserves_lock_across_limbs[0-char-ValueError]
+FAILED tests/test_protocol_rereview_repairs.py::test_every_failed_attempt_preserves_lock_across_limbs[0-map-OSError]
+FAILED tests/test_protocol_rereview_repairs.py::test_every_failed_attempt_preserves_lock_across_limbs[0-map-ValueError]
+FAILED tests/test_protocol_rereview_repairs.py::test_every_failed_attempt_preserves_lock_across_limbs[1-char-OSError]
+FAILED tests/test_protocol_rereview_repairs.py::test_every_failed_attempt_preserves_lock_across_limbs[1-char-ValueError]
+FAILED tests/test_protocol_rereview_repairs.py::test_every_failed_attempt_preserves_lock_across_limbs[1-map-OSError]
+FAILED tests/test_protocol_rereview_repairs.py::test_every_failed_attempt_preserves_lock_across_limbs[1-map-ValueError]
+8 failed, 8 passed in 0.09s

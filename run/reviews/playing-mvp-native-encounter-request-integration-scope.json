@@ -1,0 +1,26 @@
+{
+  "feature": "Criterion9 end-to-end ordered native encounter facts -> BotState -> real decision request",
+  "basis": "Approved typed encounter helper and repair1; native public chat plus exact vitals now have bounded live receipts",
+  "owned_files": [
+    "src/robots/adapters/native_encounter_stream.py",
+    "src/robots/app/playing_runtime.py",
+    "src/robots/domain/model.py",
+    "src/robots/domain/decisions.py",
+    "tests/test_native_encounter_stream.py",
+    "tests/test_native_encounter_request.py",
+    "run/reviews/playing-mvp-native-encounter-request-integration.json"
+  ],
+  "acceptance": [
+    "Real PlayingClient with source-shaped received frames yields decision request containing observed species, positive SELF damage and SELF level at the hit",
+    "Process frames in actual sequence; level or appearance received after a hit never fills that earlier fact",
+    "Seed SELF baseline only from reviewed epoch-bound selected-character snapshot, never current status_params containing later updates or persona/SQL",
+    "Clear actor associations at vanish/map/session/gap boundaries; later equal actor ID does not rewrite history",
+    "Missing species or level remains null; history bounded by approved eight-record/2048-byte component",
+    "Actual readystate/transport guards and lifecycle remain fail-closed; no sends occur from getters",
+    "Wire exact HP/SP and sender-budget semantics unchanged",
+    "No new native actions, protocol mappings, provider questions, guide ingestion or spending points"
+  ],
+  "limits": "Current session observation history, not durable per-agent memory or universal telemetry authentication",
+  "native_model_SQL_service_Git_effects_by_delegate": false,
+  "all_milestones_open": true
+}

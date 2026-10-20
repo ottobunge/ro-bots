@@ -1,0 +1,119 @@
+{
+  "status": "OFFLINE_FIX_VERIFIED_REQUIRES_INDEPENDENT_REVIEW_AND_PARENT_ROOT_GATE",
+  "self_approval": false,
+  "native_effects": false,
+  "live_delivery_verified": false,
+  "all_milestones_open": true,
+  "owned_files": [
+    "src/robots/adapters/native_chat_text.py",
+    "src/robots/app/playing_runtime.py",
+    "tests/test_native_chat_text.py",
+    "run/reviews/playing-mvp-native-chat-text-fix.json"
+  ],
+  "policy": {
+    "function": "public_chat_text(text: str) -> str",
+    "text_utf8_max_bytes": 253,
+    "short_valid_strings": "returned unchanged, including empty strings and embedded NULs",
+    "long_valid_strings": "longest whole-code-point UTF-8 prefix within the byte limit",
+    "malformed_unicode": "strict full-input encoding raises UnicodeEncodeError, including beyond the clipping frontier",
+    "message_count": "one existing wire send, never split or add ellipsis",
+    "integration": "only PlayingClient._social Say argument, after unchanged native state/readiness gate",
+    "party_chat": "unchanged separate non-NUL helper and its existing 254-byte budget"
+  },
+  "authority": {
+    "revision": "e985006171d2eb320ee512a653f4c83aea3d81b6",
+    "profile": "MAIN/pre-re PACKETVER=20180704, obfuscation absent",
+    "source_root": "/home/otto/.hermes/cache/scratch/callback-package-hut2_cuz/configured-variant",
+    "immutable_source_profile_binding": "existing test_immutable_source_profile_sender_binding executed successfully before the compiler oracle and in final targeted suite",
+    "chat_size_max": 256,
+    "accepted_server_message_length_max": 255,
+    "existing_wire_nul_bytes": 1,
+    "active_server_message_length_extra_bytes": 1,
+    "budget_formula": "253 text bytes + 1 existing wire NUL + 1 server modern-branch increment = 255",
+    "next_ascii_byte": "254 text bytes produce server messageLength 256 and exceed 255",
+    "source_ranges": [
+      "src/map/map.hpp:285-286 defines CHAT_SIZE_MAX (255 + 1)",
+      "src/map/clif.cpp:10454-10463 reads length and excludes existing four-byte header",
+      "src/map/clif.cpp:10487-10511 validates and removes exact selected name plus separator",
+      "src/map/clif.cpp:10514-10539 active post-20151001 increment and upper-bound rejection",
+      "src/map/clif_packetdb.hpp:486-497 variable 0x00f3 GlobalMessage registration, offsets 2 and 4",
+      "spikes/003-clientless-limbs/client.py:607-611 unchanged name + separator + message UTF-8 + NUL serializer"
+    ],
+    "source_sha256": {
+      "src/map/map.hpp": "1cb428d1145ec9c4045b2ae58c163be24bf1bd374fc8eea07eaf0c266621fe2b",
+      "src/map/clif.cpp": "ace16f15be3b60f730522d620b73a68a9f2cc384016aadce9c985888aea9a1ac",
+      "src/map/clif_packetdb.hpp": "51c8a9ebd591e0dd4f444f829253a14d449615425405cb8a95f28a6dea460e66",
+      "src/map/clif_shuffle.hpp": "befba011ca4b2d1186c16fba325a7240a4ff5375e252d2fb4cc62d503c66d2a0"
+    },
+    "compiler_oracles": {
+      "headers": "full unchanged config/core.hpp, map/packets.hpp and map/map.hpp",
+      "flags_and_includes": "same reviewed CPPFLAGS and include paths as tests/test_native_protocol_manifest.py, no forced headers or profile overrides",
+      "gcc": "GCC 16.2.0 compile and executed oracle exit 0",
+      "clang": "Clang 21.1.8 compile and executed oracle exit 0",
+      "both_stdout": "packetver=20180704 main=20180704 chat_size_max=256 text_max=253 accepted_message_length=255 rejected_next_message_length=256",
+      "boundary_arithmetic": "source-backed calculation; not execution of the server chat handler"
+    }
+  },
+  "vertical_tdd": {
+    "fixture": "synthetic 282 characters / 286 UTF-8 bytes, no private generated reply copied",
+    "path": "real PlayingClient.perform_native(Say) and unchanged BotClient.say / packetdb.pack; fake network sink only",
+    "red_vertical": "1 test failed on emitted 286 + 1 + 1 > 255, after correcting fake missing log method",
+    "green_vertical": "1 passed after helper import and Say argument normalization",
+    "red_utf8": "1 passed / 1 failed because 253-byte slicing cut a multibyte code point",
+    "green_utf8": "2 passed after strict decode boundary correction",
+    "new_final_cases": 27,
+    "coverage": [
+      "short and empty strings preserve exact wire bytes",
+      "ASCII 253/254 byte frontier",
+      "2-, 3- and 4-byte code points at every partial boundary",
+      "strict surrogate rejection, including invalid suffix beyond cap",
+      "native transport, vitals, position and progression gates run before text processing",
+      "operator say uses same bounded native path",
+      "party chat retains independent existing limit",
+      "real serialized 0x00F3 header/length, exact speaker prefix and NUL unchanged"
+    ]
+  },
+  "verification": {
+    "targeted_final_pytest": {"passed": 353, "failures": 0, "errors": 0, "elapsed_s": 3.58},
+    "prior_recovery_runtime_set": {"passed": 198, "failures": 0, "errors": 0},
+    "scoped_black": "passed, 3 files unchanged",
+    "scoped_ruff": "passed after removing one redundant encoding argument in new test",
+    "scoped_strict_mypy": "passed, 3 files, fresh private cache",
+    "whole_src_xenon": "passed before and after change with absolute B/module B/average A unchanged",
+    "whole_src_duplicate_code": "passed before and after change, pylint 10.00/10",
+    "whole_root_check_and_audit": "not rerun by delegate; parent must run on final independently reviewed snapshot",
+    "runtime_original_sha256": "29f7a642a72218de2b6ef9bd7a29957f7e42902b1ee60494af08155eedb0f200",
+    "runtime_modified_sha256": "51e7ec6ed02227ed8a3c2a03af3b9073ff9a3a1800b54441c7cb9e5b9506718c",
+    "owned_python_sha256": {
+      "src/robots/adapters/native_chat_text.py": "a5a8e0610f14fae6a9465af5ebb968dd7b01d19fd8cbe24efbb07a237b4c8747",
+      "src/robots/app/playing_runtime.py": "51e7ec6ed02227ed8a3c2a03af3b9073ff9a3a1800b54441c7cb9e5b9506718c",
+      "tests/test_native_chat_text.py": "2e352fcc78f04f7e1e234ea2548950618639cddd04a48e740e8dc8144e6d84da"
+    },
+    "runtime_scope_equivalence": "reversing exactly the added import and Say argument yields byte-identical original runtime and identical AST, preserving all REST/pose/keepalive/goal/readiness branches"
+  },
+  "evidence_directory": "/home/otto/.hermes/cache/scratch/native-chat-text-fix",
+  "private_evidence": [
+    "playing_runtime.original.py",
+    "red-vertical.xml (initial fake-fixture error, not credited as RED)",
+    "red-vertical-budget.xml",
+    "green-vertical.xml",
+    "red-utf8.xml",
+    "green-utf8.xml",
+    "green-regressions.xml",
+    "green-final.xml",
+    "chat-budget.cpp",
+    "compile_oracle.py",
+    "g++.command.json / g++.compile.stdout / g++.compile.stderr / g++.oracle.stdout",
+    "clang++.command.json / clang++.compile.stdout / clang++.compile.stderr / clang++.oracle.stdout",
+    "oracle-results.json",
+    "scope-equivalence.json"
+  ],
+  "remaining": [
+    "independent review of new runtime/helper/tests hashes and parent stable root check/audit",
+    "separately authorized live peer receipt; this delegate performed no native/model/SQL/service/host/Git effects",
+    "parent must compare actual peer RX to CLIPPED transmitted text, not full raw model-generated reply",
+    "preserve historical overlong rejection/zero-peer-RX evidence; send emission is not delivery",
+    "embedded NULs remain unchanged for compatibility and can truncate server-visible text; no new hygiene policy or complete delivery claim",
+    "clipping is a code-point prefix policy, not a persona, knowledge feature or guarantee of complete semantic content"
+  ]
+}

@@ -1,0 +1,134 @@
+{
+  "implementation_complete": true,
+  "self_approval": false,
+  "contract": "Intentional NEW contract: explicit change_goal=keep returns current goal before score fallback; absent/unsupported choices retain score fallback.",
+  "owned_files_modified": [
+    "src/robots/app/brain.py",
+    "tests/test_explicit_goal_review.py"
+  ],
+  "owned_files_created": [
+    "tests/test_recorded_goal_keep.py",
+    "run/reviews/playing-mvp-explicit-keep-fix.json"
+  ],
+  "production_scope": "Only _review_goal changed: missing choice default becomes empty string; explicit keep early return; unchanged supported mapping unindented after early return.",
+  "no_forced_combat_or_flee_override": true,
+  "new_native_sessions": 0,
+  "new_inference_calls": 0,
+  "sql_provider_world_git_effects": false,
+  "evidence_kind": "Offline replay of exact recorded Clef answer summaries with synthetic test state; not new model observations or native gameplay.",
+  "diagnostic_sha256": "0ca44629164c398b9f6e7fcd62e1d6c42af78549abb32fdc5ecd9012c3095f18",
+  "before_sha256": {
+    "src/robots/app/brain.py": "c4e644fde9780af4f650564edb4115727c95132e39825f0e4c5037f935442777",
+    "tests/test_explicit_goal_review.py": "b1f4addf09a6b197c4ec3787e12d37f5a9e3b81b324c682ab435f8be6740c1c4",
+    "run/reviews/playing-mvp-goal-behavior-diagnostic.json": "0ca44629164c398b9f6e7fcd62e1d6c42af78549abb32fdc5ecd9012c3095f18"
+  },
+  "verification": {
+    "after_sha256": {
+      "src/robots/app/brain.py": "57b31b54546bad5704fda62ac9572510457bc4a2eb46faea9deb87e6beb6be75",
+      "tests/test_explicit_goal_review.py": "a9bffe77dba2e3c43606b68140449fd435206d0e38c9893dcdc302e6393a3f51",
+      "tests/test_recorded_goal_keep.py": "4625d52c9044f1a6a34df72a187ae3a7325dadbba018f301ea398ad60022e6dd"
+    },
+    "source_outside_review_unchanged": true,
+    "old_explicit_test_bodies_preserved": {
+      "test_start_honors_explicit_current_grind_despite_bad_review": true,
+      "test_supported_explicit_choice_overrides_bad_review": true
+    },
+    "missing_unsupported_fallback_test_body_preserved": true,
+    "recorded_fixtures_exact_match": true,
+    "diagnostic_unchanged": true,
+    "runs": {
+      "red": {
+        "tests": 5,
+        "failures": 2,
+        "errors": 0,
+        "skipped": 0
+      },
+      "green": {
+        "tests": 30,
+        "failures": 2,
+        "errors": 0,
+        "skipped": 0
+      },
+      "green2": {
+        "tests": 68,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "final": {
+        "tests": 68,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      }
+    },
+    "final_counts_by_module": {
+      "tests.test_recorded_goal_keep": 5,
+      "tests.test_explicit_goal_review": 45,
+      "tests.test_brain": 17,
+      "tests.test_empty_farm_plan": 1
+    },
+    "elapsed_s": 227.1327681541443
+  },
+  "quality_checks": [
+    {
+      "name": "format",
+      "command": "PYTHONDONTWRITEBYTECODE=1 nix develop --offline --no-write-lock-file path:./spikes/007-native-packet-ast/toolchain -c /home/otto/dev/ro-bots/.venv/bin/black --workers 1 src/robots/app/brain.py tests/test_explicit_goal_review.py tests/test_recorded_goal_keep.py",
+      "exit_code": 0,
+      "log": "/home/otto/.hermes/cache/scratch/goalkeep-1791396571436051159/format.log"
+    },
+    {
+      "name": "black",
+      "command": "PYTHONDONTWRITEBYTECODE=1 nix develop --offline --no-write-lock-file path:./spikes/007-native-packet-ast/toolchain -c /home/otto/dev/ro-bots/.venv/bin/black --workers 1 --check src/robots/app/brain.py tests/test_explicit_goal_review.py tests/test_recorded_goal_keep.py",
+      "exit_code": 0,
+      "log": "/home/otto/.hermes/cache/scratch/goalkeep-1791396571436051159/black.log"
+    },
+    {
+      "name": "ruff",
+      "command": "PYTHONDONTWRITEBYTECODE=1 nix develop --offline --no-write-lock-file path:./spikes/007-native-packet-ast/toolchain -c /home/otto/dev/ro-bots/.venv/bin/ruff check --no-cache src/robots/app/brain.py tests/test_explicit_goal_review.py tests/test_recorded_goal_keep.py",
+      "exit_code": 0,
+      "log": "/home/otto/.hermes/cache/scratch/goalkeep-1791396571436051159/ruff.log"
+    },
+    {
+      "name": "mypy",
+      "command": "PYTHONDONTWRITEBYTECODE=1 nix develop --offline --no-write-lock-file path:./spikes/007-native-packet-ast/toolchain -c /home/otto/dev/ro-bots/.venv/bin/mypy --strict --cache-dir /home/otto/.hermes/cache/scratch/goalkeep-1791396571436051159/mypy src/robots/app/brain.py tests/test_explicit_goal_review.py tests/test_recorded_goal_keep.py",
+      "exit_code": 0,
+      "log": "/home/otto/.hermes/cache/scratch/goalkeep-1791396571436051159/mypy.log"
+    },
+    {
+      "name": "pytest",
+      "command": "PYTHONDONTWRITEBYTECODE=1 nix develop --offline --no-write-lock-file path:./spikes/007-native-packet-ast/toolchain -c /home/otto/dev/ro-bots/.venv/bin/pytest -o addopts='' -p no:cacheprovider tests/test_recorded_goal_keep.py tests/test_explicit_goal_review.py tests/test_brain.py tests/test_empty_farm_plan.py -q --junitxml=/home/otto/.hermes/cache/scratch/goalkeep-1791396571436051159/final.xml",
+      "exit_code": 0,
+      "log": "/home/otto/.hermes/cache/scratch/goalkeep-1791396571436051159/pytest.log"
+    }
+  ],
+  "private_evidence_dir": "/home/otto/.hermes/cache/scratch/goalkeep-1791396571436051159",
+  "test_contract_revision": {
+    "historical_keep_cases_removed_from_fallback_matrix": 8,
+    "authoritative_keep_cases_added": 20,
+    "recorded_answer_start_cases": 2,
+    "additional_missing_empty_unsupported_cases": 3,
+    "fallback_original_assertions_preserved": true,
+    "supported_nonkeep_original_tests_unchanged": true
+  },
+  "replayed_startup_outcome": {
+    "review_scores": [
+      0.47613983195913184,
+      0.455523213077666
+    ],
+    "selected_script": "GrindScript",
+    "current_plan": null,
+    "goal_change_notes": [],
+    "decision_calls_per_fixture": 1,
+    "escalations_per_fixture": 0,
+    "actions_per_fixture": []
+  },
+  "issues": [
+    "First post-fix run exposed incorrect test-only event label heartbeat #0; corrected to existing periodic review #0 without production event changes. Failed run retained as green.xml."
+  ],
+  "acceptance_limits": [
+    "No live damage, XP, loot or autonomous gameplay acceptance claimed.",
+    "Keepalive is parallel-owned and not inspected/changed; combined parent gates and independent review pending.",
+    "All gameplay milestones remain open."
+  ]
+}

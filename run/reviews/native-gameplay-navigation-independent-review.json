@@ -1,0 +1,194 @@
+{
+  "passed": false,
+  "scope": "Independent offline review of frozen pure gameplay collector/encoders, actor helper and public geometry navigation, plus actual inherited packetdb parse_stream. No source changes, engine/SQL/native connections/inference/Git/private fixtures. Evolving app/brain/domain/playing runtime excluded.",
+  "native_acceptance": false,
+  "native_gameplay_acceptance": false,
+  "combat_acceptance": false,
+  "full_goal_acceptance": false,
+  "security_concerns": [],
+  "logic_errors": [
+    {
+      "id": "NATIVE-FRAMING-001",
+      "severity": "blocking",
+      "location": "spikes/003-clientless-limbs/packetdb.py PACKET_DB; parse_stream:683-688; client.py:679,691-697",
+      "problem": "Actual packetdb omits 0x0991 normal inventory (variable; header4 + rows24), 0x0A37 pickup ACK (59), 0x00A1 floor disappearance (6), 0x0148 resurrection (8), 0x00AF inventory deletion (6), and 0x07FA inventory deletion (8). Correct literal native frames throw ValueError, not a partial wait. Actual receive loop catches that outside the loop, sets rx_error, running=False and connected_map=False; collector never gets those frames.",
+      "evidence": [
+        "/home/otto/.hermes/cache/scratch/native-independent/packetdb-results.jsonl",
+        "/home/otto/.hermes/cache/scratch/native-independent/packetdb-supplement.json",
+        "/home/otto/.hermes/cache/scratch/native-independent/junit-final.xml"
+      ],
+      "required_fix": "Parent-owned metadata repair against compiled MAIN/pre-re20180704 authority, retaining unknown-stream fail-closed behavior; re-review exact raw individual/coalesced/incremental streams. Do not replace with legacy IDs or unknown=2 fallback."
+    },
+    {
+      "id": "INVENTORY-BARRIER-002",
+      "severity": "blocking",
+      "location": "src/robots/adapters/native_gameplay.py:314-315,374-376",
+      "problem": "Deletion 00AF or 07FA between initial inventory list and WEIGHT clears inventory_known only, leaving inventory_initial armed and stale rows retained. Following parameter24 WEIGHT makes inventory_counts complete again with deleted stock. Both independent regressions fail: auth -> normal list(index2,item501,count3) -> delete -> WEIGHT returns ((501,3),) instead of unknown.",
+      "source_order": "Pinned clif.cpp:10782 inventorylist ->10783 pc_checkitem ->10793 SP_WEIGHT; map.hpp:502 SP_WEIGHT=24. This deletion window is source-real, not an arbitrary optional ordering.",
+      "required_fix": "Keep initial barrier invalidated after unsupported mutation, or implement validated mutation before publication. Later full-refresh support remains unclaimed."
+    },
+    {
+      "id": "CHAT-ENCODER-003",
+      "severity": "blocking contract defect; not a general movement blocker",
+      "location": "src/robots/adapters/native_gameplay.py:43-49; pinned clif.cpp:10493-10495",
+      "problem": "party_chat accepts an empty message, producing name plus separator only. Native clif_process_message requires inputLength >= nameLength + separatorLength + 1 and rejects it. Independent source-contract test fails.",
+      "required_fix": "Reject empty UTF8 messages. Existing no-NUL, exact selected speaker name, name byte limit23 and message limit254 otherwise match this profile."
+    }
+  ],
+  "quality_concerns": [
+    {
+      "id": "STRICT-TYPING-004",
+      "severity": "blocking review gate",
+      "location": "tests/test_native_gameplay.py",
+      "problem": "Strict mypy including both new test modules reports 20 errors: untyped fixture helper calls, Optional ObservedPosition attribute reads at120/145 and unreachable statements at158/175. Source-only strict mypy passes; test failures are not waived or attributed to evolving integration code.",
+      "evidence": "/home/otto/.hermes/cache/scratch/native-independent/mypy.log"
+    }
+  ],
+  "integration_blockers": [
+    {
+      "id": "WIRE-MAP-NAME-005",
+      "problem": "0091 preserves prontera.gat / prt_fild08.gat from native mapindex_getmapname_ext; public cache and starter_route use prontera / prt_fild08. Passing received view.map_name literally into navigation raises NoRoute. Independent boundary probe confirms it.",
+      "authority": "pinned clif.cpp:2159; common/mapindex.cpp:43-64",
+      "required": "Parent integration must provide explicit source-derived wire-map to public-cache identity handling; preserve raw observation and fail unknown names. Do not guess fixture/default map or silently change navigation identity."
+    },
+    {
+      "id": "INITIAL-ALIVE-006",
+      "problem": "Initial auth and positive HP correctly leave alive_known=False; initial defensive combat remains forbidden pending separately reviewed primary pc_auth fresh-alive authority. Parent work in progress is outside this review; no API change or unknown-alive combat approval."
+    },
+    {
+      "id": "NATIVE-EFFECTS-007",
+      "problem": "No actual walking/map change/combat/loot/respawn/population acceptance performed in this offline scope. Respawn encoder sends a request, mapmove alone does not establish revival. Host wiring and live acceptance remain separate."
+    }
+  ],
+  "verified_contracts": [
+    "Exact outgoing attack0437len7 action0/7, pickup0362len6, partychat0108 variable non-NUL, respawn00B2len3 type0 all pass actual packetdb framing.",
+    "Compiled pinned source gameplay sizeof/offsetof oracle rerun with actual MAIN20180704/PRERE: normal row24, equip57, pickupACK59 count@4/type@23/result@24, floor22, damage34, ownmove12/start@6, auth13/start@6, mapmove22/x18/y20. Numeric final-shuffle oracle verifies actions/pickup/chat/respawn registrations. Native mapcache compiler layout8/20 and count4/name0/xs12/ys14/len16 rerun in repository tests.",
+    "16 primary literal-ID framing profiles exercised, 14 pass and 2 fail; 9 supplementary formats including nonempty inventory/equipment rows exercise remaining collector formats, with additional missing IDs retained in artifact.",
+    "Own actor ID and uint32 negative alias excluded from type5 combat eligibility; sourcekind only, not alive/range/permission. Type0 remains noncombat ambiguous;6/12 NPC and7 pet excluded; no job/name/id-threshold heuristics.",
+    "Contiguous snapshot replay suppressed; gaps clear facts and deny same epoch until changed epoch. Known malformed packet length/header denies before mutation. Unknown already-framed IDs ignored, not unknown-stream framing accepted.",
+    "Own packed movement uses from coordinate and native from/to equality only for arrival. Actor movement uses from position. Raw damage retained as presentation only. Signed64 XP decreases retained as deltas, not kill causality.",
+    "Public path8-neighbor shortest cell count, no static/dynamic diagonal corner cutting, explicit NoRoute invalid/blocked endpoints or unknown maps. Zlib exact dimensions/eof/no trailing stream; tile cap262144/file67108864/aggregate268435456. Source warp trigger153..159,20..24 to prt_fild08(170,375); route stops first trigger and no waypoint when already inside."
+  ],
+  "limitations": [
+    "Event/damage/XP/death/pickup and floor caches epoch-scoped but unbounded; actor cache4096. No immediate resource attack reproduced within finite controlled offline scope, not a bounded-production approval. Retention/collection bounds required before long population operation.",
+    "Inventory mutation/refresh implementation incomplete; historical observed counts and acquired ACK totals are not complete current stock. Initial deletion-barrier bug is a concrete blocker beyond this declared limitation.",
+    "Pickup uint16 native count represented conservatively as signed-positive1..32767; >=32768 explicitly rejected, not normalized. Pinned common/mmo.hpp:81 MAX_AMOUNT30000 is within supported range. No support claim for large counts.",
+    "Exact typed snapshot contract assumed; arbitrary Any/invalid bool epoch deep schema is not a review target. Public geometry does not authorize hidden/global mob knowledge.",
+    "1296 cached maps is not1265 active maps. Current actual engine/model state belongs to parent, not inferred or probed here."
+  ],
+  "tests": {
+    "repository": {
+      "tests.test_native_gameplay": {
+        "total": 82,
+        "failed": 0
+      },
+      "tests.test_native_navigation": {
+        "total": 59,
+        "failed": 0
+      },
+      "": {
+        "total": 34,
+        "failed": 5
+      }
+    },
+    "independent_cases": 34,
+    "unique_junit_classname_name": 175,
+    "passed": 170,
+    "failed": 5,
+    "failures": [
+      {
+        "classname": "",
+        "name": "test_packetdb_exact_frames[0991]"
+      },
+      {
+        "classname": "",
+        "name": "test_packetdb_exact_frames[0a37]"
+      },
+      {
+        "classname": "",
+        "name": "test_initial_delete_cannot_rearm_stale_inventory[175-6]"
+      },
+      {
+        "classname": "",
+        "name": "test_initial_delete_cannot_rearm_stale_inventory[2042-8]"
+      },
+      {
+        "classname": "",
+        "name": "test_party_chat_rejects_empty_message_required_by_source"
+      }
+    ],
+    "junit": "/home/otto/.hermes/cache/scratch/native-independent/junit-final.xml",
+    "log": "/home/otto/.hermes/cache/scratch/native-independent/pytest-final.log",
+    "coverage": {
+      "src/robots/adapters/native_gameplay.py": 97.12918660287082,
+      "src/robots/adapters/native_navigation.py": 100.0
+    },
+    "coverage_gate85": true
+  },
+  "gates": {
+    "pytest": {
+      "exit_code": 1,
+      "log": "/home/otto/.hermes/cache/scratch/native-independent/pytest-final.log"
+    },
+    "ruff": {
+      "exit_code": 0,
+      "log": "/home/otto/.hermes/cache/scratch/native-independent/ruff.log"
+    },
+    "black": {
+      "exit_code": 0,
+      "log": "/home/otto/.hermes/cache/scratch/native-independent/black.log"
+    },
+    "mypy": {
+      "exit_code": 1,
+      "log": "/home/otto/.hermes/cache/scratch/native-independent/mypy.log"
+    },
+    "bandit": {
+      "exit_code": 0,
+      "log": "/home/otto/.hermes/cache/scratch/native-independent/bandit.log"
+    },
+    "vulture": {
+      "exit_code": 0,
+      "log": "/home/otto/.hermes/cache/scratch/native-independent/vulture.log"
+    },
+    "xenon": {
+      "exit_code": 0,
+      "log": "/home/otto/.hermes/cache/scratch/native-independent/xenon.log"
+    },
+    "duplication": {
+      "exit_code": 0,
+      "log": "/home/otto/.hermes/cache/scratch/native-independent/duplication-final.log"
+    },
+    "mypy_source_only": {
+      "exit_code": 0,
+      "log": "/home/otto/.hermes/cache/scratch/native-independent/mypy-source.log"
+    }
+  },
+  "gate_commands_artifact": "/home/otto/.hermes/cache/scratch/native-independent/gates.json",
+  "final_gate_commands_artifact": [
+    "/home/otto/.hermes/cache/scratch/native-independent/pytest-final.json",
+    "/home/otto/.hermes/cache/scratch/native-independent/duplication-final.json"
+  ],
+  "freeze": {
+    "stable": true,
+    "files": 30,
+    "before": "/home/otto/.hermes/cache/scratch/native-independent/freeze-before.json",
+    "after": "/home/otto/.hermes/cache/scratch/native-independent/freeze-after.json",
+    "hashes_sha256": {
+      "src/robots/adapters/native_gameplay.py": "fd9a41c0514d9ce276f2883fa5dc07fb3a10320b06d3c9230bdad4e5ada47b85",
+      "tests/test_native_gameplay.py": "61c1db76174db04dab538ce2f07383aa22430a4f52db64a7b57d49d4ff6d3734",
+      "src/robots/adapters/native_navigation.py": "d4d758fc7d827d42aab374ebc0c938b5a066d73638e95d82eca3d7aca2730c0a",
+      "tests/test_native_navigation.py": "55f1060dabd47f9a4d8fd345c491afd491e7d06cef9e09f678833563ff128635",
+      "spikes/003-clientless-limbs/packetdb.py": "1c2be6705938f5ab575cc822b690dba583f8a7719b9469f794fcbb661c032cf3",
+      "spikes/003-clientless-limbs/client.py": "e17e3b9e553269a1666e72910fd46fc58d4096f6b5ebf0d0e005a05a71f21e93"
+    },
+    "closure_artifact_sha256": "456584035c5579aed76730c1ecb2b352f2dc78bbec55945353c17e60ffebd95a"
+  },
+  "artifacts": {
+    "scratch": "/home/otto/.hermes/cache/scratch/native-independent",
+    "packetdb_primary": "/home/otto/.hermes/cache/scratch/native-independent/packetdb-results.jsonl",
+    "packetdb_supplement": "/home/otto/.hermes/cache/scratch/native-independent/packetdb-supplement.json",
+    "independent_harness": "/home/otto/.hermes/cache/scratch/native-independent/test_review.py"
+  },
+  "source_modified": false,
+  "summary": "REJECT native-play readiness: six native incoming IDs absent from actual framing, unsafe rearming of stale initial inventory, empty party-chat encoder defect, and strict test typing gate failure. Public navigation/other scoped gates pass. No native or combat acceptance."
+}

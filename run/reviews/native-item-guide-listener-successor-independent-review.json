@@ -1,0 +1,53 @@
+{
+  "status": "LISTENER_PEER_READINESS_SUCCESSOR_INDEPENDENT_REVIEW_CONDITIONAL_PASS_OFFLINE",
+  "reviewed_snapshot": ".work/native-item-guide-listener-readiness-successor/content",
+  "reviewed_report": "run/reviews/native-item-guide-listener-readiness-successor.json",
+  "reviewed_report_sha256": "cadc8414ca2dc8a1b6a52c408d205c17c4910dd9a59236d48b48b87046a6e679",
+  "parent_adoption": "run/reviews/native-item-guide-listener-successor-parent-adopted.json",
+  "parent_adoption_sha256": "823a1d98fc268689331ae753e0efbfdf92295dfb41a97dfbe6e84ac39c4a5021",
+  "report_digest_binding": "parent adoption review_sha256 equals the reviewed report's computed sha256 (cadc8414ca2dc8a1b6a52c408d205c17c4910dd9a59236d48b48b87046a6e679)",
+  "verification": {
+    "report_digest": "OK - reviewed report sha256 equals the digest recorded in the parent adoption record",
+    "base_freeze": "OK - all five base-freeze copies hash exactly to the adopted rotation base digests e0695f1f/live_recovery.py, 295eab4e/recovery.py, ec94b628/item_guide_publication.py, 528b12b8/item_guide_files.py, a8339f4a/rootless_socket_reader.py",
+    "final_modules": "OK - current content bytes equal the recorded final digests and the parent adoption module digests; changed flags truthful; item_guide_publication.py, item_guide_files.py and rootless_socket_reader.py are byte-identical to the adopted base",
+    "recorded_diffs": "OK - both recorded diffs digest-match and replay byte-exactly from base-freeze bytes to current content bytes (13 hunks in live_recovery.py; 1 hunk in recovery.py: only the appended frozen Approval.listener_evidence field with () default)",
+    "only_semantic_changes": "OK - deletions confined to the operation_native_health signature/completeness-gate line, the Effects init line, native_role call-site wiring and receipt-field reflows around the new listener_observations field; strict-mode validation, retained-log marker logic and the mariadb healthcheck path have no deleted or rewritten lines",
+    "red_evidence": "OK - red/adapted-baseline.xml df027fed (120/120 pass on the stashed base); red/listener-readiness-red.xml 10604ab3 (27/27 new unit cases failing on the named gaps: missing tcp_listener_peer_facts/validate_listener_evidence, Approval arity 11); red/listener-cycle-red.xml 66b55e3e (7/7 cycle fixtures erroring on missing loopback_connect_probe); red/listener-rotation-denial.txt bf38305c records the real validate_world/validate_role role_running frontier denial plus the honestly-empty cursor shape (records=0, sha256 of b'')",
+    "green_evidence": "OK - green/listener-readiness-full-green.xml d4b26427: 154 unique (classname,name) cases, 0 failures/errors/skips, no duplicate identities",
+    "identity_math": "OK - programmatic set comparison: the 120 adapted-baseline identities are all present and passing in green; green minus baseline = exactly 34 new identities = the 27 red-failing unit cases + the 7 cycle-red erroring cases; 120 union 34 = 154",
+    "harness_adaptations": "OK - all 22 retained harness files are identical to predecessor bytes after normalizing only the namespace name string (path-literal rewrite); the five disclosed oracle revisions are confined to the two new listener files",
+    "gate_logs": "OK - black.log b9cf5115 (2 files unchanged), black-apply.log 7a55b445, ruff.log 82b3e6a6 (All checks passed), mypy.log f9b031e5 (strict, 2 source files), xenon.log empty (e3b0c442, silent pass at max-absolute B max-modules B max-average A) all match the recorded prefixes",
+    "fresh_interpreter_gates": "OK - reviewer re-ran the exact qualified command (nix develop --offline --no-write-lock-file path:./spikes/007-native-packet-ast/toolchain -c env -u PYTEST_ADDOPTS -u PYTEST_DISABLE_PLUGIN_AUTOLOAD PYTHONOPTIMIZE=0 PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=src:. .venv/bin/python -B -m pytest <harness> --ignore=fixture-support --override-ini addopts= --junitxml=<own> -q) from a fresh interpreter: 154 passed, 0 failed",
+    "fresh_gates_junitxml": ".work/native-item-guide-listener-successor-independent-review/gates-green-independent.xml",
+    "fresh_gates_junitxml_sha256": "26b56de2e0eff84994f5b16ba98254339fe87959552cf63a4db29748093b038e",
+    "strict_and_retained_paths": "OK - strict mode still fails closed with the field present (snapshot strict contracts inside the reviewer's fresh 154-run plus reviewer probe05 at validator and substitution sites); retained logs still admit through historical markers and a refusing probe cannot deny them (snapshot retained-log contract inside the fresh run)",
+    "probe_evidence_honesty": "OK - connect refusal/timeout produce ListenerFact(None) unavailable evidence, never zero/False (snapshot unit contracts re-run green; reviewer probes 03 and 08 observe None in the operation-level observation trail); the passing cycle's listener_observations are all-True from fresh same-checkpoint captures with probe call counts >= 3x observations",
+    "docker_terminal_state": "OK - exited+Pid 0+ExitCode 0+OOMKilled False substitutes the rotated Finished marker only inside the bound maintenance channel; a dirty exit keeps the role_fault denial (snapshot contracts inside the fresh run)"
+  },
+  "boundary_probes": {
+    "file": ".work/native-item-guide-listener-successor-independent-review/test_listener_successor_boundary_probes.py",
+    "file_sha256": "28d50c09fcff68951289b2ab90a8683a24eb1d529c2188f1e48678278a0534f7",
+    "junitxml": ".work/native-item-guide-listener-successor-independent-review/probes-boundary-final.xml",
+    "junitxml_sha256": "8c2b46e5c36da6cbf9c2d59ba39194f45dd3d302d252be12ff41d5df4c4f0ffa",
+    "result": "9/9 probe cases passed (8 boundary themes) in the qualified toolchain (fresh interpreter)",
+    "cases": {
+      "probe01_wrong_port_for_role_denied": "listener_evidence (('login', 16901),) denied with listener_evidence_binding; the compiled PORTS value is accepted",
+      "probe02_unknown_role_denied": "unknown roles (wheelofdestiny, sudachi) denied with listener_evidence_binding before any port-table lookup",
+      "probe03_unreachable_probe_keeps_rotated_denial_with_zero_commands": "full listener cycle with refused char probe: receipt denied, zero lifecycle commands, zero helper calls, every recorded observation has char=None (unavailable, not False/0), retained custody asserted",
+      "probe04a_staged_candidate_drift_denies_before_write": "drifted staged public candidate denies the publication advance and the approval binding stays at BEFORE_SHA (pre-write integrity gate of the verified write+readback chain)",
+      "probe04b_one_shot_publication_advance_cannot_rearm": "full cycle advances BEFORE->AFTER with publication verified and consumes the one-shot request (content_request None on the advanced approval, which is a distinct object from the BEFORE-bound issuance); the stale BEFORE approval is denied approval_drift; and a second full cycle - which re-attaches a fresh one-shot request in memory - is still denied with zero commands and no verified publication, so the advance cannot re-arm",
+      "probe05_strict_with_evidence_fails_closed": "strict approval carrying the field denied listener_evidence_requires_maintenance; listener_channel_open False and listener_channel_substitution returns unchanged facts with substituted=False even with all-probe-True evidence",
+      "probe06_listener_evidence_cannot_substitute_mariadb_health_or_map_epoch": "unhealthy mariadb healthcheck denies role_running despite bound channel and all-True probe evidence (parser_ready stays False); a map baseline older than HISTORICAL_MAP_EPOCH still denies historical_map_epoch",
+      "probe07_duplicate_and_empty_evidence_shapes": "duplicate role bindings (same role twice, divergent ports) denied listener_evidence_binding; empty default validates and decodes bit-equal (Approval equality, read_approval old-JSON == explicit-empty new-JSON)",
+      "probe08_probe_capture_is_fresh_per_checkpoint": "Effects-level capture hits every bound role per checkpoint (role-sorted), a world change between checkpoints is observed (login True then None), the observation trail records both independent samples, no object reuse"
+    }
+  },
+  "repair_history": "Reviewer-probe harness/model defects across the reviewer's own first probe runs (candidate bytes never touched): (1) probe06 lacked the offline owner slot the harness primitive requires; (2) probe04 initially assumed the container runtime dict was the publication write seam - the receipt shows the publication writes and verifies the two staged public targets (write_attempted=True, partial_public_state='exact-two-public-targets-verified-no-native-parser-claim') - and then modeled the one-shot request as saved-document state when run_rotation attaches it in memory via dataclasses.replace; both re-modeled truthfully (drift gate + in-memory re-attachment); (3) the harness requires pytest's own managed tmp root per spy construction (mkdir collision, then seeded-layout FileNotFoundError on a fresh subdir) - fixed by splitting probe04 into one-spy-per-test functions. First-run junitxmls preserved as probes-boundary.xml and probes-boundary-repair1.xml.",
+  "verdict": "CONDITIONAL PASS",
+  "conditions": [
+    "Component adoption and live activation remain parent-owned: this review establishes the offline completed snapshot only; native authority is UNCHANGED_REVOKED.",
+    "Live activation must follow the report's remaining_parent_steps: issue the maintenance approval carrying listener_evidence=[[\"login\",16900],[\"char\",16121],[\"map\",15121]] only inside the reviewed operator run, and reconcile the run receipt's listener_observations against the deployment's actual loopback reachability.",
+    "No live Docker/SQL/lock/publication/TCP evidence was produced here; every probe is synthetic and the real connector was only identity-audited."
+  ],
+  "compliance": "Offline only; writes confined to .work/native-item-guide-listener-successor-independent-review/** and run/reviews/native-item-guide-listener-successor-independent-review.json; no Git actions; no production edits; no private bundle bodies, credentials or approvals disclosed; no budget resets; no live effects."
+}

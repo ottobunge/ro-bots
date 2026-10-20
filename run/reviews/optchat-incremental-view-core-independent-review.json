@@ -1,0 +1,317 @@
+{
+  "schema": 1,
+  "passed": true,
+  "security_concerns": [],
+  "logic_errors": [],
+  "quality_blockers": [],
+  "summary": "Frozen pure incremental view passes independent offline review; live adoption, durable binding and full-system compliance remain unverified.",
+  "scope": {
+    "production_object": "robots.society.optchat_view.IncrementalView",
+    "files": [
+      "src/robots/society/optchat_view.py",
+      "tests/test_optchat_view.py",
+      "run/reviews/optchat-incremental-view-core.json"
+    ],
+    "scope_path": "/home/otto/dev/ro-bots/run/reviews/optchat-incremental-view-core-scope.json",
+    "scope_sha256": "b8600613f90eb76285dda5860865cacb0ab6e155fa82472544585d47780b44b0",
+    "authority_revision": "3c190e06f34aba0c69f49042c526093269604935",
+    "primary_source_path": "/home/otto/.hermes/cache/scratch/optchat-current-optchat.md",
+    "primary_source_sha256": "12f300f760af82bc07bc5201051d1267824ded09c9def8186e4f8144368038d8",
+    "primary_source_treatment": "External design data only; embedded agent prompt not followed."
+  },
+  "freeze": {
+    "path": "/home/otto/.hermes/cache/scratch/optchat-view-core-independent-freeze.json",
+    "sha256": "cd6ae4aea75b7a18a2f3d4d3949dee5ec50163be6db29149823ade3287c84857",
+    "input_count": 260,
+    "before_matches": true,
+    "after_matches": true,
+    "changed": [],
+    "before_receipt": "/home/otto/.hermes/cache/scratch/optchat-view-core-independent-review/freeze-before.json",
+    "after_receipt": "/home/otto/.hermes/cache/scratch/optchat-view-core-independent-review/freeze-after.json"
+  },
+  "fresh_execution": {
+    "junit_path": "/home/otto/.hermes/cache/scratch/optchat-view-core-independent-review/fresh-tests.xml",
+    "junit_sha256": "18d51390f3298f3b25596669a12e90e8ccd6238c0635b4ea8c99fad2547e3320",
+    "tests": 282,
+    "unique_tests": 282,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "component_tests": 50,
+    "affected_legacy_tests": 203,
+    "independent_probes": 29,
+    "groups": {
+      "tests.test_optchat_view": 50,
+      "tests.test_host_memory": 16,
+      "tests.test_host_summary_cache": 72,
+      "tests.test_memory_concurrency": 3,
+      "tests.test_memory_journal_boundary": 14,
+      "tests.test_memory_journal_failures": 9,
+      "tests.test_memory_storage": 21,
+      "tests.test_memory_summary_cache": 68,
+      "": 29
+    },
+    "coverage_kind": "statement/line, not branch",
+    "covered_lines": 166,
+    "statements": 170,
+    "coverage_percent": 97.6470588235294,
+    "execution": {
+      "fresh-tests": {
+        "exit_code": 0,
+        "command": [
+          "nix",
+          "develop",
+          "--offline",
+          "--no-write-lock-file",
+          "path:./spikes/007-native-packet-ast/toolchain",
+          "-c",
+          ".venv/bin/python",
+          "-m",
+          "pytest",
+          "tests/test_optchat_view.py",
+          "tests/test_host_memory.py",
+          "tests/test_host_summary_cache.py",
+          "tests/test_memory_concurrency.py",
+          "tests/test_memory_journal_boundary.py",
+          "tests/test_memory_journal_failures.py",
+          "tests/test_memory_storage.py",
+          "tests/test_memory_summary_cache.py",
+          "/home/otto/.hermes/cache/scratch/optchat-view-core-independent-review/test_independent.py",
+          "-p",
+          "no:cacheprovider",
+          "--basetemp=/home/otto/.hermes/cache/scratch/optchat-view-core-independent-review/pytest-tmp",
+          "--junitxml=/home/otto/.hermes/cache/scratch/optchat-view-core-independent-review/fresh-tests.xml",
+          "--cov=robots.society.optchat_view",
+          "--cov-report=json:/home/otto/.hermes/cache/scratch/optchat-view-core-independent-review/coverage.json"
+        ],
+        "log": "/home/otto/.hermes/cache/scratch/optchat-view-core-independent-review/fresh-tests.log"
+      },
+      "black": {
+        "exit_code": 0,
+        "command": [
+          "nix",
+          "develop",
+          "--offline",
+          "--no-write-lock-file",
+          "path:./spikes/007-native-packet-ast/toolchain",
+          "-c",
+          ".venv/bin/python",
+          "-m",
+          "black",
+          "--check",
+          "--workers",
+          "1",
+          "src/robots/society/optchat_view.py",
+          "tests/test_optchat_view.py"
+        ],
+        "log": "/home/otto/.hermes/cache/scratch/optchat-view-core-independent-review/black.log"
+      },
+      "ruff": {
+        "exit_code": 0,
+        "command": [
+          "nix",
+          "develop",
+          "--offline",
+          "--no-write-lock-file",
+          "path:./spikes/007-native-packet-ast/toolchain",
+          "-c",
+          ".venv/bin/python",
+          "-m",
+          "ruff",
+          "check",
+          "--no-cache",
+          "src/robots/society/optchat_view.py",
+          "tests/test_optchat_view.py"
+        ],
+        "log": "/home/otto/.hermes/cache/scratch/optchat-view-core-independent-review/ruff.log"
+      },
+      "mypy": {
+        "exit_code": 0,
+        "command": [
+          "nix",
+          "develop",
+          "--offline",
+          "--no-write-lock-file",
+          "path:./spikes/007-native-packet-ast/toolchain",
+          "-c",
+          ".venv/bin/python",
+          "-m",
+          "mypy",
+          "--config-file",
+          "pyproject.toml",
+          "--cache-dir",
+          "/home/otto/.hermes/cache/scratch/optchat-view-core-independent-review/mypy-cache",
+          "src/robots/society/optchat_view.py",
+          "tests/test_optchat_view.py"
+        ],
+        "log": "/home/otto/.hermes/cache/scratch/optchat-view-core-independent-review/mypy.log"
+      },
+      "xenon": {
+        "exit_code": 0,
+        "command": [
+          "nix",
+          "develop",
+          "--offline",
+          "--no-write-lock-file",
+          "path:./spikes/007-native-packet-ast/toolchain",
+          "-c",
+          ".venv/bin/python",
+          "-m",
+          "xenon",
+          "--max-absolute",
+          "B",
+          "--max-modules",
+          "B",
+          "--max-average",
+          "A",
+          "src/robots/society/optchat_view.py"
+        ],
+        "log": "/home/otto/.hermes/cache/scratch/optchat-view-core-independent-review/xenon.log"
+      },
+      "duplicates": {
+        "exit_code": 0,
+        "command": [
+          "nix",
+          "develop",
+          "--offline",
+          "--no-write-lock-file",
+          "path:./spikes/007-native-packet-ast/toolchain",
+          "-c",
+          ".venv/bin/python",
+          "-m",
+          "pylint",
+          "--disable=all",
+          "--enable=duplicate-code",
+          "src/robots/society/optchat_view.py"
+        ],
+        "log": "/home/otto/.hermes/cache/scratch/optchat-view-core-independent-review/duplicates.log"
+      }
+    }
+  },
+  "fresh_probe_results": [
+    {
+      "contract": "append-only prefix and real default high-to-low batches",
+      "result": "PASS",
+      "details": "310 actual appends; each complete dyadic cover verified; JSON checkpoint/read round-trip at each step; default 512-byte emoji summaries; no refit reads."
+    },
+    {
+      "contract": "inclusive-last ranking, oldest ties and built-parent readiness",
+      "result": "PASS",
+      "details": "T=10 newest-pair and T=7 oldest-tie checks; 2,000 deterministic large-epoch fixture attempts with over 1,000 actual one-merge comparisons against independent Fraction oracle and two common rational scale factors. Missing parents skipped. Counts bounded through 1,000,000."
+    },
+    {
+      "contract": "exact UTF-8 payload including IDs and separators",
+      "result": "PASS",
+      "details": "512-byte multi-byte limits accepted; 513+ rejected without leaf admission; surrogate and nontext rejected; CR/LF flattening preserves byte count; exact HIGH equality readable and above HIGH explicitly refused."
+    },
+    {
+      "contract": "readiness and full-source coverage",
+      "result": "PASS",
+      "details": "Missing parents keep complete cover and pending batch. New readiness alone changes no read/state; explicit advance completes low-water batch. Existing component regressions also exercise impossible LOW and skipped highest-ranked unbuilt parent."
+    },
+    {
+      "contract": "exact strict checkpoint restore",
+      "result": "PASS",
+      "details": "Restores only referenced coordinates, policy/count/pending unchanged, callback only asked for referenced nodes; no refit or raw replay. Empty and over-HIGH pending states round-trip. Wrong policy, missing referenced node, missing/extra fields, bad types, bool integers, invalid levels/gaps/overlap rejected."
+    },
+    {
+      "contract": "failure handoff and immutable instance lines",
+      "result": "PASS within documented scope",
+      "details": "RuntimeError/KeyboardInterrupt/SystemExit exact exception objects preserved. Failed leaf fetch admits nothing. Parent callback failure after append retains the newly admitted leaf and complete render; subsequent append fetches ordinal 2, not a duplicate/skipped leaf. Checkpoint restores that admitted cover. Current instance freezes old bytes; restore relies on documented same immutable callback closure."
+    }
+  ],
+  "primary_design_core_matrix": [
+    {
+      "primary_lines": "23, 55-62, 73-87",
+      "status": "PASS",
+      "scope": "UTF-8 and dyadic ordered complete summary-only view; renderer exposes line body, not chat wrapper."
+    },
+    {
+      "primary_lines": "158-193",
+      "status": "PASS",
+      "scope": "Inclusive-last due, oldest tie, built sibling parents, high-to-low batch/pending readiness."
+    },
+    {
+      "primary_lines": "195-197",
+      "status": "PURE CHECKPOINT ONLY",
+      "scope": "Exact load of saved coordinates is verified, filesystem view.json durability/source binding not implemented."
+    },
+    {
+      "primary_lines": "199-241",
+      "status": "NOT VERIFIED",
+      "scope": "Stable body prefix is verified, provider prompt layout/cache marking/hits/savings are not."
+    }
+  ],
+  "author_evidence": {
+    "registered_artifacts": 35,
+    "hashes_match_before_and_after": true,
+    "physical_xml_files": 14,
+    "actual_xml_cases_receipt": "/home/otto/.hermes/cache/scratch/optchat-view-core-independent-review/author-evidence-check.json",
+    "initial_red": "01-red.xml has collection error (0 assertion failures, 1 error); not a genuine assertion RED.",
+    "later_actual_red_failures": [
+      11,
+      9,
+      13,
+      1
+    ],
+    "differential_result": {
+      "counter_steps_including_empty": 20001,
+      "counter_T_range": [
+        0,
+        20000
+      ],
+      "counter_seconds": 0.7481744629985769,
+      "variable_utf8_batch_events": 1500,
+      "variable_utf8_complete_bytes_roundtrips": 1500,
+      "policy_note": "counter harness explicitly changes test-only policy per expected list length; this is not a default-profile cost/KV benchmark"
+    },
+    "differential_attribution": "Artifact contents/hash verified, not independently rerun; test-only policy and timing are not default-profile cost or KV measurements."
+  },
+  "static_security_review": {
+    "imports": [
+      "from collections.abc import Callable",
+      "from dataclasses import dataclass",
+      "from itertools import pairwise",
+      "from typing import cast"
+    ],
+    "findings": [],
+    "boundary": "Component contains no file, SQL, network, provider/model/process APIs; caller callback behavior is outside this pure component."
+  },
+  "suggestions": [
+    {
+      "priority": "nonblocking",
+      "location": "src/robots/society/optchat_view.py:126-133,202-214",
+      "message": "Document admitted-leaf exception handoff before wiring an adapter: a parent readiness callback can raise after append publishes the leaf. An adapter must inspect source_count/use advance, not blindly retry the same raw ordinal. This is not a retroactive all-or-nothing requirement or a loss-of-cover defect."
+    },
+    {
+      "priority": "future integration boundary",
+      "location": "IncrementalView.restore caller",
+      "message": "Future store/adapter must bind raw source, immutable node closure, world/persona/policy and durable acknowledgement; namespace alone grants no filesystem or identity authority. Keep this separate from the pure checkpoint verdict."
+    }
+  ],
+  "limitations": [
+    "No source repairs or edits; only this new review report and owned scratch artifacts created.",
+    "No private original journal reads, live persistence, provider/default activation, model/paid/network/SQL/service/native/Git/CPP/cache migration effects.",
+    "Scoped Black/Ruff/project-strict-mypy (both new files), Xenon B/B/A and component duplicate-code checks passed; parent retains whole-source quality/audit ownership.",
+    "Legacy regressions passed, but the nine standing unchanged legacy definition/conformance failures are not fixed or waived.",
+    "No durable view store, source identity binding, actual saved replay, semantic summary generator/tree queue, raw zoom/date, full-system literal compliance, provider cache savings or resource allocation proved.",
+    "Literal-versus-scaled deployment and RO budget/provider adoption remain user decisions; no implicit budget approval."
+  ],
+  "artifact_registry": {
+    "/home/otto/.hermes/cache/scratch/optchat-view-core-independent-review/author-evidence-check.json": "2d6754818cc15412e75b35ce62ba89fa0beb88435a803aa82716e35f19825ada",
+    "/home/otto/.hermes/cache/scratch/optchat-view-core-independent-review/black.log": "b9cf511501d306d2bd8355ccb165c8ddc0a6fdd62d7c72c4a7b1795cf8934c8c",
+    "/home/otto/.hermes/cache/scratch/optchat-view-core-independent-review/coverage.json": "5309d2ca207ecea177d7f3b1af801d01cdac7a6ad866937bc7772e54c02bf1a0",
+    "/home/otto/.hermes/cache/scratch/optchat-view-core-independent-review/duplicates.log": "bbb6ffa7d7107b760478161908c009d3b85b078b80d54e3ad8dcd57bfe91a142",
+    "/home/otto/.hermes/cache/scratch/optchat-view-core-independent-review/execution.json": "4253fb84af25b2be968d6a61fafc0e27e11ef44731efdcb34fafd02d5735aef2",
+    "/home/otto/.hermes/cache/scratch/optchat-view-core-independent-review/finalize_review.py": "a3a5f76831dfdff1791aea49c5e303c41d3ccbf7ae1369beec8e349f60c5a044",
+    "/home/otto/.hermes/cache/scratch/optchat-view-core-independent-review/freeze-after.json": "f8dbe08487375e544fcd07b70d8db566104205796a383d5b8512bdbffed5dfbf",
+    "/home/otto/.hermes/cache/scratch/optchat-view-core-independent-review/freeze-before.json": "f8dbe08487375e544fcd07b70d8db566104205796a383d5b8512bdbffed5dfbf",
+    "/home/otto/.hermes/cache/scratch/optchat-view-core-independent-review/fresh-tests.log": "e5833fa61e75e329c59e32c54a86fbbe67b2ebe88feb064da7f01f588a08345e",
+    "/home/otto/.hermes/cache/scratch/optchat-view-core-independent-review/fresh-tests.xml": "18d51390f3298f3b25596669a12e90e8ccd6238c0635b4ea8c99fad2547e3320",
+    "/home/otto/.hermes/cache/scratch/optchat-view-core-independent-review/mypy.log": "f9b031e5c45aa702cd4fef028d465551cb20a2c4698e0913c7b00766b20ac4d8",
+    "/home/otto/.hermes/cache/scratch/optchat-view-core-independent-review/ruff.log": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+    "/home/otto/.hermes/cache/scratch/optchat-view-core-independent-review/run_review.py": "f8b34f1934ec13a3f3b24b3ae813d30b49981e37bbf1e5f82cef2323506b3dca",
+    "/home/otto/.hermes/cache/scratch/optchat-view-core-independent-review/test_independent.py": "ee14d5f2a3bd9d21b36049392b7462d16cebe35f99c7a11cc4ec8c18705fb21c",
+    "/home/otto/.hermes/cache/scratch/optchat-view-core-independent-review/xenon.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  }
+}

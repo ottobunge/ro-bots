@@ -8,6 +8,13 @@ from dataclasses import dataclass
 from enum import StrEnum
 from typing import Literal
 
+from robots.domain.capacity import ReceivedCapacity
+from robots.domain.npc import NpcDialogue
+from robots.domain.self_metadata import ServerSelfSlots
+from robots.domain.shop import ReceivedShopOffer, ReceivedZeny
+from robots.domain.skill_knowledge import PublicSkillKnowledge
+from robots.domain.skills import ReceivedSkillContextReadOnly
+
 
 class Goal(StrEnum):
     """High-level drives a bot can pursue. The persona weights these."""
@@ -25,12 +32,19 @@ ChatChannel = Literal["public", "party", "guild", "whisper"]
 
 @dataclass(frozen=True, slots=True)
 class ActorRef:
-    """Something visible near the bot."""
+    """Something visible near the bot.
+
+    ``x``/``y`` carry the last observed cell when the tracker has one, so
+    range-aware goal scripts can approach the target (window-14 frontier);
+    ``None`` keeps the fail-closed range-blind behavior.
+    """
 
     id: int
     name: str
     kind: ActorKind
     distance: float
+    x: int | None = None
+    y: int | None = None
 
 
 @dataclass(frozen=True, slots=True)
@@ -71,6 +85,24 @@ class BotState:
     inventory: dict[str, int]
     pending_invites: tuple[PartyInvite, ...]
     recent_chat: tuple[ChatLine, ...]
+    inventory_known: bool = True
+    alive_known: bool = True
+    alive: bool | None = True
+    native_epoch: int | None = None
+    progression_source: str = "legacy"
+    recent_encounters: tuple[dict[str, int | str | None], ...] = ()
+    npc_dialogue: NpcDialogue | None = None
+    npc_instructions_received: bool = False
+    received_skills: ReceivedSkillContextReadOnly | None = None
+    public_skill_knowledge: PublicSkillKnowledge | None = None
+    shop_offer: ReceivedShopOffer | None = None
+    zeny: int | None = None
+    zeny_receipt: ReceivedZeny | None = None
+    weight: int | None = None
+    max_weight: int | None = None
+    capacity_receipt: ReceivedCapacity | None = None
+    inventory_slots: int | None = None
+    server_self_slots: ServerSelfSlots | None = None
 
     @property
     def hp_ratio(self) -> float:

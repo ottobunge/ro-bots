@@ -1,0 +1,50 @@
+{
+  "slice": "playing-grind-shop (window 28 packaging)",
+  "status": "COMPLETE-packaged (window 28 ready; coordinator executes live)",
+  "completed_at": "2026-10-17T23:00:00+02:00 (gate-verified)",
+  "scope": {
+    "production": [
+      "src/robots/adapters/native_gameplay.py",
+      "src/robots/app/playing_runtime.py",
+      "src/robots/app/scripts.py",
+      "src/robots/domain/actions.py"
+    ],
+    "tests": [
+      "tests/test_shop_sell_loop.py"
+    ],
+    "namespace": [
+      ".work/playing-grind-shop/**",
+      "run/reviews/playing-grind-shop.json",
+      ".work/playing-grind-operator/READY-TO-RUN.md (Window-28 section)"
+    ]
+  },
+  "tdd": {
+    "red": {
+      "receipt": ".work/playing-grind-shop/red-receipt.txt",
+      "provenance": "16 tests written first; 14 reached failures (AttributeError/ImportError/assert) against the unchanged source; 3 inert-guard tests passed as regression guards"
+    },
+    "green": {
+      "receipt": ".work/playing-grind-shop/green-receipt-scoped.txt",
+      "tests": 16
+    },
+    "chronology_note": "Two encoder-boundary contracts (sell_open positive id, sell index>=2/amount>=1) were tightened to their source-backed bounds after the first GREEN run failed them; the tightening is cited in-code (clif.cpp:122-127, npc.cpp:3053, pc.cpp:6107). The sell-open positive dialog-lifecycle dispatch path has no offline test (fail-closed negative only): the received-dialog harness was out of the finite budget and is disclosed here; window 28 live provides its native proof."
+  },
+  "gates": {
+    "black": "clean (touched files)",
+    "ruff_scoped": "clean (touched files)",
+    "mypy_scoped": "mypy --strict clean (4 production files)",
+    "scoped_pytest": "17 passed",
+    "neighbor_regressions": "exit 0 (test_playing_runtime, loot_priority, native_gameplay_equip, grind approach/commitment, farm widening, grind dialogue clear)",
+    "full_root_gate": "GREEN: nix develop -c task check exit 0 from repo root; 5974 passed + 65 subtests passed (baseline 5958+65 + 16 new). Log: .work/playing-grind-shop/full-gate.log (GATE_EXIT=0)"
+  },
+  "packets": {
+    "store_open": "ZC_SELECT_DEALTYPE 0xc4 (clif.cpp:2223-2231, packets.hpp:736-740) - pre-existing",
+    "sell_open": "CZ_ACK_SELECT_DEALTYPE 0xc5 type 1 (packets.hpp:1519-1524, clif.cpp:12255-12271, npc.cpp:2387-2418) - new native_gameplay.sell_open",
+    "sell_list": "ZC_PC_SELL_ITEMLIST 0xc7 (clif.cpp:2265-2280, packets.hpp:742-753) - new tracker ingestion view.sell_lists",
+    "sell_request": "CZ_PC_SELL_ITEMLIST 0xc9 (clif.cpp:12345-12361, packets.hpp:301-311) - new native_gameplay.sell",
+    "sell_result": "0xcb <result>.B 3B, always sent (clif.cpp:12333-12342; npc.cpp:3031-3138 deletes+pays) - new tracker ingestion view.sell_results",
+    "buy_pair": "CZ 0xc8 / ZC_PC_PURCHASE_RESULT 0xca (clif.cpp:12274-12326) - pre-existing, loop rule mints through it",
+    "zeny_verified": "0x00b1 param 20 (SP_ZENY=20 map.hpp:501; clif_longpar_change clif.cpp:3560-3570, case clif.cpp:3734-3736). NOT 0x00b0 at this pin."
+  },
+  "merchant_npc": "run/worlds/test-first-live-86e7c36895db/runtime/npc/merchants/shops.txt:255 prt_in,172,130 Weapon Dealer#prt sells 1201; warps runtime/npc/warps/cities/prontera.txt:20-28"
+}

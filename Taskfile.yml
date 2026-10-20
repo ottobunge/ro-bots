@@ -94,43 +94,78 @@ tasks:
       - ./serve.sh
 
   # ---- ADR-010: worlds / volumes / e2e playground -------------------------
-  # world= is the WORLD_KIND: debug (default) | test | prod-NAME.
+  # Ordinary per-world Compose projects/volumes (ADR-019).
+  # Runtime/schema/images must be prepared; full E2E remains unfinished.
+
+  world:inspect:
+    desc: 'Read-only test-world resource listing; not authorization for seed/reset'
+    cmds:
+      - docker container ls --all --quiet --no-trunc --filter label=com.docker.compose.project=ro-bots-test
+      - docker volume ls --quiet --filter 'name=^ro-bots-world-test$'
+
+  world:inventory:
+    desc: 'Read-only exact test-volume/container inventory; no mutation authorization'
+    cmds:
+      - uv run python -m robots.adapters.world_inventory
+
+  world:prepare:
+    desc: 'Prepare new private host runtime/bootstrap files; no containers or SQL executed'
+    env:
+      WORLD: '{{.world | default "debug"}}'
+      WORLD_STAGE: '{{.stage | default ""}}'
+    cmds:
+      - bash scripts/world.sh prepare --world "$WORLD"
+
+  world:config:
+    desc: 'Render selected-world Compose configuration without engine changes'
+    env:
+      WORLD: '{{.world | default "debug"}}'
+      WORLD_STAGE: '{{.stage | default ""}}'
+    cmds:
+      - bash scripts/world.sh config --world "$WORLD"
 
   world:up:
-    desc: 'Compose up the world stack (MariaDB + worldfeed [+ rAthena profile]) for world= (default debug)'
+    desc: 'Start selected Compose world; requires prepared runtime/schema and loaded images'
+    env:
+      WORLD: '{{.world | default "debug"}}'
+      WORLD_STAGE: '{{.stage | default ""}}'
     cmds:
-      - WORLD_KIND='{{.world|default "debug"}}' bash scripts/world.sh up
-    vars:
-      world: '{{.world|default "debug"}}'
+      - bash scripts/world.sh up --world "$WORLD"
 
   world:down:
-    desc: Compose down the world stack (volume kept)
+    desc: 'Stop selected Compose world, preserving its persistent data volume'
+    env:
+      WORLD: '{{.world | default "debug"}}'
+      WORLD_STAGE: '{{.stage | default ""}}'
     cmds:
-      - WORLD_KIND='{{.world|default "debug"}}' bash scripts/world.sh down
+      - bash scripts/world.sh down --world "$WORLD"
 
   world:wipe:
-    desc: 'Wipe a world (down -v + volume rm); REFUSES prod-* unless FORCE=1'
+    desc: 'Stop and remove only the test data volume; debug/production refused'
+    env:
+      WORLD: '{{.world | default "test"}}'
+      WORLD_STAGE: '{{.stage | default ""}}'
     cmds:
-      - WORLD_KIND='{{.world|default "debug"}}' FORCE='${FORCE:-0}' bash scripts/world.sh wipe
+      - bash scripts/world.sh wipe --world "$WORLD"
 
   world:status:
-    desc: Show world stack status (services, volume, ports)
+    desc: 'Read-only selected Compose world service status'
+    env:
+      WORLD: '{{.world | default "debug"}}'
+      WORLD_STAGE: '{{.stage | default ""}}'
     cmds:
-      - WORLD_KIND='{{.world|default "debug"}}' bash scripts/world.sh status
+      - bash scripts/world.sh status --world "$WORLD"
 
   e2e:
-    desc: 'Full-stack e2e (ADR-010 criterion 5): clean test world -> seed -> bots -> ticks -> assertions. TICKS=120 KEEP=0 CLEF_URL= '
+    desc: 'BLOCKED: clean-world seeding/reset and gameplay assertions are not accepted'
     cmds:
       - bash scripts/e2e.sh
 
   playground:
-    desc: e2e with KEEP=1, then point you at the dashboard (fast dev loop)
+    desc: 'BLOCKED: playground depends on a verified clean-world executor'
     cmds:
       - KEEP=1 bash scripts/e2e.sh
-      - echo
-      - echo "Playground is up ->"
-      - echo "  dashboard (Rust, mock feed) http://127.0.0.1:8401"
-      - echo "  worldfeed (Python, live)    http://127.0.0.1:8400"
+
 
   bench:decisions:
     desc: Benchmark decision backends (ADR-012). Vars, e.g. backends=cloudflare-flash,cloudflare-27b runs=10

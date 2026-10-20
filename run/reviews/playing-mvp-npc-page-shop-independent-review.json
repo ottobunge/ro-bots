@@ -1,0 +1,420 @@
+{
+  "schema": "combined-frozen-npc-page-shop-independent-review/v1",
+  "passed": true,
+  "security_concerns": [],
+  "logic_errors": [],
+  "quality_blockers": [],
+  "scope": "Read-only offline NPC page-bound extension and pure shop codec; no Memory specification/provider approval, whole-root gate or live acceptance.",
+  "freeze": {
+    "inputs": 257,
+    "before": "/home/otto/.hermes/cache/scratch/npc-page-shop-independent-review/before.json",
+    "after": "/home/otto/.hermes/cache/scratch/npc-page-shop-independent-review/after.json",
+    "mismatches": [],
+    "sha256": "e675ed4f434651a8bca81a9613da1ff29cf70e343e4599e26abb7a015d97437a"
+  },
+  "actual_test_executions": [
+    {
+      "command": [
+        "nix",
+        "develop",
+        "--offline",
+        "--no-write-lock-file",
+        "path:./spikes/007-native-packet-ast/toolchain",
+        "-c",
+        ".venv/bin/python",
+        "-m",
+        "pytest",
+        "tests/test_native_shop.py",
+        "tests/test_native_protocol_manifest.py",
+        "tests/test_native_npc_page_budget.py",
+        "tests/test_native_npc_dialogue.py",
+        "tests/test_native_npc_guidance.py",
+        "tests/test_native_npc_cancel_recovery.py",
+        "tests/test_native_pose_recovery.py",
+        "tests/test_native_rest_interrupt.py",
+        "tests/test_native_playing_keepalive.py",
+        "tests/test_native_gameplay_repairs.py",
+        "tests/test_native_npc_completion_quality.py",
+        "-q",
+        "-o",
+        "addopts=",
+        "-o",
+        "cache_dir=/home/otto/.hermes/cache/scratch/npc-page-shop-independent-review/pytest-cache",
+        "-o",
+        "faulthandler_timeout=30",
+        "--basetemp=/home/otto/.hermes/cache/scratch/npc-page-shop-independent-review/pytest-tmp",
+        "--junitxml=/home/otto/.hermes/cache/scratch/npc-page-shop-independent-review/fresh.xml"
+      ],
+      "exit_code": 0
+    },
+    {
+      "name": "probes",
+      "command": [
+        ".venv/bin/python",
+        "-m",
+        "pytest",
+        "/home/otto/.hermes/cache/scratch/npc-page-shop-independent-review/test_independent.py",
+        "-q",
+        "-o",
+        "addopts=",
+        "-o",
+        "cache_dir=/home/otto/.hermes/cache/scratch/npc-page-shop-independent-review/probe-cache",
+        "--basetemp=/home/otto/.hermes/cache/scratch/npc-page-shop-independent-review/probe-tmp",
+        "--junitxml=/home/otto/.hermes/cache/scratch/npc-page-shop-independent-review/probes.xml"
+      ],
+      "exit_code": 0
+    },
+    {
+      "name": "mypy",
+      "command": [
+        ".venv/bin/python",
+        "-m",
+        "mypy",
+        "--strict",
+        "--cache-dir",
+        "/home/otto/.hermes/cache/scratch/npc-page-shop-independent-review/mypy",
+        "src/robots/adapters/native_npc_dialogue.py",
+        "tests/test_native_npc_page_budget.py",
+        "src/robots/adapters/native_shop.py",
+        "tests/test_native_shop.py"
+      ],
+      "exit_code": 0
+    },
+    {
+      "name": "black",
+      "command": [
+        ".venv/bin/python",
+        "-m",
+        "black",
+        "--check",
+        "src/robots/adapters/native_npc_dialogue.py",
+        "tests/test_native_npc_page_budget.py",
+        "src/robots/adapters/native_shop.py",
+        "tests/test_native_shop.py"
+      ],
+      "exit_code": 0
+    },
+    {
+      "name": "ruff",
+      "command": [
+        ".venv/bin/python",
+        "-m",
+        "ruff",
+        "check",
+        "src/robots/adapters/native_npc_dialogue.py",
+        "tests/test_native_npc_page_budget.py",
+        "src/robots/adapters/native_shop.py",
+        "tests/test_native_shop.py"
+      ],
+      "exit_code": 0
+    }
+  ],
+  "xml_results": [
+    {
+      "path": "/home/otto/.hermes/cache/scratch/npc-page-shop-independent-review/fresh.xml",
+      "cases": 263,
+      "by_class": {
+        "tests.test_native_shop": 51,
+        "tests.test_native_protocol_manifest": 24,
+        "tests.test_native_npc_page_budget": 18,
+        "tests.test_native_npc_dialogue": 4,
+        "tests.test_native_npc_guidance": 26,
+        "tests.test_native_npc_cancel_recovery": 66,
+        "tests.test_native_pose_recovery": 14,
+        "tests.test_native_rest_interrupt": 26,
+        "tests.test_native_playing_keepalive": 18,
+        "tests.test_native_gameplay_repairs": 15,
+        "tests.test_native_npc_completion_quality": 1
+      },
+      "failure": 0,
+      "error": 0,
+      "skipped": 0
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/npc-page-shop-independent-review/probes.xml",
+      "cases": 17,
+      "by_class": {
+        ".hermes.cache.scratch.npc-page-shop-independent-review.test_independent": 17
+      },
+      "failure": 0,
+      "error": 0,
+      "skipped": 0
+    }
+  ],
+  "unique_physical_cases": 280,
+  "executed_cases": 280,
+  "artifact_registry_validation": {
+    "shop": {
+      "registry_sha256": "5650c6ba8cd6ba76f47e10ad258ae5d5c397529833724f4f416a89b40619decd",
+      "count": 104,
+      "mismatches": []
+    },
+    "npc": {
+      "registry_sha256": "31b8a48dfc79f92c3d70134a446ddac045ba92f17af98c868108381ffe453cc4",
+      "count": 35,
+      "mismatches": []
+    }
+  },
+  "fresh_full_header_oracles": [
+    {
+      "path": "/home/otto/.hermes/cache/scratch/npc-page-shop-independent-review/pytest-tmp/test_source_bound_fresh_full_h0/oracle.json",
+      "sha256": "b75fbba30d97b2328cb1e819f2cdcc1ef8285efdcb59488e7549e102cbd17492",
+      "observed": {
+        "command": [
+          "/nix/store/j1938gsbvbhkyz4kbmvjk56r479mkw3s-gcc-wrapper-16.2.0/bin/g++",
+          "-std=c++17",
+          "-DHAS_TLS",
+          "-fno-strict-aliasing",
+          "-DHAVE_GETADDRINFO",
+          "-DHAVE_SETRLIMIT",
+          "-DHAVE_STRNLEN",
+          "-DPACKETVER=20180704",
+          "-DPRERE",
+          "-DHAVE_MONOTONIC_CLOCK",
+          "-DHAS_TLS",
+          "-fno-strict-aliasing",
+          "-DHAVE_GETADDRINFO",
+          "-DHAVE_SETRLIMIT",
+          "-DHAVE_STRNLEN",
+          "-DPACKETVER=20180704",
+          "-DPRERE",
+          "-DHAVE_MONOTONIC_CLOCK",
+          "-I/home/otto/.hermes/cache/scratch/callback-package-hut2_cuz/configured-variant/src",
+          "-I/home/otto/.hermes/cache/scratch/callback-package-hut2_cuz/configured-variant/src/common",
+          "-I/home/otto/.hermes/cache/scratch/callback-package-hut2_cuz/configured-variant/3rdparty/libconfig",
+          "-I/home/otto/.hermes/cache/scratch/callback-package-hut2_cuz/configured-variant/3rdparty/rapidyaml/src",
+          "-I/home/otto/.hermes/cache/scratch/callback-package-hut2_cuz/configured-variant/3rdparty/rapidyaml/ext/c4core/src",
+          "-I/nix/store/1w8g6rvhljfk44hx50qz4sc47sm1f28v-mariadb-connector-c-3.3.5-dev/include",
+          "-I/nix/store/1w8g6rvhljfk44hx50qz4sc47sm1f28v-mariadb-connector-c-3.3.5-dev/include/mysql",
+          "/home/otto/.hermes/cache/scratch/npc-page-shop-independent-review/pytest-tmp/test_source_bound_fresh_full_h0/shop.cpp",
+          "-o",
+          "/home/otto/.hermes/cache/scratch/npc-page-shop-independent-review/pytest-tmp/test_source_bound_fresh_full_h0/shop.elf"
+        ],
+        "stdout": "PROFILE 20180704 20180704 20\nHEADER ZC_SELECT_DEALTYPE 196\nRECORD ZC_SELECT_DEALTYPE 6 1\nFIELD ZC_SELECT_DEALTYPE packetType 0 2 1\nFIELD ZC_SELECT_DEALTYPE npcId 2 4 0\nHEADER CZ_ACK_SELECT_DEALTYPE 197\nRECORD CZ_ACK_SELECT_DEALTYPE 7 1\nFIELD CZ_ACK_SELECT_DEALTYPE packetType 0 2 1\nFIELD CZ_ACK_SELECT_DEALTYPE GID 2 4 0\nFIELD CZ_ACK_SELECT_DEALTYPE type 6 1 0\nHEADER ZC_PC_PURCHASE_ITEMLIST 198\nRECORD ZC_PC_PURCHASE_ITEMLIST 4 1\nFIELD ZC_PC_PURCHASE_ITEMLIST packetType 0 2 1\nFIELD ZC_PC_PURCHASE_ITEMLIST packetLength 2 2 1\nTAIL ZC_PC_PURCHASE_ITEMLIST items 4 11\nRECORD ZC_PC_PURCHASE_ITEMLIST_sub 11 1\nFIELD ZC_PC_PURCHASE_ITEMLIST_sub price 0 4 0\nFIELD ZC_PC_PURCHASE_ITEMLIST_sub discountPrice 4 4 0\nFIELD ZC_PC_PURCHASE_ITEMLIST_sub itemType 8 1 0\nFIELD ZC_PC_PURCHASE_ITEMLIST_sub itemId 9 2 0\nRECORD CZ_PC_PURCHASE_ITEMLIST 4 1\nFIELD CZ_PC_PURCHASE_ITEMLIST packetType 0 2 1\nFIELD CZ_PC_PURCHASE_ITEMLIST packetLength 2 2 1\nTAIL CZ_PC_PURCHASE_ITEMLIST items 4 4\nRECORD CZ_PC_PURCHASE_ITEMLIST_sub 4 1\nFIELD CZ_PC_PURCHASE_ITEMLIST_sub amount 0 2 0\nFIELD CZ_PC_PURCHASE_ITEMLIST_sub itemId 2 2 0\nHEADER ZC_PC_PURCHASE_RESULT 202\nRECORD ZC_PC_PURCHASE_RESULT 3 1\nFIELD ZC_PC_PURCHASE_RESULT packetType 0 2 1\nFIELD ZC_PC_PURCHASE_RESULT result 2 1 0\nHEADER ZC_PAR_CHANGE 176\nRECORD ZC_PAR_CHANGE 8 1\nFIELD ZC_PAR_CHANGE PacketType 0 2 1\nFIELD ZC_PAR_CHANGE varID 2 2 0\nFIELD ZC_PAR_CHANGE count 4 4 1\nHEADER ZC_LONGPAR_CHANGE 177\nRECORD ZC_LONGPAR_CHANGE 8 1\nFIELD ZC_LONGPAR_CHANGE PacketType 0 2 1\nFIELD ZC_LONGPAR_CHANGE varID 2 2 0\nFIELD ZC_LONGPAR_CHANGE amount 4 4 1\n",
+        "elf_sha256": "8af97ec6d55e9240dcdcb550f5b773f9850619bf603f2f498d3f7cc43a91b156"
+      }
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/npc-page-shop-independent-review/pytest-tmp/test_source_bound_fresh_full_h1/oracle.json",
+      "sha256": "84d4afa87e743f8dcd249e0f5ff568dc6ee961a1c2ecc383ca7d64fa9a7f26f0",
+      "observed": {
+        "command": [
+          "/nix/store/2msw5nclhpsm80z65dqmjiv8kkras989-clang-wrapper-21.1.8/bin/clang++",
+          "-std=c++17",
+          "-DHAS_TLS",
+          "-fno-strict-aliasing",
+          "-DHAVE_GETADDRINFO",
+          "-DHAVE_SETRLIMIT",
+          "-DHAVE_STRNLEN",
+          "-DPACKETVER=20180704",
+          "-DPRERE",
+          "-DHAVE_MONOTONIC_CLOCK",
+          "-DHAS_TLS",
+          "-fno-strict-aliasing",
+          "-DHAVE_GETADDRINFO",
+          "-DHAVE_SETRLIMIT",
+          "-DHAVE_STRNLEN",
+          "-DPACKETVER=20180704",
+          "-DPRERE",
+          "-DHAVE_MONOTONIC_CLOCK",
+          "-I/home/otto/.hermes/cache/scratch/callback-package-hut2_cuz/configured-variant/src",
+          "-I/home/otto/.hermes/cache/scratch/callback-package-hut2_cuz/configured-variant/src/common",
+          "-I/home/otto/.hermes/cache/scratch/callback-package-hut2_cuz/configured-variant/3rdparty/libconfig",
+          "-I/home/otto/.hermes/cache/scratch/callback-package-hut2_cuz/configured-variant/3rdparty/rapidyaml/src",
+          "-I/home/otto/.hermes/cache/scratch/callback-package-hut2_cuz/configured-variant/3rdparty/rapidyaml/ext/c4core/src",
+          "-I/nix/store/1w8g6rvhljfk44hx50qz4sc47sm1f28v-mariadb-connector-c-3.3.5-dev/include",
+          "-I/nix/store/1w8g6rvhljfk44hx50qz4sc47sm1f28v-mariadb-connector-c-3.3.5-dev/include/mysql",
+          "/home/otto/.hermes/cache/scratch/npc-page-shop-independent-review/pytest-tmp/test_source_bound_fresh_full_h1/shop.cpp",
+          "-o",
+          "/home/otto/.hermes/cache/scratch/npc-page-shop-independent-review/pytest-tmp/test_source_bound_fresh_full_h1/shop.elf"
+        ],
+        "stdout": "PROFILE 20180704 20180704 20\nHEADER ZC_SELECT_DEALTYPE 196\nRECORD ZC_SELECT_DEALTYPE 6 1\nFIELD ZC_SELECT_DEALTYPE packetType 0 2 1\nFIELD ZC_SELECT_DEALTYPE npcId 2 4 0\nHEADER CZ_ACK_SELECT_DEALTYPE 197\nRECORD CZ_ACK_SELECT_DEALTYPE 7 1\nFIELD CZ_ACK_SELECT_DEALTYPE packetType 0 2 1\nFIELD CZ_ACK_SELECT_DEALTYPE GID 2 4 0\nFIELD CZ_ACK_SELECT_DEALTYPE type 6 1 0\nHEADER ZC_PC_PURCHASE_ITEMLIST 198\nRECORD ZC_PC_PURCHASE_ITEMLIST 4 1\nFIELD ZC_PC_PURCHASE_ITEMLIST packetType 0 2 1\nFIELD ZC_PC_PURCHASE_ITEMLIST packetLength 2 2 1\nTAIL ZC_PC_PURCHASE_ITEMLIST items 4 11\nRECORD ZC_PC_PURCHASE_ITEMLIST_sub 11 1\nFIELD ZC_PC_PURCHASE_ITEMLIST_sub price 0 4 0\nFIELD ZC_PC_PURCHASE_ITEMLIST_sub discountPrice 4 4 0\nFIELD ZC_PC_PURCHASE_ITEMLIST_sub itemType 8 1 0\nFIELD ZC_PC_PURCHASE_ITEMLIST_sub itemId 9 2 0\nRECORD CZ_PC_PURCHASE_ITEMLIST 4 1\nFIELD CZ_PC_PURCHASE_ITEMLIST packetType 0 2 1\nFIELD CZ_PC_PURCHASE_ITEMLIST packetLength 2 2 1\nTAIL CZ_PC_PURCHASE_ITEMLIST items 4 4\nRECORD CZ_PC_PURCHASE_ITEMLIST_sub 4 1\nFIELD CZ_PC_PURCHASE_ITEMLIST_sub amount 0 2 0\nFIELD CZ_PC_PURCHASE_ITEMLIST_sub itemId 2 2 0\nHEADER ZC_PC_PURCHASE_RESULT 202\nRECORD ZC_PC_PURCHASE_RESULT 3 1\nFIELD ZC_PC_PURCHASE_RESULT packetType 0 2 1\nFIELD ZC_PC_PURCHASE_RESULT result 2 1 0\nHEADER ZC_PAR_CHANGE 176\nRECORD ZC_PAR_CHANGE 8 1\nFIELD ZC_PAR_CHANGE PacketType 0 2 1\nFIELD ZC_PAR_CHANGE varID 2 2 0\nFIELD ZC_PAR_CHANGE count 4 4 1\nHEADER ZC_LONGPAR_CHANGE 177\nRECORD ZC_LONGPAR_CHANGE 8 1\nFIELD ZC_LONGPAR_CHANGE PacketType 0 2 1\nFIELD ZC_LONGPAR_CHANGE varID 2 2 0\nFIELD ZC_LONGPAR_CHANGE amount 4 4 1\n",
+        "elf_sha256": "86a64d6e9655b326d6199bc35535fd261004f2c22071816c45bbf4a09b59d6fb"
+      }
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/npc-page-shop-independent-review/pytest-tmp/test_source_bound_unchanged_np0/oracle.json",
+      "sha256": "25fd8cacdc0880658ac27bab023e4ef262ee4b7c16d615c50f12fa4ff829e1ca",
+      "observed": {
+        "command": [
+          "/nix/store/j1938gsbvbhkyz4kbmvjk56r479mkw3s-gcc-wrapper-16.2.0/bin/g++",
+          "-std=c++17",
+          "-DHAS_TLS",
+          "-fno-strict-aliasing",
+          "-DHAVE_GETADDRINFO",
+          "-DHAVE_SETRLIMIT",
+          "-DHAVE_STRNLEN",
+          "-DPACKETVER=20180704",
+          "-DPRERE",
+          "-DHAVE_MONOTONIC_CLOCK",
+          "-DHAS_TLS",
+          "-fno-strict-aliasing",
+          "-DHAVE_GETADDRINFO",
+          "-DHAVE_SETRLIMIT",
+          "-DHAVE_STRNLEN",
+          "-DPACKETVER=20180704",
+          "-DPRERE",
+          "-DHAVE_MONOTONIC_CLOCK",
+          "-I/home/otto/.hermes/cache/scratch/callback-package-hut2_cuz/configured-variant/src",
+          "-I/home/otto/.hermes/cache/scratch/callback-package-hut2_cuz/configured-variant/src/common",
+          "-I/home/otto/.hermes/cache/scratch/callback-package-hut2_cuz/configured-variant/3rdparty/libconfig",
+          "-I/home/otto/.hermes/cache/scratch/callback-package-hut2_cuz/configured-variant/3rdparty/rapidyaml/src",
+          "-I/home/otto/.hermes/cache/scratch/callback-package-hut2_cuz/configured-variant/3rdparty/rapidyaml/ext/c4core/src",
+          "-I/nix/store/1w8g6rvhljfk44hx50qz4sc47sm1f28v-mariadb-connector-c-3.3.5-dev/include",
+          "-I/nix/store/1w8g6rvhljfk44hx50qz4sc47sm1f28v-mariadb-connector-c-3.3.5-dev/include/mysql",
+          "/home/otto/.hermes/cache/scratch/npc-page-shop-independent-review/pytest-tmp/test_source_bound_unchanged_np0/npc.cpp",
+          "-o",
+          "/home/otto/.hermes/cache/scratch/npc-page-shop-independent-review/pytest-tmp/test_source_bound_unchanged_np0/npc"
+        ],
+        "stdout": "180 8 1 4\n181 6 1 2\n183 8 1 4\n182 6 1 2\n196 6 1 2\n322 6 1 2\n468 6 1 2\n144 7 1 2\n326 6 1 2\n"
+      }
+    }
+  ],
+  "source_excerpt_proof": [
+    {
+      "path": "/home/otto/.hermes/cache/scratch/callback-package-hut2_cuz/configured-variant/src/map/packets.hpp",
+      "lines": [
+        41,
+        45
+      ],
+      "sha256": "5d556ba6758ef63426758ffbbe6b7f0e3a5ad1a1e4000458c259211d82b27ba5",
+      "verified": true
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/callback-package-hut2_cuz/configured-variant/src/map/packets.hpp",
+      "lines": [
+        736,
+        740
+      ],
+      "sha256": "2c4ac6cb9c3b5d74131520d2c7b9798c2e8db5599ac07ce0cb3858d846b65c1a",
+      "verified": true
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/callback-package-hut2_cuz/configured-variant/src/map/packets.hpp",
+      "lines": [
+        1519,
+        1524
+      ],
+      "sha256": "3ac94a7d686cc6c43e85a35d25b47eecfd9160570e1fffcf5a82c1228a103a8c",
+      "verified": true
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/callback-package-hut2_cuz/configured-variant/src/map/packets_struct.hpp",
+      "lines": [
+        354,
+        366
+      ],
+      "sha256": "020e3fffc2b9d686e02e00804a1e0bf64bc1c8b4368883fb0280bc118b52eed1",
+      "verified": true
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/callback-package-hut2_cuz/configured-variant/src/map/packets_struct.hpp",
+      "lines": [
+        3045,
+        3096
+      ],
+      "sha256": "8834b4d4f1c708fc2afdf446392693e556de8d59caab054f81e9f31ae5473a28",
+      "verified": true
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/callback-package-hut2_cuz/configured-variant/src/map/clif.cpp",
+      "lines": [
+        2222,
+        2261
+      ],
+      "sha256": "70e7b5795cb7f76c5888d91b22e79218c2468d491130a440744a5d879ec601a5",
+      "verified": true
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/callback-package-hut2_cuz/configured-variant/src/map/clif.cpp",
+      "lines": [
+        3548,
+        3570
+      ],
+      "sha256": "b3f7465c043309db9fc2cbdfa23c8384360931d0b8b948de48691069306c1fb4",
+      "verified": true
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/callback-package-hut2_cuz/configured-variant/src/map/clif.cpp",
+      "lines": [
+        3734,
+        3736
+      ],
+      "sha256": "2bd726d7503d19423087a7f11071378f5b0077c2c1f200f0495d8fcf47eecfdb",
+      "verified": true
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/callback-package-hut2_cuz/configured-variant/src/map/clif.cpp",
+      "lines": [
+        12255,
+        12326
+      ],
+      "sha256": "7ab29fba51b96461a25d0bbac6af4569239be8149ce548faa32508fde1232a2a",
+      "verified": true
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/callback-package-hut2_cuz/configured-variant/src/map/clif_packetdb.hpp",
+      "lines": [
+        65,
+        73
+      ],
+      "sha256": "86d8bf71a0c5939dc4c8c286011da7cfa62a7f88bc11f94e7e01f6528e0bd826",
+      "verified": true
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/callback-package-hut2_cuz/configured-variant/src/map/npc.cpp",
+      "lines": [
+        2387,
+        2418
+      ],
+      "sha256": "72347ddc1a103a654008e32a5115f5644537342c7ca63791b335e22f050c4317",
+      "verified": true
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/callback-package-hut2_cuz/configured-variant/src/map/map.hpp",
+      "lines": [
+        493,
+        503
+      ],
+      "sha256": "565a79a3d67cf614ace939d8d4ba061ac81bec3f855f2fb9b3aeca3c49bc5cb6",
+      "verified": true
+    }
+  ],
+  "npc_delta": {
+    "inverse_delta_bit_identical": true,
+    "old_sha256": "1b599901d842bc7de5001ad0491ac46ecdae8cfd4faa66a8c735e91239e3523f",
+    "new_sha256": "c949544fa45f2c7927190c90b11c793071fd46347183d72c338570db330fbd11"
+  },
+  "review_boundaries": [
+    "32 pages admitted; 33 fails closed; exact4096 UTF8 admitted and 4097 denied without replacing retained pages; malformed/null/invalid UTF8 denied.",
+    "64 presentation,32 request,120 absolute lifetime,5 request/opening deadline and15 response deadline extension preserved;66 cancellation regressions plus pose/REST/keepalive tests passed.",
+    "Source SP_ZENY20 selects clif_longpar_change; full GCC/Clang headers establish B1=177,8bytes,signed32 amount@4. B0/parameter20 unrelated; unreceived remains None; signed-negative received values retained, not interpreted as spend authority.",
+    "Both unsigned prices independent; all256 opaque item types and CA result bytes retained. Only byte0 reports ordinary success; no acquisition/correlation proof.",
+    "C5 NPC ID uint32 type0; C8 header from actual source registration, uint16 quantity/itemID and4-byte rows; bool/zero/out-of-width fields denied.",
+    "C6 active MAIN/preRE11-byte rows and4-byte prefix;64-row limits and rejection of empty offers are explicit engineering policy, not universal server geometry/stock limits. Sender can emit zero rows if source shop count is zero; no claim such bytes are malformed.",
+    "Inherited897-entry parser unchanged; combined NPC/shop/B1 stream coalesced,every split andbytewise intact; unknownFAFA denied.",
+    "Shop module stdlib-only import; no runtime source imports it; no budget,ownership,eligibility,NPC pair/epoch correlation or actuation integration.",
+    "NPC source inverse-normalizes bit-identically except named32-page bound;257 source/dependency freeze unchanged; configured3216 files+1aux verified before/after both fresh shop compilers."
+  ],
+  "no_live_effects": true,
+  "no_source_repairs": true,
+  "native_sessions_opened": 0,
+  "network_or_model_or_sql_calls": 0,
+  "full_root_gate_run": false,
+  "remaining": [
+    "Parent current whole-root check/audit result.",
+    "Separately authorized live NPC close/cancel, actual shop receipt and purchase verification remain open.",
+    "Memory full-spec and provider/cache audits belong to separate reviewers."
+  ],
+  "tool_execution_notes": [
+    "One evidence-summary attempt assumed all oracle JSONs had elf_sha256; unrelated existing NPC oracle lacks that field. Retried preserving each actual oracle schema; no source/test change."
+  ],
+  "artifact_handles": {
+    "registry": {
+      "path": "/home/otto/.hermes/cache/scratch/npc-page-shop-independent-review/artifact-registry.json",
+      "sha256": "ee06d26c05f6aafd8868d650cf22600dc5ccc4417aaafc5391ebe6b8d801e569",
+      "count": 28
+    },
+    "scratch": "/home/otto/.hermes/cache/scratch/npc-page-shop-independent-review"
+  }
+}

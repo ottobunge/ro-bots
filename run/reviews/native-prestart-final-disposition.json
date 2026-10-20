@@ -1,0 +1,33 @@
+{
+  "scope": "Accepted offline initializer and CLI/native configuration review; live user authorization separate",
+  "reviews": [
+    {
+      "review": "world-volume-import-independent-review.json",
+      "verdict": "PASS",
+      "distinct_cases": 52,
+      "matched_public_inputs": 18,
+      "annotation_only_subsequent_delta": [
+        "tests/test_world_volume_import.py"
+      ]
+    },
+    {
+      "review": "world-cli-native-prestart-delta-review.json",
+      "verdict": "PASS",
+      "distinct_cases": 232,
+      "matched_public_inputs": 27,
+      "annotation_only_subsequent_delta": [
+        "tests/test_world_prepare_cleanup.py",
+        "tests/test_world_volume_import.py"
+      ]
+    }
+  ],
+  "annotation_delta": "Reversing only added type imports/signatures exactly recovers old reviewed byte hashes; production code unchanged. Parent scoped30 cases and configured full gate pass.",
+  "parent_full_gate": {
+    "tests": 1836,
+    "subtests": 65,
+    "coverage_percent": 94.27,
+    "exit_code": 0
+  },
+  "user_authorization_record": "run/reviews/first-test-world-live-authorization.json",
+  "live_world_executed": false
+}

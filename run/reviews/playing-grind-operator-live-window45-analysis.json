@@ -1,0 +1,11 @@
+{
+  "record": "GRIND_WINDOW45_PASSED_TRUE_BOTH_ENGAGED_FX0_JOIN_RECOVERED_KILL_LANDED",
+  "date": "2026-10-19 (window ~08:00-08:30)",
+  "headline": {
+    "fixture_0": "JOINED AND ENGAGED for the first time in seven windows (the save-move + per-window lottery): own_pos 123, 122 walks, 302 moveTos dispatched, 19 decisions, a full continuous session.",
+    "fixture_1": "197 attacks, 39 attributed, 456 bot-dealt damage, ONE MOB KILLED (gid 110019108), 495 walks, rest 0, engaged all window, xp earned. Stat setup correctly idle (both legs complete: STR 9 / DEX 9 \u2014 no 0x00BB sent).",
+    "verdict": "passed TRUE with real engagement on both agents."
+  },
+  "next_diagnosis": "The loot leg: the kill happened but floor_items stayed 0 and no 0x0362 pickup was dispatched across w36-45 \u2014 the drop's ZC_ITEM_ENTRY is not reaching/being ingested by the client despite kills, while the pre-regression windows (w26/28) picked up normally. At 7.5x item rates a Poring drop should be near-certain (Jellopy 70%x7.5 capped). Targeted probe: kill a mob live, watch the raw 0x009D frames on the wire and the tracker's floor ingest.",
+  "process": "window 45 ran alone on a quiet machine (the sequential gate->window discipline)."
+}

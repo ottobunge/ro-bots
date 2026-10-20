@@ -1,0 +1,15 @@
+{
+  "scope": "First working host runtime tracer: nonblocking pending planning and passive IDLE through actual ScheduledAgent/PlayingClient; offline only",
+  "authority": "run/reviews/llm-planning-host-segment-scope.json and ADR-021",
+  "prerequisite_approval": "run/reviews/llm-planning-job-context-approved.json",
+  "allowed_existing_files": ["src/robots/app/planning_brain.py", "src/robots/app/agent_runtime.py", "tests/test_llm_planning_host_construction.py"],
+  "allowed_new_files": ["src/robots/app/planning_runtime.py", "tests/test_llm_planning_host_tick.py", "tests/test_llm_planning_host_cleanup.py", "run/reviews/llm-planning-host-pending-runtime.json"],
+  "runtime_policy": {"physical_workers_per_agent":1,"completion_slots":1,"planning_wait_seconds":120,"provider_calls_max":4,"provider_timeout_seconds":30,"shutdown_join_seconds":1,"context_tokens":4096,"generation_tokens":512},
+  "capture": "Use approved capture_job_context only; no live provider/native/store references in worker; fresh host-side identity/capability admission",
+  "execution": "Advertise only passive IDLE on the current received map in this tracer; REST/CLEF execution follows separately. Disable all mechanical loot/patrol/NPC fallback in opt-in mode. Never invoke legacy plan authorship/scripts.",
+  "acceptance": ["Real opted-in host connect returns while an in-process provider boundary is blocked; zero effects at construction", "Actual ScheduledAgent ticks continue native event drain and 20/40/60/80-second keepalive", "Pending/timeout/invalid/empty passive IDLE produce no mechanical pickup, patrol, NPC or attack", "One physical worker remains owned across logical timeout/replan/epoch changes; no replacement until confirmed termination", "Late/stale or fresh-capability-invalid proposals are denied on the host owner thread", "Actual shutdown retains unresolved worker ownership and refuses reconnect; client cleanup still attempted"],
+  "legacy_test_transition": "Archive original unfinished-start receipt; retain invalid/unreceived-context refusal before model/thread effects, while valid context gains the new tested runtime path",
+  "protected_components": ["planning_job_context.py", "planning_context.py", "llm_planner.py", "planning_llm.py", "plan_lifecycle.py", "society/memory.py"],
+  "excluded_effects": ["Real inference", "Native sessions", "SQL/Docker/services", "Private live journals", "Provisioning/downloads", "Git operations", "Live flag activation", "REST/combat/CLEF execution or full-goal claims"],
+  "budget": "Finite initial pending-runtime tracer; same unfinished host feature, no old provider/repair budget reset"
+}

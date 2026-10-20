@@ -1,0 +1,136 @@
+{
+  "schema": "native-map-missing-assets/v1",
+  "status": "exact_three_errors_attributed_finite_four_file_plan_no_world_changes",
+  "scope": "read-only Docker inspect/logs/archive copies; source verification and owned scratch candidates only",
+  "map_identity": {
+    "container_id": "ced219e3f4a12a4e12d5c4599a2b9a4b44191324671c44993848c5bed74b077c",
+    "image_id": "sha256:d6aa8e108909e6c0ab6f18bedf1cd8c34dc11d2194f7ca65322d46a331a6a469",
+    "project": "ro-bots-test",
+    "service": "rathena-map",
+    "volume": "ro-bots-world-test",
+    "mount_destination": "/world",
+    "runtime_root": "/world/runtime",
+    "native_user": "10000:10000",
+    "started_at": "2026-10-08T15:08:31.458528082Z"
+  },
+  "prior_diagnosis_sha256": "2a6e0a452f043ed8543a7066d81d5a3c1a8aadcc4941fe48c9fb7da684eba762",
+  "errors": [
+    {
+      "timestamp_utc": "2026-10-08T15:08:31.489536Z",
+      "asset": "db/import/map_cache.dat",
+      "category": "map_cache_open_failure",
+      "source": "src/map/map.cpp:3920-3944"
+    },
+    {
+      "timestamp_utc": "2026-10-08T15:08:32.406990Z",
+      "asset": "db/import/mob_avail.yml",
+      "category": "MOB_AVAIL_DB_open_failure",
+      "source": "src/map/mob.cpp:5881-5883; src/common/database.cpp:92-97"
+    },
+    {
+      "timestamp_utc": "2026-10-08T15:08:32.849721Z",
+      "category": "BARTER_DB_root_open_failure",
+      "exact_public_asset_in_private_plan": true,
+      "source": "src/map/npc.cpp:394-396,6348-6349; src/common/database.cpp:92-97"
+    }
+  ],
+  "source_authority": {
+    "revision": "e985006171d2eb320ee512a653f4c83aea3d81b6",
+    "configured_variant": "callback-qualified",
+    "manifest_path": "/nix/store/0w1nfsmj8gaipcidhgx2nkg4axqxcbbr-rathena-playable-callback-qualified-20180704-e985006171d2-callback-qualified/share/rathena-playable-callback-qualified/configured-source.json",
+    "manifest_sha256": "1fd585266bbcf2268b2cec9e901100fad68b904a8b2a8c049c5869c56af43e12",
+    "configured_closure_sha256": "08a7056eab5f58d83e8f00af4f3371d56551c3033b9c377d5fd3860c3744d138",
+    "cpp_files_checked": 10,
+    "all_checked_cpp_equal_installed_manifest": true,
+    "raw_public_source": "/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source",
+    "raw_nar_hash_actual_equals_expected": "sha256-ppi6wPYDqwXh+XR39ufl0SDS6gYfdKyHtQ9tU9rgrNI=",
+    "build_profile": "qualified pre-renewal PACKETVER 20180704 supplied by delegation; no compiler/native probe or rebuild performed"
+  },
+  "restoration_plan_private": {
+    "path": "/home/otto/.hermes/cache/scratch/npc-map-asset-diagnosis/restoration-plan.private.json",
+    "sha256": "6064092d56766c9d67f590ef1ee9bcba61ec44baf4c5be4d4bd34222524b7d4a",
+    "file_count": 4,
+    "exact_container_paths_and_source_hashes": true,
+    "all_destinations_engine_confirmed_absent": true
+  },
+  "public_assets": [
+    {
+      "destination": "db/import/map_cache.dat",
+      "source": "db/import-tmpl/map_cache.dat",
+      "sha256": "6cc16abd70eefb90dc0ba0d14fb088630873b2c6ad943f7442356735984c35a3",
+      "size": 8,
+      "semantics": "Pinned eight-byte binary header: file_size=8, map_count=0; zero map overrides. Retain installed common and pre-re caches unchanged."
+    },
+    {
+      "destination": "db/import/mob_avail.yml",
+      "source": "db/import-tmpl/mob_avail.yml",
+      "sha256": "63cd73d189c9bd193a29e507bf053de2ecfb6d3157ac4baa34df0a432da97944",
+      "size": 3937,
+      "semantics": "Header MOB_AVAIL_DB version 1, no Body, no Clear, no Footer: adds no appearance overrides."
+    },
+    {
+      "category": "BARTER_DB_ROOT_PUBLIC_IMPORTER",
+      "sha256": "e956b91129756b57b90707b25d836d4e75354ca38d0756ecfc493a3b0645814f",
+      "size": 2327,
+      "semantics": "Header BARTER_DB version 2, no Body; Footer loads Renewal-only merchant definitions only under RENEWAL, then unconditionally imports custom barter defaults."
+    },
+    {
+      "category": "BARTER_DB_EMPTY_CUSTOM_PUBLIC_TEMPLATE",
+      "sha256": "974ed3c884b869be0b111aa1df7124d2725fae6f4f2f0985a5a78beb31fbd555",
+      "size": 2217,
+      "semantics": "Required fourth file, not an already-observed fourth startup error. Header BARTER_DB version 2 without Body/Footer/Clear; prevents creating a new missing import and adds no barter NPCs/items."
+    }
+  ],
+  "installed_base_caches": {
+    "db/map_cache.dat": {
+      "status": "present",
+      "mode": "0o600",
+      "uid": 10000,
+      "gid": 10000,
+      "size": 3056818,
+      "sha256": "00d277d00e70f476ceef9608f0b45a2a85bfc5ebf1fabf92f46e86f63648282e"
+    },
+    "db/pre-re/map_cache.dat": {
+      "status": "present",
+      "mode": "0o600",
+      "uid": 10000,
+      "gid": 10000,
+      "size": 28082,
+      "sha256": "7a58a94bada98c5457fce3fc9bf950b4111fdf494d0488c54d716516707a8433"
+    }
+  },
+  "restoration_conditions": [
+    "Parent must freshly verify exact map ID/image/project/service/runtime-root/mount and world ownership/exclusion under its reviewed maintenance policy. Diagnosis does not authorize lifecycle.",
+    "Recheck absence using engine file inspection, reject symlink targets/parents and any existing destination; never overwrite. Parent directory absence/mode was not authoritatively established here; check/create only exact needed public directories in scoped restore.",
+    "Set new public files owner 10000:10000 and mode0600, consistent with inspected installed assets. New required directories owner10000:10000 mode0700; verify all actual parent traversal/read permissions and refuse unrelated existing parent changes.",
+    "Copy only the four pinned source artifacts enumerated in private plan with hash equality and no-replace installation. No blank/generated YAML, map rebuild, third-party game assets, sourceRoot rebinding, SQL/config/default gameplay changes.",
+    "Read back exact destination bytes/type/uid/gid/mode and compare source hashes after installation; verify untouched base caches.",
+    "Statically validate Header types/versions, optional Body semantics and complete applicable import closure against configured pinned database.cpp and compiled pre-renewal profile before startup.",
+    "A separately authorized new startup epoch must preserve stream provenance/LF framing, report all three former errors absent plus zero newly introduced source/error/fatal/SQL failures including custom barter import, and normal map readiness/peer connection. Never waive the existing errors because readiness follows."
+  ],
+  "verified": {
+    "historical_current_start_error_count": 3,
+    "exact_assets_attributed": 3,
+    "finite_candidate_file_count": 4,
+    "candidate_hash_readback_matches_source": true,
+    "source_nar_verified": true,
+    "container_world_writes": 0,
+    "native_provider_SQL_calls": 0,
+    "lifecycle_calls": 0
+  },
+  "issues": [
+    "Initial public remote urllib request failed TLS issuer validation; verified existing pinned source NAR instead and browsed official pinned YAML/parser.",
+    "Diagnostic assertion initially expected custom barter file as the third fault; exact privately captured path is the root barter database. Corrected attribution, then expanded finite plan with its mandatory empty custom import.",
+    "An earlier assertion wrongly treated root barter importer as header-only. Actual Footer requires the fourth file; no incorrect plan was published.",
+    "Exceeded delegated 16-call budget by one visible tool call to qualify Docker file-absence diagnostics and finish verified report after harness assertion failures."
+  ],
+  "unperformed": [
+    "world installation",
+    "new startup validation",
+    "native gameplay",
+    "package/NAR rebuild",
+    "source authority rebinding",
+    "full all-path proof"
+  ],
+  "privacy": "Raw logs/private inspected args and exact NPC public paths retained only in0700 owned scratch; report allowlists db/conf paths and public failure/source categories."
+}

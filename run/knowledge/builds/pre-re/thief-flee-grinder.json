@@ -1,0 +1,172 @@
+{
+ "class": "Thief",
+ "playstyle": "grinder (flee-tank dagger sprint)",
+ "playstyle_axis": "grinder",
+ "summary": "Max kill-speed dagger thief: AGI/STR, Double Attack autos, Envenom burst. Meh gear requirement, best zeny-per-hour of the melee classes at equal investment.",
+ "stat_progression": [
+  {
+   "phase": "job change ~40",
+   "base_level": 40,
+   "stat_point_budget": 305,
+   "points_spent": 303,
+   "points_left": 2,
+   "allocation": {
+    "agi": 50,
+    "dex": 24,
+    "str": 20,
+    "vit": 1,
+    "int": 1,
+    "luk": 1
+   },
+   "leftover_into": "AGI (2 pts left at 305)"
+  },
+  {
+   "phase": "job 50",
+   "base_level": 50,
+   "stat_point_budget": 420,
+   "points_spent": 419,
+   "points_left": 1,
+   "allocation": {
+    "agi": 60,
+    "str": 30,
+    "dex": 26,
+    "vit": 1,
+    "int": 1,
+    "luk": 1
+   },
+   "leftover_into": "AGI/STR"
+  }
+ ],
+ "skill_order": [
+  {
+   "skill": "Double Attack",
+   "levels": "1->10",
+   "at": "job 1-10",
+   "prereqs": [],
+   "why": "the DPS"
+  },
+  {
+   "skill": "Improve Dodge",
+   "levels": 10,
+   "at": "job 11-20",
+   "prereqs": [],
+   "why": "+30 flee = tank-by-miss"
+  },
+  {
+   "skill": "Envenom",
+   "levels": 10,
+   "at": "job 21-30",
+   "prereqs": [],
+   "why": "+150 poison proc-damage; poison DoT"
+  },
+  {
+   "skill": "Steal",
+   "levels": 5,
+   "at": "job 31-35",
+   "prereqs": [],
+   "why": "Hiding prereq + loot"
+  },
+  {
+   "skill": "Hiding",
+   "levels": 5,
+   "at": "job 36-40",
+   "prereqs": [
+    "Steal 5"
+   ],
+   "why": "panic button"
+  }
+ ],
+ "skill_point_budget": {
+  "job40_points": 40,
+  "job50_points": 50,
+  "job50_add": [
+   "Steal ->10",
+   "Hiding ->10",
+   "Detoxify 1"
+  ]
+ },
+ "equipment_order": [
+  {
+   "order": 1,
+   "id": 1201,
+   "name": "Knife [3]",
+   "price_z": 50,
+   "why": "starter dagger"
+  },
+  {
+   "order": 2,
+   "id": 1204,
+   "name": "Cutter [3]",
+   "price_z": 1250,
+   "why": "ATK 30"
+  },
+  {
+   "order": 3,
+   "id": 2303,
+   "name": "Jacket",
+   "price_z": 200,
+   "why": "armor"
+  },
+  {
+   "order": 4,
+   "id": 2401,
+   "name": "Sandals",
+   "price_z": 400,
+   "why": "shoes"
+  },
+  {
+   "order": 5,
+   "id": 1207,
+   "name": "Main Gauche [3]",
+   "price_z": 2400,
+   "why": "ATK 43"
+  }
+ ],
+ "grinding": [
+  {
+   "map": "prt_fild08",
+   "phase": "Lv 12-35",
+   "mobs": [
+    {
+     "id": 1113,
+     "name": "Drops",
+     "level": 2,
+     "hp": 45,
+     "exp": "27/20"
+    },
+    {
+     "id": 1052,
+     "name": "Rocker",
+     "level": 15,
+     "hp": 185,
+     "exp": "99/74"
+    },
+    {
+     "id": 1014,
+     "name": "Spore",
+     "level": 18,
+     "hp": 280,
+     "exp": "117/87",
+     "notes": "Water 1 passive; Spores sell"
+    }
+   ]
+  }
+ ],
+ "do_not_waste": [
+  "Steal beyond 5 until job 50 (DPS first)",
+  "Hiding early levels",
+  "anything in INT"
+ ],
+ "renewal_differences": "Same as the stealth variant; renewal ASPD and daggers' 0.5%-per-STR weapon layer (renewal-only) slightly shift DPS math.",
+ "sources": [
+  "iro-wiki corpus page 'Stats' (stat per-point effects, raise-cost floor((X-1)/10)+2, 48 pts at BLv1, level-up points floor(X/5)+3)",
+  "iro-wiki corpus page 'Total stat point requirement' (cumulative cost table)",
+  "rathena/src/map/status.cpp status_base_atk (pre-re status ATK: STR+(STR/10)^2+DEX/5+LUK/5 melee; DEX+(DEX/10)^2+STR/5 ranged; MATK min INT+(INT/7)^2 max INT+(INT/5)^2)",
+  "rathena/db/pre-re/skill_tree.yml (authoritative server skill prerequisites)",
+  "rathena/db/pre-re/skill_db.yml (SP costs, cast times)",
+  "iro-wiki corpus '<Class> Job Change Guide' + rathena/npc/pre-re/jobs/1-1/<class>.txt (job change)",
+  "iro-wiki corpus pages 'Double Attack', 'Envenom', 'Improve Dodge'",
+  "iro-db monsters 1113/1052/1014; items 1201/1204/1207",
+  "rathena/status.cpp:4517 TF_MISS flee bonus"
+ ]
+}

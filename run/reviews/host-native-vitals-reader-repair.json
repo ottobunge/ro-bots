@@ -1,0 +1,69 @@
+{
+  "status": "offline_repair_verified_independent_review_pending",
+  "scope": {
+    "src/robots/app/agent_runtime.py": "Only ScheduledAgent._native_vitals: presence sentinel distinguishes omitted synthetic attributes from explicit native failure; running and connected_map require literal True, exposed sock cannot be None, exposed rx_thread must exist and report alive. Existing errors, optional health hook and quartet helper unchanged.",
+    "tests/test_host_native_vitals.py": "20 added parametrized cases; original 21 assertions unchanged. Stopped retained quartet, independent bad/healthy exposed attributes, zero SP, exact nonlocal liveness exception identity, dead-reader tick cognition exclusion and zero-budget connect cleanup.",
+    "run/reviews/host-native-vitals-reader-repair.json": "This evidence artifact."
+  },
+  "offline_only": true,
+  "native_socket_thread_provider_sql_execution": false,
+  "tdd": [
+    {"slice": "stopped native reader retained complete quartet", "red": "1 failed: DID NOT RAISE NativeTelemetryUnavailableError", "implementation": "deny exposed running not literal True", "green_host_tests": 22},
+    {"slice": "independent native connected_map boolean contract", "red": "3 failed connected_map=False/None/1; 3 running cases passed", "implementation": "apply same literal True requirement to connected_map", "green_host_tests": 28},
+    {"slice": "exposed missing socket", "red": "1 failed: DID NOT RAISE NativeTelemetryUnavailableError", "implementation": "deny exposed sock=None", "green_host_tests": 29},
+    {"slice": "exposed missing/dead reader", "red": "2 failed: DID NOT RAISE NativeTelemetryUnavailableError", "implementation": "deny exposed rx_thread=None or not is_alive(); no exception swallowing", "green_host_tests": 31}
+  ],
+  "verification": {
+    "command_prefix": "nix develop --offline --no-write-lock-file -c uv run --offline --no-sync",
+    "combined_pytest_exit_code": 0,
+    "combined_tests": 325,
+    "enumerated_unique_junit_tests": 325,
+    "failures": 0,
+    "errors": 0,
+    "skips": 0,
+    "junit": "/home/otto/.hermes/cache/scratch/host-reader-junit.xml",
+    "by_module": {
+      "tests.test_host_native_vitals": 41,
+      "tests.test_agent_host": 17,
+      "tests.test_host_native_transport": 31,
+      "tests.test_host_self_chat": 12,
+      "tests.test_host_memory": 16,
+      "tests.test_host_chat_commands": 38,
+      "tests.test_host_chat_interruptions": 20,
+      "tests.test_core_interruption_cleanup": 25,
+      "tests.test_host_storage_failure": 15,
+      "tests.test_host_summary_cache": 72,
+      "tests.test_native_vitals": 38
+    },
+    "coverage": {
+      "threshold_unchanged": 85,
+      "combined_percent": 93.08176100628931,
+      "native_vitals_helper_percent": 100,
+      "agent_runtime_percent_display": 93,
+      "json": "/home/otto/.hermes/cache/scratch/host-reader-coverage.json"
+    },
+    "static_checks": {
+      "black_check_workers_1": "passed, 2 files unchanged",
+      "ruff_check": "passed",
+      "mypy_strict": "passed, no issues in 2 source files"
+    },
+    "warnings": ["One existing StarletteDeprecationWarning: FastAPI TestClient uses deprecated httpx integration. Recorded, not waived or repaired in this scope."],
+    "full_configured_check": "Parent-owned; not rerun by this scoped repair worker.",
+    "independent_review": "Parent must perform fresh combined host/chat review; implementer is not reviewer."
+  },
+  "source_hashes": {
+    "original_agent_runtime": "ad069417275ba5a69f7dbc04fd68604c484bfe8f9bd7adb52a087e6270b77149",
+    "src/robots/app/agent_runtime.py": "d79ce299c615e5d332774c608d1688a76551883cb9c6f595c4d84a0f5fb7d7a8",
+    "tests/test_host_native_vitals.py": "42ff46f33eea7b10587d871855e0b56613e86273f798742b13611d9ce9c55ffe",
+    "src/robots/adapters/native_vitals.py": "663cc93d1fbe0cb20fb6ae4331e2ad5cf63d9e940a246bb8b332b408f6a7e9ff",
+    "spikes/003-clientless-limbs/client.py": "f4432d814522833d52d575d83b681b0f6ad85e98f886708ba4015ecb2c9bb557",
+    "_drain_events_ast_source_segment": "bf7e8f6fd8a8fec9a92e63ed0f6c9dda0ac9346e02ae6597404f29b5f6ab1ffc"
+  },
+  "scope_proof": "Removing exactly the inserted native-session guard reproduces the original agent_runtime SHA256. Thus all other runtime bodies, including _drain_events, are byte-for-byte unchanged.",
+  "source_contract": "Inspected client.py: running/connected_map bool flags, sock socket|None, rx_thread Thread|None. Reader starts before successful map connect return. close sets both flags False and clears socket/reader without clearing status. No native is_healthy method exists.",
+  "limits": [
+    "This is observational session readiness, not an atomic transport-race or physical socket-release guarantee.",
+    "No socket fileno checks, new background thread, lifecycle redesign, class-based fake/native bypass, fallback vitals or status caching.",
+    "Remaining job/level/player kind/distance/inventory fields are still synthetic; actual cognition remains OFF for native acceptance."
+  ]
+}

@@ -1,0 +1,239 @@
+{
+  "passed": true,
+  "security_concerns": [],
+  "logic_errors": [],
+  "quality_blockers": [],
+  "suggestions": [],
+  "summary": "PASS for frozen offline repair-cycle-1 candidate: disappearance-before-continuation attack leak is closed, temporal actor reuse remains blocked, legitimate continuous-identity prompt continuation survives, and tested received gameplay/encounter behavior matches the pre-repair observer.",
+  "scope": "Independent read-only offline candidate review only; no native sessions, seed/account/login operations, source repairs, milestone approval or live acceptance.",
+  "candidate": {
+    "path": "/home/otto/dev/ro-bots/run/reviews/playing-mvp-native-npc-cancel-repair1.json",
+    "sha256": "d347c03bc237dc66d4e7c35ed4c7d1c8b6d4e032812af728ed5c4e260feaf274",
+    "repair_cycle": 1
+  },
+  "source_freeze": {
+    "inputs": 251,
+    "expected_path": "/home/otto/.hermes/cache/scratch/npc-cancel-repair1-independent-freeze.json",
+    "before_path": "/home/otto/.hermes/cache/scratch/npc-cancel-repair1-independent-review/before.json",
+    "after_path": "/home/otto/.hermes/cache/scratch/npc-cancel-repair1-independent-review/after.json",
+    "all_inputs_match_before_after": true,
+    "drift": []
+  },
+  "candidate_artifacts": {
+    "physically_hash_verified": 41,
+    "errors": [],
+    "focused_final_physical_cases": 900,
+    "focused_frozen_physical_cases": 900,
+    "focused_final_and_frozen_failures_errors_skips": 0,
+    "historical_failures_preserved": "Original genuine independent RED and corrected native RED each contain one failing case. Earlier native RED includes the map-ACK harness assumption; intermediate variants contain three map-ACK assertion failures. None are relabeled as final failures or native acceptance."
+  },
+  "fresh_verification": {
+    "physical_testcases": 1003,
+    "failures": 0,
+    "errors": 0,
+    "skips": 0,
+    "original_independent_probes_reexecuted": 15,
+    "new_independent_observer_cases": [
+      "test_actual_dispatcher_multiframe_encounters_match_before[False]",
+      "test_actual_dispatcher_multiframe_encounters_match_before[True]",
+      "test_actual_dispatcher_received_gameplay_retained_empty_old_overlap[False]",
+      "test_actual_dispatcher_received_gameplay_retained_empty_old_overlap[True]",
+      "test_gameplay_cursor_ahead_metadata_overlap_does_not_drop_fresh_frame",
+      "test_per_frame_tracker_equals_whole_batch_without_snapshot_delta_loss"
+    ],
+    "xml_path": "/home/otto/.hermes/cache/scratch/npc-cancel-repair1-independent-review/fresh-focused.xml",
+    "checks": [
+      {
+        "name": "focused",
+        "command": [
+          "nix",
+          "develop",
+          "--offline",
+          "--no-write-lock-file",
+          "path:./spikes/007-native-packet-ast/toolchain",
+          "-c",
+          ".venv/bin/python",
+          "-m",
+          "pytest",
+          "-o",
+          "addopts=",
+          "-q",
+          "-p",
+          "no:cacheprovider",
+          "tests/test_native_npc_cancel_recovery.py",
+          "tests/test_native_npc_guidance.py",
+          "tests/test_native_npc_dialogue.py",
+          "tests/test_native_npc_close_framing.py",
+          "tests/test_native_npc_cutin_framing.py",
+          "tests/test_native_npc_completion_quality.py",
+          "tests/test_native_npc_memory_journal.py",
+          "tests/test_playing_runtime.py",
+          "tests/test_agent_host.py",
+          "tests/test_native_rest_interrupt.py",
+          "tests/test_native_chat_text.py",
+          "tests/test_host_self_chat.py",
+          "tests/test_native_playing_keepalive.py",
+          "tests/test_native_pose_recovery.py",
+          "tests/test_movement_arrival_evidence.py",
+          "tests/test_native_patrol_destination.py",
+          "tests/test_native_encounter_stream.py",
+          "tests/test_native_encounter_context.py",
+          "tests/test_native_encounter_request.py",
+          "tests/test_native_map_identity.py",
+          "tests/test_native_map_lifecycle.py",
+          "/home/otto/.hermes/cache/scratch/npc-cancel-independent-review/test_independent_probes.py",
+          "tests/test_native_gameplay.py",
+          "tests/test_native_gameplay_repairs.py",
+          "/home/otto/.hermes/cache/scratch/npc-cancel-repair1-independent-review/test_repair1_observer_probes.py",
+          "--junitxml=/home/otto/.hermes/cache/scratch/npc-cancel-repair1-independent-review/fresh-focused.xml"
+        ],
+        "exit_code": 0,
+        "output": "........................................................................ [  7%]\n........................................................................ [ 14%]\n........................................................................ [ 21%]\n........................................................................ [ 28%]\n........................................................................ [ 35%]\n........................................................................ [ 43%]\n........................................................................ [ 50%]\n........................................................................ [ 57%]\n........................................................................ [ 64%]\n........................................................................ [ 71%]\n........................................................................ [ 78%]\n........................................................................ [ 86%]\n........................................................................ [ 93%]\n...................................................................      [100%]\n1003 passed in 11.55s\n"
+      },
+      {
+        "name": "ruff",
+        "command": [
+          ".venv/bin/ruff",
+          "check",
+          "src/robots/app/playing_runtime.py",
+          "src/robots/adapters/native_npc_dialogue.py",
+          "tests/test_native_npc_cancel_recovery.py"
+        ],
+        "exit_code": 0,
+        "output": "All checks passed!\n"
+      },
+      {
+        "name": "black",
+        "command": [
+          ".venv/bin/black",
+          "--check",
+          "--workers",
+          "1",
+          "src/robots/app/playing_runtime.py",
+          "src/robots/adapters/native_npc_dialogue.py",
+          "tests/test_native_npc_cancel_recovery.py"
+        ],
+        "exit_code": 0,
+        "output": "All done! \u2728 \ud83c\udf70 \u2728\n3 files would be left unchanged.\n"
+      },
+      {
+        "name": "mypy",
+        "command": [
+          ".venv/bin/mypy",
+          "--strict",
+          "--cache-dir",
+          "/home/otto/.hermes/cache/scratch/npc-cancel-repair1-independent-review/mypy-cache",
+          "src/robots/app/playing_runtime.py",
+          "src/robots/adapters/native_npc_dialogue.py",
+          "tests/test_native_npc_cancel_recovery.py"
+        ],
+        "exit_code": 0,
+        "output": "Success: no issues found in 3 source files\n"
+      },
+      {
+        "name": "xenon",
+        "command": [
+          ".venv/bin/xenon",
+          "src",
+          "--max-absolute",
+          "B",
+          "--max-modules",
+          "B",
+          "--max-average",
+          "A"
+        ],
+        "exit_code": 0,
+        "output": ""
+      },
+      {
+        "name": "duplicates",
+        "command": [
+          ".venv/bin/pylint",
+          "--disable=all",
+          "--enable=duplicate-code",
+          "--ignore-paths=tests",
+          "src"
+        ],
+        "exit_code": 0,
+        "output": "\n--------------------------------------------------------------------\nYour code has been rated at 10.00/10 (previous run: 10.00/10, +0.00)\n\n"
+      }
+    ]
+  },
+  "source_review": {
+    "production_ast_added": [
+      "PlayingClient._consume_received_snapshot",
+      "PlayingClient._validate_received_npc_context"
+    ],
+    "production_ast_changed": [
+      "PlayingClient._observe"
+    ],
+    "native_npc_dialogue_unchanged": true,
+    "reviewed_actual_native_facade": "spikes/003-clientless-limbs/client.py:169-174,700-741,762-785,827-845",
+    "cursor_findings": "Gameplay and metadata cursors advance together only after successful tracker receipt; reset seeds both at the same base. No supported metadata-ahead path found. Fresh lagging-metadata overlap probe confirms already-consumed tracker frames do not lose following gameplay receipts. Empty/all-old retained snapshots and consumed-base eviction preserve inventory, damage, XP and pickup history; discontinuities remain fail-closed.",
+    "ordered_npc_findings": "Each frame updates gameplay and metadata before context validation and NPC consumption. Vanish/death/map/walking/range loss invalidates the old dialogue before same-ID UI/respawn can release uncertainty. Continuous B4/B5/B7 received before future disappearance is accepted at its original sequence; later disappearance cannot retrospectively invalidate its receipt.",
+    "encounter_findings": "Damage is retained bounded history rather than reset per snapshot, so small consume calls preserve final-batch encounter input. Encounter stream remains ordered over original frames, joining species and level at hit sequence. Fresh actual-dispatcher comparisons with pre-repair observer cover multiframe level changes, vanish/reuse, unknown species, map changes, repeated snapshots and partial previously consumed prefixes."
+  },
+  "limitations": [
+    "Fresh focused execution is 1003 testcases, not 1003 additional unique tests; it includes the candidate 900-case focused scope, gameplay suites and six new independent cases.",
+    "Whole-project task check/audit are owned by the parent and are not replaced or waived by this independent scoped review.",
+    "Positive pre-repair differential comparisons are finite observer contracts, not a proof of every runtime path.",
+    "Server closure remains unknown after locally abandoned cancellation; no new NPC reward, gear, quest or image-ACK inference was introduced."
+  ],
+  "artifact_registry": [
+    {
+      "path": "/home/otto/.hermes/cache/scratch/npc-cancel-repair1-independent-review/after.json",
+      "sha256": "7ffed3173284cd0ad1a0fdd82a84916a12c2d7148d63ae2df8e8982b25386189",
+      "bytes": 27237
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/npc-cancel-repair1-independent-review/before.json",
+      "sha256": "7ffed3173284cd0ad1a0fdd82a84916a12c2d7148d63ae2df8e8982b25386189",
+      "bytes": 27237
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/npc-cancel-repair1-independent-review/black.log",
+      "sha256": "45a468fa6205768496f23f1716ebb7575e9b723449d2099b88bf2afef60b721f",
+      "bytes": 56
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/npc-cancel-repair1-independent-review/checks.json",
+      "sha256": "7c4d5030459dab4b562d8ad521b2df8d673ab8d29e78d79adac91a1b0df1e3c9",
+      "bytes": 4586
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/npc-cancel-repair1-independent-review/duplicates.log",
+      "sha256": "8cbfc8cd0b04a4858b0b78b74c6df9631a1695e105e6911d4b57fbcc43b218b5",
+      "bytes": 140
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/npc-cancel-repair1-independent-review/focused.log",
+      "sha256": "434741997cd37c9a929b49578a2aec9786f45f0fe7122c6b0fc606de8d3d5a80",
+      "bytes": 1142
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/npc-cancel-repair1-independent-review/fresh-focused.xml",
+      "sha256": "fdd27efb44563a8fcb75966431aed4481dcecb94e2e95404fe9a9f61baf1647e",
+      "bytes": 140999
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/npc-cancel-repair1-independent-review/mypy.log",
+      "sha256": "8228fcc5ce46d42d01caf3cd941f4e9c5f2bcc372bb5b147a2f0572d2dd675a8",
+      "bytes": 43
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/npc-cancel-repair1-independent-review/ruff.log",
+      "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+      "bytes": 19
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/npc-cancel-repair1-independent-review/test_repair1_observer_probes.py",
+      "sha256": "489d1acb7971b38dbab29ea04c98679ab90a9b2751bfdf31711eb5a0fae4ce81",
+      "bytes": 5090
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/npc-cancel-repair1-independent-review/xenon.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    }
+  ]
+}

@@ -1,0 +1,307 @@
+{
+  "passed": true,
+  "scope": "Offline concrete native playing wire repairs only; unchanged collector constructor, NativeGameplayView tuple API and consume_snapshot signature. No live native, engine, SQL, inference, Git or private fixture access.",
+  "native_acceptance": false,
+  "native_gameplay_acceptance": false,
+  "combat_acceptance": false,
+  "full_goal_acceptance": false,
+  "original_independent_failure_preserved": {
+    "path": "run/reviews/native-gameplay-navigation-independent-review.json",
+    "passed": false,
+    "total": 175,
+    "passed_tests": 170,
+    "failed_tests": 5
+  },
+  "repairs": [
+    {
+      "id": "NATIVE-FRAMING-001",
+      "verified": "Actual parse_stream now registers 0A37=59,0991=-1,00A1=6,0148=8,00AF=6,07FA=8. Individual, coalesced and every incremental split exercise all six plus existing equipment0A0D. UnknownFFFF still raises. Final outgoing0437=7/0362=6 and PIN sizes retained."
+    },
+    {
+      "id": "INVENTORY-BARRIER-002",
+      "verified": "Both deletion variants disable the initial WEIGHT window. Historical observed_inventory_counts remain explicit partial facts; current inventory_counts stays None after WEIGHT/replay/repeated WEIGHT."
+    },
+    {
+      "id": "CHAT-ENCODER-003",
+      "verified": "Empty UTF8 text raises opaque ValueError. Nonempty whitespace, newline, UTF8 and254-byte bodies preserve exact party0108 wire bytes."
+    },
+    {
+      "id": "STRICT-TYPING-004",
+      "verified": "20 original mypy errors reproduced before edits. Typed frame helpers and fresh immutable view snapshots retain every existing assertion and all82 existing cases. Strict mypy passes including both new tests; no ignores or config relaxation."
+    },
+    {
+      "id": "BOUNDED-CACHES",
+      "verified": "damage/xp/deaths/pickups use deque(maxlen1024), retaining wire sequence identities. Floor4096, inventory slots4096 and acquired item types4096 overflow poison collector until a new epoch instead of truncating current stock/perception. Floor disappearance releases capacity; updates to existing floor IDs do not consume capacity. Existing actors4096 unchanged."
+    }
+  ],
+  "primary_authority": {
+    "source": "/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source",
+    "profile": "e985 MAIN/pre-re PACKETVER=20180704 -DPRERE",
+    "compiled_six_layout_output": "59 4 24 6 8 6 8",
+    "source_excerpts": "Unaltered packed structs extracted from map/packets_struct.hpp and map/packets.hpp; config/packets.hpp decides MAIN vs RE. Compiler test exercises pickup59, normal header4/row24, disappear6,resurrection8,throwACK6,delete8. Existing larger compiler oracle rerun verifies normal/equip/damage/movement/auth layouts.",
+    "source_readback": "clif.cpp native pc_checkitem ordering and clif_process_message minimum match independent failed review; fixed IDs verified directly from DEFINE_PACKET_HEADER declarations."
+  },
+  "red_evidence": {
+    "framing-first-red.log": "/home/otto/.hermes/cache/scratch/wire-repairs/framing-first-red.log",
+    "framing-first-green.log": "/home/otto/.hermes/cache/scratch/wire-repairs/framing-first-green.log",
+    "framing-rest-red.log": "/home/otto/.hermes/cache/scratch/wire-repairs/framing-rest-red.log",
+    "inventory-chat-red.log": "/home/otto/.hermes/cache/scratch/wire-repairs/inventory-chat-red.log",
+    "typing-red.log": "/home/otto/.hermes/cache/scratch/wire-repairs/typing-red.log",
+    "bounds-red.log": "/home/otto/.hermes/cache/scratch/wire-repairs/bounds-red.log",
+    "ruff-pre-format-failure.log": "/home/otto/.hermes/cache/scratch/wire-repairs/ruff-pre-format-failure.log"
+  },
+  "validation": {
+    "junit": "/home/otto/.hermes/cache/scratch/wire-repairs/final.xml",
+    "total": 201,
+    "failed": 0,
+    "groups": {
+      "tests.test_native_gameplay": {
+        "total": 82,
+        "failed": 0
+      },
+      "tests.test_native_gameplay_repairs": {
+        "total": 15,
+        "failed": 0
+      },
+      "tests.test_playing_packet_framing": {
+        "total": 11,
+        "failed": 0
+      },
+      "tests.test_native_navigation": {
+        "total": 59,
+        "failed": 0
+      },
+      "": {
+        "total": 34,
+        "failed": 0
+      }
+    },
+    "coverage": {
+      "covered_lines": 223,
+      "num_statements": 228,
+      "percent_covered": 95.48387096774194,
+      "percent_covered_display": "95",
+      "missing_lines": 5,
+      "excluded_lines": 0,
+      "percent_statements_covered": 97.80701754385964,
+      "percent_statements_covered_display": "98",
+      "num_branches": 82,
+      "num_partial_branches": 9,
+      "covered_branches": 73,
+      "missing_branches": 9,
+      "percent_branches_covered": 89.02439024390245,
+      "percent_branches_covered_display": "89"
+    },
+    "coverage_gate85": true,
+    "packet_conditions": "13 tests and65 subtests passed",
+    "gates": {
+      "pytest": {
+        "command": [
+          "uv",
+          "run",
+          "--offline",
+          "pytest",
+          "-q",
+          "-o",
+          "pythonpath=src",
+          "-o",
+          "addopts=",
+          "-p",
+          "no:cacheprovider",
+          "tests/test_native_gameplay.py",
+          "tests/test_native_gameplay_repairs.py",
+          "tests/test_playing_packet_framing.py",
+          "tests/test_native_navigation.py",
+          "/home/otto/.hermes/cache/scratch/wire-repairs/test_review.py",
+          "--basetemp=/home/otto/.hermes/cache/scratch/wire-repairs/pytest-temp",
+          "--junitxml=/home/otto/.hermes/cache/scratch/wire-repairs/final.xml",
+          "--cov=robots.adapters.native_gameplay",
+          "--cov-branch",
+          "--cov-report=json:/home/otto/.hermes/cache/scratch/wire-repairs/final-coverage.json",
+          "--cov-fail-under=85"
+        ],
+        "exit_code": 0,
+        "log": "/home/otto/.hermes/cache/scratch/wire-repairs/pytest-final.log"
+      },
+      "ruff": {
+        "command": [
+          "uv",
+          "run",
+          "--offline",
+          "ruff",
+          "check",
+          "src/robots/adapters/native_gameplay.py",
+          "tests/test_native_gameplay.py",
+          "tests/test_native_gameplay_repairs.py",
+          "tests/test_playing_packet_framing.py"
+        ],
+        "exit_code": 0,
+        "log": "/home/otto/.hermes/cache/scratch/wire-repairs/ruff-final.log"
+      },
+      "black": {
+        "command": [
+          "uv",
+          "run",
+          "--offline",
+          "black",
+          "--check",
+          "src/robots/adapters/native_gameplay.py",
+          "tests/test_native_gameplay.py",
+          "tests/test_native_gameplay_repairs.py",
+          "tests/test_playing_packet_framing.py"
+        ],
+        "exit_code": 0,
+        "log": "/home/otto/.hermes/cache/scratch/wire-repairs/black-final.log"
+      },
+      "mypy": {
+        "command": [
+          "uv",
+          "run",
+          "--offline",
+          "mypy",
+          "--strict",
+          "--follow-imports=silent",
+          "--cache-dir=/home/otto/.hermes/cache/scratch/wire-repairs/mypy-final",
+          "src/robots/adapters/native_gameplay.py",
+          "tests/test_native_gameplay.py",
+          "tests/test_native_gameplay_repairs.py",
+          "tests/test_playing_packet_framing.py"
+        ],
+        "exit_code": 0,
+        "log": "/home/otto/.hermes/cache/scratch/wire-repairs/mypy-final.log"
+      },
+      "bandit": {
+        "command": [
+          "uv",
+          "run",
+          "--offline",
+          "bandit",
+          "-q",
+          "-c",
+          "pyproject.toml",
+          "src/robots/adapters/native_gameplay.py"
+        ],
+        "exit_code": 0,
+        "log": "/home/otto/.hermes/cache/scratch/wire-repairs/bandit-final.log"
+      },
+      "vulture": {
+        "command": [
+          "uv",
+          "run",
+          "--offline",
+          "vulture",
+          "src/robots/adapters/native_gameplay.py",
+          "tests/test_native_gameplay.py",
+          "tests/test_native_gameplay_repairs.py",
+          "tests/test_playing_packet_framing.py",
+          "--min-confidence",
+          "85"
+        ],
+        "exit_code": 0,
+        "log": "/home/otto/.hermes/cache/scratch/wire-repairs/vulture-final.log"
+      },
+      "xenon": {
+        "command": [
+          "uv",
+          "run",
+          "--offline",
+          "xenon",
+          "src",
+          "--max-absolute",
+          "B",
+          "--max-modules",
+          "B",
+          "--max-average",
+          "A"
+        ],
+        "exit_code": 0,
+        "log": "/home/otto/.hermes/cache/scratch/wire-repairs/xenon-final.log"
+      },
+      "duplication": {
+        "command": [
+          "uv",
+          "run",
+          "--offline",
+          "pylint",
+          "--disable=all",
+          "--enable=duplicate-code",
+          "--persistent=no",
+          "--ignore-paths=tests",
+          "src"
+        ],
+        "exit_code": 0,
+        "log": "/home/otto/.hermes/cache/scratch/wire-repairs/duplication-final.log"
+      },
+      "packet-conditions": {
+        "command": [
+          "uv",
+          "run",
+          "--offline",
+          "pytest",
+          "-q",
+          "-o",
+          "addopts=",
+          "-p",
+          "no:cacheprovider",
+          "tests/test_packet_conditions.py"
+        ],
+        "exit_code": 0,
+        "log": "/home/otto/.hermes/cache/scratch/wire-repairs/packet-conditions-final.log"
+      }
+    }
+  },
+  "freeze": {
+    "before": {
+      "src/robots/adapters/native_gameplay.py": "c7e9f16750bf117ba3a4843264e215d2e653c0376c70acd7ac45e00a6b2100f9",
+      "tests/test_native_gameplay.py": "423753c3269270ebdd1ef81dee0c595fb877a7781994f17011261838a9d9024c",
+      "tests/test_native_gameplay_repairs.py": "1025e8ad031e6d971686c5446de7552d36455749390ac39408a76495d0b4e83b",
+      "tests/test_playing_packet_framing.py": "b8c81c64aea1cd7e17884de0add45c2d0edcf383cfa34071f1850eaad6c11707",
+      "spikes/003-clientless-limbs/packetdb.py": "2b2236689b7e2637699e7ca42d63a98ccb527640be164ba9cc301581dff53228",
+      "spikes/003-clientless-limbs/client.py": "e17e3b9e553269a1666e72910fd46fc58d4096f6b5ebf0d0e005a05a71f21e93",
+      "src/robots/adapters/native_navigation.py": "d4d758fc7d827d42aab374ebc0c938b5a066d73638e95d82eca3d7aca2730c0a",
+      "src/robots/adapters/native_actor_presentation.py": "81140e814a682ea44742880dd9a3a7a19e165eb2098debfa657d24615fe5b730"
+    },
+    "after": {
+      "src/robots/adapters/native_gameplay.py": "c7e9f16750bf117ba3a4843264e215d2e653c0376c70acd7ac45e00a6b2100f9",
+      "tests/test_native_gameplay.py": "423753c3269270ebdd1ef81dee0c595fb877a7781994f17011261838a9d9024c",
+      "tests/test_native_gameplay_repairs.py": "1025e8ad031e6d971686c5446de7552d36455749390ac39408a76495d0b4e83b",
+      "tests/test_playing_packet_framing.py": "b8c81c64aea1cd7e17884de0add45c2d0edcf383cfa34071f1850eaad6c11707",
+      "spikes/003-clientless-limbs/packetdb.py": "2b2236689b7e2637699e7ca42d63a98ccb527640be164ba9cc301581dff53228",
+      "spikes/003-clientless-limbs/client.py": "e17e3b9e553269a1666e72910fd46fc58d4096f6b5ebf0d0e005a05a71f21e93",
+      "src/robots/adapters/native_navigation.py": "d4d758fc7d827d42aab374ebc0c938b5a066d73638e95d82eca3d7aca2730c0a",
+      "src/robots/adapters/native_actor_presentation.py": "81140e814a682ea44742880dd9a3a7a19e165eb2098debfa657d24615fe5b730"
+    },
+    "stable": true
+  },
+  "pre_repair_hashes": {
+    "src/robots/adapters/native_gameplay.py": "fd9a41c0514d9ce276f2883fa5dc07fb3a10320b06d3c9230bdad4e5ada47b85",
+    "tests/test_native_gameplay.py": "61c1db76174db04dab538ce2f07383aa22430a4f52db64a7b57d49d4ff6d3734",
+    "spikes/003-clientless-limbs/packetdb.py": "1c2be6705938f5ab575cc822b690dba583f8a7719b9469f794fcbb661c032cf3",
+    "spikes/003-clientless-limbs/client.py": "e17e3b9e553269a1666e72910fd46fc58d4096f6b5ebf0d0e005a05a71f21e93",
+    "src/robots/adapters/native_navigation.py": "d4d758fc7d827d42aab374ebc0c938b5a066d73638e95d82eca3d7aca2730c0a"
+  },
+  "protected_pre_repair_unchanged": {
+    "spikes/003-clientless-limbs/client.py": true,
+    "src/robots/adapters/native_navigation.py": true
+  },
+  "limitations": [
+    "This is metadata repair for reviewed gameplay families, not exhaustive native protocol validation.",
+    "Retained event tuples are bounded tails, not complete epoch event history; consumers must use wire sequence identities and recognize retention gaps.",
+    "Acquired ACK totals and observed historical inventory rows do not establish current stock after unsupported mutations.",
+    "Initial alive authority, explicit wire-map identity adaptation, host wiring and live walk/combat/loot/respawn/population acceptance remain parent integration work."
+  ],
+  "issues_encountered": [
+    "First standalone compiler attempt lacked libconfig.h; retried with pinned Nix include path and passed. Repository six-frame compiler test uses config/packets.hpp plus exact extracted declarations without libconfig dependency.",
+    "One intermediate Xenon C ingest finding fixed by extracting receipt validation without changing thresholds. Final whole-source Xenon B/B/A and duplication checks pass."
+  ],
+  "files_modified": [
+    "spikes/003-clientless-limbs/packetdb.py",
+    "src/robots/adapters/native_gameplay.py",
+    "tests/test_native_gameplay.py"
+  ],
+  "files_created": [
+    "tests/test_native_gameplay_repairs.py",
+    "tests/test_playing_packet_framing.py",
+    "run/reviews/native-playing-wire-repairs.json"
+  ]
+}

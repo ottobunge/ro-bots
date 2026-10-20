@@ -1,0 +1,41 @@
+{
+  "scope": "population configuration; no live reconciliation",
+  "source_sha256": {
+    "src/robots/society/society.py": "4109fbad57f3192762447ca7378689374e1cf1fc9a694bb82e827b797836018e",
+    "src/robots/app/world_state.py": "59084c45e40f3ea8f15f983ef6377b71c3db729de7ea02f0a0f48b3e3e24d5bf",
+    "tests/test_population_config.py": "cecd227079d277bde7bdceab0b33c2eb1c9f3c13aecfaa85329d1d905766268d",
+    "tests/test_world_state.py": "1b026aa85e1ed5a68cc00bbae2b0c0f61cdbececbd94bb03d5f4085614382727"
+  },
+  "red_green": [
+    "API incorrectly rejected solos > friend groups; now honors independent counts and fixed size",
+    "negative/empty counts and singleton friend minima accepted; now rejected before replacement",
+    "regeneration detached bound host memory; now refuses before changes",
+    "70 configured groups had only 39 distinct IDs; now configured group IDs are unique"
+  ],
+  "verification": {
+    "scoped_tests": 80,
+    "population_tests": 11,
+    "full_offline_tests": 589,
+    "full_offline_subtests": 65,
+    "full_suite_command": "nix develop -c uv run pytest tests --no-cov --tb=short",
+    "scoped_black": "passed",
+    "scoped_ruff": "passed",
+    "scoped_mypy": "passed",
+    "git_diff_check": "passed",
+    "warning": "existing Starlette TestClient deprecation",
+    "coverage": "not measured in this run",
+    "full_quality": "not claimed"
+  },
+  "residual_frontier": [
+    "independent review pending",
+    "host-bound generation refused until account and memory reconciliation exists",
+    "exact requested total agent allocation not implemented",
+    "no character creation, native-game effects, isolated world reset or overall E2E acceptance",
+    "legacy generator group-name identity behavior preserved; new configured identities are distinct"
+  ],
+  "effects": {
+    "external_network": false,
+    "database_writes": false,
+    "staging_commits_push": false
+  }
+}

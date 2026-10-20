@@ -1,0 +1,35 @@
+{
+  "status": "COMPLETE_OFFLINE_WINDOW15_PACKAGED",
+  "completed_at": "2026-10-16T00:00:00+00:00",
+  "scope": "window-14 three gaps: species widening, reader stability, 0x8C8 attribution; window-15 packaging",
+  "gaps_closed": {
+    "species_starvation": {
+      "fix": "src/robots/app/scripts.py TARGET_WIDEN_STEPS=20; FarmScript widens its own target filter to observed attackable species after 20 consecutive plan-target-absent evaluations; plan object never rewritten; any plan-species sighting resets the streak and is preferred again",
+      "tests": "tests/test_farm_target_widening.py (11 cases incl. 3 parametrized)",
+      "red_receipt": "ImportError: cannot import name 'TARGET_WIDEN_STEPS' on unchanged predecessor source (2026-10-16 run)"
+    },
+    "reader_stability": {
+      "diagnosis": "rx thread did NOT exit from a swallowed exception: window-14 fixture_1 receipt records rx_error 'EOF from map-server'; pinned rAthena src/common/socket.cpp:1016 closes client sessions silent > stall_time (=60, deployed packet_athena.conf:22); the only client pump rode host cognition (drain_native_events -> agent.tick -> build_state), starved in window 14 (4 keepalives in ~500s, pacer build_state failures from step 144)",
+      "fix": "src/robots/app/playing_runtime.py: daemon keepalive pump thread with its OWN wall-time schedule (time.monotonic, never the injected host clock), started only after the first successful strict post-readiness pump, sharing send critical-section + poison flag with the tick pump, stopped and joined on close/connect, send failures poison health fail-closed",
+      "tests": "tests/test_transport_keepalive_thread.py (4 cases: frozen-host-clock pumping, readiness-gated start, fail-closed poison, close-join without post-close sends)",
+      "red_receipt": "TypeError: unexpected keyword argument 'keepalive_interval_s' (pyright + pytest) on unchanged source"
+    },
+    "capture_attribution": {
+      "fix": ".work/playing-grind-killchain/killchain_capture.py: 34B 0x8C8 decode (source@2, target@6, damage i32@22, mirroring native_gameplay.py:364-376); attribution = in-range sent attack + later 0x8C8 with source == self aid (raw or negated u32) and target == attacked id; counters for attacked-target deaths (0x0080 type 1) and XP deltas (0x00B0/0x00B1/0x0ACB)",
+      "composition": ".work/playing-grind-killchain/killchain_window15.py wraps the emission operator's capture symbol from this namespace only (no operator-namespace file modified; emission evidence rows never mutated); _perform wrapper records attacks (monotonic ts, target id, in-range = emission accepted_wire verdict); sampler thread drains client.native_frame_snapshot with strict seq cursor, gaps disclosed",
+      "tests": ".work/playing-grind-killchain/tests/ (9 attribution + 3 wiring, all offline)"
+    }
+  },
+  "gates": {
+    "root_gate": "nix develop -c task check GREEN from repo root: 5927 passed + 65 subtests passed, coverage 95.76% (>=85%), whole-source black/ruff/mypy/duplicate-code/xenon clean (baseline was 5913+65; +14 net new)",
+    "task_audit": "GREEN: no known vulnerabilities",
+    "scoped": "tests/test_farm_target_widening.py + tests/test_transport_keepalive_thread.py + tests/test_native_playing_keepalive.py + tests/test_grind_approach_range.py + .work/playing-grind-killchain/tests/ all GREEN repeatedly"
+  },
+  "window15_packaging": ".work/playing-grind-operator/READY-TO-RUN.md Window-15 section: exact command (killchain_window15.main over the emission operator, PYTHONPATH adds the killchain namespace), acceptance = transport healthy + rx_thread_alive true at window end + attributed_attacks >= 1 + bot_dealt_damage > 0 + attacked_target_deaths >= 1 + xp_gain_total > 0 + floor-item pickup on ONE bot; live execution prohibited here (coordinator runs window 15)",
+  "honest_limits": [
+    "fix provenance for window-14 EOF is receipt+pinned-source derived; the exact server-side kick line ('Session #N timed out' vs unsupported-packet) was not directly observed - container logs had rotated and the runtime image has no shell; the fix is robust to the idle-kick shape regardless",
+    "6-byte keepalive sends rely on single-syscall write atomicity under a normally empty send buffer (documented in playing_runtime.py); not formally provable from Python",
+    "sampler thread samples frames at 0.5s; unsampled frames between polls are lost when the client's bounded ring truncates - disclosed as frame_gaps in the killchain counters"
+  ],
+  "prohibited_followups_respected": "no live execution, no spike edits, no Git actions, no private bundle bodies, no operator-namespace file edits"
+}

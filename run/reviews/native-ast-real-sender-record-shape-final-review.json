@@ -1,0 +1,2881 @@
+{
+  "passed": false,
+  "semantic_review_passed": false,
+  "quality_passed": false,
+  "review_type": "FINAL_INDEPENDENT_READ_ONLY_RENEWED_PROTOTYPE_RECORD_SHAPE_REPAIR_2_OF_2",
+  "summary": "Union overwrite denial and retained real emotion candidate reproduce, but field-level PackedAttr is still admitted contrary to the required fail-closed shape boundary; added lint/type debt independently blocks approval.",
+  "security_concerns": [],
+  "logic_errors": [
+    {
+      "id": "L4_FIELD_PACKED_SCOPE",
+      "severity": "blocking contract/supported-grammar discrepancy, not demonstrated byte-overwrite",
+      "location": "spikes/007-native-packet-ast/sender-proof/trace_sender.py:38",
+      "description": "ordinary_fields explicitly permits FieldDecl children named PackedAttr. A fresh Clang/GCC-compiled field-only packing record becomes IDENTITY_LAYOUT_CANDIDATE instead of rejecting unsupported field packing before metadata. Record-level packing remains separately required and supported.",
+      "fixture": "struct P {unsigned short h;unsigned int x __attribute__((packed));};",
+      "GCC_metadata": {
+        "id": 1,
+        "size": 6,
+        "offsets": [
+          0,
+          2
+        ]
+      },
+      "observed_send": "{\"id\":1,\"size\":6,\"offsets\":[0,2]}\nsent_header=1 size=6\n",
+      "actual_decision": "IDENTITY_LAYOUT_CANDIDATE",
+      "without_metadata_reason": [
+        "GCC layout evidence absent"
+      ],
+      "AST_field_attributes": [
+        {
+          "name": "h",
+          "type": {
+            "qualType": "unsigned short"
+          },
+          "attributes": []
+        },
+        {
+          "name": "x",
+          "type": {
+            "qualType": "unsigned int"
+          },
+          "attributes": [
+            "PackedAttr"
+          ]
+        }
+      ],
+      "no_false_header_claim": "This particular field-packing fixture sends header 1 correctly. It demonstrates expansion beyond the explicitly required denied storage forms, not an overlapping-header exploit or public CLI pin bypass.",
+      "evidence": "/home/otto/.hermes/cache/scratch/native-record-final-independent/field-packed.result.json"
+    }
+  ],
+  "quality_blockers": [
+    {
+      "tool": "black",
+      "baseline_exit": 1,
+      "current_exit": 1,
+      "baseline_files_needing_format": 2,
+      "current_files_needing_format": 2,
+      "classification": "pre-existing unwaived formatting debt; cannot claim production quality acceptance"
+    },
+    {
+      "tool": "ruff",
+      "baseline_diagnostics": 150,
+      "current_diagnostics": 189,
+      "added_diagnostics": 39,
+      "classification": "new style/lint debt, blocking; no baseline waiver"
+    },
+    {
+      "tool": "mypy",
+      "baseline_diagnostics": 88,
+      "current_diagnostics": 102,
+      "added_diagnostics": 14,
+      "classification": "new untyped/type-check debt, blocking; no baseline waiver"
+    }
+  ],
+  "suggestions": [
+    "Escalate final rejected frontier to the user; no third automatic repair or auto-fixes are authorized.",
+    "If future scope is separately authorized, decide field-level packing support explicitly rather than silently extending the record grammar."
+  ],
+  "reviewed_author_report": {
+    "path": "/home/otto/dev/ro-bots/run/reviews/native-ast-real-sender-record-shape-repair.json",
+    "sha256": "edcd12969e69be3200bcbb3c7c7293637a18eafd2eb7c73c2b97d6f4facd5ca4",
+    "author_passed": false
+  },
+  "reviewed_source_hashes": {
+    "spikes/007-native-packet-ast/sender-proof/trace_sender.py": "096628098957275599da7da9a34c678d8d4c763bb871b8301669606a3dde4a8a",
+    "spikes/007-native-packet-ast/sender-proof/test_trace.py": "4c48676433e4dcfc70efc9bdd1d766171751584ca492b2cdf08573ae37b12d18",
+    "spikes/007-native-packet-ast/sender-proof/README.md": "aaf6952611657e3cfe75fdd9aaf83f27ba6163f72d7dc95538e78aa0b02e40a3",
+    "spikes/007-native-packet-ast/sender-proof/cli.py": "22c7c1d3a9df43afa2ab607554e3b4c1d2be80bd60da9243df8985ad5225dc95"
+  },
+  "delta_review": {
+    "changed_functions": [
+      "trace"
+    ],
+    "four_added_tests_and_previous_ten_preserved": true,
+    "added_source_static_scan": {
+      "hardcoded_secret": false,
+      "shell_true": false,
+      "unsafe_eval": false,
+      "pickle_load": false,
+      "os_system": false
+    },
+    "scan_scope": "trace guard delta plus manual read of all four new record tests; subprocess argument vectors, scratch-only evidence, no shell=True, credentials, network, eval, or deserialization added"
+  },
+  "unit_tests": {
+    "physical_method_count": 14,
+    "executed_count": 14,
+    "exit": 0,
+    "names": [
+      "test_L1_helper_in_third_or_fourth_send_argument",
+      "test_L1_plain_actual_pointer_and_AREA_guard",
+      "test_L2_const_and_constexpr_integral_header_guards",
+      "test_L2_mutable_header_is_not_an_immutable_constant",
+      "test_L3_enum_to_integral_and_const_void_address_guard",
+      "test_L3_float_parameter_cast_is_not_integral_plain_read",
+      "test_L4_defined_union_overwrite_denied_before_metadata",
+      "test_L4_header_requires_short_word_representation",
+      "test_L4_ordinary_packed_short_aliases_remain_candidates",
+      "test_L4_unsupported_layout_forms_fail_before_metadata",
+      "test_real_declaration_send_sizeof_identity",
+      "test_real_header_and_gcc_layout_join",
+      "test_unknown_helper_escape_denied_structurally",
+      "test_wrong_authorities_rejected_before_candidate"
+    ],
+    "previous_method_count": 10,
+    "previous_methods_byte_preserved": true
+  },
+  "independent_compiled_probes": {
+    "count": 20,
+    "expected_negative_count": 18,
+    "positive_control_count": 2,
+    "matching_expected_count": 19,
+    "mismatches": [
+      "field-packed"
+    ],
+    "record_shape_probe_count": 13,
+    "metadata_authority": "Every independent probe has a fresh successful Clang AST compilation plus GCC compilation and executed measurement; no mock layout joins in this probe set. GCC offsetof is not available for the bitfield; that case measures only header offset and is rejected before metadata.",
+    "results": [
+      {
+        "name": "union",
+        "expected_candidate": false,
+        "matches": true,
+        "GCC_metadata": {
+          "id": 1,
+          "size": 4,
+          "offsets": [
+            0,
+            0
+          ]
+        },
+        "GCC_stdout": "{\"id\":1,\"size\":4,\"offsets\":[0,0]}\nsent_header=2 size=4\n",
+        "result": {
+          "identity_proven": true,
+          "decision": "UNRESOLVED",
+          "reasons": [
+            "unsupported record shape: requires plain non-overlapping scalar aggregate"
+          ],
+          "sink_contract_status": "UNREVIEWED",
+          "sender_semantic_admission": false,
+          "runtime_admission": false,
+          "object_id": "0x55555579a1b0",
+          "send_object_id": "0x55555579a1b0",
+          "sizeof_object_id": "0x55555579a1b0",
+          "object_type": "P",
+          "function_id": "0x555555799280",
+          "send_id": "0x55555579a718",
+          "sizeof_id": "0x55555579a690",
+          "sink_decl_id": "0x555555798ac0"
+        },
+        "without_metadata": {
+          "identity_proven": true,
+          "decision": "UNRESOLVED",
+          "reasons": [
+            "unsupported record shape: requires plain non-overlapping scalar aggregate"
+          ],
+          "sink_contract_status": "UNREVIEWED",
+          "sender_semantic_admission": false,
+          "runtime_admission": false,
+          "object_id": "0x55555579a1b0",
+          "send_object_id": "0x55555579a1b0",
+          "sizeof_object_id": "0x55555579a1b0",
+          "object_type": "P",
+          "function_id": "0x555555799280",
+          "send_id": "0x55555579a718",
+          "sizeof_id": "0x55555579a690",
+          "sink_decl_id": "0x555555798ac0"
+        },
+        "source_sha256": "62bb4f345c109285cb95bc1c84ee82a36289e329eeb95ad8f8d1594f00af5fb4"
+      },
+      {
+        "name": "alias-union",
+        "expected_candidate": false,
+        "matches": true,
+        "GCC_metadata": {
+          "id": 1,
+          "size": 4,
+          "offsets": [
+            0,
+            0
+          ]
+        },
+        "GCC_stdout": "{\"id\":1,\"size\":4,\"offsets\":[0,0]}\nsent_header=2 size=4\n",
+        "result": {
+          "identity_proven": true,
+          "decision": "UNRESOLVED",
+          "reasons": [
+            "record declaration unavailable"
+          ],
+          "sink_contract_status": "UNREVIEWED",
+          "sender_semantic_admission": false,
+          "runtime_admission": false,
+          "object_id": "0x55555579a170",
+          "send_object_id": "0x55555579a170",
+          "sizeof_object_id": "0x55555579a170",
+          "object_type": "P",
+          "function_id": "0x555555799200",
+          "send_id": "0x55555579a6b8",
+          "sizeof_id": "0x55555579a630",
+          "sink_decl_id": "0x555555798ae0"
+        },
+        "without_metadata": {
+          "identity_proven": true,
+          "decision": "UNRESOLVED",
+          "reasons": [
+            "record declaration unavailable"
+          ],
+          "sink_contract_status": "UNREVIEWED",
+          "sender_semantic_admission": false,
+          "runtime_admission": false,
+          "object_id": "0x55555579a170",
+          "send_object_id": "0x55555579a170",
+          "sizeof_object_id": "0x55555579a170",
+          "object_type": "P",
+          "function_id": "0x555555799200",
+          "send_id": "0x55555579a6b8",
+          "sizeof_id": "0x55555579a630",
+          "sink_decl_id": "0x555555798ae0"
+        },
+        "source_sha256": "59087b4d09518379ec620976c02d1ae29987f522a156426024a62c5628d34ba8"
+      },
+      {
+        "name": "anonymous-union",
+        "expected_candidate": false,
+        "matches": true,
+        "GCC_metadata": {
+          "id": 1,
+          "size": 8,
+          "offsets": [
+            0,
+            4
+          ]
+        },
+        "GCC_stdout": "{\"id\":1,\"size\":8,\"offsets\":[0,4]}\nsent_header=1 size=8\n",
+        "result": {
+          "identity_proven": true,
+          "decision": "UNRESOLVED",
+          "reasons": [
+            "unsupported record shape: requires plain non-overlapping scalar aggregate"
+          ],
+          "sink_contract_status": "UNREVIEWED",
+          "sender_semantic_admission": false,
+          "runtime_admission": false,
+          "object_id": "0x55555579a520",
+          "send_object_id": "0x55555579a520",
+          "sizeof_object_id": "0x55555579a520",
+          "object_type": "P",
+          "function_id": "0x55555579a430",
+          "send_id": "0x55555579ad08",
+          "sizeof_id": "0x55555579ac80",
+          "sink_decl_id": "0x555555799230"
+        },
+        "without_metadata": {
+          "identity_proven": true,
+          "decision": "UNRESOLVED",
+          "reasons": [
+            "unsupported record shape: requires plain non-overlapping scalar aggregate"
+          ],
+          "sink_contract_status": "UNREVIEWED",
+          "sender_semantic_admission": false,
+          "runtime_admission": false,
+          "object_id": "0x55555579a520",
+          "send_object_id": "0x55555579a520",
+          "sizeof_object_id": "0x55555579a520",
+          "object_type": "P",
+          "function_id": "0x55555579a430",
+          "send_id": "0x55555579ad08",
+          "sizeof_id": "0x55555579ac80",
+          "sink_decl_id": "0x555555799230"
+        },
+        "source_sha256": "e9d35b4068a9b91af974001fe45153a3efef6b37621e1558a1c836e23db26627"
+      },
+      {
+        "name": "base",
+        "expected_candidate": false,
+        "matches": true,
+        "GCC_metadata": {
+          "id": 1,
+          "size": 8,
+          "offsets": [
+            0,
+            4
+          ]
+        },
+        "GCC_stdout": "{\"id\":1,\"size\":8,\"offsets\":[0,4]}\nsent_header=1 size=8\n",
+        "result": {
+          "identity_proven": true,
+          "decision": "UNRESOLVED",
+          "reasons": [
+            "unsupported record shape: requires plain non-overlapping scalar aggregate"
+          ],
+          "sink_contract_status": "UNREVIEWED",
+          "sender_semantic_admission": false,
+          "runtime_admission": false,
+          "object_id": "0x555555799cc0",
+          "send_object_id": "0x555555799cc0",
+          "sizeof_object_id": "0x555555799cc0",
+          "object_type": "P",
+          "function_id": "0x555555799bd8",
+          "send_id": "0x55555579a468",
+          "sizeof_id": "0x55555579a3e0",
+          "sink_decl_id": "0x555555798e80"
+        },
+        "without_metadata": {
+          "identity_proven": true,
+          "decision": "UNRESOLVED",
+          "reasons": [
+            "unsupported record shape: requires plain non-overlapping scalar aggregate"
+          ],
+          "sink_contract_status": "UNREVIEWED",
+          "sender_semantic_admission": false,
+          "runtime_admission": false,
+          "object_id": "0x555555799cc0",
+          "send_object_id": "0x555555799cc0",
+          "sizeof_object_id": "0x555555799cc0",
+          "object_type": "P",
+          "function_id": "0x555555799bd8",
+          "send_id": "0x55555579a468",
+          "sizeof_id": "0x55555579a3e0",
+          "sink_decl_id": "0x555555798e80"
+        },
+        "source_sha256": "596980813097f318fb32fa3e660af4129a1e6d553de39bce433b0261b530ac5d"
+      },
+      {
+        "name": "bitfield",
+        "expected_candidate": false,
+        "matches": true,
+        "GCC_metadata": {
+          "id": 1,
+          "size": 4,
+          "offsets": [
+            0
+          ]
+        },
+        "GCC_stdout": "{\"id\":1,\"size\":4,\"offsets\":[0]}\nsent_header=1 size=4\n",
+        "result": {
+          "identity_proven": true,
+          "decision": "UNRESOLVED",
+          "reasons": [
+            "unsupported record shape: requires plain non-overlapping scalar aggregate"
+          ],
+          "sink_contract_status": "UNREVIEWED",
+          "sender_semantic_admission": false,
+          "runtime_admission": false,
+          "object_id": "0x555555799640",
+          "send_object_id": "0x555555799640",
+          "sizeof_object_id": "0x555555799640",
+          "object_type": "P",
+          "function_id": "0x555555799550",
+          "send_id": "0x55555579a9d8",
+          "sizeof_id": "0x55555579a950",
+          "sink_decl_id": "0x555555798e30"
+        },
+        "without_metadata": {
+          "identity_proven": true,
+          "decision": "UNRESOLVED",
+          "reasons": [
+            "unsupported record shape: requires plain non-overlapping scalar aggregate"
+          ],
+          "sink_contract_status": "UNREVIEWED",
+          "sender_semantic_admission": false,
+          "runtime_admission": false,
+          "object_id": "0x555555799640",
+          "send_object_id": "0x555555799640",
+          "sizeof_object_id": "0x555555799640",
+          "object_type": "P",
+          "function_id": "0x555555799550",
+          "send_id": "0x55555579a9d8",
+          "sizeof_id": "0x55555579a950",
+          "sink_decl_id": "0x555555798e30"
+        },
+        "source_sha256": "b2f598f28ee6a288098e9c3607f481982315cb0a17f814e05af84e74e8c70a78"
+      },
+      {
+        "name": "overlap-attribute",
+        "expected_candidate": false,
+        "matches": true,
+        "GCC_metadata": {
+          "id": 1,
+          "size": 8,
+          "offsets": [
+            0,
+            4
+          ]
+        },
+        "GCC_stdout": "{\"id\":1,\"size\":8,\"offsets\":[0,4]}\nsent_header=1 size=8\n",
+        "result": {
+          "identity_proven": true,
+          "decision": "UNRESOLVED",
+          "reasons": [
+            "unsupported record shape: requires plain non-overlapping scalar aggregate"
+          ],
+          "sink_contract_status": "UNREVIEWED",
+          "sender_semantic_admission": false,
+          "runtime_admission": false,
+          "object_id": "0x55555579a220",
+          "send_object_id": "0x55555579a220",
+          "sizeof_object_id": "0x55555579a220",
+          "object_type": "P",
+          "function_id": "0x5555557992b0",
+          "send_id": "0x55555579a788",
+          "sizeof_id": "0x55555579a700",
+          "sink_decl_id": "0x555555798b90"
+        },
+        "without_metadata": {
+          "identity_proven": true,
+          "decision": "UNRESOLVED",
+          "reasons": [
+            "unsupported record shape: requires plain non-overlapping scalar aggregate"
+          ],
+          "sink_contract_status": "UNREVIEWED",
+          "sender_semantic_admission": false,
+          "runtime_admission": false,
+          "object_id": "0x55555579a220",
+          "send_object_id": "0x55555579a220",
+          "sizeof_object_id": "0x55555579a220",
+          "object_type": "P",
+          "function_id": "0x5555557992b0",
+          "send_id": "0x55555579a788",
+          "sizeof_id": "0x55555579a700",
+          "sink_decl_id": "0x555555798b90"
+        },
+        "source_sha256": "e28bd44085f3ba089958465bb5859358d5b5340e7d00f80d8a62b2adff79e4d4"
+      },
+      {
+        "name": "unknown-attribute",
+        "expected_candidate": false,
+        "matches": true,
+        "GCC_metadata": {
+          "id": 1,
+          "size": 8,
+          "offsets": [
+            0,
+            4
+          ]
+        },
+        "GCC_stdout": "{\"id\":1,\"size\":8,\"offsets\":[0,4]}\nsent_header=1 size=8\n",
+        "result": {
+          "identity_proven": true,
+          "decision": "UNRESOLVED",
+          "reasons": [
+            "unsupported record shape: requires plain non-overlapping scalar aggregate"
+          ],
+          "sink_contract_status": "UNREVIEWED",
+          "sender_semantic_admission": false,
+          "runtime_admission": false,
+          "object_id": "0x55555579a220",
+          "send_object_id": "0x55555579a220",
+          "sizeof_object_id": "0x55555579a220",
+          "object_type": "P",
+          "function_id": "0x5555557992b0",
+          "send_id": "0x55555579a788",
+          "sizeof_id": "0x55555579a700",
+          "sink_decl_id": "0x555555798b90"
+        },
+        "without_metadata": {
+          "identity_proven": true,
+          "decision": "UNRESOLVED",
+          "reasons": [
+            "unsupported record shape: requires plain non-overlapping scalar aggregate"
+          ],
+          "sink_contract_status": "UNREVIEWED",
+          "sender_semantic_admission": false,
+          "runtime_admission": false,
+          "object_id": "0x55555579a220",
+          "send_object_id": "0x55555579a220",
+          "sizeof_object_id": "0x55555579a220",
+          "object_type": "P",
+          "function_id": "0x5555557992b0",
+          "send_id": "0x55555579a788",
+          "sizeof_id": "0x55555579a700",
+          "sink_decl_id": "0x555555798b90"
+        },
+        "source_sha256": "126a2a7e5fc5d4bcc39f5340f983ba61935077b5840feb622353e91b1c7f90f7"
+      },
+      {
+        "name": "wide-header",
+        "expected_candidate": false,
+        "matches": true,
+        "GCC_metadata": {
+          "id": 1,
+          "size": 8,
+          "offsets": [
+            0,
+            4
+          ]
+        },
+        "GCC_stdout": "{\"id\":1,\"size\":8,\"offsets\":[0,4]}\nsent_header=1 size=8\n",
+        "result": {
+          "identity_proven": true,
+          "decision": "UNRESOLVED",
+          "reasons": [
+            "unsupported record header representation: requires short word on pinned target"
+          ],
+          "sink_contract_status": "UNREVIEWED",
+          "sender_semantic_admission": false,
+          "runtime_admission": false,
+          "object_id": "0x555555799610",
+          "send_object_id": "0x555555799610",
+          "sizeof_object_id": "0x555555799610",
+          "object_type": "P",
+          "function_id": "0x555555799520",
+          "send_id": "0x55555579a9a8",
+          "sizeof_id": "0x55555579a920",
+          "sink_decl_id": "0x555555798e00"
+        },
+        "without_metadata": {
+          "identity_proven": true,
+          "decision": "UNRESOLVED",
+          "reasons": [
+            "unsupported record header representation: requires short word on pinned target"
+          ],
+          "sink_contract_status": "UNREVIEWED",
+          "sender_semantic_admission": false,
+          "runtime_admission": false,
+          "object_id": "0x555555799610",
+          "send_object_id": "0x555555799610",
+          "sizeof_object_id": "0x555555799610",
+          "object_type": "P",
+          "function_id": "0x555555799520",
+          "send_id": "0x55555579a9a8",
+          "sizeof_id": "0x55555579a920",
+          "sink_decl_id": "0x555555798e00"
+        },
+        "source_sha256": "09e360c2209f88ff16ca480c0798246b46a8a00fa5b40f07277bf6089f3bd1bd"
+      },
+      {
+        "name": "field-packed",
+        "expected_candidate": false,
+        "matches": false,
+        "GCC_metadata": {
+          "id": 1,
+          "size": 6,
+          "offsets": [
+            0,
+            2
+          ]
+        },
+        "GCC_stdout": "{\"id\":1,\"size\":6,\"offsets\":[0,2]}\nsent_header=1 size=6\n",
+        "result": {
+          "identity_proven": true,
+          "decision": "IDENTITY_LAYOUT_CANDIDATE",
+          "reasons": [],
+          "sink_contract_status": "UNREVIEWED",
+          "sender_semantic_admission": false,
+          "runtime_admission": false,
+          "object_id": "0x55555579a190",
+          "send_object_id": "0x55555579a190",
+          "sizeof_object_id": "0x55555579a190",
+          "object_type": "P",
+          "function_id": "0x555555799220",
+          "send_id": "0x55555579a6f8",
+          "sizeof_id": "0x55555579a670",
+          "sink_decl_id": "0x555555798b00",
+          "record_id": "0x555555798598",
+          "header_field_id": "0x555555798760",
+          "header_field_name": "h",
+          "header_constant_id": "0x5555557988a0",
+          "header_assignment_id": "0x55555579a368",
+          "header_value": 1,
+          "record_location": {
+            "offset": 63,
+            "file": "/home/otto/.hermes/cache/scratch/native-record-final-independent/field-packed.cpp",
+            "line": 4,
+            "col": 8,
+            "tokLen": 1
+          },
+          "constant_location": {
+            "offset": 146,
+            "line": 5,
+            "col": 22,
+            "tokLen": 1
+          },
+          "measured_size": 6,
+          "measured_offsets": [
+            0,
+            2
+          ]
+        },
+        "without_metadata": {
+          "identity_proven": true,
+          "decision": "UNRESOLVED",
+          "reasons": [
+            "GCC layout evidence absent"
+          ],
+          "sink_contract_status": "UNREVIEWED",
+          "sender_semantic_admission": false,
+          "runtime_admission": false,
+          "object_id": "0x55555579a190",
+          "send_object_id": "0x55555579a190",
+          "sizeof_object_id": "0x55555579a190",
+          "object_type": "P",
+          "function_id": "0x555555799220",
+          "send_id": "0x55555579a6f8",
+          "sizeof_id": "0x55555579a670",
+          "sink_decl_id": "0x555555798b00",
+          "record_id": "0x555555798598",
+          "header_field_id": "0x555555798760",
+          "header_field_name": "h",
+          "header_constant_id": "0x5555557988a0",
+          "header_assignment_id": "0x55555579a368",
+          "header_value": 1,
+          "record_location": {
+            "offset": 63,
+            "file": "/home/otto/.hermes/cache/scratch/native-record-final-independent/field-packed.cpp",
+            "line": 4,
+            "col": 8,
+            "tokLen": 1
+          },
+          "constant_location": {
+            "offset": 146,
+            "line": 5,
+            "col": 22,
+            "tokLen": 1
+          }
+        },
+        "source_sha256": "31babfaf1dfd0c3f719e5a92fb0559fcc3fb66dcb7f7c58b0222c69650f1227a"
+      },
+      {
+        "name": "reference",
+        "expected_candidate": false,
+        "matches": true,
+        "GCC_metadata": {
+          "id": 1,
+          "size": 16,
+          "offsets": [
+            0,
+            8
+          ]
+        },
+        "GCC_stdout": "{\"id\":1,\"size\":16,\"offsets\":[0,8]}\nsent_header=1 size=16\n",
+        "result": {
+          "identity_proven": true,
+          "decision": "UNRESOLVED",
+          "reasons": [
+            "unsupported record shape: requires plain non-overlapping scalar aggregate"
+          ],
+          "sink_contract_status": "UNREVIEWED",
+          "sender_semantic_admission": false,
+          "runtime_admission": false,
+          "object_id": "0x55555579a670",
+          "send_object_id": "0x55555579a670",
+          "sizeof_object_id": "0x55555579a670",
+          "object_type": "P",
+          "function_id": "0x55555579a580",
+          "send_id": "0x55555579aba8",
+          "sizeof_id": "0x55555579ab20",
+          "sink_decl_id": "0x555555798f30"
+        },
+        "without_metadata": {
+          "identity_proven": true,
+          "decision": "UNRESOLVED",
+          "reasons": [
+            "unsupported record shape: requires plain non-overlapping scalar aggregate"
+          ],
+          "sink_contract_status": "UNREVIEWED",
+          "sender_semantic_admission": false,
+          "runtime_admission": false,
+          "object_id": "0x55555579a670",
+          "send_object_id": "0x55555579a670",
+          "sizeof_object_id": "0x55555579a670",
+          "object_type": "P",
+          "function_id": "0x55555579a580",
+          "send_id": "0x55555579aba8",
+          "sizeof_id": "0x55555579ab20",
+          "sink_decl_id": "0x555555798f30"
+        },
+        "source_sha256": "3fbdaff387c94f1d622d18ffe9345fd3d45f318b508d2f80158634714f1dc618"
+      },
+      {
+        "name": "constructor",
+        "expected_candidate": false,
+        "matches": true,
+        "GCC_metadata": {
+          "id": 1,
+          "size": 8,
+          "offsets": [
+            0,
+            4
+          ]
+        },
+        "GCC_stdout": "{\"id\":1,\"size\":8,\"offsets\":[0,4]}\nsent_header=1 size=8\n",
+        "result": {
+          "identity_proven": true,
+          "decision": "UNRESOLVED",
+          "reasons": [
+            "unsupported record shape: requires plain non-overlapping scalar aggregate"
+          ],
+          "sink_contract_status": "UNREVIEWED",
+          "sender_semantic_admission": false,
+          "runtime_admission": false,
+          "object_id": "0x55555579a6d0",
+          "send_object_id": "0x55555579a6d0",
+          "sizeof_object_id": "0x55555579a6d0",
+          "object_type": "P",
+          "function_id": "0x55555579a5e8",
+          "send_id": "0x55555579afd8",
+          "sizeof_id": "0x55555579af50",
+          "sink_decl_id": "0x555555798a00"
+        },
+        "without_metadata": {
+          "identity_proven": true,
+          "decision": "UNRESOLVED",
+          "reasons": [
+            "unsupported record shape: requires plain non-overlapping scalar aggregate"
+          ],
+          "sink_contract_status": "UNREVIEWED",
+          "sender_semantic_admission": false,
+          "runtime_admission": false,
+          "object_id": "0x55555579a6d0",
+          "send_object_id": "0x55555579a6d0",
+          "sizeof_object_id": "0x55555579a6d0",
+          "object_type": "P",
+          "function_id": "0x55555579a5e8",
+          "send_id": "0x55555579afd8",
+          "sizeof_id": "0x55555579af50",
+          "sink_decl_id": "0x555555798a00"
+        },
+        "source_sha256": "86ed81014ec0f4a9589c2dd35dea3694d122a57445aa4bc6d50de6da69d036c7"
+      },
+      {
+        "name": "destructor",
+        "expected_candidate": false,
+        "matches": true,
+        "GCC_metadata": {
+          "id": 1,
+          "size": 8,
+          "offsets": [
+            0,
+            4
+          ]
+        },
+        "GCC_stdout": "{\"id\":1,\"size\":8,\"offsets\":[0,4]}\nsent_header=1 size=8\n",
+        "result": {
+          "identity_proven": true,
+          "decision": "UNRESOLVED",
+          "reasons": [
+            "unsupported record shape: requires plain non-overlapping scalar aggregate"
+          ],
+          "sink_contract_status": "UNREVIEWED",
+          "sender_semantic_admission": false,
+          "runtime_admission": false,
+          "object_id": "0x55555579a008",
+          "send_object_id": "0x55555579a008",
+          "sizeof_object_id": "0x55555579a008",
+          "object_type": "P",
+          "function_id": "0x555555799f50",
+          "send_id": "0x55555579a538",
+          "sizeof_id": "0x55555579a4b0",
+          "sink_decl_id": "0x555555798970"
+        },
+        "without_metadata": {
+          "identity_proven": true,
+          "decision": "UNRESOLVED",
+          "reasons": [
+            "unsupported record shape: requires plain non-overlapping scalar aggregate"
+          ],
+          "sink_contract_status": "UNREVIEWED",
+          "sender_semantic_admission": false,
+          "runtime_admission": false,
+          "object_id": "0x55555579a008",
+          "send_object_id": "0x55555579a008",
+          "sizeof_object_id": "0x55555579a008",
+          "object_type": "P",
+          "function_id": "0x555555799f50",
+          "send_id": "0x55555579a538",
+          "sizeof_id": "0x55555579a4b0",
+          "sink_decl_id": "0x555555798970"
+        },
+        "source_sha256": "d20fb93d9def83c34c7e53b1d1eb979a081be9e0d744670f6227d7a55efe0672"
+      },
+      {
+        "name": "operator",
+        "expected_candidate": false,
+        "matches": true,
+        "GCC_metadata": {
+          "id": 1,
+          "size": 8,
+          "offsets": [
+            0,
+            4
+          ]
+        },
+        "GCC_stdout": "{\"id\":1,\"size\":8,\"offsets\":[0,4]}\nsent_header=1 size=8\n",
+        "result": {
+          "identity_proven": true,
+          "decision": "UNRESOLVED",
+          "reasons": [
+            "unsupported record shape: requires plain non-overlapping scalar aggregate"
+          ],
+          "sink_contract_status": "UNREVIEWED",
+          "sender_semantic_admission": false,
+          "runtime_admission": false,
+          "object_id": "0x55555579bc68",
+          "send_object_id": "0x55555579bc68",
+          "sizeof_object_id": "0x55555579bc68",
+          "object_type": "P",
+          "function_id": "0x55555579bbb0",
+          "send_id": "0x55555579c138",
+          "sizeof_id": "0x55555579c0a8",
+          "sink_decl_id": "0x5555557993b0"
+        },
+        "without_metadata": {
+          "identity_proven": true,
+          "decision": "UNRESOLVED",
+          "reasons": [
+            "unsupported record shape: requires plain non-overlapping scalar aggregate"
+          ],
+          "sink_contract_status": "UNREVIEWED",
+          "sender_semantic_admission": false,
+          "runtime_admission": false,
+          "object_id": "0x55555579bc68",
+          "send_object_id": "0x55555579bc68",
+          "sizeof_object_id": "0x55555579bc68",
+          "object_type": "P",
+          "function_id": "0x55555579bbb0",
+          "send_id": "0x55555579c138",
+          "sizeof_id": "0x55555579c0a8",
+          "sink_decl_id": "0x5555557993b0"
+        },
+        "source_sha256": "17f71adaff2be56d7da8c466da45e27eba1dd6f64fdf57abcf93eb257e1b9e07"
+      },
+      {
+        "name": "packed-unsigned-alias",
+        "expected_candidate": true,
+        "matches": true,
+        "GCC_metadata": {
+          "id": 1,
+          "size": 6,
+          "offsets": [
+            0,
+            2
+          ]
+        },
+        "GCC_stdout": "{\"id\":1,\"size\":6,\"offsets\":[0,2]}\nsent_header=1 size=6\n",
+        "result": {
+          "identity_proven": true,
+          "decision": "IDENTITY_LAYOUT_CANDIDATE",
+          "reasons": [],
+          "sink_contract_status": "UNREVIEWED",
+          "sender_semantic_admission": false,
+          "runtime_admission": false,
+          "object_id": "0x55555579a7a0",
+          "send_object_id": "0x55555579a7a0",
+          "sizeof_object_id": "0x55555579a7a0",
+          "object_type": "P",
+          "function_id": "0x55555579a6b0",
+          "send_id": "0x55555579ad08",
+          "sizeof_id": "0x55555579ac80",
+          "sink_decl_id": "0x555555799130",
+          "record_id": "0x555555798b50",
+          "header_field_id": "0x555555798df0",
+          "header_field_name": "h",
+          "header_constant_id": "0x555555798ed0",
+          "header_assignment_id": "0x55555579a978",
+          "header_value": 1,
+          "record_location": {
+            "offset": 137,
+            "line": 6,
+            "col": 32,
+            "tokLen": 1
+          },
+          "constant_location": {
+            "offset": 198,
+            "line": 8,
+            "col": 14,
+            "tokLen": 1
+          },
+          "measured_size": 6,
+          "measured_offsets": [
+            0,
+            2
+          ]
+        },
+        "without_metadata": {
+          "identity_proven": true,
+          "decision": "UNRESOLVED",
+          "reasons": [
+            "GCC layout evidence absent"
+          ],
+          "sink_contract_status": "UNREVIEWED",
+          "sender_semantic_admission": false,
+          "runtime_admission": false,
+          "object_id": "0x55555579a7a0",
+          "send_object_id": "0x55555579a7a0",
+          "sizeof_object_id": "0x55555579a7a0",
+          "object_type": "P",
+          "function_id": "0x55555579a6b0",
+          "send_id": "0x55555579ad08",
+          "sizeof_id": "0x55555579ac80",
+          "sink_decl_id": "0x555555799130",
+          "record_id": "0x555555798b50",
+          "header_field_id": "0x555555798df0",
+          "header_field_name": "h",
+          "header_constant_id": "0x555555798ed0",
+          "header_assignment_id": "0x55555579a978",
+          "header_value": 1,
+          "record_location": {
+            "offset": 137,
+            "line": 6,
+            "col": 32,
+            "tokLen": 1
+          },
+          "constant_location": {
+            "offset": 198,
+            "line": 8,
+            "col": 14,
+            "tokLen": 1
+          }
+        },
+        "source_sha256": "0f9c895bf08ceb8c946b1d765ddcbccd2b29200ba5333becd16d7bf8c7717e95"
+      },
+      {
+        "name": "packed-signed-alias",
+        "expected_candidate": true,
+        "matches": true,
+        "GCC_metadata": {
+          "id": 1,
+          "size": 6,
+          "offsets": [
+            0,
+            2
+          ]
+        },
+        "GCC_stdout": "{\"id\":1,\"size\":6,\"offsets\":[0,2]}\nsent_header=1 size=6\n",
+        "result": {
+          "identity_proven": true,
+          "decision": "IDENTITY_LAYOUT_CANDIDATE",
+          "reasons": [],
+          "sink_contract_status": "UNREVIEWED",
+          "sender_semantic_admission": false,
+          "runtime_admission": false,
+          "object_id": "0x55555579a310",
+          "send_object_id": "0x55555579a310",
+          "sizeof_object_id": "0x55555579a310",
+          "object_type": "P",
+          "function_id": "0x55555579a220",
+          "send_id": "0x55555579a878",
+          "sizeof_id": "0x55555579a7f0",
+          "sink_decl_id": "0x555555798c50",
+          "record_id": "0x5555557986a0",
+          "header_field_id": "0x555555798910",
+          "header_field_name": "h",
+          "header_constant_id": "0x5555557989f0",
+          "header_assignment_id": "0x55555579a4e8",
+          "header_value": 1,
+          "record_location": {
+            "offset": 105,
+            "col": 50,
+            "tokLen": 1
+          },
+          "constant_location": {
+            "offset": 146,
+            "line": 5,
+            "col": 13,
+            "tokLen": 1
+          },
+          "measured_size": 6,
+          "measured_offsets": [
+            0,
+            2
+          ]
+        },
+        "without_metadata": {
+          "identity_proven": true,
+          "decision": "UNRESOLVED",
+          "reasons": [
+            "GCC layout evidence absent"
+          ],
+          "sink_contract_status": "UNREVIEWED",
+          "sender_semantic_admission": false,
+          "runtime_admission": false,
+          "object_id": "0x55555579a310",
+          "send_object_id": "0x55555579a310",
+          "sizeof_object_id": "0x55555579a310",
+          "object_type": "P",
+          "function_id": "0x55555579a220",
+          "send_id": "0x55555579a878",
+          "sizeof_id": "0x55555579a7f0",
+          "sink_decl_id": "0x555555798c50",
+          "record_id": "0x5555557986a0",
+          "header_field_id": "0x555555798910",
+          "header_field_name": "h",
+          "header_constant_id": "0x5555557989f0",
+          "header_assignment_id": "0x55555579a4e8",
+          "header_value": 1,
+          "record_location": {
+            "offset": 105,
+            "col": 50,
+            "tokLen": 1
+          },
+          "constant_location": {
+            "offset": 146,
+            "line": 5,
+            "col": 13,
+            "tokLen": 1
+          }
+        },
+        "source_sha256": "02862cc3cbc414a6dfdce98692a22f7537d4d48319c6919c851b1c7518c9b290"
+      },
+      {
+        "name": "replay-arg3-call",
+        "expected_candidate": false,
+        "matches": true,
+        "GCC_metadata": {
+          "id": 1,
+          "size": 8,
+          "offsets": [
+            0,
+            4
+          ]
+        },
+        "GCC_stdout": "{\"id\":1,\"size\":8,\"offsets\":[0,4]}\n",
+        "result": {
+          "identity_proven": true,
+          "decision": "UNRESOLVED",
+          "reasons": [
+            "unsupported cast kind/type in final send argument"
+          ],
+          "sink_contract_status": "UNREVIEWED",
+          "sender_semantic_admission": false,
+          "runtime_admission": false,
+          "object_id": "0x55555579a038",
+          "send_object_id": "0x55555579a038",
+          "sizeof_object_id": "0x55555579a038",
+          "object_type": "P",
+          "function_id": "0x555555799f70",
+          "send_id": "0x55555579a688",
+          "sizeof_id": "0x55555579a420",
+          "sink_decl_id": "0x555555799480",
+          "record_id": "0x555555798a68",
+          "header_field_id": "0x555555798c30",
+          "header_field_name": "h",
+          "header_constant_id": "0x555555798d18",
+          "header_assignment_id": "0x55555579a210",
+          "header_value": 1,
+          "record_location": {
+            "offset": 63,
+            "file": "/home/otto/.hermes/cache/scratch/native-record-final-independent/replay-arg3-call.cpp",
+            "line": 4,
+            "col": 8,
+            "tokLen": 1
+          },
+          "constant_location": {
+            "offset": 98,
+            "col": 43,
+            "tokLen": 1
+          }
+        },
+        "without_metadata": {
+          "identity_proven": true,
+          "decision": "UNRESOLVED",
+          "reasons": [
+            "GCC layout evidence absent"
+          ],
+          "sink_contract_status": "UNREVIEWED",
+          "sender_semantic_admission": false,
+          "runtime_admission": false,
+          "object_id": "0x55555579a038",
+          "send_object_id": "0x55555579a038",
+          "sizeof_object_id": "0x55555579a038",
+          "object_type": "P",
+          "function_id": "0x555555799f70",
+          "send_id": "0x55555579a688",
+          "sizeof_id": "0x55555579a420",
+          "sink_decl_id": "0x555555799480",
+          "record_id": "0x555555798a68",
+          "header_field_id": "0x555555798c30",
+          "header_field_name": "h",
+          "header_constant_id": "0x555555798d18",
+          "header_assignment_id": "0x55555579a210",
+          "header_value": 1,
+          "record_location": {
+            "offset": 63,
+            "file": "/home/otto/.hermes/cache/scratch/native-record-final-independent/replay-arg3-call.cpp",
+            "line": 4,
+            "col": 8,
+            "tokLen": 1
+          },
+          "constant_location": {
+            "offset": 98,
+            "col": 43,
+            "tokLen": 1
+          }
+        },
+        "source_sha256": "c9f9df488050b9464fbf1d74a32b93f1795dd68997eda8ef1643a7aa1e8eeb9a"
+      },
+      {
+        "name": "replay-arg4-call",
+        "expected_candidate": false,
+        "matches": true,
+        "GCC_metadata": {
+          "id": 1,
+          "size": 8,
+          "offsets": [
+            0,
+            4
+          ]
+        },
+        "GCC_stdout": "{\"id\":1,\"size\":8,\"offsets\":[0,4]}\n",
+        "result": {
+          "identity_proven": true,
+          "decision": "UNRESOLVED",
+          "reasons": [
+            "unsupported cast kind/type in final send argument"
+          ],
+          "sink_contract_status": "UNREVIEWED",
+          "sender_semantic_admission": false,
+          "runtime_admission": false,
+          "object_id": "0x55555579a038",
+          "send_object_id": "0x55555579a038",
+          "sizeof_object_id": "0x55555579a038",
+          "object_type": "P",
+          "function_id": "0x555555799f70",
+          "send_id": "0x55555579a6a8",
+          "sizeof_id": "0x55555579a420",
+          "sink_decl_id": "0x555555799480",
+          "record_id": "0x555555798a68",
+          "header_field_id": "0x555555798c30",
+          "header_field_name": "h",
+          "header_constant_id": "0x555555798d18",
+          "header_assignment_id": "0x55555579a210",
+          "header_value": 1,
+          "record_location": {
+            "offset": 63,
+            "file": "/home/otto/.hermes/cache/scratch/native-record-final-independent/replay-arg4-call.cpp",
+            "line": 4,
+            "col": 8,
+            "tokLen": 1
+          },
+          "constant_location": {
+            "offset": 98,
+            "col": 43,
+            "tokLen": 1
+          }
+        },
+        "without_metadata": {
+          "identity_proven": true,
+          "decision": "UNRESOLVED",
+          "reasons": [
+            "GCC layout evidence absent"
+          ],
+          "sink_contract_status": "UNREVIEWED",
+          "sender_semantic_admission": false,
+          "runtime_admission": false,
+          "object_id": "0x55555579a038",
+          "send_object_id": "0x55555579a038",
+          "sizeof_object_id": "0x55555579a038",
+          "object_type": "P",
+          "function_id": "0x555555799f70",
+          "send_id": "0x55555579a6a8",
+          "sizeof_id": "0x55555579a420",
+          "sink_decl_id": "0x555555799480",
+          "record_id": "0x555555798a68",
+          "header_field_id": "0x555555798c30",
+          "header_field_name": "h",
+          "header_constant_id": "0x555555798d18",
+          "header_assignment_id": "0x55555579a210",
+          "header_value": 1,
+          "record_location": {
+            "offset": 63,
+            "file": "/home/otto/.hermes/cache/scratch/native-record-final-independent/replay-arg4-call.cpp",
+            "line": 4,
+            "col": 8,
+            "tokLen": 1
+          },
+          "constant_location": {
+            "offset": 98,
+            "col": 43,
+            "tokLen": 1
+          }
+        },
+        "source_sha256": "7092cf7d1952af95488f4cbea701acc70fb5947cc914c9f609b77d46c3bc5cfb"
+      },
+      {
+        "name": "replay-mutable",
+        "expected_candidate": false,
+        "matches": true,
+        "GCC_metadata": {
+          "id": 1,
+          "size": 8,
+          "offsets": [
+            0,
+            4
+          ]
+        },
+        "GCC_stdout": "{\"id\":1,\"size\":8,\"offsets\":[0,4]}\n",
+        "result": {
+          "identity_proven": true,
+          "decision": "UNRESOLVED",
+          "reasons": [
+            "header declaration is not immutable integral const/constexpr"
+          ],
+          "sink_contract_status": "UNREVIEWED",
+          "sender_semantic_admission": false,
+          "runtime_admission": false,
+          "object_id": "0x55555579a008",
+          "send_object_id": "0x55555579a008",
+          "sizeof_object_id": "0x55555579a008",
+          "object_type": "P",
+          "function_id": "0x555555799f40",
+          "send_id": "0x55555579a4e8",
+          "sizeof_id": "0x55555579a3d0",
+          "sink_decl_id": "0x555555799450"
+        },
+        "without_metadata": {
+          "identity_proven": true,
+          "decision": "UNRESOLVED",
+          "reasons": [
+            "header declaration is not immutable integral const/constexpr"
+          ],
+          "sink_contract_status": "UNREVIEWED",
+          "sender_semantic_admission": false,
+          "runtime_admission": false,
+          "object_id": "0x55555579a008",
+          "send_object_id": "0x55555579a008",
+          "sizeof_object_id": "0x55555579a008",
+          "object_type": "P",
+          "function_id": "0x555555799f40",
+          "send_id": "0x55555579a4e8",
+          "sizeof_id": "0x55555579a3d0",
+          "sink_decl_id": "0x555555799450"
+        },
+        "source_sha256": "182f06e49f0e07ed070d29bd6317c150a14b0a3e0f7428fad502caddae612352"
+      },
+      {
+        "name": "replay-float-cast",
+        "expected_candidate": false,
+        "matches": true,
+        "GCC_metadata": {
+          "id": 1,
+          "size": 8,
+          "offsets": [
+            0,
+            4
+          ]
+        },
+        "GCC_stdout": "{\"id\":1,\"size\":8,\"offsets\":[0,4]}\n",
+        "result": {
+          "identity_proven": true,
+          "decision": "UNRESOLVED",
+          "reasons": [
+            "unsupported scalar cast kind/type"
+          ],
+          "sink_contract_status": "UNREVIEWED",
+          "sender_semantic_admission": false,
+          "runtime_admission": false,
+          "object_id": "0x555555799be8",
+          "send_object_id": "0x555555799be8",
+          "sizeof_object_id": "0x555555799be8",
+          "object_type": "P",
+          "function_id": "0x555555799b20",
+          "send_id": "0x55555579a1f8",
+          "sizeof_id": "0x55555579a0e0",
+          "sink_decl_id": "0x555555799030",
+          "record_id": "0x555555798618",
+          "header_field_id": "0x5555557987e0",
+          "header_field_name": "h",
+          "header_constant_id": "0x5555557988c8",
+          "header_assignment_id": "0x555555799dc0",
+          "header_value": 1,
+          "record_location": {
+            "offset": 63,
+            "file": "/home/otto/.hermes/cache/scratch/native-record-final-independent/replay-float-cast.cpp",
+            "line": 4,
+            "col": 8,
+            "tokLen": 1
+          },
+          "constant_location": {
+            "offset": 98,
+            "col": 43,
+            "tokLen": 1
+          }
+        },
+        "without_metadata": {
+          "identity_proven": true,
+          "decision": "UNRESOLVED",
+          "reasons": [
+            "GCC layout evidence absent"
+          ],
+          "sink_contract_status": "UNREVIEWED",
+          "sender_semantic_admission": false,
+          "runtime_admission": false,
+          "object_id": "0x555555799be8",
+          "send_object_id": "0x555555799be8",
+          "sizeof_object_id": "0x555555799be8",
+          "object_type": "P",
+          "function_id": "0x555555799b20",
+          "send_id": "0x55555579a1f8",
+          "sizeof_id": "0x55555579a0e0",
+          "sink_decl_id": "0x555555799030",
+          "record_id": "0x555555798618",
+          "header_field_id": "0x5555557987e0",
+          "header_field_name": "h",
+          "header_constant_id": "0x5555557988c8",
+          "header_assignment_id": "0x555555799dc0",
+          "header_value": 1,
+          "record_location": {
+            "offset": 63,
+            "file": "/home/otto/.hermes/cache/scratch/native-record-final-independent/replay-float-cast.cpp",
+            "line": 4,
+            "col": 8,
+            "tokLen": 1
+          },
+          "constant_location": {
+            "offset": 98,
+            "col": 43,
+            "tokLen": 1
+          }
+        },
+        "source_sha256": "0499b0857c53f8df95f76a4758013eb07bf10be5b886416ae965facf22a3a596"
+      },
+      {
+        "name": "functional-float",
+        "expected_candidate": false,
+        "matches": true,
+        "GCC_metadata": {
+          "id": 1,
+          "size": 8,
+          "offsets": [
+            0,
+            4
+          ]
+        },
+        "GCC_stdout": "{\"id\":1,\"size\":8,\"offsets\":[0,4]}\nsent_header=1 size=8\n",
+        "result": {
+          "identity_proven": true,
+          "decision": "UNRESOLVED",
+          "reasons": [
+            "unsupported scalar cast kind/type"
+          ],
+          "sink_contract_status": "UNREVIEWED",
+          "sender_semantic_admission": false,
+          "runtime_admission": false,
+          "object_id": "0x55555579a640",
+          "send_object_id": "0x55555579a640",
+          "sizeof_object_id": "0x55555579a640",
+          "object_type": "P",
+          "function_id": "0x555555799720",
+          "send_id": "0x55555579ac18",
+          "sizeof_id": "0x55555579ab90",
+          "sink_decl_id": "0x555555798f40",
+          "record_id": "0x555555798a38",
+          "header_field_id": "0x555555798c00",
+          "header_field_name": "h",
+          "header_constant_id": "0x555555798ce8",
+          "header_assignment_id": "0x55555579a818",
+          "header_value": 1,
+          "record_location": {
+            "offset": 63,
+            "file": "/home/otto/.hermes/cache/scratch/native-record-final-independent/functional-float.cpp",
+            "line": 4,
+            "col": 8,
+            "tokLen": 1
+          },
+          "constant_location": {
+            "offset": 122,
+            "line": 5,
+            "col": 22,
+            "tokLen": 1
+          }
+        },
+        "without_metadata": {
+          "identity_proven": true,
+          "decision": "UNRESOLVED",
+          "reasons": [
+            "GCC layout evidence absent"
+          ],
+          "sink_contract_status": "UNREVIEWED",
+          "sender_semantic_admission": false,
+          "runtime_admission": false,
+          "object_id": "0x55555579a640",
+          "send_object_id": "0x55555579a640",
+          "sizeof_object_id": "0x55555579a640",
+          "object_type": "P",
+          "function_id": "0x555555799720",
+          "send_id": "0x55555579ac18",
+          "sizeof_id": "0x55555579ab90",
+          "sink_decl_id": "0x555555798f40",
+          "record_id": "0x555555798a38",
+          "header_field_id": "0x555555798c00",
+          "header_field_name": "h",
+          "header_constant_id": "0x555555798ce8",
+          "header_assignment_id": "0x55555579a818",
+          "header_value": 1,
+          "record_location": {
+            "offset": 63,
+            "file": "/home/otto/.hermes/cache/scratch/native-record-final-independent/functional-float.cpp",
+            "line": 4,
+            "col": 8,
+            "tokLen": 1
+          },
+          "constant_location": {
+            "offset": 122,
+            "line": 5,
+            "col": 22,
+            "tokLen": 1
+          }
+        },
+        "source_sha256": "5d9d019f300b50b6c73e8bae73115416ef9e4feef3d1fef8393dcf1c15ee262f"
+      }
+    ]
+  },
+  "union_reproduction": {
+    "decision": "UNRESOLVED",
+    "reason": [
+      "unsupported record shape: requires plain non-overlapping scalar aggregate"
+    ],
+    "GCC_metadata": {
+      "id": 1,
+      "size": 4,
+      "offsets": [
+        0,
+        0
+      ]
+    },
+    "GCC_sent_bytes": "{\"id\":1,\"size\":4,\"offsets\":[0,0]}\nsent_header=2 size=4\n",
+    "without_metadata": {
+      "identity_proven": true,
+      "decision": "UNRESOLVED",
+      "reasons": [
+        "unsupported record shape: requires plain non-overlapping scalar aggregate"
+      ],
+      "sink_contract_status": "UNREVIEWED",
+      "sender_semantic_admission": false,
+      "runtime_admission": false,
+      "object_id": "0x55555579a1b0",
+      "send_object_id": "0x55555579a1b0",
+      "sizeof_object_id": "0x55555579a1b0",
+      "object_type": "P",
+      "function_id": "0x555555799280",
+      "send_id": "0x55555579a718",
+      "sizeof_id": "0x55555579a690",
+      "sink_decl_id": "0x555555798ac0"
+    },
+    "defined_observation": "memcpy of object representation, no inactive-union member read"
+  },
+  "real_emotion": {
+    "cli": [
+      {
+        "exit": 0,
+        "result": {
+          "identity_proven": true,
+          "decision": "IDENTITY_LAYOUT_CANDIDATE",
+          "reasons": [],
+          "sink_contract_status": "UNREVIEWED",
+          "sender_semantic_admission": false,
+          "runtime_admission": false,
+          "object_id": "0x55555c95d100",
+          "send_object_id": "0x55555c95d100",
+          "sizeof_object_id": "0x55555c95d100",
+          "object_type": "PACKET_ZC_EMOTION",
+          "function_id": "0x55555c95d000",
+          "send_id": "0x55555c95d880",
+          "sizeof_id": "0x55555c95d7d0",
+          "sink_decl_id": "0x55555c566910",
+          "record_id": "0x55555877cce8",
+          "header_field_id": "0x55555877cf08",
+          "header_field_name": "packetType",
+          "header_constant_id": "0x55555877d068",
+          "header_assignment_id": "0x55555c95d2f0",
+          "header_value": 192,
+          "record_location": {
+            "offset": 46129,
+            "line": 1973,
+            "col": 8,
+            "tokLen": 17,
+            "includedFrom": {
+              "file": "/home/otto/.hermes/cache/scratch/native-profile-replay-s2jdj4rn/public-source/src/map/clif.hpp"
+            }
+          },
+          "constant_location": {
+            "spellingLoc": {
+              "offset": 3026,
+              "file": "<scratch space>",
+              "line": 116,
+              "col": 1,
+              "tokLen": 17
+            },
+            "expansionLoc": {
+              "offset": 46220,
+              "file": "/home/otto/.hermes/cache/scratch/native-profile-replay-s2jdj4rn/public-source/src/map/packets.hpp",
+              "line": 1978,
+              "col": 1,
+              "tokLen": 20,
+              "includedFrom": {
+                "file": "/home/otto/.hermes/cache/scratch/native-profile-replay-s2jdj4rn/public-source/src/map/clif.hpp"
+              }
+            }
+          },
+          "measured_size": 7,
+          "measured_offsets": [
+            0,
+            2,
+            6
+          ],
+          "sender": "clif_emotion",
+          "source_closure_sha256": "f045b33b434efc83a7e216f295bf899114a4a1a2daa159898fb738d8b553d6d6",
+          "authority_sha256": "602c856e8e368fe767ff6b54704416818dc7939a5c6606f0fb6af6b49c2e71ac",
+          "ast_artifact_sha256": "07238418270d5717f43aa169a51bd5f40c3e58598479831b25aa0d80af30f450",
+          "gcc_layout_artifact_sha256": "d79dfefd4be7efe0d6fbf3fd8cf7bfb135853dfe8935b39d758e7d99b3140ebf"
+        }
+      },
+      {
+        "exit": 0,
+        "result": {
+          "identity_proven": false,
+          "decision": "UNRESOLVED",
+          "reasons": [
+            "send count not one"
+          ],
+          "sink_contract_status": "UNREVIEWED",
+          "sender_semantic_admission": false,
+          "runtime_admission": false,
+          "sender": "clif_name",
+          "source_closure_sha256": "f045b33b434efc83a7e216f295bf899114a4a1a2daa159898fb738d8b553d6d6",
+          "authority_sha256": "602c856e8e368fe767ff6b54704416818dc7939a5c6606f0fb6af6b49c2e71ac",
+          "ast_artifact_sha256": "07238418270d5717f43aa169a51bd5f40c3e58598479831b25aa0d80af30f450",
+          "gcc_layout_artifact_sha256": "d79dfefd4be7efe0d6fbf3fd8cf7bfb135853dfe8935b39d758e7d99b3140ebf"
+        }
+      },
+      {
+        "exit": 0,
+        "result": {
+          "identity_proven": false,
+          "decision": "UNRESOLVED",
+          "reasons": [
+            "send count not one"
+          ],
+          "sink_contract_status": "UNREVIEWED",
+          "sender_semantic_admission": false,
+          "runtime_admission": false,
+          "sender": "clif_sitting",
+          "source_closure_sha256": "f045b33b434efc83a7e216f295bf899114a4a1a2daa159898fb738d8b553d6d6",
+          "authority_sha256": "602c856e8e368fe767ff6b54704416818dc7939a5c6606f0fb6af6b49c2e71ac",
+          "ast_artifact_sha256": "07238418270d5717f43aa169a51bd5f40c3e58598479831b25aa0d80af30f450",
+          "gcc_layout_artifact_sha256": "d79dfefd4be7efe0d6fbf3fd8cf7bfb135853dfe8935b39d758e7d99b3140ebf"
+        }
+      },
+      {
+        "exit": 2,
+        "result": {
+          "decision": "DENIED",
+          "reasons": [
+            "unsupported profile; denied before candidate"
+          ],
+          "runtime_admission": false,
+          "sender_semantic_admission": false
+        }
+      }
+    ],
+    "fresh_GCC_metadata": {
+      "id": 192,
+      "size": 7,
+      "offsets": [
+        0,
+        2,
+        6
+      ]
+    },
+    "fresh_GCC_join": {
+      "identity_proven": true,
+      "decision": "IDENTITY_LAYOUT_CANDIDATE",
+      "reasons": [],
+      "sink_contract_status": "UNREVIEWED",
+      "sender_semantic_admission": false,
+      "runtime_admission": false,
+      "object_id": "0x55555c95d100",
+      "send_object_id": "0x55555c95d100",
+      "sizeof_object_id": "0x55555c95d100",
+      "object_type": "PACKET_ZC_EMOTION",
+      "function_id": "0x55555c95d000",
+      "send_id": "0x55555c95d880",
+      "sizeof_id": "0x55555c95d7d0",
+      "sink_decl_id": "0x55555c566910",
+      "record_id": "0x55555877cce8",
+      "header_field_id": "0x55555877cf08",
+      "header_field_name": "packetType",
+      "header_constant_id": "0x55555877d068",
+      "header_assignment_id": "0x55555c95d2f0",
+      "header_value": 192,
+      "record_location": {
+        "offset": 46129,
+        "line": 1973,
+        "col": 8,
+        "tokLen": 17,
+        "includedFrom": {
+          "file": "/home/otto/.hermes/cache/scratch/native-profile-replay-s2jdj4rn/public-source/src/map/clif.hpp"
+        }
+      },
+      "constant_location": {
+        "spellingLoc": {
+          "offset": 3026,
+          "file": "<scratch space>",
+          "line": 116,
+          "col": 1,
+          "tokLen": 17
+        },
+        "expansionLoc": {
+          "offset": 46220,
+          "file": "/home/otto/.hermes/cache/scratch/native-profile-replay-s2jdj4rn/public-source/src/map/packets.hpp",
+          "line": 1978,
+          "col": 1,
+          "tokLen": 20,
+          "includedFrom": {
+            "file": "/home/otto/.hermes/cache/scratch/native-profile-replay-s2jdj4rn/public-source/src/map/clif.hpp"
+          }
+        }
+      },
+      "measured_size": 7,
+      "measured_offsets": [
+        0,
+        2,
+        6
+      ]
+    }
+  },
+  "remaining_semantic_proof_gaps": [
+    "Field-only PackedAttr denial is not implemented; other independently exercised unsupported shapes and prior L1/L2/L3 omissions remained denied.",
+    "Actual clif_send sink U2-U7 remains UNREVIEWED; object/header/layout candidate is not sender semantic, copying/lifetime/recipient, runtime or production admission.",
+    "Enum-spelling exceptions remain conditional on the actual immutable pinned CLI artifacts; no general arbitrary-type or generic C++ proof is asserted. Functional float cast denial was freshly compiled.",
+    "clif_name and clif_sitting remain UNRESOLVED; three selected functions are not all sender-site coverage.",
+    "No historical binary equivalence, gameplay, combat, XP, loot or milestone acceptance."
+  ],
+  "scope": {
+    "candidate_only": true,
+    "sink_contract_status": "UNREVIEWED",
+    "sender_semantic_admission": false,
+    "runtime_admission": false,
+    "production_adoption": false,
+    "all_six_milestones_open": true,
+    "original_production_generator": "REJECTED; original two repairs exhausted; untouched",
+    "callback_qualification": "Prior separately approved bounded qualification untouched; not rerun",
+    "automatic_repair_budget": {
+      "used": 2,
+      "maximum": 2,
+      "third_repair_authorized": false
+    },
+    "code_test_document_pin_old_report_source_package_world_runtime_git_writes": false,
+    "external_network_server_model_sql_container_actions": false,
+    "owned_repository_output": "run/reviews/native-ast-real-sender-record-shape-final-review.json"
+  },
+  "preservation": {
+    "before_frozen_snapshot": {
+      "count": 198,
+      "mismatches": []
+    },
+    "after_frozen_snapshot": {
+      "count": 198,
+      "mismatches": []
+    },
+    "final_frozen_snapshot": {
+      "count": 198,
+      "mismatches": [],
+      "snapshot_path": "/home/otto/.hermes/cache/scratch/native-record-shape-final-freeze.json",
+      "snapshot_sha256": "db14e3b4c2b9342188cb0b1c02bf965f5136659c6e350d91e4d2cffa36b39cdd"
+    },
+    "artifacts_before": {
+      "original": {
+        "count": 158,
+        "mismatches": []
+      },
+      "repair1": {
+        "count": 234,
+        "mismatches": []
+      },
+      "current": {
+        "count": 381,
+        "mismatches": []
+      }
+    },
+    "artifacts_after": {
+      "original": {
+        "count": 158,
+        "mismatches": []
+      },
+      "repair1": {
+        "count": 234,
+        "mismatches": []
+      },
+      "current": {
+        "count": 381,
+        "mismatches": []
+      }
+    },
+    "stream_hashing_used": true,
+    "full_AST_regenerated": false,
+    "run_proof_py_executed": false
+  },
+  "execution": {
+    "toolchain_entrypoint": "nix develop --offline --no-write-lock-file path:./spikes/007-native-packet-ast/toolchain -c python3 -B /home/otto/.hermes/cache/scratch/native-record-final-independent/review.py",
+    "compiler_and_quality_execution_elapsed_seconds": 2.568,
+    "commands": [
+      {
+        "name": "alias-union-clang",
+        "command": [
+          "clang++",
+          "-std=c++17",
+          "-fsyntax-only",
+          "-Xclang",
+          "-ast-dump=json",
+          "/home/otto/.hermes/cache/scratch/native-record-final-independent/alias-union.cpp"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 0.278
+      },
+      {
+        "name": "alias-union-gcc-build",
+        "command": [
+          "g++",
+          "-std=c++17",
+          "/home/otto/.hermes/cache/scratch/native-record-final-independent/alias-union.cpp",
+          "-o",
+          "/home/otto/.hermes/cache/scratch/native-record-final-independent/alias-union.bin"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 0.242
+      },
+      {
+        "name": "alias-union-gcc-run",
+        "command": [
+          "/home/otto/.hermes/cache/scratch/native-record-final-independent/alias-union.bin"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 0.003
+      },
+      {
+        "name": "anonymous-union-clang",
+        "command": [
+          "clang++",
+          "-std=c++17",
+          "-fsyntax-only",
+          "-Xclang",
+          "-ast-dump=json",
+          "/home/otto/.hermes/cache/scratch/native-record-final-independent/anonymous-union.cpp"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 0.167
+      },
+      {
+        "name": "anonymous-union-gcc-build",
+        "command": [
+          "g++",
+          "-std=c++17",
+          "/home/otto/.hermes/cache/scratch/native-record-final-independent/anonymous-union.cpp",
+          "-o",
+          "/home/otto/.hermes/cache/scratch/native-record-final-independent/anonymous-union.bin"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 0.204
+      },
+      {
+        "name": "anonymous-union-gcc-run",
+        "command": [
+          "/home/otto/.hermes/cache/scratch/native-record-final-independent/anonymous-union.bin"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 0.004
+      },
+      {
+        "name": "base-clang",
+        "command": [
+          "clang++",
+          "-std=c++17",
+          "-fsyntax-only",
+          "-Xclang",
+          "-ast-dump=json",
+          "/home/otto/.hermes/cache/scratch/native-record-final-independent/base.cpp"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 0.389
+      },
+      {
+        "name": "base-gcc-build",
+        "command": [
+          "g++",
+          "-std=c++17",
+          "/home/otto/.hermes/cache/scratch/native-record-final-independent/base.cpp",
+          "-o",
+          "/home/otto/.hermes/cache/scratch/native-record-final-independent/base.bin"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 0.243
+      },
+      {
+        "name": "base-gcc-run",
+        "command": [
+          "/home/otto/.hermes/cache/scratch/native-record-final-independent/base.bin"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 0.004
+      },
+      {
+        "name": "bitfield-clang",
+        "command": [
+          "clang++",
+          "-std=c++17",
+          "-fsyntax-only",
+          "-Xclang",
+          "-ast-dump=json",
+          "/home/otto/.hermes/cache/scratch/native-record-final-independent/bitfield.cpp"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 0.153
+      },
+      {
+        "name": "bitfield-gcc-build",
+        "command": [
+          "g++",
+          "-std=c++17",
+          "/home/otto/.hermes/cache/scratch/native-record-final-independent/bitfield.cpp",
+          "-o",
+          "/home/otto/.hermes/cache/scratch/native-record-final-independent/bitfield.bin"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 0.191
+      },
+      {
+        "name": "bitfield-gcc-run",
+        "command": [
+          "/home/otto/.hermes/cache/scratch/native-record-final-independent/bitfield.bin"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 0.003
+      },
+      {
+        "name": "black-baseline",
+        "command": [
+          "/home/otto/dev/ro-bots/.venv/bin/black",
+          "--check",
+          "--config",
+          "/home/otto/dev/ro-bots/pyproject.toml",
+          "/home/otto/.hermes/cache/scratch/sender-record-repair2-3m48zvmq/trace_sender.py",
+          "/home/otto/.hermes/cache/scratch/sender-record-repair2-3m48zvmq/test_trace.py"
+        ],
+        "exit": 1,
+        "elapsed_seconds": 0.729
+      },
+      {
+        "name": "black-current",
+        "command": [
+          "/home/otto/dev/ro-bots/.venv/bin/black",
+          "--check",
+          "--config",
+          "/home/otto/dev/ro-bots/pyproject.toml",
+          "/home/otto/dev/ro-bots/spikes/007-native-packet-ast/sender-proof/trace_sender.py",
+          "/home/otto/dev/ro-bots/spikes/007-native-packet-ast/sender-proof/test_trace.py"
+        ],
+        "exit": 1,
+        "elapsed_seconds": 0.614
+      },
+      {
+        "name": "cli-clif_emotion",
+        "command": [
+          "/nix/store/lb41b0anx1f98y9y5s9mdv97gjgsq740-python3-3.14.7/bin/python3",
+          "-B",
+          "/home/otto/dev/ro-bots/spikes/007-native-packet-ast/sender-proof/cli.py",
+          "clif_emotion"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 0.154
+      },
+      {
+        "name": "cli-clif_name",
+        "command": [
+          "/nix/store/lb41b0anx1f98y9y5s9mdv97gjgsq740-python3-3.14.7/bin/python3",
+          "-B",
+          "/home/otto/dev/ro-bots/spikes/007-native-packet-ast/sender-proof/cli.py",
+          "clif_name"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 0.333
+      },
+      {
+        "name": "cli-clif_sitting",
+        "command": [
+          "/nix/store/lb41b0anx1f98y9y5s9mdv97gjgsq740-python3-3.14.7/bin/python3",
+          "-B",
+          "/home/otto/dev/ro-bots/spikes/007-native-packet-ast/sender-proof/cli.py",
+          "clif_sitting"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 0.24
+      },
+      {
+        "name": "cli-wrong-profile",
+        "command": [
+          "/nix/store/lb41b0anx1f98y9y5s9mdv97gjgsq740-python3-3.14.7/bin/python3",
+          "-B",
+          "/home/otto/dev/ro-bots/spikes/007-native-packet-ast/sender-proof/cli.py",
+          "clif_emotion",
+          "--profile",
+          "20211103"
+        ],
+        "exit": 2,
+        "elapsed_seconds": 0.065
+      },
+      {
+        "name": "constructor-clang",
+        "command": [
+          "clang++",
+          "-std=c++17",
+          "-fsyntax-only",
+          "-Xclang",
+          "-ast-dump=json",
+          "/home/otto/.hermes/cache/scratch/native-record-final-independent/constructor.cpp"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 0.187
+      },
+      {
+        "name": "constructor-gcc-build",
+        "command": [
+          "g++",
+          "-std=c++17",
+          "/home/otto/.hermes/cache/scratch/native-record-final-independent/constructor.cpp",
+          "-o",
+          "/home/otto/.hermes/cache/scratch/native-record-final-independent/constructor.bin"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 0.158
+      },
+      {
+        "name": "constructor-gcc-run",
+        "command": [
+          "/home/otto/.hermes/cache/scratch/native-record-final-independent/constructor.bin"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 0.061
+      },
+      {
+        "name": "destructor-clang",
+        "command": [
+          "clang++",
+          "-std=c++17",
+          "-fsyntax-only",
+          "-Xclang",
+          "-ast-dump=json",
+          "/home/otto/.hermes/cache/scratch/native-record-final-independent/destructor.cpp"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 0.185
+      },
+      {
+        "name": "destructor-gcc-build",
+        "command": [
+          "g++",
+          "-std=c++17",
+          "/home/otto/.hermes/cache/scratch/native-record-final-independent/destructor.cpp",
+          "-o",
+          "/home/otto/.hermes/cache/scratch/native-record-final-independent/destructor.bin"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 0.192
+      },
+      {
+        "name": "destructor-gcc-run",
+        "command": [
+          "/home/otto/.hermes/cache/scratch/native-record-final-independent/destructor.bin"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 0.003
+      },
+      {
+        "name": "field-packed-clang",
+        "command": [
+          "clang++",
+          "-std=c++17",
+          "-fsyntax-only",
+          "-Xclang",
+          "-ast-dump=json",
+          "/home/otto/.hermes/cache/scratch/native-record-final-independent/field-packed.cpp"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 0.213
+      },
+      {
+        "name": "field-packed-gcc-build",
+        "command": [
+          "g++",
+          "-std=c++17",
+          "/home/otto/.hermes/cache/scratch/native-record-final-independent/field-packed.cpp",
+          "-o",
+          "/home/otto/.hermes/cache/scratch/native-record-final-independent/field-packed.bin"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 0.162
+      },
+      {
+        "name": "field-packed-gcc-run",
+        "command": [
+          "/home/otto/.hermes/cache/scratch/native-record-final-independent/field-packed.bin"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 0.003
+      },
+      {
+        "name": "functional-float-clang",
+        "command": [
+          "clang++",
+          "-std=c++17",
+          "-fsyntax-only",
+          "-Xclang",
+          "-ast-dump=json",
+          "/home/otto/.hermes/cache/scratch/native-record-final-independent/functional-float.cpp"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 0.156
+      },
+      {
+        "name": "functional-float-gcc-build",
+        "command": [
+          "g++",
+          "-std=c++17",
+          "/home/otto/.hermes/cache/scratch/native-record-final-independent/functional-float.cpp",
+          "-o",
+          "/home/otto/.hermes/cache/scratch/native-record-final-independent/functional-float.bin"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 0.12
+      },
+      {
+        "name": "functional-float-gcc-run",
+        "command": [
+          "/home/otto/.hermes/cache/scratch/native-record-final-independent/functional-float.bin"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 0.003
+      },
+      {
+        "name": "mypy-baseline",
+        "command": [
+          "/home/otto/dev/ro-bots/.venv/bin/mypy",
+          "--config-file",
+          "/home/otto/dev/ro-bots/pyproject.toml",
+          "--follow-imports=skip",
+          "--cache-dir",
+          "/home/otto/.hermes/cache/scratch/native-record-final-independent/mypy-baseline",
+          "/home/otto/.hermes/cache/scratch/sender-record-repair2-3m48zvmq/trace_sender.py",
+          "/home/otto/.hermes/cache/scratch/sender-record-repair2-3m48zvmq/test_trace.py"
+        ],
+        "exit": 1,
+        "elapsed_seconds": 1.327
+      },
+      {
+        "name": "mypy-current",
+        "command": [
+          "/home/otto/dev/ro-bots/.venv/bin/mypy",
+          "--config-file",
+          "/home/otto/dev/ro-bots/pyproject.toml",
+          "--follow-imports=skip",
+          "--cache-dir",
+          "/home/otto/.hermes/cache/scratch/native-record-final-independent/mypy-current",
+          "/home/otto/dev/ro-bots/spikes/007-native-packet-ast/sender-proof/trace_sender.py",
+          "/home/otto/dev/ro-bots/spikes/007-native-packet-ast/sender-proof/test_trace.py"
+        ],
+        "exit": 1,
+        "elapsed_seconds": 1.323
+      },
+      {
+        "name": "operator-clang",
+        "command": [
+          "clang++",
+          "-std=c++17",
+          "-fsyntax-only",
+          "-Xclang",
+          "-ast-dump=json",
+          "/home/otto/.hermes/cache/scratch/native-record-final-independent/operator.cpp"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 0.243
+      },
+      {
+        "name": "operator-gcc-build",
+        "command": [
+          "g++",
+          "-std=c++17",
+          "/home/otto/.hermes/cache/scratch/native-record-final-independent/operator.cpp",
+          "-o",
+          "/home/otto/.hermes/cache/scratch/native-record-final-independent/operator.bin"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 0.22
+      },
+      {
+        "name": "operator-gcc-run",
+        "command": [
+          "/home/otto/.hermes/cache/scratch/native-record-final-independent/operator.bin"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 0.003
+      },
+      {
+        "name": "overlap-attribute-clang",
+        "command": [
+          "clang++",
+          "-std=c++17",
+          "-fsyntax-only",
+          "-Xclang",
+          "-ast-dump=json",
+          "/home/otto/.hermes/cache/scratch/native-record-final-independent/overlap-attribute.cpp"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 0.204
+      },
+      {
+        "name": "overlap-attribute-gcc-build",
+        "command": [
+          "g++",
+          "-std=c++17",
+          "/home/otto/.hermes/cache/scratch/native-record-final-independent/overlap-attribute.cpp",
+          "-o",
+          "/home/otto/.hermes/cache/scratch/native-record-final-independent/overlap-attribute.bin"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 0.202
+      },
+      {
+        "name": "overlap-attribute-gcc-run",
+        "command": [
+          "/home/otto/.hermes/cache/scratch/native-record-final-independent/overlap-attribute.bin"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 0.003
+      },
+      {
+        "name": "packed-signed-alias-clang",
+        "command": [
+          "clang++",
+          "-std=c++17",
+          "-fsyntax-only",
+          "-Xclang",
+          "-ast-dump=json",
+          "/home/otto/.hermes/cache/scratch/native-record-final-independent/packed-signed-alias.cpp"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 0.151
+      },
+      {
+        "name": "packed-signed-alias-gcc-build",
+        "command": [
+          "g++",
+          "-std=c++17",
+          "/home/otto/.hermes/cache/scratch/native-record-final-independent/packed-signed-alias.cpp",
+          "-o",
+          "/home/otto/.hermes/cache/scratch/native-record-final-independent/packed-signed-alias.bin"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 0.163
+      },
+      {
+        "name": "packed-signed-alias-gcc-run",
+        "command": [
+          "/home/otto/.hermes/cache/scratch/native-record-final-independent/packed-signed-alias.bin"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 0.048
+      },
+      {
+        "name": "packed-unsigned-alias-clang",
+        "command": [
+          "clang++",
+          "-std=c++17",
+          "-fsyntax-only",
+          "-Xclang",
+          "-ast-dump=json",
+          "/home/otto/.hermes/cache/scratch/native-record-final-independent/packed-unsigned-alias.cpp"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 0.225
+      },
+      {
+        "name": "packed-unsigned-alias-gcc-build",
+        "command": [
+          "g++",
+          "-std=c++17",
+          "/home/otto/.hermes/cache/scratch/native-record-final-independent/packed-unsigned-alias.cpp",
+          "-o",
+          "/home/otto/.hermes/cache/scratch/native-record-final-independent/packed-unsigned-alias.bin"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 0.168
+      },
+      {
+        "name": "packed-unsigned-alias-gcc-run",
+        "command": [
+          "/home/otto/.hermes/cache/scratch/native-record-final-independent/packed-unsigned-alias.bin"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 0.004
+      },
+      {
+        "name": "real-layout-build",
+        "command": [
+          "/nix/store/j1938gsbvbhkyz4kbmvjk56r479mkw3s-gcc-wrapper-16.2.0/bin/g++",
+          "-std=c++17",
+          "-DHAS_TLS",
+          "-fno-strict-aliasing",
+          "-DHAVE_GETADDRINFO",
+          "-DHAVE_SETRLIMIT",
+          "-DHAVE_STRNLEN",
+          "-DPACKETVER=20180704",
+          "-DPRERE",
+          "-DHAVE_MONOTONIC_CLOCK",
+          "-DHAS_TLS",
+          "-fno-strict-aliasing",
+          "-DHAVE_GETADDRINFO",
+          "-DHAVE_SETRLIMIT",
+          "-DHAVE_STRNLEN",
+          "-DPACKETVER=20180704",
+          "-DPRERE",
+          "-DHAVE_MONOTONIC_CLOCK",
+          "-I/home/otto/.hermes/cache/scratch/native-profile-replay-s2jdj4rn/public-source",
+          "-I/home/otto/.hermes/cache/scratch/native-profile-replay-s2jdj4rn/public-source/src",
+          "-I/home/otto/.hermes/cache/scratch/native-profile-replay-s2jdj4rn/public-source/src/map",
+          "-I/home/otto/.hermes/cache/scratch/native-profile-replay-s2jdj4rn/public-source/src/common",
+          "-I/home/otto/.hermes/cache/scratch/native-profile-replay-s2jdj4rn/public-source/3rdparty/rapidyaml/src",
+          "-I/home/otto/.hermes/cache/scratch/native-profile-replay-s2jdj4rn/public-source/3rdparty/rapidyaml/ext/c4core/src",
+          "-I/home/otto/.hermes/cache/scratch/native-profile-replay-s2jdj4rn/public-source/3rdparty/libconfig",
+          "-I/nix/store/1w8g6rvhljfk44hx50qz4sc47sm1f28v-mariadb-connector-c-3.3.5-dev/include/mysql",
+          "/home/otto/.hermes/cache/scratch/native-profile-replay-s2jdj4rn/output/layout.cpp",
+          "-o",
+          "/home/otto/.hermes/cache/scratch/native-record-final-independent/real-gcc-layout"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 1.144
+      },
+      {
+        "name": "real-layout-run",
+        "command": [
+          "/home/otto/.hermes/cache/scratch/native-record-final-independent/real-gcc-layout"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 0.002
+      },
+      {
+        "name": "reference-clang",
+        "command": [
+          "clang++",
+          "-std=c++17",
+          "-fsyntax-only",
+          "-Xclang",
+          "-ast-dump=json",
+          "/home/otto/.hermes/cache/scratch/native-record-final-independent/reference.cpp"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 0.179
+      },
+      {
+        "name": "reference-gcc-build",
+        "command": [
+          "g++",
+          "-std=c++17",
+          "/home/otto/.hermes/cache/scratch/native-record-final-independent/reference.cpp",
+          "-o",
+          "/home/otto/.hermes/cache/scratch/native-record-final-independent/reference.bin"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 0.164
+      },
+      {
+        "name": "reference-gcc-run",
+        "command": [
+          "/home/otto/.hermes/cache/scratch/native-record-final-independent/reference.bin"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 0.003
+      },
+      {
+        "name": "replay-arg3-call-clang",
+        "command": [
+          "clang++",
+          "-std=c++17",
+          "-fsyntax-only",
+          "-Xclang",
+          "-ast-dump=json",
+          "/home/otto/.hermes/cache/scratch/native-record-final-independent/replay-arg3-call.cpp"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 0.165
+      },
+      {
+        "name": "replay-arg3-call-gcc-build",
+        "command": [
+          "g++",
+          "-std=c++17",
+          "/home/otto/.hermes/cache/scratch/native-record-final-independent/replay-arg3-call.cpp",
+          "-o",
+          "/home/otto/.hermes/cache/scratch/native-record-final-independent/replay-arg3-call.bin"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 0.162
+      },
+      {
+        "name": "replay-arg3-call-gcc-run",
+        "command": [
+          "/home/otto/.hermes/cache/scratch/native-record-final-independent/replay-arg3-call.bin"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 0.002
+      },
+      {
+        "name": "replay-arg4-call-clang",
+        "command": [
+          "clang++",
+          "-std=c++17",
+          "-fsyntax-only",
+          "-Xclang",
+          "-ast-dump=json",
+          "/home/otto/.hermes/cache/scratch/native-record-final-independent/replay-arg4-call.cpp"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 0.152
+      },
+      {
+        "name": "replay-arg4-call-gcc-build",
+        "command": [
+          "g++",
+          "-std=c++17",
+          "/home/otto/.hermes/cache/scratch/native-record-final-independent/replay-arg4-call.cpp",
+          "-o",
+          "/home/otto/.hermes/cache/scratch/native-record-final-independent/replay-arg4-call.bin"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 0.124
+      },
+      {
+        "name": "replay-arg4-call-gcc-run",
+        "command": [
+          "/home/otto/.hermes/cache/scratch/native-record-final-independent/replay-arg4-call.bin"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 0.013
+      },
+      {
+        "name": "replay-float-cast-clang",
+        "command": [
+          "clang++",
+          "-std=c++17",
+          "-fsyntax-only",
+          "-Xclang",
+          "-ast-dump=json",
+          "/home/otto/.hermes/cache/scratch/native-record-final-independent/replay-float-cast.cpp"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 0.138
+      },
+      {
+        "name": "replay-float-cast-gcc-build",
+        "command": [
+          "g++",
+          "-std=c++17",
+          "/home/otto/.hermes/cache/scratch/native-record-final-independent/replay-float-cast.cpp",
+          "-o",
+          "/home/otto/.hermes/cache/scratch/native-record-final-independent/replay-float-cast.bin"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 0.122
+      },
+      {
+        "name": "replay-float-cast-gcc-run",
+        "command": [
+          "/home/otto/.hermes/cache/scratch/native-record-final-independent/replay-float-cast.bin"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 0.002
+      },
+      {
+        "name": "replay-mutable-clang",
+        "command": [
+          "clang++",
+          "-std=c++17",
+          "-fsyntax-only",
+          "-Xclang",
+          "-ast-dump=json",
+          "/home/otto/.hermes/cache/scratch/native-record-final-independent/replay-mutable.cpp"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 0.171
+      },
+      {
+        "name": "replay-mutable-gcc-build",
+        "command": [
+          "g++",
+          "-std=c++17",
+          "/home/otto/.hermes/cache/scratch/native-record-final-independent/replay-mutable.cpp",
+          "-o",
+          "/home/otto/.hermes/cache/scratch/native-record-final-independent/replay-mutable.bin"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 0.123
+      },
+      {
+        "name": "replay-mutable-gcc-run",
+        "command": [
+          "/home/otto/.hermes/cache/scratch/native-record-final-independent/replay-mutable.bin"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 0.003
+      },
+      {
+        "name": "ruff-baseline",
+        "command": [
+          "/home/otto/dev/ro-bots/.venv/bin/ruff",
+          "check",
+          "--no-cache",
+          "--config",
+          "/home/otto/dev/ro-bots/pyproject.toml",
+          "--output-format=json",
+          "/home/otto/.hermes/cache/scratch/sender-record-repair2-3m48zvmq/trace_sender.py",
+          "/home/otto/.hermes/cache/scratch/sender-record-repair2-3m48zvmq/test_trace.py"
+        ],
+        "exit": 1,
+        "elapsed_seconds": 0.019
+      },
+      {
+        "name": "ruff-current",
+        "command": [
+          "/home/otto/dev/ro-bots/.venv/bin/ruff",
+          "check",
+          "--no-cache",
+          "--config",
+          "/home/otto/dev/ro-bots/pyproject.toml",
+          "--output-format=json",
+          "/home/otto/dev/ro-bots/spikes/007-native-packet-ast/sender-proof/trace_sender.py",
+          "/home/otto/dev/ro-bots/spikes/007-native-packet-ast/sender-proof/test_trace.py"
+        ],
+        "exit": 1,
+        "elapsed_seconds": 0.013
+      },
+      {
+        "name": "union-clang",
+        "command": [
+          "clang++",
+          "-std=c++17",
+          "-fsyntax-only",
+          "-Xclang",
+          "-ast-dump=json",
+          "/home/otto/.hermes/cache/scratch/native-record-final-independent/union.cpp"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 0.344
+      },
+      {
+        "name": "union-gcc-build",
+        "command": [
+          "g++",
+          "-std=c++17",
+          "/home/otto/.hermes/cache/scratch/native-record-final-independent/union.cpp",
+          "-o",
+          "/home/otto/.hermes/cache/scratch/native-record-final-independent/union.bin"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 0.308
+      },
+      {
+        "name": "union-gcc-run",
+        "command": [
+          "/home/otto/.hermes/cache/scratch/native-record-final-independent/union.bin"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 0.019
+      },
+      {
+        "name": "unittest",
+        "command": [
+          "/nix/store/lb41b0anx1f98y9y5s9mdv97gjgsq740-python3-3.14.7/bin/python3",
+          "-B",
+          "-m",
+          "unittest",
+          "discover",
+          "-s",
+          "/home/otto/dev/ro-bots/spikes/007-native-packet-ast/sender-proof",
+          "-v"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 1.98
+      },
+      {
+        "name": "unknown-attribute-clang",
+        "command": [
+          "clang++",
+          "-std=c++17",
+          "-fsyntax-only",
+          "-Xclang",
+          "-ast-dump=json",
+          "/home/otto/.hermes/cache/scratch/native-record-final-independent/unknown-attribute.cpp"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 0.201
+      },
+      {
+        "name": "unknown-attribute-gcc-build",
+        "command": [
+          "g++",
+          "-std=c++17",
+          "/home/otto/.hermes/cache/scratch/native-record-final-independent/unknown-attribute.cpp",
+          "-o",
+          "/home/otto/.hermes/cache/scratch/native-record-final-independent/unknown-attribute.bin"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 0.191
+      },
+      {
+        "name": "unknown-attribute-gcc-run",
+        "command": [
+          "/home/otto/.hermes/cache/scratch/native-record-final-independent/unknown-attribute.bin"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 0.003
+      },
+      {
+        "name": "wide-header-clang",
+        "command": [
+          "clang++",
+          "-std=c++17",
+          "-fsyntax-only",
+          "-Xclang",
+          "-ast-dump=json",
+          "/home/otto/.hermes/cache/scratch/native-record-final-independent/wide-header.cpp"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 0.265
+      },
+      {
+        "name": "wide-header-gcc-build",
+        "command": [
+          "g++",
+          "-std=c++17",
+          "/home/otto/.hermes/cache/scratch/native-record-final-independent/wide-header.cpp",
+          "-o",
+          "/home/otto/.hermes/cache/scratch/native-record-final-independent/wide-header.bin"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 0.193
+      },
+      {
+        "name": "wide-header-gcc-run",
+        "command": [
+          "/home/otto/.hermes/cache/scratch/native-record-final-independent/wide-header.bin"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 0.06
+      }
+    ],
+    "quality_details": [
+      {
+        "version": "baseline",
+        "tool": "black",
+        "exit": 1,
+        "diagnostic_count": 2
+      },
+      {
+        "version": "baseline",
+        "tool": "ruff",
+        "exit": 1,
+        "diagnostic_count": 150
+      },
+      {
+        "version": "baseline",
+        "tool": "mypy",
+        "exit": 1,
+        "diagnostic_count": 88
+      },
+      {
+        "version": "current",
+        "tool": "black",
+        "exit": 1,
+        "diagnostic_count": 2
+      },
+      {
+        "version": "current",
+        "tool": "ruff",
+        "exit": 1,
+        "diagnostic_count": 189
+      },
+      {
+        "version": "current",
+        "tool": "mypy",
+        "exit": 1,
+        "diagnostic_count": 102
+      }
+    ],
+    "result_path": "/home/otto/.hermes/cache/scratch/native-record-final-independent/execution.json",
+    "result_sha256": "8b6731764ec236f9b7e7c8fbb6c71849b34b4dc5ceb35f6c32462d117e92db20"
+  },
+  "artifacts": {
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/field-packed-clang.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/packed-signed-alias-gcc-build.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/overlap-attribute.cpp": "e28bd44085f3ba089958465bb5859358d5b5340e7d00f80d8a62b2adff79e4d4",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/field-packed.cpp": "31babfaf1dfd0c3f719e5a92fb0559fcc3fb66dcb7f7c58b0222c69650f1227a",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/anonymous-union-gcc-build.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/alias-union.result.json": "8ad1389fd6f951a547b476756723330681a8e885bd9db9020755610860d41dfa",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/functional-float-gcc-build.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/trace-delta.diff": "247d192ed5758dbf4efffeb99a6ec5826f2215a12c13b7e4c77e491cb75b845e",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/replay-arg4-call.result.json": "dd177f9f1d5c5cf3007ebab3f7befafa8dd7f31d6c398956c02f9eb3ca10769b",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/replay-float-cast-gcc-build.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/anonymous-union-clang.stdout": "df706c83a95ac3ddeb194a77ed0c81fcd5608986e625a60f374f2efd34f56db1",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/packed-unsigned-alias-clang.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/anonymous-union-gcc-build.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/packed-unsigned-alias-gcc-build.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/packed-signed-alias-gcc-run.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/replay-arg3-call-gcc-build.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/operator-gcc-build.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/operator-clang.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/bitfield.cpp": "b2f598f28ee6a288098e9c3607f481982315cb0a17f814e05af84e74e8c70a78",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/replay-arg4-call-gcc-build.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/replay-float-cast-clang.stdout": "94d732472c855ad56f3e3980261000ffd9bac582452d64c0d88472fd257ee3fd",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/cli-clif_emotion.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/execution.json": "8b6731764ec236f9b7e7c8fbb6c71849b34b4dc5ceb35f6c32462d117e92db20",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/replay-float-cast.bin": "29bcffcdb6b8e3d4ac1ff9630dcac499eada53c42417a02e9a72bfed7f8a771c",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/unknown-attribute-clang.stdout": "d9ef6eeb8e287a57dc6ee46a9c2aeef4fe743b3a99e6385dc3eb9e4613ca93ee",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/replay-arg4-call-clang.stdout": "7bc7e2437c278a49ff8a016d769587943cdcf9b5e333a286729830ef995f242c",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/base.result.json": "013daf9c2416427e0b014666caeae415b4354d9370d9e4ffc01252ae6bba6b93",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/real-layout-run.stdout": "d79dfefd4be7efe0d6fbf3fd8cf7bfb135853dfe8935b39d758e7d99b3140ebf",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/overlap-attribute-clang.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/packed-signed-alias-clang.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/real-layout-build.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/union-gcc-build.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/destructor-gcc-build.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/replay-float-cast-gcc-run.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/replay-arg3-call-gcc-run.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/wide-header-gcc-run.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/black-baseline.stderr": "4708d047253c5a8d630121bcba661a156a73a6bb8d1366ddc3aa1d218663efe0",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/functional-float.result.json": "868ab66035202d552ca967974141147d98faf6c3a79094aba1beaa6ac2abf96f",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/replay-mutable.bin": "477f08d0c685f9ed22964401ed024360726f6c8def71fe48da05677040760d49",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/field-packed-gcc-run.stdout": "212d721dc423be613541927dc8e9a4576cd6d273d7df75961b2b099868ad1feb",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/replay-mutable-clang.stdout": "210a77961270257a4db404dfb284e10c77f5317a327a5d3dd9eb4a84ef02109e",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/reference-clang.stdout": "7e973f12dbae309f31dc342b4ff163a5eb3c8745a801f31f89d8a355e337b550",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/constructor.bin": "7e7fc0d14fe97a47f8160baf04dccfc56aabf590f698d9c517089a6f44420df9",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/replay-arg3-call-gcc-build.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/reference-gcc-build.stderr": "1a54b4a47559313ae993148db8e03acdd167e57b78dc43bcb26dc3b6856455be",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/bitfield.result.json": "cbbdd152e8e0d21f7e9b84d779aca7a8a3799c14f429f11d19f092b856904048",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/overlap-attribute-gcc-run.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/cli-wrong-profile.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/bitfield-gcc-build.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/destructor-gcc-run.stdout": "7656fbf0b9c76fb89f49a0b800266a70659a04d8024b91d0e994b2daaaf86be1",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/replay-arg4-call.bin": "f01039ed2caacf395f3f13175c673d0ef8179ed3f46c616d1e75c776e70bf7a7",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/overlap-attribute-gcc-build.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/overlap-attribute-gcc-run.stdout": "7656fbf0b9c76fb89f49a0b800266a70659a04d8024b91d0e994b2daaaf86be1",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/replay-arg4-call.cpp": "7092cf7d1952af95488f4cbea701acc70fb5947cc914c9f609b77d46c3bc5cfb",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/real-layout-build.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/unittest.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/operator-gcc-build.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/reference.bin": "b10f81696fb8d3174739fcd7c77aa4e2e2ef0c78b3f0570d0ca30be9010ed9c1",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/field-packed-gcc-build.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/packed-unsigned-alias.result.json": "2be86e227ccc355811f4df61b81e00e71f3365c279b1541f9737f4cd26baa3de",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/overlap-attribute.bin": "c5eb87ce94db08087a872fdcb041c3a1a1aba8a6c51a6276d6d573b1e614a975",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/union-gcc-run.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/black-baseline.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/real-gcc-layout": "85a2d72d0ee09cefe357a7fcc961b71f6b68ba768791a03462666d2308427dc5",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/constructor.cpp": "86ed81014ec0f4a9589c2dd35dea3694d122a57445aa4bc6d50de6da69d036c7",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/unknown-attribute-gcc-build.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/packed-unsigned-alias.cpp": "0f9c895bf08ceb8c946b1d765ddcbccd2b29200ba5333becd16d7bf8c7717e95",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/bitfield-clang.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/anonymous-union.cpp": "e9d35b4068a9b91af974001fe45153a3efef6b37621e1558a1c836e23db26627",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/base.cpp": "596980813097f318fb32fa3e660af4129a1e6d553de39bce433b0261b530ac5d",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/replay-mutable.result.json": "63237879898ad9f0e5f3acb5ae8ac35dd856e6c2327ee7cb959cb63205f7bddc",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/destructor.result.json": "8d1a4458aa12b22a689154a208441f4ca9cf395c4d1dc4d49fc48e46f4f5bca7",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/destructor-clang.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/replay-arg4-call-clang.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/replay-mutable-gcc-build.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/union.cpp": "62bb4f345c109285cb95bc1c84ee82a36289e329eeb95ad8f8d1594f00af5fb4",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/overlap-attribute.result.json": "980c4aba1c9aecec2bd1faa8ffd92db9bd08a84994cbd304691bbb41a54fa15d",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/base.bin": "31226818dcd211fc93a952a31609c3eb1e4123d2230930894de2cc1fee74089b",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/operator.result.json": "c0c19e5ab76ddae76ac1d57d93fa8209a497c72aede8c1e35d6e9a2ff6d8ef8f",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/wide-header-gcc-run.stdout": "7656fbf0b9c76fb89f49a0b800266a70659a04d8024b91d0e994b2daaaf86be1",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/unknown-attribute-gcc-run.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/replay-mutable-clang.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/destructor-gcc-run.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/overlap-attribute-gcc-build.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/black-current.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/bitfield-gcc-run.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/field-packed.result.json": "c4131bf169e5714b9555532a1340ed553f58977fa4e01289a2594235f0806ab7",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/destructor-gcc-build.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/packed-signed-alias.bin": "9cb78220c18ecb647a7885aeeaeb501e7240db9961454210200c51e4f4e12b1f",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/cli-clif_sitting.stdout": "97d0e4baddf60e824b93d0073f05780d37ff0b775cd7c28717c64d0b4f436ea9",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/operator-gcc-run.stdout": "7656fbf0b9c76fb89f49a0b800266a70659a04d8024b91d0e994b2daaaf86be1",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/wide-header.cpp": "09e360c2209f88ff16ca480c0798246b46a8a00fa5b40f07277bf6089f3bd1bd",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/base-clang.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/unknown-attribute-gcc-run.stdout": "7656fbf0b9c76fb89f49a0b800266a70659a04d8024b91d0e994b2daaaf86be1",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/union-gcc-run.stdout": "7f77b9672612603c5e02fd38924c5cd66e2cf09f8d0c031b902318f186a8d9aa",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/unknown-attribute-clang.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/anonymous-union.result.json": "09239d457f9cbe6c2bf69036bc4d591aa61f205ce1fa85f9b31681886c9f74d2",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/black-current.stderr": "627479a170c4bad9d8d9a420bca748be7dd7a34ac440e8968677f60e3b82b41b",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/unknown-attribute.cpp": "126a2a7e5fc5d4bcc39f5340f983ba61935077b5840feb622353e91b1c7f90f7",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/finalize.py": "7f51005348f04013f19692c13ba3343e4fd5e376b2b58e46f6e2ad8b54ca9c44",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/bitfield-gcc-run.stdout": "d202c9371b99f77332084fc160a026e04f97eeae110bc547e7b097ef0b0606b3",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/destructor-clang.stdout": "6bd9802629d0c2c673d67109aa0bea54973f91923f1402f0c3488db88ee36f41",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/packed-signed-alias.result.json": "51244b5a81bfa35569968a1c40992d14f39b55744ce643dd6b2565fe95b95a02",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/alias-union.cpp": "59087b4d09518379ec620976c02d1ae29987f522a156426024a62c5628d34ba8",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/packed-unsigned-alias-gcc-run.stdout": "212d721dc423be613541927dc8e9a4576cd6d273d7df75961b2b099868ad1feb",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/replay-arg4-call-gcc-build.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/anonymous-union.bin": "58b84ef7580212a48003868821964baa5497b24b6aa7e3a4696f897475e50149",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/functional-float.cpp": "5d9d019f300b50b6c73e8bae73115416ef9e4feef3d1fef8393dcf1c15ee262f",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/ruff-current.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/anonymous-union-clang.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/ruff-baseline.stdout": "8557b2fe8253b00fac84f478759a84a28436cdce8e47b37dd35aaaebac4ae945",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/functional-float-gcc-run.stdout": "7656fbf0b9c76fb89f49a0b800266a70659a04d8024b91d0e994b2daaaf86be1",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/constructor-gcc-run.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/overlap-attribute-clang.stdout": "61525bfdce078719975b45acdfe673c1d8fb4d40dbdb660aaf5034f1b8af1028",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/alias-union-clang.stdout": "824c5409917cd534645b4e24d1ed6e604fac1eae05bb750f462846b7550f347a",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/constructor-gcc-build.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/base-gcc-run.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/packed-signed-alias.cpp": "02862cc3cbc414a6dfdce98692a22f7537d4d48319c6919c851b1c7518c9b290",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/packed-unsigned-alias-gcc-run.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/wide-header.result.json": "c8afb02d1d624aea6d4c910d8e778310bd2da888f9ea0282059511afecaa325d",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/replay-arg4-call-gcc-run.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/alias-union-clang.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/packed-unsigned-alias-gcc-build.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/replay-arg3-call-gcc-run.stdout": "6a8df598dddcb1d006fa589b246e7db5c83229036fcd529cab5ee894739f03e3",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/replay-float-cast.result.json": "1a25264ec4c492a46f110a6f1f9a38a93449900ddc7f6770a4409a37f7417c09",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/reference.result.json": "c111192beef0037c86bd9d7e23eaf2b40413105584d325c08709ae31e479e88f",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/replay-arg3-call-clang.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/packed-signed-alias-gcc-run.stdout": "212d721dc423be613541927dc8e9a4576cd6d273d7df75961b2b099868ad1feb",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/constructor.result.json": "807279443dcb25a3a57da5f28272b8a4e5a457e77fddc234b848e408d6e78ff7",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/base-gcc-build.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/unknown-attribute.bin": "0a471c256112b3e9c99ff58e81f363779c7e25d5f8d864903543d38cf87cc42d",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/union-clang.stdout": "2af3671639451531647c30caca2e783f9511428cf8400e3d870d4c945efdd429",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/bitfield-gcc-build.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/reference-gcc-run.stdout": "36413d05769856ccd11d6684f06c05d28a61e3a40e07f02e4ace5cb997ca9d4c",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/constructor-clang.stdout": "c6401e1bdb773709ef16045c03640e6c17f2c3c11e11619ca8fcb543079bb7f6",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/operator-clang.stdout": "4f58de1e609ba036e8252e2da013564c68228b64ae5e22203129711d9a880cfb",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/wide-header-clang.stdout": "aa59bc6e28e0b699740c12f25c4d510ab01c2340f31b5f400068fd2fbcef3b5a",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/wide-header.bin": "08f597f6e962d3353c5358d949ae22acacf803ce27f0d885981dc9f439ee76c0",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/replay-mutable-gcc-run.stdout": "6a8df598dddcb1d006fa589b246e7db5c83229036fcd529cab5ee894739f03e3",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/replay-float-cast-gcc-run.stdout": "6a8df598dddcb1d006fa589b246e7db5c83229036fcd529cab5ee894739f03e3",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/alias-union-gcc-run.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/wide-header-clang.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/destructor.bin": "baddcb6fed5a837ecc84fd2cf6a7a87c219e449efb1d3e11dcbe0fc29496e5eb",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/operator.bin": "e9a60b1db1b23eaba230d8038ca00fc124b34b7ddec97c869fa8fe6e4ba54a73",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/base-gcc-build.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/unknown-attribute-gcc-build.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/functional-float-gcc-run.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/field-packed.bin": "6f2e9e0ba124ebb83c2ade63c0ca2e68482cb2da37ee89f4d2e475bc2408d78d",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/functional-float-clang.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/functional-float-clang.stdout": "56bdd115da0bba4b99b64926445af737c9e8305c4f382f9de7a9503a08f64e76",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/ruff-baseline.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/alias-union-gcc-run.stdout": "7f77b9672612603c5e02fd38924c5cd66e2cf09f8d0c031b902318f186a8d9aa",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/base-clang.stdout": "cacdcaca0897dd8b5930752f485fe09003685ed8ad7477a9cdbed25e8259e885",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/reference-gcc-build.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/packed-unsigned-alias-clang.stdout": "02d57140ee44f668192d65879ffae3ed18146c29924d87015cb270ca22471b6a",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/replay-arg4-call-gcc-run.stdout": "6a8df598dddcb1d006fa589b246e7db5c83229036fcd529cab5ee894739f03e3",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/replay-float-cast.cpp": "0499b0857c53f8df95f76a4758013eb07bf10be5b886416ae965facf22a3a596",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/unknown-attribute.result.json": "26c6df001e0bc8189fdc59fbebd25996a709a735921dd14a3bcf494d6828c9ea",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/reference.cpp": "3fbdaff387c94f1d622d18ffe9345fd3d45f318b508d2f80158634714f1dc618",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/cli-clif_name.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/bitfield.bin": "1cb7d7fdf9c972aebd47b45767a376706e96488a148d020349b646ce42c294b6",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/functional-float.bin": "179e190bc632cafdaf6ad1a8264f18f102b17cb4964e11b580e5a610b896ae52",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/operator.cpp": "17f71adaff2be56d7da8c466da45e27eba1dd6f64fdf57abcf93eb257e1b9e07",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/replay-mutable.cpp": "182f06e49f0e07ed070d29bd6317c150a14b0a3e0f7428fad502caddae612352",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/alias-union.bin": "a36a24b2d93b54c4485c5575ae362760102b6b6a9681eb57b567435511975779",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/constructor-gcc-build.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/alias-union-gcc-build.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/union.bin": "2db1331e5dc1b8134d9f34089fc8157611b16bf5ab962027652c5b88106ee66b",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/constructor-clang.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/cli-wrong-profile.stdout": "82f0413cd3d48f4fa86301b4d82ed00c780c5491e9d0ed97168aae0b4c357781",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/wide-header-gcc-build.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/replay-arg3-call.bin": "7cec336c41ca175e26772cfc99d2965ec8a6a71534a1d5d8597f2ee0a10d6acc",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/constructor-gcc-run.stdout": "7656fbf0b9c76fb89f49a0b800266a70659a04d8024b91d0e994b2daaaf86be1",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/field-packed-gcc-build.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/cli-clif_name.stdout": "7df4dd8267fa98940a551f316950e738f37dd8892578873aeae7502f0fe6c505",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/review.py": "e099db23982803d4ec665dddc880b80d43747cdc8845ae3222ffcde4620ad54b",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/union.result.json": "6abdf8bf909e1e606019fba6ef9a20a142ac039b5f3a52bb92df7aba7f33f6f2",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/union-gcc-build.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/cli-clif_sitting.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/unittest.stderr": "44778e75edc72640f290ef174b5b78122004b069564af5f17a15beefcb002e9a",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/replay-mutable-gcc-run.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/reference-clang.stderr": "c5c17bee64b9ba759af4c414645f096dedcc2630ee4f477aac7650a55728446e",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/destructor.cpp": "d20fb93d9def83c34c7e53b1d1eb979a081be9e0d744670f6227d7a55efe0672",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/bitfield-clang.stdout": "40f94cb64afd27d2836b9cca9f25e9f1207c9868fcd4dced0adeb15801c362dc",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/alias-union-gcc-build.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/cli-clif_emotion.stdout": "597dea97de3efe9f536596c9a30a1f438c8987ba86bb5f476660e56bedfe45f8",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/packed-signed-alias-gcc-build.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/anonymous-union-gcc-run.stdout": "7656fbf0b9c76fb89f49a0b800266a70659a04d8024b91d0e994b2daaaf86be1",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/real-layout-run.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/wide-header-gcc-build.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/ruff-current.stdout": "fd33baa240a4bd545180e2998397f0185ec34146f9f7603c9a22cb6f0b5069f5",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/replay-arg3-call-clang.stdout": "4b2b26b5686f4c09542b41bb14647aa9c7d135650e60b078a7ab93c99e6b927f",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/field-packed-gcc-run.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/packed-signed-alias-clang.stdout": "aed23f8f225aed6736c46b79d5dc0984711cf0fc0777b3432ca87f322373ce02",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/reference-gcc-run.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/replay-arg3-call.result.json": "81083ca4649c4d06b3847a25db808ef499f4083db536bcf80df0f472cf4c6cfc",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/packed-unsigned-alias.bin": "8c20ad246746d610f731f48b32b6c0c9a4d6a18444c44727aa02ebb5ac848ee2",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/union-clang.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/functional-float-gcc-build.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/replay-float-cast-gcc-build.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/field-packed-clang.stdout": "cb323fd8bd730a740b015e83ff77dfcf7bb89bf69a04cbd49ad02cedfecbd835",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/replay-float-cast-clang.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/replay-arg3-call.cpp": "c9f9df488050b9464fbf1d74a32b93f1795dd68997eda8ef1643a7aa1e8eeb9a",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/operator-gcc-run.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/replay-mutable-gcc-build.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/base-gcc-run.stdout": "7656fbf0b9c76fb89f49a0b800266a70659a04d8024b91d0e994b2daaaf86be1",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/anonymous-union-gcc-run.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/unit/tmpx5pzgik4.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/unit/tmp_c8u5euj.clang.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/unit/tmp_c8u5euj.ast.json": "36eff8621f54dee1a0a9f49be0128ed3ce6ed5bc04657d4aeb86fc5fe82f523f",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/unit/tmpxfl5266r.ast.json": "966bcd4c0b84437f7373ad45e1f7a4f50f14b7d50b1d9a8de0532c222e41ebe2",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/unit/tmp9hwphyxg.gcc.stdout": "7f77b9672612603c5e02fd38924c5cd66e2cf09f8d0c031b902318f186a8d9aa",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/unit/tmp9hwphyxg.cpp": "e57e4ec98f88b46af1d794ffa5fe53eaf166552f8e0bc9238d201db6299f47ab",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/unit/tmpu2n6hngj.cpp": "0a40247ecd75b60d27c96975f3f0214014876355e8310bcc2899f53bbce5e647",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/unit/tmpyzzmherv.cpp": "312efe79a3d03bc57c52753d0b18555544c11849ee342c82c319f6f656532eae",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/unit/tmp18npds9o.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/unit/tmpxfl5266r.cpp": "397ec2593d7b6378bc8d03136b31e1555a167969f45eec3a73682ccc909b1208",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/unit/tmpf7lp0yeq.ast.json": "5381c7619d1146ee8641d5575816edd122d7f54c710a5de883eb03010b10dc05",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/unit/tmpkgm3ar_k.cpp": "8b48fc6ea50102519091475db12978d8736da0c01bcb94acac8c9bfe1bd5bf7b",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/unit/tmptk8r4k02.ast.json": "928287ab41c3effb419e8f62526406fe3b1254a720f262683c301daf64359799",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/unit/tmp_vxeldf3.cpp": "dc2ed4fd603df4f66bcd67a90a4816c11653581bb5c68eb4e942245214647d3a",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/unit/tmpz6msah8u.stdout": "1e84730be84ab4feee380a6104616501d7764b6a518a5d27efe75be408ff0a9b",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/unit/tmp9hwphyxg.bin": "b55b87d81aa8afd84d6628c820638447bf269687105ca33171fb63dd715de805",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/unit/tmpihftymzz.stdout": "a1fb581738e88c3d92a93aaa9777a95d695e7c0b615308f69e9e83dd2983a296",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/unit/tmp_c8u5euj.bin": "633712a3168e5cf8a45a9c2c3811c8b232c7068ebf4815d244dadee99b6eade6",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/unit/tmptk8r4k02.clang.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/unit/tmp18npds9o.stdout": "628c286f408bae40f37e530b997976eef4a2dcb95e67865c81139c848c429dfd",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/unit/tmptk8r4k02.cpp": "f82bbcc97ce952821b8f9a9a750f038128f1cdee2e5fb3a63f672de2b602e86b",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/unit/tmpihftymzz.cpp": "608fce4d4a4b184895649b675611341fb9362adbda0004b059a17a81384761e4",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/unit/tmp14hcvy2l.cpp": "7768d048413e6bc119fcccdde19fc933497d5b88b508ab618e13ecc5e3c109f8",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/unit/tmpl4qjw8lq.clang.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/unit/tmp_eiwysie.cpp": "4d9c54f73dd6c972cf2f9c8aa243ccedb60dd1aeb6f8616616cb446e6530b095",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/unit/tmpxjf3_vlq.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/unit/tmpyzzmherv.clang.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/unit/tmpx5pzgik4.cpp": "7b50ec581f8020d7d282731a5c3b718bbc95c59cf8debc6bee9c4e3485eb1e72",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/unit/tmpz6msah8u.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/unit/tmpz6msah8u.cpp": "cf6ac874981bcbfba0aba7c2055946b3296c31527ffd0cd60791274a95b1a76f",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/unit/tmp_eiwysie.ast.json": "b7c33121471b4e1ecf50ccab4526410f4739452b66f1dd6335e36631b49acee6",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/unit/tmp_c8u5euj.cpp": "ba0bd89592fbaff5485418e4e8eb8200933fffa2e8ffe676c7487969e85e2062",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/unit/tmp_vxeldf3.clang.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/unit/tmpu2n6hngj.ast.json": "89881c26907d5bf2e62a9e22afb94808793f8d918b167346a7d949e522aa41e5",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/unit/tmppr0q03hc.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/unit/tmpf7lp0yeq.cpp": "998df380c58960257f1bb168ff8657fbc4154dc791165a3af09fe79da218ac70",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/unit/tmpluqn7azc.gcc.stdout": "2455d2e351d9e64dd5e0d48c58d54589baf863f04d3e8dbbada574ae5f4d2f09",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/unit/tmpluqn7azc.clang.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/unit/tmpl4qjw8lq.cpp": "52e01204b2e38380b5de1edd7f484a05dc5906b76ad98bb026ae132337ddf45c",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/unit/tmp14hcvy2l.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/unit/tmp14hcvy2l.stdout": "487082578d86be62af59b206846e7f7f014925077bc68038fa0ce844f40a8184",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/unit/tmpyzzmherv.ast.json": "5180b5608873307a5611e0f2c5b36c62e4d78baaf24f3bdb7a2c7272cc3d1628",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/unit/tmppr0q03hc.stdout": "5af639bc12181bc148ceecac80503c2d90210a1048bc2d9b1e5c9febcc449437",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/unit/tmpluqn7azc.ast.json": "98aa32f6093c27def83a9c7011216601388ef1cbf94c9200ca3522a2d7596f9a",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/unit/tmp9hwphyxg.gcc.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/unit/tmppr0q03hc.cpp": "a098659fe5cb5c065269f8d37a8d28939329811a936506211038704cae1ba406",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/unit/tmpxjf3_vlq.stdout": "a29fb178434e10933d7a15a54d6fad3df2d79fab554e88f78a9b1da4090741c2",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/unit/tmpx5pzgik4.stdout": "5b21e33b7efcce16166a55eb59106da3f5f5923c4f6aa89bd4bc26dabcf9e6d9",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/unit/tmpxfl5266r.clang.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/unit/tmpluqn7azc.bin": "6a933735235de11196a6d7db772c6a0d22b30d3c666dbc2f62dfc3b733b67076",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/unit/tmpkgm3ar_k.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/unit/tmpcnv8lxvp.cpp": "b7996f168c79fb14ba961414d9f3e03e09007eca918cbc4facc045417400b537",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/unit/tmp_eiwysie.clang.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/unit/tmp18npds9o.cpp": "4eb5039a11c4690eabb67af6a7eb9ef3717a49778c40ff5163f773ec8fae86f8",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/unit/tmpxjf3_vlq.cpp": "51e2a448e3608ea9e23c18f8a4666b66f6d26b8fcc87a1e90d0000006a86a260",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/unit/tmp9hwphyxg.result.json": "c78b233a0469e86ee35081599426e5e81670f9f5ed857b225c15f87d23633e0a",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/unit/tmp9hwphyxg.clang.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/unit/tmp_c8u5euj.gcc.stdout": "2455d2e351d9e64dd5e0d48c58d54589baf863f04d3e8dbbada574ae5f4d2f09",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/unit/tmp_vxeldf3.ast.json": "c0270b6a1eb54ad3edf2a4a00e2fa401a4161b41027e894c0e7135aa6abc503e",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/unit/tmpu2n6hngj.clang.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/unit/tmpihftymzz.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/unit/tmpluqn7azc.cpp": "500c0a1a7cca75301ce05c5a3990e5afe9f23a67d57bcdf1d3fbf6eee7a39d06",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/unit/tmpcnv8lxvp.ast.json": "933d560c555a504b5fb11b30bad0c9830c6e04df9636693481ac60a9a6b061a8",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/unit/tmpl4qjw8lq.ast.json": "6c8bce3f13a94a4e7ddf3c4877a8b2a1d76b439b038b88fccb92e49940127b10",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/unit/tmp9hwphyxg.ast.json": "2b9c2070f45bca612573b61bf257e4e1e8be8e2d49c3b52e85696f41c7293e10",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/unit/tmpf7lp0yeq.clang.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/unit/tmpkgm3ar_k.stdout": "00a1ac9ba64a036c4437d2dc566722c986991603391b363726b00b82c9cfa793",
+    "/home/otto/.hermes/cache/scratch/native-record-final-independent/unit/tmpcnv8lxvp.clang.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b"
+  }
+}

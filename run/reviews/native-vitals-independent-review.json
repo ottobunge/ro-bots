@@ -1,0 +1,350 @@
+{
+  "schema_version": 1,
+  "passed": true,
+  "security_concerns": [],
+  "logic_errors": [],
+  "verdict": "OFFLINE_CLIENT_AND_PURE_PROJECTION_APPROVED_ONLY",
+  "summary": "Frozen client retention, connect/map-allocation reset, and strict pure vitals projection satisfy the bounded offline contract; no native telemetry or scheduled-host acceptance.",
+  "scope": {
+    "included": [
+      "BotClient status_params initialization",
+      "0x00B0 retention branch",
+      "connect reset before cleanup and again after old-reader termination",
+      "_map_server reset before allocation",
+      "robots.adapters.native_vitals",
+      "seven named frozen offline test modules"
+    ],
+    "excluded": [
+      "concurrently changing scheduled-host integration and its tests",
+      "app imports",
+      "whole-source/global quality gates",
+      "engine/native execution",
+      "native sockets",
+      "SQL",
+      "providers",
+      "private fixtures",
+      "git commands",
+      "source edits",
+      "live telemetry probe"
+    ]
+  },
+  "authority": {
+    "source_root": "/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source",
+    "profile": "Pinned MAIN/pre-re PACKETVER 20180704 supplied by coordinator; not rebuilt or newly compiled here",
+    "source_sha256": {
+      "src/map/map.hpp": "1cb428d1145ec9c4045b2ae58c163be24bf1bd374fc8eea07eaf0c266621fe2b",
+      "src/map/clif.cpp": "0b1db098158c240b090c6edb8417978ba495957c8a2df4cd9a0ab4cb39884ac5",
+      "src/map/packets_struct.hpp": "5ab5ef13d2a1cdc60d84dcaf2e3be0b6e316b9630e61c3ac7ba0f930d4d31287"
+    },
+    "source_checks": [
+      "map.hpp:498-505 enum HP=5 MAXHP=6 SP=7 MAXSP=8",
+      "packets_struct.hpp:354-359 packed int16 header, uint16 parameter, signed int32 count; Python <HHi preserves identical header bit pattern",
+      "clif.cpp:3548-3557 sends sizeof(PACKET_ZC_PAR_CHANGE) to SELF",
+      "clif.cpp:3677-3694 uses this packet for all four counts and can present positive HP on actual death"
+    ],
+    "native_frames_captured": false
+  },
+  "reviewed_contracts": [
+    "New client status starts empty, never persona/default health",
+    "Exact eight-byte B0 frame and full B0 header validated before mutation",
+    "Only uint16 parameter IDs 5/6/7/8 retained; other IDs and B1 never authoritative",
+    "Raw signed int32 values retained unchanged, including negative values; invalid negatives deny projection",
+    "Connect clears before close and after old-reader cleanup; map transport clears before allocation",
+    "All snapshot keys must be exact built-in int; required counts must be exact built-in int, not bool/float/int subtype",
+    "Four counts in 0..2147483647, max_hp>0, hp<=max_hp, sp<=max_sp; max_sp=0 allowed",
+    "Incomplete/malformed primitive snapshots raise ValueError-compatible NativeTelemetryUnavailable with constant opaque message",
+    "Frozen detached projection retains no mutable Mapping reference"
+  ],
+  "verification": {
+    "commands": [
+      {
+        "command": [
+          "black",
+          "--workers",
+          "1",
+          "--check",
+          "src/robots/adapters/native_vitals.py",
+          "tests/test_native_vitals.py",
+          "spikes/003-clientless-limbs/client.py"
+        ],
+        "exit_code": 0,
+        "output": "All done! \u2728 \ud83c\udf70 \u2728\n3 files would be left unchanged.\n"
+      },
+      {
+        "command": [
+          "ruff",
+          "check",
+          "src/robots/adapters/native_vitals.py",
+          "tests/test_native_vitals.py"
+        ],
+        "exit_code": 0,
+        "output": "All checks passed!\n"
+      },
+      {
+        "command": [
+          "mypy",
+          "--strict",
+          "--cache-dir",
+          "/home/otto/.hermes/cache/scratch/native-vitals-independent/mypy-cache",
+          "src/robots/adapters/native_vitals.py",
+          "tests/test_native_vitals.py"
+        ],
+        "exit_code": 0,
+        "output": "Success: no issues found in 2 source files\n"
+      },
+      {
+        "command": [
+          "bandit",
+          "-q",
+          "src/robots/adapters/native_vitals.py"
+        ],
+        "exit_code": 0,
+        "output": ""
+      },
+      {
+        "command": [
+          "vulture",
+          "src/robots/adapters/native_vitals.py",
+          "tests/test_native_vitals.py",
+          "--min-confidence",
+          "85"
+        ],
+        "exit_code": 0,
+        "output": ""
+      },
+      {
+        "command": [
+          "xenon",
+          "--max-absolute",
+          "B",
+          "--max-modules",
+          "B",
+          "--max-average",
+          "B",
+          "src/robots/adapters/native_vitals.py"
+        ],
+        "exit_code": 0,
+        "output": ""
+      },
+      {
+        "command": [
+          "mypy",
+          "--strict",
+          "--cache-dir",
+          "/home/otto/.hermes/cache/scratch/native-vitals-independent/mypy-cache",
+          "/home/otto/.hermes/cache/scratch/native-vitals-independent/dispatch_extract.py"
+        ],
+        "exit_code": 0,
+        "output": "Success: no issues found in 1 source file\n"
+      }
+    ],
+    "pytest_files": [
+      "tests/test_native_vitals.py",
+      "tests/test_client_protocol.py",
+      "tests/test_client_pincode.py",
+      "tests/test_protocol_rereview_repairs.py",
+      "tests/test_temporary_handshake_cleanup.py",
+      "tests/test_movement_arrival_evidence.py",
+      "tests/test_packet_conditions.py"
+    ],
+    "junit": {
+      "pytest_exit_code": 0,
+      "testcase_elements": 208,
+      "unique_testcases": 208,
+      "raw_suite_attributes": [
+        {
+          "name": "pytest",
+          "errors": "0",
+          "failures": "0",
+          "skipped": "0",
+          "tests": "273",
+          "time": "1.457",
+          "timestamp": "2026-10-06T19:13:02.169863+02:00",
+          "hostname": "framework"
+        }
+      ],
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "sha256": "cfaac456ef4840181365fdb0665d944220b36647a0bcd991638e811e54bc9ff6"
+    },
+    "ordinary_testcases": 208,
+    "additional_subtests": 65,
+    "new_feature_testcases": 38,
+    "independent_extra_checks": {
+      "count": 59,
+      "checks": [
+        "invalid-count-5--2147483648",
+        "invalid-count-5--1",
+        "invalid-count-5-2147483648",
+        "invalid-count-5-True",
+        "invalid-count-5-False",
+        "invalid-count-5-1.0",
+        "invalid-count-6--2147483648",
+        "invalid-count-6--1",
+        "invalid-count-6-2147483648",
+        "invalid-count-6-True",
+        "invalid-count-6-False",
+        "invalid-count-6-1.0",
+        "invalid-count-7--2147483648",
+        "invalid-count-7--1",
+        "invalid-count-7-2147483648",
+        "invalid-count-7-True",
+        "invalid-count-7-False",
+        "invalid-count-7-1.0",
+        "invalid-count-8--2147483648",
+        "invalid-count-8--1",
+        "invalid-count-8-2147483648",
+        "invalid-count-8-True",
+        "invalid-count-8-False",
+        "invalid-count-8-1.0",
+        "nonplain-extra-key-True",
+        "nonplain-extra-key-1.5",
+        "wire-signed-boundary-5--2147483648",
+        "wire-signed-boundary-5--1",
+        "wire-signed-boundary-5-0",
+        "wire-signed-boundary-5-2147483647",
+        "wire-signed-boundary-6--2147483648",
+        "wire-signed-boundary-6--1",
+        "wire-signed-boundary-6-0",
+        "wire-signed-boundary-6-2147483647",
+        "wire-signed-boundary-7--2147483648",
+        "wire-signed-boundary-7--1",
+        "wire-signed-boundary-7-0",
+        "wire-signed-boundary-7-2147483647",
+        "wire-signed-boundary-8--2147483648",
+        "wire-signed-boundary-8--1",
+        "wire-signed-boundary-8-0",
+        "wire-signed-boundary-8-2147483647",
+        "malformed-size-0",
+        "malformed-size-1",
+        "malformed-size-2",
+        "malformed-size-3",
+        "malformed-size-4",
+        "malformed-size-5",
+        "malformed-size-6",
+        "malformed-size-7",
+        "malformed-size-9",
+        "malformed-size-10",
+        "malformed-size-16",
+        "wrong-header-0",
+        "wrong-header-1",
+        "wrong-header-177",
+        "wrong-header-65535",
+        "old-reader-final-dispatch-cleared-before-login",
+        "positive-presentation-hp-does-not-assert-alive"
+      ],
+      "socket_attempts": [],
+      "host_app_imported": false
+    },
+    "coverage": {
+      "covered_lines": 21,
+      "num_statements": 21,
+      "percent_covered": 100.0,
+      "percent_covered_display": "100",
+      "missing_lines": 0,
+      "excluded_lines": 0,
+      "percent_statements_covered": 100.0,
+      "percent_statements_covered_display": "100",
+      "num_branches": 6,
+      "num_partial_branches": 0,
+      "covered_branches": 6,
+      "missing_branches": 0,
+      "percent_branches_covered": 100.0,
+      "percent_branches_covered_display": "100"
+    },
+    "coverage_policy": "Actual --cov=robots.adapters.native_vitals --cov-branch --cov-fail-under=85 passed at 100%; scoped helper acceptance only, not a whole-repository or full legacy-client coverage waiver. Exact new dispatch branch independently strict-mypy checked.",
+    "static_scan": {
+      "scope": "helper and exact new B0 branch AST; manual review of initialization/reset and new tests",
+      "dangerous_call_findings": [],
+      "synthetic_test_credentials": "[REDACTED]; public offline test constants, not production secrets"
+    },
+    "public_hashes_before": {
+      "spikes/003-clientless-limbs/client.py": "f4432d814522833d52d575d83b681b0f6ad85e98f886708ba4015ecb2c9bb557",
+      "spikes/003-clientless-limbs/packetdb.py": "1c2be6705938f5ab575cc822b690dba583f8a7719b9469f794fcbb661c032cf3",
+      "src/robots/adapters/native_vitals.py": "663cc93d1fbe0cb20fb6ae4331e2ad5cf63d9e940a246bb8b332b408f6a7e9ff",
+      "tests/test_native_vitals.py": "12ed87791f9b21080eb78e7a13a0c3ce2005c98b6ff67514c85791008caf3dac",
+      "tests/test_client_protocol.py": "3e781d2f50501b2d1bf0c3caccf507f3c6fcde533ad62ea1448b0f857143a5a2",
+      "tests/test_client_pincode.py": "b1748f4dd88eda1902119087aa7f87522d396d668d9fdbe9c7c1be9025f16071",
+      "tests/test_protocol_rereview_repairs.py": "a49988510058798c05455003d4618d7309eb442ac60fbef05aa0ebbc820852c4",
+      "tests/test_temporary_handshake_cleanup.py": "6eb4f7d7099a21728add193bd72f233ebdd21ca2aa2056d855984cb4ab943a47",
+      "tests/test_movement_arrival_evidence.py": "5ead0aee2bc68f6cd48003812283d75c4cdb796cd8a6e6b159fc8a8aee5e8e12",
+      "tests/test_packet_conditions.py": "abe40cc3af9d56de1f98088ae372e0e1f54cfe5a2d89ea6828f75f6e4d1969d1",
+      "pyproject.toml": "e8ae0849a413bc3d705f081f609b92dae702bbd3e491b2c3aeb5d8665c458fba",
+      "uv.lock": "2d7b4c187078488d7625e4fd4fa982745cab8d6a65b2ff3e382ffa286f1df245",
+      "flake.nix": "185e4a4babf62a40484c347f59653bd11b79ce847316a3a90349c8545d38a359",
+      "flake.lock": "c9c0bac69415b99a29ef3fe149b6f04ef54d291989bdf7218cf819ed52edf2a0"
+    },
+    "public_hashes_after": {
+      "spikes/003-clientless-limbs/client.py": "f4432d814522833d52d575d83b681b0f6ad85e98f886708ba4015ecb2c9bb557",
+      "spikes/003-clientless-limbs/packetdb.py": "1c2be6705938f5ab575cc822b690dba583f8a7719b9469f794fcbb661c032cf3",
+      "src/robots/adapters/native_vitals.py": "663cc93d1fbe0cb20fb6ae4331e2ad5cf63d9e940a246bb8b332b408f6a7e9ff",
+      "tests/test_native_vitals.py": "12ed87791f9b21080eb78e7a13a0c3ce2005c98b6ff67514c85791008caf3dac",
+      "tests/test_client_protocol.py": "3e781d2f50501b2d1bf0c3caccf507f3c6fcde533ad62ea1448b0f857143a5a2",
+      "tests/test_client_pincode.py": "b1748f4dd88eda1902119087aa7f87522d396d668d9fdbe9c7c1be9025f16071",
+      "tests/test_protocol_rereview_repairs.py": "a49988510058798c05455003d4618d7309eb442ac60fbef05aa0ebbc820852c4",
+      "tests/test_temporary_handshake_cleanup.py": "6eb4f7d7099a21728add193bd72f233ebdd21ca2aa2056d855984cb4ab943a47",
+      "tests/test_movement_arrival_evidence.py": "5ead0aee2bc68f6cd48003812283d75c4cdb796cd8a6e6b159fc8a8aee5e8e12",
+      "tests/test_packet_conditions.py": "abe40cc3af9d56de1f98088ae372e0e1f54cfe5a2d89ea6828f75f6e4d1969d1",
+      "pyproject.toml": "e8ae0849a413bc3d705f081f609b92dae702bbd3e491b2c3aeb5d8665c458fba",
+      "uv.lock": "2d7b4c187078488d7625e4fd4fa982745cab8d6a65b2ff3e382ffa286f1df245",
+      "flake.nix": "185e4a4babf62a40484c347f59653bd11b79ce847316a3a90349c8545d38a359",
+      "flake.lock": "c9c0bac69415b99a29ef3fe149b6f04ef54d291989bdf7218cf819ed52edf2a0"
+    },
+    "frozen_public_file_count": 14,
+    "stable": true,
+    "native_hashes_match_implementation": true,
+    "artifacts": {
+      "junit.xml": {
+        "path": "/home/otto/.hermes/cache/scratch/native-vitals-independent/junit.xml",
+        "sha256": "cfaac456ef4840181365fdb0665d944220b36647a0bcd991638e811e54bc9ff6"
+      },
+      "coverage.json": {
+        "path": "/home/otto/.hermes/cache/scratch/native-vitals-independent/coverage.json",
+        "sha256": "df9fee659c315dab7fa58bcc738c4e7844f3ecc85cd8a78169be788d0990183e"
+      },
+      "extra-checks.json": {
+        "path": "/home/otto/.hermes/cache/scratch/native-vitals-independent/extra-checks.json",
+        "sha256": "3b965f9db5f570fd7c122d39b1de94f9aeec59e3a326a43f13ee1fa7e23dbd33"
+      },
+      "commands.json": {
+        "path": "/home/otto/.hermes/cache/scratch/native-vitals-independent/commands.json",
+        "sha256": "6dd229585b288f8997963019672ff316984e101d196567d59de552c8312155bf"
+      },
+      "dispatch_extract.py": {
+        "path": "/home/otto/.hermes/cache/scratch/native-vitals-independent/dispatch_extract.py",
+        "sha256": "d0fe6e70680b9b2260cfe753fe020bdb756db4eabe120e65c46286d20d0925c9"
+      }
+    },
+    "tdd": "Implementation report contains RED/GREEN evidence; independent reviewer reran GREEN only and does not claim personally observed historical RED."
+  },
+  "suggestions": [
+    "Before any live telemetry/readiness acceptance independently complete and freeze scheduled-host gating; this review intentionally excludes it.",
+    "Use current connected/running reader health and rx_error/dispatch_errors as caller gates, not quartet presence alone."
+  ],
+  "limitations": [
+    "Synthetic source-shaped bytes are not captured native frames or proof of native world isolation.",
+    "Malformed frames preserve previously known status while raising; receiver dispatch_errors must deny readiness. Pure projection does not know reader/session health.",
+    "Map warp status reset is not implemented or reviewed; reset claim is limited to connect and map transport allocation.",
+    "Snapshot copy is not arbitrary Mapping-callback exception containment and not an atomic four-packet transaction.",
+    "Positive presented HP, including 1 or novice max_hp/2 on death, is not an alive/death oracle.",
+    "No claim that full legacy client Ruff/mypy debt or approximately 70% diagnostic full-client coverage is waived.",
+    "No new physical FD-release, FPS, unknown inventory/job/actor truth or all-goals acceptance claim."
+  ],
+  "encountered_issues": [
+    {
+      "issue": "Initial nix develop path: checkout mode failed copying existing run/mysql.sock unsupported file type",
+      "resolution": "Retried canonical pinned nix develop --offline /home/otto/dev/ro-bots; no socket opened or engine invoked."
+    },
+    {
+      "issue": "First scratch allocation spy replaced socket.socket before ssl loaded, producing TypeError during AnyIO plugin import",
+      "resolution": "Loaded ssl before installing denial spy; plugin autoload retained; final 208-case run passed. No production source change.",
+      "preserved_error": "TypeError: function() argument code must be code, not str; ssl.SSLSocket class attempted to subclass function"
+    }
+  ],
+  "files_created": [
+    "run/reviews/native-vitals-independent-review.json"
+  ],
+  "production_files_modified": [],
+  "live_authorization": "NONE: bounded offline review only; scheduled-host gate remains a separate prerequisite."
+}

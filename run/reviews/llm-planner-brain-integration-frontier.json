@@ -1,0 +1,40 @@
+{
+  "status": "read_only_consumer_boundary_inspection",
+  "source_hashes": {
+    "src/robots/app/agent_runtime.py": "597bec8b2735ee8e4a3846d8428cc3a1eb4872fa386b478a6607d800106fac26",
+    "src/robots/app/brain.py": "f5351e49015174c610e50963d8c55f6d334fb2b6800fa8467e176ad63c3ab424",
+    "src/robots/app/scripts.py": "a84b24ebe9f8aa7100c66c608098e40537dc6d851f6abf2c8a5e6f954e5f0c55",
+    "src/robots/app/playing_runtime.py": "8f6b5861c662705368a4f4fc347d2c990db0f47a140a4ba07aa5772ad41030fd"
+  },
+  "boundaries": [
+    {
+      "location": "agent_runtime.py:383-395,559-582,655-661",
+      "observed": "brain.start and handle_event are synchronous on initial connection/tick before/within native event draining.",
+      "required_future_integration": "Schedule planning outside this path; a slow planner must not block event draining/keepalive or return stale session results."
+    },
+    {
+      "location": "agent_runtime.py:584-611; playing_runtime.py:504-559",
+      "observed": "Empty non-recovery script actions pass to mechanical_actions, which can add loot/patrol/NPC exploration.",
+      "required_future_integration": "A pending/invalid plan needs an explicit safe-pending gate through the whole tick, not just an empty brain result."
+    },
+    {
+      "location": "scripts.py:77-88",
+      "observed": "IdleTownScript emits movement; it is not a zero-action pending-plan fallback.",
+      "required_future_integration": "Do not equate proposed idle metadata with this wandering script without an explicit execution contract."
+    },
+    {
+      "location": "scripts.py:92-112; brain.py:474-498",
+      "observed": "FarmScript consumes legacy FarmPlan name targets and duration; ProposedPlan has ordered typed phases and public species/item IDs.",
+      "required_future_integration": "Add a validated phase executor/translation with actually perceived targets; never interpret species IDs as runtime actor IDs."
+    },
+    {
+      "location": "playing_runtime.py:562-565",
+      "observed": "Keepalive is serviced in native event draining.",
+      "required_future_integration": "Prove continued event draining during actual planner requests; heartbeat counters alone do not establish transport continuity."
+    }
+  ],
+  "scope": "Source reconnaissance only; not an implemented safe pending guard or acceptance test.",
+  "source_modified": false,
+  "native_model_or_other_effects": false,
+  "pending_work": "Planner adapter writer owns disjoint new files; consumer integration stays deferred until its completed review/gate/real-provider verification."
+}

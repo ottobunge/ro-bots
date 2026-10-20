@@ -1,0 +1,125 @@
+{
+  "scope": "offline filesystem import plus real Docker archive build/inspection; no container or SQL execution",
+  "artifact": "/nix/store/dsdq3jxcci0k1zbjy09xrs6ki6kwcwyh-ro-bots-world-init.tar.gz",
+  "artifact_bytes": 97332133,
+  "artifact_sha256": "a94201add067c58ac20cca3e8e0f652c87011d48c487b4431b14748626f89114",
+  "artifact_nar_hash": "sha256-a9AjBtomPs+Exsv5npTzKRJ4gWPyfZ+JEMZJ7GFB6u0=",
+  "image_config": {
+    "User": "0:0",
+    "Entrypoint": [
+      "/nix/store/lb41b0anx1f98y9y5s9mdv97gjgsq740-python3-3.14.7/bin/python3",
+      "/nix/store/k3wx52abbd9l6vg8sjxvajppj13knpqj-world-volume-import/libexec/import-stage.py"
+    ],
+    "Cmd": [
+      "--source",
+      "/prepared",
+      "--destination",
+      "/world",
+      "--runtime-uid",
+      "10000",
+      "--runtime-gid",
+      "10000",
+      "--mysql-uid",
+      "999",
+      "--mysql-gid",
+      "999"
+    ],
+    "anonymous_volume_declared": false
+  },
+  "image_layers": 25,
+  "image_layer_members": 13244,
+  "image_script_bytes_match": true,
+  "public_nix_input_files": [
+    "flake.nix",
+    "flake.lock",
+    "import-stage.py"
+  ],
+  "public_source_sha256": {
+    "flake.nix": "38dad75d31dcd8a5975d42063018e7fccfddb634e50bed79bc60c1a507e97345",
+    "flake.lock": "c9c0bac69415b99a29ef3fe149b6f04ef54d291989bdf7218cf819ed52edf2a0",
+    "import-stage.py": "8a317b2f95ec017c153d571aca2809a3e11a4839c34d582e3d31d070157f3749"
+  },
+  "pytest": {
+    "passed": 28,
+    "failed": 0,
+    "tdd_initial_red": true
+  },
+  "coverage": {
+    "method": "stdlib trace, real CLI subprocesses plus API failure tests",
+    "pytest_exit_code": 0,
+    "executable_lines": 124,
+    "covered_lines": 116,
+    "percent": 93.54838709677419,
+    "missing_lines": [
+      0,
+      107,
+      108,
+      110,
+      111,
+      112,
+      113,
+      114
+    ]
+  },
+  "quality": {
+    "black": "passed",
+    "ruff": "passed",
+    "mypy_script_strict": "passed",
+    "vulture": "blocked: uncached dependency closure attempted unavailable source downloads; not waived"
+  },
+  "actual_preparation": {
+    "public_assets_returned": 679,
+    "public_data_assets_copied": 676,
+    "known_native_elf_files_omitted": 3,
+    "private_role_configs_copied": 7,
+    "runtime_files_copied": 683,
+    "npc_files": 527,
+    "mapcache_checked_maps": 1265,
+    "public_data_bytes_match": true,
+    "sql_files_copied": 5,
+    "secret_files_copied": 2,
+    "private_values": "[REDACTED]"
+  },
+  "permissions": {
+    "world_root": "0711; importer effective UID/GID (root 0:0 in image)",
+    "runtime_memory_logs": "configured runtime UID/GID; dirs 0700 files 0600",
+    "db_secrets_root_sql": "configured mysql UID/GID; dirs 0700 files 0600",
+    "tested_uid": 1000,
+    "tested_gid": 100,
+    "production_runtime_uid_gid": [
+      10000,
+      10000
+    ],
+    "production_mysql_uid_gid": [
+      999,
+      999
+    ],
+    "production_cross_uid_ownership_execution": "UNEXECUTED"
+  },
+  "failure_scope": "Preflight precedes mutation. Copy/chown failure may leave partial fresh output; importer refuses all nonempty destinations. No rollback, fsync, receipt or release guarantee.",
+  "dependency_sha256_before": {
+    "nix/playable-world/flake.nix": "abf784d2fa46c2ed46c71f5d1dad0fcea158deca34c20c3d8aa9ee1fc3f23be2",
+    "nix/playable-world/flake.lock": "c9c0bac69415b99a29ef3fe149b6f04ef54d291989bdf7218cf819ed52edf2a0",
+    "src/robots/adapters/world_prepare.py": "c663f60dc2dcd74e088f76e2424fd63126938e4500582581bb50e7fbfd055c19",
+    "src/robots/adapters/rathena_runtime.py": "0a52cbbae5ec459022c1348e33c65105c8cf0776a6bf68bca05e1066d8c74293",
+    "src/robots/adapters/rathena_runtime_assets.py": "8cf599ddd633c82879d5a6fc0ed2d98f13399e4094262b6bcafb25c9841650fc",
+    "src/robots/adapters/world_bootstrap_sql.py": "cfa64780b9356b04a2e8eb2699fb0e6703f4b3f6ae9b815fb454a03f9b8b2ce5"
+  },
+  "dependency_sha256_after": {
+    "nix/playable-world/flake.nix": "abf784d2fa46c2ed46c71f5d1dad0fcea158deca34c20c3d8aa9ee1fc3f23be2",
+    "nix/playable-world/flake.lock": "c9c0bac69415b99a29ef3fe149b6f04ef54d291989bdf7218cf819ed52edf2a0",
+    "src/robots/adapters/world_prepare.py": "c663f60dc2dcd74e088f76e2424fd63126938e4500582581bb50e7fbfd055c19",
+    "src/robots/adapters/rathena_runtime.py": "0a52cbbae5ec459022c1348e33c65105c8cf0776a6bf68bca05e1066d8c74293",
+    "src/robots/adapters/rathena_runtime_assets.py": "8cf599ddd633c82879d5a6fc0ed2d98f13399e4094262b6bcafb25c9841650fc",
+    "src/robots/adapters/world_bootstrap_sql.py": "cfa64780b9356b04a2e8eb2699fb0e6703f4b3f6ae9b815fb454a03f9b8b2ce5"
+  },
+  "dependencies_unchanged": true,
+  "engine_resources_changed": false,
+  "containers_executed": false,
+  "sql_executed": false,
+  "live_world_provisioned": false,
+  "issues": [
+    "Prepared public_assets actually includes three native ELFs: only 676 data assets and seven private configs are copied.",
+    "pytest-cov/vulture Nix closures were uncached; unavailable upstream fetches blocked them. Source line coverage measured with stdlib trace instead; vulture remains unexecuted."
+  ]
+}

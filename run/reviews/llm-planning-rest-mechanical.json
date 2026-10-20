@@ -1,0 +1,106 @@
+{
+  "status": "PARTIAL_OFFLINE_REST_MECHANICS_EXERCISED_NOT_APPROVED",
+  "scope": "run/reviews/llm-planning-rest-mechanical-scope.json",
+  "source_authority": {
+    "path": "run/reviews/llm-planning-rest-execution-frontier.json",
+    "sha256": "3b4c7e4caa127676c7b3b3241eddf613823783b2a8629846d216f7f937939eff",
+    "reused_parent_verified_source_audit": true,
+    "compiler_invoked": false
+  },
+  "implemented": [
+    "Actual playing.build_host -> ScheduledAgent -> PlayingClient -> real strict LlmPlanner/Reader/Core REST admission",
+    "Host-only received pose/vitals observation; positive Basic>=3 or Summoner>=1 narrow sit gate",
+    "Typed persistent REST request/hold/stand-wait/finished state; no fallback or movement",
+    "Fresh HP/SP change progress and recovered HP/SP >=0.75 policy",
+    "Three >=1s sit requests with 3s receipt wait; existing paced/bounded stand requests",
+    "30s no-health/SP-progress failure; one owner hold replan request after lifecycle cooldown; keepalive while provider blocked"
+  ],
+  "vertical_tdd": {
+    "REST1": "rest1-red.xml -> rest1-green.xml",
+    "REST2": "rest2-red.xml -> rest2-green.xml",
+    "REST3": "rest3-red.xml -> rest3-green.xml",
+    "REST4": "rest4-red.xml -> rest4-green.xml",
+    "extra_reds": [
+      "condition-red.xml",
+      "stand-budget-red.xml"
+    ],
+    "already_green_followups": [
+      "map admission denial",
+      "received boundary denial matrix",
+      "fresh changed-SP HEALTH_IMPROVES Summoner path"
+    ],
+    "historical_failures_preserved": true
+  },
+  "final_tests": {
+    "path": "/home/otto/.hermes/cache/scratch/llm-planning-rest-mechanical/final-zero-failure.xml",
+    "sha256": "1dd555ee2c64f0ad949bea2ada42b86ccf635744d41b74e92fac8fbcd2a6f79c",
+    "physical_testcases": 136,
+    "new_rest_testcases": 15,
+    "failures": 0,
+    "errors": 0,
+    "skips": 0
+  },
+  "artifact_hashes": {
+    "rest1-red.xml": "b0390a1fa961367d6834b03dbbe022f31cdc404f952fc7d2f25eb19fed909c54",
+    "stand-budget-green.xml": "22829156e342ef205bdb8cdc56a99efde2fe3d845eaab5be3b07b8a663ffaacb",
+    "rest3-red.xml": "ff2ea393c391472fc04b3e9971aa2d9aa8aea4bf068165a8739aa21c6215fe28",
+    "rest1-green.xml": "7ac2ea91218a993149805b355f2b91647c9c9bfdbadacd5bd2710635692ae9b0",
+    "stand-budget-red.xml": "6da64a25fb12fa46358989a854e559ebe1c42cfca177268550ebc5cfcc2fd97d",
+    "condition-green.xml": "4f157de5e621b1da023014c3dca493eadc3bd7d188a62443bef55d52af6bfd93",
+    "rest4-red.xml": "e4892d387d7caf9336ec943973c33209132cde5c338ee7d6e653ece4e1544597",
+    "final-verified.xml": "fd7bd1e27e31398307ccfeab65dc8b6a656043895ec958f7aaf87b06b55e10a3",
+    "final-contract.xml": "c50bbce5f56b8d94e65e9143a11857b5a5d007eaf3f66646e342eca3423d44b9",
+    "rest4-green.xml": "6c176449178b9d7306ac7d99ff6fdf7cb80cf83482ebd4acf70acb2c5fa4e2ee",
+    "final-current.xml": "4f4a457c3357054fdf6c2f3a6cc3520ebaa6172b69899dbfb75cfbaead54b3ca",
+    "rest2-red.xml": "e9782c86089d435f2c2362a521cd7aa236fbc5c9325be91b2ca832b4d5a46fdf",
+    "condition-red.xml": "83020a6e4d2c94a5dec157e4db002456289b35979c6da50e46440c9df0bd69aa",
+    "rest2-green.xml": "71802232e437a2e38f3b077b47ccb87bdbe4c709b0fc62f1b7776b87608863a2",
+    "rest3-green.xml": "18e17d8df599e3769c78dd959752a43b56960744babfc189a3b2f781444b4ddf",
+    "final-zero-failure.xml": "1dd555ee2c64f0ad949bea2ada42b86ccf635744d41b74e92fac8fbcd2a6f79c"
+  },
+  "quality": {
+    "path": "/home/otto/.hermes/cache/scratch/llm-planning-rest-mechanical/quality-final.json",
+    "whole_project_mypy": 236,
+    "black_ruff_mypy_xenon_vulture_duplicates_bandit": "exit 0; final test-only CLEF spy addition rechecked Black/Ruff/mypy",
+    "failed_diagnostics": "initial mypy tuple inference, Xenon C ranks and subsequent Ruff SIM102 preserved in tool transcript; intermediate quality.json retained",
+    "last_test_only_ruff_error": "CLEF-spy EM101 reached, then repaired and final whole-source Ruff/Black exited 0."
+  },
+  "freeze": {
+    "before_matching": 337,
+    "after_protected_matching": 333,
+    "changed_existing": [
+      "src/robots/app/agent_runtime.py",
+      "src/robots/app/playing_runtime.py",
+      "src/robots/app/planning_brain.py",
+      "tests/test_llm_planning_host_tick.py"
+    ],
+    "candidate_path": "/home/otto/.hermes/cache/scratch/llm-planning-rest-mechanical/candidate-freeze.json",
+    "candidate_sha256": "09525a553dc70319bf50df0b4bb32d1045047e22457b271f35eba71e25ebb3cd"
+  },
+  "remaining": [
+    "FAILED sit/prerequisite/no-progress holds intentionally stay fail-closed across replacement admissions; exact post-failure exit-pose reconciliation and new-version execution handoff remain unproven/incomplete in PlannedBrain._install_rest/_rest_actions",
+    "Zero-MAXSP success, malformed/stale pose and pending-arrival combinations need explicit actual-host REST-specific followups (existing legacy pose regressions passed)",
+    "Parent unchanged root check/audit and frozen independent completed-snapshot review still required"
+  ],
+  "effects": {
+    "real_provider_calls": 0,
+    "native_sessions": 0,
+    "live_activation": false,
+    "clef_calls_during_mechanical_rest1_ticks": 0,
+    "llm_calls_initial_rest1": 2,
+    "mechanical_ticks_no_replan_llm_calls": 0
+  },
+  "full_milestones_and_eleven_criteria": "OPEN",
+  "files_existing_modified": [
+    "src/robots/app/agent_runtime.py",
+    "src/robots/app/playing_runtime.py",
+    "src/robots/app/planning_brain.py",
+    "tests/test_llm_planning_host_tick.py"
+  ],
+  "files_created": [
+    "src/robots/app/planning_execution.py",
+    "tests/test_llm_planning_rest_execution.py",
+    "run/reviews/llm-planning-rest-mechanical.json"
+  ],
+  "environment_issue": "Relative Nix flake resolved through Git and rejected untracked flake; qualified explicit path: tiny locked offline toolchain succeeded without Git/provisioning."
+}

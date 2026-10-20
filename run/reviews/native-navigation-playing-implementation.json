@@ -1,0 +1,187 @@
+{
+  "scope": "public geometry only; no game, TCP, SQL, engine or inference effects",
+  "native_gameplay_verified": false,
+  "tdd": [
+    "missing MapCache/shortest_path RED -> compressed wall fixture GREEN",
+    "missing starter_route RED -> pinned public route GREEN",
+    "blocked trigger RED (1 failed,55 passed) -> alternate trigger GREEN",
+    "missing aggregate tile budget RED -> bounded allocation GREEN"
+  ],
+  "compiler_oracle": {
+    "sizeof_main": 8,
+    "count_offset": 4,
+    "sizeof_entry": 20,
+    "name_offset": 0,
+    "xs_offset": 12,
+    "ys_offset": 14,
+    "len_offset": 16,
+    "compiler": "root pinned nix develop c++",
+    "test": "test_compiled_pinned_native_struct_layout"
+  },
+  "cached_maps": 1296,
+  "cached_map_count_is_not_active_engine_map_count": true,
+  "active_engine_map_count_from_parent_context_only": 1265,
+  "public_runtime_pre_re_cache": "/home/otto/dev/ro-bots/run/worlds/test-first-live-86e7c36895db/runtime/db/pre-re/map_cache.dat",
+  "public_cache_source": "/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source",
+  "starter_route": {
+    "fixture_origin": [
+      150,
+      154
+    ],
+    "origin_is_not_runtime_default": true,
+    "path_cells": 131,
+    "path_steps": 130,
+    "approach": [
+      154,
+      24
+    ],
+    "next_waypoint": [
+      150,
+      153
+    ],
+    "warp_tile": [
+      156,
+      22
+    ],
+    "trigger_rectangle": [
+      153,
+      20,
+      159,
+      24
+    ],
+    "destination_map": "prt_fild08",
+    "destination": [
+      170,
+      375
+    ],
+    "field_example_path_cells": 6
+  },
+  "api_example": "cache = MapCache.load(runtime / 'db/map_cache.dat', runtime / 'db/pre-re/map_cache.dat'); plan = starter_route(cache, received_map, received_position, blocked_visible=own_visible_cells); send plan.next_waypoint only if not None; require native position feedback before advancing and native map-change feedback for warp",
+  "limits": {
+    "file_bytes": 67108864,
+    "tiles_per_map": 262144,
+    "nodes_per_search": "at most declared tile count",
+    "decompression": "dimension+1 bounded output; exact dimensions/eof/no trailing bytes",
+    "aggregate_tile_bytes": 268435456
+  },
+  "verification": [
+    {
+      "command": [
+        "pytest",
+        "tests/test_native_navigation.py",
+        "-o",
+        "pythonpath=src",
+        "--cov=robots.adapters.native_navigation",
+        "--cov-report=term-missing",
+        "--cov-fail-under=85"
+      ],
+      "exit_code": 0,
+      "output": "...........................................................              [100%]\n================================ tests coverage ================================\n_______________ coverage: platform linux, python 3.14.7-final-0 ________________\n\nName                                       Stmts   Miss  Cover   Missing\n------------------------------------------------------------------------\nsrc/robots/adapters/native_navigation.py     179      0   100%\n------------------------------------------------------------------------\nTOTAL                                        179      0   100%\nRequired test coverage of 85% reached. Total coverage: 100.00%\n59 passed in 0.69s\n"
+    },
+    {
+      "command": [
+        "black",
+        "--check",
+        "src/robots/adapters/native_navigation.py",
+        "tests/test_native_navigation.py"
+      ],
+      "exit_code": 0,
+      "output": "All done! \u2728 \ud83c\udf70 \u2728\n2 files would be left unchanged.\n"
+    },
+    {
+      "command": [
+        "ruff",
+        "check",
+        "src/robots/adapters/native_navigation.py",
+        "tests/test_native_navigation.py"
+      ],
+      "exit_code": 0,
+      "output": "All checks passed!\n"
+    },
+    {
+      "command": [
+        "mypy",
+        "--follow-imports=skip",
+        "src/robots/adapters/native_navigation.py",
+        "tests/test_native_navigation.py"
+      ],
+      "exit_code": 0,
+      "output": "Success: no issues found in 2 source files\n"
+    },
+    {
+      "command": [
+        "bandit",
+        "-q",
+        "-c",
+        "pyproject.toml",
+        "src/robots/adapters/native_navigation.py"
+      ],
+      "exit_code": 0,
+      "output": ""
+    },
+    {
+      "command": [
+        "vulture",
+        "src/robots/adapters/native_navigation.py",
+        "tests/test_native_navigation.py",
+        "--min-confidence",
+        "85"
+      ],
+      "exit_code": 0,
+      "output": ""
+    },
+    {
+      "command": [
+        "xenon",
+        "src/robots/adapters/native_navigation.py",
+        "--max-absolute",
+        "B",
+        "--max-modules",
+        "B",
+        "--max-average",
+        "A"
+      ],
+      "exit_code": 0,
+      "output": ""
+    },
+    {
+      "command": [
+        "pylint",
+        "--disable=all",
+        "--enable=duplicate-code",
+        "src/robots/adapters/native_navigation.py"
+      ],
+      "exit_code": 0,
+      "output": "\n--------------------------------------------------------------------\nYour code has been rated at 10.00/10 (previous run: 10.00/10, +0.00)\n\n"
+    }
+  ],
+  "closure_before": {
+    "src/robots/adapters/native_navigation.py": "d4d758fc7d827d42aab374ebc0c938b5a066d73638e95d82eca3d7aca2730c0a",
+    "tests/test_native_navigation.py": "55f1060dabd47f9a4d8fd345c491afd491e7d06cef9e09f678833563ff128635",
+    "/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source/src/map/map.cpp": "9629e6b751ca3fd9d160e48c0beb80bf7bbe0c359fa7ecdb46698b074e6c1113",
+    "/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source/src/map/map.hpp": "1cb428d1145ec9c4045b2ae58c163be24bf1bd374fc8eea07eaf0c266621fe2b",
+    "/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source/src/map/path.cpp": "61232a958b740c40cb7c13c9df00f90c476d19092ed3d0863ff5556864945233",
+    "/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source/src/map/npc.cpp": "90d582661668e5cb8567de5a7b92d067e5d0db479963b00bab340af9fe477534",
+    "/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source/src/tool/mapcache.cpp": "9823958e6b8506a9d9e0641400dfc2d048922e5bdc8b779b2e783756fc1efb7e",
+    "/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source/src/common/mmo.hpp": "883ec2048b726d51f897218989ca66c476bcdbc969d683025fe09a0bf280fa6d",
+    "/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source/npc/warps/cities/prontera.txt": "434fe0daf761275cf731c343a501c02d88355a524b9c9a87d1f00c510ae3f4d7",
+    "/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source/db/map_cache.dat": "00d277d00e70f476ceef9608f0b45a2a85bfc5ebf1fabf92f46e86f63648282e",
+    "/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source/db/pre-re/map_cache.dat": "7a58a94bada98c5457fce3fc9bf950b4111fdf494d0488c54d716516707a8433"
+  },
+  "closure_after": {
+    "src/robots/adapters/native_navigation.py": "d4d758fc7d827d42aab374ebc0c938b5a066d73638e95d82eca3d7aca2730c0a",
+    "tests/test_native_navigation.py": "55f1060dabd47f9a4d8fd345c491afd491e7d06cef9e09f678833563ff128635",
+    "/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source/src/map/map.cpp": "9629e6b751ca3fd9d160e48c0beb80bf7bbe0c359fa7ecdb46698b074e6c1113",
+    "/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source/src/map/map.hpp": "1cb428d1145ec9c4045b2ae58c163be24bf1bd374fc8eea07eaf0c266621fe2b",
+    "/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source/src/map/path.cpp": "61232a958b740c40cb7c13c9df00f90c476d19092ed3d0863ff5556864945233",
+    "/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source/src/map/npc.cpp": "90d582661668e5cb8567de5a7b92d067e5d0db479963b00bab340af9fe477534",
+    "/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source/src/tool/mapcache.cpp": "9823958e6b8506a9d9e0641400dfc2d048922e5bdc8b779b2e783756fc1efb7e",
+    "/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source/src/common/mmo.hpp": "883ec2048b726d51f897218989ca66c476bcdbc969d683025fe09a0bf280fa6d",
+    "/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source/npc/warps/cities/prontera.txt": "434fe0daf761275cf731c343a501c02d88355a524b9c9a87d1f00c510ae3f4d7",
+    "/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source/db/map_cache.dat": "00d277d00e70f476ceef9608f0b45a2a85bfc5ebf1fabf92f46e86f63648282e",
+    "/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source/db/pre-re/map_cache.dat": "7a58a94bada98c5457fce3fc9bf950b4111fdf494d0488c54d716516707a8433"
+  },
+  "closure_stable": true,
+  "remaining": "Parent must integrate with native controller and verify actual walking, map change and farming; this module never claims arrival.",
+  "runtime_public_cache_sha256": "7a58a94bada98c5457fce3fc9bf950b4111fdf494d0488c54d716516707a8433"
+}

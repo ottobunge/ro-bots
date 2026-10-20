@@ -1,0 +1,151 @@
+{
+  "blocker_analysis": {
+    "a_nearby_monsters_empty": "false in the parallel fresh states (2 monsters, 18/55 samples) BUT the brain's own script states were empty (travel engaged 277x requires empty nearby_monsters) - the ScriptStateCapture rows now witness the brain-vs-diagnostic divergence directly",
+    "b_name_mismatch": "remaining candidate; the pinned-layout probe rules OUT the species byte offset; window-7 per-sample species_table/species_resolutions/catalog_size/plan_target_mobs name the live link decisively",
+    "c_build_raised": "not the standing blocker: fixture_0 projected a state in 55/55 samples (attackable_count 2/1/0; only the expected teardown raise at transport close); the diagnostic now records exception class/message class per sample anyway",
+    "window6_raw_receipt": "run/reviews/playing-grind-operator-live-window6.json"
+  },
+  "combined_suites": {
+    "framediag": {
+      "failures": 0,
+      "junit": "evidence/COMBINED-framediag.xml",
+      "tests": 18
+    },
+    "operator": {
+      "failures": 0,
+      "junit": "evidence/COMBINED-operator.xml",
+      "tests": 19
+    },
+    "target": {
+      "failures": 0,
+      "junit": "evidence/GREEN-target.xml",
+      "tests": 34
+    },
+    "travel2_replan": {
+      "failures": 0,
+      "junit": "evidence/COMBINED-travel2-replan.xml",
+      "tests": 29
+    }
+  },
+  "date": "2026-10-15",
+  "evidence_digests": {
+    "READY-TO-RUN.md": "147a1411f816dc207829311818d5c330dc6d409ab4cf491e05c2bbb061ac85a9",
+    "evidence/COMBINED-framediag.xml": "fd7164b925897cf57201d31792af15097887b456851cbcd42828a04be8ad45d6",
+    "evidence/COMBINED-operator.xml": "56acd0236f34d6926917984f0f421ff9ab4c4499a2d9edde327af23de65f5616",
+    "evidence/COMBINED-travel2-replan.xml": "12d47ffcce5468875a47680f4a4c64103c86f99d1bd30eb30a680cc43473fa28",
+    "evidence/GREEN-target.xml": "9f7c108acd89ff54ba3a241b9b37a85b099117b084e26af998042388b2bf4ce9",
+    "evidence/RED-collection.log": "998d520d74192b4f753372326c8564902a05395232c6e0b7fbc097a9f9122492",
+    "evidence/RED-target.xml": "e4c4a97bcc6f3cf0bc21a1522df1f40483d321887885a50d373bb2db86473ba1",
+    "evidence/black-scoped.log": "0214ffb784a78652e40eec014c77c4333c1f9bd65b48a4d473b56c44596f5d18",
+    "evidence/mypy-scoped.log": "fea4c3342c950142f2a3773858bc1ae52fa17b85e5a1cb79f70396180fa2cabe",
+    "evidence/originals/COPY_DIGESTS.json": "ce087c370dc57a601fe2998ef35d5d7b07e1f7ad1c46cd14eef5d3c94b1bf1bd",
+    "evidence/root-task-check.log": "069525b102e3fd683ddfe239f23aea6fccecb4b12c790bb1b1e208bc0ea793f1",
+    "evidence/ruff-scoped.log": "0857a355f2103f99b327c3bb2e9e470d8e884f53395f87133c776bcb43a7f357",
+    "evidence/spawn-unit-layout-oracle.txt": "01e5c2af4c2e5651b82bc9a39cc4722172c8be9e816ede2414c677c8cdd6a513",
+    "evidence/xenon-scoped.log": "8bcfa82e9ef577074ff3458affec1d83e1f197b2f17e65cb6d2b9dde04652a4a"
+  },
+  "honest_limits": [
+    "the blocker label itself is named LIVE in window 7; this slice settled it offline only as far as the window-6 raw receipt and the compiled pinned layout allow",
+    "the 0x09FD/0x09FF sizes in the decoder's expected_length map (110/104) match the compiled walking/idle structs; the walking flag (packet_id==0x09FD) and position offsets (63/59) remain consistent with the pinned structs",
+    "fixture_1's visible-2/attackable-0 samples are consistent with non-attackable objecttypes (e.g. type 0 players); the per-sample species table will disambiguate live"
+  ],
+  "live_executed": false,
+  "namespace": [
+    ".work/playing-grind-target/**",
+    "run/reviews/playing-grind-target.json"
+  ],
+  "offline_built": true,
+  "operator": "playing-grind-target",
+  "pinned_layout_verdict": {
+    "answer": "YES - offset CORRECT; no src/robots fix required",
+    "citations": "rathena/src/map/packets_struct.hpp:705 (packet_spawn_unit int16 job), :778 (packet_unit_walking), :850 (packet_idle_unit); enum: :76 spawn_unitType=0x9fe, :108 unit_walkingType=0x9fd, :37 idle_unitType=0x9ff; name[NAME_LENGTH] :754/828/900",
+    "compiled_rows": {
+      "idle_0x09FF": {
+        "offsetof_PosDir": 59,
+        "offsetof_job": 23,
+        "sizeof": 104
+      },
+      "spawn_0x09FE": {
+        "offsetof_AID": 5,
+        "offsetof_job": 23,
+        "sizeof": 103
+      },
+      "walking_0x09FD": {
+        "offsetof_MoveData": 63,
+        "offsetof_job": 23,
+        "sizeof": 110
+      }
+    },
+    "end_to_end_offline_proof": "test_real_client_projection_names_received_poring_and_attack_flows: live-shaped 0x09FE Poring(1002) frame -> REAL PlayingClient -> state.nearby_monsters == ['Poring'] -> FarmScript emits Attack -> perform_native sends CZ_REQUEST_ACT2 0x0437",
+    "evidence": "evidence/spawn-unit-layout-oracle.txt",
+    "oracle": "compiled sizeof/offsetof from run/public-source/callback-qualified-e985006171d2/src/map/packets_struct.hpp with the qualified CPPFLAGS",
+    "question": "does the species/job byte offset used for the mob-db lookup (playing_runtime.py:1441 raw[23:25]) match the pinned 20180704 spawn-unit layout?"
+  },
+  "prohibited_verified": {
+    "git_actions": "none",
+    "live_execution": "not attempted",
+    "private_bundle_bodies": "none",
+    "spike_edits": "none",
+    "src_edits": "none (pinned-layout probe found the production offset CORRECT)"
+  },
+  "quality_gates": {
+    "root_gate": {
+      "exit": 0,
+      "log": "evidence/root-task-check.log",
+      "summary": "nix develop -c task check: 5892 passed - src baseline unchanged"
+    },
+    "scoped_black": {
+      "exit": 0,
+      "log": "evidence/black-scoped.log",
+      "note": "no-op by project formatter config (.work force-excluded)"
+    },
+    "scoped_mypy_strict": {
+      "exit": 0,
+      "log": "evidence/mypy-scoped.log",
+      "summary": "Success: no issues found in 5 source files (MYPYPATH=src + six grind namespaces)"
+    },
+    "scoped_ruff": {
+      "exit": 0,
+      "log": "evidence/ruff-scoped.log"
+    },
+    "scoped_xenon_modules": {
+      "exit": 0,
+      "log": "evidence/xenon-scoped.log",
+      "summary": "5 namespace modules clean at max-absolute B / max-modules B / max-average A; adapted 1:1 test files are predecessor bytes excluded from the module scope like the siblings"
+    }
+  },
+  "schema": "reviewed-operator-namespace/v1",
+  "source_digests": {
+    "modules": {
+      "frame_diagnostics.py": "ac6b432a41cf9d1778f509207feaeef00da43f695ad4770e2900d4e6d31537a3",
+      "grind_target_operator.py": "648d66d88cfd042cf144abbde3c1f4c8f601e6eb41bb7eadcf703e75718ce15b",
+      "projection_diagnostic.py": "77948eb5ae6d0cd2691e0c209eeecb8f85d64d400d12aa56fdc160c889f7d65b",
+      "spawn_knowledge.py": "466e81b64f53ca16754f4fbd25269f1f567feda7506616aa10db218b6f964c72",
+      "travel.py": "545d123961ea6641f798c9b88daa81d421d3a0afbe848ad5c2339994d000d7ff"
+    },
+    "tests": {
+      "tests/conftest.py": "f99664e547c602e6aaaf3341b652e88e17f129c9eb9e2727e1fca4352b58f912",
+      "tests/test_consolidation_contracts.py": "d0fbc61926ee9a0987932af820abbeff94927fb9980da42c1872eb438c91bd48",
+      "tests/test_farm_idle_travel.py": "24cdb0962321166a14d73413bec2fe7a051c4a64b01cf3a61fa456e9ec90d530",
+      "tests/test_projection_diagnostic.py": "626d39d6d087b9ac4ce676098a25bd300b1ddce907e28f61518dbd2283ea39bd",
+      "tests/test_projection_layout_oracle.py": "0494b851d8f32718026f89e7d1f5be9e0bb58eb2b756632b03c105d0cf01e611",
+      "tests/test_travel_contracts.py": "3b660c2f088fd14b2bc65731a8a7fc4d14728d7360fdb8d5449428d1174e69f8",
+      "tests/tests_support/stub_harness.py": "98e5f6747aed8078bcfb39db900d3b95b84616eb39c9270147e602bf976dbc39"
+    }
+  },
+  "task": "window-7 slice: consolidated operator (travel+replan+framediag) + safe BotState projection diagnostic; name the no-attack blocker decisively",
+  "tdd_chronology": {
+    "green": {
+      "artifact": "evidence/GREEN-target.xml",
+      "errors": 0,
+      "failures": 0,
+      "skipped": 0,
+      "tests": 34
+    },
+    "red": {
+      "artifact": "evidence/RED-target.xml",
+      "note": "collection-stage ModuleNotFoundError naming the two NEW modules (projection_diagnostic, grind_target_operator) against the copied-trio-plus-tests snapshot; log evidence/RED-collection.log"
+    }
+  },
+  "window7_packaging": "READY-TO-RUN.md (same command shape as windows 5/6; acceptance = decisive projection label + in-slice attack 0x437 flow or complete fix-slice payload)"
+}

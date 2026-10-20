@@ -1,0 +1,94 @@
+{
+  "design": {
+    "anti_flap": "the pacer only ever delivers Heartbeat (never PlanExpired); deliveries never share a heartbeat_seq (agent counter bumped per delivery, exactly like ReplanWatcher); recorded production interaction: every paced review re-authors the farm plan with a NEW plan_id (brain._setup_farm_plan increments _plan_seq), which resets the watcher's stale-episode accumulation - the bounded replan trigger stays silent under pacing (paced reviews themselves are the re-authoring path); contract: watcher replans stay <= max_replans (observed 0 under the stub), at most one successor_unmet record, and every delivered event consumed exactly one heartbeat_seq",
+    "decision_count_tradeoff": "EventDrivenBrain.handle_event calls the decision model exactly once per delivered event: ~150 reviews per 300s window per agent at 2.0s vs ~0-1 at the production cadence. Free with the stubbed ScriptedDecisionModel (offline twins and a default window 8); a real multiplier with CLEF/LLM decision models - documented in the module docstring, the receipt, and READY-TO-RUN",
+    "pacer": ".work/playing-grind-cadence/heartbeat_pacer.py: HeartbeatPacer delivers at most one Heartbeat per cadence boundary (default every 2.0s of mechanical 0.25s stepping; operator argument --pacer-every-s, 0 disables); blocked deliveries (no seam, no build_state, no heartbeat_seq) are recorded, never fabricated"
+  },
+  "digest_bindings": {
+    "byte_identical_helpers": [
+      "spawn_knowledge.py",
+      "travel.py",
+      "frame_diagnostics.py",
+      "projection_diagnostic.py"
+    ],
+    "copies_current_playing_grind_cadence": {
+      "frame_diagnostics.py": "ac6b432a41cf9d1778f509207feaeef00da43f695ad4770e2900d4e6d31537a3",
+      "grind_target_operator.py": "f2f54b119041bf5c4a22cb7078ef904af5f98e3e601b969e3ca38225ca350629",
+      "projection_diagnostic.py": "77948eb5ae6d0cd2691e0c209eeecb8f85d64d400d12aa56fdc160c889f7d65b",
+      "spawn_knowledge.py": "466e81b64f53ca16754f4fbd25269f1f567feda7506616aa10db218b6f964c72",
+      "travel.py": "545d123961ea6641f798c9b88daa81d421d3a0afbe848ad5c2339994d000d7ff"
+    },
+    "evidence": {
+      "COMBINED-framediag.xml": "da18f4e45f8592c49aac7ce3305119d146c6f4bc37dbb03e6ed2b86ae90a52d5",
+      "COMBINED-namespaces.xml": "ea685bd5483eb1c5cd79686af992802b228cd1b77e17138fdc6f2c9e5cce3c8a",
+      "COMBINED-operator.xml": "79952429d4edcdf10ddce7f2e40eee81e2321ea72e6fe7d3dcc966cb4c22d323",
+      "COMBINED-target.xml": "d018d51d90fe9b1c62e260dbdc25125d78b28533eb56d77771e6a0dba02beefe",
+      "COMBINED-travel.xml": "948289d35decfef361150fb321eeec547bb0bfc4696331d1a3206599170a63db",
+      "COMBINED-travel2-replan.xml": "24a340884a3b130ab13e3685222d79a2fea6701cbb718e6181d9ca4170387dcc",
+      "GREEN-cadence.xml": "a7df43ae3dbfc29b4b9914a2d8bf851fc23544e50e49ed463e2e4263b0004da6",
+      "RED-provenance.md": "6407f9aa103e8ada956d0ff564b766bdd5a4453b521f0e0643f4c6ba217d2abd",
+      "root-task-check.log": "180b7e4cd12387422fc4097d4e0215987ba1b6a6a24069c553f9eeef842062be"
+    },
+    "new_modules": {
+      "heartbeat_pacer.py": "a4a80e76444ac088349b616750aedd0dabc6467160f7a6aba349af311d6c03ed",
+      "tests/conftest.py": "561f1f9726b5fe74f411daf6cc6b80a6386443dd5542351214187e0be45597e2",
+      "tests/test_cadence_contracts.py": "10bd067fed66ef5c6e5e0da1b59f935e44148e9f3e2fcd7aeb03884825b5952f"
+    },
+    "originals_playing_grind_target": {
+      "frame_diagnostics.py": "ac6b432a41cf9d1778f509207feaeef00da43f695ad4770e2900d4e6d31537a3",
+      "grind_target_operator.py": "648d66d88cfd042cf144abbde3c1f4c8f601e6eb41bb7eadcf703e75718ce15b",
+      "projection_diagnostic.py": "77948eb5ae6d0cd2691e0c209eeecb8f85d64d400d12aa56fdc160c889f7d65b",
+      "spawn_knowledge.py": "466e81b64f53ca16754f4fbd25269f1f567feda7506616aa10db218b6f964c72",
+      "travel.py": "545d123961ea6641f798c9b88daa81d421d3a0afbe848ad5c2339994d000d7ff"
+    },
+    "successor_operator": {
+      "derivation": "copy of the window-7 consolidated operator + pacer wiring (OPERATOR_ID playing-grind-cadence, --pacer-every-s, pacer receipts, _observe_and_pace/_build_pacers helpers)",
+      "module": "grind_target_operator.py"
+    }
+  },
+  "frontier_addressed": {
+    "fix_seam": "operator-level heartbeat pacer delivering Heartbeat through the SAME ScheduledAgent.deliver_event seam the window-5 replan watcher uses (agent.heartbeat_seq bumped first); no production edits, production heartbeat constants untouched (imported read-only in tests)",
+    "window7_finding": "run/reviews/playing-grind-operator-live-window7-analysis.json: fixture 1 projected a Poring at 6.7 tiles with plan target ['Poring'] and dispatched ZERO attacks; root cause - brain script evaluation rides Heartbeat events produced at HEARTBEAT_MIN_S..HEARTBEAT_MAX_S=300..1200s randomized (src/robots/app/agent_runtime.py), so a bounded 300s window can contain ZERO script evaluations; the operator's mechanical 0.25s loop drove host.step() (scheduling only), not the brain's script step"
+  },
+  "honest_disclosures": [
+    "twin mirror seam: the RED mirror reproduces window 7 at the OPERATOR-LOOP seam (host.step-shaped loop, zero script evaluations), exactly as the window-7 analysis names the mechanism; the live window-7 capture ALSO counted 600 brain.step_script calls from the agent producer thread that still dispatched zero attacks - the twin does not reproduce that per-thread stepping, and window 8's receipt (script_capture + pacer + timeline) is the instrument that will decide whether paced reviews alone close the live engagement path",
+    "GREEN twin drives the mechanical script step through the real agent.tick() on the simulated clock (the window-8 shape: apply_operator_interventions sets tick_seconds=0.25 before producers start, so the live agent thread steps the script at that cadence); the twin folds thread stepping and pacer cadence into one deterministic loop",
+    "under pacing with the stub decision model, a permanently wrong farm_target is NOT replan-corrected (review churn resets the watcher's stale episode); --pacer-every-s 0 restores the window-5 watcher regime; with an LLM decision model the paced reviews carry fresh memory context and can retarget directly"
+  ],
+  "named_contracts": [
+    "RED mirror: pacer absent + window-7 operator loop shape over a simulated 300s window (1200x0.25s) -> zero timer heartbeats (production desert), zero script evaluations, zero attacks on the wire, while every projection sample shows the plan target in engagement range (fixture-1 shape: Poring plan, Poring visible)",
+    "GREEN: pacer at 2.0s -> 150 deliveries, script evaluations > 0, attack_emitted, attack packet (0x437/0x114) in wire.sent via real perform_native at the observed target actor id, decision-call counts recorded (>= seed + deliveries), no decision failures",
+    "anti-flap: 150 paced reviews + stale non-target plan -> watcher replans <= 1, at most one successor_unmet, agent.heartbeat_seq == pacer deliveries + replans + production timer heartbeats (no double-fire, no seq collision)",
+    "pacer denies invalid cadence (0, negative, NaN, inf; non-positive step_s)",
+    "pacer receipt is honest about missing seams (blocked + reason, never fabricated deliveries)"
+  ],
+  "scope": {
+    "git_actions": 0,
+    "live_execution": 0,
+    "note": "src/ and spikes/ carry the PRE-EXISTING shared dirty tree of parallel delegates; this namespace wrote only inside .work/playing-grind-cadence/ + run/reviews/ + the READY-TO-RUN Window-8 section",
+    "owned_namespace": ".work/playing-grind-cadence/",
+    "production_src_edits": 0,
+    "report_path": "run/reviews/playing-grind-cadence.json",
+    "spike_edits": 0
+  },
+  "status": "COMPLETE_OFFLINE_TDD_GATES_GREEN_LIVE_LEFT_TO_PARENT",
+  "tdd_chronology": {
+    "GREEN": "5/5 namespace contracts (evidence/GREEN-cadence.xml)",
+    "RED_behavioral": "3 named-contract failures (decision-call seam unwired; mirror seeded with wrong plan-target model; watcher/tick timers on wall clock inside the simulated window) - all fixed inside this namespace; full transcription in evidence/RED-provenance.md",
+    "RED_module_absence": "pytest .work/playing-grind-cadence/tests -> ModuleNotFoundError: No module named 'heartbeat_pacer' (1 collection error) - see evidence/RED-provenance.md"
+  },
+  "verification": {
+    "combined_scoped_suites": "grouped per sibling convention to avoid cross-namespace module-basename collisions (target and travel2 both ship test_travel_contracts.py; a single-invocation run denied with 3 collection errors - evidence/COMBINED-namespaces.xml kept as that record): operator 19 + travel 15 + travel2+replan 29 + framediag 18 + target 34 + cadence 5 = 120 passed, 0 failures (per-group junit XMLs in evidence/)",
+    "namespace_suite": "nix develop -c uv run pytest .work/playing-grind-cadence/tests -q -p no:cacheprovider -> 5 passed (evidence/GREEN-cadence.xml)",
+    "root_gate": "nix develop -c task check (repo root, TMPDIR under allowed scratch) -> rc 0, 5892 passed, 65 subtests passed (evidence/root-task-check.log): baseline holds exactly, namespace is .work scratch not collected by the root suite",
+    "scoped_black": "black --check .work/playing-grind-cadence/ -> no-op (.work excluded by project formatter config, matching siblings)",
+    "scoped_mypy": "MYPYPATH over the six grind namespaces; mypy --strict on heartbeat_pacer.py + grind_target_operator.py -> Success: no issues found in 2 source files",
+    "scoped_ruff": "nix develop -c uv run ruff check .work/playing-grind-cadence/ -> All checks passed",
+    "scoped_xenon": "xenon heartbeat_pacer.py grind_target_operator.py --max-absolute B --max-modules B --max-average A -> 0 findings (test files excluded from module scope, matching the sibling namespaces whose own test files rank C under the same thresholds)"
+  },
+  "window8_packaging": {
+    "acceptance": "per agent: pacer.deliveries > 0 AND script_capture.script_steps > 0 AND attack dispatched at an observed target (0x437 in sent packets while projection samples show the target in range) with damage/death/XP/loot receipts OR honest blocker evidence with projection samples attached",
+    "ready_to_run": ".work/playing-grind-operator/READY-TO-RUN.md '## Window 8' section (same command shape; PYTHONPATH gains .work/playing-grind-cadence FIRST so the consolidated copies + pacer resolve there; --pacer-every-s 2.0)"
+  },
+  "worker": "playing-grind-cadence (window-8 packaging delegate)"
+}

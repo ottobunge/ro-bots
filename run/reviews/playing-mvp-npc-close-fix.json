@@ -1,0 +1,118 @@
+{
+  "schema": "playing-mvp-npc-close-fix/v1",
+  "scope": "Offline manual newly observed packet maintenance; not generator cycle 3.",
+  "self_approval": false,
+  "independent_review": "pending parent-owned review",
+  "parent_root_gate": "not run by delegate",
+  "native_rerun": false,
+  "revision": "e985006171d2eb320ee512a653f4c83aea3d81b6",
+  "profile": {
+    "role": "map",
+    "packetver": 20180704,
+    "client_family": "MAIN",
+    "ruleset": "pre-re",
+    "obfuscation": "ABSENT"
+  },
+  "change": {
+    "packet": "0x00B6",
+    "name": "ZC_CLOSE_DIALOG",
+    "fixed_length": 6,
+    "preserved_mapping_count": 889,
+    "result_mapping_count": 890,
+    "only_packetdb_change": ", 0x00B6: 6",
+    "NATIVE_MACROS_and_parse_stream_bitexact": true
+  },
+  "source": {
+    "record": "PACKET_ZC_CLOSE_DIALOG",
+    "declaration": "src/map/packets.hpp:755-759",
+    "sender": "clif_scriptclose",
+    "qualified_clif_lines": [
+      2519,
+      2526
+    ],
+    "sender_body_sha256": "0ddcfe138ede8550daa2f709e9dbd64f89c2ed6aa760560d142365e837c0ca18",
+    "hash_span": "Exact function text excluding final line-feed",
+    "configured_non_makefile_count_checked": 3206
+  },
+  "compiler_oracles": {
+    "g++": "182 6 1 0 2 2 4",
+    "clang++": "182 6 1 0 2 2 4",
+    "columns": [
+      "header",
+      "sizeof",
+      "alignof",
+      "packetType_offset",
+      "npcId_offset",
+      "packetType_width",
+      "npcId_width"
+    ],
+    "fresh_full_unchanged_headers": true,
+    "recipe": "Existing pinned spikes/007-native-packet-ast/toolchain, exact immutable map-cppflags and existing include closure; no forced-header or flag override"
+  },
+  "tdd": {
+    "red": "One real parse_stream failure: unknown packet 0x00b6 at 0",
+    "first_green": "1 passed after sole mapping addition",
+    "initial_collection_issue": "Fixed test helper import before valid RED; collection error is not RED evidence",
+    "final_test_counts": {
+      "tests": 261,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "quality": [
+      "Black check on new and preservation test",
+      "Ruff check on new and preservation test",
+      "strict mypy on new test",
+      "py_compile on new test"
+    ],
+    "coverage": [
+      "Individual opaque uint32 payload boundaries",
+      "Coalesced observed predecessor-ID order 0196/0AB2/0080, plus B0/clock/C0/known variable chat/repeated B6",
+      "Every stream split and bytewise delivery",
+      "All B6 truncations retain exact bytes",
+      "Unknown successor still raises at exact offset",
+      "Existing malformed variable lengths remain rejected",
+      "All 889 old mappings retained; entire prior packetdb recovered bitexact after removing sole B6 token",
+      "Pinned manifest conflicts/source/profile drift fail closed",
+      "Fresh GCC and Clang full-header/profile oracles"
+    ]
+  },
+  "artifacts": {
+    "private_scratch": "/home/otto/.hermes/cache/scratch/npc-close-kk24hkhc",
+    "red_xml": "/home/otto/.hermes/cache/scratch/npc-close-kk24hkhc/red.xml",
+    "first_green_xml": "/home/otto/.hermes/cache/scratch/npc-close-kk24hkhc/green-first.xml",
+    "final_xml": "/home/otto/.hermes/cache/scratch/npc-close-kk24hkhc/final.xml",
+    "final_log": "/home/otto/.hermes/cache/scratch/npc-close-kk24hkhc/final-gate.log",
+    "final_oracles": "/home/otto/.hermes/cache/scratch/npc-close-kk24hkhc/pytest-final",
+    "snapshot_sha256": {
+      "spikes/003-clientless-limbs/packetdb.py": "f75d7db42e9df276c5be3a47b1a875eb66c642366600de7bdf398f467cbb9d31",
+      "tests/test_native_npc_close_framing.py": "fd405676630281cc26cd71c6842b0e289ea040a65ff6e33c21ba6a7d2720844b",
+      "tests/test_native_emotion_framing.py": "c038ec539b7e64dfb3e2b5b17d076c467075ecdc30fa84bfb30b8842465f239a",
+      "protocol/main-20180704-pre-re-npc-close.json": "df6ba88ff0faa70b3797296060d59587afb28927ddfd1238d47594a47f1051ab",
+      "protocol/main-20180704-pre-re.json": "cba02cf6818ba9d8cfc11c04ca7f0d31c31a60a98443d3c08537b91c91d8b474",
+      "tests/test_native_protocol_manifest.py": "e13eff6c7ae84daa17259304017366510d76a7d7683d6b9ff2b541087ae253cf"
+    },
+    "packetdb_before_sha256": "7edfe9bb2a93559e29832f6446a9d8b852c6caafe2e406a6516986176e302c67",
+    "packetdb_after_sha256": "f75d7db42e9df276c5be3a47b1a875eb66c642366600de7bdf398f467cbb9d31",
+    "snapshot_stable": true
+  },
+  "files_created": [
+    "tests/test_native_npc_close_framing.py",
+    "protocol/main-20180704-pre-re-npc-close.json",
+    "run/reviews/playing-mvp-npc-close-fix.json"
+  ],
+  "files_modified": [
+    "spikes/003-clientless-limbs/packetdb.py",
+    "tests/test_native_emotion_framing.py"
+  ],
+  "exclusions": [
+    "No live runs or world/SQL/Docker effects",
+    "No NPC/dialog semantics or identity approval",
+    "No 0x0146 ACK, unknown skipping, ignore-all-NPC behavior, revive or attack effects",
+    "No production parser/API/collector/client changes",
+    "No source/package/header/flags/toolchain/deployment edits",
+    "Original C0 manifest and test_native_protocol_manifest unchanged",
+    "No original generator/tracer/B1 budget consumption or waiver",
+    "No combat XP/loot or death-tail acceptance claim"
+  ]
+}

@@ -1,0 +1,72 @@
+{
+  "scope": "First journal repair final rejected disposition",
+  "accepted": false,
+  "review": "run/reviews/runtime-publication-journal-first-fix-review.json",
+  "historical_reviewed_source_matches_completed_parent_gate": true,
+  "reviewed_source_sha256": "303e75c81fce596c2e42dd8674b8492a14a3ce8951f0d1d527d4fa161d97eae2",
+  "verified_executions": 141,
+  "verified_failed_executions": 10,
+  "failed_tests": [
+    [
+      "",
+      "test_diagnostic_nonlocal_contract[False-KeyboardInterrupt]"
+    ],
+    [
+      "",
+      "test_diagnostic_nonlocal_contract[False-SystemExit]"
+    ],
+    [
+      "",
+      "test_diagnostic_nonlocal_contract[False-GeneratorExit]"
+    ],
+    [
+      "",
+      "test_diagnostic_nonlocal_contract[False-Cancel]"
+    ],
+    [
+      "",
+      "test_constructor_allocation_getpid_contract[KeyboardInterrupt]"
+    ],
+    [
+      "",
+      "test_constructor_allocation_getpid_contract[SystemExit]"
+    ],
+    [
+      "",
+      "test_pure_normal_close_diagnostic[KeyboardInterrupt]"
+    ],
+    [
+      "",
+      "test_pure_normal_close_diagnostic[SystemExit]"
+    ],
+    [
+      "",
+      "test_pure_normal_close_diagnostic[GeneratorExit]"
+    ],
+    [
+      "",
+      "test_pure_normal_close_diagnostic[Cancel]"
+    ]
+  ],
+  "original_finding_assessment": {
+    "JOURNAL-ACK-001": {
+      "closure": "closed_for_frozen_acknowledgement_method_only",
+      "evidence": "18 fresh cases: OSError/ValueError deny False; KeyboardInterrupt/SystemExit/GeneratorExit/custom BaseException propagate exact origin and reached frame at root-fstat/file-fstat/entry-stat. All begin with actual append/True ack; poison then denies later ack without a second binding visit and later writes refuse. Holding the cooperative lock after poisoning is observed, not treated as an error."
+    },
+    "JOURNAL-OWNERSHIP-001": {
+      "closure": "partially_addressed_not_fully_closed",
+      "evidence": "Returned close and failed constructor expose immutable snapshots, preserve primary origins and optional identity, attempt once and never retry. Real valid-fd/EBADF and independent-process flock observations support pre-release versus release-before-raise distinctions. New allocation-gap finding prevents unconditional constructor closure.",
+      "contract_migration_assessment": "The migration is a genuine narrow observational handoff, not proof of physical release. Two independently owned normal-exit worker tests prove that a retained capsule accompanies a live blocked writer and kernel teardown releases it without manual descriptor close. This is operationally meaningful only where the caller/supervisor has separately established process ownership and a permitted controlled process boundary. No built-in supervisor, retry, kill or manager authority is present; capsule PID/inode/fd and forged snapshots cannot establish it. For a long-lived host lacking such a boundary, the unresolved status alone does not solve targeted cleanup.",
+      "old_oracle": "Original unconditional zero-live-fd constructor oracle and failed report preserved and not rerun; no claim that they pass."
+    }
+  },
+  "open_findings": [
+    "JOURNAL-DIAGNOSTIC-001",
+    "JOURNAL-OWNERSHIP-002"
+  ],
+  "second_and_final_repair": "deleg_43f8d3c9/task-0",
+  "repair_cycle_count": 2,
+  "further_repair_requires_explicit_architectural_review": true,
+  "reviewed_old_source_stability_does_not_apply_to_active_repair": true,
+  "publication_or_world_authority": false
+}

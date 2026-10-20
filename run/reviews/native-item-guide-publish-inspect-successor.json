@@ -1,0 +1,63 @@
+{
+ "status": "COMPLETE",
+ "namespace": "native-item-guide-publish-inspect-successor",
+ "frontier": "run/reviews/native-item-guide-content-inspect-drift-frontier.json",
+ "fix_summary": "publish_row_normalization: pure helper neutralizing ONLY State.Health.Log (constant marker; present-vs-absent preserved; Status/FailingStreak strict) applied to BOTH sides of the single publish_content row equality; every other field and unknown fields fail closed; validate_world/validate_role/fingerprint paths untouched",
+ "changed_modules": {
+  "content/live_recovery.py": {
+   "base_freeze_sha256": "1494b5676b16cb4552c3c2604d7d4cfbd866a16a272cdef86b19bd4b57caaf66",
+   "green_sha256": "0d965cc0b6c376c5a5169f38201f5dfd093417f780d1ec86689f077d760d6a5c"
+  }
+ },
+ "byte_identical_modules": {
+  "item_guide_files.py": "528b12b88c2ca5a3bacdb0c4786666af7d8caf1042943395814890ac3773ef18",
+  "item_guide_publication.py": "ec94b628c3d5d45d8ba256f9fe8b9c7f1fee6362669be57ff063e5e1709facb0",
+  "recovery.py": "83a85cdfd6f78b7c1683c0d51c19a1f48b4820e45970b35a7ff3fa86ecb2e736",
+  "rootless_socket_reader.py": "a8339f4af3359d6ae283879ce1031a4bcc8e589e9822a203e6a3c68acafd49ae"
+ },
+ "red_receipt": {
+  "junit": ".work/native-item-guide-publish-inspect-successor/red/publish-inspect-drift-red.xml",
+  "sha256": "5fa032d36e62eb5714d0ca97c1275d1fff006b3990f212474beb81c32241ff92",
+  "base": "byte-identical adopted base",
+  "denial_identity": "content_inspect_drift",
+  "cases": [
+   {
+    "name": "test_advancing_health_log_cycle_publishes_verified",
+    "result": "FAIL"
+   },
+   {
+    "name": "test_stable_health_log_cycle_still_publishes_verified",
+    "result": "PASS"
+   },
+   {
+    "name": "test_unknown_late_inspect_field_still_denies",
+    "result": "PASS"
+   }
+  ]
+ },
+ "green_new_tests": {
+  "junit": ".work/native-item-guide-publish-inspect-successor/green/publish-inspect-drift-green.xml",
+  "sha256": "c55794c409c97f9ba8c072ff6081a7a4a1d3a8b7896feb56a73ec37f3f67f81f",
+  "tests": 3,
+  "failures": 0
+ },
+ "full_adapted_suite": {
+  "junit": ".work/native-item-guide-publish-inspect-successor/green/publish-inspect-successor-full-green.xml",
+  "sha256": "66841c8052d25e79e67a4b01db6df4937ab1353f1d23ab6b9bd4a04d83f21895",
+  "tests": "157",
+  "failures": "0",
+  "errors": "0",
+  "skipped": "0",
+  "id_set": "exact match with inherited 154 (0 missing, 0 extra) + 3 new",
+  "excluded": "fixture-support/ predecessor-generation harness modules (out of inherited selection)"
+ },
+ "gates": {
+  "black": "1 file would be left unchanged",
+  "ruff": "All checks passed",
+  "mypy": "Success: no issues found in 1 source file (strict project config)",
+  "xenon": "exit 0 (B/B/A thresholds)"
+ },
+ "interpreter": "nix develop -c uv run pytest (PYTHONOPTIMIZE=0, PYTHONDONTWRITEBYTECODE=1, scratch TMPDIR, PYTEST_ADDOPTS/PYTEST_DISABLE_PLUGIN_AUTOLOAD unset)",
+ "prohibitions": "no live docker/SQL/lock/publication/TCP (synthetic offline only); no approvals altered; no production edits outside namespace; no git actions; strict mode not weakened",
+ "native_authority": "UNCHANGED_REVOKED"
+}

@@ -1,0 +1,163 @@
+{
+  "passed": true,
+  "bounded_two_agent_run_approved": true,
+  "independent_review_complete": true,
+  "security_concerns": [],
+  "logic_errors": [],
+  "suggestions": [],
+  "summary": "Approved the explicitly renewed bounded pending-start shutdown/cancellation contract on the frozen offline source snapshot. Strengthened retention-before-release and explicit-reap-after-termination assertions are legitimate and pass; no new or remaining in-scope security or logic defect found.",
+  "authorization": "run/reviews/playing-shutdown-contract-renewed-authorization.json",
+  "approval_boundary": {
+    "source_only_readiness": true,
+    "native_activation_permission": false,
+    "live_execution_performed": false,
+    "native_acceptance": false,
+    "native_gameplay_acceptance": false,
+    "native_combat_acceptance": false,
+    "full_goal_acceptance": false,
+    "requires_fresh_world_account_preflight_and_existing_exact_live_scope": true,
+    "whole_project_combined_gate": "Parent-owned and not substituted by this scoped review."
+  },
+  "review_findings": [
+    "agent_runtime.disconnect selects timeout=0 only for pending producer startup; successfully online shutdown retains the original argument-free unbounded join. No unsafe thread injection, polling shutdown or automatic reconnect/reap is introduced.",
+    "An unsuccessful join retains the thread, pending ownership and client; is_alive=False or ident=None is not accepted instead of a successful join. Host.stop attempts the other agents and WorldFeed, and withholds all journals while any startup ownership remains pending.",
+    "Actual playing.run_host attempts shutdown on any BaseException, adds only a cleanup exception-class diagnostic, and bare-raises the exact original object with deepest originating frame intact. Normal-completion shutdown errors still propagate; CLI KeyboardInterrupt policy remains unchanged.",
+    "The repository producer helper now requires an explicit Event release instead of two-second automatic expiry. Its legacy run_host case asserts exact SystemExit/frame, live retained worker, pending flags, no client/journal close, failed repeated stop without release, then explicit release/join/reap and client-before-journal termination-safe closure. This is a stronger two-phase oracle, not relaxed acceptance. Endpoint/privacy assertions remain present.",
+    "The obsolete scratch immediate-close assertion is not the renewed contract oracle. Its original file, previous failing JUnit and implementation report remain byte-for-byte preserved. A separately named current-contract copy replaces timed expiry with explicit release and verifies both retention and reap; every case in that copy ran without skips.",
+    "Nine new independent Event-controlled lifecycle cases exercise the real host and run_host, RuntimeError/SystemExit/KeyboardInterrupt, direct disconnect/host.stop/run_host, repeated denied reconnect and repeated bounded stop, later participant cleanup, all-journal retention, and explicit reap. They observe return before release, not timer-driven eventual success."
+  ],
+  "verification": {
+    "launcher": "nix develop --offline -c python3 /home/otto/.hermes/cache/scratch/shutdown-contract-final/verify.py",
+    "environment": "Pinned Nix shell, uv --offline --no-sync, real Python threads and synthetic clients only; no native/network/provider inference/SQL/engine/private fixtures.",
+    "configured_static_gates": {
+      "black": {
+        "exit_code": 0,
+        "command": "uv run --offline --no-sync black --check --workers 1 src tests",
+        "log": "/home/otto/.hermes/cache/scratch/shutdown-contract-final/black.log"
+      },
+      "ruff": {
+        "exit_code": 0,
+        "command": "uv run --offline --no-sync ruff check --no-cache src tests",
+        "log": "/home/otto/.hermes/cache/scratch/shutdown-contract-final/ruff.log"
+      },
+      "mypy": {
+        "exit_code": 0,
+        "command": "uv run --offline --no-sync mypy --no-incremental --cache-dir=/home/otto/.hermes/cache/scratch/shutdown-contract-final/mypy-cold src tests",
+        "log": "/home/otto/.hermes/cache/scratch/shutdown-contract-final/mypy.log"
+      },
+      "vulture": {
+        "exit_code": 0,
+        "command": "uv run --offline --no-sync vulture src vulture_whitelist.py",
+        "log": "/home/otto/.hermes/cache/scratch/shutdown-contract-final/vulture.log"
+      },
+      "xenon": {
+        "exit_code": 0,
+        "command": "uv run --offline --no-sync xenon src --max-absolute B --max-modules B --max-average A",
+        "log": "/home/otto/.hermes/cache/scratch/shutdown-contract-final/xenon.log"
+      },
+      "duplicate": {
+        "exit_code": 0,
+        "command": "uv run --offline --no-sync pylint --disable=all --enable=duplicate-code --persistent=no --ignore-paths=tests src",
+        "log": "/home/otto/.hermes/cache/scratch/shutdown-contract-final/duplicate.log"
+      },
+      "bandit": {
+        "exit_code": 0,
+        "command": "uv run --offline --no-sync bandit -q -c pyproject.toml -r src",
+        "log": "/home/otto/.hermes/cache/scratch/shutdown-contract-final/bandit.log"
+      }
+    },
+    "cold_mypy": "Success: no issues found in 167 source files",
+    "thresholds": "Unchanged: Vulture confidence 85, Xenon absolute B/module B/average A, scoped coverage floor 85. Dependency pins unchanged.",
+    "regression": {
+      "command": "uv run --offline --no-sync pytest tests/test_native_startup_producer_ownership.py tests/test_agent_host.py tests/test_core_interruption_cleanup.py tests/test_host_memory.py tests/test_host_storage_failure.py tests/test_host_native_vitals.py tests/test_host_native_transport.py tests/test_host_chat_commands.py tests/test_host_chat_interruptions.py tests/test_host_self_chat.py tests/test_host_summary_cache.py tests/test_playing_startup_cleanup.py tests/test_pending_start_shutdown_contract.py tests/test_playing_runtime.py tests/test_native_pose_recovery.py tests/test_native_map_identity.py tests/test_temporary_handshake_cleanup.py tests/test_client_protocol.py /home/otto/.hermes/cache/scratch/startup-producer-independent/test_boundary.py /home/otto/.hermes/cache/scratch/shutdown-contract-final/test_fresh_contract.py --cov=robots.app.agent_runtime --cov=robots.playing --cov-branch --cov-fail-under=85 --cov-report=term-missing --cov-report=json:/home/otto/.hermes/cache/scratch/shutdown-contract-final/coverage.json -p no:cacheprovider --basetemp=/home/otto/.hermes/cache/scratch/shutdown-contract-final/pytest-tmp --junitxml=/home/otto/.hermes/cache/scratch/shutdown-contract-final/regression.xml -o faulthandler_timeout=10",
+      "exit_code": 0,
+      "junit": "/home/otto/.hermes/cache/scratch/shutdown-contract-final/regression.xml",
+      "log": "/home/otto/.hermes/cache/scratch/shutdown-contract-final/coverage.log",
+      "physical_cases": 519,
+      "unique_cases": 519,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "new_repository_contract_cases": 18,
+      "adapted_repository_producer_cases": 10,
+      "original_independent_boundary_cases": 8,
+      "fresh_independent_lifecycle_cases": 9
+    },
+    "prior_independent_regressions": {
+      "command": "uv run --offline --no-sync pytest /home/otto/.hermes/cache/scratch/playing-final-review/test_independent_host.py /home/otto/.hermes/cache/scratch/shutdown-contract-final/test_prior_edges_renewed.py -p no:cacheprovider --basetemp=/home/otto/.hermes/cache/scratch/shutdown-contract-final/prior-tmp --junitxml=/home/otto/.hermes/cache/scratch/shutdown-contract-final/prior.xml",
+      "exit_code": 0,
+      "cases": 37,
+      "unique_cases": 37,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "junit": "/home/otto/.hermes/cache/scratch/shutdown-contract-final/prior.xml",
+      "log": "/home/otto/.hermes/cache/scratch/shutdown-contract-final/prior.log"
+    },
+    "aggregate": {
+      "physical_cases": 556,
+      "unique_classname_name_identities": 556,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "coverage": {
+      "scope": "robots.app.agent_runtime and robots.playing only, not whole project",
+      "evidence": "/home/otto/.hermes/cache/scratch/shutdown-contract-final/coverage.json",
+      "statement_percent": 93.63057324840764,
+      "branch_percent": 86.1344537815126,
+      "branch_inclusive_percent": 91.88660801564028,
+      "files": {
+        "src/robots/app/agent_runtime.py": {
+          "branch_percent": 85.64814814814815,
+          "branch_inclusive_percent": 91.43492769744161,
+          "covered_branches": 185,
+          "num_branches": 216
+        },
+        "src/robots/playing.py": {
+          "branch_percent": 90.9090909090909,
+          "branch_inclusive_percent": 95.16129032258064,
+          "covered_branches": 20,
+          "num_branches": 22
+        }
+      }
+    },
+    "warnings": [
+      "Existing Starlette TestClient deprecation warning.",
+      "Existing Bandit nosec warnings; no gate failure."
+    ],
+    "exact_all_commands_artifact": "/home/otto/.hermes/cache/scratch/shutdown-contract-final/checks.json"
+  },
+  "freeze": {
+    "source_dependency_helper_test_closure_files": 25,
+    "before": "/home/otto/.hermes/cache/scratch/shutdown-contract-final/before.json",
+    "after": "/home/otto/.hermes/cache/scratch/shutdown-contract-final/final-after.json",
+    "all_fingerprints_equal": true,
+    "new_scratch_test_sha256": {
+      "/home/otto/.hermes/cache/scratch/shutdown-contract-final/test_fresh_contract.py": "2897e2420b415eb5e6eb8671162c92f6a138c28f19c3f62d123f994eff83f041",
+      "/home/otto/.hermes/cache/scratch/shutdown-contract-final/test_prior_edges_renewed.py": "dfd2d4679ed52e73d4ea7cbc64c302a5392dd777fdab859331f8403018846516"
+    },
+    "critical_sha256": {
+      "src/robots/app/agent_runtime.py": "e60d518da5a11dd872f30b8987a03edf5b4a773188264ac21740afe67b64500d",
+      "src/robots/playing.py": "c4e1f310975c1d4781ffdb01dab95f97ddddca0169df0e1eb411b4acae784fcf",
+      "tests/test_pending_start_shutdown_contract.py": "35ed1c078d60bc4df2e42abceed52640f83d65892af5bd6c067221344e1eb53c",
+      "tests/test_native_startup_producer_ownership.py": "19c4e44893609792e1ae959d6a8dbb5c5ca5da92b3b59372467fba8ad32765f4",
+      "src/robots/app/playing_runtime.py": "56c143c8852a4884fc0632905be168f1c8e63988526b4aca151235de652fadc6",
+      "Taskfile.yml": "bf60a77c96fb4cfb4c5475c73a6e7da5a7eef90fc9f63c06a9812cfcbbb1d31d",
+      "pyproject.toml": "e8ae0849a413bc3d705f081f609b92dae702bbd3e491b2c3aeb5d8665c458fba",
+      "flake.lock": "c9c0bac69415b99a29ef3fe149b6f04ef54d291989bdf7218cf819ed52edf2a0",
+      "uv.lock": "2d7b4c187078488d7625e4fd4fa982745cab8d6a65b2ff3e382ffa286f1df245"
+    },
+    "all_other_hashes_in_before_after_artifacts": true
+  },
+  "limitations": [
+    "Pending shutdown is a reported incomplete release, not a promise all descriptors are closed. An explicit later stop after join-confirmed termination is required.",
+    "Scoped offline approval is not live/native/full-goal acceptance or an activation authorization. No 813-case actor rerun or runtime packaging claim."
+  ],
+  "files_changed_by_reviewer": {
+    "repository_source_tests_dependency_configuration_git": [],
+    "report": "run/reviews/playing-shutdown-contract-final-review.json",
+    "scratch_root": "/home/otto/.hermes/cache/scratch/shutdown-contract-final"
+  },
+  "acceptance_blockers": []
+}

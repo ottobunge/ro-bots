@@ -1,0 +1,97 @@
+{
+  "schema": "native-item-guide-precondition-successor-independent-review/v1",
+  "status": "INDEPENDENT_REVIEW_CONDITIONAL_PASS_ZERO_CANDIDATE_DEFECTS_ADOPTION_REMAINS_PARENT_OWNED",
+  "reviewed_snapshot": {
+    "writer_report": "run/reviews/native-item-guide-maintenance-precondition-successor.json",
+    "writer_report_sha256": "89ab0c8112900eecf213ec90d9216019b3f37896c9ed5ebd2a9e715030d122d9",
+    "parent_verified_report": "run/reviews/native-item-guide-precondition-successor-parent-verified.json",
+    "successor_dir": ".work/native-item-guide-maintenance-precondition-successor",
+    "composite_dir": ".work/native-item-guide-combined"
+  },
+  "verified_identities": {
+    "live_recovery.py_successor": "7d7ff94dfe3c3e0ffa23b578aa15676ea0d78c285b8a55055d4ee74bdbfadada",
+    "live_recovery.py_composite": "11c1dd2dece659ba12de0e4f0b75000c1964d402532ad867f3ba62a5f2db5e02",
+    "four_other_modules_byte_identical_to_composite": true,
+    "historical_table_health_receipt_digest_still_pinned": "7aed8c66bbff2e261916653c1fac1f904e9e1dd9d00ce4d83b79cee5dc06fe1e"
+  },
+  "diff_verification": {
+    "independently_recomputed_unified_hunks": 3,
+    "recomputed_diff_sha256": "56716f0857cdea08db067dba233d610d290ba1e4cd3fa5015ad095ecb795cb49",
+    "matches_declared_diff_file_sha256": true,
+    "new_constant": "HISTORICAL_MAP_EPOCH = \"2026-10-08T15:08:31.458528082Z\" (names the previously inlined literal; MAP_FAULTS and epoch value unchanged)",
+    "new_helper": "_selected_table_health_binding (exactly-one selection, absolute path, receipt-name regex, bytes re-verified against bound digest at check time, historical path additionally requires historical SHA)",
+    "predicate_B_shape": "historical epoch branch unchanged; newer-only branch requires strictly newer started_at (nanosecond) AND empty observed error inventory; no faults fabricated"
+  },
+  "red_verification": {
+    "corrected_red_xml_sha256": "3493967110529cb73dd3fe0d8a4ff0f254d8c5191edd703e5c4730f06d2d7157",
+    "pre_oracle_red_xml_sha256": "2e383f7cf22e06c7fcfb54868e893a911ad55c688e42913c2a215e018c2edbee",
+    "corrected_red": "98 unique ids, 12 failures, 0 errors/skips",
+    "failed_set_matches_declared_after_classname_normalization": true,
+    "failure_attribution": "8 failures target predicate A (table-health binding/window/inventory), 4 target predicate B (map epoch/baseline); all 12 inside test_maintenance_precondition_successor, zero elsewhere",
+    "pre_oracle_preserved": "same 12 logical failures under the old param identity scheme; disclosed scratch-oracle correction is test-local; note: pre-oracle prose mentions 16 inherited stale-phase failures but its saved XML holds the 98-case selector with exactly 12 failures - XML is authoritative, prose imprecision only"
+  },
+  "green_verification": {
+    "writer_green_xml_sha256": "abed472115f62b66e638ecff4b4b42a12f610aff710e7464ab536145736a2fe5",
+    "writer_green": "98 unique ids, all pass, ids identical to corrected-RED ids"
+  },
+  "harness_adaptation_verification": {
+    "adapted_files_checked": [
+      "guard/conftest.py",
+      "guard/test_actual_chain.py",
+      "publication/conftest.py",
+      "publication/test_publication.py"
+    ],
+    "adapted_files_differs": "16 changed lines total, all namespace/candidate-root path literals; zero assertion or logic changes",
+    "other_test_sources": "593 copied files compared against the composite review namespace: 0 test .py sources differ",
+    "fixture_artifacts_differing": 38,
+    "fixture_artifact_nature": "regenerated test outputs (trace.json line-number shifts) plus namespace/digest binding updates in synthetic approvals; the guard approval's live_recovery binding digest correctly updated to the successor digest 7d7ff94d...; optimized-*.json denial receipts embed the namespace path only",
+    "observation_report_imprecision": "writer report claims all_other_harness_files_byte_identical=true; literally true for test sources, false for 38 fixture JSON artifacts whose changes are exactly the declared path-literal/digest-binding kind. Non-blocking; recommend future reports scope this claim to test sources."
+  },
+  "independent_rerun": {
+    "command": "nix develop --offline --no-write-lock-file path:./spikes/007-native-packet-ast/toolchain -c env PYTHONOPTIMIZE=0 PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=src:. .venv/bin/python -B -m pytest .work/native-item-guide-maintenance-precondition-successor/harness --ignore-glob=**/fixture-support/* --override-ini addopts='' --junitxml=<own namespace>/green/independent-rerun-green.xml -q",
+    "result": "98 passed, 0 failed, 0 skipped (5 pre-existing RuntimeWarnings unchanged)",
+    "xml": ".work/native-item-guide-precondition-successor-independent-review/green/independent-rerun-green.xml",
+    "xml_sha256": "a28e92f16f419e91a2503ae4cb3fca5093f522391d09fec2d95eac8671914551",
+    "case_names_identical_to_writer_green": true
+  },
+  "own_boundary_probes": {
+    "file": ".work/native-item-guide-precondition-successor-independent-review/probe/test_precondition_successor_independent_probes.py",
+    "file_sha256": "48c0ba61a1f010fccae67592c931451b500aef2418881088e1505356e8f3c5ae",
+    "xml": ".work/native-item-guide-precondition-successor-independent-review/green/independent-probes.xml",
+    "xml_sha256": "d9b5ed12e443f4c5a782b351b0e21eb8e4f9ddf06bcaa13854028492a4fb0959",
+    "result": "33 passed, 0 failed",
+    "groups": [
+      "exactly-one selection: two qualifying bindings denied (current_table_health_binding); duplicate identical pair denied",
+      "path shapes: relative path with matching basename denied, bare basename denied, absolute non-matching basename denied; directory path with matching basename selects but raw IsADirectoryError propagates (never admits; same unguarded read_bytes as historical code, not a regression)",
+      "historical identity: real pinned historical path+SHA passes binding/digest/historical-identity stages and is denied only at the 24h window (current_table_health_expired); foreign digest on historical path denied (historical_table_health_digest); versioned fresh receipt admitted end-to-end",
+      "receipt mutations denied: status, lifetime=false, 11 tables, InnoDB, foreign schema, renamed table, expired window, negative age (byte tamper vs binding denied; age==0 boundary admitted)",
+      "map epoch: newer zero-error admitted; +1ns newer admitted; older zero-error denied (historical_map_epoch); equal epoch string takes the historical branch (zero errors there still denied); newer epoch with one captured-style error denied (fixed_map_error_inventory) on stdout and stderr",
+      "non-map roles unchanged: historical epoch with exact MAP_FAULTS admitted, extra fault denied; mariadb lifetime match admitted / mismatch denied / startup-event mismatch denied; login/char zero-error admitted, single error denied; epoch gate is map-only"
+    ],
+    "honest_probe_history": "two intermediate probe runs failed on reviewer harness defects (a relative_to() crash outside repo root; a negative-age case that actually constructed age==0 and correctly passed). Both were reviewer bugs, fixed and re-run; their overwritten XMLs are disclosed here rather than preserved as receipts. No candidate behavior was involved in either."
+  },
+  "safety": {
+    "live_engine": 0,
+    "docker": 0,
+    "sql": 0,
+    "check_table_receipt_created": false,
+    "world_lock": 0,
+    "private_bundle_bodies_read": false,
+    "source_edits": "none (reviewer probe files and reports only)",
+    "git_actions": 0,
+    "production_or_writer_artifacts_modified": false
+  },
+  "verdict": "CONDITIONAL PASS",
+  "named_defects": [],
+  "conditions": [
+    "Adoption stays parent-owned; this review does not adopt the successor into the project tree.",
+    "The real refreshed CHECK TABLE receipt remains a separate parent slice under the original lock; none created here and none authorized.",
+    "Parent issuance of the maintenance approval binding the exact refreshed receipt path/digest and carrying the captured map epoch as error_baselines remains required before any admission through this chain.",
+    "No approval is issued by this review."
+  ],
+  "non_blocking_observations": [
+    "Writer report 'all_other_harness_files_byte_identical' should be scoped to test sources (38 fixture JSON artifacts differ by the declared path-literal/digest-binding kind).",
+    "Pre-oracle RED note conflates the separate 47-case stale fixture-support probe with the first RED run; saved XMLs are consistent and authoritative.",
+    "Directory-bound receipt path with matching basename propagates a raw IsADirectoryError instead of a DeniedError classification; admission-safe, historical behavior preserved, noted for the parent's future receipt-refresh slice if input validation is desired."
+  ]
+}

@@ -1,0 +1,277 @@
+{
+  "passed": false,
+  "security_concerns": [],
+  "logic_errors": [
+    {
+      "severity": "blocking",
+      "title": "Same-NPC continuation after actor disappearance clears uncertain cancellation and permits combat",
+      "locations": [
+        "src/robots/adapters/native_npc_dialogue.py:141-142",
+        "src/robots/app/playing_runtime.py:218",
+        "src/robots/app/playing_runtime.py:232",
+        "src/robots/app/playing_runtime.py:263-280"
+      ],
+      "counterexample": "During pending cancel at t=4.0, receive actor 321 vanish (0080), then B5 naming 321, then a monster presentation. NPC consume accepts B5 before actor-context validation and clears cancel_uncertain. Validation discards view, leaving no active dialogue and no uncertainty. Actual PlayingClient.perform_native(Attack(123)) emits 37047b00000000. Wire sends increase from 2 to 3.",
+      "expected": "An actor disappearance/context-invalid continuation must not acknowledge cancellation or release combat/motion/loot/new-contact barriers.",
+      "evidence": [
+        "corrected-probes.xml",
+        "counterexample.log",
+        "counterexample-command.json"
+      ]
+    }
+  ],
+  "quality_blockers": [],
+  "suggestions": [
+    "Retain same-batch actor-vanish-before-continuation regression at the real client boundary; validate context before allowing any continuation to release uncertainty, without accepting actor-ID reuse as same-session proof."
+  ],
+  "summary": "FAIL: actual offline client probe releases the cancellation barrier on same-NPC continuation after actor disappearance and sends an attack packet.",
+  "scope": "Read-only review of frozen four production modules plus one test. Scratch harness/report only; no source repairs, live effects, backups, service, SQL, Nix mutation, Git mutation, or native sessions.",
+  "test_executions": [
+    {
+      "artifact": "/home/otto/.hermes/cache/scratch/npc-cancel-independent-review/fresh.xml",
+      "cases": 176,
+      "failures": 1,
+      "errors": 0,
+      "skips": 0,
+      "failing_cases": [
+        "test_source_bound_unchanged_npc_header_oracle"
+      ]
+    },
+    {
+      "artifact": "/home/otto/.hermes/cache/scratch/npc-cancel-independent-review/fresh-offline-nix.xml",
+      "cases": 217,
+      "failures": 2,
+      "errors": 0,
+      "skips": 0,
+      "failing_cases": [
+        "test_silence_real_brain_and_host_safe_chat_rest",
+        "test_actor_vanish_before_same_npc_continuation_cannot_clear_uncertainty"
+      ]
+    },
+    {
+      "artifact": "/home/otto/.hermes/cache/scratch/npc-cancel-independent-review/corrected-probes.xml",
+      "cases": 15,
+      "failures": 1,
+      "errors": 0,
+      "skips": 0,
+      "failing_cases": [
+        "test_actor_vanish_before_same_npc_continuation_cannot_clear_uncertainty"
+      ]
+    }
+  ],
+  "probe_results": {
+    "corrected_independent_physical_cases": 15,
+    "passed": 14,
+    "failed": 1,
+    "covered": [
+      "12 repeated real EventDrivenBrain.handle_event/step_script plus ScheduledAgent ticks",
+      "safe chat and low-HP REST with stable received inventory facts",
+      "actual model attack/flee choices and hidden script intent with no wire actuation while uncertainty holds",
+      "same-NPC B4/B5/B7 continuation before deadline with exact stage/deadline/absolute budget and real Next/repeated cancel requests",
+      "exact OSError/SystemExit/KeyboardInterrupt identity and deepest origin frame with poison retained after timeout",
+      "transport/frame-gap/reused-sequence/map/actor boundaries retain cancellation uncertainty",
+      "actor disappearance followed by same-NPC B5 in one received snapshot: FAIL, attack wire packet observed"
+    ],
+    "candidate_tests": "Fresh physical candidate/client/host/rest suites included existing epoch, absolute-deadline, repeated-cancel, boolean-selection, late-response and noncancel-timeout contracts; independent failure is not covered by those passing tests."
+  },
+  "static_checks": {
+    "strict_project_mypy_5_files": "PASS, fresh scratch cache",
+    "ruff_5_files": "PASS",
+    "black_5_files": "PASS",
+    "whole_src_xenon_B_B_A": "PASS, unchanged thresholds",
+    "whole_src_duplicate_code": "PASS",
+    "added_line_security_scan": [],
+    "changed_method_ast_inventory": {
+      "native_npc_dialogue.py": {
+        "changed_methods": [
+          "NativeNpcDialogue.__init__",
+          "NativeNpcDialogue._receive",
+          "NativeNpcDialogue.active",
+          "NativeNpcDialogue.consume",
+          "NativeNpcDialogue.request"
+        ],
+        "added_methods": [
+          "NativeNpcDialogue._commit_request",
+          "NativeNpcDialogue._expire",
+          "NativeNpcDialogue.actuation_blocked"
+        ],
+        "removed_methods": [],
+        "unchanged_methods": 9
+      },
+      "brain.py": {
+        "changed_methods": [
+          "EventDrivenBrain._npc_step",
+          "EventDrivenBrain.handle_event"
+        ],
+        "added_methods": [],
+        "removed_methods": [],
+        "unchanged_methods": 29
+      },
+      "scripts.py": {
+        "changed_methods": [
+          "NpcGuidanceScript.step"
+        ],
+        "added_methods": [
+          "NpcGuidanceScript._dialog_status"
+        ],
+        "removed_methods": [],
+        "unchanged_methods": 12
+      },
+      "playing_runtime.py": {
+        "changed_methods": [
+          "PlayingClient._npc_action",
+          "PlayingClient._npc_mechanical",
+          "PlayingClient._npc_open_ready"
+        ],
+        "added_methods": [],
+        "removed_methods": [],
+        "unchanged_methods": 50
+      }
+    },
+    "outside_changed_methods_ast_equal": {
+      "native_npc_dialogue.py": true,
+      "brain.py": true,
+      "scripts.py": true,
+      "playing_runtime.py": true
+    },
+    "qualitative_review": "Bounded expiry/request-commit/dialog-status helpers express separate responsibilities and changed predicates are readable. No unrelated production AST changes. No NPC table or compiler binding changes; readability does not excuse the reproduced ordering error."
+  },
+  "freeze": {
+    "count": 250,
+    "before_matches_expected": true,
+    "after_matches_expected": true,
+    "drift": [],
+    "provided_sha256": "ed909e2957fa5ea1d18eaf8585766b65cdfb659163185341653c763a4a7ada6f",
+    "before_sha256": "9b75e7a9a9bff7dc6a8f7e32066d01ab65e3f4083ae0a623393dda5e911ef499",
+    "after_sha256": "9b75e7a9a9bff7dc6a8f7e32066d01ab65e3f4083ae0a623393dda5e911ef499",
+    "owned_after_snapshots_match": {
+      "native_npc_dialogue.py": true,
+      "brain.py": true,
+      "scripts.py": true,
+      "playing_runtime.py": true,
+      "test_native_npc_cancel_recovery.py": true
+    }
+  },
+  "artifact_registry": [
+    {
+      "path": "/home/otto/.hermes/cache/scratch/npc-cancel-independent-review/additional-execution.json",
+      "sha256": "f2b50dc85059e46e48aaf62b67faf395342342735fd0f7ccecb24e81d9eb7729",
+      "bytes": 3031
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/npc-cancel-independent-review/ast-security.json",
+      "sha256": "c42b5804bf9a0f21c12bd35d89dd3814aca1b56c7ea263039c411266791b2285",
+      "bytes": 1266
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/npc-cancel-independent-review/black.log",
+      "sha256": "25369eabb8c122f861d58ddb255f81f4b9ee797f42f3882975bef953218258ed",
+      "bytes": 56
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/npc-cancel-independent-review/corrected-probes.log",
+      "sha256": "9e2cf68aa8c46f3fdcceb2a6069c5058f188b7bf023f61a53700bc013390a04c",
+      "bytes": 2008
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/npc-cancel-independent-review/corrected-probes.xml",
+      "sha256": "06811d51b68f254907fb8c1a6319ff747349f765cf85454c9f6239ac6c5c65a9",
+      "bytes": 4436
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/npc-cancel-independent-review/counterexample-command.json",
+      "sha256": "1200367467625ec4aad06d87355a4e7d2f010551601cf65d65cd878ec27e9bc7",
+      "bytes": 715
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/npc-cancel-independent-review/counterexample.log",
+      "sha256": "1c1e390d26d3fa5d5c27b10a4e7a3ea07df275afba03e16a726c1f09f5161e8d",
+      "bytes": 139
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/npc-cancel-independent-review/duplicates.log",
+      "sha256": "8cbfc8cd0b04a4858b0b78b74c6df9631a1695e105e6911d4b57fbcc43b218b5",
+      "bytes": 140
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/npc-cancel-independent-review/execution.json",
+      "sha256": "f3bfb4bc9aa8779b9c4715e3765af21b955d17b8d654e038a2b7aa746db0cad1",
+      "bytes": 3466
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/npc-cancel-independent-review/freeze-after.json",
+      "sha256": "9b75e7a9a9bff7dc6a8f7e32066d01ab65e3f4083ae0a623393dda5e911ef499",
+      "bytes": 27109
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/npc-cancel-independent-review/freeze-before.json",
+      "sha256": "9b75e7a9a9bff7dc6a8f7e32066d01ab65e3f4083ae0a623393dda5e911ef499",
+      "bytes": 27109
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/npc-cancel-independent-review/fresh-offline-nix-command.json",
+      "sha256": "949aef119c3ed85ddffb3a1234321bce9896ceae73239fd7faef0458bea8043e",
+      "bytes": 697
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/npc-cancel-independent-review/fresh-offline-nix.log",
+      "sha256": "68baeb988e65262711a913033e2b29ee9b098bf3a2700b0ea50e5f0d4dcb8be7",
+      "bytes": 3467
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/npc-cancel-independent-review/fresh-offline-nix.xml",
+      "sha256": "0d57c0e0fefd53d78902023b1f2ed4ccf7cdfc58245d3f0e26e2e5c99220f512",
+      "bytes": 31516
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/npc-cancel-independent-review/fresh.xml",
+      "sha256": "62702e6fe3ac52626b29cacf28c5af58c3933664fc83b0de25488f0b0d04737c",
+      "bytes": 25296
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/npc-cancel-independent-review/mypy.log",
+      "sha256": "e317872697c2cbfdefa321527a6efe73290dff3a390b0fa8723b87092eccba6a",
+      "bytes": 43
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/npc-cancel-independent-review/pytest.log",
+      "sha256": "11473ad99e9970bc95aa01b6f068cb6671e7d82f83bf904256f7e14ac51ed30b",
+      "bytes": 3685
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/npc-cancel-independent-review/ruff.log",
+      "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+      "bytes": 19
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/npc-cancel-independent-review/start-time.json",
+      "sha256": "bc33a590511d38256e81ca66e21a61a79a9174c2d78e804659ac6d508eac2859",
+      "bytes": 30
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/npc-cancel-independent-review/targeted.diff",
+      "sha256": "f5d786cdf52e2480212643865a0362541a8f2bb5f49512d6e93c9e4be5bbecef",
+      "bytes": 16367
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/npc-cancel-independent-review/test_independent_probes.py",
+      "sha256": "fe6fbbe47c214ce69353f8b84f5d671b35f669c9f770e0ecd6b8e6702dee9242",
+      "bytes": 5933
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/npc-cancel-independent-review/xenon.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    }
+  ],
+  "review_remaining_limits": [
+    "This is offline synthetic-wire evidence using actual project brain/client/scheduled-host code, not native conversation completion or server-close acknowledgment.",
+    "Parent full project check/audit and separately authorized fresh native acceptance remain distinct; no native effects performed.",
+    "Initial direct-venv suite failure was missing g++, preserved in fresh.xml and pytest.log; tiny offline Nix --no-write-lock-file rerun executed the compiler oracle successfully.",
+    "Initial independent scratch harness incorrectly asserted inventory_known false despite the fixture received inventory boundary; that harness error and initial failing XML/log were preserved, then corrected to compare received baseline facts. Corrected run leaves only the genuine actor-context defect.",
+    "Original author failed regression XML/log overwriting remains an evidence-preservation limitation; available later XML and retained terminal failure excerpts do not establish all original failures as physically preserved.",
+    "Overlapping test runs are reported separately, not summed as unique tests.",
+    "Initial nested-tool/time-budget incident is not waived by this bounded review; no greater-than/skip waiver or changed quality thresholds."
+  ],
+  "elapsed_seconds_to_final_freeze": 180.05103507500098
+}

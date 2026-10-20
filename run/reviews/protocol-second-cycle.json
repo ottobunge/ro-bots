@@ -1,0 +1,418 @@
+{
+  "schema": 1,
+  "cycle": 2,
+  "status": "partial",
+  "passed": false,
+  "created_at": "2026-10-05T10:59:06.307881+00:00",
+  "summary": "All seven exact protocol rereview blockers repaired and offline regressions green; broad concurrent-worktree gates fail outside owned scope and independent parent rereview remains required.",
+  "repo": "/home/otto/dev/ro-bots",
+  "review_authority": "run/reviews/spike-protocol-rereview.json",
+  "review_authority_sha256": "cdb6cbad726d391410a7c88bea35832c739ed942b39c215a6757cadd73a0444e",
+  "seven_blockers_offline_repaired": true,
+  "independent_review_passed": false,
+  "finding_repairs": {
+    "S1": "Retired historical probe; no credentials, connections, imports of client or legacy route; nonzero explicit main.",
+    "S2": "Retired generator; no eval/exec, legacy guard/derive API or alternate profile path; nonzero explicit main.",
+    "L1": "Movement compares wire gid to account aid; correct actor succeeds, character-ID collision actor fails.",
+    "L2": "connect_pair records all attempted connection failures irrespective of exception class; >=30 second shared boundary survives final attempts and later limbs.",
+    "L3": "Each participant cleanup attempted independently; any exception or retained resources invalidates PASS and poisons budget against retries/later limbs. Origin exception retained when BotClient cleanup fails, sanitized notes and retained cleanup errors. Failed socket close also retains reference and blocks reuse.",
+    "L4": "Parse CHARACTER_INFO.CharNum uint8@118 and select exact wire slot; actual coalesced receive/pending path covers singleton slot5 and slots2/7.",
+    "L5": "Walking name offset86, native size110; standalone fixture corrected83->86 with name assertion preserved and separate pinned compiler oracle."
+  },
+  "additional_repairs": [
+    "Nonblocking FIFO manifest rejection",
+    "Native ACTOR_ENTRY_LEN metadata 110/103/104 and retirement documentation"
+  ],
+  "tdd_cycles": [
+    {
+      "finding": "S1",
+      "red": {
+        "exit_code": 1,
+        "log": "run/reviews/protocol-second-S1-red.txt",
+        "result": "1 failed in 0.03s"
+      },
+      "green": {
+        "exit_code": 0,
+        "log": "run/reviews/protocol-second-S1-green.txt",
+        "result": "1 passed in 0.01s"
+      }
+    },
+    {
+      "finding": "S2",
+      "red": {
+        "exit_code": 1,
+        "log": "run/reviews/protocol-second-S2-red.txt",
+        "result": "1 failed in 0.02s"
+      },
+      "green": {
+        "exit_code": 0,
+        "log": "run/reviews/protocol-second-S2-green.txt",
+        "result": "1 passed in 0.01s"
+      }
+    },
+    {
+      "finding": "L1",
+      "red": {
+        "exit_code": 1,
+        "log": "run/reviews/protocol-second-L1-red.txt",
+        "result": "2 failed in 0.03s"
+      },
+      "green": {
+        "exit_code": 0,
+        "log": "run/reviews/protocol-second-L1-green.txt",
+        "result": "2 passed in 0.03s"
+      }
+    },
+    {
+      "finding": "L2",
+      "red": {
+        "exit_code": 1,
+        "log": "run/reviews/protocol-second-L2-red.txt",
+        "result": "8 failed, 8 passed in 0.09s"
+      },
+      "green": {
+        "exit_code": 0,
+        "log": "run/reviews/protocol-second-L2-green.txt",
+        "result": "16 passed in 0.04s"
+      }
+    },
+    {
+      "finding": "L3",
+      "red": {
+        "exit_code": 1,
+        "log": "run/reviews/protocol-second-L3-red.txt",
+        "result": "5 failed, 20 deselected in 0.07s"
+      },
+      "green": {
+        "exit_code": 0,
+        "log": "run/reviews/protocol-second-L3-green.txt",
+        "result": "5 passed, 20 deselected in 0.02s"
+      }
+    },
+    {
+      "finding": "L4",
+      "red": {
+        "exit_code": 1,
+        "log": "run/reviews/protocol-second-L4-red.txt",
+        "result": "2 failed in 0.72s"
+      },
+      "green": {
+        "exit_code": 0,
+        "log": "run/reviews/protocol-second-L4-green.txt",
+        "result": "2 passed in 0.74s"
+      }
+    },
+    {
+      "finding": "L5",
+      "red": {
+        "exit_code": 1,
+        "log": "run/reviews/protocol-second-L5-red.txt",
+        "result": "1 failed in 0.73s"
+      },
+      "green": {
+        "exit_code": 0,
+        "log": "run/reviews/protocol-second-L5-green.txt",
+        "result": "1 passed in 0.66s"
+      }
+    }
+  ],
+  "tdd_corrections": [
+    "Initial L2 fake clock did not patch client monotonic time. Reverted L2 implementation, corrected test clock, then reran valid RED (8 failing/8 existing passing cases) before reapplying repair.",
+    "Initial S1 pytest AST introspection could display legacy literals; changed assertion to boolean and regenerated sanitized RED log. Reports and retained logs do not reproduce credential values."
+  ],
+  "additional_red": {
+    "fifo_and_socket_release": "2 failed, 28 deselected in 0.05s",
+    "actor_metadata": "1 failed in 0.68s",
+    "green": "31 passed in 0.72s"
+  },
+  "verification": [
+    {
+      "kind": "new regressions",
+      "exit_code": 0,
+      "result": "31 passed in 0.72s",
+      "log": "run/reviews/protocol-second-new-tests.txt"
+    },
+    {
+      "kind": "all protocol regressions",
+      "exit_code": 0,
+      "result": "117 passed, 65 subtests passed in 1.78s",
+      "log": "run/reviews/protocol-second-focused.txt",
+      "command": "nix develop --offline -c uv run --offline --no-sync pytest -o addopts= -q tests/test_protocol_rereview_repairs.py tests/test_client_protocol.py tests/test_limb_evidence.py tests/test_packet_conditions.py spikes/003-clientless-limbs/test_packetdb.py"
+    },
+    {
+      "kind": "owned-test black/ruff/mypy",
+      "exit_code": 0,
+      "logs": [
+        "run/reviews/protocol-second-format.txt",
+        "run/reviews/protocol-second-ruff.txt",
+        "run/reviews/protocol-second-mypy.txt"
+      ]
+    },
+    {
+      "kind": "owned spike syntax/static",
+      "exit_code": 0,
+      "result": "py_compile all owned Python files; isolated Ruff E9,F63,F7,F82 passes; AST scan finds no eval/exec or literal client credentials",
+      "log": "run/reviews/protocol-second-spike-static.txt"
+    },
+    {
+      "kind": "packetdb strict standalone self-test",
+      "exit_code": 0,
+      "log": "run/reviews/protocol-second-packetdb-cli.txt"
+    },
+    {
+      "kind": "full Python suite",
+      "exit_code": 1,
+      "result": "5 failed, 579 passed, 1 warning, 65 subtests passed in 22.13s",
+      "failures": [
+        "FAILED tests/test_population_config.py::test_invalid_population_configuration_is_rejected_without_replacing_state[patch0]",
+        "FAILED tests/test_population_config.py::test_invalid_population_configuration_is_rejected_without_replacing_state[patch1]",
+        "FAILED tests/test_population_config.py::test_invalid_population_configuration_is_rejected_without_replacing_state[patch2]",
+        "FAILED tests/test_population_config.py::test_invalid_population_configuration_is_rejected_without_replacing_state[patch3]",
+        "FAILED tests/test_world_state.py::test_regenerate_roster_rejects_bad_params"
+      ],
+      "log": "run/reviews/protocol-second-fullsuite.txt"
+    },
+    {
+      "kind": "final nonmutating task check",
+      "exit_code": 201,
+      "failures": [
+        "  --> tests/test_population_config.py:3:1",
+        "src/robots/app/builds.py:173: error: Unsupported operand types for >= (\"int\" and \"None\")  [operator]"
+      ],
+      "log": "run/reviews/protocol-second-task-check-final.txt"
+    },
+    {
+      "kind": "dependency audit",
+      "executed": false,
+      "reason": "task audit requires external vulnerability-service access; network/provider calls prohibited"
+    }
+  ],
+  "native_compiler_evidence": {
+    "commit": "e985006171d2eb320ee512a653f4c83aea3d81b6",
+    "profile": {
+      "flags": [
+        "-DPACKETVER=20180704",
+        "-DPRERE"
+      ],
+      "family": "MAIN",
+      "ruleset": "pre-renewal"
+    },
+    "procedure": "Hash-pinned config and native headers; full common header plus exact regex-extracted unaltered walking/spawn/idle complete packed declarations; g++ C++17 then execute oracle offline. Not a full map-header build.",
+    "CHARACTER_INFO": {
+      "size": 155,
+      "name": 88,
+      "CharNum": 118
+    },
+    "packet_unit_walking": {
+      "size": 110,
+      "AID": 5,
+      "GID": 9,
+      "MoveData": 63,
+      "name": 86
+    },
+    "packet_spawn_unit": {
+      "size": 103,
+      "name": 79
+    },
+    "packet_idle_unit": {
+      "size": 104,
+      "name": 80
+    },
+    "source_hashes": {
+      "rathena/config.log": {
+        "sha256": "6bb759d7b65d463ecd38ca81f484659ec2dc6e7885b017a964b9c611114e9d78",
+        "bytes": 48741
+      },
+      "rathena/src/common/packets.hpp": {
+        "sha256": "c92279bf163e9546b649397638c19e57c3eb515b49e841c13f88a5fb97bba693",
+        "bytes": 17432
+      },
+      "rathena/src/map/packets_struct.hpp": {
+        "sha256": "5ab5ef13d2a1cdc60d84dcaf2e3be0b6e316b9630e61c3ac7ba0f930d4d31287",
+        "bytes": 157544
+      }
+    }
+  },
+  "modified_files": [
+    "spikes/003-clientless-limbs/client.py",
+    "spikes/003-clientless-limbs/packetdb.py",
+    "spikes/003-clientless-limbs/test_limbs.py",
+    "spikes/003-clientless-limbs/scripts/probe_map.py",
+    "spikes/003-clientless-limbs/scripts/gen_packetdb.py",
+    "spikes/003-clientless-limbs/test_packetdb.py",
+    "spikes/003-clientless-limbs/README.md",
+    "tests/test_protocol_rereview_repairs.py"
+  ],
+  "source_hashes": {
+    "spikes/003-clientless-limbs/client.py": {
+      "sha256": "fd7076aed2a48727130a34468bdbfbe16c8e9a94687880bc86e77d325e23aa9d",
+      "bytes": 34146
+    },
+    "spikes/003-clientless-limbs/packetdb.py": {
+      "sha256": "d106ae277a6c7f75cf597c9051651a27e0ba6fa3663575608e0033048b18f9d4",
+      "bytes": 37159
+    },
+    "spikes/003-clientless-limbs/test_limbs.py": {
+      "sha256": "d7a85bda1876b0bc28e8475d969e01bb443c7cbe5a49c82ef29eebfe98bc2ef5",
+      "bytes": 16028
+    },
+    "spikes/003-clientless-limbs/scripts/probe_map.py": {
+      "sha256": "85109472752d9cd0c2912f7fd0cc41fba08219171a9dd0b2ce272f6eaff9c47b",
+      "bytes": 300
+    },
+    "spikes/003-clientless-limbs/scripts/gen_packetdb.py": {
+      "sha256": "b07c857779277391f1b0c1935bd27a60b13eaa8e65b28bc119b36398a383c7f2",
+      "bytes": 297
+    },
+    "spikes/003-clientless-limbs/test_packetdb.py": {
+      "sha256": "afdb0770e12525f85169ce24af2eaa23cf8015debc1c2a5cb2914c8f1400e7c3",
+      "bytes": 3586
+    },
+    "spikes/003-clientless-limbs/README.md": {
+      "sha256": "29d676355586f69c7f8e23ab2dbbc12e3bab17e9d867f70dab6b33352b39fd6a",
+      "bytes": 12321
+    },
+    "tests/test_protocol_rereview_repairs.py": {
+      "sha256": "587c6aee7058cb18c5537fd41b46cba5e847254817590cfa74c088f198843110",
+      "bytes": 13878
+    },
+    "tests/test_client_protocol.py": {
+      "sha256": "3e781d2f50501b2d1bf0c3caccf507f3c6fcde533ad62ea1448b0f857143a5a2",
+      "bytes": 18039
+    },
+    "tests/test_limb_evidence.py": {
+      "sha256": "9669537ee7ed63e7be4850936e96d28fc0a75bb17c77bac753c45ec8be941569",
+      "bytes": 13263
+    },
+    "tests/test_packet_conditions.py": {
+      "sha256": "abe40cc3af9d56de1f98088ae372e0e1f54cfe5a2d89ea6828f75f6e4d1969d1",
+      "bytes": 10259
+    },
+    "spikes/003-clientless-limbs/seed_test.sql": {
+      "sha256": "c041c5cb431bc340740ae7b617dd21caedd4c81101a1f8418ef99f81e360d0f0",
+      "bytes": 5655
+    },
+    "spikes/003-clientless-limbs/scripts/seed_fixture.py": {
+      "sha256": "03de2f4f659c8df0a3c5e9c41d74c3cb2493176f420aead8a7022f5631ecdb0e",
+      "bytes": 3284
+    }
+  },
+  "review_point_source_hashes": {
+    "spikes/003-clientless-limbs/client.py": {
+      "sha256": "a3ba947f95cb7010805ecd901831b811fb64dd9c87f40b2bb99f230f6b6a34f5",
+      "bytes": 33960
+    },
+    "spikes/003-clientless-limbs/packetdb.py": {
+      "sha256": "f7e022155ce3c4da2bb28ad6f55ffc35ecf2fd9f29462ebbe39c40dade012444",
+      "bytes": 37953
+    },
+    "spikes/003-clientless-limbs/test_limbs.py": {
+      "sha256": "fc2a4c4fc6298add7f6f2aef44af7daa5651f48881d46dab247b110358ba182b",
+      "bytes": 14750
+    },
+    "spikes/003-clientless-limbs/README.md": {
+      "sha256": "800a9c6086b91c43378024752360257b25a5d714d2515c981fec0d3dd5b7536c",
+      "bytes": 9856
+    },
+    "spikes/003-clientless-limbs/seed_test.sql": {
+      "sha256": "c041c5cb431bc340740ae7b617dd21caedd4c81101a1f8418ef99f81e360d0f0",
+      "bytes": 5655
+    },
+    "spikes/003-clientless-limbs/scripts/seed_fixture.py": {
+      "sha256": "03de2f4f659c8df0a3c5e9c41d74c3cb2493176f420aead8a7022f5631ecdb0e",
+      "bytes": 3284
+    },
+    "spikes/003-clientless-limbs/scripts/probe_map.py": {
+      "sha256": "9d923faa688c740ceb85a28813721fcde0def7a38628e326ea0468d2c045588c",
+      "bytes": 1284
+    },
+    "spikes/003-clientless-limbs/scripts/gen_packetdb.py": {
+      "sha256": "bc86bfd0ec71dfc41201d0a56ca3380caba5aabe616b0ac231616ba238464951",
+      "bytes": 3474
+    },
+    "spikes/003-clientless-limbs/test_packetdb.py": {
+      "sha256": "1db329c09a3fdedb9ca466e06fe8863a0a79a9b75cf03856a3d0761c1483645b",
+      "bytes": 3434
+    },
+    "tests/test_packet_conditions.py": {
+      "sha256": "abe40cc3af9d56de1f98088ae372e0e1f54cfe5a2d89ea6828f75f6e4d1969d1",
+      "bytes": 10259
+    },
+    "tests/test_client_protocol.py": {
+      "sha256": "3e781d2f50501b2d1bf0c3caccf507f3c6fcde533ad62ea1448b0f857143a5a2",
+      "bytes": 18039
+    },
+    "tests/test_limb_evidence.py": {
+      "sha256": "8f886fa22f81938a50be564523533b4efe7f2537f5acd982037b4d38ed3fc8b4",
+      "bytes": 13265
+    },
+    "rathena/config.log": {
+      "sha256": "6bb759d7b65d463ecd38ca81f484659ec2dc6e7885b017a964b9c611114e9d78",
+      "bytes": 48741
+    },
+    "rathena/src/common/packets.hpp": {
+      "sha256": "c92279bf163e9546b649397638c19e57c3eb515b49e841c13f88a5fb97bba693",
+      "bytes": 17432
+    },
+    "rathena/src/map/packets_struct.hpp": {
+      "sha256": "5ab5ef13d2a1cdc60d84dcaf2e3be0b6e316b9630e61c3ac7ba0f930d4d31287",
+      "bytes": 157544
+    },
+    "rathena/src/map/clif_packetdb.hpp": {
+      "sha256": "51c8a9ebd591e0dd4f444f829253a14d449615425405cb8a95f28a6dea460e66",
+      "bytes": 79471
+    },
+    "rathena/src/map/clif_shuffle.hpp": {
+      "sha256": "befba011ca4b2d1186c16fba325a7240a4ff5375e252d2fb4cc62d503c66d2a0",
+      "bytes": 288273
+    },
+    "rathena/src/map/clif.cpp": {
+      "sha256": "0b1db098158c240b090c6edb8417978ba495957c8a2df4cd9a0ab4cb39884ac5",
+      "bytes": 775974
+    },
+    "rathena/src/login/loginclif.cpp": {
+      "sha256": "85b9ef68f01890d505e5ef6089f6fb286516e2a35625f14fbcd79b03a36d9d93",
+      "bytes": 18190
+    },
+    "rathena/src/char/char_clif.cpp": {
+      "sha256": "f50dedd4cf46d0d3bea95c9410f1f0f04c5f7b525e6691b2afb9c4a3677c5654",
+      "bytes": 50916
+    },
+    "rathena/sql-files/main.sql": {
+      "sha256": "40bafce9c3aa14dd997d911b6dd42151d4b0e7afae9273d1ba96993ffdea1c80",
+      "bytes": 41941
+    }
+  },
+  "protected_scope": "No edits to existing client/limb/condition tests, SQL or seed renderer, core/runtime/mechanics/Rust/wiki files. Concurrent children continued; no stash, reset, staging or commit.",
+  "residual_frontier": [
+    "Parent must independently rereview source hashes, actual paths and regression outputs; any further blocking review after this second bounded cycle requires STOP/escalation.",
+    "Broad suite: population-config/world-state failures and final lint mypy build failure outside owned protocol scope; cannot claim broad acceptance or a pristine worktree.",
+    "Native 0x083e refusal framing/uint32 diagnostic decode not added; unsupported refusal remains fail-closed.",
+    "Tuple-id freshness possible allocator reuse remains a future conservative false-negative issue, not demonstrated stale-evidence acceptance.",
+    "Cleanup/deadlines cooperative, not hard real-time containment; dead reader/socket references retained and whole budget poisoned.",
+    "No private live credentials, SQL execution, MyISAM migration, live smoke, packet-causal proof, exhaustive native-family regeneration or credential rotation."
+  ],
+  "inherited_acceptance_exclusions": [
+    "No supplied real private fixture credentials or live authorization; no fixture accounts invented or connected.",
+    "No current native chat/movement/sit-stand/party acceptance, immediate rerun acceptance, general adapter acceptance, autonomous grinding or world isolation acceptance.",
+    "Historical README PASS timings are preserved history only and cannot establish repaired wire logic; offline fake tests do not supersede the defects reproduced here.",
+    "Character creation remains intentionally disabled before wire writes, despite compiler-verified native request/response framing lengths.",
+    "No MariaDB anonymous-block syntax/execution, transactional locking/rollback/concurrency, post-write live DB readback or SQL deployment was exercised.",
+    "Pinned native login/char/skill tables use MyISAM and MUST remain blocked by the InnoDB engine guard; no engine migration is authorized or performed.",
+    "Isolation/stopped flags and offline snapshots are operator attestations/models, not proof of fresh exclusive ownership or absence of in-memory sessions. No unsafe lifecycle/seed execution route is approved.",
+    "Inherited 20211103 snapshot outside exercised/native-corrected families is not fully regenerated. Unknown/unsupported families are not automatically blockers unless a supported path demonstrably misuses them; walking name and sparse slot are demonstrated supported-path mismatches.",
+    "Post-reply party correlation is not causal/cryptographic proof against delayed or injected traffic; very fast valid replies or bounded logs may produce fail-closed false negatives.",
+    "No broad app quality/full-suite acceptance or credential rotation claim; this report does not validate unrelated working-tree changes."
+  ],
+  "constraints": {
+    "network_game_calls": 0,
+    "provider_calls": 0,
+    "database_calls": 0,
+    "live_smoke": false,
+    "sql_changes": false,
+    "staging": false,
+    "commits": false,
+    "push": false,
+    "report_contains_credentials": false
+  }
+}

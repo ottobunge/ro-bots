@@ -1,0 +1,273 @@
+FFFFF                                                                    [100%]
+=================================== FAILURES ===================================
+_ test_cleanup_attempts_all_clients_blocks_retry_and_following_limb[False-False] _
+
+limbs = <module 'rereview_limbs' from '/home/otto/dev/ro-bots/spikes/003-clientless-limbs/test_limbs.py'>
+success = False, stuck = False
+
+    @pytest.mark.parametrize("success", [False, True])
+    @pytest.mark.parametrize("stuck", [False, True])
+    def test_cleanup_attempts_all_clients_blocks_retry_and_following_limb(
+        limbs, success, stuck
+    ):
+        from types import SimpleNamespace
+    
+        clock = Clock()
+        budget = limbs.Budget(59, clock=clock.monotonic, sleep=clock.sleep)
+        closed, attempts = [], []
+        clients = []
+        secret = "sentinel-not-for-output"
+        for index in range(2):
+            participant = SimpleNamespace(
+                sock=object(), rx_thread=SimpleNamespace(is_alive=lambda: True),
+                rx_error=None, dispatch_errors=[]
+            )
+    
+            def close(p=participant, i=index):
+                closed.append(i)
+                if i == 0:
+                    if not stuck:
+                        raise RuntimeError(secret)
+                else:
+                    p.sock = p.rx_thread = None
+    
+            participant.close = close
+            clients.append(participant)
+    
+        def limb(participants, _budget):
+            attempts.append(1)
+            participants.extend(clients)
+            if not success:
+                raise ValueError(secret)
+            return "OK fake limb evidence"
+    
+>       limbs.run_limb("first", limb, budget)
+
+tests/test_protocol_rereview_repairs.py:180: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+spikes/003-clientless-limbs/test_limbs.py:189: in run_limb
+    client.close()
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+p = namespace(sock=<object object at 0x7ffff6f81a90>, rx_thread=namespace(is_alive=<function test_cleanup_attempts_all_cli...], close=<function test_cleanup_attempts_all_clients_blocks_retry_and_following_limb.<locals>.close at 0x7ffff5b76090>)
+i = 0
+
+    def close(p=participant, i=index):
+        closed.append(i)
+        if i == 0:
+            if not stuck:
+>               raise RuntimeError(secret)
+E               RuntimeError: sentinel-not-for-output
+
+tests/test_protocol_rereview_repairs.py:166: RuntimeError
+_ test_cleanup_attempts_all_clients_blocks_retry_and_following_limb[False-True] _
+
+limbs = <module 'rereview_limbs' from '/home/otto/dev/ro-bots/spikes/003-clientless-limbs/test_limbs.py'>
+success = True, stuck = False
+
+    @pytest.mark.parametrize("success", [False, True])
+    @pytest.mark.parametrize("stuck", [False, True])
+    def test_cleanup_attempts_all_clients_blocks_retry_and_following_limb(
+        limbs, success, stuck
+    ):
+        from types import SimpleNamespace
+    
+        clock = Clock()
+        budget = limbs.Budget(59, clock=clock.monotonic, sleep=clock.sleep)
+        closed, attempts = [], []
+        clients = []
+        secret = "sentinel-not-for-output"
+        for index in range(2):
+            participant = SimpleNamespace(
+                sock=object(), rx_thread=SimpleNamespace(is_alive=lambda: True),
+                rx_error=None, dispatch_errors=[]
+            )
+    
+            def close(p=participant, i=index):
+                closed.append(i)
+                if i == 0:
+                    if not stuck:
+                        raise RuntimeError(secret)
+                else:
+                    p.sock = p.rx_thread = None
+    
+            participant.close = close
+            clients.append(participant)
+    
+        def limb(participants, _budget):
+            attempts.append(1)
+            participants.extend(clients)
+            if not success:
+                raise ValueError(secret)
+            return "OK fake limb evidence"
+    
+>       limbs.run_limb("first", limb, budget)
+
+tests/test_protocol_rereview_repairs.py:180: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+spikes/003-clientless-limbs/test_limbs.py:189: in run_limb
+    client.close()
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+p = namespace(sock=<object object at 0x7ffff6f82910>, rx_thread=namespace(is_alive=<function test_cleanup_attempts_all_cli...], close=<function test_cleanup_attempts_all_clients_blocks_retry_and_following_limb.<locals>.close at 0x7ffff5b775e0>)
+i = 0
+
+    def close(p=participant, i=index):
+        closed.append(i)
+        if i == 0:
+            if not stuck:
+>               raise RuntimeError(secret)
+E               RuntimeError: sentinel-not-for-output
+
+tests/test_protocol_rereview_repairs.py:166: RuntimeError
+_ test_cleanup_attempts_all_clients_blocks_retry_and_following_limb[True-False] _
+
+limbs = <module 'rereview_limbs' from '/home/otto/dev/ro-bots/spikes/003-clientless-limbs/test_limbs.py'>
+success = False, stuck = True
+
+    @pytest.mark.parametrize("success", [False, True])
+    @pytest.mark.parametrize("stuck", [False, True])
+    def test_cleanup_attempts_all_clients_blocks_retry_and_following_limb(
+        limbs, success, stuck
+    ):
+        from types import SimpleNamespace
+    
+        clock = Clock()
+        budget = limbs.Budget(59, clock=clock.monotonic, sleep=clock.sleep)
+        closed, attempts = [], []
+        clients = []
+        secret = "sentinel-not-for-output"
+        for index in range(2):
+            participant = SimpleNamespace(
+                sock=object(), rx_thread=SimpleNamespace(is_alive=lambda: True),
+                rx_error=None, dispatch_errors=[]
+            )
+    
+            def close(p=participant, i=index):
+                closed.append(i)
+                if i == 0:
+                    if not stuck:
+                        raise RuntimeError(secret)
+                else:
+                    p.sock = p.rx_thread = None
+    
+            participant.close = close
+            clients.append(participant)
+    
+        def limb(participants, _budget):
+            attempts.append(1)
+            participants.extend(clients)
+            if not success:
+                raise ValueError(secret)
+            return "OK fake limb evidence"
+    
+        limbs.run_limb("first", limb, budget)
+>       assert closed == [0, 1]
+E       assert [0, 1, 0, 1] == [0, 1]
+E         
+E         Left contains 2 more items, first extra item: 0
+E         Use -v to get more diff
+
+tests/test_protocol_rereview_repairs.py:181: AssertionError
+_ test_cleanup_attempts_all_clients_blocks_retry_and_following_limb[True-True] _
+
+limbs = <module 'rereview_limbs' from '/home/otto/dev/ro-bots/spikes/003-clientless-limbs/test_limbs.py'>
+success = True, stuck = True
+
+    @pytest.mark.parametrize("success", [False, True])
+    @pytest.mark.parametrize("stuck", [False, True])
+    def test_cleanup_attempts_all_clients_blocks_retry_and_following_limb(
+        limbs, success, stuck
+    ):
+        from types import SimpleNamespace
+    
+        clock = Clock()
+        budget = limbs.Budget(59, clock=clock.monotonic, sleep=clock.sleep)
+        closed, attempts = [], []
+        clients = []
+        secret = "sentinel-not-for-output"
+        for index in range(2):
+            participant = SimpleNamespace(
+                sock=object(), rx_thread=SimpleNamespace(is_alive=lambda: True),
+                rx_error=None, dispatch_errors=[]
+            )
+    
+            def close(p=participant, i=index):
+                closed.append(i)
+                if i == 0:
+                    if not stuck:
+                        raise RuntimeError(secret)
+                else:
+                    p.sock = p.rx_thread = None
+    
+            participant.close = close
+            clients.append(participant)
+    
+        def limb(participants, _budget):
+            attempts.append(1)
+            participants.extend(clients)
+            if not success:
+                raise ValueError(secret)
+            return "OK fake limb evidence"
+    
+        limbs.run_limb("first", limb, budget)
+        assert closed == [0, 1]
+        assert len(attempts) == 1
+>       assert not limbs.results[-1][1]
+E       assert not True
+
+tests/test_protocol_rereview_repairs.py:183: AssertionError
+____________ test_connect_preserves_origin_when_cleanup_also_fails _____________
+
+    def login():
+>       raise origin
+E       ValueError: sentinel-origin-secret
+
+tests/test_protocol_rereview_repairs.py:209: ValueError
+
+During handling of the above exception, another exception occurred:
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7ffff5bf0640>
+
+    def test_connect_preserves_origin_when_cleanup_also_fails(monkeypatch):
+        import client
+        import secrets
+    
+        bot = client.BotClient("offline", secrets.token_hex(8), verbose=False)
+        origin = ValueError("sentinel-origin-secret")
+        cleanup = RuntimeError("sentinel-cleanup-secret")
+        calls = []
+    
+        def close():
+            calls.append(1)
+            if len(calls) > 1:
+                raise cleanup
+    
+        def login():
+            raise origin
+    
+        monkeypatch.setattr(bot, "close", close)
+        monkeypatch.setattr(bot, "_login_server", login)
+        with pytest.raises(ValueError) as caught:
+>           bot.connect()
+
+tests/test_protocol_rereview_repairs.py:214: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+spikes/003-clientless-limbs/client.py:371: in connect
+    self.close()
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def close():
+        calls.append(1)
+        if len(calls) > 1:
+>           raise cleanup
+E           RuntimeError: sentinel-cleanup-secret
+
+tests/test_protocol_rereview_repairs.py:206: RuntimeError
+=========================== short test summary info ============================
+FAILED tests/test_protocol_rereview_repairs.py::test_cleanup_attempts_all_clients_blocks_retry_and_following_limb[False-False]
+FAILED tests/test_protocol_rereview_repairs.py::test_cleanup_attempts_all_clients_blocks_retry_and_following_limb[False-True]
+FAILED tests/test_protocol_rereview_repairs.py::test_cleanup_attempts_all_clients_blocks_retry_and_following_limb[True-False]
+FAILED tests/test_protocol_rereview_repairs.py::test_cleanup_attempts_all_clients_blocks_retry_and_following_limb[True-True]
+FAILED tests/test_protocol_rereview_repairs.py::test_connect_preserves_origin_when_cleanup_also_fails
+5 failed, 20 deselected in 0.07s

@@ -1,0 +1,693 @@
+{
+  "schema": "owned-public-map-asset-restoration/v1",
+  "status": "PASS_FOUR_EXACT_PINNED_PUBLIC_ASSETS_INSTALLED_AND_READ_BACK",
+  "observed_at_utc": "2026-10-12T20:09:56.516222+00:00",
+  "effects": {
+    "service_lifecycle": 0,
+    "db_DML_DDL_repair_reset": 0,
+    "native_sessions": 0,
+    "provider_calls": 0,
+    "existing_files_overwritten": 0,
+    "new_public_files": 4,
+    "new_required_directories": 2
+  },
+  "no_zero_actor_count_claim": true,
+  "startup_acceptance": "NOT_RUN; file presence is not startup, former-error absence, readiness or peer acceptance",
+  "health_evidence": "native-current-db-health.json supplies bounded current 12-table QUICK OK evidence only; no historical repair/data-loss proof",
+  "privacy": "No credentials, names, private configs, raw SQL or connection strings emitted",
+  "installed": [
+    {
+      "path": "runtime/db/import/map_cache.dat",
+      "type": "file",
+      "uid": 10000,
+      "gid": 10000,
+      "mode": "0o600",
+      "size": 8,
+      "dev": 66306,
+      "ino": 128319501,
+      "sha256": "6cc16abd70eefb90dc0ba0d14fb088630873b2c6ad943f7442356735984c35a3"
+    },
+    {
+      "path": "runtime/db/import/mob_avail.yml",
+      "type": "file",
+      "uid": 10000,
+      "gid": 10000,
+      "mode": "0o600",
+      "size": 3937,
+      "dev": 66306,
+      "ino": 128319502,
+      "sha256": "63cd73d189c9bd193a29e507bf053de2ecfb6d3157ac4baa34df0a432da97944"
+    },
+    {
+      "path": "runtime/npc/barters.yml",
+      "type": "file",
+      "uid": 10000,
+      "gid": 10000,
+      "mode": "0o600",
+      "size": 2327,
+      "dev": 66306,
+      "ino": 128319503,
+      "sha256": "e956b91129756b57b90707b25d836d4e75354ca38d0756ecfc493a3b0645814f"
+    },
+    {
+      "path": "runtime/npc/custom/barters.yml",
+      "type": "file",
+      "uid": 10000,
+      "gid": 10000,
+      "mode": "0o600",
+      "size": 2217,
+      "dev": 66306,
+      "ino": 128319505,
+      "sha256": "974ed3c884b869be0b111aa1df7124d2725fae6f4f2f0985a5a78beb31fbd555"
+    }
+  ],
+  "fixture_lock_held_during_checks_and_install": true,
+  "issues": [],
+  "inputs": {
+    "scope": {
+      "path": "/home/otto/dev/ro-bots/run/reviews/owned-public-map-asset-restoration-scope.json",
+      "sha256": "a6096a14bd1592eabf14aad233810e7f46546b8315da570d03dd1d4ff5a30067"
+    },
+    "plan": {
+      "path": "/home/otto/.hermes/cache/scratch/npc-map-asset-diagnosis/restoration-plan.private.json",
+      "sha256": "6064092d56766c9d67f590ef1ee9bcba61ec44baf4c5be4d4bd34222524b7d4a"
+    },
+    "diagnosis": {
+      "path": "/home/otto/dev/ro-bots/run/reviews/native-map-missing-assets.json",
+      "sha256": "31a70d8f83c86bae2d8314f1e06376bd355aa79b391e413ff524a9c272a894a7"
+    },
+    "health": {
+      "path": "/home/otto/dev/ro-bots/run/reviews/native-current-db-health.json",
+      "sha256": "7aed8c66bbff2e261916653c1fac1f904e9e1dd9d00ce4d83b79cee5dc06fe1e"
+    }
+  },
+  "source_freeze": {
+    "path": "/home/otto/.hermes/cache/scratch/npc-public-asset-restoration/stable-public-source-freeze.json",
+    "sha256": "229ab97ae579e567a76f7280f964b4f26a0ce9ed5a55b01be172a919762baea3",
+    "binding_count": 23
+  },
+  "scope_before": {
+    "roles": [
+      {
+        "role": "mariadb",
+        "id": "71715cf83bb3f5104c600dbeb2cdd3b0be162a9c3a85cfbb228fcebb10326f50",
+        "image": "sha256:ab3dff582d246358b6f6a1f6212f29ac64609fad883eb3dcfb0a89f6f7d0700e",
+        "project": "ro-bots-test",
+        "service": "mariadb",
+        "user": "",
+        "mounts": [
+          [
+            "volume",
+            "ro-bots-world-test",
+            "/docker-entrypoint-initdb.d",
+            false
+          ],
+          [
+            "volume",
+            "ro-bots-world-test",
+            "/var/lib/mysql",
+            true
+          ],
+          [
+            "volume",
+            "ro-bots-world-test",
+            "/var/lib/ro-bots",
+            true
+          ]
+        ],
+        "started_at": "2026-10-08T15:08:26.958040263Z",
+        "restart_count": 0
+      },
+      {
+        "role": "login",
+        "id": "d8f4183c03d4c6fdd618b20be8574069e29b884543fdd6ba5be716067811aa5b",
+        "image": "sha256:d6aa8e108909e6c0ab6f18bedf1cd8c34dc11d2194f7ca65322d46a331a6a469",
+        "project": "ro-bots-test",
+        "service": "rathena-login",
+        "user": "10000:10000",
+        "mounts": [
+          [
+            "volume",
+            "ro-bots-world-test",
+            "/world",
+            true
+          ]
+        ],
+        "started_at": "2026-10-08T15:08:31.178482699Z",
+        "restart_count": 0
+      },
+      {
+        "role": "char",
+        "id": "a9c42644d6db7bbfe40b50657da05afd89237b29628625be1c35a7b0c294a3d9",
+        "image": "sha256:d6aa8e108909e6c0ab6f18bedf1cd8c34dc11d2194f7ca65322d46a331a6a469",
+        "project": "ro-bots-test",
+        "service": "rathena-char",
+        "user": "10000:10000",
+        "mounts": [
+          [
+            "volume",
+            "ro-bots-world-test",
+            "/world",
+            true
+          ]
+        ],
+        "started_at": "2026-10-08T15:08:31.32507112Z",
+        "restart_count": 0
+      },
+      {
+        "role": "map",
+        "id": "ced219e3f4a12a4e12d5c4599a2b9a4b44191324671c44993848c5bed74b077c",
+        "image": "sha256:d6aa8e108909e6c0ab6f18bedf1cd8c34dc11d2194f7ca65322d46a331a6a469",
+        "project": "ro-bots-test",
+        "service": "rathena-map",
+        "user": "10000:10000",
+        "mounts": [
+          [
+            "volume",
+            "ro-bots-world-test",
+            "/world",
+            true
+          ]
+        ],
+        "started_at": "2026-10-08T15:08:31.458528082Z",
+        "restart_count": 0
+      }
+    ],
+    "exact_volume_users": 4,
+    "network_id": "6bf526ab697622fdbb8520b5ef4dd89b21dfa599dee53414c0f2144feec47f8a",
+    "network_name": "ro-bots-test_default",
+    "mountpoint": "/home/otto/.local/share/containers/storage/volumes/ro-bots-world-test/_data",
+    "same_rootless_engine_verified": true
+  },
+  "independent_admin_identity_check": {
+    "status": "PASS",
+    "fixed_complete_SELECT_sha256": "6fdaed6402049c087905ef5223ac2815e8264ace21436911ad4424559570ff28",
+    "transport_sha256": "3677d86137e6fcf6c3ff9614efbef71b5fa4571f3a326f141366453d549af8f6",
+    "validator_sha256": "c5e63c592c578cc9d75d2afcfc892eb9466e988776112a497469a059bf6a7f25",
+    "configured_nonhuman_accounts": 2,
+    "configured_characters": 2,
+    "credentials_PINs_names_group0_state0_exact": true,
+    "guild_members_owned": true,
+    "online_flags": [
+      1,
+      0
+    ],
+    "maintenance_policy_allows_first_online_0_or_1": true,
+    "lifetime_log_query_guard_pass_claim": false,
+    "query_receipt": {
+      "sql_sha256": "6fdaed6402049c087905ef5223ac2815e8264ace21436911ad4424559570ff28",
+      "stdout_sha256": "1161d98e7d979f2c28141f56b0f15416e52b305de5b5ee972c93be3b7f6dd041",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "returncode": 0,
+      "duration_seconds": 0.081107
+    }
+  },
+  "public_semantics": [
+    {
+      "target": "/world/runtime/db/import/map_cache.dat",
+      "file_size": 8,
+      "map_count": 0,
+      "gameplay_overrides": false
+    },
+    {
+      "target": "/world/runtime/db/import/mob_avail.yml",
+      "header": [
+        "Header:",
+        "  Type: MOB_AVAIL_DB",
+        "  Version: 1"
+      ],
+      "empty_body": true,
+      "renewal_only_import_skipped": null,
+      "mandatory_custom_import": null,
+      "gameplay_overrides": false
+    },
+    {
+      "target": "/world/runtime/npc/barters.yml",
+      "header": [
+        "Header:",
+        "  Type: BARTER_DB",
+        "  Version: 2"
+      ],
+      "empty_body": true,
+      "renewal_only_import_skipped": true,
+      "mandatory_custom_import": "/world/runtime/npc/custom/barters.yml",
+      "gameplay_overrides": false
+    },
+    {
+      "target": "/world/runtime/npc/custom/barters.yml",
+      "header": [
+        "Header:",
+        "  Type: BARTER_DB",
+        "  Version: 2"
+      ],
+      "empty_body": true,
+      "renewal_only_import_skipped": null,
+      "mandatory_custom_import": null,
+      "gameplay_overrides": false
+    }
+  ],
+  "base_cache_container_before": [
+    {
+      "container_handle": "ced219e3f4a12a4e12d5c4599a2b9a4b44191324671c44993848c5bed74b077c:/world/runtime/db/map_cache.dat",
+      "container_path": "/world/runtime/db/map_cache.dat",
+      "type": "regular_file",
+      "uid": 10000,
+      "gid": 10000,
+      "mode": "0600",
+      "size": 3056818,
+      "sha256": "00d277d00e70f476ceef9608f0b45a2a85bfc5ebf1fabf92f46e86f63648282e"
+    },
+    {
+      "container_handle": "ced219e3f4a12a4e12d5c4599a2b9a4b44191324671c44993848c5bed74b077c:/world/runtime/db/pre-re/map_cache.dat",
+      "container_path": "/world/runtime/db/pre-re/map_cache.dat",
+      "type": "regular_file",
+      "uid": 10000,
+      "gid": 10000,
+      "mode": "0600",
+      "size": 28082,
+      "sha256": "7a58a94bada98c5457fce3fc9bf950b4111fdf494d0488c54d716516707a8433"
+    }
+  ],
+  "probe_namespace_events": [
+    {
+      "kind": "volume_root",
+      "value": {
+        "path": "volume-root",
+        "type": "dir",
+        "uid": 0,
+        "gid": 0,
+        "mode": "0o755",
+        "size": 4096,
+        "dev": 66306,
+        "ino": 127702428
+      }
+    },
+    {
+      "kind": "absent_target",
+      "value": "runtime/db/import/map_cache.dat"
+    },
+    {
+      "kind": "absent_target",
+      "value": "runtime/db/import/mob_avail.yml"
+    },
+    {
+      "kind": "absent_target",
+      "value": "runtime/npc/barters.yml"
+    },
+    {
+      "kind": "absent_target",
+      "value": "runtime/npc/custom/barters.yml"
+    },
+    {
+      "kind": "cache_before",
+      "value": {
+        "path": "runtime/db/map_cache.dat",
+        "type": "file",
+        "uid": 10000,
+        "gid": 10000,
+        "mode": "0o600",
+        "size": 3056818,
+        "dev": 66306,
+        "ino": 128342902,
+        "sha256": "00d277d00e70f476ceef9608f0b45a2a85bfc5ebf1fabf92f46e86f63648282e"
+      }
+    },
+    {
+      "kind": "cache_before",
+      "value": {
+        "path": "runtime/db/pre-re/map_cache.dat",
+        "type": "file",
+        "uid": 10000,
+        "gid": 10000,
+        "mode": "0o600",
+        "size": 28082,
+        "dev": 66306,
+        "ino": 128342935,
+        "sha256": "7a58a94bada98c5457fce3fc9bf950b4111fdf494d0488c54d716516707a8433"
+      }
+    },
+    {
+      "kind": "probe_complete",
+      "value": true
+    }
+  ],
+  "install_namespace_events": [
+    {
+      "kind": "volume_root",
+      "value": {
+        "path": "volume-root",
+        "type": "dir",
+        "uid": 0,
+        "gid": 0,
+        "mode": "0o755",
+        "size": 4096,
+        "dev": 66306,
+        "ino": 127702428
+      }
+    },
+    {
+      "kind": "absent_target",
+      "value": "runtime/db/import/map_cache.dat"
+    },
+    {
+      "kind": "absent_target",
+      "value": "runtime/db/import/mob_avail.yml"
+    },
+    {
+      "kind": "absent_target",
+      "value": "runtime/npc/barters.yml"
+    },
+    {
+      "kind": "absent_target",
+      "value": "runtime/npc/custom/barters.yml"
+    },
+    {
+      "kind": "cache_before",
+      "value": {
+        "path": "runtime/db/map_cache.dat",
+        "type": "file",
+        "uid": 10000,
+        "gid": 10000,
+        "mode": "0o600",
+        "size": 3056818,
+        "dev": 66306,
+        "ino": 128342902,
+        "sha256": "00d277d00e70f476ceef9608f0b45a2a85bfc5ebf1fabf92f46e86f63648282e"
+      }
+    },
+    {
+      "kind": "cache_before",
+      "value": {
+        "path": "runtime/db/pre-re/map_cache.dat",
+        "type": "file",
+        "uid": 10000,
+        "gid": 10000,
+        "mode": "0o600",
+        "size": 28082,
+        "dev": 66306,
+        "ino": 128342935,
+        "sha256": "7a58a94bada98c5457fce3fc9bf950b4111fdf494d0488c54d716516707a8433"
+      }
+    },
+    {
+      "kind": "created_directory",
+      "value": {
+        "path": "import",
+        "type": "dir",
+        "uid": 10000,
+        "gid": 10000,
+        "mode": "0o700",
+        "size": 4096,
+        "dev": 66306,
+        "ino": 128319500
+      }
+    },
+    {
+      "kind": "created_file",
+      "value": "runtime/db/import/map_cache.dat"
+    },
+    {
+      "kind": "installed_readback",
+      "value": {
+        "path": "runtime/db/import/map_cache.dat",
+        "type": "file",
+        "uid": 10000,
+        "gid": 10000,
+        "mode": "0o600",
+        "size": 8,
+        "dev": 66306,
+        "ino": 128319501,
+        "sha256": "6cc16abd70eefb90dc0ba0d14fb088630873b2c6ad943f7442356735984c35a3"
+      }
+    },
+    {
+      "kind": "created_file",
+      "value": "runtime/db/import/mob_avail.yml"
+    },
+    {
+      "kind": "installed_readback",
+      "value": {
+        "path": "runtime/db/import/mob_avail.yml",
+        "type": "file",
+        "uid": 10000,
+        "gid": 10000,
+        "mode": "0o600",
+        "size": 3937,
+        "dev": 66306,
+        "ino": 128319502,
+        "sha256": "63cd73d189c9bd193a29e507bf053de2ecfb6d3157ac4baa34df0a432da97944"
+      }
+    },
+    {
+      "kind": "created_file",
+      "value": "runtime/npc/barters.yml"
+    },
+    {
+      "kind": "installed_readback",
+      "value": {
+        "path": "runtime/npc/barters.yml",
+        "type": "file",
+        "uid": 10000,
+        "gid": 10000,
+        "mode": "0o600",
+        "size": 2327,
+        "dev": 66306,
+        "ino": 128319503,
+        "sha256": "e956b91129756b57b90707b25d836d4e75354ca38d0756ecfc493a3b0645814f"
+      }
+    },
+    {
+      "kind": "created_directory",
+      "value": {
+        "path": "custom",
+        "type": "dir",
+        "uid": 10000,
+        "gid": 10000,
+        "mode": "0o700",
+        "size": 4096,
+        "dev": 66306,
+        "ino": 128319504
+      }
+    },
+    {
+      "kind": "created_file",
+      "value": "runtime/npc/custom/barters.yml"
+    },
+    {
+      "kind": "installed_readback",
+      "value": {
+        "path": "runtime/npc/custom/barters.yml",
+        "type": "file",
+        "uid": 10000,
+        "gid": 10000,
+        "mode": "0o600",
+        "size": 2217,
+        "dev": 66306,
+        "ino": 128319505,
+        "sha256": "974ed3c884b869be0b111aa1df7124d2725fae6f4f2f0985a5a78beb31fbd555"
+      }
+    },
+    {
+      "kind": "cache_after",
+      "value": {
+        "path": "runtime/db/map_cache.dat",
+        "type": "file",
+        "uid": 10000,
+        "gid": 10000,
+        "mode": "0o600",
+        "size": 3056818,
+        "dev": 66306,
+        "ino": 128342902,
+        "sha256": "00d277d00e70f476ceef9608f0b45a2a85bfc5ebf1fabf92f46e86f63648282e"
+      }
+    },
+    {
+      "kind": "cache_after",
+      "value": {
+        "path": "runtime/db/pre-re/map_cache.dat",
+        "type": "file",
+        "uid": 10000,
+        "gid": 10000,
+        "mode": "0o600",
+        "size": 28082,
+        "dev": 66306,
+        "ino": 128342935,
+        "sha256": "7a58a94bada98c5457fce3fc9bf950b4111fdf494d0488c54d716516707a8433"
+      }
+    },
+    {
+      "kind": "install_complete",
+      "value": true
+    }
+  ],
+  "container_archive_readback": [
+    {
+      "container_handle": "ced219e3f4a12a4e12d5c4599a2b9a4b44191324671c44993848c5bed74b077c:/world/runtime/db/import/map_cache.dat",
+      "container_path": "/world/runtime/db/import/map_cache.dat",
+      "type": "regular_file",
+      "uid": 10000,
+      "gid": 10000,
+      "mode": "0600",
+      "size": 8,
+      "sha256": "6cc16abd70eefb90dc0ba0d14fb088630873b2c6ad943f7442356735984c35a3",
+      "volume_target": "/home/otto/.local/share/containers/storage/volumes/ro-bots-world-test/_data/runtime/db/import/map_cache.dat"
+    },
+    {
+      "container_handle": "ced219e3f4a12a4e12d5c4599a2b9a4b44191324671c44993848c5bed74b077c:/world/runtime/db/import/mob_avail.yml",
+      "container_path": "/world/runtime/db/import/mob_avail.yml",
+      "type": "regular_file",
+      "uid": 10000,
+      "gid": 10000,
+      "mode": "0600",
+      "size": 3937,
+      "sha256": "63cd73d189c9bd193a29e507bf053de2ecfb6d3157ac4baa34df0a432da97944",
+      "volume_target": "/home/otto/.local/share/containers/storage/volumes/ro-bots-world-test/_data/runtime/db/import/mob_avail.yml"
+    },
+    {
+      "container_handle": "ced219e3f4a12a4e12d5c4599a2b9a4b44191324671c44993848c5bed74b077c:/world/runtime/npc/barters.yml",
+      "container_path": "/world/runtime/npc/barters.yml",
+      "type": "regular_file",
+      "uid": 10000,
+      "gid": 10000,
+      "mode": "0600",
+      "size": 2327,
+      "sha256": "e956b91129756b57b90707b25d836d4e75354ca38d0756ecfc493a3b0645814f",
+      "volume_target": "/home/otto/.local/share/containers/storage/volumes/ro-bots-world-test/_data/runtime/npc/barters.yml"
+    },
+    {
+      "container_handle": "ced219e3f4a12a4e12d5c4599a2b9a4b44191324671c44993848c5bed74b077c:/world/runtime/npc/custom/barters.yml",
+      "container_path": "/world/runtime/npc/custom/barters.yml",
+      "type": "regular_file",
+      "uid": 10000,
+      "gid": 10000,
+      "mode": "0600",
+      "size": 2217,
+      "sha256": "974ed3c884b869be0b111aa1df7124d2725fae6f4f2f0985a5a78beb31fbd555",
+      "volume_target": "/home/otto/.local/share/containers/storage/volumes/ro-bots-world-test/_data/runtime/npc/custom/barters.yml"
+    }
+  ],
+  "base_cache_container_after": [
+    {
+      "container_handle": "ced219e3f4a12a4e12d5c4599a2b9a4b44191324671c44993848c5bed74b077c:/world/runtime/db/map_cache.dat",
+      "container_path": "/world/runtime/db/map_cache.dat",
+      "type": "regular_file",
+      "uid": 10000,
+      "gid": 10000,
+      "mode": "0600",
+      "size": 3056818,
+      "sha256": "00d277d00e70f476ceef9608f0b45a2a85bfc5ebf1fabf92f46e86f63648282e"
+    },
+    {
+      "container_handle": "ced219e3f4a12a4e12d5c4599a2b9a4b44191324671c44993848c5bed74b077c:/world/runtime/db/pre-re/map_cache.dat",
+      "container_path": "/world/runtime/db/pre-re/map_cache.dat",
+      "type": "regular_file",
+      "uid": 10000,
+      "gid": 10000,
+      "mode": "0600",
+      "size": 28082,
+      "sha256": "7a58a94bada98c5457fce3fc9bf950b4111fdf494d0488c54d716516707a8433"
+    }
+  ],
+  "all_four_current_file_hashes_and_import_headers_verified": true,
+  "both_base_cache_hashes_unchanged": true,
+  "scope_after": {
+    "roles": [
+      {
+        "role": "mariadb",
+        "id": "71715cf83bb3f5104c600dbeb2cdd3b0be162a9c3a85cfbb228fcebb10326f50",
+        "image": "sha256:ab3dff582d246358b6f6a1f6212f29ac64609fad883eb3dcfb0a89f6f7d0700e",
+        "project": "ro-bots-test",
+        "service": "mariadb",
+        "user": "",
+        "mounts": [
+          [
+            "volume",
+            "ro-bots-world-test",
+            "/docker-entrypoint-initdb.d",
+            false
+          ],
+          [
+            "volume",
+            "ro-bots-world-test",
+            "/var/lib/mysql",
+            true
+          ],
+          [
+            "volume",
+            "ro-bots-world-test",
+            "/var/lib/ro-bots",
+            true
+          ]
+        ],
+        "started_at": "2026-10-08T15:08:26.958040263Z",
+        "restart_count": 0
+      },
+      {
+        "role": "login",
+        "id": "d8f4183c03d4c6fdd618b20be8574069e29b884543fdd6ba5be716067811aa5b",
+        "image": "sha256:d6aa8e108909e6c0ab6f18bedf1cd8c34dc11d2194f7ca65322d46a331a6a469",
+        "project": "ro-bots-test",
+        "service": "rathena-login",
+        "user": "10000:10000",
+        "mounts": [
+          [
+            "volume",
+            "ro-bots-world-test",
+            "/world",
+            true
+          ]
+        ],
+        "started_at": "2026-10-08T15:08:31.178482699Z",
+        "restart_count": 0
+      },
+      {
+        "role": "char",
+        "id": "a9c42644d6db7bbfe40b50657da05afd89237b29628625be1c35a7b0c294a3d9",
+        "image": "sha256:d6aa8e108909e6c0ab6f18bedf1cd8c34dc11d2194f7ca65322d46a331a6a469",
+        "project": "ro-bots-test",
+        "service": "rathena-char",
+        "user": "10000:10000",
+        "mounts": [
+          [
+            "volume",
+            "ro-bots-world-test",
+            "/world",
+            true
+          ]
+        ],
+        "started_at": "2026-10-08T15:08:31.32507112Z",
+        "restart_count": 0
+      },
+      {
+        "role": "map",
+        "id": "ced219e3f4a12a4e12d5c4599a2b9a4b44191324671c44993848c5bed74b077c",
+        "image": "sha256:d6aa8e108909e6c0ab6f18bedf1cd8c34dc11d2194f7ca65322d46a331a6a469",
+        "project": "ro-bots-test",
+        "service": "rathena-map",
+        "user": "10000:10000",
+        "mounts": [
+          [
+            "volume",
+            "ro-bots-world-test",
+            "/world",
+            true
+          ]
+        ],
+        "started_at": "2026-10-08T15:08:31.458528082Z",
+        "restart_count": 0
+      }
+    ],
+    "exact_volume_users": 4,
+    "network_id": "6bf526ab697622fdbb8520b5ef4dd89b21dfa599dee53414c0f2144feec47f8a",
+    "network_name": "ro-bots-test_default",
+    "mountpoint": "/home/otto/.local/share/containers/storage/volumes/ro-bots-world-test/_data",
+    "same_rootless_engine_verified": true
+  },
+  "stable_public_binding_unchanged": true,
+  "canonical_fixture_lock_released": true,
+  "finished_at_utc": "2026-10-12T20:09:58.182570+00:00",
+  "installer_sources": {
+    "/home/otto/.hermes/cache/scratch/npc-public-asset-restoration/restore.py": "5a171edb2721f8de7ea3588cc17ff0be41d75921a1a60dbfbc83ba174416db96",
+    "/home/otto/.hermes/cache/scratch/npc-public-asset-restoration/install_fd.py": "5a55a691540e9a2690e77ea5effe650cb99056709d2184b4b91f6e33b0d9ecab"
+  }
+}

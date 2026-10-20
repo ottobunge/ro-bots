@@ -1,0 +1,3112 @@
+{
+  "scope": {
+    "user_choice": "Authorize one bounded cleanup and fresh review",
+    "authorized_work": "Deny field-level packing; formatting/type-only changes to tracer/tests preserving behavior; eliminate added quality regressions; fresh independent review",
+    "owned_code": [
+      "spikes/007-native-packet-ast/sender-proof/trace_sender.py",
+      "spikes/007-native-packet-ast/sender-proof/test_trace.py",
+      "spikes/007-native-packet-ast/sender-proof/README.md"
+    ],
+    "new_cleanup_report": "run/reviews/native-ast-real-sender-explicit-cleanup.json",
+    "baseline_final_review_sha256": "128e00e3557b57f636506cce6f9e420c7c85596acd92e881b55f121a7852934f",
+    "baseline_author_report_sha256": "edcd12969e69be3200bcbb3c7c7293637a18eafd2eb7c73c2b97d6f4facd5ca4",
+    "baseline_freeze": "/home/otto/.hermes/cache/scratch/native-record-shape-final-freeze.json",
+    "baseline_owned_hashes": {
+      "trace_sender.py": "096628098957275599da7da9a34c678d8d4c763bb871b8301669606a3dde4a8a",
+      "test_trace.py": "4c48676433e4dcfc70efc9bdd1d766171751584ca492b2cdf08573ae37b12d18",
+      "README.md": "aaf6952611657e3cfe75fdd9aaf83f27ba6163f72d7dc95538e78aa0b02e40a3"
+    },
+    "automatic_repair_cycles_remain_exhausted": true,
+    "additional_explicit_cleanup_attempts_authorized": 1,
+    "automatic_repair_budget_reset": false,
+    "forbidden": [
+      "old rejected generator changes",
+      "callback trial changes",
+      "CLI/pin/authority changes",
+      "root quality threshold changes",
+      "server package rebuild/deployment",
+      "runtime or world changes",
+      "evidence overwrite",
+      "new features or grammar expansion"
+    ],
+    "if_review_rejects": "stop and escalate; no further automatic cleanup"
+  },
+  "result": "SELF_VERIFIED_PARTIAL_PENDING_FRESH_INDEPENDENT_REVIEW",
+  "passed": false,
+  "semantic_self_checks_passed": true,
+  "independent_approval": false,
+  "before_code_hashes": {
+    "trace_sender.py": "096628098957275599da7da9a34c678d8d4c763bb871b8301669606a3dde4a8a",
+    "test_trace.py": "4c48676433e4dcfc70efc9bdd1d766171751584ca492b2cdf08573ae37b12d18",
+    "README.md": "aaf6952611657e3cfe75fdd9aaf83f27ba6163f72d7dc95538e78aa0b02e40a3"
+  },
+  "after_code_hashes": {
+    "trace_sender.py": "4adc11200b1343a2a555190cf9354f4ffdea9b2e2a9df1d9dcbb880c9d76cd68",
+    "test_trace.py": "1a9ff14bf6637a40548c392d255ff476466e2bfcdc76f4a9a629608c9a982578",
+    "README.md": "bafd450cf3c786e273e10f1c1a1ed613ac0ead2ec11efe1c3bcc2583221230fa"
+  },
+  "test_body_AST_comparison": {
+    "original_count": 14,
+    "current_count": 15,
+    "retained": {
+      "test_real_declaration_send_sizeof_identity": true,
+      "test_real_header_and_gcc_layout_join": true,
+      "test_unknown_helper_escape_denied_structurally": true,
+      "test_wrong_authorities_rejected_before_candidate": true,
+      "test_L1_helper_in_third_or_fourth_send_argument": true,
+      "test_L1_plain_actual_pointer_and_AREA_guard": true,
+      "test_L2_mutable_header_is_not_an_immutable_constant": true,
+      "test_L2_const_and_constexpr_integral_header_guards": true,
+      "test_L3_float_parameter_cast_is_not_integral_plain_read": true,
+      "test_L3_enum_to_integral_and_const_void_address_guard": true,
+      "test_L4_defined_union_overwrite_denied_before_metadata": true,
+      "test_L4_unsupported_layout_forms_fail_before_metadata": true,
+      "test_L4_ordinary_packed_short_aliases_remain_candidates": true,
+      "test_L4_header_requires_short_word_representation": true
+    },
+    "normalization": "Ignore formatting and function/variable annotations; normalize typed Measurement keyword constructor to its identical dict literal. No assertion replacement or omission."
+  },
+  "physical_unittest_methods": 15,
+  "executed_tests": 15,
+  "tests_exit": 0,
+  "red_green": {
+    "red": {
+      "command": {
+        "command": [
+          "python3",
+          "-B",
+          "-m",
+          "unittest",
+          "test_trace.RecordShapeTests.test_field_level_packed_attribute_denied_before_metadata",
+          "-v"
+        ],
+        "exit": 1
+      },
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "338411db1fb84f81aa0163b02845260f83a37be9a631b360cf28312b02e265c0"
+    },
+    "green": {
+      "command": {
+        "command": [
+          "python3",
+          "-B",
+          "-m",
+          "unittest",
+          "test_trace.RecordShapeTests.test_field_level_packed_attribute_denied_before_metadata",
+          "-v"
+        ],
+        "exit": 0
+      },
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "43b5733d4b77901c1c7747a0972e942fdba72f6c02af323828d651706ec81037"
+    }
+  },
+  "fresh_compiled_probes": {
+    "count": 20,
+    "matching_count": 20,
+    "results": [
+      {
+        "name": "union",
+        "expected_candidate": false,
+        "matches": true,
+        "metadata": {
+          "id": 1,
+          "size": 4,
+          "offsets": [
+            0,
+            0
+          ]
+        },
+        "GCC_stdout": "{\"id\":1,\"size\":4,\"offsets\":[0,0]}\nsent_header=2 size=4\n",
+        "AST_fields": [
+          {
+            "name": "h",
+            "type": {
+              "qualType": "unsigned short"
+            },
+            "children": []
+          },
+          {
+            "name": "x",
+            "type": {
+              "qualType": "unsigned int"
+            },
+            "children": []
+          }
+        ],
+        "result": {
+          "identity_proven": true,
+          "decision": "UNRESOLVED",
+          "reasons": [
+            "unsupported record shape: requires plain non-overlapping scalar aggregate"
+          ],
+          "sink_contract_status": "UNREVIEWED",
+          "sender_semantic_admission": false,
+          "runtime_admission": false,
+          "object_id": "0x55555579a340",
+          "send_object_id": "0x55555579a340",
+          "sizeof_object_id": "0x55555579a340",
+          "object_type": "P",
+          "function_id": "0x555555799410",
+          "send_id": "0x55555579a8a8",
+          "sizeof_id": "0x55555579a820",
+          "sink_decl_id": "0x555555798c50"
+        },
+        "without_metadata": {
+          "identity_proven": true,
+          "decision": "UNRESOLVED",
+          "reasons": [
+            "unsupported record shape: requires plain non-overlapping scalar aggregate"
+          ],
+          "sink_contract_status": "UNREVIEWED",
+          "sender_semantic_admission": false,
+          "runtime_admission": false,
+          "object_id": "0x55555579a340",
+          "send_object_id": "0x55555579a340",
+          "sizeof_object_id": "0x55555579a340",
+          "object_type": "P",
+          "function_id": "0x555555799410",
+          "send_id": "0x55555579a8a8",
+          "sizeof_id": "0x55555579a820",
+          "sink_decl_id": "0x555555798c50"
+        },
+        "source_sha256": "62bb4f345c109285cb95bc1c84ee82a36289e329eeb95ad8f8d1594f00af5fb4"
+      },
+      {
+        "name": "alias-union",
+        "expected_candidate": false,
+        "matches": true,
+        "metadata": {
+          "id": 1,
+          "size": 4,
+          "offsets": [
+            0,
+            0
+          ]
+        },
+        "GCC_stdout": "{\"id\":1,\"size\":4,\"offsets\":[0,0]}\nsent_header=2 size=4\n",
+        "AST_fields": [],
+        "result": {
+          "identity_proven": true,
+          "decision": "UNRESOLVED",
+          "reasons": [
+            "record declaration unavailable"
+          ],
+          "sink_contract_status": "UNREVIEWED",
+          "sender_semantic_admission": false,
+          "runtime_admission": false,
+          "object_id": "0x55555579a170",
+          "send_object_id": "0x55555579a170",
+          "sizeof_object_id": "0x55555579a170",
+          "object_type": "P",
+          "function_id": "0x555555799200",
+          "send_id": "0x55555579a6b8",
+          "sizeof_id": "0x55555579a630",
+          "sink_decl_id": "0x555555798ae0"
+        },
+        "without_metadata": {
+          "identity_proven": true,
+          "decision": "UNRESOLVED",
+          "reasons": [
+            "record declaration unavailable"
+          ],
+          "sink_contract_status": "UNREVIEWED",
+          "sender_semantic_admission": false,
+          "runtime_admission": false,
+          "object_id": "0x55555579a170",
+          "send_object_id": "0x55555579a170",
+          "sizeof_object_id": "0x55555579a170",
+          "object_type": "P",
+          "function_id": "0x555555799200",
+          "send_id": "0x55555579a6b8",
+          "sizeof_id": "0x55555579a630",
+          "sink_decl_id": "0x555555798ae0"
+        },
+        "source_sha256": "59087b4d09518379ec620976c02d1ae29987f522a156426024a62c5628d34ba8"
+      },
+      {
+        "name": "anonymous-union",
+        "expected_candidate": false,
+        "matches": true,
+        "metadata": {
+          "id": 1,
+          "size": 8,
+          "offsets": [
+            0,
+            4
+          ]
+        },
+        "GCC_stdout": "{\"id\":1,\"size\":8,\"offsets\":[0,4]}\nsent_header=1 size=8\n",
+        "AST_fields": [
+          {
+            "name": "h",
+            "type": {
+              "qualType": "unsigned short"
+            },
+            "children": []
+          },
+          {
+            "name": null,
+            "type": {
+              "qualType": "P::(anonymous union at /home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/anonymous-union.cpp:4:28)"
+            },
+            "children": []
+          }
+        ],
+        "result": {
+          "identity_proven": true,
+          "decision": "UNRESOLVED",
+          "reasons": [
+            "unsupported record shape: requires plain non-overlapping scalar aggregate"
+          ],
+          "sink_contract_status": "UNREVIEWED",
+          "sender_semantic_admission": false,
+          "runtime_admission": false,
+          "object_id": "0x55555579a520",
+          "send_object_id": "0x55555579a520",
+          "sizeof_object_id": "0x55555579a520",
+          "object_type": "P",
+          "function_id": "0x55555579a430",
+          "send_id": "0x55555579ad08",
+          "sizeof_id": "0x55555579ac80",
+          "sink_decl_id": "0x555555799230"
+        },
+        "without_metadata": {
+          "identity_proven": true,
+          "decision": "UNRESOLVED",
+          "reasons": [
+            "unsupported record shape: requires plain non-overlapping scalar aggregate"
+          ],
+          "sink_contract_status": "UNREVIEWED",
+          "sender_semantic_admission": false,
+          "runtime_admission": false,
+          "object_id": "0x55555579a520",
+          "send_object_id": "0x55555579a520",
+          "sizeof_object_id": "0x55555579a520",
+          "object_type": "P",
+          "function_id": "0x55555579a430",
+          "send_id": "0x55555579ad08",
+          "sizeof_id": "0x55555579ac80",
+          "sink_decl_id": "0x555555799230"
+        },
+        "source_sha256": "e9d35b4068a9b91af974001fe45153a3efef6b37621e1558a1c836e23db26627"
+      },
+      {
+        "name": "base",
+        "expected_candidate": false,
+        "matches": true,
+        "metadata": {
+          "id": 1,
+          "size": 8,
+          "offsets": [
+            0,
+            4
+          ]
+        },
+        "GCC_stdout": "{\"id\":1,\"size\":8,\"offsets\":[0,4]}\nsent_header=1 size=8\n",
+        "AST_fields": [
+          {
+            "name": "h",
+            "type": {
+              "qualType": "unsigned short"
+            },
+            "children": []
+          },
+          {
+            "name": "x",
+            "type": {
+              "qualType": "unsigned int"
+            },
+            "children": []
+          }
+        ],
+        "result": {
+          "identity_proven": true,
+          "decision": "UNRESOLVED",
+          "reasons": [
+            "unsupported record shape: requires plain non-overlapping scalar aggregate"
+          ],
+          "sink_contract_status": "UNREVIEWED",
+          "sender_semantic_admission": false,
+          "runtime_admission": false,
+          "object_id": "0x555555799cc0",
+          "send_object_id": "0x555555799cc0",
+          "sizeof_object_id": "0x555555799cc0",
+          "object_type": "P",
+          "function_id": "0x555555799bd8",
+          "send_id": "0x55555579a468",
+          "sizeof_id": "0x55555579a3e0",
+          "sink_decl_id": "0x555555798e80"
+        },
+        "without_metadata": {
+          "identity_proven": true,
+          "decision": "UNRESOLVED",
+          "reasons": [
+            "unsupported record shape: requires plain non-overlapping scalar aggregate"
+          ],
+          "sink_contract_status": "UNREVIEWED",
+          "sender_semantic_admission": false,
+          "runtime_admission": false,
+          "object_id": "0x555555799cc0",
+          "send_object_id": "0x555555799cc0",
+          "sizeof_object_id": "0x555555799cc0",
+          "object_type": "P",
+          "function_id": "0x555555799bd8",
+          "send_id": "0x55555579a468",
+          "sizeof_id": "0x55555579a3e0",
+          "sink_decl_id": "0x555555798e80"
+        },
+        "source_sha256": "596980813097f318fb32fa3e660af4129a1e6d553de39bce433b0261b530ac5d"
+      },
+      {
+        "name": "bitfield",
+        "expected_candidate": false,
+        "matches": true,
+        "metadata": {
+          "id": 1,
+          "size": 4,
+          "offsets": [
+            0
+          ]
+        },
+        "GCC_stdout": "{\"id\":1,\"size\":4,\"offsets\":[0]}\nsent_header=1 size=4\n",
+        "AST_fields": [
+          {
+            "name": "h",
+            "type": {
+              "qualType": "unsigned short"
+            },
+            "children": []
+          },
+          {
+            "name": "x",
+            "type": {
+              "qualType": "unsigned int"
+            },
+            "children": [
+              "ConstantExpr"
+            ]
+          }
+        ],
+        "result": {
+          "identity_proven": true,
+          "decision": "UNRESOLVED",
+          "reasons": [
+            "unsupported record shape: requires plain non-overlapping scalar aggregate"
+          ],
+          "sink_contract_status": "UNREVIEWED",
+          "sender_semantic_admission": false,
+          "runtime_admission": false,
+          "object_id": "0x555555799640",
+          "send_object_id": "0x555555799640",
+          "sizeof_object_id": "0x555555799640",
+          "object_type": "P",
+          "function_id": "0x555555799550",
+          "send_id": "0x55555579a9d8",
+          "sizeof_id": "0x55555579a950",
+          "sink_decl_id": "0x555555798e30"
+        },
+        "without_metadata": {
+          "identity_proven": true,
+          "decision": "UNRESOLVED",
+          "reasons": [
+            "unsupported record shape: requires plain non-overlapping scalar aggregate"
+          ],
+          "sink_contract_status": "UNREVIEWED",
+          "sender_semantic_admission": false,
+          "runtime_admission": false,
+          "object_id": "0x555555799640",
+          "send_object_id": "0x555555799640",
+          "sizeof_object_id": "0x555555799640",
+          "object_type": "P",
+          "function_id": "0x555555799550",
+          "send_id": "0x55555579a9d8",
+          "sizeof_id": "0x55555579a950",
+          "sink_decl_id": "0x555555798e30"
+        },
+        "source_sha256": "b2f598f28ee6a288098e9c3607f481982315cb0a17f814e05af84e74e8c70a78"
+      },
+      {
+        "name": "overlap-attribute",
+        "expected_candidate": false,
+        "matches": true,
+        "metadata": {
+          "id": 1,
+          "size": 8,
+          "offsets": [
+            0,
+            4
+          ]
+        },
+        "GCC_stdout": "{\"id\":1,\"size\":8,\"offsets\":[0,4]}\nsent_header=1 size=8\n",
+        "AST_fields": [
+          {
+            "name": "h",
+            "type": {
+              "qualType": "unsigned short"
+            },
+            "children": []
+          },
+          {
+            "name": "x",
+            "type": {
+              "qualType": "unsigned int"
+            },
+            "children": [
+              "NoUniqueAddressAttr"
+            ]
+          }
+        ],
+        "result": {
+          "identity_proven": true,
+          "decision": "UNRESOLVED",
+          "reasons": [
+            "unsupported record shape: requires plain non-overlapping scalar aggregate"
+          ],
+          "sink_contract_status": "UNREVIEWED",
+          "sender_semantic_admission": false,
+          "runtime_admission": false,
+          "object_id": "0x55555579a220",
+          "send_object_id": "0x55555579a220",
+          "sizeof_object_id": "0x55555579a220",
+          "object_type": "P",
+          "function_id": "0x5555557992b0",
+          "send_id": "0x55555579a788",
+          "sizeof_id": "0x55555579a700",
+          "sink_decl_id": "0x555555798b90"
+        },
+        "without_metadata": {
+          "identity_proven": true,
+          "decision": "UNRESOLVED",
+          "reasons": [
+            "unsupported record shape: requires plain non-overlapping scalar aggregate"
+          ],
+          "sink_contract_status": "UNREVIEWED",
+          "sender_semantic_admission": false,
+          "runtime_admission": false,
+          "object_id": "0x55555579a220",
+          "send_object_id": "0x55555579a220",
+          "sizeof_object_id": "0x55555579a220",
+          "object_type": "P",
+          "function_id": "0x5555557992b0",
+          "send_id": "0x55555579a788",
+          "sizeof_id": "0x55555579a700",
+          "sink_decl_id": "0x555555798b90"
+        },
+        "source_sha256": "e28bd44085f3ba089958465bb5859358d5b5340e7d00f80d8a62b2adff79e4d4"
+      },
+      {
+        "name": "unknown-attribute",
+        "expected_candidate": false,
+        "matches": true,
+        "metadata": {
+          "id": 1,
+          "size": 8,
+          "offsets": [
+            0,
+            4
+          ]
+        },
+        "GCC_stdout": "{\"id\":1,\"size\":8,\"offsets\":[0,4]}\nsent_header=1 size=8\n",
+        "AST_fields": [
+          {
+            "name": "h",
+            "type": {
+              "qualType": "unsigned short"
+            },
+            "children": []
+          },
+          {
+            "name": "x",
+            "type": {
+              "qualType": "unsigned int"
+            },
+            "children": []
+          }
+        ],
+        "result": {
+          "identity_proven": true,
+          "decision": "UNRESOLVED",
+          "reasons": [
+            "unsupported record shape: requires plain non-overlapping scalar aggregate"
+          ],
+          "sink_contract_status": "UNREVIEWED",
+          "sender_semantic_admission": false,
+          "runtime_admission": false,
+          "object_id": "0x55555579a640",
+          "send_object_id": "0x55555579a640",
+          "sizeof_object_id": "0x55555579a640",
+          "object_type": "P",
+          "function_id": "0x5555557996d0",
+          "send_id": "0x55555579aba8",
+          "sizeof_id": "0x55555579ab20",
+          "sink_decl_id": "0x555555798fb0"
+        },
+        "without_metadata": {
+          "identity_proven": true,
+          "decision": "UNRESOLVED",
+          "reasons": [
+            "unsupported record shape: requires plain non-overlapping scalar aggregate"
+          ],
+          "sink_contract_status": "UNREVIEWED",
+          "sender_semantic_admission": false,
+          "runtime_admission": false,
+          "object_id": "0x55555579a640",
+          "send_object_id": "0x55555579a640",
+          "sizeof_object_id": "0x55555579a640",
+          "object_type": "P",
+          "function_id": "0x5555557996d0",
+          "send_id": "0x55555579aba8",
+          "sizeof_id": "0x55555579ab20",
+          "sink_decl_id": "0x555555798fb0"
+        },
+        "source_sha256": "126a2a7e5fc5d4bcc39f5340f983ba61935077b5840feb622353e91b1c7f90f7"
+      },
+      {
+        "name": "wide-header",
+        "expected_candidate": false,
+        "matches": true,
+        "metadata": {
+          "id": 1,
+          "size": 8,
+          "offsets": [
+            0,
+            4
+          ]
+        },
+        "GCC_stdout": "{\"id\":1,\"size\":8,\"offsets\":[0,4]}\nsent_header=1 size=8\n",
+        "AST_fields": [
+          {
+            "name": "h",
+            "type": {
+              "qualType": "unsigned int"
+            },
+            "children": []
+          },
+          {
+            "name": "x",
+            "type": {
+              "qualType": "unsigned int"
+            },
+            "children": []
+          }
+        ],
+        "result": {
+          "identity_proven": true,
+          "decision": "UNRESOLVED",
+          "reasons": [
+            "unsupported record header representation: requires short word on pinned target"
+          ],
+          "sink_contract_status": "UNREVIEWED",
+          "sender_semantic_admission": false,
+          "runtime_admission": false,
+          "object_id": "0x555555799610",
+          "send_object_id": "0x555555799610",
+          "sizeof_object_id": "0x555555799610",
+          "object_type": "P",
+          "function_id": "0x555555799520",
+          "send_id": "0x55555579a9a8",
+          "sizeof_id": "0x55555579a920",
+          "sink_decl_id": "0x555555798e00"
+        },
+        "without_metadata": {
+          "identity_proven": true,
+          "decision": "UNRESOLVED",
+          "reasons": [
+            "unsupported record header representation: requires short word on pinned target"
+          ],
+          "sink_contract_status": "UNREVIEWED",
+          "sender_semantic_admission": false,
+          "runtime_admission": false,
+          "object_id": "0x555555799610",
+          "send_object_id": "0x555555799610",
+          "sizeof_object_id": "0x555555799610",
+          "object_type": "P",
+          "function_id": "0x555555799520",
+          "send_id": "0x55555579a9a8",
+          "sizeof_id": "0x55555579a920",
+          "sink_decl_id": "0x555555798e00"
+        },
+        "source_sha256": "09e360c2209f88ff16ca480c0798246b46a8a00fa5b40f07277bf6089f3bd1bd"
+      },
+      {
+        "name": "field-packed",
+        "expected_candidate": false,
+        "matches": true,
+        "metadata": {
+          "id": 1,
+          "size": 6,
+          "offsets": [
+            0,
+            2
+          ]
+        },
+        "GCC_stdout": "{\"id\":1,\"size\":6,\"offsets\":[0,2]}\nsent_header=1 size=6\n",
+        "AST_fields": [
+          {
+            "name": "h",
+            "type": {
+              "qualType": "unsigned short"
+            },
+            "children": []
+          },
+          {
+            "name": "x",
+            "type": {
+              "qualType": "unsigned int"
+            },
+            "children": [
+              "PackedAttr"
+            ]
+          }
+        ],
+        "result": {
+          "identity_proven": true,
+          "decision": "UNRESOLVED",
+          "reasons": [
+            "unsupported record shape: requires plain non-overlapping scalar aggregate"
+          ],
+          "sink_contract_status": "UNREVIEWED",
+          "sender_semantic_admission": false,
+          "runtime_admission": false,
+          "object_id": "0x55555579a190",
+          "send_object_id": "0x55555579a190",
+          "sizeof_object_id": "0x55555579a190",
+          "object_type": "P",
+          "function_id": "0x555555799220",
+          "send_id": "0x55555579a6f8",
+          "sizeof_id": "0x55555579a670",
+          "sink_decl_id": "0x555555798b00"
+        },
+        "without_metadata": {
+          "identity_proven": true,
+          "decision": "UNRESOLVED",
+          "reasons": [
+            "unsupported record shape: requires plain non-overlapping scalar aggregate"
+          ],
+          "sink_contract_status": "UNREVIEWED",
+          "sender_semantic_admission": false,
+          "runtime_admission": false,
+          "object_id": "0x55555579a190",
+          "send_object_id": "0x55555579a190",
+          "sizeof_object_id": "0x55555579a190",
+          "object_type": "P",
+          "function_id": "0x555555799220",
+          "send_id": "0x55555579a6f8",
+          "sizeof_id": "0x55555579a670",
+          "sink_decl_id": "0x555555798b00"
+        },
+        "source_sha256": "31babfaf1dfd0c3f719e5a92fb0559fcc3fb66dcb7f7c58b0222c69650f1227a"
+      },
+      {
+        "name": "reference",
+        "expected_candidate": false,
+        "matches": true,
+        "metadata": {
+          "id": 1,
+          "size": 16,
+          "offsets": [
+            0,
+            8
+          ]
+        },
+        "GCC_stdout": "{\"id\":1,\"size\":16,\"offsets\":[0,8]}\nsent_header=1 size=16\n",
+        "AST_fields": [
+          {
+            "name": "h",
+            "type": {
+              "qualType": "unsigned short"
+            },
+            "children": []
+          },
+          {
+            "name": "x",
+            "type": {
+              "qualType": "int &"
+            },
+            "children": [
+              "DeclRefExpr"
+            ]
+          }
+        ],
+        "result": {
+          "identity_proven": true,
+          "decision": "UNRESOLVED",
+          "reasons": [
+            "unsupported record shape: requires plain non-overlapping scalar aggregate"
+          ],
+          "sink_contract_status": "UNREVIEWED",
+          "sender_semantic_admission": false,
+          "runtime_admission": false,
+          "object_id": "0x55555579a670",
+          "send_object_id": "0x55555579a670",
+          "sizeof_object_id": "0x55555579a670",
+          "object_type": "P",
+          "function_id": "0x55555579a580",
+          "send_id": "0x55555579aba8",
+          "sizeof_id": "0x55555579ab20",
+          "sink_decl_id": "0x555555798f30"
+        },
+        "without_metadata": {
+          "identity_proven": true,
+          "decision": "UNRESOLVED",
+          "reasons": [
+            "unsupported record shape: requires plain non-overlapping scalar aggregate"
+          ],
+          "sink_contract_status": "UNREVIEWED",
+          "sender_semantic_admission": false,
+          "runtime_admission": false,
+          "object_id": "0x55555579a670",
+          "send_object_id": "0x55555579a670",
+          "sizeof_object_id": "0x55555579a670",
+          "object_type": "P",
+          "function_id": "0x55555579a580",
+          "send_id": "0x55555579aba8",
+          "sizeof_id": "0x55555579ab20",
+          "sink_decl_id": "0x555555798f30"
+        },
+        "source_sha256": "3fbdaff387c94f1d622d18ffe9345fd3d45f318b508d2f80158634714f1dc618"
+      },
+      {
+        "name": "constructor",
+        "expected_candidate": false,
+        "matches": true,
+        "metadata": {
+          "id": 1,
+          "size": 8,
+          "offsets": [
+            0,
+            4
+          ]
+        },
+        "GCC_stdout": "{\"id\":1,\"size\":8,\"offsets\":[0,4]}\nsent_header=1 size=8\n",
+        "AST_fields": [
+          {
+            "name": "h",
+            "type": {
+              "qualType": "unsigned short"
+            },
+            "children": []
+          },
+          {
+            "name": "x",
+            "type": {
+              "qualType": "unsigned int"
+            },
+            "children": []
+          }
+        ],
+        "result": {
+          "identity_proven": true,
+          "decision": "UNRESOLVED",
+          "reasons": [
+            "unsupported record shape: requires plain non-overlapping scalar aggregate"
+          ],
+          "sink_contract_status": "UNREVIEWED",
+          "sender_semantic_admission": false,
+          "runtime_admission": false,
+          "object_id": "0x55555579a6d0",
+          "send_object_id": "0x55555579a6d0",
+          "sizeof_object_id": "0x55555579a6d0",
+          "object_type": "P",
+          "function_id": "0x55555579a5e8",
+          "send_id": "0x55555579afd8",
+          "sizeof_id": "0x55555579af50",
+          "sink_decl_id": "0x555555798a00"
+        },
+        "without_metadata": {
+          "identity_proven": true,
+          "decision": "UNRESOLVED",
+          "reasons": [
+            "unsupported record shape: requires plain non-overlapping scalar aggregate"
+          ],
+          "sink_contract_status": "UNREVIEWED",
+          "sender_semantic_admission": false,
+          "runtime_admission": false,
+          "object_id": "0x55555579a6d0",
+          "send_object_id": "0x55555579a6d0",
+          "sizeof_object_id": "0x55555579a6d0",
+          "object_type": "P",
+          "function_id": "0x55555579a5e8",
+          "send_id": "0x55555579afd8",
+          "sizeof_id": "0x55555579af50",
+          "sink_decl_id": "0x555555798a00"
+        },
+        "source_sha256": "86ed81014ec0f4a9589c2dd35dea3694d122a57445aa4bc6d50de6da69d036c7"
+      },
+      {
+        "name": "destructor",
+        "expected_candidate": false,
+        "matches": true,
+        "metadata": {
+          "id": 1,
+          "size": 8,
+          "offsets": [
+            0,
+            4
+          ]
+        },
+        "GCC_stdout": "{\"id\":1,\"size\":8,\"offsets\":[0,4]}\nsent_header=1 size=8\n",
+        "AST_fields": [
+          {
+            "name": "h",
+            "type": {
+              "qualType": "unsigned short"
+            },
+            "children": []
+          },
+          {
+            "name": "x",
+            "type": {
+              "qualType": "unsigned int"
+            },
+            "children": []
+          }
+        ],
+        "result": {
+          "identity_proven": true,
+          "decision": "UNRESOLVED",
+          "reasons": [
+            "unsupported record shape: requires plain non-overlapping scalar aggregate"
+          ],
+          "sink_contract_status": "UNREVIEWED",
+          "sender_semantic_admission": false,
+          "runtime_admission": false,
+          "object_id": "0x55555579a008",
+          "send_object_id": "0x55555579a008",
+          "sizeof_object_id": "0x55555579a008",
+          "object_type": "P",
+          "function_id": "0x555555799f50",
+          "send_id": "0x55555579a538",
+          "sizeof_id": "0x55555579a4b0",
+          "sink_decl_id": "0x555555798970"
+        },
+        "without_metadata": {
+          "identity_proven": true,
+          "decision": "UNRESOLVED",
+          "reasons": [
+            "unsupported record shape: requires plain non-overlapping scalar aggregate"
+          ],
+          "sink_contract_status": "UNREVIEWED",
+          "sender_semantic_admission": false,
+          "runtime_admission": false,
+          "object_id": "0x55555579a008",
+          "send_object_id": "0x55555579a008",
+          "sizeof_object_id": "0x55555579a008",
+          "object_type": "P",
+          "function_id": "0x555555799f50",
+          "send_id": "0x55555579a538",
+          "sizeof_id": "0x55555579a4b0",
+          "sink_decl_id": "0x555555798970"
+        },
+        "source_sha256": "d20fb93d9def83c34c7e53b1d1eb979a081be9e0d744670f6227d7a55efe0672"
+      },
+      {
+        "name": "operator",
+        "expected_candidate": false,
+        "matches": true,
+        "metadata": {
+          "id": 1,
+          "size": 8,
+          "offsets": [
+            0,
+            4
+          ]
+        },
+        "GCC_stdout": "{\"id\":1,\"size\":8,\"offsets\":[0,4]}\nsent_header=1 size=8\n",
+        "AST_fields": [
+          {
+            "name": "h",
+            "type": {
+              "qualType": "unsigned short"
+            },
+            "children": []
+          },
+          {
+            "name": "x",
+            "type": {
+              "qualType": "unsigned int"
+            },
+            "children": []
+          }
+        ],
+        "result": {
+          "identity_proven": true,
+          "decision": "UNRESOLVED",
+          "reasons": [
+            "unsupported record shape: requires plain non-overlapping scalar aggregate"
+          ],
+          "sink_contract_status": "UNREVIEWED",
+          "sender_semantic_admission": false,
+          "runtime_admission": false,
+          "object_id": "0x55555579bc68",
+          "send_object_id": "0x55555579bc68",
+          "sizeof_object_id": "0x55555579bc68",
+          "object_type": "P",
+          "function_id": "0x55555579bbb0",
+          "send_id": "0x55555579c138",
+          "sizeof_id": "0x55555579c0a8",
+          "sink_decl_id": "0x5555557993b0"
+        },
+        "without_metadata": {
+          "identity_proven": true,
+          "decision": "UNRESOLVED",
+          "reasons": [
+            "unsupported record shape: requires plain non-overlapping scalar aggregate"
+          ],
+          "sink_contract_status": "UNREVIEWED",
+          "sender_semantic_admission": false,
+          "runtime_admission": false,
+          "object_id": "0x55555579bc68",
+          "send_object_id": "0x55555579bc68",
+          "sizeof_object_id": "0x55555579bc68",
+          "object_type": "P",
+          "function_id": "0x55555579bbb0",
+          "send_id": "0x55555579c138",
+          "sizeof_id": "0x55555579c0a8",
+          "sink_decl_id": "0x5555557993b0"
+        },
+        "source_sha256": "17f71adaff2be56d7da8c466da45e27eba1dd6f64fdf57abcf93eb257e1b9e07"
+      },
+      {
+        "name": "packed-unsigned-alias",
+        "expected_candidate": true,
+        "matches": true,
+        "metadata": {
+          "id": 1,
+          "size": 6,
+          "offsets": [
+            0,
+            2
+          ]
+        },
+        "GCC_stdout": "{\"id\":1,\"size\":6,\"offsets\":[0,2]}\nsent_header=1 size=6\n",
+        "AST_fields": [
+          {
+            "name": "h",
+            "type": {
+              "desugaredQualType": "unsigned short",
+              "qualType": "uint16",
+              "typeAliasDeclId": "0x555555798ad0"
+            },
+            "children": []
+          },
+          {
+            "name": "x",
+            "type": {
+              "qualType": "unsigned int"
+            },
+            "children": []
+          }
+        ],
+        "result": {
+          "identity_proven": true,
+          "decision": "IDENTITY_LAYOUT_CANDIDATE",
+          "reasons": [],
+          "sink_contract_status": "UNREVIEWED",
+          "sender_semantic_admission": false,
+          "runtime_admission": false,
+          "object_id": "0x55555579a7a0",
+          "send_object_id": "0x55555579a7a0",
+          "sizeof_object_id": "0x55555579a7a0",
+          "object_type": "P",
+          "function_id": "0x55555579a6b0",
+          "send_id": "0x55555579ad08",
+          "sizeof_id": "0x55555579ac80",
+          "sink_decl_id": "0x555555799130",
+          "record_id": "0x555555798b50",
+          "header_field_id": "0x555555798df0",
+          "header_field_name": "h",
+          "header_constant_id": "0x555555798ed0",
+          "header_assignment_id": "0x55555579a978",
+          "header_value": 1,
+          "record_location": {
+            "offset": 137,
+            "line": 6,
+            "col": 32,
+            "tokLen": 1
+          },
+          "constant_location": {
+            "offset": 198,
+            "line": 8,
+            "col": 14,
+            "tokLen": 1
+          },
+          "measured_size": 6,
+          "measured_offsets": [
+            0,
+            2
+          ]
+        },
+        "without_metadata": {
+          "identity_proven": true,
+          "decision": "UNRESOLVED",
+          "reasons": [
+            "GCC layout evidence absent"
+          ],
+          "sink_contract_status": "UNREVIEWED",
+          "sender_semantic_admission": false,
+          "runtime_admission": false,
+          "object_id": "0x55555579a7a0",
+          "send_object_id": "0x55555579a7a0",
+          "sizeof_object_id": "0x55555579a7a0",
+          "object_type": "P",
+          "function_id": "0x55555579a6b0",
+          "send_id": "0x55555579ad08",
+          "sizeof_id": "0x55555579ac80",
+          "sink_decl_id": "0x555555799130",
+          "record_id": "0x555555798b50",
+          "header_field_id": "0x555555798df0",
+          "header_field_name": "h",
+          "header_constant_id": "0x555555798ed0",
+          "header_assignment_id": "0x55555579a978",
+          "header_value": 1,
+          "record_location": {
+            "offset": 137,
+            "line": 6,
+            "col": 32,
+            "tokLen": 1
+          },
+          "constant_location": {
+            "offset": 198,
+            "line": 8,
+            "col": 14,
+            "tokLen": 1
+          }
+        },
+        "source_sha256": "0f9c895bf08ceb8c946b1d765ddcbccd2b29200ba5333becd16d7bf8c7717e95"
+      },
+      {
+        "name": "packed-signed-alias",
+        "expected_candidate": true,
+        "matches": true,
+        "metadata": {
+          "id": 1,
+          "size": 6,
+          "offsets": [
+            0,
+            2
+          ]
+        },
+        "GCC_stdout": "{\"id\":1,\"size\":6,\"offsets\":[0,2]}\nsent_header=1 size=6\n",
+        "AST_fields": [
+          {
+            "name": "h",
+            "type": {
+              "desugaredQualType": "short",
+              "qualType": "int16",
+              "typeAliasDeclId": "0x555555798640"
+            },
+            "children": []
+          },
+          {
+            "name": "x",
+            "type": {
+              "qualType": "unsigned int"
+            },
+            "children": []
+          }
+        ],
+        "result": {
+          "identity_proven": true,
+          "decision": "IDENTITY_LAYOUT_CANDIDATE",
+          "reasons": [],
+          "sink_contract_status": "UNREVIEWED",
+          "sender_semantic_admission": false,
+          "runtime_admission": false,
+          "object_id": "0x55555579a310",
+          "send_object_id": "0x55555579a310",
+          "sizeof_object_id": "0x55555579a310",
+          "object_type": "P",
+          "function_id": "0x55555579a220",
+          "send_id": "0x55555579a878",
+          "sizeof_id": "0x55555579a7f0",
+          "sink_decl_id": "0x555555798c50",
+          "record_id": "0x5555557986a0",
+          "header_field_id": "0x555555798910",
+          "header_field_name": "h",
+          "header_constant_id": "0x5555557989f0",
+          "header_assignment_id": "0x55555579a4e8",
+          "header_value": 1,
+          "record_location": {
+            "offset": 105,
+            "col": 50,
+            "tokLen": 1
+          },
+          "constant_location": {
+            "offset": 146,
+            "line": 5,
+            "col": 13,
+            "tokLen": 1
+          },
+          "measured_size": 6,
+          "measured_offsets": [
+            0,
+            2
+          ]
+        },
+        "without_metadata": {
+          "identity_proven": true,
+          "decision": "UNRESOLVED",
+          "reasons": [
+            "GCC layout evidence absent"
+          ],
+          "sink_contract_status": "UNREVIEWED",
+          "sender_semantic_admission": false,
+          "runtime_admission": false,
+          "object_id": "0x55555579a310",
+          "send_object_id": "0x55555579a310",
+          "sizeof_object_id": "0x55555579a310",
+          "object_type": "P",
+          "function_id": "0x55555579a220",
+          "send_id": "0x55555579a878",
+          "sizeof_id": "0x55555579a7f0",
+          "sink_decl_id": "0x555555798c50",
+          "record_id": "0x5555557986a0",
+          "header_field_id": "0x555555798910",
+          "header_field_name": "h",
+          "header_constant_id": "0x5555557989f0",
+          "header_assignment_id": "0x55555579a4e8",
+          "header_value": 1,
+          "record_location": {
+            "offset": 105,
+            "col": 50,
+            "tokLen": 1
+          },
+          "constant_location": {
+            "offset": 146,
+            "line": 5,
+            "col": 13,
+            "tokLen": 1
+          }
+        },
+        "source_sha256": "02862cc3cbc414a6dfdce98692a22f7537d4d48319c6919c851b1c7518c9b290"
+      },
+      {
+        "name": "replay-arg3-call",
+        "expected_candidate": false,
+        "matches": true,
+        "metadata": {
+          "id": 1,
+          "size": 8,
+          "offsets": [
+            0,
+            4
+          ]
+        },
+        "GCC_stdout": "{\"id\":1,\"size\":8,\"offsets\":[0,4]}\n",
+        "AST_fields": [
+          {
+            "name": "h",
+            "type": {
+              "qualType": "short"
+            },
+            "children": []
+          },
+          {
+            "name": "x",
+            "type": {
+              "qualType": "int"
+            },
+            "children": []
+          }
+        ],
+        "result": {
+          "identity_proven": true,
+          "decision": "UNRESOLVED",
+          "reasons": [
+            "unsupported cast kind/type in final send argument"
+          ],
+          "sink_contract_status": "UNREVIEWED",
+          "sender_semantic_admission": false,
+          "runtime_admission": false,
+          "object_id": "0x55555579a038",
+          "send_object_id": "0x55555579a038",
+          "sizeof_object_id": "0x55555579a038",
+          "object_type": "P",
+          "function_id": "0x555555799f70",
+          "send_id": "0x55555579a688",
+          "sizeof_id": "0x55555579a420",
+          "sink_decl_id": "0x555555799480",
+          "record_id": "0x555555798a68",
+          "header_field_id": "0x555555798c30",
+          "header_field_name": "h",
+          "header_constant_id": "0x555555798d18",
+          "header_assignment_id": "0x55555579a210",
+          "header_value": 1,
+          "record_location": {
+            "offset": 63,
+            "file": "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/replay-arg3-call.cpp",
+            "line": 4,
+            "col": 8,
+            "tokLen": 1
+          },
+          "constant_location": {
+            "offset": 98,
+            "col": 43,
+            "tokLen": 1
+          }
+        },
+        "without_metadata": {
+          "identity_proven": true,
+          "decision": "UNRESOLVED",
+          "reasons": [
+            "GCC layout evidence absent"
+          ],
+          "sink_contract_status": "UNREVIEWED",
+          "sender_semantic_admission": false,
+          "runtime_admission": false,
+          "object_id": "0x55555579a038",
+          "send_object_id": "0x55555579a038",
+          "sizeof_object_id": "0x55555579a038",
+          "object_type": "P",
+          "function_id": "0x555555799f70",
+          "send_id": "0x55555579a688",
+          "sizeof_id": "0x55555579a420",
+          "sink_decl_id": "0x555555799480",
+          "record_id": "0x555555798a68",
+          "header_field_id": "0x555555798c30",
+          "header_field_name": "h",
+          "header_constant_id": "0x555555798d18",
+          "header_assignment_id": "0x55555579a210",
+          "header_value": 1,
+          "record_location": {
+            "offset": 63,
+            "file": "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/replay-arg3-call.cpp",
+            "line": 4,
+            "col": 8,
+            "tokLen": 1
+          },
+          "constant_location": {
+            "offset": 98,
+            "col": 43,
+            "tokLen": 1
+          }
+        },
+        "source_sha256": "c9f9df488050b9464fbf1d74a32b93f1795dd68997eda8ef1643a7aa1e8eeb9a"
+      },
+      {
+        "name": "replay-arg4-call",
+        "expected_candidate": false,
+        "matches": true,
+        "metadata": {
+          "id": 1,
+          "size": 8,
+          "offsets": [
+            0,
+            4
+          ]
+        },
+        "GCC_stdout": "{\"id\":1,\"size\":8,\"offsets\":[0,4]}\n",
+        "AST_fields": [
+          {
+            "name": "h",
+            "type": {
+              "qualType": "short"
+            },
+            "children": []
+          },
+          {
+            "name": "x",
+            "type": {
+              "qualType": "int"
+            },
+            "children": []
+          }
+        ],
+        "result": {
+          "identity_proven": true,
+          "decision": "UNRESOLVED",
+          "reasons": [
+            "unsupported cast kind/type in final send argument"
+          ],
+          "sink_contract_status": "UNREVIEWED",
+          "sender_semantic_admission": false,
+          "runtime_admission": false,
+          "object_id": "0x55555579a038",
+          "send_object_id": "0x55555579a038",
+          "sizeof_object_id": "0x55555579a038",
+          "object_type": "P",
+          "function_id": "0x555555799f70",
+          "send_id": "0x55555579a6a8",
+          "sizeof_id": "0x55555579a420",
+          "sink_decl_id": "0x555555799480",
+          "record_id": "0x555555798a68",
+          "header_field_id": "0x555555798c30",
+          "header_field_name": "h",
+          "header_constant_id": "0x555555798d18",
+          "header_assignment_id": "0x55555579a210",
+          "header_value": 1,
+          "record_location": {
+            "offset": 63,
+            "file": "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/replay-arg4-call.cpp",
+            "line": 4,
+            "col": 8,
+            "tokLen": 1
+          },
+          "constant_location": {
+            "offset": 98,
+            "col": 43,
+            "tokLen": 1
+          }
+        },
+        "without_metadata": {
+          "identity_proven": true,
+          "decision": "UNRESOLVED",
+          "reasons": [
+            "GCC layout evidence absent"
+          ],
+          "sink_contract_status": "UNREVIEWED",
+          "sender_semantic_admission": false,
+          "runtime_admission": false,
+          "object_id": "0x55555579a038",
+          "send_object_id": "0x55555579a038",
+          "sizeof_object_id": "0x55555579a038",
+          "object_type": "P",
+          "function_id": "0x555555799f70",
+          "send_id": "0x55555579a6a8",
+          "sizeof_id": "0x55555579a420",
+          "sink_decl_id": "0x555555799480",
+          "record_id": "0x555555798a68",
+          "header_field_id": "0x555555798c30",
+          "header_field_name": "h",
+          "header_constant_id": "0x555555798d18",
+          "header_assignment_id": "0x55555579a210",
+          "header_value": 1,
+          "record_location": {
+            "offset": 63,
+            "file": "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/replay-arg4-call.cpp",
+            "line": 4,
+            "col": 8,
+            "tokLen": 1
+          },
+          "constant_location": {
+            "offset": 98,
+            "col": 43,
+            "tokLen": 1
+          }
+        },
+        "source_sha256": "7092cf7d1952af95488f4cbea701acc70fb5947cc914c9f609b77d46c3bc5cfb"
+      },
+      {
+        "name": "replay-mutable",
+        "expected_candidate": false,
+        "matches": true,
+        "metadata": {
+          "id": 1,
+          "size": 8,
+          "offsets": [
+            0,
+            4
+          ]
+        },
+        "GCC_stdout": "{\"id\":1,\"size\":8,\"offsets\":[0,4]}\n",
+        "AST_fields": [
+          {
+            "name": "h",
+            "type": {
+              "qualType": "short"
+            },
+            "children": []
+          },
+          {
+            "name": "x",
+            "type": {
+              "qualType": "int"
+            },
+            "children": []
+          }
+        ],
+        "result": {
+          "identity_proven": true,
+          "decision": "UNRESOLVED",
+          "reasons": [
+            "header declaration is not immutable integral const/constexpr"
+          ],
+          "sink_contract_status": "UNREVIEWED",
+          "sender_semantic_admission": false,
+          "runtime_admission": false,
+          "object_id": "0x55555579a008",
+          "send_object_id": "0x55555579a008",
+          "sizeof_object_id": "0x55555579a008",
+          "object_type": "P",
+          "function_id": "0x555555799f40",
+          "send_id": "0x55555579a4e8",
+          "sizeof_id": "0x55555579a3d0",
+          "sink_decl_id": "0x555555799450"
+        },
+        "without_metadata": {
+          "identity_proven": true,
+          "decision": "UNRESOLVED",
+          "reasons": [
+            "header declaration is not immutable integral const/constexpr"
+          ],
+          "sink_contract_status": "UNREVIEWED",
+          "sender_semantic_admission": false,
+          "runtime_admission": false,
+          "object_id": "0x55555579a008",
+          "send_object_id": "0x55555579a008",
+          "sizeof_object_id": "0x55555579a008",
+          "object_type": "P",
+          "function_id": "0x555555799f40",
+          "send_id": "0x55555579a4e8",
+          "sizeof_id": "0x55555579a3d0",
+          "sink_decl_id": "0x555555799450"
+        },
+        "source_sha256": "182f06e49f0e07ed070d29bd6317c150a14b0a3e0f7428fad502caddae612352"
+      },
+      {
+        "name": "replay-float-cast",
+        "expected_candidate": false,
+        "matches": true,
+        "metadata": {
+          "id": 1,
+          "size": 8,
+          "offsets": [
+            0,
+            4
+          ]
+        },
+        "GCC_stdout": "{\"id\":1,\"size\":8,\"offsets\":[0,4]}\n",
+        "AST_fields": [
+          {
+            "name": "h",
+            "type": {
+              "qualType": "short"
+            },
+            "children": []
+          },
+          {
+            "name": "x",
+            "type": {
+              "qualType": "int"
+            },
+            "children": []
+          }
+        ],
+        "result": {
+          "identity_proven": true,
+          "decision": "UNRESOLVED",
+          "reasons": [
+            "unsupported scalar cast kind/type"
+          ],
+          "sink_contract_status": "UNREVIEWED",
+          "sender_semantic_admission": false,
+          "runtime_admission": false,
+          "object_id": "0x555555799be8",
+          "send_object_id": "0x555555799be8",
+          "sizeof_object_id": "0x555555799be8",
+          "object_type": "P",
+          "function_id": "0x555555799b20",
+          "send_id": "0x55555579a1f8",
+          "sizeof_id": "0x55555579a0e0",
+          "sink_decl_id": "0x555555799030",
+          "record_id": "0x555555798618",
+          "header_field_id": "0x5555557987e0",
+          "header_field_name": "h",
+          "header_constant_id": "0x5555557988c8",
+          "header_assignment_id": "0x555555799dc0",
+          "header_value": 1,
+          "record_location": {
+            "offset": 63,
+            "file": "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/replay-float-cast.cpp",
+            "line": 4,
+            "col": 8,
+            "tokLen": 1
+          },
+          "constant_location": {
+            "offset": 98,
+            "col": 43,
+            "tokLen": 1
+          }
+        },
+        "without_metadata": {
+          "identity_proven": true,
+          "decision": "UNRESOLVED",
+          "reasons": [
+            "GCC layout evidence absent"
+          ],
+          "sink_contract_status": "UNREVIEWED",
+          "sender_semantic_admission": false,
+          "runtime_admission": false,
+          "object_id": "0x555555799be8",
+          "send_object_id": "0x555555799be8",
+          "sizeof_object_id": "0x555555799be8",
+          "object_type": "P",
+          "function_id": "0x555555799b20",
+          "send_id": "0x55555579a1f8",
+          "sizeof_id": "0x55555579a0e0",
+          "sink_decl_id": "0x555555799030",
+          "record_id": "0x555555798618",
+          "header_field_id": "0x5555557987e0",
+          "header_field_name": "h",
+          "header_constant_id": "0x5555557988c8",
+          "header_assignment_id": "0x555555799dc0",
+          "header_value": 1,
+          "record_location": {
+            "offset": 63,
+            "file": "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/replay-float-cast.cpp",
+            "line": 4,
+            "col": 8,
+            "tokLen": 1
+          },
+          "constant_location": {
+            "offset": 98,
+            "col": 43,
+            "tokLen": 1
+          }
+        },
+        "source_sha256": "0499b0857c53f8df95f76a4758013eb07bf10be5b886416ae965facf22a3a596"
+      },
+      {
+        "name": "functional-float",
+        "expected_candidate": false,
+        "matches": true,
+        "metadata": {
+          "id": 1,
+          "size": 8,
+          "offsets": [
+            0,
+            4
+          ]
+        },
+        "GCC_stdout": "{\"id\":1,\"size\":8,\"offsets\":[0,4]}\nsent_header=1 size=8\n",
+        "AST_fields": [
+          {
+            "name": "h",
+            "type": {
+              "qualType": "unsigned short"
+            },
+            "children": []
+          },
+          {
+            "name": "x",
+            "type": {
+              "qualType": "unsigned int"
+            },
+            "children": []
+          }
+        ],
+        "result": {
+          "identity_proven": true,
+          "decision": "UNRESOLVED",
+          "reasons": [
+            "unsupported scalar cast kind/type"
+          ],
+          "sink_contract_status": "UNREVIEWED",
+          "sender_semantic_admission": false,
+          "runtime_admission": false,
+          "object_id": "0x55555579a640",
+          "send_object_id": "0x55555579a640",
+          "sizeof_object_id": "0x55555579a640",
+          "object_type": "P",
+          "function_id": "0x555555799720",
+          "send_id": "0x55555579ac18",
+          "sizeof_id": "0x55555579ab90",
+          "sink_decl_id": "0x555555798f40",
+          "record_id": "0x555555798a38",
+          "header_field_id": "0x555555798c00",
+          "header_field_name": "h",
+          "header_constant_id": "0x555555798ce8",
+          "header_assignment_id": "0x55555579a818",
+          "header_value": 1,
+          "record_location": {
+            "offset": 63,
+            "file": "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/functional-float.cpp",
+            "line": 4,
+            "col": 8,
+            "tokLen": 1
+          },
+          "constant_location": {
+            "offset": 122,
+            "line": 5,
+            "col": 22,
+            "tokLen": 1
+          }
+        },
+        "without_metadata": {
+          "identity_proven": true,
+          "decision": "UNRESOLVED",
+          "reasons": [
+            "GCC layout evidence absent"
+          ],
+          "sink_contract_status": "UNREVIEWED",
+          "sender_semantic_admission": false,
+          "runtime_admission": false,
+          "object_id": "0x55555579a640",
+          "send_object_id": "0x55555579a640",
+          "sizeof_object_id": "0x55555579a640",
+          "object_type": "P",
+          "function_id": "0x555555799720",
+          "send_id": "0x55555579ac18",
+          "sizeof_id": "0x55555579ab90",
+          "sink_decl_id": "0x555555798f40",
+          "record_id": "0x555555798a38",
+          "header_field_id": "0x555555798c00",
+          "header_field_name": "h",
+          "header_constant_id": "0x555555798ce8",
+          "header_assignment_id": "0x55555579a818",
+          "header_value": 1,
+          "record_location": {
+            "offset": 63,
+            "file": "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/functional-float.cpp",
+            "line": 4,
+            "col": 8,
+            "tokLen": 1
+          },
+          "constant_location": {
+            "offset": 122,
+            "line": 5,
+            "col": 22,
+            "tokLen": 1
+          }
+        },
+        "source_sha256": "5d9d019f300b50b6c73e8bae73115416ef9e4feef3d1fef8393dcf1c15ee262f"
+      }
+    ]
+  },
+  "actual_CLI": [
+    {
+      "name": "emotion",
+      "exit": 0,
+      "result": {
+        "identity_proven": true,
+        "decision": "IDENTITY_LAYOUT_CANDIDATE",
+        "reasons": [],
+        "sink_contract_status": "UNREVIEWED",
+        "sender_semantic_admission": false,
+        "runtime_admission": false,
+        "object_id": "0x55555c95d100",
+        "send_object_id": "0x55555c95d100",
+        "sizeof_object_id": "0x55555c95d100",
+        "object_type": "PACKET_ZC_EMOTION",
+        "function_id": "0x55555c95d000",
+        "send_id": "0x55555c95d880",
+        "sizeof_id": "0x55555c95d7d0",
+        "sink_decl_id": "0x55555c566910",
+        "record_id": "0x55555877cce8",
+        "header_field_id": "0x55555877cf08",
+        "header_field_name": "packetType",
+        "header_constant_id": "0x55555877d068",
+        "header_assignment_id": "0x55555c95d2f0",
+        "header_value": 192,
+        "record_location": {
+          "offset": 46129,
+          "line": 1973,
+          "col": 8,
+          "tokLen": 17,
+          "includedFrom": {
+            "file": "/home/otto/.hermes/cache/scratch/native-profile-replay-s2jdj4rn/public-source/src/map/clif.hpp"
+          }
+        },
+        "constant_location": {
+          "spellingLoc": {
+            "offset": 3026,
+            "file": "<scratch space>",
+            "line": 116,
+            "col": 1,
+            "tokLen": 17
+          },
+          "expansionLoc": {
+            "offset": 46220,
+            "file": "/home/otto/.hermes/cache/scratch/native-profile-replay-s2jdj4rn/public-source/src/map/packets.hpp",
+            "line": 1978,
+            "col": 1,
+            "tokLen": 20,
+            "includedFrom": {
+              "file": "/home/otto/.hermes/cache/scratch/native-profile-replay-s2jdj4rn/public-source/src/map/clif.hpp"
+            }
+          }
+        },
+        "measured_size": 7,
+        "measured_offsets": [
+          0,
+          2,
+          6
+        ],
+        "sender": "clif_emotion",
+        "source_closure_sha256": "f045b33b434efc83a7e216f295bf899114a4a1a2daa159898fb738d8b553d6d6",
+        "authority_sha256": "602c856e8e368fe767ff6b54704416818dc7939a5c6606f0fb6af6b49c2e71ac",
+        "ast_artifact_sha256": "07238418270d5717f43aa169a51bd5f40c3e58598479831b25aa0d80af30f450",
+        "gcc_layout_artifact_sha256": "d79dfefd4be7efe0d6fbf3fd8cf7bfb135853dfe8935b39d758e7d99b3140ebf"
+      }
+    },
+    {
+      "name": "name",
+      "exit": 0,
+      "result": {
+        "identity_proven": false,
+        "decision": "UNRESOLVED",
+        "reasons": [
+          "send count not one"
+        ],
+        "sink_contract_status": "UNREVIEWED",
+        "sender_semantic_admission": false,
+        "runtime_admission": false,
+        "sender": "clif_name",
+        "source_closure_sha256": "f045b33b434efc83a7e216f295bf899114a4a1a2daa159898fb738d8b553d6d6",
+        "authority_sha256": "602c856e8e368fe767ff6b54704416818dc7939a5c6606f0fb6af6b49c2e71ac",
+        "ast_artifact_sha256": "07238418270d5717f43aa169a51bd5f40c3e58598479831b25aa0d80af30f450",
+        "gcc_layout_artifact_sha256": "d79dfefd4be7efe0d6fbf3fd8cf7bfb135853dfe8935b39d758e7d99b3140ebf"
+      }
+    },
+    {
+      "name": "sitting",
+      "exit": 0,
+      "result": {
+        "identity_proven": false,
+        "decision": "UNRESOLVED",
+        "reasons": [
+          "send count not one"
+        ],
+        "sink_contract_status": "UNREVIEWED",
+        "sender_semantic_admission": false,
+        "runtime_admission": false,
+        "sender": "clif_sitting",
+        "source_closure_sha256": "f045b33b434efc83a7e216f295bf899114a4a1a2daa159898fb738d8b553d6d6",
+        "authority_sha256": "602c856e8e368fe767ff6b54704416818dc7939a5c6606f0fb6af6b49c2e71ac",
+        "ast_artifact_sha256": "07238418270d5717f43aa169a51bd5f40c3e58598479831b25aa0d80af30f450",
+        "gcc_layout_artifact_sha256": "d79dfefd4be7efe0d6fbf3fd8cf7bfb135853dfe8935b39d758e7d99b3140ebf"
+      }
+    },
+    {
+      "name": "wrong-profile",
+      "exit": 2,
+      "result": {
+        "decision": "DENIED",
+        "reasons": [
+          "unsupported profile; denied before candidate"
+        ],
+        "runtime_admission": false,
+        "sender_semantic_admission": false
+      }
+    }
+  ],
+  "quality": {
+    "baseline": {
+      "black": {
+        "exit": 1
+      },
+      "ruff": {
+        "exit": 1,
+        "count": 150,
+        "kinds": {
+          "E401": 3,
+          "I001": 3,
+          "PT009": 16,
+          "PLC0415": 2,
+          "E501": 40,
+          "E702": 37,
+          "PLW1510": 1,
+          "N802": 6,
+          "E701": 38,
+          "PLR0911": 1,
+          "PLR0912": 1,
+          "PLR0915": 1,
+          "PLW2901": 1
+        },
+        "metrics": [
+          "Too many return statements (27 > 6)",
+          "Too many branches (29 > 12)",
+          "Too many statements (101 > 50)"
+        ]
+      },
+      "mypy": {
+        "exit": 1,
+        "count": 88,
+        "kinds": {
+          "no-untyped-def": 21,
+          "no-untyped-call": 66,
+          "attr-defined": 1
+        }
+      }
+    },
+    "current": {
+      "black": {
+        "exit": 0
+      },
+      "ruff": {
+        "exit": 1,
+        "count": 67,
+        "kinds": {
+          "I001": 4,
+          "PT009": 27,
+          "E401": 3,
+          "PLC0415": 5,
+          "PLW1510": 3,
+          "N802": 10,
+          "UP034": 5,
+          "ARG002": 1,
+          "E501": 5,
+          "PLR0911": 1,
+          "PLR0912": 1,
+          "PLR0915": 1,
+          "PLW2901": 1
+        },
+        "metrics": [
+          "Too many return statements (29 > 6)",
+          "Too many branches (31 > 12)",
+          "Too many statements (110 > 50)"
+        ]
+      },
+      "mypy": {
+        "exit": 0,
+        "count": 0,
+        "kinds": {}
+      }
+    },
+    "initial_hardened": {
+      "ruff_count": 189,
+      "mypy_count": 102
+    },
+    "remaining_added_ruff_kinds": {
+      "I001": 1,
+      "PT009": 11,
+      "PLC0415": 3,
+      "PLW1510": 2,
+      "N802": 4,
+      "UP034": 5,
+      "ARG002": 1
+    },
+    "new_regression": true,
+    "unwaived_remaining_debt": true,
+    "blocking_frontier": "Black is clean and strict mypy is clean. Ruff remains 67 diagnostics versus original baseline 150 and hardened initial 189; retained added diagnostic kinds and complexity metrics are not waived. All added quality regressions were NOT eliminated. Stop at this frontier; fresh parent review/explicit decision required.",
+    "new_source_type_diagnostics": false,
+    "added_complexity_metrics_vs_baseline": {
+      "returns": {
+        "baseline": 27,
+        "current": 29
+      },
+      "branches": {
+        "baseline": 29,
+        "current": 31
+      },
+      "statements": {
+        "baseline": 101,
+        "initial_hardened": 110,
+        "current": 110
+      }
+    }
+  },
+  "preservation": {
+    "nonowned_count": 195,
+    "nonowned_mismatches": [],
+    "old_artifacts": {
+      "native-ast-real-sender-record-shape-final-review.json": {
+        "report_sha256": "128e00e3557b57f636506cce6f9e420c7c85596acd92e881b55f121a7852934f",
+        "count": 275,
+        "mismatches": []
+      },
+      "native-ast-real-sender-record-shape-repair.json": {
+        "report_sha256": "edcd12969e69be3200bcbb3c7c7293637a18eafd2eb7c73c2b97d6f4facd5ca4",
+        "count": 381,
+        "mismatches": []
+      },
+      "native-ast-real-sender-proof.json": {
+        "report_sha256": "8041ea9f408868e30891f204f88b8307f58909eaf719983ce433513a26335a41",
+        "count": 158,
+        "mismatches": []
+      },
+      "native-ast-real-sender-independent-review.json": {
+        "report_sha256": "92566646d1595b6aef846be03fc04d0c889ace9d6825e60f82ec6dc2f7d88fb1",
+        "count": 82,
+        "mismatches": []
+      },
+      "native-ast-real-sender-review-repair.json": {
+        "report_sha256": "575a3be4485ccec6ed7e99c13bde906f6b2bff1fc44f1a4d2dd937d712d10509",
+        "count": 234,
+        "mismatches": []
+      }
+    }
+  },
+  "commands": [
+    {
+      "name": "initial-ruff",
+      "command": [
+        "/home/otto/dev/ro-bots/.venv/bin/ruff",
+        "check",
+        "--output-format",
+        "json",
+        "/home/otto/dev/ro-bots/spikes/007-native-packet-ast/sender-proof/trace_sender.py",
+        "/home/otto/dev/ro-bots/spikes/007-native-packet-ast/sender-proof/test_trace.py"
+      ],
+      "exit": 1
+    },
+    {
+      "name": "initial-mypy",
+      "command": [
+        "/home/otto/dev/ro-bots/.venv/bin/mypy",
+        "--no-incremental",
+        "/home/otto/dev/ro-bots/spikes/007-native-packet-ast/sender-proof/trace_sender.py",
+        "/home/otto/dev/ro-bots/spikes/007-native-packet-ast/sender-proof/test_trace.py"
+      ],
+      "exit": 1
+    },
+    {
+      "name": "initial-black",
+      "command": [
+        "/home/otto/dev/ro-bots/.venv/bin/black",
+        "--check",
+        "--workers",
+        "1",
+        "/home/otto/dev/ro-bots/spikes/007-native-packet-ast/sender-proof/trace_sender.py",
+        "/home/otto/dev/ro-bots/spikes/007-native-packet-ast/sender-proof/test_trace.py"
+      ],
+      "exit": 1
+    },
+    {
+      "name": "final-format",
+      "command": [
+        "/home/otto/dev/ro-bots/.venv/bin/black",
+        "--workers",
+        "1",
+        "/home/otto/dev/ro-bots/spikes/007-native-packet-ast/sender-proof/trace_sender.py",
+        "/home/otto/dev/ro-bots/spikes/007-native-packet-ast/sender-proof/test_trace.py"
+      ],
+      "cwd": "/home/otto/dev/ro-bots",
+      "exit": 0
+    },
+    {
+      "name": "baseline-black",
+      "command": [
+        "/home/otto/dev/ro-bots/.venv/bin/black",
+        "--check",
+        "--workers",
+        "1",
+        "--config",
+        "/home/otto/dev/ro-bots/pyproject.toml",
+        "/home/otto/.hermes/cache/scratch/sender-record-repair2-3m48zvmq/trace_sender.py",
+        "/home/otto/.hermes/cache/scratch/sender-record-repair2-3m48zvmq/test_trace.py"
+      ],
+      "cwd": "/home/otto/dev/ro-bots",
+      "exit": 1
+    },
+    {
+      "name": "baseline-ruff",
+      "command": [
+        "/home/otto/dev/ro-bots/.venv/bin/ruff",
+        "check",
+        "--config",
+        "/home/otto/dev/ro-bots/pyproject.toml",
+        "--output-format",
+        "json",
+        "/home/otto/.hermes/cache/scratch/sender-record-repair2-3m48zvmq/trace_sender.py",
+        "/home/otto/.hermes/cache/scratch/sender-record-repair2-3m48zvmq/test_trace.py"
+      ],
+      "cwd": "/home/otto/dev/ro-bots",
+      "exit": 1
+    },
+    {
+      "name": "baseline-mypy",
+      "command": [
+        "/home/otto/dev/ro-bots/.venv/bin/mypy",
+        "--no-incremental",
+        "--config-file",
+        "/home/otto/dev/ro-bots/pyproject.toml",
+        "/home/otto/.hermes/cache/scratch/sender-record-repair2-3m48zvmq/trace_sender.py",
+        "/home/otto/.hermes/cache/scratch/sender-record-repair2-3m48zvmq/test_trace.py"
+      ],
+      "cwd": "/home/otto/dev/ro-bots",
+      "exit": 1
+    },
+    {
+      "name": "current-black",
+      "command": [
+        "/home/otto/dev/ro-bots/.venv/bin/black",
+        "--check",
+        "--workers",
+        "1",
+        "--config",
+        "/home/otto/dev/ro-bots/pyproject.toml",
+        "/home/otto/dev/ro-bots/spikes/007-native-packet-ast/sender-proof/trace_sender.py",
+        "/home/otto/dev/ro-bots/spikes/007-native-packet-ast/sender-proof/test_trace.py"
+      ],
+      "cwd": "/home/otto/dev/ro-bots",
+      "exit": 0
+    },
+    {
+      "name": "current-ruff",
+      "command": [
+        "/home/otto/dev/ro-bots/.venv/bin/ruff",
+        "check",
+        "--config",
+        "/home/otto/dev/ro-bots/pyproject.toml",
+        "--output-format",
+        "json",
+        "/home/otto/dev/ro-bots/spikes/007-native-packet-ast/sender-proof/trace_sender.py",
+        "/home/otto/dev/ro-bots/spikes/007-native-packet-ast/sender-proof/test_trace.py"
+      ],
+      "cwd": "/home/otto/dev/ro-bots",
+      "exit": 1
+    },
+    {
+      "name": "current-mypy",
+      "command": [
+        "/home/otto/dev/ro-bots/.venv/bin/mypy",
+        "--no-incremental",
+        "--config-file",
+        "/home/otto/dev/ro-bots/pyproject.toml",
+        "/home/otto/dev/ro-bots/spikes/007-native-packet-ast/sender-proof/trace_sender.py",
+        "/home/otto/dev/ro-bots/spikes/007-native-packet-ast/sender-proof/test_trace.py"
+      ],
+      "cwd": "/home/otto/dev/ro-bots",
+      "exit": 0
+    },
+    {
+      "name": "all-tests",
+      "command": [
+        "python3",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "/home/otto/dev/ro-bots/spikes/007-native-packet-ast/sender-proof",
+        "-v"
+      ],
+      "cwd": "/home/otto/dev/ro-bots",
+      "exit": 0
+    },
+    {
+      "name": "union-clang",
+      "command": [
+        "clang++",
+        "-std=c++17",
+        "-fsyntax-only",
+        "-Xclang",
+        "-ast-dump=json",
+        "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/union.cpp"
+      ],
+      "cwd": "/home/otto/dev/ro-bots",
+      "exit": 0
+    },
+    {
+      "name": "union-gcc",
+      "command": [
+        "g++",
+        "-std=c++17",
+        "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/union.cpp",
+        "-o",
+        "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/union.bin"
+      ],
+      "cwd": "/home/otto/dev/ro-bots",
+      "exit": 0
+    },
+    {
+      "name": "union-observe",
+      "command": [
+        "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/union.bin"
+      ],
+      "cwd": "/home/otto/dev/ro-bots",
+      "exit": 0
+    },
+    {
+      "name": "alias-union-clang",
+      "command": [
+        "clang++",
+        "-std=c++17",
+        "-fsyntax-only",
+        "-Xclang",
+        "-ast-dump=json",
+        "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/alias-union.cpp"
+      ],
+      "cwd": "/home/otto/dev/ro-bots",
+      "exit": 0
+    },
+    {
+      "name": "alias-union-gcc",
+      "command": [
+        "g++",
+        "-std=c++17",
+        "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/alias-union.cpp",
+        "-o",
+        "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/alias-union.bin"
+      ],
+      "cwd": "/home/otto/dev/ro-bots",
+      "exit": 0
+    },
+    {
+      "name": "alias-union-observe",
+      "command": [
+        "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/alias-union.bin"
+      ],
+      "cwd": "/home/otto/dev/ro-bots",
+      "exit": 0
+    },
+    {
+      "name": "anonymous-union-clang",
+      "command": [
+        "clang++",
+        "-std=c++17",
+        "-fsyntax-only",
+        "-Xclang",
+        "-ast-dump=json",
+        "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/anonymous-union.cpp"
+      ],
+      "cwd": "/home/otto/dev/ro-bots",
+      "exit": 0
+    },
+    {
+      "name": "anonymous-union-gcc",
+      "command": [
+        "g++",
+        "-std=c++17",
+        "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/anonymous-union.cpp",
+        "-o",
+        "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/anonymous-union.bin"
+      ],
+      "cwd": "/home/otto/dev/ro-bots",
+      "exit": 0
+    },
+    {
+      "name": "anonymous-union-observe",
+      "command": [
+        "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/anonymous-union.bin"
+      ],
+      "cwd": "/home/otto/dev/ro-bots",
+      "exit": 0
+    },
+    {
+      "name": "base-clang",
+      "command": [
+        "clang++",
+        "-std=c++17",
+        "-fsyntax-only",
+        "-Xclang",
+        "-ast-dump=json",
+        "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/base.cpp"
+      ],
+      "cwd": "/home/otto/dev/ro-bots",
+      "exit": 0
+    },
+    {
+      "name": "base-gcc",
+      "command": [
+        "g++",
+        "-std=c++17",
+        "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/base.cpp",
+        "-o",
+        "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/base.bin"
+      ],
+      "cwd": "/home/otto/dev/ro-bots",
+      "exit": 0
+    },
+    {
+      "name": "base-observe",
+      "command": [
+        "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/base.bin"
+      ],
+      "cwd": "/home/otto/dev/ro-bots",
+      "exit": 0
+    },
+    {
+      "name": "bitfield-clang",
+      "command": [
+        "clang++",
+        "-std=c++17",
+        "-fsyntax-only",
+        "-Xclang",
+        "-ast-dump=json",
+        "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/bitfield.cpp"
+      ],
+      "cwd": "/home/otto/dev/ro-bots",
+      "exit": 0
+    },
+    {
+      "name": "bitfield-gcc",
+      "command": [
+        "g++",
+        "-std=c++17",
+        "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/bitfield.cpp",
+        "-o",
+        "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/bitfield.bin"
+      ],
+      "cwd": "/home/otto/dev/ro-bots",
+      "exit": 0
+    },
+    {
+      "name": "bitfield-observe",
+      "command": [
+        "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/bitfield.bin"
+      ],
+      "cwd": "/home/otto/dev/ro-bots",
+      "exit": 0
+    },
+    {
+      "name": "overlap-attribute-clang",
+      "command": [
+        "clang++",
+        "-std=c++17",
+        "-fsyntax-only",
+        "-Xclang",
+        "-ast-dump=json",
+        "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/overlap-attribute.cpp"
+      ],
+      "cwd": "/home/otto/dev/ro-bots",
+      "exit": 0
+    },
+    {
+      "name": "overlap-attribute-gcc",
+      "command": [
+        "g++",
+        "-std=c++17",
+        "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/overlap-attribute.cpp",
+        "-o",
+        "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/overlap-attribute.bin"
+      ],
+      "cwd": "/home/otto/dev/ro-bots",
+      "exit": 0
+    },
+    {
+      "name": "overlap-attribute-observe",
+      "command": [
+        "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/overlap-attribute.bin"
+      ],
+      "cwd": "/home/otto/dev/ro-bots",
+      "exit": 0
+    },
+    {
+      "name": "unknown-attribute-clang",
+      "command": [
+        "clang++",
+        "-std=c++17",
+        "-fsyntax-only",
+        "-Xclang",
+        "-ast-dump=json",
+        "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/unknown-attribute.cpp"
+      ],
+      "cwd": "/home/otto/dev/ro-bots",
+      "exit": 0
+    },
+    {
+      "name": "unknown-attribute-gcc",
+      "command": [
+        "g++",
+        "-std=c++17",
+        "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/unknown-attribute.cpp",
+        "-o",
+        "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/unknown-attribute.bin"
+      ],
+      "cwd": "/home/otto/dev/ro-bots",
+      "exit": 0
+    },
+    {
+      "name": "unknown-attribute-observe",
+      "command": [
+        "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/unknown-attribute.bin"
+      ],
+      "cwd": "/home/otto/dev/ro-bots",
+      "exit": 0
+    },
+    {
+      "name": "wide-header-clang",
+      "command": [
+        "clang++",
+        "-std=c++17",
+        "-fsyntax-only",
+        "-Xclang",
+        "-ast-dump=json",
+        "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/wide-header.cpp"
+      ],
+      "cwd": "/home/otto/dev/ro-bots",
+      "exit": 0
+    },
+    {
+      "name": "wide-header-gcc",
+      "command": [
+        "g++",
+        "-std=c++17",
+        "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/wide-header.cpp",
+        "-o",
+        "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/wide-header.bin"
+      ],
+      "cwd": "/home/otto/dev/ro-bots",
+      "exit": 0
+    },
+    {
+      "name": "wide-header-observe",
+      "command": [
+        "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/wide-header.bin"
+      ],
+      "cwd": "/home/otto/dev/ro-bots",
+      "exit": 0
+    },
+    {
+      "name": "field-packed-clang",
+      "command": [
+        "clang++",
+        "-std=c++17",
+        "-fsyntax-only",
+        "-Xclang",
+        "-ast-dump=json",
+        "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/field-packed.cpp"
+      ],
+      "cwd": "/home/otto/dev/ro-bots",
+      "exit": 0
+    },
+    {
+      "name": "field-packed-gcc",
+      "command": [
+        "g++",
+        "-std=c++17",
+        "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/field-packed.cpp",
+        "-o",
+        "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/field-packed.bin"
+      ],
+      "cwd": "/home/otto/dev/ro-bots",
+      "exit": 0
+    },
+    {
+      "name": "field-packed-observe",
+      "command": [
+        "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/field-packed.bin"
+      ],
+      "cwd": "/home/otto/dev/ro-bots",
+      "exit": 0
+    },
+    {
+      "name": "reference-clang",
+      "command": [
+        "clang++",
+        "-std=c++17",
+        "-fsyntax-only",
+        "-Xclang",
+        "-ast-dump=json",
+        "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/reference.cpp"
+      ],
+      "cwd": "/home/otto/dev/ro-bots",
+      "exit": 0
+    },
+    {
+      "name": "reference-gcc",
+      "command": [
+        "g++",
+        "-std=c++17",
+        "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/reference.cpp",
+        "-o",
+        "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/reference.bin"
+      ],
+      "cwd": "/home/otto/dev/ro-bots",
+      "exit": 0
+    },
+    {
+      "name": "reference-observe",
+      "command": [
+        "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/reference.bin"
+      ],
+      "cwd": "/home/otto/dev/ro-bots",
+      "exit": 0
+    },
+    {
+      "name": "constructor-clang",
+      "command": [
+        "clang++",
+        "-std=c++17",
+        "-fsyntax-only",
+        "-Xclang",
+        "-ast-dump=json",
+        "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/constructor.cpp"
+      ],
+      "cwd": "/home/otto/dev/ro-bots",
+      "exit": 0
+    },
+    {
+      "name": "constructor-gcc",
+      "command": [
+        "g++",
+        "-std=c++17",
+        "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/constructor.cpp",
+        "-o",
+        "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/constructor.bin"
+      ],
+      "cwd": "/home/otto/dev/ro-bots",
+      "exit": 0
+    },
+    {
+      "name": "constructor-observe",
+      "command": [
+        "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/constructor.bin"
+      ],
+      "cwd": "/home/otto/dev/ro-bots",
+      "exit": 0
+    },
+    {
+      "name": "destructor-clang",
+      "command": [
+        "clang++",
+        "-std=c++17",
+        "-fsyntax-only",
+        "-Xclang",
+        "-ast-dump=json",
+        "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/destructor.cpp"
+      ],
+      "cwd": "/home/otto/dev/ro-bots",
+      "exit": 0
+    },
+    {
+      "name": "destructor-gcc",
+      "command": [
+        "g++",
+        "-std=c++17",
+        "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/destructor.cpp",
+        "-o",
+        "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/destructor.bin"
+      ],
+      "cwd": "/home/otto/dev/ro-bots",
+      "exit": 0
+    },
+    {
+      "name": "destructor-observe",
+      "command": [
+        "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/destructor.bin"
+      ],
+      "cwd": "/home/otto/dev/ro-bots",
+      "exit": 0
+    },
+    {
+      "name": "operator-clang",
+      "command": [
+        "clang++",
+        "-std=c++17",
+        "-fsyntax-only",
+        "-Xclang",
+        "-ast-dump=json",
+        "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/operator.cpp"
+      ],
+      "cwd": "/home/otto/dev/ro-bots",
+      "exit": 0
+    },
+    {
+      "name": "operator-gcc",
+      "command": [
+        "g++",
+        "-std=c++17",
+        "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/operator.cpp",
+        "-o",
+        "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/operator.bin"
+      ],
+      "cwd": "/home/otto/dev/ro-bots",
+      "exit": 0
+    },
+    {
+      "name": "operator-observe",
+      "command": [
+        "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/operator.bin"
+      ],
+      "cwd": "/home/otto/dev/ro-bots",
+      "exit": 0
+    },
+    {
+      "name": "packed-unsigned-alias-clang",
+      "command": [
+        "clang++",
+        "-std=c++17",
+        "-fsyntax-only",
+        "-Xclang",
+        "-ast-dump=json",
+        "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/packed-unsigned-alias.cpp"
+      ],
+      "cwd": "/home/otto/dev/ro-bots",
+      "exit": 0
+    },
+    {
+      "name": "packed-unsigned-alias-gcc",
+      "command": [
+        "g++",
+        "-std=c++17",
+        "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/packed-unsigned-alias.cpp",
+        "-o",
+        "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/packed-unsigned-alias.bin"
+      ],
+      "cwd": "/home/otto/dev/ro-bots",
+      "exit": 0
+    },
+    {
+      "name": "packed-unsigned-alias-observe",
+      "command": [
+        "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/packed-unsigned-alias.bin"
+      ],
+      "cwd": "/home/otto/dev/ro-bots",
+      "exit": 0
+    },
+    {
+      "name": "packed-signed-alias-clang",
+      "command": [
+        "clang++",
+        "-std=c++17",
+        "-fsyntax-only",
+        "-Xclang",
+        "-ast-dump=json",
+        "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/packed-signed-alias.cpp"
+      ],
+      "cwd": "/home/otto/dev/ro-bots",
+      "exit": 0
+    },
+    {
+      "name": "packed-signed-alias-gcc",
+      "command": [
+        "g++",
+        "-std=c++17",
+        "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/packed-signed-alias.cpp",
+        "-o",
+        "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/packed-signed-alias.bin"
+      ],
+      "cwd": "/home/otto/dev/ro-bots",
+      "exit": 0
+    },
+    {
+      "name": "packed-signed-alias-observe",
+      "command": [
+        "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/packed-signed-alias.bin"
+      ],
+      "cwd": "/home/otto/dev/ro-bots",
+      "exit": 0
+    },
+    {
+      "name": "replay-arg3-call-clang",
+      "command": [
+        "clang++",
+        "-std=c++17",
+        "-fsyntax-only",
+        "-Xclang",
+        "-ast-dump=json",
+        "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/replay-arg3-call.cpp"
+      ],
+      "cwd": "/home/otto/dev/ro-bots",
+      "exit": 0
+    },
+    {
+      "name": "replay-arg3-call-gcc",
+      "command": [
+        "g++",
+        "-std=c++17",
+        "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/replay-arg3-call.cpp",
+        "-o",
+        "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/replay-arg3-call.bin"
+      ],
+      "cwd": "/home/otto/dev/ro-bots",
+      "exit": 0
+    },
+    {
+      "name": "replay-arg3-call-observe",
+      "command": [
+        "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/replay-arg3-call.bin"
+      ],
+      "cwd": "/home/otto/dev/ro-bots",
+      "exit": 0
+    },
+    {
+      "name": "replay-arg4-call-clang",
+      "command": [
+        "clang++",
+        "-std=c++17",
+        "-fsyntax-only",
+        "-Xclang",
+        "-ast-dump=json",
+        "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/replay-arg4-call.cpp"
+      ],
+      "cwd": "/home/otto/dev/ro-bots",
+      "exit": 0
+    },
+    {
+      "name": "replay-arg4-call-gcc",
+      "command": [
+        "g++",
+        "-std=c++17",
+        "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/replay-arg4-call.cpp",
+        "-o",
+        "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/replay-arg4-call.bin"
+      ],
+      "cwd": "/home/otto/dev/ro-bots",
+      "exit": 0
+    },
+    {
+      "name": "replay-arg4-call-observe",
+      "command": [
+        "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/replay-arg4-call.bin"
+      ],
+      "cwd": "/home/otto/dev/ro-bots",
+      "exit": 0
+    },
+    {
+      "name": "replay-mutable-clang",
+      "command": [
+        "clang++",
+        "-std=c++17",
+        "-fsyntax-only",
+        "-Xclang",
+        "-ast-dump=json",
+        "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/replay-mutable.cpp"
+      ],
+      "cwd": "/home/otto/dev/ro-bots",
+      "exit": 0
+    },
+    {
+      "name": "replay-mutable-gcc",
+      "command": [
+        "g++",
+        "-std=c++17",
+        "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/replay-mutable.cpp",
+        "-o",
+        "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/replay-mutable.bin"
+      ],
+      "cwd": "/home/otto/dev/ro-bots",
+      "exit": 0
+    },
+    {
+      "name": "replay-mutable-observe",
+      "command": [
+        "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/replay-mutable.bin"
+      ],
+      "cwd": "/home/otto/dev/ro-bots",
+      "exit": 0
+    },
+    {
+      "name": "replay-float-cast-clang",
+      "command": [
+        "clang++",
+        "-std=c++17",
+        "-fsyntax-only",
+        "-Xclang",
+        "-ast-dump=json",
+        "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/replay-float-cast.cpp"
+      ],
+      "cwd": "/home/otto/dev/ro-bots",
+      "exit": 0
+    },
+    {
+      "name": "replay-float-cast-gcc",
+      "command": [
+        "g++",
+        "-std=c++17",
+        "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/replay-float-cast.cpp",
+        "-o",
+        "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/replay-float-cast.bin"
+      ],
+      "cwd": "/home/otto/dev/ro-bots",
+      "exit": 0
+    },
+    {
+      "name": "replay-float-cast-observe",
+      "command": [
+        "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/replay-float-cast.bin"
+      ],
+      "cwd": "/home/otto/dev/ro-bots",
+      "exit": 0
+    },
+    {
+      "name": "functional-float-clang",
+      "command": [
+        "clang++",
+        "-std=c++17",
+        "-fsyntax-only",
+        "-Xclang",
+        "-ast-dump=json",
+        "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/functional-float.cpp"
+      ],
+      "cwd": "/home/otto/dev/ro-bots",
+      "exit": 0
+    },
+    {
+      "name": "functional-float-gcc",
+      "command": [
+        "g++",
+        "-std=c++17",
+        "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/functional-float.cpp",
+        "-o",
+        "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/functional-float.bin"
+      ],
+      "cwd": "/home/otto/dev/ro-bots",
+      "exit": 0
+    },
+    {
+      "name": "functional-float-observe",
+      "command": [
+        "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/functional-float.bin"
+      ],
+      "cwd": "/home/otto/dev/ro-bots",
+      "exit": 0
+    },
+    {
+      "name": "cli-emotion",
+      "command": [
+        "python3",
+        "-B",
+        "/home/otto/dev/ro-bots/spikes/007-native-packet-ast/sender-proof/cli.py",
+        "clif_emotion"
+      ],
+      "cwd": "/home/otto/dev/ro-bots",
+      "exit": 0
+    },
+    {
+      "name": "cli-name",
+      "command": [
+        "python3",
+        "-B",
+        "/home/otto/dev/ro-bots/spikes/007-native-packet-ast/sender-proof/cli.py",
+        "clif_name"
+      ],
+      "cwd": "/home/otto/dev/ro-bots",
+      "exit": 0
+    },
+    {
+      "name": "cli-sitting",
+      "command": [
+        "python3",
+        "-B",
+        "/home/otto/dev/ro-bots/spikes/007-native-packet-ast/sender-proof/cli.py",
+        "clif_sitting"
+      ],
+      "cwd": "/home/otto/dev/ro-bots",
+      "exit": 0
+    },
+    {
+      "name": "cli-wrong-profile",
+      "command": [
+        "python3",
+        "-B",
+        "/home/otto/dev/ro-bots/spikes/007-native-packet-ast/sender-proof/cli.py",
+        "clif_emotion",
+        "--profile",
+        "20211103"
+      ],
+      "cwd": "/home/otto/dev/ro-bots",
+      "exit": 2
+    }
+  ],
+  "remaining_gaps": [
+    "Remaining root Ruff debt is not waived; retained original assertion diagnostics must not be hidden by blanket rewriting. Any added diagnostic kinds/metrics still block approval.",
+    "clif_send sink U2-U7 UNREVIEWED; candidate is not sender semantic or runtime admission.",
+    "No callback/pristine-modified source join, gameplay, combat, XP, loot or milestone acceptance. All six milestones remain open.",
+    "Automatic repair budget remains exhausted. This is the sole explicitly authorized cleanup; rejection requires escalation, not another cleanup."
+  ],
+  "sink_contract_status": "UNREVIEWED",
+  "sender_semantic_admission": false,
+  "runtime_admission": false,
+  "production_adoption": false,
+  "run_proof_executed": false,
+  "full_AST_regenerated": false,
+  "artifacts": {
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/tmpp0xph7cp.stdout": "190a4c3e986623c6045889b61d063afb7ef2c96a81d4f3d7b960ee8564a9cafe",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/field-packed-clang.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/tmp_h7iormd.clang.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/current-ruff.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/overlap-attribute.cpp": "e28bd44085f3ba089958465bb5859358d5b5340e7d00f80d8a62b2adff79e4d4",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/packed-signed-alias-observe.stdout": "212d721dc423be613541927dc8e9a4576cd6d273d7df75961b2b099868ad1feb",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/tmptc4k9ze7.cpp": "dc2ed4fd603df4f66bcd67a90a4816c11653581bb5c68eb4e942245214647d3a",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/field-packed.cpp": "31babfaf1dfd0c3f719e5a92fb0559fcc3fb66dcb7f7c58b0222c69650f1227a",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/operator-gcc.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/current-ruff.stdout": "afeab4be7797bf8332154ea1decd0a5fa91dfafa4a32e36679b3ac1bfe767d1f",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/tmp_h7iormd.result.json": "ae0de93f65e3e9dbb74c7008e3ae063ec7a22295f301b1a00a3d1818b7e26fa1",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/typed-mypy.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/packed-unsigned-alias-observe.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/anonymous-union-clang.stdout": "d2ba1014971d0c7c7f30c6c7d39841b088510c529e261a2ac3a626599cb33fac",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/packed-signed-alias-gcc.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/packed-unsigned-alias-clang.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/destructor-observe.stdout": "7656fbf0b9c76fb89f49a0b800266a70659a04d8024b91d0e994b2daaaf86be1",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/final-format.stderr": "cc9e0cf0c09cc0d3ccfa0a7e3b85c89ca4da90d0faa3edbe95b8b412e0929559",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/tmpym9hlqw_.ast.json": "906e285fe41086d8524127a01510a7fadd27b2f0289f371cc727c4f480a69ea9",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/initial-mypy.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/field-packed-gcc.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/alias-union-gcc.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/functional-float-observe.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/operator-clang.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/constructor-gcc.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/tmpluvzlrj6.gcc.stdout": "2455d2e351d9e64dd5e0d48c58d54589baf863f04d3e8dbbada574ae5f4d2f09",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/freeze-before.json": "cc8fc86cd0cde79ac9725cf18ab93eb828fd6d0dba6c7f45869e32f6cd329e6d",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/replay-arg4-call-gcc.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/cli-sitting.stdout": "97d0e4baddf60e824b93d0073f05780d37ff0b775cd7c28717c64d0b4f436ea9",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/tmph5fkz7nx.cpp": "608fce4d4a4b184895649b675611341fb9362adbda0004b059a17a81384761e4",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/bitfield.cpp": "b2f598f28ee6a288098e9c3607f481982315cb0a17f814e05af84e74e8c70a78",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/replay-float-cast-clang.stdout": "7f070f97892bfa3bf0d41d196960648d494a8a8346d483d2b251329e836b130e",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/red.command.json": "09f92ee0427911a125a5209714c016d305921183e4e57ff99d9640edfcc1478f",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/tmp0wfyobib.stdout": "10c268700dfb4392c0d0d18b0ed5791c38e74bb87d9300cdf5b552c7d994a422",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/replay-float-cast.bin": "29bcffcdb6b8e3d4ac1ff9630dcac499eada53c42417a02e9a72bfed7f8a771c",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/unknown-attribute-clang.stdout": "14084dddac777e8e0ed3a5a97bae1ff95a3940a26b430e561a288b628c70fe54",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/typed-mypy.stdout": "993c8e2c314864243beb1a6f2f1efecb172e1b7345a664927fc0990fa04bf989",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/replay-arg4-call-clang.stdout": "cdb773d5b8c6851f08eb2d5c011cc2d90015385569c2f05642915827a4bccc3e",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/union.fresh-result.json": "c63d99e9ba008d6c9becdb1ccf88e1a2372a3c630e2ce49ca6013be5c8231259",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/union-observe.stdout": "7f77b9672612603c5e02fd38924c5cd66e2cf09f8d0c031b902318f186a8d9aa",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/overlap-attribute-clang.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/replay-arg4-call-observe.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/packed-signed-alias-clang.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/tmph5fkz7nx.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/tmpp0xph7cp.cpp": "a098659fe5cb5c065269f8d37a8d28939329811a936506211038704cae1ba406",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/destructor-gcc.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/replay-mutable-observe.stdout": "6a8df598dddcb1d006fa589b246e7db5c83229036fcd529cab5ee894739f03e3",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/reference-gcc.stderr": "7d093ea53fca44e4f7216cb2a391b05323a2f33fc2f7cce2826827a175a1b8ad",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/unknown-attribute.fresh-result.json": "d4f77803f4d4597523ea72a3af409bf875a0d118fbaad1f9f1cedc76929222be",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/anonymous-union-gcc.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/tmp_tj1hth_.clang.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/functional-float-gcc.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/initial-black.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/unknown-attribute-gcc.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/tmp7ul58szf.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/replay-mutable.bin": "477f08d0c685f9ed22964401ed024360726f6c8def71fe48da05677040760d49",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/before-test_trace.py": "4c48676433e4dcfc70efc9bdd1d766171751584ca492b2cdf08573ae37b12d18",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/replay-mutable-clang.stdout": "a50ef0ff77cde85652dabec57c50d54b51551126d3b7eae57d51eb0da8fad103",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/reference-observe.stdout": "36413d05769856ccd11d6684f06c05d28a61e3a40e07f02e4ace5cb997ca9d4c",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/tmpbsofg6np.ast.json": "1ec3e99b00e7e5036756abdfdbc372ac2d58d1501e0af1ebac4eae04276fdaf6",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/reference-clang.stdout": "7dac1451c5a4da6b37689667b6f1f0edf18c3f0a93ae3f3fd51bd343768f87a0",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/constructor.bin": "7e7fc0d14fe97a47f8160baf04dccfc56aabf590f698d9c517089a6f44420df9",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/tmpxsdq7fs1.cpp": "b7996f168c79fb14ba961414d9f3e03e09007eca918cbc4facc045417400b537",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/tmpluvzlrj6.clang.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/tmp2c7ig5pf.stdout": "007fd669b3cc4df113e1b297d54ffce519eb2334ebeeabcb1a8cb343e896a2c6",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/replay-float-cast.fresh-result.json": "264e063c52e47294f580e3ca717e7168c5ffcd47075f7c9bd39c40be43fe71ea",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/overlap-attribute.fresh-result.json": "e64bc1fc80d5e4f1ecc040528ea62ce65b86303b1a8986be6bdd202fca38b727",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/typed.commands.json": "4981f00cecf56a40712a7b2bfb70e877c8b54fae491755665d41942dcb2f9ac6",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/tmp_h7iormd.gcc.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/before-README.md": "aaf6952611657e3cfe75fdd9aaf83f27ba6163f72d7dc95538e78aa0b02e40a3",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/replay-mutable.fresh-result.json": "62524022d63f4892668afd3741e8dd1857191ebdaee41cc1840263645085e6f3",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/cli-wrong-profile.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/replay-arg3-call-gcc.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/overlap-attribute-gcc.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/all-tests.stderr": "11db28ca9cfcd420bbb24fc27a6bcbb6f81cdf131970ba60540625c875cb0c33",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/union-gcc.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/tmpvvgnnyzu.clang.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/reference-gcc.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/current-black.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/tmptc4k9ze7.clang.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/baseline-mypy.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/replay-arg4-call.bin": "f01039ed2caacf395f3f13175c673d0ef8179ed3f46c616d1e75c776e70bf7a7",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/tmpln7mhy2f.cpp": "cf6ac874981bcbfba0aba7c2055946b3296c31527ffd0cd60791274a95b1a76f",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/alias-union.fresh-result.json": "418dbc77049f9873922f9f800c4e9e36051b0014aeeda4399988d2faa9a2d17d",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/packed-unsigned-alias-observe.stdout": "212d721dc423be613541927dc8e9a4576cd6d273d7df75961b2b099868ad1feb",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/constructor-gcc.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/wide-header-observe.stdout": "7656fbf0b9c76fb89f49a0b800266a70659a04d8024b91d0e994b2daaaf86be1",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/replay-arg4-call.cpp": "7092cf7d1952af95488f4cbea701acc70fb5947cc914c9f609b77d46c3bc5cfb",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/alias-union-observe.stdout": "7f77b9672612603c5e02fd38924c5cd66e2cf09f8d0c031b902318f186a8d9aa",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/tmp8fc6tkv6.ast.json": "1b595ac77db7263158f2ef96574cece4bfc4d3c0f9688135d1d43e71801837f3",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/tmpbsofg6np.cpp": "500c0a1a7cca75301ce05c5a3990e5afe9f23a67d57bcdf1d3fbf6eee7a39d06",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/reference.bin": "b10f81696fb8d3174739fcd7c77aa4e2e2ef0c78b3f0570d0ca30be9010ed9c1",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/replay-arg3-call-observe.stdout": "6a8df598dddcb1d006fa589b246e7db5c83229036fcd529cab5ee894739f03e3",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/bitfield-gcc.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/overlap-attribute.bin": "c5eb87ce94db08087a872fdcb041c3a1a1aba8a6c51a6276d6d573b1e614a975",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/tmp_tj1hth_.cpp": "0a40247ecd75b60d27c96975f3f0214014876355e8310bcc2899f53bbce5e647",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/replay-arg4-call-gcc.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/tmpkmq45qe5.gcc.stdout": "212d721dc423be613541927dc8e9a4576cd6d273d7df75961b2b099868ad1feb",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/constructor.cpp": "86ed81014ec0f4a9589c2dd35dea3694d122a57445aa4bc6d50de6da69d036c7",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/tmp8fc6tkv6.clang.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/packed-unsigned-alias.cpp": "0f9c895bf08ceb8c946b1d765ddcbccd2b29200ba5333becd16d7bf8c7717e95",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/bitfield-clang.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/tmp0wfyobib.cpp": "7768d048413e6bc119fcccdde19fc933497d5b88b508ab618e13ecc5e3c109f8",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/cli-emotion.stdout": "597dea97de3efe9f536596c9a30a1f438c8987ba86bb5f476660e56bedfe45f8",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/anonymous-union.cpp": "e9d35b4068a9b91af974001fe45153a3efef6b37621e1558a1c836e23db26627",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/tmp8fc6tkv6.cpp": "52e01204b2e38380b5de1edd7f484a05dc5906b76ad98bb026ae132337ddf45c",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/base.cpp": "596980813097f318fb32fa3e660af4129a1e6d553de39bce433b0261b530ac5d",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/anonymous-union-gcc.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/destructor-clang.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/tmp1mppubpo.cpp": "f82bbcc97ce952821b8f9a9a750f038128f1cdee2e5fb3a63f672de2b602e86b",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/tmpi6ggzehl.clang.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/replay-arg4-call-clang.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/wide-header-observe.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/overlap-attribute-observe.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/tmp3q89g1fx.cpp": "4d9c54f73dd6c972cf2f9c8aa243ccedb60dd1aeb6f8616616cb446e6530b095",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/packed-signed-alias-observe.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/union.cpp": "62bb4f345c109285cb95bc1c84ee82a36289e329eeb95ad8f8d1594f00af5fb4",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/field-packed-observe.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/base.bin": "31226818dcd211fc93a952a31609c3eb1e4123d2230930894de2cc1fee74089b",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/tmpx9ka9sxa.clang.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/union-gcc.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/tmp3q89g1fx.ast.json": "11c074fb4cfb5941a1cad3978b67cc362720bcdedfc336d2bb979314754d6880",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/field-packed.fresh-result.json": "1816971c783a9b4f9bf42765cb7cde99a612e121caedd0707316fbc4814309dd",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/tmp1mppubpo.ast.json": "b00996eef786842afb48862ec55ec05d1dff4187f81ea11aee0a15c57b16085a",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/current-black.stderr": "b9cf511501d306d2bd8355ccb165c8ddc0a6fdd62d7c72c4a7b1795cf8934c8c",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/replay-mutable-clang.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/packed-signed-alias.fresh-result.json": "80b84ff0cdcc0838d52bbaed1c44e1035bbc7e682691d3c2912baad3c47782f4",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/tmplpq8s_j2.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/current-mypy.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/typed-ruff.stdout": "df542a57c77461fda94711f37b75d58e807141625a914f6f3448bdc3e559c487",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/tmp2c7ig5pf.cpp": "8b48fc6ea50102519091475db12978d8736da0c01bcb94acac8c9bfe1bd5bf7b",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/base-gcc.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/tmpkdaelg6v.cpp": "6d0b49742b3c705926cc4aca7debc619882ece77a7b8921a43290b5c73c651c8",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/initial-ruff.stdout": "fd33baa240a4bd545180e2998397f0185ec34146f9f7603c9a22cb6f0b5069f5",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/overlap-attribute-observe.stdout": "7656fbf0b9c76fb89f49a0b800266a70659a04d8024b91d0e994b2daaaf86be1",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/packed-signed-alias.bin": "9cb78220c18ecb647a7885aeeaeb501e7240db9961454210200c51e4f4e12b1f",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/anonymous-union-observe.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/red.stderr": "338411db1fb84f81aa0163b02845260f83a37be9a631b360cf28312b02e265c0",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/final-format.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/tmpi6ggzehl.ast.json": "1c199fea9da3fa0f39c90ba4cd73c6b9e73194483ee179de0e31a9636ba0a4cb",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/baseline-mypy.stdout": "5ea9ca0ae4e531baf8b649493a1c4a5e00fb5d8b688ee8ce7884e458a1f0c312",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/operator.fresh-result.json": "a3792ad57840ebdbbfd77865eb534bb34424affedd00383f06dbb5818480c8e7",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/packed-signed-alias-gcc.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/wide-header.cpp": "09e360c2209f88ff16ca480c0798246b46a8a00fa5b40f07277bf6089f3bd1bd",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/base-clang.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/tmpln7mhy2f.stdout": "f11e71a1c7bda00156390df071ad1859abe17580daacf60be51812383e45f7d2",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/wide-header-gcc.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/operator-observe.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/unknown-attribute-observe.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/bitfield-gcc.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/tmpkmq45qe5.ast.json": "3d380ebf35ae5b8185fc2c576a9bc0d3bff45a70a712881d6845873374403fad",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/functional-float.fresh-result.json": "2efe0c0098ea76a8123055435e145720cba1f53d09aa523988ec50fbd496a556",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/base-observe.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/tmpkdaelg6v.gcc.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/unknown-attribute-clang.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/functional-float-observe.stdout": "7656fbf0b9c76fb89f49a0b800266a70659a04d8024b91d0e994b2daaaf86be1",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/unknown-attribute.cpp": "126a2a7e5fc5d4bcc39f5340f983ba61935077b5840feb622353e91b1c7f90f7",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/final.commands.json": "027769947d2b194d7a1f4f5292fe30ccbbb181b9c02fc7fd7dd3acc04d0f2451",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/tmpkmq45qe5.bin": "f595b5facee5cada9e110fc30ddbdd0298bc637c339a8b8ceaf85568682cae6a",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/base.fresh-result.json": "cbba7cda888045b7733d5856bc32b4a9becacc06a54a1c88589956a8f1a67ab2",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/tmpx9ka9sxa.cpp": "397ec2593d7b6378bc8d03136b31e1555a167969f45eec3a73682ccc909b1208",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/tmpwc0sbgi2.cpp": "4eb5039a11c4690eabb67af6a7eb9ef3717a49778c40ff5163f773ec8fae86f8",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/tmpwc0sbgi2.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/wide-header.fresh-result.json": "64b05df75c44b1d04c1f22a2d411bf6ff9b0baaf3f1e3aa81d2a2d722a67e8fb",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/tmpp0xph7cp.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/initial-black.stderr": "627479a170c4bad9d8d9a420bca748be7dd7a34ac440e8968677f60e3b82b41b",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/tmp7ul58szf.cpp": "7b50ec581f8020d7d282731a5c3b718bbc95c59cf8debc6bee9c4e3485eb1e72",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/cli-sitting.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/destructor-clang.stdout": "cef603e7cd1471b74585f99ce549d061b0746f8474e3d3974293f2706425e1a1",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/functional-float-gcc.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/tmpluvzlrj6.ast.json": "6e6bc75af8ad994d3235f651524006153a72afc86007b25f3df286274e5d33b8",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/tmpkdaelg6v.bin": "d889212c7099662b7e6842ec45b3e067cb4f22f6a33d12641102167ebcf9feb8",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/all-tests.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/tmp_h7iormd.cpp": "e57e4ec98f88b46af1d794ffa5fe53eaf166552f8e0bc9238d201db6299f47ab",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/alias-union.cpp": "59087b4d09518379ec620976c02d1ae29987f522a156426024a62c5628d34ba8",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/green.stderr": "43b5733d4b77901c1c7747a0972e942fdba72f6c02af323828d651706ec81037",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/replay-arg4-call.fresh-result.json": "b602616c0360158b6d92bec916279461b8ec38a45d35dea8eac3e2c726fad0d3",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/anonymous-union.bin": "58b84ef7580212a48003868821964baa5497b24b6aa7e3a4696f897475e50149",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/tmp2c7ig5pf.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/functional-float.cpp": "5d9d019f300b50b6c73e8bae73115416ef9e4feef3d1fef8393dcf1c15ee262f",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/bitfield-observe.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/anonymous-union-clang.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/packed-unsigned-alias-gcc.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/tmp_h7iormd.gcc.stdout": "7f77b9672612603c5e02fd38924c5cd66e2cf09f8d0c031b902318f186a8d9aa",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/before-trace_sender.py": "096628098957275599da7da9a34c678d8d4c763bb871b8301669606a3dde4a8a",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/overlap-attribute-clang.stdout": "efc12a5a59ecdf23ce21a18db67b9709152e01df488d7b15567d36b0b8697ad6",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/alias-union-clang.stdout": "a769237569e4f90567b26786af06bb8fe95f4c19190429732ffb7cec13dc7cfd",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/tmplpq8s_j2.stdout": "fdcf8a4154a188ec8484f55197b1eb1605beb5554b47f6572713d0be2c3ec915",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/tmpkdaelg6v.ast.json": "b1eae867ecc8e245168ecf47f587c9c8999bfa20f87670593a79861d664b15b2",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/replay-arg3-call-observe.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/tmpkmq45qe5.gcc.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/packed-signed-alias.cpp": "02862cc3cbc414a6dfdce98692a22f7537d4d48319c6919c851b1c7518c9b290",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/tmptc4k9ze7.ast.json": "0fb99d8b1e8525025b7c35e92725058d84ed184afa24a5d3f2365090a11def95",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/tmpbsofg6np.clang.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/alias-union-clang.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/anonymous-union-observe.stdout": "7656fbf0b9c76fb89f49a0b800266a70659a04d8024b91d0e994b2daaaf86be1",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/tmpi6ggzehl.cpp": "312efe79a3d03bc57c52753d0b18555544c11849ee342c82c319f6f656532eae",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/unknown-attribute-observe.stdout": "7656fbf0b9c76fb89f49a0b800266a70659a04d8024b91d0e994b2daaaf86be1",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/replay-arg3-call-clang.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/tmpx9ka9sxa.ast.json": "41f4124301ee36935c5ad9e958d2d2053a6e08693e67f9572ae4c14309ae7689",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/cli-emotion.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/tmpkdaelg6v.gcc.stdout": "212d721dc423be613541927dc8e9a4576cd6d273d7df75961b2b099868ad1feb",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/baseline-ruff.stdout": "8557b2fe8253b00fac84f478759a84a28436cdce8e47b37dd35aaaebac4ae945",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/wide-header-gcc.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/replay-float-cast-gcc.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/unknown-attribute.bin": "0a471c256112b3e9c99ff58e81f363779c7e25d5f8d864903543d38cf87cc42d",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/union-clang.stdout": "933f52c2b7c5d6a2a4bda7f19e5b246426517d1f30ec28f1b51768c391274154",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/reference-observe.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/tmp_h7iormd.bin": "dd075f0d523357cd02d3bde3eba33b5583a7efe368043da2f029ff995c5f4d6f",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/tmplpq8s_j2.cpp": "51e2a448e3608ea9e23c18f8a4666b66f6d26b8fcc87a1e90d0000006a86a260",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/tmpym9hlqw_.cpp": "998df380c58960257f1bb168ff8657fbc4154dc791165a3af09fe79da218ac70",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/constructor-clang.stdout": "97b27599be39b644b87568f1bf68deca50653a4eb4c7b01f7901b7d881563e70",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/tmpvvgnnyzu.gcc.stdout": "212d721dc423be613541927dc8e9a4576cd6d273d7df75961b2b099868ad1feb",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/operator-clang.stdout": "8367ac83971761fbbf15e8fd47becd19779ce0c03e52c8dee3195bd1b1c878ec",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/format.stderr": "fc8b16b73ad86a9fe37776fe3b9736108aa1e626dfce48d47359dad346122f90",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/wide-header-clang.stdout": "8c36ffeacd54d5632ee866fe3d0224051d5b65496fdaf24fd6735ea110d9051b",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/wide-header.bin": "08f597f6e962d3353c5358d949ae22acacf803ce27f0d885981dc9f439ee76c0",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/destructor-observe.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/tmpvvgnnyzu.ast.json": "533a1bc3bce6a4c7d2a5f448817a7a49d990cb8017665d3214b3eb549cbe720d",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/wide-header-clang.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/destructor.bin": "baddcb6fed5a837ecc84fd2cf6a7a87c219e449efb1d3e11dcbe0fc29496e5eb",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/operator-observe.stdout": "7656fbf0b9c76fb89f49a0b800266a70659a04d8024b91d0e994b2daaaf86be1",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/operator.bin": "e9a60b1db1b23eaba230d8038ca00fc124b34b7ddec97c869fa8fe6e4ba54a73",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/unknown-attribute-gcc.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/tmpluvzlrj6.cpp": "ba0bd89592fbaff5485418e4e8eb8200933fffa2e8ffe676c7487969e85e2062",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/baseline-black.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/replay-float-cast-observe.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/operator-gcc.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/tmpkmq45qe5.clang.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/field-packed.bin": "6f2e9e0ba124ebb83c2ade63c0ca2e68482cb2da37ee89f4d2e475bc2408d78d",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/alias-union-observe.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/constructor-observe.stdout": "7656fbf0b9c76fb89f49a0b800266a70659a04d8024b91d0e994b2daaaf86be1",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/tmpbsofg6np.gcc.stdout": "2455d2e351d9e64dd5e0d48c58d54589baf863f04d3e8dbbada574ae5f4d2f09",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/tmp7ul58szf.stdout": "d98c2e386177f08e613effc85c51b336233486cab355026893cc9bd201a3c50a",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/constructor.fresh-result.json": "0b9bffdbe6c2b2cd08724e14b62f1423c469e2c384ecfe7e841586102424c563",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/functional-float-clang.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/functional-float-clang.stdout": "42823fa8db3a73f7b10457e442340f4c20ba746a83708d22919a3f2e8422b520",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/tmp1mppubpo.clang.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/tmpvvgnnyzu.cpp": "6d0b49742b3c705926cc4aca7debc619882ece77a7b8921a43290b5c73c651c8",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/base-clang.stdout": "d9dd33a1b2ef8878fd9e89ea5d6e89e7d22103da4240594c619295218d37e2ce",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/constructor-observe.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/packed-unsigned-alias-clang.stdout": "20ff1c571b8624598fb8700adf78401feaa6d941827bd5d9c0864df1dc1d4598",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/typed-ruff.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/tmpkdaelg6v.clang.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/replay-mutable-observe.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/tmp3q89g1fx.clang.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/replay-float-cast.cpp": "0499b0857c53f8df95f76a4758013eb07bf10be5b886416ae965facf22a3a596",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/initial-ruff.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/green.command.json": "0a86a8d435765cc4b08ebcf2bfae2e2c9f84094ab05f70e9f9c21a8dd2fa707c",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/reference.cpp": "3fbdaff387c94f1d622d18ffe9345fd3d45f318b508d2f80158634714f1dc618",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/bitfield.bin": "1cb7d7fdf9c972aebd47b45767a376706e96488a148d020349b646ce42c294b6",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/functional-float.bin": "179e190bc632cafdaf6ad1a8264f18f102b17cb4964e11b580e5a610b896ae52",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/operator.cpp": "17f71adaff2be56d7da8c466da45e27eba1dd6f64fdf57abcf93eb257e1b9e07",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/baseline-black.stderr": "4708d047253c5a8d630121bcba661a156a73a6bb8d1366ddc3aa1d218663efe0",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/replay-mutable.cpp": "182f06e49f0e07ed070d29bd6317c150a14b0a3e0f7428fad502caddae612352",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/alias-union.bin": "a36a24b2d93b54c4485c5575ae362760102b6b6a9681eb57b567435511975779",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/cli-name.stdout": "7df4dd8267fa98940a551f316950e738f37dd8892578873aeae7502f0fe6c505",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/union.bin": "2db1331e5dc1b8134d9f34089fc8157611b16bf5ab962027652c5b88106ee66b",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/constructor-clang.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/replay-float-cast-observe.stdout": "6a8df598dddcb1d006fa589b246e7db5c83229036fcd529cab5ee894739f03e3",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/initial-mypy.stdout": "acfb7d811126f8010607ae79a5eb2a526f37d93589af34fe439a8126cce3ce20",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/cli-wrong-profile.stdout": "82f0413cd3d48f4fa86301b4d82ed00c780c5491e9d0ed97168aae0b4c357781",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/tmpvvgnnyzu.bin": "308003c7a71df589652729076dddb3ee350b26ef68c329e5d928776feceb802c",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/packed-unsigned-alias.fresh-result.json": "51d591736d3cb11a7259c51fb10491ce7c011a3963ce82e817b984a6df82db51",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/tmp_h7iormd.ast.json": "118e05fbfa11f8192214ab1b9c358133c6e0c1f7f5f2a2f363a0f38522756d40",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/replay-arg3-call-gcc.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/replay-arg3-call.bin": "7cec336c41ca175e26772cfc99d2965ec8a6a71534a1d5d8597f2ee0a10d6acc",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/green.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/field-packed-gcc.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/field-packed-observe.stdout": "212d721dc423be613541927dc8e9a4576cd6d273d7df75961b2b099868ad1feb",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/tmpxsdq7fs1.clang.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/union-observe.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/bitfield.fresh-result.json": "1f5c91babc308ec4384f79fab1d92094ac1ddacadcc8a1fe142aefb1f066a46a",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/anonymous-union.fresh-result.json": "e233da68dde7bd56c0d471fddd5713cc89fd02358a8304322fac2f1e10729d75",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/base-observe.stdout": "7656fbf0b9c76fb89f49a0b800266a70659a04d8024b91d0e994b2daaaf86be1",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/tmpxsdq7fs1.ast.json": "2940dceb828887e24305d5284ac814e2037b9ea8dd6cb6526ff2050ed1401041",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/red.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/commands.json": "95d2f9f491a066b60be8b8d10ec5dbbcf860afeb01ce4e4b56a8b0259d1cde90",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/reference-clang.stderr": "c84fc081b8fbc119433037f62fbed8538fa11c8644d8c1fb1a10b82ada04987a",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/tmpwc0sbgi2.stdout": "fcdff943fd52e59af3fc7bfe98ed33c0ce62b4a92aba4fa5ff713b9c202e5ace",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/destructor.cpp": "d20fb93d9def83c34c7e53b1d1eb979a081be9e0d744670f6227d7a55efe0672",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/bitfield-clang.stdout": "41da3794d9eb84ef86cff74a533db880b44928ac365e2ba2174c64093a629af4",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/overlap-attribute-gcc.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/destructor-gcc.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/baseline-ruff.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/tmpbsofg6np.bin": "4926e61b82b1ae473c7a35318660020f18b6ef1ac1faec3a38c47cbcbd3ad2ab",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/reference.fresh-result.json": "bb53ba53f2127d1184e2acbcc05cbe94e9c494ad9dfee4f5555ce9c9c0f12569",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/replay-arg3-call.fresh-result.json": "37f98f44ec4cc46f5ff7f2fe14dafa7f15ff28afd28baf643b450956a9630143",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/replay-mutable-gcc.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/tmpln7mhy2f.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/tmpluvzlrj6.bin": "e9f0569922549adb9c3ad59404681a09bc9962f81641b3606504bcef10b80666",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/packed-unsigned-alias-gcc.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/replay-float-cast-gcc.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/replay-arg3-call-clang.stdout": "d3f1248ad1c7394d71854ddcaedb27d2db49afdeac7e6e335bc4268846875d58",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/current-mypy.stdout": "f9b031e5c45aa702cd4fef028d465551cb20a2c4698e0913c7b00766b20ac4d8",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/alias-union-gcc.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/tmpym9hlqw_.clang.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/cli-name.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/packed-signed-alias-clang.stdout": "61490aac80307800904a8032c349d8c2352b0cdd6494c5fe833ab9f951859de4",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/tmpvvgnnyzu.gcc.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/replay-mutable-gcc.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/packed-unsigned-alias.bin": "8c20ad246746d610f731f48b32b6c0c9a4d6a18444c44727aa02ebb5ac848ee2",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/format.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/bitfield-observe.stdout": "d202c9371b99f77332084fc160a026e04f97eeae110bc547e7b097ef0b0606b3",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/union-clang.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/tmph5fkz7nx.stdout": "a32bd386b12b58d518fd40bcc9a54f5b22cc4dd24f12556adda3ed54e39e4c12",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/base-gcc.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/tmp0wfyobib.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/destructor.fresh-result.json": "f8242dec2ad38275d7e676f22fc936d1b98fd0ba5e2c3fd8fdcb7fb2c90d4112",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/field-packed-clang.stdout": "6b639d2a5dde6d952277714a96f89e8b2bdd3035f2cbc5cfee2abcca3f934846",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/tmpkmq45qe5.cpp": "6d0b49742b3c705926cc4aca7debc619882ece77a7b8921a43290b5c73c651c8",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/replay-float-cast-clang.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/replay-arg3-call.cpp": "c9f9df488050b9464fbf1d74a32b93f1795dd68997eda8ef1643a7aa1e8eeb9a",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/tmp_tj1hth_.ast.json": "fd2213189a0f82f1e7fa100639b9ed9f515a6bc402273949eab057d65e218c0d",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/replay-arg4-call-observe.stdout": "6a8df598dddcb1d006fa589b246e7db5c83229036fcd529cab5ee894739f03e3",
+    "/home/otto/.hermes/cache/scratch/cleanup-bounded-driver.py": "c98f51d16b961e3f4c69a190ac3f25533cb96846f804fb71203df0a2dab439f5",
+    "/home/otto/.hermes/cache/scratch/cleanup-final-driver.py": "3be188d7049ac6cad4d84360db5e79576f4ae78340049a0ed6c4799dace5dcaa"
+  },
+  "bounded_attempt_complete": true,
+  "cleanup_requirements_fully_satisfied": false,
+  "toolchain_entrypoint": "nix develop --offline --no-write-lock-file path:./spikes/007-native-packet-ast/toolchain -c python3 -B /home/otto/.hermes/cache/scratch/cleanup-final-driver.py",
+  "field_packing_classification": "contract/supported-grammar discrepancy, not false-header exploit; GCC sent header 1 correctly"
+}

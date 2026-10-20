@@ -1,0 +1,19 @@
+{
+  "feature": "Received equipment snapshot and acknowledgement substrate for NPC-guided starter gear",
+  "owns_only_new_files": [
+    "src/robots/adapters/native_equipment.py",
+    "tests/test_native_equipment.py",
+    "protocol/main-20180704-pre-re-equipment.json",
+    "run/reviews/playing-mvp-native-equipment-codec.json"
+  ],
+  "does_not_touch_parallel_NPC_files": true,
+  "requirements": [
+    "Full unchanged-header measurements under exact installed MAIN20180704 pre-re flags for EQUIPITEM_INFO and active equip/unequip requests/ACKs",
+    "Strict active-profile equipment-list decoding preserves inventory index, item ID, allowed slot mask, actual WearState and relevant received detail; no quantity-only equipped inference",
+    "Strict ACK decoding preserves result/status semantics and correlation fields; representation encoders are not legal-actuation permission",
+    "Source-shaped tests-first row/header/width/flag/framer boundary evidence",
+    "Missing or unsupported facts stay unknown; no fabricated item effects or legal equipment eligibility",
+    "No runtime/model/action/packetdb integration or native requests by delegate; NPC implementation retains those file owners"
+  ],
+  "all_milestones_open": true
+}

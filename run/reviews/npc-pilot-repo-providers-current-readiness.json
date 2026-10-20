@@ -1,0 +1,163 @@
+{
+  "checked_at": "2026-10-13T03:20:23+02:00",
+  "effects": {
+    "CLEF_decisions": 0,
+    "SQL_operations": 0,
+    "completion_calls": 0,
+    "configuration_changes": 0,
+    "downloads": 0,
+    "inference_calls": 0,
+    "metadata_GET_attempts": 6,
+    "native_sessions": 0,
+    "provider_POSTs": 0,
+    "provider_changes": 0,
+    "world_or_lifecycle_changes": 0
+  },
+  "elapsed_seconds": 0.032443,
+  "host_request_interfaces": {
+    "CLEF": "Existing probe decision_url assembly and decision adapter contract inspected statically; no factory construction or decision submitted.",
+    "LLM": "Existing LocalPlanningModel/llm_planner tool-function schema: tools, tool_choice=auto, parallel_tool_calls=false; structured function names and arguments. Static source contract only; no request submitted.",
+    "lazy_construction_checked": false
+  },
+  "known_limits": [
+    "Metadata HTTP success and listed model names do not establish completion, function-call quality, actual tool support, token/template compatibility, usable context budget, GPU offload, or NPC progress.",
+    "The LLM configured request name local may differ from advertised alias chat; alias acceptance remains unverified without inference.",
+    "Selected native authority remains revoked per task context; this report grants no activation or inference budget."
+  ],
+  "planning_configuration": {
+    "generation_tokens": 512,
+    "request_model_id": "local",
+    "token_ceiling": 4096,
+    "transport_timeout_seconds": 30
+  },
+  "providers": [
+    {
+      "advertised_model_available": true,
+      "alias": "local_llm",
+      "auth_availability_ack": "[REDACTED]",
+      "checks": {
+        "/health": {
+          "curl_exit": 0,
+          "elapsed_seconds": 0.000806,
+          "http_status": 200,
+          "json_metadata_valid": true,
+          "method": "GET",
+          "reported_status": "ok",
+          "response_bytes": 15,
+          "response_sha256": "a29ee2b15c494311c52521766e44af56a3ad2248e7a8ab465e5206463c13d288",
+          "tcp_connect_seconds": 0.000261
+        },
+        "/props": {
+          "curl_exit": 0,
+          "elapsed_seconds": 0.000593,
+          "http_status": 200,
+          "json_metadata_valid": true,
+          "metadata": {
+            "build_info": "b11146-7fe450e",
+            "chat_template_present": true,
+            "model_alias": "chat",
+            "slot_context_capacity": 4096,
+            "slots": 1
+          },
+          "method": "GET",
+          "response_bytes": 6057,
+          "response_sha256": "1d42a0ce52912e286fede4fe99eee0ef28e325284988366d317f29c8e9e113d2",
+          "tcp_connect_seconds": 0.000164
+        },
+        "/v1/models": {
+          "curl_exit": 0,
+          "elapsed_seconds": 0.000576,
+          "http_status": 200,
+          "json_metadata_valid": true,
+          "method": "GET",
+          "model_names": [
+            "chat"
+          ],
+          "response_bytes": 571,
+          "response_sha256": "22f661c631407c2c4ca624c68ca9490182f014450cb9aa0cf3eeabf1551eb449",
+          "tcp_connect_seconds": 0.000147
+        }
+      },
+      "configured_request_model": "local",
+      "configured_request_model_literal_present_in_catalog": false,
+      "connection": "[REDACTED]",
+      "elapsed_seconds": 0.024262,
+      "inference_established": false,
+      "metadata_ready": true,
+      "props_alias_present_in_model_catalog": true,
+      "role": "Selected planning LLM",
+      "tcp_and_http_health_confirmed": true,
+      "tools_or_function_call_support_established": false
+    },
+    {
+      "advertised_model_available": true,
+      "alias": "heavengraph_clef_flash",
+      "auth_availability_ack": "[REDACTED]",
+      "checks": {
+        "/health": {
+          "curl_exit": 0,
+          "elapsed_seconds": 0.002732,
+          "http_status": 200,
+          "json_metadata_valid": true,
+          "method": "GET",
+          "reported_status": "ok",
+          "response_bytes": 15,
+          "response_sha256": "a29ee2b15c494311c52521766e44af56a3ad2248e7a8ab465e5206463c13d288",
+          "tcp_connect_seconds": 0.001237
+        },
+        "/props": {
+          "curl_exit": 0,
+          "elapsed_seconds": 0.002976,
+          "http_status": 200,
+          "json_metadata_valid": true,
+          "metadata": {
+            "build_info": "b11146-7fe450e",
+            "chat_template_present": true,
+            "model_alias": "Clef-Flash-Q4_K_M.gguf",
+            "slot_context_capacity": 8192,
+            "slots": 8
+          },
+          "method": "GET",
+          "response_bytes": 9900,
+          "response_sha256": "cbcb478fb20f06ec41b2727d973e0066b613f29de06d44a33f3aad131c6c33e7",
+          "tcp_connect_seconds": 0.001119
+        },
+        "/v1/models": {
+          "curl_exit": 0,
+          "elapsed_seconds": 0.003143,
+          "http_status": 200,
+          "json_metadata_valid": true,
+          "method": "GET",
+          "model_names": [
+            "Clef-Flash-Q4_K_M.gguf"
+          ],
+          "response_bytes": 803,
+          "response_sha256": "6523fa66f93bd066d2f6c11e86092e0465395b62d05c61306290a8848531913b",
+          "tcp_connect_seconds": 0.001387
+        }
+      },
+      "configured_request_model": null,
+      "configured_request_model_literal_present_in_catalog": null,
+      "connection": "[REDACTED]",
+      "elapsed_seconds": 0.02847,
+      "inference_established": false,
+      "metadata_ready": true,
+      "props_alias_present_in_model_catalog": true,
+      "role": "Selected Heavengraph Clef-Flash",
+      "tcp_and_http_health_confirmed": true,
+      "tools_or_function_call_support_established": false
+    }
+  ],
+  "scope": "Selected providers only. Bounded direct GET /health, /v1/models, and existing qualified /props route. No redirects, proxy, private context, inference, or provider switching. Raw bodies and stderr not retained.",
+  "source_inputs_unchanged": true,
+  "source_receipts_sha256": {
+    "/home/otto/dev/ro-bots/.work/operators/npc-native-host-pilot/probe.py": "113336e813db06650d92e922b5da7d28d1aede1f300fe4a815ba82d4ebe66381",
+    "/home/otto/dev/ro-bots/.work/private/npc-pilot/config.json": "a253a2220c04b86585fe2f5659948f5af1d6dc670e896c9035a7edef4bc67207",
+    "/home/otto/dev/ro-bots/.work/private/npc-pilot/location.json": "a63fa43b535364d9c419db187cf96088aa1c741bf665ab5c0be4ee94c0cb8277",
+    "/home/otto/dev/ro-bots/src/robots/adapters/decision/clef_local.py": "7390bf0b6a1cc3287aa1fa7b031a1e84f87b062241d247832ca6b270033b9f1f",
+    "/home/otto/dev/ro-bots/src/robots/adapters/planning_llm.py": "1c26c7401618fc8ce2228ca31763e2d44c3336253e339a0bfea1751b65b0889e",
+    "/home/otto/dev/ro-bots/src/robots/playing.py": "1d56b0d527bc04ffea4a152d9bf9cfd312156dd9c19c896d2f31bc8ca3668f8e"
+  },
+  "started_at": "2026-10-13T03:20:23+02:00",
+  "status": "METADATA_READY_NOT_INFERENCE_ACCEPTANCE"
+}

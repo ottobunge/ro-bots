@@ -1,0 +1,469 @@
+{
+  "status": "OFFLINE_PRODUCER_COMPLETE_PENDING_PARENT_REVIEW_AND_FULL_ROOT",
+  "scope": "read-only actual PlayingClient NPC observation producer; offline Wire fixtures only",
+  "public_api": "PlayingClient.planning_npc_observation(identity: PlanningIdentity) -> NpcObservation | None",
+  "owned_changes": {
+    "modified": [
+      "src/robots/app/playing_runtime.py"
+    ],
+    "created": [
+      "tests/test_npc_planning_observation.py",
+      "run/reviews/npc-planning-observation.json"
+    ],
+    "source_sha256": "01593bf6e70a70fc23237b9e83f3dea46eee09f91798d4fadc86318a6a56368d",
+    "test_sha256": "eeb367d70bbb2fe97687d52d9ca5e3b33de6eea031b65bdcd31fe0039ae82b68"
+  },
+  "behavior": [
+    "Samples one finite qualified monotonic reading and passes it through existing received-frame consumption without changing default per-frame validation order.",
+    "Uses fresh received tracker, native vitals and selected-session progression guards, without catalog publication or gameplay/recovery helpers.",
+    "NEXT/MENU only: exact caller identity object, received actor ID/epoch/literal map/opened and prompt sequences, unmodified option indices including empty labels, actual existing deadline minimum.",
+    "Requires exact current and epoch-bound selected name, same session, known alive/standing, no standing/rest/movement pending state, confirmed arrival, supported continuous actor presentation6/12, no dialogue failure/cancellation uncertainty, remaining existing response budget.",
+    "Expected NativeTelemetryUnavailable maps to None after existing invalidations; unexpected callback errors and nonlocal control flow retain exact origins/deepest frames.",
+    "Rejects invalid clocks/deadlines (bool, NaN, infinity, oversized integers) before unsafe conversion/controller arithmetic; valid 1e15 clock and254 received options remain usable.",
+    "No host phase advertising, no capture/context/controller/domain/schema/protocol/old-test changes, no executable plan dispatch."
+  ],
+  "trust_boundary": {
+    "host_supplied": [
+      "agent",
+      "world",
+      "ruleset"
+    ],
+    "locally_checked": [
+      "exact selected character name",
+      "native session epoch",
+      "received actor/prompt/map continuity",
+      "local safety/readiness gates"
+    ],
+    "unknown": [
+      "native engine legality",
+      "quest eligibility",
+      "server restrictions",
+      "server response/reward acceptance"
+    ],
+    "ready": "first local advisory gate for a future typed intent, never server acceptance or host execution authorization"
+  },
+  "tdd": {
+    "chronology": [
+      "parent-observer-red.xml",
+      "slice1-red.xml",
+      "slice1-green.xml",
+      "slice2-red.xml",
+      "slice2-green.xml",
+      "slice3-red.xml",
+      "slice3-green.xml",
+      "slice4-red.xml",
+      "slice4-green.xml",
+      "name-binding-red.xml",
+      "name-binding-green.xml",
+      "slice5-integration-first.xml",
+      "final-scoped.xml",
+      "alias-fixture-corrected.xml",
+      "final2-scoped.xml"
+    ],
+    "behavioral_red": {
+      "slice1-red.xml": "Two genuine missing producer assertions for actual NEXT/MENU.",
+      "slice2-red.xml": "Unsupported/consumed UI and failed/uncertain controller incorrectly yielded ready receipts.",
+      "slice3-red.xml": "Fresh identity, pose/motion/selected state and expected telemetry denial contracts failed; existing actor/frame ordering positives and negatives already passed.",
+      "slice4-red.xml": "Oversized clock integer reached unsafe isfinite, invalid deadlines/budget/binding accepted, and clock callback was sampled twice.",
+      "name-binding-red.xml": "Old prompt could be rebound to a changed selected name and newly matching caller identity."
+    },
+    "existing_green_characterizations": "Existing capture already used generic dataclass serialization and deepcopy; no old three-field-copy defect exists and no capture rewrite was made. Produced-receipt capture/planner/lifecycle integration was green on first run and is not represented as a new source behavior RED.",
+    "test_oracle_correction": {
+      "receipt": "final-scoped.xml",
+      "failure": "test_literal_map_alias_is_not_normalized_into_planning_permission expected retained dialogue after a warp but fixture omitted re-presenting the NPC; warp correctly clears old actor.",
+      "repair": "Added a fresh received NPC actor presentation after the map receipt, without source changes or weakening denial assertions.",
+      "classification": "test-fixture/oracle correction, not production behavioral RED"
+    },
+    "quality_history": [
+      "xenon-initial-failure.txt",
+      "initial-quality.json",
+      "final-quality.json",
+      "final2-quality.json"
+    ],
+    "quality_repairs": "Scoped Black/Ruff formatting/import sorting, test effect-spy helper extraction and dynamic typed fixture attribute setup; rank-C producer Boolean chain refactored to explicit grouped guard checks without changing thresholds."
+  },
+  "current_verification": {
+    "selected_receipt": {
+      "path": "/home/otto/.hermes/cache/scratch/npc-planning-observation/final2-scoped.xml",
+      "sha256": "59a1b118083658aee3600c501551387272d949ee0b9e826883e0ce07a5eb131b",
+      "testcases": 1462,
+      "unique_ids": 1462,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "failed_ids": [],
+      "error_ids": [],
+      "skipped_ids": []
+    },
+    "owned_new_unique_cases": 106,
+    "unchanged_parent_tracer_ids": [
+      "::test_actual_client_produces_current_next_prompt_observation"
+    ],
+    "unchanged_capture_characterization_ids": [
+      "::test_existing_capture_keeps_detached_npc_observation_and_ui",
+      "::test_existing_capture_reaches_actual_scripted_npc_planner"
+    ],
+    "identity_registry": {
+      "path": "/home/otto/.hermes/cache/scratch/npc-planning-observation/test-identities.json",
+      "sha256": "3c4b129a274abc80bf2498220d7e1ac30ce1b4131b636a8b40662046ee0fd021",
+      "raw_ids_preserved": true
+    },
+    "source_quality": {
+      "black": {
+        "command": [
+          ".venv/bin/black",
+          "--check",
+          "src/robots/app/playing_runtime.py",
+          "tests/test_npc_planning_observation.py"
+        ],
+        "exit_code": 0,
+        "output": "/home/otto/.hermes/cache/scratch/npc-planning-observation/final2-black.txt",
+        "sha256": "02cc42369c2692805e5373ff7cdee8ff699f0b6fcf938ddea3f0de44faad7235"
+      },
+      "ruff": {
+        "command": [
+          ".venv/bin/ruff",
+          "check",
+          "src/robots/app/playing_runtime.py",
+          "tests/test_npc_planning_observation.py"
+        ],
+        "exit_code": 0,
+        "output": "/home/otto/.hermes/cache/scratch/npc-planning-observation/final2-ruff.txt",
+        "sha256": "62af8447bb5ea4ee43bf3e1eb2501e3af725caeda6498c4be41879eeaf64cbb4"
+      },
+      "mypy": {
+        "command": [
+          ".venv/bin/mypy",
+          "--cache-dir",
+          "/home/otto/.hermes/cache/scratch/npc-planning-observation/mypy-cache"
+        ],
+        "exit_code": 0,
+        "output": "/home/otto/.hermes/cache/scratch/npc-planning-observation/final2-mypy.txt",
+        "sha256": "3666045d3c93e952075f4055d9e5f24b783136b651ef5328ff50b9ca8f04dc29"
+      },
+      "xenon": {
+        "command": [
+          ".venv/bin/xenon",
+          "src",
+          "--max-absolute",
+          "B",
+          "--max-modules",
+          "B",
+          "--max-average",
+          "A"
+        ],
+        "exit_code": 0,
+        "output": "/home/otto/.hermes/cache/scratch/npc-planning-observation/final2-xenon.txt",
+        "sha256": "4069d50ff562f9e4a5920dcc903a71183c3889a5976002ec9bdc34db87762921"
+      },
+      "duplicate": {
+        "command": [
+          ".venv/bin/pylint",
+          "--disable=all",
+          "--enable=duplicate-code",
+          "--ignore-paths=tests",
+          "src"
+        ],
+        "exit_code": 0,
+        "output": "/home/otto/.hermes/cache/scratch/npc-planning-observation/final2-duplicate.txt",
+        "sha256": "e9829f99363004abef1b361767877d5f11b920a33119265bb84d615c4af9acc1"
+      }
+    },
+    "configured_mypy": "strict whole src/tests configuration,244 checked files; cache confined to task scratch",
+    "configured_complexity": "whole src unchanged Xenon B/B/A thresholds",
+    "configured_duplicate_gate": "whole src unchanged pylint duplicate-code gate",
+    "full_root_check": "not run by delegate; parent remaining gate",
+    "audit": "not run by delegate; prior parent evidence is historical, no network audit operation in scope"
+  },
+  "effect_evidence": {
+    "integration_cases": 10,
+    "actual_paths": [
+      "PlayingClient producer",
+      "unchanged capture_job_context",
+      "actual LlmPlanner with ScriptedModel",
+      "real PlanLifecycle fresh-capability admission"
+    ],
+    "forbidden_spies": [
+      "wire._send",
+      "wire.move",
+      "wire.sit",
+      "wire.stand",
+      "wire.say",
+      "wire.keepalive",
+      "wire.party_reply",
+      "wire.party_invite",
+      "client._keepalive"
+    ],
+    "result": "No forbidden effect spy fired; original offline fixture click count retained; memory notes unchanged.",
+    "fresh_admission": "NEXT/CHOOSE proposals admitted only with current matching producer; new prompt/close/vanish/expiry deny stale proposals while job capture remains unchanged.",
+    "model": "two scripted completion calls and one NPC investigation per integration case; zero real inference/provider/network calls",
+    "not_claimed": [
+      "host NPC execution",
+      "real worker isolation",
+      "native acceptance",
+      "live gameplay",
+      "quest/reward success"
+    ]
+  },
+  "preservation": {
+    "baseline_path": "/home/otto/.hermes/cache/scratch/npc-planning-observation/baseline.json",
+    "baseline_sha256": "425f7bf5a82d08c1cc45a11c923a77b9e5448e3d910ea682aef500f30afca52a",
+    "baseline_entries": 396,
+    "protected_bindings": 395,
+    "distinct_protected_paths": 393,
+    "protected_drift": [],
+    "completed_input_freeze": {
+      "path": "/home/otto/.hermes/cache/scratch/npc-planning-observation/completed-input-freeze.json",
+      "sha256": "8aeb469c923c12401aff54424bb2ebfb24b9b8ba6ae3178ab8732a9d8c2add34",
+      "entries": 400
+    },
+    "approved_typed_contract_review_sha256": "046c5625e669eaefc544ec42eb08e9af6f215c7a4b50c07e53d31812993ac8c9"
+  },
+  "receipts": {
+    "alias-fixture-corrected.xml": {
+      "path": "/home/otto/.hermes/cache/scratch/npc-planning-observation/alias-fixture-corrected.xml",
+      "sha256": "0f503d2f66f549a535f78a282ea5671c09ab96c7733c3b01757a5c2d44a0d6d5",
+      "testcases": 106,
+      "unique_ids": 106,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "failed_ids": [],
+      "error_ids": [],
+      "skipped_ids": []
+    },
+    "final-scoped.xml": {
+      "path": "/home/otto/.hermes/cache/scratch/npc-planning-observation/final-scoped.xml",
+      "sha256": "761f68b96490c60a2d7174f3fe70b058e8a7f6469c2984495eaa58df6e61a13e",
+      "testcases": 1462,
+      "unique_ids": 1462,
+      "failures": 1,
+      "errors": 0,
+      "skips": 0,
+      "failed_ids": [
+        "tests.test_npc_planning_observation::test_literal_map_alias_is_not_normalized_into_planning_permission"
+      ],
+      "error_ids": [],
+      "skipped_ids": []
+    },
+    "final2-scoped.xml": {
+      "path": "/home/otto/.hermes/cache/scratch/npc-planning-observation/final2-scoped.xml",
+      "sha256": "59a1b118083658aee3600c501551387272d949ee0b9e826883e0ce07a5eb131b",
+      "testcases": 1462,
+      "unique_ids": 1462,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "failed_ids": [],
+      "error_ids": [],
+      "skipped_ids": []
+    },
+    "name-binding-green.xml": {
+      "path": "/home/otto/.hermes/cache/scratch/npc-planning-observation/name-binding-green.xml",
+      "sha256": "0e01e5d49c7fa1ccfa64d65503dbaf6316be105ecc552ae3cdc7e8ddd196b9f9",
+      "testcases": 275,
+      "unique_ids": 275,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "failed_ids": [],
+      "error_ids": [],
+      "skipped_ids": []
+    },
+    "name-binding-red.xml": {
+      "path": "/home/otto/.hermes/cache/scratch/npc-planning-observation/name-binding-red.xml",
+      "sha256": "56e04787b811d69eb18ef58f1fc4b3afba4271689212a03612a9edebe340555e",
+      "testcases": 92,
+      "unique_ids": 92,
+      "failures": 1,
+      "errors": 0,
+      "skips": 0,
+      "failed_ids": [
+        "tests.test_npc_planning_observation::test_selected_name_change_cannot_rebind_old_prompt_to_new_identity"
+      ],
+      "error_ids": [],
+      "skipped_ids": []
+    },
+    "parent-observer-red.xml": {
+      "path": "/home/otto/.hermes/cache/scratch/npc-planning-observation/parent-observer-red.xml",
+      "sha256": "2563eb53f2881bccaa84f1f441de9599cc8ba8566a3222e6bd5dfaa7594b31d5",
+      "testcases": 1,
+      "unique_ids": 1,
+      "failures": 1,
+      "errors": 0,
+      "skips": 0,
+      "failed_ids": [
+        ".hermes.cache.scratch.npc-planning-observation.test_actual_observer::test_actual_client_produces_current_next_prompt_observation"
+      ],
+      "error_ids": [],
+      "skipped_ids": []
+    },
+    "slice1-green.xml": {
+      "path": "/home/otto/.hermes/cache/scratch/npc-planning-observation/slice1-green.xml",
+      "sha256": "67f23d6e5ea8e1e9a5985b6fdbfac4c2c5dcbd099dd4b876706bbb333304e199",
+      "testcases": 29,
+      "unique_ids": 29,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "failed_ids": [],
+      "error_ids": [],
+      "skipped_ids": []
+    },
+    "slice1-red.xml": {
+      "path": "/home/otto/.hermes/cache/scratch/npc-planning-observation/slice1-red.xml",
+      "sha256": "d50ca1c459eddc4e5a3458c3dd4b61a24bf13efae9f60295d9eeb0c896303015",
+      "testcases": 2,
+      "unique_ids": 2,
+      "failures": 2,
+      "errors": 0,
+      "skips": 0,
+      "failed_ids": [
+        "tests.test_npc_planning_observation::test_current_next_exact_receipt_without_effects",
+        "tests.test_npc_planning_observation::test_current_menu_preserves_empty_label_indices_without_effects"
+      ],
+      "error_ids": [],
+      "skipped_ids": []
+    },
+    "slice2-green.xml": {
+      "path": "/home/otto/.hermes/cache/scratch/npc-planning-observation/slice2-green.xml",
+      "sha256": "b95fd012f4e4200926004e86edc7c30e4f35aa43f3d26103dab0a6b7d5576da8",
+      "testcases": 106,
+      "unique_ids": 106,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "failed_ids": [],
+      "error_ids": [],
+      "skipped_ids": []
+    },
+    "slice2-red.xml": {
+      "path": "/home/otto/.hermes/cache/scratch/npc-planning-observation/slice2-red.xml",
+      "sha256": "51c0b4e82371c26bb213eb633225fb6a45e370979aa64517dd1c50587573ce66",
+      "testcases": 14,
+      "unique_ids": 14,
+      "failures": 11,
+      "errors": 0,
+      "skips": 0,
+      "failed_ids": [
+        "tests.test_npc_planning_observation::test_no_receipt_for_nonplanning_ui[None]",
+        "tests.test_npc_planning_observation::test_no_receipt_for_nonplanning_ui[180]",
+        "tests.test_npc_planning_observation::test_no_receipt_for_nonplanning_ui[182]",
+        "tests.test_npc_planning_observation::test_no_receipt_for_nonplanning_ui[468]",
+        "tests.test_npc_planning_observation::test_no_receipt_for_nonplanning_ui[322]",
+        "tests.test_npc_planning_observation::test_no_receipt_for_nonplanning_ui[196]",
+        "tests.test_npc_planning_observation::test_consumed_or_cancel_uncertain_prompt_is_not_ready[action0]",
+        "tests.test_npc_planning_observation::test_consumed_or_cancel_uncertain_prompt_is_not_ready[action1]",
+        "tests.test_npc_planning_observation::test_consumed_or_cancel_uncertain_prompt_is_not_ready[action2]",
+        "tests.test_npc_planning_observation::test_failed_or_uncertain_controller_never_publishes_ready[failed]",
+        "tests.test_npc_planning_observation::test_failed_or_uncertain_controller_never_publishes_ready[cancel_uncertain]"
+      ],
+      "error_ids": [],
+      "skipped_ids": []
+    },
+    "slice3-green.xml": {
+      "path": "/home/otto/.hermes/cache/scratch/npc-planning-observation/slice3-green.xml",
+      "sha256": "1c663dc201da35f4d51f551764119e8904e73f55e196de5418f112cd1e92e7bd",
+      "testcases": 256,
+      "unique_ids": 256,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "failed_ids": [],
+      "error_ids": [],
+      "skipped_ids": []
+    },
+    "slice3-red.xml": {
+      "path": "/home/otto/.hermes/cache/scratch/npc-planning-observation/slice3-red.xml",
+      "sha256": "6c834c2af86f25a37fa06cbdb2ad35a7037e7d19c56f27b6f88cd87188c6e82e",
+      "testcases": 47,
+      "unique_ids": 47,
+      "failures": 21,
+      "errors": 0,
+      "skips": 0,
+      "failed_ids": [
+        "tests.test_npc_planning_observation::test_identity_must_match_exact_current_received_self[character]",
+        "tests.test_npc_planning_observation::test_identity_must_match_exact_current_received_self[session_epoch]",
+        "tests.test_npc_planning_observation::test_pure_pose_and_pending_guards_never_send_recovery[standing-unknown]",
+        "tests.test_npc_planning_observation::test_pure_pose_and_pending_guards_never_send_recovery[sitting]",
+        "tests.test_npc_planning_observation::test_pure_pose_and_pending_guards_never_send_recovery[stand-pending]",
+        "tests.test_npc_planning_observation::test_pure_pose_and_pending_guards_never_send_recovery[rest-pending]",
+        "tests.test_npc_planning_observation::test_pure_pose_and_pending_guards_never_send_recovery[movement-pending]",
+        "tests.test_npc_planning_observation::test_fresh_transport_and_selected_state_denies_unavailable[running]",
+        "tests.test_npc_planning_observation::test_fresh_transport_and_selected_state_denies_unavailable[connected_map]",
+        "tests.test_npc_planning_observation::test_fresh_transport_and_selected_state_denies_unavailable[sock]",
+        "tests.test_npc_planning_observation::test_fresh_transport_and_selected_state_denies_unavailable[rx_thread]",
+        "tests.test_npc_planning_observation::test_fresh_transport_and_selected_state_denies_unavailable[rx_error]",
+        "tests.test_npc_planning_observation::test_fresh_transport_and_selected_state_denies_unavailable[dispatch_errors]",
+        "tests.test_npc_planning_observation::test_fresh_transport_and_selected_state_denies_unavailable[closed]",
+        "tests.test_npc_planning_observation::test_fresh_transport_and_selected_state_denies_unavailable[keepalive]",
+        "tests.test_npc_planning_observation::test_fresh_transport_and_selected_state_denies_unavailable[gap]",
+        "tests.test_npc_planning_observation::test_fresh_transport_and_selected_state_denies_unavailable[class_fresh]",
+        "tests.test_npc_planning_observation::test_fresh_transport_and_selected_state_denies_unavailable[vitals]",
+        "tests.test_npc_planning_observation::test_fresh_transport_and_selected_state_denies_unavailable[selection_epoch]",
+        "tests.test_npc_planning_observation::test_fresh_transport_and_selected_state_denies_unavailable[name]",
+        "tests.test_npc_planning_observation::test_fresh_received_actor_session_boundaries_deny_stale_prompt[motion]"
+      ],
+      "error_ids": [],
+      "skipped_ids": []
+    },
+    "slice4-green.xml": {
+      "path": "/home/otto/.hermes/cache/scratch/npc-planning-observation/slice4-green.xml",
+      "sha256": "6977e2704c00c184df37f8f622a7157db911e9cf39f5ecb612b1c5828efe4b1c",
+      "testcases": 343,
+      "unique_ids": 343,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "failed_ids": [],
+      "error_ids": [],
+      "skipped_ids": []
+    },
+    "slice4-red.xml": {
+      "path": "/home/otto/.hermes/cache/scratch/npc-planning-observation/slice4-red.xml",
+      "sha256": "e8c0755bd3ce08bb799f5cd3d65270efa005593bc4f92584fe7b8707d35a851f",
+      "testcases": 84,
+      "unique_ids": 84,
+      "failures": 15,
+      "errors": 0,
+      "skips": 0,
+      "failed_ids": [
+        "tests.test_npc_planning_observation::test_invalid_clock_never_reaches_unsafe_controller_math[10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000]",
+        "tests.test_npc_planning_observation::test_invalid_clock_never_reaches_unsafe_controller_math[-10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000]",
+        "tests.test_npc_planning_observation::test_existing_expiry_must_be_valid_and_strictly_future[True-deadline]",
+        "tests.test_npc_planning_observation::test_existing_expiry_must_be_valid_and_strictly_future[True-absolute_deadline]",
+        "tests.test_npc_planning_observation::test_existing_expiry_must_be_valid_and_strictly_future[nan-deadline]",
+        "tests.test_npc_planning_observation::test_existing_expiry_must_be_valid_and_strictly_future[nan-absolute_deadline]",
+        "tests.test_npc_planning_observation::test_existing_expiry_must_be_valid_and_strictly_future[inf-deadline]",
+        "tests.test_npc_planning_observation::test_existing_expiry_must_be_valid_and_strictly_future[inf-absolute_deadline]",
+        "tests.test_npc_planning_observation::test_existing_expiry_must_be_valid_and_strictly_future[10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000-deadline]",
+        "tests.test_npc_planning_observation::test_existing_expiry_must_be_valid_and_strictly_future[10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000-absolute_deadline]",
+        "tests.test_npc_planning_observation::test_clock_sample_is_once_and_used_by_consumption_and_receipt",
+        "tests.test_npc_planning_observation::test_ready_receipt_needs_remaining_request_budget_and_exact_valid_binding[requests]",
+        "tests.test_npc_planning_observation::test_ready_receipt_needs_remaining_request_budget_and_exact_valid_binding[map-name]",
+        "tests.test_npc_planning_observation::test_ready_receipt_needs_remaining_request_budget_and_exact_valid_binding[indices]",
+        "tests.test_npc_planning_observation::test_ready_receipt_needs_remaining_request_budget_and_exact_valid_binding[open-sequence]"
+      ],
+      "error_ids": [],
+      "skipped_ids": []
+    },
+    "slice5-integration-first.xml": {
+      "path": "/home/otto/.hermes/cache/scratch/npc-planning-observation/slice5-integration-first.xml",
+      "sha256": "485e7d50efcc948b052f75d65f08a99b0407d1a16506ab60448cb6339f0582d4",
+      "testcases": 105,
+      "unique_ids": 105,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "failed_ids": [],
+      "error_ids": [],
+      "skipped_ids": []
+    }
+  },
+  "limitations": [
+    "Literal .gat/cached-map aliases fail closed: existing controller stores the cache-derived bare key while frozen NpcObservation binding accepts only [A-Za-z0-9_]{1,32}; no normalization or domain/controller change was authorized. Deployment supporting that native-map route needs a separately reviewed binding decision.",
+    "API only. Actual PlannedBrain still supports IDLE/REST and AgentHost does not bind or advertise this NPC seam.",
+    "Independent completed-snapshot review and parent fullRoot gates remain required; live/native operations remain unauthorized.",
+    "Full goals remain OPEN."
+  ]
+}

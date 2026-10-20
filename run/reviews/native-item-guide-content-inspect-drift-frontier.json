@@ -1,0 +1,19 @@
+{
+  "status": "CONTENT_INSPECT_DRIFT_VOLATILE_HEALTH_LOG_FRONTIER",
+  "instrumented_evidence": {
+    "publish_content_entered": true,
+    "request_scope": "owned-stopped-map-item-guide-v1",
+    "denial": "content_inspect_drift",
+    "comparison": "rows == self.rows over raw docker inspect output",
+    "volatile_field": "State.Health.Log (mariadb healthcheck appends timestamped entries every 3s)",
+    "earlier_checkpoints": "admission, pre/post map stop, and fresh_content_checkpoint all passed; approved_runtime_drift held (fingerprints only compare stable content digests)"
+  },
+  "publication": "pending, zero writes (denial precedes first write)",
+  "world_state": {
+    "map": "stopped by this cycle (normal_finish substitution verified live: normal_finish=true, sql_errors=0)",
+    "login/char/mariadb": "running",
+    "fixtures": "offline"
+  },
+  "fix_scope": "Normalize the row equality in publish_content by stripping only inherently volatile docker fields (State.Health.Log history) from both sides; all identity/state/mount fields remain strictly compared. TDD: E2E fixture where the health log advances between capture and publish must go RED on current bytes and GREEN after the fix; strict comparisons otherwise unchanged.",
+  "native_authority": "UNCHANGED_REVOKED"
+}

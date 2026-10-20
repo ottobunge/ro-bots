@@ -1,0 +1,208 @@
+{
+  "scope": "Read-only dashboard-to-population caller frontier for criterion 3 / milestone 5. No source, tests, wiki, private/authority data, Git, dependencies, services, HTTP, SQL or native execution changed.",
+  "finding": "The real Rust generate path exists. A real AgentHost rejects it at the host-bound WorldState guard because no host-owned population reconciler is wired. Standalone success replaces only an in-memory aggregate, not accounts, characters or workers.",
+  "first_blocking_runtime_hop": {
+    "location": "src/robots/app/world_state.py:285-287 -> 337-340",
+    "reason": "_apply_regenerate_roster immediately calls _require_unbound. AgentHost._build_agent binds memory at src/robots/app/agent_runtime.py:1092-1099; WorldState.bind_memory sets _host_bound at src/robots/app/world_state.py:200-208. The flag is not cleared by normal disconnect.",
+    "missing_caller": "src/robots/adapters/worldfeed_server.py:111-124 only routes force_action to the injected dispatcher; generate falls into WorldState. AgentHost.start_worldfeed at src/robots/app/agent_runtime.py:1217-1225 injects only HostChatCommands, constructed at 1028-1032.",
+    "default_reachable_qualification": "For a host with at least one manifest-matched ScheduledAgent. A host with no matched entries may remain unbound and regenerate the inspector while scheduling nobody; that is not population execution."
+  },
+  "trace": [
+    {
+      "hop": "UI -> Axum -> real Rust feed",
+      "status": "implemented / wired / default live",
+      "sources": [
+        "dashboard/crates/dashboard-app/src/render.rs:74-105",
+        "dashboard/crates/dashboard-app/src/main.rs:109-114",
+        "dashboard/crates/dashboard-app/src/main.rs:202-214,239-253",
+        "dashboard/crates/world-feed/src/live.rs:439-445"
+      ],
+      "detail": "Generate submits RegenerateRoster; absent WORLDFEED_BACKEND selects live, not mock fallback."
+    },
+    {
+      "hop": "Rust JSON -> Python default factory/routes",
+      "status": "implemented / wired",
+      "sources": [
+        "dashboard/crates/world-feed/src/live.rs:290-332,338-349",
+        "src/robots/adapters/worldfeed_server.py:191-216,111-124"
+      ],
+      "detail": "groups/solos/friends bounds are translated and POSTed to /commands. Supported min=2 parameters reach Python; min=1 is rejected rather than silently changed. Rust reports execution not verified; WorldState only."
+    },
+    {
+      "hop": "generation -> roster/private aggregate",
+      "status": "implemented for unbound standalone only / rejected on ordinary host",
+      "sources": [
+        "src/robots/app/world_state.py:285-340",
+        "src/robots/society/society.py:209-257",
+        "src/robots/society/population_limits.py:7-58"
+      ],
+      "detail": "Pure candidate generation and two binding guards precede aggregate commit. The unbound success builds offline runtime rows and StubSummarizer memories; it does not provision."
+    },
+    {
+      "hop": "roster -> persistence and exact account binding",
+      "status": "missing generated-population persistence/caller; existing read-only manifest and optional journal adapters",
+      "sources": [
+        "src/robots/__main__.py:99-114",
+        "src/robots/app/agent_runtime.py:267-304,1006-1044,1126-1147"
+      ],
+      "detail": "CLI regenerates a seed/n_groups roster at construction; load_manifest reads externally supplied persona/account/character rows. _populate_agents builds only manifest/roster intersection once; missing rows merely warn at 1058-1061. No generation handler persists a roster/spec or manifest; optional journals persist experiences, not the desired population."
+    },
+    {
+      "hop": "scheduled host reconciliation -> actual worker",
+      "status": "existing fixed-agent lifecycle wired / population reconciliation missing",
+      "sources": [
+        "src/robots/app/agent_runtime.py:1034-1044,1092-1124,1150-1178,378-419"
+      ],
+      "detail": "step iterates existing self.agents and self.roster schedules; it never consumes changed WorldState.roster or adds generated entries. Existing connect constructs the client and starts the owning worker."
+    },
+    {
+      "hop": "ordinary account/character provisioning seam",
+      "status": "missing default executor; existing-character login only; fixture renderers not runtime provisioning",
+      "sources": [
+        "src/robots/app/agent_runtime.py:583-596",
+        "spikes/003-clientless-limbs/client.py:61-64,368-378,423-428",
+        "src/robots/adapters/world_test_fixture.py:1-8,55-69,72-110",
+        "spikes/003-clientless-limbs/scripts/seed_fixture.py:16-22,48-61,65-79"
+      ],
+      "detail": "Host supplies an existing manifest account/character; BotClient defaults create_char=False and _create_char explicitly raises NotImplementedError. world_test_fixture renders insert-only SQL for exactly TWO accounts, not a one-agent provisioner or SQL executor. Legacy fixture validation requires InnoDB and cannot be repurposed as a transactional MyISAM provisioner."
+    }
+  ],
+  "related_control_routes": [
+    {
+      "surface": "Persona and schedule edits",
+      "status": "aggregate-only on current live host",
+      "sources": [
+        "src/robots/app/world_state.py:342-372,386-392",
+        "src/robots/app/roster_edit.py:17-35",
+        "src/robots/app/agent_runtime.py:1006,1097-1099,1150-1169",
+        "dashboard/crates/world-feed/src/live.rs:350-358"
+      ],
+      "detail": "Edits replace immutable roster/persona/group objects in WorldState; the host retains its previous roster and ScheduledAgent persona. Python force_schedule is a command body type, not a distinct HTTP route; Rust has no ForceSchedule variant and rejects schedule-bearing EditPersona. Do not call an emitted edit/schedule feed line applied runtime control."
+    },
+    {
+      "surface": "Forced public chat",
+      "status": "Python host execution seam exists; Rust/browser path refuses",
+      "sources": [
+        "src/robots/app/host_commands.py:51-63,113-146,161-193",
+        "src/robots/app/agent_runtime.py:641-649,706-745",
+        "src/robots/adapters/worldfeed_server.py:113-117,218-225",
+        "dashboard/crates/world-feed/src/live.rs:360-362",
+        "dashboard/crates/world-feed/src/lib.rs:270-277"
+      ],
+      "detail": "Python accepts only action=chat with command_id and args, queues to the owning tick, calls client.say, exposes retained queued/dispatched/uncertain status; dispatched is not receipt or server ACK. Rust ForceAction uses arg, lacks command_id, and is rejected before HTTP. Demo force_action only appends a note."
+    },
+    {
+      "surface": "Memory/character inspection",
+      "status": "GET detail wired; memory bound to live host log; character population absent",
+      "sources": [
+        "src/robots/adapters/worldfeed_server.py:80-100,202-204",
+        "src/robots/app/world_state.py:80-89,200-208,257",
+        "src/robots/app/agent_runtime.py:955-971",
+        "dashboard/crates/world-feed/src/wire.rs:95-132"
+      ],
+      "detail": "GET /feed/agent/{agent_id} includes rendered memory and characters. _publish never supplies characters and WorldState preserves an initially empty tuple. No separate character query/provision route exists in this factory. Rust translates supplied strings but cannot invent native levels/builds; schedule and goals absent from the contract remain unavailable."
+    }
+  ],
+  "reuse": [
+    "Population resource preflight: src/robots/society/population_limits.py:7-58; use min=2 even for solo-only requests, reject booleans and worst-case overflow before RNG/effects.",
+    "Pure seeded builder: src/robots/society/society.py:209-257. First solo persona is deterministically Doramir-01 by the existing sequence/name code at 230-242; this is a persona identifier, not account ownership.",
+    "Preserve host-bound admission/final-commit exclusion and release aggregate locks before MemoryLog callbacks: src/robots/app/world_state.py:109-111,152-165,285-340; tests/test_population_binding_race.py:30-84.",
+    "Reuse ManifestEntry, actual _build_agent/_new_memory, ScheduledAgent.connect/disconnect and retained cleanup ownership; do not introduce an alternate bot scheduler.",
+    "Reuse truthful feed provenance at dashboard/crates/world-feed/src/live.rs:321-326 and wire.rs:143-151. HostChatCommands is a chat-specific dispatcher, not a population/provisioning authority."
+  ],
+  "next_tdd_slice": {
+    "name": "P0: host-owned, single-solo reconfiguration against an existing exact manifest binding (not new-account generation acceptance)",
+    "boundary": "Add a dedicated population admission/reconciliation caller to the actual AgentHost WorldFeed assembly. Bound the first implementation to an offline, producer-joined host whose sole generated persona already matches exactly one configured account/character binding. Keep unknown identities, growth, online replacement, uncertain cleanup and standalone bound-regeneration fail closed. No automatic seeding, migrations or blanket removal of _require_unbound.",
+    "example_dashboard_body": {
+      "type": "regenerate_roster",
+      "seed": 17,
+      "friend_groups": 0,
+      "solos": 1,
+      "friends_per_group_min": 2,
+      "friends_per_group_max": 2
+    },
+    "red_green_acceptance": [
+      "Through the actual host-built create_app, submit the translated generate command with exactly one preprovided synthetic manifest binding. Today the host-bound guard rejects; that rejection is the RED frontier for an authorized reconciler, not a test failure to hide.",
+      "Admission must queue a candidate without detaching the inspector or performing native/provider/SQL effects. Drain/commit on the serialized host scheduler under its lifecycle ownership, rechecking offline/join/identity conditions. An HTTP admission receipt must remain explicitly pending, not roster-applied.",
+      "On commit, WorldState.roster, AgentHost.roster and the retained ScheduledAgent.persona describe the same candidate. Preserve the same private Memory/MemoryLog/journal and exact ManifestEntry; reuse the existing worker, not an inspector-only replacement. No character/account creation is claimed.",
+      "Drive the candidate schedule open/closed through real AgentHost.step with only the client/provider boundaries replaced: exactly the owning ScheduledAgent connects/disconnects; GET detail reflects its real publish and same private memory. Existing unrelated memory files stay untouched.",
+      "Unknown candidate binding, resource overflow, an online or unjoined worker, concurrent binding/stop and candidate failure must produce no committed roster/feed/memory/worker change. Preserve origin exceptions and existing host-bound standalone regressions.",
+      "Use the actual default assembly with run_worldfeed captured at uvicorn.Server, as in tests/test_host_chat_commands.py:26-57; patch external chat discovery/client/provider effects only. Tests remain offline contract evidence, never native proof."
+    ],
+    "finite_file_ownership_after_freeze_release": {
+      "existing": [
+        "src/robots/adapters/worldfeed_server.py",
+        "src/robots/app/agent_runtime.py",
+        "src/robots/app/world_state.py"
+      ],
+      "new": [
+        "src/robots/app/population_reconciliation.py",
+        "tests/test_dashboard_population_vertical.py"
+      ],
+      "read_only_dependencies": [
+        "src/robots/app/host_commands.py",
+        "src/robots/app/roster_edit.py",
+        "src/robots/society/society.py",
+        "src/robots/society/population_limits.py",
+        "tests/test_population_binding_race.py",
+        "tests/test_population_config.py",
+        "dashboard/crates/world-feed/src/live.rs"
+      ],
+      "excluded": [
+        "Native client/protocol/planner/provider sources",
+        "Maintenance recovery sources and scratch",
+        "SQL/fixture/provisioning adapters",
+        "Rust/browser feature expansion",
+        "Population-spec persistence/journal migration",
+        "Wiki/authority/private runtime artifacts"
+      ]
+    },
+    "not_closed": "This slice closes the host caller/roster-to-existing-worker gap only. It does not create new accounts/characters, increase population, persist a desired roster across restart, enable Rust forced chat, or accept criterion 3/milestone 5."
+  },
+  "one_later_native_vertical_trace": {
+    "trace": "Use the default live Rust adapter and real Python AgentHost API to request the same bounded one-solo shape, with one preprovisioned exact owned identity. Observe pending then committed roster, the same host-owned memory, actual scheduled native login/presence, ordinary public chat if separately wired, schedule close/reconnect and fresh offline cleanup. Real native inspection must show the selected character rather than an empty synthetic characters list.",
+    "dependency": "Requires freeze release, maintenance/test-world readiness, exact world/volume/all-users ownership and fresh exact account/character/no-human/offline evidence. No such facts were read or established here.",
+    "fresh_account_frontier": "Accepting newly generated accounts/characters additionally requires an explicit bounded provisioning executor and population-spec/binding persistence, neither wired today. At MyISAM, record partial insert outcomes and read back exact rows; no rollback/exactly-once/automatic retry claims. The two-account SQL renderer is not permission or a one-account executor. Never use ranged seeders."
+  },
+  "parallelism": {
+    "can_start_independently_after_freeze": "P0 offline caller TDD and API/host source review need no healthy server, engine, SQL or provider. They must keep the native-loop owner and maintenance worker sources untouched. Rust chat/status/schema work can be separately owned later, but is not a prerequisite for generate translation and is not included here.",
+    "depends_on_test_world_readiness": "Any native worker connection or real provisioning/character/presence/readback acceptance. Reserve exact owned identities and volume before effects; maintenance inventory is not generation authority."
+  },
+  "evidence_limits": [
+    "Source and existing test/report inspection only; no tests or imports executed, no HTTP/native/SQL calls.",
+    "tests/test_population_config.py:18-36 uses unbound create_app; 62-78 proves bound refusal. tests/test_agent_host.py:388-451 manually replaces host.roster rather than exercising dashboard edits. tests/test_host_chat_commands.py:1,70-85 ends at fake say.",
+    "Historical reports inspected: run/reviews/population-binding-parent-verification.json:10-14 excludes account/native reconciliation; run/reviews/host-chat-final-disposition.json:5-10 excludes Rust/browser/native delivery. Historical counts were not rerun.",
+    "Current source digests identify inspected bytes, not approval, exclusive ownership or a qualified native freeze."
+  ],
+  "goal_sources": [
+    "wiki/guides/goals-ledger.md:2184-2186",
+    "wiki/guides/playable-world-acceptance.md:39"
+  ],
+  "source_digest_verification": {"files_checked": 24, "mismatches_after_report_write": [], "meaning": "Inspected source bytes unchanged across artifact creation; not freeze approval or native proof."},
+  "source_sha256": {
+    "dashboard/crates/dashboard-app/src/main.rs": "0253992f028484ae45c29e708089b955f80f7b5dd69815779a1d0c6b5c47fa8d",
+    "dashboard/crates/dashboard-app/src/render.rs": "e02427c8942c101daa5165860b32a2eb4ac901eb3b959ca6ba2bf60aef6eff22",
+    "dashboard/crates/world-feed/src/lib.rs": "a1008cb5200844e64ccb59edfb8baf2f324e647a43e597a9619a6c09d255bdee",
+    "dashboard/crates/world-feed/src/live.rs": "7ea29f93a8c9534fc4757221dfafde81f7d6c128343a58d11c16b8cef2f0f9b8",
+    "dashboard/crates/world-feed/src/wire.rs": "cf54289322d96a182ee10061e35489ebeec1b871b0fe44c3cd6aeb014c328f3d",
+    "run/reviews/host-chat-final-disposition.json": "18bd2bb87f06e4312adbd9443672ed29c5b5d320dc0cadfe84adc4dfa7cb902c",
+    "run/reviews/population-binding-parent-verification.json": "38fee53e321a81f5bd98b1045302896a445abadd768dcd2c7aa9f8527ec2302f",
+    "spikes/003-clientless-limbs/client.py": "2f57a0adc0b43a20235835290499ca0043966c5def208642598afb0dc49807fd",
+    "spikes/003-clientless-limbs/scripts/seed_fixture.py": "03de2f4f659c8df0a3c5e9c41d74c3cb2493176f420aead8a7022f5631ecdb0e",
+    "src/robots/__main__.py": "a1396e7ed4f3480f1534d1dc156ca277a479dae899d8ef91424e378537a2da08",
+    "src/robots/adapters/world_test_fixture.py": "b5e5eebc3ae1d74ce52fb71be7345e3a95c161c3f78534c28db5b27df8126514",
+    "src/robots/adapters/worldfeed_server.py": "456b110a37b32af9229af49be9587c7316ff47b24fe52f729a51cb42172f5b49",
+    "src/robots/app/agent_runtime.py": "5d266e7a0bb290855f56be5bb688172fa4ed0b13d005c246289c83185cb7e744",
+    "src/robots/app/host_commands.py": "023af553c24b7ec2fc5d6d5e21d361f1d541b6d499f06d18a0039df7f3a1407b",
+    "src/robots/app/roster_edit.py": "202030a31b34b9e0c9d79f7d0827f4c00229f4e71c22c47dc74cbda57abd1e13",
+    "src/robots/app/world_state.py": "61f4daebc1383fd9ee8b9bda27111ed5b1b94c7ccf43099c0d892b7799ce9d0d",
+    "src/robots/society/population_limits.py": "e73bc0f8d7e6fa3bf360db70e1ee6019b51370042a4f0a3683b78c757e2b29ca",
+    "src/robots/society/society.py": "fa7a1c6629b9836de6fca90770e50539fd83bffe98abc51cf68534b92af3db53",
+    "tests/test_agent_host.py": "fed470a1158fa9b5ec09ad12895af4ced33bb679d31ca471567eed1c6a94929b",
+    "tests/test_host_chat_commands.py": "c92969013f656ad8e7fa103bb8662a9acfe6ab7be12dc896b86db26f1785e58c",
+    "tests/test_population_binding_race.py": "57129ac7a653e38161b120a8fdb329b6261b6f97739cd3603f37e6c36c11b7e0",
+    "tests/test_population_config.py": "cecd227079d277bde7bdceab0b33c2eb1c9f3c13aecfaa85329d1d905766268d",
+    "wiki/guides/goals-ledger.md": "14ceb05e19a28568ff607245e5b066fbc574474a65420794a747fcb6f33dd73a",
+    "wiki/guides/playable-world-acceptance.md": "dcc57ad07c58df1a8d1f3998f04b838e4ff3fbdc01e10273b4eb1c2ff265926a"
+  }
+}

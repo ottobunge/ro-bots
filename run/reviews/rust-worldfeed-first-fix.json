@@ -1,0 +1,465 @@
+{
+  "schema_version": 1,
+  "cycle": "first bounded Rust corrective cycle; third fixer",
+  "completed_at": "2026-10-05T12:00:25.356192+00:00",
+  "authority": "run/reviews/rust-worldfeed-review.json",
+  "repository": "/home/otto/dev/ro-bots",
+  "rust_gates_passed": true,
+  "overall_review_approved": false,
+  "independent_parent_rereview_required": true,
+  "overall_RWF_POP_acceptance": false,
+  "source_ownership": "dashboard/** only; the explicitly requested run/reviews JSON is a report, not a production-source edit",
+  "files_created": [
+    "dashboard/crates/world-feed/tests/population_bounds.rs",
+    "run/reviews/rust-worldfeed-first-fix.json"
+  ],
+  "source_files_modified": [
+    "dashboard/README.md",
+    "dashboard/crates/dashboard-app/src/render.rs",
+    "dashboard/crates/dashboard-app/src/tests.rs",
+    "dashboard/crates/world-feed/src/lib.rs",
+    "dashboard/crates/world-feed/src/live.rs",
+    "dashboard/crates/world-feed/src/mock/mod.rs",
+    "dashboard/crates/world-feed/src/mock/tests.rs",
+    "dashboard/crates/world-feed/tests/http_live.rs"
+  ],
+  "finding_dispositions": {
+    "RWF-HTML-001": {
+      "status": "bounded fix implemented; pending fresh parent review",
+      "evidence": "An accepted editable malicious name is sent through the real inspector axum HTTP router; exact HTML response failed the escaped-title assertion before the shell fix and passes afterward. No browser execution claim.",
+      "fix": "Escape shared HTML title; escape attitude labels and guild-goal body text; JSON-quote inline-JS persona ID and escape < plus Unicode line separators; replace dynamic chat innerHTML with textContent.",
+      "limits": "Title uses an explicitly selected mock feed and real HTTP router/response, not another Python integration run. Other contexts use direct actual renderer output; browser execution was not exercised."
+    },
+    "RWF-POP-BOUND-001": {
+      "status": "PARTIAL: Rust front door/mock builder bounded; upstream blocker remains",
+      "bounds": {
+        "max_agents": 4096,
+        "max_friend_groups": 4096,
+        "max_solos": 4096,
+        "max_friends_per_group": 16,
+        "min_friends_per_group": 1,
+        "live_python_min_friends_per_group": 2,
+        "max_population_formula": "checked(groups * friends_max + solos) <= 4096"
+      },
+      "compatibility": "16 is a Rust resource ceiling, NOT an RO party-size rule; a 7-friend group plus 3 solos generates exactly 10 agents. Max-size all-solo and 16-friend boundary payloads validate offline.",
+      "evidence": "The million-group case is validation-only. Oversized and u32 extreme commands reject with Invalid before reqwest send; an owned loopback request counter remains zero. The public generator and private builder validate before RNG, roster Vecs, generation loops and channel creation. Invalid mock regeneration leaves the prior roster unchanged.",
+      "api_change": "MockWorldFeed::with_shape now returns Result<Self, CommandError>; default new(seed) remains infallible with a fixed valid shape. Existing caller test updated only to unwrap the successful result.",
+      "exact_remaining_blocker": "Corresponding Python WorldState/SocietyRoster resource bounds must be integrated after the frozen-source/lifecycle/population reviews, at every upstream generation entrypoint before construction. Direct upstream callers bypass Rust; Rust timeouts/body caps cannot cancel unbounded Python generation. Python was not modified; no overall RWF-POP or end-to-end resource acceptance."
+    },
+    "RWF-OVERFLOW-001": {
+      "status": "bounded fix implemented; pending fresh parent review",
+      "evidence": "Legal JSON u32 extrema reproduced unchecked-add panic under catch_unwind in RED. Checked group+solo addition and checked maximum-population multiplication/addition now reject with Invalid. Population regressions also actually passed in optimized release, not an inference about wrapping."
+    },
+    "RWF-GAP-001": {
+      "status": "bounded fix implemented; pending fresh parent review",
+      "fix": "Retain independent adapter-lifetime replay_gap and possible_restart booleans, separately from reconnect-cleared transient events_error. The existing health events_error output combines both retained facts and any transient error, without changing the public DTO schema.",
+      "evidence": "Owned SSE sends 0,3, HTTP503, comment-only success, empty success, replayed0, next4 and a held-open comment stream. Gap/restart facts survive all, the transient503 disappears, cursor remains4, and connected health remains stale. RED caught gap provenance overwritten by a transient HTTP503 before reconnect; GREEN exercised the complete sequence.",
+      "reset_frontier": "Only already-supported intentional construction/restart of a fresh adapter clears integrity flags and cursor. No new reconciliation API, epoch, durable replay or automatic restart recovery is invented."
+    }
+  },
+  "tdd": {
+    "method": "Vertical RED -> minimal production fix -> GREEN for each slice before beginning the next. Six named regressions; no production fix before its observed behavioral failure. The contextual audit test contains multiple sink assertions; its RED stopped at the attitude assertion.",
+    "slices": [
+      {
+        "finding": "RWF-HTML-001",
+        "red": {
+          "command": [
+            "nix",
+            "develop",
+            "-c",
+            "cargo",
+            "test",
+            "--manifest-path",
+            "dashboard/Cargo.toml",
+            "inspector_http_escapes_editable_title"
+          ],
+          "exit_code": 101,
+          "at": "2026-10-05T13:47:37.127082+02:00",
+          "source_sha256": {
+            "dashboard/crates/dashboard-app/src/render.rs": "002a4a9309fa2f34a6e645ffcea7de803b0f746daa01ea92999ad16472980425",
+            "dashboard/crates/dashboard-app/src/tests.rs": "d0672919ac52a860528f0bb46e17a4b2292370e70bcb4a459da8c32cbecf2b8b"
+          },
+          "log_sha256": "e153b35e089ea9d8774b966155c210e50ab026fae258a6dea4a2e6cea519471c",
+          "log_path": "/home/otto/.hermes/cache/scratch/rwf-first-fix/html-title-red.log",
+          "actual_output": "warning: Git tree '/home/otto/dev/ro-bots' is dirty\nro-bots dev shell — try: task --list\n   Compiling dashboard-app v0.1.0 (/home/otto/dev/ro-bots/dashboard/crates/dashboard-app)\n    Finished `test` profile [unoptimized + debuginfo] target(s) in 3.48s\n     Running unittests src/main.rs (dashboard/target/debug/deps/dashboard-f62f8adff113ec43)\n\nrunning 1 test\ntest tests::inspector_http_escapes_editable_title ... FAILED\n\nfailures:\n\n---- tests::inspector_http_escapes_editable_title stdout ----\n\nthread 'tests::inspector_http_escapes_editable_title' (2777824) panicked at crates/dashboard-app/src/tests.rs:154:5:\nassertion failed: html.contains(&format!(\"<title>ro-bots · {}</title>\",\n            crate::render::esc(name)))\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n\n\nfailures:\n    tests::inspector_http_escapes_editable_title\n\ntest result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 11 filtered out; finished in 0.00s\n\nerror: test failed, to rerun pass `-p dashboard-app --bin dashboard`\n"
+        },
+        "green": {
+          "command": [
+            "nix",
+            "develop",
+            "-c",
+            "cargo",
+            "test",
+            "--manifest-path",
+            "dashboard/Cargo.toml",
+            "inspector_http_escapes_editable_title"
+          ],
+          "exit_code": 0,
+          "at": "2026-10-05T13:48:00.317604+02:00",
+          "source_sha256": {
+            "dashboard/crates/dashboard-app/src/render.rs": "9932da5ab14145ff631e6ee7df5df6c0726ef7dd4762b7b90b8c047e90b31d09",
+            "dashboard/crates/dashboard-app/src/tests.rs": "d0672919ac52a860528f0bb46e17a4b2292370e70bcb4a459da8c32cbecf2b8b"
+          },
+          "log_sha256": "0fe5c2c9e7f8d9847331f0459ad7636d79521358b7a0c47b39c3bfca206bebd3",
+          "log_path": "/home/otto/.hermes/cache/scratch/rwf-first-fix/html-title-green.log",
+          "actual_output": "warning: Git tree '/home/otto/dev/ro-bots' is dirty\nro-bots dev shell — try: task --list\n   Compiling dashboard-app v0.1.0 (/home/otto/dev/ro-bots/dashboard/crates/dashboard-app)\n    Finished `test` profile [unoptimized + debuginfo] target(s) in 3.72s\n     Running unittests src/main.rs (dashboard/target/debug/deps/dashboard-f62f8adff113ec43)\n\nrunning 1 test\ntest tests::inspector_http_escapes_editable_title ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 11 filtered out; finished in 0.00s\n\n     Running unittests src/lib.rs (dashboard/target/debug/deps/world_feed-a64f8a0c98cb5566)\n\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 20 filtered out; finished in 0.00s\n\n     Running tests/http_live.rs (dashboard/target/debug/deps/http_live-1b4506fcffc6cb30)\n\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 3 filtered out; finished in 0.00s\n\n     Running tests/python_wire.rs (dashboard/target/debug/deps/python_wire-142d734878303f84)\n\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 1 filtered out; finished in 0.00s\n\n     Running tests/sse.rs (dashboard/target/debug/deps/sse-eeb18ce9c959186e)\n\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 2 filtered out; finished in 0.00s\n\n"
+        }
+      },
+      {
+        "finding": "RWF-HTML-001 contextual audit",
+        "red": {
+          "command": [
+            "nix",
+            "develop",
+            "-c",
+            "cargo",
+            "test",
+            "--manifest-path",
+            "dashboard/Cargo.toml",
+            "upstream_strings_are_safe_in_remaining_render_contexts"
+          ],
+          "exit_code": 101,
+          "at": "2026-10-05T13:48:38.393525+02:00",
+          "source_sha256": {
+            "dashboard/crates/dashboard-app/src/render.rs": "9932da5ab14145ff631e6ee7df5df6c0726ef7dd4762b7b90b8c047e90b31d09",
+            "dashboard/crates/dashboard-app/src/tests.rs": "3e1a1c1fac6f07beff2e39bb7bdbd9579bdabdedd409f53634caa46230ace685"
+          },
+          "log_sha256": "522cfc6e978d344e4c93e23de5689a73d42b34264ba0fe740faf5cd3139cea73",
+          "log_path": "/home/otto/.hermes/cache/scratch/rwf-first-fix/html-context-red.log",
+          "actual_output": "warning: Git tree '/home/otto/dev/ro-bots' is dirty\nro-bots dev shell — try: task --list\n   Compiling dashboard-app v0.1.0 (/home/otto/dev/ro-bots/dashboard/crates/dashboard-app)\n    Finished `test` profile [unoptimized + debuginfo] target(s) in 3.81s\n     Running unittests src/main.rs (dashboard/target/debug/deps/dashboard-f62f8adff113ec43)\n\nrunning 1 test\ntest tests::upstream_strings_are_safe_in_remaining_render_contexts ... FAILED\n\nfailures:\n\n---- tests::upstream_strings_are_safe_in_remaining_render_contexts stdout ----\n\nthread 'tests::upstream_strings_are_safe_in_remaining_render_contexts' (2779238) panicked at crates/dashboard-app/src/tests.rs:167:5:\nassertion failed: html.contains(&crate::render::esc(&detail.attitude))\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n\n\nfailures:\n    tests::upstream_strings_are_safe_in_remaining_render_contexts\n\ntest result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 12 filtered out; finished in 0.00s\n\nerror: test failed, to rerun pass `-p dashboard-app --bin dashboard`\n"
+        },
+        "green": {
+          "command": [
+            "nix",
+            "develop",
+            "-c",
+            "cargo",
+            "test",
+            "--manifest-path",
+            "dashboard/Cargo.toml",
+            "upstream_strings_are_safe_in_remaining_render_contexts"
+          ],
+          "exit_code": 0,
+          "at": "2026-10-05T13:49:09.235726+02:00",
+          "source_sha256": {
+            "dashboard/crates/dashboard-app/src/render.rs": "e02427c8942c101daa5165860b32a2eb4ac901eb3b959ca6ba2bf60aef6eff22",
+            "dashboard/crates/dashboard-app/src/tests.rs": "3e1a1c1fac6f07beff2e39bb7bdbd9579bdabdedd409f53634caa46230ace685"
+          },
+          "log_sha256": "fedfb3f150409739ed0074550304cdd8bf2dc0778f087107892e154bbd4cb0e4",
+          "log_path": "/home/otto/.hermes/cache/scratch/rwf-first-fix/html-context-green.log",
+          "actual_output": "warning: Git tree '/home/otto/dev/ro-bots' is dirty\nro-bots dev shell — try: task --list\n   Compiling dashboard-app v0.1.0 (/home/otto/dev/ro-bots/dashboard/crates/dashboard-app)\n    Finished `test` profile [unoptimized + debuginfo] target(s) in 2.79s\n     Running unittests src/main.rs (dashboard/target/debug/deps/dashboard-f62f8adff113ec43)\n\nrunning 1 test\ntest tests::upstream_strings_are_safe_in_remaining_render_contexts ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 12 filtered out; finished in 0.00s\n\n     Running unittests src/lib.rs (dashboard/target/debug/deps/world_feed-a64f8a0c98cb5566)\n\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 20 filtered out; finished in 0.00s\n\n     Running tests/http_live.rs (dashboard/target/debug/deps/http_live-1b4506fcffc6cb30)\n\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 3 filtered out; finished in 0.00s\n\n     Running tests/python_wire.rs (dashboard/target/debug/deps/python_wire-142d734878303f84)\n\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 1 filtered out; finished in 0.00s\n\n     Running tests/sse.rs (dashboard/target/debug/deps/sse-eeb18ce9c959186e)\n\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 2 filtered out; finished in 0.00s\n\n"
+        }
+      },
+      {
+        "finding": "RWF-OVERFLOW-001",
+        "red": {
+          "command": [
+            "nix",
+            "develop",
+            "-c",
+            "cargo",
+            "test",
+            "--manifest-path",
+            "dashboard/Cargo.toml",
+            "json_u32_extrema_reject_without_panic"
+          ],
+          "exit_code": 101,
+          "at": "2026-10-05T13:49:34.474886+02:00",
+          "source_sha256": {
+            "dashboard/crates/world-feed/src/lib.rs": "0648de4d72d8b3da3b28c47e00b373459d636df699472fab5a0c53720ebe2225",
+            "dashboard/crates/world-feed/tests/population_bounds.rs": "1056ff3acd38ecdff4de8b7989431c0f5bf75dd7c2598bacef9780fea4553aa3"
+          },
+          "log_sha256": "3ad20c39c67cf76535c966e3cd55096de74874aea0ed82a3a16f1b6caab582d0",
+          "log_path": "/home/otto/.hermes/cache/scratch/rwf-first-fix/overflow-red.log",
+          "actual_output": "warning: Git tree '/home/otto/dev/ro-bots' is dirty\nro-bots dev shell — try: task --list\n   Compiling world-feed v0.1.0 (/home/otto/dev/ro-bots/dashboard/crates/world-feed)\n    Finished `test` profile [unoptimized + debuginfo] target(s) in 1.29s\n     Running unittests src/main.rs (dashboard/target/debug/deps/dashboard-f62f8adff113ec43)\n\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 13 filtered out; finished in 0.00s\n\n     Running unittests src/lib.rs (dashboard/target/debug/deps/world_feed-a64f8a0c98cb5566)\n\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 20 filtered out; finished in 0.00s\n\n     Running tests/http_live.rs (dashboard/target/debug/deps/http_live-1b4506fcffc6cb30)\n\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 3 filtered out; finished in 0.00s\n\n     Running tests/population_bounds.rs (dashboard/target/debug/deps/population_bounds-9d785c1e8290a6d7)\n\nrunning 1 test\ntest json_u32_extrema_reject_without_panic ... FAILED\n\nfailures:\n\n---- json_u32_extrema_reject_without_panic stdout ----\n\nthread 'json_u32_extrema_reject_without_panic' (2780820) panicked at crates/world-feed/src/lib.rs:316:20:\nattempt to add with overflow\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n\nthread 'json_u32_extrema_reject_without_panic' (2780820) panicked at crates/world-feed/tests/population_bounds.rs:13:9:\nvalidation must not panic for legal JSON u32 values\n\n\nfailures:\n    json_u32_extrema_reject_without_panic\n\ntest result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\nerror: test failed, to rerun pass `-p world-feed --test population_bounds`\n"
+        },
+        "green": {
+          "command": [
+            "nix",
+            "develop",
+            "-c",
+            "cargo",
+            "test",
+            "--manifest-path",
+            "dashboard/Cargo.toml",
+            "json_u32_extrema_reject_without_panic"
+          ],
+          "exit_code": 0,
+          "at": "2026-10-05T13:49:58.778650+02:00",
+          "source_sha256": {
+            "dashboard/crates/world-feed/src/lib.rs": "14f736dda42e0d63ef09e2b117e7f28a324319a402c7b6d7ce80528c9c145b92",
+            "dashboard/crates/world-feed/tests/population_bounds.rs": "1056ff3acd38ecdff4de8b7989431c0f5bf75dd7c2598bacef9780fea4553aa3"
+          },
+          "log_sha256": "c1b8bd2ed00f55a5c2c8c9595cd7caac9cb9d25f4f22cb587eab7a82ca66c47c",
+          "log_path": "/home/otto/.hermes/cache/scratch/rwf-first-fix/overflow-green.log",
+          "actual_output": "warning: Git tree '/home/otto/dev/ro-bots' is dirty\nro-bots dev shell — try: task --list\n   Compiling world-feed v0.1.0 (/home/otto/dev/ro-bots/dashboard/crates/world-feed)\n   Compiling dashboard-app v0.1.0 (/home/otto/dev/ro-bots/dashboard/crates/dashboard-app)\n    Finished `test` profile [unoptimized + debuginfo] target(s) in 7.73s\n     Running unittests src/main.rs (dashboard/target/debug/deps/dashboard-f62f8adff113ec43)\n\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 13 filtered out; finished in 0.00s\n\n     Running unittests src/lib.rs (dashboard/target/debug/deps/world_feed-a64f8a0c98cb5566)\n\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 20 filtered out; finished in 0.00s\n\n     Running tests/http_live.rs (dashboard/target/debug/deps/http_live-1b4506fcffc6cb30)\n\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 3 filtered out; finished in 0.00s\n\n     Running tests/population_bounds.rs (dashboard/target/debug/deps/population_bounds-9d785c1e8290a6d7)\n\nrunning 1 test\ntest json_u32_extrema_reject_without_panic ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n     Running tests/python_wire.rs (dashboard/target/debug/deps/python_wire-142d734878303f84)\n\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 1 filtered out; finished in 0.00s\n\n     Running tests/sse.rs (dashboard/target/debug/deps/sse-eeb18ce9c959186e)\n\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 2 filtered out; finished in 0.00s\n\n"
+        }
+      },
+      {
+        "finding": "RWF-POP-BOUND-001 front door",
+        "red": {
+          "command": [
+            "nix",
+            "develop",
+            "-c",
+            "cargo",
+            "test",
+            "--manifest-path",
+            "dashboard/Cargo.toml",
+            "oversized_rosters_reject_before_network"
+          ],
+          "exit_code": 101,
+          "at": "2026-10-05T13:51:05.036960+02:00",
+          "source_sha256": {
+            "dashboard/crates/world-feed/src/lib.rs": "14f736dda42e0d63ef09e2b117e7f28a324319a402c7b6d7ce80528c9c145b92",
+            "dashboard/crates/world-feed/src/live.rs": "017e7cbbeaba9e6c533d85cbc5343c67e3b48a01a71b16b01a1c4f18a90db2f4",
+            "dashboard/crates/world-feed/tests/population_bounds.rs": "12f67f2260e44c74eb5f8bbecf0f5b06046ba2924254bdeba6525d9c068f8369"
+          },
+          "log_sha256": "b4accbd760e1beaca89ba6ef1f2e46abb3cdace1c1f9affd70e53bac8a542b46",
+          "log_path": "/home/otto/.hermes/cache/scratch/rwf-first-fix/population-frontdoor-red.log",
+          "actual_output": "warning: Git tree '/home/otto/dev/ro-bots' is dirty\nro-bots dev shell — try: task --list\n   Compiling world-feed v0.1.0 (/home/otto/dev/ro-bots/dashboard/crates/world-feed)\n    Finished `test` profile [unoptimized + debuginfo] target(s) in 3.89s\n     Running unittests src/main.rs (dashboard/target/debug/deps/dashboard-f62f8adff113ec43)\n\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 13 filtered out; finished in 0.00s\n\n     Running unittests src/lib.rs (dashboard/target/debug/deps/world_feed-a64f8a0c98cb5566)\n\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 20 filtered out; finished in 0.00s\n\n     Running tests/http_live.rs (dashboard/target/debug/deps/http_live-1b4506fcffc6cb30)\n\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 3 filtered out; finished in 0.00s\n\n     Running tests/population_bounds.rs (dashboard/target/debug/deps/population_bounds-9d785c1e8290a6d7)\n\nrunning 1 test\ntest oversized_rosters_reject_before_network ... FAILED\n\nfailures:\n\n---- oversized_rosters_reject_before_network stdout ----\n\nthread 'oversized_rosters_reject_before_network' (2783445) panicked at crates/world-feed/tests/population_bounds.rs:27:9:\nassertion failed: matches!(command_payload(&cmd), Err(CommandError::Invalid(_)))\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n\n\nfailures:\n    oversized_rosters_reject_before_network\n\ntest result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1 filtered out; finished in 0.00s\n\nerror: test failed, to rerun pass `-p world-feed --test population_bounds`\n"
+        },
+        "green": {
+          "command": [
+            "nix",
+            "develop",
+            "-c",
+            "cargo",
+            "test",
+            "--manifest-path",
+            "dashboard/Cargo.toml",
+            "oversized_rosters_reject_before_network"
+          ],
+          "exit_code": 0,
+          "at": "2026-10-05T13:51:42.396479+02:00",
+          "source_sha256": {
+            "dashboard/crates/world-feed/src/lib.rs": "7d2157f43fe5d15e96157842558c77e1229c5ba94ce07a7030b764737937357c",
+            "dashboard/crates/world-feed/src/live.rs": "a1dd8fa2f4b2a48d8200f0e78e88718f1c60cc884122a8fd34ca38587f8b60e8",
+            "dashboard/crates/world-feed/tests/population_bounds.rs": "12f67f2260e44c74eb5f8bbecf0f5b06046ba2924254bdeba6525d9c068f8369"
+          },
+          "log_sha256": "c57adf6f1db5aea3207ceaae397c72ab961dfda8153b690812c88dca7a84e344",
+          "log_path": "/home/otto/.hermes/cache/scratch/rwf-first-fix/population-frontdoor-green.log",
+          "actual_output": "warning: Git tree '/home/otto/dev/ro-bots' is dirty\nro-bots dev shell — try: task --list\n   Compiling world-feed v0.1.0 (/home/otto/dev/ro-bots/dashboard/crates/world-feed)\n   Compiling dashboard-app v0.1.0 (/home/otto/dev/ro-bots/dashboard/crates/dashboard-app)\n    Finished `test` profile [unoptimized + debuginfo] target(s) in 9.08s\n     Running unittests src/main.rs (dashboard/target/debug/deps/dashboard-f62f8adff113ec43)\n\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 13 filtered out; finished in 0.00s\n\n     Running unittests src/lib.rs (dashboard/target/debug/deps/world_feed-a64f8a0c98cb5566)\n\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 20 filtered out; finished in 0.00s\n\n     Running tests/http_live.rs (dashboard/target/debug/deps/http_live-1b4506fcffc6cb30)\n\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 3 filtered out; finished in 0.00s\n\n     Running tests/population_bounds.rs (dashboard/target/debug/deps/population_bounds-9d785c1e8290a6d7)\n\nrunning 1 test\ntest oversized_rosters_reject_before_network ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1 filtered out; finished in 0.00s\n\n     Running tests/python_wire.rs (dashboard/target/debug/deps/python_wire-142d734878303f84)\n\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 1 filtered out; finished in 0.00s\n\n     Running tests/sse.rs (dashboard/target/debug/deps/sse-eeb18ce9c959186e)\n\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 2 filtered out; finished in 0.00s\n\n"
+        }
+      },
+      {
+        "finding": "RWF-POP-BOUND-001 public generator",
+        "red": {
+          "command": [
+            "nix",
+            "develop",
+            "-c",
+            "cargo",
+            "test",
+            "--manifest-path",
+            "dashboard/Cargo.toml",
+            "public_mock_generator_rejects_invalid_shape"
+          ],
+          "exit_code": 101,
+          "at": "2026-10-05T13:52:09.961221+02:00",
+          "source_sha256": {
+            "dashboard/crates/world-feed/src/mock/mod.rs": "242248ecea195ec955aad17aaf218ecf14be8a41ff9b78ee0f4604397bf1b809",
+            "dashboard/crates/world-feed/src/mock/tests.rs": "d8e452bca873d8054f1e51a62c11624af0d8f54258f385594697299e8f9942ad",
+            "dashboard/crates/world-feed/tests/population_bounds.rs": "b35d5dd4c1b3388af50fae0f9252b812f8f497584dc76f3dfa505b29c795a525"
+          },
+          "log_sha256": "914e28b0a0115db77e2d1e354e28f3b07dc93ccd37cd1cc2aa399e5647451260",
+          "log_path": "/home/otto/.hermes/cache/scratch/rwf-first-fix/population-generator-red.log",
+          "actual_output": "warning: Git tree '/home/otto/dev/ro-bots' is dirty\nro-bots dev shell — try: task --list\n   Compiling world-feed v0.1.0 (/home/otto/dev/ro-bots/dashboard/crates/world-feed)\n    Finished `test` profile [unoptimized + debuginfo] target(s) in 2.76s\n     Running unittests src/main.rs (dashboard/target/debug/deps/dashboard-f62f8adff113ec43)\n\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 13 filtered out; finished in 0.00s\n\n     Running unittests src/lib.rs (dashboard/target/debug/deps/world_feed-a64f8a0c98cb5566)\n\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 20 filtered out; finished in 0.00s\n\n     Running tests/http_live.rs (dashboard/target/debug/deps/http_live-1b4506fcffc6cb30)\n\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 3 filtered out; finished in 0.00s\n\n     Running tests/population_bounds.rs (dashboard/target/debug/deps/population_bounds-9d785c1e8290a6d7)\n\nrunning 1 test\ntest public_mock_generator_rejects_invalid_shape ... FAILED\n\nfailures:\n\n---- public_mock_generator_rejects_invalid_shape stdout ----\n\nthread 'public_mock_generator_rejects_invalid_shape' (2786258) panicked at crates/world-feed/tests/population_bounds.rs:14:5:\nassertion failed: world_feed::MockWorldFeed::with_shape(1, 1, 0, 17, 17).rejected()\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n\n\nfailures:\n    public_mock_generator_rejects_invalid_shape\n\ntest result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 2 filtered out; finished in 0.00s\n\nerror: test failed, to rerun pass `-p world-feed --test population_bounds`\n"
+        },
+        "green": {
+          "command": [
+            "nix",
+            "develop",
+            "-c",
+            "cargo",
+            "test",
+            "--manifest-path",
+            "dashboard/Cargo.toml",
+            "public_mock_generator_rejects_invalid_shape"
+          ],
+          "exit_code": 0,
+          "at": "2026-10-05T13:52:46.448445+02:00",
+          "source_sha256": {
+            "dashboard/crates/world-feed/src/mock/mod.rs": "7dba6c8fdc3d33ec6a7893a6807b525e0044a0aeaaf1bf1db196228e69f13122",
+            "dashboard/crates/world-feed/src/mock/tests.rs": "d88e1b8406134d107694a14a9cbddd025336227eede02403bded001445bc95fb",
+            "dashboard/crates/world-feed/tests/population_bounds.rs": "b35d5dd4c1b3388af50fae0f9252b812f8f497584dc76f3dfa505b29c795a525"
+          },
+          "log_sha256": "050306cb69f49467153d5a087996afbcfbb1c602b3336e0e12d5488c2bfd2bc8",
+          "log_path": "/home/otto/.hermes/cache/scratch/rwf-first-fix/population-generator-green.log",
+          "actual_output": "warning: Git tree '/home/otto/dev/ro-bots' is dirty\nro-bots dev shell — try: task --list\n   Compiling world-feed v0.1.0 (/home/otto/dev/ro-bots/dashboard/crates/world-feed)\n   Compiling dashboard-app v0.1.0 (/home/otto/dev/ro-bots/dashboard/crates/dashboard-app)\n    Finished `test` profile [unoptimized + debuginfo] target(s) in 6.39s\n     Running unittests src/main.rs (dashboard/target/debug/deps/dashboard-f62f8adff113ec43)\n\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 13 filtered out; finished in 0.00s\n\n     Running unittests src/lib.rs (dashboard/target/debug/deps/world_feed-a64f8a0c98cb5566)\n\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 20 filtered out; finished in 0.00s\n\n     Running tests/http_live.rs (dashboard/target/debug/deps/http_live-1b4506fcffc6cb30)\n\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 3 filtered out; finished in 0.00s\n\n     Running tests/population_bounds.rs (dashboard/target/debug/deps/population_bounds-9d785c1e8290a6d7)\n\nrunning 1 test\ntest public_mock_generator_rejects_invalid_shape ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 2 filtered out; finished in 0.00s\n\n     Running tests/python_wire.rs (dashboard/target/debug/deps/python_wire-142d734878303f84)\n\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 1 filtered out; finished in 0.00s\n\n     Running tests/sse.rs (dashboard/target/debug/deps/sse-eeb18ce9c959186e)\n\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 2 filtered out; finished in 0.00s\n\n"
+        }
+      },
+      {
+        "finding": "RWF-GAP-001",
+        "red": {
+          "command": [
+            "nix",
+            "develop",
+            "-c",
+            "cargo",
+            "test",
+            "--manifest-path",
+            "dashboard/Cargo.toml",
+            "feed_integrity_survives_transport_reconnects"
+          ],
+          "exit_code": 101,
+          "at": "2026-10-05T13:54:25.700718+02:00",
+          "source_sha256": {
+            "dashboard/crates/world-feed/src/live.rs": "a1dd8fa2f4b2a48d8200f0e78e88718f1c60cc884122a8fd34ca38587f8b60e8",
+            "dashboard/crates/world-feed/tests/http_live.rs": "c086612ea52cb361abc02be87bcc246d93fcaa91d15a92c3ab4aaae3a68f86b3"
+          },
+          "log_sha256": "c84b39cc18e36034f4efd04f065f887c9100c6c2890aa5a75dca2e8862b9c682",
+          "log_path": "/home/otto/.hermes/cache/scratch/rwf-first-fix/gap-red-valid.log",
+          "actual_output": "warning: Git tree '/home/otto/dev/ro-bots' is dirty\nro-bots dev shell — try: task --list\n   Compiling world-feed v0.1.0 (/home/otto/dev/ro-bots/dashboard/crates/world-feed)\n    Finished `test` profile [unoptimized + debuginfo] target(s) in 3.70s\n     Running unittests src/main.rs (dashboard/target/debug/deps/dashboard-f62f8adff113ec43)\n\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 13 filtered out; finished in 0.00s\n\n     Running unittests src/lib.rs (dashboard/target/debug/deps/world_feed-a64f8a0c98cb5566)\n\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 20 filtered out; finished in 0.00s\n\n     Running tests/http_live.rs (dashboard/target/debug/deps/http_live-1b4506fcffc6cb30)\n\nrunning 1 test\ntest feed_integrity_survives_transport_reconnects ... FAILED\n\nfailures:\n\n---- feed_integrity_survives_transport_reconnects stdout ----\n\nthread 'feed_integrity_survives_transport_reconnects' (2790140) panicked at crates/world-feed/tests/http_live.rs:163:5:\nassertion failed: warning.contains(\"replay gap\")\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n\n\nfailures:\n    feed_integrity_survives_transport_reconnects\n\ntest result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 3 filtered out; finished in 0.00s\n\nerror: test failed, to rerun pass `-p world-feed --test http_live`\n"
+        },
+        "green": {
+          "command": [
+            "nix",
+            "develop",
+            "-c",
+            "cargo",
+            "test",
+            "--manifest-path",
+            "dashboard/Cargo.toml",
+            "feed_integrity_survives_transport_reconnects"
+          ],
+          "exit_code": 0,
+          "at": "2026-10-05T13:55:01.459582+02:00",
+          "source_sha256": {
+            "dashboard/crates/world-feed/src/live.rs": "7ea29f93a8c9534fc4757221dfafde81f7d6c128343a58d11c16b8cef2f0f9b8",
+            "dashboard/crates/world-feed/tests/http_live.rs": "c086612ea52cb361abc02be87bcc246d93fcaa91d15a92c3ab4aaae3a68f86b3"
+          },
+          "log_sha256": "03b2d3d93fd6d2a4b0274e65923694a1cc1c08926376f9979dcf5babb5b01eda",
+          "log_path": "/home/otto/.hermes/cache/scratch/rwf-first-fix/gap-green.log",
+          "actual_output": "warning: Git tree '/home/otto/dev/ro-bots' is dirty\nro-bots dev shell — try: task --list\n   Compiling world-feed v0.1.0 (/home/otto/dev/ro-bots/dashboard/crates/world-feed)\n   Compiling dashboard-app v0.1.0 (/home/otto/dev/ro-bots/dashboard/crates/dashboard-app)\n    Finished `test` profile [unoptimized + debuginfo] target(s) in 7.58s\n     Running unittests src/main.rs (dashboard/target/debug/deps/dashboard-f62f8adff113ec43)\n\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 13 filtered out; finished in 0.00s\n\n     Running unittests src/lib.rs (dashboard/target/debug/deps/world_feed-a64f8a0c98cb5566)\n\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 20 filtered out; finished in 0.00s\n\n     Running tests/http_live.rs (dashboard/target/debug/deps/http_live-1b4506fcffc6cb30)\n\nrunning 1 test\ntest feed_integrity_survives_transport_reconnects ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 3 filtered out; finished in 0.01s\n\n     Running tests/population_bounds.rs (dashboard/target/debug/deps/population_bounds-9d785c1e8290a6d7)\n\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 3 filtered out; finished in 0.00s\n\n     Running tests/python_wire.rs (dashboard/target/debug/deps/python_wire-142d734878303f84)\n\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 1 filtered out; finished in 0.00s\n\n     Running tests/sse.rs (dashboard/target/debug/deps/sse-eeb18ce9c959186e)\n\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 2 filtered out; finished in 0.00s\n\n"
+        }
+      }
+    ]
+  },
+  "verification": {
+    "baseline": {
+      "command": "nix develop -c cargo test --manifest-path dashboard/Cargo.toml",
+      "exit_code": 0,
+      "test_groups": [
+        11,
+        20,
+        3,
+        1,
+        2
+      ],
+      "total_rust_tests": 37,
+      "evidence": "Actual initial terminal output before production edits; no baseline source reset/stash performed."
+    },
+    "final_gate": {
+      "command": [
+        "nix",
+        "develop",
+        "-c",
+        "task",
+        "-t",
+        "dashboard/Taskfile.yml",
+        "dashboard:check"
+      ],
+      "exit_code": 0,
+      "test_groups": [
+        13,
+        20,
+        4,
+        3,
+        1,
+        2
+      ],
+      "total_rust_tests": 43,
+      "original_tests": 37,
+      "new_regressions": 6,
+      "doc_tests": 0,
+      "gates": [
+        "rustfmt --check",
+        "clippy all targets/features -D warnings",
+        "cargo test",
+        "cargo audit -D warnings",
+        "cargo machete",
+        "cargo doc --no-deps"
+      ],
+      "actual_output": "warning: Git tree '/home/otto/dev/ro-bots' is dirty\nro-bots dev shell — try: task --list\ntask: [dashboard:audit] cargo audit -D warnings\ntask: [dashboard:clippy] cargo clippy --all-targets --all-features -- -D warnings\ntask: [dashboard:doc] cargo doc --no-deps\ntask: [dashboard:fmt] cargo fmt --all -- --check\ntask: [dashboard:machete] cargo machete\ntask: [dashboard:test] cargo test\nAnalyzing dependencies of crates in this directory...\n    Blocking waiting for file lock on package cache\n    Fetching advisory database from `https://github.com/RustSec/advisory-db.git`\ncargo-machete didn't find any unused dependencies in this directory. Good job!\nDone!\n    Blocking waiting for file lock on package cache\n    Blocking waiting for file lock on package cache\n    Blocking waiting for file lock on package cache\n    Blocking waiting for file lock on package cache\n    Blocking waiting for file lock on package cache\n    Blocking waiting for file lock on package cache\n    Blocking waiting for file lock on package cache\n    Blocking waiting for file lock on build directory\n   Compiling world-feed v0.1.0 (/home/otto/dev/ro-bots/dashboard/crates/world-feed)\n    Blocking waiting for file lock on build directory\n      Loaded 1290 security advisories (from /home/otto/.cargo/advisory-db)\n    Updating crates.io index\n    Scanning Cargo.lock for vulnerabilities (232 crate dependencies)\n   Compiling dashboard-app v0.1.0 (/home/otto/dev/ro-bots/dashboard/crates/dashboard-app)\n    Finished `test` profile [unoptimized + debuginfo] target(s) in 9.13s\n     Running unittests src/main.rs (target/debug/deps/dashboard-f62f8adff113ec43)\n\nrunning 13 tests\ntest tests::backend_default_is_live_and_mock_requires_explicit_selection ... ok\ntest tests::agent_page_unknown_id_is_404 ... ok\ntest tests::liveview_ws_route_is_wired ... ok\ntest tests::inspector_http_escapes_editable_title ... ok\ntest tests::roster_page_lists_groups_and_agents ... ok\ntest tests::commands_endpoint_applies_force_action ... ok\ntest tests::agent_page_renders_memory_and_reputation ... ok\ntest tests::unavailable_live_router_is_labeled_and_never_returns_fake_agents ... ok\ntest tests::upstream_strings_are_safe_in_remaining_render_contexts ... ok\ntest tests::commands_endpoint_rejects_unknown_persona ... ok\ntest tests::roster_api_returns_snapshot_json ... ok\ntest tests::configurator_and_feed_pages_render ... ok\ntest tests::commands_endpoint_regenerates_roster ... ok\n\ntest result: ok. 13 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n     Running unittests src/lib.rs (target/debug/deps/world_feed-a64f8a0c98cb5566)\n\nrunning 20 tests\ntest mock::tests::chat_line_roundtrip ... ok\ntest mock::tests::agent_status_roundtrip ... ok\ntest mock::tests::command_json_shape_is_tagged_snake_case ... ok\ntest mock::tests::agent_detail_has_memory_reputation_characters ... ok\ntest mock::tests::command_roundtrip_all_variants ... ok\ntest mock::tests::command_ack_is_operator_forced ... ok\ntest mock::tests::command_validation_rejects_bad_shapes ... ok\ntest mock::tests::day_hour_progresses_over_a_week ... ok\ntest mock::tests::schedule_window_wraps_midnight ... ok\ntest mock::tests::world_event_roundtrip_preserves_kind_and_flags ... ok\ntest mock::tests::schedule_window_contains_start_excludes_end ... ok\ntest mock::tests::roster_shape_follows_request ... ok\ntest mock::tests::edit_persona_updates_fields ... ok\ntest mock::tests::force_disconnect_reconnect_overrides_schedule ... ok\ntest mock::tests::different_seed_different_roster ... ok\ntest mock::tests::regenerate_roster_changes_seed_and_shape ... ok\ntest mock::tests::unknown_persona_is_rejected ... ok\ntest mock::tests::same_seed_same_roster ... ok\ntest mock::tests::tick_flips_online_status_on_schedule ... ok\ntest mock::tests::ticks_are_deterministic ... ok\n\ntest result: ok. 20 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n     Running tests/http_live.rs (target/debug/deps/http_live-1b4506fcffc6cb30)\n\nrunning 4 tests\ntest http_error_and_timeout_never_become_mock ... ok\ntest feed_integrity_survives_transport_reconnects ... ok\n    Checking world-feed v0.1.0 (/home/otto/dev/ro-bots/dashboard/crates/world-feed)\n Documenting world-feed v0.1.0 (/home/otto/dev/ro-bots/dashboard/crates/world-feed)\ntest timeout_is_bounded_without_mock_fallback ... ok\ntest loopback_snapshots_reconnect_cursor_errors_and_commands ... ok\n\ntest result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.12s\n\n     Running tests/population_bounds.rs (target/debug/deps/population_bounds-9d785c1e8290a6d7)\n\nrunning 3 tests\ntest json_u32_extrema_reject_without_panic ... ok\ntest public_mock_generator_rejects_invalid_shape ... ok\ntest oversized_rosters_reject_before_network ... ok\n\ntest result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n     Running tests/python_wire.rs (target/debug/deps/python_wire-142d734878303f84)\n\nrunning 1 test\ntest python_snapshots_preserve_supplied_data_without_inventing_builds ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n     Running tests/sse.rs (target/debug/deps/sse-eeb18ce9c959186e)\n\nrunning 2 tests\ntest sse_does_not_dispatch_partial_event_or_unbounded_frame ... ok\ntest sse_accepts_every_chunk_boundary_and_crlf ... ok\n\ntest result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n   Doc-tests world_feed\n\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n Documenting dashboard-app v0.1.0 (/home/otto/dev/ro-bots/dashboard/crates/dashboard-app)\n    Finished `dev` profile [unoptimized + debuginfo] target(s) in 12.21s\n   Generated /home/otto/dev/ro-bots/dashboard/target/doc/dashboard/index.html and 1 other file\n    Checking world-feed v0.1.0 (/home/otto/dev/ro-bots/dashboard/crates/world-feed)\n    Checking dashboard-app v0.1.0 (/home/otto/dev/ro-bots/dashboard/crates/dashboard-app)\n    Finished `dev` profile [unoptimized + debuginfo] target(s) in 14.22s\n",
+      "log_sha256": "6fd27fcdfb6302525c6d880c9cb550e6a5e79298a83b72fa26a1d298ad5c1a94"
+    },
+    "optimized_release_population": {
+      "command": [
+        "nix",
+        "develop",
+        "-c",
+        "cargo",
+        "test",
+        "--manifest-path",
+        "dashboard/Cargo.toml",
+        "--release",
+        "-p",
+        "world-feed",
+        "--test",
+        "population_bounds"
+      ],
+      "exit_code": 0,
+      "at": "2026-10-05T13:57:45.370338+02:00",
+      "source_sha256": {
+        "dashboard/crates/world-feed/src/lib.rs": "a1008cb5200844e64ccb59edfb8baf2f324e647a43e597a9619a6c09d255bdee",
+        "dashboard/crates/world-feed/src/mock/mod.rs": "4eb174704d457f198ea6b249fb72eec21b79bd15e69407e3d0fdb8252d60cec8",
+        "dashboard/crates/world-feed/tests/population_bounds.rs": "e3941bfe69850ca0d76ef4b3a3e4a54528b1f787f63b0457e220a2e0773f5f03"
+      },
+      "log_sha256": "14e3006521f41afefb3bebc3ae5053f03cf00ecf05e933d5f085dbe1ed7a2b88",
+      "log_path": "/home/otto/.hermes/cache/scratch/rwf-first-fix/release-population.log",
+      "actual_output": "warning: Git tree '/home/otto/dev/ro-bots' is dirty\nro-bots dev shell — try: task --list\n   Compiling proc-macro2 v1.0.107\n   Compiling bytes v1.12.1\n   Compiling stable_deref_trait v1.2.1\n   Compiling shlex v2.0.1\n   Compiling find-msvc-tools v0.1.14\n   Compiling writeable v0.6.4\n   Compiling litemap v0.8.3\n   Compiling icu_properties_data v2.3.0\n   Compiling utf8_iter v1.0.4\n   Compiling icu_normalizer_data v2.3.0\n   Compiling slab v0.4.12\n   Compiling zeroize v1.9.0\n   Compiling untrusted v0.9.0\n   Compiling tracing v0.1.44\n   Compiling try-lock v0.2.5\n   Compiling sync_wrapper v1.0.2\n   Compiling getrandom v0.2.17\n   Compiling serde v1.0.229\n   Compiling rustls v0.23.45\n   Compiling ipnet v2.12.2\n   Compiling subtle v2.6.1\n   Compiling base64 v0.23.1\n   Compiling bitflags v2.13.2\n   Compiling want v0.3.1\n   Compiling rustls-pki-types v1.15.1\n   Compiling cc v1.6.0\n   Compiling futures-util v0.3.34\n   Compiling webpki-roots v1.0.9\n   Compiling http v1.5.0\n   Compiling quote v1.0.47\n   Compiling syn v3.0.6\n   Compiling ring v0.17.14\n   Compiling http-body v1.1.0\n   Compiling http-body-util v0.1.5\n   Compiling axum-core v0.5.6\n   Compiling synstructure v0.14.0\n   Compiling zerofrom-derive v0.1.8\n   Compiling yoke-derive v0.8.4\n   Compiling zerovec-derive v0.11.6\n   Compiling displaydoc v0.2.7\n   Compiling tokio-macros v2.7.2\n   Compiling serde_derive v1.0.229\n   Compiling thiserror-impl v2.0.21\n   Compiling tokio v1.53.2\n   Compiling zerofrom v0.1.8\n   Compiling yoke v0.8.3\n   Compiling zerotrie v0.2.5\n   Compiling zerovec v0.11.8\n   Compiling thiserror v2.0.21\n   Compiling tungstenite v0.29.0\n   Compiling tinystr v0.8.4\n   Compiling potential_utf v0.1.6\n   Compiling icu_collections v2.3.0\n   Compiling icu_locale_core v2.3.0\n   Compiling serde_urlencoded v0.7.1\n   Compiling icu_provider v2.3.1\n   Compiling rustls-webpki v0.103.15\n   Compiling icu_properties v2.3.0\n   Compiling icu_normalizer v2.3.0\n   Compiling idna_adapter v1.2.2\n   Compiling idna v1.1.0\n   Compiling url v2.5.8\n   Compiling hyper v1.11.1\n   Compiling tower v0.5.3\n   Compiling tokio-util v0.7.19\n   Compiling tokio-tungstenite v0.29.0\n   Compiling tower-http v0.6.11\n   Compiling tokio-stream v0.1.19\n   Compiling tokio-rustls v0.26.6\n   Compiling hyper-util v0.1.21\n   Compiling hyper-rustls v0.27.10\n   Compiling axum v0.8.9\n   Compiling reqwest v0.12.22\n   Compiling world-feed v0.1.0 (/home/otto/dev/ro-bots/dashboard/crates/world-feed)\n    Finished `release` profile [optimized] target(s) in 43.17s\n     Running tests/population_bounds.rs (dashboard/target/release/deps/population_bounds-a5649bec1d2251fa)\n\nrunning 3 tests\ntest json_u32_extrema_reject_without_panic ... ok\ntest public_mock_generator_rejects_invalid_shape ... ok\ntest oversized_rosters_reject_before_network ... ok\n\ntest result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n"
+    },
+    "git_diff_check_exit_code": 0,
+    "final_dashboard_sha256": {
+      "dashboard/Taskfile.yml": "9af0557d4cc01edf0aa10edd2cb1d46faca34d8f5af112ff1cdeb0f881f47eb9",
+      "dashboard/README.md": "05dcc390d2593170004d6d872408d64bcd48d46f096093eb8bb1bb6098fd84be",
+      "dashboard/Cargo.toml": "30cf07e68a3651772eedda7d2cd66315c458ec507b049f412443b2afbe8fca9a",
+      "dashboard/Cargo.lock": "0a57a881e01220685815d98b009bd720e96daf734cda6c410479736184642122",
+      "dashboard/.dockerignore": "c97ecfda4d205190b973232dcfdb0c29748521c2534dd866bcc782f30b086738",
+      "dashboard/.gitignore": "44c92e3a70ad3307b7056871c2bdb096d8bfa9373f5bf06a79bb6324a20ff2fb",
+      "dashboard/docker-compose.yml": "97141af7065041266133a3a5bbb799c47eefd29bf69a06bd072f69f08dc45cc5",
+      "dashboard/Dockerfile": "a1ae10afdf9487e0c8a54c2a734427ef5e0805fefee8adaf5e57d9c8cb358ce9",
+      "dashboard/fixtures/event.json": "9043117c155c684d583d6c730406765d62d715319a67c6dea52480bc66128dfb",
+      "dashboard/fixtures/agent.json": "b60635dc6a38bf46cd64f36fd59758300d11782aea4f3d14d1a270245d240aa9",
+      "dashboard/fixtures/smoke.py": "cd635349b7bba502a85740bd87b150f87df802075fd6275cbae253c19fd9ad9b",
+      "dashboard/fixtures/provenance.json": "e72f6926747649a1b7b1255971ed9434b8a69d779fd33e4667b5a126d7a9d7ff",
+      "dashboard/fixtures/generate.py": "46f741f767ce3684db36880876db48d8e6ea5ce2afad8af6ca69a8a651ac15ed",
+      "dashboard/fixtures/events.sse": "ca66c237fd4fdacdc6b47fa05d475aa94ed7e21a1f717008e00df0d3f047bd87",
+      "dashboard/fixtures/roster.json": "c1f52cf0973b114226b354c305ad199ca5d660550e9ba063e43c5f157cbb8afc",
+      "dashboard/crates/dashboard-app/Cargo.toml": "53e6b5cc6556e84c63399fc3857ef7dc79318e08812e87640eded29c1fb4266c",
+      "dashboard/crates/world-feed/Cargo.toml": "cd13d5f40d6e9759c810574832bf81e8ea817715c44cd60c38c0ef8cb211408a",
+      "dashboard/crates/world-feed/src/wire.rs": "cf54289322d96a182ee10061e35489ebeec1b871b0fe44c3cd6aeb014c328f3d",
+      "dashboard/crates/world-feed/src/lib.rs": "a1008cb5200844e64ccb59edfb8baf2f324e647a43e597a9619a6c09d255bdee",
+      "dashboard/crates/world-feed/src/live.rs": "7ea29f93a8c9534fc4757221dfafde81f7d6c128343a58d11c16b8cef2f0f9b8",
+      "dashboard/crates/world-feed/tests/python_wire.rs": "2b8f0f4fab4fa2bb2ada39db13a383c8a814e344734f25c7f2f561e56b1af38f",
+      "dashboard/crates/world-feed/tests/http_live.rs": "92d70a8236fa8f21facee66e2bab293ecf76259153d63625f8480216a2fe33e3",
+      "dashboard/crates/world-feed/tests/sse.rs": "fbec32331829685b5de258a85eac287a0d2b5eeba95b30cadb98e00daaef6f8b",
+      "dashboard/crates/world-feed/tests/population_bounds.rs": "e3941bfe69850ca0d76ef4b3a3e4a54528b1f787f63b0457e220a2e0773f5f03",
+      "dashboard/crates/world-feed/src/mock/tests.rs": "d88e1b8406134d107694a14a9cbddd025336227eede02403bded001445bc95fb",
+      "dashboard/crates/world-feed/src/mock/mod.rs": "4eb174704d457f198ea6b249fb72eec21b79bd15e69407e3d0fdb8252d60cec8",
+      "dashboard/crates/dashboard-app/assets/style.css": "ca28ec48b1810f5788c2119c301dd2a3ec6a56854a45a928a987b5b6403a5f81",
+      "dashboard/crates/dashboard-app/src/main.rs": "0253992f028484ae45c29e708089b955f80f7b5dd69815779a1d0c6b5c47fa8d",
+      "dashboard/crates/dashboard-app/src/liveview.rs": "50bd17e42e1f49ca6abdea9cd23e3393b16a7b8feff7b0a95173cfe061b53afa",
+      "dashboard/crates/dashboard-app/src/render.rs": "e02427c8942c101daa5165860b32a2eb4ac901eb3b959ca6ba2bf60aef6eff22",
+      "dashboard/crates/dashboard-app/src/tests.rs": "c6a91e2f974a72863b9b31936e2e0e76930b88991c2c125b166bc7882f2f2273"
+    },
+    "final_gate_source_hashes_match_current": true
+  },
+  "preserved": "Existing live-default/no mock fallback and unsupported force/schedule command rejection tests still pass. No new fallback, runtime effects or game acceptance claimed.",
+  "scope_exclusions": [
+    "No Python, root flake, root Taskfile, core/runtime/memory/protocol source edits",
+    "No fixtures regenerated or huge roster allocated/posted",
+    "No shared services, game, Docker, SQL, provider, credentials or staging",
+    "No commit or push",
+    "All new HTTP listeners test-owned 127.0.0.1:0; tests terminate their owned tokio tasks"
+  ],
+  "issues_encountered": [
+    {
+      "issue": "First SSE regression fixture embedded pretty multiline JSON in a single data field, causing an EOF parse failure.",
+      "resolution": "Corrected only the test to emit compact JSON, reran and observed a valid behavior RED before changing SSE production code.",
+      "invalid_red_log": "/home/otto/.hermes/cache/scratch/rwf-first-fix/gap-red.log"
+    }
+  ],
+  "remaining": "Fresh parent independent re-review is required. Python resource guard integration remains pending; no self-approval or overall POP acceptance."
+}

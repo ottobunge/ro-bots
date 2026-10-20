@@ -1,0 +1,26 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+___________ test_walking_name_matches_pinned_unaltered_native_struct ___________
+
+native_layout = [155, 88, 118, 110, 5, 9, ...]
+
+    def test_walking_name_matches_pinned_unaltered_native_struct(native_layout):
+        import client
+        import struct
+    
+        size, aid, gid, move, name = native_layout[3:8]
+        raw = bytearray(size)
+        struct.pack_into("<HH", raw, 0, 0x09FD, size)
+        struct.pack_into("<I", raw, aid, 11)
+        struct.pack_into("<I", raw, gid, 21)
+        raw[name:name + 24] = b"OfflineA".ljust(24, b"\0")
+        parsed = client.BotClient._parse_actor_entry(0x09FD, bytes(raw))
+>       assert parsed["name"] == "OfflineA"
+E       AssertionError: assert '' == 'OfflineA'
+E         
+E         - OfflineA
+
+tests/test_protocol_rereview_repairs.py:348: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_protocol_rereview_repairs.py::test_walking_name_matches_pinned_unaltered_native_struct
+1 failed in 0.73s

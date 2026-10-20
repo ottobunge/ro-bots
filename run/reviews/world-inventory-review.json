@@ -1,0 +1,258 @@
+{
+  "schema_version": 1,
+  "reviewed_at_utc": "2026-10-05T13:01:27.275212+00:00",
+  "scope": "Independent review of fixed-scope read-only test-world inventory; not a reset executor or ownership/seed/gameplay approval",
+  "passed": false,
+  "security_concerns": [],
+  "logic_errors": [
+    {
+      "id": "WI-001",
+      "severity": "medium",
+      "location": "src/robots/adapters/world_inventory.py:164-176, 200-206",
+      "summary": "Malformed encoded engine output escapes the sanitized inventory failure boundary.",
+      "detail": "subprocess.run(text=True) may raise UnicodeDecodeError while decoding either captured stdout or stderr. run_engine catches only OSError and TimeoutExpired; main catches only InventoryError. Both actual subprocess decoding probes raised UnicodeDecodeError out of main rather than returning 2 with the fixed sanitized unavailable message. Even unused stderr is decoded and can trigger this.",
+      "reproduction": "Inject a subprocess.run wrapper at the first exact allowlisted container ls tuple. Delegate the same capture/text/check/shell/timeout options to an isolated local Python fixture that emits byte 0xff on stdout, then repeat for stderr. Neither fixture runs Docker or connects to a service.",
+      "observed": "UnicodeDecodeError escaped main for both streams; no partial inventory printed. This is an error-handling defect, not mutation authorization or demonstrated secret disclosure.",
+      "recommended_fix": "Translate subprocess UnicodeError decoding failures to the same sanitized InventoryError as other engine read failures, retaining strict decoding. Add adapter-through-CLI regression coverage for both streams. Do not broadly swallow arbitrary programming exceptions."
+    }
+  ],
+  "evidence": {
+    "full_content_review": {
+      "implementation": "src/robots/adapters/world_inventory.py:1-212",
+      "tests": "tests/test_world_inventory.py:1-295",
+      "task_addition": "Taskfile.yml:105-108 reviewed together with full Taskfile and git diff; fixed module command, no deps/variable-driven target/mutation invocation"
+    },
+    "independent_scoped_gates": {
+      "command": "nix develop --offline -c bash -c 'uv run --offline --no-sync black --check src/robots/adapters/world_inventory.py tests/test_world_inventory.py && uv run --offline --no-sync ruff check src/robots/adapters/world_inventory.py tests/test_world_inventory.py && uv run --offline --no-sync mypy src/robots/adapters/world_inventory.py tests/test_world_inventory.py && uv run --offline --no-sync xenon src/robots/adapters/world_inventory.py --max-absolute B --max-modules B --max-average A && uv run --offline --no-sync bandit -q -c pyproject.toml src/robots/adapters/world_inventory.py && uv run --offline --no-sync vulture src/robots/adapters/world_inventory.py && uv run --offline --no-sync pylint --disable=all --enable=duplicate-code src/robots/adapters/world_inventory.py && uv run --offline --no-sync pytest tests/test_world_inventory.py tests/test_taskfile_safety_labels.py tests/test_world_isolation_guard.py tests/test_world_seed_safety.py --no-cov -o addopts=\"\" -q --tb=short && git diff --check'",
+      "exit_code": 0,
+      "passed_tests": 121,
+      "pytest_elapsed_seconds": 0.26,
+      "gates_passed": [
+        "Black",
+        "Ruff",
+        "strict mypy (2 source files)",
+        "Xenon",
+        "Bandit",
+        "Vulture",
+        "Pylint duplicate-code",
+        "scoped pytest",
+        "git diff --check"
+      ],
+      "scope_note": "No whole-repository or combined core approval. Scoped safety tests exercise denial/pure plans; they do not execute a reset."
+    },
+    "separate_inventory_test_run": {
+      "command": "nix develop --offline -c uv run --offline --no-sync pytest tests/test_world_inventory.py --no-cov -o addopts=\"\" -q --tb=short",
+      "exit_code": 0,
+      "passed_tests": 31,
+      "pytest_elapsed_seconds": 0.08
+    },
+    "targeted_suppression_validation": {
+      "B404": "Only specific subprocess import at line 7; validated module import inert and no hidden process execution on import.",
+      "B603": "Only subprocess call argument at line 167. Full tuple checked by _allowed_command before dispatch; three literal list queries plus exact selected-format container/volume inspect, lowercase 64-hex container ID, fixed volume. Five independent exact forms executed under spy; 404 altered tuples refused before subprocess.",
+      "subprocess_options": {
+        "capture_output": true,
+        "text": true,
+        "check": false,
+        "shell": false,
+        "timeout": 10
+      },
+      "bandit_verbose_run": {
+        "exit_code": 0,
+        "issues": 0,
+        "specifically_suppressed_potential_issues": 2,
+        "blanket_nosec_lines": 0,
+        "global_B404_B603_skips": false
+      },
+      "decision": "Narrow B404/B603 suppressions justified for this read-only allowlist; they do not justify overlooking WI-001."
+    },
+    "fixture_probe_run": {
+      "command": "nix develop --offline -c uv run --offline --no-sync python /home/otto/.hermes/cache/scratch/world_inventory_independent_probe.py",
+      "exit_code": 0,
+      "checks": [
+        {
+          "name": "fresh module import inert",
+          "passed": true,
+          "detail": "No subprocess.run or socket.socket call"
+        },
+        {
+          "name": "all five read-only command forms execute with exact options",
+          "passed": true,
+          "detail": {
+            "forms": 5,
+            "shell": false,
+            "timeout_seconds": 10
+          }
+        },
+        {
+          "name": "command mutation/option/injection matrix denied before subprocess",
+          "passed": true,
+          "detail": {
+            "denied_tuples": 404
+          }
+        },
+        {
+          "name": "container list shape, uniqueness and boundary",
+          "passed": true,
+          "detail": {
+            "invalid_cases": 8,
+            "accepted_max_per_query": 64
+          }
+        },
+        {
+          "name": "foreign running volume user discovered; output strips raw labels and mount source",
+          "passed": true,
+          "detail": {
+            "calls": 12,
+            "projected_keys": [
+              "containers",
+              "foreign_volume_users",
+              "inventory_stable",
+              "mutation_authorized",
+              "volume_exists",
+              "volume_labels_match",
+              "volume_users",
+              "world"
+            ],
+            "raw_fixture_marker_visible": false
+          }
+        },
+        {
+          "name": "inspection identity/schema/malformed/oversize rejected",
+          "passed": true,
+          "detail": {
+            "cases": 13
+          }
+        },
+        {
+          "name": "volume list and exact inspection identity denied",
+          "passed": true,
+          "detail": {
+            "cases": 4
+          }
+        },
+        {
+          "name": "inconsistency/drift sanitize CLI and never emit partial success",
+          "passed": true,
+          "detail": {
+            "cases": 4,
+            "status": 2
+          }
+        },
+        {
+          "name": "real adapter error classes sanitized through CLI under spy",
+          "passed": true,
+          "detail": {
+            "cases": 3,
+            "status": 2
+          }
+        },
+        {
+          "name": "deeply nested invalid top-level JSON denied",
+          "passed": true,
+          "detail": {
+            "status": 2,
+            "response_characters": 4001
+          }
+        }
+      ],
+      "unexpected_error_observations": [
+        {
+          "probe": "actual subprocess decoding of invalid UTF-8 stdout from injected local Python fixture",
+          "exception": "UnicodeDecodeError",
+          "source": "run_engine catches OSError/TimeoutExpired only; main catches InventoryError only",
+          "cli_sanitized_message_emitted": false,
+          "cli_partial_inventory_emitted": false
+        },
+        {
+          "probe": "actual subprocess decoding of invalid UTF-8 stderr from injected local Python fixture",
+          "exception": "UnicodeDecodeError",
+          "source": "run_engine catches OSError/TimeoutExpired only; main catches InventoryError only",
+          "cli_sanitized_message_emitted": false,
+          "cli_partial_inventory_emitted": false
+        }
+      ],
+      "local_invalid_byte_fixture_children": 2,
+      "external_engine_calls": 0,
+      "network_calls": 0
+    },
+    "nonintegration_check": "No world_inventory/inventory_test_world references found by content search in scripts; reviewed adapter contains no reset planner call or mutation path.",
+    "parent_report_usage": "Read run/reviews/world-inventory-parent-verification.json for context, not an approval oracle. All test/gate/probe outcomes above independently executed.",
+    "harness_note": "The first exploratory probe run incorrectly treated controlled rejection of nested JSON as a harness failure. Corrected only the scratch harness assertion and reran successfully; no implementation/test modifications."
+  },
+  "fingerprints": {
+    "algorithm": "SHA-256",
+    "primary_before_initial_tests": {
+      "src/robots/adapters/world_inventory.py": "cccc670a6bee8918dc0deb0ca1d94c5469b520e047899b86bd165929f5647bca",
+      "tests/test_world_inventory.py": "c4ed1aa6b5c0a8023af26084c4dd680021cd89d1d47cab19ec7be564d95c1ec8",
+      "Taskfile.yml": "63616950e21c15c455c2b6f90be4d588b77f31a62181fd7a93253d164a64a7fd"
+    },
+    "dependencies_and_primary_before_probes": {
+      "src/robots/adapters/world_inventory.py": "cccc670a6bee8918dc0deb0ca1d94c5469b520e047899b86bd165929f5647bca",
+      "tests/test_world_inventory.py": "c4ed1aa6b5c0a8023af26084c4dd680021cd89d1d47cab19ec7be564d95c1ec8",
+      "Taskfile.yml": "63616950e21c15c455c2b6f90be4d588b77f31a62181fd7a93253d164a64a7fd",
+      "src/robots/__init__.py": "14a8271c90ed669cc0645c2901ba6a3d93345643b7697e87b965b9008f02b6a6",
+      "src/robots/adapters/__init__.py": "0682851ebbbbcccfb31e82a108d69a92193252f3eda2498f893dc078f3a68b1d",
+      "tests/test_world_isolation_guard.py": "510168243ce69138b4bce39a9f7700eefc2554f4ea9092a592386453682de8b3",
+      "tests/test_world_seed_safety.py": "eede21817970e7db28b4e23a2ca368c6db8233026f9153ed29a9876f36658350",
+      "tests/test_taskfile_safety_labels.py": "6cb17b9f5d326c0ccf0260c2d92a3b389ae8794e8530ca98e66dd0d45af347e0",
+      "scripts/seed_test_agents.py": "a38da7cbf328a74f7d660bfc9b3955ef71cdf7acdc4b9dec573111f0ba89aed2",
+      "scripts/e2e_runner.py": "c7f46a26f95aa07f901eb72da831681780602b132068583a9a8972c7bb2ec386",
+      "scripts/world.sh": "0fb763180e1bb81bb5a7cfd43adee89e577a955e96159de5d35827948b1861f7",
+      "scripts/e2e.sh": "bd225e3019082ec35a7596d3d5735712b26888e315cf0b8e580f25f8cad746f6",
+      "docker-compose.worlds.yml": "4712fa181bf2c93495cf3360fe1189ada55c5371c66646514fa87f5c7374cce3",
+      "pyproject.toml": "e8ae0849a413bc3d705f081f609b92dae702bbd3e491b2c3aeb5d8665c458fba"
+    },
+    "dependencies_and_primary_after_probes": {
+      "src/robots/adapters/world_inventory.py": "cccc670a6bee8918dc0deb0ca1d94c5469b520e047899b86bd165929f5647bca",
+      "tests/test_world_inventory.py": "c4ed1aa6b5c0a8023af26084c4dd680021cd89d1d47cab19ec7be564d95c1ec8",
+      "Taskfile.yml": "63616950e21c15c455c2b6f90be4d588b77f31a62181fd7a93253d164a64a7fd",
+      "src/robots/__init__.py": "14a8271c90ed669cc0645c2901ba6a3d93345643b7697e87b965b9008f02b6a6",
+      "src/robots/adapters/__init__.py": "0682851ebbbbcccfb31e82a108d69a92193252f3eda2498f893dc078f3a68b1d",
+      "tests/test_world_isolation_guard.py": "510168243ce69138b4bce39a9f7700eefc2554f4ea9092a592386453682de8b3",
+      "tests/test_world_seed_safety.py": "eede21817970e7db28b4e23a2ca368c6db8233026f9153ed29a9876f36658350",
+      "tests/test_taskfile_safety_labels.py": "6cb17b9f5d326c0ccf0260c2d92a3b389ae8794e8530ca98e66dd0d45af347e0",
+      "scripts/seed_test_agents.py": "a38da7cbf328a74f7d660bfc9b3955ef71cdf7acdc4b9dec573111f0ba89aed2",
+      "scripts/e2e_runner.py": "c7f46a26f95aa07f901eb72da831681780602b132068583a9a8972c7bb2ec386",
+      "scripts/world.sh": "0fb763180e1bb81bb5a7cfd43adee89e577a955e96159de5d35827948b1861f7",
+      "scripts/e2e.sh": "bd225e3019082ec35a7596d3d5735712b26888e315cf0b8e580f25f8cad746f6",
+      "docker-compose.worlds.yml": "4712fa181bf2c93495cf3360fe1189ada55c5371c66646514fa87f5c7374cce3",
+      "pyproject.toml": "e8ae0849a413bc3d705f081f609b92dae702bbd3e491b2c3aeb5d8665c458fba"
+    },
+    "final": {
+      "src/robots/adapters/world_inventory.py": "cccc670a6bee8918dc0deb0ca1d94c5469b520e047899b86bd165929f5647bca",
+      "tests/test_world_inventory.py": "c4ed1aa6b5c0a8023af26084c4dd680021cd89d1d47cab19ec7be564d95c1ec8",
+      "Taskfile.yml": "63616950e21c15c455c2b6f90be4d588b77f31a62181fd7a93253d164a64a7fd",
+      "src/robots/__init__.py": "14a8271c90ed669cc0645c2901ba6a3d93345643b7697e87b965b9008f02b6a6",
+      "src/robots/adapters/__init__.py": "0682851ebbbbcccfb31e82a108d69a92193252f3eda2498f893dc078f3a68b1d",
+      "tests/test_world_isolation_guard.py": "510168243ce69138b4bce39a9f7700eefc2554f4ea9092a592386453682de8b3",
+      "tests/test_world_seed_safety.py": "eede21817970e7db28b4e23a2ca368c6db8233026f9153ed29a9876f36658350",
+      "tests/test_taskfile_safety_labels.py": "6cb17b9f5d326c0ccf0260c2d92a3b389ae8794e8530ca98e66dd0d45af347e0",
+      "scripts/seed_test_agents.py": "a38da7cbf328a74f7d660bfc9b3955ef71cdf7acdc4b9dec573111f0ba89aed2",
+      "scripts/e2e_runner.py": "c7f46a26f95aa07f901eb72da831681780602b132068583a9a8972c7bb2ec386",
+      "scripts/world.sh": "0fb763180e1bb81bb5a7cfd43adee89e577a955e96159de5d35827948b1861f7",
+      "scripts/e2e.sh": "bd225e3019082ec35a7596d3d5735712b26888e315cf0b8e580f25f8cad746f6",
+      "docker-compose.worlds.yml": "4712fa181bf2c93495cf3360fe1189ada55c5371c66646514fa87f5c7374cce3",
+      "pyproject.toml": "e8ae0849a413bc3d705f081f609b92dae702bbd3e491b2c3aeb5d8665c458fba"
+    },
+    "primary_stable_through_review": true,
+    "probe_dependency_hashes_stable": true,
+    "dependency_limit": "Additional safety-test dependencies first fingerprinted after initial combined gates, before independent probes. No claim of an exclusive whole-repository freeze."
+  },
+  "limits": [
+    "Two matching projected observations do not establish an atomic snapshot, exclusive lock, continuous freeze, trusted ownership, or permission to mutate; mutation_authorized remains false.",
+    "Project/service/world labels are untrusted classification; foreign means project label mismatch, not cryptographic ownership.",
+    "Selected Go format omits environment and credentials. Captured mounts include source metadata, but public projection excludes raw label values and mount source/destination paths.",
+    "Inspect parser caps 262144 characters, not captured bytes or subprocess memory. List outputs have no byte cap. Up to 64 IDs per query and 128 union IDs per snapshot; no global end-to-end observation deadline beyond 10 seconds per command.",
+    "No Docker engine reads made by this reviewer. Existing-resource inspect, foreign users, command failures and drift verified through explicit fixtures; parent absence observation is not independently repeated and cannot establish live present-resource behavior.",
+    "No SQL, credential/runtime-secret inspection, reset execution, seeding, provisioning, gameplay, ownership certification, or combined population/chat/core acceptance.",
+    "PATH-resolved docker and the configured engine endpoint are ambient trusted operator dependencies; the allowlist controls arguments, not executable provenance.",
+    "No baseline stash/reset, dependency refresh, network audit, whole-repository coverage, or full check performed in the concurrently modified working tree."
+  ],
+  "files_created_or_modified_in_repository": [
+    "run/reviews/world-inventory-review.json"
+  ],
+  "implementation_tests_taskfile_modified": false,
+  "external_mutations": false,
+  "staged_committed_pushed": false,
+  "summary": "Fail-closed approval withheld for WI-001 (uncaught malformed-output decoding failures), despite 31 inventory / 121 scoped tests and all scoped static gates passing; read-only allowlist and narrow suppressions otherwise verified."
+}

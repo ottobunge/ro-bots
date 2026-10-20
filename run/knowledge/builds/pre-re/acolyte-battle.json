@@ -1,0 +1,211 @@
+{
+ "class": "Acolyte",
+ "playstyle": "grinder (blessed mace brawler)",
+ "playstyle_axis": "grinder",
+ "summary": "Self-buffered melee: Blessing +10 STR/DEX/INT and AGI-Up +12 AGI make a mace acolyte hit like a swordman with free healing on top.",
+ "stat_progression": [
+  {
+   "phase": "job change ~40",
+   "base_level": 40,
+   "stat_point_budget": 305,
+   "points_spent": 268,
+   "points_left": 37,
+   "allocation": {
+    "str": 40,
+    "dex": 30,
+    "int": 20,
+    "agi": 1,
+    "vit": 1,
+    "luk": 1
+   },
+   "leftover_into": "STR (37 pts left at 305: push STR->45, INT as SP pool)"
+  },
+  {
+   "phase": "job 50",
+   "base_level": 50,
+   "stat_point_budget": 420,
+   "points_spent": 366,
+   "points_left": 54,
+   "allocation": {
+    "str": 50,
+    "dex": 30,
+    "int": 30,
+    "agi": 1,
+    "vit": 1,
+    "luk": 1
+   },
+   "leftover_into": "STR/INT"
+  }
+ ],
+ "skill_order": [
+  {
+   "skill": "Heal",
+   "levels": "1-3 ->8",
+   "at": "job 1-15",
+   "prereqs": [],
+   "why": "survivability + self-heal between fights"
+  },
+  {
+   "skill": "Divine Protection",
+   "levels": 5,
+   "at": "job 4-8",
+   "prereqs": [],
+   "why": "Blessing prereq"
+  },
+  {
+   "skill": "Blessing",
+   "levels": "5 ->10",
+   "at": "job 9-20",
+   "prereqs": [
+    "Divine Protection 5"
+   ],
+   "why": "self +10 STR/DEX/INT at lv10: free ATK, HIT, MATK"
+  },
+  {
+   "skill": "Increase AGI",
+   "levels": 10,
+   "at": "job 21-30",
+   "prereqs": [
+    "Heal 3"
+   ],
+   "why": "self +12 AGI: ASPD + flee"
+  },
+  {
+   "skill": "Demon Bane",
+   "levels": 5,
+   "at": "job 31-35",
+   "prereqs": [
+    "Divine Protection 3"
+   ],
+   "why": "+3 ATK/lv vs Demon+Undead races"
+  },
+  {
+   "skill": "Ruwach / Aqua Benedicta",
+   "levels": "1 / 1",
+   "at": "job 36-37",
+   "prereqs": [],
+   "why": "cheap holy poke / water"
+  },
+  {
+   "skill": "Heal",
+   "levels": "->10",
+   "at": "job 38-40",
+   "prereqs": [],
+   "why": "finish sustain"
+  }
+ ],
+ "skill_point_budget": {
+  "job40_points": 40,
+  "job50_points": 50,
+  "job50_add": [
+   "Demon Bane ->10",
+   "Teleport 2",
+   "Cure 1"
+  ]
+ },
+ "equipment_order": [
+  {
+   "order": 1,
+   "id": 1501,
+   "name": "Club [3]",
+   "price_z": 120,
+   "why": "ATK 23"
+  },
+  {
+   "order": 2,
+   "id": 2401,
+   "name": "Sandals",
+   "price_z": 400,
+   "why": "shoes"
+  },
+  {
+   "order": 3,
+   "id": 2101,
+   "name": "Guard",
+   "price_z": 500,
+   "why": "shield"
+  },
+  {
+   "order": 4,
+   "id": 1504,
+   "name": "Mace [3]",
+   "price_z": 1600,
+   "why": "ATK 37"
+  },
+  {
+   "order": 5,
+   "id": 2303,
+   "name": "Jacket",
+   "price_z": 200,
+   "why": "armor"
+  },
+  {
+   "order": 6,
+   "id": 1507,
+   "name": "Smasher [2]",
+   "price_z": 9000,
+   "why": "ATK 54 wlv2, req lv14 job? (item req 14) - late first-class goal"
+  }
+ ],
+ "grinding": [
+  {
+   "map": "prontera culverts (classic iRO spawns - confirm on server)",
+   "phase": "Lv 30-50",
+   "mobs": [
+    {
+     "id": 1050,
+     "name": "Thief Bug",
+     "level": 10,
+     "hp": 89,
+     "exp": "72/54"
+    },
+    {
+     "id": 1054,
+     "name": "Male Thief Bug",
+     "level": 30,
+     "hp": 595,
+     "exp": "198/224",
+     "notes": "aggressive"
+    },
+    {
+     "id": 1015,
+     "name": "Zombie",
+     "level": 17,
+     "hp": 234,
+     "exp": "117/87",
+     "notes": "Undead 1: Demon Bane ATK + Heal-bomb synergy"
+    }
+   ]
+  },
+  {
+   "map": "prt_fild08",
+   "phase": "Lv 12-30 (safe)",
+   "mobs": [
+    {
+     "id": 1052,
+     "name": "Rocker",
+     "level": 15,
+     "hp": 185,
+     "exp": "99/74"
+    }
+   ]
+  }
+ ],
+ "do_not_waste": [
+  "Angelus (no party to shield; soft-DEF% is small)",
+  "Warp Portal chain (utility, not DPS)",
+  "Decrease AGI"
+ ],
+ "renewal_differences": "Pre-re Blessing is a flat +STR/DEX/INT = skill lv (rAthena SC_BLESSING); renewal's biggest change here is Heal scaling and mace/weapon ATK layering (0.5% STR weapon ATK is renewal-only). Demon Bane values are era-stable.",
+ "sources": [
+  "iro-wiki corpus page 'Stats' (stat per-point effects, raise-cost floor((X-1)/10)+2, 48 pts at BLv1, level-up points floor(X/5)+3)",
+  "iro-wiki corpus page 'Total stat point requirement' (cumulative cost table)",
+  "rathena/src/map/status.cpp status_base_atk (pre-re status ATK: STR+(STR/10)^2+DEX/5+LUK/5 melee; DEX+(DEX/10)^2+STR/5 ranged; MATK min INT+(INT/7)^2 max INT+(INT/5)^2)",
+  "rathena/db/pre-re/skill_tree.yml (authoritative server skill prerequisites)",
+  "rathena/db/pre-re/skill_db.yml (SP costs, cast times)",
+  "iro-wiki corpus '<Class> Job Change Guide' + rathena/npc/pre-re/jobs/1-1/<class>.txt (job change)",
+  "iro-wiki corpus pages 'Demon Bane', 'Divine Protection', 'Blessing', 'Increase AGI', 'Heal'",
+  "iro-db monsters 1050/1054/1015/1052; items 1501/1504/1507",
+  "rathena/status.cpp SC_BLESSING/SC_INCREASEAGI val derivations"
+ ]
+}

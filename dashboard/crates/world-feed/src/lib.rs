@@ -17,8 +17,15 @@
 
 use serde::{Deserialize, Serialize};
 
+pub mod live;
 pub mod mock;
+pub mod wire;
 pub use mock::MockWorldFeed;
+
+/// Resource ceiling shared by Rust roster command admission and live snapshots.
+pub const MAX_ROSTER_AGENTS: u32 = 4096;
+/// Resource policy, not an RO party rule; permits the known seven-friend shape.
+pub const MAX_FRIENDS_PER_GROUP: u32 = 16;
 
 /// Severity of one world event, used by the UI for row tinting.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
@@ -52,6 +59,8 @@ pub enum EventKind {
     Wipe,
     /// Operator command acknowledged (ADR-008 audit trail).
     CommandAck,
+    /// Uninterpreted Python source event; original kind is retained in payload.
+    Source,
 }
 
 /// One chat line, wherever it appeared.
@@ -92,20 +101,24 @@ pub struct ReputationEntry {
     /// Human player display name.
     pub human: String,
     /// Score in [-1, 1].
-    pub score: f64,
+    pub score: Option<f64>,
+    /// Python per-agent score, when supplied.
+    pub agent_score: Option<f64>,
+    /// Python propagated group score, when supplied.
+    pub group_score: Option<f64>,
     /// Last reason the score moved.
     pub last_reason: String,
     /// When the score last moved (epoch seconds).
-    pub last_at: f64,
+    pub last_at: Option<f64>,
 }
 
 /// One OptChat-style memory view line, `L<level>:<index> <summary>` (ADR-004).
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub struct MemoryViewLine {
     /// Tree level (0 = verbatim note).
-    pub level: u32,
+    pub level: Option<u32>,
     /// Node index at that level.
-    pub index: u64,
+    pub index: Option<u64>,
     /// Node summary text (without the `Lx:y` prefix).
     pub summary: String,
 }
@@ -120,7 +133,7 @@ pub struct CharacterSummary {
     /// One-line build plan summary.
     pub build_summary: String,
     /// Current level of this character.
-    pub level: u32,
+    pub level: Option<u32>,
 }
 
 /// One weekly schedule window: `(weekday 0-6 Mon..Sun, start_hour, end_hour)`.
@@ -208,7 +221,7 @@ pub struct GroupInfo {
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub struct RosterSnapshot {
     /// Seed the active world was generated from (reproducibility, ADR-008).
-    pub seed: u64,
+    pub seed: Option<u64>,
     /// Friend groups incl. solo outsiders.
     pub groups: Vec<GroupInfo>,
     /// One status per agent.
@@ -305,9 +318,31 @@ impl Command {
                         "friends_per_group_min > friends_per_group_max".into(),
                     ));
                 }
-                if *friend_groups + *solos == 0 {
+                let group_count = friend_groups
+                    .checked_add(*solos)
+                    .ok_or_else(|| CommandError::Invalid("group and solo count overflow".into()))?;
+                if group_count == 0 {
                     return Err(CommandError::Invalid(
                         "at least one group or solo required".into(),
+                    ));
+                }
+                if *friend_groups > MAX_ROSTER_AGENTS || *solos > MAX_ROSTER_AGENTS {
+                    return Err(CommandError::Invalid(
+                        "groups and solos must each be <= 4096".into(),
+                    ));
+                }
+                if *friends_per_group_max > MAX_FRIENDS_PER_GROUP {
+                    return Err(CommandError::Invalid(
+                        "friends_per_group_max must be <= 16".into(),
+                    ));
+                }
+                let total = friend_groups
+                    .checked_mul(*friends_per_group_max)
+                    .and_then(|friends| friends.checked_add(*solos))
+                    .ok_or_else(|| CommandError::Invalid("maximum population overflow".into()))?;
+                if total > MAX_ROSTER_AGENTS {
+                    return Err(CommandError::Invalid(
+                        "maximum population must be <= 4096".into(),
                     ));
                 }
                 Ok(())
@@ -349,10 +384,62 @@ impl Command {
 }
 
 /// Read half of the contract: snapshot queries + a broadcast event stream.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct FeedHealth {
+    /// Explicit backend mode.
+    pub mode: String,
+    /// available, stale, or unavailable.
+    pub status: String,
+    /// Snapshot transport error, if any.
+    pub error: Option<String>,
+    /// Seconds since the last valid roster.
+    pub snapshot_age_secs: Option<u64>,
+    /// Last decoded/delivered upstream sequence, scoped to server lifetime.
+    pub last_event_id: Option<u64>,
+    /// Upstream stream connection state.
+    pub events_status: String,
+    /// Stream error or replay gap warning.
+    pub events_error: Option<String>,
+}
+
+/// Read half of the contract: cached snapshots plus broadcast stream.
 ///
 /// Implementors must be cheap to clone / share behind an `Arc`; the stream is
 /// a `tokio::sync::broadcast` receiver re-emitted as JSON lines (SSE-ready).
 pub trait WorldFeed: Send + Sync + 'static {
+    /// Backend identity and transport health; mock is always explicitly labeled.
+    fn health(&self) -> FeedHealth {
+        FeedHealth {
+            mode: "mock".into(),
+            status: "available".into(),
+            error: None,
+            snapshot_age_secs: None,
+            last_event_id: None,
+            events_status: "synthetic demo".into(),
+            events_error: None,
+        }
+    }
+
+    /// Fetch detail without blocking the async HTTP server.
+    fn fetch_agent<'a>(
+        &'a self,
+        id: &'a str,
+    ) -> std::pin::Pin<
+        Box<dyn std::future::Future<Output = Result<Option<AgentDetail>, String>> + Send + 'a>,
+    > {
+        Box::pin(async move { Ok(self.agent_detail(id)) })
+    }
+
+    /// Async command transport. Success is backend-specific, never game proof.
+    fn send_command(
+        &self,
+        cmd: Command,
+    ) -> std::pin::Pin<
+        Box<dyn std::future::Future<Output = Result<WorldEvent, CommandError>> + Send + '_>,
+    > {
+        Box::pin(async move { self.apply_command(cmd) })
+    }
+
     /// Current roster snapshot (groups, agents, seed).
     fn roster(&self) -> RosterSnapshot;
 

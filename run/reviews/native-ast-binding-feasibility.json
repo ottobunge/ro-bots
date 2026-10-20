@@ -1,0 +1,3142 @@
+{
+  "verdict": "PARTIAL",
+  "scope": "independent classifier-only offline synthetic C++ fixtures",
+  "runtime_integration": false,
+  "old_generator_approved": false,
+  "real_clif_profile_supported": false,
+  "full_translation_unit_supported": false,
+  "numeric_lengths_extracted": false,
+  "artifact_directory": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk",
+  "physical_cpp_cases": 30,
+  "retained_fresh_cases": 23,
+  "prior_available_cases": 7,
+  "safe_expected_cases": 2,
+  "safe_expected_cases_admitted": 1,
+  "unsafe_expected_cases": 27,
+  "unsafe_expected_cases_all_unresolved": 27,
+  "compiler_frontend_successes": 29,
+  "semantic_repeat_successes": 29,
+  "gcc_compile_successes": 29,
+  "gcc_oracle_comparisons": 23,
+  "gcc_oracle_matches": 23,
+  "candidate_decisions": {
+    "UNRESOLVED": 32,
+    "FIXED_SIZEOF": 1
+  },
+  "production_freeze": {
+    "input_count": 185,
+    "before_matches": true,
+    "after_matches": true,
+    "changed_paths": []
+  },
+  "limitations": [
+    "No production integration, catalogue approval or arbitrary C++ dataflow claim",
+    "Straight-line direct local aggregate only; branches and lambdas unresolved",
+    "Numeric sizeof lengths remain unknown; GCC stdout is independent oracle only",
+    "Known clif_send is a pinned synthetic fixture sink, not server sender authority"
+  ],
+  "blocked_artifact": "/home/otto/.hermes/cache/scratch/nmg-final/owned/complete-header.cpp: missing config/core.hpp with fixture-only compiler options; requires separately reviewed full-TU include/profile closure. No exceptional real clif_send declarations adopted",
+  "authority": "/home/otto/dev/ro-bots/run/reviews/native-ast-spike-authorization.json",
+  "cases": [
+    {
+      "source": "/home/otto/.hermes/cache/scratch/nmg-final/prefix_increment.cpp",
+      "name": "prefix_increment",
+      "group": "retained_fresh",
+      "expected_stdout": "2 66\n",
+      "expected_kind": "unresolved",
+      "source_sha256": "daf6651c5cdeb13fee53cb0baa414b619cf6f96a4faf0c29ef4e22e9cf122651",
+      "gcc_command": [
+        "/nix/store/j1938gsbvbhkyz4kbmvjk56r479mkw3s-gcc-wrapper-16.2.0/bin/g++",
+        "-std=c++17",
+        "/home/otto/.hermes/cache/scratch/nmg-final/prefix_increment.cpp",
+        "-o",
+        "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/0/oracle"
+      ],
+      "gcc_exit": 0,
+      "gcc_stdout": "2 66\n",
+      "gcc_runtime_exit": 0,
+      "oracle_matches_retained": true,
+      "clang_ast_produced": true,
+      "semantic_repeat_equal": true,
+      "semantic_ast_sha256": "b1537431690a7304e0f5448bb5c5d9ac1af567d4b71a71c45707b375b658285f",
+      "candidates": [
+        {
+          "call_ast_id": "0x5555557bba38",
+          "function_decl_id": "0x5555557bb410",
+          "function": "clif_test",
+          "call_range": {
+            "begin": {
+              "offset": 481,
+              "col": 81,
+              "tokLen": 9
+            },
+            "end": {
+              "offset": 511,
+              "col": 111,
+              "tokLen": 1
+            }
+          },
+          "decision": "UNRESOLVED",
+          "header_constant": null,
+          "object_decl_id": "0x5555557bb4c8",
+          "object_type": "PACKET_ZC_ONE",
+          "reason": "unsupported AST statement: UnaryOperator",
+          "evidence": [
+            {
+              "ast_id": "0x5555557bb6b8",
+              "kind": "BinaryOperator",
+              "opcode": "="
+            },
+            {
+              "ast_id": "0x5555557bb7f8",
+              "kind": "UnaryOperator",
+              "opcode": "++"
+            },
+            {
+              "kind": "DeclRefExpr",
+              "declaration_identity_match": true
+            },
+            {
+              "ast_id": "0x5555557bb6b8",
+              "position": 1,
+              "value": 1,
+              "member_decl_id": "0x5555557b8e20"
+            }
+          ],
+          "object_decl_kind": "VarDecl",
+          "object_name": "p",
+          "target_write_count": 2,
+          "alias_or_escape_count": 0,
+          "sizeof_decl_id": "0x5555557bb4c8"
+        }
+      ],
+      "clang_error": null,
+      "artifact_directory": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/0",
+      "fixed_candidates": 0,
+      "unresolved_candidates": 1,
+      "unsafe_all_unresolved": true
+    },
+    {
+      "source": "/home/otto/.hermes/cache/scratch/nmg-final/prefix_decrement.cpp",
+      "name": "prefix_decrement",
+      "group": "retained_fresh",
+      "expected_stdout": "0 66\n",
+      "expected_kind": "unresolved",
+      "source_sha256": "2032962d0ba45571c49c7b77b1f56443d6ef2e0cc19039e328419c3151ba7587",
+      "gcc_command": [
+        "/nix/store/j1938gsbvbhkyz4kbmvjk56r479mkw3s-gcc-wrapper-16.2.0/bin/g++",
+        "-std=c++17",
+        "/home/otto/.hermes/cache/scratch/nmg-final/prefix_decrement.cpp",
+        "-o",
+        "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/1/oracle"
+      ],
+      "gcc_exit": 0,
+      "gcc_stdout": "0 66\n",
+      "gcc_runtime_exit": 0,
+      "oracle_matches_retained": true,
+      "clang_ast_produced": true,
+      "semantic_repeat_equal": true,
+      "semantic_ast_sha256": "ea6fc29a1787da2928e3cbc9d048909a8ea8b3cf9579bfc4a4aad97017095633",
+      "candidates": [
+        {
+          "call_ast_id": "0x5555557bba38",
+          "function_decl_id": "0x5555557bb410",
+          "function": "clif_test",
+          "call_range": {
+            "begin": {
+              "offset": 481,
+              "col": 81,
+              "tokLen": 9
+            },
+            "end": {
+              "offset": 511,
+              "col": 111,
+              "tokLen": 1
+            }
+          },
+          "decision": "UNRESOLVED",
+          "header_constant": null,
+          "object_decl_id": "0x5555557bb4c8",
+          "object_type": "PACKET_ZC_ONE",
+          "reason": "unsupported AST statement: UnaryOperator",
+          "evidence": [
+            {
+              "ast_id": "0x5555557bb6b8",
+              "kind": "BinaryOperator",
+              "opcode": "="
+            },
+            {
+              "ast_id": "0x5555557bb7f8",
+              "kind": "UnaryOperator",
+              "opcode": "--"
+            },
+            {
+              "kind": "DeclRefExpr",
+              "declaration_identity_match": true
+            },
+            {
+              "ast_id": "0x5555557bb6b8",
+              "position": 1,
+              "value": 1,
+              "member_decl_id": "0x5555557b8e20"
+            }
+          ],
+          "object_decl_kind": "VarDecl",
+          "object_name": "p",
+          "target_write_count": 2,
+          "alias_or_escape_count": 0,
+          "sizeof_decl_id": "0x5555557bb4c8"
+        }
+      ],
+      "clang_error": null,
+      "artifact_directory": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/1",
+      "fixed_candidates": 0,
+      "unresolved_candidates": 1,
+      "unsafe_all_unresolved": true
+    },
+    {
+      "source": "/home/otto/.hermes/cache/scratch/nmg-final/lambda_parameter.cpp",
+      "name": "lambda_parameter",
+      "group": "retained_fresh",
+      "expected_stdout": "2 4\n",
+      "expected_kind": "unresolved",
+      "source_sha256": "f69c5af16eb96ccd7be287d3f4e03c0c52a2e278b70c24e64a2daee48c3da899",
+      "gcc_command": [
+        "/nix/store/j1938gsbvbhkyz4kbmvjk56r479mkw3s-gcc-wrapper-16.2.0/bin/g++",
+        "-std=c++17",
+        "/home/otto/.hermes/cache/scratch/nmg-final/lambda_parameter.cpp",
+        "-o",
+        "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/2/oracle"
+      ],
+      "gcc_exit": 0,
+      "gcc_stdout": "2 4\n",
+      "gcc_runtime_exit": 0,
+      "oracle_matches_retained": true,
+      "clang_ast_produced": true,
+      "semantic_repeat_equal": true,
+      "semantic_ast_sha256": "0aa37087ce7be022e1c06c5099a67677e3b24735f34d862dc46ba9f239ecd597",
+      "candidates": [
+        {
+          "call_ast_id": "0x5555557bbe28",
+          "function_decl_id": "0x5555557bb430",
+          "function": "clif_test",
+          "call_range": {
+            "begin": {
+              "offset": 497,
+              "col": 97,
+              "tokLen": 9
+            },
+            "end": {
+              "offset": 527,
+              "col": 127,
+              "tokLen": 1
+            }
+          },
+          "decision": "UNRESOLVED",
+          "header_constant": null,
+          "object_decl_id": "0x5555557bba88",
+          "object_type": "PACKET_ZC_TWO",
+          "reason": "nested/lambda/conditional sender unsupported; declaration identity preserved",
+          "evidence": [
+            {
+              "ast_id": "0x5555557bb818",
+              "kind": "alias_initializer"
+            }
+          ],
+          "object_decl_kind": "ParmVarDecl",
+          "object_name": "p",
+          "target_write_count": 0,
+          "alias_or_escape_count": 1
+        }
+      ],
+      "clang_error": null,
+      "artifact_directory": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/2",
+      "fixed_candidates": 0,
+      "unresolved_candidates": 1,
+      "unsafe_all_unresolved": true
+    },
+    {
+      "source": "/home/otto/.hermes/cache/scratch/nmg-final/prefix_parentheses.cpp",
+      "name": "prefix_parentheses",
+      "group": "retained_fresh",
+      "expected_stdout": "2 66\n",
+      "expected_kind": "unresolved",
+      "source_sha256": "866c61e5eb64a76ed0bd763c19c5d513cdb5d4f5b3f5d4291b0fcfb4f6ed8b8a",
+      "gcc_command": [
+        "/nix/store/j1938gsbvbhkyz4kbmvjk56r479mkw3s-gcc-wrapper-16.2.0/bin/g++",
+        "-std=c++17",
+        "/home/otto/.hermes/cache/scratch/nmg-final/prefix_parentheses.cpp",
+        "-o",
+        "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/3/oracle"
+      ],
+      "gcc_exit": 0,
+      "gcc_stdout": "2 66\n",
+      "gcc_runtime_exit": 0,
+      "oracle_matches_retained": true,
+      "clang_ast_produced": true,
+      "semantic_repeat_equal": true,
+      "semantic_ast_sha256": "d3dcb9df95d4eb0e96dfdbf98d247cfaad8571eadbc685b52fe5436e4e762bb5",
+      "candidates": [
+        {
+          "call_ast_id": "0x5555557bba88",
+          "function_decl_id": "0x5555557bb420",
+          "function": "clif_test",
+          "call_range": {
+            "begin": {
+              "offset": 486,
+              "col": 86,
+              "tokLen": 9
+            },
+            "end": {
+              "offset": 516,
+              "col": 116,
+              "tokLen": 1
+            }
+          },
+          "decision": "UNRESOLVED",
+          "header_constant": null,
+          "object_decl_id": "0x5555557bb4d8",
+          "object_type": "PACKET_ZC_ONE",
+          "reason": "unsupported AST statement: UnaryOperator",
+          "evidence": [
+            {
+              "ast_id": "0x5555557bb6c8",
+              "kind": "BinaryOperator",
+              "opcode": "="
+            },
+            {
+              "ast_id": "0x5555557bb848",
+              "kind": "UnaryOperator",
+              "opcode": "++"
+            },
+            {
+              "kind": "DeclRefExpr",
+              "declaration_identity_match": true
+            },
+            {
+              "ast_id": "0x5555557bb6c8",
+              "position": 1,
+              "value": 1,
+              "member_decl_id": "0x5555557b8e30"
+            }
+          ],
+          "object_decl_kind": "VarDecl",
+          "object_name": "p",
+          "target_write_count": 2,
+          "alias_or_escape_count": 0,
+          "sizeof_decl_id": "0x5555557bb4d8"
+        }
+      ],
+      "clang_error": null,
+      "artifact_directory": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/3",
+      "fixed_candidates": 0,
+      "unresolved_candidates": 1,
+      "unsafe_all_unresolved": true
+    },
+    {
+      "source": "/home/otto/.hermes/cache/scratch/nmg-final/prefix_comments.cpp",
+      "name": "prefix_comments",
+      "group": "retained_fresh",
+      "expected_stdout": "2 66\n",
+      "expected_kind": "unresolved",
+      "source_sha256": "5badebbb948ab3230f9675583b4fb8a9586bd4058ecb45bc8b3259758cdf9c9f",
+      "gcc_command": [
+        "/nix/store/j1938gsbvbhkyz4kbmvjk56r479mkw3s-gcc-wrapper-16.2.0/bin/g++",
+        "-std=c++17",
+        "/home/otto/.hermes/cache/scratch/nmg-final/prefix_comments.cpp",
+        "-o",
+        "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/4/oracle"
+      ],
+      "gcc_exit": 0,
+      "gcc_stdout": "2 66\n",
+      "gcc_runtime_exit": 0,
+      "oracle_matches_retained": true,
+      "clang_ast_produced": true,
+      "semantic_repeat_equal": true,
+      "semantic_ast_sha256": "bed8a4c0a4cedd5ff5a4c7a6d9d61989c0c9c2dbdcea8cd568e5d40a86aa2f49",
+      "candidates": [
+        {
+          "call_ast_id": "0x5555557bba68",
+          "function_decl_id": "0x5555557bb420",
+          "function": "clif_test",
+          "call_range": {
+            "begin": {
+              "offset": 495,
+              "col": 95,
+              "tokLen": 9
+            },
+            "end": {
+              "offset": 525,
+              "col": 125,
+              "tokLen": 1
+            }
+          },
+          "decision": "UNRESOLVED",
+          "header_constant": null,
+          "object_decl_id": "0x5555557bb4d8",
+          "object_type": "PACKET_ZC_ONE",
+          "reason": "unsupported AST statement: UnaryOperator",
+          "evidence": [
+            {
+              "ast_id": "0x5555557bb6c8",
+              "kind": "BinaryOperator",
+              "opcode": "="
+            },
+            {
+              "ast_id": "0x5555557bb828",
+              "kind": "UnaryOperator",
+              "opcode": "++"
+            },
+            {
+              "kind": "DeclRefExpr",
+              "declaration_identity_match": true
+            },
+            {
+              "ast_id": "0x5555557bb6c8",
+              "position": 1,
+              "value": 1,
+              "member_decl_id": "0x5555557b8e30"
+            }
+          ],
+          "object_decl_kind": "VarDecl",
+          "object_name": "p",
+          "target_write_count": 2,
+          "alias_or_escape_count": 0,
+          "sizeof_decl_id": "0x5555557bb4d8"
+        }
+      ],
+      "clang_error": null,
+      "artifact_directory": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/4",
+      "fixed_candidates": 0,
+      "unresolved_candidates": 1,
+      "unsafe_all_unresolved": true
+    },
+    {
+      "source": "/home/otto/.hermes/cache/scratch/nmg-final/prefix_indirect.cpp",
+      "name": "prefix_indirect",
+      "group": "retained_fresh",
+      "expected_stdout": "2 66\n",
+      "expected_kind": "unresolved",
+      "source_sha256": "796d55aa70d1dfec6af7b44790c727ea4e5d37a8688da44dda01c17e997b0ec6",
+      "gcc_command": [
+        "/nix/store/j1938gsbvbhkyz4kbmvjk56r479mkw3s-gcc-wrapper-16.2.0/bin/g++",
+        "-std=c++17",
+        "/home/otto/.hermes/cache/scratch/nmg-final/prefix_indirect.cpp",
+        "-o",
+        "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/5/oracle"
+      ],
+      "gcc_exit": 0,
+      "gcc_stdout": "2 66\n",
+      "gcc_runtime_exit": 0,
+      "oracle_matches_retained": true,
+      "clang_ast_produced": true,
+      "semantic_repeat_equal": true,
+      "semantic_ast_sha256": "6591e7343e160da1204fa92df99e2cc3626d0735df25f222c4168a58e98a105d",
+      "candidates": [
+        {
+          "call_ast_id": "0x5555557bbb78",
+          "function_decl_id": "0x5555557bb410",
+          "function": "clif_test",
+          "call_range": {
+            "begin": {
+              "offset": 487,
+              "col": 87,
+              "tokLen": 9
+            },
+            "end": {
+              "offset": 517,
+              "col": 117,
+              "tokLen": 1
+            }
+          },
+          "decision": "UNRESOLVED",
+          "header_constant": null,
+          "object_decl_id": "0x5555557bb4c8",
+          "object_type": "PACKET_ZC_ONE",
+          "reason": "unsupported AST statement: UnaryOperator",
+          "evidence": [
+            {
+              "ast_id": "0x5555557bb6b8",
+              "kind": "BinaryOperator",
+              "opcode": "="
+            },
+            {
+              "ast_id": "0x5555557bb938",
+              "kind": "UnaryOperator",
+              "opcode": "++"
+            },
+            {
+              "kind": "DeclRefExpr",
+              "declaration_identity_match": true
+            },
+            {
+              "ast_id": "0x5555557bb6b8",
+              "position": 1,
+              "value": 1,
+              "member_decl_id": "0x5555557b8e20"
+            }
+          ],
+          "object_decl_kind": "VarDecl",
+          "object_name": "p",
+          "target_write_count": 2,
+          "alias_or_escape_count": 0,
+          "sizeof_decl_id": "0x5555557bb4c8"
+        }
+      ],
+      "clang_error": null,
+      "artifact_directory": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/5",
+      "fixed_candidates": 0,
+      "unresolved_candidates": 1,
+      "unsafe_all_unresolved": true
+    },
+    {
+      "source": "/home/otto/.hermes/cache/scratch/nmg-final/lambda_reference.cpp",
+      "name": "lambda_reference",
+      "group": "retained_fresh",
+      "expected_stdout": "2 4\n",
+      "expected_kind": "unresolved",
+      "source_sha256": "b79af6b87a230696514a869ad1805d094ea9682fd1d115c7d9f45d210428dad7",
+      "gcc_command": [
+        "/nix/store/j1938gsbvbhkyz4kbmvjk56r479mkw3s-gcc-wrapper-16.2.0/bin/g++",
+        "-std=c++17",
+        "/home/otto/.hermes/cache/scratch/nmg-final/lambda_reference.cpp",
+        "-o",
+        "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/6/oracle"
+      ],
+      "gcc_exit": 0,
+      "gcc_stdout": "2 4\n",
+      "gcc_runtime_exit": 0,
+      "oracle_matches_retained": true,
+      "clang_ast_produced": true,
+      "semantic_repeat_equal": true,
+      "semantic_ast_sha256": "d93bdb2cf19b028836b64580a839e73784fb23ac5e5e2e9bbd3dea0129b09297",
+      "candidates": [
+        {
+          "call_ast_id": "0x5555557bbe38",
+          "function_decl_id": "0x5555557bb430",
+          "function": "clif_test",
+          "call_range": {
+            "begin": {
+              "offset": 498,
+              "col": 98,
+              "tokLen": 9
+            },
+            "end": {
+              "offset": 528,
+              "col": 128,
+              "tokLen": 1
+            }
+          },
+          "decision": "UNRESOLVED",
+          "header_constant": null,
+          "object_decl_id": "0x5555557bbaf8",
+          "object_type": "PACKET_ZC_TWO &",
+          "reason": "nested/lambda/conditional sender unsupported; declaration identity preserved",
+          "evidence": [
+            {
+              "ast_id": "0x5555557bb818",
+              "kind": "alias_initializer"
+            }
+          ],
+          "object_decl_kind": "ParmVarDecl",
+          "object_name": "p",
+          "target_write_count": 0,
+          "alias_or_escape_count": 1
+        }
+      ],
+      "clang_error": null,
+      "artifact_directory": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/6",
+      "fixed_candidates": 0,
+      "unresolved_candidates": 1,
+      "unsafe_all_unresolved": true
+    },
+    {
+      "source": "/home/otto/.hermes/cache/scratch/nmg-final/lambda_capture.cpp",
+      "name": "lambda_capture",
+      "group": "retained_fresh",
+      "expected_stdout": "2 66\n",
+      "expected_kind": "unresolved",
+      "source_sha256": "ff789c9d82545c79b725e68dd384c528ea9e426e3d31929b98e16690f4817102",
+      "gcc_command": [
+        "/nix/store/j1938gsbvbhkyz4kbmvjk56r479mkw3s-gcc-wrapper-16.2.0/bin/g++",
+        "-std=c++17",
+        "/home/otto/.hermes/cache/scratch/nmg-final/lambda_capture.cpp",
+        "-o",
+        "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/7/oracle"
+      ],
+      "gcc_exit": 0,
+      "gcc_stdout": "2 66\n",
+      "gcc_runtime_exit": 0,
+      "oracle_matches_retained": true,
+      "clang_ast_produced": true,
+      "semantic_repeat_equal": true,
+      "semantic_ast_sha256": "05345a66ddf9657e4e4c32e10a3781124247e4383b90ab5b42b312e3836f5aa6",
+      "candidates": [
+        {
+          "call_ast_id": "0x5555557bbda8",
+          "function_decl_id": "0x5555557bb430",
+          "function": "clif_test",
+          "call_range": {
+            "begin": {
+              "offset": 500,
+              "col": 100,
+              "tokLen": 9
+            },
+            "end": {
+              "offset": 530,
+              "col": 130,
+              "tokLen": 1
+            }
+          },
+          "decision": "UNRESOLVED",
+          "header_constant": null,
+          "object_decl_id": "0x5555557bb4e8",
+          "object_type": "PACKET_ZC_ONE",
+          "reason": "nested/lambda/conditional sender unsupported; declaration identity preserved",
+          "evidence": [
+            {
+              "ast_id": "0x5555557bb6d8",
+              "kind": "BinaryOperator",
+              "opcode": "="
+            },
+            {
+              "ast_id": "0x5555557bbb60",
+              "kind": "BinaryOperator",
+              "opcode": "="
+            },
+            {
+              "ast_id": "0x5555557bbb60",
+              "kind": "BinaryOperator",
+              "opcode": "="
+            },
+            {
+              "ast_id": "0x5555557bb818",
+              "kind": "alias_initializer"
+            }
+          ],
+          "object_decl_kind": "VarDecl",
+          "object_name": "p",
+          "target_write_count": 2,
+          "alias_or_escape_count": 1
+        }
+      ],
+      "clang_error": null,
+      "artifact_directory": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/7",
+      "fixed_candidates": 0,
+      "unresolved_candidates": 1,
+      "unsafe_all_unresolved": true
+    },
+    {
+      "source": "/home/otto/.hermes/cache/scratch/nmg-final/lambda_empty_return.cpp",
+      "name": "lambda_empty_return",
+      "group": "retained_fresh",
+      "expected_stdout": "2 4\n1 66\n",
+      "expected_kind": "unresolved",
+      "source_sha256": "d81e2bad7dd3ae4f96aac03ffc323600223f70c8705578419a96c9dcc2f24c54",
+      "gcc_command": [
+        "/nix/store/j1938gsbvbhkyz4kbmvjk56r479mkw3s-gcc-wrapper-16.2.0/bin/g++",
+        "-std=c++17",
+        "/home/otto/.hermes/cache/scratch/nmg-final/lambda_empty_return.cpp",
+        "-o",
+        "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/8/oracle"
+      ],
+      "gcc_exit": 0,
+      "gcc_stdout": "2 4\n1 66\n",
+      "gcc_runtime_exit": 0,
+      "oracle_matches_retained": true,
+      "clang_ast_produced": true,
+      "semantic_repeat_equal": true,
+      "semantic_ast_sha256": "9034e4241b97c8ab91e4fdfff654e3dc2ee3f56b81f9f7ad2ddca832b6c016f6",
+      "candidates": [
+        {
+          "call_ast_id": "0x5555557bbd58",
+          "function_decl_id": "0x5555557bb3f0",
+          "function": "clif_test",
+          "call_range": {
+            "begin": {
+              "offset": 491,
+              "col": 91,
+              "tokLen": 9
+            },
+            "end": {
+              "offset": 529,
+              "col": 129,
+              "tokLen": 1
+            }
+          },
+          "decision": "UNRESOLVED",
+          "header_constant": null,
+          "object_decl_id": "0x5555557ba5d0",
+          "object_type": "PACKET_ZC_TWO",
+          "reason": "nested/lambda/conditional sender unsupported; declaration identity preserved",
+          "evidence": [
+            {
+              "ast_id": "0x5555557bb7d8",
+              "kind": "alias_initializer"
+            }
+          ],
+          "object_decl_kind": "VarDecl",
+          "object_name": "other",
+          "target_write_count": 0,
+          "alias_or_escape_count": 1
+        },
+        {
+          "call_ast_id": "0x5555557bd080",
+          "function_decl_id": "0x5555557bb3f0",
+          "function": "clif_test",
+          "call_range": {
+            "begin": {
+              "offset": 544,
+              "col": 144,
+              "tokLen": 9
+            },
+            "end": {
+              "offset": 574,
+              "col": 174,
+              "tokLen": 1
+            }
+          },
+          "decision": "UNRESOLVED",
+          "header_constant": null,
+          "object_decl_id": "0x5555557bb4a8",
+          "object_type": "PACKET_ZC_ONE",
+          "reason": "unsupported local initializer or alias/escape; unsupported AST statement: CXXOperatorCallExpr",
+          "evidence": [
+            {
+              "ast_id": "0x5555557bb698",
+              "kind": "BinaryOperator",
+              "opcode": "="
+            },
+            {
+              "kind": "DeclRefExpr",
+              "declaration_identity_match": true
+            },
+            {
+              "ast_id": "0x5555557bb698",
+              "position": 1,
+              "value": 1,
+              "member_decl_id": "0x5555557b8e00"
+            }
+          ],
+          "object_decl_kind": "VarDecl",
+          "object_name": "p",
+          "target_write_count": 1,
+          "alias_or_escape_count": 0,
+          "sizeof_decl_id": "0x5555557bb4a8"
+        }
+      ],
+      "clang_error": null,
+      "artifact_directory": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/8",
+      "fixed_candidates": 0,
+      "unresolved_candidates": 2,
+      "unsafe_all_unresolved": true
+    },
+    {
+      "source": "/home/otto/.hermes/cache/scratch/nmg-final/lambda_comment.cpp",
+      "name": "lambda_comment",
+      "group": "retained_fresh",
+      "expected_stdout": "2 4\n",
+      "expected_kind": "unresolved",
+      "source_sha256": "7353cffa4a83299589d00201dc59ea8b470a42174c0014b3069e6b39165a1ede",
+      "gcc_command": [
+        "/nix/store/j1938gsbvbhkyz4kbmvjk56r479mkw3s-gcc-wrapper-16.2.0/bin/g++",
+        "-std=c++17",
+        "/home/otto/.hermes/cache/scratch/nmg-final/lambda_comment.cpp",
+        "-o",
+        "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/9/oracle"
+      ],
+      "gcc_exit": 0,
+      "gcc_stdout": "2 4\n",
+      "gcc_runtime_exit": 0,
+      "oracle_matches_retained": true,
+      "clang_ast_produced": true,
+      "semantic_repeat_equal": true,
+      "semantic_ast_sha256": "2d4c631de31467da906e7954b37d168ac5413dc4e1671bd27d2420de9d35edf1",
+      "candidates": [
+        {
+          "call_ast_id": "0x5555557bbe38",
+          "function_decl_id": "0x5555557bb440",
+          "function": "clif_test",
+          "call_range": {
+            "begin": {
+              "offset": 523,
+              "col": 123,
+              "tokLen": 9
+            },
+            "end": {
+              "offset": 553,
+              "col": 153,
+              "tokLen": 1
+            }
+          },
+          "decision": "UNRESOLVED",
+          "header_constant": null,
+          "object_decl_id": "0x5555557bba98",
+          "object_type": "PACKET_ZC_TWO",
+          "reason": "nested/lambda/conditional sender unsupported; declaration identity preserved",
+          "evidence": [
+            {
+              "ast_id": "0x5555557bb828",
+              "kind": "alias_initializer"
+            }
+          ],
+          "object_decl_kind": "ParmVarDecl",
+          "object_name": "p",
+          "target_write_count": 0,
+          "alias_or_escape_count": 1
+        }
+      ],
+      "clang_error": null,
+      "artifact_directory": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/9",
+      "fixed_candidates": 0,
+      "unresolved_candidates": 1,
+      "unsafe_all_unresolved": true
+    },
+    {
+      "source": "/home/otto/.hermes/cache/scratch/nmg-final/lambda_unary_plus.cpp",
+      "name": "lambda_unary_plus",
+      "group": "retained_fresh",
+      "expected_stdout": "2 4\n",
+      "expected_kind": "unresolved",
+      "source_sha256": "e982a1145785f2e9d081425469c41ccfa5e63cf470e44c5438160e53e3734012",
+      "gcc_command": [
+        "/nix/store/j1938gsbvbhkyz4kbmvjk56r479mkw3s-gcc-wrapper-16.2.0/bin/g++",
+        "-std=c++17",
+        "/home/otto/.hermes/cache/scratch/nmg-final/lambda_unary_plus.cpp",
+        "-o",
+        "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/10/oracle"
+      ],
+      "gcc_exit": 0,
+      "gcc_stdout": "2 4\n",
+      "gcc_runtime_exit": 0,
+      "oracle_matches_retained": true,
+      "clang_ast_produced": true,
+      "semantic_repeat_equal": true,
+      "semantic_ast_sha256": "bbc6b38f464c728c1e0b01712f3b246f30d67a3cc26e02e96ba47e112636af81",
+      "candidates": [
+        {
+          "call_ast_id": "0x5555557bbe38",
+          "function_decl_id": "0x5555557bb440",
+          "function": "clif_test",
+          "call_range": {
+            "begin": {
+              "offset": 498,
+              "col": 98,
+              "tokLen": 9
+            },
+            "end": {
+              "offset": 528,
+              "col": 128,
+              "tokLen": 1
+            }
+          },
+          "decision": "UNRESOLVED",
+          "header_constant": null,
+          "object_decl_id": "0x5555557bba98",
+          "object_type": "PACKET_ZC_TWO",
+          "reason": "nested/lambda/conditional sender unsupported; declaration identity preserved",
+          "evidence": [
+            {
+              "ast_id": "0x5555557bb828",
+              "kind": "alias_initializer"
+            },
+            {
+              "ast_id": "0x5555557bf6b0",
+              "kind": "unknown_call_escape"
+            }
+          ],
+          "object_decl_kind": "ParmVarDecl",
+          "object_name": "p",
+          "target_write_count": 0,
+          "alias_or_escape_count": 2
+        }
+      ],
+      "clang_error": null,
+      "artifact_directory": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/10",
+      "fixed_candidates": 0,
+      "unresolved_candidates": 1,
+      "unsafe_all_unresolved": true
+    },
+    {
+      "source": "/home/otto/.hermes/cache/scratch/nmg-final/lambda_logical_context.cpp",
+      "name": "lambda_logical_context",
+      "group": "retained_fresh",
+      "expected_stdout": "2 4\n",
+      "expected_kind": "unresolved",
+      "source_sha256": "d8f146062eb12c8a2bcc627068347767db26d8b05c56013504f614d8ac89a16d",
+      "gcc_command": [
+        "/nix/store/j1938gsbvbhkyz4kbmvjk56r479mkw3s-gcc-wrapper-16.2.0/bin/g++",
+        "-std=c++17",
+        "/home/otto/.hermes/cache/scratch/nmg-final/lambda_logical_context.cpp",
+        "-o",
+        "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/11/oracle"
+      ],
+      "gcc_exit": 0,
+      "gcc_stdout": "2 4\n",
+      "gcc_runtime_exit": 0,
+      "oracle_matches_retained": true,
+      "clang_ast_produced": true,
+      "semantic_repeat_equal": true,
+      "semantic_ast_sha256": "ec4752e06913192a298e05dfabfd9a9e7540145f1b1abce1b3a34bd2c0ab7e91",
+      "candidates": [
+        {
+          "call_ast_id": "0x5555557bbe58",
+          "function_decl_id": "0x5555557bb420",
+          "function": "clif_test",
+          "call_range": {
+            "begin": {
+              "offset": 509,
+              "col": 109,
+              "tokLen": 9
+            },
+            "end": {
+              "offset": 539,
+              "col": 139,
+              "tokLen": 1
+            }
+          },
+          "decision": "UNRESOLVED",
+          "header_constant": null,
+          "object_decl_id": "0x5555557bba88",
+          "object_type": "PACKET_ZC_TWO",
+          "reason": "nested/lambda/conditional sender unsupported; declaration identity preserved",
+          "evidence": [
+            {
+              "ast_id": "0x5555557bff38",
+              "kind": "unknown_call_escape"
+            }
+          ],
+          "object_decl_kind": "ParmVarDecl",
+          "object_name": "p",
+          "target_write_count": 0,
+          "alias_or_escape_count": 1
+        }
+      ],
+      "clang_error": null,
+      "artifact_directory": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/11",
+      "fixed_candidates": 0,
+      "unresolved_candidates": 1,
+      "unsafe_all_unresolved": true
+    },
+    {
+      "source": "/home/otto/.hermes/cache/scratch/nmg-final/helper_ref_mutation.cpp",
+      "name": "helper_ref_mutation",
+      "group": "retained_fresh",
+      "expected_stdout": "2 66\n",
+      "expected_kind": "unresolved",
+      "source_sha256": "16f020225eb51174d0e417dbb03c2b1f6f529e50fd6767874742dd9c37ebd5dc",
+      "gcc_command": [
+        "/nix/store/j1938gsbvbhkyz4kbmvjk56r479mkw3s-gcc-wrapper-16.2.0/bin/g++",
+        "-std=c++17",
+        "/home/otto/.hermes/cache/scratch/nmg-final/helper_ref_mutation.cpp",
+        "-o",
+        "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/12/oracle"
+      ],
+      "gcc_exit": 0,
+      "gcc_stdout": "2 66\n",
+      "gcc_runtime_exit": 0,
+      "oracle_matches_retained": true,
+      "clang_ast_produced": true,
+      "semantic_repeat_equal": true,
+      "semantic_ast_sha256": "fe8c49a3f1137e27505863dc1164fe7655abe69d03b9a7b795271c71becc9c94",
+      "candidates": [
+        {
+          "call_ast_id": "0x5555557bba98",
+          "function_decl_id": "0x5555557bb3b0",
+          "function": "clif_test",
+          "call_range": {
+            "begin": {
+              "offset": 476,
+              "col": 76,
+              "tokLen": 9
+            },
+            "end": {
+              "offset": 506,
+              "col": 106,
+              "tokLen": 1
+            }
+          },
+          "decision": "UNRESOLVED",
+          "header_constant": null,
+          "object_decl_id": "0x5555557bb468",
+          "object_type": "PACKET_ZC_ONE",
+          "reason": "unsupported AST statement: CallExpr",
+          "evidence": [
+            {
+              "ast_id": "0x5555557bb658",
+              "kind": "BinaryOperator",
+              "opcode": "="
+            },
+            {
+              "ast_id": "0x5555557bb848",
+              "kind": "unknown_call_escape"
+            },
+            {
+              "kind": "DeclRefExpr",
+              "declaration_identity_match": true
+            },
+            {
+              "ast_id": "0x5555557bb658",
+              "position": 1,
+              "value": 1,
+              "member_decl_id": "0x5555557b8dc0"
+            }
+          ],
+          "object_decl_kind": "VarDecl",
+          "object_name": "p",
+          "target_write_count": 1,
+          "alias_or_escape_count": 1,
+          "sizeof_decl_id": "0x5555557bb468"
+        }
+      ],
+      "clang_error": null,
+      "artifact_directory": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/12",
+      "fixed_candidates": 0,
+      "unresolved_candidates": 1,
+      "unsafe_all_unresolved": true
+    },
+    {
+      "source": "/home/otto/.hermes/cache/scratch/nmg-final/alias_reference_mutation.cpp",
+      "name": "alias_reference_mutation",
+      "group": "retained_fresh",
+      "expected_stdout": "2 66\n",
+      "expected_kind": "unresolved",
+      "source_sha256": "136f238e9e7ecfca40f4d695d6ffece6fd92d693047ae366ce1ab1499d24a568",
+      "gcc_command": [
+        "/nix/store/j1938gsbvbhkyz4kbmvjk56r479mkw3s-gcc-wrapper-16.2.0/bin/g++",
+        "-std=c++17",
+        "/home/otto/.hermes/cache/scratch/nmg-final/alias_reference_mutation.cpp",
+        "-o",
+        "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/13/oracle"
+      ],
+      "gcc_exit": 0,
+      "gcc_stdout": "2 66\n",
+      "gcc_runtime_exit": 0,
+      "oracle_matches_retained": true,
+      "clang_ast_produced": true,
+      "semantic_repeat_equal": true,
+      "semantic_ast_sha256": "59a8e9e34432cff051f7bfb36eeeaeecd59c752f5567101020785550c85cd96b",
+      "candidates": [
+        {
+          "call_ast_id": "0x5555557bbec8",
+          "function_decl_id": "0x5555557bb550",
+          "function": "clif_test",
+          "call_range": {
+            "begin": {
+              "offset": 492,
+              "col": 92,
+              "tokLen": 9
+            },
+            "end": {
+              "offset": 522,
+              "col": 122,
+              "tokLen": 1
+            }
+          },
+          "decision": "UNRESOLVED",
+          "header_constant": null,
+          "object_decl_id": "0x5555557bb608",
+          "object_type": "PACKET_ZC_ONE",
+          "reason": "unsupported local initializer or alias/escape; object/other assignment unsupported",
+          "evidence": [
+            {
+              "ast_id": "0x5555557bb7f8",
+              "kind": "BinaryOperator",
+              "opcode": "="
+            },
+            {
+              "ast_id": "0x5555557bb970",
+              "kind": "alias_initializer"
+            },
+            {
+              "kind": "DeclRefExpr",
+              "declaration_identity_match": true
+            },
+            {
+              "ast_id": "0x5555557bb7f8",
+              "position": 1,
+              "value": 1,
+              "member_decl_id": "0x5555557b8f60"
+            }
+          ],
+          "object_decl_kind": "VarDecl",
+          "object_name": "p",
+          "target_write_count": 1,
+          "alias_or_escape_count": 1,
+          "sizeof_decl_id": "0x5555557bb608"
+        }
+      ],
+      "clang_error": null,
+      "artifact_directory": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/13",
+      "fixed_candidates": 0,
+      "unresolved_candidates": 1,
+      "unsafe_all_unresolved": true
+    },
+    {
+      "source": "/home/otto/.hermes/cache/scratch/nmg-final/alias_pointer_mutation.cpp",
+      "name": "alias_pointer_mutation",
+      "group": "retained_fresh",
+      "expected_stdout": "2 66\n",
+      "expected_kind": "unresolved",
+      "source_sha256": "929111763d43c77b47ca7b8708609d89d29fb0f9522d8ff176d7d91a2c5b8e4f",
+      "gcc_command": [
+        "/nix/store/j1938gsbvbhkyz4kbmvjk56r479mkw3s-gcc-wrapper-16.2.0/bin/g++",
+        "-std=c++17",
+        "/home/otto/.hermes/cache/scratch/nmg-final/alias_pointer_mutation.cpp",
+        "-o",
+        "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/14/oracle"
+      ],
+      "gcc_exit": 0,
+      "gcc_stdout": "2 66\n",
+      "gcc_runtime_exit": 0,
+      "oracle_matches_retained": true,
+      "clang_ast_produced": true,
+      "semantic_repeat_equal": true,
+      "semantic_ast_sha256": "4ccb947304b969437df6bdab89027c248769b98d5dbdea26cce6af97fb8346b8",
+      "candidates": [
+        {
+          "call_ast_id": "0x5555557bbc98",
+          "function_decl_id": "0x5555557bb400",
+          "function": "clif_test",
+          "call_range": {
+            "begin": {
+              "offset": 493,
+              "col": 93,
+              "tokLen": 9
+            },
+            "end": {
+              "offset": 523,
+              "col": 123,
+              "tokLen": 1
+            }
+          },
+          "decision": "UNRESOLVED",
+          "header_constant": null,
+          "object_decl_id": "0x5555557bb4b8",
+          "object_type": "PACKET_ZC_ONE",
+          "reason": "unsupported local initializer or alias/escape; object/other assignment unsupported",
+          "evidence": [
+            {
+              "ast_id": "0x5555557bb6a8",
+              "kind": "BinaryOperator",
+              "opcode": "="
+            },
+            {
+              "ast_id": "0x5555557bb7e8",
+              "kind": "alias_initializer"
+            },
+            {
+              "kind": "DeclRefExpr",
+              "declaration_identity_match": true
+            },
+            {
+              "ast_id": "0x5555557bb6a8",
+              "position": 1,
+              "value": 1,
+              "member_decl_id": "0x5555557b8e10"
+            }
+          ],
+          "object_decl_kind": "VarDecl",
+          "object_name": "p",
+          "target_write_count": 1,
+          "alias_or_escape_count": 1,
+          "sizeof_decl_id": "0x5555557bb4b8"
+        }
+      ],
+      "clang_error": null,
+      "artifact_directory": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/14",
+      "fixed_candidates": 0,
+      "unresolved_candidates": 1,
+      "unsafe_all_unresolved": true
+    },
+    {
+      "source": "/home/otto/.hermes/cache/scratch/nmg-final/parenthesized_header_assignment.cpp",
+      "name": "parenthesized_header_assignment",
+      "group": "retained_fresh",
+      "expected_stdout": "2 66\n",
+      "expected_kind": "unresolved",
+      "source_sha256": "b417065aa3ea27c35a912a71787d86ce1226e43e63fa8e61aeda378e4bc2443d",
+      "gcc_command": [
+        "/nix/store/j1938gsbvbhkyz4kbmvjk56r479mkw3s-gcc-wrapper-16.2.0/bin/g++",
+        "-std=c++17",
+        "/home/otto/.hermes/cache/scratch/nmg-final/parenthesized_header_assignment.cpp",
+        "-o",
+        "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/15/oracle"
+      ],
+      "gcc_exit": 0,
+      "gcc_stdout": "2 66\n",
+      "gcc_runtime_exit": 0,
+      "oracle_matches_retained": true,
+      "clang_ast_produced": true,
+      "semantic_repeat_equal": true,
+      "semantic_ast_sha256": "b1abb2956a4998e7b9f7ca2da661d4c860e3d9eb434380c1ef70b6ead1863356",
+      "candidates": [
+        {
+          "call_ast_id": "0x5555557bbce8",
+          "function_decl_id": "0x5555557bb660",
+          "function": "clif_test",
+          "call_range": {
+            "begin": {
+              "offset": 483,
+              "col": 83,
+              "tokLen": 9
+            },
+            "end": {
+              "offset": 513,
+              "col": 113,
+              "tokLen": 1
+            }
+          },
+          "decision": "UNRESOLVED",
+          "header_constant": null,
+          "object_decl_id": "0x5555557bb718",
+          "object_type": "PACKET_ZC_ONE",
+          "reason": "requires exactly one identity-bound header write",
+          "evidence": [
+            {
+              "ast_id": "0x5555557bb908",
+              "kind": "BinaryOperator",
+              "opcode": "="
+            },
+            {
+              "ast_id": "0x5555557bbaa0",
+              "kind": "BinaryOperator",
+              "opcode": "="
+            },
+            {
+              "kind": "DeclRefExpr",
+              "declaration_identity_match": true
+            },
+            {
+              "ast_id": "0x5555557bb908",
+              "position": 1,
+              "value": 1,
+              "member_decl_id": "0x5555557b9070"
+            },
+            {
+              "ast_id": "0x5555557bbaa0",
+              "position": 2,
+              "value": 2,
+              "member_decl_id": "0x5555557b9070"
+            }
+          ],
+          "object_decl_kind": "VarDecl",
+          "object_name": "p",
+          "target_write_count": 2,
+          "alias_or_escape_count": 0,
+          "sizeof_decl_id": "0x5555557bb718"
+        }
+      ],
+      "clang_error": null,
+      "artifact_directory": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/15",
+      "fixed_candidates": 0,
+      "unresolved_candidates": 1,
+      "unsafe_all_unresolved": true
+    },
+    {
+      "source": "/home/otto/.hermes/cache/scratch/nmg-final/parenthesized_postfix.cpp",
+      "name": "parenthesized_postfix",
+      "group": "retained_fresh",
+      "expected_stdout": "2 66\n",
+      "expected_kind": "unresolved",
+      "source_sha256": "c5c928e10556730603e2fa4f3ee606dab6c454502146a524cf2db373ec4ef938",
+      "gcc_command": [
+        "/nix/store/j1938gsbvbhkyz4kbmvjk56r479mkw3s-gcc-wrapper-16.2.0/bin/g++",
+        "-std=c++17",
+        "/home/otto/.hermes/cache/scratch/nmg-final/parenthesized_postfix.cpp",
+        "-o",
+        "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/16/oracle"
+      ],
+      "gcc_exit": 0,
+      "gcc_stdout": "2 66\n",
+      "gcc_runtime_exit": 0,
+      "oracle_matches_retained": true,
+      "clang_ast_produced": true,
+      "semantic_repeat_equal": true,
+      "semantic_ast_sha256": "3275674901f0a3b6e921dbda6cc9ac9dec9d8c0e1aa86309c40b1f4b0eb14bd4",
+      "candidates": [
+        {
+          "call_ast_id": "0x5555557bba48",
+          "function_decl_id": "0x5555557bb400",
+          "function": "clif_test",
+          "call_range": {
+            "begin": {
+              "offset": 483,
+              "col": 83,
+              "tokLen": 9
+            },
+            "end": {
+              "offset": 513,
+              "col": 113,
+              "tokLen": 1
+            }
+          },
+          "decision": "UNRESOLVED",
+          "header_constant": null,
+          "object_decl_id": "0x5555557bb4b8",
+          "object_type": "PACKET_ZC_ONE",
+          "reason": "unsupported AST statement: UnaryOperator",
+          "evidence": [
+            {
+              "ast_id": "0x5555557bb6a8",
+              "kind": "BinaryOperator",
+              "opcode": "="
+            },
+            {
+              "ast_id": "0x5555557bb808",
+              "kind": "UnaryOperator",
+              "opcode": "++"
+            },
+            {
+              "kind": "DeclRefExpr",
+              "declaration_identity_match": true
+            },
+            {
+              "ast_id": "0x5555557bb6a8",
+              "position": 1,
+              "value": 1,
+              "member_decl_id": "0x5555557b8e10"
+            }
+          ],
+          "object_decl_kind": "VarDecl",
+          "object_name": "p",
+          "target_write_count": 2,
+          "alias_or_escape_count": 0,
+          "sizeof_decl_id": "0x5555557bb4b8"
+        }
+      ],
+      "clang_error": null,
+      "artifact_directory": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/16",
+      "fixed_candidates": 0,
+      "unresolved_candidates": 1,
+      "unsafe_all_unresolved": true
+    },
+    {
+      "source": "/home/otto/.hermes/cache/scratch/nmg-final/parenthesized_object_assignment.cpp",
+      "name": "parenthesized_object_assignment",
+      "group": "retained_fresh",
+      "expected_stdout": "2 66\n",
+      "expected_kind": "unresolved",
+      "source_sha256": "05251373fa6fd3ed9a40f822bf6eef7c7701257049728292a71d09b9fb2a3899",
+      "gcc_command": [
+        "/nix/store/j1938gsbvbhkyz4kbmvjk56r479mkw3s-gcc-wrapper-16.2.0/bin/g++",
+        "-std=c++17",
+        "/home/otto/.hermes/cache/scratch/nmg-final/parenthesized_object_assignment.cpp",
+        "-o",
+        "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/17/oracle"
+      ],
+      "gcc_exit": 0,
+      "gcc_stdout": "2 66\n",
+      "gcc_runtime_exit": 0,
+      "oracle_matches_retained": true,
+      "clang_ast_produced": true,
+      "semantic_repeat_equal": true,
+      "semantic_ast_sha256": "a78d4c6bbc8ace8e62ee4f0e57a155b11fd1e700959554ef3eeb741a00321f29",
+      "candidates": [
+        {
+          "call_ast_id": "0x5555557bcb78",
+          "function_decl_id": "0x5555557bb660",
+          "function": "clif_test",
+          "call_range": {
+            "begin": {
+              "offset": 490,
+              "col": 90,
+              "tokLen": 9
+            },
+            "end": {
+              "offset": 520,
+              "col": 120,
+              "tokLen": 1
+            }
+          },
+          "decision": "UNRESOLVED",
+          "header_constant": null,
+          "object_decl_id": "0x5555557bb718",
+          "object_type": "PACKET_ZC_ONE",
+          "reason": "unsupported record layout/behavior",
+          "evidence": [
+            {
+              "ast_id": "0x5555557bb908",
+              "kind": "BinaryOperator",
+              "opcode": "="
+            },
+            {
+              "ast_id": "0x5555557bc938",
+              "kind": "unknown_call_escape"
+            },
+            {
+              "kind": "DeclRefExpr",
+              "declaration_identity_match": true
+            }
+          ],
+          "object_decl_kind": "VarDecl",
+          "object_name": "p",
+          "target_write_count": 1,
+          "alias_or_escape_count": 1,
+          "sizeof_decl_id": "0x5555557bb718"
+        }
+      ],
+      "clang_error": null,
+      "artifact_directory": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/17",
+      "fixed_candidates": 0,
+      "unresolved_candidates": 1,
+      "unsafe_all_unresolved": true
+    },
+    {
+      "source": "/home/otto/.hermes/cache/scratch/nmg-final/header_after_send.cpp",
+      "name": "header_after_send",
+      "group": "retained_fresh",
+      "expected_stdout": "2 66\n",
+      "expected_kind": "unresolved",
+      "source_sha256": "14a74ae6d296fcec1bc96a1eb2870b24943e546ea205d7a660c9986952f36797",
+      "gcc_command": [
+        "/nix/store/j1938gsbvbhkyz4kbmvjk56r479mkw3s-gcc-wrapper-16.2.0/bin/g++",
+        "-std=c++17",
+        "/home/otto/.hermes/cache/scratch/nmg-final/header_after_send.cpp",
+        "-o",
+        "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/18/oracle"
+      ],
+      "gcc_exit": 0,
+      "gcc_stdout": "2 66\n",
+      "gcc_runtime_exit": 0,
+      "oracle_matches_retained": true,
+      "clang_ast_produced": true,
+      "semantic_repeat_equal": true,
+      "semantic_ast_sha256": "3af93a34af854e6be9a8496fe4afb7ba54c028726f69bc263dcb2d83da4ca791",
+      "candidates": [
+        {
+          "call_ast_id": "0x5555557bb8d8",
+          "function_decl_id": "0x5555557bb410",
+          "function": "clif_test",
+          "call_range": {
+            "begin": {
+              "offset": 441,
+              "col": 41,
+              "tokLen": 9
+            },
+            "end": {
+              "offset": 471,
+              "col": 71,
+              "tokLen": 1
+            }
+          },
+          "decision": "UNRESOLVED",
+          "header_constant": null,
+          "object_decl_id": "0x5555557bb4c8",
+          "object_type": "PACKET_ZC_ONE",
+          "reason": "unsupported object initializer",
+          "evidence": [
+            {
+              "ast_id": "0x5555557bba28",
+              "kind": "BinaryOperator",
+              "opcode": "="
+            },
+            {
+              "kind": "DeclRefExpr",
+              "declaration_identity_match": true
+            }
+          ],
+          "object_decl_kind": "VarDecl",
+          "object_name": "p",
+          "target_write_count": 1,
+          "alias_or_escape_count": 0,
+          "sizeof_decl_id": "0x5555557bb4c8"
+        }
+      ],
+      "clang_error": null,
+      "artifact_directory": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/18",
+      "fixed_candidates": 0,
+      "unresolved_candidates": 1,
+      "unsafe_all_unresolved": true
+    },
+    {
+      "source": "/home/otto/.hermes/cache/scratch/nmg-final/array_shadow.cpp",
+      "name": "array_shadow",
+      "group": "retained_fresh",
+      "expected_stdout": "2 4\n",
+      "expected_kind": "unresolved",
+      "source_sha256": "c449e9ba9da403321e054f904c94d0fc083743188282e57ae3e1f6ec9bbfd1a0",
+      "gcc_command": [
+        "/nix/store/j1938gsbvbhkyz4kbmvjk56r479mkw3s-gcc-wrapper-16.2.0/bin/g++",
+        "-std=c++17",
+        "/home/otto/.hermes/cache/scratch/nmg-final/array_shadow.cpp",
+        "-o",
+        "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/19/oracle"
+      ],
+      "gcc_exit": 0,
+      "gcc_stdout": "2 4\n",
+      "gcc_runtime_exit": 0,
+      "oracle_matches_retained": true,
+      "clang_ast_produced": true,
+      "semantic_repeat_equal": true,
+      "semantic_ast_sha256": "9ef55b753927aa684e698c9356e6c10d51ca25184fa8261cb6b6f67f8009f1e5",
+      "candidates": [
+        {
+          "call_ast_id": "0x5555557bbba8",
+          "function_decl_id": "0x5555557bb370",
+          "function": "clif_test",
+          "call_range": {
+            "begin": {
+              "offset": 488,
+              "col": 88,
+              "tokLen": 9
+            },
+            "end": {
+              "offset": 518,
+              "col": 118,
+              "tokLen": 1
+            }
+          },
+          "decision": "UNRESOLVED",
+          "header_constant": null,
+          "object_decl_id": "0x5555557bb768",
+          "object_type": "char[4]",
+          "reason": "nested/lambda/conditional sender unsupported; declaration identity preserved",
+          "evidence": [],
+          "object_decl_kind": "VarDecl",
+          "object_name": "p",
+          "target_write_count": 0,
+          "alias_or_escape_count": 0
+        }
+      ],
+      "clang_error": null,
+      "artifact_directory": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/19",
+      "fixed_candidates": 0,
+      "unresolved_candidates": 1,
+      "unsafe_all_unresolved": true
+    },
+    {
+      "source": "/home/otto/.hermes/cache/scratch/nmg-final/array_no_binding_send.cpp",
+      "name": "array_no_binding_send",
+      "group": "retained_fresh",
+      "expected_stdout": "0 4\n",
+      "expected_kind": "unresolved",
+      "source_sha256": "8ea69ddbcdc7aa976eff46b6898535ba5e5f073418b434d9b40d17fd865dcbcd",
+      "gcc_command": [
+        "/nix/store/j1938gsbvbhkyz4kbmvjk56r479mkw3s-gcc-wrapper-16.2.0/bin/g++",
+        "-std=c++17",
+        "/home/otto/.hermes/cache/scratch/nmg-final/array_no_binding_send.cpp",
+        "-o",
+        "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/20/oracle"
+      ],
+      "gcc_exit": 0,
+      "gcc_stdout": "0 4\n",
+      "gcc_runtime_exit": 0,
+      "oracle_matches_retained": true,
+      "clang_ast_produced": true,
+      "semantic_repeat_equal": true,
+      "semantic_ast_sha256": "ed0d7d915c48436795c22723a06a633ec32ebf4db5c6e99937f21066d8ddc492",
+      "candidates": [
+        {
+          "call_ast_id": "0x5555557bbaa8",
+          "function_decl_id": "0x5555557bb400",
+          "function": "clif_test",
+          "call_range": {
+            "begin": {
+              "offset": 478,
+              "col": 78,
+              "tokLen": 9
+            },
+            "end": {
+              "offset": 507,
+              "col": 107,
+              "tokLen": 1
+            }
+          },
+          "decision": "UNRESOLVED",
+          "header_constant": null,
+          "object_decl_id": null,
+          "object_type": null,
+          "reason": "send pointer is not direct address of declaration",
+          "evidence": []
+        }
+      ],
+      "clang_error": null,
+      "artifact_directory": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/20",
+      "fixed_candidates": 0,
+      "unresolved_candidates": 1,
+      "unsafe_all_unresolved": true
+    },
+    {
+      "source": "/home/otto/.hermes/cache/scratch/nmg-final/comments_strings_positive.cpp",
+      "name": "comments_strings_positive",
+      "group": "retained_fresh",
+      "expected_stdout": "1 66\n",
+      "expected_kind": "fixed",
+      "source_sha256": "f16699a933872fcc264c69b14500849f4db2dfb8ebe3e48ea7f3d4d4e91f5b23",
+      "gcc_command": [
+        "/nix/store/j1938gsbvbhkyz4kbmvjk56r479mkw3s-gcc-wrapper-16.2.0/bin/g++",
+        "-std=c++17",
+        "/home/otto/.hermes/cache/scratch/nmg-final/comments_strings_positive.cpp",
+        "-o",
+        "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/21/oracle"
+      ],
+      "gcc_exit": 0,
+      "gcc_stdout": "1 66\n",
+      "gcc_runtime_exit": 0,
+      "oracle_matches_retained": true,
+      "clang_ast_produced": true,
+      "semantic_repeat_equal": true,
+      "semantic_ast_sha256": "34901af4dfdf31c5465612dcd3dea98bd81fe83c6bbf45a17d36283315f83dc4",
+      "candidates": [
+        {
+          "call_ast_id": "0x5555557bbce8",
+          "function_decl_id": "0x5555557bb5e0",
+          "function": "clif_test",
+          "call_range": {
+            "begin": {
+              "offset": 539,
+              "col": 139,
+              "tokLen": 9
+            },
+            "end": {
+              "offset": 569,
+              "col": 169,
+              "tokLen": 1
+            }
+          },
+          "decision": "FIXED_SIZEOF",
+          "header_constant": 1,
+          "object_decl_id": "0x5555557bb698",
+          "object_type": "PACKET_ZC_ONE",
+          "reason": null,
+          "evidence": [
+            {
+              "ast_id": "0x5555557bb888",
+              "kind": "BinaryOperator",
+              "opcode": "="
+            },
+            {
+              "kind": "DeclRefExpr",
+              "declaration_identity_match": true
+            },
+            {
+              "ast_id": "0x5555557bb888",
+              "position": 1,
+              "value": 1,
+              "member_decl_id": "0x5555557b8ff0"
+            }
+          ],
+          "object_decl_kind": "VarDecl",
+          "object_name": "p",
+          "target_write_count": 1,
+          "alias_or_escape_count": 0,
+          "sizeof_decl_id": "0x5555557bb698",
+          "fixture_sink_body_sha256": "72b8df1285557d24295288c02833d27c371cbfc68c289c6627d3c934958d1242",
+          "fixture_sink_ast_shape_sha256": "7a917aba4f138cf0914bef782c7cebabbe735a4f0e71ee65417481ffef715da0",
+          "framing": {
+            "kind": "sizeof_same_local",
+            "type": "PACKET_ZC_ONE",
+            "numeric_length": null
+          }
+        }
+      ],
+      "clang_error": null,
+      "artifact_directory": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/21",
+      "fixed_candidates": 1,
+      "unresolved_candidates": 0,
+      "unsafe_all_unresolved": null
+    },
+    {
+      "source": "/home/otto/.hermes/cache/scratch/nmg-final/ordinary_branch_positive.cpp",
+      "name": "ordinary_branch_positive",
+      "group": "retained_fresh",
+      "expected_stdout": "1 66\n",
+      "expected_kind": "fixed",
+      "source_sha256": "59ba43fb3e06a75d083499e3c438f9378278d0b9ae183f05334313ec351f46e0",
+      "gcc_command": [
+        "/nix/store/j1938gsbvbhkyz4kbmvjk56r479mkw3s-gcc-wrapper-16.2.0/bin/g++",
+        "-std=c++17",
+        "/home/otto/.hermes/cache/scratch/nmg-final/ordinary_branch_positive.cpp",
+        "-o",
+        "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/22/oracle"
+      ],
+      "gcc_exit": 0,
+      "gcc_stdout": "1 66\n",
+      "gcc_runtime_exit": 0,
+      "oracle_matches_retained": true,
+      "clang_ast_produced": true,
+      "semantic_repeat_equal": true,
+      "semantic_ast_sha256": "d8608945b5046eacd5647cfba2195efb0e47c6fcd6ac186dcb5a5d978a10100f",
+      "candidates": [
+        {
+          "call_ast_id": "0x5555557bbb38",
+          "function_decl_id": "0x5555557bb570",
+          "function": "clif_test",
+          "call_range": {
+            "begin": {
+              "offset": 475,
+              "col": 75,
+              "tokLen": 9
+            },
+            "end": {
+              "offset": 505,
+              "col": 105,
+              "tokLen": 1
+            }
+          },
+          "decision": "UNRESOLVED",
+          "header_constant": null,
+          "object_decl_id": "0x5555557bb628",
+          "object_type": "PACKET_ZC_ONE",
+          "reason": "nested/lambda/conditional sender unsupported; declaration identity preserved",
+          "evidence": [
+            {
+              "ast_id": "0x5555557bb818",
+              "kind": "BinaryOperator",
+              "opcode": "="
+            },
+            {
+              "ast_id": "0x5555557bbd38",
+              "kind": "unknown_call_escape"
+            }
+          ],
+          "object_decl_kind": "VarDecl",
+          "object_name": "p",
+          "target_write_count": 1,
+          "alias_or_escape_count": 1
+        },
+        {
+          "call_ast_id": "0x5555557bbd38",
+          "function_decl_id": "0x5555557bb570",
+          "function": "clif_test",
+          "call_range": {
+            "begin": {
+              "offset": 516,
+              "col": 116,
+              "tokLen": 9
+            },
+            "end": {
+              "offset": 546,
+              "col": 146,
+              "tokLen": 1
+            }
+          },
+          "decision": "UNRESOLVED",
+          "header_constant": null,
+          "object_decl_id": "0x5555557bb628",
+          "object_type": "PACKET_ZC_ONE",
+          "reason": "nested/lambda/conditional sender unsupported; declaration identity preserved",
+          "evidence": [
+            {
+              "ast_id": "0x5555557bb818",
+              "kind": "BinaryOperator",
+              "opcode": "="
+            },
+            {
+              "ast_id": "0x5555557bbb38",
+              "kind": "unknown_call_escape"
+            }
+          ],
+          "object_decl_kind": "VarDecl",
+          "object_name": "p",
+          "target_write_count": 1,
+          "alias_or_escape_count": 1
+        }
+      ],
+      "clang_error": null,
+      "artifact_directory": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/22",
+      "fixed_candidates": 0,
+      "unresolved_candidates": 2,
+      "unsafe_all_unresolved": null
+    },
+    {
+      "source": "/home/otto/.hermes/cache/scratch/nmg-final/owned/complete-header.cpp",
+      "name": "complete-header",
+      "group": "prior_available",
+      "expected_kind": null,
+      "source_sha256": "5899a609249a73db8345b2a6fb65cf1f25d51296e33f4fb2e27abaeab64f75bb",
+      "gcc_command": [
+        "/nix/store/j1938gsbvbhkyz4kbmvjk56r479mkw3s-gcc-wrapper-16.2.0/bin/g++",
+        "-std=c++17",
+        "/home/otto/.hermes/cache/scratch/nmg-final/owned/complete-header.cpp",
+        "-o",
+        "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/23/oracle"
+      ],
+      "gcc_exit": 1,
+      "clang_ast_produced": false,
+      "semantic_repeat_equal": false,
+      "semantic_ast_sha256": null,
+      "candidates": [],
+      "clang_error": "compiler rejected source",
+      "artifact_directory": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/23",
+      "fixed_candidates": 0,
+      "unresolved_candidates": 0,
+      "unsafe_all_unresolved": null
+    },
+    {
+      "source": "/home/otto/.hermes/cache/scratch/nmg-final/owned/cycle2-PacketTypedecrement.cpp",
+      "name": "cycle2-PacketTypedecrement",
+      "group": "prior_available",
+      "expected_kind": "unresolved",
+      "source_sha256": "2a8b1f6c3274e6b1f86f665e114a87164e289438b7f8da5e385f8992bdab1a21",
+      "gcc_command": [
+        "/nix/store/j1938gsbvbhkyz4kbmvjk56r479mkw3s-gcc-wrapper-16.2.0/bin/g++",
+        "-std=c++17",
+        "/home/otto/.hermes/cache/scratch/nmg-final/owned/cycle2-PacketTypedecrement.cpp",
+        "-o",
+        "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/24/oracle"
+      ],
+      "gcc_exit": 0,
+      "gcc_stdout": "0 66\n",
+      "gcc_runtime_exit": 0,
+      "oracle_matches_retained": true,
+      "clang_ast_produced": true,
+      "semantic_repeat_equal": true,
+      "semantic_ast_sha256": "11f6c59342d2b4a472991e232407778149a22e83384ccd8d9b86213656df0b34",
+      "candidates": [
+        {
+          "call_ast_id": "0x5555557bb958",
+          "function_decl_id": "0x5555557bade0",
+          "function": "clif_test",
+          "call_range": {
+            "begin": {
+              "offset": 411,
+              "col": 80,
+              "tokLen": 9
+            },
+            "end": {
+              "offset": 441,
+              "col": 110,
+              "tokLen": 1
+            }
+          },
+          "decision": "UNRESOLVED",
+          "header_constant": null,
+          "object_decl_id": "0x5555557baed0",
+          "object_type": "PACKET_ZC_ONE",
+          "reason": "unsupported record layout/behavior",
+          "evidence": [
+            {
+              "ast_id": "0x5555557bb710",
+              "kind": "BinaryOperator",
+              "opcode": "="
+            },
+            {
+              "ast_id": "0x5555557bb780",
+              "kind": "UnaryOperator",
+              "opcode": "--"
+            },
+            {
+              "kind": "DeclRefExpr",
+              "declaration_identity_match": true
+            }
+          ],
+          "object_decl_kind": "VarDecl",
+          "object_name": "p",
+          "target_write_count": 2,
+          "alias_or_escape_count": 0,
+          "sizeof_decl_id": "0x5555557baed0"
+        }
+      ],
+      "clang_error": null,
+      "artifact_directory": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/24",
+      "fixed_candidates": 0,
+      "unresolved_candidates": 1,
+      "unsafe_all_unresolved": true
+    },
+    {
+      "source": "/home/otto/.hermes/cache/scratch/nmg-final/owned/cycle2-PacketTypeincrement.cpp",
+      "name": "cycle2-PacketTypeincrement",
+      "group": "prior_available",
+      "expected_kind": "unresolved",
+      "source_sha256": "a9a248e9e72be582ef54c88479ed6e21cb5a58246a12224606f7d537c3aaa7f4",
+      "gcc_command": [
+        "/nix/store/j1938gsbvbhkyz4kbmvjk56r479mkw3s-gcc-wrapper-16.2.0/bin/g++",
+        "-std=c++17",
+        "/home/otto/.hermes/cache/scratch/nmg-final/owned/cycle2-PacketTypeincrement.cpp",
+        "-o",
+        "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/25/oracle"
+      ],
+      "gcc_exit": 0,
+      "gcc_stdout": "2 66\n",
+      "gcc_runtime_exit": 0,
+      "oracle_matches_retained": true,
+      "clang_ast_produced": true,
+      "semantic_repeat_equal": true,
+      "semantic_ast_sha256": "0744799fc981cc626cd4b7c341ddec810150e7f9e1cc982946f023d8f20da014",
+      "candidates": [
+        {
+          "call_ast_id": "0x5555557bb998",
+          "function_decl_id": "0x5555557bade0",
+          "function": "clif_test",
+          "call_range": {
+            "begin": {
+              "offset": 416,
+              "col": 85,
+              "tokLen": 9
+            },
+            "end": {
+              "offset": 446,
+              "col": 115,
+              "tokLen": 1
+            }
+          },
+          "decision": "UNRESOLVED",
+          "header_constant": null,
+          "object_decl_id": "0x5555557baed0",
+          "object_type": "PACKET_ZC_ONE",
+          "reason": "unsupported record layout/behavior",
+          "evidence": [
+            {
+              "ast_id": "0x5555557bb710",
+              "kind": "BinaryOperator",
+              "opcode": "="
+            },
+            {
+              "ast_id": "0x5555557bb7c0",
+              "kind": "UnaryOperator",
+              "opcode": "++"
+            },
+            {
+              "kind": "DeclRefExpr",
+              "declaration_identity_match": true
+            }
+          ],
+          "object_decl_kind": "VarDecl",
+          "object_name": "p",
+          "target_write_count": 2,
+          "alias_or_escape_count": 0,
+          "sizeof_decl_id": "0x5555557baed0"
+        }
+      ],
+      "clang_error": null,
+      "artifact_directory": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/25",
+      "fixed_candidates": 0,
+      "unresolved_candidates": 1,
+      "unsafe_all_unresolved": true
+    },
+    {
+      "source": "/home/otto/.hermes/cache/scratch/nmg-final/owned/cycle2-lambda.cpp",
+      "name": "cycle2-lambda",
+      "group": "prior_available",
+      "expected_kind": "unresolved",
+      "source_sha256": "8b8f3856a338b16c9de417912d428213a8df61484e00a3f5ba4ee702f62998e5",
+      "gcc_command": [
+        "/nix/store/j1938gsbvbhkyz4kbmvjk56r479mkw3s-gcc-wrapper-16.2.0/bin/g++",
+        "-std=c++17",
+        "/home/otto/.hermes/cache/scratch/nmg-final/owned/cycle2-lambda.cpp",
+        "-o",
+        "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/26/oracle"
+      ],
+      "gcc_exit": 0,
+      "gcc_stdout": "2 4\n",
+      "gcc_runtime_exit": 0,
+      "oracle_matches_retained": true,
+      "clang_ast_produced": true,
+      "semantic_repeat_equal": true,
+      "semantic_ast_sha256": "282e0c03d3606a8958f44d3faf5b23e4abe2ea5eda4b7c9d9f52c43e3410553d",
+      "candidates": [
+        {
+          "call_ast_id": "0x5555557bbbb8",
+          "function_decl_id": "0x5555557bac00",
+          "function": "clif_test",
+          "call_range": {
+            "begin": {
+              "offset": 428,
+              "col": 97,
+              "tokLen": 9
+            },
+            "end": {
+              "offset": 458,
+              "col": 127,
+              "tokLen": 1
+            }
+          },
+          "decision": "UNRESOLVED",
+          "header_constant": null,
+          "object_decl_id": "0x5555557bb840",
+          "object_type": "PACKET_ZC_TWO",
+          "reason": "nested/lambda/conditional sender unsupported; declaration identity preserved",
+          "evidence": [
+            {
+              "ast_id": "0x5555557bb598",
+              "kind": "alias_initializer"
+            }
+          ],
+          "object_decl_kind": "ParmVarDecl",
+          "object_name": "p",
+          "target_write_count": 0,
+          "alias_or_escape_count": 1
+        }
+      ],
+      "clang_error": null,
+      "artifact_directory": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/26",
+      "fixed_candidates": 0,
+      "unresolved_candidates": 1,
+      "unsafe_all_unresolved": true
+    },
+    {
+      "source": "/home/otto/.hermes/cache/scratch/nmg-final/owned/cycle2-packetTypedecrement.cpp",
+      "name": "cycle2-packetTypedecrement",
+      "group": "prior_available",
+      "expected_kind": "unresolved",
+      "source_sha256": "8517f6b23285ffb7aa46b283d48f17270b41ee70eb08372b599a682cbb901770",
+      "gcc_command": [
+        "/nix/store/j1938gsbvbhkyz4kbmvjk56r479mkw3s-gcc-wrapper-16.2.0/bin/g++",
+        "-std=c++17",
+        "/home/otto/.hermes/cache/scratch/nmg-final/owned/cycle2-packetTypedecrement.cpp",
+        "-o",
+        "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/27/oracle"
+      ],
+      "gcc_exit": 0,
+      "gcc_stdout": "0 66\n",
+      "gcc_runtime_exit": 0,
+      "oracle_matches_retained": true,
+      "clang_ast_produced": true,
+      "semantic_repeat_equal": true,
+      "semantic_ast_sha256": "704a149bf4f39be3973cbe21be5dda59b59dd4f80977819f520c4639d15a97de",
+      "candidates": [
+        {
+          "call_ast_id": "0x5555557bb958",
+          "function_decl_id": "0x5555557bade0",
+          "function": "clif_test",
+          "call_range": {
+            "begin": {
+              "offset": 411,
+              "col": 80,
+              "tokLen": 9
+            },
+            "end": {
+              "offset": 441,
+              "col": 110,
+              "tokLen": 1
+            }
+          },
+          "decision": "UNRESOLVED",
+          "header_constant": null,
+          "object_decl_id": "0x5555557baed0",
+          "object_type": "PACKET_ZC_ONE",
+          "reason": "unsupported record layout/behavior",
+          "evidence": [
+            {
+              "ast_id": "0x5555557bb710",
+              "kind": "BinaryOperator",
+              "opcode": "="
+            },
+            {
+              "ast_id": "0x5555557bb780",
+              "kind": "UnaryOperator",
+              "opcode": "--"
+            },
+            {
+              "kind": "DeclRefExpr",
+              "declaration_identity_match": true
+            }
+          ],
+          "object_decl_kind": "VarDecl",
+          "object_name": "p",
+          "target_write_count": 2,
+          "alias_or_escape_count": 0,
+          "sizeof_decl_id": "0x5555557baed0"
+        }
+      ],
+      "clang_error": null,
+      "artifact_directory": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/27",
+      "fixed_candidates": 0,
+      "unresolved_candidates": 1,
+      "unsafe_all_unresolved": true
+    },
+    {
+      "source": "/home/otto/.hermes/cache/scratch/nmg-final/owned/cycle2-packetTypeincrement.cpp",
+      "name": "cycle2-packetTypeincrement",
+      "group": "prior_available",
+      "expected_kind": "unresolved",
+      "source_sha256": "27c2b8e1bfc050eb8787af6e0d327ec954c59562a921ba3f18ea9d659f6aa721",
+      "gcc_command": [
+        "/nix/store/j1938gsbvbhkyz4kbmvjk56r479mkw3s-gcc-wrapper-16.2.0/bin/g++",
+        "-std=c++17",
+        "/home/otto/.hermes/cache/scratch/nmg-final/owned/cycle2-packetTypeincrement.cpp",
+        "-o",
+        "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/28/oracle"
+      ],
+      "gcc_exit": 0,
+      "gcc_stdout": "2 66\n",
+      "gcc_runtime_exit": 0,
+      "oracle_matches_retained": true,
+      "clang_ast_produced": true,
+      "semantic_repeat_equal": true,
+      "semantic_ast_sha256": "d028d7a265018bce48406e01d0fd665246acebd4420e6a3186526284249e53a4",
+      "candidates": [
+        {
+          "call_ast_id": "0x5555557bb998",
+          "function_decl_id": "0x5555557bade0",
+          "function": "clif_test",
+          "call_range": {
+            "begin": {
+              "offset": 416,
+              "col": 85,
+              "tokLen": 9
+            },
+            "end": {
+              "offset": 446,
+              "col": 115,
+              "tokLen": 1
+            }
+          },
+          "decision": "UNRESOLVED",
+          "header_constant": null,
+          "object_decl_id": "0x5555557baed0",
+          "object_type": "PACKET_ZC_ONE",
+          "reason": "unsupported record layout/behavior",
+          "evidence": [
+            {
+              "ast_id": "0x5555557bb710",
+              "kind": "BinaryOperator",
+              "opcode": "="
+            },
+            {
+              "ast_id": "0x5555557bb7c0",
+              "kind": "UnaryOperator",
+              "opcode": "++"
+            },
+            {
+              "kind": "DeclRefExpr",
+              "declaration_identity_match": true
+            }
+          ],
+          "object_decl_kind": "VarDecl",
+          "object_name": "p",
+          "target_write_count": 2,
+          "alias_or_escape_count": 0,
+          "sizeof_decl_id": "0x5555557baed0"
+        }
+      ],
+      "clang_error": null,
+      "artifact_directory": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/28",
+      "fixed_candidates": 0,
+      "unresolved_candidates": 1,
+      "unsafe_all_unresolved": true
+    },
+    {
+      "source": "/home/otto/.hermes/cache/scratch/native-manifest-rereview1/counterexample.cpp",
+      "name": "counterexample",
+      "group": "prior_available",
+      "expected_kind": "unresolved",
+      "source_sha256": "c15af63a3cfb8f0e56dc6bbdf1ec3333d56cb7efd65af3d1247cca5c487b3bfa",
+      "gcc_command": [
+        "/nix/store/j1938gsbvbhkyz4kbmvjk56r479mkw3s-gcc-wrapper-16.2.0/bin/g++",
+        "-std=c++17",
+        "/home/otto/.hermes/cache/scratch/native-manifest-rereview1/counterexample.cpp",
+        "-o",
+        "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/29/oracle"
+      ],
+      "gcc_exit": 0,
+      "gcc_stdout": "2 66\n0 66\n2 4\n",
+      "gcc_runtime_exit": 0,
+      "oracle_matches_retained": true,
+      "clang_ast_produced": true,
+      "semantic_repeat_equal": true,
+      "semantic_ast_sha256": "b45b60b333e88cd67dcdf705367c1c31daecc61fa194395eb0df3f9d50c07ff2",
+      "candidates": [
+        {
+          "call_ast_id": "0x5555557bbd78",
+          "function_decl_id": "0x5555557bb220",
+          "function": "clif_prefix_increment",
+          "call_range": {
+            "begin": {
+              "offset": 458,
+              "col": 91,
+              "tokLen": 9
+            },
+            "end": {
+              "offset": 488,
+              "col": 121,
+              "tokLen": 1
+            }
+          },
+          "decision": "UNRESOLVED",
+          "header_constant": null,
+          "object_decl_id": "0x5555557bb310",
+          "object_type": "PACKET_ZC_ONE",
+          "reason": "unsupported record layout/behavior",
+          "evidence": [
+            {
+              "ast_id": "0x5555557bbb08",
+              "kind": "BinaryOperator",
+              "opcode": "="
+            },
+            {
+              "ast_id": "0x5555557bbb78",
+              "kind": "UnaryOperator",
+              "opcode": "++"
+            },
+            {
+              "kind": "DeclRefExpr",
+              "declaration_identity_match": true
+            }
+          ],
+          "object_decl_kind": "VarDecl",
+          "object_name": "p",
+          "target_write_count": 2,
+          "alias_or_escape_count": 0,
+          "sizeof_decl_id": "0x5555557bb310"
+        },
+        {
+          "call_ast_id": "0x5555557bc240",
+          "function_decl_id": "0x5555557bbe58",
+          "function": "clif_prefix_decrement",
+          "call_range": {
+            "begin": {
+              "offset": 582,
+              "col": 91,
+              "tokLen": 9
+            },
+            "end": {
+              "offset": 612,
+              "col": 121,
+              "tokLen": 1
+            }
+          },
+          "decision": "UNRESOLVED",
+          "header_constant": null,
+          "object_decl_id": "0x5555557bbf10",
+          "object_type": "PACKET_ZC_ONE",
+          "reason": "unsupported record layout/behavior",
+          "evidence": [
+            {
+              "ast_id": "0x5555557bc060",
+              "kind": "BinaryOperator",
+              "opcode": "="
+            },
+            {
+              "ast_id": "0x5555557bc0d0",
+              "kind": "UnaryOperator",
+              "opcode": "--"
+            },
+            {
+              "kind": "DeclRefExpr",
+              "declaration_identity_match": true
+            }
+          ],
+          "object_decl_kind": "VarDecl",
+          "object_name": "p",
+          "target_write_count": 2,
+          "alias_or_escape_count": 0,
+          "sizeof_decl_id": "0x5555557bbf10"
+        },
+        {
+          "call_ast_id": "0x5555557bcb68",
+          "function_decl_id": "0x5555557bc320",
+          "function": "clif_lambda_shadow",
+          "call_range": {
+            "begin": {
+              "offset": 719,
+              "col": 104,
+              "tokLen": 9
+            },
+            "end": {
+              "offset": 749,
+              "col": 134,
+              "tokLen": 1
+            }
+          },
+          "decision": "UNRESOLVED",
+          "header_constant": null,
+          "object_decl_id": "0x5555557bc828",
+          "object_type": "PACKET_ZC_TWO",
+          "reason": "nested/lambda/conditional sender unsupported; declaration identity preserved",
+          "evidence": [
+            {
+              "ast_id": "0x5555557bc5b8",
+              "kind": "alias_initializer"
+            }
+          ],
+          "object_decl_kind": "ParmVarDecl",
+          "object_name": "p",
+          "target_write_count": 0,
+          "alias_or_escape_count": 1
+        }
+      ],
+      "clang_error": null,
+      "artifact_directory": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/29",
+      "fixed_candidates": 0,
+      "unresolved_candidates": 3,
+      "unsafe_all_unresolved": true
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/0/first.ast.json",
+      "sha256": "bca08e08ba0c8429be1615f9643bf1f378344d480ed0e8536efef89a7f718f53"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/0/first.json",
+      "sha256": "4089d9f28f404a18c28a865d8a46e154146d64ec918a14a7fbea87caab178367"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/0/gcc.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/0/gcc.stdout",
+      "sha256": "7782ad7df07a9dc79a266a3df89692a5b66a60c5fed819d3f9732fe4f45a9bef"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/0/oracle",
+      "sha256": "d045340f7bf990905cb7a350ad685dad2f1c431ebd033218a2ba163f28c4229f"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/0/second.ast.json",
+      "sha256": "bca08e08ba0c8429be1615f9643bf1f378344d480ed0e8536efef89a7f718f53"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/0/second.json",
+      "sha256": "4089d9f28f404a18c28a865d8a46e154146d64ec918a14a7fbea87caab178367"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/1/first.ast.json",
+      "sha256": "d759474ce4bae4ed3fe93474870c7edb0e1f10f9631e6b1738f8c2c2678baecf"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/1/first.json",
+      "sha256": "e53c110abf71eb43064c7266203bc91df70e15361fae5b0b9a8082f15795dd65"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/1/gcc.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/1/gcc.stdout",
+      "sha256": "b3e5258e87fc845ed403cb7b0e61f1cdabdac141967ae3c55653d8457144f45a"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/1/oracle",
+      "sha256": "5953961a958b86a160cc86d671a156ffe7526c6fe4e584b4620b87b8fb779b0b"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/1/second.ast.json",
+      "sha256": "d759474ce4bae4ed3fe93474870c7edb0e1f10f9631e6b1738f8c2c2678baecf"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/1/second.json",
+      "sha256": "e53c110abf71eb43064c7266203bc91df70e15361fae5b0b9a8082f15795dd65"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/10/first.ast.json",
+      "sha256": "c60c3d34c60bebc91357953a286fe59c72e41fc2a29e3ab28830eca2ab1d6373"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/10/first.json",
+      "sha256": "42fbdab86b29c967c0e1e4ad6b9656011ea7ff56d35be24d18ea04900a9276f4"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/10/gcc.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/10/gcc.stdout",
+      "sha256": "0b6693b0fa788f42f92edb0721ac4da7e1b22ea0c796913a2c5e83b6271cfaf5"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/10/oracle",
+      "sha256": "51952a5bd0134ca67c806fe1f0f0c26300071a174ec056f56c0a33cd0d4d62b9"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/10/second.ast.json",
+      "sha256": "c60c3d34c60bebc91357953a286fe59c72e41fc2a29e3ab28830eca2ab1d6373"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/10/second.json",
+      "sha256": "42fbdab86b29c967c0e1e4ad6b9656011ea7ff56d35be24d18ea04900a9276f4"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/11/first.ast.json",
+      "sha256": "451afcc26a9842216802e6a4d02bdbca7f4b36827d722279d13d20b9af53d6c5"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/11/first.json",
+      "sha256": "db8d901056da93dfa58c8b37dd023accebf881ab453229c5d216f9d511759460"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/11/gcc.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/11/gcc.stdout",
+      "sha256": "0b6693b0fa788f42f92edb0721ac4da7e1b22ea0c796913a2c5e83b6271cfaf5"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/11/oracle",
+      "sha256": "dcf1bbe3410d8accfe580c0dd4f370e75fd18ce4556ed81ec917e2c219263e63"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/11/second.ast.json",
+      "sha256": "451afcc26a9842216802e6a4d02bdbca7f4b36827d722279d13d20b9af53d6c5"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/11/second.json",
+      "sha256": "db8d901056da93dfa58c8b37dd023accebf881ab453229c5d216f9d511759460"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/12/first.ast.json",
+      "sha256": "f88fcb3201719e1743621d988a473efd2b04a79edf78af7832db2fcf39bdd3c9"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/12/first.json",
+      "sha256": "0b0100d8c7a1ca8201703af5cc9ed3491c86bd1382f9ccf854081fdb6ed723d4"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/12/gcc.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/12/gcc.stdout",
+      "sha256": "7782ad7df07a9dc79a266a3df89692a5b66a60c5fed819d3f9732fe4f45a9bef"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/12/oracle",
+      "sha256": "8ccac23fe4da363ddd988e8729fd1c6e37581ac856a5b2f13e4d9f3e0e4c0d23"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/12/second.ast.json",
+      "sha256": "f88fcb3201719e1743621d988a473efd2b04a79edf78af7832db2fcf39bdd3c9"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/12/second.json",
+      "sha256": "0b0100d8c7a1ca8201703af5cc9ed3491c86bd1382f9ccf854081fdb6ed723d4"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/13/first.ast.json",
+      "sha256": "69bf17a9f3d84b54bf3324ffcfe2ac869a521237aa5252dfbc2375e69edc648e"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/13/first.json",
+      "sha256": "296647fadf069eee4a5fea0a0a49882416d4a80c2e652e5e356f13060215ff3b"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/13/gcc.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/13/gcc.stdout",
+      "sha256": "7782ad7df07a9dc79a266a3df89692a5b66a60c5fed819d3f9732fe4f45a9bef"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/13/oracle",
+      "sha256": "85ef763855e18546ac0561cf53bad31d312a2f3b45926ff06effecf03dbbdccb"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/13/second.ast.json",
+      "sha256": "69bf17a9f3d84b54bf3324ffcfe2ac869a521237aa5252dfbc2375e69edc648e"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/13/second.json",
+      "sha256": "296647fadf069eee4a5fea0a0a49882416d4a80c2e652e5e356f13060215ff3b"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/14/first.ast.json",
+      "sha256": "c7081908218f76049ddf56351a523758284bcc6d2accdf1506533b94cfa4118d"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/14/first.json",
+      "sha256": "2a7ebaabb41c27137586d91fc7f74ea830bf3fec95f6b456f858be81d132a39a"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/14/gcc.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/14/gcc.stdout",
+      "sha256": "7782ad7df07a9dc79a266a3df89692a5b66a60c5fed819d3f9732fe4f45a9bef"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/14/oracle",
+      "sha256": "2471204e18181a5bb8dc48313bd0c4ab93dd640eddbce18661b6ba99dddf8573"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/14/second.ast.json",
+      "sha256": "c7081908218f76049ddf56351a523758284bcc6d2accdf1506533b94cfa4118d"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/14/second.json",
+      "sha256": "2a7ebaabb41c27137586d91fc7f74ea830bf3fec95f6b456f858be81d132a39a"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/15/first.ast.json",
+      "sha256": "9e64c7965d7cdddbd410a252b075b13c2be58f045499376966d460605126cf83"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/15/first.json",
+      "sha256": "824a8578a7124de99192342c601a69b63eaaca9f654428c44450750d47a1e4e7"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/15/gcc.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/15/gcc.stdout",
+      "sha256": "7782ad7df07a9dc79a266a3df89692a5b66a60c5fed819d3f9732fe4f45a9bef"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/15/oracle",
+      "sha256": "3c6186179e6e54584766c7b3c6a786b27573d073cde72afd2c61476b0e29f2ad"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/15/second.ast.json",
+      "sha256": "9e64c7965d7cdddbd410a252b075b13c2be58f045499376966d460605126cf83"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/15/second.json",
+      "sha256": "824a8578a7124de99192342c601a69b63eaaca9f654428c44450750d47a1e4e7"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/16/first.ast.json",
+      "sha256": "2330d99a9f6f9d10ca9acb139f216e8b16a0b906ef87a28c42ca2031d21f88d7"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/16/first.json",
+      "sha256": "80c89ed35f22ae501c21270244f8adad624c91ef19ace2d2ade4eea37eb2c8e8"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/16/gcc.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/16/gcc.stdout",
+      "sha256": "7782ad7df07a9dc79a266a3df89692a5b66a60c5fed819d3f9732fe4f45a9bef"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/16/oracle",
+      "sha256": "ec3107de133b06f9d0bdc319e32fc6a112823d7321f0d09dd961d262db6909cf"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/16/second.ast.json",
+      "sha256": "2330d99a9f6f9d10ca9acb139f216e8b16a0b906ef87a28c42ca2031d21f88d7"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/16/second.json",
+      "sha256": "80c89ed35f22ae501c21270244f8adad624c91ef19ace2d2ade4eea37eb2c8e8"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/17/first.ast.json",
+      "sha256": "136088a02ec6e0abae10361c0928a2eee8cad6f9e78aa1e0175cbdee1fd08921"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/17/first.json",
+      "sha256": "b3a2cbff5a0c9da55b2784c3cdfa785e180e23f41b3a7ace0bd200823248c358"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/17/gcc.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/17/gcc.stdout",
+      "sha256": "7782ad7df07a9dc79a266a3df89692a5b66a60c5fed819d3f9732fe4f45a9bef"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/17/oracle",
+      "sha256": "eb2083065bd786cd2ca6ad69cb81326ad4a7fd42ff986ac3757396656f42a948"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/17/second.ast.json",
+      "sha256": "136088a02ec6e0abae10361c0928a2eee8cad6f9e78aa1e0175cbdee1fd08921"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/17/second.json",
+      "sha256": "b3a2cbff5a0c9da55b2784c3cdfa785e180e23f41b3a7ace0bd200823248c358"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/18/first.ast.json",
+      "sha256": "e2c866f1d3e200d3fab802985610670041f1d936a7639efaff9f113886fbbd28"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/18/first.json",
+      "sha256": "c09513ba0a88e238f7317e94f30bf2aee90aec06fd5820539beb17ce4a9c8965"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/18/gcc.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/18/gcc.stdout",
+      "sha256": "7782ad7df07a9dc79a266a3df89692a5b66a60c5fed819d3f9732fe4f45a9bef"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/18/oracle",
+      "sha256": "f2e6cdd769b60693681364366a54cb25d2555a94d4f649596b15a270891e8b86"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/18/second.ast.json",
+      "sha256": "e2c866f1d3e200d3fab802985610670041f1d936a7639efaff9f113886fbbd28"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/18/second.json",
+      "sha256": "c09513ba0a88e238f7317e94f30bf2aee90aec06fd5820539beb17ce4a9c8965"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/19/first.ast.json",
+      "sha256": "c4afd43c151bcf01c59a933485abb9cf9dfd264de6188c348e4c7f9b5284aae9"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/19/first.json",
+      "sha256": "c4a884367fbc202f5878fa75258a7745a20c5666077b4785d380876bd21494a9"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/19/gcc.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/19/gcc.stdout",
+      "sha256": "0b6693b0fa788f42f92edb0721ac4da7e1b22ea0c796913a2c5e83b6271cfaf5"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/19/oracle",
+      "sha256": "8dc8f408c1a97bad4fa44675907e74b412c05e6331d46d07516c9bf733ff1be4"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/19/second.ast.json",
+      "sha256": "c4afd43c151bcf01c59a933485abb9cf9dfd264de6188c348e4c7f9b5284aae9"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/19/second.json",
+      "sha256": "c4a884367fbc202f5878fa75258a7745a20c5666077b4785d380876bd21494a9"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/2/first.ast.json",
+      "sha256": "6126fab23eed765ad31f5ff10549d7b146cb48b6d51d0a164d08da36062cb2a8"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/2/first.json",
+      "sha256": "5c6d08b23a5b34f8ce30ed034a68fef72cdfdc6ff0f7adc266cb426990a89035"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/2/gcc.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/2/gcc.stdout",
+      "sha256": "0b6693b0fa788f42f92edb0721ac4da7e1b22ea0c796913a2c5e83b6271cfaf5"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/2/oracle",
+      "sha256": "e7e882f5fc17dc2b1a5bec7ecdecebc790a13e2968e4a9f4a8c4f56d34ec0550"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/2/second.ast.json",
+      "sha256": "6126fab23eed765ad31f5ff10549d7b146cb48b6d51d0a164d08da36062cb2a8"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/2/second.json",
+      "sha256": "5c6d08b23a5b34f8ce30ed034a68fef72cdfdc6ff0f7adc266cb426990a89035"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/20/first.ast.json",
+      "sha256": "0e272bb552fd631c69158847ae0eabb126e8dac16b097382728551a47c90110a"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/20/first.json",
+      "sha256": "1290c725ec16949b348793deba8bbf79bc3a689040d6edbda3f157fe7f755ea4"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/20/gcc.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/20/gcc.stdout",
+      "sha256": "968c76efed47eb02a2a77c542c9128dfd4e9c7066629920b2d8c3231081e7623"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/20/oracle",
+      "sha256": "b243edb9d25e4c380c5033aaa68a014ecf342c80b115d984f413d744e9a3bace"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/20/second.ast.json",
+      "sha256": "0e272bb552fd631c69158847ae0eabb126e8dac16b097382728551a47c90110a"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/20/second.json",
+      "sha256": "1290c725ec16949b348793deba8bbf79bc3a689040d6edbda3f157fe7f755ea4"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/21/first.ast.json",
+      "sha256": "2136fd6aba8dc88cc742f82ced988b9508e911e2bb4f220134a25861dc564a98"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/21/first.json",
+      "sha256": "47075e28a9900034f71807ef34314f5e0e3c0ad8e74bdbbf3238bd4a64e9c751"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/21/gcc.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/21/gcc.stdout",
+      "sha256": "dc6ca95cf92eedc688367f107042c85746ac78066238d8cb9c053f09ef691319"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/21/oracle",
+      "sha256": "202455ef130e0570447115bf33f3baafac7076bc768024009eedfcea532f18a7"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/21/second.ast.json",
+      "sha256": "2136fd6aba8dc88cc742f82ced988b9508e911e2bb4f220134a25861dc564a98"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/21/second.json",
+      "sha256": "47075e28a9900034f71807ef34314f5e0e3c0ad8e74bdbbf3238bd4a64e9c751"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/22/first.ast.json",
+      "sha256": "37f375adfa17221f9c91f1dc649a02c0eb2ae9125734eae673681cb0fd7fe7eb"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/22/first.json",
+      "sha256": "fa3b44c1f078089df9aacacbebf4e9d88b44084fab4ba7f182ce1107abb63c80"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/22/gcc.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/22/gcc.stdout",
+      "sha256": "dc6ca95cf92eedc688367f107042c85746ac78066238d8cb9c053f09ef691319"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/22/oracle",
+      "sha256": "f7c924a90e6b77c3f2cf63f335b5df620ef38194b36b0ef6eb4d5e3df9abfbe7"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/22/second.ast.json",
+      "sha256": "37f375adfa17221f9c91f1dc649a02c0eb2ae9125734eae673681cb0fd7fe7eb"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/22/second.json",
+      "sha256": "fa3b44c1f078089df9aacacbebf4e9d88b44084fab4ba7f182ce1107abb63c80"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/23/first.json",
+      "sha256": "22d60b8518f6911946d3fe76119de0d5182313d3cad7c540f300ca759f313e69"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/23/gcc.stderr",
+      "sha256": "2c39594dcfcfb55832ef26a6e1bc08b8f49a8b58b2b1145d87a4e17300b571e3"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/23/second.json",
+      "sha256": "22d60b8518f6911946d3fe76119de0d5182313d3cad7c540f300ca759f313e69"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/24/first.ast.json",
+      "sha256": "738646faac52e41f72318343466208b58521f0bd10bc8e5b747cdb106d85bbcb"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/24/first.json",
+      "sha256": "1527d774dcf4a4ff5ab1ffb736968594da9dcc4d7d9cc1fab37a95b3aa9c2e20"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/24/gcc.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/24/gcc.stdout",
+      "sha256": "b3e5258e87fc845ed403cb7b0e61f1cdabdac141967ae3c55653d8457144f45a"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/24/oracle",
+      "sha256": "98923d485dcd2ba825e1dc34be4df25b9563d2c9f37733b2e73a664da970c70f"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/24/second.ast.json",
+      "sha256": "738646faac52e41f72318343466208b58521f0bd10bc8e5b747cdb106d85bbcb"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/24/second.json",
+      "sha256": "1527d774dcf4a4ff5ab1ffb736968594da9dcc4d7d9cc1fab37a95b3aa9c2e20"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/25/first.ast.json",
+      "sha256": "f4b94a7f2cf40fee6adc512a67707d0dc018552f98d1d0a1a7313a8ede9776c9"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/25/first.json",
+      "sha256": "61af38a8330d423532f4dcd524d1cec8acac808ecf34e55575dbc1f72e841917"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/25/gcc.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/25/gcc.stdout",
+      "sha256": "7782ad7df07a9dc79a266a3df89692a5b66a60c5fed819d3f9732fe4f45a9bef"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/25/oracle",
+      "sha256": "f6f3935253e618058a7d8112a4de645b13b7b3ac894fdcbee84c2e5defc08271"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/25/second.ast.json",
+      "sha256": "f4b94a7f2cf40fee6adc512a67707d0dc018552f98d1d0a1a7313a8ede9776c9"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/25/second.json",
+      "sha256": "61af38a8330d423532f4dcd524d1cec8acac808ecf34e55575dbc1f72e841917"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/26/first.ast.json",
+      "sha256": "25b785261a4f997c108da5d35fd71df314a92207ef1fb8043714562b91d5da67"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/26/first.json",
+      "sha256": "7f81e62915a08e4112b0fa5bdf979c5fd30d34b2b6fa0238aa1a89ad39c33c6d"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/26/gcc.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/26/gcc.stdout",
+      "sha256": "0b6693b0fa788f42f92edb0721ac4da7e1b22ea0c796913a2c5e83b6271cfaf5"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/26/oracle",
+      "sha256": "503c51ae78c8407c98b42bf7a2547cbd442c8c2f2296ff05d15c3a65cd59574b"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/26/second.ast.json",
+      "sha256": "25b785261a4f997c108da5d35fd71df314a92207ef1fb8043714562b91d5da67"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/26/second.json",
+      "sha256": "7f81e62915a08e4112b0fa5bdf979c5fd30d34b2b6fa0238aa1a89ad39c33c6d"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/27/first.ast.json",
+      "sha256": "e47c22ed267d2344b9cfd03bc953511d80775b52190d623fcdc88715a09b70da"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/27/first.json",
+      "sha256": "e5c93c6fed02656f4f445d886cddd228a02214a150bcfad7760fa7144372b9e4"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/27/gcc.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/27/gcc.stdout",
+      "sha256": "b3e5258e87fc845ed403cb7b0e61f1cdabdac141967ae3c55653d8457144f45a"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/27/oracle",
+      "sha256": "154394d341117c63d96485c92e808fe97010628b00c0e23c4a0c224ce754f066"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/27/second.ast.json",
+      "sha256": "e47c22ed267d2344b9cfd03bc953511d80775b52190d623fcdc88715a09b70da"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/27/second.json",
+      "sha256": "e5c93c6fed02656f4f445d886cddd228a02214a150bcfad7760fa7144372b9e4"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/28/first.ast.json",
+      "sha256": "9edd96c414c1fded5c22cd9227722cad393b9a3f3218172b89e101a50874048a"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/28/first.json",
+      "sha256": "4d26d6020c98ce5ad431fdfddfdf99580d172426d605e881640d9cbb9163d201"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/28/gcc.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/28/gcc.stdout",
+      "sha256": "7782ad7df07a9dc79a266a3df89692a5b66a60c5fed819d3f9732fe4f45a9bef"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/28/oracle",
+      "sha256": "23601ba90ea2f665c16c136d836693d5b93127739265b231dd17e919aca8b166"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/28/second.ast.json",
+      "sha256": "9edd96c414c1fded5c22cd9227722cad393b9a3f3218172b89e101a50874048a"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/28/second.json",
+      "sha256": "4d26d6020c98ce5ad431fdfddfdf99580d172426d605e881640d9cbb9163d201"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/29/first.ast.json",
+      "sha256": "997384ee3f0586ab76e91a1ff2ebb4ff679a82dd31aebaebea928f029bb0896c"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/29/first.json",
+      "sha256": "528fe72e8ca1c34f36bf75611db32ab86d154e03a996d15a1ef36005d3df190d"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/29/gcc.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/29/gcc.stdout",
+      "sha256": "bf8a78c3dfcb64ddc0e3cf03d4ba4450adf1ead6d09a58c0dabbbf6738a09676"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/29/oracle",
+      "sha256": "2bb3ef2d5c6f256f6f79233c89a73bb2ad9be6d10ac35a9e038551906366bb27"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/29/second.ast.json",
+      "sha256": "997384ee3f0586ab76e91a1ff2ebb4ff679a82dd31aebaebea928f029bb0896c"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/29/second.json",
+      "sha256": "528fe72e8ca1c34f36bf75611db32ab86d154e03a996d15a1ef36005d3df190d"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/3/first.ast.json",
+      "sha256": "f176c6d8356c6ca0ac1fc4e1a32d9f3510b13dda1010f7257048fa5c31b6f18f"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/3/first.json",
+      "sha256": "316e47f0fe6f44848211ca57e8dba0bc78092624b0f7c6d31164733f39045121"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/3/gcc.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/3/gcc.stdout",
+      "sha256": "7782ad7df07a9dc79a266a3df89692a5b66a60c5fed819d3f9732fe4f45a9bef"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/3/oracle",
+      "sha256": "ea540d945ce3ad259ab8814f1c606c8b8ab60cc8d991a59465d389dbbe33e83d"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/3/second.ast.json",
+      "sha256": "f176c6d8356c6ca0ac1fc4e1a32d9f3510b13dda1010f7257048fa5c31b6f18f"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/3/second.json",
+      "sha256": "316e47f0fe6f44848211ca57e8dba0bc78092624b0f7c6d31164733f39045121"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/4/first.ast.json",
+      "sha256": "82e8d9a3eca9b72accf7700f79f9aa26ed513b392776de75ff56e10cda596e48"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/4/first.json",
+      "sha256": "dedd55943217f80fcec4fedf0216f99e0323dd4c29f53cb5da0a68fba2a5a35e"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/4/gcc.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/4/gcc.stdout",
+      "sha256": "7782ad7df07a9dc79a266a3df89692a5b66a60c5fed819d3f9732fe4f45a9bef"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/4/oracle",
+      "sha256": "945102bea26edd482ab373f20315d1283683d43b3eaa5db0713705bce7dd742e"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/4/second.ast.json",
+      "sha256": "82e8d9a3eca9b72accf7700f79f9aa26ed513b392776de75ff56e10cda596e48"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/4/second.json",
+      "sha256": "dedd55943217f80fcec4fedf0216f99e0323dd4c29f53cb5da0a68fba2a5a35e"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/5/first.ast.json",
+      "sha256": "3be06c1c2286e2db26d2c6c155cf64aa4c4c2e37706c94b39c5b85ebd11130b9"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/5/first.json",
+      "sha256": "5f2b3b4c00bc17ab36556a974d7871ec763d2b786f09fc26d2470b49cbe6c76d"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/5/gcc.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/5/gcc.stdout",
+      "sha256": "7782ad7df07a9dc79a266a3df89692a5b66a60c5fed819d3f9732fe4f45a9bef"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/5/oracle",
+      "sha256": "2ff60026f45d1c5c4c9085aaa18b18ffafcd9d246e0229526584f955f3934129"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/5/second.ast.json",
+      "sha256": "3be06c1c2286e2db26d2c6c155cf64aa4c4c2e37706c94b39c5b85ebd11130b9"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/5/second.json",
+      "sha256": "5f2b3b4c00bc17ab36556a974d7871ec763d2b786f09fc26d2470b49cbe6c76d"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/6/first.ast.json",
+      "sha256": "0cc64ee77c0cba625723c98f14ae75ac7772f1632c4e58d22cc5055ef3238a3b"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/6/first.json",
+      "sha256": "e124811eeeede8cbdf07a875878a5683afd42b274e21cbd0a643d87f08c82beb"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/6/gcc.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/6/gcc.stdout",
+      "sha256": "0b6693b0fa788f42f92edb0721ac4da7e1b22ea0c796913a2c5e83b6271cfaf5"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/6/oracle",
+      "sha256": "4189b3dbc3a4a6a56c139e00aff6f49253c7592f506fe98bfbcd9782318097ca"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/6/second.ast.json",
+      "sha256": "0cc64ee77c0cba625723c98f14ae75ac7772f1632c4e58d22cc5055ef3238a3b"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/6/second.json",
+      "sha256": "e124811eeeede8cbdf07a875878a5683afd42b274e21cbd0a643d87f08c82beb"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/7/first.ast.json",
+      "sha256": "21b281359b5b7b4f5e6705b7557a9d6f324b0a13d6e8c07ba1899b4431f2730a"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/7/first.json",
+      "sha256": "a80a59f903ce6f43298538f82b57ab2fbd7232aa2452ede62a9858eacf90bd3e"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/7/gcc.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/7/gcc.stdout",
+      "sha256": "7782ad7df07a9dc79a266a3df89692a5b66a60c5fed819d3f9732fe4f45a9bef"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/7/oracle",
+      "sha256": "9b8b4cf2053b7592d46a7b7f2256c3437028bcd8c8f28983fb1c9759ec35b051"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/7/second.ast.json",
+      "sha256": "21b281359b5b7b4f5e6705b7557a9d6f324b0a13d6e8c07ba1899b4431f2730a"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/7/second.json",
+      "sha256": "a80a59f903ce6f43298538f82b57ab2fbd7232aa2452ede62a9858eacf90bd3e"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/8/first.ast.json",
+      "sha256": "7d79a5a4683fafa35ba044dcbf23a1e9a51e272fe1fedb252433cf650ad16542"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/8/first.json",
+      "sha256": "d0a76a40120a50b8e169a9d3e99589bc475caf2d1fe6fe96d45833eb490746b0"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/8/gcc.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/8/gcc.stdout",
+      "sha256": "32580da5980eee83d62e5944b2fcd26df339e5991642c6850cdcc0f113387c73"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/8/oracle",
+      "sha256": "5f983aad802f5b077bdb8c9234b6889b584c1615f49ec851039f60366f76d27e"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/8/second.ast.json",
+      "sha256": "7d79a5a4683fafa35ba044dcbf23a1e9a51e272fe1fedb252433cf650ad16542"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/8/second.json",
+      "sha256": "d0a76a40120a50b8e169a9d3e99589bc475caf2d1fe6fe96d45833eb490746b0"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/9/first.ast.json",
+      "sha256": "ae36145361bdb58431b83e870d22c735e2baf59c85c6a64974b25a0f7109b68c"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/9/first.json",
+      "sha256": "6572f4cd75f0d46341b3b7001626631de50cae419a72319a18146da31224821b"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/9/gcc.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/9/gcc.stdout",
+      "sha256": "0b6693b0fa788f42f92edb0721ac4da7e1b22ea0c796913a2c5e83b6271cfaf5"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/9/oracle",
+      "sha256": "61be686e9ee5f2db74e84e64739e2d7a4935f048255a4d46b884098179990113"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/9/second.ast.json",
+      "sha256": "ae36145361bdb58431b83e870d22c735e2baf59c85c6a64974b25a0f7109b68c"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-bj0_whhk/9/second.json",
+      "sha256": "6572f4cd75f0d46341b3b7001626631de50cae419a72319a18146da31224821b"
+    }
+  ],
+  "owned_code_hashes": {
+    "spikes/007-native-packet-ast/bindings/resolve.py": "6ee359710ed331e1499be504ffddaa012bc89e8393577438688baf3f66bc7295",
+    "spikes/007-native-packet-ast/bindings/test_bindings.py": "8143c62e14f823e7be2c915339e824b11961994c9b68dddd2cb2bc14b8782466",
+    "spikes/007-native-packet-ast/bindings/run_retained.py": "5d4b5752beea76477782467c140b7bcd8f70a2d8241e1b423a867430e8233682"
+  },
+  "tdd_logs": [
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-green-final.log",
+      "sha256": "50113666881ab1fb5971fe89961fee3987a390adab9ced87683d2d3e7e90bf61"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-green1.log",
+      "sha256": "39101a66a0ea2055642c08d80f80507715f0cf44ab638baa34df3a4826d08ea6"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-green2.log",
+      "sha256": "84a9028475b41f6018630b565e4d3b8f73224229bb85d1e8eb79d63609fd3d84"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-green3.log",
+      "sha256": "f0546c33715d7599dff7655050009b09a5d1d3b0eddb57a49236f403fba37909"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-green4.log",
+      "sha256": "138fa3a05cecc9bc72b07bda3e342e66ff00969b51e4def3e90fe1548789e029"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-red1.log",
+      "sha256": "8685b97e027c9164892f27a208f38cfa65eb399cce391e2d7d31b30dc44f24cd"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-red2.log",
+      "sha256": "9fba9a2d5b731101a64d52de5197adfb4b5e0db8d84416ac53622adf71115930"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-red3.log",
+      "sha256": "e1852cf8a10c001287dcabc1279461e1c16e000851c306c54768d29ff399179f"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-red4.log",
+      "sha256": "3b6d64e9a8b1a9c41af215d135c1e10c9ea2e722bba427facfe00d1cb825cf89"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-red5.log",
+      "sha256": "3dfa5828ee2ebabb126e6a2e38326e6e380bff16e15b7b2bdde24652aa1e6c83"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/ast-binding-red6.log",
+      "sha256": "1016b3e857dbae36511b417f5e0003b50896754517d5b76407df8f4965ce69c6"
+    }
+  ],
+  "validation_checks": {
+    "fresh_gcc_oracles": true,
+    "unsafe_fixture_denials": true,
+    "nonzero_useful_coverage": true,
+    "production_unchanged": true,
+    "successful_ast_repeats": true
+  }
+}

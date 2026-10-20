@@ -1,0 +1,77 @@
+{
+  "scope": "Offline synthetic ScheduledAgent received-vitals integration only; no live cognition/native/socket/provider/SQL execution or acceptance",
+  "files_modified": [
+    "src/robots/app/agent_runtime.py",
+    "tests/test_agent_host.py"
+  ],
+  "files_created": [
+    "tests/test_host_native_vitals.py",
+    "run/reviews/host-native-vitals-integration.json"
+  ],
+  "fake_changes": [
+    {
+      "file": "tests/test_agent_host.py",
+      "class": "FakeGameClient",
+      "change": "Only added explicit constructor status_params: dict[int,int] = {5:1,6:1,7:1,8:1}; no assertion changes or global fixtures"
+    }
+  ],
+  "tdd_cycles": [
+    "RED actual build_state yielded (1,1,1,1), GREEN received tuple (37,100,0,23), later HP 12",
+    "RED missing status attribute AttributeError, GREEN opaque NativeTelemetryUnavailable",
+    "RED gradual quartet connect False, GREEN bounded fake-clock readiness then exactly one start",
+    "RED incomplete tick raised and counted, GREEN skip before cognition/counting",
+    "RED three explicit transport fault cases started brain, GREEN denial and cleanup",
+    "RED unsupported telemetry_wait_s keyword, GREEN plain-number 0..5 validation and deadline"
+  ],
+  "behavior": [
+    "No vitals fallback or last-good cache; zero SP retained",
+    "Only NativeTelemetryUnavailable skipped by tick after operator dispatch",
+    "5-second default status wait independent of native connect deadline; caller accepts immediate zero budget",
+    "No-brain idle connect does not request status",
+    "Other BotState placeholder fields unchanged",
+    "Optional is_healthy hook checked if exposed; current native client source does not define it, explicit rx_error/dispatch_errors still gated"
+  ],
+  "verification": {
+    "scoped": {
+      "name": "pytest",
+      "errors": "0",
+      "failures": "0",
+      "skipped": "0",
+      "tests": "305",
+      "time": "4.760",
+      "timestamp": "2026-10-06T19:17:33.677642+02:00",
+      "hostname": "framework"
+    },
+    "client": {
+      "name": "pytest",
+      "errors": "0",
+      "failures": "0",
+      "skipped": "0",
+      "tests": "83",
+      "time": "0.078",
+      "timestamp": "2026-10-06T19:17:52.065232+02:00",
+      "hostname": "framework"
+    },
+    "new_tests": 21,
+    "hashes": {
+      "src/robots/app/agent_runtime.py": "ad069417275ba5a69f7dbc04fd68604c484bfe8f9bd7adb52a087e6270b77149",
+      "tests/test_host_native_vitals.py": "0eb406ed9283bc6ab1f0d02934ab0827a4a162d2157ee2e9738311e74120c01b",
+      "tests/test_agent_host.py": "82ca83552e0c4cc892a97c58efb3530aebbe52587d5bda89e2ab2ca8327b3108"
+    }
+  },
+  "drain_events_exact_source_sha256": "bf7e8f6fd8a8fec9a92e63ed0f6c9dda0ac9346e02ae6597404f29b5f6ab1ffc",
+  "static_gates": {
+    "black": "pass entire src/tests",
+    "ruff": "pass entire src/tests",
+    "mypy": "pass strict 140 files",
+    "bandit": "pass (preexisting nosec warnings)",
+    "vulture": "pass project threshold",
+    "xenon": "pass project B/B/A",
+    "pylint_duplicate_code": "pass whole src 10/10"
+  },
+  "root_coverage_gate": "Attempted configured 85% whole suite; timed out after 120 seconds at approximately 49%; no root success or coverage acceptance claimed. Parent must rerun whole gate on frozen completed source.",
+  "warnings": [
+    "Existing FastAPI Starlette httpx deprecation warning"
+  ],
+  "review_status": "App source now frozen; fresh independent host review required because integration changed reviewed source; full cognition still OFF and other fabricated fields remain blockers."
+}

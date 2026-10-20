@@ -1,0 +1,673 @@
+{
+  "passed": true,
+  "status": "PASS_BOUNDED_OFFLINE_COMPONENT",
+  "contract": "CORE-TIMING-001",
+  "contract_closed": true,
+  "security_concerns": [],
+  "logic_errors": [],
+  "quality_blockers": [],
+  "suggestions": [],
+  "summary": "Oversized timing rejection is repaired; all prior lifecycle contracts and four fresh numeric/boundary/state-preservation cases pass on the unchanged completed snapshot.",
+  "candidate_report": {
+    "path": "/home/otto/dev/ro-bots/run/reviews/llm-plan-lifecycle-core-repair1.json",
+    "sha256": "111b54b98a3a16cd838120d50b3eef3f28992293e642623a86e544985d690457"
+  },
+  "original_blocking_review": {
+    "sha256": "43c86cc373e7b3248f62aef92da13e669f198a1a2df05f396401c1cf852834a1",
+    "freeze_paths": [
+      "run/reviews/llm-plan-lifecycle-core-independent-review.json"
+    ]
+  },
+  "repair_budget": {
+    "cycle": 1,
+    "maximum_cycles": 2,
+    "historical_budgets_unchanged": true
+  },
+  "snapshot": {
+    "freeze_path": "/home/otto/.hermes/cache/scratch/llm-plan-core-repair1-independent-freeze.json",
+    "input_count": 286,
+    "before_mismatches": [],
+    "after_mismatches": [],
+    "baseline_input_count": 283,
+    "changed": [
+      "src/robots/domain/planning.py",
+      "tests/test_plan_lifecycle.py"
+    ],
+    "protected_unchanged_count": 281,
+    "exact_baseline_domain_and_test_hash_recovery": true,
+    "baseline_recovery_method": "RED traceback expression and pre-repair test prefix/import recovered in scratch; both SHA256 exactly match preserved before.json hashes",
+    "current_hashes": {
+      "src/robots/domain/planning.py": "2722eb5cea7627c071b13a3e7966d7bfb6d3307ac81335314d63d0c0a51f9ffb",
+      "tests/test_plan_lifecycle.py": "4c248b4fee24902de9d14b757675885c3ab9d35f536f1910e072ab1eb3ea41ff"
+    }
+  },
+  "tests": {
+    "repair_red": {
+      "cases": 39,
+      "unique_physical_cases": 39,
+      "failures": 5,
+      "errors": 0,
+      "skips": 0,
+      "ids": [
+        [
+          "tests.test_plan_lifecycle",
+          "test_request_admission_execution_path"
+        ],
+        [
+          "tests.test_plan_lifecycle",
+          "test_foreign_identity_denied[agent-other]"
+        ],
+        [
+          "tests.test_plan_lifecycle",
+          "test_foreign_identity_denied[world-other]"
+        ],
+        [
+          "tests.test_plan_lifecycle",
+          "test_foreign_identity_denied[character-other]"
+        ],
+        [
+          "tests.test_plan_lifecycle",
+          "test_foreign_identity_denied[session_epoch-2]"
+        ],
+        [
+          "tests.test_plan_lifecycle",
+          "test_foreign_identity_denied[ruleset-renewal]"
+        ],
+        [
+          "tests.test_plan_lifecycle",
+          "test_unsupported_phase_or_map_denied[phase0]"
+        ],
+        [
+          "tests.test_plan_lifecycle",
+          "test_unsupported_phase_or_map_denied[phase1]"
+        ],
+        [
+          "tests.test_plan_lifecycle",
+          "test_current_unknown_prerequisite_denied"
+        ],
+        [
+          "tests.test_plan_lifecycle",
+          "test_invalid_timing_denied[duration-True]"
+        ],
+        [
+          "tests.test_plan_lifecycle",
+          "test_invalid_timing_denied[duration-nan]"
+        ],
+        [
+          "tests.test_plan_lifecycle",
+          "test_invalid_timing_denied[review_at-100.0]"
+        ],
+        [
+          "tests.test_plan_lifecycle",
+          "test_invalid_timing_denied[review_at-inf]"
+        ],
+        [
+          "tests.test_plan_lifecycle",
+          "test_stale_token_cannot_replace_active"
+        ],
+        [
+          "tests.test_plan_lifecycle",
+          "test_single_flight_reasons_are_deduplicated_and_bounded"
+        ],
+        [
+          "tests.test_plan_lifecycle",
+          "test_timeout_cooldown_and_retry_exhaustion"
+        ],
+        [
+          "tests.test_plan_lifecycle",
+          "test_invalid_reply_consumes_attempt_and_releases_request"
+        ],
+        [
+          "tests.test_plan_lifecycle",
+          "test_identity_switch_invalidates_old_context_and_reply"
+        ],
+        [
+          "tests.test_plan_lifecycle",
+          "test_reason_and_config_bounds"
+        ],
+        [
+          "tests.test_plan_lifecycle",
+          "test_empty_plan_unsafe_fallback_and_target_bool_denied"
+        ],
+        [
+          "tests.test_plan_lifecycle",
+          "test_execution_reads_revalidate_without_requesting"
+        ],
+        [
+          "tests.test_plan_lifecycle",
+          "test_success_resets_retry_episode_but_keeps_cooldown"
+        ],
+        [
+          "tests.test_plan_lifecycle",
+          "test_observable_conditions_must_be_typed"
+        ],
+        [
+          "tests.test_plan_lifecycle",
+          "test_mutable_phase_sequence_denied"
+        ],
+        [
+          "tests.test_plan_lifecycle",
+          "test_prerequisite_metadata_is_bounded"
+        ],
+        [
+          "tests.test_plan_lifecycle",
+          "test_oversized_timing_rejection_preserves_active_and_attempt_budget[duration]"
+        ],
+        [
+          "tests.test_plan_lifecycle",
+          "test_oversized_timing_rejection_preserves_active_and_attempt_budget[review_at]"
+        ],
+        [
+          "tests.test_plan_lifecycle",
+          "test_oversized_config_timing_raises_value_error[cooldown]"
+        ],
+        [
+          "tests.test_plan_lifecycle",
+          "test_oversized_config_timing_raises_value_error[wait]"
+        ],
+        [
+          "",
+          "test_duplicate_reason_preserves_correlation_and_deadline"
+        ],
+        [
+          "",
+          "test_old_timeout_reply_cannot_consume_new_request_or_replace_plan"
+        ],
+        [
+          "",
+          "test_malformed_typed_shape_missing_travel_destination_rejected"
+        ],
+        [
+          "",
+          "test_current_prerequisite_loss_denies_action_but_metadata_remains"
+        ],
+        [
+          "",
+          "test_mixed_travel_rest_cannot_hide_missing_implicit_vitals"
+        ],
+        [
+          "",
+          "test_ruleset_literal_case_mismatch_is_foreign_not_normalized"
+        ],
+        [
+          "",
+          "test_rejection_timeout_budget_cannot_reset_and_success_keeps_cooldown"
+        ],
+        [
+          "",
+          "test_clock_only_reads_no_sleep_or_native_provider_calls"
+        ],
+        [
+          "",
+          "test_oversized_integer_duration_denied_without_arithmetic_exception"
+        ],
+        [
+          "",
+          "test_rest_fallback_is_metadata_and_not_native_recovery_authority"
+        ]
+      ]
+    },
+    "repair_green": {
+      "cases": 39,
+      "unique_physical_cases": 39,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "ids": [
+        [
+          "tests.test_plan_lifecycle",
+          "test_request_admission_execution_path"
+        ],
+        [
+          "tests.test_plan_lifecycle",
+          "test_foreign_identity_denied[agent-other]"
+        ],
+        [
+          "tests.test_plan_lifecycle",
+          "test_foreign_identity_denied[world-other]"
+        ],
+        [
+          "tests.test_plan_lifecycle",
+          "test_foreign_identity_denied[character-other]"
+        ],
+        [
+          "tests.test_plan_lifecycle",
+          "test_foreign_identity_denied[session_epoch-2]"
+        ],
+        [
+          "tests.test_plan_lifecycle",
+          "test_foreign_identity_denied[ruleset-renewal]"
+        ],
+        [
+          "tests.test_plan_lifecycle",
+          "test_unsupported_phase_or_map_denied[phase0]"
+        ],
+        [
+          "tests.test_plan_lifecycle",
+          "test_unsupported_phase_or_map_denied[phase1]"
+        ],
+        [
+          "tests.test_plan_lifecycle",
+          "test_current_unknown_prerequisite_denied"
+        ],
+        [
+          "tests.test_plan_lifecycle",
+          "test_invalid_timing_denied[duration-True]"
+        ],
+        [
+          "tests.test_plan_lifecycle",
+          "test_invalid_timing_denied[duration-nan]"
+        ],
+        [
+          "tests.test_plan_lifecycle",
+          "test_invalid_timing_denied[review_at-100.0]"
+        ],
+        [
+          "tests.test_plan_lifecycle",
+          "test_invalid_timing_denied[review_at-inf]"
+        ],
+        [
+          "tests.test_plan_lifecycle",
+          "test_stale_token_cannot_replace_active"
+        ],
+        [
+          "tests.test_plan_lifecycle",
+          "test_single_flight_reasons_are_deduplicated_and_bounded"
+        ],
+        [
+          "tests.test_plan_lifecycle",
+          "test_timeout_cooldown_and_retry_exhaustion"
+        ],
+        [
+          "tests.test_plan_lifecycle",
+          "test_invalid_reply_consumes_attempt_and_releases_request"
+        ],
+        [
+          "tests.test_plan_lifecycle",
+          "test_identity_switch_invalidates_old_context_and_reply"
+        ],
+        [
+          "tests.test_plan_lifecycle",
+          "test_reason_and_config_bounds"
+        ],
+        [
+          "tests.test_plan_lifecycle",
+          "test_empty_plan_unsafe_fallback_and_target_bool_denied"
+        ],
+        [
+          "tests.test_plan_lifecycle",
+          "test_execution_reads_revalidate_without_requesting"
+        ],
+        [
+          "tests.test_plan_lifecycle",
+          "test_success_resets_retry_episode_but_keeps_cooldown"
+        ],
+        [
+          "tests.test_plan_lifecycle",
+          "test_observable_conditions_must_be_typed"
+        ],
+        [
+          "tests.test_plan_lifecycle",
+          "test_mutable_phase_sequence_denied"
+        ],
+        [
+          "tests.test_plan_lifecycle",
+          "test_prerequisite_metadata_is_bounded"
+        ],
+        [
+          "tests.test_plan_lifecycle",
+          "test_oversized_timing_rejection_preserves_active_and_attempt_budget[duration]"
+        ],
+        [
+          "tests.test_plan_lifecycle",
+          "test_oversized_timing_rejection_preserves_active_and_attempt_budget[review_at]"
+        ],
+        [
+          "tests.test_plan_lifecycle",
+          "test_oversized_config_timing_raises_value_error[cooldown]"
+        ],
+        [
+          "tests.test_plan_lifecycle",
+          "test_oversized_config_timing_raises_value_error[wait]"
+        ],
+        [
+          "",
+          "test_duplicate_reason_preserves_correlation_and_deadline"
+        ],
+        [
+          "",
+          "test_old_timeout_reply_cannot_consume_new_request_or_replace_plan"
+        ],
+        [
+          "",
+          "test_malformed_typed_shape_missing_travel_destination_rejected"
+        ],
+        [
+          "",
+          "test_current_prerequisite_loss_denies_action_but_metadata_remains"
+        ],
+        [
+          "",
+          "test_mixed_travel_rest_cannot_hide_missing_implicit_vitals"
+        ],
+        [
+          "",
+          "test_ruleset_literal_case_mismatch_is_foreign_not_normalized"
+        ],
+        [
+          "",
+          "test_rejection_timeout_budget_cannot_reset_and_success_keeps_cooldown"
+        ],
+        [
+          "",
+          "test_clock_only_reads_no_sleep_or_native_provider_calls"
+        ],
+        [
+          "",
+          "test_oversized_integer_duration_denied_without_arithmetic_exception"
+        ],
+        [
+          "",
+          "test_rest_fallback_is_metadata_and_not_native_recovery_authority"
+        ]
+      ]
+    },
+    "independent": {
+      "cases": 43,
+      "unique_physical_cases": 43,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "ids": [
+        [
+          "tests.test_plan_lifecycle",
+          "test_request_admission_execution_path"
+        ],
+        [
+          "tests.test_plan_lifecycle",
+          "test_foreign_identity_denied[agent-other]"
+        ],
+        [
+          "tests.test_plan_lifecycle",
+          "test_foreign_identity_denied[world-other]"
+        ],
+        [
+          "tests.test_plan_lifecycle",
+          "test_foreign_identity_denied[character-other]"
+        ],
+        [
+          "tests.test_plan_lifecycle",
+          "test_foreign_identity_denied[session_epoch-2]"
+        ],
+        [
+          "tests.test_plan_lifecycle",
+          "test_foreign_identity_denied[ruleset-renewal]"
+        ],
+        [
+          "tests.test_plan_lifecycle",
+          "test_unsupported_phase_or_map_denied[phase0]"
+        ],
+        [
+          "tests.test_plan_lifecycle",
+          "test_unsupported_phase_or_map_denied[phase1]"
+        ],
+        [
+          "tests.test_plan_lifecycle",
+          "test_current_unknown_prerequisite_denied"
+        ],
+        [
+          "tests.test_plan_lifecycle",
+          "test_invalid_timing_denied[duration-True]"
+        ],
+        [
+          "tests.test_plan_lifecycle",
+          "test_invalid_timing_denied[duration-nan]"
+        ],
+        [
+          "tests.test_plan_lifecycle",
+          "test_invalid_timing_denied[review_at-100.0]"
+        ],
+        [
+          "tests.test_plan_lifecycle",
+          "test_invalid_timing_denied[review_at-inf]"
+        ],
+        [
+          "tests.test_plan_lifecycle",
+          "test_stale_token_cannot_replace_active"
+        ],
+        [
+          "tests.test_plan_lifecycle",
+          "test_single_flight_reasons_are_deduplicated_and_bounded"
+        ],
+        [
+          "tests.test_plan_lifecycle",
+          "test_timeout_cooldown_and_retry_exhaustion"
+        ],
+        [
+          "tests.test_plan_lifecycle",
+          "test_invalid_reply_consumes_attempt_and_releases_request"
+        ],
+        [
+          "tests.test_plan_lifecycle",
+          "test_identity_switch_invalidates_old_context_and_reply"
+        ],
+        [
+          "tests.test_plan_lifecycle",
+          "test_reason_and_config_bounds"
+        ],
+        [
+          "tests.test_plan_lifecycle",
+          "test_empty_plan_unsafe_fallback_and_target_bool_denied"
+        ],
+        [
+          "tests.test_plan_lifecycle",
+          "test_execution_reads_revalidate_without_requesting"
+        ],
+        [
+          "tests.test_plan_lifecycle",
+          "test_success_resets_retry_episode_but_keeps_cooldown"
+        ],
+        [
+          "tests.test_plan_lifecycle",
+          "test_observable_conditions_must_be_typed"
+        ],
+        [
+          "tests.test_plan_lifecycle",
+          "test_mutable_phase_sequence_denied"
+        ],
+        [
+          "tests.test_plan_lifecycle",
+          "test_prerequisite_metadata_is_bounded"
+        ],
+        [
+          "tests.test_plan_lifecycle",
+          "test_oversized_timing_rejection_preserves_active_and_attempt_budget[duration]"
+        ],
+        [
+          "tests.test_plan_lifecycle",
+          "test_oversized_timing_rejection_preserves_active_and_attempt_budget[review_at]"
+        ],
+        [
+          "tests.test_plan_lifecycle",
+          "test_oversized_config_timing_raises_value_error[cooldown]"
+        ],
+        [
+          "tests.test_plan_lifecycle",
+          "test_oversized_config_timing_raises_value_error[wait]"
+        ],
+        [
+          "",
+          "test_duplicate_reason_preserves_correlation_and_deadline"
+        ],
+        [
+          "",
+          "test_old_timeout_reply_cannot_consume_new_request_or_replace_plan"
+        ],
+        [
+          "",
+          "test_malformed_typed_shape_missing_travel_destination_rejected"
+        ],
+        [
+          "",
+          "test_current_prerequisite_loss_denies_action_but_metadata_remains"
+        ],
+        [
+          "",
+          "test_mixed_travel_rest_cannot_hide_missing_implicit_vitals"
+        ],
+        [
+          "",
+          "test_ruleset_literal_case_mismatch_is_foreign_not_normalized"
+        ],
+        [
+          "",
+          "test_rejection_timeout_budget_cannot_reset_and_success_keeps_cooldown"
+        ],
+        [
+          "",
+          "test_clock_only_reads_no_sleep_or_native_provider_calls"
+        ],
+        [
+          "",
+          "test_oversized_integer_duration_denied_without_arithmetic_exception"
+        ],
+        [
+          "",
+          "test_rest_fallback_is_metadata_and_not_native_recovery_authority"
+        ],
+        [
+          "",
+          "test_negative_huge_deadline_rejection_keeps_active_cooldown_and_retry_episode"
+        ],
+        [
+          "",
+          "test_daily_duration_boundary_at_non_daily_absolute_clock"
+        ],
+        [
+          "",
+          "test_large_finite_monotonic_clock_allows_representable_future_review"
+        ],
+        [
+          "",
+          "test_configuration_boundaries_and_negative_huge_duration_deny_normally"
+        ]
+      ]
+    }
+  },
+  "test_accounting": {
+    "prior_author_cases": 25,
+    "prior_independent_cases": 10,
+    "repair_permanent_cases": 4,
+    "fresh_independent_cases": 4,
+    "unique_total": 43
+  },
+  "fresh_cases": [
+    "negative huge deadline rejection preserves active/version/pending/counters/cooldown/retry episode and successful retry",
+    "duration 86400 boundary admits with absolute clock beyond one day, invalid review/duration boundary denies, review due disables execution",
+    "large finite monotonic clock allows representable future review",
+    "negative huge duration/config values deny normally; max config accepted; exhausted retry budget retained"
+  ],
+  "quality": {
+    "tests": {
+      "command": [
+        ".venv/bin/python",
+        "-m",
+        "pytest",
+        "tests/test_plan_lifecycle.py",
+        "/home/otto/.hermes/cache/scratch/llm-plan-lifecycle-core-independent-review/test_independent_plan_core.py",
+        "/home/otto/.hermes/cache/scratch/llm-plan-core-repair1-independent-review/test_repair_numeric.py",
+        "-q",
+        "-o",
+        "cache_dir=/home/otto/.hermes/cache/scratch/llm-plan-core-repair1-independent-review/pytest-cache",
+        "--junitxml=/home/otto/.hermes/cache/scratch/llm-plan-core-repair1-independent-review/tests.xml"
+      ],
+      "exit_code": 0
+    },
+    "black": {
+      "command": [
+        ".venv/bin/black",
+        "--check",
+        "src/robots/domain/planning.py",
+        "src/robots/app/plan_lifecycle.py",
+        "src/robots/ports/planning.py",
+        "tests/test_plan_lifecycle.py"
+      ],
+      "exit_code": 0
+    },
+    "ruff": {
+      "command": [
+        ".venv/bin/ruff",
+        "check",
+        "--cache-dir",
+        "/home/otto/.hermes/cache/scratch/llm-plan-core-repair1-independent-review/ruff-cache",
+        "src/robots/domain/planning.py",
+        "src/robots/app/plan_lifecycle.py",
+        "src/robots/ports/planning.py",
+        "tests/test_plan_lifecycle.py"
+      ],
+      "exit_code": 0
+    },
+    "mypy": {
+      "command": [
+        ".venv/bin/mypy",
+        "--strict",
+        "--cache-dir",
+        "/home/otto/.hermes/cache/scratch/llm-plan-core-repair1-independent-review/mypy-cache",
+        "src/robots/domain/planning.py",
+        "src/robots/app/plan_lifecycle.py",
+        "src/robots/ports/planning.py",
+        "tests/test_plan_lifecycle.py"
+      ],
+      "exit_code": 0
+    }
+  },
+  "security_added_line_scan": {
+    "secrets": [],
+    "shell_injection": [],
+    "unsafe_execution": [],
+    "unsafe_deserialization": [],
+    "sql_injection": []
+  },
+  "preserved_evidence": {
+    "repair_artifacts_verified_before_after": 19,
+    "original_immutable_artifacts_verified_before_after": 106,
+    "total_verified_before_after": 125,
+    "mismatches": [],
+    "repair_red": {
+      "cases": 39,
+      "failures": 5,
+      "errors": 0,
+      "skips": 0
+    },
+    "repair_initial_mypy_failure": "Seven test typing errors, preserved, not a behavioral RED; repaired typing and final strict mypy are green",
+    "author_original_artifact_chronology_unchanged": true
+  },
+  "root_gate": "Not claimed here; parent separately runs fresh root check/audit. Repair whole-source quality receipts were hash-verified, not independently rerun.",
+  "limits": [
+    "Typed ProposedPlan port, not general JSON decoder",
+    "Serialized single owner and caller-supplied finite monotonic clock/fresh capabilities",
+    "No LLM/model/tools/brain/native resources, persistence, dashboard scheduler or live activation",
+    "execution_plan(None) and idle/rest fallback are metadata, not native authorization",
+    "All six milestones and eleven acceptance criteria remain OPEN; legacy brain integration failures remain separate",
+    "No production/test repairs, Git effects, private config/profile changes, native/network/SQL/Docker/inference effects"
+  ],
+  "artifact_sha256": {
+    "/home/otto/.hermes/cache/scratch/llm-plan-core-repair1-independent-review/freeze-before.json": "16da943c118b1660adc33be435a919f0b467b8c8fd8b088df49b738a6de3fc4c",
+    "/home/otto/.hermes/cache/scratch/llm-plan-core-repair1-independent-review/security-scan.json": "0dab05f646fc4d556edc7efb2d560f720477c95b30b7431b8b93547f6d0055a2",
+    "/home/otto/.hermes/cache/scratch/llm-plan-core-repair1-independent-review/tests.diff": "bab15226befaae99fdce25b57e37550c9e930f7234ed5cfde49fc961c940131a",
+    "/home/otto/.hermes/cache/scratch/llm-plan-core-repair1-independent-review/freeze-after.json": "16da943c118b1660adc33be435a919f0b467b8c8fd8b088df49b738a6de3fc4c",
+    "/home/otto/.hermes/cache/scratch/llm-plan-core-repair1-independent-review/test_repair_numeric.py": "04d3a97542fb123c05347d26f3f9c238223b2f9059abf80c8ab38940402a4f86",
+    "/home/otto/.hermes/cache/scratch/llm-plan-core-repair1-independent-review/tests.xml": "1a8c3a89b6183e40316e782223386d4b57f96ead3a0977bbfe52a7edbff8e33a",
+    "/home/otto/.hermes/cache/scratch/llm-plan-core-repair1-independent-review/artifacts-before.json": "a7b612a1758a22d1a10c14a961e5ebc0d8e62d1e41d3cefc52242435c0e233fc",
+    "/home/otto/.hermes/cache/scratch/llm-plan-core-repair1-independent-review/mypy.log": "71144743c83babea384888a735db0c4daba3d4d7b7942b6839984bd5c21b52bb",
+    "/home/otto/.hermes/cache/scratch/llm-plan-core-repair1-independent-review/tests.log": "986dbc9a5d6b6525242d1315dd44f9f5e97162596004680091f1927df955e4ea",
+    "/home/otto/.hermes/cache/scratch/llm-plan-core-repair1-independent-review/baseline-test_plan_lifecycle.py": "067bf70414346a038a2bc217d5abf4f541570891f24cf20f8f87e6cb5c882db3",
+    "/home/otto/.hermes/cache/scratch/llm-plan-core-repair1-independent-review/xml.json": "8afcadb67381e7d9a36c6491bc9c20dbfe03093b3b06b2aa28c341dedb7c1786",
+    "/home/otto/.hermes/cache/scratch/llm-plan-core-repair1-independent-review/baseline-planning.py": "f62f0f687a6b58c5b3e66c3e17fd750dc49dfbc57017fee22d97d06b5ca65b57",
+    "/home/otto/.hermes/cache/scratch/llm-plan-core-repair1-independent-review/ruff.log": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+    "/home/otto/.hermes/cache/scratch/llm-plan-core-repair1-independent-review/artifacts-after.json": "a7b612a1758a22d1a10c14a961e5ebc0d8e62d1e41d3cefc52242435c0e233fc",
+    "/home/otto/.hermes/cache/scratch/llm-plan-core-repair1-independent-review/commands.json": "623d05884838ed46430761a51d46a86eb0cefcdaae7a9ec958fd7da58aba532a",
+    "/home/otto/.hermes/cache/scratch/llm-plan-core-repair1-independent-review/planning.diff": "693b0344daed877ae5f95e3ef6dd7efcd96402e78163e8b96359ab2d6113d633",
+    "/home/otto/.hermes/cache/scratch/llm-plan-core-repair1-independent-review/black.log": "26a5fd9505f2b5608a20c4fed4b4c4795e0783d03b72ade02a6af34dae8ad086"
+  }
+}

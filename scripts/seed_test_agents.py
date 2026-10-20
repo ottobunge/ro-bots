@@ -1,204 +1,230 @@
-"""ADR-010: deterministic test-world seed.
+"""Fail-closed test-world seed preparation.
 
-Builds the SAME SocietyRoster shape the dashboard uses (SocietyRoster.build
-with a fixed seed), then maps the roster onto real rAthena rows:
-
-- one login account per persona (SQL INSERT into ``login``),
-- one character per persona (SQL INSERT into ``char``, matching the
-  account via account_id),
-- a JSON manifest at run/test-world-manifest.json: accounts, personas,
-  groups — the e2e runner and the dashboard both read this.
-
-The roster for the test world: 2 friend groups + 1 solo (3 groups, the
-last built group is always a solo), 5 personas with playstyles.
-
-SQL is applied over TCP 127.0.0.1:3306 as ragnarok/ragnarok by default;
-pass --socket to use a unix socket (run/mysql.sock) instead. Uses the
-mysql CLI (no python mysql driver dependency).
-
-Usage:
-  python3 scripts/seed_test_agents.py            # TCP localhost
-  python3 scripts/seed_test_agents.py --socket run/mysql.sock
-  python3 scripts/seed_test_agents.py --print    # SQL to stdout, no DB
+Only pure, offline plans are supported. A plan is not authorization to execute:
+there is no trusted Docker/DB observation adapter or transactional executor yet.
+No SQL, credential or account manifest is printed or written by this entrypoint.
 """
 
 from __future__ import annotations
 
-import argparse
-import json
-import pathlib
-import random
-import subprocess
+import re
+import subprocess  # public side-effect spy seam
 import sys
+from typing import Any
 
-# Make src/ importable when run from a checkout without installing.
-sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent.parent / "src"))
+__all__ = ["apply_sql", "cleanup_plan", "database_route", "main", "subprocess"]
 
-from robots.society.models import SocietyPersona  # noqa: E402
-from robots.society.society import SocietyRoster  # noqa: E402
+type Data = dict[str, Any]
+type Statement = tuple[str, tuple[int | str, ...]]
 
-SEED = 42
-N_GROUPS = 3  # 2 friend groups + the always-solo last group
-DB = "ragnarok"
-
-# rAthena job ids (class column of `char`): 0 novice, 1 swordsman,
-# 2 mage, 3 archer, 4 acolyte, 5 merchant, 6 thief.
-PLAYSTYLE_CLASS = {
-    "tank": 1,  # swordsman
-    "melee": 1,  # swordsman
-    "mage": 2,
-    "hunter": 3,  # archer
-    "healer": 4,  # acolyte
-    "support": 4,  # acolyte
-}
-
-# First account id auto_increment baseline of the rAthena login table.
-ACCOUNT_BASE = 2_100_000
-CHAR_BASE = 160_000
-
-MANIFEST_PATH = pathlib.Path(__file__).resolve().parent.parent / "run" / "test-world-manifest.json"
+IDENTITY = {"world": "test", "project": "ro-bots-test", "volume": "ro-bots-world-test"}
+GAME_SERVICES = {"rathena-login", "rathena-char", "rathena-map"}
 
 
-def build_roster() -> SocietyRoster:
-    """The fixed-seed test society: 2 friend groups + 1 solo, 5 personas."""
-    return SocietyRoster.build(random.Random(SEED), n_groups=N_GROUPS)
+def require(condition: bool) -> None:
+    """Raise a non-secret error for incomplete or mismatched evidence."""
+    if not condition:
+        msg = "isolated plan blocked: missing, ambiguous or mismatched ownership/offline evidence"
+        raise RuntimeError(msg)
 
 
-def account_name(persona: SocietyPersona) -> str:
-    """Login account for a persona: e2e_<PersonaId> (ASCII, <=23 chars)."""
-    return f"e2e_{persona.name.replace('-', '')}"
+def validate_world(config: Data, observed: Data) -> None:
+    """Validate supplied observations for planning ONLY, not execution authority.
 
-
-def seed_sql(roster: SocietyRoster) -> tuple[str, list[dict]]:
-    """SQL INSERTs for the roster + the manifest rows describing them."""
-    lines = [
-        "-- ADR-010 deterministic test-world seed (SocietyRoster.build"
-        f" (random.Random({SEED}), n_groups={N_GROUPS}))",
-        "-- Idempotent: existing e2e_* accounts/chars are removed first.",
-        "DELETE FROM `char` WHERE account_id >= %d;" % ACCOUNT_BASE,
-        "DELETE FROM `login` WHERE account_id >= %d;" % ACCOUNT_BASE,
-    ]
-    accounts: list[dict] = []
-    personas_manifest: list[dict] = []
-    groups_manifest: list[dict] = []
-
-    aid = ACCOUNT_BASE
-    cid = CHAR_BASE
-    for group in roster.groups:
-        members: list[dict] = []
-        for pid in group.member_ids:
-            persona = roster.personas[pid]
-            acct = account_name(persona)
-            char_name = persona.name.replace("-", "")  # RO names: no dashes
-            cls = PLAYSTYLE_CLASS.get(persona.playstyle.value, 0)
-            lines.append(
-                "INSERT INTO `login` (`account_id`, `userid`, `user_pass`, `sex`,"
-                " `email`, `group_id`, `character_slots`)"
-                " VALUES (%d, '%s', 'e2epass', 'M', '%s@example.invalid', 0, 3);"
-                % (aid, acct, acct)
-            )
-            lines.append(
-                "INSERT INTO `char` (`char_id`, `account_id`, `char_num`, `name`,"
-                " `class`, `base_level`, `job_level`, `last_map`, `last_x`, `last_y`,"
-                " `save_map`, `save_x`, `save_y`)"
-                " VALUES (%d, %d, 0, '%s', %d, 1, 1, 'prontera', 156, %d,"
-                " 'prontera', 156, %d);"
-                % (cid, aid, char_name, cls, 145 + (cid - CHAR_BASE) % 8, 145 + (cid - CHAR_BASE) % 8)
-            )
-            row = {
-                "account_id": aid,
-                "account": acct,
-                "password": "e2epass",
-                "char_id": cid,
-                "char_name": char_name,
-                "persona_id": persona.persona_id,
-                "playstyle": persona.playstyle.value,
-                "attitude": persona.attitude.value,
-                "chattiness": round(persona.chattiness, 4),
-                "level_band": list(persona.level_band),
-            }
-            accounts.append(row)
-            members.append(row)
-            personas_manifest.append(
-                {
-                    "persona_id": persona.persona_id,
-                    "name": persona.name,
-                    "playstyle": persona.playstyle.value,
-                    "attitude": persona.attitude.value,
-                    "chattiness": round(persona.chattiness, 4),
-                    "account": acct,
-                    "char_name": char_name,
-                }
-            )
-            aid += 1
-            cid += 1
-        groups_manifest.append(
+    Observations must eventually be acquired directly by a trusted adapter while
+    holding an exclusive world lock. Caller-provided JSON is NOT live proof.
+    """
+    require(isinstance(config, dict) and isinstance(observed, dict))
+    require(config.get("allow_isolated_plan") is True)
+    require(all(config.get(key) == value for key, value in IDENTITY.items()))
+    require(all(observed.get(key) == value for key, value in IDENTITY.items()))
+    run_id = config.get("run_id")
+    require(isinstance(run_id, str) and re.fullmatch(r"[a-f0-9]{32}", run_id) is not None)
+    require(
+        config.get("route")
+        == {
+            "kind": "compose-exec",
+            "service": "mariadb",
+            "database": "ragnarok",
+        }
+    )
+    require(
+        observed.get("volume_labels")
+        == {
+            "ro-bots.world": "test",
+            "ro-bots.project": "ro-bots-test",
+        }
+    )
+    require(observed.get("database_identity") == {"world": "test", "run_id": run_id})
+    services: Any = observed.get("game_services")
+    require(isinstance(services, dict) and set(services) == GAME_SERVICES)
+    require(all(state == "stopped" for state in services.values()))
+    container: Any = observed.get("db_container")
+    require(isinstance(container, dict))
+    container_id = container.get("id")
+    require(
+        isinstance(container_id, str) and re.fullmatch(r"[a-f0-9]{64}", container_id) is not None
+    )
+    require(container.get("service") == "mariadb")
+    require(container.get("project") == "ro-bots-test" and container.get("world") == "test")
+    require(
+        container.get("mounts")
+        == [
             {
-                "group_id": group.group_id,
-                "attitude": group.attitude.value,
-                "members": [m["persona_id"] for m in members],
-                "accounts": [m["account"] for m in members],
+                "type": "volume",
+                "source": "ro-bots-world-test",
+                "target": "/var/lib/mysql",
+            }
+        ]
+    )
+    require(container.get("published_ports") == [])
+    require(container.get("network") == "ro-bots-test-world-local")
+
+
+def validate_manifest(config: Data, manifest: Data) -> None:
+    """Only a single, explicit character pair per run-namespaced account."""
+    require(isinstance(manifest, dict))
+    require(all(manifest.get(key) == value for key, value in IDENTITY.items()))
+    require(manifest.get("run_id") == config["run_id"])
+    rows: Any = manifest.get("accounts")
+    require(isinstance(rows, list) and bool(rows))
+    account_ids, char_ids, names, accounts = set(), set(), set(), set()
+    prefix = "e2e_" + config["run_id"][:12] + "_"
+    for row in rows:
+        require(
+            isinstance(row, dict)
+            and set(row)
+            == {
+                "account_id",
+                "account",
+                "char_id",
+                "char_name",
             }
         )
+        aid, cid, account, name = (
+            row[key]
+            for key in (
+                "account_id",
+                "char_id",
+                "account",
+                "char_name",
+            )
+        )
+        require(type(aid) is int and aid > 0 and type(cid) is int and cid > 0)
+        require(
+            isinstance(account, str)
+            and re.fullmatch(re.escape(prefix) + r"[a-z0-9]{1,6}", account) is not None
+        )
+        require(isinstance(name, str) and re.fullmatch(r"[A-Za-z0-9_]{1,23}", name) is not None)
+        require(aid not in account_ids and cid not in char_ids)
+        require(account not in accounts and name not in names)
+        account_ids.add(aid)
+        char_ids.add(cid)
+        accounts.add(account)
+        names.add(name)
 
-    manifest = {
-        "seed": SEED,
-        "n_groups": N_GROUPS,
-        "accounts": accounts,
-        "personas": personas_manifest,
-        "groups": groups_manifest,
-    }
-    return "\n".join(lines) + "\n", manifest
+
+def validate_ownership(manifest: Data, database: Data) -> None:
+    """Require exact current identities, no extra characters, and offline rows."""
+    require(isinstance(database, dict))
+    accounts: Any = database.get("accounts")
+    characters: Any = database.get("characters")
+    require(isinstance(accounts, list) and isinstance(characters, list))
+    require(all(isinstance(row, dict) for row in accounts + characters))
+    for row in manifest["accounts"]:
+        account_matches = [
+            item
+            for item in accounts
+            if (
+                item.get("account_id") == row["account_id"] or item.get("account") == row["account"]
+            )
+        ]
+        character_matches = [
+            item
+            for item in characters
+            if (
+                item.get("account_id") == row["account_id"]
+                or item.get("char_id") == row["char_id"]
+                or item.get("char_name") == row["char_name"]
+            )
+        ]
+        require(
+            account_matches
+            == [
+                {
+                    "account_id": row["account_id"],
+                    "account": row["account"],
+                    "online": False,
+                }
+            ]
+        )
+        require(
+            character_matches
+            == [
+                {
+                    "account_id": row["account_id"],
+                    "char_id": row["char_id"],
+                    "char_name": row["char_name"],
+                    "online": False,
+                }
+            ]
+        )
+        require(account_matches[0]["online"] is False and character_matches[0]["online"] is False)
+
+
+def cleanup_plan(
+    config: Data, observed: Data, manifest: Data, database: Data
+) -> tuple[Statement, ...]:
+    """Describe exact owned pairs; never delete an account-id range.
+
+    This is inert data. Running it requires locked fresh readback, transactional
+    row locks, affected-row checks, and post-write verification not implemented here.
+    """
+    validate_world(config, observed)
+    validate_manifest(config, manifest)
+    validate_ownership(manifest, database)
+    statements: list[Statement] = []
+    for row in manifest["accounts"]:
+        statements.extend(
+            [
+                (
+                    (
+                        "DELETE FROM `char` WHERE `account_id` = %s AND `char_id` = %s "
+                        "AND `name` = %s AND `online` = 0"
+                    ),
+                    (row["account_id"], row["char_id"], row["char_name"]),
+                ),
+                (
+                    "DELETE FROM `login` WHERE `account_id` = %s AND `userid` = %s",
+                    (row["account_id"], row["account"]),
+                ),
+            ]
+        )
+    return tuple(statements)
+
+
+def database_route(config: Data, observed: Data) -> tuple[str, str, str]:
+    """Describe a pinned running container route, never connect or fall back."""
+    validate_world(config, observed)
+    container = observed["db_container"]
+    require(container.get("state") == "running")
+    return "container-exec", container["id"], "ragnarok"
 
 
 def apply_sql(sql: str, socket: str | None) -> None:
-    """Pipe the SQL into MariaDB (TCP ragnarok/ragnarok, or --socket as root)."""
-    if socket:
-        cmd = ["mariadb", "--no-defaults", "--skip-ssl", "-S", socket, "-u", "root", DB]
-    else:
-        cmd = ["mariadb", "--no-defaults", "--skip-ssl", "-h", "127.0.0.1", "-P", "3306",
-               "-u", "ragnarok", "-praragnarok", DB]
-    # fall back to the mysql binary name if mariadb is absent
-    if not socket:
-        try:
-            subprocess.run(["which", "mariadb"], check=True, capture_output=True)
-        except subprocess.CalledProcessError:
-            cmd = ["mysql", "--no-defaults", "--skip-ssl", "-h", "127.0.0.1", "-P", "3306",
-                   "-u", "ragnarok", "-praragnarok", DB]
-    proc = subprocess.run(cmd, input=sql, capture_output=True, text=True)
-    if proc.returncode != 0:
-        raise RuntimeError(f"seed SQL failed ({' '.join(cmd[:3])}...): {proc.stderr.strip()}")
+    """Arbitrary SQL and native/TCP routes never acquire execution authority."""
+    _ = sql, socket
+    msg = "seed blocked: verified isolated transaction executor is unavailable"
+    raise RuntimeError(msg)
 
 
 def main() -> int:
-    ap = argparse.ArgumentParser(description=__doc__)
-    ap.add_argument("--socket", help="MariaDB unix socket (default: TCP 127.0.0.1:3306)")
-    ap.add_argument("--print", dest="print_sql", action="store_true",
-                    help="print the SQL to stdout and skip the DB")
-    args = ap.parse_args()
-
-    roster = build_roster()
-    sql, manifest = seed_sql(roster)
-
-    MANIFEST_PATH.parent.mkdir(parents=True, exist_ok=True)
-    MANIFEST_PATH.write_text(json.dumps(manifest, indent=2) + "\n")
-    print(f"[seed] manifest -> {MANIFEST_PATH}"
-          f" ({len(manifest['accounts'])} accounts, {len(manifest['groups'])} groups)")
-    for g in manifest["groups"]:
-        print(f"[seed] group {g['group_id']!r} ({g['attitude']}): {', '.join(g['members'])}")
-
-    if args.print_sql:
-        print(sql)
-        return 0
-    try:
-        apply_sql(sql, args.socket)
-    except (RuntimeError, FileNotFoundError) as exc:
-        print(f"[seed] ERROR: {exc}", file=sys.stderr)
-        print("[seed] is MariaDB up? (task world:up, or spikes/002-rathena-up/start.sh)",
-              file=sys.stderr)
-        return 1
-    print(f"[seed] SQL applied: {len(manifest['accounts'])} accounts + chars in '{DB}'")
-    return 0
+    print(  # noqa: T201
+        "[seed] blocked: shared-world seed/reset is not authorized; "
+        "verified isolated ownership required",
+        file=sys.stderr,
+    )
+    return 2
 
 
 if __name__ == "__main__":

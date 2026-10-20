@@ -1,0 +1,1107 @@
+{
+  "status": "OFFLINE_RECEIPT_BOUND_NPC_HOST_PHASE_COMPLETE_CANDIDATE",
+  "passed": true,
+  "summary": "Actual opt-in AgentHost completes one received Next/Choose phase: physical LlmPlanner investigation and fresh admission, event-only physical CLEF control, exact bound local request once, and newer matching same-open received UI progress.",
+  "scope": {
+    "single_host_owner": true,
+    "source_ownership_single_writer": true,
+    "offline_scripted_planning_and_decision_models": true,
+    "actual_host_planner_client_controller_mechanics": true,
+    "git_calls": false,
+    "dependency_changes": false,
+    "network_service_provider_native_world_sql_effects": false,
+    "domain_schema_lifecycle_protocol_capture_cache_budget_memory_changes": false,
+    "live_activation": false,
+    "root_gate_run_by_delegate": false
+  },
+  "owned_modified_existing_sources": [
+    "src/robots/app/planning_brain.py",
+    "src/robots/app/agent_runtime.py",
+    "src/robots/app/execution_decisions.py",
+    "src/robots/app/playing_runtime.py"
+  ],
+  "owned_created": [
+    "src/robots/app/npc_planning_execution.py",
+    "tests/test_llm_planning_npc_host.py",
+    "run/reviews/npc-host-integration.json"
+  ],
+  "source_sha256": {
+    "src/robots/app/planning_brain.py": "9eefac0e5274fa52d8fd601521857a17c0a6228280b26da4b2d8e8300a913e23",
+    "src/robots/app/agent_runtime.py": "5d266e7a0bb290855f56be5bb688172fa4ed0b13d005c246289c83185cb7e744",
+    "src/robots/app/execution_decisions.py": "372bf92e70b301f5b1bcef411b00474031243043d83c5c5379896c1b03ba69c1",
+    "src/robots/app/playing_runtime.py": "369171823465b1cc0149bfea789606bc7a9e9b8071dd0c2594e06080bddf45f9",
+    "src/robots/app/npc_planning_execution.py": "2deb5a45cff518911cfc4948d6510c58c446e00d1baf6a568727633fd9323b39",
+    "tests/test_llm_planning_npc_host.py": "f42584e06d5c80a51216ef66b505610edcb8fd090ed72805adbb2b5784699b50"
+  },
+  "predecessors": [
+    {
+      "path": "/home/otto/dev/ro-bots/run/reviews/npc-plan-contract-approved.json",
+      "sha256": "c275aa2299f63df58062d05146120c90259f94f641dd2e1bb24c0ec928068b86"
+    },
+    {
+      "path": "/home/otto/dev/ro-bots/run/reviews/npc-planning-observation-approved.json",
+      "sha256": "5d98694c12f14391a93b2eff8a454cdf41db51de48fd44affdb3eedd6cff9e88"
+    },
+    {
+      "path": "/home/otto/dev/ro-bots/run/reviews/npc-bound-response-approved.json",
+      "sha256": "2f766f59f0ae65a4b50cd488ce33203cb3e0f043b4b79ec9c8e29a4ad3768145"
+    },
+    {
+      "path": "/home/otto/dev/ro-bots/run/reviews/npc-bound-response-independent-review.json",
+      "sha256": "2c0cca190f1ae92476cacab76298cac33638358068f4e9b1ad3e0260e2bc4c1e"
+    }
+  ],
+  "preservation": {
+    "baseline": {
+      "path": "/home/otto/.hermes/cache/scratch/npc-host-integration-frontier/baseline.json",
+      "sha256": "67e957bebdf4473b1a899b858e61a51f9b932cdf6570dd6d658320b012d73b10"
+    },
+    "baseline_bindings": 415,
+    "baseline_distinct_paths": 413,
+    "protected_bindings": 411,
+    "protected_distinct_paths": 409,
+    "protected_drift": [],
+    "resolved_alias_exclusion": true,
+    "original_host_tracer_source": {
+      "path": "/home/otto/.hermes/cache/scratch/npc-host-integration-frontier/test_host_npc_capability.py",
+      "sha256": "fd6b4b72e30f554576f9ec42636cb4f017c3ce7538280eadb014271901e5543b"
+    },
+    "original_red": {
+      "path": "/home/otto/.hermes/cache/scratch/npc-host-integration-frontier/parent-host-capability-red.xml",
+      "sha256": "9f55188b88ca01f9d239511c39f1eed34f47de11ee931e30b1a3ad1841f50308"
+    },
+    "original_red_not_overwritten": true
+  },
+  "completed_freeze": {
+    "path": "/home/otto/.hermes/cache/scratch/npc-host-integration-frontier/completed-freeze.json",
+    "sha256": "2b9f452c86116f595e6491411930add79ab111f0f064a73fb5272f6ba9ea907d",
+    "bindings": 417,
+    "distinct_paths": 415,
+    "frozen_rerun_before_after_equal": true,
+    "drift": []
+  },
+  "acceptance_groups": {
+    "1_investigation_admission_controlled_bytes_received_progress": {
+      "physical_cases": 7,
+      "functions": [
+        "test_actual_npc_investigation_admission_clef_before_exact_bound_request",
+        "test_expected_waiting_survives_until_new_same_open_received_ui_progress",
+        "test_clef_receives_detached_complete_permitted_ui_and_current_typed_receipt",
+        "test_full_permitted_ui_does_not_become_an_oversized_execution_event_key",
+        "test_actual_host_npc_uses_verified_cache_identity_and_retains_raw_gat_map"
+      ],
+      "passed": true
+    },
+    "2_hold_replan_pending_timeout": {
+      "physical_cases": 8,
+      "functions": [
+        "test_npc_clef_control_does_not_author_menu_or_use_legacy_fallback",
+        "test_failed_dispatch_or_expired_wait_requests_one_bounded_fresh_plan_not_progress",
+        "test_npc_planner_timeout_retains_physical_owner_and_passive_keepalive",
+        "test_pending_npc_clef_timeout_retains_worker_and_blocks_fresh_binding_until_join"
+      ],
+      "passed": true
+    },
+    "3_stale_denied_waiting_transition": {
+      "physical_cases": 30,
+      "functions": [
+        "test_actual_received_drift_denies_old_proposal_or_pending_clef_result",
+        "test_waiting_requires_new_matching_same_open_ui_not_unrelated_receipts",
+        "test_actual_host_npc_send_control_flow_keeps_exact_origin_and_failed_phase",
+        "test_new_admitted_version_cannot_inherit_issued_barrier_or_old_queued_action",
+        "test_queued_npc_reply_is_denied_when_admitted_plan_review_deadline_passes",
+        "test_received_progress_after_plan_review_deadline_cannot_complete_expired_phase"
+      ],
+      "passed": true
+    },
+    "4_identical_binding_replacement_worker_reconnect_cleanup": {
+      "physical_cases": 16,
+      "functions": [
+        "test_binding_replacement_with_identical_metadata_invalidates_all_old_npc_work",
+        "test_changed_binding_retains_physical_planner_until_join_and_requires_fresh_bind",
+        "test_disconnect_invalidates_npc_phase_and_queued_action_before_client_close",
+        "test_host_reconnect_invalidates_old_npc_state_before_wire_connect"
+      ],
+      "passed": true
+    }
+  },
+  "mechanical_contract": {
+    "before_request": "Fresh actionable producer receipt and current PlanLifecycle validation before emission; host-local current client/wire/session references and exact queued action/version/CLEF authorization plus current review deadline before perform; existing bound primitive performs its unchanged one-clock, single-snapshot exact binding/request path.",
+    "after_request": "A matching issued local receipt installs waiting, distinct from pre-send ready observation. Validated current typed UI/controller lease sustains only this admitted phase. Newer matching actor/map/epoch/opening UI can record received UI progress; expired plan/UI, denied/failed/missing local dispatch, unrelated/same-sequence/unsupported UI cannot.",
+    "local_disposition": "PlayingClient additive read-only LocalNpcDispatch says issued/denied/failed only. perform_native and legacy primitives retain None return/signatures. No receipt is a server ACK.",
+    "binding": "NpcHostBinding holds owner-local client/wire/session object references. ScheduledAgent invalidates before connect/start/close and on changed binding before capture/dispatch. Queued actions are exact owner-emitted objects. Prior claimed workers remain owned until join; unclaimed work is cancelled before provider dispatch. Identical metadata does not restore old authority.",
+    "clef": "Once-per-admitted-version received-UI review and allowed execution events, deduplicated by bounded header/version keys. Pending first review holds; continue never authors a menu. Hold/replan pauses requests; bounded LLM replanning uses existing lifecycle policy. No per-tick decision/model loop.",
+    "captured_context": "Existing deep job capture unchanged. NPC execution request includes full captured permitted UI and current complete typed receipt within the unchanged 32768-byte budget. Administrative event keys do not duplicate UI text. Character/public rules/private memory remain advisory; host labels are not native authority.",
+    "completion": "Exactly one response per admitted version; no same-intent retry and no automatic answer to subsequent prompts. A fresh explicit bounded LLM plan/decision can respond to new UI without inheriting the old issued barrier.",
+    "known_boundary": "Standalone approved NpcRespond primitive remains continuous-session only and its cross-instance complete-tuple collision is not claimed fixed. The new host binding policy prevents prior host-owned intent from crossing replacement. UI progress is not native causality, quest success, reward or server closure."
+  },
+  "tests": {
+    "selected_current_runs": [
+      {
+        "name": "final2-scoped",
+        "command": [
+          "nix",
+          "develop",
+          "--offline",
+          "--no-write-lock-file",
+          "path:./spikes/007-native-packet-ast/toolchain",
+          "-c",
+          "env",
+          "PYTHONOPTIMIZE=0",
+          "PYTHONDONTWRITEBYTECODE=1",
+          "PYTHONPATH=/home/otto/dev/ro-bots/src:/home/otto/dev/ro-bots",
+          "PYTEST_DISABLE_PLUGIN_AUTOLOAD=1",
+          ".venv/bin/python",
+          "-B",
+          "-m",
+          "pytest",
+          "-q",
+          "-o",
+          "addopts=",
+          "-p",
+          "no:cacheprovider",
+          "--junitxml=/home/otto/.hermes/cache/scratch/npc-host-integration-frontier/frozen-final2-scoped.xml",
+          "tests/test_host_native_transport.py",
+          "tests/test_host_native_vitals.py",
+          "tests/test_llm_planner.py",
+          "tests/test_llm_planning_clef_execution.py",
+          "tests/test_llm_planning_host_cleanup.py",
+          "tests/test_llm_planning_host_construction.py",
+          "tests/test_llm_planning_host_tick.py",
+          "tests/test_llm_planning_rest_execution.py",
+          "tests/test_movement_arrival_evidence.py",
+          "tests/test_native_audited_fixed_framing.py",
+          "tests/test_native_gameplay.py",
+          "tests/test_native_gameplay_repairs.py",
+          "tests/test_native_name_reply_framing.py",
+          "tests/test_native_npc_cancel_recovery.py",
+          "tests/test_native_npc_close_framing.py",
+          "tests/test_native_npc_completion_quality.py",
+          "tests/test_native_npc_cutin_framing.py",
+          "tests/test_native_npc_dialogue.py",
+          "tests/test_native_npc_guidance.py",
+          "tests/test_native_npc_memory_journal.py",
+          "tests/test_native_npc_name_input.py",
+          "tests/test_native_npc_page_budget.py",
+          "tests/test_native_playing_keepalive.py",
+          "tests/test_native_pose_recovery.py",
+          "tests/test_native_rest_interrupt.py",
+          "tests/test_native_textinput.py",
+          "tests/test_npc_plan_contract.py",
+          "tests/test_npc_planning_observation.py",
+          "tests/test_plan_lifecycle.py",
+          "tests/test_planning_context.py",
+          "tests/test_planning_job_context.py",
+          "tests/test_playing_packet_framing.py",
+          "tests/test_playing_runtime.py",
+          "/home/otto/.hermes/cache/scratch/npc-planning-observation/test_actual_observer.py",
+          "/home/otto/.hermes/cache/scratch/npc-capture-characterization/test_existing_capture.py",
+          "/home/otto/.hermes/cache/scratch/npc-planning-observation/test_cached_map_completion.py",
+          "tests/test_npc_bound_response.py",
+          "/home/otto/.hermes/cache/scratch/npc-bound-response/test_bound_dispatch.py"
+        ],
+        "exit": 0,
+        "xml": "/home/otto/.hermes/cache/scratch/npc-host-integration-frontier/frozen-final2-scoped.xml",
+        "xml_sha256": "8d198f230269eed17b3c37262a8ee880c9bd989f4ec24122a7e5b8e453bf1cff",
+        "log": "/home/otto/.hermes/cache/scratch/npc-host-integration-frontier/frozen-final2-scoped.log",
+        "log_sha256": "5f099fc86a27058faf1dedd8f94becd99d3fff09b7fdebd90237a6e9f60d2bed",
+        "cases": 1599,
+        "unique_ids": 1599,
+        "failures": 0,
+        "errors": 0,
+        "skips": 0,
+        "raw_ids_equal": true,
+        "missing_raw_ids": [],
+        "extra_raw_ids": []
+      },
+      {
+        "name": "final2-probes",
+        "command": [
+          "nix",
+          "develop",
+          "--offline",
+          "--no-write-lock-file",
+          "path:./spikes/007-native-packet-ast/toolchain",
+          "-c",
+          "env",
+          "PYTHONOPTIMIZE=0",
+          "PYTHONDONTWRITEBYTECODE=1",
+          "PYTHONPATH=/home/otto/dev/ro-bots/src:/home/otto/dev/ro-bots",
+          "PYTEST_DISABLE_PLUGIN_AUTOLOAD=1",
+          ".venv/bin/python",
+          "-B",
+          "-m",
+          "pytest",
+          "-q",
+          "-o",
+          "addopts=",
+          "-p",
+          "no:cacheprovider",
+          "--junitxml=/home/otto/.hermes/cache/scratch/npc-host-integration-frontier/frozen-final2-probes.xml",
+          "/home/otto/.hermes/cache/scratch/npc-planning-observation-independent-review/test_independent_observer.py"
+        ],
+        "exit": 0,
+        "xml": "/home/otto/.hermes/cache/scratch/npc-host-integration-frontier/frozen-final2-probes.xml",
+        "xml_sha256": "988b3453440d48d53cc2556e2d91a9703e9d9b564e2148cf852b4dc9140363b5",
+        "log": "/home/otto/.hermes/cache/scratch/npc-host-integration-frontier/frozen-final2-probes.log",
+        "log_sha256": "c6d88cabd45bb56945545a34b3ad0da1cbc47318e073e6e98e913c682037a2b9",
+        "cases": 6,
+        "unique_ids": 6,
+        "failures": 0,
+        "errors": 0,
+        "skips": 0,
+        "raw_ids_equal": true,
+        "missing_raw_ids": [],
+        "extra_raw_ids": []
+      },
+      {
+        "name": "independent-probes",
+        "command": [
+          "nix",
+          "develop",
+          "--offline",
+          "--no-write-lock-file",
+          "path:./spikes/007-native-packet-ast/toolchain",
+          "-c",
+          "env",
+          "PYTHONOPTIMIZE=0",
+          "PYTHONDONTWRITEBYTECODE=1",
+          "PYTHONPATH=/home/otto/dev/ro-bots/src:/home/otto/dev/ro-bots",
+          "PYTEST_DISABLE_PLUGIN_AUTOLOAD=1",
+          ".venv/bin/python",
+          "-B",
+          "-m",
+          "pytest",
+          "-q",
+          "-o",
+          "addopts=",
+          "-p",
+          "no:cacheprovider",
+          "--junitxml=/home/otto/.hermes/cache/scratch/npc-host-integration-frontier/frozen-independent-probes.xml",
+          "/home/otto/.hermes/cache/scratch/npc-bound-response-independent-review/test_independent_dispatch.py"
+        ],
+        "exit": 0,
+        "xml": "/home/otto/.hermes/cache/scratch/npc-host-integration-frontier/frozen-independent-probes.xml",
+        "xml_sha256": "e3d9354dec66a3896d8e3b594036ea29d4d21c409c92359d399d689d5491aa83",
+        "log": "/home/otto/.hermes/cache/scratch/npc-host-integration-frontier/frozen-independent-probes.log",
+        "log_sha256": "81e5c70bf67266b07d15a93dcb0767e6681fce3a6c64626855990ecd2ed1d943",
+        "cases": 6,
+        "unique_ids": 6,
+        "failures": 0,
+        "errors": 0,
+        "skips": 0,
+        "raw_ids_equal": true,
+        "missing_raw_ids": [],
+        "extra_raw_ids": []
+      },
+      {
+        "command": [
+          "nix",
+          "develop",
+          "--offline",
+          "--no-write-lock-file",
+          "path:./spikes/007-native-packet-ast/toolchain",
+          "-c",
+          "env",
+          "PYTHONOPTIMIZE=0",
+          "PYTHONDONTWRITEBYTECODE=1",
+          "PYTHONPATH=/home/otto/dev/ro-bots/src:/home/otto/dev/ro-bots",
+          "PYTEST_DISABLE_PLUGIN_AUTOLOAD=1",
+          ".venv/bin/python",
+          "-B",
+          "-m",
+          "pytest",
+          "-q",
+          "-o",
+          "addopts=",
+          "-p",
+          "no:cacheprovider",
+          "--junitxml=/home/otto/.hermes/cache/scratch/npc-host-integration-frontier/frozen-host.xml",
+          "tests/test_llm_planning_npc_host.py",
+          "/home/otto/.hermes/cache/scratch/npc-host-integration-frontier/test_host_npc_capability.py",
+          "tests/test_agent_host.py",
+          "tests/test_host_cleanup_origin.py",
+          "tests/test_host_storage_failure.py",
+          "tests/test_host_chat_commands.py",
+          "tests/test_host_chat_interruptions.py",
+          "tests/test_host_self_chat.py",
+          "tests/test_host_memory.py",
+          "tests/test_host_summary_cache.py",
+          "tests/test_brain.py"
+        ],
+        "exit": 0,
+        "xml": "/home/otto/.hermes/cache/scratch/npc-host-integration-frontier/frozen-host.xml",
+        "xml_sha256": "f8e6188761c996b9a6bf433157b63733bec0135610b46c7301afd71140b47b5a",
+        "log": "/home/otto/.hermes/cache/scratch/npc-host-integration-frontier/frozen-host.log",
+        "log_sha256": "6c9293b220b4a236669b6c4c5b722eb496d99cb3c2cf2c3c1aac9876d75f5a43",
+        "cases": 277,
+        "unique_ids": 277,
+        "failures": 0,
+        "errors": 0,
+        "skips": 0
+      }
+    ],
+    "raw_id_registry": {
+      "path": "/home/otto/.hermes/cache/scratch/npc-host-integration-frontier/frozen-raw-ids.json",
+      "sha256": "cdc14966c51eb2e25d42b689eeaeec90c9497c66f4693741dac065ea11dae8ae"
+    },
+    "physical_unique_union": 1888,
+    "physical_cases_by_run": [
+      1599,
+      6,
+      6,
+      277
+    ],
+    "cross_run_overlap": 0,
+    "new_actual_npc_host_cases": 61,
+    "approved_current_raw_ids_preserved": true,
+    "approved_retained_cases": 1611,
+    "raw_id_normalization": false,
+    "original_parent_tracer_exact_context_green": {
+      "path": "/home/otto/.hermes/cache/scratch/npc-host-integration-frontier/parent-host-capability-green.xml",
+      "sha256": "6d9d956e1716aa617e7493c960b742b1da0baa7384fdcd5c0fdfcacaed137a92",
+      "physical_cases": 1,
+      "raw_ids_equal_to_original_red": true,
+      "command": [
+        "nix",
+        "develop",
+        "--offline",
+        "--no-write-lock-file",
+        "path:./spikes/007-native-packet-ast/toolchain",
+        "-c",
+        "env",
+        "PYTHONOPTIMIZE=0",
+        "PYTHONDONTWRITEBYTECODE=1",
+        "PYTHONPATH=/home/otto/dev/ro-bots/src:/home/otto/dev/ro-bots",
+        "PYTEST_DISABLE_PLUGIN_AUTOLOAD=1",
+        ".venv/bin/python",
+        "-B",
+        "-m",
+        "pytest",
+        "-q",
+        "-o",
+        "addopts=",
+        "-p",
+        "no:cacheprovider",
+        "--junitxml=/home/otto/.hermes/cache/scratch/npc-host-integration-frontier/parent-host-capability-green.xml",
+        "/home/otto/.hermes/cache/scratch/npc-host-integration-frontier/test_host_npc_capability.py"
+      ],
+      "counting": "Extra exact-context pass is not added again to the selected union; the same immutable source/selector also appears in frozen-host with a different raw classname."
+    }
+  },
+  "quality": {
+    "selected_fresh_gates": {
+      "black": {
+        "command": [
+          ".venv/bin/black",
+          "--check",
+          "--workers",
+          "1",
+          "src/robots/app/planning_brain.py",
+          "src/robots/app/agent_runtime.py",
+          "src/robots/app/execution_decisions.py",
+          "src/robots/app/playing_runtime.py",
+          "src/robots/app/npc_planning_execution.py",
+          "tests/test_llm_planning_npc_host.py"
+        ],
+        "exit": 0,
+        "log": "/home/otto/.hermes/cache/scratch/npc-host-integration-frontier/frozen-black.log",
+        "sha256": "7657c5ec367da2c8d4deead1b5f1f8eca9c1b89120ad13df7f855ca4005696b6"
+      },
+      "ruff": {
+        "command": [
+          ".venv/bin/ruff",
+          "check",
+          "src/robots/app/planning_brain.py",
+          "src/robots/app/agent_runtime.py",
+          "src/robots/app/execution_decisions.py",
+          "src/robots/app/playing_runtime.py",
+          "src/robots/app/npc_planning_execution.py",
+          "tests/test_llm_planning_npc_host.py"
+        ],
+        "exit": 0,
+        "log": "/home/otto/.hermes/cache/scratch/npc-host-integration-frontier/frozen-ruff.log",
+        "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
+      },
+      "mypy": {
+        "command": [
+          ".venv/bin/mypy",
+          "--cache-dir",
+          "/home/otto/.hermes/cache/scratch/npc-host-integration-frontier/frozen-mypy-cache"
+        ],
+        "exit": 0,
+        "log": "/home/otto/.hermes/cache/scratch/npc-host-integration-frontier/frozen-mypy.log",
+        "sha256": "ec21cafb79de86d2a0a28d4646d59acfcbb4bc782bc0c864ef5f26c34cbe1a40"
+      },
+      "xenon": {
+        "command": [
+          ".venv/bin/xenon",
+          "src",
+          "--max-absolute",
+          "B",
+          "--max-modules",
+          "B",
+          "--max-average",
+          "A"
+        ],
+        "exit": 0,
+        "log": "/home/otto/.hermes/cache/scratch/npc-host-integration-frontier/frozen-xenon.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "duplicate": {
+        "command": [
+          ".venv/bin/pylint",
+          "--disable=all",
+          "--enable=duplicate-code",
+          "--ignore-paths=tests",
+          "src"
+        ],
+        "exit": 0,
+        "log": "/home/otto/.hermes/cache/scratch/npc-host-integration-frontier/frozen-duplicate.log",
+        "sha256": "8cbfc8cd0b04a4858b0b78b74c6df9631a1695e105e6911d4b57fbcc43b218b5"
+      },
+      "bandit": {
+        "command": [
+          ".venv/bin/bandit",
+          "-q",
+          "-c",
+          "pyproject.toml",
+          "-r",
+          "src"
+        ],
+        "exit": 0,
+        "log": "/home/otto/.hermes/cache/scratch/npc-host-integration-frontier/frozen-bandit.log",
+        "sha256": "2ee20ac6a3a915ff1204f17c53260bcc2ebfb848f37624608d13ddfdf1cc35ff"
+      },
+      "vulture": {
+        "command": [
+          ".venv/bin/vulture",
+          "src",
+          "vulture_whitelist.py"
+        ],
+        "exit": 0,
+        "log": "/home/otto/.hermes/cache/scratch/npc-host-integration-frontier/frozen-vulture.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    "configured_strict_mypy": "Whole unmodified configured src/tests scope with a new frozen-mypy-cache; 247 source files, no casts/ignores/waivers. Approved predecessor reported 245; two new owned Python files explain the current count. The brief's 246 was not used to truncate configuration.",
+    "whole_source_thresholds": "Xenon absolute B/module B/average A, unchanged duplicate-code, Bandit and Vulture thresholds. All selected current exits zero.",
+    "scope": "Black/Ruff on six owned Python files; remaining static scans whole configured project/source scope.",
+    "warnings": [
+      "Existing FastAPI/Starlette TestClient httpx deprecation warning in extra legacy tests; no dependency change."
+    ]
+  },
+  "tdd_history": [
+    {
+      "path": "/home/otto/.hermes/cache/scratch/npc-host-integration-frontier/01-dispatch-red.xml",
+      "sha256": "a0c707d06cddba3c8dc57f102a50b3bab27f19a0ecfe52408b4f0e7cfb373a6e",
+      "command": [
+        "nix",
+        "develop",
+        "--offline",
+        "--no-write-lock-file",
+        "path:./spikes/007-native-packet-ast/toolchain",
+        "-c",
+        "env",
+        "PYTHONOPTIMIZE=0",
+        "PYTHONDONTWRITEBYTECODE=1",
+        "PYTHONPATH=/home/otto/dev/ro-bots/src:/home/otto/dev/ro-bots",
+        "PYTEST_DISABLE_PLUGIN_AUTOLOAD=1",
+        ".venv/bin/python",
+        "-B",
+        "-m",
+        "pytest",
+        "-q",
+        "-o",
+        "addopts=",
+        "-p",
+        "no:cacheprovider",
+        "--junitxml=/home/otto/.hermes/cache/scratch/npc-host-integration-frontier/01-dispatch-red.xml",
+        "tests/test_llm_planning_npc_host.py"
+      ],
+      "physical_cases": 2,
+      "failures": 2,
+      "errors": 0,
+      "skips": 0,
+      "failed_raw_ids": [
+        [
+          "tests.test_llm_planning_npc_host",
+          "test_actual_npc_investigation_admission_clef_before_exact_bound_request[next]"
+        ],
+        [
+          "tests.test_llm_planning_npc_host",
+          "test_actual_npc_investigation_admission_clef_before_exact_bound_request[choose]"
+        ]
+      ],
+      "already_green_cases": 0
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/npc-host-integration-frontier/02-progress-red.xml",
+      "sha256": "dcc74590f42080cd265c9e648323e172d99a5b40277bf1bc7059d19369fe8415",
+      "command": [
+        "nix",
+        "develop",
+        "--offline",
+        "--no-write-lock-file",
+        "path:./spikes/007-native-packet-ast/toolchain",
+        "-c",
+        "env",
+        "PYTHONOPTIMIZE=0",
+        "PYTHONDONTWRITEBYTECODE=1",
+        "PYTHONPATH=/home/otto/dev/ro-bots/src:/home/otto/dev/ro-bots",
+        "PYTEST_DISABLE_PLUGIN_AUTOLOAD=1",
+        ".venv/bin/python",
+        "-B",
+        "-m",
+        "pytest",
+        "-q",
+        "-o",
+        "addopts=",
+        "-p",
+        "no:cacheprovider",
+        "--junitxml=/home/otto/.hermes/cache/scratch/npc-host-integration-frontier/02-progress-red.xml",
+        "tests/test_llm_planning_npc_host.py",
+        "-k",
+        "expected_waiting"
+      ],
+      "physical_cases": 2,
+      "failures": 2,
+      "errors": 0,
+      "skips": 0,
+      "failed_raw_ids": [
+        [
+          "tests.test_llm_planning_npc_host",
+          "test_expected_waiting_survives_until_new_same_open_received_ui_progress[next]"
+        ],
+        [
+          "tests.test_llm_planning_npc_host",
+          "test_expected_waiting_survives_until_new_same_open_received_ui_progress[choose]"
+        ]
+      ],
+      "already_green_cases": 0
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/npc-host-integration-frontier/03-binding-red.xml",
+      "sha256": "a143bc4cfc0f7c33726376f56540626413641aec8c57b22d2e1b1f385aad2caa",
+      "command": [
+        "nix",
+        "develop",
+        "--offline",
+        "--no-write-lock-file",
+        "path:./spikes/007-native-packet-ast/toolchain",
+        "-c",
+        "env",
+        "PYTHONOPTIMIZE=0",
+        "PYTHONDONTWRITEBYTECODE=1",
+        "PYTHONPATH=/home/otto/dev/ro-bots/src:/home/otto/dev/ro-bots",
+        "PYTEST_DISABLE_PLUGIN_AUTOLOAD=1",
+        ".venv/bin/python",
+        "-B",
+        "-m",
+        "pytest",
+        "-q",
+        "-o",
+        "addopts=",
+        "-p",
+        "no:cacheprovider",
+        "--junitxml=/home/otto/.hermes/cache/scratch/npc-host-integration-frontier/03-binding-red.xml",
+        "tests/test_llm_planning_npc_host.py",
+        "-k",
+        "binding_replacement"
+      ],
+      "physical_cases": 8,
+      "failures": 6,
+      "errors": 0,
+      "skips": 0,
+      "failed_raw_ids": [
+        [
+          "tests.test_llm_planning_npc_host",
+          "test_binding_replacement_with_identical_metadata_invalidates_all_old_npc_work[decision-client]"
+        ],
+        [
+          "tests.test_llm_planning_npc_host",
+          "test_binding_replacement_with_identical_metadata_invalidates_all_old_npc_work[decision-wire]"
+        ],
+        [
+          "tests.test_llm_planning_npc_host",
+          "test_binding_replacement_with_identical_metadata_invalidates_all_old_npc_work[queued-client]"
+        ],
+        [
+          "tests.test_llm_planning_npc_host",
+          "test_binding_replacement_with_identical_metadata_invalidates_all_old_npc_work[queued-wire]"
+        ],
+        [
+          "tests.test_llm_planning_npc_host",
+          "test_binding_replacement_with_identical_metadata_invalidates_all_old_npc_work[waiting-client]"
+        ],
+        [
+          "tests.test_llm_planning_npc_host",
+          "test_binding_replacement_with_identical_metadata_invalidates_all_old_npc_work[waiting-wire]"
+        ]
+      ],
+      "already_green_cases": 2
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/npc-host-integration-frontier/04-capture-red.xml",
+      "sha256": "669be1a13b9d0f27c8af8f408f9a35bee1e05e3338e835ae5a40cbc2bc302e2b",
+      "command": [
+        "nix",
+        "develop",
+        "--offline",
+        "--no-write-lock-file",
+        "path:./spikes/007-native-packet-ast/toolchain",
+        "-c",
+        "env",
+        "PYTHONOPTIMIZE=0",
+        "PYTHONDONTWRITEBYTECODE=1",
+        "PYTHONPATH=/home/otto/dev/ro-bots/src:/home/otto/dev/ro-bots",
+        "PYTEST_DISABLE_PLUGIN_AUTOLOAD=1",
+        ".venv/bin/python",
+        "-B",
+        "-m",
+        "pytest",
+        "-q",
+        "-o",
+        "addopts=",
+        "-p",
+        "no:cacheprovider",
+        "--junitxml=/home/otto/.hermes/cache/scratch/npc-host-integration-frontier/04-capture-red.xml",
+        "tests/test_llm_planning_npc_host.py",
+        "-k",
+        "complete_permitted"
+      ],
+      "physical_cases": 1,
+      "failures": 1,
+      "errors": 0,
+      "skips": 0,
+      "failed_raw_ids": [
+        [
+          "tests.test_llm_planning_npc_host",
+          "test_clef_receives_detached_complete_permitted_ui_and_current_typed_receipt"
+        ]
+      ],
+      "already_green_cases": 0
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/npc-host-integration-frontier/05-failure-red.xml",
+      "sha256": "826dc7f9f719b9341fa77719153f98129aed9b9a8dda9e3cc3c477bbba1f92ea",
+      "command": [
+        "nix",
+        "develop",
+        "--offline",
+        "--no-write-lock-file",
+        "path:./spikes/007-native-packet-ast/toolchain",
+        "-c",
+        "env",
+        "PYTHONOPTIMIZE=0",
+        "PYTHONDONTWRITEBYTECODE=1",
+        "PYTHONPATH=/home/otto/dev/ro-bots/src:/home/otto/dev/ro-bots",
+        "PYTEST_DISABLE_PLUGIN_AUTOLOAD=1",
+        ".venv/bin/python",
+        "-B",
+        "-m",
+        "pytest",
+        "-q",
+        "-o",
+        "addopts=",
+        "-p",
+        "no:cacheprovider",
+        "--junitxml=/home/otto/.hermes/cache/scratch/npc-host-integration-frontier/05-failure-red.xml",
+        "tests/test_llm_planning_npc_host.py",
+        "-k",
+        "failed_dispatch"
+      ],
+      "physical_cases": 3,
+      "failures": 3,
+      "errors": 0,
+      "skips": 0,
+      "failed_raw_ids": [
+        [
+          "tests.test_llm_planning_npc_host",
+          "test_failed_dispatch_or_expired_wait_requests_one_bounded_fresh_plan_not_progress[timeout]"
+        ],
+        [
+          "tests.test_llm_planning_npc_host",
+          "test_failed_dispatch_or_expired_wait_requests_one_bounded_fresh_plan_not_progress[denied]"
+        ],
+        [
+          "tests.test_llm_planning_npc_host",
+          "test_failed_dispatch_or_expired_wait_requests_one_bounded_fresh_plan_not_progress[send]"
+        ]
+      ],
+      "already_green_cases": 0
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/npc-host-integration-frontier/06-controls-characterization.xml",
+      "sha256": "96621696f116f19a115cbc0097c41d8afde8e1d2300207e846e585da94e1db7f",
+      "command": [
+        "nix",
+        "develop",
+        "--offline",
+        "--no-write-lock-file",
+        "path:./spikes/007-native-packet-ast/toolchain",
+        "-c",
+        "env",
+        "PYTHONOPTIMIZE=0",
+        "PYTHONDONTWRITEBYTECODE=1",
+        "PYTHONPATH=/home/otto/dev/ro-bots/src:/home/otto/dev/ro-bots",
+        "PYTEST_DISABLE_PLUGIN_AUTOLOAD=1",
+        ".venv/bin/python",
+        "-B",
+        "-m",
+        "pytest",
+        "-q",
+        "-o",
+        "addopts=",
+        "-p",
+        "no:cacheprovider",
+        "--junitxml=/home/otto/.hermes/cache/scratch/npc-host-integration-frontier/06-controls-characterization.xml",
+        "tests/test_llm_planning_npc_host.py"
+      ],
+      "physical_cases": 47,
+      "failures": 2,
+      "errors": 0,
+      "skips": 0,
+      "failed_raw_ids": [
+        [
+          "tests.test_llm_planning_npc_host",
+          "test_waiting_requires_new_matching_same_open_ui_not_unrelated_receipts[epoch]"
+        ],
+        [
+          "tests.test_llm_planning_npc_host",
+          "test_npc_planner_timeout_retains_physical_owner_and_passive_keepalive"
+        ]
+      ],
+      "already_green_cases": 45
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/npc-host-integration-frontier/07-close-red.xml",
+      "sha256": "64c873776e4a7145535d224ca24c875b198b4998232e754ee56694ba17ab2952",
+      "command": [
+        "nix",
+        "develop",
+        "--offline",
+        "--no-write-lock-file",
+        "path:./spikes/007-native-packet-ast/toolchain",
+        "-c",
+        "env",
+        "PYTHONOPTIMIZE=0",
+        "PYTHONDONTWRITEBYTECODE=1",
+        "PYTHONPATH=/home/otto/dev/ro-bots/src:/home/otto/dev/ro-bots",
+        "PYTEST_DISABLE_PLUGIN_AUTOLOAD=1",
+        ".venv/bin/python",
+        "-B",
+        "-m",
+        "pytest",
+        "-q",
+        "-o",
+        "addopts=",
+        "-p",
+        "no:cacheprovider",
+        "--junitxml=/home/otto/.hermes/cache/scratch/npc-host-integration-frontier/07-close-red.xml",
+        "tests/test_llm_planning_npc_host.py",
+        "-k",
+        "disconnect_invalidates"
+      ],
+      "physical_cases": 1,
+      "failures": 1,
+      "errors": 0,
+      "skips": 0,
+      "failed_raw_ids": [
+        [
+          "tests.test_llm_planning_npc_host",
+          "test_disconnect_invalidates_npc_phase_and_queued_action_before_client_close"
+        ]
+      ],
+      "already_green_cases": 0
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/npc-host-integration-frontier/09-event-key-red.xml",
+      "sha256": "fc3de78c6cbd560817cd5e48e9b39ae2b744f632fe27543b1caa01982de2bc38",
+      "command": [
+        "nix",
+        "develop",
+        "--offline",
+        "--no-write-lock-file",
+        "path:./spikes/007-native-packet-ast/toolchain",
+        "-c",
+        "env",
+        "PYTHONOPTIMIZE=0",
+        "PYTHONDONTWRITEBYTECODE=1",
+        "PYTHONPATH=/home/otto/dev/ro-bots/src:/home/otto/dev/ro-bots",
+        "PYTEST_DISABLE_PLUGIN_AUTOLOAD=1",
+        ".venv/bin/python",
+        "-B",
+        "-m",
+        "pytest",
+        "-q",
+        "-o",
+        "addopts=",
+        "-p",
+        "no:cacheprovider",
+        "--junitxml=/home/otto/.hermes/cache/scratch/npc-host-integration-frontier/09-event-key-red.xml",
+        "tests/test_llm_planning_npc_host.py",
+        "-k",
+        "full_permitted_ui_does"
+      ],
+      "physical_cases": 1,
+      "failures": 1,
+      "errors": 0,
+      "skips": 0,
+      "failed_raw_ids": [
+        [
+          "tests.test_llm_planning_npc_host",
+          "test_full_permitted_ui_does_not_become_an_oversized_execution_event_key"
+        ]
+      ],
+      "already_green_cases": 0
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/npc-host-integration-frontier/11-queued-review-red.xml",
+      "sha256": "4456a857e7da456439efd95faec2c08caa57b1e042b498c9b843c5ad82073214",
+      "command": [
+        "nix",
+        "develop",
+        "--offline",
+        "--no-write-lock-file",
+        "path:./spikes/007-native-packet-ast/toolchain",
+        "-c",
+        "env",
+        "PYTHONOPTIMIZE=0",
+        "PYTHONDONTWRITEBYTECODE=1",
+        "PYTHONPATH=/home/otto/dev/ro-bots/src:/home/otto/dev/ro-bots",
+        "PYTEST_DISABLE_PLUGIN_AUTOLOAD=1",
+        ".venv/bin/python",
+        "-B",
+        "-m",
+        "pytest",
+        "-q",
+        "-o",
+        "addopts=",
+        "-p",
+        "no:cacheprovider",
+        "--junitxml=/home/otto/.hermes/cache/scratch/npc-host-integration-frontier/11-queued-review-red.xml",
+        "tests/test_llm_planning_npc_host.py",
+        "-k",
+        "queued_npc_reply_is_denied"
+      ],
+      "physical_cases": 1,
+      "failures": 1,
+      "errors": 0,
+      "skips": 0,
+      "failed_raw_ids": [
+        [
+          "tests.test_llm_planning_npc_host",
+          "test_queued_npc_reply_is_denied_when_admitted_plan_review_deadline_passes"
+        ]
+      ],
+      "already_green_cases": 0
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/npc-host-integration-frontier/13-expired-progress-red.xml",
+      "sha256": "19cae419c1d6ae1707c3c21cf49c3ce45fd00cc4f668a5989883a76ea80e5745",
+      "command": [
+        "nix",
+        "develop",
+        "--offline",
+        "--no-write-lock-file",
+        "path:./spikes/007-native-packet-ast/toolchain",
+        "-c",
+        "env",
+        "PYTHONOPTIMIZE=0",
+        "PYTHONDONTWRITEBYTECODE=1",
+        "PYTHONPATH=/home/otto/dev/ro-bots/src:/home/otto/dev/ro-bots",
+        "PYTEST_DISABLE_PLUGIN_AUTOLOAD=1",
+        ".venv/bin/python",
+        "-B",
+        "-m",
+        "pytest",
+        "-q",
+        "-o",
+        "addopts=",
+        "-p",
+        "no:cacheprovider",
+        "--junitxml=/home/otto/.hermes/cache/scratch/npc-host-integration-frontier/13-expired-progress-red.xml",
+        "tests/test_llm_planning_npc_host.py",
+        "-k",
+        "received_progress_after_plan"
+      ],
+      "physical_cases": 1,
+      "failures": 1,
+      "errors": 0,
+      "skips": 0,
+      "failed_raw_ids": [
+        [
+          "tests.test_llm_planning_npc_host",
+          "test_received_progress_after_plan_review_deadline_cannot_complete_expired_phase"
+        ]
+      ],
+      "already_green_cases": 0
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/npc-host-integration-frontier/14-before-connect-red.xml",
+      "sha256": "ec56da1cc7662be3d9031d0af50311d6f5293a237904c0552c63d4d0ff1387f7",
+      "command": [
+        "nix",
+        "develop",
+        "--offline",
+        "--no-write-lock-file",
+        "path:./spikes/007-native-packet-ast/toolchain",
+        "-c",
+        "env",
+        "PYTHONOPTIMIZE=0",
+        "PYTHONDONTWRITEBYTECODE=1",
+        "PYTHONPATH=/home/otto/dev/ro-bots/src:/home/otto/dev/ro-bots",
+        "PYTEST_DISABLE_PLUGIN_AUTOLOAD=1",
+        ".venv/bin/python",
+        "-B",
+        "-m",
+        "pytest",
+        "-q",
+        "-o",
+        "addopts=",
+        "-p",
+        "no:cacheprovider",
+        "--junitxml=/home/otto/.hermes/cache/scratch/npc-host-integration-frontier/14-before-connect-red.xml",
+        "tests/test_llm_planning_npc_host.py",
+        "-k",
+        "host_reconnect_invalidates"
+      ],
+      "physical_cases": 1,
+      "failures": 1,
+      "errors": 0,
+      "skips": 0,
+      "failed_raw_ids": [
+        [
+          "tests.test_llm_planning_npc_host",
+          "test_host_reconnect_invalidates_old_npc_state_before_wire_connect"
+        ]
+      ],
+      "already_green_cases": 0
+    }
+  ],
+  "history_notes": [
+    "Original parent actual-host capability RED and immutable tracer source are preserved and now GREEN in the same raw-ID context.",
+    "Each added production mechanism followed its reached behavioral RED; already-green characterizations are not labeled tests-first feature evidence.",
+    "03-binding-red had six reached failures and two already-green planning cases; all historical outcomes are retained.",
+    "06-controls-characterization had an epoch/version phase-invalidation behavioral failure plus a keepalive test-oracle error. The latter was corrected by seeding an actual tick at time zero; no keepalive production behavior was changed for it.",
+    "Initial and refactor lint failures are preserved. Final quality failure exposed a partially typed test-helper call and six duplicate event-key lines; corrected with explicit fixture annotations and binding/header projection, without weakening thresholds.",
+    "Historical passing snapshots remain historical after later changes; only frozen selected runs establish the completed current candidate."
+  ],
+  "artifact_registry": {
+    "/home/otto/.hermes/cache/scratch/npc-host-integration-frontier/01-dispatch-green.xml": "6508073e7563f098e7fc96bc013343010ba3b78161243886fa40459f9d39cac8",
+    "/home/otto/.hermes/cache/scratch/npc-host-integration-frontier/01-dispatch-red.xml": "a0c707d06cddba3c8dc57f102a50b3bab27f19a0ecfe52408b4f0e7cfb373a6e",
+    "/home/otto/.hermes/cache/scratch/npc-host-integration-frontier/02-progress-green.xml": "a731b665804843775fd152c37105c0de43ad485ed520065b3b986061a0ed455c",
+    "/home/otto/.hermes/cache/scratch/npc-host-integration-frontier/02-progress-red.xml": "dcc74590f42080cd265c9e648323e172d99a5b40277bf1bc7059d19369fe8415",
+    "/home/otto/.hermes/cache/scratch/npc-host-integration-frontier/03-binding-green.xml": "7179dfe83734e2851cf5de1363d39833f2ece5e83c620ec18735f985600fa254",
+    "/home/otto/.hermes/cache/scratch/npc-host-integration-frontier/03-binding-red.xml": "a143bc4cfc0f7c33726376f56540626413641aec8c57b22d2e1b1f385aad2caa",
+    "/home/otto/.hermes/cache/scratch/npc-host-integration-frontier/04-capture-green.xml": "82e484c1bffca9ad382cc28c83c5dd79ae57304d1e15eee094918845c6fd8327",
+    "/home/otto/.hermes/cache/scratch/npc-host-integration-frontier/04-capture-red.xml": "669be1a13b9d0f27c8af8f408f9a35bee1e05e3338e835ae5a40cbc2bc302e2b",
+    "/home/otto/.hermes/cache/scratch/npc-host-integration-frontier/05-failure-green.xml": "f6ab78ea6e2deccebef2548bf888f35d7fc6a3a67db1f8a87265947d15e50041",
+    "/home/otto/.hermes/cache/scratch/npc-host-integration-frontier/05-failure-red.xml": "826dc7f9f719b9341fa77719153f98129aed9b9a8dda9e3cc3c477bbba1f92ea",
+    "/home/otto/.hermes/cache/scratch/npc-host-integration-frontier/06-controls-characterization.xml": "96621696f116f19a115cbc0097c41d8afde8e1d2300207e846e585da94e1db7f",
+    "/home/otto/.hermes/cache/scratch/npc-host-integration-frontier/06-controls-green.xml": "4375078216c316086293eeea8aca7e19d99459d46c7ba1f376a181e451086f38",
+    "/home/otto/.hermes/cache/scratch/npc-host-integration-frontier/07-close-green.xml": "61afc08fcb108eab4af3a7d4f4bc1623562fd2e1509ef06bd831f111e1b7b283",
+    "/home/otto/.hermes/cache/scratch/npc-host-integration-frontier/07-close-red.xml": "64c873776e4a7145535d224ca24c875b198b4998232e754ee56694ba17ab2952",
+    "/home/otto/.hermes/cache/scratch/npc-host-integration-frontier/08-refactor-green.xml": "6b984f80ab83a6ce46eab56416bd75c9866e61ee6c146ccee0ab89c471be52f7",
+    "/home/otto/.hermes/cache/scratch/npc-host-integration-frontier/09-event-key-green.xml": "8c2c6b9d3da7b9ccc0af296d7113d0909d76e24f6bdfffb6a5452d0d3778c00d",
+    "/home/otto/.hermes/cache/scratch/npc-host-integration-frontier/09-event-key-red.xml": "fc3de78c6cbd560817cd5e48e9b39ae2b744f632fe27543b1caa01982de2bc38",
+    "/home/otto/.hermes/cache/scratch/npc-host-integration-frontier/10-ownership-characterization.xml": "82c05258a24c7436cbb65f12ba46d55fa045e34e4ed83a982ddf33799b242c11",
+    "/home/otto/.hermes/cache/scratch/npc-host-integration-frontier/11-queued-review-green.xml": "a0686ce7e9e660724ad7da69814fbe20c3a7cc59ec9f083148ce3e3e72fbcb45",
+    "/home/otto/.hermes/cache/scratch/npc-host-integration-frontier/11-queued-review-red.xml": "4456a857e7da456439efd95faec2c08caa57b1e042b498c9b843c5ad82073214",
+    "/home/otto/.hermes/cache/scratch/npc-host-integration-frontier/12-session-characterization.xml": "48c55a4b445efaf10de2a2179c6babe0a2618bbd61515f163b562613307aef49",
+    "/home/otto/.hermes/cache/scratch/npc-host-integration-frontier/13-expired-progress-green.xml": "8165cc3396a2f0ba4eb6a930f16414e45fbe9626080e94c0e8ae09e294a27caa",
+    "/home/otto/.hermes/cache/scratch/npc-host-integration-frontier/13-expired-progress-red.xml": "19cae419c1d6ae1707c3c21cf49c3ce45fd00cc4f668a5989883a76ea80e5745",
+    "/home/otto/.hermes/cache/scratch/npc-host-integration-frontier/14-before-connect-green.xml": "da5dd67fdcdfa6ff34a94e964d7552ba4ead363f9464231b672a6f1d9c538530",
+    "/home/otto/.hermes/cache/scratch/npc-host-integration-frontier/14-before-connect-red.xml": "ec56da1cc7662be3d9031d0af50311d6f5293a237904c0552c63d4d0ff1387f7",
+    "/home/otto/.hermes/cache/scratch/npc-host-integration-frontier/baseline.json": "67e957bebdf4473b1a899b858e61a51f9b932cdf6570dd6d658320b012d73b10",
+    "/home/otto/.hermes/cache/scratch/npc-host-integration-frontier/candidate-freeze.json": "9f6917121eff900bb5a99d91852dd32c63c4e4b27368f8903263cd531ea9aec4",
+    "/home/otto/.hermes/cache/scratch/npc-host-integration-frontier/completed-freeze.json": "2b9f452c86116f595e6491411930add79ab111f0f064a73fb5272f6ba9ea907d",
+    "/home/otto/.hermes/cache/scratch/npc-host-integration-frontier/extra-regressions.py": "e2ffb282db62c935b7a1dbc9c599e7e8e1417b1b5bdce4151cbee8f875a8b69f",
+    "/home/otto/.hermes/cache/scratch/npc-host-integration-frontier/final-bandit.log": "2ee20ac6a3a915ff1204f17c53260bcc2ebfb848f37624608d13ddfdf1cc35ff",
+    "/home/otto/.hermes/cache/scratch/npc-host-integration-frontier/final-black.log": "7657c5ec367da2c8d4deead1b5f1f8eca9c1b89120ad13df7f855ca4005696b6",
+    "/home/otto/.hermes/cache/scratch/npc-host-integration-frontier/final-duplicate.log": "837940b249e170feb522bd5b164e52e8494b05981e1a6d92ec720b74d7a33106",
+    "/home/otto/.hermes/cache/scratch/npc-host-integration-frontier/final-final2-probes.xml": "a905eaac72726f4701dcf3e6166dd2dc5a0d3dede291513d881e37cab5433b39",
+    "/home/otto/.hermes/cache/scratch/npc-host-integration-frontier/final-final2-scoped.xml": "130b9e8f7497c737b44a2f9d010e8dacc7cf89156a2bacde63127f2149bde39e",
+    "/home/otto/.hermes/cache/scratch/npc-host-integration-frontier/final-format-ast.json": "5a2e3da801324ed14c51a6c801cf06a01af1d385edf25b98584d02c366f39f7e",
+    "/home/otto/.hermes/cache/scratch/npc-host-integration-frontier/final-host.xml": "a2d4bf9e0a70e73c64e49165938c36827475e2d17c08522fe80652e3ad263f6b",
+    "/home/otto/.hermes/cache/scratch/npc-host-integration-frontier/final-independent-probes.xml": "da6735a6168d8807ab5ed882fd6a2e8e1497b0d280294de513f236aab11e4409",
+    "/home/otto/.hermes/cache/scratch/npc-host-integration-frontier/final-mypy.log": "065538a1404087ebb277630498d2c13ec447be3ba22241e6c3c863a326c146ad",
+    "/home/otto/.hermes/cache/scratch/npc-host-integration-frontier/final-quality.json": "65dde842a42608fd0c0a72143d87d27fc4cdfa8bffb902d55bb6cae5cc4d9eab",
+    "/home/otto/.hermes/cache/scratch/npc-host-integration-frontier/final-ruff.log": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+    "/home/otto/.hermes/cache/scratch/npc-host-integration-frontier/final-vulture.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/npc-host-integration-frontier/final-xenon.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/npc-host-integration-frontier/final2-bandit.log": "2ee20ac6a3a915ff1204f17c53260bcc2ebfb848f37624608d13ddfdf1cc35ff",
+    "/home/otto/.hermes/cache/scratch/npc-host-integration-frontier/final2-black.log": "7657c5ec367da2c8d4deead1b5f1f8eca9c1b89120ad13df7f855ca4005696b6",
+    "/home/otto/.hermes/cache/scratch/npc-host-integration-frontier/final2-duplicate.log": "8cbfc8cd0b04a4858b0b78b74c6df9631a1695e105e6911d4b57fbcc43b218b5",
+    "/home/otto/.hermes/cache/scratch/npc-host-integration-frontier/final2-final2-probes.xml": "58aef1167b6bb34186c99c698d65836a8f4cafed13db31fbbd5831ae6755cf69",
+    "/home/otto/.hermes/cache/scratch/npc-host-integration-frontier/final2-final2-scoped.xml": "b142bddb84f4c338ec67ec1ddf676ec0e4fc27d4242c59e3dc3bd1e9575dd99e",
+    "/home/otto/.hermes/cache/scratch/npc-host-integration-frontier/final2-host.xml": "aed88aa0dbafc67049d3121e9c6346fcc711103d35dcee16cbd800f51adb55b5",
+    "/home/otto/.hermes/cache/scratch/npc-host-integration-frontier/final2-independent-probes.xml": "9788dc828c0cce2ef87e836fdf6189394def1d1c14a25a65e22a0ce792a71658",
+    "/home/otto/.hermes/cache/scratch/npc-host-integration-frontier/final2-mypy.log": "ec21cafb79de86d2a0a28d4646d59acfcbb4bc782bc0c864ef5f26c34cbe1a40",
+    "/home/otto/.hermes/cache/scratch/npc-host-integration-frontier/final2-quality.json": "cf1034456868563e06594d89675840a6ecd8bb156e9c4ab18d7a9fb8d1098d00",
+    "/home/otto/.hermes/cache/scratch/npc-host-integration-frontier/final2-ruff.log": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+    "/home/otto/.hermes/cache/scratch/npc-host-integration-frontier/final2-vulture.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/npc-host-integration-frontier/final2-xenon.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/npc-host-integration-frontier/frozen-bandit.log": "2ee20ac6a3a915ff1204f17c53260bcc2ebfb848f37624608d13ddfdf1cc35ff",
+    "/home/otto/.hermes/cache/scratch/npc-host-integration-frontier/frozen-black.log": "7657c5ec367da2c8d4deead1b5f1f8eca9c1b89120ad13df7f855ca4005696b6",
+    "/home/otto/.hermes/cache/scratch/npc-host-integration-frontier/frozen-duplicate.log": "8cbfc8cd0b04a4858b0b78b74c6df9631a1695e105e6911d4b57fbcc43b218b5",
+    "/home/otto/.hermes/cache/scratch/npc-host-integration-frontier/frozen-final2-probes.log": "c6d88cabd45bb56945545a34b3ad0da1cbc47318e073e6e98e913c682037a2b9",
+    "/home/otto/.hermes/cache/scratch/npc-host-integration-frontier/frozen-final2-probes.xml": "988b3453440d48d53cc2556e2d91a9703e9d9b564e2148cf852b4dc9140363b5",
+    "/home/otto/.hermes/cache/scratch/npc-host-integration-frontier/frozen-final2-scoped.log": "5f099fc86a27058faf1dedd8f94becd99d3fff09b7fdebd90237a6e9f60d2bed",
+    "/home/otto/.hermes/cache/scratch/npc-host-integration-frontier/frozen-final2-scoped.xml": "8d198f230269eed17b3c37262a8ee880c9bd989f4ec24122a7e5b8e453bf1cff",
+    "/home/otto/.hermes/cache/scratch/npc-host-integration-frontier/frozen-host.json": "6a1c6ae4329cfefd26078f1c1cbecaec99243165a1eadbee8bb67810aa5cfd97",
+    "/home/otto/.hermes/cache/scratch/npc-host-integration-frontier/frozen-host.log": "6c9293b220b4a236669b6c4c5b722eb496d99cb3c2cf2c3c1aac9876d75f5a43",
+    "/home/otto/.hermes/cache/scratch/npc-host-integration-frontier/frozen-host.xml": "f8e6188761c996b9a6bf433157b63733bec0135610b46c7301afd71140b47b5a",
+    "/home/otto/.hermes/cache/scratch/npc-host-integration-frontier/frozen-independent-probes.log": "81e5c70bf67266b07d15a93dcb0767e6681fce3a6c64626855990ecd2ed1d943",
+    "/home/otto/.hermes/cache/scratch/npc-host-integration-frontier/frozen-independent-probes.xml": "e3d9354dec66a3896d8e3b594036ea29d4d21c409c92359d399d689d5491aa83",
+    "/home/otto/.hermes/cache/scratch/npc-host-integration-frontier/frozen-mypy.log": "ec21cafb79de86d2a0a28d4646d59acfcbb4bc782bc0c864ef5f26c34cbe1a40",
+    "/home/otto/.hermes/cache/scratch/npc-host-integration-frontier/frozen-prerequisites.json": "651b501a361c4a4dd8663e1a1ea6e4a9b2bd0c555e02ce774ee840c93acdbba2",
+    "/home/otto/.hermes/cache/scratch/npc-host-integration-frontier/frozen-quality.json": "87bd302ef66dfffb91d7679eec1725da55ff032bd5a8c7b52278763638634cc8",
+    "/home/otto/.hermes/cache/scratch/npc-host-integration-frontier/frozen-raw-ids.json": "cdc14966c51eb2e25d42b689eeaeec90c9497c66f4693741dac065ea11dae8ae",
+    "/home/otto/.hermes/cache/scratch/npc-host-integration-frontier/frozen-ruff.log": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+    "/home/otto/.hermes/cache/scratch/npc-host-integration-frontier/frozen-vulture.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/npc-host-integration-frontier/frozen-xenon.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/npc-host-integration-frontier/initial-bandit.log": "2ee20ac6a3a915ff1204f17c53260bcc2ebfb848f37624608d13ddfdf1cc35ff",
+    "/home/otto/.hermes/cache/scratch/npc-host-integration-frontier/initial-black.log": "0655cf928a242dcfe74730655ddf5297846de1aa1aede6858f3117cbc8800b09",
+    "/home/otto/.hermes/cache/scratch/npc-host-integration-frontier/initial-duplicate.log": "8cbfc8cd0b04a4858b0b78b74c6df9631a1695e105e6911d4b57fbcc43b218b5",
+    "/home/otto/.hermes/cache/scratch/npc-host-integration-frontier/initial-mypy.log": "ea4c67497f29d9f5b2f37cac6a2ff8d67927c6f70ce04212097e6742ea5a5658",
+    "/home/otto/.hermes/cache/scratch/npc-host-integration-frontier/initial-quality.json": "928c6d83ef9bf08d1b13c2c98f8beff5496668644bab64d17c5da5d5a12eac35",
+    "/home/otto/.hermes/cache/scratch/npc-host-integration-frontier/initial-ruff.log": "ed0d092d089f3731cffb93109dd23ab58220b58871696670f65182cbd89551e7",
+    "/home/otto/.hermes/cache/scratch/npc-host-integration-frontier/initial-vulture.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/npc-host-integration-frontier/initial-xenon.log": "529a10dc532a7c3569d062fc918d5f00f6e347485477ee2a380d0dd1ee7c3652",
+    "/home/otto/.hermes/cache/scratch/npc-host-integration-frontier/parent-host-capability-green.xml": "6d9d956e1716aa617e7493c960b742b1da0baa7384fdcd5c0fdfcacaed137a92",
+    "/home/otto/.hermes/cache/scratch/npc-host-integration-frontier/parent-host-capability-red.xml": "9f55188b88ca01f9d239511c39f1eed34f47de11ee931e30b1a3ad1841f50308",
+    "/home/otto/.hermes/cache/scratch/npc-host-integration-frontier/prerequisites.py": "83363cf5690f0c9e183d1f6131e093a55514c1fccfabd919279dbe6aeb5233a0",
+    "/home/otto/.hermes/cache/scratch/npc-host-integration-frontier/quality.py": "3893c42354d6b4f48734e887c01ae93cc380d5b7fc7f3673831d9a614416d84c",
+    "/home/otto/.hermes/cache/scratch/npc-host-integration-frontier/refactor1-bandit.log": "2ee20ac6a3a915ff1204f17c53260bcc2ebfb848f37624608d13ddfdf1cc35ff",
+    "/home/otto/.hermes/cache/scratch/npc-host-integration-frontier/refactor1-black.log": "7657c5ec367da2c8d4deead1b5f1f8eca9c1b89120ad13df7f855ca4005696b6",
+    "/home/otto/.hermes/cache/scratch/npc-host-integration-frontier/refactor1-duplicate.log": "8cbfc8cd0b04a4858b0b78b74c6df9631a1695e105e6911d4b57fbcc43b218b5",
+    "/home/otto/.hermes/cache/scratch/npc-host-integration-frontier/refactor1-mypy.log": "ec21cafb79de86d2a0a28d4646d59acfcbb4bc782bc0c864ef5f26c34cbe1a40",
+    "/home/otto/.hermes/cache/scratch/npc-host-integration-frontier/refactor1-quality.json": "acf9a2474d76c862f0cbedb20111d57e203694b58523ee9c3d4a0217a82ed28e",
+    "/home/otto/.hermes/cache/scratch/npc-host-integration-frontier/refactor1-ruff.log": "2c395b0ab1fc37a0849ffcbe2144de9b398fa9c42dc857e9f7bf609853234d38",
+    "/home/otto/.hermes/cache/scratch/npc-host-integration-frontier/refactor1-vulture.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/npc-host-integration-frontier/refactor1-xenon.log": "2e7f256005ebdd3211baf747d0c3e62eb1d4b404559c9cdec85ff4a043a8b5e6",
+    "/home/otto/.hermes/cache/scratch/npc-host-integration-frontier/refactor2-bandit.log": "2ee20ac6a3a915ff1204f17c53260bcc2ebfb848f37624608d13ddfdf1cc35ff",
+    "/home/otto/.hermes/cache/scratch/npc-host-integration-frontier/refactor2-black.log": "7657c5ec367da2c8d4deead1b5f1f8eca9c1b89120ad13df7f855ca4005696b6",
+    "/home/otto/.hermes/cache/scratch/npc-host-integration-frontier/refactor2-duplicate.log": "8cbfc8cd0b04a4858b0b78b74c6df9631a1695e105e6911d4b57fbcc43b218b5",
+    "/home/otto/.hermes/cache/scratch/npc-host-integration-frontier/refactor2-mypy.log": "ec21cafb79de86d2a0a28d4646d59acfcbb4bc782bc0c864ef5f26c34cbe1a40",
+    "/home/otto/.hermes/cache/scratch/npc-host-integration-frontier/refactor2-quality.json": "5d8b77032c258bb061da943ac1cbf94c811557dbe2b0392eaef2bae39e4eff26",
+    "/home/otto/.hermes/cache/scratch/npc-host-integration-frontier/refactor2-ruff.log": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+    "/home/otto/.hermes/cache/scratch/npc-host-integration-frontier/refactor2-vulture.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/npc-host-integration-frontier/refactor2-xenon.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/npc-host-integration-frontier/test_host_npc_capability.py": "fd6b4b72e30f554576f9ec42636cb4f017c3ce7538280eadb014271901e5543b"
+  },
+  "remaining_open": [
+    "Parent configured full-root check/audit on completed interacting sources.",
+    "Independent completed-snapshot review and parent adoption.",
+    "Separately authorized real provider/native session acceptance.",
+    "Full project goals remain OPEN."
+  ],
+  "full_goals": "OPEN",
+  "procedural_lessons_for_parent": [
+    "Keep pre-send actionable receipt validation separate from post-issued same-open UI/lease tracking.",
+    "Treat object-reference binding changes as host-policy invalidation even when DTO metadata repeats exactly.",
+    "Preserve physical worker ownership after logical invalidation/timeout, and deny old queued action objects before actuation."
+  ]
+}

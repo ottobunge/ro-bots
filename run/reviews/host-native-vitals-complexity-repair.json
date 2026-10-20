@@ -1,0 +1,258 @@
+{
+  "passed": true,
+  "cycle": 1,
+  "phase": "REFACTOR; existing functional GREEN, reviewed quality RED",
+  "scope": "OFFLINE_ONLY; no native/model/gameplay acceptance",
+  "before": {
+    "source_sha256": "d79ce299c615e5d332774c608d1688a76551883cb9c6f595c4d84a0f5fb7d7a8",
+    "xenon": {
+      "exit_code": 1,
+      "command": [
+        "uv",
+        "run",
+        "--offline",
+        "--no-sync",
+        "xenon",
+        "--max-absolute",
+        "B",
+        "--max-modules",
+        "B",
+        "--max-average",
+        "A",
+        "src"
+      ],
+      "observed_stderr": "ERROR:xenon:block \"src/robots/app/agent_runtime.py:621 _native_vitals\" has a rank of C",
+      "initial_invocation_issue": "Bare xenon unavailable in Nix shell; reran successfully via pinned uv offline no-sync."
+    },
+    "metrics": {
+      "_native_vitals": {
+        "complexity": 13,
+        "rank": "C"
+      }
+    }
+  },
+  "after": {
+    "source_sha256": "4c99c3a952c5a96d1446c196b7b3aa737107601d69aa9ddaa7d7b0af6fcb4e60",
+    "metrics": {
+      "_require_native_session": {
+        "complexity": 8,
+        "rank": "B"
+      },
+      "_native_vitals": {
+        "complexity": 6,
+        "rank": "B"
+      }
+    }
+  },
+  "gates": {
+    "black": {
+      "exit_code": 0,
+      "command": [
+        "black",
+        "--check",
+        "src",
+        "tests"
+      ],
+      "log": "/home/otto/.hermes/cache/scratch/hvr-p9j3acw4/black.log"
+    },
+    "ruff": {
+      "exit_code": 0,
+      "command": [
+        "ruff",
+        "check",
+        "src",
+        "tests"
+      ],
+      "log": "/home/otto/.hermes/cache/scratch/hvr-p9j3acw4/ruff.log"
+    },
+    "mypy": {
+      "exit_code": 0,
+      "command": [
+        "mypy"
+      ],
+      "log": "/home/otto/.hermes/cache/scratch/hvr-p9j3acw4/mypy.log"
+    },
+    "bandit": {
+      "exit_code": 0,
+      "command": [
+        "bandit",
+        "-q",
+        "-c",
+        "pyproject.toml",
+        "-r",
+        "src"
+      ],
+      "log": "/home/otto/.hermes/cache/scratch/hvr-p9j3acw4/bandit.log"
+    },
+    "vulture": {
+      "exit_code": 0,
+      "command": [
+        "vulture",
+        "src",
+        "vulture_whitelist.py"
+      ],
+      "log": "/home/otto/.hermes/cache/scratch/hvr-p9j3acw4/vulture.log"
+    },
+    "xenon": {
+      "exit_code": 0,
+      "command": [
+        "xenon",
+        "src",
+        "--max-absolute",
+        "B",
+        "--max-modules",
+        "B",
+        "--max-average",
+        "A"
+      ],
+      "log": "/home/otto/.hermes/cache/scratch/hvr-p9j3acw4/xenon.log"
+    },
+    "pylint": {
+      "exit_code": 0,
+      "command": [
+        "pylint",
+        "--disable=all",
+        "--enable=duplicate-code",
+        "--ignore-paths=tests",
+        "src"
+      ],
+      "log": "/home/otto/.hermes/cache/scratch/hvr-p9j3acw4/pylint.log"
+    },
+    "regression": {
+      "exit_code": 0,
+      "command": [
+        "pytest",
+        "tests/test_agent_host.py",
+        "tests/test_host_native_transport.py",
+        "tests/test_host_self_chat.py",
+        "tests/test_host_memory.py",
+        "tests/test_host_chat_commands.py",
+        "tests/test_host_chat_interruptions.py",
+        "tests/test_core_interruption_cleanup.py",
+        "tests/test_host_storage_failure.py",
+        "tests/test_host_summary_cache.py",
+        "tests/test_native_vitals.py",
+        "tests/test_host_native_vitals.py",
+        "/home/otto/.hermes/cache/scratch/hv-cfw2maev/test_independent.py",
+        "--cov=robots.app.agent_runtime",
+        "--cov=robots.adapters.native_vitals",
+        "--cov-report=term-missing",
+        "--cov-report=json:/home/otto/.hermes/cache/scratch/hvr-p9j3acw4/coverage.json",
+        "--cov-fail-under=85",
+        "--junitxml=/home/otto/.hermes/cache/scratch/hvr-p9j3acw4/regression.xml",
+        "-q"
+      ],
+      "log": "/home/otto/.hermes/cache/scratch/hvr-p9j3acw4/regression.log"
+    },
+    "client": {
+      "exit_code": 0,
+      "command": [
+        "nix",
+        "develop",
+        "--offline",
+        "--no-write-lock-file",
+        "--command",
+        "uv",
+        "run",
+        "--offline",
+        "--no-sync",
+        "pytest",
+        "tests/test_client_protocol.py",
+        "tests/test_client_pincode.py",
+        "tests/test_temporary_handshake_cleanup.py",
+        "--no-cov",
+        "--basetemp=/home/otto/.hermes/cache/scratch/hvr-p9j3acw4/client-tmp",
+        "--junitxml=/home/otto/.hermes/cache/scratch/hvr-p9j3acw4/client-complete.xml",
+        "-q"
+      ],
+      "log": "Actual terminal output: 104 passed; authoritative JUnit client-complete.xml"
+    }
+  },
+  "junit": {
+    "regression": {
+      "raw": 375,
+      "unique": 375,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "by_module": {
+        "tests.test_agent_host": 17,
+        "tests.test_host_native_transport": 31,
+        "tests.test_host_self_chat": 12,
+        "tests.test_host_memory": 16,
+        "tests.test_host_chat_commands": 38,
+        "tests.test_host_chat_interruptions": 20,
+        "tests.test_core_interruption_cleanup": 25,
+        "tests.test_host_storage_failure": 15,
+        "tests.test_host_summary_cache": 72,
+        "tests.test_native_vitals": 38,
+        "tests.test_host_native_vitals": 41,
+        "": 50
+      },
+      "artifact": "/home/otto/.hermes/cache/scratch/hvr-p9j3acw4/regression.xml"
+    },
+    "client": {
+      "raw": 104,
+      "unique": 104,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "by_module": {
+        "tests.test_client_protocol": 42,
+        "tests.test_client_pincode": 41,
+        "tests.test_temporary_handshake_cleanup": 21
+      },
+      "artifact": "/home/otto/.hermes/cache/scratch/hvr-p9j3acw4/client-complete.xml"
+    }
+  },
+  "total_unique": 479,
+  "coverage": {
+    "percent": 93.11424100156495,
+    "artifact": "/home/otto/.hermes/cache/scratch/hvr-p9j3acw4/coverage.json",
+    "helper_executable_lines": [
+      292,
+      294,
+      295,
+      296,
+      297,
+      298,
+      299,
+      300,
+      301,
+      302,
+      303,
+      304
+    ],
+    "helper_missing_lines": [],
+    "helper_line_coverage_percent": 100
+  },
+  "preservation": {
+    "frozen_files_checked": 149,
+    "changed": [
+      "src/robots/app/agent_runtime.py"
+    ],
+    "all_other_app_ast_unchanged_by_reverse_transplant": true,
+    "guard_ast_matches_original": true,
+    "drain_events_source_sha256": "bf7e8f6fd8a8fec9a92e63ed0f6c9dda0ac9346e02ae6597404f29b5f6ab1ffc",
+    "tests_byte_unchanged": true,
+    "guard_order": "Existing rx_error/dispatch_errors/optional health check, then literal flags, socket, reader, then Mapping/value projection. Omitted attributes retain sentinel permission; callback BaseException origins uncaught."
+  },
+  "files_modified": [
+    "src/robots/app/agent_runtime.py"
+  ],
+  "files_created": [
+    "run/reviews/host-native-vitals-complexity-repair.json"
+  ],
+  "limits": [
+    "Readiness observational/non-atomic; no FD ownership or race-exclusion claim.",
+    "All existing status/wire/player/job/level/distance/inventory limitations unchanged.",
+    "Root configured CHECK and fresh independent review remain parent-owned.",
+    "Failed independent and parent reports preserved."
+  ],
+  "warnings": "See gate logs; existing framework/Bandit/Nix notices retained.",
+  "harness_correction": {
+    "initial_artifact": "/home/otto/.hermes/cache/scratch/hvr-p9j3acw4/initial-repair-report.json",
+    "initial_outcome": "All executed tests and gates passed; verifier correctly refused overall passed because first client selection omitted 21 handshake tests (83 instead of 104).",
+    "correction": "Reran exact complete client selection, 104 unique pass, no assertion or source changes."
+  }
+}

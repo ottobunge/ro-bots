@@ -1,0 +1,96 @@
+{
+  "scope": "Read-only next-step sender/framing readiness, not implementation or admission",
+  "qualified_clif_sha256": "ace16f15be3b60f730522d620b73a68a9f2cc384016aadce9c985888aea9a1ac",
+  "qualified_emotion_lines": [
+    9412,
+    9420
+  ],
+  "qualified_emotion_fragment_sha256": "a1261d1ac07891c69891c6a7db28033c03069ee08f3aab1e8d4bb91d4c105bb6",
+  "canonical_emotion_lines": [
+    9412,
+    9420
+  ],
+  "exact_emotion_fragment_identical": true,
+  "qualified_fragment_source": "void clif_emotion( const block_list& bl, emotion_type type ){\n\tPACKET_ZC_EMOTION p{};\n\n\tp.packetType = HEADER_ZC_EMOTION;\n\tp.GID = bl.id;\n\tp.type = static_cast<decltype(p.type)>( type );\n\n\tclif_send( &p, sizeof(p), &bl, AREA );\n}",
+  "canonical_tracer_actual_cli_exit": 0,
+  "canonical_tracer_result": {
+    "identity_proven": true,
+    "decision": "IDENTITY_LAYOUT_CANDIDATE",
+    "reasons": [],
+    "sink_contract_status": "UNREVIEWED",
+    "sender_semantic_admission": false,
+    "runtime_admission": false,
+    "object_id": "0x55555c95d100",
+    "send_object_id": "0x55555c95d100",
+    "sizeof_object_id": "0x55555c95d100",
+    "object_type": "PACKET_ZC_EMOTION",
+    "function_id": "0x55555c95d000",
+    "send_id": "0x55555c95d880",
+    "sizeof_id": "0x55555c95d7d0",
+    "sink_decl_id": "0x55555c566910",
+    "record_id": "0x55555877cce8",
+    "header_field_id": "0x55555877cf08",
+    "header_field_name": "packetType",
+    "header_constant_id": "0x55555877d068",
+    "header_assignment_id": "0x55555c95d2f0",
+    "header_value": 192,
+    "record_location": {
+      "offset": 46129,
+      "line": 1973,
+      "col": 8,
+      "tokLen": 17,
+      "includedFrom": {
+        "file": "/home/otto/.hermes/cache/scratch/native-profile-replay-s2jdj4rn/public-source/src/map/clif.hpp"
+      }
+    },
+    "constant_location": {
+      "spellingLoc": {
+        "offset": 3026,
+        "file": "<scratch space>",
+        "line": 116,
+        "col": 1,
+        "tokLen": 17
+      },
+      "expansionLoc": {
+        "offset": 46220,
+        "file": "/home/otto/.hermes/cache/scratch/native-profile-replay-s2jdj4rn/public-source/src/map/packets.hpp",
+        "line": 1978,
+        "col": 1,
+        "tokLen": 20,
+        "includedFrom": {
+          "file": "/home/otto/.hermes/cache/scratch/native-profile-replay-s2jdj4rn/public-source/src/map/clif.hpp"
+        }
+      }
+    },
+    "measured_size": 7,
+    "measured_offsets": [
+      0,
+      2,
+      6
+    ],
+    "sender": "clif_emotion",
+    "source_closure_sha256": "f045b33b434efc83a7e216f295bf899114a4a1a2daa159898fb738d8b553d6d6",
+    "authority_sha256": "602c856e8e368fe767ff6b54704416818dc7939a5c6606f0fb6af6b49c2e71ac",
+    "ast_artifact_sha256": "07238418270d5717f43aa169a51bd5f40c3e58598479831b25aa0d80af30f450",
+    "gcc_layout_artifact_sha256": "d79dfefd4be7efe0d6fbf3fd8cf7bfb135853dfe8935b39d758e7d99b3140ebf"
+  },
+  "canonical_tracer_output_sha256": "597dea97de3efe9f536596c9a30a1f438c8987ba86bb5f476660e56bedfe45f8",
+  "canonical_identity_is_not_qualified_source_AST_identity": true,
+  "required_new_proof": [
+    "Fresh qualified-profile invocation-local object/header/send-length binding; do not transfer prior AST addresses or launder source closure",
+    "Conditional source-to-WFIFO analysis for the actual qualified AREA/SELF path",
+    "Explicit stated allocator/copy/session/lifetime assumptions and limits; not queue receipt or gameplay proof",
+    "Separate receiver-policy review before C0 registration or bulk framing changes"
+  ],
+  "proposed_first_target": "map:PACKET_ZC_EMOTION / clif_emotion / 0x00C0 only, to address the last observed unknown-ID blocker",
+  "all_current_preconditions": "UNDISCHARGED",
+  "compiler_execution_authenticated": false,
+  "sink_admission": false,
+  "runtime_admission": false,
+  "receiver_table_sha256": "89a3630ad446e06a1b1128bf96e0b6263874858311be3f529204e4818c5f8e31",
+  "existing206_inputs_unchanged": 206,
+  "tracer_and_CLI_unchanged": true,
+  "new_stage_implementation_authorized_by_this_readonly_inspection": false,
+  "deployment_or_native_retry_authorized_by_this_inspection": false,
+  "all_six_milestones_open": true
+}

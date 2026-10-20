@@ -1,0 +1,454 @@
+{
+  "schema": "playing-mvp-npc-close-independent-review/v1",
+  "passed": true,
+  "security_concerns": [],
+  "logic_errors": [],
+  "quality_blockers": [],
+  "suggestions": [],
+  "summary": "Approved only the frozen manual 0x00B6 six-byte framing registration and companion pinned specification; no runtime or native acceptance.",
+  "scope": {
+    "revision": "e985006171d2eb320ee512a653f4c83aea3d81b6",
+    "profile": {
+      "role": "map",
+      "packetver": 20180704,
+      "client_family": "MAIN",
+      "ruleset": "pre-re",
+      "obfuscation": "ABSENT"
+    },
+    "production_delta": ", 0x00B6: 6",
+    "old_mapping_count": 889,
+    "new_mapping_count": 890,
+    "prior_packetdb_recovered_sha256": "7edfe9bb2a93559e29832f6446a9d8b852c6caafe2e406a6516986176e302c67",
+    "NATIVE_MACROS_and_parse_stream_bitexact": true,
+    "C0_manifest_and_validator_unchanged": true,
+    "self_approval": false
+  },
+  "tests": {
+    "focused": {
+      "tests": 261,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "fresh_independent_probes": {
+      "tests": 8,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "author_red": {
+      "tests": 1,
+      "failures": 1,
+      "errors": 0,
+      "skipped": 0
+    },
+    "author_first_green": {
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "author_final": {
+      "tests": 261,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "red_is_physical_real_parser_failure_not_collection_error": true,
+    "initial_author_import_collection_error_excluded": true,
+    "configured_non_makefile_files_checked_by_existing_helper": 3206,
+    "quality": [
+      {
+        "name": "black",
+        "command": [
+          ".venv/bin/black",
+          "--check",
+          "tests/test_native_npc_close_framing.py",
+          "tests/test_native_emotion_framing.py"
+        ],
+        "returncode": 0,
+        "log": "/home/otto/.hermes/cache/scratch/b6-review-c8ld_3gv/black.log"
+      },
+      {
+        "name": "ruff",
+        "command": [
+          ".venv/bin/ruff",
+          "check",
+          "tests/test_native_npc_close_framing.py",
+          "tests/test_native_emotion_framing.py"
+        ],
+        "returncode": 0,
+        "log": "/home/otto/.hermes/cache/scratch/b6-review-c8ld_3gv/ruff.log"
+      },
+      {
+        "name": "mypy",
+        "command": [
+          ".venv/bin/mypy",
+          "--strict",
+          "--cache-dir",
+          "/home/otto/.hermes/cache/scratch/b6-review-c8ld_3gv/mypy",
+          "tests/test_native_npc_close_framing.py",
+          "tests/test_native_emotion_framing.py"
+        ],
+        "returncode": 0,
+        "log": "/home/otto/.hermes/cache/scratch/b6-review-c8ld_3gv/mypy.log"
+      },
+      {
+        "name": "baseline-ruff",
+        "command": [
+          ".venv/bin/ruff",
+          "check",
+          "/home/otto/.hermes/cache/scratch/b6-review-c8ld_3gv/baseline/packetdb.py"
+        ],
+        "returncode": 1,
+        "log": "/home/otto/.hermes/cache/scratch/b6-review-c8ld_3gv/baseline-ruff.log"
+      },
+      {
+        "name": "current-ruff",
+        "command": [
+          ".venv/bin/ruff",
+          "check",
+          "spikes/003-clientless-limbs/packetdb.py"
+        ],
+        "returncode": 1,
+        "log": "/home/otto/.hermes/cache/scratch/b6-review-c8ld_3gv/current-ruff.log"
+      },
+      {
+        "name": "baseline-mypy",
+        "command": [
+          ".venv/bin/mypy",
+          "--strict",
+          "--cache-dir",
+          "/home/otto/.hermes/cache/scratch/b6-review-c8ld_3gv/baseline-mypy",
+          "/home/otto/.hermes/cache/scratch/b6-review-c8ld_3gv/baseline/packetdb.py"
+        ],
+        "returncode": 1,
+        "log": "/home/otto/.hermes/cache/scratch/b6-review-c8ld_3gv/baseline-mypy.log"
+      },
+      {
+        "name": "current-mypy",
+        "command": [
+          ".venv/bin/mypy",
+          "--strict",
+          "--cache-dir",
+          "/home/otto/.hermes/cache/scratch/b6-review-c8ld_3gv/current-mypy",
+          "spikes/003-clientless-limbs/packetdb.py"
+        ],
+        "returncode": 1,
+        "log": "/home/otto/.hermes/cache/scratch/b6-review-c8ld_3gv/current-mypy.log"
+      }
+    ],
+    "legacy_packetdb_debt": {
+      "ruff": {
+        "unchanged_diagnostics": true,
+        "count": 40
+      },
+      "mypy": {
+        "unchanged_diagnostics": true,
+        "count": 2
+      }
+    }
+  },
+  "fresh_probe_cases": [
+    "opaque uint32 payloads containing packet-like IDs",
+    "coalesced 0196/0AB2/0080 and repeated B6, every split",
+    "all B6 truncations after clock prefix",
+    "unknown successor rejection at exact offset",
+    "malformed variable lengths rejected and incomplete valid variable retained",
+    "sender-body hash span and strict manifest value conflict rejection",
+    "unreviewed forced-header CPPFLAGS denied by pinned fixture before any compiler launch",
+    "bitexact baseline recovery and old C0 mapping drift denied"
+  ],
+  "compiler_oracles": [
+    {
+      "oracle_stdout": "/home/otto/.hermes/cache/scratch/b6-review-c8ld_3gv/pytest/test_fresh_full_unchanged_head0/oracle.stdout",
+      "output": "182 6 1 0 2 2 4",
+      "command": [
+        "/nix/store/j1938gsbvbhkyz4kbmvjk56r479mkw3s-gcc-wrapper-16.2.0/bin/g++",
+        "-std=c++17",
+        "-DHAS_TLS",
+        "-fno-strict-aliasing",
+        "-DHAVE_GETADDRINFO",
+        "-DHAVE_SETRLIMIT",
+        "-DHAVE_STRNLEN",
+        "-DPACKETVER=20180704",
+        "-DPRERE",
+        "-DHAVE_MONOTONIC_CLOCK",
+        "-DHAS_TLS",
+        "-fno-strict-aliasing",
+        "-DHAVE_GETADDRINFO",
+        "-DHAVE_SETRLIMIT",
+        "-DHAVE_STRNLEN",
+        "-DPACKETVER=20180704",
+        "-DPRERE",
+        "-DHAVE_MONOTONIC_CLOCK",
+        "-I/home/otto/.hermes/cache/scratch/callback-package-hut2_cuz/configured-variant/src",
+        "-I/home/otto/.hermes/cache/scratch/callback-package-hut2_cuz/configured-variant/src/common",
+        "-I/home/otto/.hermes/cache/scratch/callback-package-hut2_cuz/configured-variant/3rdparty/libconfig",
+        "-I/home/otto/.hermes/cache/scratch/callback-package-hut2_cuz/configured-variant/3rdparty/rapidyaml/src",
+        "-I/home/otto/.hermes/cache/scratch/callback-package-hut2_cuz/configured-variant/3rdparty/rapidyaml/ext/c4core/src",
+        "-I/nix/store/1w8g6rvhljfk44hx50qz4sc47sm1f28v-mariadb-connector-c-3.3.5-dev/include",
+        "-I/nix/store/1w8g6rvhljfk44hx50qz4sc47sm1f28v-mariadb-connector-c-3.3.5-dev/include/mysql",
+        "/home/otto/.hermes/cache/scratch/b6-review-c8ld_3gv/pytest/test_fresh_full_unchanged_head0/npc-close.cpp",
+        "-o",
+        "/home/otto/.hermes/cache/scratch/b6-review-c8ld_3gv/pytest/test_fresh_full_unchanged_head0/npc-close"
+      ],
+      "compile_stdout": "/home/otto/.hermes/cache/scratch/b6-review-c8ld_3gv/pytest/test_fresh_full_unchanged_head0/compile.stdout",
+      "compile_stderr": "/home/otto/.hermes/cache/scratch/b6-review-c8ld_3gv/pytest/test_fresh_full_unchanged_head0/compile.stderr"
+    },
+    {
+      "oracle_stdout": "/home/otto/.hermes/cache/scratch/b6-review-c8ld_3gv/pytest/test_fresh_full_unchanged_head1/oracle.stdout",
+      "output": "182 6 1 0 2 2 4",
+      "command": [
+        "/nix/store/2msw5nclhpsm80z65dqmjiv8kkras989-clang-wrapper-21.1.8/bin/clang++",
+        "-std=c++17",
+        "-DHAS_TLS",
+        "-fno-strict-aliasing",
+        "-DHAVE_GETADDRINFO",
+        "-DHAVE_SETRLIMIT",
+        "-DHAVE_STRNLEN",
+        "-DPACKETVER=20180704",
+        "-DPRERE",
+        "-DHAVE_MONOTONIC_CLOCK",
+        "-DHAS_TLS",
+        "-fno-strict-aliasing",
+        "-DHAVE_GETADDRINFO",
+        "-DHAVE_SETRLIMIT",
+        "-DHAVE_STRNLEN",
+        "-DPACKETVER=20180704",
+        "-DPRERE",
+        "-DHAVE_MONOTONIC_CLOCK",
+        "-I/home/otto/.hermes/cache/scratch/callback-package-hut2_cuz/configured-variant/src",
+        "-I/home/otto/.hermes/cache/scratch/callback-package-hut2_cuz/configured-variant/src/common",
+        "-I/home/otto/.hermes/cache/scratch/callback-package-hut2_cuz/configured-variant/3rdparty/libconfig",
+        "-I/home/otto/.hermes/cache/scratch/callback-package-hut2_cuz/configured-variant/3rdparty/rapidyaml/src",
+        "-I/home/otto/.hermes/cache/scratch/callback-package-hut2_cuz/configured-variant/3rdparty/rapidyaml/ext/c4core/src",
+        "-I/nix/store/1w8g6rvhljfk44hx50qz4sc47sm1f28v-mariadb-connector-c-3.3.5-dev/include",
+        "-I/nix/store/1w8g6rvhljfk44hx50qz4sc47sm1f28v-mariadb-connector-c-3.3.5-dev/include/mysql",
+        "/home/otto/.hermes/cache/scratch/b6-review-c8ld_3gv/pytest/test_fresh_full_unchanged_head1/npc-close.cpp",
+        "-o",
+        "/home/otto/.hermes/cache/scratch/b6-review-c8ld_3gv/pytest/test_fresh_full_unchanged_head1/npc-close"
+      ],
+      "compile_stdout": "/home/otto/.hermes/cache/scratch/b6-review-c8ld_3gv/pytest/test_fresh_full_unchanged_head1/compile.stdout",
+      "compile_stderr": "/home/otto/.hermes/cache/scratch/b6-review-c8ld_3gv/pytest/test_fresh_full_unchanged_head1/compile.stderr"
+    },
+    {
+      "oracle_stdout": "/home/otto/.hermes/cache/scratch/b6-review-c8ld_3gv/pytest/test_fresh_unchanged_full_head0/oracle.stdout",
+      "output": "192 7 1 0 2 6 2 4 1",
+      "command": [
+        "/nix/store/j1938gsbvbhkyz4kbmvjk56r479mkw3s-gcc-wrapper-16.2.0/bin/g++",
+        "-std=c++17",
+        "-DHAS_TLS",
+        "-fno-strict-aliasing",
+        "-DHAVE_GETADDRINFO",
+        "-DHAVE_SETRLIMIT",
+        "-DHAVE_STRNLEN",
+        "-DPACKETVER=20180704",
+        "-DPRERE",
+        "-DHAVE_MONOTONIC_CLOCK",
+        "-DHAS_TLS",
+        "-fno-strict-aliasing",
+        "-DHAVE_GETADDRINFO",
+        "-DHAVE_SETRLIMIT",
+        "-DHAVE_STRNLEN",
+        "-DPACKETVER=20180704",
+        "-DPRERE",
+        "-DHAVE_MONOTONIC_CLOCK",
+        "-I/home/otto/.hermes/cache/scratch/callback-package-hut2_cuz/configured-variant/src",
+        "-I/home/otto/.hermes/cache/scratch/callback-package-hut2_cuz/configured-variant/src/common",
+        "-I/home/otto/.hermes/cache/scratch/callback-package-hut2_cuz/configured-variant/3rdparty/libconfig",
+        "-I/home/otto/.hermes/cache/scratch/callback-package-hut2_cuz/configured-variant/3rdparty/rapidyaml/src",
+        "-I/home/otto/.hermes/cache/scratch/callback-package-hut2_cuz/configured-variant/3rdparty/rapidyaml/ext/c4core/src",
+        "-I/nix/store/1w8g6rvhljfk44hx50qz4sc47sm1f28v-mariadb-connector-c-3.3.5-dev/include",
+        "-I/nix/store/1w8g6rvhljfk44hx50qz4sc47sm1f28v-mariadb-connector-c-3.3.5-dev/include/mysql",
+        "/home/otto/.hermes/cache/scratch/b6-review-c8ld_3gv/pytest/test_fresh_unchanged_full_head0/emotion.cpp",
+        "-o",
+        "/home/otto/.hermes/cache/scratch/b6-review-c8ld_3gv/pytest/test_fresh_unchanged_full_head0/emotion"
+      ],
+      "compile_stdout": "/home/otto/.hermes/cache/scratch/b6-review-c8ld_3gv/pytest/test_fresh_unchanged_full_head0/compile.stdout",
+      "compile_stderr": "/home/otto/.hermes/cache/scratch/b6-review-c8ld_3gv/pytest/test_fresh_unchanged_full_head0/compile.stderr"
+    },
+    {
+      "oracle_stdout": "/home/otto/.hermes/cache/scratch/b6-review-c8ld_3gv/pytest/test_fresh_unchanged_full_head1/oracle.stdout",
+      "output": "192 7 1 0 2 6 2 4 1",
+      "command": [
+        "/nix/store/2msw5nclhpsm80z65dqmjiv8kkras989-clang-wrapper-21.1.8/bin/clang++",
+        "-std=c++17",
+        "-DHAS_TLS",
+        "-fno-strict-aliasing",
+        "-DHAVE_GETADDRINFO",
+        "-DHAVE_SETRLIMIT",
+        "-DHAVE_STRNLEN",
+        "-DPACKETVER=20180704",
+        "-DPRERE",
+        "-DHAVE_MONOTONIC_CLOCK",
+        "-DHAS_TLS",
+        "-fno-strict-aliasing",
+        "-DHAVE_GETADDRINFO",
+        "-DHAVE_SETRLIMIT",
+        "-DHAVE_STRNLEN",
+        "-DPACKETVER=20180704",
+        "-DPRERE",
+        "-DHAVE_MONOTONIC_CLOCK",
+        "-I/home/otto/.hermes/cache/scratch/callback-package-hut2_cuz/configured-variant/src",
+        "-I/home/otto/.hermes/cache/scratch/callback-package-hut2_cuz/configured-variant/src/common",
+        "-I/home/otto/.hermes/cache/scratch/callback-package-hut2_cuz/configured-variant/3rdparty/libconfig",
+        "-I/home/otto/.hermes/cache/scratch/callback-package-hut2_cuz/configured-variant/3rdparty/rapidyaml/src",
+        "-I/home/otto/.hermes/cache/scratch/callback-package-hut2_cuz/configured-variant/3rdparty/rapidyaml/ext/c4core/src",
+        "-I/nix/store/1w8g6rvhljfk44hx50qz4sc47sm1f28v-mariadb-connector-c-3.3.5-dev/include",
+        "-I/nix/store/1w8g6rvhljfk44hx50qz4sc47sm1f28v-mariadb-connector-c-3.3.5-dev/include/mysql",
+        "/home/otto/.hermes/cache/scratch/b6-review-c8ld_3gv/pytest/test_fresh_unchanged_full_head1/emotion.cpp",
+        "-o",
+        "/home/otto/.hermes/cache/scratch/b6-review-c8ld_3gv/pytest/test_fresh_unchanged_full_head1/emotion"
+      ],
+      "compile_stdout": "/home/otto/.hermes/cache/scratch/b6-review-c8ld_3gv/pytest/test_fresh_unchanged_full_head1/compile.stdout",
+      "compile_stderr": "/home/otto/.hermes/cache/scratch/b6-review-c8ld_3gv/pytest/test_fresh_unchanged_full_head1/compile.stderr"
+    }
+  ],
+  "source_review": {
+    "sender_function": "clif_scriptclose",
+    "sender_lines": [
+      2519,
+      2526
+    ],
+    "sender_full_body_checked": true,
+    "npc_id_assignment": "packet.npcId = npcid;",
+    "send": "clif_send( &packet, sizeof( packet ), &sd, SELF );",
+    "declaration_lines": [
+      755,
+      759
+    ],
+    "body_hash_span": "Exact function excluding only final line-feed",
+    "approved_compile_inputs": "Existing immutable package flags, configured header/source closure and original full-header include set; no manual forced headers or profile/source/flag edits",
+    "legacy_Native_macros_not_profile_authority": true
+  },
+  "freeze_before_after": {
+    "path": "/home/otto/.hermes/cache/scratch/playing-mvp-npc-close-review-freeze.json",
+    "before": {
+      "spikes/003-clientless-limbs/packetdb.py": "f75d7db42e9df276c5be3a47b1a875eb66c642366600de7bdf398f467cbb9d31",
+      "tests/test_native_emotion_framing.py": "c038ec539b7e64dfb3e2b5b17d076c467075ecdc30fa84bfb30b8842465f239a",
+      "tests/test_native_npc_close_framing.py": "fd405676630281cc26cd71c6842b0e289ea040a65ff6e33c21ba6a7d2720844b",
+      "tests/test_native_protocol_manifest.py": "e13eff6c7ae84daa17259304017366510d76a7d7683d6b9ff2b541087ae253cf",
+      "protocol/main-20180704-pre-re-npc-close.json": "df6ba88ff0faa70b3797296060d59587afb28927ddfd1238d47594a47f1051ab",
+      "protocol/main-20180704-pre-re.json": "cba02cf6818ba9d8cfc11c04ca7f0d31c31a60a98443d3c08537b91c91d8b474",
+      "rathena/src/map/packets.hpp": "b4959224a48e1febb811d7c1474f2c1b703d324ae4db7e3a1053a85b80da57bc",
+      "rathena/src/map/clif.cpp": "0b1db098158c240b090c6edb8417978ba495957c8a2df4cd9a0ab4cb39884ac5",
+      "run/reviews/playing-mvp-npc-close-fix.json": "2ec47e9979338308829c7ec1ee6e5587eef2261905050e801a415af906eb0391",
+      "run/reviews/playing-mvp-npc-close-parent-gate.json": "b8f35bbdf6344116d455141d22e9b716af392bb6e9c0f76b6cddd2be56d54142",
+      "nix/playable-callback-qualified/flake.nix": "7af46d26a268d880439b60df3f8b49624f7f99e09b288df00fee60e64405697e",
+      "nix/playable-callback-qualified/flake.lock": "c9c0bac69415b99a29ef3fe149b6f04ef54d291989bdf7218cf819ed52edf2a0"
+    },
+    "after": {
+      "spikes/003-clientless-limbs/packetdb.py": "f75d7db42e9df276c5be3a47b1a875eb66c642366600de7bdf398f467cbb9d31",
+      "tests/test_native_emotion_framing.py": "c038ec539b7e64dfb3e2b5b17d076c467075ecdc30fa84bfb30b8842465f239a",
+      "tests/test_native_npc_close_framing.py": "fd405676630281cc26cd71c6842b0e289ea040a65ff6e33c21ba6a7d2720844b",
+      "tests/test_native_protocol_manifest.py": "e13eff6c7ae84daa17259304017366510d76a7d7683d6b9ff2b541087ae253cf",
+      "protocol/main-20180704-pre-re-npc-close.json": "df6ba88ff0faa70b3797296060d59587afb28927ddfd1238d47594a47f1051ab",
+      "protocol/main-20180704-pre-re.json": "cba02cf6818ba9d8cfc11c04ca7f0d31c31a60a98443d3c08537b91c91d8b474",
+      "rathena/src/map/packets.hpp": "b4959224a48e1febb811d7c1474f2c1b703d324ae4db7e3a1053a85b80da57bc",
+      "rathena/src/map/clif.cpp": "0b1db098158c240b090c6edb8417978ba495957c8a2df4cd9a0ab4cb39884ac5",
+      "run/reviews/playing-mvp-npc-close-fix.json": "2ec47e9979338308829c7ec1ee6e5587eef2261905050e801a415af906eb0391",
+      "run/reviews/playing-mvp-npc-close-parent-gate.json": "b8f35bbdf6344116d455141d22e9b716af392bb6e9c0f76b6cddd2be56d54142",
+      "nix/playable-callback-qualified/flake.nix": "7af46d26a268d880439b60df3f8b49624f7f99e09b288df00fee60e64405697e",
+      "nix/playable-callback-qualified/flake.lock": "c9c0bac69415b99a29ef3fe149b6f04ef54d291989bdf7218cf819ed52edf2a0"
+    },
+    "matches_expected": true,
+    "file_count": 12,
+    "elapsed_seconds": 306.199,
+    "five_minute_target_met": false
+  },
+  "parent_gate_record": {
+    "task_check_exit": 0,
+    "task_audit_exit": 0,
+    "physical_tests_passed": 3977,
+    "subtests_passed": 65,
+    "coverage_percent": 95.07,
+    "author_red_first_green_final_xml_verified": true,
+    "previous_889_packet_mappings_byte_exactly_preserved": true,
+    "new_mapping": "0x00B6: 6",
+    "result_mapping_count": 890,
+    "self_approval_accepted": false,
+    "independent_review_pending": true,
+    "native_rerun_performed": false,
+    "scoped_tests_passed": 261,
+    "source_hashes": {
+      "spikes/003-clientless-limbs/packetdb.py": "f75d7db42e9df276c5be3a47b1a875eb66c642366600de7bdf398f467cbb9d31",
+      "tests/test_native_emotion_framing.py": "c038ec539b7e64dfb3e2b5b17d076c467075ecdc30fa84bfb30b8842465f239a",
+      "tests/test_native_npc_close_framing.py": "fd405676630281cc26cd71c6842b0e289ea040a65ff6e33c21ba6a7d2720844b",
+      "protocol/main-20180704-pre-re-npc-close.json": "df6ba88ff0faa70b3797296060d59587afb28927ddfd1238d47594a47f1051ab"
+    },
+    "all_six_milestones_open": true
+  },
+  "artifacts_sha256": {
+    "/home/otto/dev/ro-bots/spikes/003-clientless-limbs/packetdb.py": "f75d7db42e9df276c5be3a47b1a875eb66c642366600de7bdf398f467cbb9d31",
+    "/home/otto/dev/ro-bots/tests/test_native_emotion_framing.py": "c038ec539b7e64dfb3e2b5b17d076c467075ecdc30fa84bfb30b8842465f239a",
+    "/home/otto/dev/ro-bots/tests/test_native_npc_close_framing.py": "fd405676630281cc26cd71c6842b0e289ea040a65ff6e33c21ba6a7d2720844b",
+    "/home/otto/dev/ro-bots/tests/test_native_protocol_manifest.py": "e13eff6c7ae84daa17259304017366510d76a7d7683d6b9ff2b541087ae253cf",
+    "/home/otto/dev/ro-bots/protocol/main-20180704-pre-re-npc-close.json": "df6ba88ff0faa70b3797296060d59587afb28927ddfd1238d47594a47f1051ab",
+    "/home/otto/dev/ro-bots/protocol/main-20180704-pre-re.json": "cba02cf6818ba9d8cfc11c04ca7f0d31c31a60a98443d3c08537b91c91d8b474",
+    "/home/otto/dev/ro-bots/rathena/src/map/packets.hpp": "b4959224a48e1febb811d7c1474f2c1b703d324ae4db7e3a1053a85b80da57bc",
+    "/home/otto/dev/ro-bots/rathena/src/map/clif.cpp": "0b1db098158c240b090c6edb8417978ba495957c8a2df4cd9a0ab4cb39884ac5",
+    "/home/otto/dev/ro-bots/run/reviews/playing-mvp-npc-close-fix.json": "2ec47e9979338308829c7ec1ee6e5587eef2261905050e801a415af906eb0391",
+    "/home/otto/dev/ro-bots/run/reviews/playing-mvp-npc-close-parent-gate.json": "b8f35bbdf6344116d455141d22e9b716af392bb6e9c0f76b6cddd2be56d54142",
+    "/home/otto/dev/ro-bots/nix/playable-callback-qualified/flake.nix": "7af46d26a268d880439b60df3f8b49624f7f99e09b288df00fee60e64405697e",
+    "/home/otto/dev/ro-bots/nix/playable-callback-qualified/flake.lock": "c9c0bac69415b99a29ef3fe149b6f04ef54d291989bdf7218cf819ed52edf2a0",
+    "/home/otto/.hermes/cache/scratch/playing-mvp-npc-close-review-freeze.json": "6dd58c9bd2558134c1c20f176385f2ad16d97033de011302cfb57d4b672cf439",
+    "/home/otto/.hermes/cache/scratch/b6-review-c8ld_3gv/focused.xml": "5eba14cfe2b19142a87211998365c54e3b4ce8218befcbcba60d4e7452f53c92",
+    "/home/otto/.hermes/cache/scratch/b6-review-c8ld_3gv/probes.log": "1b31e3fc3c18a42910709d5a3afabfbc07474fc3e627801defb18fc76e853e8f",
+    "/home/otto/.hermes/cache/scratch/b6-review-c8ld_3gv/current-ruff.log": "d5547b47cc30021ec322c9090e4252c9d76b7fb149dbe049d2af02d560236f6a",
+    "/home/otto/.hermes/cache/scratch/b6-review-c8ld_3gv/quality.json": "153ad11b49a00ee4e1211346e49c4f03144de62b8ac63789aeb8265379a4bcd8",
+    "/home/otto/.hermes/cache/scratch/b6-review-c8ld_3gv/probes.xml": "397f89f66b2ebc4f61d3ce5ffd439307254a89c36b69518b2aa7c8f208d27933",
+    "/home/otto/.hermes/cache/scratch/b6-review-c8ld_3gv/test_independent_b6.py": "76a6b8516d5b09334027a88f5fb820cd82edb0b38a4429f79d755c5cf20ad1c6",
+    "/home/otto/.hermes/cache/scratch/b6-review-c8ld_3gv/baseline-ruff.log": "359cb959f7a9c5bc11feaa371eae6477f558c0642bbeda5e4b2aaa430d392e33",
+    "/home/otto/.hermes/cache/scratch/b6-review-c8ld_3gv/ruff.log": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+    "/home/otto/.hermes/cache/scratch/b6-review-c8ld_3gv/before.json": "a1e4f5b837a9b40f1eff3b173d5bbac518fc3da4e86da3b2045ceef3f5d8553e",
+    "/home/otto/.hermes/cache/scratch/b6-review-c8ld_3gv/focused.log": "679e143c9b6423c0d40085c023e54e0cb2ad585d19702d340f05acdc43a0c864",
+    "/home/otto/.hermes/cache/scratch/b6-review-c8ld_3gv/black.log": "b9cf511501d306d2bd8355ccb165c8ddc0a6fdd62d7c72c4a7b1795cf8934c8c",
+    "/home/otto/.hermes/cache/scratch/b6-review-c8ld_3gv/baseline/packetdb.py": "7edfe9bb2a93559e29832f6446a9d8b852c6caafe2e406a6516986176e302c67",
+    "/home/otto/.hermes/cache/scratch/b6-review-c8ld_3gv/pytest/test_fresh_full_unchanged_head0/command.json": "c8b1d89c55e140dfa66b43ef03ea044f69fcdf3b02c8f4f095b5e85f9dc95087",
+    "/home/otto/.hermes/cache/scratch/b6-review-c8ld_3gv/pytest/test_fresh_full_unchanged_head0/npc-close": "7e15e2e4bb14bf8b8eafa1df411b17e47c2750af5e0b021d2b57dc2dc516fdd3",
+    "/home/otto/.hermes/cache/scratch/b6-review-c8ld_3gv/pytest/test_fresh_full_unchanged_head0/oracle.stdout": "44a2584a564bd3b092ef99fdcba56a1297776f267d4a4c93a51a89764412641b",
+    "/home/otto/.hermes/cache/scratch/b6-review-c8ld_3gv/pytest/test_fresh_full_unchanged_head0/npc-close.cpp": "7bf195ec714b99e915fb708ba36d283a5d996685f0eaa1d26ee43d82ac365357",
+    "/home/otto/.hermes/cache/scratch/b6-review-c8ld_3gv/pytest/test_fresh_full_unchanged_head0/compile.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/b6-review-c8ld_3gv/pytest/test_fresh_full_unchanged_head0/compile.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/b6-review-c8ld_3gv/pytest/test_fresh_unchanged_full_head0/command.json": "d6c8f7f6bfb99b185d92ce9b33fd54d4775fbdbe17ff820d6b93c3a2772e4a19",
+    "/home/otto/.hermes/cache/scratch/b6-review-c8ld_3gv/pytest/test_fresh_unchanged_full_head0/oracle.stdout": "f4a34f5f151f9353526e28d56d86fc4321ff0c882c36e761bf5b54bf7d583e87",
+    "/home/otto/.hermes/cache/scratch/b6-review-c8ld_3gv/pytest/test_fresh_unchanged_full_head0/emotion": "5f40f41989b35aae48563f32585fe5140d8d66486f0495370c56a7963b6bb6cb",
+    "/home/otto/.hermes/cache/scratch/b6-review-c8ld_3gv/pytest/test_fresh_unchanged_full_head0/compile.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/b6-review-c8ld_3gv/pytest/test_fresh_unchanged_full_head0/emotion.cpp": "a325bd594bba7435a217d04c08691bee4a8cff43932f8e81d7c9cae6164b5026",
+    "/home/otto/.hermes/cache/scratch/b6-review-c8ld_3gv/pytest/test_fresh_unchanged_full_head0/compile.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/b6-review-c8ld_3gv/pytest/test_fresh_full_unchanged_head1/command.json": "59226d9544e67b99f48cf77a847e94f03f6a4cd7cc51370abd7431a7759dc72f",
+    "/home/otto/.hermes/cache/scratch/b6-review-c8ld_3gv/pytest/test_fresh_full_unchanged_head1/npc-close": "a218dbe4d95d8aaab48a68f69474300ac1cccf17b11a18cf158ab16035c4604e",
+    "/home/otto/.hermes/cache/scratch/b6-review-c8ld_3gv/pytest/test_fresh_full_unchanged_head1/oracle.stdout": "44a2584a564bd3b092ef99fdcba56a1297776f267d4a4c93a51a89764412641b",
+    "/home/otto/.hermes/cache/scratch/b6-review-c8ld_3gv/pytest/test_fresh_full_unchanged_head1/npc-close.cpp": "7bf195ec714b99e915fb708ba36d283a5d996685f0eaa1d26ee43d82ac365357",
+    "/home/otto/.hermes/cache/scratch/b6-review-c8ld_3gv/pytest/test_fresh_full_unchanged_head1/compile.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/b6-review-c8ld_3gv/pytest/test_fresh_full_unchanged_head1/compile.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/b6-review-c8ld_3gv/pytest/test_fresh_unchanged_full_head1/command.json": "7cba2a460dcb16811f4291a9480f09b6aab9d106a51257867607ecec2fadfac8",
+    "/home/otto/.hermes/cache/scratch/b6-review-c8ld_3gv/pytest/test_fresh_unchanged_full_head1/oracle.stdout": "f4a34f5f151f9353526e28d56d86fc4321ff0c882c36e761bf5b54bf7d583e87",
+    "/home/otto/.hermes/cache/scratch/b6-review-c8ld_3gv/pytest/test_fresh_unchanged_full_head1/emotion": "10b9f9bd8c2df08ec5aefa6b41743b4ba7201c07852da19dc0657e413ab39147",
+    "/home/otto/.hermes/cache/scratch/b6-review-c8ld_3gv/pytest/test_fresh_unchanged_full_head1/compile.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/b6-review-c8ld_3gv/pytest/test_fresh_unchanged_full_head1/emotion.cpp": "a325bd594bba7435a217d04c08691bee4a8cff43932f8e81d7c9cae6164b5026",
+    "/home/otto/.hermes/cache/scratch/b6-review-c8ld_3gv/pytest/test_fresh_unchanged_full_head1/compile.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/npc-close-kk24hkhc/red.xml": "6fc8956e48e55e1b4646f43e5bbceb1c3a4a8dfbef724630ae1714be7020a46a",
+    "/home/otto/.hermes/cache/scratch/npc-close-kk24hkhc/green-first.xml": "a7a4a73c31a73d0b40397f4408f8ceea9eac1fb246eaa5401368e676276147c1",
+    "/home/otto/.hermes/cache/scratch/npc-close-kk24hkhc/final.xml": "fd27f6914301d74f904ed4dd177bd10a4928f9dcded191a6c86482170a5f8dee",
+    "/nix/store/0w1nfsmj8gaipcidhgx2nkg4axqxcbbr-rathena-playable-callback-qualified-20180704-e985006171d2-callback-qualified/share/rathena-playable-callback-qualified/profiles.json": "ee2af351afee975ad4145d0e38412dfac0779cd123435f318f8c876349bc0148",
+    "/nix/store/0w1nfsmj8gaipcidhgx2nkg4axqxcbbr-rathena-playable-callback-qualified-20180704-e985006171d2-callback-qualified/share/rathena-playable-callback-qualified/configured-source.json": "1fd585266bbcf2268b2cec9e901100fad68b904a8b2a8c049c5869c56af43e12",
+    "/nix/store/0w1nfsmj8gaipcidhgx2nkg4axqxcbbr-rathena-playable-callback-qualified-20180704-e985006171d2-callback-qualified/share/rathena-playable-callback-qualified/qualified-clif.cpp": "ace16f15be3b60f730522d620b73a68a9f2cc384016aadce9c985888aea9a1ac",
+    "/nix/store/0w1nfsmj8gaipcidhgx2nkg4axqxcbbr-rathena-playable-callback-qualified-20180704-e985006171d2-callback-qualified/share/rathena-playable-callback-qualified/map-cppflags.txt": "7986f2fdeb11e55ee707ac27eb4701a64b90361ce1636bb728025fb92a99291d",
+    "/nix/store/0w1nfsmj8gaipcidhgx2nkg4axqxcbbr-rathena-playable-callback-qualified-20180704-e985006171d2-callback-qualified/share/rathena-playable-callback-qualified/map-compile-recipe.txt": "8488711230e38fb3a48a9d19dca18b50b3a93780fd9287775768723af9358878"
+  },
+  "limits": [
+    "Only bounded offline frozen packet/manifest feature approved; not complete protocol correctness or universal C++ safety.",
+    "All probes are synthetic bytes, not raw native captures or evidence of live NPC receipt.",
+    "No live/network/SQL/engine/client/native/inference/Git/source writes or deployment effects performed.",
+    "Framing does not implement dialogue handling, NPC identity, 0x0146 acknowledgement, death/revival, combat XP or loot authority.",
+    "No generic generator/tracer/B1 cycle or formal-row auto-adoption.",
+    "Parent-recorded completed root gate was not repeated; unrelated active REST/runtime work excluded from dependencies.",
+    "Fresh runtime admission, native receipt/rerun, whole-source gate after all workers finish and milestone acceptance remain parent-owned/pending."
+  ],
+  "files_created": [
+    "run/reviews/playing-mvp-npc-close-independent-review.json"
+  ],
+  "private_artifacts": "/home/otto/.hermes/cache/scratch/b6-review-c8ld_3gv"
+}

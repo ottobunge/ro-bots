@@ -1,0 +1,212 @@
+{
+  "schema": "native-item-guide-deployment-fresh-readonly/v1",
+  "started_at": "2026-10-13T17:01:56.749307+00:00",
+  "status": "BLOCKED",
+  "native_authority": "UNCHANGED_REVOKED",
+  "execution_approval_issued": false,
+  "humans": "UNKNOWN",
+  "online": "UNKNOWN",
+  "autotraders": "UNKNOWN",
+  "loaded_npc": "UNKNOWN",
+  "native_parser_acceptance": "UNKNOWN",
+  "restart_verdict": "NOT_ISSUED",
+  "read_only_counters": {
+    "container_inspect_batches": 1,
+    "container_records_requested": 4,
+    "volume_inspects": 1,
+    "archive_attempts": 0,
+    "version_requests": 1,
+    "context_metadata_reads": 1,
+    "sql": 0,
+    "private_config_reads": 0,
+    "exec": 0,
+    "helper_containers": 0,
+    "role_operations": 0,
+    "world_locks": 0,
+    "provider_calls": 0,
+    "native_calls": 0,
+    "deployed_writes": 0
+  },
+  "commands": [
+    {
+      "command": [
+        "docker",
+        "context",
+        "inspect"
+      ],
+      "started_at": "2026-10-13T17:01:56.760988+00:00",
+      "ended_at": "2026-10-13T17:01:56.775421+00:00",
+      "exit_code": 0
+    },
+    {
+      "request": "GET /version on exact configured engine",
+      "started_at": "2026-10-13T17:01:56.775561+00:00",
+      "ended_at": "2026-10-13T17:01:56.835655+00:00",
+      "http_status": 200
+    },
+    {
+      "command": [
+        "docker",
+        "inspect",
+        "71715cf83bb3f5104c600dbeb2cdd3b0be162a9c3a85cfbb228fcebb10326f50",
+        "d8f4183c03d4c6fdd618b20be8574069e29b884543fdd6ba5be716067811aa5b",
+        "a9c42644d6db7bbfe40b50657da05afd89237b29628625be1c35a7b0c294a3d9",
+        "ced219e3f4a12a4e12d5c4599a2b9a4b44191324671c44993848c5bed74b077c"
+      ],
+      "started_at": "2026-10-13T17:01:56.835857+00:00",
+      "ended_at": "2026-10-13T17:01:56.864595+00:00",
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "docker",
+        "volume",
+        "inspect",
+        "ro-bots-world-test"
+      ],
+      "started_at": "2026-10-13T17:01:56.865120+00:00",
+      "ended_at": "2026-10-13T17:01:56.882234+00:00",
+      "exit_code": 0
+    }
+  ],
+  "expected_public_hashes": {
+    "base_import": "9de2dafdf7236f49557587ee9100923d33da2a31bff15f7b005a93235aa3ad4a",
+    "appended_import": "a811c282f67f3b3da7a85dfe4f54f9241f9e32a9caa72a91f6fc87d52da232a5",
+    "informational_script": "0cb282af4dbce1496716ac86719302e0239209f65c9deff31a3330cd83314f14"
+  },
+  "source_lineage": {
+    "candidate_recovery_sha256": "a538ef5b444acab01b698e9474c3296c37e7683110d7fd441d54b65c305ce1e8",
+    "original_recovery_sha256": "7c0194ebc746bb0fb2146e63046bf370bc8ea09ed16282551be9aef2e4566ca3",
+    "selected_constants_equal": true
+  },
+  "engine": {
+    "endpoint_unchanged": true,
+    "rootless_socket_owned_by_current_uid": true,
+    "endpoint_sha256": "be487c5e68727393399017352ac15314ae0da29ca68a6fca3fbfd58d92970cec",
+    "advertised_api_version": "1.44",
+    "process_only_api_override": "1.44",
+    "endpoint_switched": false
+  },
+  "before_roles": {
+    "mariadb": {
+      "id": "71715cf83bb3f5104c600dbeb2cdd3b0be162a9c3a85cfbb228fcebb10326f50",
+      "image": "sha256:ab3dff582d246358b6f6a1f6212f29ac64609fad883eb3dcfb0a89f6f7d0700e",
+      "project": "ro-bots-test",
+      "service": "mariadb",
+      "state": "running",
+      "running": true,
+      "pid": 38200,
+      "started_at": "2026-10-08T15:08:26.958040263Z",
+      "started_at_integer_ns": 1791472106958040263,
+      "mounts": [
+        {
+          "Type": "volume",
+          "Name": "ro-bots-world-test",
+          "Destination": "/docker-entrypoint-initdb.d",
+          "RW": false
+        },
+        {
+          "Type": "volume",
+          "Name": "ro-bots-world-test",
+          "Destination": "/var/lib/mysql",
+          "RW": true
+        },
+        {
+          "Type": "volume",
+          "Name": "ro-bots-world-test",
+          "Destination": "/var/lib/ro-bots",
+          "RW": true
+        }
+      ],
+      "network_ids": [
+        "6bf526ab697622fdbb8520b5ef4dd89b21dfa599dee53414c0f2144feec47f8a"
+      ],
+      "configured_user": ""
+    },
+    "login": {
+      "id": "d8f4183c03d4c6fdd618b20be8574069e29b884543fdd6ba5be716067811aa5b",
+      "image": "sha256:d6aa8e108909e6c0ab6f18bedf1cd8c34dc11d2194f7ca65322d46a331a6a469",
+      "project": "ro-bots-test",
+      "service": "rathena-login",
+      "state": "running",
+      "running": true,
+      "pid": 38491,
+      "started_at": "2026-10-08T15:08:31.178482699Z",
+      "started_at_integer_ns": 1791472111178482699,
+      "mounts": [
+        {
+          "Type": "volume",
+          "Name": "ro-bots-world-test",
+          "Destination": "/world",
+          "RW": true
+        }
+      ],
+      "network_ids": [
+        "6bf526ab697622fdbb8520b5ef4dd89b21dfa599dee53414c0f2144feec47f8a"
+      ],
+      "configured_user": "10000:10000"
+    },
+    "char": {
+      "id": "a9c42644d6db7bbfe40b50657da05afd89237b29628625be1c35a7b0c294a3d9",
+      "image": "sha256:d6aa8e108909e6c0ab6f18bedf1cd8c34dc11d2194f7ca65322d46a331a6a469",
+      "project": "ro-bots-test",
+      "service": "rathena-char",
+      "state": "running",
+      "running": true,
+      "pid": 38610,
+      "started_at": "2026-10-08T15:08:31.32507112Z",
+      "started_at_integer_ns": 1791472111325071120,
+      "mounts": [
+        {
+          "Type": "volume",
+          "Name": "ro-bots-world-test",
+          "Destination": "/world",
+          "RW": true
+        }
+      ],
+      "network_ids": [
+        "6bf526ab697622fdbb8520b5ef4dd89b21dfa599dee53414c0f2144feec47f8a"
+      ],
+      "configured_user": "10000:10000"
+    },
+    "map": {
+      "id": "ced219e3f4a12a4e12d5c4599a2b9a4b44191324671c44993848c5bed74b077c",
+      "image": "sha256:d6aa8e108909e6c0ab6f18bedf1cd8c34dc11d2194f7ca65322d46a331a6a469",
+      "project": "ro-bots-test",
+      "service": "rathena-map",
+      "state": "running",
+      "running": true,
+      "pid": 103253,
+      "started_at": "2026-10-12T23:18:15.345459707Z",
+      "started_at_integer_ns": 1791847095345459707,
+      "mounts": [
+        {
+          "Type": "volume",
+          "Name": "ro-bots-world-test",
+          "Destination": "/world",
+          "RW": true
+        }
+      ],
+      "network_ids": [
+        "6bf526ab697622fdbb8520b5ef4dd89b21dfa599dee53414c0f2144feec47f8a"
+      ],
+      "configured_user": "10000:10000"
+    }
+  },
+  "before_volume": {
+    "name": "ro-bots-world-test",
+    "driver": "local",
+    "scope": "local",
+    "created_at": "2026-10-06T06:07:24+02:00",
+    "project_label": "ro-bots-test",
+    "mountpoint_metadata_available": true,
+    "mountpoint_sha256": "f7c952f405acf013bcbab40039c388fb289a7342667ab60eaa0c1aeaaf515c72",
+    "all_role_world_mount_sources_match": true,
+    "existing_file_primitive_mount_metadata": "AVAILABLE_NOT_OPENED_OR_NAMESPACE_QUALIFIED"
+  },
+  "blocker": "exact owned world mount refused: mariadb",
+  "ended_at": "2026-10-13T17:01:56.882320+00:00",
+  "engine_request_count": 3,
+  "local_evidence_root_mode_octal": "0700",
+  "scope": "Metadata and two map archive attempts only; no server changes, SQL, logs, player observation or operational authority."
+}

@@ -1,0 +1,44 @@
+{
+  "record": "GRIND_ENTRY_CHURN_ROOT_CAUSED_AND_WORLD_RECOVERED",
+  "date": "2026-10-18",
+  "root_cause": {
+    "summary": "The w30/31 entry churn was NOT a rAthena bug and NOT client-side: it was server-side inter-server disconnection caused by operator container churn. The char-server could not register with the login-server because compose-network DNS (aardvark-dns) resolved peer service names to stale/wrong container IPs after repeated recreate/restart cycles (each restart also reassigns the container IP). With no char-server online, the login accepted credentials (SQL fine) then refused every client with 'Connection refused: there is no char-server online'; clients hung on the map handoff, received no vitals/actors, and looped the 60s stall kick. A secondary effect: pasta port-forwards for recreated containers went stale, so even host-side probes EOF'd before reaching the login.",
+    "evidence": [
+      "journalctl --user: login log '[Notice]: Authentication accepted (account: fx_e09b999a23_0, id: 2000000)' followed immediately by '[Status]: Connection refused: there is no char-server online (account: fx_e09b999a23_0)' and '[Warning]: connect_check: DDoS Attack detected' \u2014 the 60s reconnect loop of w30/31 is this refusal cycle",
+      "journalctl --user: char-server 'Connecting to 10.89.2.35:6900 ... connect failed (111)' where 10.89.2.35 was the char's OWN IP on the then-current network (DNS self/wrong resolution); map-server dialed its own IP for the char-server likewise",
+      "docker inspect: fresh-network recreate produced login=.5 char=.3 map=.4, but the char still dialed .35/.34 = stale network addresses served by the poisoned DNS registry",
+      "docker restart reassigns container IPs in this podman network, so literal-IP pins must be (re)applied between restarts"
+    ]
+  },
+  "recovery_procedure_that_worked": [
+    "1. Enabled server-side console visibility: docker cp conf out, set console_msg_log: 1 (map/char) \u2014 NOTE login_athena.conf at this pin does NOT support console_msg_log (login exits 1); instead server console output is visible via journalctl --user (podman journald driver), which was the decisive evidence source",
+    "2. docker cp pushes must chmod 644 the file first \u2014 a 0600 file owned by the host-mapped uid makes rAthena fail conf load with 'Configuration file not found'",
+    "3. compose down (network REMOVED) + up mariadb first, then the three rathena services together \u2014 fresh network re-registered DNS but resolutions still returned stale IPs, so:",
+    "4. Literal-IP pins applied in dependency order with the PIN-RESTART PIANO: patch char_athena.conf login_ip -> login's current IP, restart char; then patch map_athena.conf char_ip -> char's NEW IP, restart map. The login must be restarted FIRST (fresh pasta port-forward for host clients); it dials nobody so its IP change only requires re-pinning the char before its restart",
+    "5. Verified via journal: 'Connection of the char-server RO Bots accepted', 'Map-Server 0 connected: 1265 maps', 'Map Server is now online'; client path verified by the window's own logins: 'Fx_e09b999a23_1 logged in (AID/CID 2000001/150001)' and readback counts 2 1"
+  ],
+  "world_state_after_recovery": {
+    "containers": {
+      "mariadb": "10.89.2.2",
+      "login": "10.89.2.9",
+      "char": "10.89.2.10",
+      "map": "10.89.2.11"
+    },
+    "pins": {
+      "char login_ip": "10.89.2.9",
+      "map char_ip": "10.89.2.10",
+      "inter_athena *_server_ip": "mariadb (resolves fine; mariadb never churned)"
+    },
+    "conf_diffs_vs_volume_baseline": [
+      "char_athena.conf login_ip literal",
+      "map_athena.conf char_ip literal"
+    ],
+    "fragility": "ANY rathena container recreate/restart invalidates the pins and pasta forwards; recovery = re-run the pin-restart piano. Long-term fix (world lane): static IPs in compose or a conf-templating step that injects resolved IPs at start"
+  },
+  "window_32": {
+    "proc": "proc_d06b13c0a95b",
+    "composition": "killcommit_window23 (standard), includes the return-leg production changes from deleg_7cdb6c05",
+    "launched": "after recovery; first logins observed ~3 min in; fixture_1 online prt_fild08 [167,352]; fixture_0 mid-sequence at prt_in merchant cell [168,128]"
+  },
+  "acceptance_note": "w26 remains the completed acceptance (kill-to-loot chain). w32 exercises the NEW acceptance (spent bot walks prt_in -> prontera -> prt_fild08 and resumes committed kills) per READY-TO-RUN Window-30 note; verdict pends the receipt"
+}

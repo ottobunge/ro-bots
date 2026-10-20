@@ -1,0 +1,137 @@
+{
+ "class": "Novice",
+ "playstyle": "bootstrap",
+ "playstyle_axis": "all (shared 0-zeny bootstrap)",
+ "summary": "0-zeny Novice loop: farm prt_fild08 (Poring/Drops/Lunatic/Pupa), sell loot at Prontera tool/weapon NPCs, buy Knife [3] 1201 for 50z, reach Novice Job 10 + Basic Skill 9, pick a first class.",
+ "stat_progression": [
+  {
+   "phase": "bootstrap (class-neutral)",
+   "base_level": 10,
+   "stat_point_budget": 80,
+   "points_spent": 32,
+   "points_left": 48,
+   "allocation": {
+    "str": 9,
+    "dex": 9,
+    "agi": 1,
+    "vit": 1,
+    "int": 1,
+    "luk": 1
+   },
+   "leftover_into": "hold unspent points; they carry over to first class. Melee starters may swap INT->VIT, casters STR->INT (INT 9)."
+  }
+ ],
+ "skill_order": [
+  {
+   "skill": "Basic Skill",
+   "levels": 9,
+   "at": "Novice job 1-9",
+   "prereqs": [],
+   "why": "Mandatory gate for every first-class change (rathena/npc/pre-re/jobs/1-1 scripts check it). 1 pt per job level 1-9."
+  },
+  {
+   "skill": "First Aid (quest)",
+   "levels": 1,
+   "at": "optional",
+   "prereqs": [
+    "Novice Skill Quest"
+   ],
+   "why": "+5 HP for 3 SP; marginal but free."
+  },
+  {
+   "skill": "Play Dead (quest)",
+   "levels": 1,
+   "at": "optional",
+   "prereqs": [
+    "Novice Skill Quest"
+   ],
+   "why": "Emergency disengage vs aggressive mobs."
+  }
+ ],
+ "skill_point_budget": {
+  "novice_job10_points": 10,
+  "basic_skill_cost": 9,
+  "spare": 1
+ },
+ "equipment_order": [
+  {
+   "order": 1,
+   "id": 2302,
+   "name": "Cotton Shirt [1]",
+   "price_z": "given at creation (NPC 10z)",
+   "why": "Only starter armor; DEF 1 (server item_db)."
+  },
+  {
+   "order": 2,
+   "id": 1201,
+   "name": "Knife [3]",
+   "price_z": 50,
+   "why": "First weapon purchase (prt_in Weapon Dealer loop); ATK 17."
+  },
+  {
+   "order": 3,
+   "id": 501,
+   "name": "Red Potion",
+   "price_z": "10z (iRO NPC) / 50z (server item_db Buy)",
+   "why": "Buy only a few; sell-loot funds them."
+  }
+ ],
+ "grinding": [
+  {
+   "map": "prt_fild08",
+   "phase": "Lv 1-10+",
+   "mobs": [
+    {
+     "id": 1002,
+     "name": "Poring",
+     "level": 1,
+     "hp": 60,
+     "exp": "27/20 (iro-db; server mob_db base 2/1 before rates)",
+     "notes": "Passive Looter, Water 1, drops Jellopy 70% (sell 3z), Sticky Mucus 4% (35z), Apple 10%"
+    },
+    {
+     "id": 1113,
+     "name": "Drops",
+     "level": 2,
+     "hp": 45,
+     "exp": "27/20",
+     "notes": "Passive Looter, Fire 1, Jellopy 75%, Rod [4] 0.81%"
+    },
+    {
+     "id": 1063,
+     "name": "Lunatic",
+     "level": 3,
+     "hp": 55,
+     "exp": "36/27",
+     "notes": "Passive, Neutral 3, Clover 65% (5z), Feather 10% (10z)"
+    },
+    {
+     "id": 1008,
+     "name": "Pupa",
+     "level": 4,
+     "hp": 66,
+     "exp": "36/27",
+     "notes": "Immobile, Earth 1, Chrysalis 55%, Safe target for Lv1 characters"
+    }
+   ]
+  }
+ ],
+ "do_not_waste": [
+  "stat points beyond the cheap 10s/9s before job 10 (keep the pool for the real class build)",
+  "LUK (0.3% crit per point is worthless at this stage)",
+  "zeny on anything but Knife + a few Red Potions before the job change"
+ ],
+ "renewal_differences": "Novice-phase mechanics are identical pre-re/renewal (stat costs, Basic Skill, job change at Novice job 10). Current-iRO features the wiki page shows (Criatura Academy instant-job-change track, free novice gear, Novice Falchion reward on Swordman change) are renewal-era and absent on this db/pre-re server: the classic npc/pre-re job quests apply instead.",
+ "sources": [
+  "iro-wiki corpus page 'Stats' (stat per-point effects, raise-cost floor((X-1)/10)+2, 48 pts at BLv1, level-up points floor(X/5)+3)",
+  "iro-wiki corpus page 'Total stat point requirement' (cumulative cost table)",
+  "rathena/src/map/status.cpp status_base_atk (pre-re status ATK: STR+(STR/10)^2+DEX/5+LUK/5 melee; DEX+(DEX/10)^2+STR/5 ranged; MATK min INT+(INT/7)^2 max INT+(INT/5)^2)",
+  "rathena/db/pre-re/skill_tree.yml (authoritative server skill prerequisites)",
+  "rathena/db/pre-re/skill_db.yml (SP costs, cast times)",
+  "iro-wiki corpus '<Class> Job Change Guide' + rathena/npc/pre-re/jobs/1-1/<class>.txt (job change)",
+  "iro-wiki corpus pages 'Novice', 'Basic Skill', 'First Aid', 'Play Dead'",
+  "iro-db corpus monster ids 1002/1113/1063/1008, item ids 1201/2302/501/909/938",
+  "rathena/db/pre-re/mob_db.yml (Poring Lv1 Hp50 BaseExp2 JobExp1 - server base table; live rates configured separately)",
+  "project receipts run/reviews/knife-purchase-mechanics.json, run/reviews/playing-mvp-npc-earned-equipment-route.json (established prt_fild08 -> prt_in sell -> Knife 50z loop)"
+ ]
+}

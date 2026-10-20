@@ -9,8 +9,8 @@ run date. `$/1k` = USD per 1000 decisions (hosted only).
 | 2026-10-05 | cpu (Framework, BLAS, 16thr) | — | 64.9s | 77.1s | timeout | 0.94s | — | spike 001 formal run |
 | 2026-10-05 | cloudflare-flash | 0.40s | 0.24s | 0.31s* | 3.83s | 0.41s | $0.215 | *p95 outlier 52.4s in this run (route cold-spot); median set stable |
 | 2026-10-05 | cloudflare-27b | 0.90s | 0.73s | 1.04s | 6.03s | 0.58s | $0.574 | |
-| 2026-10-05 | heavengraph-flash | — | — | — | — | — | — | pending spike 005 |
-| 2026-10-05 | heavengraph-27b | — | — | — | — | — | — | pending spike 005 |
+| 2026-10-05 | heavengraph-flash | 2863ms | 1118ms | 3363ms | 8773ms concurrent | no reproduced advantage | — | archived 20-run spike 005; batch best of 5; health rechecked |
+| 2026-10-05 | heavengraph-27b | 5078ms | 3575ms | 5766ms | 28588ms concurrent | no reproduced advantage | — | archived 20-run spike 005; batch best of 5; health rechecked |
 
 Run it yourself:
 

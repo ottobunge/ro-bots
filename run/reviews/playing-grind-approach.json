@@ -1,0 +1,59 @@
+{
+  "status": "GRIND_APPROACH_RANGE_AWARE_COMPLETE",
+  "completed_at": "2026-10-15T23:14:23+00:00",
+  "window_basis": "run/reviews/playing-grind-operator-live-window13-analysis.json (0x0139 x62603: attacks authored/dispatched but every one rejected for distance)",
+  "change": {
+    "file": "src/robots/app/scripts.py",
+    "what": "MELEE_RANGE constant + _melee_action helper: GrindScript and FarmScript emit MoveTo(the target's CURRENT known cell) when the chosen target is beyond melee range and Attack when within; the cell is re-read from the handed-in state every evaluation (moved targets refollow, no stale commit); a state monster without a tracked position keeps the honest legacy Attack (fail-closed, server range feedback is the truth).",
+    "pre_fix_sha256": "a84b24ebe9f8aa7100c66c608098e40537dc6d851f6abf2c8a5e6f954e5f0c55",
+    "post_fix_sha256": "f0a21998e03c64a487dd5f81c08195d26daef5fe9132f454ccc7808a15003124"
+  },
+  "melee_range_verification": {
+    "brief_default": 2,
+    "shipped": 1,
+    "deviation_reason": "The brief's 'default 2: rAthena unarmed/melee attack range' fails verification at the pinned checkout: there is NO attack_range battle config at this 2018-07-04 pin, the enforced unarmed range floors at 1, and a 2-tile straight attack (client metric 2 > 1) still draws 0x0139 \u2014 shipping 2 would reproduce the window-13 failure at a nearer boundary. Constant is one line to adjust if the server config ever changes.",
+    "pinned_source": "/nix/store/96i0fc5fng3ckcpv9zxld86v1rb7ipq4-e985006171d2eb320ee512a653f4c83aea3d81b6.tar.gz (flake.nix:10-16, rev e985006171d2eb320ee512a653f4c83aea3d81b6, MAIN/pre-re 20180704)",
+    "citations": [
+      "src/map/battle.cpp:8215-8230 battle_check_range (BL_PC circular client-metric check_distance_client_bl; distance < 2 accepted without path check at 8226-8228)",
+      "src/map/status.cpp:4216 if(base_status->rhw.range < 1) base_status->rhw.range = 1 (unarmed range floor 1)",
+      "src/map/path.hpp:48 check_distance_client_bl macro (client metric)",
+      "src/map/clif.cpp:8173 ZC_ATTACK_FAILURE_FOR_DISTANCE 0x0139 carries currentAttRange",
+      "conf/battle/* and the battle.cpp registration table: no attack_range key exists at this pin"
+    ],
+    "gate_metric": "scripts compare Chebyshev (the server's own client metric): attack when max(|dx|,|dy|) <= MELEE_RANGE"
+  },
+  "tdd": {
+    "RED": {
+      "evidence": [
+        ".work/playing-grind-approach/evidence/RED-approach-twin.log",
+        ".work/playing-grind-approach/evidence/RED-approach-twin.xml",
+        "tests collection error naming the missing MELEE_RANGE contract"
+      ],
+      "shape": "fake-wire twin (.work/playing-grind-approach/wire_twin.py), Poring at distance 14, real production 0x0437 bytes (robots.adapters.native_gameplay.attack): current bytes = [(1079 attack target=42), (313 doomed)] \u2014 zero approach, server model dooms it, exactly window-13"
+    },
+    "GREEN": {
+      "evidence": [
+        ".work/playing-grind-approach/evidence/GREEN-approach.log",
+        ".work/playing-grind-approach/evidence/GREEN-approach.xml"
+      ],
+      "shape": "17/17 (12 repo contracts + 5 twin): approach 0x035F steps until in range then accepted 0x437, zero doomed; guards: in-range immediate attack, boundary 2-straight still approaches, positionless fail-closed attack, target-mob filter unchanged, hp-rest precedence, loot/idle tails, non-grasp goal scripts and TravelScript unchanged"
+    }
+  },
+  "gates": {
+    "root": "nix develop -c task check from repo root: RC=0, 'All checks passed!', 5911 passed + 65 subtests passed (baseline 5899+65, +12 this slice)",
+    "combined_namespaces": "operator 19 + travel 15 + travel2 19 + framediag 18 + target 34 + replan 10 + cadence 6 + emission 7 + approach 5 = 133 tests, 0 failures, 0 errors",
+    "scoped": "black --check rc=0, ruff rc=0, mypy 'no issues in 266 source files' rc=0, xenon src B/B/A rc=0",
+    "evidence_dir": ".work/playing-grind-approach/evidence"
+  },
+  "digests": {
+    "tests/test_grind_approach_range.py": "e6d94a4edff83aa684ba0ac4e5358f65fdcb12523c0c9df777a47abe0ed2391a",
+    ".work/playing-grind-approach/wire_twin.py": "7f4de45caef7f7b6826e73842cb62d44a3ee8d3dcf77a52da38154de81015adc",
+    ".work/playing-grind-approach/tests/test_approach_twin.py": "b311a35c48f9fff4830c80dfcf1ce22166d00cd1bcc2a213720ceefe40d28b6a",
+    ".work/playing-grind-approach/tests/conftest.py": "5baf3b8e0f5140abd0899790584b8f1f0562cbb875a72435d38402a65d3598e5",
+    "root-task-check.log": "b178e32a0bad75125ec31018e394aafed7c413b766898ad14013ae2e5a38d430",
+    "GREEN-approach.log": "478436a861d88857b2952e286a34afc4efeabc5ecbaa5f1355341e92c625a7a2",
+    "RED-approach-twin.log": "9d69dd40a3a7b161ac4ecadd128ff7b69abb04b4d7876756471f22fe81674fbb"
+  },
+  "honest_boundary": "Production BotState.ActorRef carries distance only (src/robots/domain/model.py:34-41); _nearby drops tracker positions (src/robots/app/playing_runtime.py:1198-1226). Until a position-carrying projection lands, live range-aware behavior is dormant and the script attacks anyway (fail-closed honest) \u2014 window-14 receipts showing 0x139 again indict the missing position projection, not this slice. The twin proves the full walk-then-attack chain the moment the state carries cells.",
+  "prohibitions_respected": "no live execution, no spike edits, no Git actions, no private bundle bodies; namespace kept to .work/playing-grind-approach/** + run/reviews/playing-grind-approach.json + src/robots/app/scripts.py + tests"
+}

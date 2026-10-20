@@ -1,131 +1,61 @@
 # ro-bots dashboard
 
-Rust web dashboard for the ro-bots world — **observer + control plane**
-(ADR-007, ADR-008). It is a pure consumer adapter over the `WorldFeed`
-contract: no DB, no direct simulation access. While the real Python runtime
-feed lands, a seeded `MockWorldFeed` makes everything demoable offline.
+Rust observer over Python WorldFeed HTTP snapshots and SSE. **Transport integration is not native-game or host-command acceptance.** No DB, game client, or model provider is accessed by this adapter.
 
-## Stack
+## Run with the pinned toolchain
 
-- **Dioxus LiveView 0.7.10 on Axum 0.8.9** (ADR-007's chosen option; the
-  crate is maintained — 0.7.10 released 2026-07, 0.8.0-alpha line active).
-  One LiveView route (`/live`) provides the server-rendered auto-updating
-  page; everything else is server-rendered HTML + JSON/SSE.
-- Tokio 1.53, serde/serde_json for the contract, `rand`/`rand_pcg` for the
-  seeded mock.
-
-## Run
+From the repository root:
 
 ```sh
-cd dashboard
-cargo run --release          # http://127.0.0.1:8400
-ROBOTS_SEED=7 cargo run --release   # different initial seed
+nix develop
+WORLDFEED_BACKEND=live WORLDFEED_URL=http://127.0.0.1:8400 \
+  cargo run --manifest-path dashboard/Cargo.toml --release
+# Dashboard binds 127.0.0.1:8401; DASHBOARD_BIND overrides it.
+
+# Offline demo must be an explicit choice:
+WORLDFEED_BACKEND=mock ROBOTS_SEED=42 \
+  cargo run --manifest-path dashboard/Cargo.toml --release
+
+task -t dashboard/Taskfile.yml dashboard:check
 ```
 
-Docker (binds 127.0.0.1:8400 only):
+Absent `WORLDFEED_BACKEND` means **live**. Unknown modes and invalid URLs fail configuration; connection failure never selects mock. Only mock spawns the synthetic ticker. Every HTML surface visibly labels the backend, and `/api/health` reports identity, available/stale/unavailable status, snapshot age, connection state, errors, and last upstream sequence. The standalone `dashboard/docker-compose.yml` explicitly selects mock; it is not live integration evidence. Docker was not exercised for this change.
+
+## Compatibility, not an invented Python schema
+
+`world-feed/src/wire.rs` deserializes the existing Python API:
+
+- `/feed/roster`: `{agents:[...]}`; no source seed or group schedules.
+- `/feed/agent/{id}`: `goal`, `script`, `plan`; memory strings; `agent_score` and `group_score`; character-name strings.
+- `/feed/events`: numeric `id` plus `data:{ts,kind,summary,operator_forced}`.
+
+The dashboard snapshot model uses nullable seed, memory indices, character levels, reputation score/timestamp. Missing goals/builds/class paths/reputation reasons are `not supplied`; supplied agent/group scores remain separate. Group associations derive only from supplied roster group IDs; group attitude/schedule and guild/relationship details are not inferred. Raw memory strings are preserved, not parsed into invented hierarchy. Source events remain `kind:source` with `payload.source_kind`, `summary`, and `sequence`; summary text is not interpreted as observed chat/combat/command execution.
+
+## Transport bounds and reconnect
+
+Defaults: 3-second snapshot/command deadlines; 10-second SSE read deadline; 30-second SSE connection deadline; 2-second roster polling; 1-second reconnect delay; 10-second detail-cache TTL. Configuration durations must be nonzero and at most 60 seconds. HTTP bodies cap at 2 MiB; SSE frames at 128 KiB; roster at 4096 agents; cached details at 128; broadcast at 512 events. Redirects/system proxies are disabled. URL credentials, query and fragment are rejected.
+
+Incremental SSE decoding survives LF/CRLF and arbitrary network chunks. Only complete valid numeric-ID events advance the cursor. Reconnect sends `Last-Event-ID`; replayed IDs are deduplicated. Sequence gaps and replayed/lower IDs set independent adapter-lifetime integrity flags, separate from transient transport errors. Successful, empty or comment-only reconnects clear only transport errors. Both integrity warnings remain in `events_error`, alongside any transport error, and keep health stale even while SSE is connected. Only an intentional adapter restart resets these flags together with its cursor; refreshing a snapshot is not history reconciliation. Cached roster is retained on failure but marked stale; before the first successful roster `/api/roster` returns 503. Detail transport failures return 503, distinct from upstream 404.
+
+**Limitations:** Python sequence IDs are process-lifetime, not durable. No server epoch exists: after an upstream restart lower IDs are suppressed; restart/reconfigure the dashboard deliberately to reset its cursor. Evicted history cannot be recovered. Downstream `/api/events` is a bounded broadcast, not durable replay; lagged UI receivers skip events. Static roster/inspector snapshots require reload; `/live` polls roster/health automatically. Quiet streams reconnect on the read deadline and temporarily show stale rather than fabricate activity.
+
+## Commands
+
+Dashboard JSON retains its existing `Command` schema. The live adapter maps roster fields to Python `groups`, `solos`, `friends_min`, `friends_max`, and flattens persona edits. Nonempty schedule-bearing edits are rejected rather than silently dropped. All force actions are rejected because Python currently adds WorldState notes/events, not host effects. `force_schedule` is not exposed by this dashboard contract.
+
+Successful supported POST responses retain the Python source event and explicitly say `execution: "not verified; WorldState only"`. They do not demonstrate AgentHost updates, scheduling, character actions, or gameplay. Rust admission bounds each group/solo count to 4096, friend sizes to 1..16 with min <= max, and the worst-case population `groups * friends_max + solos` to 4096 using checked multiplication/addition. These are resource limits, **not RO party-size rules**; seven-member friend groups remain valid. Live Python separately requires friend sizes >=2. Validation runs before payload construction/network I/O and before mock roster allocation/loops. `MockWorldFeed::with_shape` is now fallible (`Result`), and mock regeneration uses the same guard. **RWF-POP-BOUND-001 remains only partially addressed:** a matching upstream Python resource guard is still a pending prerequisite after the WorldState freeze and independent lifecycle/population reviews. Direct Python callers can bypass Rust admission; no end-to-end resource-bound acceptance is claimed. Commands are not retried automatically because timeout outcomes can be uncertain.
+
+## Evidence and gates
+
+`fixtures/generate.py` creates deterministic snapshots/events using the actual read-only Python serializer with a fixed clock and seed, including memory, characters and separate reputation scores. `fixtures/provenance.json` records source hashes and the offline evidence label. It uses no BotClient/DB/provider.
 
 ```sh
-docker compose -f dashboard/docker-compose.yml up --build
+nix develop -c uv run python dashboard/fixtures/generate.py
+nix develop -c cargo build --manifest-path dashboard/Cargo.toml -p dashboard-app
+nix develop -c python dashboard/fixtures/smoke.py
+nix develop -c task -t dashboard/Taskfile.yml dashboard:check
 ```
 
-## What to open
+Rust loopback tests exercise snapshot/detail deserialization, fragmented SSE, reconnect cursor and duplicate suppression, HTTP failures, timeout, command payload translation/rejection, and no-fallback mode selection. The executable smoke runs temporary loopback fixture HTTP and dashboard processes, verifies live/explicit mock labels and stale state after upstream shutdown, then terminates them. **This is fake-HTTP evidence, not native-game acceptance.**
 
-| URL | What |
-|---|---|
-| `/` | Roster: agent cards grouped by friend group, online badge from schedule, group attitude label. |
-| `/config` | **Configurator** (ADR-008): set seed / friend-group count / solo count / friends-per-group min-max, press **Generate** → POSTs `regenerate_roster`; the mock world regenerates from that seed (exposed in the page header). |
-| `/agent/:id` | **Inspector**: persona, current goal/script/plan, personal/group/guild goals, memory view (OptChat `L<level>:<index>` lines), reputation ledger (human, score bar, last reason), characters (name, class path, build), schedule, related events, **edit persona** form, **force action** buttons. |
-| `/feed` | Live feed: chat lines styled as MMO chat + world events, operator-forced events tinted/tagged `operator-forced`. |
-| `/live` | Dioxus LiveView page: auto-updating roster + event stream over one WebSocket, no client framework. |
-| `/api/roster`, `/api/agent/:id` | Snapshot JSON (the WorldFeed query API). |
-| `/api/events` | SSE stream of `WorldEvent` JSON. |
-| `/commands` | **Write path** (POST): `regenerate_roster`, `edit_persona`, `force_action` (see below). |
-
-## WorldFeed JSON contract
-
-The Python runtime implements this same boundary later. Read path = snapshot
-queries + event stream; write path = commands. All types live in the
-`world-feed` crate with serde round-trip tests.
-
-### `RosterSnapshot` — `GET /api/roster`
-
-```json
-{
-  "seed": 42,
-  "groups": [
-    {"group_id": "Silver Wolves", "attitude": "clique",
-     "member_ids": ["mika-01", "doramir-02"], "schedule": [{"day": 1, "start": 18.0, "end": 22.0}]}
-  ],
-  "agents": [
-    {"persona_id": "mika-01", "name": "mika-01", "playstyle": "healer",
-     "attitude": "clique", "group_id": "Silver Wolves", "online": true, "chattiness": 0.4}
-  ]
-}
-```
-
-`schedule` windows are weekly `(day 0-6 Mon..Sun, start_hour, end_hour)` and
-may wrap midnight (`start > end`).
-
-### `AgentDetail` — `GET /api/agent/:id`
-
-Persona fields + `current_goal` / `current_script` / `current_plan` strings,
-`memory_view: [{level, index, summary}]` (OptChat lines, newest last,
-`L{level}:{index} {summary}` when rendered), `reputation:
-[{human, score ∈ [-1,1], last_reason, last_at}]`, `characters:
-[{name, class_path, build_summary, level}]`, `personal_goal` / `group_goal` /
-`guild_goal`, `schedule: [ScheduleWindow]`.
-
-### `WorldEvent` — streamed on `/api/events` (SSE) and the LiveView socket
-
-```json
-{"ts": 1767588000.0, "kind": "chat",
- "payload": {"line": {"at": 1767588000.0, "channel": "map", "sender": "mika-01", "text": "buffs plz"}},
- "severity": "info", "operator_forced": false}
-```
-
-`kind` ∈ `chat | online | offline | goal_change | party_invite | reputation |
-wipe | command_ack`; `severity` ∈ `info | notable | alarm`.
-
-### Commands — `POST /commands` (ADR-008)
-
-```json
-{"type": "regenerate_roster", "seed": 777, "friend_groups": 3, "solos": 1,
- "friends_per_group_min": 2, "friends_per_group_max": 4}
-{"type": "edit_persona", "persona_id": "mika-01",
- "edit": {"name": "mika", "playstyle": "mage", "attitude": "clique",
-          "chattiness": 0.5, "schedule": [{"day": 1, "start": 18.0, "end": 22.0}]}}
-{"type": "force_action", "persona_id": "mika-01", "action": "chat", "arg": "hello"}
-```
-
-`action` ∈ `goal_change | chat | party_invite | disconnect | reconnect`.
-Responses are the acknowledged `WorldEvent` (HTTP 200) or a 422 with the
-validation error. Every ack is `operator_forced: true` so experiments can
-separate organic from injected behavior.
-
-## What is mocked vs real
-
-Everything behind the WorldFeed boundary is currently **mocked**:
-`MockWorldFeed` fabricates the whole society from a seed — 3 friend groups
-plus 1 solo outsider by default, with ADR-005-style schedules (evening
-windows, shared per group, jittered per agent) that tick online/offline on a
-virtual clock (1 simulated hour per tick, no wall-clock dependency), chat
-lines from chatty online agents, goal changes, party invites, reputation
-moves against a fixed set of fake humans, wipes, 5-10-line OptChat-style
-memory views, per-human reputation ledgers, and ADR-009-style character
-summaries. Same seed → same roster → same event sequence (unit-tested);
-commands mutate that deterministic state, nothing else. **Real**: the Axum
-server, the LiveView/SSE wiring, the command API shape, and the contract
-types themselves. **Not real yet**: no rAthena connection, no Clef decisions,
-no actual personalities — the Python runtime will implement `WorldFeed`
-(read + `/commands`) and the dashboard code does not change.
-
-## Quality gates
-
-```sh
-task dashboard:check   # fmt + clippy pedantic (-D warnings) + test + audit + machete + doc
-task dashboard:serve   # cargo run --release
-```
-
-`unsafe_code = "deny"`, clippy `pedantic` warnings, and
-`unwrap_used/expect_used/panic/indexing_slicing = "deny"` are enforced in
-the workspace `Cargo.toml` — the observer loop must not panic.
+Cargo/rustc/rustfmt/clippy/cargo-audit/cargo-machete come from the root pinned Nix devShell; Taskfile never installs global tools. Axum/Dioxus versions remain those in Cargo.lock. Reqwest is pinned to 0.12.22; request deadlines, per-read deadlines and incremental `Response::chunk` were checked against the author's tagged source before use.

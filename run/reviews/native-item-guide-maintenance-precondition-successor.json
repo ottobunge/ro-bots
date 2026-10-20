@@ -1,0 +1,179 @@
+{
+ "schema": "native-item-guide-maintenance-precondition-successor/v1",
+ "status": "OFFLINE_TDD_SOURCE_SUCCESSOR_COMPLETE_BOTH_PRECONDITION_GAPS_ADMITTED_BY_DESIGN_NO_EXECUTION_NO_ADOPTION",
+ "scope": "Successor candidate namespace only; review of this successor's own offline functional contracts. Not component adoption, not execution approval, not CHECK TABLE receipt creation.",
+ "parent_composite": {
+  "candidate": "/home/otto/dev/ro-bots/.work/native-item-guide-combined/maintenance-content-candidate",
+  "independent_review": "run/reviews/native-item-guide-combined-independent-review.json",
+  "independent_review_sha256": "178934a9128ccf1622d5694a969008292adb01b251e1ae0fbdb0674ba66484b3",
+  "parent_conditional_adoption": "run/reviews/native-item-guide-combined-parent-conditional-approved.json",
+  "parent_conditional_adoption_sha256": "f398facc03acf8502f0473f16a3cb1c0a1802f121d8066c653b32cf557ddf2ff"
+ },
+ "frozen_inputs": {
+  "frontier_record": {
+   "path": "run/reviews/native-item-guide-publication-precondition-frontier.json",
+   "sha256": "73ed51355e68881522b050fa57e6b16fe7ccd34d3718177141b1c6a95d14506b"
+  },
+  "read_phase_verified": {
+   "path": "run/reviews/native-item-guide-parent-read-phase-verified.json",
+   "sha256": "bf81b83e1d9ac180f25f16310fb59740f7ab66cc099600bcf7ad4567579f6ffe"
+  },
+  "private_bindings_referenced_by_hash_only": "b78a5ff613a9c189042dbece395c98c1383994fca3817d5cda4f9527b2137eed",
+  "pinned_historical_table_health_receipt": {
+   "path": "run/reviews/native-current-db-health.json",
+   "pinned_sha256": "7aed8c66bbff2e261916653c1fac1f904e9e1dd9d00ce4d83b79cee5dc06fe1e",
+   "unchanged_and_still_pinned_as_documented_original": true
+  }
+ },
+ "module_identities": {
+  "item_guide_files.py": {
+   "composite_sha256": "528b12b88c2ca5a3bacdb0c4786666af7d8caf1042943395814890ac3773ef18",
+   "successor_sha256": "528b12b88c2ca5a3bacdb0c4786666af7d8caf1042943395814890ac3773ef18",
+   "byte_identical_to_composite": true
+  },
+  "item_guide_publication.py": {
+   "composite_sha256": "26fd4a66042424014917748f84c67ef724886c62d20074c163726ad05f1154aa",
+   "successor_sha256": "26fd4a66042424014917748f84c67ef724886c62d20074c163726ad05f1154aa",
+   "byte_identical_to_composite": true
+  },
+  "live_recovery.py": {
+   "composite_sha256": "11c1dd2dece659ba12de0e4f0b75000c1964d402532ad867f3ba62a5f2db5e02",
+   "successor_sha256": "7d7ff94dfe3c3e0ffa23b578aa15676ea0d78c285b8a55055d4ee74bdbfadada",
+   "byte_identical_to_composite": false
+  },
+  "recovery.py": {
+   "composite_sha256": "a538ef5b444acab01b698e9474c3296c37e7683110d7fd441d54b65c305ce1e8",
+   "successor_sha256": "a538ef5b444acab01b698e9474c3296c37e7683110d7fd441d54b65c305ce1e8",
+   "byte_identical_to_composite": true
+  },
+  "rootless_socket_reader.py": {
+   "composite_sha256": "a8339f4af3359d6ae283879ce1031a4bcc8e589e9822a203e6a3c68acafd49ae",
+   "successor_sha256": "a8339f4af3359d6ae283879ce1031a4bcc8e589e9822a203e6a3c68acafd49ae",
+   "byte_identical_to_composite": true
+  }
+ },
+ "semantic_changes": [
+  {
+   "id": "A_TABLE_HEALTH_REFRESH_VIA_APPROVAL_BINDINGS",
+   "predicate": "live_recovery.table_health / current_table_health_binding",
+   "change": "Receipt location/digest now supplied entirely through Approval bindings: exactly one binding whose key is an absolute path with receipt-name identity native-current-db-health[-<version>].json is selected (r.require(len==1, 'current_table_health_binding')); bytes are read from the bound path and verified byte-for-byte against the bound digest at check time. If the selected path is the historical constant path, the bound digest must additionally equal the historical TABLE_HEALTH_SHA ('historical_table_health_digest') so the original receipt identity cannot be rebound. The 24h window ('current_table_health_expired', 0 <= age <= 86400s), BOUNDED_CURRENT_TABLE_CHECKS_OK status, same_database_lifetime, and the exact 12-table ragnarok/MyISAM CHECKED_TABLES inventory are unchanged. TABLE_HEALTH/TABLE_HEALTH_SHA constants retained as documented original; no new pinned path+SHA constant pair exists in the successor.",
+   "resolution_of": "TABLE_HEALTH_PROOF_EXPIRED (frontier blocker 1). Actual receipt refresh remains a separate parent slice under the original lock; this successor performs none."
+  },
+  {
+   "id": "B_CURRENT_EPOCH_MAP_BASELINE_ADMISSION",
+   "predicate": "live_recovery.validate_error_inventory / historical_map_epoch + fixed_map_error_inventory",
+   "change": "Map-role branch preserves the historical authority unchanged (started_at == HISTORICAL_MAP_EPOCH '2026-10-08T15:08:31.458528082Z' still requires exactly the three MAP_FAULTS timestamps). A second admission branch accepts an approval-carried current-start baseline only when its started_at is strictly newer than the pinned epoch (nanosecond comparison via log_timestamp) and the observed error inventory is empty. Older or equal epochs are denied ('historical_map_epoch'); any nonzero/unknown observed error on a newer epoch is denied ('fixed_map_error_inventory'); no faults are ever fabricated; MAP_FAULTS and the historical epoch constant are immutable.",
+   "resolution_of": "MAP_ERROR_INVENTORY_PINNED_TO_HISTORICAL_EPOCH (frontier blocker 2). The exact current capture epoch 2026-10-12T23:18:15.345459707Z comes from the parent-issued approval's error_baselines entry at admission time; the current capture alone is not admission."
+  }
+ ],
+ "diff_inventory": {
+  "changed_modules": [
+   "live_recovery.py"
+  ],
+  "unified_hunks": 3,
+  "diff_file": "/home/otto/dev/ro-bots/.work/native-item-guide-maintenance-precondition-successor/green/live_recovery-successor.diff",
+  "diff_file_sha256": "56716f0857cdea08db067dba233d610d290ba1e4cd3fa5015ad095ecb795cb49",
+  "new_helper": "_selected_table_health_binding",
+  "new_constants": [
+   "HISTORICAL_MAP_EPOCH (value equals the previously inlined literal; the historical epoch is now named, not changed)"
+  ]
+ },
+ "harness_adaptation": {
+  "manifest": "/home/otto/dev/ro-bots/.work/native-item-guide-maintenance-precondition-successor/copy-manifest.json",
+  "manifest_sha256": "e0486c67a91c33fd662c3177a1ffff9a7653b3d2cf5f2297dbf8e15529cbfc25",
+  "adapted_files_only": [
+   "harness/guard/conftest.py",
+   "harness/guard/test_actual_chain.py",
+   "harness/publication/conftest.py",
+   "harness/publication/test_publication.py"
+  ],
+  "adaptation_kind": "namespace/candidate-root path literals only; every original function assertion preserved",
+  "all_other_harness_files_byte_identical": true,
+  "suite_selection": "harness directory minus fixture-support/ copies, matching the composite review's declared 78-case union (publication 47 raw + guard 25 + independent 6)",
+  "stale_fixture_support_copies": "Retained as artifacts, excluded from the declared suite. In full-collection probing they contributed 47 cases with 16 failures against the byte-identical accepted composite bytes (inherited phase drift, not introduced by this successor)."
+ },
+ "tdd_chronology": {
+  "tests_file": "/home/otto/dev/ro-bots/.work/native-item-guide-maintenance-precondition-successor/harness/test_maintenance_precondition_successor.py",
+  "tests_file_sha256": "c1ca7d0cf9cf9a85a477e84ec22b54d48006de245a8f2a5497e38d163310d2fc",
+  "red_first": [
+   {
+    "receipt": "pre-oracle-correction (preserved)",
+    "xml_path": "/home/otto/dev/ro-bots/.work/native-item-guide-maintenance-precondition-successor/red/pre-oracle-correction-red.xml",
+    "xml_sha256": "2e383f7cf22e06c7fcfb54868e893a911ad55c688e42913c2a215e018c2edbee",
+    "tests": "98",
+    "failures": "12",
+    "errors": "0",
+    "skipped": "0",
+    "unique_case_ids": 98,
+    "note": "First RED run, full collection including stale fixture-support copies: 12 successor-gap failures plus 16 inherited stale-phase failures."
+   },
+   {
+    "receipt": "corrected-RED (authoritative)",
+    "xml_path": "/home/otto/dev/ro-bots/.work/native-item-guide-maintenance-precondition-successor/red/maintenance-precondition-successor-red.xml",
+    "xml_sha256": "3493967110529cb73dd3fe0d8a4ff0f254d8c5191edd703e5c4730f06d2d7157",
+    "tests": "98",
+    "failures": "12",
+    "errors": "0",
+    "skipped": "0",
+    "unique_case_ids": 98,
+    "note": "Identical test bytes as GREEN, run against the byte-identical composite live_recovery.py (successor source stashed and restored, SHA re-verified). 12 failures, all in the successor test file, exactly the two gaps."
+   }
+  ],
+  "red_failed_ids": [
+   "test_maintenance_precondition_successor::test_check_error_baselines_admit_parent_captured_current_epoch",
+   "test_maintenance_precondition_successor::test_current_epoch_clean_baseline_is_admitted",
+   "test_maintenance_precondition_successor::test_fresh_parent_selected_receipt_is_admitted",
+   "test_maintenance_precondition_successor::test_historical_path_cannot_rebind_different_bytes",
+   "test_maintenance_precondition_successor::test_map_faults_constant_immutable",
+   "test_maintenance_precondition_successor::test_newer_epoch_with_unknown_errors_is_never_admitted",
+   "test_maintenance_precondition_successor::test_window_status_and_inventory_retained[2026-10-13T07:59:00.000000000Z-90060.0-BOUNDED_CURRENT_TABLE_CHECKS_OK-True-None-MyISAM-current_table_health_expired]",
+   "test_maintenance_precondition_successor::test_window_status_and_inventory_retained[2026-10-14T09:00:00.000000000Z-60.0-BOUNDED_CURRENT_TABLE_CHECKS_OK-False-None-MyISAM-current_table_health]",
+   "test_maintenance_precondition_successor::test_window_status_and_inventory_retained[2026-10-14T09:00:00.000000000Z-60.0-BOUNDED_CURRENT_TABLE_CHECKS_OK-True-11-MyISAM-checked_table_inventory]",
+   "test_maintenance_precondition_successor::test_window_status_and_inventory_retained[2026-10-14T09:00:00.000000000Z-60.0-BOUNDED_CURRENT_TABLE_CHECKS_OK-True-None-InnoDB-checked_table_inventory]",
+   "test_maintenance_precondition_successor::test_window_status_and_inventory_retained[2026-10-14T09:00:00.000000000Z-60.0-STALE_STATUS-True-None-MyISAM-current_table_health]",
+   "test_maintenance_precondition_successor::test_window_status_and_inventory_retained[2026-10-14T09:01:00.000000000Z--60.0-BOUNDED_CURRENT_TABLE_CHECKS_OK-True-None-MyISAM-current_table_health_expired]"
+  ],
+  "scratch_oracle_correction": {
+   "old_identity": "test_window_status_and_inventory_retained[<observed_at>-<status>-<lifetime>-<tables>-<engine>-<classification>] (now derived as observed_at+60s)",
+   "new_identity": "test_window_status_and_inventory_retained[<observed_at>-<now_offset_seconds>-<status>-<lifetime>-<tables>-<engine>-<classification>] (per-case now offset; expired variants use +90060s/-60s)",
+   "nature": "Test-local oracle defect in this successor's new test only; no production source involved; corrected before the authoritative RED/GREEN pair."
+  },
+  "green": {
+   "xml_path": "/home/otto/dev/ro-bots/.work/native-item-guide-maintenance-precondition-successor/green/maintenance-precondition-successor-green.xml",
+   "xml_sha256": "abed472115f62b66e638ecff4b4b42a12f610aff710e7464ab536145736a2fe5",
+   "tests": "98",
+   "failures": "0",
+   "errors": "0",
+   "skipped": "0",
+   "unique_case_ids": 98,
+   "command": "nix develop --offline --no-write-lock-file path:./spikes/007-native-packet-ast/toolchain -c env PYTHONOPTIMIZE=0 PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=src:. .venv/bin/python -B -m pytest .work/native-item-guide-maintenance-precondition-successor/harness --ignore-glob=**/fixture-support/* --override-ini addopts='' --junitxml=<own namespace>.xml -q"
+  },
+  "case_retention": "All 78 declared composite cases retained: present and passing in both RED and GREEN runs, no omission, no revision, no renamed identity (harness test sources byte-identical except the four namespace-seam files, whose path literals do not touch assertions). The two frontier predicates had no direct case inside the 78; the successor contracts are 20 new cases reaching RED first."
+ },
+ "quality": {
+  "scope": "successor-changed pair (live_recovery.py successor copy + unchanged recovery.py)",
+  "black": "PASS (2 files unchanged)",
+  "ruff": "PASS",
+  "mypy_strict": "PASS (no issues in 2 source files)",
+  "xenon": "PASS at --max-absolute B --max-modules B --max-average A",
+  "gate_logs": "/home/otto/dev/ro-bots/.work/native-item-guide-maintenance-precondition-successor/green/gates/",
+  "inherited_broad": "Whole-root inherited 51 Ruff findings / 31 mypy errors remain non-clean exactly as accepted at the composite; disclosed, not waived, and outside this successor's changed-module scope."
+ },
+ "effects": {
+  "live_engine": 0,
+  "docker": 0,
+  "sql": 0,
+  "check_table_receipt_created": false,
+  "world_lock": 0,
+  "native_or_model_or_provider_calls": 0,
+  "git_actions": 0,
+  "production_src_or_tests_edits": false,
+  "private_body_publication": false,
+  "source_edits": "successor copies only, within the owned namespace"
+ },
+ "remaining_for_parent": [
+  "Separately reviewed bounded CHECK TABLE receipt refresh under the original lock, producing the real refreshed receipt (not performed here by design).",
+  "Parent issuance of a maintenance approval binding that exact receipt path/digest and carrying the captured map epoch as the error_baselines entry; admission then follows through the reviewed chain.",
+  "Independent review + adoption of this successor per the composite's review bar; the third frontier item (runtime map import target key) needs no source change per the frontier record."
+ ]
+}

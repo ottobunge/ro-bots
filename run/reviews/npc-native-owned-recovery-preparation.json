@@ -1,0 +1,83 @@
+{
+  "schema": "npc-native-owned-recovery-preparation/v1",
+  "status": "OFFLINE_DRIVER_EXERCISED_AND_FROZEN_NOT_OPERATIONALLY_APPROVED",
+  "created_at": "2026-10-11T09:27:43Z",
+  "outcome": "A recovery-only driver owns exact guarded stop map -> char -> login and start login -> char -> map sequencing. The default CLI exits 2 with approval_required before private, lock, query or engine effects. Offline fake-boundary execution passes; no recovery was performed.",
+  "native_activation": "REVOKED_UNCHANGED",
+  "all_goals": "OPEN",
+  "source_authority": {
+    "audit": "/home/otto/dev/ro-bots/run/reviews/npc-native-host-pilot-owned-recovery-audit.json",
+    "audit_sha256": "1161089b31e0283ac38c82808021004cd003b6a02ff83bf879d7043c953170c5",
+    "diagnosis": "/home/otto/dev/ro-bots/run/reviews/npc-native-host-pilot-attempt1-diagnosis.json",
+    "diagnosis_sha256": "08313f84779c26a4890b62805efbc3e854690c011e95d9f71d5ec99f33fb3d4e",
+    "qualified_source_revision": "e985006171d2eb320ee512a653f4c83aea3d81b6",
+    "qualified_closure_sha256": "08a7056eab5f58d83e8f00af4f3371d56551c3033b9c377d5fd3860c3744d138",
+    "installed_configured_manifest_sha256": "1fd585266bbcf2268b2cec9e901100fad68b904a8b2a8c049c5869c56af43e12",
+    "fresh_public_binding_check": "All 9 fixed authority/helper/discovery/deployment bindings and 10 targeted qualified source files match their immutable authority hashes. No changing pilot candidate was read or frozen.",
+    "normal_recovery_mechanism": "Pinned char.cpp normal finalize and next initialization call char_set_all_offline_sql. This is source-backed normal lifecycle behavior, not a performed SQL clear, server patch or guaranteed wait. Original MyISAM state has no universal transaction, rollback or exactly-once guarantee.",
+    "historical_SQL_only": "Fixture 0 account 2000000/char 150000 was online=1; fixture 1 account 2000001/char 150001 was online=0; total chars=2, foreign online=0. This task made no fresh actual SQL observation and does not claim the current flag is cleared."
+  },
+  "owned_artifacts": {
+    "/home/otto/.hermes/cache/scratch/npc-owned-recovery/recovery.py": "c5e63c592c578cc9d75d2afcfc892eb9466e988776112a497469a059bf6a7f25",
+    "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_recovery.py": "bf85bd8ad91a9b8366a654c86f8052be51e2df892d7f2074b05a26fa3b14c214",
+    "/home/otto/.hermes/cache/scratch/npc-owned-recovery/run_checks.py": "62a91df312189ba96c927bd33e388e9ced4e578da3821b284522cb454180ef7e"
+  },
+  "completed_source_freeze": {
+    "path": "/home/otto/.hermes/cache/scratch/npc-owned-recovery/completed-source-freeze.json",
+    "sha256": "ec0132ba8794a182ab5ea35e63b251b5e650d34778cbb9087a94ae53ac104327",
+    "owned_runtime_files": 3,
+    "immutable_authority_helper_bindings": 9,
+    "targeted_qualified_source_files": 10,
+    "adopted_production_duplicate_gate_files": 99,
+    "qualification": "Completed offline code/input freeze, NOT a fresh live world or actual private-input freeze. Parent must separately bind and inspect those inputs under the existing owned-world lock.",
+    "excluded_candidate": "/home/otto/.hermes/cache/scratch/npc-native-host-pilot/probe.py"
+  },
+  "evidence": {
+    "index": "/home/otto/.hermes/cache/scratch/npc-owned-recovery/evidence-index.json",
+    "index_sha256": "fe574399b9b77b55c5f231857f3ec07a84bfe12bae8dbcdd3077df91145367f1",
+    "preserved_command_receipts": 38,
+    "preserved_unique_XML_files": 16,
+    "hashed_receipt_log_XML_artifacts": 92,
+    "selected_final_XML": "/home/otto/.hermes/cache/scratch/npc-owned-recovery/completed-tests-1791710703474698125.xml",
+    "selected_final_test_counts": {"cases": 15, "unique_ids": 15, "failures": 0, "errors": 0, "skips": 0},
+    "physical_test_ID_set": "Stored verbatim in evidence-index.json selected_final_runs.tests.test_ids. Counts apply only to that selected current run; histories are not added together.",
+    "TDD": "Reached assertion REDs for absent approval, foreign volume/player and unknown player admission, explicit owned orphan=1, real sequencing, immutable helper reuse, default CLI rejection, missing role facts and post-preflight expiry. RED/GREEN XMLs are preserved. Timeout/nonzero, changed identities, no-op, stale readback, failed readiness and failed release additions that passed on introduction are labeled characterizations, not retrospective REDs.",
+    "source_history": "/home/otto/.hermes/cache/scratch/npc-owned-recovery/before-quality-refactor",
+    "quality_history": "Initial Black/Ruff/mypy/Xenon failures, mechanical fixes, complexity refactors and the later optional-health typing failure are retained. No ignore, skip, waiver, threshold relaxation or budget reset was used.",
+    "final_gates": {"tests": 0, "black": 0, "ruff": 0, "strict_mypy": 0, "xenon_B_B_A": 0, "combined_duplicates": 0},
+    "quality_scope": "Black/Ruff/explicit strict fresh-cache mypy: the 3 owned executable Python files. Xenon: new driver plus current adopted src, B/B/A unchanged. Duplicate gate: new driver plus current src plus unchanged reviewed old lock launcher. Exact commands and logs are selected in the evidence index. No full-root acceptance is claimed.",
+    "qualified_environment": "nix develop --offline --no-write-lock-file path:./spikes/007-native-packet-ast/toolchain with existing repository .venv; nonoptimized -B Python, explicit scratch-only test collection and no new dependencies."
+  },
+  "driver_contract": {
+    "recovery_only_SQL": "Fixed SELECT-only query validates exactly the two expected non-server accounts and every char row, exact account/character pairs, names/password/PIN/group0/state0, total chars2, expected flags (1,0) or guarded no-op (0,0), no foreign online identity and guild-member char IDs contained in the owned pair. Actual private values stay inside the parent-reviewed query/input bridge. No UPDATE/INSERT/DELETE is generated.",
+    "commands": "docker stop --signal=TERM -t -1 <exact map ID>, then char, then login; docker start <same login ID>, then char, then map. Each subprocess has timeout=60 only for the CLI/direct child. No database stop, recreate, compose, force-kill, admin packets, reset or native client is available through driver sequencing.",
+    "fresh_guards": "Lock precedes fresh private/world/SQL checks and remains owned through readback/release. Every transition checks exact four IDs/images/services/project/mounts, ro-bots-world-test including MariaDB /var/lib/mysql, no foreign volume user, known owned sockets and zero known local clients/active/autotrade actors. Missing health/fault/SQL-error/lifetime/player facts deny. DB identity/lifetime and approved runtime/public fingerprints must remain unchanged. Current approval/expiry is checked again after slow preflight before lifecycle dispatch.",
+    "stop_start_readback": "Each stop requires exited/PID0, normal finish classification and SQL error absence before advancing. Each start requires running/PID>0, parser readiness and actual owned DB/interserver dependencies, not a listener alone. Char stop and restart require exact readback0; final readback0 and the unchanged approved all-offline live-preflight boundary must pass before release.",
+    "failure_custody": "Nonzero, timeout, unexpected state, input/identity drift, SQL/readiness failure or failed release halts the sequence and retains the owner/partial-state receipt. No automatic retry, extra signal, restart or lock release retry. Timeout cannot prove role cancellation: the daemon may continue graceful shutdown. Nonlocal exceptions retain an origin-attached custody receipt where diagnostic allocation succeeds.",
+    "unchanged_reuse": "reviewed_boundary hash-checks and loads the unchanged approved passive launcher FixtureLock/load_private without invoking its lazy native factory. Tests exercise real scratch-file flock exclusion/release and real unchanged private-reader 0600 permission checks with FAKE inputs only. The old baseline helper/allOffline guard remains unchanged and is not weakened to accept online1.",
+    "trust_scope": "Trusted Unix ordinary-user misconfiguration scope, not hostile same-UID mutation proof. Fake typed callbacks in tests are not fresh operational observations."
+  },
+  "operational_handoff": {
+    "status": "PARTIAL_OPERATIONAL_ASSEMBLY_NOT_AUTHORIZED",
+    "protected_boundary": "No parent-selected current-expiry recovery approval or reviewed live Effects/query/socket-player adapter was supplied. The callable driver is exercised with fake effect boundaries; default assembly intentionally stops at approval_required (or protected_adapter_required if approval is supplied without a bridge). This is not a new permission path.",
+    "future_parent_requirements": "Independently review this completed freeze and exact callbacks; bind artifact/source/helper/fixed discovery and current private/runtime hashes to the existing deployment. Reuse the exact original FixtureLock/fixed private discovery/load_private permissions. Supply actual existing engine-inventory/headless knownRoleOwn/player observations and a SELECT-only configured-ragnarok Unix-socket bridge in the exact MariaDB. Unknown data denies before effects. Execute only under separate current recovery scope/expiry and fresh held-lock checks. Native retry remains forbidden until actual unchanged allOffline readback0; recovery cannot reinstate activation or rewrite attempt1 as PASS."
+  },
+  "no_live_effects": {
+    "actual_service_lifecycle_changes": 0,
+    "actual_SQL_queries": 0,
+    "actual_SQL_writes": 0,
+    "native_sessions": 0,
+    "provider_HTTP_calls": 0,
+    "private_actual_credential_reads": 0,
+    "Docker_commands_executed": 0,
+    "Git_operations": 0,
+    "dependencies_changed": 0,
+    "candidate_probe_read_or_modified": false,
+    "existing_source_or_old_reports_modified": []
+  },
+  "issues_remaining": [
+    "Actual SQL online flags, live ownership/player exclusion and recovery success are unobserved here; historical online1 is not pretended to be offline.",
+    "The approved live-helper chain and custom recovery query/player bridge still require parent operational assembly/qualification; the offline callback success does not supply that proof.",
+    "No universal descendant cancellation, transaction/rollback, save-completion, exactly-once recovery or allocation-failure custody handoff is claimed."
+  ]
+}

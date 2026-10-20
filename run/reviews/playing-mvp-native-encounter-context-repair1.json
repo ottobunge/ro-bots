@@ -1,0 +1,144 @@
+{
+  "schema": "native-encounter-context-repair/v1",
+  "status": "OFFLINE_REPAIR_VERIFIED_FRESH_INDEPENDENT_REVIEW_PENDING",
+  "finding": "EC-HISTORY-OVERSIZE-CURSOR",
+  "repair_cycle": 1,
+  "maximum_automatic_cycles": 2,
+  "review_sha256": "d72517c03f53ed37f7041bc7b5c0f367794da8e4f1a2ddd56a7dc8bfa560c2de",
+  "authorization": "run/reviews/playing-mvp-native-encounter-context-repair1-scope.json",
+  "owned_files": [
+    "src/robots/adapters/native_encounter_context.py",
+    "tests/test_native_encounter_context.py",
+    "run/reviews/playing-mvp-native-encounter-context-repair1.json"
+  ],
+  "original_file_sha256": {
+    "src/robots/adapters/native_encounter_context.py": "ac901f04bffbf2d69650abc5faf4d9cfc492b6df31b5bba8c79fae4ffc2043d6",
+    "tests/test_native_encounter_context.py": "e0d579c28caf126e1ec982300e01994f6768a880f717c35fec5c04a9ed282bfd"
+  },
+  "file_sha256": {
+    "src/robots/adapters/native_encounter_context.py": "1bb5e71378d1f68a0bd54a2e294c85650cb1f4fcc25882648a57bfe8acdb7dc7",
+    "tests/test_native_encounter_context.py": "d26d3c09d6b95910d7f088ccce36cb186e0ebcccc5e8f4af5472db3e26b8163e"
+  },
+  "change": "Only HitHistory.record docstring and relocation of cursor assignment after successful byte-budget evaluation but before the empty-pending return.",
+  "policy": "False means not retained, not unseen. Valid newer same-epoch receipts consume the sequence even if dropped. Retained records remain unchanged on oversize drop. Foreign/older/equal receipts do not mutate history or cursor. Serialization failures still propagate without cursor mutation.",
+  "tdd": {
+    "red": "/home/otto/.hermes/cache/scratch/ec-repair1-ahs7efea/red.json",
+    "red_xml": "/home/otto/.hermes/cache/scratch/ec-repair1-ahs7efea/red.xml",
+    "red_tests": 1,
+    "red_failures": 1,
+    "red_errors": 0,
+    "red_reason": "Old implementation accepts sequence 9 after builder-produced oversized sequence 10.",
+    "green": "/home/otto/.hermes/cache/scratch/ec-repair1-ahs7efea/green.json",
+    "green_xml": "/home/otto/.hermes/cache/scratch/ec-repair1-ahs7efea/green.xml",
+    "vertical_cycle": "One failing end-to-end builder/receipt/history regression, minimal production repair, one passing regression; then four boundary/preservation regressions with no further production changes."
+  },
+  "verification": {
+    "scope": {
+      "tests": 97,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "broader": {
+      "tests": 965,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "production_only_statement_relocation_and_record_docstring": true,
+    "original_ten_test_bodies_and_bytes_unchanged": true,
+    "new_tests": 5,
+    "quality": {
+      "black": 0,
+      "ruff": 0,
+      "strict_mypy": 0
+    },
+    "strict_mypy_note": "Expected /dev/null config notice preserved in execution log; no type errors.",
+    "scope_baseline": 92,
+    "broader_existing_component_cases": 952,
+    "existing_reviewer_cases": 8,
+    "scoped_xml": "/home/otto/.hermes/cache/scratch/ec-repair1-ahs7efea/scoped.xml",
+    "broader_xml": "/home/otto/.hermes/cache/scratch/ec-repair1-ahs7efea/broader.xml",
+    "execution": "/home/otto/.hermes/cache/scratch/ec-repair1-ahs7efea/verification-execution.json",
+    "trace": [
+      {
+        "sequence": 3,
+        "retained": true,
+        "fact_utf8_bytes": 199,
+        "retained_sequences": [
+          3
+        ],
+        "history_utf8_bytes": 199
+      },
+      {
+        "sequence": 10,
+        "retained": false,
+        "fact_utf8_bytes": 3193,
+        "retained_sequences": [
+          3
+        ],
+        "history_utf8_bytes": 199
+      },
+      {
+        "sequence": 9,
+        "retained": false,
+        "fact_utf8_bytes": 199,
+        "retained_sequences": [
+          3
+        ],
+        "history_utf8_bytes": 199
+      },
+      {
+        "sequence": 10,
+        "retained": false,
+        "fact_utf8_bytes": 202,
+        "retained_sequences": [
+          3
+        ],
+        "history_utf8_bytes": 199
+      },
+      {
+        "sequence": 11,
+        "retained": true,
+        "fact_utf8_bytes": 200,
+        "retained_sequences": [
+          3,
+          11
+        ],
+        "history_utf8_bytes": 398
+      }
+    ]
+  },
+  "regressions": [
+    "3 -> 10 oversize drop -> 9 rejected -> 10 rewritten rejected -> 11 retained; prior records preserved, <=8 and <=2048 bytes",
+    "First receipt oversized with empty history consumes cursor, including Thai UTF8 provenance",
+    "Foreign oversized sequence 100 cannot poison existing cursor",
+    "Reset to epoch 2 clears history and consumed cursor, rejects epoch 1, accepts fresh sequence 1",
+    "UTF8 encoding exception preserves both prior records and cursor; existing exception policy unchanged"
+  ],
+  "unchanged": [
+    "All builder, level-validator, species-decoder and serialization implementations",
+    "Original ten test bodies and file prefix bytes",
+    "Eight-record and 2048-byte caps including all provenance",
+    "Pinned e985006 profile, compiler headers/flags/bindings",
+    "No active wiring, frame-validity side effects, native/model/SQL/network effects or changes to other domains/gates"
+  ],
+  "private_evidence": "/home/otto/.hermes/cache/scratch/ec-repair1-ahs7efea",
+  "private_artifact_hashes": "/home/otto/.hermes/cache/scratch/ec-repair1-ahs7efea/artifact-hashes.json",
+  "private_artifact_manifest_sha256": "ff2d4a7526465c8f439ecb415d53fd41d3c4e58c6b2a2f6812ef72ba2dc80d28",
+  "self_approval": false,
+  "native_effects": false,
+  "network_calls": 0,
+  "sql_queries": 0,
+  "model_calls": 0,
+  "runtime_wiring_acceptance": false,
+  "full_root_gates_run": false,
+  "all_milestones_open": true,
+  "limits": [
+    "Pure caller-provenance helper; typed inputs do not authenticate source or prove transport/instance health.",
+    "Original independent failed report and RED evidence preserved; passing repair tests do not overwrite that historical failure.",
+    "No repeated compiler/header audit or whole-root check; parent owns root verification and fresh independent review.",
+    "Runtime integration and gameplay acceptance remain unverified and unauthorized by this repair."
+  ],
+  "remaining": "Fresh independent review of repaired frozen sources, parent whole-root checks, and separately authorized future runtime integration."
+}

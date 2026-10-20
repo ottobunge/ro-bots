@@ -1,0 +1,191 @@
+{
+ "class": "Merchant",
+ "playstyle": "grinder/tank hybrid (mammonite brawler)",
+ "playstyle_axis": "grinder",
+ "summary": "Fight-first merchant: Mammonite 10 bursts (600% ATK), axe in hand, VIT pool. Trade skills come second and can be finished at job 45-50.",
+ "stat_progression": [
+  {
+   "phase": "job change ~40",
+   "base_level": 40,
+   "stat_point_budget": 305,
+   "points_spent": 268,
+   "points_left": 37,
+   "allocation": {
+    "str": 40,
+    "agi": 30,
+    "dex": 20,
+    "vit": 1,
+    "int": 1,
+    "luk": 1
+   },
+   "leftover_into": "STR (37 pts left at 305)"
+  },
+  {
+   "phase": "job 50",
+   "base_level": 50,
+   "stat_point_budget": 420,
+   "points_spent": 376,
+   "points_left": 44,
+   "allocation": {
+    "str": 50,
+    "agi": 40,
+    "dex": 20,
+    "vit": 1,
+    "int": 1,
+    "luk": 1
+   },
+   "leftover_into": "STR/AGI"
+  }
+ ],
+ "skill_order": [
+  {
+   "skill": "Mammonite",
+   "levels": 10,
+   "at": "job 1-10",
+   "prereqs": [],
+   "why": "600% ATK finisher for 1000z+5SP - strongest first-class hit"
+  },
+  {
+   "skill": "Enlarge Weight Limit",
+   "levels": "3 ->5",
+   "at": "job 11-15",
+   "prereqs": [],
+   "why": "cart prereq + carry"
+  },
+  {
+   "skill": "Discount",
+   "levels": "3 ->5",
+   "at": "job 16-18",
+   "prereqs": [
+    "Enlarge Weight Limit 3"
+   ],
+   "why": "cut resupply costs (-11..13%)"
+  },
+  {
+   "skill": "Overcharge",
+   "levels": "3 ->5",
+   "at": "job 19-21",
+   "prereqs": [
+    "Discount 3"
+   ],
+   "why": "loot +11..13%"
+  },
+  {
+   "skill": "Pushcart",
+   "levels": 10,
+   "at": "job 22-31",
+   "prereqs": [
+    "Enlarge Weight Limit 5"
+   ],
+   "why": "hauling = fewer town trips"
+  },
+  {
+   "skill": "Enlarge Weight Limit",
+   "levels": "->10",
+   "at": "job 32-36",
+   "prereqs": [],
+   "why": "+2000 weight"
+  },
+  {
+   "skill": "Discount",
+   "levels": "->10 / Overcharge ->10",
+   "at": "job 37-45+",
+   "prereqs": [],
+   "why": "full trade rates once the fighting kit is done"
+  }
+ ],
+ "skill_point_budget": {
+  "job40_points": 40,
+  "job50_points": 50,
+  "job50_add": [
+   "Discount ->10",
+   "Overcharge ->10",
+   "Crazy Uproar quest (STR+4)"
+  ]
+ },
+ "equipment_order": [
+  {
+   "order": 1,
+   "id": 1201,
+   "name": "Knife [3]",
+   "price_z": 50,
+   "why": "starter"
+  },
+  {
+   "order": 2,
+   "id": 1301,
+   "name": "Axe [3]",
+   "price_z": 500,
+   "why": "ATK 38"
+  },
+  {
+   "order": 3,
+   "id": 2303,
+   "name": "Jacket",
+   "price_z": 200,
+   "why": "DEF"
+  },
+  {
+   "order": 4,
+   "id": 2401,
+   "name": "Sandals",
+   "price_z": 400,
+   "why": "shoes"
+  },
+  {
+   "order": 5,
+   "id": 1351,
+   "name": "Battle Axe [3]",
+   "price_z": 5400,
+   "why": "ATK 80"
+  },
+  {
+   "order": 6,
+   "id": 2101,
+   "name": "Guard",
+   "price_z": 500,
+   "why": "shield when not two-handing"
+  }
+ ],
+ "grinding": [
+  {
+   "map": "prt_fild08 -> Rocker fields",
+   "phase": "Lv 15-50",
+   "mobs": [
+    {
+     "id": 1052,
+     "name": "Rocker",
+     "level": 15,
+     "hp": 185,
+     "exp": "99/74",
+     "notes": "Mammonite 5 one-shots (350% ATK)"
+    },
+    {
+     "id": 1013,
+     "name": "Wolf",
+     "level": 45,
+     "hp": 1219,
+     "exp": "342/386",
+     "notes": "Mammonite 10 (600%) bursts; watch the 1000z/cast vs loot"
+    }
+   ]
+  }
+ ],
+ "do_not_waste": [
+  "Mammonite on trash below its zeny cost (z-per-kill discipline)",
+  "Vending/Change Cart before Pushcart 3+",
+  "Item Appraisal"
+ ],
+ "renewal_differences": "Mammonite zeny/damage table is era-stable; the corpus 'Merchant' page's renewal-era extras (Buying Store/Cart Decoration) are optional server-side extras as noted in the economy build. STR 0.5% weapon ATK is renewal-only and would boost axe builds there.",
+ "sources": [
+  "iro-wiki corpus page 'Stats' (stat per-point effects, raise-cost floor((X-1)/10)+2, 48 pts at BLv1, level-up points floor(X/5)+3)",
+  "iro-wiki corpus page 'Total stat point requirement' (cumulative cost table)",
+  "rathena/src/map/status.cpp status_base_atk (pre-re status ATK: STR+(STR/10)^2+DEX/5+LUK/5 melee; DEX+(DEX/10)^2+STR/5 ranged; MATK min INT+(INT/7)^2 max INT+(INT/5)^2)",
+  "rathena/db/pre-re/skill_tree.yml (authoritative server skill prerequisites)",
+  "rathena/db/pre-re/skill_db.yml (SP costs, cast times)",
+  "iro-wiki corpus '<Class> Job Change Guide' + rathena/npc/pre-re/jobs/1-1/<class>.txt (job change)",
+  "iro-wiki corpus pages 'Mammonite', 'Enlarge Weight Limit', 'Discount', 'Overcharge', 'Pushcart'",
+  "iro-db items 1301/1351; monsters 1052/1013",
+  "corpus 'Merchant' Job Bonuses (as economy build)"
+ ]
+}

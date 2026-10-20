@@ -1,0 +1,98 @@
+{
+  "scope": {
+    "purpose": "Repair adapter package import boundary only; no actor parser redesign",
+    "modified": ["src/robots/adapters/__init__.py"],
+    "created": ["tests/test_adapter_import_boundary.py", "run/reviews/adapter-import-boundary-repair.json"],
+    "network_native_sql_inference_git_writes": false,
+    "provider_instances_created": false,
+    "standalone_constructor": "Offline dummy constructor only, no connections"
+  },
+  "root_cause": "Importing a pure adapter submodule executed eager adapters package imports, then chat._http imported httpx before the decoder loaded.",
+  "repair": {
+    "mechanism": "PEP 562 __getattr__, fixed eight-name module allowlist, per-symbol globals cache, __dir__, TYPE_CHECKING exports",
+    "preserved": ["existing __all__ names and order", "class identities from existing modules", "from imports", "star imports", "public names in dir", "original explicit-provider import failures"],
+    "unknown_attributes": "AttributeError with standard module/name message",
+    "no_fallback_or_arbitrary_input_module_import": true
+  },
+  "vertical_tdd": [
+    {
+      "slice": "Pure decoder imports in fresh isolated interpreters with HTTP/YAML/provider import denial",
+      "red_command": "nix develop --offline --no-write-lock-file -c uv run --offline --no-sync pytest tests/test_adapter_import_boundary.py -v",
+      "red": "2 failed: ModuleNotFoundError: optional import denied: robots.adapters.chat",
+      "green": "2 passed after lazy export resolver"
+    },
+    {
+      "slice": "dir advertises unresolved public classes without provider imports",
+      "red_command": "nix develop --offline --no-write-lock-file -c uv run --offline --no-sync pytest tests/test_adapter_import_boundary.py::test_dir_lists_lazy_exports_without_loading_them -v",
+      "red": "1 failed: public __all__ not a subset of dir(package)",
+      "green": "Passed after __dir__ addition, including final 12-test boundary run"
+    }
+  ],
+  "standalone_bare_nix": {
+    "original_command": "nix develop --offline --no-write-lock-file -c python3 -I /home/otto/.hermes/cache/scratch/repro-standalone-actor-import.py",
+    "red_exit_code": 1,
+    "red": "ModuleNotFoundError: No module named httpx, from adapters/__init__.py -> chat -> chat_local -> chat._http",
+    "green_exit_code": 0,
+    "green_stdout": "standalone actor client imported and constructed without connections",
+    "outside_repository_cwd_command": "nix develop --offline --no-write-lock-file /home/otto/dev/ro-bots -c python3 -I /home/otto/.hermes/cache/scratch/repro-standalone-actor-import.py",
+    "outside_repository_cwd": "/home/otto",
+    "outside_repository_cwd_exit_code": 0
+  },
+  "tests": {
+    "runner_prefix": "nix develop --offline --no-write-lock-file -c uv run --offline --no-sync",
+    "selected_command": "pytest tests/test_adapter_import_boundary.py tests/test_native_actor_presentation.py tests/test_native_progression.py tests/test_client_actor_presentation.py tests/test_client_pincode.py tests/test_client_protocol.py tests/test_temporary_handshake_cleanup.py tests/test_core_interruption_cleanup.py tests/test_protocol_rereview_repairs.py tests/test_host_native_transport.py tests/test_host_native_vitals.py tests/test_host_self_chat.py --junitxml=/home/otto/.hermes/cache/scratch/adapter-boundary-tests.xml --cov=robots.adapters --cov-report=json:/home/otto/.hermes/cache/scratch/adapter-boundary-coverage.json --cov-report=",
+    "final_exit_code": 0,
+    "passed": 1187,
+    "unique_junit_cases": 1187,
+    "nested_junit_subtest_cases": 0,
+    "by_module": {
+      "test_adapter_import_boundary": 12,
+      "test_client_actor_presentation": 71,
+      "test_client_pincode": 41,
+      "test_client_protocol": 42,
+      "test_core_interruption_cleanup": 25,
+      "test_host_native_transport": 31,
+      "test_host_native_vitals": 41,
+      "test_host_self_chat": 12,
+      "test_native_actor_presentation": 813,
+      "test_native_progression": 47,
+      "test_protocol_rereview_repairs": 31,
+      "test_temporary_handshake_cleanup": 21
+    },
+    "boundary_only_final": "12 passed in 0.72s",
+    "boundary_only_package_coverage": {"covered_lines": 13, "statements": 13, "percent": 100.0, "missing_lines": 0, "default_TYPE_CHECKING_excluded_lines": 4},
+    "coverage_scope_warning": "Selected adapter-wide coverage is not a whole-project coverage gate. Package init and both pure decoders are 100%; full configured suite belongs to coordinator."
+  },
+  "whole_source_static_gates": {
+    "runner_prefix": "uv run --offline --no-sync inside pinned nix develop --offline --no-write-lock-file",
+    "black --check src tests": {"exit_code": 0, "result": "146 files would be left unchanged"},
+    "ruff check src tests": {"exit_code": 0, "result": "All checks passed"},
+    "mypy": {"exit_code": 0, "result": "Success: no issues found in 146 source files"},
+    "bandit -q -c pyproject.toml -r src": {"exit_code": 0, "result": "Existing nosec warnings in rathena_runtime.py only"},
+    "vulture src vulture_whitelist.py": {"exit_code": 0},
+    "xenon src --max-absolute B --max-modules B --max-average A": {"exit_code": 0},
+    "pylint --disable=all --enable=duplicate-code --ignore-paths=tests src": {"exit_code": 0, "result": "10.00/10"},
+    "unchanged_gate_settings": true
+  },
+  "sha256": {
+    "package_init_before": "0682851ebbbbcccfb31e82a108d69a92193252f3eda2498f893dc078f3a68b1d",
+    "package_init_after": "9b1e7275a89b55489704b9976dd1cfa684a4f9ea02f70393fb79bebbb885761e",
+    "boundary_tests": "26b89f94c4df5f93e20a1c1a745f60fb1d50ade7827b7e5ec5389b1b09edda1c",
+    "client_before_parent_provided_and_after_verified": "6438326c4b77ee9595c24b837616bbf68e7ff95670dbef659e447f8388b3f46d",
+    "final_protected_snapshots_not_modified_by_this_worker": {
+      "src/robots/adapters/native_actor_presentation.py": "81140e814a682ea44742880dd9a3a7a19e165eb2098debfa657d24615fe5b730",
+      "src/robots/adapters/native_progression.py": "ad74be96c5d843cfeabd21ef0bdc0086bd0d9d76546ab3a1954a0f276cbff3fe",
+      "pyproject.toml": "e8ae0849a413bc3d705f081f609b92dae702bbd3e491b2c3aeb5d8665c458fba",
+      "uv.lock": "2d7b4c187078488d7625e4fd4fa982745cab8d6a65b2ff3e382ffa286f1df245",
+      "flake.nix": "185e4a4babf62a40484c347f59653bd11b79ce847316a3a90349c8545d38a359",
+      "flake.lock": "c9c0bac69415b99a29ef3fe149b6f04ef54d291989bdf7218cf819ed52edf2a0"
+    }
+  },
+  "issues_and_acceptance": {
+    "intermediate_test_lint": "Local test imports initially violated Ruff; moved imports to test module scope; final whole-source Ruff green",
+    "full_project_test_and_coverage_gate": "Not run by narrow repair worker; coordinator owns",
+    "dependency_audit": "Not run: no network/dependency changes authorized",
+    "milestones": "All six remain open; no live actor/current-kind/position/cognitive/native acceptance claimed",
+    "preexisting_dirty_checkout": "Preserved unrelated changes"
+  }
+}

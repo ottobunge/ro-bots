@@ -1,0 +1,136 @@
+{
+  "passed": false,
+  "security_concerns": [],
+  "logic_errors": [
+    {
+      "id": "PLANNER-CLOCK-001",
+      "file": "src/robots/app/llm_planner.py",
+      "lines": [
+        254,
+        261
+      ],
+      "summary": "Planner adds an absolute +/-1e12 clock restriction not present in the approved finite-clock core or this scope.",
+      "reproduction": "At now=1000000000001.0 actual PlanLifecycle.request succeeds and decoded ProposedPlan.denial(caps, now) is None, but LlmPlanner.propose denies before any model call.",
+      "evidence": "test_core_valid_large_finite_clock_is_not_newly_restricted in tests.xml"
+    }
+  ],
+  "quality_blockers": [],
+  "suggestions": [
+    {
+      "id": "PLANNER-SCHEMA-001",
+      "file": "src/robots/app/llm_planner.py",
+      "lines": [
+        189,
+        197,
+        283,
+        286
+      ],
+      "summary": "Prompt requests actual enum strings but submit_plan schema never publishes valid success/progress/fallback/replan/safety strings. The schema-vocabulary probe fails. Treat as nonblocking provider usability risk: valid values are schema-permitted, but actual autonomous provider reliability remains unverified and no real inference was authorized."
+    }
+  ],
+  "summary": "Offline effect-spy boundaries and existing vertical pass; newly introduced finite-clock contract narrowing blocks approval.",
+  "candidate_sha256": "ed4712bc806be0f65e0c88bc92971cd3ed052c42a2f679b3220852bd519f97db",
+  "source_hashes": {
+    "src/robots/ports/planning_model.py": "aee8330ccb8d92a2c6093923cb0c3a4e0d82828a20bb8ceaca50cd0587dd885d",
+    "src/robots/app/llm_planner.py": "bb339de79d467ddebecc0636ac3883c2c9a8713a2af18bd988d73bb082648f1b",
+    "src/robots/adapters/planning_llm.py": "1c26c7401618fc8ce2228ca31763e2d44c3336253e339a0bfea1751b65b0889e",
+    "tests/test_llm_planner.py": "19242acef639aef1fa2f8288e96014271592a97fa84fb39ec973a029e4313ccf"
+  },
+  "freeze": {
+    "input_count": 294,
+    "before_mismatches": [],
+    "after_mismatches": [],
+    "sha256": "589ecd3aec6b47935d3765f3afecdbe7a6416c7cd8a646e4bb66a714ad69215d"
+  },
+  "candidate_artifact_hash_mismatches": [],
+  "tests": {
+    "cases": 43,
+    "unique_identities": 43,
+    "failures": 2,
+    "errors": 0,
+    "skips": 0
+  },
+  "existing_cases": 25,
+  "fresh_cases": 18,
+  "test_classification": {
+    "passed": 41,
+    "blocking_counterexamples": 1,
+    "nonblocking_schema_contract_probe": 1
+  },
+  "gates": {
+    "black": {
+      "command": [
+        ".venv/bin/black",
+        "--check",
+        "src/robots/ports/planning_model.py",
+        "src/robots/app/llm_planner.py",
+        "src/robots/adapters/planning_llm.py",
+        "tests/test_llm_planner.py"
+      ],
+      "exit_code": 0,
+      "output": "All done! \u2728 \ud83c\udf70 \u2728\n4 files would be left unchanged.\n"
+    },
+    "ruff": {
+      "command": [
+        ".venv/bin/ruff",
+        "check",
+        "--no-cache",
+        "src/robots/ports/planning_model.py",
+        "src/robots/app/llm_planner.py",
+        "src/robots/adapters/planning_llm.py",
+        "tests/test_llm_planner.py"
+      ],
+      "exit_code": 0,
+      "output": "All checks passed!\n"
+    },
+    "mypy": {
+      "command": [
+        ".venv/bin/mypy",
+        "--cache-dir",
+        "/home/otto/.hermes/cache/scratch/llm-planner-tool-loop-independent-review/mypy-cache",
+        "src/robots/ports/planning_model.py",
+        "src/robots/app/llm_planner.py",
+        "src/robots/adapters/planning_llm.py",
+        "tests/test_llm_planner.py"
+      ],
+      "exit_code": 0,
+      "output": "Success: no issues found in 4 source files\n"
+    },
+    "vulture": {
+      "command": [
+        ".venv/bin/vulture"
+      ],
+      "exit_code": 0,
+      "output": ""
+    }
+  },
+  "vulture_scope": "Actual pyproject.toml [tool.vulture] paths=[src,vulture_whitelist.py], min_confidence=85; no-argument invocation uses configured paths, not an empty scan.",
+  "verified": [
+    "Actual approved reader to correlated model-selected tool response to typed ProposedPlan to actual lifecycle admission (existing production vertical).",
+    "Actual MockTransport HTTP request assembly with template + tools + messages and exact rendered prompt tokenization; exact-fit admission and denial before generation for unknown/bool capacity, malformed tokens, generation reservation overflow and caller ceiling.",
+    "Duplicate JSON, NaN numeric argument, Unicode surrogate and unknown function keys deny before private handler.",
+    "Post-model identity and epoch drift deny before private read.",
+    "Foreign plan identity, unsupported phase and implicit unknown prerequisites deny without admission or native dispatch.",
+    "Deadline-expired and epoch-stale HTTP response cannot produce an admitted plan."
+  ],
+  "no_repairs": true,
+  "real_inference_calls": 0,
+  "network_calls": 0,
+  "native_or_sql_or_docker_effects": 0,
+  "scope_limits": [
+    "Parent owns full-root gate/security/complexity/duplicate audit and approval.",
+    "Prior approved Reader/core internals are frozen dependencies, not re-reviewed.",
+    "Negative follow-up and independent probes are not historical tests-first RED proof.",
+    "Scheduler, brain, CLI, persistence, native execution and actual provider activation remain separate; all 6 milestones / 11 criteria stay open."
+  ],
+  "artifacts": {
+    "/home/otto/.hermes/cache/scratch/llm-planner-tool-loop-independent-review/vulture.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/llm-planner-tool-loop-independent-review/case-registry.json": "b04d1ddfc2b86942447e38ae115aafccf142e22292319853a22769b0ba4c3000",
+    "/home/otto/.hermes/cache/scratch/llm-planner-tool-loop-independent-review/test_independent.py": "390106e426a2d321f09c69b1528c36e3fbd6b75cabfb761ed12052dae169f1ef",
+    "/home/otto/.hermes/cache/scratch/llm-planner-tool-loop-independent-review/tests.xml": "0d913a222dcb1b59eb2de95c35229aac430f465368d03b2c429d75866e759d5f",
+    "/home/otto/.hermes/cache/scratch/llm-planner-tool-loop-independent-review/mypy.log": "71144743c83babea384888a735db0c4daba3d4d7b7942b6839984bd5c21b52bb",
+    "/home/otto/.hermes/cache/scratch/llm-planner-tool-loop-independent-review/ruff.log": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+    "/home/otto/.hermes/cache/scratch/llm-planner-tool-loop-independent-review/verify.py": "f1bbaa94862a6c30023355eb347546b7c30c177a2792c1706c8fa5dc4e5e0fd2",
+    "/home/otto/.hermes/cache/scratch/llm-planner-tool-loop-independent-review/black.log": "26a5fd9505f2b5608a20c4fed4b4c4795e0783d03b72ade02a6af34dae8ad086"
+  }
+}

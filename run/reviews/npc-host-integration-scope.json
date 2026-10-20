@@ -1,0 +1,38 @@
+{
+  "status": "ACTUAL_HOST_RECEIVED_NPC_TO_PLANNING_WORKER_CAPABILITY_RED_REACHED",
+  "baseline": {
+    "path": "/home/otto/.hermes/cache/scratch/npc-host-integration-frontier/baseline.json",
+    "sha256": "67e957bebdf4473b1a899b858e61a51f9b932cdf6570dd6d658320b012d73b10",
+    "bindings": 415,
+    "distinct_paths": 413
+  },
+  "owned_sources": [
+    "src/robots/app/planning_brain.py",
+    "src/robots/app/agent_runtime.py",
+    "src/robots/app/execution_decisions.py",
+    "src/robots/app/playing_runtime.py"
+  ],
+  "owned_new_module": "src/robots/app/npc_planning_execution.py",
+  "owned_new_test": "tests/test_llm_planning_npc_host.py",
+  "owned_new_report": "run/reviews/npc-host-integration.json",
+  "finite_goal": "One already-open received Next/Menu interaction, one LLM-authored typed plan, current admission, event-only CLEF control, one bound response and matching received UI progress through actual AgentHost",
+  "acceptance": [
+    "Original actual host capability tracer GREEN, not direct helper only",
+    "Actual LlmPlanner investigation/structured NEXT and CHOOSE proposals captured and admitted with fresh host observations",
+    "CLEF continue/hold/replan controls unchanged intent; no per-tick model or menu authorship",
+    "Bound response once and local dispatch outcome distinct from server acceptance; no progress merely from emitting action",
+    "Matching newer same-open UI progress, no repeat same UI/unrelated events as success; unsupported input or timeout safe bounded replan",
+    "Wait phase survives expected local waiting state without requiring pre-send ready observation; no redispatch",
+    "Invalidate all previous NPC intent/phase/queued decision state on client/wire/session binding change including repeated metadata",
+    "Default legacy and IDLE/REST plus keepalive/capture/worker cleanup behavior preserved"
+  ],
+  "additional_client_scope": "Add local bound-dispatch feedback only if needed by actual host to distinguish source-denied/no request from issued request; preserve perform_native return/signatures and all previous guards",
+  "not_authorized": [
+    "NPC opening/catalogue lookup/travel/quest engine",
+    "CLOSE/name/free-text/spending intent",
+    "Domain/schema/protocol/cache/context budgets/dependency changes",
+    "Native sessions, real inference, world/DB effects or provider purchases"
+  ],
+  "completion_bound": "A completed candidate must pass received context -> admitted plan -> CLEF -> actual bound dispatch -> received progress. Partial capability-only scaffolding is not activation or completion.",
+  "full_goals": "OPEN"
+}

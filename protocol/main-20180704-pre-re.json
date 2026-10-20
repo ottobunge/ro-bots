@@ -1,0 +1,75 @@
+{
+  "schema": "reviewed-static-protocol/v1",
+  "profile": {
+    "role": "map",
+    "packetver": 20180704,
+    "client_family": "MAIN",
+    "ruleset": "pre-re",
+    "obfuscation": "ABSENT"
+  },
+  "provenance": {
+    "revision": "e985006171d2eb320ee512a653f4c83aea3d81b6",
+    "package": "/nix/store/0w1nfsmj8gaipcidhgx2nkg4axqxcbbr-rathena-playable-callback-qualified-20180704-e985006171d2-callback-qualified",
+    "package_nar_hash": "sha256-hIVo2RvlabG8Jw362W7PxdXkQx2CDYihvHKwhZjP0Es=",
+    "variant": "callback-qualified",
+    "profiles_sha256": "ee2af351afee975ad4145d0e38412dfac0779cd123435f318f8c876349bc0148",
+    "configured_source_sha256": "1fd585266bbcf2268b2cec9e901100fad68b904a8b2a8c049c5869c56af43e12",
+    "qualified_clif_sha256": "ace16f15be3b60f730522d620b73a68a9f2cc384016aadce9c985888aea9a1ac",
+    "map_cppflags_sha256": "7986f2fdeb11e55ee707ac27eb4701a64b90361ce1636bb728025fb92a99291d",
+    "map_compile_recipe_sha256": "8488711230e38fb3a48a9d19dca18b50b3a93780fd9287775768723af9358878"
+  },
+  "packets": [
+    {
+      "id": 192,
+      "direction": "S->C",
+      "name": "ZC_EMOTION",
+      "declaration_scope": "map",
+      "cpp_record": "PACKET_ZC_EMOTION",
+      "cpp_header": "HEADER_ZC_EMOTION",
+      "framing": "fixed",
+      "length": 7,
+      "alignment": 1,
+      "byte_order": "little-endian",
+      "fields": [
+        {"name": "packetType", "wire_type": "uint16", "cpp_type": "int16", "offset": 0, "width": 2},
+        {"name": "GID", "wire_type": "uint32", "cpp_type": "int32", "offset": 2, "width": 4},
+        {"name": "type", "wire_type": "uint8", "cpp_type": "uint8", "offset": 6, "width": 1}
+      ],
+      "source": {
+        "declaration": "src/map/packets.hpp",
+        "declaration_sha256": "b4959224a48e1febb811d7c1474f2c1b703d324ae4db7e3a1053a85b80da57bc",
+        "sender_artifact": "qualified-clif.cpp",
+        "sender_function": "clif_emotion",
+        "sender_lines": [9412, 9420],
+        "sender_body_sha256": "a1261d1ac07891c69891c6a7db28033c03069ee08f3aab1e8d4bb91d4c105bb6",
+        "sender_body_hash_span": "Exact function text from void through closing brace; excludes final line-feed.",
+        "object": "p",
+        "header_assignment": "p.packetType = HEADER_ZC_EMOTION;",
+        "gid_assignment": "p.GID = bl.id;",
+        "type_assignment": "p.type = static_cast<decltype(p.type)>( type );",
+        "send": "clif_send( &p, sizeof(p), &bl, AREA );"
+      },
+      "review": "Manual source audit plus full unchanged-header compiler measurements; no invocation-local AST identity transferred."
+    }
+  ],
+  "normal_operation_assumptions": [
+    "Healthy allocator/FIFO metadata, valid capacity and supported normal allocation; resource exhaustion is not proved safe here.",
+    "Valid block/session/recipient objects and packet lifetime during the synchronous send/copy path; no exceptional callback destruction or concurrent mutation.",
+    "The separately reviewed four callback pointer qualification edits are required in the selected package; this specification does not deploy them.",
+    "Layout/source audit is not queue admission, network delivery, receipt, gameplay or universal C++ memory-safety proof."
+  ],
+  "coverage": {
+    "reviewed_rows": 1,
+    "legacy_mapping_policy": "Preserve all 888 existing mappings without new blanket source approval; only add 0x00C0=7.",
+    "legacy_macros": "NATIVE_MACROS remains historical and unchanged, not this manifest's profile authority.",
+    "rejected_candidates": "No old generator rows or 477 conventional-header candidates adopted; exhausted repair budgets remain exhausted.",
+    "runtime_binding": "Review artifact plus regression checks only; no general manifest loader or auto-application API added."
+  },
+  "maintenance": {
+    "trigger": "Deliberately changed source pin/profile or a newly observed unknown packet.",
+    "recipe": "Proposed manual/AI-assisted offline source audit, immutable provenance refresh, compiler layout/header/profile checks, RED/GREEN parser tests and independent review.",
+    "implemented_job": false,
+    "automatic_apply_or_deploy": false,
+    "stale_evidence": "Changed hashes/profile/header invalidate this reviewed specification; fail checks and re-review, never infer new sizes or skip unknown frames."
+  }
+}

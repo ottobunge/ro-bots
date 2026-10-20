@@ -1,0 +1,359 @@
+--- brain.py.original
++++ brain.py
+@@ -4,6 +4,7 @@
+ — never per tick. Between events, the active behavior script runs mechanically.
+ """
+ 
++import math
+ from dataclasses import dataclass, field
+ from typing import TYPE_CHECKING, Any, final
+ 
+@@ -72,12 +73,25 @@
+         policy: EscalationPolicy | None = None,
+         mob_db: MobDatabase | None = None,
+         memory: Memory | None = None,
++        *,
++        recovery_hp_ratio: float = 0.75,
+     ) -> None:
++        if (
++            type(recovery_hp_ratio) not in (int, float)
++            or not math.isfinite(recovery_hp_ratio)
++            or not 0 < recovery_hp_ratio <= 1
++        ):
++            message = "recovery_hp_ratio must be finite and in (0, 1]"
++            raise ValueError(message)
++        self._recovery_hp_ratio = recovery_hp_ratio
+         self._model = decision_model
+         self._chat = chat
+         self.memory = memory
+         self.policy = policy or EscalationPolicy()
+         self._script: BehaviorScript | None = None
++        self._recovering = False
++        self._escape: tuple[int, int] | None = None
++        self._recovery_epoch: int | None = None
+         self._plan: FarmPlan | None = None
+         self._plan_seq = 0
+         self._mob_db: MobDatabase | None = mob_db
+@@ -95,6 +109,23 @@
+     @property
+     def current_plan(self) -> FarmPlan | None:
+         return self._plan
++
++    @property
++    def is_recovering(self) -> bool:
++        """Pure host guard: empty recovery outcomes must not become patrol/loot."""
++        return self._recovering or self._escape is not None
++
++    def recovery_health_ready(self, state: BotState) -> bool:
++        if self._escape is not None and (state.x, state.y) != self._escape:
++            return False
++        return self.is_recovering and (
++            not self._recovering or state.hp_ratio >= self._recovery_hp_ratio
++        )
++
++    @property
++    def required_recovery_hp_ratio(self) -> float:
++        """Engineering hysteresis policy; pure escape needs only motion/pose."""
++        return self._recovery_hp_ratio if self._recovering else 0.0
+ 
+     def should_interrupt(self, event: MonsterSpotted) -> bool:
+         """FarmPlan customizes the interrupt system: while farming, only
+@@ -112,10 +143,23 @@
+ 
+     def start(self, state: BotState) -> TickResult:
+         """Initial plan: one heartbeat review to pick a goal and a script."""
++        self._recovering = False
++        self._escape = None
++        self._recovery_epoch = state.native_epoch
+         return self.handle_event(state, Heartbeat(seq=0))
++
++    def sync_context(self, state: BotState) -> None:
++        """A new authenticated native session cannot inherit an old interrupt."""
++        if state.native_epoch != self._recovery_epoch:
++            self._recovering = False
++            self._escape = None
++            self._script = None
++            self._plan = None
++            self._recovery_epoch = state.native_epoch
+ 
+     def handle_event(self, state: BotState, event: WorldEvent) -> TickResult:
+         """React to one world event — the only path that reaches Clef."""
++        self.sync_context(state)
+         response = self._model.decide(self._decision_request(state, event))
+         self.decision_count += 1
+         answers: dict[str, Any] = response["answers"]
+@@ -138,6 +182,8 @@
+             case PlanExpired():
+                 notes.append("farm plan ended; goal review on next heartbeat")
+                 self._plan = None
++                if isinstance(self._script, FarmScript):
++                    self._script = None
+             case Heartbeat():
+                 actions.extend(self._run_review(state, answers, notes))
+             case _:
+@@ -168,6 +214,8 @@
+     ) -> list[GameAction]:
+         """Heartbeat: goal review, farm-plan authoring, optional announcement."""
+         goal = self._review_goal(state, answers, notes)
++        if self.is_recovering and self._choice(answers, "change_goal", "") == "keep":
++            return []
+         plan = self._setup_farm_plan(state, answers, notes) if self._wants_farming(goal) else None
+         self._plan = plan
+         self._script = FarmScript(plan) if plan is not None else script_for(goal, state)
+@@ -202,14 +250,35 @@
+                 },
+             }
+ 
+-    def step_script(self, state: BotState) -> ScriptOutcome:
++    def step_script(self, state: BotState, *, can_resume: bool = True) -> ScriptOutcome:
+         """One mechanical script step (no model calls); clears script when done."""
++        recovery = self._step_recovery(state, can_resume=can_resume)
++        if recovery is not None:
++            return recovery
+         if self._script is None:
+             self._script = script_for(state.goal, state)
+         outcome: ScriptOutcome = self._script.step(state)
++        if any(isinstance(action, Rest) for action in outcome.actions):
++            self._recovering = True
+         if outcome.status in (ScriptStatus.DONE, ScriptStatus.FAILED):
+             self._script = None
+         return outcome
++
++    def _step_recovery(self, state: BotState, *, can_resume: bool) -> ScriptOutcome | None:
++        """Finite interrupt only; the combat plan remains untouched underneath."""
++        if self._escape is not None:
++            if (state.x, state.y) != self._escape:
++                return ScriptOutcome((MoveTo(*self._escape),), ScriptStatus.ACTIVE)
++            if not can_resume:
++                return ScriptOutcome((), ScriptStatus.ACTIVE)
++            self._escape = None
++        if self._recovering:
++            if state.hp_ratio < self._recovery_hp_ratio:
++                return ScriptOutcome((Rest(),), ScriptStatus.ACTIVE)
++            if not can_resume:
++                return ScriptOutcome((), ScriptStatus.ACTIVE)
++            self._recovering = False
++        return None
+ 
+     # -- event reactions ----------------------------------------------------
+ 
+@@ -218,12 +287,14 @@
+     ) -> list[GameAction]:
+         match self._choice(answers, "react_monster", "ignore"):
+             case "attack":
++                if self.is_recovering:
++                    return []
+                 self._script = GrindScript()
+                 notes.append("script->grind")
+                 return []
+             case "flee":
+                 notes.append("fleeing")
+-                return [MoveTo(x=state.x, y=state.y + 4)]
++                return self._flee(state)
+             case _:
+                 notes.append("monster ignored")
+                 return []
+@@ -231,11 +302,17 @@
+     def _react_damage(self, state: BotState, answers: dict[str, Any]) -> list[GameAction]:
+         match self._choice(answers, "react_damage", "keep"):
+             case "rest":
+-                return [Rest()]
++                self._recovering = True
++                return [] if self._escape is not None else [Rest()]
+             case "flee":
+-                return [MoveTo(x=state.x, y=state.y + 4)]
++                return self._flee(state)
+             case _:
+                 return []
++
++    def _flee(self, state: BotState) -> list[GameAction]:
++        """Explicit choice only; received positions drive the suspended escape."""
++        self._escape = (state.x, state.y + 4)
++        return [MoveTo(*self._escape)]
+ 
+     def _react_to_chat(
+         self, state: BotState, answers: dict[str, Any], event: ChatHeard
+--- agent_runtime.py.original
++++ agent_runtime.py
+@@ -578,13 +578,32 @@
+         if timers is not None:
+             for fired in timers.fire_due(self._tick_clock.monotonic()):
+                 self.deliver_event(state, self._as_heartbeat(fired))
+-        outcome = self.brain.step_script(state)
++        self._advance_script(state)
++        self._publish(state)
++
++    def _advance_script(self, state: BotState) -> None:
++        brain = self.brain
++        if brain is None:
++            return
++        context = getattr(brain, "sync_context", None)
++        if context is not None:
++            context(state)
++        if not getattr(brain, "is_recovering", False):
++            outcome = brain.step_script(state)
++            self.execute_actions(self._script_actions(state, outcome.actions))
++            return
++        ready = getattr(self.client, "recovery_ready", None)
++        can_resume = True
++        if ready is not None and brain.recovery_health_ready(state):
++            can_resume = bool(ready(hp_ratio=brain.required_recovery_hp_ratio))
++        outcome = brain.step_script(state, can_resume=can_resume)
+         self.execute_actions(self._script_actions(state, outcome.actions))
+-        self._publish(state)
+ 
+     def _script_actions(
+         self, state: BotState, actions: tuple[GameAction, ...]
+     ) -> tuple[GameAction, ...]:
++        if getattr(self.brain, "is_recovering", False):
++            return actions
+         mechanical = getattr(self.client, "mechanical_actions", None)
+         return (
+             cast(tuple[GameAction, ...], mechanical(state, actions))
+--- playing_runtime.py.original
++++ playing_runtime.py
+@@ -124,15 +124,27 @@
+         self._patrol: _FieldPatrol | None = None
+         self._keepalive_at: float | None = None
+         self._keepalive_failed = False
++        self._rest_at: float | None = None
++        self._rest_seq: int | None = None
++        self._standing_seq = 0
++        self._closed = False
+ 
+     def connect(self, *args: Any, **kwargs: Any) -> Any:
+         self._patrol = None
+         self._keepalive_at = None
+         result = self.wire.connect(*args, **kwargs)
++        self._closed = False
++        self._epoch = None
+         self._keepalive_failed = False
+         return result
+ 
+     def close(self, *args: Any, **kwargs: Any) -> Any:
++        self._closed = True
++        self._rest_at = None
++        self._rest_seq = None
++        self._stand_pending = None
++        self._pending = None
++        self._epoch = None
+         self._patrol = None
+         self._keepalive_at = None
+         result = self.wire.close(*args, **kwargs)
+@@ -143,6 +155,9 @@
+         return getattr(self.wire, name)
+ 
+     def _health(self) -> None:
++        if self._closed:
++            message = "native playing session closed"
++            raise NativeTelemetryUnavailable(message)
+         if self._keepalive_failed:
+             message = "native keepalive send failed; transport release required"
+             raise NativeTelemetryUnavailable(message)
+@@ -227,8 +242,11 @@
+         state = self.build_native_state(Goal.GRIND)
+         match action:
+             case Attack(target_id=target):
+-                if state.alive is True and any(
+-                    actor.id == target for actor in state.nearby_monsters
++                if (
++                    state.alive is True
++                    and any(actor.id == target for actor in state.nearby_monsters)
++                    and self._rest_seq is None
++                    and self._attack_ready()
+                 ):
+                     self.wire._send(attack(target))
+             case Loot():
+@@ -246,7 +264,7 @@
+             case Say(text=text):
+                 self.wire.say(text)
+             case Rest():
+-                self.wire.sit()
++                self._rest(state)
+             case AcceptInvite():
+                 if self.wire.party_invite_pid:
+                     self.wire.party_reply(self.wire.party_invite_pid, True)
+@@ -270,6 +288,44 @@
+                 self.wire._send(pickup(item.floor_item_id))
+             else:
+                 self._move(state, (item.position.x, item.position.y))
++
++    def _rest(self, state: BotState) -> None:
++        """pc_setsit stops walk/attack; cancel intent, never invent arrival."""
++        if state.alive is not True:
++            return
++        if self._rest_seq is None:
++            self._rest_seq = self._metadata_cursor
++        now = self._now()
++        if self._standing is False or (self._rest_at is not None and now - self._rest_at < 1):
++            return
++        self.wire.sit()
++        self._rest_at = now
++        self._rest_seq = self._metadata_cursor
++        self._pending = None
++        self._patrol = None
++
++    def recovery_ready(self, *, hp_ratio: float = 0.75) -> bool:
++        """Recheck received health before requesting standing or releasing intent."""
++        state = self.build_native_state(Goal.GRIND)
++        if (
++            state.alive is not True
++            or state.hp_ratio < hp_ratio
++            or not self._attack_ready(after_seq=self._rest_seq)
++        ):
++            return False
++        self._rest_at = None
++        self._rest_seq = None
++        return True
++
++    def _attack_ready(self, *, after_seq: int | None = None) -> bool:
++        tracker = self._tracker
++        if (
++            tracker is None
++            or tracker.view.position is None
++            or not self._require_standing(after_seq=after_seq)
++        ):
++            return False
++        return not self._await_pending(tracker.view, tracker.view.position)
+ 
+     def _move(self, state: BotState, target: tuple[int, int]) -> None:
+         tracker = self._tracker
+@@ -473,9 +529,9 @@
+             and (pos.x, pos.y) == patrol.target
+         )
+ 
+-    def _require_standing(self) -> bool:
++    def _require_standing(self, *, after_seq: int | None = None) -> bool:
+         """Only received SELF pose, not HP or send intent, authorizes recovery."""
+-        if self._standing is True:
++        if self._standing is True and (after_seq is None or self._standing_seq > after_seq):
+             return True
+         now = self._now()
+         pending = self._stand_pending
+@@ -507,6 +563,9 @@
+         self.perform_native(Say(text))
+ 
+     def _reset_epoch(self, epoch: int, base: int) -> None:
++        self._rest_at = None
++        self._rest_seq = None
++        self._standing_seq = base
+         self._keepalive_at = None
+         self._keepalive_failed = False
+         self._patrol = None
+@@ -567,13 +626,14 @@
+         ):
+             return
+         if raw[29] == 2:
+-            if self._standing is not False:
+-                self._stand_pending = None
++            # pc_setsit stops walking. Forget intent, not received coordinates.
++            self._pending = None
+             self._standing = False
+         elif raw[29] == 3:
+             pending = self._stand_pending
+             if pending is None or seq > pending[0]:
+                 self._standing = True
++                self._standing_seq = seq
+                 self._stand_pending = None
+ 
+     def _progression(self) -> SessionProgression:

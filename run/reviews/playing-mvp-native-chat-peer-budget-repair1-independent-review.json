@@ -1,0 +1,310 @@
+{
+  "passed": true,
+  "status": "PASS_OFFLINE_INDEPENDENT_REVIEW",
+  "finding": "CHAT-OUTGOING-NAME-BUDGET",
+  "repair_cycle": 1,
+  "security_concerns": [],
+  "logic_errors": [],
+  "quality_blockers": [],
+  "summary": "Sender-bound UTF-8 clipping satisfies incoming and sender-prefixed outgoing limits on the pinned legacy Say path; exact native peer receipt remains unverified.",
+  "scope": {
+    "owned_repository_output": "run/reviews/playing-mvp-native-chat-peer-budget-repair1-independent-review.json",
+    "private_evidence_directory": "/home/otto/.hermes/cache/scratch/chat-peer-repair1-independent-review",
+    "no_fixes": true,
+    "source_or_test_edits": false,
+    "root_checks": "Parent responsibility; not repeated by independent reviewer."
+  },
+  "authority": {
+    "revision": "e985006171d2eb320ee512a653f4c83aea3d81b6",
+    "profile": "MAIN20180704 pre-re, obfuscation absent",
+    "source_root": "/home/otto/dev/ro-bots/rathena",
+    "upstream_clif_sha256": "0b1db098158c240b090c6edb8417978ba495957c8a2df4cd9a0ab4cb39884ac5",
+    "configured_source_root": "/home/otto/.hermes/cache/scratch/callback-package-hut2_cuz/configured-variant",
+    "configured_source_sha256": {
+      "src/map/clif.cpp": "ace16f15be3b60f730522d620b73a68a9f2cc384016aadce9c985888aea9a1ac",
+      "src/map/map.hpp": "1cb428d1145ec9c4045b2ae58c163be24bf1bd374fc8eea07eaf0c266621fe2b",
+      "src/map/clif_packetdb.hpp": "51c8a9ebd591e0dd4f444f829253a14d449615425405cb8a95f28a6dea460e66",
+      "src/map/clif_shuffle.hpp": "befba011ca4b2d1186c16fba325a7240a4ff5375e252d2fb4cc62d503c66d2a0"
+    },
+    "upstream_configured_chat_ranges_equal": true,
+    "ranges": [
+      "clif.cpp:6756-6774",
+      "clif.cpp:10454-10553",
+      "clif.cpp:11516-11535",
+      "strlib.cpp:250-267"
+    ],
+    "immutable_source_profile_binding_fresh_test_passed": true,
+    "no_new_compiler_flags_or_oracles": true,
+    "budget": "min(253,255-len((actual_selected_wire_name+\" : \").encode(\"utf-8\")))",
+    "incoming_derivation": "text bytes + terminal wire NUL + modern increment <=255",
+    "outgoing_derivation": "Full selected name, separator and text plus NUL <=256; safestrncpy reserves last byte for NUL."
+  },
+  "fresh_verification": {
+    "exit_code": 0,
+    "tests": 242,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "physical_xml_counts": {
+      "tests.test_native_chat_text": {
+        "tests": 35,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "tests.test_playing_runtime": {
+        "tests": 91,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "tests.test_native_rest_interrupt": {
+        "tests": 26,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "tests.test_native_pose_recovery": {
+        "tests": 14,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "tests.test_native_playing_keepalive": {
+        "tests": 18,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "tests.test_native_protocol_manifest": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "": {
+        "tests": 57,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      }
+    },
+    "focused_regressions": 184,
+    "source_profile_binding_cases": 1,
+    "independent_probe_cases": 57,
+    "probe_detail": "40 exact-byte frontier/next-code-point combinations for ASCII, 2/3/4-byte payloads across mixed-case ASCII, CJK, emoji, realistic long CJK and synthetic extreme names; 9 exact short-text cases; 5 strict malformed/negative-budget cases; zero-budget case; incoming-only negative control; embedded-NUL compatibility case.",
+    "probe_evidence_kind": "Actual BotClient.say serializer with fake sink and source-shaped handler/relay simulation, NOT native peer delivery.",
+    "command": "PYTHONDONTWRITEBYTECODE=1 nix develop --offline --no-write-lock-file path:./spikes/007-native-packet-ast/toolchain -c .venv/bin/python -m pytest -q -o addopts='' -p no:cacheprovider tests/test_native_chat_text.py tests/test_playing_runtime.py tests/test_native_rest_interrupt.py tests/test_native_pose_recovery.py tests/test_native_playing_keepalive.py tests/test_native_protocol_manifest.py::test_immutable_source_profile_sender_binding /home/otto/.hermes/cache/scratch/chat-peer-repair1-independent-review/test_peer_budget_probe.py --basetemp=/home/otto/.hermes/cache/scratch/chat-peer-repair1-independent-review/pytest-temp --junitxml=/home/otto/.hermes/cache/scratch/chat-peer-repair1-independent-review/regressions.xml"
+  },
+  "scope_preservation": {
+    "runtime_only_delta": "Exactly one Say call argument adds self.wire.char_name; no sender fallback, identity rewrite or extra send.",
+    "runtime_inverse_bytes_equal": true,
+    "runtime_inverse_ast_equal": true,
+    "runtime_inverse_sha256": "51e7ec6ed02227ed8a3c2a03af3b9073ff9a3a1800b54441c7cb9e5b9506718c",
+    "original_runtime_restored_sha256": "29f7a642a72218de2b6ef9bd7a29957f7e42902b1ee60494af08155eedb0f200",
+    "unchanged": [
+      "native readiness order and fail-closed guards",
+      "REST threshold/pending-motion cancellation",
+      "SELF pose standing receipt barrier",
+      "keepalive clock/packet/failure semantics",
+      "PartyChat membership guard, non-NUL framing and separate254-byte budget",
+      "legacy serializer prefix/name capitalization/final NUL and packet maps"
+    ],
+    "test_contract_changes_legitimate": "The old incoming-only253-byte expectation is insufficient for full sender-prefixed peer relay; updated sender-specific frontiers preserve short/error/readiness/party contracts.",
+    "strict_encoding": "Entire text and sender are encoded strictly before clipping or Send; malformed suffix beyond frontier rejects. Negative budget raises ValueError; zero budget emits empty text."
+  },
+  "freeze": {
+    "manifest": "/home/otto/.hermes/cache/scratch/chat-peer-repair1-review-freeze.json",
+    "file_count": 18,
+    "verified_before": true,
+    "verified_after": true,
+    "drift": [],
+    "sha256": {
+      "src/robots/adapters/native_chat_text.py": "bccfcf770f28f14f569bf782d1f5df0de86f91bf4c7e641abd8b1dd7782ee13e",
+      "src/robots/app/playing_runtime.py": "c78eb0278e98de8eda5ef31544356164e74fea491bf540ab2da587a9d2d731f0",
+      "spikes/003-clientless-limbs/client.py": "2f57a0adc0b43a20235835290499ca0043966c5def208642598afb0dc49807fd",
+      "spikes/003-clientless-limbs/packetdb.py": "f75d7db42e9df276c5be3a47b1a875eb66c642366600de7bdf398f467cbb9d31",
+      "tests/test_native_chat_text.py": "f0ac4154bdd398a97ee58e311d87036e8588573c2e9628697aeaaedd640d8995",
+      "tests/test_native_rest_interrupt.py": "7f31b62d61346e48dee4fe5c8bab7765d5a994d5ccc028c0811d51262f1a88b5",
+      "tests/test_playing_runtime.py": "805770a5692e9694bee4ec8dd5ec03060bfa886196cda5cafb563dae60c5c2b0",
+      "tests/test_native_pose_recovery.py": "3c88d30f8093f645ae287f0f803b939846524ec0712e30c6222e072408ce0710",
+      "tests/test_native_playing_keepalive.py": "b816746b20d70eef071b16c2bdf240d13e2bdc86fb6057366fb03d9a71c8a12c",
+      "run/reviews/playing-mvp-native-chat-text-fix.json": "d331f6bddcd7f66fb4a1193e0221a267065be52bb9949d393f57cf7c8f1728f3",
+      "run/reviews/playing-mvp-native-chat-text-parent-gate.json": "ea9698d8c1caaf0a98a1e8c446f69a9c7b5c9e4f70773c5c031a46fde7c4568e",
+      "run/reviews/playing-mvp-native-chat-text-scope.json": "59467f679e9b962821df6ccc7ff1fc3f62603ce18b1e3fb9d69f8794042ac0dc",
+      "run/reviews/playing-mvp-chat-size-frontier.json": "a1b6dfe3aa210612661cadbac7dc9da1afdf99c8a05425b466fb49600c8048ec",
+      "src/robots/domain/decisions.py": "fdbe5e0b4ea0e11a78746961873e168512613e5b6a252835aecb8700078dab3f",
+      "tests/test_decision_vitals_context.py": "4208f1a7099a6ff006ee29a75d943a6285ae5d39f4a32ef86cb12ada1e6007aa",
+      "run/reviews/playing-mvp-native-chat-peer-budget-repair1.json": "0c7fe9dc7056243b17fea685ced68c85f45de996aa518411533f77e79176b622",
+      "run/reviews/playing-mvp-native-chat-peer-budget-repair1-scope.json": "c5337183bbcf7e35428628923a460fff5b3f48534ab66cb8423bace85dd216b0",
+      "run/reviews/playing-mvp-chat-peer-truncation-frontier.json": "0fe836f053229417e0379b4fc074f38dd0290584414ebdc9cf5346a179bcb2ca"
+    }
+  },
+  "historical_evidence": {
+    "preserved": true,
+    "incoming_only_approval": "Historical bounded evidence only, not peer-safe approval.",
+    "actual_failure": "252-byte reply admitted incoming; exact owned map outgoing truncation warning1 and exact peer matches0 remain preserved.",
+    "author_tdd_xml_physically_checked": {
+      "/home/otto/.hermes/cache/scratch/chat-peer-repair1/red-sender.xml": {
+        "sha256": "89b69dd1ca61909922403111f0ee72fa4ccf42e2912a19712780fffc92d4794c",
+        "tests": 2,
+        "failures": 2,
+        "errors": 0
+      },
+      "/home/otto/.hermes/cache/scratch/chat-peer-repair1/green-focused.xml": {
+        "sha256": "ea644da57e7b4fd70dbd845a66e891dfb3e673c8c868afe3d4f532fc888776ac",
+        "tests": 184,
+        "failures": 0,
+        "errors": 0
+      },
+      "/home/otto/.hermes/cache/scratch/chat-peer-repair1/green-relay.xml": {
+        "sha256": "7df2e8a935d67f1f02264fec54953abc5fff906fb4fc16e18c1f174deb7d8882",
+        "tests": 1,
+        "failures": 0,
+        "errors": 0
+      },
+      "/home/otto/.hermes/cache/scratch/chat-peer-repair1/red-relay.xml": {
+        "sha256": "9c0afd52f3fb475833b71a4596c815963d01bd3052d3c6d33abc94377930f366",
+        "tests": 1,
+        "failures": 1,
+        "errors": 0
+      }
+    },
+    "author_artifact_manifest": "/home/otto/.hermes/cache/scratch/chat-peer-repair1/artifact-manifest.json",
+    "author_artifact_count": 27,
+    "author_manifest_mismatches": [],
+    "author_artifacts_sha256_and_bytes": {
+      "/home/otto/.hermes/cache/scratch/chat-peer-repair1/red-sender.xml": {
+        "sha256": "89b69dd1ca61909922403111f0ee72fa4ccf42e2912a19712780fffc92d4794c",
+        "bytes": 2909
+      },
+      "/home/otto/.hermes/cache/scratch/chat-peer-repair1/final-focused.log": {
+        "sha256": "4c2f5de9c4569d2eb6d541c832d0247e3c48c8d7ce882dd2b70649935a01ca92",
+        "bytes": 260
+      },
+      "/home/otto/.hermes/cache/scratch/chat-peer-repair1/green-focused.xml": {
+        "sha256": "ea644da57e7b4fd70dbd845a66e891dfb3e673c8c868afe3d4f532fc888776ac",
+        "bytes": 33158
+      },
+      "/home/otto/.hermes/cache/scratch/chat-peer-repair1/xenon.log": {
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      "/home/otto/.hermes/cache/scratch/chat-peer-repair1/final-gates.json": {
+        "sha256": "6db55ece8f5ddee2cc53b1844cd7d012a91fc2d0c9e57f0fc73bbf763dfe264f",
+        "bytes": 1596
+      },
+      "/home/otto/.hermes/cache/scratch/chat-peer-repair1/native_chat_text.py.before": {
+        "sha256": "a5a8e0610f14fae6a9465af5ebb968dd7b01d19fd8cbe24efbb07a237b4c8747",
+        "bytes": 914
+      },
+      "/home/otto/.hermes/cache/scratch/chat-peer-repair1/duplicate.log": {
+        "sha256": "8cbfc8cd0b04a4858b0b78b74c6df9631a1695e105e6911d4b57fbcc43b218b5",
+        "bytes": 140
+      },
+      "/home/otto/.hermes/cache/scratch/chat-peer-repair1/green-relay.xml": {
+        "sha256": "7df2e8a935d67f1f02264fec54953abc5fff906fb4fc16e18c1f174deb7d8882",
+        "bytes": 380
+      },
+      "/home/otto/.hermes/cache/scratch/chat-peer-repair1/final-mypy.log": {
+        "sha256": "8228fcc5ce46d42d01caf3cd941f4e9c5f2bcc372bb5b147a2f0572d2dd675a8",
+        "bytes": 43
+      },
+      "/home/otto/.hermes/cache/scratch/chat-peer-repair1/red-sender.log": {
+        "sha256": "d8ab76928a880fc9ea2cdf4a123c4c638488261289742e6a0c98523e41fbe1d6",
+        "bytes": 3603
+      },
+      "/home/otto/.hermes/cache/scratch/chat-peer-repair1/green-relay.log": {
+        "sha256": "364fae48cbe8f4ef8e995f8fb3224d43792e784eb9919ceefea2fe0106918edf",
+        "bytes": 98
+      },
+      "/home/otto/.hermes/cache/scratch/chat-peer-repair1/playing_runtime.py.before": {
+        "sha256": "51e7ec6ed02227ed8a3c2a03af3b9073ff9a3a1800b54441c7cb9e5b9506718c",
+        "bytes": 25011
+      },
+      "/home/otto/.hermes/cache/scratch/chat-peer-repair1/mypy.log": {
+        "sha256": "a67af2aea8ddaf2ef2b4ff9fe50eb9e6037859371b924bd1e8834ed94868c65f",
+        "bytes": 163
+      },
+      "/home/otto/.hermes/cache/scratch/chat-peer-repair1/final-duplicate.log": {
+        "sha256": "8cbfc8cd0b04a4858b0b78b74c6df9631a1695e105e6911d4b57fbcc43b218b5",
+        "bytes": 140
+      },
+      "/home/otto/.hermes/cache/scratch/chat-peer-repair1/final-xenon.log": {
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      "/home/otto/.hermes/cache/scratch/chat-peer-repair1/final-black.log": {
+        "sha256": "45a468fa6205768496f23f1716ebb7575e9b723449d2099b88bf2afef60b721f",
+        "bytes": 56
+      },
+      "/home/otto/.hermes/cache/scratch/chat-peer-repair1/gates.json": {
+        "sha256": "7ea5d3861d133431efda60dc1efa3cdc9bd4f334352c56410a78a1a5b0fb3e4d",
+        "bytes": 1596
+      },
+      "/home/otto/.hermes/cache/scratch/chat-peer-repair1/ruff.log": {
+        "sha256": "8d02159f337663c646b2af35dda7fde4163114f8c47963a6801250d8e9d0df02",
+        "bytes": 2565
+      },
+      "/home/otto/.hermes/cache/scratch/chat-peer-repair1/test_native_chat_text.py.before": {
+        "sha256": "2e352fcc78f04f7e1e234ea2548950618639cddd04a48e740e8dc8144e6d84da",
+        "bytes": 4664
+      },
+      "/home/otto/.hermes/cache/scratch/chat-peer-repair1/final-ruff.log": {
+        "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+        "bytes": 19
+      },
+      "/home/otto/.hermes/cache/scratch/chat-peer-repair1/red-relay.xml": {
+        "sha256": "9c0afd52f3fb475833b71a4596c815963d01bd3052d3c6d33abc94377930f366",
+        "bytes": 1006
+      },
+      "/home/otto/.hermes/cache/scratch/chat-peer-repair1/focused.log": {
+        "sha256": "6586fcb7b7246670e5cf74bf63733e5a321710cddc99d9ec5005908a81d6e27b",
+        "bytes": 260
+      },
+      "/home/otto/.hermes/cache/scratch/chat-peer-repair1/red-relay.log": {
+        "sha256": "2a4b098d8021eb15a8062d0e70f40e1a804af0fd852e2e07df579ad85c271f08",
+        "bytes": 906
+      },
+      "/home/otto/.hermes/cache/scratch/chat-peer-repair1/black.log": {
+        "sha256": "aa5cb33c14955c46ede38f6d23a7d9718c147a73ec668e4be144fce3bb9fbae3",
+        "bytes": 131
+      },
+      "/home/otto/.hermes/cache/scratch/chat-peer-repair1/native_chat_text.py.after": {
+        "sha256": "bccfcf770f28f14f569bf782d1f5df0de86f91bf4c7e641abd8b1dd7782ee13e",
+        "bytes": 1100
+      },
+      "/home/otto/.hermes/cache/scratch/chat-peer-repair1/playing_runtime.py.after": {
+        "sha256": "c78eb0278e98de8eda5ef31544356164e74fea491bf540ab2da587a9d2d731f0",
+        "bytes": 25032
+      },
+      "/home/otto/.hermes/cache/scratch/chat-peer-repair1/test_native_chat_text.py.after": {
+        "sha256": "f0ac4154bdd398a97ee58e311d87036e8588573c2e9628697aeaaedd640d8995",
+        "bytes": 7372
+      }
+    }
+  },
+  "private_artifacts_sha256": {
+    "/home/otto/.hermes/cache/scratch/chat-peer-repair1-independent-review/test_peer_budget_probe.py": "8cc456237eac811e0d0b3b1d8eac263b959b1297f043b827c911ea9b38ced0e2",
+    "/home/otto/.hermes/cache/scratch/chat-peer-repair1-independent-review/regressions.xml": "e002450f2d3264249bccecc02ddd8f52dea9ac927f8f4a62296f4fa2b843367e",
+    "/home/otto/.hermes/cache/scratch/chat-peer-repair1-independent-review/verification.json": "a847996581613d29d37f8636761a692d8ee8a208961faf3eb7ff73b1e6b5d473"
+  },
+  "effects": {
+    "native": false,
+    "model": false,
+    "sql": false,
+    "network": false,
+    "services": false,
+    "git": false
+  },
+  "native_peer_RX_verified": false,
+  "all_milestones_open": true,
+  "issues_encountered": [],
+  "limitations": [
+    "Source-shaped simulation is not actual native peer acceptance; future observer must use public_chat_text(raw,wire.char_name) and match exact selected sender and emitted/clipped text.",
+    "Synthetic extreme names verify budget robustness, not legal native selected-character identities.",
+    "Embedded NULs intentionally preserve existing wire bytes and can truncate server-visible text; complete original-text delivery is not claimed.",
+    "Native fake-name/channel/atcommand modes and other profiles are not admitted by this ordinary selected-name path review.",
+    "No other exhausted budget or unrelated finding is reset by repair cycle1."
+  ]
+}

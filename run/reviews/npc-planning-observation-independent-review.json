@@ -1,0 +1,593 @@
+{
+  "passed": true,
+  "status": "OFFLINE_READ_ONLY_NPC_PRODUCER_AND_VERIFIED_CACHE_MAP_COMPLETION_INDEPENDENT_PASS",
+  "security_concerns": [],
+  "logic_errors": [],
+  "quality_blockers": [],
+  "suggestions": [],
+  "summary": "Actual PlayingClient produces current actor/session-bound NEXT/MENU observations without actuation; verified-cache canonical map completion preserves raw wire/view data and passes unchanged capture, scripted planner and fresh lifecycle admission.",
+  "public_api": "PlayingClient.planning_npc_observation(identity: PlanningIdentity) -> NpcObservation | None",
+  "scope": {
+    "read_only": true,
+    "production_repairs": false,
+    "offline_wire_and_scripted_model_only": true,
+    "native_world_sql_provider_network_effects": false,
+    "git_dependency_service_operations": false,
+    "ownership": [
+      "run/reviews/npc-planning-observation-independent-review.json",
+      "/home/otto/.hermes/cache/scratch/npc-planning-observation-independent-review"
+    ]
+  },
+  "current_bindings": {
+    "freeze_path": "/home/otto/.hermes/cache/scratch/npc-planning-observation-independent-freeze.json",
+    "freeze_sha256": "c0b593f1c9b921875d1baf2be2b1a6d1a1ab9650bcffda86febbf6e11be9ecec",
+    "bindings": 403,
+    "distinct_physical_paths": 401,
+    "before_drift": [],
+    "after_drift": [],
+    "source_sha256": "f790855173eff8c19298118c1767c827b7c63a1d35f6ff8e7e9693203d0bdbd6",
+    "test_sha256": "4f1102529cb2fc81443a41b493a9dcc5ba2c2da59cbe1db5d5bd71250c150f90"
+  },
+  "author_history": {
+    "report_sha256": "50193264066db0891a3a0146d68a1046e855c50730da0c0114990371f5c16014",
+    "all_15_xml_receipt_digests_verified": true,
+    "failed_RED_and_fixture_oracle_receipts_preserved": true,
+    "initial_candidate_400_freeze_changes": [
+      "src/robots/app/playing_runtime.py",
+      "tests/test_npc_planning_observation.py"
+    ],
+    "historical_gat_limitation_superseded_by_named_completion": true,
+    "historical_source_hashes_are_not_current_guards": true
+  },
+  "preservation": {
+    "protected_bindings": 395,
+    "distinct_protected_paths": 393,
+    "protected_drift": [],
+    "baseline_digest": "425f7bf5a82d08c1cc45a11c923a77b9e5448e3d910ea682aef500f30afca52a",
+    "historical_candidate_freeze_entries": 400,
+    "historical_candidate_changes": [
+      "src/robots/app/playing_runtime.py",
+      "tests/test_npc_planning_observation.py"
+    ],
+    "completion_artifact_errors": [],
+    "parent_red_failures": 1
+  },
+  "fresh_tests": {
+    "scope": {
+      "path": "/home/otto/.hermes/cache/scratch/npc-planning-observation-independent-review/scope.xml",
+      "sha256": "8e22acf124ffd05688663f8a1551ff73fac4f55cfc7045661733417dcca01a3c",
+      "physical_cases": 1466,
+      "unique_ids": 1466,
+      "failure": 0,
+      "error": 0,
+      "skipped": 0
+    },
+    "independent_probes": {
+      "path": "/home/otto/.hermes/cache/scratch/npc-planning-observation-independent-review/probes.xml",
+      "sha256": "1e404511dd14e3ecfe5b0bdf43e4f0ae2ecf953326a42187c9aecb4560bbbd8a",
+      "physical_cases": 6,
+      "unique_ids": 6,
+      "failure": 0,
+      "error": 0,
+      "skipped": 0
+    },
+    "fresh_unique_union_counted_once": 1472,
+    "33_repository_modules_plus_4_external_tracer_functions": true,
+    "raw_parent_id_equality": true,
+    "explicit_policy_case_delta": {
+      "fresh_count": 1466,
+      "raw_parent_missing": [],
+      "raw_parent_added": [],
+      "author_removed": [
+        [
+          "tests.test_npc_planning_observation",
+          "test_literal_map_alias_is_not_normalized_into_planning_permission"
+        ]
+      ],
+      "author_added": [
+        [
+          "",
+          "test_verified_cache_gat_map_preserves_wire_and_produces_bound_receipt"
+        ],
+        [
+          "tests.test_npc_planning_observation",
+          "test_cached_wire_map_must_match_the_received_view_identity[izlude.gat]"
+        ],
+        [
+          "tests.test_npc_planning_observation",
+          "test_cached_wire_map_must_match_the_received_view_identity[unknown.gat]"
+        ],
+        [
+          "tests.test_npc_planning_observation",
+          "test_gat_spelling_without_verified_cache_is_not_planning_permission"
+        ],
+        [
+          "tests.test_npc_planning_observation",
+          "test_verified_cached_map_identity_keeps_literal_received_spelling"
+        ]
+      ]
+    },
+    "identity_registry": {
+      "path": "/home/otto/.hermes/cache/scratch/npc-planning-observation-independent-review/selected-passing-identities.json",
+      "sha256": "e2ab7c77eed4c0e3ae1a003ea1e9395f8c8f9d5a87fd8926e60ba9715b2b4f9c"
+    },
+    "commands": {
+      "scope": [
+        "nix",
+        "develop",
+        "--offline",
+        "--no-write-lock-file",
+        "path:./spikes/007-native-packet-ast/toolchain",
+        "-c",
+        "env",
+        "PYTHONOPTIMIZE=0",
+        "PYTHONDONTWRITEBYTECODE=1",
+        "PYTHONPATH=/home/otto/dev/ro-bots/src:/home/otto/dev/ro-bots",
+        "PYTEST_DISABLE_PLUGIN_AUTOLOAD=1",
+        ".venv/bin/python",
+        "-B",
+        "-m",
+        "pytest",
+        "-q",
+        "-o",
+        "addopts=",
+        "-p",
+        "no:cacheprovider",
+        "--junitxml=/home/otto/.hermes/cache/scratch/npc-planning-observation-independent-review/scope.xml",
+        "tests/test_host_native_transport.py",
+        "tests/test_host_native_vitals.py",
+        "tests/test_llm_planner.py",
+        "tests/test_llm_planning_clef_execution.py",
+        "tests/test_llm_planning_host_cleanup.py",
+        "tests/test_llm_planning_host_construction.py",
+        "tests/test_llm_planning_host_tick.py",
+        "tests/test_llm_planning_rest_execution.py",
+        "tests/test_movement_arrival_evidence.py",
+        "tests/test_native_audited_fixed_framing.py",
+        "tests/test_native_gameplay.py",
+        "tests/test_native_gameplay_repairs.py",
+        "tests/test_native_name_reply_framing.py",
+        "tests/test_native_npc_cancel_recovery.py",
+        "tests/test_native_npc_close_framing.py",
+        "tests/test_native_npc_completion_quality.py",
+        "tests/test_native_npc_cutin_framing.py",
+        "tests/test_native_npc_dialogue.py",
+        "tests/test_native_npc_guidance.py",
+        "tests/test_native_npc_memory_journal.py",
+        "tests/test_native_npc_name_input.py",
+        "tests/test_native_npc_page_budget.py",
+        "tests/test_native_playing_keepalive.py",
+        "tests/test_native_pose_recovery.py",
+        "tests/test_native_rest_interrupt.py",
+        "tests/test_native_textinput.py",
+        "tests/test_npc_plan_contract.py",
+        "tests/test_npc_planning_observation.py",
+        "tests/test_plan_lifecycle.py",
+        "tests/test_planning_context.py",
+        "tests/test_planning_job_context.py",
+        "tests/test_playing_packet_framing.py",
+        "tests/test_playing_runtime.py",
+        "/home/otto/.hermes/cache/scratch/npc-planning-observation/test_actual_observer.py",
+        "/home/otto/.hermes/cache/scratch/npc-capture-characterization/test_existing_capture.py",
+        "/home/otto/.hermes/cache/scratch/npc-planning-observation/test_cached_map_completion.py"
+      ],
+      "probes": [
+        ".venv/bin/python",
+        "-B",
+        "-m",
+        "pytest",
+        "-q",
+        "-o",
+        "addopts=",
+        "-p",
+        "no:cacheprovider",
+        "--junitxml=/home/otto/.hermes/cache/scratch/npc-planning-observation-independent-review/probes.xml",
+        "/home/otto/.hermes/cache/scratch/npc-planning-observation-independent-review/test_independent_observer.py"
+      ]
+    }
+  },
+  "independent_probes": [
+    {
+      "case": "test_independent_exact_next_and_menu_fields_and_readonly",
+      "finding": "Exact identity object, actor321, epoch, canonical map, opened/prompt sequences, NEXT empty indices, MENU1/2/3 preserving empty label, actual minimum deadline; no actuation or mob publication."
+    },
+    {
+      "case": "test_independent_verified_map_route_and_denial_policies",
+      "finding": "Known cache .gat positive with raw wire/view retained; no-cache, unknown key, different known wire/view key, uppercase unsupported suffix and removed cache membership all deny."
+    },
+    {
+      "case": "test_independent_fresh_name_epoch_actor_motion_and_transport_loss",
+      "finding": "New matching caller name/epoch cannot reuse old prompt; vanish/reuse, pending motion, received nonarrival and transport loss deny without sends."
+    },
+    {
+      "case": "test_independent_clock_sample_deadline_expiry_and_malformed_inputs",
+      "finding": "One clock sample; existing finite minimum deadline; bool/NaN/inf/huge-int/null clocks and malformed deadlines safely deny; exact expiry denies."
+    },
+    {
+      "case": "test_independent_callback_origins_keep_identity_and_deepest_frame",
+      "finding": "12 clock/snapshot/reader cases propagate exact OSError/RuntimeError/KeyboardInterrupt/SystemExit origin and deepest callback frame."
+    },
+    {
+      "case": "test_independent_cached_producer_capture_scripted_planner_fresh_admission",
+      "finding": "10 .gat-backed NEXT/CHOOSE scenarios traverse unchanged detached capture -> real LlmPlanner with two ScriptedModel calls and one investigation -> fresh real PlanLifecycle; only matching current receipt admits, new prompt/close/vanish/expiry deny, capture and memory remain detached/unmodified."
+    }
+  ],
+  "source_review": {
+    "reviewed_definitions": [
+      "_consume_received_snapshot",
+      "_finite_npc_time",
+      "_observe",
+      "_planning_npc_map_identity",
+      "_planning_npc_self_ready",
+      "_planning_npc_view",
+      "_reset_epoch",
+      "planning_npc_observation"
+    ],
+    "dangerous_dynamic_execution_findings": [],
+    "effects": "Actual received consumption mutates local telemetry/controller cursors as intended; the API is non-actuating, not an immutable snapshot operation. Independent effect spies prohibit send, stand, motion/recovery, keepalive/social and observer mob-catalog publication."
+  },
+  "map_completion": {
+    "source": "src/robots/app/playing_runtime.py:524-532",
+    "reuses_existing_mapper": "_map_identity at351-363 for BOTH received view and wire, exact canonical equality",
+    "no_ad_hoc_normalization": true,
+    "raw_preservation": "wire.map_name and NativeGameplayView.map_name stay literal prontera.gat; NpcObservation.map_name uses existing controller canonical prontera",
+    "original_alias_test_change_explicitly_accounted": true,
+    "parent_behavioral_red_digest_verified": true,
+    "parent_scope_digest_verified": true,
+    "outside_scope_unchanged": [
+      "domain",
+      "controller",
+      "cache content",
+      "protocol",
+      "host activation"
+    ]
+  },
+  "quality": {
+    "all_fresh_exit_zero": true,
+    "configured_strict_mypy_checked_files": 244,
+    "commands_and_logs": {
+      "black": {
+        "command": [
+          ".venv/bin/black",
+          "--check",
+          "--workers",
+          "1",
+          "src/robots/app/playing_runtime.py",
+          "tests/test_npc_planning_observation.py"
+        ],
+        "exit_code": 0,
+        "log": "/home/otto/.hermes/cache/scratch/npc-planning-observation-independent-review/black.log"
+      },
+      "ruff": {
+        "command": [
+          ".venv/bin/ruff",
+          "check",
+          "--no-cache",
+          "src/robots/app/playing_runtime.py",
+          "tests/test_npc_planning_observation.py"
+        ],
+        "exit_code": 0,
+        "log": "/home/otto/.hermes/cache/scratch/npc-planning-observation-independent-review/ruff.log"
+      },
+      "mypy": {
+        "command": [
+          ".venv/bin/mypy",
+          "--cache-dir",
+          "/home/otto/.hermes/cache/scratch/npc-planning-observation-independent-review/fresh-mypy-cache"
+        ],
+        "exit_code": 0,
+        "log": "/home/otto/.hermes/cache/scratch/npc-planning-observation-independent-review/mypy.log"
+      },
+      "bandit": {
+        "command": [
+          ".venv/bin/bandit",
+          "-q",
+          "-c",
+          "pyproject.toml",
+          "-r",
+          "src"
+        ],
+        "exit_code": 0,
+        "log": "/home/otto/.hermes/cache/scratch/npc-planning-observation-independent-review/bandit.log"
+      },
+      "xenon": {
+        "command": [
+          ".venv/bin/xenon",
+          "src",
+          "--max-absolute",
+          "B",
+          "--max-modules",
+          "B",
+          "--max-average",
+          "A"
+        ],
+        "exit_code": 0,
+        "log": "/home/otto/.hermes/cache/scratch/npc-planning-observation-independent-review/xenon.log"
+      },
+      "duplicate": {
+        "command": [
+          ".venv/bin/pylint",
+          "--disable=all",
+          "--enable=duplicate-code",
+          "--ignore-paths=tests",
+          "src"
+        ],
+        "exit_code": 0,
+        "log": "/home/otto/.hermes/cache/scratch/npc-planning-observation-independent-review/duplicate.log"
+      }
+    },
+    "unchanged_thresholds": "Whole src Xenon B/B/A and duplicate-code; scoped source/new-tests Black/Ruff; whole configured strict mypy fresh cache and Bandit. No new ignores/stubs/waivers.",
+    "bandit_notes": "Exit0; only inherited nosec/no-failed-test warnings in rathena_runtime.py129-133, also present in matching parent check log."
+  },
+  "matching_full_root": {
+    "report_path": "/home/otto/dev/ro-bots/run/reviews/npc-planning-observation-combined-parent-gate.json",
+    "report_sha256": "d8e12cf52e77315932fb5c5fb88c414b5223c592e025a33cf9a0579c0aaeabf1",
+    "check_exit": 0,
+    "audit_exit": 0,
+    "physical_unique_cases": 5345,
+    "subtests_not_counted_as_unique": 65,
+    "coverage_percent": 95.44,
+    "artifacts_and_freeze_digests_verified": true,
+    "prior_id_retention": {
+      "prior_physical_unique_cases": 5236,
+      "missing_raw_ids": [],
+      "added_case_count": 109,
+      "added_classes": [
+        "tests.test_npc_planning_observation"
+      ],
+      "all_added_from_observer_file": true
+    },
+    "rerun": false,
+    "reason_no_rerun": "Matching 403-input freeze and parent full-root XML/check/audit log hashes verified; no binding fault."
+  },
+  "selected_current_passing_receipts_union": {
+    "unique_raw_ids_counted_once": 5355,
+    "includes": "matching parent root + fresh authoritative scope + independent probes; repeated root/scope IDs counted once, subtests excluded",
+    "historical_runs_not_included": true
+  },
+  "trust_boundary": {
+    "trusted_caller_metadata": [
+      "agent",
+      "world",
+      "ruleset"
+    ],
+    "locally_checked": [
+      "exact selected and epoch-bound character name",
+      "native epoch",
+      "received map/actor/prompt continuity",
+      "life/standing/arrival/health",
+      "controller UI/cancellation/failure/request budget",
+      "finite freshness/deadline eligibility"
+    ],
+    "ready_is": "Local advisory gate, never native legality, quest eligibility or server acknowledgment."
+  },
+  "limitations": [
+    "API only: AgentHost has no NPC observer binder/capability advertisement/executor/progress path; existing PlannedBrain remains IDLE/REST.",
+    "No actual physical NPC worker, real inference, server connection, gameplay/reward or native acceptance exercised.",
+    "Prior generic phase and name primitive offline approvals do not establish live NPC acceptance.",
+    "Full goals and native NPC acceptance remain OPEN; parent adoption checks are separate."
+  ],
+  "issues_encountered": [
+    "Initial context concatenated parent+test filenames were not literal paths; exact existing external tracer paths recovered without changing files, and fresh raw IDs exactly match parent.",
+    "No source/probe behavioral or quality blockers found; no repairs made."
+  ],
+  "artifact_registry": {
+    "/home/otto/.hermes/cache/scratch/npc-planning-observation-independent-freeze.json": {
+      "sha256": "c0b593f1c9b921875d1baf2be2b1a6d1a1ab9650bcffda86febbf6e11be9ecec",
+      "role": "current complete freeze"
+    },
+    "/home/otto/dev/ro-bots/run/reviews/npc-planning-observation.json": {
+      "sha256": "50193264066db0891a3a0146d68a1046e855c50730da0c0114990371f5c16014",
+      "role": "unchanged historical author report"
+    },
+    "/home/otto/.hermes/cache/scratch/npc-planning-observation-combined-tests.xml": {
+      "sha256": "6695af8fd0d8a8fe8ceb53e029bc791b7176562d95ec5f78ca93c21fa6382e8e",
+      "role": "selected current passing test receipt"
+    },
+    "/home/otto/.hermes/cache/scratch/npc-planning-observation-combined-check.log": {
+      "sha256": "1070d5e1159281116b99923cec5f36e321ed2257866ed301f9fa36b1e1effb37",
+      "role": "matching parent full-root gate"
+    },
+    "/home/otto/.hermes/cache/scratch/npc-planning-observation-combined-audit.log": {
+      "sha256": "12efd8d5b788d7b9815c963992e71d963bd5e1f644f07efbd7df75b3abc6f46e",
+      "role": "matching parent full-root gate"
+    },
+    "/home/otto/.hermes/cache/scratch/npc-planning-observation/alias-fixture-corrected.xml": {
+      "sha256": "0f503d2f66f549a535f78a282ea5671c09ab96c7733c3b01757a5c2d44a0d6d5",
+      "role": "preserved author chronology, not all passing"
+    },
+    "/home/otto/.hermes/cache/scratch/npc-planning-observation/final-scoped.xml": {
+      "sha256": "761f68b96490c60a2d7174f3fe70b058e8a7f6469c2984495eaa58df6e61a13e",
+      "role": "preserved author chronology, not all passing"
+    },
+    "/home/otto/.hermes/cache/scratch/npc-planning-observation/final2-scoped.xml": {
+      "sha256": "59a1b118083658aee3600c501551387272d949ee0b9e826883e0ce07a5eb131b",
+      "role": "preserved author chronology, not all passing"
+    },
+    "/home/otto/.hermes/cache/scratch/npc-planning-observation/name-binding-green.xml": {
+      "sha256": "0e01e5d49c7fa1ccfa64d65503dbaf6316be105ecc552ae3cdc7e8ddd196b9f9",
+      "role": "preserved author chronology, not all passing"
+    },
+    "/home/otto/.hermes/cache/scratch/npc-planning-observation/name-binding-red.xml": {
+      "sha256": "56e04787b811d69eb18ef58f1fc4b3afba4271689212a03612a9edebe340555e",
+      "role": "preserved author chronology, not all passing"
+    },
+    "/home/otto/.hermes/cache/scratch/npc-planning-observation/parent-observer-red.xml": {
+      "sha256": "2563eb53f2881bccaa84f1f441de9599cc8ba8566a3222e6bd5dfaa7594b31d5",
+      "role": "preserved author chronology, not all passing"
+    },
+    "/home/otto/.hermes/cache/scratch/npc-planning-observation/slice1-green.xml": {
+      "sha256": "67f23d6e5ea8e1e9a5985b6fdbfac4c2c5dcbd099dd4b876706bbb333304e199",
+      "role": "preserved author chronology, not all passing"
+    },
+    "/home/otto/.hermes/cache/scratch/npc-planning-observation/slice1-red.xml": {
+      "sha256": "d50ca1c459eddc4e5a3458c3dd4b61a24bf13efae9f60295d9eeb0c896303015",
+      "role": "preserved author chronology, not all passing"
+    },
+    "/home/otto/.hermes/cache/scratch/npc-planning-observation/slice2-green.xml": {
+      "sha256": "b95fd012f4e4200926004e86edc7c30e4f35aa43f3d26103dab0a6b7d5576da8",
+      "role": "preserved author chronology, not all passing"
+    },
+    "/home/otto/.hermes/cache/scratch/npc-planning-observation/slice2-red.xml": {
+      "sha256": "51c0b4e82371c26bb213eb633225fb6a45e370979aa64517dd1c50587573ce66",
+      "role": "preserved author chronology, not all passing"
+    },
+    "/home/otto/.hermes/cache/scratch/npc-planning-observation/slice3-green.xml": {
+      "sha256": "1c663dc201da35f4d51f551764119e8904e73f55e196de5418f112cd1e92e7bd",
+      "role": "preserved author chronology, not all passing"
+    },
+    "/home/otto/.hermes/cache/scratch/npc-planning-observation/slice3-red.xml": {
+      "sha256": "6c834c2af86f25a37fa06cbdb2ad35a7037e7d19c56f27b6f88cd87188c6e82e",
+      "role": "preserved author chronology, not all passing"
+    },
+    "/home/otto/.hermes/cache/scratch/npc-planning-observation/slice4-green.xml": {
+      "sha256": "6977e2704c00c184df37f8f622a7157db911e9cf39f5ecb612b1c5828efe4b1c",
+      "role": "preserved author chronology, not all passing"
+    },
+    "/home/otto/.hermes/cache/scratch/npc-planning-observation/slice4-red.xml": {
+      "sha256": "e8c0755bd3ce08bb799f5cd3d65270efa005593bc4f92584fe7b8707d35a851f",
+      "role": "preserved author chronology, not all passing"
+    },
+    "/home/otto/.hermes/cache/scratch/npc-planning-observation/slice5-integration-first.xml": {
+      "sha256": "485e7d50efcc948b052f75d65f08a99b0407d1a16506ab60448cb6339f0582d4",
+      "role": "preserved author chronology, not all passing"
+    },
+    "/home/otto/.hermes/cache/scratch/npc-planning-observation/final2-black.txt": {
+      "sha256": "02cc42369c2692805e5373ff7cdee8ff699f0b6fcf938ddea3f0de44faad7235",
+      "role": "historical author quality"
+    },
+    "/home/otto/.hermes/cache/scratch/npc-planning-observation/final2-ruff.txt": {
+      "sha256": "62af8447bb5ea4ee43bf3e1eb2501e3af725caeda6498c4be41879eeaf64cbb4",
+      "role": "historical author quality"
+    },
+    "/home/otto/.hermes/cache/scratch/npc-planning-observation/final2-mypy.txt": {
+      "sha256": "3666045d3c93e952075f4055d9e5f24b783136b651ef5328ff50b9ca8f04dc29",
+      "role": "historical author quality"
+    },
+    "/home/otto/.hermes/cache/scratch/npc-planning-observation/final2-xenon.txt": {
+      "sha256": "4069d50ff562f9e4a5920dcc903a71183c3889a5976002ec9bdc34db87762921",
+      "role": "historical author quality"
+    },
+    "/home/otto/.hermes/cache/scratch/npc-planning-observation/final2-duplicate.txt": {
+      "sha256": "e9829f99363004abef1b361767877d5f11b920a33119265bb84d615c4af9acc1",
+      "role": "historical author quality"
+    },
+    "/home/otto/.hermes/cache/scratch/npc-planning-observation/test-identities.json": {
+      "sha256": "3c4b129a274abc80bf2498220d7e1ac30ce1b4131b636a8b40662046ee0fd021",
+      "role": "historical raw identity registry"
+    },
+    "/home/otto/.hermes/cache/scratch/npc-planning-observation/baseline.json": {
+      "sha256": "425f7bf5a82d08c1cc45a11c923a77b9e5448e3d910ea682aef500f30afca52a",
+      "role": "protected baseline"
+    },
+    "/home/otto/.hermes/cache/scratch/npc-planning-observation/completed-input-freeze.json": {
+      "sha256": "8aeb469c923c12401aff54424bb2ebfb24b9b8ba6ae3178ab8732a9d8c2add34",
+      "role": "historical candidate freeze"
+    },
+    "/home/otto/.hermes/cache/scratch/npc-planning-observation/parent-cached-map-red.xml": {
+      "sha256": "372be7b6e7c4c022329febc528ab737c87814868fe64e4173c246f95aeb1d926",
+      "role": "parent cache completion chronology"
+    },
+    "/home/otto/.hermes/cache/scratch/npc-planning-observation/parent-map-completed-scope.xml": {
+      "sha256": "3993e35ecf2f86c5d5f484066514df0144088c272923b8b410aaecb984876c1c",
+      "role": "parent cache completion chronology"
+    },
+    "/home/otto/dev/ro-bots/run/reviews/npc-planning-observation-combined-parent-gate.json": {
+      "sha256": "d8e12cf52e77315932fb5c5fb88c414b5223c592e025a33cf9a0579c0aaeabf1",
+      "role": "review and scope record"
+    },
+    "/home/otto/dev/ro-bots/run/reviews/npc-planning-observation-cached-map-completion.json": {
+      "sha256": "1a5d498c2ee96dc0e2aaf9ea1b2c2731f0e2f62ba8679bc7f69cdb9c6a0762fe",
+      "role": "review and scope record"
+    },
+    "/home/otto/dev/ro-bots/run/reviews/npc-planning-observation-cached-map-scope.json": {
+      "sha256": "10d9c457b430e7e4174dadd46d77e97adf1a03dedb455af5d8368cb57d69453f",
+      "role": "review and scope record"
+    },
+    "/home/otto/dev/ro-bots/run/reviews/npc-plan-contract-combined-parent-gate.json": {
+      "sha256": "653067a58883a5cfc7cc1894492e74a7a04972a57290aa18d1e4e8b611777847",
+      "role": "review and scope record"
+    },
+    "/home/otto/.hermes/cache/scratch/npc-plan-contract-combined-tests.xml": {
+      "sha256": "642362f3ee00fac4368f6e87af776346b5efdf9443b752d95ee60fb103f1851f",
+      "role": "prior 5236-case root receipt"
+    },
+    "/home/otto/.hermes/cache/scratch/npc-planning-observation-independent-review/scope.xml": {
+      "sha256": "8e22acf124ffd05688663f8a1551ff73fac4f55cfc7045661733417dcca01a3c",
+      "role": "selected current passing test receipt"
+    },
+    "/home/otto/.hermes/cache/scratch/npc-planning-observation-independent-review/probes.xml": {
+      "sha256": "1e404511dd14e3ecfe5b0bdf43e4f0ae2ecf953326a42187c9aecb4560bbbd8a",
+      "role": "selected current passing test receipt"
+    },
+    "/home/otto/.hermes/cache/scratch/npc-planning-observation-independent-review/scope.log": {
+      "sha256": "eecdf6f151499ec45ff3fcc70685fe6534860ce097a23d02674e84c2962f4e4d",
+      "role": "fresh independent execution scope"
+    },
+    "/home/otto/.hermes/cache/scratch/npc-planning-observation-independent-review/black.log": {
+      "sha256": "b9cf511501d306d2bd8355ccb165c8ddc0a6fdd62d7c72c4a7b1795cf8934c8c",
+      "role": "fresh independent execution black"
+    },
+    "/home/otto/.hermes/cache/scratch/npc-planning-observation-independent-review/ruff.log": {
+      "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+      "role": "fresh independent execution ruff"
+    },
+    "/home/otto/.hermes/cache/scratch/npc-planning-observation-independent-review/mypy.log": {
+      "sha256": "4e2859e3af318482d45f7591ca53ca97016f9c6dd8cd0359aa137c41128a03ac",
+      "role": "fresh independent execution mypy"
+    },
+    "/home/otto/.hermes/cache/scratch/npc-planning-observation-independent-review/probes.log": {
+      "sha256": "204ee964b0c568221de00001d49155c46708c86169d670972934021295357d8a",
+      "role": "fresh independent execution probes"
+    },
+    "/home/otto/.hermes/cache/scratch/npc-planning-observation-independent-review/bandit.log": {
+      "sha256": "2ee20ac6a3a915ff1204f17c53260bcc2ebfb848f37624608d13ddfdf1cc35ff",
+      "role": "fresh independent execution bandit"
+    },
+    "/home/otto/.hermes/cache/scratch/npc-planning-observation-independent-review/xenon.log": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "role": "fresh independent execution xenon"
+    },
+    "/home/otto/.hermes/cache/scratch/npc-planning-observation-independent-review/duplicate.log": {
+      "sha256": "bbb6ffa7d7107b760478161908c009d3b85b078b80d54e3ad8dcd57bfe91a142",
+      "role": "fresh independent execution duplicate"
+    },
+    "/home/otto/.hermes/cache/scratch/npc-planning-observation-independent-review/preflight.json": {
+      "sha256": "fd063320e6f245541a85cfd19afc71d235285c83b1a9ba70fb691efd58a083cb",
+      "role": "independent review artifact"
+    },
+    "/home/otto/.hermes/cache/scratch/npc-planning-observation-independent-review/postflight.json": {
+      "sha256": "b2bf65b5bbc6b000994abd5395bd72e2aeba5fed19120eb6d9629d0a2d4a40d5",
+      "role": "independent review artifact"
+    },
+    "/home/otto/.hermes/cache/scratch/npc-planning-observation-independent-review/preservation.json": {
+      "sha256": "2bff4efa8c709b84db08294fe0f925272fbb7b9d93f685303fd628bcf9cc9cc2",
+      "role": "independent review artifact"
+    },
+    "/home/otto/.hermes/cache/scratch/npc-planning-observation-independent-review/identity-comparison.json": {
+      "sha256": "6775b543ed18ca883a4bced114c22ff8fbdc7b11f3e4bee8bd0e2b331f28714a",
+      "role": "independent review artifact"
+    },
+    "/home/otto/.hermes/cache/scratch/npc-planning-observation-independent-review/selected-passing-identities.json": {
+      "sha256": "e2ab7c77eed4c0e3ae1a003ea1e9395f8c8f9d5a87fd8926e60ba9715b2b4f9c",
+      "role": "independent review artifact"
+    },
+    "/home/otto/.hermes/cache/scratch/npc-planning-observation-independent-review/execution.json": {
+      "sha256": "b8566d8ec31294c6fc8dd0f525b8c7b5cf49b2906e53d6197c6faa4eb8e0417f",
+      "role": "independent review artifact"
+    },
+    "/home/otto/.hermes/cache/scratch/npc-planning-observation-independent-review/probes-quality-execution.json": {
+      "sha256": "5b21ae5a08bb1d98653b592663a94fb4c6e8d12bfc657b5068fe8f93030afe68",
+      "role": "independent review artifact"
+    },
+    "/home/otto/.hermes/cache/scratch/npc-planning-observation-independent-review/test_independent_observer.py": {
+      "sha256": "634907b9452940c13e78df11473cdbbc7ea9b76755c8ba13eb48a827942ed879",
+      "role": "independent review artifact"
+    }
+  },
+  "files_created": [
+    "run/reviews/npc-planning-observation-independent-review.json",
+    "/home/otto/.hermes/cache/scratch/npc-planning-observation-independent-review/{preflight.json,execution.json,scope.xml,scope.log,black.log,ruff.log,mypy.log,test_independent_observer.py,probes.xml,probes.log,probes-quality-execution.json,bandit.log,xenon.log,duplicate.log,identity-comparison.json,preservation.json,postflight.json,selected-passing-identities.json} and scratch-only fresh tool caches"
+  ],
+  "existing_source_tests_docs_reports_modified": []
+}

@@ -1,0 +1,120 @@
+{
+  "schema": "native-shop-selection-independent-review/v1",
+  "verdict": "PASS",
+  "acceptance_scope": "Frozen unadvertised zero-spend concrete action/controller/actual-client dispatch, offline only; not full-root or native acceptance.",
+  "reviewed_reports": {
+    "run/reviews/native-shop-selection.json": "db43b8e0ed3ca3448d13e84b235b94bebea22babf1a85a1a0662c750d81f55d4",
+    "run/reviews/native-shop-selection-parent-integration.json": "9572545895cb77686e728c1b09516883104ead4c4e2ac124013f38a2b44e5a53"
+  },
+  "freeze_verification": {
+    "freeze.json": {
+      "sha256": "098ae11965405822966f7ed7a41c143b09a3cd73f67183f1ceede07d137ec617",
+      "bindings": 253,
+      "distinct_physical_paths": 253,
+      "mismatches": []
+    },
+    "parent-combined-freeze.json": {
+      "sha256": "e772a4ea7253bf742f70b88c886a4c05a2eb21f2a2a57125584a37e5bbd393c3",
+      "bindings": 273,
+      "distinct_physical_paths": 273,
+      "mismatches": []
+    }
+  },
+  "owned_production_files": {
+    "src/robots/domain/actions.py": "e5da48ac9eb3f794d8fbe36e63e688b7c869d688d9c149699872e99a3612ea63",
+    "src/robots/adapters/native_npc_dialogue.py": "b96a6c7d1940a2128cc81633e7baf55c380841fb6c57306846e8a1140eba9a5e",
+    "src/robots/app/playing_runtime.py": "fb5f0de7c5382adf5055dd50dd2b8192aa8b41e6dbebcc14721afc75a0295149"
+  },
+  "selected_command": "nix develop --offline --no-write-lock-file path:./spikes/007-native-packet-ast/toolchain -c env PYTHONOPTIMIZE=0 PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=src:. .venv/bin/python -B -m pytest tests/test_native_shop_selection.py .work/native-shop-selection/adapted_tracer.py --override-ini addopts='' --junitxml=.work/native-shop-selection-independent-review/selected.xml -q",
+  "selected_receipt": {
+    "path": ".work/native-shop-selection-independent-review/selected.xml",
+    "sha256": "91110f0d72d6caff5b10e062e7daed6b0984031ef7b280ac418f802648cc8d0a",
+    "physical_cases": 41,
+    "unique_ids": 41,
+    "failures": 0,
+    "errors": 0,
+    "skips": 0
+  },
+  "physical_id_comparison": {
+    "worker_current_subset": 41,
+    "exact_raw_id_set_equal": true,
+    "missing": [],
+    "extra": [],
+    "raw_scratch_classname": ".work.native-shop-selection.adapted_tracer"
+  },
+  "additional_receipt": {
+    "path": ".work/native-shop-selection-independent-review/boundaries-and-regressions.xml",
+    "sha256": "54a952cc50b27d49b63bc34d404914e38c66728b71f17c75533fb16efc3e5050",
+    "physical_cases": 101,
+    "unique_ids": 101,
+    "failures": 0,
+    "errors": 0,
+    "skips": 0
+  },
+  "additional_classification": {
+    "independent_boundary_probes": 12,
+    "focused_prior_regressions": 89,
+    "regression_ids_in_worker_current_scoped_receipt": true,
+    "not_added_to_41_feature_case_count": true
+  },
+  "evidence_binding_checks": {
+    "freeze.json": {
+      "bindings": 253,
+      "physical": 253,
+      "mismatches": [],
+      "sha256": "098ae11965405822966f7ed7a41c143b09a3cd73f67183f1ceede07d137ec617"
+    },
+    "parent-combined-freeze.json": {
+      "bindings": 273,
+      "physical": 273,
+      "mismatches": [],
+      "sha256": "e772a4ea7253bf742f70b88c886a4c05a2eb21f2a2a57125584a37e5bbd393c3"
+    },
+    "receipts": {
+      "checked": 6,
+      "mismatches": []
+    },
+    "quality": {
+      "checked": 5,
+      "mismatches": []
+    }
+  },
+  "historical_receipts_classification": {
+    "first_red": "Original unchanged real-client tracer: 2 PASS, 1 reached missing C5 behavioral RED, before implementation.",
+    "fixture_adaptation_red": "Two missing capture API failures, not additional historical execution RED.",
+    "boundary_red": "35 PASS, same-ID new actor entry and reader replacement reached behavioral failures, one gap fixture AttributeError harness failure.",
+    "chronology": "Boundary tests added after initial feature GREEN; not all tests-first. One behavioral repair iteration; static gate repairs distinct."
+  },
+  "blocking_findings": [],
+  "review_findings": [
+    "Owner mints only from freshly validated current received C4; emitted DTO contains only scalar received identities, not native references.",
+    "Pending owner action consumed before fallible clock/observation/send. Equivalent foreign DTO denied; wrapper/wire/session/socket/controller/reader use identity, never arbitrary reference equality.",
+    "Health, received continuity, life, standing, motion, map, actor class/range, NPC epoch/opened/prompt sequence and strict numeric types are rechecked before request.",
+    "Controller preserves unsupported_shop namespace, consumes UI and increments shared request count before send, encodes exactly one seven-byte C5 type0, then waits five seconds.",
+    "Same-ID new actor entry invalidates shop UI; ordinary continuous Next and generic NPC-name updates retain supported Next behavior. C4-to-Next denies stale BUY while allowing B9 Next.",
+    "NaN, infinity, bool and oversized clock denial; dead/unknown reader cannot revive consumed selection. Exact BaseException origin retained and sender failure poisons controller without retry.",
+    "Existing Next/Menu 30-second, other UI 15-second, opening/post-send/cancel five-second budgets and absolute 120-second/request32 caps remain intact.",
+    "C6 yields neither purchase, inventory update nor progress; no C8/C6 offer projection, Zeny projection, equipment actuation or planner/schema/capability advertisement added.",
+    "Unchanged revoked native guard rejects actual current authority before downstream binding/private stages. Stale source guard is intentional fail-closed, not a request to rebind or activate."
+  ],
+  "native_claim": {
+    "accepted": false,
+    "native_execution": false,
+    "model_calls": 0,
+    "world_or_sql_effects": false,
+    "authority_status": "REVOKED_AFTER_READY_WINDOW_SINGLE_ATTEMPT",
+    "source_guard_rebound": false,
+    "old_source_evolution_test_claimed_green": false
+  },
+  "remaining": "Parent-owned full-root check/audit pending in delegation context; neither run nor inspected. No integrated planner/native prepared shop scenario accepted.",
+  "created_files": [
+    ".work/native-shop-selection-independent-review/bindings.json",
+    ".work/native-shop-selection-independent-review/boundaries-and-regressions.xml",
+    ".work/native-shop-selection-independent-review/selected-comparison.json",
+    ".work/native-shop-selection-independent-review/selected.xml",
+    ".work/native-shop-selection-independent-review/test_independent_boundaries.py",
+    "run/reviews/native-shop-selection-independent-review.json"
+  ],
+  "source_runtime_private_operator_authority_world_modified": false,
+  "issues_encountered": []
+}

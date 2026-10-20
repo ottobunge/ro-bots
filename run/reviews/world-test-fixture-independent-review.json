@@ -1,0 +1,90 @@
+{
+  "schema": 1,
+  "verdict": "PASS",
+  "passed": true,
+  "scope": "Independent offline review of the pure insert-only two-account renderer; not database execution or live acceptance",
+  "security_concerns": [],
+  "logic_errors": [],
+  "minimal_correction": null,
+  "reviewed": [
+    "src/robots/adapters/world_test_fixture.py",
+    "tests/test_world_test_fixture.py",
+    "run/reviews/world-test-fixture.json"
+  ],
+  "source_freeze": {
+    "renderer_sha256_before": "b5e5eebc3ae1d74ce52fb71be7345e3a95c161c3f78534c28db5b27df8126514",
+    "renderer_sha256_after": "b5e5eebc3ae1d74ce52fb71be7345e3a95c161c3f78534c28db5b27df8126514",
+    "tests_sha256_before": "5a287deb27652c2c447bcedbd1e5f57ca9315485b95adc3eb43b88cfe48f14b1",
+    "tests_sha256_after": "5a287deb27652c2c447bcedbd1e5f57ca9315485b95adc3eb43b88cfe48f14b1",
+    "public_dependency_files": 17,
+    "all_before_after_hashes_match": true,
+    "full_hash_evidence": "/home/otto/.hermes/cache/scratch/fi1jd40i25/verification.json"
+  },
+  "primary_source": {
+    "revision": "e985006171d2eb320ee512a653f4c83aea3d81b6",
+    "path": "/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source",
+    "nar_hash_actual_and_expected": "sha256-ppi6wPYDqwXh+XR39ufl0SDS6gYfdKyHtQ9tU9rgrNI=",
+    "main_sql_sha256": "40bafce9c3aa14dd997d911b6dd42151d4b0e7afae9273d1ba96993ffdea1c80",
+    "ddl_review": "char:209-296, login:770-794, skill:1045-1051; explicit values fit field capacities/types, all omitted required fields have defaults or permit NULL",
+    "hp_sp_review": "char.cpp:1504-1509 integer creator formulas yield HP40/SP11 for vit=int=1",
+    "pin_review": "char_logif.cpp:52-85; current timestamp avoids artificial age from zero but does not bypass required PIN challenge",
+    "engines": "All three reviewed tables are MyISAM; no transactional rollback guarantee"
+  },
+  "verified_contracts": [
+    "Frozen repr=False FixtureAccount fields and render(database, exactly-two tuple) -> bytes",
+    "Selected USE followed by exactly six plain INSERTs ordered login/char/skill per account",
+    "No SQL executor, I/O, provider or network API in renderer",
+    "Positive exact-int uint32 identifiers reject bool/subclasses and reserve account 1 without claiming range ownership",
+    "Pairwise IDs and ASCII case-insensitive username/character uniqueness",
+    "23-byte ASCII receiver bounds and four ASCII PIN digits supplied by caller",
+    "Credential punctuation is represented by safe hex literals with exact scalar roundtrip; SQL remains private",
+    "Non-GM group/state zero, novice class/slot zero, base/job level10, Basic Skill1 level9 flag0",
+    "Explicit HP40/SP11, male login/character sex, offline initial char flag, separated Prontera start/save coordinates",
+    "Schema field/value counts, unsigned ranges, varchar capacities and required-column defaults independently projected from pinned DDL",
+    "Malformed inputs rejected with opaque ValueError before any scalar hex encoding"
+  ],
+  "verification": {
+    "toolchain": "Existing pinned nix develop --offline and uv run --offline --no-sync",
+    "process_isolation": "Private short scratch TMPDIR, bytecode disabled, caches/coverage/JUnit restricted to scratch; inherited pytest disable/addopts flags unset",
+    "tests": 82,
+    "fixture_tests": 46,
+    "bootstrap_regressions": 36,
+    "failures": 0,
+    "errors": 0,
+    "skips": 0,
+    "module_statements": 44,
+    "module_missing_statements": 0,
+    "module_coverage_percent": 100,
+    "coverage_required": 85,
+    "independent_malformed_pre_encoding_probes": 51,
+    "independent_schema_and_positive_boundary_probes": "PASS",
+    "black_check": "PASS",
+    "ruff": "PASS",
+    "strict_mypy": "PASS",
+    "bandit": "PASS, no renderer suppressions",
+    "vulture_min_confidence_85": "PASS",
+    "xenon_absolute_B_modules_B_average_A": "PASS",
+    "junit": "/home/otto/.hermes/cache/scratch/fi1jd40i25/world-test-fixture-independent.xml",
+    "junit_sha256": "761dc7d917062911bf7eb47724e9797a2aa0c3e765ee41a7c6a6bb003c0d6ee8",
+    "additional_probe_evidence": "/home/otto/.hermes/cache/scratch/fi1jd40i25/probe-results.json",
+    "full_repository_gates": "Not run by independent reviewer; parent-owned integration is separate evidence"
+  },
+  "execution_remaining_parent_owned": [
+    "Bind exactly the authorized existing ro-bots-world-test database and two new nonhuman/non-GM identities",
+    "Freshly stop own native roles and exclude clients; char.online is not independent account-offline evidence",
+    "Re-read exact database identity, account/character AUTO_INCREMENT and all ID/name conflicts immediately before write; do not infer ownership from numeric thresholds",
+    "Validate parent parameters before generating private credentials/PIN; privately preserve manifest and SQL without logging scalars, credential hex or private-value hashes",
+    "Perform only six reviewed INSERTs once, then read back exact login/char/skill rows; do not update/delete/replace/reset existing rows",
+    "On partial MyISAM failure stop and report partial state; no automatic retry, rollback or exactly-once claim",
+    "Verify actual native PIN exchange and all four live limbs separately"
+  ],
+  "not_claimed": [
+    "No physical SQL execution, database parser receipt, database ownership inspection or provisioning performed",
+    "No live roles, engine, providers or network contacted",
+    "No independent mapcache walkability check; parent owns that evidence",
+    "No full mechanically legal leveled-character build certification; fixture level/skill grant retains default status/skill points",
+    "No independently recovered historical TDD RED evidence; report history is not a new execution observation"
+  ],
+  "files_modified": ["run/reviews/world-test-fixture-independent-review.json"],
+  "issues_encountered": ["Nix emitted the existing dirty-working-tree warning; all scoped commands returned zero"]
+}

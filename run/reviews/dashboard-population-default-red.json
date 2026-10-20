@@ -1,0 +1,215 @@
+{
+  "scope": "Offline default-host API admission frontier only; no implementation, root gates, native maintenance, provider I/O, SQL, browser, server binding, Git or dependency changes.",
+  "completed": true,
+  "expected_behavioral_red_reached": true,
+  "current_receipt": {
+    "path": "/home/otto/.hermes/cache/scratch/dashboard-population-tracer/default-red-03.xml",
+    "sha256": "f6e7e799619ea6b56a97643ddcb5d1b7b4c699a16abb954dffe13ca3b7c0e2ad",
+    "cases": [
+      {
+        "id": "::test_standalone_unbound_generation_is_inspector_only",
+        "status": "passed",
+        "message": null
+      },
+      {
+        "id": "::test_current_default_host_denial_preserves_physical_worker_and_private_memory",
+        "status": "passed",
+        "message": null
+      },
+      {
+        "id": "::test_default_host_existing_persona_regeneration_queues_then_owner_commits",
+        "status": "failed",
+        "message": "AssertionError: MISSING HOST-OWNED POPULATION CALLER: expected pending HTTP 202, got HTTP 400: {'detail': 'host-bound roster regeneration requires account and memory reconciliation'}; WorldFeed falls into WorldState._apply_regenerate_roster -> _require_unbound\nassert 400 == 202\n +  where 400 = <Response [400 Bad Request]>.status_code"
+      }
+    ],
+    "counts": {
+      "passed": 2,
+      "failed": 1,
+      "error": 0,
+      "skipped": 0
+    }
+  },
+  "command": "env -u PYTEST_DISABLE_PLUGIN_AUTOLOAD -u PYTEST_ADDOPTS nix develop --offline --no-write-lock-file path:./spikes/007-native-packet-ast/toolchain -c env PYTHONDONTWRITEBYTECODE=1 PYTHONOPTIMIZE=0 PYTHONPATH=/home/otto/dev/ro-bots/src:/home/otto/dev/ro-bots /home/otto/dev/ro-bots/.venv/bin/pytest -c /home/otto/dev/ro-bots/pyproject.toml --rootdir=/home/otto/dev/ro-bots /home/otto/.hermes/cache/scratch/dashboard-population-tracer/test_dashboard_population_default_red.py -vv -o faulthandler_timeout=20 -p no:cacheprovider --basetemp=/home/otto/.hermes/cache/scratch/dashboard-population-tracer/pytest-tmp-03 --junitxml=/home/otto/.hermes/cache/scratch/dashboard-population-tracer/default-red-03.xml",
+  "toolchain": "Existing .venv, Python 3.14.7, pytest 9.1.1, pinned offline tiny Nix toolchain; no dependencies installed.",
+  "chronology": [
+    {
+      "attempt": 1,
+      "classification": "Harness collection error, NOT behavioral RED. PYTHONPATH before nix develop was not available to pytest; moved explicit absolute path inside shell.",
+      "receipt": {
+        "path": "/home/otto/.hermes/cache/scratch/dashboard-population-tracer/default-red-01.xml",
+        "sha256": "f6764331e1281a38de5c5ea98e456464fd409aaea1b185c879e1611f38182c3e",
+        "cases": [
+          {
+            "id": "::.hermes.cache.scratch.dashboard-population-tracer.test_dashboard_population_default_red",
+            "status": "error",
+            "message": "collection failure"
+          }
+        ],
+        "counts": {
+          "passed": 0,
+          "failed": 0,
+          "error": 1,
+          "skipped": 0
+        }
+      }
+    },
+    {
+      "attempt": 2,
+      "classification": "Harness setup error, NOT behavioral RED. ManifestEntry is not a dataclass; corrected owned synthetic binding serialization and compared its literal fields.",
+      "receipt": {
+        "path": "/home/otto/.hermes/cache/scratch/dashboard-population-tracer/default-red-02.xml",
+        "sha256": "f9fb28f8311e6ddfbb724799d32c72624535dc9f575b8d6cdf248c3007a08db2",
+        "cases": [
+          {
+            "id": "::test_standalone_unbound_generation_is_inspector_only",
+            "status": "error",
+            "message": "failed on setup with \"TypeError: asdict() should be called on dataclass instances\""
+          },
+          {
+            "id": "::test_current_default_host_denial_preserves_physical_worker_and_private_memory",
+            "status": "error",
+            "message": "failed on setup with \"TypeError: asdict() should be called on dataclass instances\""
+          },
+          {
+            "id": "::test_default_host_existing_persona_regeneration_queues_then_owner_commits",
+            "status": "error",
+            "message": "failed on setup with \"TypeError: asdict() should be called on dataclass instances\""
+          }
+        ],
+        "counts": {
+          "passed": 0,
+          "failed": 0,
+          "error": 3,
+          "skipped": 0
+        }
+      }
+    },
+    {
+      "attempt": 3,
+      "classification": "Reached future-contract RED and two passing current-source controls.",
+      "receipt": {
+        "path": "/home/otto/.hermes/cache/scratch/dashboard-population-tracer/default-red-03.xml",
+        "sha256": "f6e7e799619ea6b56a97643ddcb5d1b7b4c699a16abb954dffe13ca3b7c0e2ad",
+        "cases": [
+          {
+            "id": "::test_standalone_unbound_generation_is_inspector_only",
+            "status": "passed",
+            "message": null
+          },
+          {
+            "id": "::test_current_default_host_denial_preserves_physical_worker_and_private_memory",
+            "status": "passed",
+            "message": null
+          },
+          {
+            "id": "::test_default_host_existing_persona_regeneration_queues_then_owner_commits",
+            "status": "failed",
+            "message": "AssertionError: MISSING HOST-OWNED POPULATION CALLER: expected pending HTTP 202, got HTTP 400: {'detail': 'host-bound roster regeneration requires account and memory reconciliation'}; WorldFeed falls into WorldState._apply_regenerate_roster -> _require_unbound\nassert 400 == 202\n +  where 400 = <Response [400 Bad Request]>.status_code"
+          }
+        ],
+        "counts": {
+          "passed": 2,
+          "failed": 1,
+          "error": 0,
+          "skipped": 0
+        }
+      }
+    }
+  ],
+  "owned_test": "/home/otto/.hermes/cache/scratch/dashboard-population-tracer/test_dashboard_population_default_red.py",
+  "test_sha256": "8f2ed009e17b57262f23c9f287841d14a3cbbfb008d64a8eb8f3a48a8b89992f",
+  "owned_artifacts_directory": "/home/otto/.hermes/cache/scratch/dashboard-population-tracer",
+  "first_blocking_line": {
+    "caller": "src/robots/app/agent_runtime.py:1225 actual create_app(state, command_dispatcher=self.commands)",
+    "dispatch": "src/robots/adapters/worldfeed_server.py:113-119 dispatches only force_action to host; regenerate falls into real WorldState",
+    "guard": "src/robots/app/world_state.py:287 calls _require_unbound; lines 337-340 raise host-bound reconciliation denial",
+    "reached_response": "HTTP 400: host-bound roster regeneration requires account and memory reconciliation"
+  },
+  "future_contract": {
+    "admission": "Same exact existing one-persona binding, offline joined worker: HTTP 202 status=queued roster_applied=false; no admission roster/private-memory/client/provider changes.",
+    "commit": "Next serialized host.step aligns host/state/ScheduledAgent persona with seeded candidate while retaining exact worker object, binding, private Memory/MemoryLog and journal bytes. No new accounts/characters.",
+    "not_yet_executed": "Post-admission queue receipt and scheduler commit assertions remain unreachable behind current HTTP 400. This is RED evidence, not candidate or implementation approval."
+  },
+  "passed_control_meaning": [
+    "Unbound standalone generation succeeds only as offline inspector aggregate; no existing host worker/client/provider/private-memory side effects.",
+    "Real default-bound host denial retains the same physically alive owning thread, ScheduledAgent/client/persona/binding/Memory/log; roster/runtime/feed/journal/client effects and provider-call counters are unchanged."
+  ],
+  "assembly": "Real AgentHost._default_world_state/_build_agent/_new_memory/ScheduledAgent.connect/_run_loop/disconnect/step, real load_manifest and FastAPI routes. One existing make_entry(Doramir-01) synthetic test identity. InProcessServer captures only uvicorn transport. Real worker is parked at fake client actors accessor, not replaced; desired case releases it then confirms actual join before admission.",
+  "finite_later_target_files": {
+    "existing": [
+      "src/robots/adapters/worldfeed_server.py",
+      "src/robots/app/agent_runtime.py",
+      "src/robots/app/world_state.py"
+    ],
+    "new": [
+      "src/robots/app/population_reconciliation.py",
+      "tests/test_dashboard_population_vertical.py"
+    ],
+    "restriction": "Freeze release required before any source change. Keep standalone host-bound guard, no blanket unbinding, no population provisioning framework."
+  },
+  "source_sha256_before": {
+    "dashboard/crates/dashboard-app/src/main.rs": "0253992f028484ae45c29e708089b955f80f7b5dd69815779a1d0c6b5c47fa8d",
+    "dashboard/crates/dashboard-app/src/render.rs": "e02427c8942c101daa5165860b32a2eb4ac901eb3b959ca6ba2bf60aef6eff22",
+    "dashboard/crates/world-feed/src/lib.rs": "a1008cb5200844e64ccb59edfb8baf2f324e647a43e597a9619a6c09d255bdee",
+    "dashboard/crates/world-feed/src/live.rs": "7ea29f93a8c9534fc4757221dfafde81f7d6c128343a58d11c16b8cef2f0f9b8",
+    "dashboard/crates/world-feed/src/wire.rs": "cf54289322d96a182ee10061e35489ebeec1b871b0fe44c3cd6aeb014c328f3d",
+    "run/reviews/host-chat-final-disposition.json": "18bd2bb87f06e4312adbd9443672ed29c5b5d320dc0cadfe84adc4dfa7cb902c",
+    "run/reviews/population-binding-parent-verification.json": "38fee53e321a81f5bd98b1045302896a445abadd768dcd2c7aa9f8527ec2302f",
+    "spikes/003-clientless-limbs/client.py": "2f57a0adc0b43a20235835290499ca0043966c5def208642598afb0dc49807fd",
+    "spikes/003-clientless-limbs/scripts/seed_fixture.py": "03de2f4f659c8df0a3c5e9c41d74c3cb2493176f420aead8a7022f5631ecdb0e",
+    "src/robots/__main__.py": "a1396e7ed4f3480f1534d1dc156ca277a479dae899d8ef91424e378537a2da08",
+    "src/robots/adapters/world_test_fixture.py": "b5e5eebc3ae1d74ce52fb71be7345e3a95c161c3f78534c28db5b27df8126514",
+    "src/robots/adapters/worldfeed_server.py": "456b110a37b32af9229af49be9587c7316ff47b24fe52f729a51cb42172f5b49",
+    "src/robots/app/agent_runtime.py": "5d266e7a0bb290855f56be5bb688172fa4ed0b13d005c246289c83185cb7e744",
+    "src/robots/app/host_commands.py": "023af553c24b7ec2fc5d6d5e21d361f1d541b6d499f06d18a0039df7f3a1407b",
+    "src/robots/app/roster_edit.py": "202030a31b34b9e0c9d79f7d0827f4c00229f4e71c22c47dc74cbda57abd1e13",
+    "src/robots/app/world_state.py": "61f4daebc1383fd9ee8b9bda27111ed5b1b94c7ccf43099c0d892b7799ce9d0d",
+    "src/robots/society/population_limits.py": "e73bc0f8d7e6fa3bf360db70e1ee6019b51370042a4f0a3683b78c757e2b29ca",
+    "src/robots/society/society.py": "fa7a1c6629b9836de6fca90770e50539fd83bffe98abc51cf68534b92af3db53",
+    "tests/test_agent_host.py": "fed470a1158fa9b5ec09ad12895af4ced33bb679d31ca471567eed1c6a94929b",
+    "tests/test_host_chat_commands.py": "c92969013f656ad8e7fa103bb8662a9acfe6ab7be12dc896b86db26f1785e58c",
+    "tests/test_population_binding_race.py": "57129ac7a653e38161b120a8fdb329b6261b6f97739cd3603f37e6c36c11b7e0",
+    "tests/test_population_config.py": "cecd227079d277bde7bdceab0b33c2eb1c9f3c13aecfaa85329d1d905766268d",
+    "wiki/guides/goals-ledger.md": "2f185f709e0a26a23ee9aa34ce1d8458b93950fe93ab19b492edf783a2a2df6b",
+    "wiki/guides/playable-world-acceptance.md": "dcc57ad07c58df1a8d1f3998f04b838e4ff3fbdc01e10273b4eb1c2ff265926a"
+  },
+  "source_sha256_after": {
+    "dashboard/crates/dashboard-app/src/main.rs": "0253992f028484ae45c29e708089b955f80f7b5dd69815779a1d0c6b5c47fa8d",
+    "dashboard/crates/dashboard-app/src/render.rs": "e02427c8942c101daa5165860b32a2eb4ac901eb3b959ca6ba2bf60aef6eff22",
+    "dashboard/crates/world-feed/src/lib.rs": "a1008cb5200844e64ccb59edfb8baf2f324e647a43e597a9619a6c09d255bdee",
+    "dashboard/crates/world-feed/src/live.rs": "7ea29f93a8c9534fc4757221dfafde81f7d6c128343a58d11c16b8cef2f0f9b8",
+    "dashboard/crates/world-feed/src/wire.rs": "cf54289322d96a182ee10061e35489ebeec1b871b0fe44c3cd6aeb014c328f3d",
+    "run/reviews/host-chat-final-disposition.json": "18bd2bb87f06e4312adbd9443672ed29c5b5d320dc0cadfe84adc4dfa7cb902c",
+    "run/reviews/population-binding-parent-verification.json": "38fee53e321a81f5bd98b1045302896a445abadd768dcd2c7aa9f8527ec2302f",
+    "spikes/003-clientless-limbs/client.py": "2f57a0adc0b43a20235835290499ca0043966c5def208642598afb0dc49807fd",
+    "spikes/003-clientless-limbs/scripts/seed_fixture.py": "03de2f4f659c8df0a3c5e9c41d74c3cb2493176f420aead8a7022f5631ecdb0e",
+    "src/robots/__main__.py": "a1396e7ed4f3480f1534d1dc156ca277a479dae899d8ef91424e378537a2da08",
+    "src/robots/adapters/world_test_fixture.py": "b5e5eebc3ae1d74ce52fb71be7345e3a95c161c3f78534c28db5b27df8126514",
+    "src/robots/adapters/worldfeed_server.py": "456b110a37b32af9229af49be9587c7316ff47b24fe52f729a51cb42172f5b49",
+    "src/robots/app/agent_runtime.py": "5d266e7a0bb290855f56be5bb688172fa4ed0b13d005c246289c83185cb7e744",
+    "src/robots/app/host_commands.py": "023af553c24b7ec2fc5d6d5e21d361f1d541b6d499f06d18a0039df7f3a1407b",
+    "src/robots/app/roster_edit.py": "202030a31b34b9e0c9d79f7d0827f4c00229f4e71c22c47dc74cbda57abd1e13",
+    "src/robots/app/world_state.py": "61f4daebc1383fd9ee8b9bda27111ed5b1b94c7ccf43099c0d892b7799ce9d0d",
+    "src/robots/society/population_limits.py": "e73bc0f8d7e6fa3bf360db70e1ee6019b51370042a4f0a3683b78c757e2b29ca",
+    "src/robots/society/society.py": "fa7a1c6629b9836de6fca90770e50539fd83bffe98abc51cf68534b92af3db53",
+    "tests/test_agent_host.py": "fed470a1158fa9b5ec09ad12895af4ced33bb679d31ca471567eed1c6a94929b",
+    "tests/test_host_chat_commands.py": "c92969013f656ad8e7fa103bb8662a9acfe6ab7be12dc896b86db26f1785e58c",
+    "tests/test_population_binding_race.py": "57129ac7a653e38161b120a8fdb329b6261b6f97739cd3603f37e6c36c11b7e0",
+    "tests/test_population_config.py": "cecd227079d277bde7bdceab0b33c2eb1c9f3c13aecfaa85329d1d905766268d",
+    "wiki/guides/goals-ledger.md": "2f185f709e0a26a23ee9aa34ce1d8458b93950fe93ab19b492edf783a2a2df6b",
+    "wiki/guides/playable-world-acceptance.md": "dcc57ad07c58df1a8d1f3998f04b838e4ff3fbdc01e10273b4eb1c2ff265926a"
+  },
+  "changed_monitored_paths": [],
+  "monitored_paths_count": 24,
+  "frontier_report": {
+    "path": "run/reviews/dashboard-population-vertical-frontier.json",
+    "sha256": "3d8afc7d6b93ee21fd817f66733e872067931edd5c16b31666398bf2d66519f2"
+  },
+  "warnings": "Existing Starlette/httpx TestClient deprecation warning; no dependency change made.",
+  "limits": [
+    "Not native proof, not new-account generation, not full criterion 3 or milestone 5 completion.",
+    "Only three exact scratch cases ran, no root suite rerun.",
+    "24 inspected source/report hashes identify stable bytes, not approval or exclusive native freeze.",
+    "Another worker's scratch helper restoration was neither read nor used."
+  ]
+}

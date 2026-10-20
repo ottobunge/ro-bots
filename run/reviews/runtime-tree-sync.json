@@ -1,0 +1,153 @@
+{
+  "scope": "source-only private-tree synchronization; implementer evidence, not independent approval",
+  "created_local": "2026-10-06",
+  "entrypoint": "robots.adapters.runtime_tree_sync.sync_private_tree(root_fd: int) -> None",
+  "files_created": [
+    "src/robots/adapters/runtime_tree_sync.py",
+    "tests/test_runtime_tree_sync.py",
+    "run/reviews/runtime-tree-sync.json",
+    "wiki/guides/runtime-tree-sync.md"
+  ],
+  "return_semantics": "None only after conditional syscall acknowledgement and supported observation/cleanup checks; no publication or admission status",
+  "bounds": {
+    "root_depth": 0,
+    "max_directory_depth": 32,
+    "max_total_nonroot_entries": 8192,
+    "max_names_per_directory_scan": 8192
+  },
+  "ordering": "all regular-file fsync calls first; then nested directory fsync bottom-up; borrowed root last",
+  "positive_calls": "recording wrappers call actual os.fsync; identities obtained from actual fstat",
+  "tests": {
+    "passed": 40,
+    "coverage_percent": 95.49549549549549,
+    "covered_statements": 106,
+    "total_statements": 111,
+    "excluded_lines": 0,
+    "threshold_unchanged": 85
+  },
+  "scoped_static_gates_passed": [
+    "black --check",
+    "ruff check",
+    "mypy strict source and tests",
+    "vulture confidence85 source plus tests",
+    "xenon absolute B/module B/average A",
+    "pylint duplicate-code owned source",
+    "bandit configured pyproject owned source"
+  ],
+  "execution": "existing pinned nix develop --offline; uv run --offline --no-sync; no dependency or gate modifications",
+  "vertical_tdd_cycles": {
+    "1": {
+      "red_summary": "1 failed in 0.35s",
+      "green_summary": "1 passed in 0.38s",
+      "red_log": "/home/otto/.hermes/cache/scratch/tree-sync-red1.log",
+      "green_log": "/home/otto/.hermes/cache/scratch/tree-sync-green1.log"
+    },
+    "2": {
+      "red_summary": "13 failed, 1 passed, 2 warnings in 0.97s",
+      "green_summary": "13 passed in 0.47s",
+      "red_log": "/home/otto/.hermes/cache/scratch/tree-sync-red2.log",
+      "green_log": "/home/otto/.hermes/cache/scratch/tree-sync-green2.log"
+    },
+    "3": {
+      "red_summary": "6 failed, 16 passed in 0.46s",
+      "green_summary": "22 passed in 0.40s",
+      "red_log": "/home/otto/.hermes/cache/scratch/tree-sync-red3.log",
+      "green_log": "/home/otto/.hermes/cache/scratch/tree-sync-green3.log"
+    },
+    "4": {
+      "red_summary": "5 failed, 23 passed in 0.53s",
+      "green_summary": "28 passed in 0.57s",
+      "red_log": "/home/otto/.hermes/cache/scratch/tree-sync-red4.log",
+      "green_log": "/home/otto/.hermes/cache/scratch/tree-sync-green4.log"
+    },
+    "5": {
+      "red_summary": "2 failed, 30 passed in 3.13s",
+      "green_summary": "32 passed in 1.85s",
+      "red_log": "/home/otto/.hermes/cache/scratch/tree-sync-red5.log",
+      "green_log": "/home/otto/.hermes/cache/scratch/tree-sync-green5.log"
+    },
+    "6": {
+      "red_summary": "3 failed, 34 passed in 1.99s",
+      "green_summary": "37 passed in 2.13s",
+      "red_log": "/home/otto/.hermes/cache/scratch/tree-sync-red6.log",
+      "green_log": "/home/otto/.hermes/cache/scratch/tree-sync-green6.log"
+    }
+  },
+  "final_gate_log": "/home/otto/.hermes/cache/scratch/tree-sync-final-gates.log",
+  "coverage_artifact": "/home/otto/.hermes/cache/scratch/tree-sync-coverage.json",
+  "raw_log_handling": "scratch harness diagnostics are not public/private-tree provenance; do not publish traceback locals or raw fixture paths",
+  "tested_faults": [
+    "owner UID synthetic on actual root fstat branch; no foreign file mutation",
+    "exact private modes and special bits",
+    "actual symlink and FIFO refusal before opening",
+    "regular-file borrowed root refusal",
+    "inode substitutions before open and after fsync for file and directory",
+    "actual chmod after file fsync",
+    "actual parent directory rename and replacement sentinel after root FD opened; unrelated cwd",
+    "depth32 succeeds/depth33 refuses",
+    "8192 entries succeed/8193 refuse",
+    "file/nested-directory/root fsync refusal selected by actual dev/inode",
+    "OSError EINVAL unsupported sync, KeyboardInterrupt and fixture-owned BaseException subclass",
+    "double cleanup faults after actual FD release preserve identity and origin frame",
+    "before-release cleanup faults attempted independently once; fixture releases retained kernel handles",
+    "scandir/open/stat failures preserve origin and sanitize OSError",
+    "directory iteration and scan-close double fault after actual release",
+    "success-path close error refuses acknowledgement",
+    "actual proc-self-fd baseline recovery and borrowed root retention"
+  ],
+  "shared_source_fingerprints_unchanged": true,
+  "shared_source_fingerprints_before": {
+    "pyproject.toml": "e8ae0849a413bc3d705f081f609b92dae702bbd3e491b2c3aeb5d8665c458fba",
+    "Taskfile.yml": "63616950e21c15c455c2b6f90be4d588b77f31a62181fd7a93253d164a64a7fd",
+    "flake.nix": "185e4a4babf62a40484c347f59653bd11b79ce847316a3a90349c8545d38a359",
+    "flake.lock": "c9c0bac69415b99a29ef3fe149b6f04ef54d291989bdf7218cf819ed52edf2a0",
+    "uv.lock": "2d7b4c187078488d7625e4fd4fa982745cab8d6a65b2ff3e382ffa286f1df245",
+    "src/robots/adapters/rathena_runtime.py": "0a52cbbae5ec459022c1348e33c65105c8cf0776a6bf68bca05e1066d8c74293",
+    "src/robots/adapters/rathena_runtime_io.py": "bc3ca2d291da5d19831bd57f5a794e455a6e9f7870db0f655d376a51de0e6719",
+    "src/robots/adapters/rathena_runtime_assets.py": "8cf599ddd633c82879d5a6fc0ed2d98f13399e4094262b6bcafb25c9841650fc"
+  },
+  "shared_source_fingerprints_after": {
+    "pyproject.toml": "e8ae0849a413bc3d705f081f609b92dae702bbd3e491b2c3aeb5d8665c458fba",
+    "Taskfile.yml": "63616950e21c15c455c2b6f90be4d588b77f31a62181fd7a93253d164a64a7fd",
+    "flake.nix": "185e4a4babf62a40484c347f59653bd11b79ce847316a3a90349c8545d38a359",
+    "flake.lock": "c9c0bac69415b99a29ef3fe149b6f04ef54d291989bdf7218cf819ed52edf2a0",
+    "uv.lock": "2d7b4c187078488d7625e4fd4fa982745cab8d6a65b2ff3e382ffa286f1df245",
+    "src/robots/adapters/rathena_runtime.py": "0a52cbbae5ec459022c1348e33c65105c8cf0776a6bf68bca05e1066d8c74293",
+    "src/robots/adapters/rathena_runtime_io.py": "bc3ca2d291da5d19831bd57f5a794e455a6e9f7870db0f655d376a51de0e6719",
+    "src/robots/adapters/rathena_runtime_assets.py": "8cf599ddd633c82879d5a6fc0ed2d98f13399e4094262b6bcafb25c9841650fc"
+  },
+  "owned_source_hashes": {
+    "src/robots/adapters/runtime_tree_sync.py": "b521c3413a9ea3fc263797029cd2fc9eb9dce56f1fd83c6d774d286e7c904588",
+    "tests/test_runtime_tree_sync.py": "17eef0c1fb9b578313229213003d605eef6239d714bb5e5a1677b94f0f7ee56d"
+  },
+  "primary_authorities": [
+    {
+      "url": "https://man7.org/linux/man-pages/man2/fsync.2.html",
+      "read_only_cached_copy": "/home/otto/.hermes/cache/scratch/publication-manuals-durable-f6809pnl/fsync.html",
+      "rule": "file fsync does not synchronize enclosing directory entries; directory needs its own fsync"
+    },
+    {
+      "url": "https://man7.org/linux/man-pages/man2/close.2.html",
+      "read_only_cached_copy": "/home/otto/.hermes/cache/scratch/runtime-publication-contract/close.html",
+      "rule": "Linux releases descriptor early; failed close must not be blindly retried"
+    }
+  ],
+  "limitations": [
+    "not an atomic seal or multi-file transaction",
+    "no private contents read or hashed; no content validation",
+    "same-UID mutation after final observation cannot be excluded",
+    "no source URI/root-path ownership promise",
+    "no power-loss/hardware durability claim",
+    "trusted-manager scope/exclusion not established",
+    "original IO-003 and EARLY-CONSTRUCTION remain unclosed",
+    "not integrated into builder, publication, manager/admission, catalog/schema or native startup; refusal78 unchanged",
+    "full repository task check and dependency audit not run in shared-writer timebox; scoped gates only",
+    "cross-directory aggregate cap and synthetic socket type have production refusal branches but no dedicated fixture case in this scoped suite"
+  ],
+  "retrieval_issues": [
+    "direct web extractor backend unsupported; urllib HTTPS certificate validation failed; used existing read-only cached primary close manual without disabling TLS checks"
+  ],
+  "world_effects": "none; no native/service/SQL/DB/container/engine/live-world interfaces called",
+  "staging_commit_push": "none",
+  "independent_review": "pending parent-owned review"
+}

@@ -1,0 +1,83 @@
+{
+  "task": "TDD smoke-harness and seed-security repair only",
+  "date": "2026-10-05",
+  "started_local": "2026-10-05T11:42:41+02:00",
+  "last_verified_local": "2026-10-05T12:00:18+02:00",
+  "status": "offline repair verified; live game and SQL acceptance intentionally unverified",
+  "ownership": {
+    "modified": [
+      "spikes/003-clientless-limbs/test_limbs.py",
+      "spikes/003-clientless-limbs/seed_test.sql",
+      "spikes/003-clientless-limbs/README.md"
+    ],
+    "created": [
+      "tests/test_limb_evidence.py",
+      "spikes/003-clientless-limbs/scripts/seed_fixture.py",
+      "run/reviews/limb-evidence-fix.json"
+    ],
+    "excluded": ["client.py", "packetdb.py", "existing test_packetdb.py", "app files", "wiki files"],
+    "original_data": "Historical run timings retained in README as non-revalidated reports; no spike data files removed."
+  },
+  "repairs": [
+    "Required private owned operator manifest with explicit isolated_disposable opt-in, literal loopback host, two exact distinct account-character-ID pairs, and no reusable credential defaults.",
+    "Validated both connected identities before limb mutation; harness-specific client subclass refuses character/map redirects outside loopback.",
+    "Removed partial party acceptance. Required fresh B current unique-party invitation and post-reply inviter result for exact recipient plus exact-ID/name/current-party online member-added record.",
+    "Propagated one absolute monotonic deadline into connect and all harness polling/backoff/cooldowns. Refused exhausted budgets and backoffs which do not fit.",
+    "Classified login-lock results 2/8; conservative lock-capable failures preserve minimum 30-second reconnect boundary even across subsequent limbs and final failed attempts.",
+    "Rejected PASS with dead receive thread or recorded rx_error/dispatch_errors.",
+    "Replaced name-only seed writes with MariaDB fail-closed guarded anonymous transaction block: require explicit stopped isolated scope and InnoDB, lock and verify both exact login/character ownership pairs and offline state before first fixture write, rollback/signal on mismatch, verify readback before commit.",
+    "Added offline snapshot validator and SQL renderer which strips password fields and has no SQL execution API.",
+    "Corrected README validation claims, documented operator prerequisites and honest limits."
+  ],
+  "tdd_red_observations": [
+    "Original stale two-member roster produced OK (partial), causing regression assertion failure before repair.",
+    "Manifest loader, monotonic budget, deadline propagation, and fresh exact-recipient evidence regressions failed before their implementations.",
+    "Seed validation/rendering tests failed for missing utility before implementation.",
+    "Cross-limb login cooldown bypass and recorded receive-error tests exposed failures before repair.",
+    "Nonloopback redirect test failed before harness-specific guard implementation.",
+    "Final failed handshake lost lock boundary; malformed account manifest raised AttributeError. Both failures observed and then repaired."
+  ],
+  "verification": [
+    {
+      "command": "nix develop --offline -c .venv/bin/pytest tests/test_limb_evidence.py -v",
+      "result": "24 passed in 0.08s",
+      "kind": "deterministic offline regression"
+    },
+    {
+      "command": "nix develop --offline -c python3 spikes/003-clientless-limbs/test_packetdb.py",
+      "result": "7 tests, OK in 0.005s",
+      "kind": "independent existing offline client regression"
+    },
+    {
+      "command": "nix develop --offline -c ruff check --select E9,F tests/test_limb_evidence.py spikes/003-clientless-limbs/test_limbs.py spikes/003-clientless-limbs/scripts/seed_fixture.py",
+      "result": "All checks passed",
+      "kind": "targeted syntax/undefined-name/unused-import check, not full repository lint"
+    },
+    {
+      "command": "nix develop --offline -c python3 -m py_compile spikes/003-clientless-limbs/test_limbs.py spikes/003-clientless-limbs/scripts/seed_fixture.py",
+      "result": "exit 0",
+      "kind": "Python compilation"
+    }
+  ],
+  "source_authority": [
+    "Local rathena/src/login/login.hpp: AUTH_TIMEOUT 30000.",
+    "Local rathena/src/login/loginclif.cpp: SC_NOTIFY_BAN results 2/8 and timeout scheduling.",
+    "Local rathena/src/map/clif.cpp: 0x02c6 contains party ID and PARTY NAME, not inviter nickname.",
+    "Local rathena/sql-files/main.sql: char_id/account_id/name/online columns, char account_id index; char at line 296, login at line 794, skill at line 1051 use MyISAM defaults."
+  ],
+  "client_coordination": {
+    "required_contract": "BotClient.connect(deadline=absolute_monotonic_float), rx_error, dispatch_errors",
+    "observed": "Independent client child added connect(self, *, deadline: float | None = None), rx_error and dispatch_errors in the local file. Harness regressions validate shared deadline propagation with a fake client; the live handshake was not run.",
+    "not_claimed": "No client.py implementation ownership or live handshake verification; no unbounded fallback if connect deadline interface is absent."
+  },
+  "exact_remaining_frontier": [
+    "No operator manifest or authorization for a real disposable fixture was supplied; no credentials or accounts invented for live use.",
+    "MariaDB anonymous-block parsing/execution, InnoDB rollback/locking/concurrency, and database readback were NOT executed. Offline Python preflight and static ordering checks are not live SQL proof.",
+    "Upstream MyISAM schema is intentionally blocked. No engine migration performed; separately authorized isolated InnoDB fixture required for atomic seed execution.",
+    "Stopped-server/disposable-isolation flags are operator attestations; SQL cannot prove that login/char/map sessions in server memory are gone.",
+    "Post-reply snapshot may exclude a very fast legitimate acknowledgement (fail-closed false negative); wire invitation nonce is absent, so correlation is not proof against arbitrary delayed/injected traffic.",
+    "Manifest symlink inspection is not a race-proof openat ancestor walk; controlled private directory is required.",
+    "Monotonic budget is cooperative, not hard real-time containment of OS scheduling/process startup/teardown. External timeout remains documented.",
+    "No full app suite, native server, live game, SQL, provider, network, staging, commit or push actions performed."
+  ]
+}

@@ -1,0 +1,56 @@
+{
+  "task": "Criterion 7: mechanically-accurate PRE-RENEWAL build digests for Novice bootstrap + six first-job classes (1-2 playstyles each) with structured sidecars",
+  "generated_at": "2026-10-18T00:00:00+02:00",
+  "server_context": {
+    "engine": "rAthena (repo checkout rathena/)",
+    "packetver": 20180704,
+    "renewal": false,
+    "db": "db/pre-re/",
+    "agents": "Level-1 Novices, 0 zeny, empty inventory; earn-by-grinding loop prt_fild08 -> Prontera sell -> Knife 1201 @50z (established)"
+  },
+  "deliverable_dir": "run/knowledge/builds/pre-re/",
+  "coverage": {
+    "digests": 13,
+    "sidecars": 13,
+    "index": "run/knowledge/builds/pre-re/README.md",
+    "matrix": {
+      "Novice": ["all (shared 0-zeny bootstrap)"],
+      "Swordman": ["tank", "grinder"],
+      "Mage": ["grinder", "evasive/lethal (fire-wall kiter)"],
+      "Archer": ["evasive/lethal (DS kiter)", "grinder (ICC/arrow-craft farmer)"],
+      "Acolyte": ["support/party", "grinder (battle mace)"],
+      "Thief": ["evasive/lethal (steal-and-vanish)", "grinder (flee-tank)"],
+      "Merchant": ["merchant-economy", "grinder (mammonite brawler)"]
+    },
+    "per_digest_sections": ["stat progression with point-budget arithmetic", "skill order with server-tree prereq chains", "equipment targets in acquisition order with prices", "level-appropriate grinding maps/mobs with iro-db HP/exp sanity", "do-not-waste list", "renewal-differences paragraph", "sources"]
+  },
+  "sources": {
+    "primary_local_corpus": [
+      "run/knowledge/iro-wiki (2,524 pages, FTS query_iro_wiki.py): Stats, Total stat point requirement, Levels, six class pages (job bonuses + ASPD weapon tables), 69 first-class skill pages, job change guides, ASPD, Attack Range (via Stats)",
+      "run/knowledge/iro-db (1,042 monsters + 5,848 items, query_iro_db.py): ~40 mob entries (HP/exp/atk/range/hit-req/flee-req/element/drops), ~130 item entries (NPC buy/sell incl. merchant-rate parentheticals)"
+    ],
+    "server_truth_verified": [
+      "rathena/db/pre-re/skill_tree.yml - authoritative prereqs; divergences from wiki recorded in digests (AC_DOUBLE no prereq server-side; MC_IDENTIFY no prereq vs wiki 'Pushcart 3'; Blessing needs Divine Protection 5)",
+      "rathena/db/pre-re/item_db*.yml - server Buy prices (Knife 50z, Sword 100z, Bow 1000z, Cotton Shirt 10z, Sandals 400z); server Defense scale differs from db.irowiki display",
+      "rathena/db/pre-re/mob_db.yml - base exp/HP before live rates (Poring 2/1 vs iro-db 27/20); flagged in digests",
+      "rathena/src/map/status.cpp - pre-re status ATK (STR+(STR/10)^2+DEX/5+LUK/5 melee; DEX+(DEX/10)^2 ranged), MATK (INT+(INT/7)^2 / INT+(INT/5)^2), SC_BLESSING val2=val1, SC_INCREASEAGI val2=2+val1, SC_ANGELUS val2=5*val1, SC_CONCENTRATE val2=2+val1, TF_MISS flee skill*3 (first-class Thief), SC_LOUD str+4",
+      "rathena/src/map/skill.cpp:70 - pre-re Heal floor((BLv+INT)/8)*(4+8*skill_lv); corpus page shows the renewal /5*30 formula; divergence documented",
+      "rathena/npc/pre-re/jobs/1-1/*.txt - classic job-change tests (Mage mixing, Archer >=25 trunk points S5/A3/B2/C1, Thief >=25 mushroom points, Merchant delivery, Acolyte pilgrimage)"
+    ],
+    "project_receipts_cited": ["run/reviews/knife-purchase-mechanics.json", "run/reviews/playing-mvp-npc-earned-equipment-route.json"],
+    "live_wikiR_fetches": 0,
+    "live_wikiR_note": "not needed - the local corpus covered every required page; no gaps required polite live fetches"
+  },
+  "verification": {
+    "stat_budget_arithmetic": "computed programmatically from corpus formulas (raise cost floor((X-1)/10)+2; 48 pts at BLv1 + floor(X/5)+3 per level) and asserted per build phase in the sidecar generator; every allocation fits its BLv budget (305 @40, 420 @50)",
+    "skill_orders": "checked against rathena/db/pre-re/skill_tree.yml prereqs (server tree wins over wiki corpus where they differ)",
+    "json_sidecars": "all 13 parse; md/json twins 1:1; coverage matrix asserted complete (6 classes x 2 + Novice)",
+    "writes_confined_to": ["run/knowledge/builds/pre-re/**", "run/reviews/builds-research.json"]
+  },
+  "gaps_open": [
+    "live spawn tables per map are not in the corpora: digests ground mob stats in iro-db and mark non-prt_fild08 maps as 'classic iRO spawns - confirm live on the server'",
+    "live exp/zeny rate multipliers unknown; iro-db exp values are relative pacing references only",
+    "Red Potion NPC price diverges (iRO 10z vs server db Buy 50z) - needs a live tool-dealer check before pricing decisions",
+    "job bonuses beyond job 50 (transcendent) out of scope - first jobs only per task"
+  ]
+}

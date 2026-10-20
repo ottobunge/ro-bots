@@ -1,0 +1,261 @@
+{
+  "schema": 1,
+  "kind": "architecture-proposal-and-acceptance-specification",
+  "status": "proposed",
+  "recorded_date": "2026-10-05",
+  "implemented": false,
+  "approved": false,
+  "acceptance_tests_executed": false,
+  "original_contract_passed": false,
+  "document": "wiki/guides/runtime-publication-contract.md",
+  "authorities": [
+    "run/reviews/rathena-runtime-first-repair-review.json",
+    "run/reviews/runtime-first-repair-final-disposition.json"
+  ],
+  "retained_open_findings": ["RUNTIME-IO-003", "RUNTIME-IO-001-EARLY-CONSTRUCTION"],
+  "retained_original_slices": {
+    "RUNTIME-IO-001": "Exact sentinel substitution closed, earlier empty-private-root gap remains",
+    "RUNTIME-IO-002": "Exact path binding wrong-success closed, no perpetual binding claim",
+    "RUNTIME-IO-003": "Single-fault marker improvement retained, compound completion remains open",
+    "RUNTIME-IO-004": "Origin identity and traceback across cleanup double faults",
+    "RUNTIME-IO-005": "Private output mode/owner/kind/inode readback",
+    "RUNTIME-FIELD-002": "Exact native display label19; no truncation",
+    "RUNTIME-INPUT-001": "Raw CLI spelling before Path; typed Path normalization boundary retained",
+    "RUNTIME-INPUT-002": "Strict UTF-8 before JSON decoding"
+  },
+  "wire001": "Preserve independently closed inter fields23 versus SQL password32 admission",
+  "failure_model": {
+    "supported": ["I/O errors", "interrupts", "cleanup double faults", "manager death", "all subsequent writes denied", "observed path replacement", "lease expiry"],
+    "not_promised": ["every API error rolled back", "marker restoration always succeeds", "permanent pathname ownership from a receipt", "atomic multi-file catalog/tree transaction", "hostile arbitrary same-UID exclusion from mode0700 or random names", "power-loss validation from monkeypatched syscalls"],
+    "critical_rule": "If durable quarantine writing fails, revoke the affected manager scope in memory; every new manager generation requires explicit recovery for every prior bundle. Missing quarantine records never admit anything."
+  },
+  "architectures": [
+    {
+      "id": "A",
+      "name": "Manager-owned staging, nonreplace rename and separate admission catalog",
+      "recommended": true,
+      "rationale": "Separates partial artifacts from named worlds and aligns with later fresh-world quarantined bootstrap phases; publication cannot overwrite an existing root.",
+      "requires": ["trusted controlled workspace", "retained exclusive manager lease", "registered intent", "bottom-up tree sync", "nonreplace same-filesystem rename", "sync both changed parents", "catalog file and catalog directory sync/readback", "generation-scoped admission"],
+      "residual": "Post-rename fsync, released close and path/exclusion loss still yield uncertain or denied admission, not rollback."
+    },
+    {
+      "id": "B",
+      "name": "Manager-owned in-place root and external catalog commit",
+      "recommended": false,
+      "rationale": "Smaller publication rewrite with permanent advisory marker, but partial trees occupy final namespace and all consumers must use the manager.",
+      "requires": ["same controlled workspace and lease authority as A", "catalog is sole commit observation", "no marker-based consumer", "same durability and explicit restart recovery"],
+      "residual": "Catalog and cleanup uncertainty remain; in-place exposure makes legacy marker consumers particularly unsafe."
+    }
+  ],
+  "unresolved_prerequisites": [
+    "Architecture and compatibility decision not accepted",
+    "No deployed trusted workspace manager or verified exclusive management boundary",
+    "Dedicated identity/access policy, ancestry/ACL/mount control, registered writers and lease generations need actual reviewed evidence",
+    "Exact local filesystem sync and nonreplace support require validation; unsupported semantics must refuse",
+    "Fresh engine/network/database/schema/account authority and explicit live authorization remain separate and absent"
+  ],
+  "proposed_publication_schema": {
+    "version": 2,
+    "additional_fields_allowed": false,
+    "required": {
+      "transaction_id": "opaque manager-issued identifier; not caller authority",
+      "world": "existing exact safe world and native label19 rule",
+      "workspace_id": "manager registry reference; not a free parent path",
+      "manager_generation": "fresh manager incarnation identifier",
+      "lease_id": "scoped live manager lease reference",
+      "staging_name": "single safe manager-relative component",
+      "final_name": "exact safe world component",
+      "observed_parent_identity": "integer dev/ino observations, not durable provenance by themselves",
+      "observed_root_identity": "integer dev/ino observations plus intent/generation provenance",
+      "public_attestations": "existing profile/revision/source/package/public asset hashes only",
+      "commit_state": ["prepared", "committed", "uncertain", "quarantined"],
+      "cleanup_status": ["pending", "complete", "failed"],
+      "admission_state": ["denied", "offline_validated"],
+      "reason_code": "bounded sanitized enum, never exception/private values"
+    },
+    "location": "Private external manager catalog; content manifest only adds schema/transaction binding and stays nonauthorizing",
+    "validation": "Strict UTF-8, bounded size, exact fields, duplicate rejection, exact integer and enum types, transaction/world/lease/generation/binding agreement; schema1 is never admission evidence",
+    "commit_point": "Manager acknowledges successful tree/changed-parent/catalog-file/catalog-directory sync and exact binding/readback under lease; not rename or visible receipt bytes",
+    "after_commit_error": "Keep historical committed observation when proven; preserve exact raised origin; cleanup or binding uncertainty denies current admission until explicit reconciliation",
+    "restart": "All prior generation bundles denied until explicit trusted offline recovery, even receipts visibly marked committed",
+    "launch_authority": false,
+    "private_values_or_private_derived_hashes": false
+  },
+  "compatibility": {
+    "api": "Replace arbitrary destination Path write authority with manager-scoped workspace/lease; legacy wrappers must fail closed without trusted resolution. No caller-supplied exclusivity boolean.",
+    "cli": "Validate raw spellings before Path; retain bounded private file/stdin modes; explicit manager resolution required; exit0 means delivered committed offline receipt, not startup permission",
+    "origin": "Preserve identity and original traceback including KeyboardInterrupt; attach sanitized phase metadata without replacing origin or promising persisted metadata",
+    "test_migration": "Original failed schema1 marker/new-root contract stays failed in immutable evidence. Existing safety regressions retained; path/publication expectations affected by intentional schema2 staging must be reviewed explicitly, not weakened to arbitrary success or skip. Provide equivalent reached checks on owned staging and final roots.",
+    "unchanged": ["public source-equivalent assets/import omissions", "public bootstrap SQL derivation", "root flake and pins", "private capacities23/32", "native label19", "startup refusal78", "seeding/E2E live guards"]
+  },
+  "next_source_changes": [
+    {"target": "src/robots/adapters/rathena_runtime_io.py:create_root", "change": "Manager-only allocation after scoped lease/intent; reject external/adopted parents. Retain opened handles and observed identity under established mutator exclusion, not a supposed atomic mkdir receipt."},
+    {"target": "src/robots/adapters/rathena_runtime_io.py", "change": "Add bottom-up directory sync and descriptor-relative nonreplace publication helpers; retain exact write/readback/metadata and once-only cleanup semantics."},
+    {"target": "src/robots/adapters/rathena_runtime.py:198-229", "change": "Replace marker rollback predicate with phase/receipt handling and denied uncertain scopes. Commit and API completion are separate."},
+    {"target": "new narrowly scoped runtime publication manager/catalog module", "change": "Owned workspace registry/lease generation, durable intent/receipts, conservative admission and explicit offline recovery; not an engine/SQL/server executor."},
+    {"target": "src/robots/adapters/rathena_runtime.py:173-183,239-263", "change": "Change build authority signatures and CLI manager resolution, return sanitized receipt/status with existing input guards."},
+    {"target": "tests/test_runtime_publication_contract.py and existing runtime failure tests", "change": "Add acceptance cases below with positive controls, per-seam reach counts, origin identity/traceback, foreign-tree snapshots and side-effect spies; no archived harness edits."}
+  ],
+  "common_acceptance_requirements": {
+    "execution": "Future tests only, fresh owned synthetic scratch under existing pinned offline Nix; do not run old reviewer harnesses or mutate their trees. No new dependencies or host manager provisioning in this proposal.",
+    "fault_reach": "Every parameterized row must assert its own exact seam event/count and positive baseline reach. A preflight failure, API missing/import failure, timeout or earlier unrelated fault is not RED evidence for a later cutpoint.",
+    "origins": "For every injected exception assert caught.value is injected_origin and originating frame remains; independent cleanup errors may add sanitized notes only. For no injected exception explicitly assert no origin/no unexpected exception. For killed children assert reached checkpoint and exact termination, not a fabricated exception identity.",
+    "foreign_trees": "Snapshot independent foreign roots (empty0700 and sentinel variants) before each test: inode, owner/mode, entry set and privately compared bytes. Compare after and assert no create/write/chmod/unlink/rename/repair by system under test; adversary's deliberate rename is tracked separately. Do not publish secret hashes.",
+    "effects": "Launch/engine/SQL/seeder/E2E/provider spies must all remain zero, including recovery and error handling.",
+    "private_output": "Capture CLI/stdout/stderr/receipt/notes; synthetic private bytes and derived hashes must be absent. Only public attestations may be printed.",
+    "verdict": "Pass only all declared fault rows with reach, origin and foreign checks; record actual counts in the later implementation report. This artifact declares no executed case count."
+  },
+  "acceptance_cases": [
+    {
+      "id": "PUB-RED-01-EARLY-CREATION",
+      "proposed_test": "test_pre_stat_existing_empty_private_root_is_never_admitted",
+      "legacy_seam": "Real exclusive mkdir returns; pause before first os.stat in create_root; reached thread renames new root aside and renames preexisting empty sameUID0700 tree into world path; join thread",
+      "legacy_red_oracle": "assert no adopted-root writes and no successful construction: archived independent construction_identity_gap shows both assertions fail, while original root remains empty. Preserve that failed frontier, do not rerun archived harness.",
+      "replacement_oracle": "In a fresh replay fixture, manager must reject the uncontrolled/external context before allocation using actual authority evidence. If test still enables the pre-stat foreign swap in an admitted workspace, that deployment's exclusion assumption is false and acceptance MUST fail; no post-stat snapshot can repair the proof.",
+      "reach_assertion": "Legacy replay logs actual mkdir return, first-stat barrier and joined real substitution. New refusal independently asserts manager-authority check reached and zero allocation/private writes; it is not misreported as a reached construction fault.",
+      "origin_foreign": "Common origin/foreign invariants; legacy RED explicitly records adopted foreign tree changed as the observed violation, replacement must leave foreign empty and original allocation absent/untouched."
+    },
+    {
+      "id": "PUB-RED-02-AUTHORITY",
+      "proposed_test": "test_workspace_authority_is_not_caller_assertion",
+      "parameters": ["arbitrary external parent", "existing empty root", "missing deployment authority", "unaccounted sameUID writer", "caller exclusive true", "stale registry ancestry binding"],
+      "inject": "Enter actual manager workspace resolution/admission seam with each invalid evidence set, using real private roots; do not forge a positive manager identity from labels",
+      "reach_assertion": "Resolution/check branch reached for each row, rejection before first private write/allocation/publication; positive scoped authority fixture proves valid branch independently",
+      "expected": "Denied; mode0700/random basename/advisory flock/caller bool do not overcome invalid authority; no adoption",
+      "origin_foreign": "Common origin and untouched independent foreign snapshots for every row."
+    },
+    {
+      "id": "PUB-RED-03-COMPOUND-PUBLICATION",
+      "proposed_test": "test_compound_publication_failure_never_admits_unmarked_tree",
+      "parameters": ["fsync-restore-open", "fsync-moved-restore-open", "released-close-restore-open", "released-close-binding-lost"],
+      "inject": "Fresh physical fixed-asset synthetic bundle reaches legacy unlink of INCOMPLETE, then actual directory fsync fault OR real_close followed by injected error; deny compensating opens, and perform real root rename/replacement for moved rows. For A/B map same faults to pending publication/receipt and cleanup seams, not missing marker assertion alone.",
+      "reach_assertion": "Each row asserts full manifest/readback, publication transition, targeted fsync or actual descriptor release, restore/record-write denial, and actual namespace move when selected; no loader/unrelated fsync fault counts",
+      "legacy_red_oracle": "Archived rows have manifest present, marker absent, API raises, unchanged foreign replacement: original completion predicate fails. Preserve failure independent of launchableFalse.",
+      "expected": "Unacknowledged commit uncertain/quarantined and admission denied regardless of manifest/marker/label; proven pre-cleanup commit may remain historical committed but denied. Recording refusal freezes scope and new generation requires explicit recovery; no marker-write guarantee.",
+      "origin_foreign": "Same injected fsync/close origin and frame; no close retry; common untouched foreign snapshots including moved rows."
+    },
+    {
+      "id": "PUB-RED-04-POST-RENAME-SYNC",
+      "proposed_test": "test_successful_rename_is_not_commit_receipt",
+      "parameters": ["world parent fsync", "staging parent fsync", "catalog file fsync", "catalog directory fsync", "catalog readback", "postrename binding loss"],
+      "inject": "Actual nonreplace rename succeeds and final root exists; fail only selected subsequent acknowledged operation. Include catalog bytes visibly committed before its fsync failure.",
+      "reach_assertion": "rename_succeeded exactly once, exact selected fd/operation reached, public assets/readback positive; record failures after selected checkpoint only",
+      "expected": "No acknowledged committed receipt, uncertain/denied even for visible committed bytes; no automatic reverse rename or foreign repair; restart cannot infer commit from catalog JSON",
+      "origin_foreign": "Common exact origin/frame and foreign snapshots for every selected fd/fault."
+    },
+    {
+      "id": "PUB-RED-05-COMMIT-THEN-CLOSE",
+      "proposed_test": "test_proven_commit_can_outlive_api_cleanup_error",
+      "parameters": ["root close released then error", "parent close released then error", "response delivery error", "released close plus root binding loss"],
+      "inject": "Complete all required sync/catalog readback acknowledgements, then release target real fd and raise synthetic error (or response error); move/rebind final root only for selected row",
+      "reach_assertion": "Manager committed checkpoint precedes selected fault; released close count exactly1; no retry; binding-loss thread joined when selected",
+      "expected": "Exact API origin survives; historical commit_state committed is allowed, cleanup failed or response incomplete; current admission denied pending reconciliation. No unconditional rollback claim, no success exit, no marker-based launch",
+      "origin_foreign": "Common origin/frame and untouched replacements; snapshot committed owned root separately to prove no destructive rollback."
+    },
+    {
+      "id": "PUB-RED-06-WRITE-DENIAL",
+      "proposed_test": "test_quarantine_record_write_failure_freezes_scope",
+      "inject": "After reached pending publication fault, reject every subsequent create/write/rename used for quarantine/catalog/marker persistence with independent secondary errors",
+      "reach_assertion": "Original publication fault and at least one attempted record failure are both reached; subsequent admission request reaches poisoned manager path",
+      "expected": "Original survives, no persisted-quarantine promise; whole affected scope denied in memory; start fresh manager generation and deny all recovered bundles before explicit recovery regardless of stale committed receipts",
+      "origin_foreign": "Common origin/frame, untouched foreign snapshots and zero effects during both admission requests."
+    },
+    {
+      "id": "PUB-RED-07-RESTART",
+      "proposed_test": "test_each_publication_crash_checkpoint_requires_explicit_recovery",
+      "parameters": ["intent registered", "mkdir before open", "prepared tree", "rename before parent sync", "parents synced", "receipt written before fsync", "receipt file synced before directory sync", "all commit acknowledgements before response"],
+      "inject": "Offline child signals actual selected checkpoint via synthetic control channel, then parent terminates child; start a fresh manager generation over exact same owned scratch with no launch",
+      "reach_assertion": "Assert selected checkpoint event and terminated child status separately for every row; no fake power-loss or expected exception identity",
+      "expected": "No automatic admission/launch for any row; explicit recovery may issue new offline receipt only after all authority/readback/sync checks; missing/inconsistent intent or unknown roots remain quarantined",
+      "origin_foreign": "No Python origin fabricated for killed child; common independent foreign snapshots and effects denial; label as process-crash/restart, not disk power-loss test."
+    },
+    {
+      "id": "PUB-RED-08-LEASE",
+      "proposed_test": "test_lease_loss_revokes_current_admission",
+      "parameters": ["before mkdir", "between mkdir and open", "before rename", "after rename before receipt", "after committed receipt before offline admission"],
+      "inject": "Actual manager-controlled lease expiry/revocation at barrier; competing registered manager attempts mutation; separate stale caller reuses old lease",
+      "reach_assertion": "Assert exact barrier, revocation and competitor request reached; cooperative manager mutation rejected under held lease; does not simulate hostile sameUID exclusion",
+      "expected": "No allocation before invalid admission; later rows uncertain or committed-but-denied as appropriate; stale generation/lease cannot write or admit",
+      "origin_foreign": "Common explicit origin/no-origin declaration and unchanged foreign roots; deployed noncooperative-writer exclusion remains separate prerequisite."
+    },
+    {
+      "id": "PUB-RED-09-NONREPLACE",
+      "proposed_test": "test_nonreplace_collision_and_unsupported_semantics_refuse",
+      "parameters": ["existing empty0700 final root", "existing sentinel final root", "destination appears at rename barrier", "unsupported nonreplace syscall", "cross filesystem", "unsupported directory fsync"],
+      "inject": "Reach real publisher rename request for collision rows after prepared positive control; force unsupported capabilities only at exact helper seam; no replacing-rename fallback",
+      "reach_assertion": "Rename request or named capability check reached for each row, prepared state proven where applicable; ordinary rename spy remains zero on unsupported rows",
+      "expected": "No replacement/adoption; original owned staging retained denied; capability refusal cannot be bypassed with existence-check plus replacing rename",
+      "origin_foreign": "Common exact origin if injected and unchanged foreign inode/mode/bytes/entries for every collision row."
+    },
+    {
+      "id": "PUB-RED-10-RECEIPT-VALIDATION",
+      "proposed_test": "test_marker_absence_and_forged_stale_receipts_are_not_authority",
+      "parameters": ["schema1", "unknown fields", "duplicate fields", "invalid enums/types", "wrong world/transaction", "stale manager generation", "reused inode without provenance", "manifest launchableFalse", "label only", "marker absence", "prior CLI exit0"],
+      "inject": "Explicit offline manager admission reads exact malformed/stale catalog record or legacy signal; positive schema2 receipt uses live registry/lease",
+      "reach_assertion": "Catalog/legacy-signal admission branch reached for each row, valid positive control reaches full readback; wrong-generation cases do not pass solely from matching dev/ino",
+      "expected": "Denied; no live permission ever even for valid offline receipt",
+      "origin_foreign": "Common explicit validation origin/no unexpected exception and untouched foreign-tree snapshots."
+    },
+    {
+      "id": "PUB-RED-11-RECOVERY",
+      "proposed_test": "test_explicit_recovery_revalidates_not_adopts",
+      "parameters": ["valid known transaction", "missing intent", "unknown sameUID0700 tree", "changed private mode", "same-byte replaced inode", "public attestation drift", "lost parent binding", "all recovery writes denied"],
+      "inject": "Start fresh manager generation; request explicit offline recovery; mutate selected actual file/mode/binding or deny final sync/receipt writes at reached seam",
+      "reach_assertion": "Fresh lease/exclusion checks, exact known transaction lookup, actual readback or selected refusal branch and final receipt acknowledgment reached only for positive control",
+      "expected": "Only valid known transaction obtains fresh offline receipt after required sync; all negative rows remain denied with no auto adoption, secret export, recursive deletion or foreign repair",
+      "origin_foreign": "Common exact origin/frame for injected faults and untouched independent foreign roots; deliberate mutated owned fixture tracked separately."
+    },
+    {
+      "id": "PUB-RED-12-RETAINED-SAFEGUARDS",
+      "proposed_test": "test_existing_corrections_survive_manager_publication",
+      "parameters": ["IO001 sentinel substitution", "IO002 root/parent binding", "IO003 single-fault coverage", "IO004 interrupt plus cleanup", "IO005 owner/mode/kind/inode", "FIELD002 label19 accepted20 rejected", "INPUT001 raw dot/double-separator", "INPUT002 UTF16/32 rejected", "WIRE001 inter23 SQL32 accepted inter24 SQL33 rejected"],
+      "inject": "Use actual retained regression seams and valid manager positive fixtures; preserve native capacities/strict byte policy/source attestation order, modes and source-equivalent public assets",
+      "reach_assertion": "Every row's fault or validation branch plus legitimate positive control reached; raw spelling validation before Path/input/public reads; invalid fields before assets/allocation",
+      "expected": "Equivalent original safeguard behavior, with deliberate schema2 staging/path expectations separately reviewed; no weaker marker-absence oracle, skipped legacy finding or fabricated regression totals",
+      "origin_foreign": "Common exact origin/frame or explicit validation origin, unchanged foreign snapshots, private readback comparisons never exported."
+    },
+    {
+      "id": "PUB-RED-13-GUARDS",
+      "proposed_test": "test_offline_receipts_cannot_activate_live_entrypoints",
+      "parameters": ["prepared", "committed", "uncertain", "quarantined", "recovered offline receipt"],
+      "inject": "Present each receipt through actual pure admission/guard entrypoints with fail-if-called launch/engine/SQL/seeder/E2E/provider spies; exercise separate explicit authorization absent branch",
+      "reach_assertion": "Guard branch reached for every receipt; deny spies zero; existing native refusal evidence78 retained without initializing binaries",
+      "expected": "All live paths remain blocked; committed offline means no resource authority, reset permission or live authorization",
+      "origin_foreign": "No injected origin expected; assert intended denial and no unrelated exception, common unchanged foreign snapshots."
+    }
+  ],
+  "primary_os_sources": [
+    {"id": "OS1", "url": "https://man7.org/linux/man-pages/man2/mkdir.2.html", "sections": "SYNOPSIS, RETURN VALUE", "basis": "mkdir/mkdirat return status, not created directory handle"},
+    {"id": "OS2", "url": "https://man7.org/linux/man-pages/man2/fsync.2.html", "sections": "DESCRIPTION, ERRORS", "basis": "file fsync not sufficient for enclosing directory entry; directory sync errors possible"},
+    {"id": "OS3", "url": "https://man7.org/linux/man-pages/man2/close.2.html", "sections": "CAVEATS", "basis": "Linux descriptor released before possible error; avoid close retry"},
+    {"id": "OS4", "url": "https://man7.org/linux/man-pages/man2/flock.2.html", "sections": "NOTES", "basis": "local advisory flock does not exclude noncooperative writers"},
+    {"id": "OS5", "url": "https://man7.org/linux/man-pages/man2/rename.2.html", "sections": "DESCRIPTION, RENAME_NOREPLACE", "basis": "ordinary rename may replace empty directories; nonreplace capability required"}
+  ],
+  "effects": {
+    "production_code_or_existing_tests_modified": false,
+    "existing_reports_ADRs_root_flake_pins_worlds_modified": false,
+    "old_harnesses_run": false,
+    "live_SQL_engine_provider_server_effects": false,
+    "staged_committed_pushed": false,
+    "private_values_or_private_derived_hashes_printed": false
+  },
+  "issues_encountered": [
+    "web_extract backend cannot extract URL content; recovered by direct HTTPS retrieval of all five primary Linux man-pages into task-owned scratch and checked relevant passages.",
+    "Trusted manager deployment/exclusivity and architecture approval remain unresolved; proposed acceptance specifications were not executed.",
+    "Wiki index/log are coordinator-owned and unchanged; navigation registration remains for parent."
+  ],
+  "validation": {
+    "status": "artifact_lint_passed_not_implementation_acceptance",
+    "command": "nix develop --offline --no-write-lock-file -c python3 /home/otto/.hermes/cache/scratch/runtime-publication-contract/validate.py",
+    "exit_code": 0,
+    "doc_lines": 200,
+    "existing_wikilinks": 4,
+    "acceptance_specifications": 13,
+    "acceptance_tests_executed": false,
+    "original_failed_verdicts_preserved": true,
+    "source_review_bracket_files_unchanged": 7,
+    "primary_OS_sources_retrieved_and_relevant_sections_verified": 5,
+    "scratch_validation": "/home/otto/.hermes/cache/scratch/runtime-publication-contract/validation.json",
+    "navigation_registration": "Deferred to coordinator: index/log are outside owned scope"
+  }
+}

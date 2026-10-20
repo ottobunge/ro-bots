@@ -1,0 +1,282 @@
+{
+  "passed": true,
+  "security_concerns": [],
+  "logic_errors": [],
+  "quality_blockers": [],
+  "suggestions": [],
+  "review_scope": "Fresh quality-only repair-cycle-1 validation-helper extraction review; no repairs, source/test/seed/Git/DB/native/inference effects.",
+  "repair_cycle": 1,
+  "maximum_automatic_cycles": 2,
+  "source_sha256": "0877ca90583eb882a18f031fd0d4e4d28f5d45e2940d74462f47c018c5c52732",
+  "semantics": {
+    "inverse_reconstruction_sha256": "3a1677e4ab8134c6ae8a5327c5823981270417eae09f7af2d35b56510f04c73e",
+    "historical_approved_sha256": "3a1677e4ab8134c6ae8a5327c5823981270417eae09f7af2d35b56510f04c73e",
+    "inverse_exact_bytes_recovered": true,
+    "whole_module_ast_equivalent_after_helper_expansion": true,
+    "validation_statement_count": 4,
+    "validation_order_messages_probes": 4,
+    "validation_order": [
+      "ruleset",
+      "max_cards",
+      "max_utf8_bytes",
+      "topics"
+    ],
+    "selection_and_all_other_module_ast_unchanged": true,
+    "no_reconstructed_source_execution": true
+  },
+  "physical_tests": {
+    "tests": 28,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "boundary_probes": {
+    "tests": 8,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "quality": [
+    {
+      "gate": "tests",
+      "command": [
+        "/home/otto/dev/ro-bots/.venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "-p",
+        "no:cacheprovider",
+        "tests/test_rules_knowledge.py",
+        "--junitxml=/home/otto/.hermes/cache/scratch/knowledge-repair1-independent/tests.xml",
+        "--basetemp=/home/otto/.hermes/cache/scratch/knowledge-repair1-independent/pytest-tests"
+      ],
+      "exit_code": 0,
+      "log": "/home/otto/.hermes/cache/scratch/knowledge-repair1-independent/tests.log",
+      "output": "............................                                             [100%]\n"
+    },
+    {
+      "gate": "boundary_probes",
+      "command": [
+        "/home/otto/dev/ro-bots/.venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "-p",
+        "no:cacheprovider",
+        "/home/otto/.hermes/cache/scratch/test_rules_knowledge_independent.py",
+        "--junitxml=/home/otto/.hermes/cache/scratch/knowledge-repair1-independent/probes.xml",
+        "--basetemp=/home/otto/.hermes/cache/scratch/knowledge-repair1-independent/pytest-probes"
+      ],
+      "exit_code": 0,
+      "log": "/home/otto/.hermes/cache/scratch/knowledge-repair1-independent/boundary_probes.log",
+      "output": "........                                                                 [100%]\n8 passed in 0.22s\n"
+    },
+    {
+      "gate": "black",
+      "command": [
+        "/home/otto/dev/ro-bots/.venv/bin/python",
+        "-m",
+        "black",
+        "--check",
+        "--workers",
+        "1",
+        "src/robots/adapters/rules_knowledge.py",
+        "tests/test_rules_knowledge.py"
+      ],
+      "exit_code": 0,
+      "log": "/home/otto/.hermes/cache/scratch/knowledge-repair1-independent/black.log",
+      "output": "All done! \u2728 \ud83c\udf70 \u2728\n2 files would be left unchanged.\n"
+    },
+    {
+      "gate": "ruff",
+      "command": [
+        "/home/otto/dev/ro-bots/.venv/bin/python",
+        "-m",
+        "ruff",
+        "check",
+        "--no-cache",
+        "src/robots/adapters/rules_knowledge.py",
+        "tests/test_rules_knowledge.py"
+      ],
+      "exit_code": 0,
+      "log": "/home/otto/.hermes/cache/scratch/knowledge-repair1-independent/ruff.log",
+      "output": "All checks passed!\n"
+    },
+    {
+      "gate": "mypy_two_owned",
+      "command": [
+        "/home/otto/dev/ro-bots/.venv/bin/python",
+        "-m",
+        "mypy",
+        "--cache-dir=/home/otto/.hermes/cache/scratch/knowledge-repair1-independent/mypy",
+        "src/robots/adapters/rules_knowledge.py",
+        "tests/test_rules_knowledge.py"
+      ],
+      "exit_code": 0,
+      "log": "/home/otto/.hermes/cache/scratch/knowledge-repair1-independent/mypy_two_owned.log",
+      "output": "Success: no issues found in 2 source files\n"
+    },
+    {
+      "gate": "xenon_whole_src",
+      "command": [
+        "/home/otto/dev/ro-bots/.venv/bin/python",
+        "-m",
+        "xenon",
+        "src",
+        "--max-absolute",
+        "B",
+        "--max-modules",
+        "B",
+        "--max-average",
+        "A"
+      ],
+      "exit_code": 0,
+      "log": "/home/otto/.hermes/cache/scratch/knowledge-repair1-independent/xenon_whole_src.log",
+      "output": ""
+    },
+    {
+      "gate": "duplicate_whole_src",
+      "command": [
+        "/home/otto/dev/ro-bots/.venv/bin/python",
+        "-m",
+        "pylint",
+        "--disable=all",
+        "--enable=duplicate-code",
+        "--ignore-paths=tests",
+        "--persistent=n",
+        "src"
+      ],
+      "exit_code": 0,
+      "log": "/home/otto/.hermes/cache/scratch/knowledge-repair1-independent/duplicate_whole_src.log",
+      "output": "\n--------------------------------------------------------------------\nYour code has been rated at 10.00/10 (previous run: 10.00/10, +0.00)\n\n"
+    }
+  ],
+  "unchanged_test_and_seed_vs_previous_review": true,
+  "real_lookups": [
+    {
+      "ruleset": "pre-re",
+      "card_ids": [
+        "classic-primary-stats",
+        "classic-base-and-bonuses"
+      ],
+      "utf8_bytes": 1120,
+      "sha256": "6b9e0c746db440097fde0830df773e02a8d82724f82be8af521c01222264083d",
+      "all_advisory": true
+    },
+    {
+      "ruleset": "renewal",
+      "card_ids": [
+        "renewal-primary-stats",
+        "renewal-base-and-bonuses"
+      ],
+      "utf8_bytes": 1128,
+      "sha256": "b6d2d6b7e6d9b09ca48d551d5749ec6fe6bac073e638db0d9e588d914c926665",
+      "all_advisory": true
+    }
+  ],
+  "freeze_count": 5,
+  "before_after_freeze": {
+    "src/robots/adapters/rules_knowledge.py": {
+      "expected": "0877ca90583eb882a18f031fd0d4e4d28f5d45e2940d74462f47c018c5c52732",
+      "before": "0877ca90583eb882a18f031fd0d4e4d28f5d45e2940d74462f47c018c5c52732",
+      "after": "0877ca90583eb882a18f031fd0d4e4d28f5d45e2940d74462f47c018c5c52732",
+      "unchanged": true
+    },
+    "tests/test_rules_knowledge.py": {
+      "expected": "02aecfdecb79185b5d2885f6e8b62a22f0d21ecd4c77c88bd5acd88098cc22ab",
+      "before": "02aecfdecb79185b5d2885f6e8b62a22f0d21ecd4c77c88bd5acd88098cc22ab",
+      "after": "02aecfdecb79185b5d2885f6e8b62a22f0d21ecd4c77c88bd5acd88098cc22ab",
+      "unchanged": true
+    },
+    "knowledge/iro-rules-seed.json": {
+      "expected": "1f5a8c3ad712e6ce96d45b4d74b0eb474c75eab77135ff272d8db11fedf1c305",
+      "before": "1f5a8c3ad712e6ce96d45b4d74b0eb474c75eab77135ff272d8db11fedf1c305",
+      "after": "1f5a8c3ad712e6ce96d45b4d74b0eb474c75eab77135ff272d8db11fedf1c305",
+      "unchanged": true
+    },
+    "run/reviews/playing-mvp-rules-knowledge-complexity-repair1-scope.json": {
+      "expected": "cc9f0e55af8d8ad553ef53a576a10d7bdeb9a1aec907541894517fb6e7488dd4",
+      "before": "cc9f0e55af8d8ad553ef53a576a10d7bdeb9a1aec907541894517fb6e7488dd4",
+      "after": "cc9f0e55af8d8ad553ef53a576a10d7bdeb9a1aec907541894517fb6e7488dd4",
+      "unchanged": true
+    },
+    "run/reviews/playing-mvp-recovery-context-combined-parent-gate.json": {
+      "expected": "b9d52a90fd041df30e5bc9494559c046d27598fe77bf46b7078870a53fe7edf2",
+      "before": "b9d52a90fd041df30e5bc9494559c046d27598fe77bf46b7078870a53fe7edf2",
+      "after": "b9d52a90fd041df30e5bc9494559c046d27598fe77bf46b7078870a53fe7edf2",
+      "unchanged": true
+    }
+  },
+  "quality_config_pins_before_after": {
+    "Taskfile.yml": {
+      "before": "bf60a77c96fb4cfb4c5475c73a6e7da5a7eef90fc9f63c06a9812cfcbbb1d31d",
+      "after": "bf60a77c96fb4cfb4c5475c73a6e7da5a7eef90fc9f63c06a9812cfcbbb1d31d",
+      "unchanged": true
+    },
+    "pyproject.toml": {
+      "before": "e8ae0849a413bc3d705f081f609b92dae702bbd3e491b2c3aeb5d8665c458fba",
+      "after": "e8ae0849a413bc3d705f081f609b92dae702bbd3e491b2c3aeb5d8665c458fba",
+      "unchanged": true
+    },
+    "flake.nix": {
+      "before": "185e4a4babf62a40484c347f59653bd11b79ce847316a3a90349c8545d38a359",
+      "after": "185e4a4babf62a40484c347f59653bd11b79ce847316a3a90349c8545d38a359",
+      "unchanged": true
+    },
+    "flake.lock": {
+      "before": "c9c0bac69415b99a29ef3fe149b6f04ef54d291989bdf7218cf819ed52edf2a0",
+      "after": "c9c0bac69415b99a29ef3fe149b6f04ef54d291989bdf7218cf819ed52edf2a0",
+      "unchanged": true
+    },
+    "uv.lock": {
+      "before": "2d7b4c187078488d7625e4fd4fa982745cab8d6a65b2ff3e382ffa286f1df245",
+      "after": "2d7b4c187078488d7625e4fd4fa982745cab8d6a65b2ff3e382ffa286f1df245",
+      "unchanged": true
+    }
+  },
+  "artifacts_sha256": {
+    "/home/otto/dev/ro-bots/src/robots/adapters/rules_knowledge.py": "0877ca90583eb882a18f031fd0d4e4d28f5d45e2940d74462f47c018c5c52732",
+    "/home/otto/dev/ro-bots/tests/test_rules_knowledge.py": "02aecfdecb79185b5d2885f6e8b62a22f0d21ecd4c77c88bd5acd88098cc22ab",
+    "/home/otto/dev/ro-bots/knowledge/iro-rules-seed.json": "1f5a8c3ad712e6ce96d45b4d74b0eb474c75eab77135ff272d8db11fedf1c305",
+    "/home/otto/dev/ro-bots/run/reviews/playing-mvp-rules-knowledge-complexity-repair1-scope.json": "cc9f0e55af8d8ad553ef53a576a10d7bdeb9a1aec907541894517fb6e7488dd4",
+    "/home/otto/dev/ro-bots/run/reviews/playing-mvp-recovery-context-combined-parent-gate.json": "b9d52a90fd041df30e5bc9494559c046d27598fe77bf46b7078870a53fe7edf2",
+    "/home/otto/.hermes/cache/scratch/knowledge-repair1-independent/tests.log": "a4ba55c7ec7daeede2ecfea3dda9a793665ee142066911215af4f033a9e8412a",
+    "/home/otto/.hermes/cache/scratch/knowledge-repair1-independent/boundary_probes.log": "1b2656f5fc4bff75b8cd52aba0844fe99ec5f4f66ebf1c6f920dd4c165b9649e",
+    "/home/otto/.hermes/cache/scratch/knowledge-repair1-independent/black.log": "b9cf511501d306d2bd8355ccb165c8ddc0a6fdd62d7c72c4a7b1795cf8934c8c",
+    "/home/otto/.hermes/cache/scratch/knowledge-repair1-independent/ruff.log": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+    "/home/otto/.hermes/cache/scratch/knowledge-repair1-independent/mypy_two_owned.log": "f9b031e5c45aa702cd4fef028d465551cb20a2c4698e0913c7b00766b20ac4d8",
+    "/home/otto/.hermes/cache/scratch/knowledge-repair1-independent/xenon_whole_src.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/knowledge-repair1-independent/duplicate_whole_src.log": "8cbfc8cd0b04a4858b0b78b74c6df9631a1695e105e6911d4b57fbcc43b218b5",
+    "/home/otto/.hermes/cache/scratch/knowledge-repair1-independent/tests.xml": "f57651ebd9b995ff95caab0caade1865e18be7ba0343f3eed527c06593adafaa",
+    "/home/otto/.hermes/cache/scratch/knowledge-repair1-independent/probes.xml": "9ad4d84afa43a42cc8eb15509e1adc51a8277cc1b40705a71bab8c73b929e8b1",
+    "/home/otto/.hermes/cache/scratch/test_rules_knowledge_independent.py": "30b50f5ced5e53aed20c1c66f21e37c8dc68b83710accf966d41955df37810ce",
+    "/home/otto/.hermes/cache/scratch/knowledge-repair1-final-review-freeze.json": "cfc6c5960a5905947923ef0ba3d531ce982d542db298ced05526ed27e810d569",
+    "/home/otto/.hermes/cache/scratch/knowledge-repair1-review.py": "c73bf2778bc39dddbd93564ef17b98b4c12b73ce3863e821e0d536cd82536cc8"
+  },
+  "limits": {
+    "catalog_bytes": 262144,
+    "maximum_read_bytes": 262145,
+    "catalog_cards": 32,
+    "string_characters": 1024,
+    "selection_max_cards": "integer 0..8; bool rejected",
+    "max_utf8_bytes": "nonnegative integer; bool rejected; default 2048",
+    "byte_accounting": "Complete deterministic dataclass-order UTF-8 JSON with ensure_ascii=False and compact separators, including brackets and all provenance/advisory metadata.",
+    "empty_selection": "No advisory payload; explicitly serialize_cards(()) yields two bytes [] and is a separate operation.",
+    "selection_order": "Stable catalog order, stops at the first matching over-budget candidate; no later-card packing promise."
+  },
+  "trust_boundary": "RulesKnowledge.load is the strict explicit-file API. Direct frozen RuleCard/RulesKnowledge constructors are typed trusted programming seams, not hostile-upload validation or a same-Unix-user sandbox.",
+  "semantic_verification_caveat": "Pinned metadata identifies supporting source snapshots; the loader deliberately does not semantically certify arbitrary edited text. The actual four seed paraphrases were independently checked against both actual pinned snapshots.",
+  "advisory_only": true,
+  "active_model_wiring": false,
+  "full_wiki_acceptance": false,
+  "native_effects": false,
+  "repairs": [],
+  "parent_combined_gate": "Frozen parent artifact reports task check 0, audit 0, 4051 physical tests + 65 subtests, 95.36% coverage; no full-root rerun in this review.",
+  "preserved_prior_failures": [
+    "playing-mvp-recovery-context-root.log",
+    "playing-mvp-recovery-context-root-repair1.log"
+  ],
+  "repository_files_created": [
+    "run/reviews/playing-mvp-rules-knowledge-repair1-independent-review.json"
+  ]
+}

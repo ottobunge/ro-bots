@@ -1,0 +1,159 @@
+{
+  "status": "offline_candidate_green_pending_parent_review",
+  "fixture_only": true,
+  "real_network_or_model_calls": 0,
+  "live_brain_activation": false,
+  "tests": {
+    "cases": 25,
+    "failures": 0,
+    "errors": 0,
+    "skips": 0
+  },
+  "gates": {
+    "format": {
+      "exit_code": 0,
+      "command": [
+        ".venv/bin/black",
+        "src/robots/ports/planning_model.py",
+        "src/robots/app/llm_planner.py",
+        "src/robots/adapters/planning_llm.py",
+        "tests/test_llm_planner.py"
+      ]
+    },
+    "black": {
+      "exit_code": 0,
+      "command": [
+        ".venv/bin/black",
+        "--check",
+        "src/robots/ports/planning_model.py",
+        "src/robots/app/llm_planner.py",
+        "src/robots/adapters/planning_llm.py",
+        "tests/test_llm_planner.py"
+      ]
+    },
+    "ruff": {
+      "exit_code": 0,
+      "command": [
+        ".venv/bin/ruff",
+        "check",
+        "src/robots/ports/planning_model.py",
+        "src/robots/app/llm_planner.py",
+        "src/robots/adapters/planning_llm.py",
+        "tests/test_llm_planner.py"
+      ]
+    },
+    "mypy": {
+      "exit_code": 0,
+      "command": [
+        ".venv/bin/mypy",
+        "src/robots/ports/planning_model.py",
+        "src/robots/app/llm_planner.py",
+        "src/robots/adapters/planning_llm.py",
+        "tests/test_llm_planner.py"
+      ]
+    },
+    "pytest": {
+      "exit_code": 0,
+      "command": [
+        ".venv/bin/pytest",
+        "tests/test_llm_planner.py",
+        "--junitxml=/home/otto/.hermes/cache/scratch/llm-planner-tool-loop/completed.xml"
+      ]
+    },
+    "xenon": {
+      "exit_code": 0,
+      "command": [
+        ".venv/bin/xenon",
+        "src/robots",
+        "--max-absolute",
+        "B",
+        "--max-modules",
+        "B",
+        "--max-average",
+        "A"
+      ]
+    },
+    "vulture": {
+      "exit_code": 0,
+      "command": [
+        ".venv/bin/vulture"
+      ]
+    },
+    "bandit": {
+      "exit_code": 0,
+      "command": [
+        ".venv/bin/bandit",
+        "-r",
+        "src",
+        "-c",
+        "pyproject.toml",
+        "-q"
+      ]
+    },
+    "duplicates": {
+      "exit_code": 0,
+      "command": [
+        ".venv/bin/pylint",
+        "src/robots",
+        "--disable=all",
+        "--enable=duplicate-code"
+      ]
+    }
+  },
+  "protected_source_count": 289,
+  "protected_mismatches": [],
+  "source_hashes": {
+    "src/robots/ports/planning_model.py": "aee8330ccb8d92a2c6093923cb0c3a4e0d82828a20bb8ceaca50cd0587dd885d",
+    "src/robots/app/llm_planner.py": "bb339de79d467ddebecc0636ac3883c2c9a8713a2af18bd988d73bb082648f1b",
+    "src/robots/adapters/planning_llm.py": "1c26c7401618fc8ce2228ca31763e2d44c3336253e339a0bfea1751b65b0889e",
+    "tests/test_llm_planner.py": "19242acef639aef1fa2f8288e96014271592a97fa84fb39ec973a029e4313ccf"
+  },
+  "artifacts": {
+    "/home/otto/.hermes/cache/scratch/llm-planner-tool-loop/completed.xml": "52e71bfaeb6153670705ef18bad7ff61678f6f0f8eea226460ae8d982580b11c",
+    "/home/otto/.hermes/cache/scratch/llm-planner-tool-loop/duplicates.log": "8cbfc8cd0b04a4858b0b78b74c6df9631a1695e105e6911d4b57fbcc43b218b5",
+    "/home/otto/.hermes/cache/scratch/llm-planner-tool-loop/scaffold.log": "87dc053a734fd20cc783c4f225d3a817138cdbfcb28865bca1a77cd524538b86",
+    "/home/otto/.hermes/cache/scratch/llm-planner-tool-loop/red-vertical.log": "133418bc13ff21269e505d9d739283936b087f779156fcd435e3eda7c8a242ee",
+    "/home/otto/.hermes/cache/scratch/llm-planner-tool-loop/vulture.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/llm-planner-tool-loop/red-sanitized.log": "594cb02ddfb2e7364dd61d50c846172be4c768109762463e3f139f9a474e9ff5",
+    "/home/otto/.hermes/cache/scratch/llm-planner-tool-loop/gates-refactor.log": "b97344de3317033b11cd47c5febac6b0f64bea4f284485aae4efaa0a21b50ec5",
+    "/home/otto/.hermes/cache/scratch/llm-planner-tool-loop/green-vertical.xml": "8d306ed4f7f44cc01521032928696a171f3cadf8dfa38c5800d39de60828795d",
+    "/home/otto/.hermes/cache/scratch/llm-planner-tool-loop/xenon.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/llm-planner-tool-loop/red-http.xml": "5e8a3002dd7cffdf887973695f8e50ab1e569e289b7d19b02ffbdee47af27ba8",
+    "/home/otto/.hermes/cache/scratch/llm-planner-tool-loop/scaffold.xml": "30d725a3ef0462d211a6d5abe0fb8e1ef3a94092eb7650deb044559a4188852d",
+    "/home/otto/.hermes/cache/scratch/llm-planner-tool-loop/green-http.xml": "fc03a881e8518ef09e348d31bd8decdca2beb778a8efd62007d64080c6dd45a5",
+    "/home/otto/.hermes/cache/scratch/llm-planner-tool-loop/bandit.log": "2ee20ac6a3a915ff1204f17c53260bcc2ebfb848f37624608d13ddfdf1cc35ff",
+    "/home/otto/.hermes/cache/scratch/llm-planner-tool-loop/red-vertical.xml": "890edca30c51c9ed9187ac9413ce84f7e41db4317c11099e28d3f868999b7fb8",
+    "/home/otto/.hermes/cache/scratch/llm-planner-tool-loop/red-sanitized.xml": "25766b21626f49f1c22bc473abc5162aeb8d5b6b93608eba7ab5837713996c0e",
+    "/home/otto/.hermes/cache/scratch/llm-planner-tool-loop/red-http.log": "9f55aa288a903ef6515781f5085df795bb98aeec290110fc628caf8edeb90cd5",
+    "/home/otto/.hermes/cache/scratch/llm-planner-tool-loop/mypy.log": "71144743c83babea384888a735db0c4daba3d4d7b7942b6839984bd5c21b52bb",
+    "/home/otto/.hermes/cache/scratch/llm-planner-tool-loop/gates.log": "990cb57501c437d65ebc8a04b820c08a3bb0702e3557c527998c296d68a6fdaa",
+    "/home/otto/.hermes/cache/scratch/llm-planner-tool-loop/green-final.xml": "fe4d0f1de824ea1d4e5d08ac12447782479629023c6cdf12d66cb7219edd57d5",
+    "/home/otto/.hermes/cache/scratch/llm-planner-tool-loop/ruff.log": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+    "/home/otto/.hermes/cache/scratch/llm-planner-tool-loop/format.log": "0041727531ec5308b4d4eaa482e4a7d852e45c73b5798cdd2c472d4fe42f447f",
+    "/home/otto/.hermes/cache/scratch/llm-planner-tool-loop/before.json": "15c38a8966bfbe3de298828030e22603692baea9e868a1d59011aa06502c8994",
+    "/home/otto/.hermes/cache/scratch/llm-planner-tool-loop/pytest.log": "7c783f033b5399afa53844fe896c8b7ecd74016803ca5e7d7f1383a8568b2900",
+    "/home/otto/.hermes/cache/scratch/llm-planner-tool-loop/after.json": "15c38a8966bfbe3de298828030e22603692baea9e868a1d59011aa06502c8994",
+    "/home/otto/.hermes/cache/scratch/llm-planner-tool-loop/black.log": "26a5fd9505f2b5608a20c4fed4b4c4795e0783d03b72ade02a6af34dae8ad086"
+  },
+  "tdd": {
+    "scaffold": "scaffold.xml: missing module collection error; not behavioral RED",
+    "behavioral_reds": [
+      "red-vertical.xml: concrete propose NotImplementedError",
+      "red-http.xml: real adapter complete NotImplementedError",
+      "red-sanitized.xml: provider OSError escapes"
+    ],
+    "green_tracers": [
+      "green-vertical.xml",
+      "green-http.xml"
+    ],
+    "followup_tests": "Negative boundary cases added after primary implementation; not claimed as independent tests-first REDs"
+  },
+  "open": [
+    "Parent independent completed-source review and full-root gate",
+    "Real local autonomous model-selected planning and admission",
+    "Scheduler worker / brain / CLI wiring and activation",
+    "Legacy freeform chat investigation route",
+    "Native execution and gameplay acceptance; all 6 milestones / 11 criteria remain open"
+  ],
+  "invocation": "Explicit injected reader/model/finite clock; call in host worker. Caller owns lifecycle admission and failure bookkeeping. Future host must explicitly select wait=30 or 60; legacy default unchanged."
+}

@@ -1,0 +1,246 @@
+{
+  "schema": "native-encounter-context-repair-independent-review/v1",
+  "passed": true,
+  "status": "OFFLINE_REPAIR1_INDEPENDENT_REVIEW_PASSED",
+  "finding": "EC-HISTORY-OVERSIZE-CURSOR",
+  "repair_cycle": 1,
+  "maximum_automatic_cycles": 2,
+  "budget_reset": false,
+  "security_concerns": [],
+  "logic_errors": [],
+  "quality_blockers": [],
+  "suggestions": [],
+  "reviewed_report": {
+    "path": "/home/otto/dev/ro-bots/run/reviews/playing-mvp-native-encounter-context-repair1.json",
+    "sha256": "e519a0fb6fde9f4657c482e0acc9c6d56d9a9def61775c66f2b9edd022f89471"
+  },
+  "original_failed_review": {
+    "path": "/home/otto/dev/ro-bots/run/reviews/playing-mvp-native-encounter-context-independent-review.json",
+    "sha256": "d72517c03f53ed37f7041bc7b5c0f367794da8e4f1a2ddd56a7dc8bfa560c2de",
+    "preserved": true
+  },
+  "source_freeze": {
+    "authority": "/home/otto/.hermes/cache/scratch/encounter-repair1-review-freeze.json",
+    "sha256": "76fabba271d8d80a5a7986d5215cd4cee34e324c50490cd1f18dddd7d810e2b5",
+    "entries": 7,
+    "before_matches": true,
+    "after_matches": true,
+    "final_matches": true,
+    "identical_before_after": true,
+    "file_sha256": {
+      "src/robots/adapters/native_encounter_context.py": "1bb5e71378d1f68a0bd54a2e294c85650cb1f4fcc25882648a57bfe8acdb7dc7",
+      "tests/test_native_encounter_context.py": "d26d3c09d6b95910d7f088ccce36cb186e0ebcccc5e8f4af5472db3e26b8163e",
+      "src/robots/adapters/native_gameplay.py": "c7e9f16750bf117ba3a4843264e215d2e653c0376c70acd7ac45e00a6b2100f9",
+      "src/robots/adapters/native_progression.py": "ad74be96c5d843cfeabd21ef0bdc0086bd0d9d76546ab3a1954a0f276cbff3fe",
+      "run/reviews/playing-mvp-native-encounter-context-fix.json": "7cdd4e39aaa2b3567abc06e1bd4f231e07748544a740901535fc7ac99f063366",
+      "run/reviews/playing-mvp-native-encounter-context-repair1.json": "e519a0fb6fde9f4657c482e0acc9c6d56d9a9def61775c66f2b9edd022f89471",
+      "run/reviews/playing-mvp-native-encounter-context-repair1-scope.json": "4b7359eb726349f4a6bbfca4e5c62fd1021f9c2d52c4d3e03a71334f0c98a42a"
+    },
+    "before": "/home/otto/.hermes/cache/scratch/ec-repair1-independent-ccyu3f5o/freeze-before.json",
+    "after": "/home/otto/.hermes/cache/scratch/ec-repair1-independent-ccyu3f5o/freeze-after.json"
+  },
+  "source_delta": {
+    "minimal_source_delta": true,
+    "original_tests_exact_prefix_preserved": true,
+    "original_test_count": 10,
+    "repaired_test_count": 15,
+    "added_tests": [
+      "test_oversized_receipt_consumes_cursor_without_rewriting_history",
+      "test_first_oversized_receipt_consumes_cursor_with_empty_history",
+      "test_foreign_oversized_receipt_does_not_consume_cursor",
+      "test_reset_restarts_cursor_after_oversized_receipt",
+      "test_failed_utf8_evaluation_preserves_cursor_and_records"
+    ],
+    "snapshot_hashes": {
+      "/home/otto/.hermes/cache/scratch/ec-repair1-ahs7efea/native_encounter_context.py.original": "ac901f04bffbf2d69650abc5faf4d9cfc492b6df31b5bba8c79fae4ffc2043d6",
+      "/home/otto/.hermes/cache/scratch/ec-repair1-ahs7efea/test_native_encounter_context.py.original": "e0d579c28caf126e1ec982300e01994f6768a880f717c35fec5c04a9ed282bfd"
+    }
+  },
+  "static_security_scan": {
+    "scope": "Only repair-added production lines",
+    "patterns": [
+      "secret",
+      "shell_injection",
+      "eval_exec",
+      "unsafe_deserialization",
+      "sql_format"
+    ],
+    "findings": []
+  },
+  "verification": {
+    "fresh_execution": "/home/otto/.hermes/cache/scratch/ec-repair1-independent-ccyu3f5o/execution.json",
+    "nix_wrapper": "PYTHONDONTWRITEBYTECODE=1 nix develop --offline path:./spikes/007-native-packet-ast/toolchain -c .venv/bin/python",
+    "command": [
+      ".venv/bin/python",
+      "-m",
+      "pytest",
+      "-o",
+      "addopts=",
+      "-p",
+      "no:cacheprovider",
+      "-q",
+      "tests/test_native_encounter_context.py",
+      "/home/otto/.hermes/cache/scratch/ec-repair1-independent-ccyu3f5o/test_fresh_receipt_boundaries.py",
+      "--junitxml=/home/otto/.hermes/cache/scratch/ec-repair1-independent-ccyu3f5o/fresh.xml"
+    ],
+    "exit_code": 0,
+    "fresh_repository_tests": 15,
+    "fresh_independent_probe_cases": 7,
+    "fresh_total": 22,
+    "xml_counts": {
+      "red": {
+        "tests": 1,
+        "failures": 1,
+        "errors": 0,
+        "skipped": 0,
+        "path": "/home/otto/.hermes/cache/scratch/ec-repair1-ahs7efea/red.xml",
+        "sha256": "de80a08c6337828f8a1a4f7daaba7d41f958e083b27490a9bbbef81f78241566"
+      },
+      "green": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "path": "/home/otto/.hermes/cache/scratch/ec-repair1-ahs7efea/green.xml",
+        "sha256": "aa1826c4c83ff4cdfc5b352e01be07ecd3223511af946e0452641b010b2e69fe"
+      },
+      "scoped": {
+        "tests": 97,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "path": "/home/otto/.hermes/cache/scratch/ec-repair1-ahs7efea/scoped.xml",
+        "sha256": "072191a8c79a6e477d8fe780ce5617b55697bf742d8845aeea80eee8da5f7488"
+      },
+      "broader": {
+        "tests": 965,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "path": "/home/otto/.hermes/cache/scratch/ec-repair1-ahs7efea/broader.xml",
+        "sha256": "32e5bbb968c71015b7d7c92a4456ea3ff47e93e4d3e00c19a71568f3242c1ee1"
+      },
+      "fresh": {
+        "tests": 22,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "path": "/home/otto/.hermes/cache/scratch/ec-repair1-independent-ccyu3f5o/fresh.xml",
+        "sha256": "acf68f64df4186c8991f69d6153adc302256bcc1354bbd147440758d84435d5b"
+      }
+    },
+    "prior_red_green_execution_inspected": true,
+    "prior_red_reached_failure": "Old source accepted sequence 9 after builder-produced oversized sequence 10",
+    "prior_scoped_broader_xml_inspected_not_rerun": true,
+    "fresh_junit_per_class": {
+      "": 7,
+      "tests.test_native_encounter_context": 15
+    }
+  },
+  "fresh_trace": [
+    {
+      "sequence": 3,
+      "retained": true,
+      "fact_utf8_bytes": 203,
+      "retained_sequences": [
+        3
+      ],
+      "history_utf8_bytes": 203
+    },
+    {
+      "sequence": 10,
+      "retained": false,
+      "fact_utf8_bytes": 2993,
+      "retained_sequences": [
+        3
+      ],
+      "history_utf8_bytes": 203
+    },
+    {
+      "sequence": 9,
+      "retained": false,
+      "fact_utf8_bytes": 205,
+      "retained_sequences": [
+        3
+      ],
+      "history_utf8_bytes": 203
+    },
+    {
+      "sequence": 10,
+      "retained": false,
+      "fact_utf8_bytes": 206,
+      "retained_sequences": [
+        3
+      ],
+      "history_utf8_bytes": 203
+    },
+    {
+      "sequence": 11,
+      "retained": true,
+      "fact_utf8_bytes": 204,
+      "retained_sequences": [
+        3,
+        11
+      ],
+      "history_utf8_bytes": 406
+    }
+  ],
+  "boundary_coverage": [
+    "Real receipt -> builder -> oversized four-byte UTF8 provenance; 3 retained, 10 dropped preserving tuple identity, 9 rejected, rewritten 10 rejected, 11 accepted",
+    "Exact 2048-byte fact retained; exact 2049-byte fact dropped; both consume same-epoch sequence and reject older/equal replay",
+    "Foreign oversized and invalid-UTF8 epoch sequence 100 short-circuit without cursor consumption",
+    "Reset after oversized receipt accepts new epoch sequence 1 and rejects old epoch",
+    "UTF8 encoding errors propagate with both empty and retained history unchanged and do not consume cursor",
+    "Exactly eight retained records after ninth fitting receipt; oldest-first eviction; compact UTF8 history <=2048 bytes"
+  ],
+  "contract": {
+    "record_return": "True means retained; False does not imply unseen.",
+    "cursor": "Newer same-epoch facts consume cursor only after successful serialization/byte evaluation, including oversized dropped facts.",
+    "retained_records_on_drop": "Unchanged, including tuple identity.",
+    "serialization_errors": "Propagate before cursor or records mutation.",
+    "record_limit": 8,
+    "utf8_byte_limit": 2048,
+    "serialization": "compact JSON, ensure_ascii=False, separators=(comma,colon); all scalar provenance included"
+  },
+  "artifact_sha256": {
+    "/home/otto/.hermes/cache/scratch/ec-repair1-independent-ccyu3f5o/authority.json": "2a18b90ce2d784665e27939cfdeb9841fd87a11d16220126a91be13d16512657",
+    "/home/otto/.hermes/cache/scratch/ec-repair1-independent-ccyu3f5o/execution.json": "9d99084b00c33998058f2477178a6d2334c54f83eabd6062cc43540cd946f915",
+    "/home/otto/.hermes/cache/scratch/ec-repair1-independent-ccyu3f5o/freeze-after.json": "76fabba271d8d80a5a7986d5215cd4cee34e324c50490cd1f18dddd7d810e2b5",
+    "/home/otto/.hermes/cache/scratch/ec-repair1-independent-ccyu3f5o/freeze-before.json": "76fabba271d8d80a5a7986d5215cd4cee34e324c50490cd1f18dddd7d810e2b5",
+    "/home/otto/.hermes/cache/scratch/ec-repair1-independent-ccyu3f5o/fresh-trace.json": "cddba34e733af20a372718444b60a17022d564e1386717d0e448435f0aa42af7",
+    "/home/otto/.hermes/cache/scratch/ec-repair1-independent-ccyu3f5o/fresh.xml": "acf68f64df4186c8991f69d6153adc302256bcc1354bbd147440758d84435d5b",
+    "/home/otto/.hermes/cache/scratch/ec-repair1-independent-ccyu3f5o/source-checks.json": "4475185d7af8467508ec208ecd4bc60fe63664c3f64961f75ca725a68824216b",
+    "/home/otto/.hermes/cache/scratch/ec-repair1-independent-ccyu3f5o/source-delta.patch": "1de91f663761ce14de85188880a526acfb7bed8eae7af82b7cb654b8bd89d57e",
+    "/home/otto/.hermes/cache/scratch/ec-repair1-independent-ccyu3f5o/test_fresh_receipt_boundaries.py": "1ca06fd2bc6e1412a7353f5d0bba6c7d2549a2a311b33fb8b74d6a8d563b038f",
+    "/home/otto/.hermes/cache/scratch/ec-repair1-independent-ccyu3f5o/xml-counts.json": "69e5d095579735058fa189e7df37af11a90f615e928478221c04e939ed47e62e",
+    "/home/otto/.hermes/cache/scratch/ec-repair1-ahs7efea/red.json": "a5a79d853e9fb39e6dccd00d2743c5199fd9659795e2ab845da7ec42def34145",
+    "/home/otto/.hermes/cache/scratch/ec-repair1-ahs7efea/green.json": "6c5e0ae050b390c34fd035bd46ecb14c66703196b708e00657de2f7d98196600",
+    "/home/otto/.hermes/cache/scratch/ec-repair1-ahs7efea/red.xml": "de80a08c6337828f8a1a4f7daaba7d41f958e083b27490a9bbbef81f78241566",
+    "/home/otto/.hermes/cache/scratch/ec-repair1-ahs7efea/green.xml": "aa1826c4c83ff4cdfc5b352e01be07ecd3223511af946e0452641b010b2e69fe",
+    "/home/otto/.hermes/cache/scratch/ec-repair1-ahs7efea/scoped.xml": "072191a8c79a6e477d8fe780ce5617b55697bf742d8845aeea80eee8da5f7488",
+    "/home/otto/.hermes/cache/scratch/ec-repair1-ahs7efea/broader.xml": "32e5bbb968c71015b7d7c92a4456ea3ff47e93e4d3e00c19a71568f3242c1ee1",
+    "/home/otto/.hermes/cache/scratch/ec-repair1-ahs7efea/verification-execution.json": "70167385388d6a1add48e52feb55e7a665c0f7074e2bcbab7f3d52b4bac269d3",
+    "/home/otto/.hermes/cache/scratch/ec-repair1-ahs7efea/artifact-hashes.json": "ff2d4a7526465c8f439ecb415d53fd41d3c4e58c6b2a2f6812ef72ba2dc80d28",
+    "/home/otto/.hermes/cache/scratch/ec-repair1-ahs7efea/native_encounter_context.py.original": "ac901f04bffbf2d69650abc5faf4d9cfc492b6df31b5bba8c79fae4ffc2043d6",
+    "/home/otto/.hermes/cache/scratch/ec-repair1-ahs7efea/test_native_encounter_context.py.original": "e0d579c28caf126e1ec982300e01994f6768a880f717c35fec5c04a9ed282bfd"
+  },
+  "private_evidence": "/home/otto/.hermes/cache/scratch/ec-repair1-independent-ccyu3f5o",
+  "source_edits": false,
+  "test_edits": false,
+  "native_effects": false,
+  "network_calls": 0,
+  "sql_queries": 0,
+  "model_calls": 0,
+  "compiler_rerun": false,
+  "runtime_wiring_acceptance": false,
+  "full_root_gates_run": false,
+  "limits": [
+    "Offline pure-helper review only; provenance remains caller supplied, not authenticated.",
+    "No runtime receiver/transport-health integration or native gameplay acceptance claimed.",
+    "Builder, species decoder, serialization and pinned MAIN/pre-re20180704 profile remain unchanged; prior compiler evidence not repeated.",
+    "Hostile forged dataclass endpoints are not asserted; probes use real receipt parsing and fact builder.",
+    "Parent owns concurrent whole-tree check/audit and broader acceptance; this report does not waive those gates.",
+    "Only a new independent report and private scratch artifacts were written. Existing findings, test evidence and repair-cycle budget remain preserved."
+  ],
+  "summary": "Repair cycle 1 resolves the oversized-receipt cursor replay finding with only the authorized docstring and assignment relocation; 15 preserved/additional repository tests and 7 fresh offline boundary cases pass on a stable frozen snapshot."
+}

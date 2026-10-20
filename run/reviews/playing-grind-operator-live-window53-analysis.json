@@ -1,0 +1,11 @@
+{
+  "record": "GRIND_WINDOW53_TIMEOUT_FIX_DIRECTIONS_UP_IGPU_THROUGHPUT_IS_THE_CEILING_HEAVENGRAPH_IS_THE_ANSWER",
+  "date": "2026-10-19 (~21:0x)",
+  "findings": [
+    "The decide-economics fix worked as designed: 16/15 decisions landed (up from 5/0 in w52) with the 90s timeout + the 45s pacer \u2014 no more total starvation.",
+    "The ceiling is real: two agents' concurrent ~2200-token prefills exceed even the 90s budget on the iGPU (the throughput splits across slots). Some decides still timed out (5 tick failures, one startup PlayingBackendError).",
+    "own_pos stayed 0 \u2014 without reliably-served decides the agents never reached the actuation cadence."
+  ],
+  "the_decisive_next_move": "Serve Clef from HEAVENGRAPH (2x RTX 8000 48GB, criterion 6's third benchmark leg): the 9B Q4 at CUDA speeds decides in well under a second, ends every flavor of decide-latency flakiness permanently, and the agents point at heavengraph over the LAN. Deployment: the CUDA llama.cpp build there (spike 006 pattern), the model file staged, the decide-url pointed at it; the ROCm local box stays the fallback.",
+  "also_valid_tonight": "The 90s timeout + the 45s pacer stay (correct for ANY backend); the prompt could also be trimmed (~2200 tokens is mostly the state JSON) as a secondary lever."
+}

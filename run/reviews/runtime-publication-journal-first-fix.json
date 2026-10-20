@@ -1,0 +1,111 @@
+{
+  "status": "first_bounded_repair_scoped_tests_passed_independent_rereview_pending",
+  "approval": false,
+  "repair_tests_passed": true,
+  "findings_addressed": ["JOURNAL-ACK-001", "JOURNAL-OWNERSHIP-001"],
+  "started_local": "2026-10-06T01:58:12+02:00",
+  "verified_local": "2026-10-06T02:06:48+02:00",
+  "environment": "Existing pinned nix develop --offline; UV_OFFLINE=1; PYTHONDONTWRITEBYTECODE=1; uv run --offline --frozen --no-sync. No installs or dependency/gate changes.",
+  "changes": {
+    "acknowledgement": "Poison on reached binding failure; ordinary Exception origins retain False denial. BaseException origins outside Exception propagate as the exact original object with traceback. Later acknowledgement denies and appends refuse.",
+    "ownership": "Expose immutable typed JournalCleanupOwnership snapshots through PublicationJournal.cleanup_ownership and failed-constructor original_exception.journal_cleanup_ownership. Record allocated descriptor immediately after open, owning process PID, optional expected device/inode, attempt state, status and observation. Constructor cleanup reuses close(), which reuses the unchanged shared close_owned helper, exactly once.",
+    "observation": "Under the existing RLock, post-attempt fstat EBADF records released_observed/descriptor_absent. Valid descriptors, unknown identity, changed identity and diagnostic failure remain unresolved; matching device/inode is not authority to retry. The closed flag only denies further journal use. Repeated close performs no syscall and does not change unresolved status.",
+    "constructor": "Same original exception receives the public typed snapshot, plus a sanitized ownership note when unresolved. Initial file-fstat failure before _file_info exists is covered. Secondary cleanup interrupts and diagnostic failures do not mask the primary exception, errno or origin frame. No returned partial journal object or hidden traceback retention is needed.",
+    "documentation": "Narrow implementation API/boundary clarification and historical pre-fix gate qualification in wiki/guides/runtime-publication-journal.md; no approval or acceptance labels changed."
+  },
+  "tdd": [
+    {
+      "slice": "ACK",
+      "red": "Fresh tool execution of the parent's repository regressions: 2 assertion failures, actual positive append/True acknowledgement followed by reached entry-stat. Observed None instead of exact KeyboardInterrupt/SystemExit origin; tool exit 1. This initial output is retained in the delegate conversation, not a scratch log.",
+      "green": "Minimal poison-and-reraise fix: the same 2 repository cases passed, tool exit 0, before beginning cleanup slice.",
+      "final_followups": "GeneratorExit and a custom BaseException cancellation propagate; ordinary OSError/ValueError binding failures deny. These characterize the generic fix; no additional production behavior was added for them."
+    },
+    {
+      "slice": "returned-object cleanup boundary",
+      "red_log": "/home/otto/.hermes/cache/scratch/journal-first-fix/close-red.log",
+      "red": "4 reached behavior assertion failures for OSError/KeyboardInterrupt x pre-release/released close. Before the missing boundary assertion, real fd validity/EBADF and actual independent-process lock/reopen observations were checked. Not import or AttributeError failures. The log-printing shell wrapper exited 0 despite the displayed pytest failures.",
+      "green_log": "/home/otto/.hermes/cache/scratch/journal-first-fix/close-green.log",
+      "green": "4 cases passed after introducing typed ownership/status observations. Exactly one close attempt; later acknowledgement/write denied; borrowed root survived."
+    },
+    {
+      "slice": "failed-constructor ownership handoff",
+      "red_log": "/home/otto/.hermes/cache/scratch/journal-first-fix/constructor-red.log",
+      "red": "4 reached assertion failures: original read OSError + cleanup KeyboardInterrupt, or constructor KeyboardInterrupt + cleanup OSError, each pre-release/released. Exact primary identity and independent-process lock/reopen verified before missing supported handoff assertion. The log-printing shell wrapper exited 0 despite the displayed pytest failures.",
+      "green_log": "/home/otto/.hermes/cache/scratch/journal-first-fix/constructor-green.log",
+      "green": "8 combined returned-object/constructor cases passed after construction reused the one-attempt close path and attached its typed snapshot to the original exception."
+    }
+  ],
+  "verified_positive_controls": [
+    "Real private 0700 roots, owned journal files, successful append/True acknowledgement before reached acknowledgement and close faults; borrowed root descriptor remains valid.",
+    "Pre-release close fault: fd remains valid and a fresh independent process remains excluded before harness disposal. Returned object exposes unresolved ownership and repeat close makes no second attempt.",
+    "Release-before-raise fault: post-attempt EBADF is recorded as released_observed, acknowledgement denies and a fresh process reopens.",
+    "Constructor compound faults preserve primary identity, errno and reached origin traceback frame while retaining public ownership evidence after exception catch.",
+    "First owned-file fstat failure before identity assignment still retains the allocated descriptor and process ownership; successful diagnostic reports identity_unknown, diagnostic SystemExit reports diagnostic_failed, both unresolved and actually locked.",
+    "Post-release diagnostic OSError/GeneratorExit conservatively report unresolved/diagnostic_failed without masking the primary KeyboardInterrupt; a separate process proves actual release independently.",
+    "Descriptor reused for another inode or the exact same journal inode is never reclosed; both remain unresolved. Same-inode equality cannot prove continuous fd identity.",
+    "For returned close and failed construction, an owned synthetic worker retains the typed unresolved snapshot and live writer descriptor. A separate process remains locked until normal worker exit; kernel process teardown then permits reopening. No harness/manual descriptor close is counted as that recovery.",
+    "Existing append/close thread serialization, strict schema/bounds/replay, generation denial and borrowed-root semantics passed unchanged."
+  ],
+  "execution": {
+    "focused": {
+      "passed": 73,
+      "failed": 0,
+      "existing_cases": 51,
+      "ack_cases": 6,
+      "cleanup_cases": 16,
+      "collection_counts_verified": true,
+      "seconds": 4.22,
+      "journal_statements_covered": 204,
+      "journal_statements_total": 210,
+      "journal_statement_coverage_percent": 97.14285714285714,
+      "coverage_fail_under": 85,
+      "exit_code": 0,
+      "log": "/home/otto/.hermes/cache/scratch/journal-first-fix/focused.log",
+      "coverage": "/home/otto/.hermes/cache/scratch/journal-first-fix/focused-coverage.json",
+      "command": "nix develop --offline -c env UV_OFFLINE=1 PYTHONDONTWRITEBYTECODE=1 COVERAGE_FILE=/home/otto/.hermes/cache/scratch/journal-first-fix/focused.coverage uv run --offline --frozen --no-sync pytest -p no:cacheprovider tests/test_runtime_publication_journal.py tests/test_runtime_publication_journal_ack_regressions.py tests/test_runtime_publication_journal_cleanup_regressions.py --cov=robots.adapters.runtime_publication_journal --cov-report=term-missing --cov-report=json:/home/otto/.hermes/cache/scratch/journal-first-fix/focused-coverage.json --cov-fail-under=85"
+    },
+    "static": {
+      "black_scoped": 0,
+      "ruff_scoped_no_cache": 0,
+      "mypy_strict_source_and_all_scoped_tests": 0,
+      "bandit_scoped": 0,
+      "xenon_scoped": 0,
+      "whole_source_R0801": 0,
+      "results_and_commands": "/home/otto/.hermes/cache/scratch/journal-first-fix/static-results.json",
+      "runner": "/home/otto/.hermes/cache/scratch/journal-first-fix/verify_static.py",
+      "notes": "Removed only an unused parent-test call-overload ignore while preserving the required arg-type ignore. A test snapshot was retained in a distinct local variable to avoid mypy's stale property Literal narrowing; no strictness/gates/whitelist weakened."
+    },
+    "full_configured_gate": "Not run here; parent owns the completed combined gate after the disjoint concurrent memory writer finishes. Historical 1196 tests + 65 subtests / 93.75% remain pre-fix evidence, not this repair's result.",
+    "independent_review": "Original failed independent report and characterization harness unchanged. A fresh frozen rereview is required; this is implementer repair evidence only."
+  },
+  "fingerprints": {
+    "original_source_sha256_verified_before_changes": "d1300c7b7038b311aa363d4bdb50d2c9a2b441d68904809a44b2268274d0aea2",
+    "final_source_sha256": "303e75c81fce596c2e42dd8674b8492a14a3ce8951f0d1d527d4fa161d97eae2",
+    "unchanged_existing_test_sha256": "9586500c50d356417b9f7ff31269b0d64ca00f320d27ef3933d1112c4e1caed0",
+    "ack_test_sha256": "fdca6e9897fc3f2f9f56ec6c015de8c6151a838c668896f694e9fba8c66f836a",
+    "cleanup_test_sha256": "1adc0be80a39ba22772f4d52a56c84d0050e94fd63497e4057f47cb7be3352af",
+    "guide_sha256": "b41b0d9223f11b728eeff8bd2c7e9031a5d72c0d0078022dc91963fa73816c12",
+    "original_independent_report_sha256": "c93d479f2302d5178723ee9aa09fd737b6ceff1fec8da688a2a19a7acee90fca",
+    "original_parent_verification_sha256": "22e85793d01f83829f7ab03f8e2fb812dc542acaaa32451d536251e96f364c6e",
+    "unchanged_shared_helper_sha256": "bc3ca2d291da5d19831bd57f5a794e455a6e9f7870db0f655d376a51de0e6719",
+    "dependency_manifest": "/home/otto/.hermes/cache/scratch/journal-first-fix/dependencies-before.sha256",
+    "dependency_manifest_checked_files": 11,
+    "dependency_manifest_changes": [],
+    "dependency_freeze_scope": "rathena_runtime_io, runtime_publication_io, runtime_tree_sync, rathena_runtime, rathena_runtime_assets, Taskfile.yml, pyproject.toml, uv.lock, flake.nix, flake.lock, vulture_whitelist.py; sha256sum -c passed for every entry."
+  },
+  "repository_files_written": [
+    "src/robots/adapters/runtime_publication_journal.py",
+    "tests/test_runtime_publication_journal_ack_regressions.py",
+    "tests/test_runtime_publication_journal_cleanup_regressions.py",
+    "wiki/guides/runtime-publication-journal.md",
+    "run/reviews/runtime-publication-journal-first-fix.json"
+  ],
+  "residual_boundaries": [
+    "Unresolved ownership is an explicit supported handoff, not physical release. Retain PublicationJournal.cleanup_ownership or original_exception.journal_cleanup_ownership as pending process ownership until separately authorized controlled teardown of that owning process. No automatic os._exit, process kill, manager stub or unsafe fd retry was added.",
+    "The old unconditional constructor oracle requiring zero live descriptors after every cleanup failure needs migration to the documented unresolved-handoff boundary. It was not rerun/edited and is not claimed to pass; the original failed report is preserved.",
+    "EBADF, fd numbers and device/inode observations do not grant close authority or prove continuous fd identity/lock release. Diagnostic failures are unresolved even when independent evidence observes actual release.",
+    "Advisory cooperative locks do not establish hostile same-UID/privileged exclusion, workspace construction identity, multifile atomicity, recovery or world admission. Schema/model/world contracts remain unchanged.",
+    "No SQL/server/container/volume/engine/socket/provider/gateway/memory/host/world/native changes; no global installs, dependency pin/gate/whitelist changes, staging, commit or push. Test-owned worker termination is only a failure-disposal fallback; successful process-boundary tests use normal worker exit.",
+    "Original IO-003 and early-construction findings remain open. Parent ledger/index/log and concurrent society/memory/cache files were not edited."
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "record": "GRIND_WINDOW56_HEAVENGRAPH_DECIDES_SERVE_FULL_CADENCE_FX0_FIRST_MOVEMENT_IN_10_WINDOWS",
+  "date": "2026-10-20 (~02:2x)",
+  "findings": [
+    "The heavengraph decides served the FULL cadence: 243/224 decisions (the 6s pacer, no timeouts \u2014 vs 5-16 in the local-backend windows). The decide-latency class of flakiness is CLOSED by deployment.",
+    "fx0 MOVED for the first time in ~10 windows: own_pos 8, 8 walks dispatched and executed (floor met). The entry-seed + the health-gate + the fast decides compound.",
+    "fx1: 224 decisions, own_pos 0 (its rotation of the intermittent stall).",
+    "THE LAST LAYER: 0 attacks despite 467 decisions and the probe-verified visible mobs \u2014 the decide->plan->action translation (ADR-021 plan authoring reads the answers' next_action; the plans must become the FarmPlan/GrindScript steps that engage). One focused session reads that path with the decides flowing."
+  ],
+  "verdict": "passed False (honest \u2014 the attacks gate). The infrastructure story is complete: the world, the client, the telemetry, the decides all verified in isolation AND composition; the remaining work is the plan->action translation layer."
+}

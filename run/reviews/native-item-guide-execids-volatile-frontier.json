@@ -1,0 +1,16 @@
+{
+  "status": "EXECIDS_VOLATILE_HISTORY_FRONTIER",
+  "evidence": {
+    "cycle_denial": "content_inspect_drift with Health.Log normalization in place (diag_final5)",
+    "probe": "7s double inspect with NO intervening exec: publish_row_normalization output stable for all four roles",
+    "cycle_difference": "validate_sql docker exec runs between the last checkpoint snapshot and publish_content inspect",
+    "podman_behavior": "completed exec session IDs are retained/appended in the top-level ExecIDs field (raw dump carries two stale exec IDs from hours-old probes)"
+  },
+  "fix_scope": "Extend publish_row_normalization to neutralize the top-level ExecIDs append-only completed-exec history on both sides, same marker discipline as Health.Log (present-vs-absent preserved); everything else stays strictly compared. RED fixture: exec completes between captures. ALSO: the worker namespace must carry public/item-guide.txt + public/scripts_custom.conf (pinned digests 0cb282af\u2026/9de2dafd\u2026) because item_guide_publication ROOT is Path(__file__).parent.parent \u2014 the previous namespace missed them and denied via FileNotFoundError before this frontier was visible.",
+  "world_state": {
+    "map": "stopped by final5 (publication unattempted, zero writes)",
+    "login/char/mariadb": "running",
+    "fixtures": "offline"
+  },
+  "native_authority": "UNCHANGED_REVOKED"
+}

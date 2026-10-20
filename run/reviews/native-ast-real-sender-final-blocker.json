@@ -1,0 +1,88 @@
+{
+  "status": "BLOCKED_REQUIRES_USER_DECISION",
+  "final_review_sha256": "128e00e3557b57f636506cce6f9e420c7c85596acd92e881b55f121a7852934f",
+  "passed": false,
+  "semantic_review_passed": false,
+  "quality_passed": false,
+  "parent_verified_review_artifacts": 275,
+  "frozen_files_unchanged": 198,
+  "independent_compiled_probes": 20,
+  "matching_probes": 19,
+  "scope_blocker": {
+    "id": "L4_FIELD_PACKED_SCOPE",
+    "severity": "blocking contract/supported-grammar discrepancy, not demonstrated byte-overwrite",
+    "location": "spikes/007-native-packet-ast/sender-proof/trace_sender.py:38",
+    "description": "ordinary_fields explicitly permits FieldDecl children named PackedAttr. A fresh Clang/GCC-compiled field-only packing record becomes IDENTITY_LAYOUT_CANDIDATE instead of rejecting unsupported field packing before metadata. Record-level packing remains separately required and supported.",
+    "fixture": "struct P {unsigned short h;unsigned int x __attribute__((packed));};",
+    "GCC_metadata": {
+      "id": 1,
+      "size": 6,
+      "offsets": [
+        0,
+        2
+      ]
+    },
+    "observed_send": "{\"id\":1,\"size\":6,\"offsets\":[0,2]}\nsent_header=1 size=6\n",
+    "actual_decision": "IDENTITY_LAYOUT_CANDIDATE",
+    "without_metadata_reason": [
+      "GCC layout evidence absent"
+    ],
+    "AST_field_attributes": [
+      {
+        "name": "h",
+        "type": {
+          "qualType": "unsigned short"
+        },
+        "attributes": []
+      },
+      {
+        "name": "x",
+        "type": {
+          "qualType": "unsigned int"
+        },
+        "attributes": [
+          "PackedAttr"
+        ]
+      }
+    ],
+    "no_false_header_claim": "This particular field-packing fixture sends header 1 correctly. It demonstrates expansion beyond the explicitly required denied storage forms, not an overlapping-header exploit or public CLI pin bypass.",
+    "evidence": "/home/otto/.hermes/cache/scratch/native-record-final-independent/field-packed.result.json"
+  },
+  "parent_field_fixture_replay": "current tracer returns IDENTITY_LAYOUT_CANDIDATE; GCC byte observer reports sent_header=1 size=6; grammar-contract discrepancy, not wrong-header exploit",
+  "parent_harness_correction": "Initially passed full TU dictionary to list-based tracer API; reran with actual TU inner declarations, no tracer/source edits",
+  "quality_blockers": [
+    {
+      "tool": "black",
+      "baseline_exit": 1,
+      "current_exit": 1,
+      "baseline_files_needing_format": 2,
+      "current_files_needing_format": 2,
+      "classification": "pre-existing unwaived formatting debt; cannot claim production quality acceptance"
+    },
+    {
+      "tool": "ruff",
+      "baseline_diagnostics": 150,
+      "current_diagnostics": 189,
+      "added_diagnostics": 39,
+      "classification": "new style/lint debt, blocking; no baseline waiver"
+    },
+    {
+      "tool": "mypy",
+      "baseline_diagnostics": 88,
+      "current_diagnostics": 102,
+      "added_diagnostics": 14,
+      "classification": "new untyped/type-check debt, blocking; no baseline waiver"
+    }
+  ],
+  "real_emotion_facts_remain_verified": true,
+  "automatic_repair_cycles_used": 2,
+  "maximum_automatic_repair_cycles": 2,
+  "third_automatic_repair_permitted": false,
+  "further_cleanup_requires_explicit_new_authorization": true,
+  "scratch_callback_qualification_bounded_approval_unchanged": true,
+  "old_production_generator_rejected": true,
+  "sink_adoption": false,
+  "runtime_admission": false,
+  "world_changes": false,
+  "full_goal_complete": false
+}

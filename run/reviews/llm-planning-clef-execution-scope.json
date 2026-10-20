@@ -1,0 +1,57 @@
+{
+  "scope": "First event-driven CLEF execution control for admitted IDLE/REST plans; asynchronous off-host decision worker; offline TDD only",
+  "baseline": {
+    "path": "/home/otto/.hermes/cache/scratch/llm-planning-clef-execution/baseline.json",
+    "sha256": "43376d95cf8a364715da874c655b813127d9aa4cb93c925d76a1d65a326afc9e",
+    "inputs": 347
+  },
+  "authorization": "run/reviews/autonomous-continuation-authority.json",
+  "prerequisite": "run/reviews/llm-planning-rest-mechanical-approved.json",
+  "reached_red": {
+    "path": "/home/otto/.hermes/cache/scratch/llm-planning-clef-execution/parent-event-red.xml",
+    "sha256": "bd3803d2589847b6a1927f294157921cbc9830fadc3ddffb3d632d964df47aa5",
+    "harness": "/home/otto/.hermes/cache/scratch/llm-planning-clef-execution/test_execution_event.py",
+    "harness_sha256": "ee26c0bb96110827e2c8181397c6dc5f3d237079deaedd1544d9c210eb03c51f"
+  },
+  "allowed_existing": [
+    "src/robots/app/planning_brain.py"
+  ],
+  "allowed_new": [
+    "src/robots/app/execution_decisions.py",
+    "tests/test_llm_planning_clef_execution.py",
+    "run/reviews/llm-planning-clef-execution.json"
+  ],
+  "event_scope": [
+    "Heartbeat",
+    "DamageTaken",
+    "ScriptFailed"
+  ],
+  "decision_schema": {
+    "question": "plan_execution",
+    "type": "choice",
+    "options": [
+      "continue",
+      "hold",
+      "replan"
+    ],
+    "confidence_threshold": 0.6
+  },
+  "request_bound_utf8_bytes": 32768,
+  "logical_wait_seconds": 30,
+  "worker_scope": "One tracked non-daemon execution worker per agent, independently owned from its existing planning worker; no provider call on host owner; physical join required for release/reconnect",
+  "context": "Bounded deep-independent owner-specific current received data, active identity/version/phase/objective, advisory public rules, captured private notes or explicit UNKNOWN; never live native/journal callbacks",
+  "acceptance": [
+    "EXEC1 reached actual-host heartbeat invokes typed off-thread decision, keepalive while blocked, no per-tick calls",
+    "EXEC2 parsed continue/hold/replan or low-confidence/invalid reply safely applied on owner thread, LLM only for bounded replan",
+    "EXEC3 owner/context isolation and stale epoch/map/plan-version response denial",
+    "EXEC4 singleflight, logical timeout retains physical ownership, cancellation/cleanup and reconnect fencing"
+  ],
+  "preservation": "No default legacy changes; preserve approved REST progress/stand/arrival ownership, approved planner/capture/runtime/decoder, and old testcase IDs",
+  "exclusions": [
+    "Real providers/network/native sessions/live activation",
+    "Automatic admission dispatch or broad chat/event/question surfaces in this first slice",
+    "Combat/phase traversal/dashboard/provisioning/CLI/Memory migration",
+    "Native lifecycle rewrite or generic concurrency framework"
+  ],
+  "adoption": "Completed frozen independent review and unchanged full-root quality gates required; full six milestones/eleven criteria remain OPEN"
+}

@@ -1,0 +1,198 @@
+{
+  "schema": "native-capacity-context-repair-independent-review/v1",
+  "passed": true,
+  "status": "CURRENT_FROZEN_SCOPED_REPAIR_REVIEW_PASS_PARENT_FULL_GATES_SEPARATE",
+  "security_concerns": [],
+  "logic_errors": [],
+  "suggestions": [
+    "Preserve source byte copies before future repair edits; pre-repair hashes cannot establish an original-to-repaired byte diff.",
+    "If adding future inventory refresh support, retain the reached old-WEIGHT/list-without-auth denial and genuine newly received auth/list/WEIGHT recovery controls."
+  ],
+  "summary": "Frozen current capacity repair resolves both reached faults; independently exercised offline actual-client regressions pass without widening native or spending authority.",
+  "repair_cycle": 1,
+  "reviewed_source_files": [
+    "src/robots/domain/model.py",
+    "src/robots/app/playing_runtime.py",
+    "src/robots/domain/capacity.py",
+    "src/robots/adapters/native_capacity.py",
+    "tests/test_native_capacity_context.py"
+  ],
+  "additional_interacting_sources": [
+    "src/robots/adapters/native_gameplay.py",
+    "spikes/003-clientless-limbs/client.py",
+    "tests/test_native_shop_selection.py",
+    "tests/test_native_chat_text.py",
+    "tests/test_native_encounter_stream.py",
+    "tests/test_native_npc_name_input.py"
+  ],
+  "findings": {
+    "eligibility": "native_capacity.py:131-134 binds/clears capacity but returns success for invalid selected/name eligibility. Raw-frame/native-epoch/sequence denial remains at 128-130,135-143; generic receive consumption and historical encounter capture continue. All five historical root predicates pass in their complete unchanged legacy files.",
+    "owner_inventory": "native_capacity.py:50-57,124 marks same-epoch reference replacement; playing_runtime.py:318-325 clears inventory-known/initial before consumption,360-363 clears after each retained frame so replacement-wire auth cannot rearm old WEIGHT. Capacity skips retained tail. BotState emits {} with inventory_known=false without poisoning tracker.",
+    "positive_recovery": "Five post-repair probes prove coherent repeated unknown for selection/session/socket/reader/wire, fresh capacity WEIGHT alone and inventory lists alone do not rearm complete stock, and genuinely newer auth/list/WEIGHT recovers a known empty inventory without retaining old rows. Existing tests verify new-epoch first records, same-owner repeated receipts, capacity recovery, ordinary warp and immutable history.",
+    "dto_and_units": "Reviewed full current model, immutable capacity DTOs and collector: exact eight-byte B0 parameters24/25 retain signed unscaled counts and independent provenance, including zero/overweight/negative and partial history. Inventory mutation sequence and complete/nonnegative are not spend freshness or permission. Model/DTO/native_gameplay hashes are unchanged from original feature freeze.",
+    "security": "Full current five feature files inspected; no added connection/query/model/purchase path or callbacks/owner references in published capacity DTOs. Bounded AST scan found no eval/exec/os.system/pickle or subprocess shell=True call. Original diff unavailable, so no added-lines-only scan is claimed."
+  },
+  "preservation_limitation": {
+    "pre_repair_hashes_known": true,
+    "pre_repair_source_bytecopies_available": false,
+    "missing_paths": [
+      "src/robots/app/playing_runtime.py",
+      "src/robots/adapters/native_capacity.py",
+      "tests/test_native_capacity_context.py"
+    ],
+    "original_diff_produced": false,
+    "consequence": "PASS qualifies full CURRENT frozen behavior, not a byte-level original-to-repaired comparison or reconstructed tests-first chronology. Reached post-GREEN failures and repeated repair RED remain historical failures."
+  },
+  "integrity": {
+    "freeze": ".work/native-capacity-context-repair/parent-combined-freeze.json",
+    "freeze_sha256": "7f53d41dab65d67555cdf27155696ae73884c7fe97e9744226841e25bb060265",
+    "physical_current_paths": 347,
+    "worker_current_physical_paths": 333,
+    "pre_mismatches": [],
+    "post_mismatches": [],
+    "old_freeze_physical_paths": 331,
+    "historical_unchanged_physical_paths": 328,
+    "approved_changed_historical_paths": [
+      "/home/otto/dev/ro-bots/src/robots/app/playing_runtime.py",
+      "/home/otto/dev/ro-bots/src/robots/adapters/native_capacity.py",
+      "/home/otto/dev/ro-bots/tests/test_native_capacity_context.py"
+    ],
+    "historical_missing": [],
+    "registered_bindings_verified": 396,
+    "registered_hash_mismatches": [],
+    "source_hashes": {
+      "src/robots/domain/model.py": "b5fb6e2be7f979fa8e7d1ae50cba3177bafa3d0989b7a627841e561b417ccbfc",
+      "src/robots/app/playing_runtime.py": "7d2e44ef783fa39246cc40db82ac05724752a3dbbbc1fe31b12e68348b36a1a8",
+      "src/robots/domain/capacity.py": "77826c4e88d9d175b4a1069c3cb681529003991ac61ab3ccc9504c6ab46e232d",
+      "src/robots/adapters/native_capacity.py": "598e1702eb4e88112998435ed0791807fbc67673b49645c84931129392a05c76",
+      "tests/test_native_capacity_context.py": "0b1f3de3c3e4874afb63c9fcfae23fa0e4f69a631ea43a4062ccdf1d74b4aec8"
+    },
+    "excluded_unrelated_mutable_candidate": ".work/operators/selected-owner-slot-metadata-v1 (not read, run, or included in this review)"
+  },
+  "execution": {
+    "qualified_environment": "nix develop --offline --no-write-lock-file path:./spikes/007-native-packet-ast/toolchain -c env PYTHONOPTIMIZE=0 PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=src:. .venv/bin/python -B -m pytest",
+    "scoped_selected": [
+      "tests/test_native_capacity_context.py",
+      ".work/native-capacity-context-repair-independent-review/test_frontier.py",
+      ".work/native-capacity-context-repair-independent-review/test_review_boundaries.py",
+      "tests/test_native_chat_text.py",
+      "tests/test_native_encounter_stream.py",
+      "tests/test_native_npc_name_input.py"
+    ],
+    "override_ini": {
+      "addopts": "",
+      "cache_dir": ".work/native-capacity-context-repair-independent-review/cache"
+    },
+    "pytest_rootdir_and_plugins_not_overridden": true,
+    "root_gates_or_global_scans_run": false,
+    "scoped": {
+      "raw": 156,
+      "unique": 156,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "sha256": "dc6ecb47dde077bddbbab5aa67babbc0ea54275f4df08b13249843beeedddc59"
+    },
+    "post_repair_positive": {
+      "raw": 5,
+      "unique": 5,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "sha256": "fd9d549725d0f0bf31214d3056755ebb543189d17d47ae5241e9ff42e1f03f74"
+    },
+    "unique_physical_ids_across_own_runs": 161,
+    "no_overlapping_own_ids": true,
+    "feature_permanent_cases": 43,
+    "original_feature_cases_retained": 38,
+    "permanent_owner_replacement_cases": 5,
+    "copied_original_reviewer_cases": 5,
+    "cases_are_not_deduplicated_by_behavior": "Permanent and copied probe selectors are distinct physical IDs; no overlapping run is added twice.",
+    "explicit_copied_scratch_classname_mapping": {
+      ".work.native-capacity-context.test_frontier": ".work.native-capacity-context-repair-independent-review.test_frontier",
+      ".work.native-capacity-context-independent-review.test_frontier": ".work.native-capacity-context-repair-independent-review.test_frontier",
+      ".work.native-capacity-context-repair.test_frontier": ".work.native-capacity-context-repair-independent-review.test_frontier",
+      ".work.native-capacity-context-independent-review.test_review_boundaries": ".work.native-capacity-context-repair-independent-review.test_review_boundaries",
+      ".work.native-capacity-context-repair.test_review_boundaries": ".work.native-capacity-context-repair-independent-review.test_review_boundaries"
+    },
+    "identity_reconciliation": {
+      "original_39_missing": [],
+      "prior_five_owner_probe_missing": [],
+      "prior_five_root_failures_missing": [],
+      "worker_focused_61_missing": [],
+      "scoped_unexpected_vs_selected_worker": [],
+      "own_runs_overlapping_ids": []
+    },
+    "byte_identical_probe_bindings": {
+      "test_frontier.py": "75b7605a9f63c81e69f12633d37ec9663fff4835de41e67e5d35c9b2303a3591",
+      "test_review_boundaries.py": "0fb9ee4ace31ac2e803bdeb13d55f44c6b1721fbe00e038e05be304bd4b36be0"
+    }
+  },
+  "preserved_history": {
+    "original_root": {
+      "physical_cases": 5725,
+      "failures": 5,
+      "errors": 0,
+      "skips": 0,
+      "sha256": "d410636da4167ebcdc22d75822f95af1e0c8b4ec109e87628b540c0fd486e0e2"
+    },
+    "original_reviewer": {
+      "physical_cases": 5,
+      "failures": 5,
+      "sha256": "331580e427129485834cfa3ecfa77eba6d075254bbe2b8794ea38367b906ce4e"
+    },
+    "repair_repeated_reached_red": {
+      "raw": 17,
+      "unique": 17,
+      "failures": 10,
+      "errors": 0,
+      "skips": 0,
+      "path": ".work/native-capacity-context-repair/reached-red.xml",
+      "sha256": "f1c1521c3b9751f7ac217558d32a326730484ec35aadea966fdab0597cdf2251"
+    },
+    "current_worker_regressions": {
+      "raw": 2666,
+      "unique": 2666,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "path": ".work/native-capacity-context-repair/completed-regressions.xml",
+      "sha256": "34a918d7ca3f1e950b14c4564ab6f8b2203acd97618de8dc26314cfac7ae5dc0"
+    },
+    "current_worker_focused": {
+      "raw": 61,
+      "unique": 61,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "path": ".work/native-capacity-context-repair/completed-focused.xml",
+      "sha256": "e9a096c6d8958e4616a01d0f3a8c961db7deae625d369f7583b3fef4ca29f4f0"
+    },
+    "worker_current_counts_not_added_to_independent_total": true
+  },
+  "quality_evidence": {
+    "scope": "Inspected existing bounded logs and exact commands/digests/returncode0; no duplicate global scans.",
+    "black": "256 src/tests files unchanged",
+    "ruff": "All checks passed; --no-cache src tests",
+    "mypy": "Fresh-cache command; pyproject files=[src,tests]; no issues in 256 source files",
+    "xenon": "Whole src B/B/A, rc0 bound empty log",
+    "duplicate": "Whole src duplicate-code rc0, 10.00/10 bound log"
+  },
+  "effects": {
+    "production_or_tests_modified": false,
+    "git_modified": false,
+    "private_or_guard_modified": false,
+    "native_or_SQL_or_model_or_spending": false,
+    "shared_coverage_or_cache_used": false,
+    "writes_owned_only": true
+  },
+  "created": [
+    ".work/native-capacity-context-repair-independent-review/",
+    "run/reviews/native-capacity-context-repair-independent-review.json"
+  ],
+  "remaining": [
+    "Parent full root check/audit verdict remains separate; no rerun or claim of full-root acceptance by reviewer.",
+    "Producer review does not resolve actual selected-character slot limit, loaded item weight, human GUI compatibility, purchase authority or native activation."
+  ],
+  "evidence_directory": ".work/native-capacity-context-repair-independent-review"
+}

@@ -1,0 +1,214 @@
+"""Run scheduled native players with explicitly selected real model providers.
+
+Example: python -m robots.playing --manifest ... --runtime-root ...
+--memory-root ... --decision-url http://127.0.0.1:8091/v1/systemone
+Add --playground --duration 120 for a bounded current-window session.
+"""
+
+import argparse
+import json
+import math
+import random
+import time
+from contextlib import suppress
+from pathlib import Path
+from typing import Any
+
+from robots.adapters.native_navigation import MapCache
+from robots.adapters.planning_llm import LocalPlanningModel
+from robots.adapters.playing_backends import make_local_chat, make_private_decision
+from robots.adapters.skill_knowledge import load_skill_knowledge
+from robots.app import agent_runtime
+from robots.app.agent_runtime import AgentHost, ManifestEntry, PersonaClock
+from robots.app.planning_brain import PlannedBrain
+from robots.app.playing_runtime import ObservedMobDatabase, PlayingClient
+from robots.domain.planning import PlanningIdentity
+from robots.society.models import (
+    Attitude,
+    FriendGroup,
+    Playstyle,
+    Schedule,
+    ScheduleFactory,
+    SocietyPersona,
+)
+from robots.society.society import ReputationStore, SocialGraph, SocietyRoster
+
+
+def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
+    parser = argparse.ArgumentParser(description="Scheduled native players; no fake fallback")
+    for name in ("manifest", "runtime-root", "memory-root"):
+        parser.add_argument(f"--{name}", type=Path, required=True)
+    parser.add_argument("--decision-url", required=True)
+    parser.add_argument("--chat-url", default="http://127.0.0.1:8300/v1/chat/completions")
+    parser.add_argument("--worldfeed-port", type=int, default=8400)
+    parser.add_argument("--duration", type=float)
+    parser.add_argument("--playground", action="store_true")
+    parser.add_argument("--schedule-file", type=Path)
+    parser.add_argument("--skill-knowledge", type=Path, default=None)
+    parser.add_argument("--solo", action="store_true")
+    parser.add_argument("--seed", type=int, default=0)
+    parser.add_argument("--llm-planning", action="store_true")
+    parser.add_argument("--planning-world")
+    args = parser.parse_args(argv)
+    if args.llm_planning:
+        try:
+            PlanningIdentity("validation", args.planning_world, "validation", 0, "pre-re")
+        except ValueError, TypeError:
+            parser.error("llm-planning requires an explicit valid planning-world")
+    if args.duration is not None and (not math.isfinite(args.duration) or args.duration <= 0):
+        parser.error("duration must be finite and positive")
+    if args.playground and args.duration is None:
+        parser.error("playground requires a bounded duration")
+    if not 1 <= args.worldfeed_port <= 65535:
+        parser.error("worldfeed port out of range")
+    return args
+
+
+def build_roster(entries: dict[str, ManifestEntry], args: argparse.Namespace) -> SocietyRoster:
+    personas = {
+        pid: SocietyPersona(
+            pid,
+            entry.char_name,
+            Playstyle.MELEE,
+            Attitude.SOLO if args.solo else Attitude.HELPFUL_NEWBIE,
+            0.5,
+            (1, 99),
+        )
+        for pid, entry in entries.items()
+    }
+    rng = random.Random(args.seed)
+    ids = sorted(entries)
+    members = (
+        [(pid,) for pid in ids]
+        if args.solo
+        else [tuple(ids[i : i + 2]) for i in range(0, len(ids), 2)]
+    )
+    configured: Any = json.loads(args.schedule_file.read_text()) if args.schedule_file else None
+    groups = []
+    graph = SocialGraph()
+    for index, group_members in enumerate(members):
+        schedule = _schedule(args, rng, configured, group_members[0])
+        group = FriendGroup(
+            f"playing-{index}",
+            group_members,
+            Attitude.SOLO if len(group_members) == 1 else Attitude.HELPFUL_NEWBIE,
+            schedule,
+        )
+        groups.append(group)
+        graph.seed_group(group)
+    return SocietyRoster(groups, personas, graph, ReputationStore())
+
+
+def build_host(args: argparse.Namespace) -> AgentHost:
+    """Construct only; no sockets/model inference before host lifecycle starts."""
+    public_skill_knowledge = (
+        load_skill_knowledge(args.skill_knowledge, "pre-re") if args.skill_knowledge else None
+    )
+    entries = agent_runtime.load_manifest(args.manifest)
+    root = args.runtime_root
+    cache = MapCache.load(root / "db/map_cache.dat", root / "db/pre-re/map_cache.dat")
+    catalog = ObservedMobDatabase.load(root / "db/pre-re/mob_db.yml")
+    databases = {pid: ObservedMobDatabase(catalog.catalog.values()) for pid in entries}
+    chat = make_local_chat(args.chat_url)
+    decision = make_private_decision(args.decision_url)
+
+    def client_factory(entry: ManifestEntry) -> PlayingClient:
+        native = vars(agent_runtime)["_BotClient"]
+        if native is None:
+            message = "native client unavailable; refusing fake fallback"
+            raise RuntimeError(message)
+        wire = native(
+            entry.account,
+            entry.password,
+            char_name=entry.char_name,
+            verbose=False,
+            login_ip=entry.login_host,
+            login_port=entry.login_port,
+            pincode=entry.pincode,
+            create_char=False,
+        )
+        return PlayingClient(
+            wire,
+            databases[entry.persona_id],
+            cache=cache,
+            public_skill_knowledge=public_skill_knowledge,
+        )
+
+    return AgentHost(
+        build_roster(entries, args),
+        args.manifest,
+        decision_factory=lambda: decision,
+        chat_generator=chat,
+        client_factory=client_factory,
+        mob_db_factory=databases.__getitem__,
+        memory_root=args.memory_root,
+        worldfeed_port=args.worldfeed_port,
+        brain_factory=(
+            (
+                lambda persona, entry, memory: PlannedBrain(
+                    PlanningIdentity(
+                        persona.persona_id, args.planning_world, entry.char_name, 0, "pre-re"
+                    ),
+                    memory,
+                    decision,
+                    lambda: LocalPlanningModel(
+                        "http://127.0.0.1:8300", "local", 30, 512, token_ceiling=4096
+                    ),
+                )
+            )
+            if args.llm_planning
+            else None
+        ),
+    )
+
+
+def run_host(host: AgentHost, duration: float | None) -> None:
+    deadline = time.monotonic() + duration if duration is not None else None
+    try:
+        host.start_worldfeed()
+        while deadline is None or time.monotonic() < deadline:
+            host.step()
+            time.sleep(min(1.0, max(0.0, deadline - time.monotonic())) if deadline else 1.0)
+    except BaseException as origin:
+        try:
+            host.stop()
+        except BaseException as cleanup:
+            # Shutdown diagnostics must not expose provider or manifest values.
+            with suppress(BaseException):
+                origin.add_note(
+                    f"host shutdown failed ({type(cleanup).__name__}); release unconfirmed"
+                )
+        raise
+    else:
+        host.stop()
+
+
+def main(argv: list[str] | None = None) -> int:
+    args = parse_args(argv)
+    try:
+        run_host(build_host(args), args.duration)
+    except KeyboardInterrupt:
+        return 0
+    except Exception:
+        # Model endpoints/manifest values must not enter exception logs.
+        return 1
+    return 0
+
+
+def _schedule(
+    args: argparse.Namespace, rng: random.Random, configured: Any, persona_id: str
+) -> Schedule:
+    schedule = ScheduleFactory.make_group_schedule(rng)
+    if configured is not None:
+        schedule = Schedule(tuple(tuple(row) for row in configured[persona_id]))
+    if args.playground:
+        day, hour = PersonaClock().local_now()
+        end = hour + args.duration / 3600 + 1 / 60
+        schedule = Schedule(((day, hour, min(end, 24.0)),))
+        if end > 24:
+            schedule = Schedule(((day, hour, 24.0), ((day + 1) % 7, 0.0, end - 24)))
+    return schedule
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

@@ -1,0 +1,1273 @@
+{
+  "status": "COMPLETED_SELECTION_INSPECTION_WITH_LIVE_VALUE_UNKNOWN",
+  "observed_at": "2026-10-13T06:35:39.284939+00:00",
+  "corrected_source_root": "/home/otto/dev/ro-bots/run/public-source/callback-qualified-e985006171d2",
+  "immutable_original": {
+    "path": "/home/otto/dev/ro-bots/run/reviews/map-item-loader-selection.json",
+    "sha256": "f7432fb2ee47f93cb5cf91cf8641159899e913a5bedae03773a18513b6b15fe5"
+  },
+  "live_item_1201_weight": "UNKNOWN",
+  "scope": "Read-only item loader selection; ADR018 cooperative owner assumptions; no source restoration, SQL, restart/reload, admin/client/model or other worker inspection.",
+  "source_hashes": {
+    "src/map/map.cpp": "9629e6b751ca3fd9d160e48c0beb80bf7bbe0c359fa7ecdb46698b074e6c1113",
+    "src/map/itemdb.cpp": "3b51a2bbcb44c5ffbdb5dc04683dd4f567c2da92f56a4bc0008aa9a93de5efe5",
+    "src/common/database.cpp": "03d394aa9ed809557fb4ce50419776e34214220504ef1229ec864a4b10be0011",
+    "src/common/strlib.cpp": "e0c198ad92d701a9d12dbf5507a449a94dee953629f3e0b0764b15a61ba7be66",
+    "src/common/core.cpp": "765d822dedc1c2fe5a92f22393690b80bf3e47253c5df4589d08386440e5700c",
+    "src/common/cli.cpp": "f21db15851a903e31b12dc1378667b7f2c60b54baf8ce0818c16bca661a095c7"
+  },
+  "source_evidence": {
+    "src/map/map.cpp": [
+      {
+        "line": 67,
+        "text": "Sql* qsmysql_handle; /// For query_sql"
+      },
+      {
+        "line": 68,
+        "text": ""
+      },
+      {
+        "line": 69,
+        "text": "int32 db_use_sqldbs = 0;"
+      },
+      {
+        "line": 70,
+        "text": "char barter_table[32] = \"barter\";"
+      },
+      {
+        "line": 71,
+        "text": "char buyingstores_table[32] = \"buyingstores\";"
+      },
+      {
+        "line": 72,
+        "text": "char buyingstore_items_table[32] = \"buyingstore_items\";"
+      },
+      {
+        "line": 4112,
+        "text": " * Read map server configuration files (conf/map_athena.conf...)"
+      },
+      {
+        "line": 4113,
+        "text": " *------------------------------------------*/"
+      },
+      {
+        "line": 4114,
+        "text": "int32 map_config_read(const char *cfgName)"
+      },
+      {
+        "line": 4115,
+        "text": "{"
+      },
+      {
+        "line": 4116,
+        "text": "\tchar line[1024], w1[32], w2[1024];"
+      },
+      {
+        "line": 4117,
+        "text": "\tFILE *fp;"
+      },
+      {
+        "line": 4132,
+        "text": "\t\tif( (ptr = strstr(line, \"//\")) != nullptr )"
+      },
+      {
+        "line": 4133,
+        "text": "\t\t\t*ptr = '\\n'; //Strip comments"
+      },
+      {
+        "line": 4134,
+        "text": "\t\tif( sscanf(line, \"%31[^:]: %1023[^\\t\\r\\n]\", w1, w2) < 2 )"
+      },
+      {
+        "line": 4135,
+        "text": "\t\t\tcontinue;"
+      },
+      {
+        "line": 4136,
+        "text": ""
+      },
+      {
+        "line": 4137,
+        "text": "\t\t//Strip trailing spaces"
+      },
+      {
+        "line": 4144,
+        "text": "\t\t\tsafestrncpy(timestamp_format, w2, 20);"
+      },
+      {
+        "line": 4145,
+        "text": "\t\telse if(strcmpi(w1,\"stdout_with_ansisequence\")==0)"
+      },
+      {
+        "line": 4146,
+        "text": "\t\t\tstdout_with_ansisequence = config_switch(w2);"
+      },
+      {
+        "line": 4147,
+        "text": "\t\telse if(strcmpi(w1,\"console_silent\")==0) {"
+      },
+      {
+        "line": 4148,
+        "text": "\t\t\tmsg_silent = atoi(w2);"
+      },
+      {
+        "line": 4149,
+        "text": "\t\t\tif( msg_silent ) // only bother if its actually enabled"
+      },
+      {
+        "line": 4190,
+        "text": "\t\telse if (strcmpi(w1, \"channel_conf\") == 0)"
+      },
+      {
+        "line": 4191,
+        "text": "\t\t\tsafestrncpy(channel_conf, w2, sizeof(channel_conf));"
+      },
+      {
+        "line": 4192,
+        "text": "\t\telse if(strcmpi(w1,\"db_path\") == 0)"
+      },
+      {
+        "line": 4193,
+        "text": "\t\t\tsafestrncpy(db_path,w2,ARRAYLENGTH(db_path));"
+      },
+      {
+        "line": 4194,
+        "text": "\t\telse if (strcmpi(w1, \"console\") == 0) {"
+      },
+      {
+        "line": 4195,
+        "text": "\t\t\tconsole = config_switch(w2);"
+      },
+      {
+        "line": 4196,
+        "text": "\t\t\tif (console)"
+      },
+      {
+        "line": 4197,
+        "text": "\t\t\t\tShowNotice(\"Console Commands are enabled.\\n\");"
+      },
+      {
+        "line": 4198,
+        "text": "\t\t} else if (strcmpi(w1, \"enable_spy\") == 0)"
+      },
+      {
+        "line": 4199,
+        "text": "\t\t\tenable_spy = config_switch(w2);"
+      },
+      {
+        "line": 4200,
+        "text": "\t\telse if (strcmpi(w1, \"use_grf\") == 0)"
+      },
+      {
+        "line": 4201,
+        "text": "\t\t\tenable_grf = config_switch(w2);"
+      },
+      {
+        "line": 4202,
+        "text": "\t\telse if (strcmpi(w1, \"console_msg_log\") == 0)"
+      },
+      {
+        "line": 4203,
+        "text": "\t\t\tconsole_msg_log = atoi(w2);//[Ind]"
+      },
+      {
+        "line": 4204,
+        "text": "\t\telse if (strcmpi(w1, \"console_log_filepath\") == 0)"
+      },
+      {
+        "line": 4205,
+        "text": "\t\t\tsafestrncpy(console_log_filepath, w2, sizeof(console_log_filepath));"
+      },
+      {
+        "line": 4206,
+        "text": "\t\telse if (strcmpi(w1, \"import\") == 0)"
+      },
+      {
+        "line": 4207,
+        "text": "\t\t\tmap_config_read(w2);"
+      },
+      {
+        "line": 4208,
+        "text": "\t\telse"
+      },
+      {
+        "line": 4209,
+        "text": "\t\t\tShowWarning(\"Unknown setting '%s' in file %s\\n\", w1, cfgName);"
+      },
+      {
+        "line": 4210,
+        "text": "\t}"
+      },
+      {
+        "line": 4234,
+        "text": "\t\tif( (ptr = strstr(line, \"//\")) != nullptr )"
+      },
+      {
+        "line": 4235,
+        "text": "\t\t\t*ptr = '\\n'; //Strip comments"
+      },
+      {
+        "line": 4236,
+        "text": "\t\tif( sscanf(line, \"%1023[^:]: %1023[^\\t\\r\\n]\", w1, w2) < 2 )"
+      },
+      {
+        "line": 4237,
+        "text": "\t\t\tcontinue;"
+      },
+      {
+        "line": 4238,
+        "text": ""
+      },
+      {
+        "line": 4239,
+        "text": "\t\t//Strip trailing spaces"
+      },
+      {
+        "line": 4247,
+        "text": "\t\telse if (strcmpi(w1, \"delnpc\") == 0)"
+      },
+      {
+        "line": 4248,
+        "text": "\t\t\tnpc_delsrcfile(w2);"
+      },
+      {
+        "line": 4249,
+        "text": "\t\telse if (strcmpi(w1, \"import\") == 0)"
+      },
+      {
+        "line": 4250,
+        "text": "\t\t\tmap_reloadnpc_sub(w2);"
+      },
+      {
+        "line": 4251,
+        "text": "\t\telse"
+      },
+      {
+        "line": 4252,
+        "text": "\t\t\tShowWarning(\"Unknown setting '%s' in file %s\\n\", w1, cfgName);"
+      },
+      {
+        "line": 4268,
+        "text": "}"
+      },
+      {
+        "line": 4269,
+        "text": ""
+      },
+      {
+        "line": 4270,
+        "text": "int32 inter_config_read(const char *cfgName)"
+      },
+      {
+        "line": 4271,
+        "text": "{"
+      },
+      {
+        "line": 4272,
+        "text": "\tchar line[1024],w1[1024],w2[1024];"
+      },
+      {
+        "line": 4273,
+        "text": "\tFILE *fp;"
+      },
+      {
+        "line": 4282,
+        "text": "\t\tif(line[0] == '/' && line[1] == '/')"
+      },
+      {
+        "line": 4283,
+        "text": "\t\t\tcontinue;"
+      },
+      {
+        "line": 4284,
+        "text": "\t\tif( sscanf(line,\"%1023[^:]: %1023[^\\r\\n]\",w1,w2) < 2 )"
+      },
+      {
+        "line": 4285,
+        "text": "\t\t\tcontinue;"
+      },
+      {
+        "line": 4286,
+        "text": ""
+      },
+      {
+        "line": 4287,
+        "text": "#define RENEWALPREFIX \"renewal-\""
+      },
+      {
+        "line": 4350,
+        "text": "\t\telse"
+      },
+      {
+        "line": 4351,
+        "text": "\t\tif(strcmpi(w1,\"use_sql_db\")==0) {"
+      },
+      {
+        "line": 4352,
+        "text": "\t\t\tdb_use_sqldbs = config_switch(w2);"
+      },
+      {
+        "line": 4353,
+        "text": "\t\t\tShowStatus (\"Using SQL dbs: %s\\n\",w2);"
+      },
+      {
+        "line": 4354,
+        "text": "\t\t} else"
+      },
+      {
+        "line": 4355,
+        "text": "\t\tif(strcmpi(w1,\"log_db_ip\")==0)"
+      },
+      {
+        "line": 4372,
+        "text": "\t\telse"
+      },
+      {
+        "line": 4373,
+        "text": "\t\tif(strcmpi(w1, \"emblem_woe_change\")==0)"
+      },
+      {
+        "line": 4374,
+        "text": "\t\t\tinter_config.emblem_woe_change = config_switch(w2) == 1;"
+      },
+      {
+        "line": 4375,
+        "text": "\t\telse"
+      },
+      {
+        "line": 4376,
+        "text": "\t\tif (strcmpi(w1, \"emblem_transparency_limit\") == 0) {"
+      },
+      {
+        "line": 4377,
+        "text": "\t\t\tauto val = atoi(w2);"
+      },
+      {
+        "line": 4384,
+        "text": "\t\telse"
+      },
+      {
+        "line": 4385,
+        "text": "\t\tif(strcmpi(w1,\"import\")==0)"
+      },
+      {
+        "line": 4386,
+        "text": "\t\t\tinter_config_read(w2);"
+      },
+      {
+        "line": 4387,
+        "text": "\t}"
+      },
+      {
+        "line": 4388,
+        "text": "\tfclose(fp);"
+      },
+      {
+        "line": 4389,
+        "text": ""
+      },
+      {
+        "line": 5150,
+        "text": "\tShowInfo(\"  -v [--version]\\t\\tDisplays the server's version.\\n\");"
+      },
+      {
+        "line": 5151,
+        "text": "\tShowInfo(\"  --run-once\\t\\t\\tCloses server after loading (testing).\\n\");"
+      },
+      {
+        "line": 5152,
+        "text": "\tShowInfo(\"  --map-config <file>\\t\\tAlternative map-server configuration.\\n\");"
+      },
+      {
+        "line": 5153,
+        "text": "\tShowInfo(\"  --battle-config <file>\\tAlternative battle configuration.\\n\");"
+      },
+      {
+        "line": 5154,
+        "text": "\tShowInfo(\"  --atcommand-config <file>\\tAlternative atcommand configuration.\\n\");"
+      },
+      {
+        "line": 5155,
+        "text": "\tShowInfo(\"  --script-config <file>\\tAlternative script configuration.\\n\");"
+      },
+      {
+        "line": 5156,
+        "text": "\tShowInfo(\"  --msg-config <file>\\t\\tAlternative message configuration.\\n\");"
+      },
+      {
+        "line": 5157,
+        "text": "\tShowInfo(\"  --grf-path <file>\\t\\tAlternative GRF path configuration.\\n\");"
+      },
+      {
+        "line": 5158,
+        "text": "\tShowInfo(\"  --inter-config <file>\\t\\tAlternative inter-server configuration.\\n\");"
+      },
+      {
+        "line": 5159,
+        "text": "\tShowInfo(\"  --log-config <file>\\t\\tAlternative logging configuration.\\n\");"
+      },
+      {
+        "line": 5160,
+        "text": "\tif( do_exit )"
+      },
+      {
+        "line": 5161,
+        "text": "\t\texit(EXIT_SUCCESS);"
+      },
+      {
+        "line": 5355,
+        "text": "\tcli_get_options(argc,argv);"
+      },
+      {
+        "line": 5356,
+        "text": ""
+      },
+      {
+        "line": 5357,
+        "text": "\tmap_config_read(MAP_CONF_NAME);"
+      },
+      {
+        "line": 5358,
+        "text": ""
+      },
+      {
+        "line": 5359,
+        "text": "\tif (save_settings == CHARSAVE_NONE)"
+      },
+      {
+        "line": 5360,
+        "text": "\t\tShowWarning(\"Value of 'save_settings' is not set, player's data only will be saved every 'autosave_time' (%d seconds).\\n\", autosave_interval/1000);"
+      },
+      {
+        "line": 5388,
+        "text": "\tbattle_config_read(BATTLE_CONF_FILENAME);"
+      },
+      {
+        "line": 5389,
+        "text": "\tscript_config_read(SCRIPT_CONF_NAME);"
+      },
+      {
+        "line": 5390,
+        "text": "\tinter_config_read(INTER_CONF_NAME);"
+      },
+      {
+        "line": 5391,
+        "text": "\tlog_config_read(LOG_CONF_NAME);"
+      },
+      {
+        "line": 5392,
+        "text": ""
+      },
+      {
+        "line": 5393,
+        "text": "\tid_db = idb_alloc(DB_OPT_BASE);"
+      }
+    ],
+    "src/map/itemdb.cpp": [
+      {
+        "line": 38,
+        "text": "static void itemdb_jobid2mapid(uint64 bclass[3], e_mapid jobmask, bool active);"
+      },
+      {
+        "line": 39,
+        "text": ""
+      },
+      {
+        "line": 40,
+        "text": "const std::string ItemDatabase::getDefaultLocation() {"
+      },
+      {
+        "line": 41,
+        "text": "\treturn std::string(db_path) + \"/item_db.yml\";"
+      },
+      {
+        "line": 42,
+        "text": "}"
+      },
+      {
+        "line": 43,
+        "text": ""
+      },
+      {
+        "line": 44,
+        "text": "/**"
+      },
+      {
+        "line": 4886,
+        "text": "\t};"
+      },
+      {
+        "line": 4887,
+        "text": "\t"
+      },
+      {
+        "line": 4888,
+        "text": "\tif (db_use_sqldbs)"
+      },
+      {
+        "line": 4889,
+        "text": "\t\titemdb_read_sqldb();"
+      },
+      {
+        "line": 4890,
+        "text": "\telse"
+      },
+      {
+        "line": 4891,
+        "text": "\t\titem_db.load();"
+      },
+      {
+        "line": 4892,
+        "text": "\t"
+      },
+      {
+        "line": 4893,
+        "text": "\tfor(i=0; i<ARRAYLENGTH(dbsubpath); i++){"
+      },
+      {
+        "line": 4894,
+        "text": "\t\tuint8 n1 = (uint8)(strlen(db_path)+strlen(dbsubpath[i])+1);"
+      }
+    ],
+    "src/common/database.cpp": [
+      {
+        "line": 77,
+        "text": ""
+      },
+      {
+        "line": 78,
+        "text": "bool YamlDatabase::load(){"
+      },
+      {
+        "line": 79,
+        "text": "\tbool ret = this->load( this->getDefaultLocation() );"
+      },
+      {
+        "line": 80,
+        "text": ""
+      },
+      {
+        "line": 81,
+        "text": "\tthis->loadingFinished();"
+      },
+      {
+        "line": 82,
+        "text": ""
+      },
+      {
+        "line": 87,
+        "text": "\tthis->clear();"
+      },
+      {
+        "line": 88,
+        "text": ""
+      },
+      {
+        "line": 89,
+        "text": "\treturn this->load();"
+      },
+      {
+        "line": 90,
+        "text": "}"
+      },
+      {
+        "line": 91,
+        "text": ""
+      },
+      {
+        "line": 92,
+        "text": "bool YamlDatabase::load(const std::string& path) {"
+      },
+      {
+        "line": 93,
+        "text": "\tShowStatus(\"Loading '\" CL_WHITE \"%s\" CL_RESET \"'...\" CL_CLL \"\\r\", path.c_str());"
+      },
+      {
+        "line": 94,
+        "text": "\tFILE* f = fopen(path.c_str(), \"r\");"
+      },
+      {
+        "line": 95,
+        "text": "\tif (f == nullptr) {"
+      },
+      {
+        "line": 96,
+        "text": "\t\tShowError(\"Failed to open %s database file from '\" CL_WHITE \"%s\" CL_RESET \"'.\\n\", this->type.c_str(), path.c_str());"
+      },
+      {
+        "line": 140,
+        "text": "\tthis->parse( tree );"
+      },
+      {
+        "line": 141,
+        "text": ""
+      },
+      {
+        "line": 142,
+        "text": "\tthis->parseImports( tree );"
+      },
+      {
+        "line": 143,
+        "text": ""
+      },
+      {
+        "line": 144,
+        "text": "\taFree(buf);"
+      },
+      {
+        "line": 145,
+        "text": "\treturn true;"
+      },
+      {
+        "line": 161,
+        "text": "#endif"
+      },
+      {
+        "line": 162,
+        "text": ""
+      },
+      {
+        "line": 163,
+        "text": "\t\tShowStatus(\"Loading '\" CL_WHITE \"%\" PRIdPTR CL_RESET \"' entries in '\" CL_WHITE \"%s\" CL_RESET \"'\\n\", childNodesCount, fileName);"
+      },
+      {
+        "line": 164,
+        "text": ""
+      },
+      {
+        "line": 165,
+        "text": "\t\tfor( const ryml::NodeRef &node : bodyNode ){"
+      },
+      {
+        "line": 166,
+        "text": "\t\t\tcount += this->parseBodyNode( node );"
+      },
+      {
+        "line": 167,
+        "text": "#ifdef DETAILED_LOADING_OUTPUT"
+      },
+      {
+        "line": 168,
+        "text": "\t\t\tShowStatus( \"Loading [%\" PRIdPTR \"/%\" PRIdPTR \"] entries from '\" CL_WHITE \"%s\" CL_RESET \"'\" CL_CLL \"\\r\", ++childNodesProgressed, childNodesCount, fileName );"
+      },
+      {
+        "line": 169,
+        "text": "#endif"
+      },
+      {
+        "line": 170,
+        "text": "\t\t}"
+      },
+      {
+        "line": 171,
+        "text": ""
+      },
+      {
+        "line": 172,
+        "text": "\t\tShowStatus( \"Done reading '\" CL_WHITE \"%\" PRIu64 CL_RESET \"' entries in '\" CL_WHITE \"%s\" CL_RESET \"'\" CL_CLL \"\\n\", count, fileName );"
+      },
+      {
+        "line": 173,
+        "text": "\t}"
+      },
+      {
+        "line": 174,
+        "text": "}"
+      },
+      {
+        "line": 175,
+        "text": ""
+      },
+      {
+        "line": 176,
+        "text": "void YamlDatabase::parseImports( const ryml::Tree& rootNode ){"
+      },
+      {
+        "line": 177,
+        "text": "\tif( this->nodeExists( rootNode.rootref(), \"Footer\" ) ){"
+      },
+      {
+        "line": 178,
+        "text": "\t\tconst ryml::NodeRef& footerNode = rootNode[\"Footer\"];"
+      },
+      {
+        "line": 179,
+        "text": ""
+      },
+      {
+        "line": 180,
+        "text": "\t\tif( this->nodeExists( footerNode, \"Imports\") ){"
+      },
+      {
+        "line": 181,
+        "text": "\t\t\tconst ryml::NodeRef& importsNode = footerNode[\"Imports\"];"
+      },
+      {
+        "line": 182,
+        "text": ""
+      },
+      {
+        "line": 183,
+        "text": "\t\t\tfor( const ryml::NodeRef &node : importsNode ){"
+      },
+      {
+        "line": 184,
+        "text": "\t\t\t\tstd::string importFile;"
+      },
+      {
+        "line": 185,
+        "text": ""
+      },
+      {
+        "line": 186,
+        "text": "\t\t\t\tif( !this->asString( node, \"Path\", importFile ) ){"
+      },
+      {
+        "line": 187,
+        "text": "\t\t\t\t\tcontinue;"
+      },
+      {
+        "line": 188,
+        "text": "\t\t\t\t}"
+      },
+      {
+        "line": 189,
+        "text": ""
+      },
+      {
+        "line": 190,
+        "text": "\t\t\t\tif( this->nodeExists( node, \"Mode\" ) ){"
+      },
+      {
+        "line": 191,
+        "text": "\t\t\t\t\tstd::string mode;"
+      },
+      {
+        "line": 192,
+        "text": ""
+      },
+      {
+        "line": 193,
+        "text": "\t\t\t\t\tif( !this->asString( node, \"Mode\", mode ) ){"
+      },
+      {
+        "line": 194,
+        "text": "\t\t\t\t\t\tcontinue;"
+      },
+      {
+        "line": 195,
+        "text": "\t\t\t\t\t}"
+      },
+      {
+        "line": 196,
+        "text": ""
+      },
+      {
+        "line": 197,
+        "text": "#ifdef RENEWAL"
+      },
+      {
+        "line": 198,
+        "text": "\t\t\t\t\tstd::string compiledMode = \"Renewal\";"
+      },
+      {
+        "line": 199,
+        "text": ""
+      },
+      {
+        "line": 200,
+        "text": "\t\t\t\t\t// RENEWAL mode with RENEWAL_ASPD off, load pre-re ASPD"
+      },
+      {
+        "line": 201,
+        "text": "#ifndef RENEWAL_ASPD"
+      },
+      {
+        "line": 202,
+        "text": "\t\t\t\t\tif (importFile.find(\"job_aspd.yml\") != std::string::npos)"
+      },
+      {
+        "line": 203,
+        "text": "\t\t\t\t\t\tcompiledMode = \"Prerenewal\";"
+      },
+      {
+        "line": 204,
+        "text": "#endif"
+      },
+      {
+        "line": 205,
+        "text": "#else"
+      },
+      {
+        "line": 206,
+        "text": "\t\t\t\t\tstd::string compiledMode = \"Prerenewal\";"
+      },
+      {
+        "line": 207,
+        "text": "#endif"
+      },
+      {
+        "line": 208,
+        "text": ""
+      },
+      {
+        "line": 209,
+        "text": "\t\t\t\t\tif( compiledMode != mode ){"
+      },
+      {
+        "line": 210,
+        "text": "\t\t\t\t\t\t// Skip this import"
+      },
+      {
+        "line": 211,
+        "text": "\t\t\t\t\t\tcontinue;"
+      },
+      {
+        "line": 212,
+        "text": "\t\t\t\t\t}"
+      },
+      {
+        "line": 222,
+        "text": "\t\t\t\t}"
+      },
+      {
+        "line": 223,
+        "text": ""
+      },
+      {
+        "line": 224,
+        "text": "\t\t\t\tthis->load( importFile );"
+      },
+      {
+        "line": 225,
+        "text": "\t\t\t}"
+      },
+      {
+        "line": 226,
+        "text": "\t\t}"
+      },
+      {
+        "line": 227,
+        "text": "\t}"
+      }
+    ],
+    "src/common/strlib.cpp": [
+      {
+        "line": 237,
+        "text": "// on/off, english, fran\ufffdais, deutsch, espa\ufffdol, portuguese"
+      },
+      {
+        "line": 238,
+        "text": "//--------------------------------------------------"
+      },
+      {
+        "line": 239,
+        "text": "int32 config_switch(const char* str)"
+      },
+      {
+        "line": 240,
+        "text": "{"
+      },
+      {
+        "line": 241,
+        "text": "\tif (strcmpi(str, \"on\") == 0 || strcmpi(str, \"yes\") == 0 || strcmpi(str, \"oui\") == 0 || strcmpi(str, \"ja\") == 0 || strcmpi(str, \"si\") == 0 || strcmpi(str, \"sim\") == 0)"
+      },
+      {
+        "line": 242,
+        "text": "\t\treturn 1;"
+      },
+      {
+        "line": 243,
+        "text": "\tif (strcmpi(str, \"off\") == 0 || strcmpi(str, \"no\") == 0 || strcmpi(str, \"non\") == 0 || strcmpi(str, \"nein\") == 0 || strcmpi(str, \"nao\") == 0)"
+      },
+      {
+        "line": 244,
+        "text": "\t\treturn 0;"
+      },
+      {
+        "line": 245,
+        "text": ""
+      },
+      {
+        "line": 246,
+        "text": "\treturn (int32)strtol(str, nullptr, 0);"
+      }
+    ]
+  },
+  "admission_before": {
+    "id": "ced219e3f4a12a4e12d5c4599a2b9a4b44191324671c44993848c5bed74b077c",
+    "image": "sha256:d6aa8e108909e6c0ab6f18bedf1cd8c34dc11d2194f7ca65322d46a331a6a469",
+    "project": "ro-bots-test",
+    "service": "rathena-map",
+    "running": true,
+    "volume": "ro-bots-world-test",
+    "destination": "/world",
+    "workingdir": "/world/runtime",
+    "started_at": "2026-10-12T23:18:15.345459707Z",
+    "pid": 103253,
+    "engine": "existing Docker context with Podman endpoint"
+  },
+  "startup_argv_source": "Docker inspect Path/Args; configured executed command, not an in-memory parser observation",
+  "startup_loader_flags": [
+    {
+      "flag": "--runtime-root",
+      "value": "/world/runtime"
+    }
+  ],
+  "recognized_source_cli_flags": [
+    "--map-config",
+    "--inter-config",
+    "--battle-config",
+    "--log-config",
+    "--script-config"
+  ],
+  "public_source_initializers": {
+    "db_use_sqldbs": "0",
+    "db_path": "\"db\""
+  },
+  "recognized_config_keys": {
+    "map": [
+      "db_path",
+      "import"
+    ],
+    "inter": [
+      "use_sql_db",
+      "import"
+    ],
+    "note": "db_use_sqldbs is a C++ global, NOT a configuration key."
+  },
+  "additional_source_evidence": {
+    "cli_defaults_and_parser": [
+      {
+        "line": 24,
+        "text": "const char* MAP_CONF_NAME = \"conf/map_athena.conf\";"
+      },
+      {
+        "line": 25,
+        "text": "const char* INTER_CONF_NAME = \"conf/inter_athena.conf\";"
+      },
+      {
+        "line": 134,
+        "text": "\t\t\t\t\telse if (strcmp(arg, \"inter-config\") == 0) {"
+      },
+      {
+        "line": 136,
+        "text": "\t\t\t\t\t\t\tINTER_CONF_NAME = argv[++i];"
+      },
+      {
+        "line": 144,
+        "text": "\t\t\t\tif (strcmp(arg, \"map-config\") == 0) {"
+      },
+      {
+        "line": 146,
+        "text": "\t\t\t\t\t\tMAP_CONF_NAME = argv[++i];"
+      },
+      {
+        "line": 160,
+        "text": "\t\t\t\telse if (strcmp(arg, \"inter-config\") == 0) {"
+      },
+      {
+        "line": 162,
+        "text": "\t\t\t\t\t\tINTER_CONF_NAME = argv[++i];"
+      }
+    ],
+    "core_db_path": [
+      {
+        "line": 51,
+        "text": "char db_path[12] = \"db\"; /// relative path for db from server"
+      }
+    ]
+  },
+  "config_files": [
+    {
+      "path": "/world/runtime/conf/map_athena.conf",
+      "size": 517,
+      "sha256": "daedb81d0234dc26162f936123a659246c6a07e714f3158758e4734e90c8b512",
+      "mtime_epoch": 1791261724,
+      "kind": "map"
+    },
+    {
+      "path": "/world/runtime/conf/maps_athena.conf",
+      "size": 25935,
+      "sha256": "de54b6246e89838dabdc2cdf7489b68b9397d54616994eb54b2c2906edb5f94e",
+      "mtime_epoch": 1791259644,
+      "kind": "map"
+    },
+    {
+      "path": "/world/runtime/npc/pre-re/scripts_main.conf",
+      "size": 1908,
+      "sha256": "cf5a2547073b5134983334653936aa91dfb1479e5f8af47c41275d0046e0491e",
+      "mtime_epoch": 1791259644,
+      "kind": "map"
+    },
+    {
+      "path": "/world/runtime/npc/scripts_athena.conf",
+      "size": 10376,
+      "sha256": "0b2962864ee0006765763decbdfca94c7bd72a377cbf1c11627036f7dd285e0d",
+      "mtime_epoch": 1791259644,
+      "kind": "map"
+    },
+    {
+      "path": "/world/runtime/npc/scripts_guild.conf",
+      "size": 1685,
+      "sha256": "6e9ce8ae3707691b0c52fea5dc7d8601a1966b22082f70e312aebe8bd06f74be",
+      "mtime_epoch": 1791259644,
+      "kind": "map"
+    },
+    {
+      "path": "/world/runtime/npc/scripts_jobs.conf",
+      "size": 2360,
+      "sha256": "ce5274673b46f5254554b363b66e05b5303f44ddf92867704cfd928da218abb3",
+      "mtime_epoch": 1791259644,
+      "kind": "map"
+    },
+    {
+      "path": "/world/runtime/npc/scripts_mapflags.conf",
+      "size": 1076,
+      "sha256": "9f144e586c9359396d8d2fc2ab74f99568bef328f35f0f31c7afee97ef57992a",
+      "mtime_epoch": 1791259644,
+      "kind": "map"
+    },
+    {
+      "path": "/world/runtime/npc/scripts_monsters.conf",
+      "size": 268,
+      "sha256": "eb1dfdcbcfbd4a1e89bb398e09cfa5560a147ba5d106d8e71053f523bed465af",
+      "mtime_epoch": 1791259644,
+      "kind": "map"
+    },
+    {
+      "path": "/world/runtime/npc/scripts_warps.conf",
+      "size": 3283,
+      "sha256": "ef4914fe0cca49c6e6f900b2b7224fcdeb276fd1a6a48b9c521f2241510ae118",
+      "mtime_epoch": 1791259644,
+      "kind": "map"
+    },
+    {
+      "path": "/world/runtime/npc/pre-re/scripts_athena.conf",
+      "size": 5721,
+      "sha256": "4fb0a4031c5563d052999c88672c96b12a401b38397a47a6fbdafad14475c353",
+      "mtime_epoch": 1791259644,
+      "kind": "map"
+    },
+    {
+      "path": "/world/runtime/npc/pre-re/scripts_jobs.conf",
+      "size": 804,
+      "sha256": "8ab291ecd1937b833f4315070a89f4766042e2e1e3a073f82723e5bd57313ed0",
+      "mtime_epoch": 1791259644,
+      "kind": "map"
+    },
+    {
+      "path": "/world/runtime/npc/pre-re/scripts_mapflags.conf",
+      "size": 350,
+      "sha256": "d8baaa365902c0a088acc112b8d8693be67ba3b04d270c8996e441af38125dba",
+      "mtime_epoch": 1791259644,
+      "kind": "map"
+    },
+    {
+      "path": "/world/runtime/npc/pre-re/scripts_monsters.conf",
+      "size": 2925,
+      "sha256": "1b7829feb0abca5791b9b6f7b48b579387babe5378985b721296308e377b7706",
+      "mtime_epoch": 1791259644,
+      "kind": "map"
+    },
+    {
+      "path": "/world/runtime/npc/pre-re/scripts_warps.conf",
+      "size": 1160,
+      "sha256": "c55844d37142ffbef9471683567b0867dd735cd8f183035ce6f54515398194bf",
+      "mtime_epoch": 1791259644,
+      "kind": "map"
+    },
+    {
+      "path": "/world/runtime/npc/scripts_custom.conf",
+      "size": 4775,
+      "sha256": "9de2dafdf7236f49557587ee9100923d33da2a31bff15f7b005a93235aa3ad4a",
+      "mtime_epoch": 1791259644,
+      "kind": "map"
+    },
+    {
+      "path": "/world/runtime/conf/inter_athena.conf",
+      "size": 3106,
+      "sha256": "c658b03881f52e5380eb21dca461a0a67888a5f50f3fc8216f73c7fc1232b2f9",
+      "mtime_epoch": 1791261724,
+      "kind": "inter"
+    }
+  ],
+  "config_file_count": 16,
+  "config_imports": [
+    {
+      "from": "/world/runtime/conf/map_athena.conf",
+      "line": 22,
+      "to": "/world/runtime/conf/maps_athena.conf",
+      "kind": "map"
+    },
+    {
+      "from": "/world/runtime/conf/map_athena.conf",
+      "line": 23,
+      "to": "/world/runtime/npc/pre-re/scripts_main.conf",
+      "kind": "map"
+    },
+    {
+      "from": "/world/runtime/npc/pre-re/scripts_main.conf",
+      "line": 29,
+      "to": "/world/runtime/npc/scripts_athena.conf",
+      "kind": "map"
+    },
+    {
+      "from": "/world/runtime/npc/pre-re/scripts_main.conf",
+      "line": 30,
+      "to": "/world/runtime/npc/scripts_guild.conf",
+      "kind": "map"
+    },
+    {
+      "from": "/world/runtime/npc/pre-re/scripts_main.conf",
+      "line": 31,
+      "to": "/world/runtime/npc/scripts_jobs.conf",
+      "kind": "map"
+    },
+    {
+      "from": "/world/runtime/npc/pre-re/scripts_main.conf",
+      "line": 32,
+      "to": "/world/runtime/npc/scripts_mapflags.conf",
+      "kind": "map"
+    },
+    {
+      "from": "/world/runtime/npc/pre-re/scripts_main.conf",
+      "line": 33,
+      "to": "/world/runtime/npc/scripts_monsters.conf",
+      "kind": "map"
+    },
+    {
+      "from": "/world/runtime/npc/pre-re/scripts_main.conf",
+      "line": 34,
+      "to": "/world/runtime/npc/scripts_warps.conf",
+      "kind": "map"
+    },
+    {
+      "from": "/world/runtime/npc/pre-re/scripts_main.conf",
+      "line": 37,
+      "to": "/world/runtime/npc/pre-re/scripts_athena.conf",
+      "kind": "map"
+    },
+    {
+      "from": "/world/runtime/npc/pre-re/scripts_main.conf",
+      "line": 38,
+      "to": "/world/runtime/npc/pre-re/scripts_jobs.conf",
+      "kind": "map"
+    },
+    {
+      "from": "/world/runtime/npc/pre-re/scripts_main.conf",
+      "line": 39,
+      "to": "/world/runtime/npc/pre-re/scripts_mapflags.conf",
+      "kind": "map"
+    },
+    {
+      "from": "/world/runtime/npc/pre-re/scripts_main.conf",
+      "line": 40,
+      "to": "/world/runtime/npc/pre-re/scripts_monsters.conf",
+      "kind": "map"
+    },
+    {
+      "from": "/world/runtime/npc/pre-re/scripts_main.conf",
+      "line": 41,
+      "to": "/world/runtime/npc/pre-re/scripts_warps.conf",
+      "kind": "map"
+    },
+    {
+      "from": "/world/runtime/npc/pre-re/scripts_main.conf",
+      "line": 48,
+      "to": "/world/runtime/npc/scripts_custom.conf",
+      "kind": "map"
+    }
+  ],
+  "loader_assignments_in_native_order": [
+    {
+      "file": "/world/runtime/conf/map_athena.conf",
+      "line": 17,
+      "key": "db_path",
+      "effective": "db"
+    },
+    {
+      "file": "/world/runtime/conf/inter_athena.conf",
+      "line": 85,
+      "key": "use_sql_db",
+      "target": "db_use_sqldbs",
+      "effective": false
+    }
+  ],
+  "effective_disk_loader_settings": {
+    "db_use_sqldbs": false,
+    "db_path": "db"
+  },
+  "selection": "YAML",
+  "selected_yaml_entry_path": "/world/runtime/db/item_db.yml",
+  "parser_qualifier": "Effective current disk config under verified map sscanf/import semantics; no restart or reload performed. File contents transient only. Inter config inspected for import names, not connection settings.",
+  "bounded_item_load_log_evidence": {
+    "since": "2026-10-12T23:18:15.345459707Z",
+    "tail_limit_per_command": 4000,
+    "bounded_not_complete_history": true,
+    "streams": {
+      "stdout": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "lf_record_count": 0
+      },
+      "stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "lf_record_count": 0
+      }
+    },
+    "public_item_messages": []
+  },
+  "item_load_message_count": 0,
+  "prior_disk_closure": {
+    "report": "/home/otto/dev/ro-bots/run/reviews/deployed-knife-item-closure.json",
+    "sha256": "bb608434aeaaace78d01ef19520c5404dd5bb26fc5efb1e99040e8a174bd5a2d",
+    "status": "CURRENT_DISK_YAML_CLOSURE_QUALIFIED_CURRENTLY_LOADED_ITEM_UNKNOWN",
+    "authority": "Previously verified five disk YAMLs, Knife 1201 nominal Weight 400/nonstackable/no reachable import override; not repeated or promoted to live memory."
+  },
+  "conditional_prior_match": {
+    "disk_entry_path_matches_prior_expected": true,
+    "observed_completed_load_paths": [],
+    "conclusion": "Only if startup/reload used these unchanged disk bytes and selected matching ruleset/import closure does the prior nominal Knife value apply. Public filename/count evidence is not exact live item-weight observation."
+  },
+  "admission_after": {
+    "id": "ced219e3f4a12a4e12d5c4599a2b9a4b44191324671c44993848c5bed74b077c",
+    "image": "sha256:d6aa8e108909e6c0ab6f18bedf1cd8c34dc11d2194f7ca65322d46a331a6a469",
+    "project": "ro-bots-test",
+    "service": "rathena-map",
+    "running": true,
+    "volume": "ro-bots-world-test",
+    "destination": "/world",
+    "workingdir": "/world/runtime",
+    "started_at": "2026-10-12T23:18:15.345459707Z",
+    "pid": 103253,
+    "engine": "existing Docker context with Podman endpoint"
+  },
+  "remaining_ambiguity": "No actual live in-memory item 1201 weight observation. Current disk selection and bounded logs do not bind current YAML hashes to bytes used at startup/reload.",
+  "intermediate_parser_stop": {
+    "receipt": ".work/map-item-loader-selection-corrected/prerequisite-parser-partial.json",
+    "resolved": "db_path default is in configured src/common/core.cpp; config defaults/CLI handler are in configured src/common/cli.cpp, all hash verified."
+  },
+  "bounded_item_load_log_retry": {
+    "bounded_retry_without_since": true,
+    "tail_limit": 4000,
+    "streams": {
+      "stdout": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "lf_record_count": 0
+      },
+      "stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "lf_record_count": 0
+      }
+    },
+    "public_item_messages": [],
+    "logging_driver_type": "journald",
+    "started_at": "2026-10-12T23:18:15.345459707Z",
+    "pid": 103253
+  },
+  "retry_item_load_message_count": 0
+}

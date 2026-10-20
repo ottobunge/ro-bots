@@ -1,0 +1,21 @@
+{
+  "authorization_source": "Explicit user clarification response: Authorize the new isolated test world and live server checks.",
+  "conditional_on_pending_reviews_passing": true,
+  "allowed": [
+    "Load the two built runnable/init images",
+    "Create only ro-bots-test Compose project and ro-bots-world-test volume",
+    "Import prepared files into that fresh volume",
+    "Initialize its fresh database and start login/character/map services on localhost",
+    "Read back exact project resources and test service health/connectivity"
+  ],
+  "refuse": [
+    "Existing resources or port conflicts; do not overwrite",
+    "Debug/production resets",
+    "Human-account changes",
+    "Paid inference calls"
+  ],
+  "already_executed": false,
+  "native_compose": "docker-compose.native.yml",
+  "native_archive": "/nix/store/flv0x7w0yvrpjpj8zkx03mawxzfzgfqc-rathena-playable.tar.gz",
+  "init_archive": "/nix/store/5qxdq538vilhm4fbz5brh9spi68mvr3w-ro-bots-world-init.tar.gz"
+}

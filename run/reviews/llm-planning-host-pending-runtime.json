@@ -1,0 +1,58 @@
+{
+  "status": "working offline IDLE tracer; partial verification, not approved adoption",
+  "scope_authority": "run/reviews/llm-planning-host-pending-runtime-scope.json",
+  "implemented": [
+    "Actual playing.build_host -> AgentHost -> ScheduledAgent connects nonblocking while an offline PlanningModel.complete is blocked",
+    "Approved capture_job_context passed to one physical planning thread; lazy model construction in worker only",
+    "Host-owned PlanLifecycle poll/admission, native epoch identity binding plus separate connection/invalidation generation",
+    "Actual native event drain and keepalives at 20/40/60/80 seconds continue during pending planning",
+    "Mechanical fallback explicitly suppressed throughout opt-in lifecycle; only passive IDLE advertised",
+    "Logical timeout and epoch changes retain physical worker; at most eight coalesced reasons and one result slot",
+    "Fresh map, unavailable health, and changed epoch prevent captured proposal admission",
+    "Shutdown attempts native cleanup independently; unresolved planning worker retained and reconnect refused",
+    "Worker KeyboardInterrupt is rethrown as exact original with provider-origin deepest traceback frame"
+  ],
+  "tdd_history": {
+    "first-red.xml": "1 actual-host test failed at agent.connect under original unimplemented runtime",
+    "first-green.xml": "Intermediate setup defect: offline factory lambda rejected positional constructor arguments; 1 failure, 2 passes",
+    "first-green-corrected.xml": "3 passes after correcting offline provider boundary signature",
+    "pending-status-red.xml": "1 genuine failure: pending status was identity-changed rather than pending",
+    "contracts.xml": "9 passes; cleanup/singleflight/freshness contracts added after initial tracer implementation, NOT independently tests-first"
+  },
+  "verified_execution": {
+    "scoped_regression": "189 passed in 1.77 seconds; physical JUnit regression.xml",
+    "quality": "exit 0: whole src/tests Black and Ruff, whole configured mypy (234 source files), Vulture, Xenon B/B/A, pylint duplicate-code, Bandit; scratch quality.log",
+    "construction": "Original strong zero-construction-effects test unchanged; invalid/unreceived startup remains refused before thread/model effects",
+    "native_actions_in_tracer": "wire.sent and wire.moves empty while pending and after actual typed IDLE admission",
+    "environment": "Existing .venv under offline pinned path:/home/otto/dev/ro-bots/spikes/007-native-packet-ast/toolchain; no provisioning",
+    "full_root_check_and_audit": "Not rerun; parent assembly gates remain required"
+  },
+  "modified_existing_files": [
+    "src/robots/app/planning_brain.py",
+    "src/robots/app/agent_runtime.py",
+    "tests/test_llm_planning_host_construction.py"
+  ],
+  "created_files": [
+    "src/robots/app/planning_runtime.py",
+    "tests/test_llm_planning_host_tick.py",
+    "tests/test_llm_planning_host_cleanup.py",
+    "run/reviews/llm-planning-host-pending-runtime.json"
+  ],
+  "scratch_artifacts": "/home/otto/.hermes/cache/scratch/llm-planning-host-pending-runtime/",
+  "archived_originals": ["planning_brain.py", "agent_runtime.py", "test_llm_planning_host_construction.py"],
+  "issues": [
+    "Relative nix flake invocation failed because toolchain flake is untracked; corrected to explicit path: without Git changes",
+    "A scoped regression invocation named nonexistent tests/test_agent_runtime.py and ran no tests; corrected regression excludes that nonexistent path",
+    "Initial quality check found new complexity, Ruff and mypy failures; repaired without waivers; final quality exit 0",
+    "Additional host regression plus hash/XML-count verification execute_code was blocked after approval timeout; zero tool calls ran. It was not retried or routed around"
+  ],
+  "mandatory_remaining": [
+    "Independent completed-source review and parent full-root assembly/regression",
+    "Baseline 326-file / 323-protected comparison and source/artifact SHA verification: not performed after blocked call",
+    "Programmatic physical XML unique-ID reconciliation: not performed after blocked call",
+    "Separate runtime snapshot-mutation/persona-isolation, NPC/preparation/patrol variants, and unsupported REST denial tests",
+    "Explicit known-unsent planning cancellation contract; current shutdown invalidates generation and retains physical ownership but does not guarantee cancellation before provider construction",
+    "Per-contract RED receipts for cleanup/singleflight coverage; existing passing regressions must not be misreported as historic TDD"
+  ],
+  "exclusions": "No live activation, real inference, native sessions, private live journals, network, SQL, Docker, services, Git operations or dependency provisioning. REST/CLEF execution, legacy FarmPlan publication parity and full ADR-021 goal remain later work."
+}

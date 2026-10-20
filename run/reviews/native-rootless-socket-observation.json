@@ -1,0 +1,1511 @@
+{
+  "schema": "native-rootless-socket-observation/v1",
+  "read_only": true,
+  "status": "SUPPORTED_OBSERVATION_VERIFIED",
+  "preflight_sha256": "d141eb5d03db787032feec942f4e1257f0ea928f5efdccba478e94f85b162059",
+  "reader_source": "/home/otto/.hermes/cache/scratch/npc-native-socket-observation/read_sockets.py",
+  "reader_sha256": "b6301730a7b8e8ef5f90d4d578e7661f52b102a906fdce99409f7528225bab23",
+  "repeat_command": "python3 -B /home/otto/.hermes/cache/scratch/npc-native-socket-observation/read_sockets.py (new report/output namespace required)",
+  "engine": {
+    "context": "default",
+    "endpoint": "unix:///run/user/1000/podman/podman.sock",
+    "socket_uid": 1000,
+    "rootless": true,
+    "graphroot": "/home/otto/.local/share/containers/storage",
+    "runroot": "/run/user/1000/containers",
+    "podman_version": "podman version 5.8.7",
+    "roles": [
+      {
+        "role": "mariadb",
+        "id": "71715cf83bb3f5104c600dbeb2cdd3b0be162a9c3a85cfbb228fcebb10326f50",
+        "image": "sha256:ab3dff582d246358b6f6a1f6212f29ac64609fad883eb3dcfb0a89f6f7d0700e",
+        "podman_image": "ab3dff582d246358b6f6a1f6212f29ac64609fad883eb3dcfb0a89f6f7d0700e",
+        "pid": 38200,
+        "started_at": "2026-10-08T15:08:26.958040263Z",
+        "project": "ro-bots-test",
+        "service": "mariadb",
+        "mounts": [
+          [
+            "volume",
+            "ro-bots-world-test",
+            "/docker-entrypoint-initdb.d",
+            false
+          ],
+          [
+            "volume",
+            "ro-bots-world-test",
+            "/var/lib/mysql",
+            true
+          ],
+          [
+            "volume",
+            "ro-bots-world-test",
+            "/var/lib/ro-bots",
+            true
+          ]
+        ],
+        "address": "10.89.2.2",
+        "network_id": "6bf526ab697622fdbb8520b5ef4dd89b21dfa599dee53414c0f2144feec47f8a"
+      },
+      {
+        "role": "login",
+        "id": "d8f4183c03d4c6fdd618b20be8574069e29b884543fdd6ba5be716067811aa5b",
+        "image": "sha256:d6aa8e108909e6c0ab6f18bedf1cd8c34dc11d2194f7ca65322d46a331a6a469",
+        "podman_image": "d6aa8e108909e6c0ab6f18bedf1cd8c34dc11d2194f7ca65322d46a331a6a469",
+        "pid": 38491,
+        "started_at": "2026-10-08T15:08:31.178482699Z",
+        "project": "ro-bots-test",
+        "service": "rathena-login",
+        "mounts": [
+          [
+            "volume",
+            "ro-bots-world-test",
+            "/world",
+            true
+          ]
+        ],
+        "address": "10.89.2.3",
+        "network_id": "6bf526ab697622fdbb8520b5ef4dd89b21dfa599dee53414c0f2144feec47f8a"
+      },
+      {
+        "role": "char",
+        "id": "a9c42644d6db7bbfe40b50657da05afd89237b29628625be1c35a7b0c294a3d9",
+        "image": "sha256:d6aa8e108909e6c0ab6f18bedf1cd8c34dc11d2194f7ca65322d46a331a6a469",
+        "podman_image": "d6aa8e108909e6c0ab6f18bedf1cd8c34dc11d2194f7ca65322d46a331a6a469",
+        "pid": 38610,
+        "started_at": "2026-10-08T15:08:31.32507112Z",
+        "project": "ro-bots-test",
+        "service": "rathena-char",
+        "mounts": [
+          [
+            "volume",
+            "ro-bots-world-test",
+            "/world",
+            true
+          ]
+        ],
+        "address": "10.89.2.4",
+        "network_id": "6bf526ab697622fdbb8520b5ef4dd89b21dfa599dee53414c0f2144feec47f8a"
+      },
+      {
+        "role": "map",
+        "id": "ced219e3f4a12a4e12d5c4599a2b9a4b44191324671c44993848c5bed74b077c",
+        "image": "sha256:d6aa8e108909e6c0ab6f18bedf1cd8c34dc11d2194f7ca65322d46a331a6a469",
+        "podman_image": "d6aa8e108909e6c0ab6f18bedf1cd8c34dc11d2194f7ca65322d46a331a6a469",
+        "pid": 38720,
+        "started_at": "2026-10-08T15:08:31.458528082Z",
+        "project": "ro-bots-test",
+        "service": "rathena-map",
+        "mounts": [
+          [
+            "volume",
+            "ro-bots-world-test",
+            "/world",
+            true
+          ]
+        ],
+        "address": "10.89.2.5",
+        "network_id": "6bf526ab697622fdbb8520b5ef4dd89b21dfa599dee53414c0f2144feec47f8a"
+      }
+    ]
+  },
+  "host_context": {
+    "reader_namespace": {
+      "uid": 1000,
+      "gid": 100,
+      "userns": "user:[4026531837]",
+      "uid_map": "         0          0 4294967295\n",
+      "gid_map": "         0          0 4294967295\n"
+    },
+    "roles": [
+      {
+        "role": "mariadb",
+        "pid": 38200,
+        "complete": false,
+        "actor_count": null,
+        "client_connections": null,
+        "socket_inode_count": null,
+        "owned_tcp": [],
+        "errors": [
+          {
+            "operation": "exact_pid_proc_metadata_and_fd_readlink",
+            "exception": "PermissionError",
+            "errno": 13
+          }
+        ],
+        "uid_map_sha256": "044245bb42ce0469d974c454f3c4c784b4814d52d83c72cb932dd1e9705955b7",
+        "gid_map_sha256": "f3b74654e57bf72717b98c81af086f2a7c00d00e379952804676ceaf69cafd39",
+        "uid_map": "         0       1000          1\n         1     100000      65536\n",
+        "gid_map": "         0        100          1\n         1     100000      65536\n",
+        "identity": [
+          "Uid:\t100998\t100998\t100998\t100998",
+          "Gid:\t100998\t100998\t100998\t100998",
+          "NSpid:\t38200\t1"
+        ],
+        "comm": "mariadbd",
+        "tcp_sha256": "be7278a49ec3cc5aead43ea3f7a2e859d63364c62dce7bd7f690ec5423f18064",
+        "tcp6_sha256": "3927f69d52bd6413d7f26d8bbf6894f78805efcc9e6ea7321189d129e7e70b64",
+        "listener_observed": null
+      },
+      {
+        "role": "login",
+        "pid": 38491,
+        "complete": false,
+        "actor_count": null,
+        "client_connections": null,
+        "socket_inode_count": null,
+        "owned_tcp": [],
+        "errors": [
+          {
+            "operation": "exact_pid_proc_metadata_and_fd_readlink",
+            "exception": "PermissionError",
+            "errno": 13
+          }
+        ],
+        "uid_map_sha256": "044245bb42ce0469d974c454f3c4c784b4814d52d83c72cb932dd1e9705955b7",
+        "gid_map_sha256": "f3b74654e57bf72717b98c81af086f2a7c00d00e379952804676ceaf69cafd39",
+        "uid_map": "         0       1000          1\n         1     100000      65536\n",
+        "gid_map": "         0        100          1\n         1     100000      65536\n",
+        "identity": [
+          "Uid:\t109999\t109999\t109999\t109999",
+          "Gid:\t109999\t109999\t109999\t109999",
+          "NSpid:\t38491\t1"
+        ],
+        "comm": "login-server",
+        "tcp_sha256": "6202023afb16891c8069b8ffdf98d5094700903f814eea8f20924ab212d62bf4",
+        "tcp6_sha256": "66f915c0e78f7e3bd8aeec8cc07d3d4780f8308887579d66378913cc9c31ee60",
+        "listener_observed": null
+      },
+      {
+        "role": "char",
+        "pid": 38610,
+        "complete": false,
+        "actor_count": null,
+        "client_connections": null,
+        "socket_inode_count": null,
+        "owned_tcp": [],
+        "errors": [
+          {
+            "operation": "exact_pid_proc_metadata_and_fd_readlink",
+            "exception": "PermissionError",
+            "errno": 13
+          }
+        ],
+        "uid_map_sha256": "044245bb42ce0469d974c454f3c4c784b4814d52d83c72cb932dd1e9705955b7",
+        "gid_map_sha256": "f3b74654e57bf72717b98c81af086f2a7c00d00e379952804676ceaf69cafd39",
+        "uid_map": "         0       1000          1\n         1     100000      65536\n",
+        "gid_map": "         0        100          1\n         1     100000      65536\n",
+        "identity": [
+          "Uid:\t109999\t109999\t109999\t109999",
+          "Gid:\t109999\t109999\t109999\t109999",
+          "NSpid:\t38610\t1"
+        ],
+        "comm": "char-server",
+        "tcp_sha256": "3926635d6fe7054349dda2f7ffa02253fb357117b52a0987cb113d18ab306539",
+        "tcp6_sha256": "66f915c0e78f7e3bd8aeec8cc07d3d4780f8308887579d66378913cc9c31ee60",
+        "listener_observed": null
+      },
+      {
+        "role": "map",
+        "pid": 38720,
+        "complete": false,
+        "actor_count": null,
+        "client_connections": null,
+        "socket_inode_count": null,
+        "owned_tcp": [],
+        "errors": [
+          {
+            "operation": "exact_pid_proc_metadata_and_fd_readlink",
+            "exception": "PermissionError",
+            "errno": 13
+          }
+        ],
+        "uid_map_sha256": "044245bb42ce0469d974c454f3c4c784b4814d52d83c72cb932dd1e9705955b7",
+        "gid_map_sha256": "f3b74654e57bf72717b98c81af086f2a7c00d00e379952804676ceaf69cafd39",
+        "uid_map": "         0       1000          1\n         1     100000      65536\n",
+        "gid_map": "         0        100          1\n         1     100000      65536\n",
+        "identity": [
+          "Uid:\t109999\t109999\t109999\t109999",
+          "Gid:\t109999\t109999\t109999\t109999",
+          "NSpid:\t38720\t1"
+        ],
+        "comm": "map-server",
+        "tcp_sha256": "f253b8988d7860f90a2a0871053a6f1f6776b0bdd64add48275656840340235d",
+        "tcp6_sha256": "66f915c0e78f7e3bd8aeec8cc07d3d4780f8308887579d66378913cc9c31ee60",
+        "listener_observed": null
+      }
+    ]
+  },
+  "observations": [
+    {
+      "observed_at_ns": 1791832331238306566,
+      "reader_namespace": {
+        "uid": 0,
+        "gid": 0,
+        "userns": "user:[4026532852]",
+        "uid_map": "         0       1000          1\n         1     100000      65536\n",
+        "gid_map": "         0        100          1\n         1     100000      65536\n"
+      },
+      "roles": [
+        {
+          "role": "mariadb",
+          "pid": 38200,
+          "complete": true,
+          "actor_count": null,
+          "client_connections": null,
+          "socket_inode_count": 9,
+          "owned_tcp": [
+            {
+              "local": [
+                "0.0.0.0",
+                3306
+              ],
+              "remote": [
+                "0.0.0.0",
+                0
+              ],
+              "state": "0A",
+              "inode": 206229
+            },
+            {
+              "local": [
+                "10.89.2.2",
+                3306
+              ],
+              "remote": [
+                "10.89.2.5",
+                44280
+              ],
+              "state": "01",
+              "inode": 208082
+            },
+            {
+              "local": [
+                "10.89.2.2",
+                3306
+              ],
+              "remote": [
+                "10.89.2.3",
+                33320
+              ],
+              "state": "01",
+              "inode": 206278
+            },
+            {
+              "local": [
+                "10.89.2.2",
+                3306
+              ],
+              "remote": [
+                "10.89.2.3",
+                33350
+              ],
+              "state": "01",
+              "inode": 178999
+            },
+            {
+              "local": [
+                "10.89.2.2",
+                3306
+              ],
+              "remote": [
+                "10.89.2.5",
+                44282
+              ],
+              "state": "01",
+              "inode": 179062
+            },
+            {
+              "local": [
+                "10.89.2.2",
+                3306
+              ],
+              "remote": [
+                "10.89.2.4",
+                50426
+              ],
+              "state": "01",
+              "inode": 208020
+            },
+            {
+              "local": [
+                "10.89.2.2",
+                3306
+              ],
+              "remote": [
+                "10.89.2.3",
+                33334
+              ],
+              "state": "01",
+              "inode": 197309
+            },
+            {
+              "local": [
+                "::",
+                3306
+              ],
+              "remote": [
+                "::",
+                0
+              ],
+              "state": "0A",
+              "inode": 206230
+            }
+          ],
+          "errors": [],
+          "uid_map_sha256": "044245bb42ce0469d974c454f3c4c784b4814d52d83c72cb932dd1e9705955b7",
+          "gid_map_sha256": "f3b74654e57bf72717b98c81af086f2a7c00d00e379952804676ceaf69cafd39",
+          "uid_map": "         0       1000          1\n         1     100000      65536\n",
+          "gid_map": "         0        100          1\n         1     100000      65536\n",
+          "identity": [
+            "Uid:\t999\t999\t999\t999",
+            "Gid:\t999\t999\t999\t999",
+            "NSpid:\t38200\t1"
+          ],
+          "comm": "mariadbd",
+          "userns": "user:[4026532852]",
+          "tcp_sha256": "336005dbc158a5e8f4d19e91203fd2f8b8bacd5cfbd4bbf4d10372dae95255de",
+          "tcp6_sha256": "77bf32564db96f6d324c5552ae1a6b4c0fcd774524099aad4f24b115ea06e73c",
+          "unmatched_socket_inode_count": 1,
+          "listener_observed": true,
+          "process_start_tick": "291096",
+          "established": [
+            {
+              "local": [
+                "10.89.2.2",
+                3306
+              ],
+              "remote": [
+                "10.89.2.5",
+                44280
+              ],
+              "peer_role": "map",
+              "classification": "owned_peer:map"
+            },
+            {
+              "local": [
+                "10.89.2.2",
+                3306
+              ],
+              "remote": [
+                "10.89.2.3",
+                33320
+              ],
+              "peer_role": "login",
+              "classification": "owned_peer:login"
+            },
+            {
+              "local": [
+                "10.89.2.2",
+                3306
+              ],
+              "remote": [
+                "10.89.2.3",
+                33350
+              ],
+              "peer_role": "login",
+              "classification": "owned_peer:login"
+            },
+            {
+              "local": [
+                "10.89.2.2",
+                3306
+              ],
+              "remote": [
+                "10.89.2.5",
+                44282
+              ],
+              "peer_role": "map",
+              "classification": "owned_peer:map"
+            },
+            {
+              "local": [
+                "10.89.2.2",
+                3306
+              ],
+              "remote": [
+                "10.89.2.4",
+                50426
+              ],
+              "peer_role": "char",
+              "classification": "owned_peer:char"
+            },
+            {
+              "local": [
+                "10.89.2.2",
+                3306
+              ],
+              "remote": [
+                "10.89.2.3",
+                33334
+              ],
+              "peer_role": "login",
+              "classification": "owned_peer:login"
+            }
+          ],
+          "client_count_meaning": "PID-owned established non-role inbound sockets; NOT actors, SQL online flags, or human identity"
+        },
+        {
+          "role": "login",
+          "pid": 38491,
+          "complete": true,
+          "actor_count": null,
+          "client_connections": 0,
+          "socket_inode_count": 5,
+          "owned_tcp": [
+            {
+              "local": [
+                "0.0.0.0",
+                16900
+              ],
+              "remote": [
+                "0.0.0.0",
+                0
+              ],
+              "state": "0A",
+              "inode": 209930
+            },
+            {
+              "local": [
+                "10.89.2.3",
+                16900
+              ],
+              "remote": [
+                "10.89.2.4",
+                37602
+              ],
+              "state": "01",
+              "inode": 194350
+            },
+            {
+              "local": [
+                "10.89.2.3",
+                33320
+              ],
+              "remote": [
+                "10.89.2.2",
+                3306
+              ],
+              "state": "01",
+              "inode": 203524
+            },
+            {
+              "local": [
+                "10.89.2.3",
+                33334
+              ],
+              "remote": [
+                "10.89.2.2",
+                3306
+              ],
+              "state": "01",
+              "inode": 209927
+            },
+            {
+              "local": [
+                "10.89.2.3",
+                33350
+              ],
+              "remote": [
+                "10.89.2.2",
+                3306
+              ],
+              "state": "01",
+              "inode": 209929
+            }
+          ],
+          "errors": [],
+          "uid_map_sha256": "044245bb42ce0469d974c454f3c4c784b4814d52d83c72cb932dd1e9705955b7",
+          "gid_map_sha256": "f3b74654e57bf72717b98c81af086f2a7c00d00e379952804676ceaf69cafd39",
+          "uid_map": "         0       1000          1\n         1     100000      65536\n",
+          "gid_map": "         0        100          1\n         1     100000      65536\n",
+          "identity": [
+            "Uid:\t10000\t10000\t10000\t10000",
+            "Gid:\t10000\t10000\t10000\t10000",
+            "NSpid:\t38491\t1"
+          ],
+          "comm": "login-server",
+          "userns": "user:[4026532852]",
+          "tcp_sha256": "366e33cffb765f2e1a6f2e0749eed475169e96fd8514fe20e03daf2f5dff524b",
+          "tcp6_sha256": "66f915c0e78f7e3bd8aeec8cc07d3d4780f8308887579d66378913cc9c31ee60",
+          "unmatched_socket_inode_count": 0,
+          "listener_observed": true,
+          "process_start_tick": "291520",
+          "established": [
+            {
+              "local": [
+                "10.89.2.3",
+                16900
+              ],
+              "remote": [
+                "10.89.2.4",
+                37602
+              ],
+              "peer_role": "char",
+              "classification": "owned_peer:char"
+            },
+            {
+              "local": [
+                "10.89.2.3",
+                33320
+              ],
+              "remote": [
+                "10.89.2.2",
+                3306
+              ],
+              "peer_role": "mariadb",
+              "classification": "owned_peer:mariadb"
+            },
+            {
+              "local": [
+                "10.89.2.3",
+                33334
+              ],
+              "remote": [
+                "10.89.2.2",
+                3306
+              ],
+              "peer_role": "mariadb",
+              "classification": "owned_peer:mariadb"
+            },
+            {
+              "local": [
+                "10.89.2.3",
+                33350
+              ],
+              "remote": [
+                "10.89.2.2",
+                3306
+              ],
+              "peer_role": "mariadb",
+              "classification": "owned_peer:mariadb"
+            }
+          ],
+          "client_count_meaning": "PID-owned established non-role inbound sockets; NOT actors, SQL online flags, or human identity"
+        },
+        {
+          "role": "char",
+          "pid": 38610,
+          "complete": true,
+          "actor_count": null,
+          "client_connections": 0,
+          "socket_inode_count": 4,
+          "owned_tcp": [
+            {
+              "local": [
+                "0.0.0.0",
+                16121
+              ],
+              "remote": [
+                "0.0.0.0",
+                0
+              ],
+              "state": "0A",
+              "inode": 184135
+            },
+            {
+              "local": [
+                "10.89.2.4",
+                37602
+              ],
+              "remote": [
+                "10.89.2.3",
+                16900
+              ],
+              "state": "01",
+              "inode": 184178
+            },
+            {
+              "local": [
+                "10.89.2.4",
+                50426
+              ],
+              "remote": [
+                "10.89.2.2",
+                3306
+              ],
+              "state": "01",
+              "inode": 206304
+            },
+            {
+              "local": [
+                "10.89.2.4",
+                16121
+              ],
+              "remote": [
+                "10.89.2.5",
+                42474
+              ],
+              "state": "01",
+              "inode": 184179
+            }
+          ],
+          "errors": [],
+          "uid_map_sha256": "044245bb42ce0469d974c454f3c4c784b4814d52d83c72cb932dd1e9705955b7",
+          "gid_map_sha256": "f3b74654e57bf72717b98c81af086f2a7c00d00e379952804676ceaf69cafd39",
+          "uid_map": "         0       1000          1\n         1     100000      65536\n",
+          "gid_map": "         0        100          1\n         1     100000      65536\n",
+          "identity": [
+            "Uid:\t10000\t10000\t10000\t10000",
+            "Gid:\t10000\t10000\t10000\t10000",
+            "NSpid:\t38610\t1"
+          ],
+          "comm": "char-server",
+          "userns": "user:[4026532852]",
+          "tcp_sha256": "25e7e6bbfcc9dd98f31a5da5908d551bee8cfabaf3e9f3860058a25644623ca2",
+          "tcp6_sha256": "66f915c0e78f7e3bd8aeec8cc07d3d4780f8308887579d66378913cc9c31ee60",
+          "unmatched_socket_inode_count": 0,
+          "listener_observed": true,
+          "process_start_tick": "291535",
+          "established": [
+            {
+              "local": [
+                "10.89.2.4",
+                37602
+              ],
+              "remote": [
+                "10.89.2.3",
+                16900
+              ],
+              "peer_role": "login",
+              "classification": "owned_peer:login"
+            },
+            {
+              "local": [
+                "10.89.2.4",
+                50426
+              ],
+              "remote": [
+                "10.89.2.2",
+                3306
+              ],
+              "peer_role": "mariadb",
+              "classification": "owned_peer:mariadb"
+            },
+            {
+              "local": [
+                "10.89.2.4",
+                16121
+              ],
+              "remote": [
+                "10.89.2.5",
+                42474
+              ],
+              "peer_role": "map",
+              "classification": "owned_peer:map"
+            }
+          ],
+          "client_count_meaning": "PID-owned established non-role inbound sockets; NOT actors, SQL online flags, or human identity"
+        },
+        {
+          "role": "map",
+          "pid": 38720,
+          "complete": true,
+          "actor_count": null,
+          "client_connections": 0,
+          "socket_inode_count": 4,
+          "owned_tcp": [
+            {
+              "local": [
+                "0.0.0.0",
+                15121
+              ],
+              "remote": [
+                "0.0.0.0",
+                0
+              ],
+              "state": "0A",
+              "inode": 194349
+            },
+            {
+              "local": [
+                "10.89.2.5",
+                44280
+              ],
+              "remote": [
+                "10.89.2.2",
+                3306
+              ],
+              "state": "01",
+              "inode": 200549
+            },
+            {
+              "local": [
+                "10.89.2.5",
+                44282
+              ],
+              "remote": [
+                "10.89.2.2",
+                3306
+              ],
+              "state": "01",
+              "inode": 197363
+            },
+            {
+              "local": [
+                "10.89.2.5",
+                42474
+              ],
+              "remote": [
+                "10.89.2.4",
+                16121
+              ],
+              "state": "01",
+              "inode": 206310
+            }
+          ],
+          "errors": [],
+          "uid_map_sha256": "044245bb42ce0469d974c454f3c4c784b4814d52d83c72cb932dd1e9705955b7",
+          "gid_map_sha256": "f3b74654e57bf72717b98c81af086f2a7c00d00e379952804676ceaf69cafd39",
+          "uid_map": "         0       1000          1\n         1     100000      65536\n",
+          "gid_map": "         0        100          1\n         1     100000      65536\n",
+          "identity": [
+            "Uid:\t10000\t10000\t10000\t10000",
+            "Gid:\t10000\t10000\t10000\t10000",
+            "NSpid:\t38720\t1"
+          ],
+          "comm": "map-server",
+          "userns": "user:[4026532852]",
+          "tcp_sha256": "15b702009392a955ae37712884dc53cb0befac7aabbf94739e07dfbab0ee63be",
+          "tcp6_sha256": "66f915c0e78f7e3bd8aeec8cc07d3d4780f8308887579d66378913cc9c31ee60",
+          "unmatched_socket_inode_count": 0,
+          "listener_observed": true,
+          "process_start_tick": "291549",
+          "established": [
+            {
+              "local": [
+                "10.89.2.5",
+                44280
+              ],
+              "remote": [
+                "10.89.2.2",
+                3306
+              ],
+              "peer_role": "mariadb",
+              "classification": "owned_peer:mariadb"
+            },
+            {
+              "local": [
+                "10.89.2.5",
+                44282
+              ],
+              "remote": [
+                "10.89.2.2",
+                3306
+              ],
+              "peer_role": "mariadb",
+              "classification": "owned_peer:mariadb"
+            },
+            {
+              "local": [
+                "10.89.2.5",
+                42474
+              ],
+              "remote": [
+                "10.89.2.4",
+                16121
+              ],
+              "peer_role": "char",
+              "classification": "owned_peer:char"
+            }
+          ],
+          "client_count_meaning": "PID-owned established non-role inbound sockets; NOT actors, SQL online flags, or human identity"
+        }
+      ],
+      "required_endpoint_matches": [
+        {
+          "source": "char",
+          "target": "login",
+          "expected_remote": [
+            "10.89.2.3",
+            16900
+          ],
+          "matching_pid_owned_reciprocal_sockets": 1
+        },
+        {
+          "source": "map",
+          "target": "char",
+          "expected_remote": [
+            "10.89.2.4",
+            16121
+          ],
+          "matching_pid_owned_reciprocal_sockets": 1
+        },
+        {
+          "source": "login",
+          "target": "mariadb",
+          "expected_remote": [
+            "10.89.2.2",
+            3306
+          ],
+          "matching_pid_owned_reciprocal_sockets": 3
+        },
+        {
+          "source": "char",
+          "target": "mariadb",
+          "expected_remote": [
+            "10.89.2.2",
+            3306
+          ],
+          "matching_pid_owned_reciprocal_sockets": 1
+        },
+        {
+          "source": "map",
+          "target": "mariadb",
+          "expected_remote": [
+            "10.89.2.2",
+            3306
+          ],
+          "matching_pid_owned_reciprocal_sockets": 2
+        }
+      ],
+      "socket_proof_complete": true,
+      "topology_socket_match": true
+    },
+    {
+      "observed_at_ns": 1791832332668854382,
+      "reader_namespace": {
+        "uid": 0,
+        "gid": 0,
+        "userns": "user:[4026532852]",
+        "uid_map": "         0       1000          1\n         1     100000      65536\n",
+        "gid_map": "         0        100          1\n         1     100000      65536\n"
+      },
+      "roles": [
+        {
+          "role": "mariadb",
+          "pid": 38200,
+          "complete": true,
+          "actor_count": null,
+          "client_connections": null,
+          "socket_inode_count": 9,
+          "owned_tcp": [
+            {
+              "local": [
+                "0.0.0.0",
+                3306
+              ],
+              "remote": [
+                "0.0.0.0",
+                0
+              ],
+              "state": "0A",
+              "inode": 206229
+            },
+            {
+              "local": [
+                "10.89.2.2",
+                3306
+              ],
+              "remote": [
+                "10.89.2.5",
+                44280
+              ],
+              "state": "01",
+              "inode": 208082
+            },
+            {
+              "local": [
+                "10.89.2.2",
+                3306
+              ],
+              "remote": [
+                "10.89.2.3",
+                33320
+              ],
+              "state": "01",
+              "inode": 206278
+            },
+            {
+              "local": [
+                "10.89.2.2",
+                3306
+              ],
+              "remote": [
+                "10.89.2.3",
+                33350
+              ],
+              "state": "01",
+              "inode": 178999
+            },
+            {
+              "local": [
+                "10.89.2.2",
+                3306
+              ],
+              "remote": [
+                "10.89.2.5",
+                44282
+              ],
+              "state": "01",
+              "inode": 179062
+            },
+            {
+              "local": [
+                "10.89.2.2",
+                3306
+              ],
+              "remote": [
+                "10.89.2.4",
+                50426
+              ],
+              "state": "01",
+              "inode": 208020
+            },
+            {
+              "local": [
+                "10.89.2.2",
+                3306
+              ],
+              "remote": [
+                "10.89.2.3",
+                33334
+              ],
+              "state": "01",
+              "inode": 197309
+            },
+            {
+              "local": [
+                "::",
+                3306
+              ],
+              "remote": [
+                "::",
+                0
+              ],
+              "state": "0A",
+              "inode": 206230
+            }
+          ],
+          "errors": [],
+          "uid_map_sha256": "044245bb42ce0469d974c454f3c4c784b4814d52d83c72cb932dd1e9705955b7",
+          "gid_map_sha256": "f3b74654e57bf72717b98c81af086f2a7c00d00e379952804676ceaf69cafd39",
+          "uid_map": "         0       1000          1\n         1     100000      65536\n",
+          "gid_map": "         0        100          1\n         1     100000      65536\n",
+          "identity": [
+            "Uid:\t999\t999\t999\t999",
+            "Gid:\t999\t999\t999\t999",
+            "NSpid:\t38200\t1"
+          ],
+          "comm": "mariadbd",
+          "userns": "user:[4026532852]",
+          "tcp_sha256": "a1b2262b9a7ed7d42c912fa98f2106ccdf621782e4d6f43b5a433ecd5b633ec1",
+          "tcp6_sha256": "77bf32564db96f6d324c5552ae1a6b4c0fcd774524099aad4f24b115ea06e73c",
+          "unmatched_socket_inode_count": 1,
+          "listener_observed": true,
+          "process_start_tick": "291096",
+          "established": [
+            {
+              "local": [
+                "10.89.2.2",
+                3306
+              ],
+              "remote": [
+                "10.89.2.5",
+                44280
+              ],
+              "peer_role": "map",
+              "classification": "owned_peer:map"
+            },
+            {
+              "local": [
+                "10.89.2.2",
+                3306
+              ],
+              "remote": [
+                "10.89.2.3",
+                33320
+              ],
+              "peer_role": "login",
+              "classification": "owned_peer:login"
+            },
+            {
+              "local": [
+                "10.89.2.2",
+                3306
+              ],
+              "remote": [
+                "10.89.2.3",
+                33350
+              ],
+              "peer_role": "login",
+              "classification": "owned_peer:login"
+            },
+            {
+              "local": [
+                "10.89.2.2",
+                3306
+              ],
+              "remote": [
+                "10.89.2.5",
+                44282
+              ],
+              "peer_role": "map",
+              "classification": "owned_peer:map"
+            },
+            {
+              "local": [
+                "10.89.2.2",
+                3306
+              ],
+              "remote": [
+                "10.89.2.4",
+                50426
+              ],
+              "peer_role": "char",
+              "classification": "owned_peer:char"
+            },
+            {
+              "local": [
+                "10.89.2.2",
+                3306
+              ],
+              "remote": [
+                "10.89.2.3",
+                33334
+              ],
+              "peer_role": "login",
+              "classification": "owned_peer:login"
+            }
+          ],
+          "client_count_meaning": "PID-owned established non-role inbound sockets; NOT actors, SQL online flags, or human identity"
+        },
+        {
+          "role": "login",
+          "pid": 38491,
+          "complete": true,
+          "actor_count": null,
+          "client_connections": 0,
+          "socket_inode_count": 5,
+          "owned_tcp": [
+            {
+              "local": [
+                "0.0.0.0",
+                16900
+              ],
+              "remote": [
+                "0.0.0.0",
+                0
+              ],
+              "state": "0A",
+              "inode": 209930
+            },
+            {
+              "local": [
+                "10.89.2.3",
+                16900
+              ],
+              "remote": [
+                "10.89.2.4",
+                37602
+              ],
+              "state": "01",
+              "inode": 194350
+            },
+            {
+              "local": [
+                "10.89.2.3",
+                33320
+              ],
+              "remote": [
+                "10.89.2.2",
+                3306
+              ],
+              "state": "01",
+              "inode": 203524
+            },
+            {
+              "local": [
+                "10.89.2.3",
+                33334
+              ],
+              "remote": [
+                "10.89.2.2",
+                3306
+              ],
+              "state": "01",
+              "inode": 209927
+            },
+            {
+              "local": [
+                "10.89.2.3",
+                33350
+              ],
+              "remote": [
+                "10.89.2.2",
+                3306
+              ],
+              "state": "01",
+              "inode": 209929
+            }
+          ],
+          "errors": [],
+          "uid_map_sha256": "044245bb42ce0469d974c454f3c4c784b4814d52d83c72cb932dd1e9705955b7",
+          "gid_map_sha256": "f3b74654e57bf72717b98c81af086f2a7c00d00e379952804676ceaf69cafd39",
+          "uid_map": "         0       1000          1\n         1     100000      65536\n",
+          "gid_map": "         0        100          1\n         1     100000      65536\n",
+          "identity": [
+            "Uid:\t10000\t10000\t10000\t10000",
+            "Gid:\t10000\t10000\t10000\t10000",
+            "NSpid:\t38491\t1"
+          ],
+          "comm": "login-server",
+          "userns": "user:[4026532852]",
+          "tcp_sha256": "b816a79e546e484079b03911dbcafa82154239ee5f95ddbb5963fe177dbb7e8b",
+          "tcp6_sha256": "66f915c0e78f7e3bd8aeec8cc07d3d4780f8308887579d66378913cc9c31ee60",
+          "unmatched_socket_inode_count": 0,
+          "listener_observed": true,
+          "process_start_tick": "291520",
+          "established": [
+            {
+              "local": [
+                "10.89.2.3",
+                16900
+              ],
+              "remote": [
+                "10.89.2.4",
+                37602
+              ],
+              "peer_role": "char",
+              "classification": "owned_peer:char"
+            },
+            {
+              "local": [
+                "10.89.2.3",
+                33320
+              ],
+              "remote": [
+                "10.89.2.2",
+                3306
+              ],
+              "peer_role": "mariadb",
+              "classification": "owned_peer:mariadb"
+            },
+            {
+              "local": [
+                "10.89.2.3",
+                33334
+              ],
+              "remote": [
+                "10.89.2.2",
+                3306
+              ],
+              "peer_role": "mariadb",
+              "classification": "owned_peer:mariadb"
+            },
+            {
+              "local": [
+                "10.89.2.3",
+                33350
+              ],
+              "remote": [
+                "10.89.2.2",
+                3306
+              ],
+              "peer_role": "mariadb",
+              "classification": "owned_peer:mariadb"
+            }
+          ],
+          "client_count_meaning": "PID-owned established non-role inbound sockets; NOT actors, SQL online flags, or human identity"
+        },
+        {
+          "role": "char",
+          "pid": 38610,
+          "complete": true,
+          "actor_count": null,
+          "client_connections": 0,
+          "socket_inode_count": 4,
+          "owned_tcp": [
+            {
+              "local": [
+                "0.0.0.0",
+                16121
+              ],
+              "remote": [
+                "0.0.0.0",
+                0
+              ],
+              "state": "0A",
+              "inode": 184135
+            },
+            {
+              "local": [
+                "10.89.2.4",
+                37602
+              ],
+              "remote": [
+                "10.89.2.3",
+                16900
+              ],
+              "state": "01",
+              "inode": 184178
+            },
+            {
+              "local": [
+                "10.89.2.4",
+                50426
+              ],
+              "remote": [
+                "10.89.2.2",
+                3306
+              ],
+              "state": "01",
+              "inode": 206304
+            },
+            {
+              "local": [
+                "10.89.2.4",
+                16121
+              ],
+              "remote": [
+                "10.89.2.5",
+                42474
+              ],
+              "state": "01",
+              "inode": 184179
+            }
+          ],
+          "errors": [],
+          "uid_map_sha256": "044245bb42ce0469d974c454f3c4c784b4814d52d83c72cb932dd1e9705955b7",
+          "gid_map_sha256": "f3b74654e57bf72717b98c81af086f2a7c00d00e379952804676ceaf69cafd39",
+          "uid_map": "         0       1000          1\n         1     100000      65536\n",
+          "gid_map": "         0        100          1\n         1     100000      65536\n",
+          "identity": [
+            "Uid:\t10000\t10000\t10000\t10000",
+            "Gid:\t10000\t10000\t10000\t10000",
+            "NSpid:\t38610\t1"
+          ],
+          "comm": "char-server",
+          "userns": "user:[4026532852]",
+          "tcp_sha256": "b4f44e2b8d3d563f93f7c6b4eb1eca2d608aa52d22df625a2a91005715966856",
+          "tcp6_sha256": "66f915c0e78f7e3bd8aeec8cc07d3d4780f8308887579d66378913cc9c31ee60",
+          "unmatched_socket_inode_count": 0,
+          "listener_observed": true,
+          "process_start_tick": "291535",
+          "established": [
+            {
+              "local": [
+                "10.89.2.4",
+                37602
+              ],
+              "remote": [
+                "10.89.2.3",
+                16900
+              ],
+              "peer_role": "login",
+              "classification": "owned_peer:login"
+            },
+            {
+              "local": [
+                "10.89.2.4",
+                50426
+              ],
+              "remote": [
+                "10.89.2.2",
+                3306
+              ],
+              "peer_role": "mariadb",
+              "classification": "owned_peer:mariadb"
+            },
+            {
+              "local": [
+                "10.89.2.4",
+                16121
+              ],
+              "remote": [
+                "10.89.2.5",
+                42474
+              ],
+              "peer_role": "map",
+              "classification": "owned_peer:map"
+            }
+          ],
+          "client_count_meaning": "PID-owned established non-role inbound sockets; NOT actors, SQL online flags, or human identity"
+        },
+        {
+          "role": "map",
+          "pid": 38720,
+          "complete": true,
+          "actor_count": null,
+          "client_connections": 0,
+          "socket_inode_count": 4,
+          "owned_tcp": [
+            {
+              "local": [
+                "0.0.0.0",
+                15121
+              ],
+              "remote": [
+                "0.0.0.0",
+                0
+              ],
+              "state": "0A",
+              "inode": 194349
+            },
+            {
+              "local": [
+                "10.89.2.5",
+                44280
+              ],
+              "remote": [
+                "10.89.2.2",
+                3306
+              ],
+              "state": "01",
+              "inode": 200549
+            },
+            {
+              "local": [
+                "10.89.2.5",
+                44282
+              ],
+              "remote": [
+                "10.89.2.2",
+                3306
+              ],
+              "state": "01",
+              "inode": 197363
+            },
+            {
+              "local": [
+                "10.89.2.5",
+                42474
+              ],
+              "remote": [
+                "10.89.2.4",
+                16121
+              ],
+              "state": "01",
+              "inode": 206310
+            }
+          ],
+          "errors": [],
+          "uid_map_sha256": "044245bb42ce0469d974c454f3c4c784b4814d52d83c72cb932dd1e9705955b7",
+          "gid_map_sha256": "f3b74654e57bf72717b98c81af086f2a7c00d00e379952804676ceaf69cafd39",
+          "uid_map": "         0       1000          1\n         1     100000      65536\n",
+          "gid_map": "         0        100          1\n         1     100000      65536\n",
+          "identity": [
+            "Uid:\t10000\t10000\t10000\t10000",
+            "Gid:\t10000\t10000\t10000\t10000",
+            "NSpid:\t38720\t1"
+          ],
+          "comm": "map-server",
+          "userns": "user:[4026532852]",
+          "tcp_sha256": "0ce9aeb3d66d15d5a5526dfc6de19559086c3593ce0aa9bf2801fdd418b3faf0",
+          "tcp6_sha256": "66f915c0e78f7e3bd8aeec8cc07d3d4780f8308887579d66378913cc9c31ee60",
+          "unmatched_socket_inode_count": 0,
+          "listener_observed": true,
+          "process_start_tick": "291549",
+          "established": [
+            {
+              "local": [
+                "10.89.2.5",
+                44280
+              ],
+              "remote": [
+                "10.89.2.2",
+                3306
+              ],
+              "peer_role": "mariadb",
+              "classification": "owned_peer:mariadb"
+            },
+            {
+              "local": [
+                "10.89.2.5",
+                44282
+              ],
+              "remote": [
+                "10.89.2.2",
+                3306
+              ],
+              "peer_role": "mariadb",
+              "classification": "owned_peer:mariadb"
+            },
+            {
+              "local": [
+                "10.89.2.5",
+                42474
+              ],
+              "remote": [
+                "10.89.2.4",
+                16121
+              ],
+              "peer_role": "char",
+              "classification": "owned_peer:char"
+            }
+          ],
+          "client_count_meaning": "PID-owned established non-role inbound sockets; NOT actors, SQL online flags, or human identity"
+        }
+      ],
+      "required_endpoint_matches": [
+        {
+          "source": "char",
+          "target": "login",
+          "expected_remote": [
+            "10.89.2.3",
+            16900
+          ],
+          "matching_pid_owned_reciprocal_sockets": 1
+        },
+        {
+          "source": "map",
+          "target": "char",
+          "expected_remote": [
+            "10.89.2.4",
+            16121
+          ],
+          "matching_pid_owned_reciprocal_sockets": 1
+        },
+        {
+          "source": "login",
+          "target": "mariadb",
+          "expected_remote": [
+            "10.89.2.2",
+            3306
+          ],
+          "matching_pid_owned_reciprocal_sockets": 3
+        },
+        {
+          "source": "char",
+          "target": "mariadb",
+          "expected_remote": [
+            "10.89.2.2",
+            3306
+          ],
+          "matching_pid_owned_reciprocal_sockets": 1
+        },
+        {
+          "source": "map",
+          "target": "mariadb",
+          "expected_remote": [
+            "10.89.2.2",
+            3306
+          ],
+          "matching_pid_owned_reciprocal_sockets": 2
+        }
+      ],
+      "socket_proof_complete": true,
+      "topology_socket_match": true
+    }
+  ],
+  "two_independent_process_observations": true,
+  "actor_count": null,
+  "full_world_guarantee": false,
+  "native_health_admission": "NOT_ADMITTED",
+  "approved_admin_interface": "podman unshare COMMAND; no namespace flags, foreign setns, capability flags, or native exec",
+  "authority_sources": [
+    "installed podman 5.8.7 unshare --help",
+    "https://docs.podman.io/en/latest/markdown/podman-unshare.1.html",
+    "https://www.man7.org/linux/man-pages/man5/proc_pid_fd.5.html"
+  ],
+  "discovery_issue": "Initial raw Podman Image comparison refused before target proc reads: native inspect uses bare validated 64-hex; Docker API uses sha256 prefix. Both retained and exact digest agreement verified.",
+  "limits": [
+    "Sequential FD and TCP reads are not an atomic snapshot; FD/PID/read errors retain UNKNOWN.",
+    "Unmatched inodes may be Unix/UDP/other sockets, not missing TCP clients.",
+    "No SQL, account, actor, autotrader or human identity attribution was attempted.",
+    "Socket observations do not resolve lifetime log faults, stale SQL online flags, health or maintenance admission.",
+    "No service changes, new UID maps, chmod, sudo, capabilities, privileged containers, native binaries, game clients or provider calls.",
+    "Engine inspect before and after each observation proves stable selection, not exclusive mutation lock.",
+    "Parent owns adapter integration and fresh operational admission."
+  ]
+}

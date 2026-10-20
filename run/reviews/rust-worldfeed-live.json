@@ -1,0 +1,58 @@
+{
+  "task": "Rust WorldFeed HTTP/SSE integration",
+  "evidence_level": "compiled Rust + deterministic Python serialization + isolated loopback HTTP; NOT native game/host execution",
+  "scope": "dashboard/** and root flake.nix only; Python/src/tests/wiki/scripts untouched by this delegate",
+  "gates": {
+    "command": "nix develop -c task -t dashboard/Taskfile.yml dashboard:check",
+    "exit_code": 0,
+    "test_counts": [
+      11,
+      20,
+      3,
+      1,
+      2,
+      0
+    ],
+    "total_tests": 37,
+    "output": "warning: Git tree '/home/otto/dev/ro-bots' is dirty\nro-bots dev shell \u2014 try: task --list\ntask: [dashboard:machete] cargo machete\ntask: [dashboard:audit] cargo audit -D warnings\ntask: [dashboard:clippy] cargo clippy --all-targets --all-features -- -D warnings\ntask: [dashboard:fmt] cargo fmt --all -- --check\ntask: [dashboard:test] cargo test\ntask: [dashboard:doc] cargo doc --no-deps\n    Fetching advisory database from `https://github.com/RustSec/advisory-db.git`\nAnalyzing dependencies of crates in this directory...\ncargo-machete didn't find any unused dependencies in this directory. Good job!\nDone!\n    Blocking    Blocking waiting for file lock on package cache\n waiting for file lock on package cache\n    Blocking waiting for file lock on package cache\n    Blocking waiting for file lock on package cache\n    Blocking waiting for file lock on package cache\n    Blocking waiting for file lock on package cache\n    Blocking waiting for file lock on package cache\n    Blocking waiting for file lock on package cache\n    Blocking waiting for file lock on package cache\n    Blocking waiting for file lock on package cache\n    Blocking waiting for file lock on build directory\n    Blocking waiting for file lock on build directory\n    Checking world-feed v0.1.0 (/home/otto/dev/ro-bots/dashboard/crates/world-feed)\n      Loaded 1290 security advisories (from /home/otto/.cargo/advisory-db)\n    Updating crates.io index\n    Scanning Cargo.lock for vulnerabilities (232 crate dependencies)\n    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.63s\n   Compiling world-feed v0.1.0 (/home/otto/dev/ro-bots/dashboard/crates/world-feed)\n    Finished `test` profile [unoptimized + debuginfo] target(s) in 3.95s\n     Running unittests src/main.rs (target/debug/deps/dashboard-f62f8adff113ec43)\n\nrunning 11 tests\ntest tests::backend_default_is_live_and_mock_requires_explicit_selection ... ok\ntest tests::agent_page_unknown_id_is_404 ... ok\ntest tests::configurator_and_feed_pages_render ... ok\ntest tests::commands_endpoint_rejects_unknown_persona ... ok\ntest tests::liveview_ws_route_is_wired ... ok\ntest tests::roster_page_lists_groups_and_agents ... ok\ntest tests::commands_endpoint_applies_force_action ... ok\ntest tests::agent_page_renders_memory_and_reputation ... ok\ntest tests::commands_endpoint_regenerates_roster ... ok\ntest tests::unavailable_live_router_is_labeled_and_never_returns_fake_agents ... ok\ntest tests::roster_api_returns_snapshot_json ... ok\n\ntest result: ok. 11 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n     Running unittests src/lib.rs (target/debug/deps/world_feed-a64f8a0c98cb5566)\n\nrunning 20 tests\ntest mock::tests::agent_status_roundtrip ... ok\ntest mock::tests::command_validation_rejects_bad_shapes ... ok\ntest mock::tests::chat_line_roundtrip ... ok\ntest mock::tests::command_json_shape_is_tagged_snake_case ... ok\ntest mock::tests::agent_detail_has_memory_reputation_characters ... ok\ntest mock::tests::schedule_window_wraps_midnight ... ok\ntest mock::tests::command_roundtrip_all_variants ... ok\ntest mock::tests::command_ack_is_operator_forced ... ok\ntest mock::tests::regenerate_roster_changes_seed_and_shape ... ok\ntest mock::tests::edit_persona_updates_fields ... ok\ntest mock::tests::roster_shape_follows_request ... ok\ntest mock::tests::force_disconnect_reconnect_overrides_schedule ... ok\ntest mock::tests::day_hour_progresses_over_a_week ... ok\ntest mock::tests::schedule_window_contains_start_excludes_end ... ok\ntest mock::tests::same_seed_same_roster ... ok\ntest mock::tests::world_event_roundtrip_preserves_kind_and_flags ... ok\ntest mock::tests::different_seed_different_roster ... ok\ntest mock::tests::unknown_persona_is_rejected ... ok\ntest mock::tests::ticks_are_deterministic ... ok\ntest mock::tests::tick_flips_online_status_on_schedule ... ok\n\ntest result: ok. 20 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n     Running tests/http_live.rs (target/debug/deps/http_live-1b4506fcffc6cb30)\n\nrunning 3 tests\n Documenting world-feed v0.1.0 (/home/otto/dev/ro-bots/dashboard/crates/world-feed)\ntest http_error_and_timeout_never_become_mock ... ok\ntest timeout_is_bounded_without_mock_fallback ... ok\ntest loopback_snapshots_reconnect_cursor_errors_and_commands ... ok\n\ntest result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.12s\n\n     Running tests/python_wire.rs (target/debug/deps/python_wire-142d734878303f84)\n\nrunning 1 test\ntest python_snapshots_preserve_supplied_data_without_inventing_builds ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n     Running tests/sse.rs (target/debug/deps/sse-eeb18ce9c959186e)\n\nrunning 2 tests\ntest sse_does_not_dispatch_partial_event_or_unbounded_frame ... ok\ntest sse_accepts_every_chunk_boundary_and_crlf ... ok\n\ntest result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n   Doc-tests world_feed\n\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n    Finished `dev` profile [unoptimized + debuginfo] target(s) in 5.15s\n   Generated /home/otto/dev/ro-bots/dashboard/target/doc/dashboard/index.html and 1 other file\n   Compiling dashboard-app v0.1.0 (/home/otto/dev/ro-bots/dashboard/crates/dashboard-app)\n    Finished `dev` profile [unoptimized + debuginfo] target(s) in 4.59s\n{\n  \"evidence\": \"local fake HTTP fixture; no native game or host effects\",\n  \"live\": {\n    \"health\": {\n      \"mode\": \"live\",\n      \"status\": \"stale\",\n      \"error\": null,\n      \"snapshot_age_secs\": 0,\n      \"last_event_id\": 1,\n      \"events_status\": \"disconnected\",\n      \"events_error\": null\n    },\n    \"visually_marked\": true,\n    \"after_upstream_shutdown\": {\n      \"mode\": \"live\",\n      \"status\": \"stale\",\n      \"error\": \"error sending request for url (http://127.0.0.1:43479/feed/roster)\",\n      \"snapshot_age_secs\": 2,\n      \"last_event_id\": 1,\n      \"events_status\": \"disconnected\",\n      \"events_error\": \"error sending request for url (http://127.0.0.1:43479/feed/events)\"\n    }\n  },\n  \"mock\": {\n    \"health\": {\n      \"mode\": \"mock\",\n      \"status\": \"available\",\n      \"error\": null,\n      \"snapshot_age_secs\": null,\n      \"last_event_id\": null,\n      \"events_status\": \"synthetic demo\",\n      \"events_error\": null\n    },\n    \"visually_marked\": true\n  }\n}\n2026-10-05T12:45:58+02:00"
+  },
+  "changed_files": "M dashboard/Cargo.lock\n M dashboard/README.md\n M dashboard/Taskfile.yml\n M dashboard/crates/dashboard-app/src/liveview.rs\n M dashboard/crates/dashboard-app/src/main.rs\n M dashboard/crates/dashboard-app/src/render.rs\n M dashboard/crates/dashboard-app/src/tests.rs\n M dashboard/crates/world-feed/Cargo.toml\n M dashboard/crates/world-feed/src/lib.rs\n M dashboard/crates/world-feed/src/mock/mod.rs\n M dashboard/crates/world-feed/src/mock/tests.rs\n M dashboard/docker-compose.yml\n M flake.nix\n?? dashboard/.dockerignore\n?? dashboard/crates/world-feed/src/live.rs\n?? dashboard/crates/world-feed/src/wire.rs\n?? dashboard/crates/world-feed/tests/\n?? dashboard/fixtures/",
+  "implemented": [
+    "Live default and explicit mock-only synthetic ticker; invalid config refuses startup",
+    "Async reqwest snapshots/details/commands with bounded timeouts, bodies and cache",
+    "Incremental numeric-ID SSE parser across every LF/CRLF chunk boundary, reconnect Last-Event-ID, duplicate suppression and replay-gap/old-ID warnings",
+    "Python wire DTO translation preserving raw memory, character names and distinct agent/group scores; explicit unknown/not supplied numeric/string fields",
+    "UI mode/status banners and /api/health, 503 before live roster/detail availability, stale last-good roster",
+    "Supported command wire serialization flattening edit and renaming roster payload; rejects force_action and schedule-bearing edit, does not forge host ACK",
+    "Pinned root Nix Rust tools; Taskfile directory semantics corrected; no global installs"
+  ],
+  "tdd_red_evidence": [
+    "python_wire unresolved module before DTO implementation",
+    "sse unresolved API before incremental decoder",
+    "http_live absent HttpWorldFeed/LiveConfig before adapter implementation",
+    "backend mode test failed absent BackendMode before explicit selection",
+    "replayed-ID health assertion failed before warning implementation"
+  ],
+  "sources_checked": [
+    "https://raw.githubusercontent.com/seanmonstar/reqwest/v0.12.22/src/async_impl/client.rs",
+    "https://raw.githubusercontent.com/seanmonstar/reqwest/v0.12.22/src/async_impl/response.rs"
+  ],
+  "residual_frontier": [
+    "No native game, shared service, Docker, credentials, DB or provider exercised; fake fixtures only",
+    "No host command execution: Python mutations remain WorldState only; force actions and schedule-bearing edits deliberately rejected",
+    "Python generation count/range semantics remain imperfect and unmodified",
+    "Upstream IDs have no durable epoch; low IDs on restart warned/suppressed until deliberate adapter restart; eviction gaps cannot recover",
+    "Downstream broadcast has no durable replay; lagged receivers skip missed events",
+    "Static roster/inspector require reload, whereas LiveView polls cached roster/health",
+    "No independent review executed by this delegate; parent review still needed",
+    "No exhaustive cache-size/HTTP-body-cap tests or long-running TLS/native-stream soak completed within timebox"
+  ],
+  "toolchain": "Root pinned flake; cargo 1.98.0 rustc 1.98.1; reqwest exactly 0.12.22",
+  "no_commit_or_push": true,
+  "verified_complete": true,
+  "issues_encountered": [
+    "Existing Taskfile directory and cmds-string errors repaired; first-run Rust compile/Clippy errors repaired through actual gates",
+    "A combined shell initially masked Clippy exit status with subsequent date; final gate uses outer set -e and correct exit status",
+    "web_extract unsupported by configured backend; verified author tagged reqwest source via curl instead"
+  ]
+}

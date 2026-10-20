@@ -1,0 +1,592 @@
+{
+  "passed": true,
+  "security_concerns": [],
+  "logic_errors": [],
+  "quality_blockers": [],
+  "suggestions": [],
+  "summary": "Independent finite offline REST/resurrection review passed: 275 scoped regressions and 9 fresh cross-layer probes; all 28 frozen inputs unchanged.",
+  "scope": "Persistent REST recovery in brain.py, agent_runtime.py and playing_runtime.py plus exact authorized Wire.stand/resurrection-test reconciliation; not whole-tree or native gameplay approval.",
+  "actual_tests": {
+    "tests.xml": {
+      "tests": 275,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "names": null
+    },
+    "probes.xml": {
+      "tests": 9,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "names": [
+        "test_long_rest_received_sit_keepalives_and_real_heartbeat_counts",
+        "test_farm_retention_keep_damage_monster_and_release_full_ticks",
+        "test_flee_then_rest_keep_does_not_cancel_pending_escape",
+        "test_native_health_downgrade_between_host_snapshot_and_release",
+        "test_received_pose_and_state_getters_cannot_release_low_health",
+        "test_keepalive_controlflow_identity_poison_and_recovery_retained",
+        "test_flee_destination_intent_is_not_arrival_or_low_hp_rest",
+        "test_plan_expiry_during_rest_then_new_epoch_discards_old_plan",
+        "test_resurrection_recorder_does_not_supply_pose_and_peer_denied"
+      ]
+    }
+  },
+  "unique_final_tests_passed": 284,
+  "gates": {
+    "tests": {
+      "command": [
+        ".venv/bin/pytest",
+        "-oaddopts=",
+        "-pno:cacheprovider",
+        "-q",
+        "tests/test_native_rest_interrupt.py",
+        "tests/test_rest_recovery_script.py",
+        "tests/test_native_pose_recovery.py",
+        "tests/test_native_playing_keepalive.py",
+        "tests/test_brain.py",
+        "tests/test_agent_host.py",
+        "tests/test_empty_farm_plan.py",
+        "tests/test_host_native_vitals.py",
+        "tests/test_host_native_transport.py",
+        "tests/test_playing_startup_cleanup.py",
+        "tests/test_playing_runtime.py",
+        "--junitxml=/home/otto/.hermes/cache/scratch/rest-independent-review/tests.xml"
+      ],
+      "exit_code": 0
+    },
+    "black": {
+      "command": [
+        ".venv/bin/black",
+        "--check",
+        "src/robots/app/brain.py",
+        "src/robots/app/agent_runtime.py",
+        "src/robots/app/playing_runtime.py",
+        "tests/test_native_rest_interrupt.py",
+        "tests/test_rest_recovery_script.py",
+        "tests/test_playing_runtime.py"
+      ],
+      "exit_code": 0
+    },
+    "ruff": {
+      "command": [
+        ".venv/bin/ruff",
+        "check",
+        "--no-cache",
+        "src/robots/app/brain.py",
+        "src/robots/app/agent_runtime.py",
+        "src/robots/app/playing_runtime.py",
+        "tests/test_native_rest_interrupt.py",
+        "tests/test_rest_recovery_script.py",
+        "tests/test_playing_runtime.py"
+      ],
+      "exit_code": 0
+    },
+    "mypy": {
+      "command": [
+        ".venv/bin/mypy",
+        "--strict",
+        "--cache-dir=/home/otto/.hermes/cache/scratch/rest-independent-review/mypy",
+        "src/robots/app/brain.py",
+        "src/robots/app/agent_runtime.py",
+        "src/robots/app/playing_runtime.py",
+        "tests/test_native_rest_interrupt.py",
+        "tests/test_rest_recovery_script.py",
+        "tests/test_playing_runtime.py"
+      ],
+      "exit_code": 0
+    },
+    "xenon": {
+      "command": [
+        ".venv/bin/xenon",
+        "src/robots/app/brain.py",
+        "src/robots/app/agent_runtime.py",
+        "src/robots/app/playing_runtime.py",
+        "--max-absolute",
+        "B",
+        "--max-modules",
+        "B",
+        "--max-average",
+        "A"
+      ],
+      "exit_code": 0
+    },
+    "duplicate-code-scoped": {
+      "command": [
+        ".venv/bin/pylint",
+        "--disable=all",
+        "--enable=duplicate-code",
+        "--ignore-paths=tests",
+        "src/robots/app/brain.py",
+        "src/robots/app/agent_runtime.py",
+        "src/robots/app/playing_runtime.py"
+      ],
+      "exit_code": 0
+    }
+  },
+  "frozen_inputcount": 28,
+  "frozen_input_before": {
+    "src/robots/app/brain.py": {
+      "expected": "1412ae23dfed96a058ba4adea596f00e85a0f6ba55f296b5745a104ee7bbef53",
+      "actual": "1412ae23dfed96a058ba4adea596f00e85a0f6ba55f296b5745a104ee7bbef53"
+    },
+    "src/robots/app/agent_runtime.py": {
+      "expected": "597bec8b2735ee8e4a3846d8428cc3a1eb4872fa386b478a6607d800106fac26",
+      "actual": "597bec8b2735ee8e4a3846d8428cc3a1eb4872fa386b478a6607d800106fac26"
+    },
+    "src/robots/app/playing_runtime.py": {
+      "expected": "29f7a642a72218de2b6ef9bd7a29957f7e42902b1ee60494af08155eedb0f200",
+      "actual": "29f7a642a72218de2b6ef9bd7a29957f7e42902b1ee60494af08155eedb0f200"
+    },
+    "src/robots/app/scripts.py": {
+      "expected": "3bfa0bb0eb6786fc7f0fda6b88805cee6de867d2cdf97952fc8d4620861491a4",
+      "actual": "3bfa0bb0eb6786fc7f0fda6b88805cee6de867d2cdf97952fc8d4620861491a4"
+    },
+    "src/robots/app/timers.py": {
+      "expected": "aacecb6ee62b27d202ee8920f7d99739155aa1e72ffeab6011971dfb4521bf3e",
+      "actual": "aacecb6ee62b27d202ee8920f7d99739155aa1e72ffeab6011971dfb4521bf3e"
+    },
+    "src/robots/domain/model.py": {
+      "expected": "ad311ac53e1d3a24bf7fe34cb96461b342d8f3ff12a2397d7d43725221538dbf",
+      "actual": "ad311ac53e1d3a24bf7fe34cb96461b342d8f3ff12a2397d7d43725221538dbf"
+    },
+    "src/robots/domain/actions.py": {
+      "expected": "f0b93b6ac48e6954755c8af5691acacd3546e222de5350f0b9fda8dd09c91b4e",
+      "actual": "f0b93b6ac48e6954755c8af5691acacd3546e222de5350f0b9fda8dd09c91b4e"
+    },
+    "src/robots/domain/events.py": {
+      "expected": "665a13fb1d9d4137a429399914e63ba95802159ed3092b06347285580bed8789",
+      "actual": "665a13fb1d9d4137a429399914e63ba95802159ed3092b06347285580bed8789"
+    },
+    "src/robots/domain/farm.py": {
+      "expected": "3773b241cbd3c4ab6a467e122f33f2a624897f739ce01fc0e1ba49b17aaf3d8a",
+      "actual": "3773b241cbd3c4ab6a467e122f33f2a624897f739ce01fc0e1ba49b17aaf3d8a"
+    },
+    "src/robots/adapters/native_gameplay.py": {
+      "expected": "c7e9f16750bf117ba3a4843264e215d2e653c0376c70acd7ac45e00a6b2100f9",
+      "actual": "c7e9f16750bf117ba3a4843264e215d2e653c0376c70acd7ac45e00a6b2100f9"
+    },
+    "src/robots/adapters/native_navigation.py": {
+      "expected": "d4d758fc7d827d42aab374ebc0c938b5a066d73638e95d82eca3d7aca2730c0a",
+      "actual": "d4d758fc7d827d42aab374ebc0c938b5a066d73638e95d82eca3d7aca2730c0a"
+    },
+    "src/robots/adapters/native_vitals.py": {
+      "expected": "663cc93d1fbe0cb20fb6ae4331e2ad5cf63d9e940a246bb8b332b408f6a7e9ff",
+      "actual": "663cc93d1fbe0cb20fb6ae4331e2ad5cf63d9e940a246bb8b332b408f6a7e9ff"
+    },
+    "src/robots/adapters/native_session_progression.py": {
+      "expected": "c7ec4880115c14960642487b34e9ad05ea3ab1718ed0cd54748d361ae84dd55f",
+      "actual": "c7ec4880115c14960642487b34e9ad05ea3ab1718ed0cd54748d361ae84dd55f"
+    },
+    "spikes/003-clientless-limbs/client.py": {
+      "expected": "2f57a0adc0b43a20235835290499ca0043966c5def208642598afb0dc49807fd",
+      "actual": "2f57a0adc0b43a20235835290499ca0043966c5def208642598afb0dc49807fd"
+    },
+    "spikes/003-clientless-limbs/packetdb.py": {
+      "expected": "f75d7db42e9df276c5be3a47b1a875eb66c642366600de7bdf398f467cbb9d31",
+      "actual": "f75d7db42e9df276c5be3a47b1a875eb66c642366600de7bdf398f467cbb9d31"
+    },
+    "tests/test_native_rest_interrupt.py": {
+      "expected": "7f31b62d61346e48dee4fe5c8bab7765d5a994d5ccc028c0811d51262f1a88b5",
+      "actual": "7f31b62d61346e48dee4fe5c8bab7765d5a994d5ccc028c0811d51262f1a88b5"
+    },
+    "tests/test_rest_recovery_script.py": {
+      "expected": "3f77c640733429750c7ac953a94bb01e299873c2ad2ac8dbf10b977d4c8ea219",
+      "actual": "3f77c640733429750c7ac953a94bb01e299873c2ad2ac8dbf10b977d4c8ea219"
+    },
+    "tests/test_playing_runtime.py": {
+      "expected": "805770a5692e9694bee4ec8dd5ec03060bfa886196cda5cafb563dae60c5c2b0",
+      "actual": "805770a5692e9694bee4ec8dd5ec03060bfa886196cda5cafb563dae60c5c2b0"
+    },
+    "tests/test_native_pose_recovery.py": {
+      "expected": "3c88d30f8093f645ae287f0f803b939846524ec0712e30c6222e072408ce0710",
+      "actual": "3c88d30f8093f645ae287f0f803b939846524ec0712e30c6222e072408ce0710"
+    },
+    "tests/test_native_playing_keepalive.py": {
+      "expected": "b816746b20d70eef071b16c2bdf240d13e2bdc86fb6057366fb03d9a71c8a12c",
+      "actual": "b816746b20d70eef071b16c2bdf240d13e2bdc86fb6057366fb03d9a71c8a12c"
+    },
+    "tests/test_agent_host.py": {
+      "expected": "82ca83552e0c4cc892a97c58efb3530aebbe52587d5bda89e2ab2ca8327b3108",
+      "actual": "82ca83552e0c4cc892a97c58efb3530aebbe52587d5bda89e2ab2ca8327b3108"
+    },
+    "tests/test_brain.py": {
+      "expected": "14b41aa10bd612c54e538a7d9b998a848c5d89db061e57947a1eaa057f716fa4",
+      "actual": "14b41aa10bd612c54e538a7d9b998a848c5d89db061e57947a1eaa057f716fa4"
+    },
+    "run/reviews/playing-mvp-rest-interrupt-fix.json": {
+      "expected": "411ced8a67495b21519bdb3bd4c1242501d15632e32a82a7e2661feef5d13dec",
+      "actual": "411ced8a67495b21519bdb3bd4c1242501d15632e32a82a7e2661feef5d13dec"
+    },
+    "run/reviews/playing-mvp-rest-interrupt-parent-gate.json": {
+      "expected": "15831ec89f40c8b860731457e1dfab8006772553e52bd66c907e8c5aa36315a6",
+      "actual": "15831ec89f40c8b860731457e1dfab8006772553e52bd66c907e8c5aa36315a6"
+    },
+    "run/reviews/playing-mvp-rest-interrupt-scope.json": {
+      "expected": "f81954202e88d19e0aaed002f9028a4f834b261f9f642847e9f76692a39da16b",
+      "actual": "f81954202e88d19e0aaed002f9028a4f834b261f9f642847e9f76692a39da16b"
+    },
+    "run/reviews/playing-mvp-rest-resurrection-test-scope.json": {
+      "expected": "9e907192b3259cd0ce9bf46dc39fc6ecd27c79ad8b34e209a46ae8622dd5bb63",
+      "actual": "9e907192b3259cd0ce9bf46dc39fc6ecd27c79ad8b34e209a46ae8622dd5bb63"
+    },
+    "run/reviews/playing-mvp-combat-survival-diagnostic.json": {
+      "expected": "d388c698ecfb5990dd631f3995390ede7d78ba63bc8141bf5c453ff5a9d64271",
+      "actual": "d388c698ecfb5990dd631f3995390ede7d78ba63bc8141bf5c453ff5a9d64271"
+    },
+    "run/reviews/playing-mvp-npc-close-approved.json": {
+      "expected": "8b9e2628a880d0a84182f59cfb5cbc3f1d9957dc389a1c87e601874e2046258c",
+      "actual": "8b9e2628a880d0a84182f59cfb5cbc3f1d9957dc389a1c87e601874e2046258c"
+    }
+  },
+  "frozen_input_after": {
+    "src/robots/app/brain.py": {
+      "expected": "1412ae23dfed96a058ba4adea596f00e85a0f6ba55f296b5745a104ee7bbef53",
+      "actual": "1412ae23dfed96a058ba4adea596f00e85a0f6ba55f296b5745a104ee7bbef53"
+    },
+    "src/robots/app/agent_runtime.py": {
+      "expected": "597bec8b2735ee8e4a3846d8428cc3a1eb4872fa386b478a6607d800106fac26",
+      "actual": "597bec8b2735ee8e4a3846d8428cc3a1eb4872fa386b478a6607d800106fac26"
+    },
+    "src/robots/app/playing_runtime.py": {
+      "expected": "29f7a642a72218de2b6ef9bd7a29957f7e42902b1ee60494af08155eedb0f200",
+      "actual": "29f7a642a72218de2b6ef9bd7a29957f7e42902b1ee60494af08155eedb0f200"
+    },
+    "src/robots/app/scripts.py": {
+      "expected": "3bfa0bb0eb6786fc7f0fda6b88805cee6de867d2cdf97952fc8d4620861491a4",
+      "actual": "3bfa0bb0eb6786fc7f0fda6b88805cee6de867d2cdf97952fc8d4620861491a4"
+    },
+    "src/robots/app/timers.py": {
+      "expected": "aacecb6ee62b27d202ee8920f7d99739155aa1e72ffeab6011971dfb4521bf3e",
+      "actual": "aacecb6ee62b27d202ee8920f7d99739155aa1e72ffeab6011971dfb4521bf3e"
+    },
+    "src/robots/domain/model.py": {
+      "expected": "ad311ac53e1d3a24bf7fe34cb96461b342d8f3ff12a2397d7d43725221538dbf",
+      "actual": "ad311ac53e1d3a24bf7fe34cb96461b342d8f3ff12a2397d7d43725221538dbf"
+    },
+    "src/robots/domain/actions.py": {
+      "expected": "f0b93b6ac48e6954755c8af5691acacd3546e222de5350f0b9fda8dd09c91b4e",
+      "actual": "f0b93b6ac48e6954755c8af5691acacd3546e222de5350f0b9fda8dd09c91b4e"
+    },
+    "src/robots/domain/events.py": {
+      "expected": "665a13fb1d9d4137a429399914e63ba95802159ed3092b06347285580bed8789",
+      "actual": "665a13fb1d9d4137a429399914e63ba95802159ed3092b06347285580bed8789"
+    },
+    "src/robots/domain/farm.py": {
+      "expected": "3773b241cbd3c4ab6a467e122f33f2a624897f739ce01fc0e1ba49b17aaf3d8a",
+      "actual": "3773b241cbd3c4ab6a467e122f33f2a624897f739ce01fc0e1ba49b17aaf3d8a"
+    },
+    "src/robots/adapters/native_gameplay.py": {
+      "expected": "c7e9f16750bf117ba3a4843264e215d2e653c0376c70acd7ac45e00a6b2100f9",
+      "actual": "c7e9f16750bf117ba3a4843264e215d2e653c0376c70acd7ac45e00a6b2100f9"
+    },
+    "src/robots/adapters/native_navigation.py": {
+      "expected": "d4d758fc7d827d42aab374ebc0c938b5a066d73638e95d82eca3d7aca2730c0a",
+      "actual": "d4d758fc7d827d42aab374ebc0c938b5a066d73638e95d82eca3d7aca2730c0a"
+    },
+    "src/robots/adapters/native_vitals.py": {
+      "expected": "663cc93d1fbe0cb20fb6ae4331e2ad5cf63d9e940a246bb8b332b408f6a7e9ff",
+      "actual": "663cc93d1fbe0cb20fb6ae4331e2ad5cf63d9e940a246bb8b332b408f6a7e9ff"
+    },
+    "src/robots/adapters/native_session_progression.py": {
+      "expected": "c7ec4880115c14960642487b34e9ad05ea3ab1718ed0cd54748d361ae84dd55f",
+      "actual": "c7ec4880115c14960642487b34e9ad05ea3ab1718ed0cd54748d361ae84dd55f"
+    },
+    "spikes/003-clientless-limbs/client.py": {
+      "expected": "2f57a0adc0b43a20235835290499ca0043966c5def208642598afb0dc49807fd",
+      "actual": "2f57a0adc0b43a20235835290499ca0043966c5def208642598afb0dc49807fd"
+    },
+    "spikes/003-clientless-limbs/packetdb.py": {
+      "expected": "f75d7db42e9df276c5be3a47b1a875eb66c642366600de7bdf398f467cbb9d31",
+      "actual": "f75d7db42e9df276c5be3a47b1a875eb66c642366600de7bdf398f467cbb9d31"
+    },
+    "tests/test_native_rest_interrupt.py": {
+      "expected": "7f31b62d61346e48dee4fe5c8bab7765d5a994d5ccc028c0811d51262f1a88b5",
+      "actual": "7f31b62d61346e48dee4fe5c8bab7765d5a994d5ccc028c0811d51262f1a88b5"
+    },
+    "tests/test_rest_recovery_script.py": {
+      "expected": "3f77c640733429750c7ac953a94bb01e299873c2ad2ac8dbf10b977d4c8ea219",
+      "actual": "3f77c640733429750c7ac953a94bb01e299873c2ad2ac8dbf10b977d4c8ea219"
+    },
+    "tests/test_playing_runtime.py": {
+      "expected": "805770a5692e9694bee4ec8dd5ec03060bfa886196cda5cafb563dae60c5c2b0",
+      "actual": "805770a5692e9694bee4ec8dd5ec03060bfa886196cda5cafb563dae60c5c2b0"
+    },
+    "tests/test_native_pose_recovery.py": {
+      "expected": "3c88d30f8093f645ae287f0f803b939846524ec0712e30c6222e072408ce0710",
+      "actual": "3c88d30f8093f645ae287f0f803b939846524ec0712e30c6222e072408ce0710"
+    },
+    "tests/test_native_playing_keepalive.py": {
+      "expected": "b816746b20d70eef071b16c2bdf240d13e2bdc86fb6057366fb03d9a71c8a12c",
+      "actual": "b816746b20d70eef071b16c2bdf240d13e2bdc86fb6057366fb03d9a71c8a12c"
+    },
+    "tests/test_agent_host.py": {
+      "expected": "82ca83552e0c4cc892a97c58efb3530aebbe52587d5bda89e2ab2ca8327b3108",
+      "actual": "82ca83552e0c4cc892a97c58efb3530aebbe52587d5bda89e2ab2ca8327b3108"
+    },
+    "tests/test_brain.py": {
+      "expected": "14b41aa10bd612c54e538a7d9b998a848c5d89db061e57947a1eaa057f716fa4",
+      "actual": "14b41aa10bd612c54e538a7d9b998a848c5d89db061e57947a1eaa057f716fa4"
+    },
+    "run/reviews/playing-mvp-rest-interrupt-fix.json": {
+      "expected": "411ced8a67495b21519bdb3bd4c1242501d15632e32a82a7e2661feef5d13dec",
+      "actual": "411ced8a67495b21519bdb3bd4c1242501d15632e32a82a7e2661feef5d13dec"
+    },
+    "run/reviews/playing-mvp-rest-interrupt-parent-gate.json": {
+      "expected": "15831ec89f40c8b860731457e1dfab8006772553e52bd66c907e8c5aa36315a6",
+      "actual": "15831ec89f40c8b860731457e1dfab8006772553e52bd66c907e8c5aa36315a6"
+    },
+    "run/reviews/playing-mvp-rest-interrupt-scope.json": {
+      "expected": "f81954202e88d19e0aaed002f9028a4f834b261f9f642847e9f76692a39da16b",
+      "actual": "f81954202e88d19e0aaed002f9028a4f834b261f9f642847e9f76692a39da16b"
+    },
+    "run/reviews/playing-mvp-rest-resurrection-test-scope.json": {
+      "expected": "9e907192b3259cd0ce9bf46dc39fc6ecd27c79ad8b34e209a46ae8622dd5bb63",
+      "actual": "9e907192b3259cd0ce9bf46dc39fc6ecd27c79ad8b34e209a46ae8622dd5bb63"
+    },
+    "run/reviews/playing-mvp-combat-survival-diagnostic.json": {
+      "expected": "d388c698ecfb5990dd631f3995390ede7d78ba63bc8141bf5c453ff5a9d64271",
+      "actual": "d388c698ecfb5990dd631f3995390ede7d78ba63bc8141bf5c453ff5a9d64271"
+    },
+    "run/reviews/playing-mvp-npc-close-approved.json": {
+      "expected": "8b9e2628a880d0a84182f59cfb5cbc3f1d9957dc389a1c87e601874e2046258c",
+      "actual": "8b9e2628a880d0a84182f59cfb5cbc3f1d9957dc389a1c87e601874e2046258c"
+    }
+  },
+  "before_after_mismatches": [],
+  "artifactsha256": {
+    "/home/otto/.hermes/cache/scratch/rest-independent-review/freeze-before.json": "696574edeabddd1a392b0051c49cf486d910e05fc646a1bc353c340d7d7d3007",
+    "/home/otto/.hermes/cache/scratch/rest-independent-review/freeze-after.json": "696574edeabddd1a392b0051c49cf486d910e05fc646a1bc353c340d7d7d3007",
+    "/home/otto/.hermes/cache/scratch/rest-independent-review/gates.json": "4d235907847e7829c33384745acb76e9779513adca80c67d3fdee63d8ace8bd2",
+    "/home/otto/.hermes/cache/scratch/rest-independent-review/tests.log": "97fda073c82c0e526abaf74c83d65824f9745ae4975470c931b7c536c091da89",
+    "/home/otto/.hermes/cache/scratch/rest-independent-review/tests.xml": "3e03ceb88084f0a5bfe57a196987f05e436af018ba0b298ed45c7023dfc3e933",
+    "/home/otto/.hermes/cache/scratch/rest-independent-review/test_fresh_rest_review.py": "0f2d6d14b6f98de74f4a55fc76c34031555e2fea4bd3d15a003c317c335a97e4",
+    "/home/otto/.hermes/cache/scratch/rest-independent-review/conftest.py": "3175185d0723324fb9423ba616062c4576cd1a4c0d80299485528112eea6e82b",
+    "/home/otto/.hermes/cache/scratch/rest-independent-review/probes.log": "c9d5a61b3ec18bf8c677d6172b7b541fabd93cd92de9bae54610f2270d9467f6",
+    "/home/otto/.hermes/cache/scratch/rest-independent-review/probes.xml": "566699dab362c7246d5257d2c9eedd297b3ca897c0cacf2fc0092479331aaf81",
+    "/home/otto/.hermes/cache/scratch/rest-independent-review/probes-initial.log": "2b4940358e5402965a070e68c881da6b4544f0b8a4bab09400ed7d362bda2334",
+    "/home/otto/.hermes/cache/scratch/rest-independent-review/probes-initial.xml": "5c6fcb058d7b9808b1cdd9315de11fd18b366256874c332a76b0b6ca5d5a1f5c",
+    "/home/otto/.hermes/cache/scratch/rest-independent-review/source-analysis.json": "c780add529d36a06ba933428419904359c6f48092adf38b7d7472a37e65a9388",
+    "/home/otto/.hermes/cache/scratch/rest-independent-review/author-evidence-verification.json": "5c4008d9e222a05f1b877da523135a88f16ec4e2d7a7106c89731059645004d9",
+    "/home/otto/.hermes/cache/scratch/rest-independent-review/black.log": "7657c5ec367da2c8d4deead1b5f1f8eca9c1b89120ad13df7f855ca4005696b6",
+    "/home/otto/.hermes/cache/scratch/rest-independent-review/ruff.log": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+    "/home/otto/.hermes/cache/scratch/rest-independent-review/mypy.log": "ab35ee42183d4d6d3ba483825ab037d18a5a15622d03be01d82220b1564851ff",
+    "/home/otto/.hermes/cache/scratch/rest-independent-review/xenon.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/rest-independent-review/pylint-scoped.log": "bbb6ffa7d7107b760478161908c009d3b85b078b80d54e3ad8dcd57bfe91a142",
+    "/home/otto/.hermes/cache/scratch/rest-independent-review/pylint-scoped.json": "c1f84a07fc34d0a1903f4ba21a0fd7d712ee07c8e5e1d04c5b976bf37a4040a8",
+    "/home/otto/.hermes/cache/scratch/rest-resurrection-parent-before.xml": "43817b0210efbcf2fc9d85e3b4543b9ab0d960c8325701f65be925893ec1d4e5",
+    "/home/otto/.hermes/cache/scratch/rest-resurrection-parent-before.log": "98529dfb58b8068f7b7b521797cb0b76f42bb6dfd581f24e579a9a5a0bf53e8b"
+  },
+  "author_evidence_verification": {
+    "count": 33,
+    "mismatch": []
+  },
+  "source_analysis": {
+    "brain.py": {
+      "original_sha256": "57b31b54546bad5704fda62ac9572510457bc4a2eb46faea9deb87e6beb6be75",
+      "current_sha256": "1412ae23dfed96a058ba4adea596f00e85a0f6ba55f296b5745a104ee7bbef53",
+      "review_goal_exact_preserved": true,
+      "feature_complexity": [
+        {
+          "name": "EventDrivenBrain.__init__",
+          "complexity": 5,
+          "line": 69
+        },
+        {
+          "name": "EventDrivenBrain.is_recovering",
+          "complexity": 2,
+          "line": 114
+        },
+        {
+          "name": "EventDrivenBrain.recovery_health_ready",
+          "complexity": 5,
+          "line": 118
+        },
+        {
+          "name": "EventDrivenBrain.required_recovery_hp_ratio",
+          "complexity": 2,
+          "line": 126
+        },
+        {
+          "name": "EventDrivenBrain.start",
+          "complexity": 1,
+          "line": 144
+        },
+        {
+          "name": "EventDrivenBrain.sync_context",
+          "complexity": 2,
+          "line": 151
+        },
+        {
+          "name": "EventDrivenBrain.handle_event",
+          "complexity": 9,
+          "line": 160
+        },
+        {
+          "name": "EventDrivenBrain._run_review",
+          "complexity": 7,
+          "line": 212
+        },
+        {
+          "name": "EventDrivenBrain.step_script",
+          "complexity": 6,
+          "line": 253
+        },
+        {
+          "name": "EventDrivenBrain._step_recovery",
+          "complexity": 7,
+          "line": 267
+        },
+        {
+          "name": "EventDrivenBrain._react_monster",
+          "complexity": 4,
+          "line": 285
+        },
+        {
+          "name": "EventDrivenBrain._react_damage",
+          "complexity": 4,
+          "line": 302
+        },
+        {
+          "name": "EventDrivenBrain._flee",
+          "complexity": 1,
+          "line": 312
+        }
+      ]
+    },
+    "agent_runtime.py": {
+      "original_sha256": "e60d518da5a11dd872f30b8987a03edf5b4a773188264ac21740afe67b64500d",
+      "current_sha256": "597bec8b2735ee8e4a3846d8428cc3a1eb4872fa386b478a6607d800106fac26",
+      "review_goal_exact_preserved": null,
+      "feature_complexity": [
+        {
+          "name": "ScheduledAgent.tick",
+          "complexity": 10,
+          "line": 559
+        },
+        {
+          "name": "ScheduledAgent._advance_script",
+          "complexity": 6,
+          "line": 584
+        },
+        {
+          "name": "ScheduledAgent._script_actions",
+          "complexity": 3,
+          "line": 602
+        }
+      ]
+    },
+    "playing_runtime.py": {
+      "original_sha256": "e305b545b2724e68cd1b20ab7c4659e621784759dfa83c4614fe80ea07b759f4",
+      "current_sha256": "29f7a642a72218de2b6ef9bd7a29957f7e42902b1ee60494af08155eedb0f200",
+      "review_goal_exact_preserved": null,
+      "feature_complexity": [
+        {
+          "name": "ObservedMobDatabase.__init__",
+          "complexity": 2,
+          "line": 55
+        },
+        {
+          "name": "PlayingClient.__init__",
+          "complexity": 2,
+          "line": 100
+        },
+        {
+          "name": "PlayingClient.connect",
+          "complexity": 1,
+          "line": 132
+        },
+        {
+          "name": "PlayingClient.close",
+          "complexity": 1,
+          "line": 141
+        },
+        {
+          "name": "PlayingClient._health",
+          "complexity": 10,
+          "line": 157
+        },
+        {
+          "name": "PlayingClient.perform_native",
+          "complexity": 9,
+          "line": 241
+        },
+        {
+          "name": "PlayingClient._social",
+          "complexity": 8,
+          "line": 259
+        },
+        {
+          "name": "PlayingClient._rest",
+          "complexity": 6,
+          "line": 292
+        },
+        {
+          "name": "PlayingClient.recovery_ready",
+          "complexity": 4,
+          "line": 307
+        },
+        {
+          "name": "PlayingClient._attack_ready",
+          "complexity": 4,
+          "line": 320
+        },
+        {
+          "name": "PlayingClient._require_standing",
+          "complexity": 8,
+          "line": 532
+        },
+        {
+          "name": "PlayingClient._reset_epoch",
+          "complexity": 1,
+          "line": 565
+        },
+        {
+          "name": "PlayingClient._receive_pose",
+          "complexity": 7,
+          "line": 616
+        }
+      ]
+    },
+    "added_line_security_matches": []
+  },
+  "findings_verified": [
+    "Explicit and low-HP script REST persist through same/next ticks; Monster ATTACK, damage KEEP and heartbeat KEEP do not erase the hold.",
+    "Exact paused farm-plan and script identities retained through REST and release; PlanExpired removes the suspended FarmScript; native epoch change clears old plan/script and recovery intent.",
+    "Host release uses native health reread, fresh SELF 34-byte 08C8 type3@29 target0 pose beyond REST barrier, and pending-motion arrival. Force-standing at low HP does not permit Attack.",
+    "Explicit FLEE preempts rest; later REST and KEEP cannot cancel in-flight escape. Announced destination alone is not received arrival. Pure escape can release without the 75% REST-health threshold.",
+    "Synthetic 91-second rest with repeated received sitting keeps 20/40/60/80-second keepalives and exactly three 30-second heartbeat decisions; no extra mechanical-tick cognition or sit flood.",
+    "Keepalive KeyboardInterrupt propagates the identical origin and poisons subsequent native actions; recovery remains latched.",
+    "Resurrection establishes life only; Wire.stand merely records send intent without adding frames. No Attack before valid newer SELF standing; peer/targeted pose receipts denied; death/warp/authless positive-HP denials retained.",
+    "Original scripts.py and exact _review_goal source preserved; no changed complexity thresholds. Reviewed feature functions have cyclomatic complexity at most 10; meaningful separation of host advance, recovery hold and native release readiness."
+  ],
+  "policy": {
+    "default_recovery_hp_ratio": 0.75,
+    "classification": "chosen configurable engineering policy, not game formula",
+    "automatic_rest_to_flee": false
+  },
+  "probe_harness_issue": {
+    "initial_run": "7 passed, 1 fixture-order assertion failed",
+    "cause": "Initial native MonsterSpotted legitimately replaced FarmScript before REST; fixture had captured plan before establishing already-seen actors. Not a recovery defect.",
+    "resolution": "Only private reviewer fixture corrected by draining existing actor events before authoring farm plan; final 9 probes passed with network and HTTP request seams forbidden. Initial log and XML retained."
+  },
+  "execution_issue": "System Python lacked radon; reran read-only source analysis using pinned project .venv/bin/python, without installing dependencies.",
+  "effects": {
+    "source_edits": false,
+    "repository_test_edits": false,
+    "docs_or_git_writes": false,
+    "native_connections": false,
+    "provider_or_inference_calls": false,
+    "world_or_SQL_effects": false,
+    "fresh_probe_external_transport_attempts": 0
+  },
+  "limits": [
+    "Synthetic native-wire offline execution, not real server/gameplay or survival proof. REST under active pursuit may still die.",
+    "No whole partial-tree gate; unrelated knowledge adapter/tests/JSON/guide excluded. Verified archived author whole-source Xenon and duplicate-code gate evidence, not a claim that current combined whole-source gate passed.",
+    "Native verification and combined completed-tree parent gate remain pending; no 90-second live/world milestone accepted."
+  ],
+  "created_files": [
+    "/home/otto/dev/ro-bots/run/reviews/playing-mvp-rest-interrupt-independent-review.json",
+    "/home/otto/.hermes/cache/scratch/rest-independent-review"
+  ]
+}

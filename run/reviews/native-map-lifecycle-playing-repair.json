@@ -1,0 +1,395 @@
+{
+  "scope": "Offline pinned-source TDD repair only; no native/model/engine/SQL/Git execution, no dependency changes, no existing tests edited.",
+  "status": "Source-proven offline repair verified; actual native post-warp/combat acceptance remains coordinator-owned and unverified.",
+  "profile": "MAIN20180704/pre-renewal supplied by coordinator; 0x007D is fixed two-byte load acknowledgement.",
+  "source_oracles": {
+    "passed": [
+      "pc_setpos_removes_before_changemap",
+      "duplicate_ack_ignored",
+      "walk_not_auto_load_ack",
+      "zero_distance_self_feedback",
+      "requested_to_not_arrival"
+    ],
+    "hashes": {
+      "rathena/src/map/pc.cpp": "d12704c1ef7f8321c255175b6f61aa396209b931e2b1687fbbd16963d1def652",
+      "rathena/src/map/clif.cpp": "0b1db098158c240b090c6edb8417978ba495957c8a2df4cd9a0ab4cb39884ac5",
+      "rathena/src/map/unit.cpp": "e042d781fbceeb21b802a5ec44ae2cab234b673bd415a0488fa8853d8497af29"
+    }
+  },
+  "pinned_source_root": "/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source",
+  "pinned_source_equal_local_checkout": {
+    "clif.cpp": true,
+    "unit.cpp": true,
+    "pc.cpp": true
+  },
+  "findings": [
+    {
+      "source": "rathena/src/map/pc.cpp:6930-7188, specifically6951-52,7116-25",
+      "finding": "pc_setpos marks warping and removes PC before clif_changemap; updates native map/current/requested coordinates. The same-server 0091 requires LoadEndAck to add PC again."
+    },
+    {
+      "source": "rathena/src/map/clif.cpp:10748-10850,25788-25797",
+      "finding": "Only LoadEndAck is dispatched while sd.prev is null; WalkToXY does not automatically load map. Missing 007D therefore suppresses movement and perception. Duplicate ACK for an already-added PC returns immediately. Deferred initial loading callbacks in pc.cpp2494-96/14800-04 and intif.cpp3513-15 do not replace an ordinary warp ACK."
+    },
+    {
+      "source": "rathena/src/map/unit.cpp:180-245,254-319,841-915; clif.cpp2051-2061,11379-11425",
+      "finding": "An already-at-target zero-cell request does send SELF0087 via nextcell(sendMove=true), contrary to the suspected universal zero-distance no-ACK explanation. Completed ordinary walks have no mandatory final notification. Initial/current-from differs from requested-to until actual coordinate movement."
+    },
+    {
+      "source": "src/robots/app/playing_runtime.py:_await_pending",
+      "finding": "Retries were conditioned on a newer position sequence. Once feedback was lost or confirmation ignored before map load, the pending movement could never request another confirmation, even under its existing retry budget."
+    }
+  ],
+  "repair": {
+    "BotClient._dispatch_world": "After validating and retaining same-server0091, issue007D on an active connected non-null socket before publishing the native frame. Initial entry ACK unchanged. No cross-server0092/0AC7 ACK or class/epoch/alive readiness promotion.",
+    "PlayingClient._await_pending": "Remove newer-position requirement for paced same-target confirmation requests. Preserve strict newer received current/from=target plus arrival_confirmed barrier. Retain at most3 retries, one-second pacing; after exhausted final wait raise NativeTelemetryUnavailable, never clear pending or advance optimistically. A later matching receipt or native0091 resets/reconciles normally.",
+    "runtime_API_unchanged": [
+      "BotClient._dispatch(pid,raw)",
+      "BotClient.native_frame_snapshot()",
+      "BotClient.move(x,y)",
+      "PlayingClient.perform_native(action)",
+      "PlayingClient.build_native_state(goal)"
+    ]
+  },
+  "production_method_freeze": {
+    "spikes/003-clientless-limbs/client.py": [
+      "_dispatch_world"
+    ],
+    "src/robots/app/playing_runtime.py": [
+      "_await_pending"
+    ]
+  },
+  "full_source_dependency_freeze": {
+    "path": "/home/otto/.hermes/cache/scratch/native-map-lifecycle/final-freeze.json",
+    "count": 74,
+    "unchanged_during_final_gates": true
+  },
+  "source_hashes_before": {
+    "spikes/003-clientless-limbs/client.py": "e17e3b9e553269a1666e72910fd46fc58d4096f6b5ebf0d0e005a05a71f21e93",
+    "src/robots/app/playing_runtime.py": "56c143c8852a4884fc0632905be168f1c8e63988526b4aca151235de652fadc6",
+    "rathena/src/map/clif.cpp": "0b1db098158c240b090c6edb8417978ba495957c8a2df4cd9a0ab4cb39884ac5",
+    "rathena/src/map/unit.cpp": "e042d781fbceeb21b802a5ec44ae2cab234b673bd415a0488fa8853d8497af29",
+    "rathena/src/map/pc.cpp": "d12704c1ef7f8321c255175b6f61aa396209b931e2b1687fbbd16963d1def652"
+  },
+  "source_hashes_after": {
+    "spikes/003-clientless-limbs/client.py": "2f57a0adc0b43a20235835290499ca0043966c5def208642598afb0dc49807fd",
+    "src/robots/app/playing_runtime.py": "0a3e92d97d540c3496de561074edd42dc64143915f850bda9c1efd2de9298d5f",
+    "rathena/src/map/clif.cpp": "0b1db098158c240b090c6edb8417978ba495957c8a2df4cd9a0ab4cb39884ac5",
+    "rathena/src/map/unit.cpp": "e042d781fbceeb21b802a5ec44ae2cab234b673bd415a0488fa8853d8497af29",
+    "rathena/src/map/pc.cpp": "d12704c1ef7f8321c255175b6f61aa396209b931e2b1687fbbd16963d1def652",
+    "tests/test_native_map_lifecycle.py": "4108fdc3c075e3c5f6f94767881f518837400cacf215bf02efb7247be80a5b37"
+  },
+  "verification": {
+    "runner_command": "nix develop -c python /home/otto/.hermes/cache/scratch/native-map-lifecycle/check.py",
+    "runner_sha256": "1a287e01e74c3cc68105362e2739e61669737f3c4d6f8c59a7db120b40770c7c",
+    "seven_gates_and_selected_regression": {
+      "black": {
+        "command": [
+          "uv",
+          "run",
+          "--offline",
+          "black",
+          "--check",
+          "src",
+          "tests/test_native_map_lifecycle.py"
+        ],
+        "exit_code": 0,
+        "output": "All done! \u2728 \ud83c\udf70 \u2728\n72 files would be left unchanged.\n"
+      },
+      "ruff": {
+        "command": [
+          "uv",
+          "run",
+          "--offline",
+          "ruff",
+          "check",
+          "src",
+          "tests/test_native_map_lifecycle.py"
+        ],
+        "exit_code": 0,
+        "output": "All checks passed!\n"
+      },
+      "mypy": {
+        "command": [
+          "uv",
+          "run",
+          "--offline",
+          "mypy",
+          "src",
+          "tests/test_native_map_lifecycle.py"
+        ],
+        "exit_code": 0,
+        "output": "Success: no issues found in 72 source files\n"
+      },
+      "vulture": {
+        "command": [
+          "uv",
+          "run",
+          "--offline",
+          "vulture",
+          "src",
+          "vulture_whitelist.py"
+        ],
+        "exit_code": 0,
+        "output": ""
+      },
+      "xenon": {
+        "command": [
+          "uv",
+          "run",
+          "--offline",
+          "xenon",
+          "src",
+          "--max-absolute",
+          "B",
+          "--max-modules",
+          "B",
+          "--max-average",
+          "A"
+        ],
+        "exit_code": 0,
+        "output": ""
+      },
+      "duplicate": {
+        "command": [
+          "uv",
+          "run",
+          "--offline",
+          "pylint",
+          "--disable=all",
+          "--enable=duplicate-code",
+          "--ignore-paths=tests",
+          "src"
+        ],
+        "exit_code": 0,
+        "output": "\n--------------------------------------------------------------------\nYour code has been rated at 10.00/10 (previous run: 10.00/10, +0.00)\n\n"
+      },
+      "bandit": {
+        "command": [
+          "uv",
+          "run",
+          "--offline",
+          "bandit",
+          "-q",
+          "-c",
+          "pyproject.toml",
+          "-r",
+          "src"
+        ],
+        "exit_code": 0,
+        "output": "[tester]\tWARNING\tnosec encountered (B105), but no failed test on file src/robots/adapters/rathena_runtime.py:129\n[tester]\tWARNING\tnosec encountered (B105), but no failed test on file src/robots/adapters/rathena_runtime.py:130\n[tester]\tWARNING\tnosec encountered (B105), but no failed test on file src/robots/adapters/rathena_runtime.py:131\n[tester]\tWARNING\tnosec encountered (B105), but no failed test on file src/robots/adapters/rathena_runtime.py:133\n[tester]\tWARNING\tnosec encountered (B105), but no failed test on file src/robots/adapters/rathena_runtime.py:131\n[tester]\tWARNING\tnosec encountered (B105), but no failed test on file src/robots/adapters/rathena_runtime.py:132\n[tester]\tWARNING\tnosec encountered (B105), but no failed test on file src/robots/adapters/rathena_runtime.py:133\n"
+      },
+      "regression": {
+        "command": [
+          "uv",
+          "run",
+          "--offline",
+          "pytest",
+          "tests/test_client_actor_presentation.py",
+          "tests/test_client_native_progression.py",
+          "tests/test_client_native_session.py",
+          "tests/test_client_pincode.py",
+          "tests/test_client_protocol.py",
+          "tests/test_host_native_transport.py",
+          "tests/test_host_native_vitals.py",
+          "tests/test_movement_arrival_evidence.py",
+          "tests/test_native_gameplay.py",
+          "tests/test_native_gameplay_repairs.py",
+          "tests/test_native_map_identity.py",
+          "tests/test_native_map_lifecycle.py",
+          "tests/test_native_pose_recovery.py",
+          "tests/test_native_session_progression.py",
+          "tests/test_playing_runtime.py",
+          "--cov=robots.app.playing_runtime",
+          "--cov-report=json:/home/otto/.hermes/cache/scratch/native-map-lifecycle/coverage.json",
+          "--cov-report=term-missing",
+          "--cov-fail-under=85",
+          "--junitxml=/home/otto/.hermes/cache/scratch/native-map-lifecycle/regression.xml"
+        ],
+        "exit_code": 0,
+        "output": "........................................................................ [ 12%]\n........................................................................ [ 25%]\n........................................................................ [ 38%]\n........................................................................ [ 51%]\n........................................................................ [ 63%]\n........................................................................ [ 76%]\n........................................................................ [ 89%]\n............................................................             [100%]\n================================ tests coverage ================================\n_______________ coverage: platform linux, python 3.14.7-final-0 ________________\n\nName                                Stmts   Miss  Cover   Missing\n-----------------------------------------------------------------\nsrc/robots/app/playing_runtime.py     290     25    91%   148-149, 217-224, 229, 244, 248, 254, 257-258, 271, 273, 279-280, 288, 300, 358-363\n-----------------------------------------------------------------\nTOTAL                                 290     25    91%\nCoverage JSON written to file /home/otto/.hermes/cache/scratch/native-map-lifecycle/coverage.json\nRequired test coverage of 85% reached. Total coverage: 91.38%\n564 passed in 1.32s\n"
+      }
+    },
+    "physical_junit": {
+      "ack-green.xml": {
+        "path": "/home/otto/.hermes/cache/scratch/native-map-lifecycle/ack-green.xml",
+        "sha256": "72275150e7a43c371a3e68569e2ff7d5a65e60b1fa6529bd0522684a6ca4c90b",
+        "tests": 1,
+        "failures": 0,
+        "errors": 0
+      },
+      "ack-red.xml": {
+        "path": "/home/otto/.hermes/cache/scratch/native-map-lifecycle/ack-red.xml",
+        "sha256": "e38fd8efae8b100312f5b3b7df69984f1614429cc8cb9b0daa3ac3966ba20052",
+        "tests": 1,
+        "failures": 1,
+        "errors": 0
+      },
+      "exhaustion-red.xml": {
+        "path": "/home/otto/.hermes/cache/scratch/native-map-lifecycle/exhaustion-red.xml",
+        "sha256": "dd4b88df762eacc0933970bf0760a599eafce36522ffab2148ba2bd946d46a59",
+        "tests": 3,
+        "failures": 1,
+        "errors": 0
+      },
+      "movement-green.xml": {
+        "path": "/home/otto/.hermes/cache/scratch/native-map-lifecycle/movement-green.xml",
+        "sha256": "604d54383331f08565693ead564a1aec43b317fc3448a3e5fb34c3d77ecaa3f4",
+        "tests": 2,
+        "failures": 0,
+        "errors": 0
+      },
+      "movement-red.xml": {
+        "path": "/home/otto/.hermes/cache/scratch/native-map-lifecycle/movement-red.xml",
+        "sha256": "ebc3ccdc6d17a89145854101a4b9a4d931ea73a2ae43749290df69f1e933e015",
+        "tests": 2,
+        "failures": 1,
+        "errors": 0
+      },
+      "regression.xml": {
+        "path": "/home/otto/.hermes/cache/scratch/native-map-lifecycle/regression.xml",
+        "sha256": "0b96b538eb5b0b653a6b805f55b14a4b99a9a4fa67599ac36451587ebacfbcf8",
+        "tests": 564,
+        "failures": 0,
+        "errors": 0
+      },
+      "scoped.xml": {
+        "path": "/home/otto/.hermes/cache/scratch/native-map-lifecycle/scoped.xml",
+        "sha256": "5af73ea35815a7da82ff9de2f8319f068cd51ab767501ef519a7980c9241fe59",
+        "tests": 14,
+        "failures": 0,
+        "errors": 0
+      }
+    },
+    "runtime_coverage_percent": 91.37931034482759,
+    "changed_line_coverage_new_tests_only": {
+      "spikes/003-clientless-limbs/client.py": {
+        "changed_executable_lines": [
+          839,
+          844
+        ],
+        "covered": [
+          839,
+          844
+        ],
+        "missing": [],
+        "percent": 100.0
+      },
+      "src/robots/app/playing_runtime.py": {
+        "changed_executable_lines": [
+          341,
+          348,
+          349,
+          350
+        ],
+        "covered": [
+          341,
+          348,
+          349,
+          350
+        ],
+        "missing": [],
+        "percent": 100.0
+      }
+    },
+    "new_tests": 14
+  },
+  "legacy_debt": {
+    "before": {
+      "command": [
+        "uv",
+        "run",
+        "--offline",
+        "ruff",
+        "check",
+        "--output-format=json",
+        "--stdin-filename",
+        "spikes/003-clientless-limbs/client.py",
+        "-"
+      ],
+      "exit_code": 1,
+      "count": 46,
+      "codes": {
+        "I001": 1,
+        "RUF100": 1,
+        "PLR0915": 3,
+        "PLR0917": 1,
+        "T201": 1,
+        "EM101": 18,
+        "UP041": 4,
+        "EM102": 9,
+        "PLR0912": 2,
+        "RET505": 1,
+        "UP037": 1,
+        "B007": 1,
+        "PLC0415": 3
+      },
+      "complexity": [
+        "Too many statements (61 > 50)",
+        "Too many branches (33 > 12)",
+        "Too many statements (116 > 50)",
+        "Too many branches (26 > 12)",
+        "Too many statements (94 > 50)"
+      ]
+    },
+    "after": {
+      "command": [
+        "uv",
+        "run",
+        "--offline",
+        "ruff",
+        "check",
+        "--output-format=json",
+        "--stdin-filename",
+        "spikes/003-clientless-limbs/client.py",
+        "-"
+      ],
+      "exit_code": 1,
+      "count": 46,
+      "codes": {
+        "I001": 1,
+        "RUF100": 1,
+        "PLR0915": 3,
+        "PLR0917": 1,
+        "T201": 1,
+        "EM101": 18,
+        "UP041": 4,
+        "EM102": 9,
+        "PLR0912": 2,
+        "RET505": 1,
+        "UP037": 1,
+        "B007": 1,
+        "PLC0415": 3
+      },
+      "complexity": [
+        "Too many statements (61 > 50)",
+        "Too many branches (33 > 12)",
+        "Too many statements (116 > 50)",
+        "Too many branches (27 > 12)",
+        "Too many statements (96 > 50)"
+      ]
+    },
+    "mypy": {
+      "command": [
+        "uv",
+        "run",
+        "--offline",
+        "mypy",
+        "spikes/003-clientless-limbs/client.py"
+      ],
+      "exit_code": 1,
+      "output": "spikes/003-clientless-limbs/packetdb.py:479: error: Incompatible types in assignment (expression has type \"int | str | None\", variable has type \"int\")  [assignment]\nspikes/003-clientless-limbs/packetdb.py:480: error: Subclass of \"int\" and \"str\" cannot exist: have distinct disjoint bases  [unreachable]\nspikes/003-clientless-limbs/client.py:107: error: Missing type arguments for generic type \"dict\"  [type-arg]\nspikes/003-clientless-limbs/client.py:115: error: Missing type arguments for generic type \"dict\"  [type-arg]\nspikes/003-clientless-limbs/client.py:185: error: Function is missing a type annotation  [no-untyped-def]\nspikes/003-clientless-limbs/client.py:201: error: Function is missing a type annotation  [no-untyped-def]\nspikes/003-clientless-limbs/client.py:210: error: Call to untyped function \"_release_handshake_socket\" in typed context  [no-untyped-call]\nspikes/003-clientless-limbs/client.py:217: error: Call to untyped function \"_release_handshake_socket\" in typed context  [no-untyped-call]\nspikes/003-clientless-limbs/client.py:544: error: Call to untyped function \"_release_handshake_socket\" in typed context  [no-untyped-call]\nspikes/003-clientless-limbs/client.py:879: error: Missing type arguments for generic type \"dict\"  [type-arg]\nspikes/003-clientless-limbs/client.py:899: error: Missing type arguments for generic type \"dict\"  [type-arg]\nspikes/003-clientless-limbs/client.py:919: error: Function is missing a return type annotation  [no-untyped-def]\nspikes/003-clientless-limbs/client.py:919: error: Function is missing a type annotation for one or more parameters  [no-untyped-def]\nspikes/003-clientless-limbs/client.py:947: error: Missing type arguments for generic type \"dict\"  [type-arg]\nspikes/003-clientless-limbs/client.py:965: error: Missing type arguments for generic type \"dict\"  [type-arg]\nFound 15 errors in 2 files (checked 1 source file)\n"
+    }
+  },
+  "legacy_debt_notes": [
+    "Measured Ruff46 before/46 after on this exact snapshot, not assumed coordinator47. _dispatch_world branches26->27 and statements94->96 remain unresolved spike debt; seven src gates do not waive it.",
+    "Direct mypy returns15 total:13 inherited client diagnostics plus2 inherited packetdb diagnostics. Shadow-file baseline returns the same15. No new production function added.",
+    "New tests alone cover all changed executable lines100%; broad inherited spike coverage from those14 focused tests is30% overall and is not a whole-spike quality claim."
+  ],
+  "remaining": [
+    "Coordinator must repeat actual approved fixture run with fresh preflight and capture native post-warp diagnostics,007D/0087 evidence, cleanup and saved coordinates.",
+    "No native combat/XP/loot/damage acceptance established by this delegate; no forced goal or navigation geometry change.",
+    "SOCIAL northward travel near the return portal remains legitimate unchanged goal/geometry, not a movement-lifecycle fix."
+  ],
+  "private_values": "[REDACTED]"
+}

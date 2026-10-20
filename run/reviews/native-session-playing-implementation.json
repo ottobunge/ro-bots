@@ -1,0 +1,53 @@
+{
+  "scope": "Source/tests only; no native, SQL, engine or inference execution",
+  "native_cognition": false,
+  "live_gameplay_acceptance": false,
+  "source_revision_authority": "rAthena e985006171d2eb320ee512a653f4c83aea3d81b6 MAIN/pre-re PACKETVER20180704",
+  "source_proof_before_implementation": {
+    "list": "src/char/char.cpp:910-1006 selects char_id/class/base_level/job_level from schema_config.char_db for authenticated account, binds class/base/job into mmo_charstatus, encodes selected rows. char_mmo_char_tobuf:1774-1834 sends GID=p.char_id, joblevel=p.job_level, job=p.class_, level=p.base_level, CharNum=p.slot.",
+    "selection_reload": "src/char/char_clif.cpp:1074-1127 selects character ID by authenticated account and wire slot, reloads char_mmo_char_fromsql(char_id, true), retrieves that cached character status. src/char/char.cpp:1042-1060 selects the same class/base/job columns by exact char_id;1235-1243 caches the loaded mmo_charstatus.",
+    "interserver_auth": "src/char/char_mapif.cpp:1024-1076 requires account/character/login identity match and copies the selected cached status into 0x2afd. src/map/chrif.cpp:659-702 validates status size and account/character/login identity, calls pc_authok. src/map/pc.cpp:2091 copies that status;2098-2105 maps its actual class and repairs invalid classes to Novice. This layer only supports selected actual class0; unknown raw jobs remain retained but projection denies.",
+    "not_atomic": "Character listing and selection reload are distinct SQL reads of the same selected character/status source, NOT one immutable object or atomic transaction. This is an explicit bounded initial selection baseline, not universal continuously refreshed current-class authority or immunity to concurrent external database mutation.",
+    "appearance_alias": "src/map/clif.cpp:138-141 disguised_bl_id returns uint32(-int32(bl_id)); self alias uses (-aid)&0xffffffff. src/map/packets_struct.hpp:2591-2604 MAIN20180704 sprite packet is11 bytes: AID32@2, type8@6, val16@7, val2_16@9. Only self/explicit alias LOOK_BASE0 invalidates; LOOK_WEAPON2 is not class authority.",
+    "map_positions": "src/map/clif.cpp:2153-2188 distinguishes same-server0091 position change (including initial refresh) from cross-server0092/0ac7 route. Retained mapname[16]@2,x/y@18/20; packed02eb entry pos@6. Queue polling must not reapply an older entry over a later reader-applied0091. Movement sends do not mutate player position. Walking actor destination metadata is unchanged, not used as player arrival."
+  },
+  "contract_addendum_for_parent_docs": {
+    "immutable_adr": "No existing ADR modified",
+    "received_only_api": "require_native_progression remains unchanged and still demands actual SELF11/55 updates",
+    "session_api": "require_native_session_progression(snapshot, level_params, *, class_fresh, selection_epoch, map_epoch, native_epoch, char_id) returns frozen SessionProgression(job, raw_job_id, base_level, job_level, base_source, job_source). Each source is selection or self_update. Exact positive equal epochs, literal freshnessTrue, matching exact character ID and supported raw actual class0 required. Invalid current updates override and deny instead of falling back. Historical selected levels never get synthesized into status_params.",
+    "initialization": "Constructed epochs0/None/None, freshnessFalse. connect begins new epoch before closing old transport; clear authority again after reader join. Matched selected CID publishes historical receipt and fresh selection epoch; actual map allocation binds matching map epoch. Neither map ACK nor unchanged-looking appearance rearms stale class authority. Same-server0091 alone preserves baseline; cross-server route invalidates class/map epoch pending new authenticated selection.",
+    "frames": "native_frame_snapshot() returns exactly (epoch:int, base_seq:int, frames:tuple[tuple[int,float,int,bytes],...]).4096-frame ring; lifetime monotonic sequence; threading.Lock protects allocation/insertion/copy. Only successful dispatches recorded once, including valid framed unhandled packets. Login/character/PIN frames excluded. Transition hides old-reader frames; base set after join/clear, before new map transport. Consumers start at base on each epoch and fail closed if first available sequence exceeds cursor+1. Existing raw_log, dispatch_errors, receive queue, protocol deadline and cleanup contracts retained.",
+    "health": "Host must retain complete transport/reader/error/vitals gate before session helper. This projection is not atomic liveness, death truth or a universal class guarantee. No persona fallback, global SQL check, provider callback or cognition activation was added."
+  },
+  "vertical_tdd": [
+    "Initial baseline RED missing module -> GREEN explicit baseline record",
+    "Updates/decreases and freshness/epoch/identity/invalid-count denials RED23 failures -> GREEN validated independent provenance",
+    "Client authenticated selection/frame ring RED2 missing APIs -> GREEN client layer",
+    "Appearance/alias/map retention/entry/reconnect RED9 behavior failures -> GREEN lifecycle/framing/position implementation",
+    "Late old reader exposure RED -> GREEN hidden transition frames, lifetime sequences preserved",
+    "Queued entry rewinds later received position RED88/99 vs100/101 -> GREEN observation-only handshake polling"
+  ],
+  "verification": {
+    "environment": "nix develop --offline --no-write-lock-file; uv run --offline --no-sync only",
+    "selected_regressions_passed": 1197,
+    "test_files": ["tests/test_client_native_session.py", "tests/test_native_session_progression.py", "tests/test_client_native_progression.py", "tests/test_client_protocol.py", "tests/test_client_pincode.py", "tests/test_protocol_rereview_repairs.py", "tests/test_temporary_handshake_cleanup.py", "tests/test_native_progression.py", "tests/test_native_vitals.py", "tests/test_client_actor_presentation.py", "tests/test_native_actor_presentation.py"],
+    "new_helper_coverage": {"statements": 37, "missed": 0, "percent": 100},
+    "scoped_ruff": "PASS new src/test files",
+    "black": "PASS new src/tests and whole client",
+    "strict_mypy": "PASS new src/test files",
+    "scoped_xenon_B_B_A": "PASS session helper after green refactor",
+    "whole_src_duplicate_code": "PASS pylint duplicate-code10.00/10",
+    "whole_src_xenon": "FAIL concurrent unowned native_navigation.py:171 shortest_path and:224 starter_route rankC; parent must rerun completed stable root gate",
+    "legacy_client_ruff": {"previous_reported_findings": 47, "current_findings": 46, "constructor_statements_previous": 52, "constructor_statements_current": 61, "char_branches_previous": 32, "char_branches_current": 33, "char_statements_previous": 111, "char_statements_current": 116, "dispatch_world_branches_current": 26, "dispatch_world_statements_current": 94, "waived": false},
+    "legacy_client_mypy": "13 client plus2 imported packetdb errors remain; no waiver. Typed new methods do not remedy preexisting generic dict/untyped callback debt.",
+    "whole_root_check": "Parent owns final stable combined root gate and collector/host integration"
+  },
+  "owned_files_sha256": {
+    "spikes/003-clientless-limbs/client.py": "e17e3b9e553269a1666e72910fd46fc58d4096f6b5ebf0d0e005a05a71f21e93",
+    "src/robots/adapters/native_session_progression.py": "c7ec4880115c14960642487b34e9ad05ea3ab1718ed0cd54748d361ae84dd55f",
+    "tests/test_client_native_session.py": "98c4c80ff7a94fbc8c4a2dd219235641e4087d372ba1c31c6da3f9ded96adeb8",
+    "tests/test_native_session_progression.py": "ee267a614dcac57a48aa835af5a2b2383ce7ed0e6fa09f9a5a04d04fa2e3d627"
+  },
+  "workflow_lesson_for_parent_skill": "Initial SELF level updates are change-driven and need not arrive at login. Keep received-only progression distinct from a explicitly provenance-tagged selected-session baseline; map-load queue observation must not rewind later reader-confirmed positions.",
+  "remaining": ["Parent must integrate separate session baseline API with complete health gate", "Collector and world/navigation workers own live play integration", "No live native receipt/play/cognition claim made by this implementation", "Legacy spike numerical complexity/type debt remains unwaived"]
+}

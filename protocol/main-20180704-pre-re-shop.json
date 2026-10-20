@@ -1,0 +1,459 @@
+{
+  "schema": "source-compiler-qualified-shop-candidate/v1",
+  "status": "offline-candidate-not-runtime-approval",
+  "profile": {
+    "role": "map",
+    "packetver": 20180704,
+    "client_family": "MAIN",
+    "ruleset": "pre-re",
+    "obfuscation": "ABSENT"
+  },
+  "provenance": {
+    "package": "/nix/store/0w1nfsmj8gaipcidhgx2nkg4axqxcbbr-rathena-playable-callback-qualified-20180704-e985006171d2-callback-qualified",
+    "evidence": "/nix/store/0w1nfsmj8gaipcidhgx2nkg4axqxcbbr-rathena-playable-callback-qualified-20180704-e985006171d2-callback-qualified/share/rathena-playable-callback-qualified",
+    "source": "/home/otto/.hermes/cache/scratch/callback-package-hut2_cuz/configured-variant",
+    "source_count": 3216,
+    "auxiliary_count": 1,
+    "authority": "run/reviews/playing-mvp-configured-source-recovery.json",
+    "artifacts": {
+      "profiles.json": "ee2af351afee975ad4145d0e38412dfac0779cd123435f318f8c876349bc0148",
+      "configured-source.json": "1fd585266bbcf2268b2cec9e901100fad68b904a8b2a8c049c5869c56af43e12",
+      "qualified-clif.cpp": "ace16f15be3b60f730522d620b73a68a9f2cc384016aadce9c985888aea9a1ac",
+      "map-cppflags.txt": "7986f2fdeb11e55ee707ac27eb4701a64b90361ce1636bb728025fb92a99291d",
+      "map-compile-recipe.txt": "8488711230e38fb3a48a9d19dca18b50b3a93780fd9287775768723af9358878"
+    }
+  },
+  "records": {
+    "ZC_SELECT_DEALTYPE": {
+      "size": 6,
+      "alignment": 1,
+      "fields": [
+        {
+          "name": "packetType",
+          "offset": 0,
+          "width": 2,
+          "signed": true
+        },
+        {
+          "name": "npcId",
+          "offset": 2,
+          "width": 4,
+          "signed": false
+        }
+      ]
+    },
+    "CZ_ACK_SELECT_DEALTYPE": {
+      "size": 7,
+      "alignment": 1,
+      "fields": [
+        {
+          "name": "packetType",
+          "offset": 0,
+          "width": 2,
+          "signed": true
+        },
+        {
+          "name": "GID",
+          "offset": 2,
+          "width": 4,
+          "signed": false
+        },
+        {
+          "name": "type",
+          "offset": 6,
+          "width": 1,
+          "signed": false
+        }
+      ]
+    },
+    "ZC_PC_PURCHASE_ITEMLIST": {
+      "size": 4,
+      "alignment": 1,
+      "fields": [
+        {
+          "name": "packetType",
+          "offset": 0,
+          "width": 2,
+          "signed": true
+        },
+        {
+          "name": "packetLength",
+          "offset": 2,
+          "width": 2,
+          "signed": true
+        }
+      ],
+      "tail": {
+        "name": "items",
+        "offset": 4,
+        "row_width": 11
+      }
+    },
+    "ZC_PC_PURCHASE_ITEMLIST_sub": {
+      "size": 11,
+      "alignment": 1,
+      "fields": [
+        {
+          "name": "price",
+          "offset": 0,
+          "width": 4,
+          "signed": false
+        },
+        {
+          "name": "discountPrice",
+          "offset": 4,
+          "width": 4,
+          "signed": false
+        },
+        {
+          "name": "itemType",
+          "offset": 8,
+          "width": 1,
+          "signed": false
+        },
+        {
+          "name": "itemId",
+          "offset": 9,
+          "width": 2,
+          "signed": false
+        }
+      ]
+    },
+    "CZ_PC_PURCHASE_ITEMLIST": {
+      "size": 4,
+      "alignment": 1,
+      "fields": [
+        {
+          "name": "packetType",
+          "offset": 0,
+          "width": 2,
+          "signed": true
+        },
+        {
+          "name": "packetLength",
+          "offset": 2,
+          "width": 2,
+          "signed": true
+        }
+      ],
+      "tail": {
+        "name": "items",
+        "offset": 4,
+        "row_width": 4
+      }
+    },
+    "CZ_PC_PURCHASE_ITEMLIST_sub": {
+      "size": 4,
+      "alignment": 1,
+      "fields": [
+        {
+          "name": "amount",
+          "offset": 0,
+          "width": 2,
+          "signed": false
+        },
+        {
+          "name": "itemId",
+          "offset": 2,
+          "width": 2,
+          "signed": false
+        }
+      ]
+    },
+    "ZC_PC_PURCHASE_RESULT": {
+      "size": 3,
+      "alignment": 1,
+      "fields": [
+        {
+          "name": "packetType",
+          "offset": 0,
+          "width": 2,
+          "signed": true
+        },
+        {
+          "name": "result",
+          "offset": 2,
+          "width": 1,
+          "signed": false
+        }
+      ]
+    },
+    "ZC_PAR_CHANGE": {
+      "size": 8,
+      "alignment": 1,
+      "fields": [
+        {
+          "name": "PacketType",
+          "offset": 0,
+          "width": 2,
+          "signed": true
+        },
+        {
+          "name": "varID",
+          "offset": 2,
+          "width": 2,
+          "signed": false
+        },
+        {
+          "name": "count",
+          "offset": 4,
+          "width": 4,
+          "signed": true
+        }
+      ]
+    },
+    "ZC_LONGPAR_CHANGE": {
+      "size": 8,
+      "alignment": 1,
+      "fields": [
+        {
+          "name": "PacketType",
+          "offset": 0,
+          "width": 2,
+          "signed": true
+        },
+        {
+          "name": "varID",
+          "offset": 2,
+          "width": 2,
+          "signed": false
+        },
+        {
+          "name": "amount",
+          "offset": 4,
+          "width": 4,
+          "signed": true
+        }
+      ]
+    }
+  },
+  "measured_headers": {
+    "ZC_SELECT_DEALTYPE": 196,
+    "CZ_ACK_SELECT_DEALTYPE": 197,
+    "ZC_PC_PURCHASE_ITEMLIST": 198,
+    "ZC_PC_PURCHASE_RESULT": 202,
+    "ZC_PAR_CHANGE": 176,
+    "ZC_LONGPAR_CHANGE": 177
+  },
+  "purchase_request_header": {
+    "id": 200,
+    "authority": "clif_packetdb.hpp:71 registration, no HEADER constant in active declaration; not compiler-measured"
+  },
+  "oracle_cpp": "#include <config/core.hpp>\n#include <map/packets.hpp>\n#include <map/packets_struct.hpp>\n#include <cstdio>\n#include <cstddef>\n#include <type_traits>\nstatic_assert(PACKETVER == 20180704 && PACKETVER_MAIN_NUM == 20180704);\n#if !defined(PRERE) || defined(RENEWAL) || defined(PACKETVER_RE) || defined(PACKETVER_ZERO) || defined(PACKET_OBFUSCATION) || defined(PACKET_OBFUSCATION_WARN)\n#error Unreviewed_profile\n#endif\nint main(){printf(\"PROFILE %d %d %d\\n\",PACKETVER,PACKETVER_MAIN_NUM,SP_ZENY);printf(\"HEADER ZC_SELECT_DEALTYPE %d\\n\",HEADER_ZC_SELECT_DEALTYPE);printf(\"RECORD ZC_SELECT_DEALTYPE %zu %zu\\n\",sizeof(PACKET_ZC_SELECT_DEALTYPE),alignof(PACKET_ZC_SELECT_DEALTYPE));printf(\"FIELD ZC_SELECT_DEALTYPE packetType %zu %zu %d\\n\",offsetof(PACKET_ZC_SELECT_DEALTYPE,packetType),sizeof(PACKET_ZC_SELECT_DEALTYPE::packetType),std::is_signed<decltype(PACKET_ZC_SELECT_DEALTYPE::packetType)>::value);printf(\"FIELD ZC_SELECT_DEALTYPE npcId %zu %zu %d\\n\",offsetof(PACKET_ZC_SELECT_DEALTYPE,npcId),sizeof(PACKET_ZC_SELECT_DEALTYPE::npcId),std::is_signed<decltype(PACKET_ZC_SELECT_DEALTYPE::npcId)>::value);printf(\"HEADER CZ_ACK_SELECT_DEALTYPE %d\\n\",HEADER_CZ_ACK_SELECT_DEALTYPE);printf(\"RECORD CZ_ACK_SELECT_DEALTYPE %zu %zu\\n\",sizeof(PACKET_CZ_ACK_SELECT_DEALTYPE),alignof(PACKET_CZ_ACK_SELECT_DEALTYPE));printf(\"FIELD CZ_ACK_SELECT_DEALTYPE packetType %zu %zu %d\\n\",offsetof(PACKET_CZ_ACK_SELECT_DEALTYPE,packetType),sizeof(PACKET_CZ_ACK_SELECT_DEALTYPE::packetType),std::is_signed<decltype(PACKET_CZ_ACK_SELECT_DEALTYPE::packetType)>::value);printf(\"FIELD CZ_ACK_SELECT_DEALTYPE GID %zu %zu %d\\n\",offsetof(PACKET_CZ_ACK_SELECT_DEALTYPE,GID),sizeof(PACKET_CZ_ACK_SELECT_DEALTYPE::GID),std::is_signed<decltype(PACKET_CZ_ACK_SELECT_DEALTYPE::GID)>::value);printf(\"FIELD CZ_ACK_SELECT_DEALTYPE type %zu %zu %d\\n\",offsetof(PACKET_CZ_ACK_SELECT_DEALTYPE,type),sizeof(PACKET_CZ_ACK_SELECT_DEALTYPE::type),std::is_signed<decltype(PACKET_CZ_ACK_SELECT_DEALTYPE::type)>::value);printf(\"HEADER ZC_PC_PURCHASE_ITEMLIST %d\\n\",HEADER_ZC_PC_PURCHASE_ITEMLIST);printf(\"RECORD ZC_PC_PURCHASE_ITEMLIST %zu %zu\\n\",sizeof(PACKET_ZC_PC_PURCHASE_ITEMLIST),alignof(PACKET_ZC_PC_PURCHASE_ITEMLIST));printf(\"FIELD ZC_PC_PURCHASE_ITEMLIST packetType %zu %zu %d\\n\",offsetof(PACKET_ZC_PC_PURCHASE_ITEMLIST,packetType),sizeof(PACKET_ZC_PC_PURCHASE_ITEMLIST::packetType),std::is_signed<decltype(PACKET_ZC_PC_PURCHASE_ITEMLIST::packetType)>::value);printf(\"FIELD ZC_PC_PURCHASE_ITEMLIST packetLength %zu %zu %d\\n\",offsetof(PACKET_ZC_PC_PURCHASE_ITEMLIST,packetLength),sizeof(PACKET_ZC_PC_PURCHASE_ITEMLIST::packetLength),std::is_signed<decltype(PACKET_ZC_PC_PURCHASE_ITEMLIST::packetLength)>::value);printf(\"TAIL ZC_PC_PURCHASE_ITEMLIST items %zu %zu\\n\",offsetof(PACKET_ZC_PC_PURCHASE_ITEMLIST,items),sizeof(PACKET_ZC_PC_PURCHASE_ITEMLIST::items[0]));printf(\"RECORD ZC_PC_PURCHASE_ITEMLIST_sub %zu %zu\\n\",sizeof(PACKET_ZC_PC_PURCHASE_ITEMLIST_sub),alignof(PACKET_ZC_PC_PURCHASE_ITEMLIST_sub));printf(\"FIELD ZC_PC_PURCHASE_ITEMLIST_sub price %zu %zu %d\\n\",offsetof(PACKET_ZC_PC_PURCHASE_ITEMLIST_sub,price),sizeof(PACKET_ZC_PC_PURCHASE_ITEMLIST_sub::price),std::is_signed<decltype(PACKET_ZC_PC_PURCHASE_ITEMLIST_sub::price)>::value);printf(\"FIELD ZC_PC_PURCHASE_ITEMLIST_sub discountPrice %zu %zu %d\\n\",offsetof(PACKET_ZC_PC_PURCHASE_ITEMLIST_sub,discountPrice),sizeof(PACKET_ZC_PC_PURCHASE_ITEMLIST_sub::discountPrice),std::is_signed<decltype(PACKET_ZC_PC_PURCHASE_ITEMLIST_sub::discountPrice)>::value);printf(\"FIELD ZC_PC_PURCHASE_ITEMLIST_sub itemType %zu %zu %d\\n\",offsetof(PACKET_ZC_PC_PURCHASE_ITEMLIST_sub,itemType),sizeof(PACKET_ZC_PC_PURCHASE_ITEMLIST_sub::itemType),std::is_signed<decltype(PACKET_ZC_PC_PURCHASE_ITEMLIST_sub::itemType)>::value);printf(\"FIELD ZC_PC_PURCHASE_ITEMLIST_sub itemId %zu %zu %d\\n\",offsetof(PACKET_ZC_PC_PURCHASE_ITEMLIST_sub,itemId),sizeof(PACKET_ZC_PC_PURCHASE_ITEMLIST_sub::itemId),std::is_signed<decltype(PACKET_ZC_PC_PURCHASE_ITEMLIST_sub::itemId)>::value);printf(\"RECORD CZ_PC_PURCHASE_ITEMLIST %zu %zu\\n\",sizeof(PACKET_CZ_PC_PURCHASE_ITEMLIST),alignof(PACKET_CZ_PC_PURCHASE_ITEMLIST));printf(\"FIELD CZ_PC_PURCHASE_ITEMLIST packetType %zu %zu %d\\n\",offsetof(PACKET_CZ_PC_PURCHASE_ITEMLIST,packetType),sizeof(PACKET_CZ_PC_PURCHASE_ITEMLIST::packetType),std::is_signed<decltype(PACKET_CZ_PC_PURCHASE_ITEMLIST::packetType)>::value);printf(\"FIELD CZ_PC_PURCHASE_ITEMLIST packetLength %zu %zu %d\\n\",offsetof(PACKET_CZ_PC_PURCHASE_ITEMLIST,packetLength),sizeof(PACKET_CZ_PC_PURCHASE_ITEMLIST::packetLength),std::is_signed<decltype(PACKET_CZ_PC_PURCHASE_ITEMLIST::packetLength)>::value);printf(\"TAIL CZ_PC_PURCHASE_ITEMLIST items %zu %zu\\n\",offsetof(PACKET_CZ_PC_PURCHASE_ITEMLIST,items),sizeof(PACKET_CZ_PC_PURCHASE_ITEMLIST::items[0]));printf(\"RECORD CZ_PC_PURCHASE_ITEMLIST_sub %zu %zu\\n\",sizeof(PACKET_CZ_PC_PURCHASE_ITEMLIST_sub),alignof(PACKET_CZ_PC_PURCHASE_ITEMLIST_sub));printf(\"FIELD CZ_PC_PURCHASE_ITEMLIST_sub amount %zu %zu %d\\n\",offsetof(PACKET_CZ_PC_PURCHASE_ITEMLIST_sub,amount),sizeof(PACKET_CZ_PC_PURCHASE_ITEMLIST_sub::amount),std::is_signed<decltype(PACKET_CZ_PC_PURCHASE_ITEMLIST_sub::amount)>::value);printf(\"FIELD CZ_PC_PURCHASE_ITEMLIST_sub itemId %zu %zu %d\\n\",offsetof(PACKET_CZ_PC_PURCHASE_ITEMLIST_sub,itemId),sizeof(PACKET_CZ_PC_PURCHASE_ITEMLIST_sub::itemId),std::is_signed<decltype(PACKET_CZ_PC_PURCHASE_ITEMLIST_sub::itemId)>::value);printf(\"HEADER ZC_PC_PURCHASE_RESULT %d\\n\",HEADER_ZC_PC_PURCHASE_RESULT);printf(\"RECORD ZC_PC_PURCHASE_RESULT %zu %zu\\n\",sizeof(PACKET_ZC_PC_PURCHASE_RESULT),alignof(PACKET_ZC_PC_PURCHASE_RESULT));printf(\"FIELD ZC_PC_PURCHASE_RESULT packetType %zu %zu %d\\n\",offsetof(PACKET_ZC_PC_PURCHASE_RESULT,packetType),sizeof(PACKET_ZC_PC_PURCHASE_RESULT::packetType),std::is_signed<decltype(PACKET_ZC_PC_PURCHASE_RESULT::packetType)>::value);printf(\"FIELD ZC_PC_PURCHASE_RESULT result %zu %zu %d\\n\",offsetof(PACKET_ZC_PC_PURCHASE_RESULT,result),sizeof(PACKET_ZC_PC_PURCHASE_RESULT::result),std::is_signed<decltype(PACKET_ZC_PC_PURCHASE_RESULT::result)>::value);printf(\"HEADER ZC_PAR_CHANGE %d\\n\",HEADER_ZC_PAR_CHANGE);printf(\"RECORD ZC_PAR_CHANGE %zu %zu\\n\",sizeof(PACKET_ZC_PAR_CHANGE),alignof(PACKET_ZC_PAR_CHANGE));printf(\"FIELD ZC_PAR_CHANGE PacketType %zu %zu %d\\n\",offsetof(PACKET_ZC_PAR_CHANGE,PacketType),sizeof(PACKET_ZC_PAR_CHANGE::PacketType),std::is_signed<decltype(PACKET_ZC_PAR_CHANGE::PacketType)>::value);printf(\"FIELD ZC_PAR_CHANGE varID %zu %zu %d\\n\",offsetof(PACKET_ZC_PAR_CHANGE,varID),sizeof(PACKET_ZC_PAR_CHANGE::varID),std::is_signed<decltype(PACKET_ZC_PAR_CHANGE::varID)>::value);printf(\"FIELD ZC_PAR_CHANGE count %zu %zu %d\\n\",offsetof(PACKET_ZC_PAR_CHANGE,count),sizeof(PACKET_ZC_PAR_CHANGE::count),std::is_signed<decltype(PACKET_ZC_PAR_CHANGE::count)>::value);printf(\"HEADER ZC_LONGPAR_CHANGE %d\\n\",HEADER_ZC_LONGPAR_CHANGE);printf(\"RECORD ZC_LONGPAR_CHANGE %zu %zu\\n\",sizeof(PACKET_ZC_LONGPAR_CHANGE),alignof(PACKET_ZC_LONGPAR_CHANGE));printf(\"FIELD ZC_LONGPAR_CHANGE PacketType %zu %zu %d\\n\",offsetof(PACKET_ZC_LONGPAR_CHANGE,PacketType),sizeof(PACKET_ZC_LONGPAR_CHANGE::PacketType),std::is_signed<decltype(PACKET_ZC_LONGPAR_CHANGE::PacketType)>::value);printf(\"FIELD ZC_LONGPAR_CHANGE varID %zu %zu %d\\n\",offsetof(PACKET_ZC_LONGPAR_CHANGE,varID),sizeof(PACKET_ZC_LONGPAR_CHANGE::varID),std::is_signed<decltype(PACKET_ZC_LONGPAR_CHANGE::varID)>::value);printf(\"FIELD ZC_LONGPAR_CHANGE amount %zu %zu %d\\n\",offsetof(PACKET_ZC_LONGPAR_CHANGE,amount),sizeof(PACKET_ZC_LONGPAR_CHANGE::amount),std::is_signed<decltype(PACKET_ZC_LONGPAR_CHANGE::amount)>::value);}",
+  "oracle_cpp_sha256": "3ed4690e9277189200753c5e135ab1800cd941c82283bf87f3352c14206eda30",
+  "oracle_stdout": "PROFILE 20180704 20180704 20\nHEADER ZC_SELECT_DEALTYPE 196\nRECORD ZC_SELECT_DEALTYPE 6 1\nFIELD ZC_SELECT_DEALTYPE packetType 0 2 1\nFIELD ZC_SELECT_DEALTYPE npcId 2 4 0\nHEADER CZ_ACK_SELECT_DEALTYPE 197\nRECORD CZ_ACK_SELECT_DEALTYPE 7 1\nFIELD CZ_ACK_SELECT_DEALTYPE packetType 0 2 1\nFIELD CZ_ACK_SELECT_DEALTYPE GID 2 4 0\nFIELD CZ_ACK_SELECT_DEALTYPE type 6 1 0\nHEADER ZC_PC_PURCHASE_ITEMLIST 198\nRECORD ZC_PC_PURCHASE_ITEMLIST 4 1\nFIELD ZC_PC_PURCHASE_ITEMLIST packetType 0 2 1\nFIELD ZC_PC_PURCHASE_ITEMLIST packetLength 2 2 1\nTAIL ZC_PC_PURCHASE_ITEMLIST items 4 11\nRECORD ZC_PC_PURCHASE_ITEMLIST_sub 11 1\nFIELD ZC_PC_PURCHASE_ITEMLIST_sub price 0 4 0\nFIELD ZC_PC_PURCHASE_ITEMLIST_sub discountPrice 4 4 0\nFIELD ZC_PC_PURCHASE_ITEMLIST_sub itemType 8 1 0\nFIELD ZC_PC_PURCHASE_ITEMLIST_sub itemId 9 2 0\nRECORD CZ_PC_PURCHASE_ITEMLIST 4 1\nFIELD CZ_PC_PURCHASE_ITEMLIST packetType 0 2 1\nFIELD CZ_PC_PURCHASE_ITEMLIST packetLength 2 2 1\nTAIL CZ_PC_PURCHASE_ITEMLIST items 4 4\nRECORD CZ_PC_PURCHASE_ITEMLIST_sub 4 1\nFIELD CZ_PC_PURCHASE_ITEMLIST_sub amount 0 2 0\nFIELD CZ_PC_PURCHASE_ITEMLIST_sub itemId 2 2 0\nHEADER ZC_PC_PURCHASE_RESULT 202\nRECORD ZC_PC_PURCHASE_RESULT 3 1\nFIELD ZC_PC_PURCHASE_RESULT packetType 0 2 1\nFIELD ZC_PC_PURCHASE_RESULT result 2 1 0\nHEADER ZC_PAR_CHANGE 176\nRECORD ZC_PAR_CHANGE 8 1\nFIELD ZC_PAR_CHANGE PacketType 0 2 1\nFIELD ZC_PAR_CHANGE varID 2 2 0\nFIELD ZC_PAR_CHANGE count 4 4 1\nHEADER ZC_LONGPAR_CHANGE 177\nRECORD ZC_LONGPAR_CHANGE 8 1\nFIELD ZC_LONGPAR_CHANGE PacketType 0 2 1\nFIELD ZC_LONGPAR_CHANGE varID 2 2 0\nFIELD ZC_LONGPAR_CHANGE amount 4 4 1\n",
+  "oracle_stdout_sha256": "b76a60bde614af1441072fdd8e2ffaf3ff5b8ae071faff719739f974ffebb338",
+  "compiler_observations": {
+    "g++": {
+      "command": [
+        "/nix/store/j1938gsbvbhkyz4kbmvjk56r479mkw3s-gcc-wrapper-16.2.0/bin/g++",
+        "-std=c++17",
+        "-DHAS_TLS",
+        "-fno-strict-aliasing",
+        "-DHAVE_GETADDRINFO",
+        "-DHAVE_SETRLIMIT",
+        "-DHAVE_STRNLEN",
+        "-DPACKETVER=20180704",
+        "-DPRERE",
+        "-DHAVE_MONOTONIC_CLOCK",
+        "-DHAS_TLS",
+        "-fno-strict-aliasing",
+        "-DHAVE_GETADDRINFO",
+        "-DHAVE_SETRLIMIT",
+        "-DHAVE_STRNLEN",
+        "-DPACKETVER=20180704",
+        "-DPRERE",
+        "-DHAVE_MONOTONIC_CLOCK",
+        "-I/home/otto/.hermes/cache/scratch/callback-package-hut2_cuz/configured-variant/src",
+        "-I/home/otto/.hermes/cache/scratch/callback-package-hut2_cuz/configured-variant/src/common",
+        "-I/home/otto/.hermes/cache/scratch/callback-package-hut2_cuz/configured-variant/3rdparty/libconfig",
+        "-I/home/otto/.hermes/cache/scratch/callback-package-hut2_cuz/configured-variant/3rdparty/rapidyaml/src",
+        "-I/home/otto/.hermes/cache/scratch/callback-package-hut2_cuz/configured-variant/3rdparty/rapidyaml/ext/c4core/src",
+        "-I/nix/store/1w8g6rvhljfk44hx50qz4sc47sm1f28v-mariadb-connector-c-3.3.5-dev/include",
+        "-I/nix/store/1w8g6rvhljfk44hx50qz4sc47sm1f28v-mariadb-connector-c-3.3.5-dev/include/mysql",
+        "/home/otto/.hermes/cache/scratch/native-shop-proof/shop.cpp",
+        "-o",
+        "/home/otto/.hermes/cache/scratch/native-shop-proof/g++.elf"
+      ],
+      "stdout": "PROFILE 20180704 20180704 20\nHEADER ZC_SELECT_DEALTYPE 196\nRECORD ZC_SELECT_DEALTYPE 6 1\nFIELD ZC_SELECT_DEALTYPE packetType 0 2 1\nFIELD ZC_SELECT_DEALTYPE npcId 2 4 0\nHEADER CZ_ACK_SELECT_DEALTYPE 197\nRECORD CZ_ACK_SELECT_DEALTYPE 7 1\nFIELD CZ_ACK_SELECT_DEALTYPE packetType 0 2 1\nFIELD CZ_ACK_SELECT_DEALTYPE GID 2 4 0\nFIELD CZ_ACK_SELECT_DEALTYPE type 6 1 0\nHEADER ZC_PC_PURCHASE_ITEMLIST 198\nRECORD ZC_PC_PURCHASE_ITEMLIST 4 1\nFIELD ZC_PC_PURCHASE_ITEMLIST packetType 0 2 1\nFIELD ZC_PC_PURCHASE_ITEMLIST packetLength 2 2 1\nTAIL ZC_PC_PURCHASE_ITEMLIST items 4 11\nRECORD ZC_PC_PURCHASE_ITEMLIST_sub 11 1\nFIELD ZC_PC_PURCHASE_ITEMLIST_sub price 0 4 0\nFIELD ZC_PC_PURCHASE_ITEMLIST_sub discountPrice 4 4 0\nFIELD ZC_PC_PURCHASE_ITEMLIST_sub itemType 8 1 0\nFIELD ZC_PC_PURCHASE_ITEMLIST_sub itemId 9 2 0\nRECORD CZ_PC_PURCHASE_ITEMLIST 4 1\nFIELD CZ_PC_PURCHASE_ITEMLIST packetType 0 2 1\nFIELD CZ_PC_PURCHASE_ITEMLIST packetLength 2 2 1\nTAIL CZ_PC_PURCHASE_ITEMLIST items 4 4\nRECORD CZ_PC_PURCHASE_ITEMLIST_sub 4 1\nFIELD CZ_PC_PURCHASE_ITEMLIST_sub amount 0 2 0\nFIELD CZ_PC_PURCHASE_ITEMLIST_sub itemId 2 2 0\nHEADER ZC_PC_PURCHASE_RESULT 202\nRECORD ZC_PC_PURCHASE_RESULT 3 1\nFIELD ZC_PC_PURCHASE_RESULT packetType 0 2 1\nFIELD ZC_PC_PURCHASE_RESULT result 2 1 0\nHEADER ZC_PAR_CHANGE 176\nRECORD ZC_PAR_CHANGE 8 1\nFIELD ZC_PAR_CHANGE PacketType 0 2 1\nFIELD ZC_PAR_CHANGE varID 2 2 0\nFIELD ZC_PAR_CHANGE count 4 4 1\nHEADER ZC_LONGPAR_CHANGE 177\nRECORD ZC_LONGPAR_CHANGE 8 1\nFIELD ZC_LONGPAR_CHANGE PacketType 0 2 1\nFIELD ZC_LONGPAR_CHANGE varID 2 2 0\nFIELD ZC_LONGPAR_CHANGE amount 4 4 1\n",
+      "elf_sha256": "8af97ec6d55e9240dcdcb550f5b773f9850619bf603f2f498d3f7cc43a91b156"
+    },
+    "clang++": {
+      "command": [
+        "/nix/store/2msw5nclhpsm80z65dqmjiv8kkras989-clang-wrapper-21.1.8/bin/clang++",
+        "-std=c++17",
+        "-DHAS_TLS",
+        "-fno-strict-aliasing",
+        "-DHAVE_GETADDRINFO",
+        "-DHAVE_SETRLIMIT",
+        "-DHAVE_STRNLEN",
+        "-DPACKETVER=20180704",
+        "-DPRERE",
+        "-DHAVE_MONOTONIC_CLOCK",
+        "-DHAS_TLS",
+        "-fno-strict-aliasing",
+        "-DHAVE_GETADDRINFO",
+        "-DHAVE_SETRLIMIT",
+        "-DHAVE_STRNLEN",
+        "-DPACKETVER=20180704",
+        "-DPRERE",
+        "-DHAVE_MONOTONIC_CLOCK",
+        "-I/home/otto/.hermes/cache/scratch/callback-package-hut2_cuz/configured-variant/src",
+        "-I/home/otto/.hermes/cache/scratch/callback-package-hut2_cuz/configured-variant/src/common",
+        "-I/home/otto/.hermes/cache/scratch/callback-package-hut2_cuz/configured-variant/3rdparty/libconfig",
+        "-I/home/otto/.hermes/cache/scratch/callback-package-hut2_cuz/configured-variant/3rdparty/rapidyaml/src",
+        "-I/home/otto/.hermes/cache/scratch/callback-package-hut2_cuz/configured-variant/3rdparty/rapidyaml/ext/c4core/src",
+        "-I/nix/store/1w8g6rvhljfk44hx50qz4sc47sm1f28v-mariadb-connector-c-3.3.5-dev/include",
+        "-I/nix/store/1w8g6rvhljfk44hx50qz4sc47sm1f28v-mariadb-connector-c-3.3.5-dev/include/mysql",
+        "/home/otto/.hermes/cache/scratch/native-shop-proof/shop.cpp",
+        "-o",
+        "/home/otto/.hermes/cache/scratch/native-shop-proof/clang++.elf"
+      ],
+      "stdout": "PROFILE 20180704 20180704 20\nHEADER ZC_SELECT_DEALTYPE 196\nRECORD ZC_SELECT_DEALTYPE 6 1\nFIELD ZC_SELECT_DEALTYPE packetType 0 2 1\nFIELD ZC_SELECT_DEALTYPE npcId 2 4 0\nHEADER CZ_ACK_SELECT_DEALTYPE 197\nRECORD CZ_ACK_SELECT_DEALTYPE 7 1\nFIELD CZ_ACK_SELECT_DEALTYPE packetType 0 2 1\nFIELD CZ_ACK_SELECT_DEALTYPE GID 2 4 0\nFIELD CZ_ACK_SELECT_DEALTYPE type 6 1 0\nHEADER ZC_PC_PURCHASE_ITEMLIST 198\nRECORD ZC_PC_PURCHASE_ITEMLIST 4 1\nFIELD ZC_PC_PURCHASE_ITEMLIST packetType 0 2 1\nFIELD ZC_PC_PURCHASE_ITEMLIST packetLength 2 2 1\nTAIL ZC_PC_PURCHASE_ITEMLIST items 4 11\nRECORD ZC_PC_PURCHASE_ITEMLIST_sub 11 1\nFIELD ZC_PC_PURCHASE_ITEMLIST_sub price 0 4 0\nFIELD ZC_PC_PURCHASE_ITEMLIST_sub discountPrice 4 4 0\nFIELD ZC_PC_PURCHASE_ITEMLIST_sub itemType 8 1 0\nFIELD ZC_PC_PURCHASE_ITEMLIST_sub itemId 9 2 0\nRECORD CZ_PC_PURCHASE_ITEMLIST 4 1\nFIELD CZ_PC_PURCHASE_ITEMLIST packetType 0 2 1\nFIELD CZ_PC_PURCHASE_ITEMLIST packetLength 2 2 1\nTAIL CZ_PC_PURCHASE_ITEMLIST items 4 4\nRECORD CZ_PC_PURCHASE_ITEMLIST_sub 4 1\nFIELD CZ_PC_PURCHASE_ITEMLIST_sub amount 0 2 0\nFIELD CZ_PC_PURCHASE_ITEMLIST_sub itemId 2 2 0\nHEADER ZC_PC_PURCHASE_RESULT 202\nRECORD ZC_PC_PURCHASE_RESULT 3 1\nFIELD ZC_PC_PURCHASE_RESULT packetType 0 2 1\nFIELD ZC_PC_PURCHASE_RESULT result 2 1 0\nHEADER ZC_PAR_CHANGE 176\nRECORD ZC_PAR_CHANGE 8 1\nFIELD ZC_PAR_CHANGE PacketType 0 2 1\nFIELD ZC_PAR_CHANGE varID 2 2 0\nFIELD ZC_PAR_CHANGE count 4 4 1\nHEADER ZC_LONGPAR_CHANGE 177\nRECORD ZC_LONGPAR_CHANGE 8 1\nFIELD ZC_LONGPAR_CHANGE PacketType 0 2 1\nFIELD ZC_LONGPAR_CHANGE varID 2 2 0\nFIELD ZC_LONGPAR_CHANGE amount 4 4 1\n",
+      "elf_sha256": "86a64d6e9655b326d6199bc35535fd261004f2c22071816c45bbf4a09b59d6fb"
+    }
+  },
+  "excerpts": [
+    {
+      "path": "src/map/packets.hpp",
+      "file_sha256": "b4959224a48e1febb811d7c1474f2c1b703d324ae4db7e3a1053a85b80da57bc",
+      "lines": [
+        41,
+        45
+      ],
+      "text": "struct PACKET_ZC_PC_PURCHASE_RESULT{\n\tint16 packetType;\n\tuint8 result;\n} __attribute__((packed));\nDEFINE_PACKET_HEADER(ZC_PC_PURCHASE_RESULT, 0xca)",
+      "excerpt_sha256": "5d556ba6758ef63426758ffbbe6b7f0e3a5ad1a1e4000458c259211d82b27ba5"
+    },
+    {
+      "path": "src/map/packets.hpp",
+      "file_sha256": "b4959224a48e1febb811d7c1474f2c1b703d324ae4db7e3a1053a85b80da57bc",
+      "lines": [
+        736,
+        740
+      ],
+      "text": "struct PACKET_ZC_SELECT_DEALTYPE {\n\tint16 packetType;\n\tuint32 npcId;\n} __attribute__((packed));\nDEFINE_PACKET_HEADER(ZC_SELECT_DEALTYPE, 0xc4)",
+      "excerpt_sha256": "2c4ac6cb9c3b5d74131520d2c7b9798c2e8db5599ac07ce0cb3858d846b65c1a"
+    },
+    {
+      "path": "src/map/packets.hpp",
+      "file_sha256": "b4959224a48e1febb811d7c1474f2c1b703d324ae4db7e3a1053a85b80da57bc",
+      "lines": [
+        1519,
+        1524
+      ],
+      "text": "struct PACKET_CZ_ACK_SELECT_DEALTYPE{\n\tint16 packetType;\n\tuint32 GID;\n\tuint8 type;\n} __attribute__((packed));\nDEFINE_PACKET_HEADER(CZ_ACK_SELECT_DEALTYPE, 0xc5);",
+      "excerpt_sha256": "3ac94a7d686cc6c43e85a35d25b47eecfd9160570e1fffcf5a82c1228a103a8c"
+    },
+    {
+      "path": "src/map/packets_struct.hpp",
+      "file_sha256": "5ab5ef13d2a1cdc60d84dcaf2e3be0b6e316b9630e61c3ac7ba0f930d4d31287",
+      "lines": [
+        354,
+        366
+      ],
+      "text": "struct PACKET_ZC_PAR_CHANGE {\n\tint16 PacketType;\n\tuint16 varID;\n\tint32 count;\n} __attribute__((packed));\nDEFINE_PACKET_HEADER(ZC_PAR_CHANGE, 0x00b0);\n\nstruct PACKET_ZC_LONGPAR_CHANGE {\n\tint16 PacketType;\n\tuint16 varID;\n\tint32 amount;\n} __attribute__((packed));\nDEFINE_PACKET_ID(ZC_LONGPAR_CHANGE, 0x00b1);",
+      "excerpt_sha256": "020e3fffc2b9d686e02e00804a1e0bf64bc1c8b4368883fb0280bc118b52eed1"
+    },
+    {
+      "path": "src/map/packets_struct.hpp",
+      "file_sha256": "5ab5ef13d2a1cdc60d84dcaf2e3be0b6e316b9630e61c3ac7ba0f930d4d31287",
+      "lines": [
+        3045,
+        3096
+      ],
+      "text": "#if PACKETVER_MAIN_NUM >= 20210203 || PACKETVER_RE_NUM >= 20211103 || PACKETVER_ZERO_NUM >= 20221024\nstruct PACKET_ZC_PC_PURCHASE_ITEMLIST_sub {\n#if PACKETVER_MAIN_NUM >= 20181121 || PACKETVER_RE_NUM >= 20180704 || PACKETVER_ZERO_NUM >= 20181114\n\tuint32 itemId;\n#else\n\tuint16 itemId;\n#endif\n\tuint32 price;\n\tuint32 discountPrice;\n\tuint8 itemType;\n\tuint16 viewSprite;\n\tuint32 location;\n} __attribute__((packed));\nstruct PACKET_ZC_PC_PURCHASE_ITEMLIST {\n\tint16 packetType;\n\tint16 packetLength;\n\tstruct PACKET_ZC_PC_PURCHASE_ITEMLIST_sub items[];\n} __attribute__((packed));\nDEFINE_PACKET_HEADER(ZC_PC_PURCHASE_ITEMLIST, 0x0b77)\n#else  // PACKETVER_MAIN_NUM >= 20210203\nstruct PACKET_ZC_PC_PURCHASE_ITEMLIST_sub {\n\tuint32 price;\n\tuint32 discountPrice;\n\tuint8 itemType;\n#if PACKETVER_MAIN_NUM >= 20181121 || PACKETVER_RE_NUM >= 20180704 || PACKETVER_ZERO_NUM >= 20181114\n\tuint32 itemId;\n#else\n\tuint16 itemId;\n#endif\n} __attribute__((packed));\nstruct PACKET_ZC_PC_PURCHASE_ITEMLIST {\n\tint16 packetType;\n\tint16 packetLength;\n\tstruct PACKET_ZC_PC_PURCHASE_ITEMLIST_sub items[];\n} __attribute__((packed));\nDEFINE_PACKET_HEADER(ZC_PC_PURCHASE_ITEMLIST, 0x00c6)\n#endif  // PACKETVER_MAIN_NUM >= 20210203\n\nstruct PACKET_CZ_PC_PURCHASE_ITEMLIST_sub {\n\tuint16 amount;\n#if PACKETVER_MAIN_NUM >= 20181121 || PACKETVER_RE_NUM >= 20180704 || PACKETVER_ZERO_NUM >= 20181114\n\tuint32 itemId;\n#else\n\tuint16 itemId;\n#endif\n} __attribute__((packed));\n\nstruct PACKET_CZ_PC_PURCHASE_ITEMLIST {\n\tint16 packetType;\n\tint16 packetLength;\n\tstruct PACKET_CZ_PC_PURCHASE_ITEMLIST_sub items[];\n} __attribute__((packed));",
+      "excerpt_sha256": "8834b4d4f1c708fc2afdf446392693e556de8d59caab054f81e9f31ae5473a28"
+    },
+    {
+      "path": "src/map/clif.cpp",
+      "file_sha256": "ace16f15be3b60f730522d620b73a68a9f2cc384016aadce9c985888aea9a1ac",
+      "lines": [
+        2222,
+        2261
+      ],
+      "text": "/// Displays the buy/sell dialog of an NPC shop.\n/// 00c4 <shop id>.L (ZC_SELECT_DEALTYPE)\nvoid clif_npcbuysell( const map_session_data& sd, const npc_data& nd ){\n\tPACKET_ZC_SELECT_DEALTYPE packet{};\n\n\tpacket.packetType = HEADER_ZC_SELECT_DEALTYPE;\n\tpacket.npcId = nd.id;\n\n\tclif_send( &packet, sizeof( packet ), &sd, SELF );\n}\n\n\n/// Presents list of items, that can be bought in an NPC shop.\n/// 00c6 <packet len>.W { <price>.L <discount price>.L <item type>.B <name id>.W }* (ZC_PC_PURCHASE_ITEMLIST)\nvoid clif_buylist( const map_session_data& sd, const npc_data& nd ){\n\tPACKET_ZC_PC_PURCHASE_ITEMLIST* p = reinterpret_cast<PACKET_ZC_PC_PURCHASE_ITEMLIST*>( packet_buffer );\n\n\tp->packetType = HEADER_ZC_PC_PURCHASE_ITEMLIST;\n\tp->packetLength = sizeof( *p );\n\n\tfor( int32 i = 0, count = 0, discount = npc_shop_discount( &nd ); i < nd.u.shop.count; i++ ){\n\t\tint32 val = nd.u.shop.shop_item[i].value;\n\n\t\tp->items[count].price = val;\n\t\tp->items[count].discountPrice = ( discount ) ? pc_modifybuyvalue( &sd, val ) : val;\n\t\tp->items[count].itemType = itemtype( nd.u.shop.shop_item[i].nameid );\n\t\tp->items[count].itemId = client_nameid( nd.u.shop.shop_item[i].nameid );\n#if PACKETVER_MAIN_NUM >= 20210203 || PACKETVER_RE_NUM >= 20211103\n\t\tstd::shared_ptr<item_data> id = item_db.find(nd.u.shop.shop_item[i].nameid);\n\n\t\tp->items[count].viewSprite = id->look;\n\t\tp->items[count].location = pc_equippoint_sub( &sd, id.get() );\n#endif\n\n\t\tp->packetLength += static_cast<decltype(p->packetLength)>( sizeof( p->items[0] ) );\n\t\tcount++;\n\t}\n\n\tclif_send( p, p->packetLength, &sd, SELF );\n}",
+      "excerpt_sha256": "70e7b5795cb7f76c5888d91b22e79218c2468d491130a440744a5d879ec601a5"
+    },
+    {
+      "path": "src/map/clif.cpp",
+      "file_sha256": "ace16f15be3b60f730522d620b73a68a9f2cc384016aadce9c985888aea9a1ac",
+      "lines": [
+        3548,
+        3570
+      ],
+      "text": "/// Notifies client of a character parameter change.\n/// 00b0 <var id>.W <value>.L (ZC_PAR_CHANGE)\nstatic void clif_par_change( const map_session_data& sd, uint16 varId, int32 count ) {\n\tPACKET_ZC_PAR_CHANGE packet{};\n\n\tpacket.PacketType = HEADER_ZC_PAR_CHANGE;\n\tpacket.varID = varId;\n\tpacket.count = count;\n\n\tclif_send( &packet, sizeof( packet ), &sd, SELF );\n}\n\n/// Notifies client of a character parameter change.\n/// 00b1 <var id>.W <value>.L (ZC_LONGPAR_CHANGE)\nstatic void clif_longpar_change(map_session_data& sd, uint16 varId, int32 amount) {\n\tPACKET_ZC_LONGPAR_CHANGE packet{};\n\n\tpacket.PacketType = HEADER_ZC_LONGPAR_CHANGE;\n\tpacket.varID = varId;\n\tpacket.amount = amount;\n\n\tclif_send( &packet, sizeof( packet ), &sd, SELF );\n}",
+      "excerpt_sha256": "b3f7465c043309db9fc2cbdfa23c8384360931d0b8b948de48691069306c1fb4"
+    },
+    {
+      "path": "src/map/clif.cpp",
+      "file_sha256": "ace16f15be3b60f730522d620b73a68a9f2cc384016aadce9c985888aea9a1ac",
+      "lines": [
+        3734,
+        3736
+      ],
+      "text": "\t\tcase SP_ZENY:\n\t\t\tclif_longpar_change(sd, type, sd.status.zeny);\n\t\t\tbreak;",
+      "excerpt_sha256": "2bd726d7503d19423087a7f11071378f5b0077c2c1f200f0495d8fcf47eecfdb"
+    },
+    {
+      "path": "src/map/clif.cpp",
+      "file_sha256": "ace16f15be3b60f730522d620b73a68a9f2cc384016aadce9c985888aea9a1ac",
+      "lines": [
+        12255,
+        12326
+      ],
+      "text": "/// Selection between buy/sell was made.\n/// 00c5 <id>.L <type>.B (CZ_ACK_SELECT_DEALTYPE)\n/// type:\n///     0 = buy\n///     1 = sell\nvoid clif_parse_NpcBuySellSelected( int32 fd, map_session_data* sd ){\n\tconst PACKET_CZ_ACK_SELECT_DEALTYPE* p = reinterpret_cast<PACKET_CZ_ACK_SELECT_DEALTYPE*>( RFIFOP( fd, 0 ) );\n\n\tif( sd == nullptr ){\n\t\treturn;\n\t}\n\n\tif (sd->state.trading)\n\t\treturn;\n\n\tnpc_buysellsel( sd, p->GID, p->type );\n}\n\n\n/// Notification about the result of a purchase attempt from an NPC shop (ZC_PC_PURCHASE_RESULT).\n/// 00ca <result>.B\n/// result:\n///     0 = \"The deal has successfully completed.\"\n///     1 = \"You do not have enough zeny.\"\n///     2 = \"You are over your Weight Limit.\"\n///     3 = \"Out of the maximum capacity, you have too many items.\"\n///     9 = \"Amounts are exceeded the possession of the item is not available for purchase.\"\n///    10 = \"Props open-air store sales will be traded in RODEX\"\n///    11 = \"The exchange failed.\"\n///    12 = \"The exchange was well done.\"\n///    13 = \"The item is already sold and out of stock.\"\n///    14 = \"There is not enough goods to exchange.\"\nvoid clif_npc_buy_result( map_session_data* sd, e_purchase_result result ){\n\tPACKET_ZC_PC_PURCHASE_RESULT p = {};\n\n\tp.packetType = HEADER_ZC_PC_PURCHASE_RESULT;\n\tp.result = (uint8)result;\n\n\tclif_send( &p, sizeof( p ), sd, SELF );\n}\n\n\n/// Request to buy chosen items from npc shop.\n/// 00c8 <packet len>.W { <amount>.W <name id>.W }* (CZ_PC_PURCHASE_ITEMLIST)\nvoid clif_parse_NpcBuyListSend( int32 fd, map_session_data* sd ){\n\tconst PACKET_CZ_PC_PURCHASE_ITEMLIST *p = reinterpret_cast<PACKET_CZ_PC_PURCHASE_ITEMLIST*>( RFIFOP( fd, 0 ) );\n\n\tuint16 n = ( p->packetLength - sizeof( *p ) ) / sizeof( p->items[0] );\n\te_purchase_result result;\n\n\tif( sd->state.trading || !sd->npc_shopid )\n\t\tresult = e_purchase_result::PURCHASE_FAIL_MONEY;\n\telse{\n\t\tstd::vector<s_npc_buy_list> items = {};\n\n\t\titems.reserve( n );\n\n\t\tfor( uint16 i = 0; i < n; i++ ){\n\t\t\ts_npc_buy_list item = {};\n\n\t\t\titem.nameid = p->items[i].itemId;\n\t\t\titem.qty = p->items[i].amount;\n\n\t\t\titems.push_back( item );\n\t\t}\n\n\t\tresult = npc_buylist( sd, items );\n\t}\n\n\tsd->npc_shopid = 0; //Clear shop data.\n\tclif_npc_buy_result(sd, result);\n}",
+      "excerpt_sha256": "7ab29fba51b96461a25d0bbac6af4569239be8149ce548faa32508fde1232a2a"
+    },
+    {
+      "path": "src/map/clif_packetdb.hpp",
+      "file_sha256": "51c8a9ebd591e0dd4f444f829253a14d449615425405cb8a95f28a6dea460e66",
+      "lines": [
+        65,
+        73
+      ],
+      "text": "\tparseable_packet(0x00bb,5,clif_parse_StatusUp,2,4);\n\tparseable_packet( HEADER_CZ_REQ_EMOTION, sizeof(  PACKET_CZ_REQ_EMOTION ), clif_parse_Emotion, 0 );\n\tparseable_packet(0x00c1,2,clif_parse_HowManyConnections,0);\n\tpacket(0x00c3,8);\n\tparseable_packet( HEADER_CZ_ACK_SELECT_DEALTYPE, sizeof( PACKET_CZ_ACK_SELECT_DEALTYPE ), clif_parse_NpcBuySellSelected, 0 );\n\tpacket(0x00c6,-1);\n\tparseable_packet(0x00c8,-1,clif_parse_NpcBuyListSend,2,4);\n\tparseable_packet(HEADER_CZ_PC_SELL_ITEMLIST,-1,clif_parse_NpcSellListSend,2,4);\n\tpacket(0x00ca,3);",
+      "excerpt_sha256": "86d8bf71a0c5939dc4c8c286011da7cfa62a7f88bc11f94e7e01f6528e0bd826"
+    },
+    {
+      "path": "src/map/npc.cpp",
+      "file_sha256": "90d582661668e5cb8567de5a7b92d067e5d0db479963b00bab340af9fe477534",
+      "lines": [
+        2387,
+        2418
+      ],
+      "text": "int32 npc_buysellsel(map_session_data* sd, int32 id, int32 type)\n{\n\tnpc_data *nd;\n\n\tnullpo_retr(1, sd);\n\n\tif ((nd = npc_checknear(sd,map_id2bl(id))) == nullptr)\n\t\treturn 1;\n\n\tif (nd->subtype != NPCTYPE_SHOP) {\n\t\tShowError(\"no such shop npc : %d\\n\",id);\n\t\tif (sd->npc_id == id)\n\t\t\tsd->npc_id=0;\n\t\treturn 1;\n\t}\n\tif (nd->is_invisible) // can't buy if npc is not visible (hack?)\n\t\treturn 1;\n\n\tif( npc_is_hidden_dynamicnpc( *nd, *sd ) ){\n\t\treturn 1;\n\t}\n\n\tsd->npc_shopid = id;\n\n\tif (type == 0) {\n\t\tclif_buylist( *sd, *nd );\n\t} else {\n\t\tclif_selllist( *sd );\n\t}\n\n\treturn 0;\n}",
+      "excerpt_sha256": "72347ddc1a103a654008e32a5115f5644537342c7ca63791b335e22f050c4317"
+    },
+    {
+      "path": "src/map/map.hpp",
+      "file_sha256": "1cb428d1145ec9c4045b2ae58c163be24bf1bd374fc8eea07eaf0c266621fe2b",
+      "lines": [
+        493,
+        503
+      ],
+      "text": "\tt_tick first_get_tick,second_get_tick,third_get_tick;\n\tstruct item item;\n\tuint16 mob_id; ///< ID of monster who dropped it. 0 for non-monster who dropped it.\n};\n\nenum _sp {\n\tSP_SPEED,SP_BASEEXP,SP_JOBEXP,SP_KARMA,SP_MANNER,SP_HP,SP_MAXHP,SP_SP,\t// 0-7\n\tSP_MAXSP,SP_STATUSPOINT,SP_0a,SP_BASELEVEL,SP_SKILLPOINT,SP_STR,SP_AGI,SP_VIT,\t// 8-15\n\tSP_INT,SP_DEX,SP_LUK,SP_CLASS,SP_ZENY,SP_SEX,SP_NEXTBASEEXP,SP_NEXTJOBEXP,\t// 16-23\n\tSP_WEIGHT,SP_MAXWEIGHT,SP_1a,SP_1b,SP_1c,SP_1d,SP_1e,SP_1f,\t// 24-31\n\tSP_USTR,SP_UAGI,SP_UVIT,SP_UINT,SP_UDEX,SP_ULUK,SP_26,SP_27,\t// 32-39",
+      "excerpt_sha256": "565a79a3d67cf614ace939d8d4ba061ac81bec3f855f2fb9b3aeca3c49bc5cb6"
+    }
+  ],
+  "engineering_limits": {
+    "offer_rows": 64,
+    "purchase_entries": 64,
+    "offer_bytes": 708,
+    "purchase_bytes": 260,
+    "server_maximum_claim": false
+  },
+  "currency": {
+    "header": 177,
+    "parameter": 20,
+    "width": 8,
+    "signed_balance": true,
+    "b0_zeny_emitted": false,
+    "authority": "clif_updatestatus SP_ZENY calls clif_longpar_change; B1 not B0"
+  },
+  "length_policy": "C++ packetLength is signed16; inherited RFIFOW is unsigned wire-word. Codec bounded lengths <=708/260 fit both; no global 32767/65535 admission claim. Empty lists rejected by engineering policy, not a claim server never emits them.",
+  "limitations": [
+    "No integration, network, gameplay, NPC permission, price/budget eligibility, transaction correlation, inventory acquisition, or readiness proof.",
+    "All CA bytes preserved; only0 represents ordinary purchase success.",
+    "No durable source mirror; full headers, no -U or forced headers, no foreign code copied."
+  ]
+}

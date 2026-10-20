@@ -1,0 +1,179 @@
+{
+  "authority": {
+    "reader_sha256": {
+      "src/char/char.hpp": "f3bb7f873b1028bf6a23d04e1416427337a81e1cd495908b9c207120c3a37134",
+      "src/char/char_clif.cpp": "f50dedd4cf46d0d3bea95c9410f1f0f04c5f7b525e6691b2afb9c4a3677c5654",
+      "src/login/loginclif.cpp": "85b9ef68f01890d505e5ef6089f6fb286516e2a35625f14fbcd79b03a36d9d93"
+    },
+    "readers": {
+      "src/char/char.hpp": "163-164: 24-byte username/password arrays",
+      "src/char/char_clif.cpp": "791-799: explicit NUL at index 23 before username/password comparison",
+      "src/login/loginclif.cpp": "397-449: separate char/login handshake reader"
+    },
+    "revision": "e985006171d2eb320ee512a653f4c83aea3d81b6",
+    "source": "/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source"
+  },
+  "boundary_evidence": {
+    "actual_subprocess_file_and_stdin": {
+      "accept_exit": 0,
+      "db_password_bytes": {
+        "accept": [
+          32
+        ],
+        "reject": [
+          33
+        ]
+      },
+      "inter_password_bytes": {
+        "accept": [
+          23
+        ],
+        "reject": [
+          24,
+          32,
+          33
+        ]
+      },
+      "redaction": "Passwords and selected private identifiers/endpoints absent from both streams; rejects have empty stdout and exact unchanged sanitized stderr.",
+      "reject_exit": 2
+    },
+    "positive_real_populated_api_bundle": {
+      "copied_map_binary_mode": "0600",
+      "db_password_bytes": 32,
+      "inter_password_bytes": 23,
+      "launchable": false,
+      "manifest_readback": true,
+      "role_config_exact_readback": true
+    },
+    "rejection_before_public_assets_and_directory": {
+      "db_password_bytes": [
+        33
+      ],
+      "inter_password_bytes": [
+        24,
+        32,
+        33
+      ],
+      "spies": "public_assets and directory forbidden; exact BundleRejectedError classification/message; absent destination parent remains absent"
+    }
+  },
+  "change": "Only split existing ASCII password length bounds: interserver 1..23 bytes; SQL 1..32 bytes. Existing rejection message, roles, caps, launchers and blockers unchanged.",
+  "date": "2026-10-05",
+  "effects": {
+    "blocked_native_startup_exit": 78,
+    "engine_container_sql_account_reset_provider_gateway_live_effects": false,
+    "existing_private_bundles_modified": false,
+    "stage_commit_push": false,
+    "startup_and_launch_changes": false,
+    "startup_limit": "Exit 78 remains the frozen offline package boundary; existing package regressions were exercised, with no launcher flags, caps, or packaged binary changes.",
+    "synthetic_private_files_only": true,
+    "user_credentials_read": false
+  },
+  "elapsed_seconds_at_report": 481.18,
+  "finding": "RUNTIME-WIRE-001",
+  "fingerprints": {
+    "after": {
+      "Taskfile.yml": "63616950e21c15c455c2b6f90be4d588b77f31a62181fd7a93253d164a64a7fd",
+      "flake.lock": "c9c0bac69415b99a29ef3fe149b6f04ef54d291989bdf7218cf819ed52edf2a0",
+      "flake.nix": "185e4a4babf62a40484c347f59653bd11b79ce847316a3a90349c8545d38a359",
+      "pyproject.toml": "e8ae0849a413bc3d705f081f609b92dae702bbd3e491b2c3aeb5d8665c458fba",
+      "src/robots/adapters/rathena_runtime.py": "26621ee1e592eaf200ea96422fb349dac20c70e6ec7baa9b1e215cd44f9a787c",
+      "src/robots/adapters/rathena_runtime_assets.py": "8cf599ddd633c82879d5a6fc0ed2d98f13399e4094262b6bcafb25c9841650fc",
+      "src/robots/adapters/rathena_runtime_io.py": "7964077d40e9e2e70dfbeb96ef0555c4cfae16f3ffedf0f2192e46f9f7ecc032",
+      "tests/test_rathena_package.py": "d9101fc3c8573a11e22a3f0a69cbaf870db36297598f9300e9f9b4b8eb397869",
+      "tests/test_rathena_runtime.py": "472435dc9baec199191c1d99f20f0b68d9d99df955161cb0be34dc0569bfb297",
+      "uv.lock": "2d7b4c187078488d7625e4fd4fa982745cab8d6a65b2ff3e382ffa286f1df245",
+      "wiki/guides/private-rathena-runtime.md": "d192303c789ba030700654c27e789ece9706aee1c0d96a531e744903e946c26d"
+    },
+    "baseline_file_count": 11,
+    "before": {
+      "Taskfile.yml": "63616950e21c15c455c2b6f90be4d588b77f31a62181fd7a93253d164a64a7fd",
+      "flake.lock": "c9c0bac69415b99a29ef3fe149b6f04ef54d291989bdf7218cf819ed52edf2a0",
+      "flake.nix": "185e4a4babf62a40484c347f59653bd11b79ce847316a3a90349c8545d38a359",
+      "pyproject.toml": "e8ae0849a413bc3d705f081f609b92dae702bbd3e491b2c3aeb5d8665c458fba",
+      "src/robots/adapters/rathena_runtime.py": "85c46370ca234f3d81b893b9918843e9734c7616804567e8f752b52a09c402c7",
+      "src/robots/adapters/rathena_runtime_assets.py": "8cf599ddd633c82879d5a6fc0ed2d98f13399e4094262b6bcafb25c9841650fc",
+      "src/robots/adapters/rathena_runtime_io.py": "7964077d40e9e2e70dfbeb96ef0555c4cfae16f3ffedf0f2192e46f9f7ecc032",
+      "tests/test_rathena_package.py": "d9101fc3c8573a11e22a3f0a69cbaf870db36297598f9300e9f9b4b8eb397869",
+      "tests/test_rathena_runtime.py": "5cdf027c97156b6a839a30723e886bfba6218a2af648df523715f878404c087f",
+      "uv.lock": "2d7b4c187078488d7625e4fd4fa982745cab8d6a65b2ff3e382ffa286f1df245",
+      "wiki/guides/private-rathena-runtime.md": "7ac5cf636374bb8beb31d4f8a565c1f15160102813bd9cb18f1bfd7e3f4c5b2f"
+    },
+    "dependent_drift": [],
+    "dependent_file_count": 8,
+    "limit": "11 locally captured baseline files, not a claim to reproduce parent 129 fingerprints. Newly arriving bootstrap files have no pre-task baseline.",
+    "new_concurrent_companions_after_only": {
+      "src/robots/adapters/rathena_bootstrap_assets.py": "257f09e9c318dc060b21e76326a4510fce2d9fc06d048047e0949e098ab3c3c7",
+      "tests/test_rathena_bootstrap_assets.py": "8cda1166185ae50d2ee03e50b4313e3edf92390b7af6394309ad57decbbffa18"
+    },
+    "owned_changed": [
+      "src/robots/adapters/rathena_runtime.py",
+      "tests/test_rathena_runtime.py",
+      "wiki/guides/private-rathena-runtime.md"
+    ]
+  },
+  "gates": {
+    "audit": "Not run: task audit consults external vulnerability services; no dependency/network installation permitted.",
+    "final_scoped": {
+      "error": null,
+      "exit_code": 0,
+      "output": "warning: Git tree '/home/otto/dev/ro-bots' is dirty\nro-bots dev shell \u2014 try: task --list\nAll done! \u2728 \ud83c\udf70 \u2728\n2 files would be left unchanged.\nAll checks passed!\nSuccess: no issues found in 2 source files\n........................................................................ [ 94%]\n....                                                                     [100%]\n76 passed in 57.35s"
+    },
+    "full_check_attempt": {
+      "command": "UV_OFFLINE=1 UV_NO_SYNC=1 nix develop --offline -c task check",
+      "exit_code": 201,
+      "origin": "Black would reformat concurrent tests/test_rathena_bootstrap_assets.py; 95 files unchanged; no companion edits performed."
+    },
+    "full_lint_and_test_components": {
+      "error": null,
+      "exit_code": 1,
+      "exit_code_meaning": "Condition evaluated to false (expected, not an error)",
+      "output": "warning: Git tree '/home/otto/dev/ro-bots' is dirty\nro-bots dev shell \u2014 try: task --list\ntask: [lint:ruff] uv run ruff check src tests\ntask: [lint:security] uv run bandit -q -c pyproject.toml -r src\ntask: [lint:complexity] uv run xenon src --max-absolute B --max-modules B --max-average A\ntask: [lint:dead] uv run vulture src vulture_whitelist.py\ntask: [lint:mypy] uv run mypy\ntask: [lint:dup] uv run pylint --disable=all --enable=duplicate-code --ignore-paths=tests src\nF401 [*] `json` imported but unused\n --> tests/test_rathena_bootstrap_assets.py:6:8\n  |\n4 | import importlib\n5 | import importlib.util\n6 | import json\n  |        ^^^^\n7 | import re\n8 | from collections import Counter\n  |\nhelp: Remove unused import: `json`\n  |\n5 | import importlib.util\n  - import json\n6 | import re\n  |\n\nF401 [*] `re` imported but unused\n --> tests/test_rathena_bootstrap_assets.py:7:8\n  |\n5 | import importlib.util\n6 | import json\n7 | import re\n  |        ^^\n8 | from collections import Counter\n9 | from pathlib import Path\n  |\nhelp: Remove unused import: `re`\n  |\n6 | import json\n  - import re\n7 | from collections import Counter\n  |\n\nF401 [*] `collections.Counter` imported but unused\n --> tests/test_rathena_bootstrap_assets.py:8:25\n  |\n6 | import json\n7 | import re\n8 | from collections import Counter\n  |                         ^^^^^^^\n9 | from pathlib import Path\n  |\nhelp: Remove unused import: `collections.Counter`\n  |\n7 | import re\n  - from collections import Counter\n8 | from pathlib import Path\n  |\n\nE501 Line too long (106 > 100)\n  --> tests/test_rathena_bootstrap_assets.py:39:101\n   |\n39 | @pytest.mark.parametrize(\"mutation\", [\"missing\", \"extra\", \"cross_target\", \"changed_shape\", \"changed_ddl\"])\n   |                                                                                                     ^^^^^^\n40 | def test_changed_or_ambiguous_main_is_rejected_without_reporting_statement(mutation):\n41 |     module = adapter()\n   |\n\nFound 4 errors.\n[*] 3 fixable with the `--fix` option.\ntests/test_rathena_bootstrap_assets.py:27: error: Call to untyped function \"adapter\" in typed context  [no-untyped-call]\ntests/test_rathena_bootstrap_assets.py:41: error: Call to untyped function \"adapter\" in typed context  [no-untyped-call]\ntests/test_rathena_runtime.py:59: error: Unsupported operand types for < (\"int\" and \"object\")  [operator]\ntests/test_rathena_runtime.py:60: error: Unsupported operand types for < (\"int\" and \"object\")  [operator]\nFound 4 errors in 2 files (checked 96 source files)\n[tester]\tWARNING\tnosec encountered (B105), but no failed test on file src/robots/adapters/rathena_runtime.py:123\n[tester]\tWARNING\tnosec encountered (B105), but no failed test on file src/robots/adapters/rathena_runtime.py:124\n[tester]\tWARNING\tnosec encountered (B105), but no failed test on file src/robots/adapters/rathena_runtime.py:125\n[tester]\tWARNING\tnosec encountered (B105), but no failed test on file src/robots/adapters/rathena_runtime.py:127\n[tester]\tWARNING\tnosec encountered (B105), but no failed test on file src/robots/adapters/rathena_runtime.py:125\n[tester]\tWARNING\tnosec encountered (B105), but no failed test on file src/robots/adapters/rathena_runtime.py:126\n[tester]\tWARNING\tnosec encountered (B105), but no failed test on file src/robots/adapters/rathena_runtime.py:127\nERROR:xenon:block \"src/robots/adapters/rathena_bootstrap_assets.py:33 suppress_default\" has a rank of C\n\n--------------------------------------------------------------------\nYour code has been rated at 10.00/10 (previous run: 10.00/10, +0.00)\n\ntask: Failed to run task \"lint\": task: Failed to run task \"lint:ruff\": exit status 1\ntask: [test] uv run pytest --cov=src/robots --cov-report=term-missing --cov-fail-under=85\n........................................................................ [  8%]\n........................................................................ [ 16%]\n........................................................................ [ 24%]\n........................................................................ [ 32%]\n........................................................................ [ 41%]\n........................................................................ [ 49%]\n............................................................................... [ 58%]\n........................................................................ [ 66%]\n........................................................................ [ 74%]\n........................................................................ [ 82%]\n........................................................................ [ 91%]\n........................................................................ [ 99%]\n.......                                                                  [100%]\n=============================== warnings summary ===============================\n.venv/lib/python3.14/site-packages/fastapi/testclient.py:1\n  /home/otto/dev/ro-bots/.venv/lib/python3.14/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.\n    from starlette.testclient import TestClient as TestClient  # noqa\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n================================ tests coverage ================================\n_______________ coverage: platform linux, python 3.14.7-final-0 ________________\n\nName                                              Stmts   Miss  Cover   Missing\n-------------------------------------------------------------------------------\nsrc/robots/__init__.py                                1      0   100%\nsrc/robots/__main__.py                               38     13    66%   97-117, 121\nsrc/robots/adapters/__init__.py                       4      0   100%\nsrc/robots/adapters/chat/__init__.py                  4      0   100%\nsrc/robots/adapters/chat/_http.py                    20      4    80%   24-26, 37\nsrc/robots/adapters/chat/chat_local.py                8      2    75%   13, 16\nsrc/robots/adapters/chat/chat_remote.py              11      5    55%   13-15, 18-19\nsrc/robots/adapters/chat/stub.py                     10      0   100%\nsrc/robots/adapters/decision/__init__.py              4      0   100%\nsrc/robots/adapters/decision/_http.py                16      0   100%\nsrc/robots/adapters/decision/clef_local.py            8      2    75%   13, 16\nsrc/robots/adapters/decision/clef_remote.py          12      5    58%   17-19, 22-23\nsrc/robots/adapters/decision/stub.py                 12      0   100%\nsrc/robots/adapters/mechanics_stub.py                41      5    88%   162, 165-166, 169-170\nsrc/robots/adapters/mechanics_yaml.py               275     12    96%   176-177, 182-183, 220, 281, 341-342, 389-390, 474-475\nsrc/robots/adapters/memory_journal.py               136      2    99%   57-58\nsrc/robots/adapters/rathena_bootstrap_assets.py      56     23    59%   33, 54, 65, 72-82, 87-122\nsrc/robots/adapters/rathena_runtime.py              112     18    84%   202, 212-213, 217-236, 240\nsrc/robots/adapters/rathena_runtime_assets.py       160     17    89%   29, 40, 45, 47, 67, 91, 101, 121, 125, 130, 135, 144, 151, 154, 158, 171, 178\nsrc/robots/adapters/rathena_runtime_io.py            86      7    92%   23, 45, 52, 56, 93, 104, 113\nsrc/robots/adapters/world_inventory.py              114      4    96%   188-190, 212\nsrc/robots/adapters/worldfeed_server.py             128      6    95%   150, 208, 221, 249-250, 254\nsrc/robots/app/__init__.py                            6      0   100%\nsrc/robots/app/agent_runtime.py                     516     49    91%   181-182, 186, 252, 336-344, 353, 370, 413, 416-417, 454, 465, 469-470, 480, 489-490, 493-500, 514-515, 549, 572, 582-583, 668, 680, 684-687, 704-706, 743, 763-768\nsrc/robots/app/brain.py                             192     17    91%   108, 211, 221-223, 225-226, 235-238, 258, 340-342, 353, 356\nsrc/robots/app/builds.py                            117      2    98%   316, 347\nsrc/robots/app/context_selector.py                  104      2    98%   193, 201\nsrc/robots/app/escalation.py                         13      0   100%\nsrc/robots/app/host_commands.py                     139      2    99%   167-168\nsrc/robots/app/roster_edit.py                        16      1    94%   32\nsrc/robots/app/runner.py                             42      2    95%   46, 72\nsrc/robots/app/scripts.py                            72     18    75%   47, 50-55, 67, 71-73, 86, 102, 109, 121-124\nsrc/robots/app/timers.py                             71      1    99%   92\nsrc/robots/app/world_state.py                       287      9    97%   60-61, 165, 247, 357-359, 365, 432\nsrc/robots/domain/__init__.py                         5      0   100%\nsrc/robots/domain/actions.py                         24      0   100%\nsrc/robots/domain/build.py                           62      4    94%   39-40, 63-64\nsrc/robots/domain/build_templates.py                 34      0   100%\nsrc/robots/domain/decisions.py                       17      1    94%   142\nsrc/robots/domain/events.py                          54      3    94%   114, 122, 126\nsrc/robots/domain/farm.py                             9      0   100%\nsrc/robots/domain/model.py                           28      1    96%   81\nsrc/robots/ports/__init__.py                         26      0   100%\nsrc/robots/ports/mechanics.py                        10      1    90%   32\nsrc/robots/society/__init__.py                        6      0   100%\nsrc/robots/society/guild.py                         118      0   100%\nsrc/robots/society/human.py                          56      0   100%\nsrc/robots/society/memory.py                        202     21    90%   79-80, 83-89, 195, 204, 206, 209, 215-216, 246, 262, 264, 266, 286-287\nsrc/robots/society/models.py                         53      0   100%\nsrc/robots/society/population_limits.py              32      0   100%\nsrc/robots/society/society.py                       113      0   100%\n-------------------------------------------------------------------------------\nTOTAL                                              3680    259    93%\nRequired test coverage of 85% reached. Total coverage: 92.96%\n878 passed, 1 warning, 65 subtests passed in 134.73s (0:02:14)\nlint_exit=201 test_exit=0"
+    },
+    "full_static_retry": {
+      "error": null,
+      "exit_code": 201,
+      "output": "warning: Git tree '/home/otto/dev/ro-bots' is dirty\nro-bots dev shell \u2014 try: task --list\ntask: [lint:mypy] uv run mypy\ntask: [lint:security] uv run bandit -q -c pyproject.toml -r src\ntask: [lint:complexity] uv run xenon src --max-absolute B --max-modules B --max-average A\ntask: [lint:ruff] uv run ruff check src tests\ntask: [lint:dup] uv run pylint --disable=all --enable=duplicate-code --ignore-paths=tests src\ntask: [lint:dead] uv run vulture src vulture_whitelist.py\nAll checks passed!\ntests/test_rathena_bootstrap_assets.py:29: error: Call to untyped function \"adapter\" in typed context  [no-untyped-call]\ntests/test_rathena_bootstrap_assets.py:45: error: Call to untyped function \"adapter\" in typed context  [no-untyped-call]\ntests/test_rathena_bootstrap_assets.py:61: error: Call to untyped function \"adapter\" in typed context  [no-untyped-call]\ntests/test_rathena_bootstrap_assets.py:126: error: Call to untyped function \"adapter\" in typed context  [no-untyped-call]\ntests/test_rathena_bootstrap_assets.py:155: error: Call to untyped function \"adapter\" in typed context  [no-untyped-call]\nFound 5 errors in 1 file (checked 96 source files)\n[tester]\tWARNING\tnosec encountered (B105), but no failed test on file src/robots/adapters/rathena_runtime.py:123\n[tester]\tWARNING\tnosec encountered (B105), but no failed test on file src/robots/adapters/rathena_runtime.py:124\n[tester]\tWARNING\tnosec encountered (B105), but no failed test on file src/robots/adapters/rathena_runtime.py:125\n[tester]\tWARNING\tnosec encountered (B105), but no failed test on file src/robots/adapters/rathena_runtime.py:127\n[tester]\tWARNING\tnosec encountered (B105), but no failed test on file src/robots/adapters/rathena_runtime.py:125\n[tester]\tWARNING\tnosec encountered (B105), but no failed test on file src/robots/adapters/rathena_runtime.py:126\n[tester]\tWARNING\tnosec encountered (B105), but no failed test on file src/robots/adapters/rathena_runtime.py:127\n\n--------------------------------------------------------------------\nYour code has been rated at 10.00/10 (previous run: 10.00/10, +0.00)\n\ntask: Failed to run task \"lint\": task: Failed to run task \"lint:mypy\": exit status 1"
+    },
+    "full_suite_summary": {
+      "coverage_percent": 92.96,
+      "elapsed_seconds": 134.73,
+      "passed": 878,
+      "snapshot_limit": "Whole suite ran before final test-only type/assertion repairs; production runtime unchanged since GREEN. Final scoped suite rerun on final owned Python files. Companion bootstrap source/tests were concurrently changing, so this is not a stable full-gate approval.",
+      "subtests_passed": 65,
+      "test_exit": 0,
+      "warnings": 1
+    },
+    "initial_scoped": {
+      "elapsed_seconds": 58.32,
+      "exit_code": 0,
+      "passed": 76
+    }
+  },
+  "scope": [
+    "src/robots/adapters/rathena_runtime.py",
+    "tests/test_rathena_runtime.py",
+    "wiki/guides/private-rathena-runtime.md",
+    "run/reviews/rathena-runtime-wire-fix.json"
+  ],
+  "status": "implemented; independently unreviewed; full gate concurrency-limited",
+  "vertical_tdd": {
+    "green": {
+      "command": "UV_OFFLINE=1 UV_NO_SYNC=1 nix develop --offline -c uv run pytest tests/test_rathena_runtime.py::test_interserver_password_24_bytes_rejected -q --tb=short -o addopts=''",
+      "elapsed_seconds": 0.08,
+      "exit_code": 0,
+      "failed": 0,
+      "passed": 1
+    },
+    "later_test_only_repairs": "Added regression test manifest integer narrowing, then split compound assertions to satisfy mypy/Ruff; no existing tests weakened and no further runtime behavior changed.",
+    "red": {
+      "command": "UV_OFFLINE=1 UV_NO_SYNC=1 nix develop --offline -c uv run pytest tests/test_rathena_runtime.py::test_interserver_password_24_bytes_rejected -q --tb=short",
+      "exit_code": 1,
+      "failed": 1,
+      "failure": "E   Failed: DID NOT RAISE BundleRejectedError",
+      "origin": "Actual build_from_bytes accepted a 24-byte ASCII interserver password and constructed a real populated bundle; pytest.raises failed with DID NOT RAISE BundleRejectedError, not a spy/setup failure.",
+      "passed": 0
+    },
+    "regression_cases_added": 18
+  }
+}

@@ -1,0 +1,60 @@
+{
+  "record": "GRIND_COMMITMENT_CADENCE_DIAGNOSED_WINDOW36_KILL_WAS_A_SPECIES_BUDGET_FAILURE_NOT_A_COMMITMENT_FAILURE",
+  "date": "2026-10-19",
+  "lane": ".work/commitment-cadence (offline TDD only; no src/robots edits, no git, no live execution)",
+  "verdict": {
+    "commitment_machinery": "HELD. w36's bot-dealt damage is 100%% concentrated on ONE gid: receipt damage_by_target = {\"110015694\": 64}. The analysis note 'the damage SPREADS across gids' is contradicted by the receipt and is corrected here.",
+    "named_mechanism": "Species-budget mismatch under a roaming plan: (1) killcommit_window23.pin_plans pins the Poring plan ONCE at the intervention seam; (2) brain.py:305-306 re-authors brain._plan on EVERY heartbeat review (w36 plan_target_mobs roamed Lunatic->Poring->Pupa->Lunatic/Creamy); (3) with plan ('Pupa',) the FarmScript filter admitted the 427-HP Pupa and scripts.py:410-416 (species-first pick) had no Poring in-filter, so the commitment held the Pupa; (4) the 1-damage Novice landed 64 of 427 before dying at t=858 -> 0 kills is arithmetic. w26 is the same code closing the same species with the budget present: 1886 dispatched / 476 accepted swings / 427 damage = exactly the pinned Pupa pool (mob_db.yml Id 1008 Hp 427), 1 death, loot, real XP 6 (BaseExp 2 + JobExp 4).",
+    "cadence_comparison": "w26 and w36 ran the SAME pacer (step_s 0.25, heartbeat every_s 6.0). Acceptance ratios agree: w26 476/1886 = 25.2%, w36 68/322 = 21.1%; damage per accepted swing 0.90 vs 0.94. The only material difference is total standing-melee budget (322 vs 1886 dispatches; the w36 fx1 spent t=0-199 leaving prontera, chased wandering Porings with 0 accepted swings, held the Pupa only from t~715, and died at t=858)."
+  },
+  "hypothesis_bisect": {
+    "H1_window_expires": "REJECTED. KILL_COMMIT_WINDOW counts only approach evaluations without a landed attack; every authored in-melee attack re-arms it (scripts.py:417-419, 122-125). Twin: commit_window=30 vs 10**9 -> byte-identical damage_by_target. Armed-hold expiry mid-approach re-picks the SAME species row (never the nearer other species). w26 ran the same window param through 1886 dispatches.",
+    "H2_distance_oscillation": "REJECTED for held damage. hold() freezes the target id (scripts.py:106-120); twin candidate-order flips every evaluation cannot split a single hold (each killed gid took exactly its full 50 pool). Pre-arm flips alternate only the approach MoveTo cell - nothing is authored out of melee, so no damage exists to spread.",
+    "H3_movement_reroute": "REJECTED. _melee_action re-follows the committed actor's fresh received cell (scripts.py:423-438); twin: a moving committed mob keeps the hold and the nearer static other mob never steals it. The live immobile-Pupa 125s hold confirms it.",
+    "H4_attack_ack_burns_window": "REJECTED for the commitment. Authored attacks re-arm the window regardless of server acceptance; twin all-acks-rejected never rotates the target. The 0x0139/drop failures are REAL (live chase: 72 dispatched -> 0 accepted swings) but belong to the acceptance layer (see handoffs)."
+  },
+  "fixes": {
+    "composition_durable_pin": {
+      "file": ".work/commitment-cadence/durable_pin.py",
+      "what": "enforce_pinned_plan(brain, pinned_plan) wraps brain._setup_farm_plan so EVERY heartbeat re-authoring returns the pinned plan (authoring still runs and is recorded in notes). Idempotent per brain (attribute _pinned_farm_plan).",
+      "tests": ".work/commitment-cadence/tests/test_cadence_bisect.py::test_fix_durable_pin_keeps_the_pupa_out_of_the_filter (RED pre-module -> GREEN), test_fix_pinned_filter_closes_a_poring_kill_within_the_window_budget, test_fix_pin_survives_script_reinstalls_which_the_one_shot_pin_does_not",
+      "twin_result": "pinned w36-shaped run: plans_installed stays ('Poring',) across all 43 reviews; Pupa damage 0 (vs 90 roaming); BOTH Poring pools close (50+50, 2 deaths) inside the same 1026-evaluation budget.",
+      "wiring_patch_ready_for_parent": "in .work/commitment-cadence/README.md (mirrors killcommit_window23.compose's intervention wrap; 3 lines inside the existing _pinning_interventions closure)"
+    },
+    "killcommit_xp_label": {
+      "file": ".work/playing-grind-killcommit/killcommit_capture.py (allowed lane edit)",
+      "what": "XP gate reads ONLY SP_BASEEXP(1)/SP_JOBEXP(2); 0x00B0 param 5 = SP_HP (rathena src/map/map.hpp:499) recorded under hp_deltas_by_param as 'SP_HP'; zeny(20)/weight(24)/maxHP(6)/SP(7) under other_deltas_by_param. Events keep honest param_name. Nothing dropped.",
+      "tests": ".work/commitment-cadence/tests/test_xp_label_honesty.py (RED: SP_HP import missing + buggy shape asserted -> GREEN after fix); killcommit lane's own 10 tests stay green",
+      "corrected_totals": "w36: xp_delta_positive was TRUE from 56 points of pure HP regen with ZERO kills -> now FALSE (no BASEEXP/JOBEXP deltas). w26: reported xp_gain_total 64 was really 6 (Pupa BaseExp 2 / JobExp 4); the other 58 were SP_HP 48 + SP_WEIGHT 10."
+    }
+  },
+  "production_handoffs_patch_ready": [
+    {
+      "target": ".work/playing-grind-killchain/killchain_capture.py (other namespace - NOT edited here)",
+      "gap": "KillchainAttributor._xp counts ALL params into xp_gain_total/xp_events (map.hpp:499: param 5 is SP_HP), so emission-level xp_gain_total is polluted: w36 'xp_gain_total 56' was pure HP regen; w26's 64 was really 6.",
+      "description": "Apply the same param-5 (SP_HP) exclusion the killcommit lane landed: in KillchainAttributor._xp, only accumulate _xp_gain for var ids 1 (SP_BASEEXP) and 2 (SP_JOBEXP); record other params under a separate status counter with honest names (SP_HP/SP_ZENY/SP_WEIGHT per map.hpp:499-502). TDD-gated: replay w36's param-5-only stream and require xp_gain_total == 0; replay w26's mixed stream and require 6.",
+      "evidence": "w26 receipt xp_deltas_by_param {'SP_24': 10, 'SP_5': 48, 'SP_BASEEXP': 2, 'SP_JOBEXP': 4}; w36 {'SP_5': 56}"
+    },
+    {
+      "target": "src/robots/app/agent_runtime.py + respawn flow (production; parent applies TDD-gated)",
+      "gap": "After fx1's death at t~858 (deaths [2000001]), the session zombied for ~700s: 800+ MoveTo dispatched, own_position FROZEN at the save cell [150,373], 0 attacks, 0 movement (w36 fx1 diagnostic samples t=917->1640), 2 'tick failed' ERRORs. The death latch (R1) worked client-side; the missing piece is the death->respawn (restart) flow.",
+      "description": "On a received own-death (0x0080? the death receipt path), the client must drive the restart/respawn exchange before resuming field behavior; until the character is alive again, the goal script should hold (Rest-like no-dispatch) instead of emitting walks the server rejects. Tests: fake-wire twin that kills the character mid-window and requires (a) no walk/attack sends while dead, (b) the respawn send, (c) field behavior resuming after the alive transition."
+    },
+    {
+      "target": "dispatch/acceptance layer (attack range vs received-state staleness; production + composition, parent applies)",
+      "gap": "Chase acceptance is total-loss vs moving species: w36 t=429-514 authored 72 attacks against wandering Porings with 0 accepted swings (server range metric on true cells vs stale received cells), while the standing-immobile hold accepted at the swing cap. The twin calibrates this gate (wander 2 evals, receive-lag 2, walk throttle 12 evals/cell from the live t=679-715 approach) and reproduces the shape.",
+      "description": "Do not attack from a stale received cell: (a) author Attack only when the RECEIVED Chebyshev distance is <= MELEE_RANGE AND the actor frame is fresh (received within the last actor-frame interval), else keep the approach MoveTo; (b) optional server-metric guard: send a position-confirming move first when the last own-position ingest is older than one step. Acceptance gate: chase-phase accepted swings > 0 at unchanged damage-per-swing."
+    }
+  ],
+  "tests": {
+    "lane": ".work/commitment-cadence/tests (15 tests, all pass): 11 bisect/reproduction/fix + 4 xp-honesty",
+    "kept_green": ".work/playing-grind-killcommit/tests (10) + .work/playing-grind-killchain/tests + tests/ full gate exit 0 (coverage 95% >= 85 floor; baseline 95.49% intact)",
+    "pre_existing_red_not_touched": ".work/engagement-diagnosis/tests/test_engagement_gate.py::test_decision_backend_failure_aborts_connect_and_tears_down_the_session fails in full isolation on the dirty tree (w34 connect-resilience keeps the session; the test expects teardown) - owned by the engagement lane."
+  },
+  "artifacts": {
+    "lane": ".work/commitment-cadence/ (README.md, w36_evidence.json, cadence_twin.py, durable_pin.py, evidence/cadence_twin_receipt.json, tests/)",
+    "edited_in_allowed_lane": ".work/playing-grind-killcommit/killcommit_capture.py (param-5 exclusion + hp/other delta buckets + docstring)",
+    "receipts_basis": "run/reviews/playing-grind-operator-live-window36.json + -analysis.json, window26.json + -analysis.json; pins: rathena src/map/map.hpp:499-502, db/pre-re/mob_db.yml Id 1002 (Hp 50) / Id 1008 (Hp 427)"
+  },
+  "authority": "This receipt + the lane README own the w36 commitment diagnosis; killcommit_capture.py xp honesty is landed and tested in its own lane; the durable-pin wiring and the three production handoffs above are patch-ready for the parent to apply TDD-gated."
+}

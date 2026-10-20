@@ -1,0 +1,83 @@
+{
+  "passed": true,
+  "security_concerns": [],
+  "logic_errors": [],
+  "suggestions": [],
+  "summary": "PASS: independently verified the bounded native-profile arrival barrier and corrected account-wire-actor replay; eligible for coordinator-owned isolated four-limb rerun after fresh ownership, offline and destination-walkability checks.",
+  "scope": "Read-only movement closure review. No engine, SQL execution, game actions, network requests, providers, private fixture reads, git commands, staging or source edits. Unrelated app/agent_runtime.py and new host-native tests excluded from the source freeze and verdict.",
+  "approval": {
+    "protocol_smoke_arrival_normal_bounded_own_fixture": true,
+    "revised_harness_live_verified": false,
+    "native_saved_position_verified_by_this_review": false,
+    "agent_host_or_paid_calls_authorized": false,
+    "full_milestone_or_general_native_guarantees": false,
+    "prerequisites": ["Fresh exact isolated-world and fixture ownership/exclusion checks", "Both fixture participants offline before reuse", "Fresh verification of one-cell destination walkability", "Existing authorized manifest only; no additional accounts or reseeding"]
+  },
+  "source_freeze": {
+    "parent_eight_fingerprints_matched": true,
+    "parent_junit_hash_matched": true,
+    "closure_file_count": 22,
+    "before_after_identical": true,
+    "before_manifest": "/home/otto/.hermes/cache/scratch/ar-1xkb7pa0/before.json",
+    "after_manifest": "/home/otto/.hermes/cache/scratch/ar-1xkb7pa0/after.json",
+    "before_manifest_sha256": "b3aab8e153a4c74b9b97a1d10c82ddbe8291063975585b199931846edf247b2b",
+    "after_manifest_sha256": "b3aab8e153a4c74b9b97a1d10c82ddbe8291063975585b199931846edf247b2b",
+    "includes": "Parent movement harness/client/packetdb and five test inputs; nine selected test files, dependency definitions/locks, public offline fixture-generation dependencies and retired probe/generator dependencies. No unrelated host worker files."
+  },
+  "verification": {
+    "environment": "Pinned nix develop --offline with uv run --offline; process-only short scratch TMPDIR, bytecode writes disabled, pytest cache disabled and inherited PYTEST_ADDOPTS/PYTEST_DISABLE_PLUGIN_AUTOLOAD unset for tests.",
+    "pytest_exit_code": 0,
+    "selected_test_files": 9,
+    "unique_junit_cases": 276,
+    "pytest_tests": 276,
+    "subtests": 65,
+    "junit_assertion_total": 341,
+    "failures": 0,
+    "errors": 0,
+    "skips": 0,
+    "new_movement_cases": 22,
+    "corrected_legacy_movement_cases": 2,
+    "junit": "/home/otto/.hermes/cache/scratch/ar-1xkb7pa0/independent.xml",
+    "junit_sha256": "796dca9bbdc13c558d109c2af4cf387fe23fff224ebabf189f533a4c3b30fcdf",
+    "coverage": "/home/otto/.hermes/cache/scratch/ar-1xkb7pa0/coverage.json",
+    "arrival_helper_executable_lines_covered": 16,
+    "arrival_helper_executable_lines_missing": 0,
+    "arrival_helper_line_coverage_percent": 100,
+    "coverage_scope": "Actual spike file instrumented in selected tests; exact helper lines 286-308 only, not global source coverage.",
+    "independent_native_packing_property_cases": 28561,
+    "native_packing_property": "Compiled exact pinned public WBUFPOS2 function with g++ and exercised all four-coordinate combinations of 13 boundary values; actual helper accepted iff native start and end both equaled target. Verified stale malformed matching-ID entry excluded before payload parsing.",
+    "detailed_execution_logs": "/home/otto/.hermes/cache/scratch/ar-1xkb7pa0/results.json",
+    "native_hashes_and_extra_logs": "/home/otto/.hermes/cache/scratch/ar-1xkb7pa0/extra-results.json"
+  },
+  "quality": {
+    "new_test_ruff": "PASS",
+    "new_test_mypy": "PASS",
+    "three_reviewed_files_black_check": "PASS",
+    "actual_helper_extraction_strict_mypy": "PASS",
+    "actual_helper_extraction_ruff": "PASS after correcting only scratch extraction blank-line padding; original failed extraction output preserved",
+    "whole_legacy_harness_ruff": "FAIL: 33 diagnostics, none within movement helper/limb lines 286-337. Counts: I001 1, RUF100 1, PLR0912 2, EM101 24, PLW0603 1, T201 3, E501 1.",
+    "whole_legacy_harness_mypy": "FAIL: 47 harness diagnostics. Movement-range diagnostics are existing untyped limb_move signature at line 311 and existing untyped connect_pair call at line 312; actual new typed helper passes strict checking. No whole-legacy clean claim or waiver.",
+    "static_security_review": "No hardcoded credentials, command execution, SQL, file writes, dynamic code execution or external calls introduced in the reviewed movement closure. Scratch-only native compiler probe uses extracted public trusted code."
+  },
+  "review_findings": [
+    "Initial peer movement destination cannot alone pass: exact mover account-wire actor must first announce the target, then exactly one second same-target request is sent.",
+    "Retained mover-stream entry identities are captured BEFORE confirmation dispatch, preserving valid response arriving before send returns; initial, retained, wrong-target, malformed and other-stream packets do not substitute for fresh arrival evidence.",
+    "The accepted self packet is exactly 12 bytes with native 0x0087 header and overlapping six-byte MOVE_DATA decode at offset 6; both actual current/from and requested/to must equal target. There is no invented actor-ID field inside SELF 0x0087.",
+    "Corrected legacy fake supplies fresh zero-length SELF response only on second dispatch, retains original account ID 11 versus character ID 21 discrimination, and asserts two sends for valid actor versus one for wrong actor.",
+    "Original absolute budget remains unchanged; no fixed postmove dwell or confirmation retry loop added. Timeout, reader health and all-participant cleanup continue through existing harness contracts."
+  ],
+  "native_authority": {
+    "root": "/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source",
+    "profile": "MAIN/pre-re PACKETVER=20180704",
+    "anchors": ["src/map/clif.cpp:182 WBUFPOS2 exact public function compiled independently", "src/map/clif.cpp:2051-2060 clif_walkok snapshots actual sd.x/y and requested ud.to_x/to_y to SELF", "src/map/unit.cpp:186-192 zero-length path emits walkok when sendMove", "src/map/unit.cpp:623-628 native timer updates map coordinates", "src/map/unit.cpp:894-898 request during walk sets change_walk_target"],
+    "existing_source_investigation": "run/reviews/native-movement-source-investigation.json",
+    "separate_prior_probe_not_current_harness_validation": "run/reviews/native-movement-same-target-live-probe.json"
+  },
+  "limits": [
+    "Entry-object identity freshness is only retained-history exclusion in the ordinary bounded current connection; not a universal nonce, replay-resistance or reconnect/resume claim.",
+    "Supported ordinary one-cell own-fixture timing and pinned native profile only; no hostile-stream catalog, combat/status/warp or arbitrary concurrent-command guarantees.",
+    "Fresh native world rerun and exact saved-position readback remain coordinator-owned; this review performed offline tests and public-source compiler checks only."
+  ],
+  "files_created": ["run/reviews/native-movement-arrival-independent-review.json", "Scratch-only logs, manifests, coverage/JUnit, extracted helper and native packing compiler probe under /home/otto/.hermes/cache/scratch/ar-1xkb7pa0"],
+  "source_or_existing_reports_modified": false
+}

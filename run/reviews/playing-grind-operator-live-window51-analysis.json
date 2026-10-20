@@ -1,0 +1,15 @@
+{
+  "record": "GRIND_WINDOW51_DECISIONS_HEALTHY_RX_STREAM_EMPTY_BOTH_AGENTS",
+  "date": "2026-10-19 (~18:3x)",
+  "findings": {
+    "backend_fix_confirmed": "55/56 decisions (the 4-slot Clef served both cadences \u2014 no PlayingBackendError; the slot-overload fix holds).",
+    "new_shape": "ZERO warnings, ticks succeeded, but the rx stream was EMPTY all window: actor_frames 0 (the probes minutes earlier saw mobs!), map_entries 0, own_pos 0, while 176 walk-ish sends went out. The handshake completed (online, the entry consumed, the position seeded in the spike's world model) but the reader thread received NOTHING after connect.",
+    "contrast": "Standalone probes at the same hours: connect + handshake + actor frames + damage events all flowed (the reader worked). The window context starves BOTH agents' readers simultaneously."
+  },
+  "hypotheses_for_next_session": [
+    "The reader-vs-poll difference: probes read the socket via _poll (pre-reader); the window's agents run the reader thread. Something in the window composition (the keepalive pump? the two concurrent readers? the host netns?) kills or starves the readers.",
+    "The pasta/aardvark forward half-staleness (accepts, no relay) \u2014 but the probes' handshake+actor flow disproves a full stall; needs a 30s probe counting READER-received (not polled) frames.",
+    "The keepalive pump's interaction with the reader (the pump sends 0x0360-shaped traffic \u2014 the sent_pids show exactly 0x360 x164-176 per stalled window!)."
+  ],
+  "note": "0x360 = ZC_NOTIFY_MOVE (a SERVER->CLIENT frame id) appearing in sent_pids on every stalled window is suspicious \u2014 either a mislabeled counter or a limb sending a server-frame id; one look at the walk limb's pack id will confirm."
+}

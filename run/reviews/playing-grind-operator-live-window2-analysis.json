@@ -1,0 +1,34 @@
+{
+  "status": "GRIND_WINDOW2_TRAVEL_ENGAGED_NO_FIELD_CONTACT_DIAGNOSTIC_SEAM_NAMED",
+  "completed_at": "2026-10-14T22:48:35.584412+00:00",
+  "raw_receipt": "run/reviews/playing-grind-operator-live-window2.json",
+  "command": "python -m grind_travel_operator (travel slice) --playground --duration 300, same preflight as window 1 (fixtures 0/2 online before, clef 8093 + chat 8300 healthy)",
+  "results": {
+    "transport": "healthy both agents full window",
+    "goal": "grind both",
+    "plan": "farm Pupa on prt_fild08 (fresh Clef decision; memory persistence across reconnects visible)",
+    "fixture_0": {
+      "moveTo_dispatched": 16,
+      "position_start": [
+        193,
+        360
+      ],
+      "position_at_diag": [
+        192,
+        361
+      ],
+      "travel": "committed cells sampled from pinned warp anchor; engaged 0; committed_target null at sample",
+      "attacks": 0
+    },
+    "fixture_1": {
+      "other_actions": 4,
+      "movement": 0,
+      "attacks": 0
+    },
+    "combat": "none again: damage/deaths/loot zero; xp selection barriers only"
+  },
+  "decisive_unknown": "attackable_count: null in the runtime diagnostic - the sampled seam does not expose the client actor view, so we still cannot distinguish (a) no rx map frames reaching the client, (b) actor frames arriving but not classified attackable, (c) MoveTo dispatched but walk-ack gating blocking actual sends (16 dispatched vs 1-tile displacement)",
+  "note": "10-07 progress receipt (earlier harness) showed rich received frames (0x87 x352, 0x107 x178, walks x350) proving the map session CAN stream frames; the current operator receipts drain empty post-close and sample the wrong seam mid-run",
+  "next": "frame-level mid-run diagnostic slice: rx pid histogram + own-position ingest + actor-observation counters sampled DURING the window (not post-close), plus walk-ack gating audit; then window 3",
+  "native_authority": "UNCHANGED_REVOKED"
+}

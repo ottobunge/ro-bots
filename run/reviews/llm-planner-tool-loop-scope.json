@@ -1,0 +1,24 @@
+{
+  "slice": "subgoal11 production planner tool-loop and explicit local model adapter",
+  "allowed_new_files": [
+    "src/robots/ports/planning_model.py",
+    "src/robots/app/llm_planner.py",
+    "src/robots/adapters/planning_llm.py",
+    "tests/test_llm_planner.py",
+    "run/reviews/llm-planner-tool-loop.json"
+  ],
+  "allowed_existing_files": [],
+  "approved_dependencies": ["run/reviews/llm-plan-lifecycle-core-approved.json", "run/reviews/llm-planning-context-approved.json"],
+  "requirements": [
+    "Concrete bounded provider-neutral investigation/submit-plan loop implementing PlannerPort",
+    "Strict typed plan decoding with request-bound identity and correlation",
+    "No arbitrary function dispatch or native actions",
+    "Explicit loopback OpenAI-compatible transport with actual template/tokenizer capacity preflight",
+    "No silent prompt truncation, context expansion or journal migration",
+    "Tests exercise reader -> tool messages -> proposed plan -> existing lifecycle admission",
+    "Actual local inference reserved for parent after candidate review"
+  ],
+  "no_existing_brain_cli_provider_native_memory_changes": true,
+  "no_live_effects_by_worker": true,
+  "full_scheduler_brain_native_acceptance_open": true
+}

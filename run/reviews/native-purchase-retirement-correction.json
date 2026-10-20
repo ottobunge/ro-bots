@@ -1,0 +1,57 @@
+{
+  "status": "REACHED_PRE_DISPATCH_RETIREMENT_CORRECTION_SCOPED_GREEN_PENDING_FROZEN_VERIFICATION",
+  "fault": "Purchase authority survived observed loss before progress was issued; advisory slot republication could rearm it",
+  "source_changes": {
+    "src/robots/adapters/native_purchase.py": "67afdd0d9ca3e736a5d8e0e96f295fa81239ecab584baaa9a835de4b544857d8",
+    "tests/test_native_purchase_retirement.py": "c6138b40292504fbb940ea9f4d83544f3078553161139be7eef996d1baad9170"
+  },
+  "prior_rejection": "run/reviews/inventory-purchase-combined-parent-rejected.json",
+  "original_source_bytes": {
+    "src/robots/adapters/native_purchase.py": "7f4be3c11a678d92adcd9b16982926b4c9877fb2a6b52ada05cfd07aa749c2ee",
+    "src/robots/app/playing_runtime.py": "45e9fbaaafd6bb45413ab6f3228cbaeae887c9e81cb794b0752eac7c3d655c56",
+    "tests/test_native_shop_purchase.py": "5ac891ca8af11a2cf2eab9b613bc3198c903e8b1503e36b611b2a8e749cfa27c"
+  },
+  "correction": "Observed context loss now consumes pre-dispatch qualification, removes trusted current facts and marks any minted action incomplete. Old intent cannot dispatch or mint again after advisory republication. Issued-state rules preserved.",
+  "receipts": {
+    "red": {
+      "path": ".work/native-purchase-retirement-parent/red.xml",
+      "sha256": "7a00ced7611a5400c8deceb9896f0f6e7c0297b150211b8c6db89d62001c7582",
+      "unique_cases": 4,
+      "failures": 2,
+      "errors": 0,
+      "skips": 0
+    },
+    "green": {
+      "path": ".work/native-purchase-retirement-parent/green.xml",
+      "sha256": "fd16d53f226f411deb2257a207465eef305a9dd54758ed0c124c503475292476",
+      "unique_cases": 74,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0
+    },
+    "refactor-green": {
+      "path": ".work/native-purchase-retirement-parent/refactor-green.xml",
+      "sha256": "821ec034582c81503d6034ac935da6d6fbbc1e4d829c735c6a2d76587241371e",
+      "unique_cases": 80,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0
+    },
+    "final-green": {
+      "path": ".work/native-purchase-retirement-parent/final-green.xml",
+      "sha256": "fb1720458846389b4e770d143917ec1a011ecae969faa4fe19a3fe57c2eda031",
+      "unique_cases": 80,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0
+    }
+  },
+  "already_green_controls": 2,
+  "new_permanent_cases": 4,
+  "owned_black_ruff_strict_mypy_xenon": "Final actual command exited0 at unchanged gates",
+  "preserved_quality_failure": ".work/native-purchase-retirement-parent/quality-first.json",
+  "quality_refactor": "Separate context identity, loss classification and retirement responsibilities; no functional scope expansion",
+  "original_reviewer_diagnostic": "Unchanged minimal reproducer retains obsolete assertions that facts remain live/progressNone after loss; permanent behavioral regression was RED before this correction, original interaction control passes unchanged",
+  "native_scope": "UNCHANGED_REVOKED",
+  "actual_purchase": false
+}

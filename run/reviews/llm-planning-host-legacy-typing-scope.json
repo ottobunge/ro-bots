@@ -1,0 +1,10 @@
+{
+  "scope": "Narrow completion for the full-gate typing regression introduced by the opt-in brain union",
+  "status": "Capture independent handoff completed and parent-verified; bounded test-only typing completion may now execute",
+  "authority": "run/reviews/llm-planning-host-segment-scope.json",
+  "reached_failure": "run/reviews/llm-planning-job-context-combined-parent-gate.json: 14 strict-mypy diagnostics before root pytest",
+  "allowed_existing_files": ["tests/test_agent_host.py", "tests/test_host_memory.py", "tests/test_host_summary_cache.py"],
+  "requirements": ["Explicitly assert/narrow legacy EventDrivenBrain fixtures before accessing legacy counters/private model or chat fields", "Preserve all existing behavior assertions and opt-in tests", "No broad casts, added type-ignore/whitelist waivers, dummy PlannedBrain private fields or production changes", "Run strict mypy and the affected offline regression tests before recombining independent review and the full gate"],
+  "effects": "Offline test-only completion; no provisioning, inference, native sessions, private live journals, migration or activation",
+  "budget": "One bounded constructor-typing completion within the unfinished host feature; previous provider/repair budgets are not reset"
+}

@@ -1,0 +1,22 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+_______________ test_actor_size_metadata_matches_native_compiler _______________
+
+native_layout = [155, 88, 118, 110, 5, 9, ...]
+
+    def test_actor_size_metadata_matches_native_compiler(native_layout):
+>       assert client.pdb.ACTOR_ENTRY_LEN == {
+            0x09FD: native_layout[3], 0x09FE: native_layout[8], 0x09FF: native_layout[10]
+        }
+E       assert {2557: 116, 2...09, 2559: 110} == {2557: 110, 2...03, 2559: 104}
+E         
+E         Differing items:
+E         {2557: 116} != {2557: 110}
+E         {2558: 109} != {2558: 103}
+E         {2559: 110} != {2559: 104}
+E         Use -v to get more diff
+
+tests/test_protocol_rereview_repairs.py:357: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_protocol_rereview_repairs.py::test_actor_size_metadata_matches_native_compiler
+1 failed in 0.68s

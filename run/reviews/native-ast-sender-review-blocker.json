@@ -1,0 +1,47 @@
+{
+  "scope": "Parent verification of independently rejected standalone recognizer and separate varargs standards audit",
+  "recognizer_approved": false,
+  "exact_pinned_emotion_candidate_verified": true,
+  "factual_assumption_limited_sink_audit_approved": true,
+  "recognizer_report_sha256": "92566646d1595b6aef846be03fc04d0c889ace9d6825e60f82ec6dc2f7d88fb1",
+  "recognizer_artifacts_verified": 82,
+  "blocking_recognizer_findings": [
+    {
+      "id": "L1",
+      "location": "trace_sender.py:19-24,41-54",
+      "issue": "Final send arguments after its first two are unchecked. Actual compiled mutate(&p) in third argument, with helper body p.h=2, is approved as header 1 IDENTITY_LAYOUT_CANDIDATE. Violates the bounded unknown-helper/no-mutation grammar; no generic CFG or sink semantic approval is demanded.",
+      "reproducer": "/home/otto/.hermes/cache/scratch/sender-independent-bpg0sgon/send_arg_mutates_header.cpp",
+      "evidence": "/home/otto/.hermes/cache/scratch/sender-independent-bpg0sgon/measured_adversarial.json",
+      "expected": "UNRESOLVED",
+      "actual": "IDENTITY_LAYOUT_CANDIDATE"
+    },
+    {
+      "id": "L2",
+      "location": "trace_sender.py:31-35",
+      "issue": "Mutable global short H=1 accepted as an immutable header constant solely from its single IntegerLiteral initializer. Its runtime value is not established.",
+      "reproducer": "/home/otto/.hermes/cache/scratch/sender-independent-bpg0sgon/mutable_header.cpp",
+      "expected": "UNRESOLVED",
+      "actual": "IDENTITY_LAYOUT_CANDIDATE"
+    },
+    {
+      "id": "L3",
+      "location": "trace_sender.py:9-10,46-52",
+      "issue": "No castKind/type validation: static_cast<int>(float_parameter), actual Clang FloatingToIntegral, accepted despite integral/plain-read-only grammar.",
+      "reproducer": "/home/otto/.hermes/cache/scratch/sender-independent-bpg0sgon/nonintegral_cast_param.cpp",
+      "expected": "UNRESOLVED",
+      "actual": "IDENTITY_LAYOUT_CANDIDATE"
+    }
+  ],
+  "varargs_report_sha256": "e3d539fa3d9692c3c94f15d817ae3bbde1b89921ddf2365ce2268fc805041be8",
+  "varargs_analysis": "Standards-based type/qualification mismatch for pointer slots; assembly observation is not portable-definedness or packet delivery proof. Source block_list pointer mismatch independently matters.",
+  "varargs_documents_verified": 2,
+  "no_observed_runtime_failure_attributed_to_varargs": true,
+  "current_old_generator_approved": false,
+  "prototype_repairs_started": false,
+  "server_source_correction_started": false,
+  "sink_adopted": false,
+  "runtime_integration": false,
+  "world_changes": false,
+  "next_action": "Request narrow scope decision for tracer repairs and separate offline callback-const-correction experiment",
+  "full_goal_complete": false
+}

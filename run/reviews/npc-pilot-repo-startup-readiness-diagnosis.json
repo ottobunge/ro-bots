@@ -1,0 +1,154 @@
+{
+  "status": "OFFLINE_NAME_ACQUISITION_GAP_CONFIRMED_NATIVE_FAILED_PREDICATE_UNKNOWN",
+  "scope": "Read-only source diagnosis and synthetic startup characterization; no implementation, gameplay, network, model, SQL, world, private journal or configuration effects.",
+  "authority": "REVOKED_AFTER_REPO_LOCAL_SINGLE_ATTEMPT",
+  "historical_startup_repair_budget": {
+    "used": 2,
+    "limit": 2,
+    "reset": false
+  },
+  "native_acceptance": false,
+  "quest_or_reward_acceptance": false,
+  "full_goals": "OPEN",
+  "actual_run_id": "183a76729f3a4447afcb06d75ca52757",
+  "actual_evidence": {
+    "public_report": "run/reviews/npc-native-host-pilot-repo-local-attempt1.json",
+    "safe_metadata": ".work/operators/npc-native-host-pilot/runs/183a76729f3a4447afcb06d75ca52757/private-001.json",
+    "stage": "telemetry_and_fixed_npc",
+    "origin_class": "NativeTelemetryUnavailableError",
+    "epoch": 1,
+    "frame_base": 0,
+    "retained_frames": 67,
+    "headers_saved": 16,
+    "vitals_received_and_validated": true,
+    "transport_flags_healthy": true,
+    "dispatch_errors": 0,
+    "planning_episodes": 0,
+    "LLM_completions": 0,
+    "CLEF_decisions": 0,
+    "NPC_clicks": 0,
+    "NPC_responses": 0,
+    "cleanup": "Supported cleanup and exact offline readback (existing receipt; no new SQL observation).",
+    "limitation": "Only last 16 headers and safe transport/vitals flags were saved. No raw payloads, full actors, readiness predicate values, inner exception message or traceback. Last 16 contain no 0ADF; this does not prove absence in all 67 frames."
+  },
+  "findings": [
+    {
+      "claim": "The pilot requires exactly one current received NPC named Bard#brising within distance 3, plus canonical prt_fild08, known alive true, standing true, no stand/rest pending and confirmed arrival/no pending movement.",
+      "sources": [
+        ".work/operators/npc-native-host-pilot/probe.py:40-60,342-363",
+        "src/robots/app/playing_runtime.py:490-492"
+      ]
+    },
+    {
+      "claim": "PlayingClient currently acquires NPC names only from validated 58-byte 0ADF name replies, name@10[24], after the same actor has already been received as presentation6/12. Actor entries retain species but not their supplied names. NPC#id fallback can never meet the pilot exact-name predicate.",
+      "sources": [
+        "src/robots/app/playing_runtime.py:851-865,1052-1110",
+        "src/robots/adapters/native_npc_dialogue.py:28-42",
+        "src/robots/app/playing_runtime.py:282-305"
+      ]
+    },
+    {
+      "claim": "Pinned server unsolicited actor-entry packets already include a name. Normal visible-area idle/new presentation calls clif_set_unit_idle, which fills p.name with status_get_name; BL_NPC returns npc_data.name. Thus the server need not send a separate unsolicited 0ADF to expose Bard. The client ignores this existing received name channel.",
+      "sources": [
+        "run/public-source/callback-qualified-e985006171d2/src/map/clif.cpp:1191-1196,1338-1340,5029-5109",
+        "run/public-source/callback-qualified-e985006171d2/src/map/packets_struct.hpp:832-902",
+        "run/public-source/callback-qualified-e985006171d2/src/map/status.cpp:8921-8947"
+      ]
+    },
+    {
+      "claim": "The inspected clif.cpp separate-name path calls clif_name from clif_parse_GetCharNameRequest; its NPC branch emits 0ADF. Normal getareachar BL_NPC handling does not call it. BotClient and PlayingClient have no automatic GetCharNameRequest path. A guaranteed unsolicited separate NPC name reply is not established.",
+      "sources": [
+        "run/public-source/callback-qualified-e985006171d2/src/map/clif.cpp:9988-10022,11467-11504,5090-5109",
+        "spikes/003-clientless-limbs/client.py",
+        "src/robots/app/playing_runtime.py"
+      ]
+    },
+    {
+      "claim": "The final post-20180307 profile registers 0x0368, six bytes, actor id@2 for GetCharNameRequest. Do not treat historical 0x0094 as the only profile authority. Both are denied by the current pilot post-connect transport scope; merely adding an auto-query would violate that scope.",
+      "sources": [
+        "run/public-source/callback-qualified-e985006171d2/src/map/clif_shuffle.hpp:4723-4743",
+        "run/public-source/callback-qualified-e985006171d2/src/map/clif_packetdb.hpp:45",
+        ".work/operators/npc-native-host-pilot/probe.py:300-318"
+      ]
+    },
+    {
+      "claim": "The source Bard#brising token is the real display-name spelling, not a client-side public-source lookup permission. Script declaration has no :: alias; npc_parsename copies it unchanged to name/exname. Do not replace it with Bard based on visual client conventions.",
+      "sources": [
+        "rathena/npc/quests/seals/brisingamen_seal.txt:25",
+        "run/public-source/callback-qualified-e985006171d2/src/map/npc.cpp:3668-3695"
+      ]
+    },
+    {
+      "claim": "Initial authentication 02EB establishes standing in wrapper metadata and arrival in tracker, so a movement command is not inherently required for startup NPC motion readiness. Vitals/healthy transport alone establish neither those receipts nor current map, progression, actor or life readiness.",
+      "sources": [
+        "src/robots/app/playing_runtime.py:1052-1076,317-359",
+        "src/robots/adapters/native_gameplay.py:369-389"
+      ]
+    }
+  ],
+  "causal_conclusion": {
+    "confirmed": "A deterministic received-name projection/acquisition gap blocks fixed-name startup when actor entries arrive without a separate 0ADF. The wait only retries; it neither consumes entry names nor requests the separate name channel.",
+    "not_proven": "Whether that name gap was the exact failed predicate of the one native attempt; initial progression/perception/map/life/pose/motion/actor count/range remain unknown.",
+    "falsifier": "A saved current actor-bound valid 0ADF with Bard#brising before timeout would disprove missing separate-name receipt as that run's failing predicate. It would not disprove the ignored entry-name defect."
+  },
+  "offline_verification": {
+    "command": "PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=src:. .venv/bin/python -B .work/npc-startup-readiness-investigation/characterize.py",
+    "exit_code": 0,
+    "results": {
+      "synthetic_only": true,
+      "cases": [
+        {
+          "case": "entry_name_only",
+          "outcome": "timeout",
+          "initial_name": "NPC#444",
+          "initial_received_ready": true,
+          "attempts": 5,
+          "elapsed_fake_seconds": 0.2,
+          "wire_sends": 0
+        },
+        {
+          "case": "explicit_name_reply",
+          "outcome": "ready",
+          "initial_name": "Bard#brising",
+          "initial_received_ready": true,
+          "attempts": 1,
+          "elapsed_fake_seconds": 0.0,
+          "wire_sends": 0
+        },
+        {
+          "case": "delayed_name_reply",
+          "outcome": "ready",
+          "initial_name": "NPC#444",
+          "initial_received_ready": true,
+          "attempts": 2,
+          "elapsed_fake_seconds": 0.05,
+          "wire_sends": 0
+        }
+      ],
+      "pilot_send_guard": {
+        "0x368": "refused",
+        "0x94": "refused",
+        "0x360": "allowed"
+      }
+    },
+    "limitations": "Actual PlayingClient projection and ScheduledAgent wait with AST-extracted unchanged pilot predicates/transport guard; synthetic Wire, no native receiver or live-run replay. Fake clock shortens wait to 0.2 seconds. Native byte contents are unknown."
+  },
+  "minimal_next_step": {
+    "evidence": "Separately reviewed safe diagnostics should identify inner state-builder failure category or detached readiness booleans, current same-epoch name-present/exact-match and actor candidate/range count; no full actors/raw payloads/private state are needed.",
+    "preferred_fix_candidate_not_implemented": "Review retaining the already received profile-pinned actor-entry name (6/12 only) with existing frame/session/vanish/map guards. This avoids adding a native name-query effect. Prove names from each entry family through real framing and exact startup gate; do not seed _npc_names directly.",
+    "alternative_not_implemented": "If using explicit 0x0368 queries instead, obtain separately reviewed bounded current-received-actor query policy and pilot scope approval; current allowlist must not be silently widened.",
+    "authority": "No implementation or native rerun authorized by this diagnosis; exhausted startup repair budget remains unchanged."
+  },
+  "files_created": [
+    ".work/npc-startup-readiness-investigation/characterize.py",
+    ".work/npc-startup-readiness-investigation/offline-results.json",
+    ".work/npc-startup-readiness-investigation/source-sha256.json",
+    "run/reviews/npc-pilot-repo-startup-readiness-diagnosis.json"
+  ],
+  "issues": [
+    "Provided safe-metadata path omitted its run-id directory; exact existing file located and read.",
+    "Public callback-qualified source closure lacks the NPC script; script read from the specified rathena checkout.",
+    "Shared repository is already dirty; no existing files changed."
+  ],
+  "unchanged_source_hashes": ".work/npc-startup-readiness-investigation/source-sha256.json"
+}

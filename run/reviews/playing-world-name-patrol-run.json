@@ -1,0 +1,483 @@
+{
+  "passed": false,
+  "authorization": "playing-world-execution-scope.json",
+  "source_reviews": [
+    "playing-shutdown-contract-final-review.json",
+    "native-map-lifecycle-independent-review.json",
+    "native-goal-tick-independent-review.json",
+    "native-name-patrol-independent-review.json"
+  ],
+  "configured_gate": "playing-name-patrol-parent-gate.json",
+  "baseline": {
+    "passed": true,
+    "read_only": true,
+    "native_sessions_opened": 0,
+    "inference_calls": 0,
+    "exact_fixture_ownership_verified": true,
+    "both_offline": true,
+    "characters": [
+      {
+        "fixture_index": 0,
+        "raw_job": 0,
+        "base_level": 10,
+        "job_level": 10,
+        "base_exp": 0,
+        "job_exp": 0,
+        "saved_hp": 86,
+        "saved_sp": 20,
+        "saved_map": "prt_fild08",
+        "saved_position": [
+          172,
+          336
+        ],
+        "inventory": []
+      },
+      {
+        "fixture_index": 1,
+        "raw_job": 0,
+        "base_level": 10,
+        "job_level": 10,
+        "base_exp": 0,
+        "job_exp": 0,
+        "saved_hp": 86,
+        "saved_sp": 20,
+        "saved_map": "prt_fild08",
+        "saved_position": [
+          173,
+          362
+        ],
+        "inventory": []
+      }
+    ],
+    "secrets": "[REDACTED]",
+    "native_gameplay_acceptance": false
+  },
+  "private_values": "[REDACTED]",
+  "errors": [
+    {
+      "stage": "loop",
+      "type": "RuntimeError"
+    }
+  ],
+  "live_native_actions": true,
+  "full_goal_acceptance": false,
+  "scenario": "single_session_real_goals",
+  "operator_goal_override": false,
+  "prior_operator_memory_preserved": true,
+  "mechanical_tick_seconds": 0.25,
+  "transport_failures": [
+    {
+      "stage": "reader_during_loop",
+      "fixture_index": 0,
+      "error_type": "ValueError",
+      "error": "unknown packet 0x0088 at 0, preceding=[]"
+    },
+    {
+      "stage": "reader_before_close",
+      "fixture_index": 0,
+      "error_type": "ValueError",
+      "error": "unknown packet 0x0088 at 0, preceding=[]"
+    }
+  ],
+  "elapsed_s": 3.6411124219957856,
+  "agents": [
+    {
+      "decision_calls": 3,
+      "decision_failures": 0,
+      "chat_calls": 0,
+      "chat_failures": 0,
+      "sent_packets": {
+        "0x888": 1,
+        "0x7d": 1,
+        "0x437": 1
+      },
+      "received_packets": {
+        "0x283": 1,
+        "0x2eb": 1,
+        "0x201": 1,
+        "0x8e": 2,
+        "0x91": 1,
+        "0xb0": 19,
+        "0x141": 12,
+        "0x13a": 2,
+        "0x9e7": 1,
+        "0xa24": 1,
+        "0xa23": 1,
+        "0xade": 1,
+        "0x1d7": 1,
+        "0xa9b": 1,
+        "0x7d8": 1,
+        "0xae5": 3,
+        "0xae4": 2,
+        "0x99b": 1,
+        "0x9ff": 2,
+        "0xadf": 2,
+        "0x10f": 1,
+        "0xa00": 1,
+        "0xacb": 4,
+        "0xbd": 1,
+        "0x2c9": 1,
+        "0x2da": 1,
+        "0x2d9": 3,
+        "0x107": 2
+      },
+      "model_latency_s": [
+        0.8220051009993767,
+        0.6950494009943213,
+        1.3492132669998682
+      ],
+      "states": [
+        [
+          "prt_fild08",
+          172,
+          336,
+          86,
+          "grind"
+        ]
+      ],
+      "max_native_frame_seq": 70,
+      "decision_summaries": [
+        {
+          "change_goal": {
+            "type": "choice",
+            "choice": "keep",
+            "probabilities": {
+              "farm": 0.2695733358076225,
+              "grind": 0.26640139656050565,
+              "keep": 0.3699771588581008,
+              "social": 0.04865949773962003,
+              "town": 0.045388611034151115
+            },
+            "confidence": 0.21247144857262595
+          },
+          "goal_review": {
+            "type": "score",
+            "score": 0.6704637871837699,
+            "legend": {
+              "0": "Badly, reconsider",
+              "1": "Going okay",
+              "2": "Going great"
+            },
+            "probabilities": {
+              "0": 0.4013213069651798,
+              "1": 0.5268935988858705,
+              "2": 0.07178509414894967
+            },
+            "confidence": 0.29034039832880576
+          },
+          "next_action": {
+            "type": "choice",
+            "choice": "grind",
+            "probabilities": {
+              "chat": 0.012915929021861502,
+              "go_town": 0.01774463231558066,
+              "grind": 0.8310827546642761,
+              "idle": 0.01902009877937597,
+              "loot": 0.010343671960241553,
+              "party_invite": 0.02165777515456807,
+              "party_join": 0.032989954761316644,
+              "quest": 0.011966198374964147,
+              "rest": 0.024713130131843144,
+              "travel": 0.017565854835972255
+            },
+            "confidence": 0.8123141718491956
+          }
+        },
+        {
+          "goal_review": {
+            "type": "score",
+            "score": 0.546213700915232,
+            "legend": {
+              "0": "Badly, reconsider",
+              "1": "Going okay",
+              "2": "Going great"
+            },
+            "probabilities": {
+              "0": 0.5114249038681059,
+              "1": 0.4309364913485562,
+              "2": 0.057638604783337884
+            },
+            "confidence": 0.1806794486271519
+          },
+          "react_monster": {
+            "type": "choice",
+            "choice": "attack",
+            "probabilities": {
+              "attack": 0.7926545183806518,
+              "flee": 0.11571537614458287,
+              "ignore": 0.09163010547476536
+            },
+            "confidence": 0.6889817775709777
+          },
+          "next_action": {
+            "type": "choice",
+            "choice": "grind",
+            "probabilities": {
+              "chat": 0.017743084932984897,
+              "go_town": 0.02616768880275306,
+              "grind": 0.7295778654107884,
+              "idle": 0.038010708091839186,
+              "loot": 0.007323313312859219,
+              "party_invite": 0.04149019672497992,
+              "party_join": 0.05996070470300375,
+              "quest": 0.013025147076468334,
+              "rest": 0.04044236854264581,
+              "travel": 0.026258922401677424
+            },
+            "confidence": 0.6995309615675427
+          }
+        },
+        {
+          "goal_review": {
+            "type": "score",
+            "score": 0.6736797420863501,
+            "legend": {
+              "0": "Badly, reconsider",
+              "1": "Going okay",
+              "2": "Going great"
+            },
+            "probabilities": {
+              "0": 0.41026627198560156,
+              "1": 0.5057877139424466,
+              "2": 0.08394601407195172
+            },
+            "confidence": 0.25868157091367006
+          },
+          "react_monster": {
+            "type": "choice",
+            "choice": "attack",
+            "probabilities": {
+              "attack": 0.8700307438498398,
+              "flee": 0.06884009410786754,
+              "ignore": 0.06112916204229258
+            },
+            "confidence": 0.8050461157747597
+          },
+          "next_action": {
+            "type": "choice",
+            "choice": "grind",
+            "probabilities": {
+              "chat": 0.01217715786374907,
+              "go_town": 0.015703684818425646,
+              "grind": 0.8289399481357461,
+              "idle": 0.02171735073331964,
+              "loot": 0.008300557002421214,
+              "party_invite": 0.028557987880666973,
+              "party_join": 0.03352799306755382,
+              "quest": 0.008334057769416306,
+              "rest": 0.027638254841932056,
+              "travel": 0.015103007886768983
+            },
+            "confidence": 0.8099332757063846
+          }
+        }
+      ],
+      "fixture_index": 0,
+      "supported_cleanup_confirmed": true,
+      "reader_error_type": "ValueError",
+      "dispatch_error_count": 0,
+      "xp_receipts": [
+        {
+          "parameter": 1,
+          "value": 0,
+          "delta": null
+        },
+        {
+          "parameter": 2,
+          "value": 0,
+          "delta": null
+        }
+      ],
+      "acquired_counts": [],
+      "damage_receipt_count": 0,
+      "death_receipt_count": 0,
+      "final_visible_actor_count": 2,
+      "final_attackable_actor_count": 2,
+      "final_floor_item_count": 0,
+      "final_inventory_known": true
+    },
+    {
+      "decision_calls": 1,
+      "decision_failures": 0,
+      "chat_calls": 0,
+      "chat_failures": 0,
+      "sent_packets": {
+        "0x888": 1,
+        "0x7d": 1,
+        "0x35f": 1
+      },
+      "received_packets": {
+        "0x283": 1,
+        "0x2eb": 1,
+        "0x201": 1,
+        "0x8e": 2,
+        "0x91": 1,
+        "0xb0": 19,
+        "0x141": 12,
+        "0x13a": 2,
+        "0x9e7": 1,
+        "0xa24": 1,
+        "0xa23": 1,
+        "0xade": 1,
+        "0x1d7": 1,
+        "0xa9b": 1,
+        "0x7d8": 1,
+        "0xae5": 2,
+        "0xae4": 1,
+        "0x107": 1,
+        "0x99b": 1,
+        "0x9ff": 2,
+        "0x10f": 1,
+        "0xa00": 1,
+        "0xacb": 4,
+        "0xbd": 1,
+        "0x2c9": 1,
+        "0x2da": 1,
+        "0x2d9": 3,
+        "0x87": 1
+      },
+      "model_latency_s": [
+        1.316524287998618
+      ],
+      "states": [
+        [
+          "prt_fild08",
+          173,
+          362,
+          86,
+          "grind"
+        ]
+      ],
+      "max_native_frame_seq": 66,
+      "decision_summaries": [
+        {
+          "change_goal": {
+            "type": "choice",
+            "choice": "grind",
+            "probabilities": {
+              "farm": 0.23396300555673766,
+              "grind": 0.32501926926818825,
+              "keep": 0.28347978227172294,
+              "social": 0.07917323997105409,
+              "town": 0.07836470293229707
+            },
+            "confidence": 0.15627408658523528
+          },
+          "goal_review": {
+            "type": "score",
+            "score": 0.5051657088696325,
+            "legend": {
+              "0": "Badly, reconsider",
+              "1": "Going okay",
+              "2": "Going great"
+            },
+            "probabilities": {
+              "0": 0.5686477446981048,
+              "1": 0.35753880173415786,
+              "2": 0.07381345356773734
+            },
+            "confidence": 0.24225143669555116
+          },
+          "next_action": {
+            "type": "choice",
+            "choice": "grind",
+            "probabilities": {
+              "chat": 0.03657759396104306,
+              "go_town": 0.04935524770392284,
+              "grind": 0.5505865665033062,
+              "idle": 0.05308274303631817,
+              "loot": 0.02082216313071433,
+              "party_invite": 0.040969630805003654,
+              "party_join": 0.08714741592878403,
+              "quest": 0.04297603300585496,
+              "rest": 0.061254000183868215,
+              "travel": 0.0572286057411847
+            },
+            "confidence": 0.5006517405592291
+          }
+        }
+      ],
+      "fixture_index": 1,
+      "supported_cleanup_confirmed": true,
+      "reader_error_type": null,
+      "dispatch_error_count": 0,
+      "xp_receipts": [
+        {
+          "parameter": 1,
+          "value": 0,
+          "delta": null
+        },
+        {
+          "parameter": 2,
+          "value": 0,
+          "delta": null
+        }
+      ],
+      "acquired_counts": [],
+      "damage_receipt_count": 0,
+      "death_receipt_count": 0,
+      "final_visible_actor_count": 2,
+      "final_attackable_actor_count": 0,
+      "final_floor_item_count": 0,
+      "final_inventory_known": true
+    }
+  ],
+  "after": {
+    "passed": true,
+    "read_only": true,
+    "native_sessions_opened": 0,
+    "inference_calls": 0,
+    "exact_fixture_ownership_verified": true,
+    "both_offline": true,
+    "characters": [
+      {
+        "fixture_index": 0,
+        "raw_job": 0,
+        "base_level": 10,
+        "job_level": 10,
+        "base_exp": 0,
+        "job_exp": 0,
+        "saved_hp": 86,
+        "saved_sp": 20,
+        "saved_map": "prt_fild08",
+        "saved_position": [
+          172,
+          336
+        ],
+        "inventory": []
+      },
+      {
+        "fixture_index": 1,
+        "raw_job": 0,
+        "base_level": 10,
+        "job_level": 10,
+        "base_exp": 0,
+        "job_exp": 0,
+        "saved_hp": 86,
+        "saved_sp": 20,
+        "saved_map": "prt_fild08",
+        "saved_position": [
+          172,
+          362
+        ],
+        "inventory": []
+      }
+    ],
+    "secrets": "[REDACTED]",
+    "native_gameplay_acceptance": false
+  },
+  "run_scope": "Real Clef startup/event goals, no runtime goal override; prior agent memory retained. One session per fixture, failure on unexpected loss. Gameplay gains require actual receipts/SQL.",
+  "observed_acceptance": {
+    "single_session_execution": false,
+    "native_name_reply_framing": true,
+    "native_patrol_legs": false,
+    "clef_attack_choice_and_send": true,
+    "combat_damage": false,
+    "xp_gain": false,
+    "loot_gain": false,
+    "llm_escalation": false,
+    "supported_cleanup_and_offline": true,
+    "full_goal": false
+  },
+  "failure_frontier": "Unknown fixed position-correction frame 0x0088; stream halted before gameplay feedback. Attack request and model choice are not damage evidence."
+}

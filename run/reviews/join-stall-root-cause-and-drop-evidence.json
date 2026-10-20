@@ -1,0 +1,14 @@
+{
+  "record": "JOIN_STALL_ROOT_CAUSE_IPBAN_DYNAMIC_PASS_FAILURE_BAN_FIXED_PLUS_DROP_ROLLING_EVIDENCE",
+  "date": "2026-10-19 (13:00-13:40)",
+  "join_stall_root_cause": {
+    "finding": "login_athena.conf had ipban_dynamic_pass_failure_ban: yes \u2014 7 auth failures within 5 minutes => 5-minute IP ban on the agent host IP (10.89.2.9). The early misconfigured probes (wrong-username auths) + rapid relogin cycles accumulated failures; during ban epochs BOTH agents' map joins stall (shared IP) \u2014 matching the entire multi-week intermittent-stall pattern (stalls following character/session, both-agents windows, journal showing accepts while clients stalled).",
+    "fix": "ipban_dynamic_pass_failure_ban: no deployed to the volume conf (line 23) + login restart + full pin-restart piano via scripts/recover-world-ips.sh; pins verified intact; Map Server online."
+  },
+  "drop_rolling_evidence": {
+    "finding": "A probe-kill was followed by TWO ZC_ITEM_ENTRY (0x009D) frames arriving on the wire near the kill site \u2014 the server ROLLS and BROADCASTS drops. The spike BotClient ignores 0x9D by design (actor dict is mob/player-shaped); the production tracker's 0x9D branch is the ingest path under test.",
+    "method": "Enabled pick logging for authoritative accounting: log_athena.conf sql_logs: yes + enable_logs: 0xFFF (was 0 = ALL logging disabled) via docker cp + MAP-ONLY restart (pins intact). picklog (ragnarok db) now records every drop (type M = monster).",
+    "probe_notes": "Bare probes: attacks land when within range (pre-re has no server-side chase); long move() paths often did not arrive; Porings wander out of view mid-attack. Kills are best left to the goal scripts; the picklog after the next window gives the drop truth."
+  },
+  "next": "Window running (proc_1a3e4e7faa72): agent kills land -> read the picklog (type M rows) + the receipt's floor_items together \u2014 that closes the loot-leg diagnosis. Also watch the join-stall pattern with the ipban fix live."
+}

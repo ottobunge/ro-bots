@@ -1,0 +1,11 @@
+{
+  "record": "READER_STARVATION_PROBE_CLIENT_PATH_HEALTHY_PUMP_VERDICT_IS_NEXT",
+  "date": "2026-10-19 (~18:5x)",
+  "probe": "PlayingClient(wire).connect() in isolation, fx0, 40s: the reader thread alive the whole time, 0x02EB arrived (count 1), 0xb0 x20 / 0x141 x12 / 0xacb x4 / 0x8e / 0x13a / 0x2d9 all flowing. The tracker view unseeded is EXPECTED in the probe (the pump = build_native_state runs in the agent's tick, which the probe does not call).",
+  "conclusion": "The client path (socket, handshake, reader, frame flow) is HEALTHY in isolation. The w50/51 both-stall lives in: (a) the pump/consume gates under the composition (the capacity/identity observe -> _deny -> NativeTelemetryUnavailable -> the tick failures seen in w50), or (b) the emission lane's own_position_ingests counter measuring the DRAIN path rather than the pump path (a measurement artifact risk).",
+  "next_probe_minutes": "Call pc.build_native_state(Goal.GRIND) in the same isolation probe after connect: if it raises NativeTelemetryUnavailable, the failing gate names itself (the capacity/identity tuple: wire.aid/char/epochs/base continuity). If it seeds, the stall is composition-specific (the two-agent host or the emission wiring), and the own_pos counter's drain-vs-pump source needs one look.",
+  "pump_verdict": [
+    "PUMP OK in isolation: build_native_state seeded map prt_fild08, pos (167,352), alive True, telemetry gates passed. The client path is fully exonerated."
+  ],
+  "narrowed": "THE STALL IS COMPOSITION-SPECIFIC. Prime suspect: the emission lane's drain (drain_native_events/_await_pending) and the agent's pump (build_native_state -> consume_snapshot) both consume the same strictly-sequential ring; the pump's consume is seq-strict (seq != cursor+1 -> _deny -> NativeTelemetryUnavailable) so a double-consumer race produces gaps -> the starved ticks (w50's 22 tick failures). Next: audit the drain's cursor discipline vs the pump's in the window composition; the fix is one-owner consumption (the drain reads without advancing, or the pump is the only consumer)."
+}

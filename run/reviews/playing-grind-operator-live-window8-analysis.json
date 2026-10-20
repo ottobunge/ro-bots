@@ -1,0 +1,14 @@
+{
+  "status": "GRIND_WINDOW8_PACER_RESILIENT_NPC_DIALOGUE_STARVATION_ROOT_CAUSE",
+  "completed_at": "2026-10-15T18:53:01.094538+00:00",
+  "raw_receipt": "run/reviews/playing-grind-operator-live-window8.json",
+  "wins": {
+    "pacer_survives_backend_failure": "fixture_0: 1 heartbeat_failed delivery recorded, 13 successful, window continued (the window-8-first-attempt crash is fixed)",
+    "fixture_0_walk_chain_scaled": "436 walk sends / 436 matched acks / 436 own-position ingests - the agent roamed the field the whole window",
+    "script_evaluation": "600 script steps per agent"
+  },
+  "root_cause_named": "EventDrivenBrain.step_script routes to _npc_step whenever state.npc_dialogue is non-None and not close_requested. Fixture 1 spawns ON TOP of NPC Nelliorde (npc at prt_fild08,175,374; fixture spawn 176,374): the dialogue controller retains a non-terminal dialogue, so the goal script NEVER runs - the agent emits dialogue \"other\" actions (69) and stands still. Explains fixture 1 standing still in EVERY window; fixture 0 (spawn away from the NPC) walks and farms correctly.",
+  "next": "bounded dialogue-clear fix: when the goal is GRIND and a non-terminal dialogue blocks the goal script beyond a bounded budget, drive the existing reviewed NPC cancel/close path to clear it and resume the goal script; then window 9 = first attack.",
+  "world": "roles running; fixtures offline after host.stop; workstation had rebooted before this window - full recovery performed (4 roles + both providers)",
+  "native_authority": "UNCHANGED_REVOKED"
+}

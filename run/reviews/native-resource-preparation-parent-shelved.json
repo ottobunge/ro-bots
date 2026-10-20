@@ -1,0 +1,42 @@
+{
+  "status": "BLOCKED_PREPARATION_CANDIDATE_SHELVED_EXACT_ACCEPTED_SOURCE_RESTORED",
+  "candidate_report_sha256": "86da71355a1aaea6efcc4e060c21058868518dc526967634e563b5e116b54e03",
+  "passing_subset_unique_cases": 700,
+  "remaining_failed_contracts": [
+    {
+      "id": "initial-npc-route-binding",
+      "test": "test_initial_unqualified_npc_open_cannot_be_blessed_retroactively",
+      "finding": "Actual prequalification opening of NPC123 is accepted by rules that qualify only merchant456. Record/bind the prequalification opening target and map (or require qualification before any opening); deny unqualified prior interactions. Do not infer no-effect from global map labels.",
+      "owned_repair_boundary": "native_resource_preparation.py request/qualify; playing_runtime.py qualification seam if needed"
+    },
+    {
+      "id": "all-reader-opt-in-clock-guard",
+      "test": "test_opted_in_state_reader_rejects_oversized_clock_without_overflow",
+      "finding": "Opted-in build_native_state with 10**1000 reaches inherited NPC math.isfinite and raises OverflowError before preparation retirement. Purchase and action admission clock tests pass, but all active-lane readers require a qualified finite sample before received processing. Preserve default NPC/capacity-only semantics.",
+      "owned_repair_boundary": "playing_runtime.py _observe, active-lane-only early clock denial/retirement"
+    }
+  ],
+  "finite_repair_budget": "Exhausted; not reset",
+  "candidate_original_source_bytes": {
+    "src/robots/adapters/native_purchase.py": "596c4a729ab65fe99dcf94e3c954321d19b0427b94930ea586df4057b510bb94",
+    "src/robots/app/playing_runtime.py": "7f1e79f215b3b53038c50f998799f57d3e3b5c5e7238065858c2d5c6d1c76810",
+    "src/robots/domain/shop.py": "e3fe6f3cf0dbcd18e19bf600999ee8c2a10cb6b9de4216a7fd10a5e75ce0fac9",
+    "src/robots/adapters/native_resource_preparation.py": "23a2dfb8905cdc7605af42fbbdf65faa7e6d6135d955195b5fca0e27951e8142",
+    "tests/test_native_resource_preparation.py": "2115cfd626100e362d5413b30e0aab6e3de792f185638fbf8070460e2130bcc8"
+  },
+  "archive": ".work/native-resource-preparation-shelved/candidate-bytes",
+  "restored_existing_sources": [
+    "src/robots/adapters/native_purchase.py",
+    "src/robots/app/playing_runtime.py",
+    "src/robots/domain/shop.py"
+  ],
+  "added_candidate_sources_removed_from_active_tree": [
+    "src/robots/adapters/native_resource_preparation.py",
+    "tests/test_native_resource_preparation.py"
+  ],
+  "restore_to": "run/reviews/inventory-purchase-combined-parent-adopted.json",
+  "accepted_source_bindings_match": true,
+  "new_policy_adopted": false,
+  "native_authority": "UNCHANGED_REVOKED",
+  "no_runtime_or_private_inputs_changed": true
+}

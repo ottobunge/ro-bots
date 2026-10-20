@@ -7,7 +7,9 @@ specific decision-model backend (llama.cpp Clef, Workers AI Clef, or a stub).
 
 from typing import TYPE_CHECKING, Any
 
+from robots.domain.inventory_context import inventory_capacity_facts
 from robots.domain.model import Goal
+from robots.domain.skills import ReceivedSkillContextReadOnly
 
 if TYPE_CHECKING:
     from robots.domain.model import BotState
@@ -20,6 +22,13 @@ PREMADE_CHAT: dict[str, str] = {
     "greet": "Hi all",
     "sell_wts": "WTS %item, PM me",
 }
+
+
+def _add_skill_context(json_state: dict[str, Any], state: BotState) -> None:
+    context = state.received_skills or ReceivedSkillContextReadOnly()
+    json_state["observed_effective_skills"] = context.decision_facts()
+    if state.public_skill_knowledge is not None:
+        json_state["skill_rules_knowledge"] = state.public_skill_knowledge.decision_advice(context)
 
 
 def _goal_criterion(goal: Goal) -> str:
@@ -44,13 +53,21 @@ def build_decision_request(
     nearby_desc = ", ".join(f"{a.name}({a.kind}, d={a.distance:.0f})" for a in state.nearby[:10])
     chat_desc = " | ".join(f"[{c.channel}] {c.sender}: {c.text}" for c in state.recent_chat[-3:])
     invites = ", ".join(i.from_name for i in state.pending_invites) or "none"
-    inv_items = ", ".join(f"{k}x{v}" for k, v in sorted(state.inventory.items())) or "empty"
+    inv_items = (
+        (", ".join(f"{k}x{v}" for k, v in sorted(state.inventory.items())) or "empty")
+        if state.inventory_known
+        else "unknown"
+    )
 
     json_state: dict[str, Any] = {
         "bot": {
             "name": state.name,
             "job": state.job,
             "level": state.base_level,
+            "hp": state.hp,
+            "max_hp": state.max_hp,
+            "sp": state.sp,
+            "max_sp": state.max_sp,
             "hp_ratio": round(state.hp_ratio, 2),
             "sp_ratio": round(state.sp / state.max_sp, 2) if state.max_sp else 0.0,
             "map": state.map_name,
@@ -60,9 +77,14 @@ def build_decision_request(
         },
         "nearby_actors": nearby_desc,
         "inventory": inv_items,
+        "inventory_capacity": inventory_capacity_facts(state),
         "pending_party_invites": invites,
         "recent_chat": chat_desc,
     }
+    _add_encounters(json_state, state)
+    _add_npc_context(json_state, state)
+    _add_skill_context(json_state, state)
+
     if memory_lines is not None:
         json_state["memory_view"] = "\n".join(memory_lines[:40])
 
@@ -133,8 +155,32 @@ def build_decision_request(
         "model": "clef",
         "state": json_state,
         "questions": questions,
-        "goal_criterion_grind": _goal_criterion(Goal.GRIND),
     }
+
+
+def _add_npc_context(json_state: dict[str, Any], state: BotState) -> None:
+    npcs = [a for a in state.nearby if a.kind == "npc"]
+    if npcs:
+        json_state["nearby_npcs"] = [
+            {"id": a.id, "name": a.name, "distance": a.distance} for a in npcs[:10]
+        ]
+    dialog = state.npc_dialogue
+    if dialog is not None:
+        json_state["npc_dialogue"] = {
+            "npc_id": dialog.npc_id,
+            "epoch": dialog.epoch,
+            "map": dialog.map_name,
+            "sequence": dialog.sequence,
+            "stage": dialog.stage,
+            "pages": list(dialog.pages),
+            "options": [{"index": i, "text": text} for i, text in dialog.options],
+        }
+
+
+def _add_encounters(json_state: dict[str, Any], state: BotState) -> None:
+    """Optional detached received history; absent leaves the legacy schema intact."""
+    if state.recent_encounters:
+        json_state["recent_encounters"] = [dict(fact) for fact in state.recent_encounters]
 
 
 def goal_summary(goal: Goal) -> str:

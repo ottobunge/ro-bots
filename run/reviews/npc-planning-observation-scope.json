@@ -1,0 +1,35 @@
+{
+  "status": "ACTUAL_CLIENT_NPC_OBSERVATION_PRODUCER_RED_REACHED",
+  "baseline": {
+    "path": "/home/otto/.hermes/cache/scratch/npc-planning-observation/baseline.json",
+    "sha256": "425f7bf5a82d08c1cc45a11c923a77b9e5448e3d910ea682aef500f30afca52a",
+    "inputs": 396
+  },
+  "owned_source": [
+    "src/robots/app/playing_runtime.py"
+  ],
+  "owned_new_test": "tests/test_npc_planning_observation.py",
+  "owned_new_report": "run/reviews/npc-planning-observation.json",
+  "public_api": "PlayingClient.planning_npc_observation(identity) -> NpcObservation | None",
+  "contract": [
+    "Fresh current received next/menu UI only, same continuous visible NPC/map/client epoch",
+    "Exact selected character name and session match; host-supplied agent/world/ruleset metadata not independently validated byclient",
+    "Current alive/standing/confirmed arrival/no pending movement/dialogue failure/cancel uncertainty/transport gap guards",
+    "Read-only ready summary and actual existing NPC deadlines, no new timers",
+    "No available NPC producer for text/close/string/numeric/waiting/failed/unknown UI",
+    "No gameplay/model/native sends, automatic name answering or host support advertisement",
+    "Use existing deep capture, already shown to retain nested NPC observation; no capture rewrite"
+  ],
+  "not_authorized": [
+    "NPC planned host execution/progress",
+    "PlanningBrain/AgentHost/context/runtime changes",
+    "Domain/schema/controller/protocol changes",
+    "Native connections/world/database/model/provider operations"
+  ],
+  "first_red": {
+    "test": "/home/otto/.hermes/cache/scratch/npc-planning-observation/test_actual_observer.py",
+    "xml": "/home/otto/.hermes/cache/scratch/npc-planning-observation/parent-observer-red.xml",
+    "assertion": "Current actual PlayingClient received next prompt has no planning observation producer"
+  },
+  "full_goals": "OPEN"
+}

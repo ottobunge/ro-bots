@@ -1,0 +1,88 @@
+{
+  "record": "ENGAGEMENT_DIAGNOSIS_ZERO_DECISION_HOLDING_GATE_NAMED_AND_CLOSED_COMPOSITION_SIDE",
+  "date": "2026-10-18",
+  "lane": ".work/engagement-diagnosis (offline only, TDD RED->GREEN, no src/robots edits, no git actions, no live execution)",
+  "holding_gate": {
+    "name": "Decision-backend failure at ScheduledAgent.connect aborts the connect and tears down every freshly authenticated session",
+    "function": "ScheduledAgent.connect (src/robots/app/agent_runtime.py:378-419, except path at :409-417 -> _failed_startup_cleanup -> _close_client)",
+    "trigger": "robots.adapters.playing_backends.PlayingDecision.decide (make_private_decision(--decision-url), httpx timeout 30s) raises PlayingBackendError on EVERY call",
+    "path": "connect -> _start_brain -> brain.start -> EventDrivenBrain.handle_event(Heartbeat(0)) -> _model.decide raises -> connect except -> client.close() -> online stays False -> AgentHost.step retries -> full relogin churn",
+    "live_evidence": {
+      "receipt_w32": ".work/playing-grind-emission/evidence/receipt-1792304761.json: decision_rows 30 == decision_failures 30, decision_calls 0, dispatched all-zero, script_steps 0, positions frozen at save points prt_in[168,128]/prt_fild08[167,352] for 1800s, repeated ERROR 'connect failed (PlayingBackendError)'",
+      "receipt_w33_diag": ".work/playing-grind-emission/evidence/receipt-1792305576.json: same shape at 150s (3/3 decision failures), plus the 30s telemetry-gate cycle (.work/playing-grind-killcommit/diag_gate_log.jsonl: wait_begin -> vitals_fail status_params {} -> vitals_ok 50ms later, every ~30.15s = one full relogin per agent attempt)",
+      "cadence_fingerprint": "the ~30s attempt cadence equals the 30s httpx timeout of make_private_decision: the endpoint (192.168.1.156:8091, private LAN) accepted TCP but never answered in-window; TCP connect verified 0.01s post-window (endpoint up now, answers were not)",
+      "pacer_starvation": "the operator loop executed only 30 mechanical iterations in 1800s (~60s each: 2 agents x one 30s decide timeout per host.step); HeartbeatPacer counts ITERATIONS at fixed step_s=0.25 (not wall time), so 1800s of wall churn = 7.5s of pacer cadence = 1 delivery attempt (itself blocked by build_state raising mid-teardown)"
+    },
+    "consequences": "no tick ever advances past build_state (NativeTelemetryUnavailable between connects), no event is drained, no script step, no dispatch; the observed '30s logoff/login alternation' in the journal is this connect-fail-relogin churn, NOT warp travel (receipt positions never move)"
+  },
+  "bisect_result": {
+    "backend_healthy_same_reset_state": "ENGAGES: plan authored over Novice guidance (brain.py plan-precedence fix holds), FarmScript installed, _merchant_step None on the field leg (drive needs zeny>=50 or sellable stock; return route has no prt_fild08 entry - both fail closed, neither holds the field), 53 dispatched attacks with real 0x437 frames, attack_chain_proven true",
+    "reset_state_hypotheses_refuted": [
+      "H1 merchant/return restructure does not hold the field leg (offline: merchant_drive_cell and merchant_return_cell both None at prt_fild08 with Novice/0-zeny/empty inventory)",
+      "H2/H3 plan binding + guidance precedence do not hold with a working backend: the reviewed plan is (re)authored by the first completed review and overrides needs_npc_preparation; sync_context's epoch wipe only matters across relogin/warps, and w32 never got one completed session",
+      "H4 actor-store reset vs sampling is moot upstream: with zero completed sessions there is no tick loop to sample at all"
+    ],
+    "offline_proof": ".work/engagement-diagnosis/offline_window.py run_window: backend-down (real ScheduledAgent.connect, live PlayingBackendError shape) => 3 connects/3 teardowns/0/0; healthy => 8 decisions, 60 dispatches, 53 attack sends, chain proven"
+  },
+  "composition_fix_shipped": {
+    "where": ".work/engagement-diagnosis/engagement_window34.py (this lane only; delegates to the reviewed killcommit_window23.main unchanged)",
+    "preflight": "preflight_decision_backend(model): one bounded decide() probe with the connect-shape build_decision_request schema; main(argv) probes the same make_private_decision backend robots.playing.build_host would build and FAILS THE WINDOW IN SECONDS with a blocker receipt (evidence/preflight-*.json, exit 1) instead of opening it - no sockets, no logins, no 1800s churn",
+    "verdict": "window_verdict(window): a zero-engagement window is never passed:true (w32 reported passed:true with 0 decisions); the holding layer is named with the gate citation (decision_backend / goal_script_layer / observation_layer / undetermined)",
+    "tests": ".work/engagement-diagnosis/tests/test_engagement_gate.py: 8 passed (RED evidence evidence/RED-engagement-gate.log: ModuleNotFoundError pre-fix, with the live 'connect failed (PlayingBackendError)' log lines emitted by the offline characterization replay)",
+    "evidence": "evidence/receipt-backend-down-w32-shape-*.json (passed:false, holding_layer decision_backend), receipt-healthy-melee-engagement-*.json (passed:true, 53 attack sends), receipt-healthy-approach-leg-*.json, layer-log-*.jsonl",
+    "gates": "scoped ruff check clean, ruff format clean, scoped mypy clean on both lane modules"
+  },
+  "production_patch_candidates": [
+    {
+      "priority": 1,
+      "title": "Fail fast / surface decision-backend unavailability at launch",
+      "file": "src/robots/playing.py or the launch path",
+      "change": "before opening any session, probe the decision backend once (the composition-side preflight in .work/engagement-diagnosis/engagement_window34.py is the reference implementation: build_decision_request from a minimal BotState, one decide() call) and refuse to launch with the error class named",
+      "why": "w32 burned 1800s and reported passed:true while every brain call failed"
+    },
+    {
+      "priority": 2,
+      "title": "Do not tear down an authenticated game session when only the brain review fails",
+      "file": "src/robots/app/agent_runtime.py, ScheduledAgent.connect",
+      "change": "isolate the brain-start decision failure from the transport lifecycle: catch the decision/chat backend exception around self._start_brain() separately from connect()'s BaseException cleanup, keep the (already authenticated) client connected with the brain unreviewed, and let the next event/heartbeat review when the backend recovers; minimally, add a retry budget with backoff so a down backend cannot produce infinite 30s-cadence full relogins",
+      "why": "today a decision outage converts into permanent relogin churn (29-30 map joins/agent/1800s observed), which also poisons the journal interpretation and starves the keepalive/pacer machinery; NOTE this is a behavior-policy change (online-without-review vs fail-closed) for the parent to decide under TDD",
+      "policy_note": "fail-closed teardown is defensible (never fake progress); if kept, then priority 1 (fast preflight) plus a bounded retry/backoff is the minimal honest hardening"
+    },
+    {
+      "priority": 3,
+      "title": "Pace on wall time, not loop iterations",
+      "file": ".work/playing-grind-emission/heartbeat_pacer.py (composition lane, next window)",
+      "change": "HeartbeatPacer accumulates fixed step_s per step() call regardless of wall time; with a slow host.step (here ~60s/iteration) the cadence silently collapses. Accumulate measured elapsed time (or only count iterations that advanced the clock)",
+      "why": "w32's pacer accumulated 7.5s of cadence in a 1800s window; even with a healthy backend a slow loop would starve reviews the same way"
+    },
+    {
+      "priority": 4,
+      "title": "Plan survival across epoch changes (secondary, becomes live once sessions survive)",
+      "file": "src/robots/app/brain.py sync_context / _run_review",
+      "change": "sync_context wipes _plan on every native-epoch change and _run_review overwrites brain._plan on every review; with full relogin per warp, an authored plan dies at each map change until the next heartbeat re-authors it (offline this self-heals at pacer cadence; across relogin churn it is a starvation window). If plan persistence across warps is desired, re-pin from the operator seam after epoch changes or make _setup_farm_plan reuse a compatible prior plan",
+      "why": "the reset-state agent falls back to NpcGuidanceScript/exploration (never attacks) between plan loss and the next completed review"
+    }
+  ],
+  "environment_note": "the decision endpoint http://192.168.1.156:8091/v1/systemone accepts TCP now (0.01s probe, passive) but answered nothing in-window; before the next live window, launch it (or re-point --decision-url) and confirm one 200-shaped decide() response - the composition preflight now enforces this in seconds",
+  "artifacts": {
+    "namespace": ".work/engagement-diagnosis/",
+    "modules": [
+      "offline_window.py",
+      "engagement_window34.py",
+      "run_offline_windows.py",
+      "tests/conftest.py",
+      "tests/test_engagement_gate.py",
+      "README.md"
+    ],
+    "evidence": [
+      "evidence/RED-engagement-gate.log",
+      "evidence/receipt-backend-down-w32-shape-1792307223.json",
+      "evidence/receipt-healthy-melee-engagement-1792307223.json",
+      "evidence/receipt-healthy-approach-leg-1792307223.json",
+      "evidence/layer-log-backend-down.jsonl",
+      "evidence/layer-log-healthy-far.jsonl",
+      "evidence/layer-log-healthy-melee.jsonl"
+    ]
+  },
+  "scope_compliance": "no src/robots edits; no git actions; no live game/inference execution (the endpoint probe was a passive 2s TCP connect to the operator's own launch dependency, no request sent); all reads of live artifacts were read-only"
+}

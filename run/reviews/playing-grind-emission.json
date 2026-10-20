@@ -1,0 +1,157 @@
+{
+  "completed_at": "2026-10-15T22:39:24+00:00",
+  "deep_capture": {
+    "also_captures": [
+      "decision rows per review (goal/plan targets/error class)",
+      "script rows per step (preparation conjuncts, plan targets, route label)",
+      "warning log records"
+    ],
+    "dispositions": [
+      "authored",
+      "dispatched",
+      "accepted_wire",
+      "gated (alive/target_absent/rest/standing/pending-walk/actuation_blocked)",
+      "dropped_warning"
+    ],
+    "module": "emission_capture.py",
+    "operator": "playing_grind_emission_operator.py (consolidated cadence stack, byte-identical copies, pacer default 6.0 s, full stderr tee to evidence)"
+  },
+  "divergence": {
+    "candidates_enumerated": {
+      "C1_needs_npc_preparation_state_shape": {
+        "citations": [
+          "src/robots/app/scripts.py:138-146",
+          "src/robots/app/brain.py:350-351",
+          "src/robots/app/playing_runtime.py:494-550",
+          "src/robots/adapters/native_gameplay.py:413-418"
+        ],
+        "verdict": "PROVEN root cause - the single flipping conjunct is inventory_known"
+      },
+      "C2_plan_target_mobs_shape_case": {
+        "citations": [
+          "src/robots/app/scripts.py:103-107",
+          "window12 projection samples: Poring in ['Poring'] exact match"
+        ],
+        "verdict": "excluded (live evidence + offline re-check)"
+      },
+      "C3_planned_vs_event_driven_brain_route": {
+        "citations": [
+          "src/robots/app/brain.py:304-305",
+          "AgentHost._build_agent"
+        ],
+        "verdict": "excluded (twin uses the same EventDrivenBrain; route identical)"
+      },
+      "C4_script_selection_for_goal_grind": {
+        "citations": [
+          "src/robots/app/scripts.py:153-155",
+          "src/robots/app/brain.py:352-353"
+        ],
+        "verdict": "excluded (FarmScript(plan) was installed at review time, hijacked pre-execution)"
+      },
+      "C5_perform_time_gates": {
+        "citations": [
+          "src/robots/app/playing_runtime.py:608-615",
+          "1041-1049"
+        ],
+        "verdict": "reachable but not the window-12 blocker; the emission capture names each gate live"
+      }
+    },
+    "pre_fix_offline_proof": {
+      "cadence_shape": "attack_sends 1200 / chain proven",
+      "live_shape": "attack_sends 0 / attack_authored false / 1200 preparation rows / plan_targets ['Poring']",
+      "probe_receipt": "evidence/pre_fix_probes.json",
+      "red_run": "exactly test_authored_plan_is_executed_despite_preparation_shape failed against unchanged production"
+    },
+    "proven": true,
+    "root_cause": "EventDrivenBrain.step_script re-entered NpcGuidanceScript on every script step whenever needs_npc_preparation(state) held - which is the live fixture shape (native epoch set, job Novice, inventory known-empty via the received weight status, no received instruction) - so the CLEF-authored farm plan was never executed even with the plan target in range. The offline twin diverged from live only in the state shape: the cadence FakeWire fed no weight-status frame, so inventory_known stayed False there and the twin's FarmScript ran."
+  },
+  "evidence_digests": {
+    "GREEN-emission.log": "ef76e083c78077edd3888276a6c9f7c92c57d8128525b01dcbce78cef94c71bf",
+    "GREEN-emission.xml": "fa765840cfde6375fa6f7af0485870e2e954b2c06fb9e800a0b47d370490b4ee",
+    "RED-emission.log": "2c118a1c00582f2812123604d195c9d13c26b1b183a81ce9b549913b45e2d067",
+    "RED-emission.xml": "4eeaa8ce6522ab3af3ec87fdcca387e77011e33806fe03d19f51beeaa066166d",
+    "agent_runtime.py.pre-fix": "5d266e7a0bb290855f56be5bb688172fa4ed0b13d005c246289c83185cb7e744",
+    "brain.py.pre-fix": "2cff4edfc45389001cad198890cdea016ffaa49e23eafd6583ce99eea4489a1b",
+    "pre_fix_probes.json": "aad8aea16eed838519fb2d9adb0a3dcf10367ecc24481a6a652a49dc6669e979",
+    "probe_summary.json": "602c22ed847a5587e688387f37cf08b48158c7d221a61d2d3633c87361d9ac84",
+    "red_shape.json": "febbbc44833723294b6efbf41255623156b225bf8a126bc415213b51c39a9a68",
+    "root-task-check.log": "6b1929b9b8a76792a46e62958c9995f40e743f2dc204e0323d75808ee21604ba",
+    "scoped_black.log": "d5d62f7c9bf4cd6d295ae2e353f2c99579059cedcbfb7ab73e23232854819d44",
+    "scoped_mypy.log": "378debea0f243fa4c728e7fe3ede5501fef438478cb33681fccfd6c7e86242af",
+    "scoped_ruff.log": "fcffdd2d29718c78d91bcae492a70ef72b7fbf05e0d7eae26a714c47bcf2df1c",
+    "scoped_xenon.log": "811ae3974904d38f21947d3675095eb305e0873fcaca847e30e11396971a3187"
+  },
+  "fix": {
+    "pre_fix_bytes_preserved": [
+      "evidence/brain.py.pre-fix",
+      "evidence/agent_runtime.py.pre-fix"
+    ],
+    "production_changes": [
+      {
+        "change": "step_script/_step_goal_script: novice guidance route only when self._plan is None; dialogue route extracted (_dialogue_route) for the xenon B gate",
+        "file": "src/robots/app/brain.py"
+      },
+      {
+        "change": "_script_actions: an authored brain plan passes script actions through unchanged (no client-side mechanical override)",
+        "file": "src/robots/app/agent_runtime.py"
+      }
+    ],
+    "rationale": "ADR-021: an admitted plan is the planner's standing instruction; a plan-less Novice still seeks guidance (preserved and regression-tested)"
+  },
+  "gates": {
+    "namespace_scoped": {
+      "black": "clean",
+      "mypy(brain,agent_runtime)": "clean",
+      "ruff": "clean",
+      "suite": "7 passed",
+      "xenon src": "clean"
+    },
+    "root_gate": {
+      "command": "cd /home/otto/dev/ro-bots && nix develop -c task check",
+      "history": "first run failed xenon on brain.py:337 step_script rank C; fixed by the _dialogue_route/_step_goal_script extraction (failed receipt preserved in log history)",
+      "log": "evidence/root-task-check.log",
+      "rc": 0,
+      "result": "5899 passed, 1 warning, 65 subtests passed in 198.46s (baseline 5899+65 unchanged)"
+    }
+  },
+  "honest_unknowns": [
+    "live-window verification pending: the twin proves the operator-loop seam; the window-13 instrumented receipt is the deciding live evidence",
+    "the alive gate is unreachable in the twin (epoch baseline authorizes alive); the capture names it live if it ever blocks",
+    "live decision-failure cadence at pacer 6 s (backend ~3/s capacity) is expected to keep the per-tick guard silent; recorded, not assumed"
+  ],
+  "module_digests": {
+    "READY-TO-RUN.md": "2ea8c14b79d0deb2a4dd2fb29bb96859d2aee94908058d2d0326880a9c0b1271",
+    "emission_capture.py": "d22e3d75d6b5fab8fb47f6bff66a2decf2c3142cdfe73fa7fa7fd53b81b6cfb2",
+    "frame_diagnostics.py": "ac6b432a41cf9d1778f509207feaeef00da43f695ad4770e2900d4e6d31537a3",
+    "heartbeat_pacer.py": "0d8f54a1f151fae6e17011ba534523ba453e24cb57ebc246a2b47ebbd88557b2",
+    "offline_twin.py": "ec3cfcea1cfff98ecb13baec9782ae36dbe19d3fc292fb8c13cd15c648fee707",
+    "playing_grind_emission_operator.py": "a62e74f37371fce195e84dc3fdaec6b8066cedf33d380c6926935432605c3ad4",
+    "projection_diagnostic.py": "77948eb5ae6d0cd2691e0c209eeecb8f85d64d400d12aa56fdc160c889f7d65b",
+    "spawn_knowledge.py": "466e81b64f53ca16754f4fbd25269f1f567feda7506616aa10db218b6f964c72",
+    "tests/conftest.py": "bfc55b3bb84a443edf430467d64e05c0e602ff2ab6d3d8dcf966e4c86211ad88",
+    "tests/test_emission_contracts.py": "e243f48299c8c957c68c45fe0639d4dcc87863d903e045800eb6026009924cd7",
+    "travel.py": "545d123961ea6641f798c9b88daa81d421d3a0afbe848ad5c2339994d000d7ff"
+  },
+  "namespace": ".work/playing-grind-emission",
+  "native_authority": "UNCHANGED_REVOKED",
+  "status": "ATTACK_EMISSION_DIVERGENCE_PROVEN_AND_FIXED_WINDOW13_PACKAGED",
+  "tdd": {
+    "GREEN": {
+      "log": "evidence/GREEN-emission.log",
+      "passed": 7,
+      "xml": "evidence/GREEN-emission.xml"
+    },
+    "RED": {
+      "failing": [
+        "test_authored_plan_is_executed_despite_preparation_shape"
+      ],
+      "log": "evidence/RED-emission.log",
+      "xml": "evidence/RED-emission.xml"
+    }
+  },
+  "window13": {
+    "acceptance": "emission.attack_chain_proven (Attack 0x437 accepted_wire at an observed mob) + per-action dispositions + damage/death/XP/loot receipts + decision_failures recorded with pacer blocked=0",
+    "command": "nix develop -c uv run python .work/playing-grind-emission/playing_grind_emission_operator.py --playground --duration 300 --pacer-every-s 6 <manifest args as windows 4-12>",
+    "package": ".work/playing-grind-emission/READY-TO-RUN.md"
+  }
+}

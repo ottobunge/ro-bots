@@ -1,0 +1,350 @@
+{
+  "date": "2026-10-05",
+  "pinned_rathena_commit": "e985006171d2eb320ee512a653f4c83aea3d81b6",
+  "scope": "Offline Classic catalog and authoring only. No live/provider/DB calls or initialization. No Renewal catalog changes, staging, commits or push.",
+  "changed_files": [
+    "src/robots/domain/build_templates.py",
+    "src/robots/app/builds.py",
+    "src/robots/domain/build.py",
+    "tests/test_build_templates.py",
+    "tests/test_classic_build_validity.py"
+  ],
+  "confirmed_red_cases": [
+    "Wizard tweak generated DEX104",
+    "Above-cap/nonlinear-overbudget/bool stats accepted",
+    "Six custom paths skipped first class",
+    "Swordsman AGI became Assassin",
+    "Paladin skipped rebirth",
+    "Nonexistent Ring Pincer",
+    "Silver Robe garment",
+    "Bow with Guard",
+    "Blacksmith illegal Helm/shield with Buster",
+    "Assassin Binoculars",
+    "Wizard missing ancestors and illegal skill set",
+    "Blacksmith duplicate Over/Power Thrust and Weapon Perfection10",
+    "Ambiguous Sage Elemental Change",
+    "Skill level loss and name-only false progress",
+    "No ruleset boundary",
+    "Unsupported market prices and wrong Impressive Riff note"
+  ],
+  "bounded_skill_validation": {
+    "mage-aoe-wizard": {
+      "Mage": 39,
+      "Wizard": 49
+    },
+    "support-battlesmith": {
+      "Blacksmith": 36,
+      "quest_targets": [
+        "MC_CARTREVOLUTION 1"
+      ],
+      "quest_acquisition_validated": false
+    }
+  },
+  "verification": {
+    "scoped_tests": "58 passed",
+    "scoped_ruff": "passed",
+    "scoped_mypy": "5 files passed",
+    "full_pytest": "489 passed, 65 subtests passed, 1 existing Starlette warning; 93.21% coverage",
+    "scoped_black": "passed",
+    "scoped_xenon": "passed after tested extraction refactor",
+    "task_check": "blocked by out-of-scope Black formatting of test_packet_conditions.py and test_world_seed_safety.py",
+    "full_mypy": "80 errors in out-of-scope protocol/limb test files at this concurrent checkpoint",
+    "full_quality_green": false
+  },
+  "frontier": "All 12 remain provisional and carry issues. Only AoE Wizard and Battlesmith have automated ancestor/max-level/job-budget closure checks. Other 10 have diagnostic missing targets below, not expanded/certified. Paladin closure costs 57 Crusader points (above ordinary49; transcendent allocation/rebirth carry semantics not validated). Bard diagnostic closure has no missing ancestors but not promoted to executable validity. Quest skills are not ordinary job point costs. Equipment variant/card resolution, per-level stats, NPC job/rebirth prerequisites and real execution remain unvalidated.",
+  "entries": [
+    {
+      "template_id": "tank-svd-knight",
+      "ruleset": "classic",
+      "fully_validated_executable": false,
+      "stat_cost": 1096,
+      "stat_budget": 1273,
+      "skill_closure_regression_validated": false,
+      "diagnostic_missing_ancestor_targets": {
+        "KN_SPEARSTAB": 3
+      },
+      "diagnostic_prerequisite_closed_tree_costs": {
+        "Novice": 0,
+        "Swordman": 25,
+        "Knight": 44
+      },
+      "unresolved_skill_aliases": [],
+      "remaining_validation_issues": [
+        "Equipment variants, card composites and full job restrictions remain unvalidated.",
+        "Stats validate only the pinned level-99 endpoint, not milestone allocations.",
+        "Class paths do not validate quest, job-level or rebirth execution requirements.",
+        "Skill ancestor closure and per-job point budgets remain unvalidated."
+      ]
+    },
+    {
+      "template_id": "tank-sac-paladin",
+      "ruleset": "classic",
+      "fully_validated_executable": false,
+      "stat_cost": 975,
+      "stat_budget": 1273,
+      "skill_closure_regression_validated": false,
+      "diagnostic_missing_ancestor_targets": {
+        "CR_SHIELDCHARGE": 3,
+        "CR_GRANDCROSS": 4,
+        "SM_PROVOKE": 5,
+        "AL_DEMONBANE": 5,
+        "CR_HOLYCROSS": 6,
+        "AL_DP": 3,
+        "AL_CURE": 1
+      },
+      "diagnostic_prerequisite_closed_tree_costs": {
+        "Novice": 0,
+        "Swordman": 10,
+        "Crusader": 57,
+        "Paladin": 10
+      },
+      "unresolved_skill_aliases": [],
+      "remaining_validation_issues": [
+        "Equipment variants, card composites and full job restrictions remain unvalidated.",
+        "Stats validate only the pinned level-99 endpoint, not milestone allocations.",
+        "Class paths do not validate quest, job-level or rebirth execution requirements.",
+        "Skill ancestor closure and per-job point budgets remain unvalidated."
+      ]
+    },
+    {
+      "template_id": "healer-fs-priest",
+      "ruleset": "classic",
+      "fully_validated_executable": false,
+      "stat_cost": 1096,
+      "stat_budget": 1273,
+      "skill_closure_regression_validated": false,
+      "diagnostic_missing_ancestor_targets": {
+        "AL_DP": 5,
+        "MG_SRECOVERY": 4,
+        "PR_IMPOSITIO": 2
+      },
+      "diagnostic_prerequisite_closed_tree_costs": {
+        "Novice": 0,
+        "Acolyte": 40,
+        "Priest": 26
+      },
+      "unresolved_skill_aliases": [],
+      "remaining_validation_issues": [
+        "Equipment variants, card composites and full job restrictions remain unvalidated.",
+        "Stats validate only the pinned level-99 endpoint, not milestone allocations.",
+        "Class paths do not validate quest, job-level or rebirth execution requirements.",
+        "Skill ancestor closure and per-job point budgets remain unvalidated.",
+        "Linked Priest guide is High-Priest focused; Classic guidance is uncertain."
+      ]
+    },
+    {
+      "template_id": "healer-battle-priest",
+      "ruleset": "classic",
+      "fully_validated_executable": false,
+      "stat_cost": 874,
+      "stat_budget": 1273,
+      "skill_closure_regression_validated": false,
+      "diagnostic_missing_ancestor_targets": {
+        "AL_DP": 5,
+        "AL_ANGELUS": 2
+      },
+      "diagnostic_prerequisite_closed_tree_costs": {
+        "Novice": 0,
+        "Acolyte": 32,
+        "Priest": 35
+      },
+      "unresolved_skill_aliases": [],
+      "remaining_validation_issues": [
+        "Equipment variants, card composites and full job restrictions remain unvalidated.",
+        "Stats validate only the pinned level-99 endpoint, not milestone allocations.",
+        "Class paths do not validate quest, job-level or rebirth execution requirements.",
+        "Skill ancestor closure and per-job point budgets remain unvalidated."
+      ]
+    },
+    {
+      "template_id": "mage-aoe-wizard",
+      "ruleset": "classic",
+      "fully_validated_executable": false,
+      "stat_cost": 1256,
+      "stat_budget": 1273,
+      "skill_closure_regression_validated": true,
+      "diagnostic_missing_ancestor_targets": {},
+      "diagnostic_prerequisite_closed_tree_costs": {
+        "Novice": 0,
+        "Mage": 39,
+        "Wizard": 49
+      },
+      "unresolved_skill_aliases": [],
+      "remaining_validation_issues": [
+        "Equipment variants, card composites and full job restrictions remain unvalidated.",
+        "Stats validate only the pinned level-99 endpoint, not milestone allocations.",
+        "Class paths do not validate quest, job-level or rebirth execution requirements."
+      ]
+    },
+    {
+      "template_id": "mage-sage-bolter",
+      "ruleset": "classic",
+      "fully_validated_executable": false,
+      "stat_cost": 1066,
+      "stat_budget": 1273,
+      "skill_closure_regression_validated": false,
+      "diagnostic_missing_ancestor_targets": {
+        "WZ_EARTHSPIKE": 1,
+        "SA_SPELLBREAKER": 3,
+        "SA_SEISMICWEAPON": 1,
+        "SA_MAGICROD": 1,
+        "MG_STONECURSE": 1
+      },
+      "diagnostic_prerequisite_closed_tree_costs": {
+        "Novice": 0,
+        "Mage": 21,
+        "Sage": 36
+      },
+      "unresolved_skill_aliases": [],
+      "remaining_validation_issues": [
+        "Equipment variants, card composites and full job restrictions remain unvalidated.",
+        "Stats validate only the pinned level-99 endpoint, not milestone allocations.",
+        "Class paths do not validate quest, job-level or rebirth execution requirements.",
+        "Skill ancestor closure and per-job point budgets remain unvalidated.",
+        "Linked Sage guide is Renewal, not validated Classic source evidence."
+      ]
+    },
+    {
+      "template_id": "hunter-ds-blitzer",
+      "ruleset": "classic",
+      "fully_validated_executable": false,
+      "stat_cost": 1107,
+      "stat_budget": 1273,
+      "skill_closure_regression_validated": false,
+      "diagnostic_missing_ancestor_targets": {
+        "HT_SKIDTRAP": 1
+      },
+      "diagnostic_prerequisite_closed_tree_costs": {
+        "Novice": 0,
+        "Archer": 40,
+        "Hunter": 22
+      },
+      "unresolved_skill_aliases": [],
+      "remaining_validation_issues": [
+        "Equipment variants, card composites and full job restrictions remain unvalidated.",
+        "Stats validate only the pinned level-99 endpoint, not milestone allocations.",
+        "Class paths do not validate quest, job-level or rebirth execution requirements.",
+        "Skill ancestor closure and per-job point budgets remain unvalidated."
+      ]
+    },
+    {
+      "template_id": "hunter-woe-trapper",
+      "ruleset": "classic",
+      "fully_validated_executable": false,
+      "stat_cost": 868,
+      "stat_budget": 1273,
+      "skill_closure_regression_validated": false,
+      "diagnostic_missing_ancestor_targets": {
+        "HT_SKIDTRAP": 1,
+        "HT_FLASHER": 1,
+        "HT_FREEZINGTRAP": 1,
+        "HT_SHOCKWAVE": 1,
+        "HT_BEASTBANE": 1,
+        "AC_CONCENTRATION": 1,
+        "AC_VULTURE": 1,
+        "AC_OWL": 3
+      },
+      "diagnostic_prerequisite_closed_tree_costs": {
+        "Novice": 0,
+        "Archer": 5,
+        "Hunter": 46
+      },
+      "unresolved_skill_aliases": [],
+      "remaining_validation_issues": [
+        "Equipment variants, card composites and full job restrictions remain unvalidated.",
+        "Stats validate only the pinned level-99 endpoint, not milestone allocations.",
+        "Class paths do not validate quest, job-level or rebirth execution requirements.",
+        "Skill ancestor closure and per-job point budgets remain unvalidated."
+      ]
+    },
+    {
+      "template_id": "support-woe-bard",
+      "ruleset": "classic",
+      "fully_validated_executable": false,
+      "stat_cost": 1074,
+      "stat_budget": 1273,
+      "skill_closure_regression_validated": false,
+      "diagnostic_missing_ancestor_targets": {},
+      "diagnostic_prerequisite_closed_tree_costs": {
+        "Novice": 0,
+        "Archer": 0,
+        "Bard": 45
+      },
+      "unresolved_skill_aliases": [],
+      "remaining_validation_issues": [
+        "Equipment variants, card composites and full job restrictions remain unvalidated.",
+        "Stats validate only the pinned level-99 endpoint, not milestone allocations.",
+        "Class paths do not validate quest, job-level or rebirth execution requirements.",
+        "Skill ancestor closure and per-job point budgets remain unvalidated."
+      ]
+    },
+    {
+      "template_id": "support-battlesmith",
+      "ruleset": "classic",
+      "fully_validated_executable": false,
+      "stat_cost": 1063,
+      "stat_budget": 1273,
+      "skill_closure_regression_validated": true,
+      "diagnostic_missing_ancestor_targets": {},
+      "diagnostic_prerequisite_closed_tree_costs": {
+        "Novice": 0,
+        "Merchant": 1,
+        "Blacksmith": 36
+      },
+      "unresolved_skill_aliases": [],
+      "remaining_validation_issues": [
+        "Equipment variants, card composites and full job restrictions remain unvalidated.",
+        "Stats validate only the pinned level-99 endpoint, not milestone allocations.",
+        "Class paths do not validate quest, job-level or rebirth execution requirements.",
+        "Cart Revolution requires quest acquisition; it is not an ordinary skill point."
+      ]
+    },
+    {
+      "template_id": "melee-crit-sin",
+      "ruleset": "classic",
+      "fully_validated_executable": false,
+      "stat_cost": 1142,
+      "stat_budget": 1273,
+      "skill_closure_regression_validated": false,
+      "diagnostic_missing_ancestor_targets": {
+        "TF_POISON": 1,
+        "TF_STEAL": 5
+      },
+      "diagnostic_prerequisite_closed_tree_costs": {
+        "Novice": 0,
+        "Thief": 31,
+        "Assassin": 35
+      },
+      "unresolved_skill_aliases": [],
+      "remaining_validation_issues": [
+        "Equipment variants, card composites and full job restrictions remain unvalidated.",
+        "Stats validate only the pinned level-99 endpoint, not milestone allocations.",
+        "Class paths do not validate quest, job-level or rebirth execution requirements.",
+        "Skill ancestor closure and per-job point budgets remain unvalidated."
+      ]
+    },
+    {
+      "template_id": "melee-agi-2h-knight",
+      "ruleset": "classic",
+      "fully_validated_executable": false,
+      "stat_cost": 1242,
+      "stat_budget": 1273,
+      "skill_closure_regression_validated": false,
+      "diagnostic_missing_ancestor_targets": {
+        "SM_SWORD": 1
+      },
+      "diagnostic_prerequisite_closed_tree_costs": {
+        "Novice": 0,
+        "Swordman": 41,
+        "Knight": 25
+      },
+      "unresolved_skill_aliases": [],
+      "remaining_validation_issues": [
+        "Equipment variants, card composites and full job restrictions remain unvalidated.",
+        "Stats validate only the pinned level-99 endpoint, not milestone allocations.",
+        "Class paths do not validate quest, job-level or rebirth execution requirements.",
+        "Skill ancestor closure and per-job point budgets remain unvalidated."
+      ]
+    }
+  ]
+}

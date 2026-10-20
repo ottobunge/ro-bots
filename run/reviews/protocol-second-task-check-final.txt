@@ -1,0 +1,43 @@
+warning: Git tree '/home/otto/dev/ro-bots' is dirty
+ro-bots dev shell — try: task --list
+task: [check] uv run black --check src tests
+All done! ✨ 🍰 ✨
+77 files would be left unchanged.
+task: [lint:complexity] uv run xenon src --max-absolute B --max-modules B --max-average A
+task: [lint:security] uv run bandit -q -c pyproject.toml -r src
+task: [lint:dead] uv run vulture src vulture_whitelist.py
+task: [lint:mypy] uv run mypy
+task: [lint:dup] uv run pylint --disable=all --enable=duplicate-code --ignore-paths=tests src
+task: [lint:ruff] uv run ruff check src tests
+I001 [*] Import block is un-sorted or un-formatted
+  --> tests/test_population_config.py:3:1
+   |
+ 1 |   """Population configuration must match requested groups and solo agents."""
+ 2 |
+ 3 | / import random
+ 4 | |
+ 5 | | import pytest
+ 6 | |
+ 7 | | from fastapi.testclient import TestClient
+ 8 | |
+ 9 | | from robots.adapters.worldfeed_server import create_app
+10 | | from robots.app.world_state import WorldState
+11 | | from robots.society.society import SocietyRoster
+   | |________________________________________________^
+help: Organize imports
+  |
+5 | import pytest
+  -
+6 | from fastapi.testclient import TestClient
+  |
+
+Found 1 error.
+[*] 1 fixable with the `--fix` option.
+src/robots/app/builds.py:173: error: Unsupported operand types for >= ("int" and "None")  [operator]
+src/robots/app/builds.py:173: note: Left operand is of type "int | None"
+Found 1 error in 1 file (checked 77 source files)
+
+--------------------------------------------------------------------
+Your code has been rated at 10.00/10 (previous run: 10.00/10, +0.00)
+
+task: Failed to run task "check": task: Failed to run task "lint": task: Failed to run task "lint:ruff": exit status 1

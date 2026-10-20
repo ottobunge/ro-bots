@@ -1,0 +1,118 @@
+{
+  "schema": "native-encounter-context-first-slice/v1",
+  "status": "OFFLINE_COMPONENT_IMPLEMENTED_PARENT_REVIEW_PENDING",
+  "audit_sha256": "05a9e1c4956e98bdcd19b30fddd4a5a6051303adbdef88c656ce227fd168d233",
+  "profile": {
+    "revision": "e985006171d2eb320ee512a653f4c83aea3d81b6",
+    "packetver": 20180704,
+    "client_family": "MAIN",
+    "ruleset": "pre-re",
+    "obfuscation": "ABSENT"
+  },
+  "owned_files": [
+    "src/robots/adapters/native_encounter_context.py",
+    "tests/test_native_encounter_context.py",
+    "run/reviews/playing-mvp-native-encounter-context-fix.json"
+  ],
+  "file_sha256": {
+    "src/robots/adapters/native_encounter_context.py": "ac901f04bffbf2d69650abc5faf4d9cfc492b6df31b5bba8c79fae4ffc2043d6",
+    "tests/test_native_encounter_context.py": "e0d579c28caf126e1ec982300e01994f6768a880f717c35fec5c04a9ed282bfd"
+  },
+  "compiler_oracle": {
+    "outputs": {
+      "g++": "idle 104 1 0 2 4 5 23 2 2 4 1\nspawn 103 1 0 2 4 5 23 2 2 4 1\nwalking 110 1 0 2 4 5 23 2 2 4 1\n",
+      "clang++": "idle 104 1 0 2 4 5 23 2 2 4 1\nspawn 103 1 0 2 4 5 23 2 2 4 1\nwalking 110 1 0 2 4 5 23 2 2 4 1\n"
+    },
+    "source_hashes": {
+      "/home/otto/.hermes/cache/scratch/callback-package-hut2_cuz/configured-variant/src/map/packets.hpp": "b4959224a48e1febb811d7c1474f2c1b703d324ae4db7e3a1053a85b80da57bc",
+      "/home/otto/.hermes/cache/scratch/callback-package-hut2_cuz/configured-variant/src/map/packets_struct.hpp": "5ab5ef13d2a1cdc60d84dcaf2e3be0b6e316b9630e61c3ac7ba0f930d4d31287",
+      "/home/otto/.hermes/cache/scratch/callback-package-hut2_cuz/configured-variant/src/custom/defines_post.hpp": "64e8ffea133190fd361801cbcbfd5bcc4fc2c499a93312f8ee347492f725ad4c"
+    },
+    "job_cpp_type": "int16 signed (std::is_same_v static_assert)",
+    "job_width": 2,
+    "job_offset": 23,
+    "wire_endianness": "little (compiled target static_assert)",
+    "actor_id_cpp_type": "uint32",
+    "actor_id_width": 4,
+    "actor_id_offset": 5,
+    "header_offsets": {
+      "PacketType": 0,
+      "PacketLength": 2,
+      "objecttype": 4
+    },
+    "family_sizes": {
+      "0x09FD/packet_unit_walking": 110,
+      "0x09FE/packet_spawn_unit": 103,
+      "0x09FF/packet_idle_unit": 104
+    },
+    "flags_authority": "tests/test_native_protocol_manifest.py CPPFLAGS + immutable package map-cppflags.txt; no extra profile-forcing flags",
+    "immutable_binding_check": "test_immutable_source_profile_sender_binding executed before both full-header compiles",
+    "configured_include_closure_counts": {
+      "g++": 68,
+      "clang++": 68
+    },
+    "private_original_evidence": "/home/otto/.hermes/cache/scratch/ec",
+    "full_headers_unchanged": true,
+    "no_extracted_header_workaround": true
+  },
+  "source_semantics": {
+    "clif.cpp": [
+      1130,
+      1278,
+      1392
+    ],
+    "assignment": "p.job = vd->look[LOOK_BASE]",
+    "mob.cpp": 4997,
+    "default_template_assignment": "mob->vd.look[LOOK_BASE] = mob->id",
+    "meaning": "observed eligible presented mob-class only; never unconditional biological/current-instance identity",
+    "catalog_lookup": "Not implemented; future public catalog lookup may describe bound presented ID, template level not current-instance level."
+  },
+  "implemented": [
+    "Complete accepted actor decode using existing presentation parser; only type5 excluding SELF and negative alias; signed nonpositive job remains unknown",
+    "Typed immutable damage facts with same epoch/target/window and observations no later than the hit",
+    "Own received native_level11 or reviewed selected baseline sequence0 provenance; absent/late/invalid captures remain null",
+    "Per-agent history <=8 records and <=2048 compact UTF8 bytes including source; duplicate/old/foreign-epoch hits do not rewrite; reset clears session history",
+    "No ID-based instance joins; caller must advance window_start on vanish/reuse/map/gap and capture facts at receipt, not latest-state replay"
+  ],
+  "verification": {
+    "new_test_count": 10,
+    "scoped_regression_junit": {
+      "tests": 92,
+      "errors": 0,
+      "failures": 0,
+      "skipped": 0
+    },
+    "junit_xml": "/home/otto/.hermes/cache/scratch/ec/tests.xml",
+    "original_red_green_logs": [
+      "/home/otto/.hermes/cache/scratch/ec/red1.txt",
+      "/home/otto/.hermes/cache/scratch/ec/red2.txt",
+      "/home/otto/.hermes/cache/scratch/ec/red3.txt",
+      "/home/otto/.hermes/cache/scratch/ec/red4.txt",
+      "/home/otto/.hermes/cache/scratch/ec/red5.txt",
+      "/home/otto/.hermes/cache/scratch/ec/red6.txt"
+    ],
+    "quality_exit_codes": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "quality_original": "/home/otto/.hermes/cache/scratch/ec/quality.json",
+    "physical_parse_stream": "all three actor families individual/coalesced/byte-incremental; inherited variable lengths remain -1",
+    "offline_import": "python -I import succeeded; httpx absent from sys.modules"
+  },
+  "limits": [
+    "Pure typed helpers preserve caller provenance but do not authenticate it or prove transport health",
+    "Historical actual native damage whose species/own level was not captured remains UNKNOWN; no retrospective reconstruction",
+    "No active runtime wiring, current-instance association tracker, public mechanics lookup, skill/bonus/equipment/stat fields or actuation",
+    "Only supported pinned profile measured; no Renewal claim or generic/full-catalogue proof",
+    "Initial fixture-import collection error was corrected before first genuine assertion RED",
+    "Boundary negative cases were grouped within the third RED/GREEN iteration rather than one case per cycle"
+  ],
+  "native_effects": false,
+  "sql_queries": 0,
+  "new_native_sessions": 0,
+  "full_root_gate_run": false,
+  "full_milestones_open": true,
+  "remaining": "Parent independent review and REST dependency release precede any active received-snapshot wiring. No active integration acceptance claimed."
+}

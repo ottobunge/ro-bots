@@ -1,0 +1,59 @@
+{
+  "scope": "Historical schema-1 journal and unchanged shared close helper; no runtime builder, memory-cache backend, tree commit, supervisor, workspace, manager, world, or admission approval.",
+  "accepted_scoped_contract": true,
+  "review": "run/reviews/runtime-publication-journal-second-fix-review.json",
+  "verified_distinct_cases": 223,
+  "current_scoped_input_count": 23,
+  "current_scoped_input_drift": [],
+  "reviewed_hashes": {
+    "Taskfile.yml": "63616950e21c15c455c2b6f90be4d588b77f31a62181fd7a93253d164a64a7fd",
+    "flake.lock": "c9c0bac69415b99a29ef3fe149b6f04ef54d291989bdf7218cf819ed52edf2a0",
+    "flake.nix": "185e4a4babf62a40484c347f59653bd11b79ce847316a3a90349c8545d38a359",
+    "pyproject.toml": "e8ae0849a413bc3d705f081f609b92dae702bbd3e491b2c3aeb5d8665c458fba",
+    "run/reviews/runtime-publication-journal-first-fix-review.json": "4128403062f3508d47379b19186f8a429943c7a3ca125c34af98f5f8fd2c5193",
+    "run/reviews/runtime-publication-journal-independent-review.json": "c93d479f2302d5178723ee9aa09fd737b6ceff1fec8da688a2a19a7acee90fca",
+    "run/reviews/runtime-publication-journal-parent-verification.json": "22e85793d01f83829f7ab03f8e2fb812dc542acaaa32451d536251e96f364c6e",
+    "run/reviews/runtime-publication-journal-second-fix.json": "195563d5ba17b95870d3799f144d386c49476cb4e931cd3291f74fea4c485345",
+    "src/robots/__init__.py": "14a8271c90ed669cc0645c2901ba6a3d93345643b7697e87b965b9008f02b6a6",
+    "src/robots/adapters/__init__.py": "0682851ebbbbcccfb31e82a108d69a92193252f3eda2498f893dc078f3a68b1d",
+    "src/robots/adapters/rathena_runtime.py": "0a52cbbae5ec459022c1348e33c65105c8cf0776a6bf68bca05e1066d8c74293",
+    "src/robots/adapters/rathena_runtime_assets.py": "8cf599ddd633c82879d5a6fc0ed2d98f13399e4094262b6bcafb25c9841650fc",
+    "src/robots/adapters/rathena_runtime_io.py": "bc3ca2d291da5d19831bd57f5a794e455a6e9f7870db0f655d376a51de0e6719",
+    "src/robots/adapters/runtime_publication_io.py": "4a7c1c8e794d92c28d9b59ccc69854fb4461e1731ae6ee2ec81db3a00ae6bd8c",
+    "src/robots/adapters/runtime_publication_journal.py": "36f442431254b6b5f8c252bc1eb7c6528755d9e50ef974f17459de1e06e60384",
+    "src/robots/adapters/runtime_tree_sync.py": "2058f33b65ea9cebae8bc3fd07aa78416559c6d4bcb335326b8a166b7053782a",
+    "tests/test_runtime_publication_journal.py": "9586500c50d356417b9f7ff31269b0d64ca00f320d27ef3933d1112c4e1caed0",
+    "tests/test_runtime_publication_journal_ack_regressions.py": "fdca6e9897fc3f2f9f56ec6c015de8c6151a838c668896f694e9fba8c66f836a",
+    "tests/test_runtime_publication_journal_cleanup_regressions.py": "1adc0be80a39ba22772f4d52a56c84d0050e94fd63497e4057f47cb7be3352af",
+    "tests/test_runtime_publication_journal_second_fix.py": "ffe79b989bbeafc02f47f707018a15cebd4961426279b55a2cc3f189e8ce7b6e",
+    "uv.lock": "2d7b4c187078488d7625e4fd4fa982745cab8d6a65b2ff3e382ffa286f1df245",
+    "vulture_whitelist.py": "872286fe8d1fb50ef67cab45cd96e5c2936549f8cbdb4bb31cd292b97617b673",
+    "wiki/guides/runtime-publication-journal.md": "70fe2dad777bcd06070c0631f4050bc9670ec36d1c18ab7faaa6351ed4f6ec5d"
+  },
+  "cleanup_is_not_guaranteed_physical_release": true,
+  "native_provider_or_world_acceptance": false,
+  "world_startup_authorized": false,
+  "original_runtime_construction_publication_findings_closed": false,
+  "finding_closure": {
+    "JOURNAL-DIAGNOSTIC-001": {
+      "closure": "closed_for_supported_reviewed_public_close_and_constructor_diagnostic_seams",
+      "evidence": "Five sole diagnostic cases use actual unpatched normal os.close after actual append/True ack and inject only owned post-close fstat. Four non-Exception objects propagate with origin frames after unresolved/diagnostic_failed snapshot assignment; ordinary EIO returns conservatively. Unpatched EBADF and fresh-process flock prove release independently; repeated close performs no additional diagnostic and ack/write deny. Sixteen close-primary contrasts preserve first OSError/KeyboardInterrupt before/after physical release against four different diagnostic nonlocal origins. Sixteen additional constructors use actual normal cleanup close and preserve their original fstat/pread primary against those four origins.",
+      "active_primary_policy": "sys.exception includes active caller except state, not just a close failure. Four fresh normal-close-in-external-except contrasts preserve that caller primary and intentionally suppress the diagnostic. Constructor active-primary contrasts separately pass. Not a claim that every diagnostic raised in every lexical caller context escapes."
+    },
+    "JOURNAL-OWNERSHIP-002": {
+      "closure": "closed_for_explicit_getpid_preallocation_and_reached_allocated_OS_seams",
+      "evidence": "Four getpid KeyboardInterrupt/SystemExit cases distinguish a fresh leaf from already-existing history and use a separate positive control. Exact objects/frames survive one PID call; owned writer open/close counts are zero, borrowed root remains valid, no capsule is claimed, no new leaf appears, pre-existing bytes stay unchanged. Forty-two allocated cases record exactly one PID call/open/close attempt at flock/first-file-fstat/pread/malformed replay, with pre-release and release-before-raise cleanup and normal/EIO/SystemExit diagnostics. Original errors expose typed owner-PID snapshots, absent initial identity where appropriate, released_observed/identity_unknown/descriptor_present/diagnostic_failed observations accurately without granting authority.",
+      "failure_model": "Explicit called OS seams only. No arbitrary bytecode/dataclass-allocation interruption immunity is asserted; typed snapshot construction is data, not a security capability."
+    },
+    "JOURNAL-ACK-001": {
+      "closure": "closed_for_frozen_acknowledgement_method",
+      "evidence": "Twelve fresh root-fstat/file-fstat/entry-stat x KeyboardInterrupt/SystemExit/GeneratorExit/custom BaseException cases start at real append/True ack, poison and propagate exact origin/frame, visit only once, deny later acknowledgements and writes. Ordinary denial regressions in unchanged repository tests also pass."
+    },
+    "JOURNAL-OWNERSHIP-001": {
+      "closure": "partially_addressed_original_unconditional_release_not_closed; narrowed_observational_handoff_contract_verified",
+      "evidence": "Public snapshots remain reachable after one attempt and on first allocated constructor failures. Two real same-inode/other-inode descriptor reuse probes remain unresolved and never reclose the replacement; stale active snapshots do not become live authority. Two newly owned workers retain actually live unresolved descriptors and locks until normal exit 0, then the kernel releases them and fresh processes can flock. No manual descriptor close is counted as process recovery.",
+      "contract_migration": "An independently owned and separately authorized process boundary makes the retained handoff operationally meaningful. No cleanup for arbitrary long-lived host targets, process kill/recovery/retry action API, or hostile same-UID exclusion is implemented. The original failed zero-live-descriptors oracle/report is unchanged, not rerun, and not claimed to pass."
+    }
+  },
+  "no_new_repair_cycle": true
+}

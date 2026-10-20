@@ -1,0 +1,345 @@
+{
+  "passed": true,
+  "security_concerns": [],
+  "logic_errors": [],
+  "quality_blockers": [],
+  "suggestions": [],
+  "summary": "Intentional literal keep priority approved offline: only _review_goal changes production behavior; missing/unsupported fallback and monster/damage/attack policy remain intact.",
+  "scope": {
+    "owned_output": "run/reviews/playing-mvp-explicit-keep-independent-review.json",
+    "production_change": "Only _review_goal: missing choice default empty string, explicit keep returns state.goal before score parsing, supported nonkeep mapping unchanged except unindent.",
+    "reviewed_files": [
+      "src/robots/app/brain.py",
+      "tests/test_explicit_goal_review.py",
+      "tests/test_recorded_goal_keep.py"
+    ],
+    "baseline": "SHA-verified exact author private pre-change snapshots, not whole dirty-repository diff",
+    "excluded": [
+      "keepalive implementation independent-review ownership",
+      "native sessions",
+      "new model inference",
+      "SQL/services/providers/world effects",
+      "malformed nested-payload general validation",
+      "repairs",
+      "source/test/doc/Git edits"
+    ]
+  },
+  "source_comparison": {
+    "src/robots/app/brain.py": {
+      "old_snapshot_sha256": "c4e644fde9780af4f650564edb4115727c95132e39825f0e4c5037f935442777",
+      "changed_functions": [
+        "_review_goal"
+      ],
+      "added_functions": [],
+      "removed_functions": []
+    },
+    "tests/test_explicit_goal_review.py": {
+      "old_snapshot_sha256": "b1f4addf09a6b197c4ec3787e12d37f5a9e3b81b324c682ab435f8be6740c1c4",
+      "changed_functions": [
+        "test_nonexplicit_choice_preserves_review_fallback"
+      ],
+      "added_functions": [
+        "test_explicit_keep_is_authoritative"
+      ],
+      "removed_functions": []
+    }
+  },
+  "static_checks": {
+    "existing_test_bodies_preserved": {
+      "test_start_honors_explicit_current_grind_despite_bad_review": true,
+      "test_supported_explicit_choice_overrides_bad_review": true,
+      "test_nonexplicit_choice_preserves_review_fallback": true
+    },
+    "brain_outside_review_ast_identical": true,
+    "security_added_lines_hits": []
+  },
+  "intentional_test_contract_revision": {
+    "historical_keep_fallback_cases_removed": 8,
+    "authoritative_keep_cases_added": 20,
+    "original_missing_unsupported_test_body_preserved": true,
+    "supported_nonkeep_assertions_preserved": true,
+    "old_behavior_intentional_not_accidental_bug": true
+  },
+  "actualtests": {
+    "scoped_xml": [
+      {
+        "name": "pytest",
+        "errors": "0",
+        "failures": "0",
+        "skipped": "0",
+        "tests": "68",
+        "time": "0.177",
+        "timestamp": "2026-10-07T20:38:09.696798+02:00",
+        "hostname": "framework"
+      }
+    ],
+    "scoped_count": 68,
+    "scoped_modules": [
+      "tests/test_recorded_goal_keep.py",
+      "tests/test_explicit_goal_review.py",
+      "tests/test_brain.py",
+      "tests/test_empty_farm_plan.py"
+    ],
+    "fresh_probe_xml": [
+      {
+        "name": "pytest",
+        "errors": "0",
+        "failures": "0",
+        "skipped": "0",
+        "tests": "398",
+        "time": "0.613",
+        "timestamp": "2026-10-07T20:42:30.153488+02:00",
+        "hostname": "framework"
+      }
+    ],
+    "fresh_probe_count": 398,
+    "combined_physical_count": 466,
+    "fresh_probe_counts_by_function": {
+      "test_missing_unsupported_differential": 210,
+      "test_keep_priority": 35,
+      "test_supported_nonkeep_differential": 120,
+      "test_recorded_start_then_recorded_flee": 2,
+      "test_monster_event_not_overridden": 20,
+      "test_damage_policy": 4,
+      "test_keep_does_not_force_grind_or_next_action": 5,
+      "test_keep_farm_plan_and_mechanical_attacks_unchanged": 2
+    },
+    "scoped_and_quality_execution": [
+      {
+        "name": "pytest",
+        "command": [
+          "nix",
+          "develop",
+          "--offline",
+          "--no-write-lock-file",
+          "path:./spikes/007-native-packet-ast/toolchain",
+          "-c",
+          "/home/otto/dev/ro-bots/.venv/bin/pytest",
+          "-o",
+          "addopts=",
+          "-p",
+          "no:cacheprovider",
+          "tests/test_recorded_goal_keep.py",
+          "tests/test_explicit_goal_review.py",
+          "tests/test_brain.py",
+          "tests/test_empty_farm_plan.py",
+          "-q",
+          "--junitxml=/home/otto/.hermes/cache/scratch/explicit-keep-independent-1791398243010280653/scoped.xml"
+        ],
+        "exit_code": 0,
+        "elapsed_s": 0.8052328249905258,
+        "output": "....................................................................     [100%]\n68 passed in 0.18s\n"
+      },
+      {
+        "name": "black",
+        "command": [
+          "nix",
+          "develop",
+          "--offline",
+          "--no-write-lock-file",
+          "path:./spikes/007-native-packet-ast/toolchain",
+          "-c",
+          "/home/otto/dev/ro-bots/.venv/bin/black",
+          "--workers",
+          "1",
+          "--check",
+          "src/robots/app/brain.py",
+          "tests/test_explicit_goal_review.py",
+          "tests/test_recorded_goal_keep.py"
+        ],
+        "exit_code": 0,
+        "elapsed_s": 0.35044855100568384,
+        "output": "All done! \u2728 \ud83c\udf70 \u2728\n3 files would be left unchanged.\n"
+      },
+      {
+        "name": "ruff",
+        "command": [
+          "nix",
+          "develop",
+          "--offline",
+          "--no-write-lock-file",
+          "path:./spikes/007-native-packet-ast/toolchain",
+          "-c",
+          "/home/otto/dev/ro-bots/.venv/bin/ruff",
+          "check",
+          "--no-cache",
+          "src/robots/app/brain.py",
+          "tests/test_explicit_goal_review.py",
+          "tests/test_recorded_goal_keep.py"
+        ],
+        "exit_code": 0,
+        "elapsed_s": 0.17954639199888334,
+        "output": "All checks passed!\n"
+      },
+      {
+        "name": "mypy",
+        "command": [
+          "nix",
+          "develop",
+          "--offline",
+          "--no-write-lock-file",
+          "path:./spikes/007-native-packet-ast/toolchain",
+          "-c",
+          "/home/otto/dev/ro-bots/.venv/bin/mypy",
+          "--strict",
+          "--cache-dir",
+          "/home/otto/.hermes/cache/scratch/explicit-keep-independent-1791398243010280653/mypy",
+          "src/robots/app/brain.py",
+          "tests/test_explicit_goal_review.py",
+          "tests/test_recorded_goal_keep.py"
+        ],
+        "exit_code": 0,
+        "elapsed_s": 2.335353665999719,
+        "output": "Success: no issues found in 3 source files\n"
+      }
+    ],
+    "fresh_probe_execution": {
+      "command": [
+        "nix",
+        "develop",
+        "--offline",
+        "--no-write-lock-file",
+        "path:./spikes/007-native-packet-ast/toolchain",
+        "-c",
+        "/home/otto/dev/ro-bots/.venv/bin/pytest",
+        "-o",
+        "addopts=",
+        "-p",
+        "no:cacheprovider",
+        "-q",
+        "/home/otto/.hermes/cache/scratch/explicit-keep-independent-1791398243010280653/test_boundary_probes.py",
+        "--junitxml=/home/otto/.hermes/cache/scratch/explicit-keep-independent-1791398243010280653/probes.xml"
+      ],
+      "exit_code": 0,
+      "elapsed_s": 1.2121612759947311,
+      "output": "........................................................................ [ 18%]\n........................................................................ [ 36%]\n........................................................................ [ 54%]\n........................................................................ [ 72%]\n........................................................................ [ 90%]\n......................................                                   [100%]\n398 passed in 0.61s\n"
+    }
+  },
+  "fresh_probes": {
+    "fallback": "210 differential cases against original _review_goal: all five goals; absent entire change entry/absent choice/empty/unknown/KEEP/None/leading-space keep; scores 0, immediately below .5, .5, immediately above .5, 1, missing. State and answer immutability and notes preserved.",
+    "keep_priority": "35 cases across all five goals; six score boundaries/missing plus actual score=None deliberately bypassed by literal keep; no stricter answer type validation invented.",
+    "supported_nonkeep": "120 original-vs-current differential mappings including same-goal no-op notes and immutable inputs.",
+    "recorded_startup": "Both fixture answer summaries exactly match frozen diagnostic; current GRIND selects GrindScript, no plan, actions empty, no phantom goal note, one decision and zero escalation. Recorded low-confidence FLEE still emits +4 Y and retains current script; next_action grind does not force attack.",
+    "event_policy": "20 actual MonsterSpotted event cases across all goals: attack selects GrindScript, flee retains script and moves +4 Y, ignore/missing stays unchanged. Four damage event cases preserve rest/flee/default.",
+    "no_forced_grind": "Five goal-specific startup script selections preserve SOCIAL/FARM_ITEM/QUEST/IDLE_TOWN/GRIND despite next_action grind.",
+    "existing_plan_and_attack": "Two keep+bad-score farm-plan cases preserve duration/targets and nearest-target attacks with no new decision calls; plain GrindScript attacks unchanged.",
+    "recorded_scores": [
+      0.47613983195913184,
+      0.455523213077666
+    ],
+    "evidence_kind": "Offline replay of archived answer summaries with synthetic state and stub models, not new Clef answers or gameplay."
+  },
+  "artifactsha256": {
+    "src/robots/app/brain.py": "57b31b54546bad5704fda62ac9572510457bc4a2eb46faea9deb87e6beb6be75",
+    "src/robots/app/scripts.py": "3bfa0bb0eb6786fc7f0fda6b88805cee6de867d2cdf97952fc8d4620861491a4",
+    "src/robots/domain/model.py": "ad311ac53e1d3a24bf7fe34cb96461b342d8f3ff12a2397d7d43725221538dbf",
+    "src/robots/domain/decisions.py": "9b32f1fad0ef0ff98c670092757742a68808846b845cbf1c469ff8bf8d2227f2",
+    "src/robots/domain/farm.py": "3773b241cbd3c4ab6a467e122f33f2a624897f739ce01fc0e1ba49b17aaf3d8a",
+    "src/robots/app/playing_runtime.py": "e305b545b2724e68cd1b20ab7c4659e621784759dfa83c4614fe80ea07b759f4",
+    "src/robots/app/agent_runtime.py": "e60d518da5a11dd872f30b8987a03edf5b4a773188264ac21740afe67b64500d",
+    "tests/test_explicit_goal_review.py": "a9bffe77dba2e3c43606b68140449fd435206d0e38c9893dcdc302e6393a3f51",
+    "tests/test_recorded_goal_keep.py": "4625d52c9044f1a6a34df72a187ae3a7325dadbba018f301ea398ad60022e6dd",
+    "tests/test_brain.py": "14b41aa10bd612c54e538a7d9b998a848c5d89db061e57947a1eaa057f716fa4",
+    "tests/test_empty_farm_plan.py": "09d1b9834dccb67209882ca7ef32171d63b1e2fcefc95fe1ea78aad104018975",
+    "run/reviews/playing-mvp-explicit-keep-fix.json": "517f5eff4a639e6f8536b0c23fcec82155709ac19922d8c25b3732d5bc430f97",
+    "run/reviews/playing-mvp-explicit-keep-scope.json": "e232aaaff2c96c6ee2c376a78318b1c8a8627842576612ea398c23769b6c4ce3",
+    "run/reviews/playing-mvp-goal-behavior-diagnostic.json": "0ca44629164c398b9f6e7fcd62e1d6c42af78549abb32fdc5ecd9012c3095f18",
+    "run/reviews/playing-mvp-keepalive-goal-combined-parent-gate.json": "b0c9656c2c7978692d5de1c2f0b91a8dcccc814aaa8ed08182ee4280965d7413",
+    "/home/otto/.hermes/cache/scratch/explicit-keep-independent-1791398243010280653/scoped.xml": "fce2fafa1d88ad12dcd0268dc641e20fdfd023792e79b43ecbdd98d565bd8e4e",
+    "/home/otto/.hermes/cache/scratch/explicit-keep-independent-1791398243010280653/probes.xml": "712c84187e876505ead0df67db5e31d7f4cd3beaef0f7c05d5d926a1ba5bd861",
+    "/home/otto/.hermes/cache/scratch/explicit-keep-independent-1791398243010280653/test_boundary_probes.py": "2eedffa7f933f4aee2ab072565f2d4a1b9dea7990f2397982a60a895ed81491c",
+    "/home/otto/.hermes/cache/scratch/explicit-keep-independent-1791398243010280653/probes-initial-collection-error.xml": "46bdabfd04afe491d85d514b8defa1487f31cf41deb81371f2ab175a73877462"
+  },
+  "frozen_before_after": {
+    "input_count": 15,
+    "expected": {
+      "src/robots/app/brain.py": "57b31b54546bad5704fda62ac9572510457bc4a2eb46faea9deb87e6beb6be75",
+      "src/robots/app/scripts.py": "3bfa0bb0eb6786fc7f0fda6b88805cee6de867d2cdf97952fc8d4620861491a4",
+      "src/robots/domain/model.py": "ad311ac53e1d3a24bf7fe34cb96461b342d8f3ff12a2397d7d43725221538dbf",
+      "src/robots/domain/decisions.py": "9b32f1fad0ef0ff98c670092757742a68808846b845cbf1c469ff8bf8d2227f2",
+      "src/robots/domain/farm.py": "3773b241cbd3c4ab6a467e122f33f2a624897f739ce01fc0e1ba49b17aaf3d8a",
+      "src/robots/app/playing_runtime.py": "e305b545b2724e68cd1b20ab7c4659e621784759dfa83c4614fe80ea07b759f4",
+      "src/robots/app/agent_runtime.py": "e60d518da5a11dd872f30b8987a03edf5b4a773188264ac21740afe67b64500d",
+      "tests/test_explicit_goal_review.py": "a9bffe77dba2e3c43606b68140449fd435206d0e38c9893dcdc302e6393a3f51",
+      "tests/test_recorded_goal_keep.py": "4625d52c9044f1a6a34df72a187ae3a7325dadbba018f301ea398ad60022e6dd",
+      "tests/test_brain.py": "14b41aa10bd612c54e538a7d9b998a848c5d89db061e57947a1eaa057f716fa4",
+      "tests/test_empty_farm_plan.py": "09d1b9834dccb67209882ca7ef32171d63b1e2fcefc95fe1ea78aad104018975",
+      "run/reviews/playing-mvp-explicit-keep-fix.json": "517f5eff4a639e6f8536b0c23fcec82155709ac19922d8c25b3732d5bc430f97",
+      "run/reviews/playing-mvp-explicit-keep-scope.json": "e232aaaff2c96c6ee2c376a78318b1c8a8627842576612ea398c23769b6c4ce3",
+      "run/reviews/playing-mvp-goal-behavior-diagnostic.json": "0ca44629164c398b9f6e7fcd62e1d6c42af78549abb32fdc5ecd9012c3095f18",
+      "run/reviews/playing-mvp-keepalive-goal-combined-parent-gate.json": "b0c9656c2c7978692d5de1c2f0b91a8dcccc814aaa8ed08182ee4280965d7413"
+    },
+    "before": {
+      "src/robots/app/brain.py": "57b31b54546bad5704fda62ac9572510457bc4a2eb46faea9deb87e6beb6be75",
+      "src/robots/app/scripts.py": "3bfa0bb0eb6786fc7f0fda6b88805cee6de867d2cdf97952fc8d4620861491a4",
+      "src/robots/domain/model.py": "ad311ac53e1d3a24bf7fe34cb96461b342d8f3ff12a2397d7d43725221538dbf",
+      "src/robots/domain/decisions.py": "9b32f1fad0ef0ff98c670092757742a68808846b845cbf1c469ff8bf8d2227f2",
+      "src/robots/domain/farm.py": "3773b241cbd3c4ab6a467e122f33f2a624897f739ce01fc0e1ba49b17aaf3d8a",
+      "src/robots/app/playing_runtime.py": "e305b545b2724e68cd1b20ab7c4659e621784759dfa83c4614fe80ea07b759f4",
+      "src/robots/app/agent_runtime.py": "e60d518da5a11dd872f30b8987a03edf5b4a773188264ac21740afe67b64500d",
+      "tests/test_explicit_goal_review.py": "a9bffe77dba2e3c43606b68140449fd435206d0e38c9893dcdc302e6393a3f51",
+      "tests/test_recorded_goal_keep.py": "4625d52c9044f1a6a34df72a187ae3a7325dadbba018f301ea398ad60022e6dd",
+      "tests/test_brain.py": "14b41aa10bd612c54e538a7d9b998a848c5d89db061e57947a1eaa057f716fa4",
+      "tests/test_empty_farm_plan.py": "09d1b9834dccb67209882ca7ef32171d63b1e2fcefc95fe1ea78aad104018975",
+      "run/reviews/playing-mvp-explicit-keep-fix.json": "517f5eff4a639e6f8536b0c23fcec82155709ac19922d8c25b3732d5bc430f97",
+      "run/reviews/playing-mvp-explicit-keep-scope.json": "e232aaaff2c96c6ee2c376a78318b1c8a8627842576612ea398c23769b6c4ce3",
+      "run/reviews/playing-mvp-goal-behavior-diagnostic.json": "0ca44629164c398b9f6e7fcd62e1d6c42af78549abb32fdc5ecd9012c3095f18",
+      "run/reviews/playing-mvp-keepalive-goal-combined-parent-gate.json": "b0c9656c2c7978692d5de1c2f0b91a8dcccc814aaa8ed08182ee4280965d7413"
+    },
+    "after": {
+      "src/robots/app/brain.py": "57b31b54546bad5704fda62ac9572510457bc4a2eb46faea9deb87e6beb6be75",
+      "src/robots/app/scripts.py": "3bfa0bb0eb6786fc7f0fda6b88805cee6de867d2cdf97952fc8d4620861491a4",
+      "src/robots/domain/model.py": "ad311ac53e1d3a24bf7fe34cb96461b342d8f3ff12a2397d7d43725221538dbf",
+      "src/robots/domain/decisions.py": "9b32f1fad0ef0ff98c670092757742a68808846b845cbf1c469ff8bf8d2227f2",
+      "src/robots/domain/farm.py": "3773b241cbd3c4ab6a467e122f33f2a624897f739ce01fc0e1ba49b17aaf3d8a",
+      "src/robots/app/playing_runtime.py": "e305b545b2724e68cd1b20ab7c4659e621784759dfa83c4614fe80ea07b759f4",
+      "src/robots/app/agent_runtime.py": "e60d518da5a11dd872f30b8987a03edf5b4a773188264ac21740afe67b64500d",
+      "tests/test_explicit_goal_review.py": "a9bffe77dba2e3c43606b68140449fd435206d0e38c9893dcdc302e6393a3f51",
+      "tests/test_recorded_goal_keep.py": "4625d52c9044f1a6a34df72a187ae3a7325dadbba018f301ea398ad60022e6dd",
+      "tests/test_brain.py": "14b41aa10bd612c54e538a7d9b998a848c5d89db061e57947a1eaa057f716fa4",
+      "tests/test_empty_farm_plan.py": "09d1b9834dccb67209882ca7ef32171d63b1e2fcefc95fe1ea78aad104018975",
+      "run/reviews/playing-mvp-explicit-keep-fix.json": "517f5eff4a639e6f8536b0c23fcec82155709ac19922d8c25b3732d5bc430f97",
+      "run/reviews/playing-mvp-explicit-keep-scope.json": "e232aaaff2c96c6ee2c376a78318b1c8a8627842576612ea398c23769b6c4ce3",
+      "run/reviews/playing-mvp-goal-behavior-diagnostic.json": "0ca44629164c398b9f6e7fcd62e1d6c42af78549abb32fdc5ecd9012c3095f18",
+      "run/reviews/playing-mvp-keepalive-goal-combined-parent-gate.json": "b0c9656c2c7978692d5de1c2f0b91a8dcccc814aaa8ed08182ee4280965d7413"
+    },
+    "all_match": true
+  },
+  "parent_gate_reference": {
+    "path": "run/reviews/playing-mvp-keepalive-goal-combined-parent-gate.json",
+    "check_exit": 0,
+    "audit_exit": 0,
+    "physical_tests": 3861,
+    "subtests": 65,
+    "coverage_percent": 95.07,
+    "independent_reviewer_repeated": false,
+    "basis": "Frozen parent report only; root gate not repeated."
+  },
+  "issues_encountered": [
+    {
+      "kind": "private harness setup, not production failure",
+      "detail": "Initial probe collection failed because nix develop did not retain injected PYTHONPATH; made private scratch probe import paths explicit and reran successfully. Original collection-error XML/log retained."
+    }
+  ],
+  "limits": {
+    "elapsed_s_since_first_freeze": 425.7691378593445,
+    "target_elapsed_s": 240,
+    "overrun_s": 185.76913785934448,
+    "tool_budget": {
+      "target_calls": 12,
+      "pre_report_tool_invocations": 22,
+      "pre_report_tool_batches": 8,
+      "report_batch": 9,
+      "report_nested_calls": 3,
+      "definition": "Counts individual invoked tools including read-only skill/file calls, excluding parallel wrapper; time includes probe authoring and harness retry."
+    },
+    "new_native_sessions": 0,
+    "new_inference_calls": 0,
+    "source_repairs": 0,
+    "full_goal_acceptance": false,
+    "live_damage_xp_loot_or_survival_acceptance": false,
+    "all_gameplay_milestones": "OPEN",
+    "scope_boundaries": "No hidden-population imports, permission expansion, forced GRIND/combat/FLEE override, or native/service/SQL/provider/Git state change. Preexisting context omissions, repeated idle walking, malformed score validation remain outside this change.",
+    "private_evidence_dir": "/home/otto/.hermes/cache/scratch/explicit-keep-independent-1791398243010280653"
+  }
+}

@@ -1,0 +1,18 @@
+// Candidate only: not installed or parser/native accepted.
+// One item, one page; no persistent variables or game-state writes.
+// ITEMINFO_ALIASNAME is the item-ID override, not ITEMINFO_VIEW (appearance).
+prt_in,170,130,0	script	Item Guide#knife1201	105,{
+	mes "[Item Guide]";
+	if (getiteminfo(1201, ITEMINFO_ID) != 1201) {
+		mes "Item 1201 is unavailable. No item facts are qualified.";
+		close;
+	}
+	mes "Item facts from this server's loaded item database.";
+	mes "Canonical item ID: " + getiteminfo(1201, ITEMINFO_ID);
+	mes "Item type code: " + getiteminfo(1201, ITEMINFO_TYPE);
+	mes "Weight (raw engine units): " + getiteminfo(1201, ITEMINFO_WEIGHT);
+	mes "View item ID override (0 means canonical): " + getiteminfo(1201, ITEMINFO_ALIASNAME);
+	mes "Database buy price (Zeny): " + getiteminfo(1201, ITEMINFO_BUY);
+	mes "These are item facts, not a shop quote or permission to buy.";
+	close;
+}

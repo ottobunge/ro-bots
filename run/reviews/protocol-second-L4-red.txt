@@ -1,0 +1,80 @@
+FF                                                                       [100%]
+=================================== FAILURES ===================================
+________ test_character_selection_uses_native_sparse_wire_slot[slots0] _________
+
+native_layout = [155, 88, 118, 110, 5, 9, ...]
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7ffff5cca2c0>
+slots = (5,)
+
+    @pytest.mark.parametrize("slots", [(5,), (2, 7)])
+    def test_character_selection_uses_native_sparse_wire_slot(native_layout, monkeypatch, slots):
+        import client
+        import secrets
+        import struct
+    
+        size, name_offset, slot_offset = native_layout[:3]
+        bot = client.BotClient("offline", secrets.token_hex(8), char_name="Selected", verbose=False)
+        bot.aid = 11
+        raw = bytearray(27 + size * len(slots))
+        struct.pack_into("<HH", raw, 0, 0x006B, len(raw))
+        for index, slot in enumerate(slots):
+            offset = 27 + index * size
+            struct.pack_into("<I", raw, offset, 21 + index)
+            name = b"Selected" if index == len(slots) - 1 else b"Other"
+            raw[offset + name_offset:offset + name_offset + 24] = name.ljust(24, b"\0")
+            raw[offset + slot_offset] = slot
+        zone = bytearray(28)
+        struct.pack_into("<HI", zone, 0, 0x0071, 21 + len(slots) - 1)
+        zone[22:26] = bytes([127, 0, 0, 1])
+        struct.pack_into("<H", zone, 26, 5121)
+        sock = FakeSocket([struct.pack("<I", 11) + bytes(raw) + bytes(zone)])
+        monkeypatch.setattr(client.socket, "create_connection", lambda *_a, **_k: sock)
+        assert bot._char_server("127.0.0.1", 1) == ("127.0.0.1", 5121)
+>       assert sock.sent[-1] == struct.pack("<HB", 0x0066, slots[-1])
+E       AssertionError: assert b'f\x00\x00' == b'f\x00\x05'
+E         
+E         At index 2 diff: b'\x00' != b'\x05'
+E         Use -v to get more diff
+
+tests/test_protocol_rereview_repairs.py:332: AssertionError
+________ test_character_selection_uses_native_sparse_wire_slot[slots1] _________
+
+native_layout = [155, 88, 118, 110, 5, 9, ...]
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7ffff5cc96e0>
+slots = (2, 7)
+
+    @pytest.mark.parametrize("slots", [(5,), (2, 7)])
+    def test_character_selection_uses_native_sparse_wire_slot(native_layout, monkeypatch, slots):
+        import client
+        import secrets
+        import struct
+    
+        size, name_offset, slot_offset = native_layout[:3]
+        bot = client.BotClient("offline", secrets.token_hex(8), char_name="Selected", verbose=False)
+        bot.aid = 11
+        raw = bytearray(27 + size * len(slots))
+        struct.pack_into("<HH", raw, 0, 0x006B, len(raw))
+        for index, slot in enumerate(slots):
+            offset = 27 + index * size
+            struct.pack_into("<I", raw, offset, 21 + index)
+            name = b"Selected" if index == len(slots) - 1 else b"Other"
+            raw[offset + name_offset:offset + name_offset + 24] = name.ljust(24, b"\0")
+            raw[offset + slot_offset] = slot
+        zone = bytearray(28)
+        struct.pack_into("<HI", zone, 0, 0x0071, 21 + len(slots) - 1)
+        zone[22:26] = bytes([127, 0, 0, 1])
+        struct.pack_into("<H", zone, 26, 5121)
+        sock = FakeSocket([struct.pack("<I", 11) + bytes(raw) + bytes(zone)])
+        monkeypatch.setattr(client.socket, "create_connection", lambda *_a, **_k: sock)
+        assert bot._char_server("127.0.0.1", 1) == ("127.0.0.1", 5121)
+>       assert sock.sent[-1] == struct.pack("<HB", 0x0066, slots[-1])
+E       AssertionError: assert b'f\x00\x01' == b'f\x00\x07'
+E         
+E         At index 2 diff: b'\x01' != b'\x07'
+E         Use -v to get more diff
+
+tests/test_protocol_rereview_repairs.py:332: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_protocol_rereview_repairs.py::test_character_selection_uses_native_sparse_wire_slot[slots0]
+FAILED tests/test_protocol_rereview_repairs.py::test_character_selection_uses_native_sparse_wire_slot[slots1]
+2 failed in 0.72s

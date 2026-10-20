@@ -1,0 +1,413 @@
+{
+  "status": "OFFLINE_CANDIDATE",
+  "approval": "PENDING_PARENT_INDEPENDENT_REVIEW",
+  "live_effects": false,
+  "policy": {
+    "local_terminal": "cancel_abandoned",
+    "server_state": "UNKNOWN",
+    "instructions_received": false,
+    "unsafe_actions_suppressed": [
+      "Attack",
+      "Loot",
+      "MoveTo",
+      "TalkToNpc"
+    ],
+    "release": "Fresh authenticated epoch; valid same-NPC continuation before pending wait expiration; no timer/map/actor-id reuse acknowledgement"
+  },
+  "changes": [
+    "src/robots/adapters/native_npc_dialogue.py",
+    "src/robots/app/scripts.py",
+    "src/robots/app/brain.py",
+    "src/robots/app/playing_runtime.py",
+    "tests/test_native_npc_cancel_recovery.py"
+  ],
+  "TDD": [
+    {
+      "cycle": 1,
+      "failures": 1
+    },
+    {
+      "cycle": 2,
+      "failures": 1
+    },
+    {
+      "cycle": 3,
+      "failures": 1
+    }
+  ],
+  "verification": {
+    "regressions": {
+      "tests": 1217,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "commands": [
+      {
+        "name": "format",
+        "command": [
+          ".venv/bin/black",
+          "src/robots/adapters/native_npc_dialogue.py",
+          "src/robots/app/scripts.py",
+          "src/robots/app/brain.py",
+          "src/robots/app/playing_runtime.py",
+          "tests/test_native_npc_cancel_recovery.py"
+        ],
+        "exit_code": 0
+      },
+      {
+        "name": "black",
+        "command": [
+          ".venv/bin/black",
+          "--check",
+          "src/robots/adapters/native_npc_dialogue.py",
+          "src/robots/app/scripts.py",
+          "src/robots/app/brain.py",
+          "src/robots/app/playing_runtime.py",
+          "tests/test_native_npc_cancel_recovery.py"
+        ],
+        "exit_code": 0
+      },
+      {
+        "name": "ruff",
+        "command": [
+          ".venv/bin/ruff",
+          "check",
+          "src/robots/adapters/native_npc_dialogue.py",
+          "src/robots/app/scripts.py",
+          "src/robots/app/brain.py",
+          "src/robots/app/playing_runtime.py",
+          "tests/test_native_npc_cancel_recovery.py"
+        ],
+        "exit_code": 0
+      },
+      {
+        "name": "mypy",
+        "command": [
+          ".venv/bin/mypy",
+          "--cache-dir",
+          "/home/otto/.hermes/cache/scratch/npc-cancel-completion/mypy-final",
+          "src/robots/adapters/native_npc_dialogue.py",
+          "src/robots/app/scripts.py",
+          "src/robots/app/brain.py",
+          "src/robots/app/playing_runtime.py",
+          "tests/test_native_npc_cancel_recovery.py"
+        ],
+        "exit_code": 0
+      },
+      {
+        "name": "xenon",
+        "command": [
+          ".venv/bin/xenon",
+          "src",
+          "--max-absolute",
+          "B",
+          "--max-modules",
+          "B",
+          "--max-average",
+          "A"
+        ],
+        "exit_code": 0
+      },
+      {
+        "name": "duplicates",
+        "command": [
+          ".venv/bin/pylint",
+          "--disable=all",
+          "--enable=duplicate-code",
+          "--ignore-paths=tests",
+          "src"
+        ],
+        "exit_code": 0
+      },
+      {
+        "name": "regressions",
+        "command": [
+          ".venv/bin/python",
+          "-m",
+          "pytest",
+          "tests/test_agent_host.py",
+          "tests/test_brain.py",
+          "tests/test_client_actor_presentation.py",
+          "tests/test_client_native_progression.py",
+          "tests/test_client_native_session.py",
+          "tests/test_client_pincode.py",
+          "tests/test_client_protocol.py",
+          "tests/test_host_chat_commands.py",
+          "tests/test_host_chat_interruptions.py",
+          "tests/test_movement_arrival_evidence.py",
+          "tests/test_native_encounter_context.py",
+          "tests/test_native_encounter_request.py",
+          "tests/test_native_encounter_stream.py",
+          "tests/test_native_gameplay.py",
+          "tests/test_native_gameplay_repairs.py",
+          "tests/test_native_map_identity.py",
+          "tests/test_native_map_lifecycle.py",
+          "tests/test_native_npc_cancel_recovery.py",
+          "tests/test_native_npc_close_framing.py",
+          "tests/test_native_npc_completion_quality.py",
+          "tests/test_native_npc_cutin_framing.py",
+          "tests/test_native_npc_dialogue.py",
+          "tests/test_native_npc_guidance.py",
+          "tests/test_native_npc_memory_journal.py",
+          "tests/test_native_playing_keepalive.py",
+          "tests/test_native_pose_recovery.py",
+          "tests/test_native_rest_interrupt.py",
+          "tests/test_playing_backends.py",
+          "tests/test_playing_packet_framing.py",
+          "tests/test_playing_runtime.py",
+          "tests/test_playing_startup_cleanup.py",
+          "tests/test_rest_recovery_script.py",
+          "-q",
+          "--junitxml=/home/otto/.hermes/cache/scratch/npc-cancel-completion/regressions.xml"
+        ],
+        "exit_code": 0
+      }
+    ],
+    "scheduled_ticks": 100,
+    "full_root_gate": "NOT_RUN",
+    "new_behaviors": "3 actual RED->GREEN cycles; additional preexisting safety guards",
+    "warning": "FastAPI/Starlette httpx deprecation warning",
+    "preserved_failures": [
+      "initial-quality.log (lint/types/complexity and incorrectly timed absolute-budget fixture)",
+      "refactor-quality.log (remaining test types)",
+      "red-1.xml",
+      "red-2.xml",
+      "red-3.xml",
+      "Original failing regressions.xml/log overwritten by final rerun; genuine terminal failure excerpt retained in runtime-average-A-failure.txt (not reconstructed XML)"
+    ]
+  },
+  "snapshot": {
+    "baseline_count": 249,
+    "changed": [
+      "tests/test_native_npc_cancel_recovery.py",
+      "src/robots/adapters/native_npc_dialogue.py",
+      "src/robots/app/brain.py",
+      "src/robots/app/playing_runtime.py",
+      "src/robots/app/scripts.py"
+    ],
+    "unowned_changed": [],
+    "before": "/home/otto/.hermes/cache/scratch/npc-cancel-completion/before.json",
+    "after": "/home/otto/.hermes/cache/scratch/npc-cancel-completion/after.json"
+  },
+  "remaining_limits": [
+    "No live cancel recovery verified",
+    "No quest/reward/gear/XP evidence",
+    "Full source profile/root and frozen parent gate still pending",
+    "Terminal view intentionally persists until reset; cancellation is not a server-close receipt",
+    "Initial finite tool budget exceeded when counting nested batch calls; no prior overrun reset; this run stops here"
+  ],
+  "artifact_registry": [
+    {
+      "path": "/home/otto/.hermes/cache/scratch/npc-cancel-completion/after-brain.py",
+      "bytes": 22534,
+      "sha256": "f5351e49015174c610e50963d8c55f6d334fb2b6800fa8467e176ad63c3ab424"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/npc-cancel-completion/after-native_npc_dialogue.py",
+      "bytes": 7842,
+      "sha256": "1b599901d842bc7de5001ad0491ac46ecdae8cfd4faa66a8c735e91239e3523f"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/npc-cancel-completion/after-playing_runtime.py",
+      "bytes": 32956,
+      "sha256": "a7118eeca772f4b2d60a742adb067fa9bed26804f1ecc44eb0f20d9ed0d853ed"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/npc-cancel-completion/after-scripts.py",
+      "bytes": 5501,
+      "sha256": "a84b24ebe9f8aa7100c66c608098e40537dc6d851f6abf2c8a5e6f954e5f0c55"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/npc-cancel-completion/after-test_native_npc_cancel_recovery.py",
+      "bytes": 11958,
+      "sha256": "5cbca90aab6eaf5330747a3a26af3b7004e083ebdc97bd8a71543e3c900c6170"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/npc-cancel-completion/after.json",
+      "bytes": 26978,
+      "sha256": "81091cf847b6a91efd591ea072fc2e42cc2f0ec092f298c4ebe37a8ed98fdaed"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/npc-cancel-completion/before-brain.py",
+      "bytes": 22352,
+      "sha256": "94cf0f8483eab0abb24e58a924765e1fcd454e065cea2b175d1ad00120902a60"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/npc-cancel-completion/before-native_npc_dialogue.py",
+      "bytes": 6757,
+      "sha256": "a6bca5ed9d724d6886dd4383025252949d74f0f67e3c80108f19cde2d47017dd"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/npc-cancel-completion/before-playing_runtime.py",
+      "bytes": 32923,
+      "sha256": "1ad26d9c7ca743fd6426c4dd42817cd1bf9db6066fe175924edf9ede97266420"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/npc-cancel-completion/before-scripts.py",
+      "bytes": 5312,
+      "sha256": "43384b6c4303c5446541bb1e859afb8ff19d70cdc31ed3611b0a6742f23d0608"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/npc-cancel-completion/before-test_native_npc_cancel_recovery.py",
+      "bytes": 4322,
+      "sha256": "0d0d49a70a0e1f10736bda3c6a7d2e5a1908636de512687f1f2d146f399ff952"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/npc-cancel-completion/before.json",
+      "bytes": 26978,
+      "sha256": "7cf4888f57c6d11fe4fcbf4125e7d0d7081ad82dffe11ce23a1cbab936bd31d6"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/npc-cancel-completion/black.log",
+      "bytes": 56,
+      "sha256": "25369eabb8c122f861d58ddb255f81f4b9ee797f42f3882975bef953218258ed"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/npc-cancel-completion/duplicates.log",
+      "bytes": 140,
+      "sha256": "8cbfc8cd0b04a4858b0b78b74c6df9631a1695e105e6911d4b57fbcc43b218b5"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/npc-cancel-completion/final-gates.log",
+      "bytes": 2285,
+      "sha256": "b159b9682f60e04f2894a243127b5577f1895e522d692085936a764f83ab4b04"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/npc-cancel-completion/format.log",
+      "bytes": 114,
+      "sha256": "c80ad64291d6d0171feb6644671d42eaf8faee195a0a85a5f41fae108e59a785"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/npc-cancel-completion/gate-results.json",
+      "bytes": 3441,
+      "sha256": "f0d638bb0be2e7db0be27cc5e2f805d07015272ff030c57b7c81672359adb502"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/npc-cancel-completion/green-1.log",
+      "bytes": 80,
+      "sha256": "32faef56d0289369b1ac111e68ee0bb7b2ed1bcf92d3f33b75313bd0556c3e6f"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/npc-cancel-completion/green-1.xml",
+      "bytes": 3145,
+      "sha256": "262f64e1e47cc1e67e4495350b87e7f843ffb50a99ec569ac20df9cd6bccc2c5"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/npc-cancel-completion/green-2.xml",
+      "bytes": 3286,
+      "sha256": "a8346fd5ec198b3acea7757648f8edc1b902e832d0498680f7d82ab3054cbaea"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/npc-cancel-completion/green-3.log",
+      "bytes": 80,
+      "sha256": "423b1d0e014eb1eab96f4420f7b344c2615be505dd574b756ac884826ca74f2d"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/npc-cancel-completion/green-3.xml",
+      "bytes": 405,
+      "sha256": "d92c99092769c65257e605a6abe40e00e400d340e24170ad6be21073b082e05c"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/npc-cancel-completion/guards-final.xml",
+      "bytes": 5306,
+      "sha256": "ac33aac77c8cb621fe8d406e571d09fac623cc43d039d457afac70e7684264ba"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/npc-cancel-completion/guards.xml",
+      "bytes": 6138,
+      "sha256": "2e90194f688ff0b4c83aee0119ddea97c672117e7b33b8a2792e0797b54c162c"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/npc-cancel-completion/initial-quality.log",
+      "bytes": 5343,
+      "sha256": "7af54448d08c502fe4917f0eb78d3e3885c801bbef4127ee9e0ccc931682f36d"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/npc-cancel-completion/mypy.log",
+      "bytes": 43,
+      "sha256": "e317872697c2cbfdefa321527a6efe73290dff3a390b0fa8723b87092eccba6a"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/npc-cancel-completion/preexisting.diff",
+      "bytes": 18901,
+      "sha256": "9761953f46f643ebf9a8d2c4dd65e1a0f85a379c5944d8e107e180f20e855870"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/npc-cancel-completion/red-1.log",
+      "bytes": 944,
+      "sha256": "5e1161d21311e622bd30cf0da2c9cd50e2e58ef44025fbc4386c238d404a2577"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/npc-cancel-completion/red-1.xml",
+      "bytes": 1037,
+      "sha256": "bbc9f121d485283719184525dca315101ce082ba58b3b82ed325c33219312c62"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/npc-cancel-completion/red-2.log",
+      "bytes": 1095,
+      "sha256": "122a171e41b67d5489c69c3d1697ff1aa225be019acca697f437ce5b1e1b7c5b"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/npc-cancel-completion/red-2.xml",
+      "bytes": 1416,
+      "sha256": "2ee78a56528b553a7d027681c02eeb5712077bc506af5f31cc3a27d03aa3511b"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/npc-cancel-completion/red-3.log",
+      "bytes": 1219,
+      "sha256": "cc47eb0f19aa357d1881430f34932c3b97cadb1644990879b50783d7e18c828e"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/npc-cancel-completion/red-3.xml",
+      "bytes": 1534,
+      "sha256": "22fe369717730fb35c67e7061d1aac75448b18787a693805c6515021c4436d23"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/npc-cancel-completion/refactor-quality.log",
+      "bytes": 913,
+      "sha256": "1a67ce7bb4d7e9ea4b28f4677be9968b90ea5e5abc725dbfb9f2de3bf8d4548e"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/npc-cancel-completion/regressions.log",
+      "bytes": 1840,
+      "sha256": "16ab7947d5749e79133e55f541742621dbf64e377952191d7f39626a7651b04f"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/npc-cancel-completion/regressions.xml",
+      "bytes": 361920,
+      "sha256": "66c6407989e560ef3503743964766539b547150144e74649288e546d23063183"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/npc-cancel-completion/ruff.log",
+      "bytes": 19,
+      "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/npc-cancel-completion/run_gates.py",
+      "bytes": 1646,
+      "sha256": "7872626bdeb9c46d2eadac3447772badf6d811097a5900b12287074d090f337b"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/npc-cancel-completion/selected-tests.json",
+      "bytes": 1298,
+      "sha256": "eab2aa25219ecbc4f136581231713978a5772eb1d76d454f067db46c1d84efa1"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/npc-cancel-completion/start.json",
+      "bytes": 30,
+      "sha256": "9b342650d57c2ac8e9aa6dfd889bda1b137b44617b33c7927d5a31783398f3eb"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/npc-cancel-completion/xenon.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/npc-cancel-completion/runtime-average-A-failure.txt",
+      "bytes": 476,
+      "sha256": "33084ca0fec6394e27734a4237f1c1b052c6f6ca7cdccc0eb04adf62619bfa44"
+    }
+  ],
+  "elapsed_since_source_snapshot_seconds": 385.62225192299957
+}

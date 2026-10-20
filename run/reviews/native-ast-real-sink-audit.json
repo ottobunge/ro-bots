@@ -1,0 +1,5206 @@
+{
+  "schema": "native-ast-real-sink-independent-candidate-audit-v1",
+  "verdict": "PARTIAL_SOURCE_AND_ACTIVE_AST_CANDIDATE_NOT_ADOPTED",
+  "candidate_contract_proposed": true,
+  "sink_adopted": false,
+  "sender_admission": false,
+  "runtime_integration": false,
+  "binary_equivalence": false,
+  "all_six_milestones_open": true,
+  "real_combat_xp_loot_verified": false,
+  "old_rejected_generator_263_rows_approved": false,
+  "scope": {
+    "authority_file": "/home/otto/dev/ro-bots/run/reviews/native-ast-real-sender-scope.json",
+    "authority_sha256": "f53d5fbba3ecf5ca49af484f2721a2538a2f6884b6611f7ed08eaa2b2d7dc5c0",
+    "owned_new_report": "/home/otto/dev/ro-bots/run/reviews/native-ast-real-sink-audit.json",
+    "scratch": "/home/otto/.hermes/cache/scratch/native-sink-audit-7bc2c7qv",
+    "mode": "offline read-only source/AST; no server execution; candidate clif_emotion AREA including conditional recursive SELF only",
+    "out_of_scope": [
+      "caller/general CFG",
+      "party cross-map runtime state",
+      "clif_name admission",
+      "clif_sitting admission",
+      "all-route safety",
+      "catalogue integration"
+    ]
+  },
+  "authority": {
+    "prerequisite": "/home/otto/dev/ro-bots/run/reviews/native-ast-profile-replay-independent-review.json",
+    "prerequisite_sha256": "90f8f0d5c25de1e74eefdcc22bed664269ff76d0da09e756cc0d1a9eb53f580a",
+    "actual_reviewer_result": "/home/otto/.hermes/cache/scratch/native-profile-replay-s2jdj4rn/output/result.json",
+    "actual_reviewer_result_sha256": "602c856e8e368fe767ff6b54704416818dc7939a5c6606f0fb6af6b49c2e71ac",
+    "reviewed_source_closure_sha256": "f045b33b434efc83a7e216f295bf899114a4a1a2daa159898fb738d8b553d6d6",
+    "upstream_commit": "e985006171d2eb320ee512a653f4c83aea3d81b6",
+    "source_differences_preserved": [
+      "src/common/core.cpp",
+      "src/common/runtime-root.hpp",
+      "src/custom/defines_post.hpp"
+    ],
+    "GCC": "16.2.0 layout authority from approved executed oracles",
+    "Clang": "21.1.8 active expanded AST, not server binary equivalence"
+  },
+  "profile": {
+    "full_clif_TU_macro_values": {
+      "PACKETVER": "#define PACKETVER 20180704",
+      "PACKETVER_MAIN_NUM": "#define PACKETVER_MAIN_NUM PACKETVER",
+      "PACKETVER_RE_NUM": "ABSENT",
+      "PACKETVER_ZERO_NUM": "ABSENT",
+      "PACKETVER_RE": "ABSENT",
+      "PACKETVER_ZERO": "ABSENT",
+      "PRERE": "#define PRERE 1",
+      "RENEWAL": "ABSENT",
+      "RENEWAL_ASPD": "ABSENT",
+      "PACKET_OBFUSCATION": "ABSENT",
+      "PACKET_OBFUSCATION_WARN": "ABSENT",
+      "NULLPO_CHECK": "ABSENT",
+      "DEBUG": "ABSENT",
+      "SEND_SHORTLIST": "#define SEND_SHORTLIST ",
+      "AREA_SIZE": "#define AREA_SIZE battle_config.area_size",
+      "WFIFOHEAD": "#define WFIFOHEAD(fd,size) do{ if( ( fd ) && session[( fd )]->wdata_size + ( size ) > session[( fd )]->max_wdata ){ _realloc_writefifo( ( fd ), ( size ), ALC_MARK ); } }while( false )",
+      "WFIFOP": "#define WFIFOP(fd,pos) (session[fd]->wdata + session[fd]->wdata_size + (pos))",
+      "WBUFW": "#define WBUFW(p,pos) (*(uint16*)WBUFP((p),(pos)))",
+      "RBUFW": "#define RBUFW(p,pos) (*(uint16*)RBUFP((p),(pos)))",
+      "nullpo_ret": "#define nullpo_ret(t) (void)(t)",
+      "BL_CAST": "#define BL_CAST(type_,bl) ( ((bl) == nullptr || (bl)->type != (type_)) ? nullptr : static_cast< typename std::conditional< std::is_const<std::remove_pointer_t<decltype(bl)>>::value, const T##type_*, T##type_* >::type >(bl) )",
+      "RECREATE2": "#define RECREATE2(result,type,number,file,line,func) (result) = (type*)aRealloc2( ( result ), sizeof( type ) * ( number ), ( file ), ( line ), ( func ) )",
+      "aRealloc2": "#define aRealloc2(p,n,file,line,func) _mrealloc(p,n,file,line,func)"
+    },
+    "active_CPP_guard_findings": [
+      "MAIN PACKETVER=20180704, PRERE=1; no RE/ZERO/RENEWAL or packet obfuscation/warn",
+      "NULLPO_CHECK and DEBUG absent: nullpo_ret expands to (void)(t), not a runtime null guard",
+      "AREA_SIZE expands to battle_config.area_size, not a compiler-fixed radius",
+      "SEND_SHORTLIST active; FIFO macros explicitly expanded in AST",
+      "RECREATE2 resolves through aRealloc2 to _mrealloc in compiled common/socket.cpp AST"
+    ],
+    "unsupported_profiles": [
+      "any different CPP/source/custom-header profile",
+      "obfuscation-enabled or renewal/RE/ZERO",
+      "debug/nullpo-enabled variants"
+    ],
+    "original_failed_guards_preserved": true,
+    "no_guard_waivers": true
+  },
+  "symbol_roles": [
+    {
+      "name": "clif_send",
+      "signature": {
+        "qualType": "int32 (const void *, int32, const block_list *, enum send_target)"
+      },
+      "location": {
+        "offset": 12864,
+        "file": "/home/otto/.hermes/cache/scratch/native-profile-replay-s2jdj4rn/public-source/src/map/clif.cpp",
+        "line": 477,
+        "col": 7,
+        "tokLen": 9
+      },
+      "source_sha256": "0b1db098158c240b090c6edb8417978ba495957c8a2df4cd9a0ab4cb39884ac5",
+      "body_source_sha256": "076e7fabf2a44896ca4fe3bba7341fa5a0f3ae2214f3103e6fc745994c0f6082",
+      "body_byte_range": [
+        12947,
+        20006
+      ],
+      "body_ast_sha256": "1931cc3971b9a0ac6598ab3fced5a5a5e23d3258352cc11c1ecb96c6899535af",
+      "ast_file": "/home/otto/.hermes/cache/scratch/native-sink-audit-7bc2c7qv/send-ast.stdout",
+      "ast_file_sha256": "8e78531f8a3c3751ca9f4e4904831f35e83473f76280ee9d06b515b80311aa7f",
+      "node_count": 2713,
+      "node_kinds": {
+        "CompoundStmt": 54,
+        "DeclStmt": 13,
+        "VarDecl": 18,
+        "ImplicitCastExpr": 995,
+        "CXXNullPtrLiteralExpr": 15,
+        "CXXConstructExpr": 1,
+        "IntegerLiteral": 40,
+        "IfStmt": 52,
+        "BinaryOperator": 253,
+        "DeclRefExpr": 612,
+        "CStyleCastExpr": 3,
+        "ParenExpr": 126,
+        "ConditionalOperator": 1,
+        "MemberExpr": 175,
+        "CXXStaticCastExpr": 7,
+        "SwitchStmt": 1,
+        "CaseStmt": 32,
+        "ConstantExpr": 32,
+        "CallExpr": 73,
+        "WhileStmt": 6,
+        "DoStmt": 12,
+        "ArraySubscriptExpr": 53,
+        "StringLiteral": 25,
+        "PredefinedExpr": 12,
+        "CXXBoolLiteralExpr": 12,
+        "BreakStmt": 18,
+        "AttributedStmt": 4,
+        "FallThroughAttr": 4,
+        "NullStmt": 4,
+        "ForStmt": 4,
+        "null": 5,
+        "UnaryOperator": 17,
+        "ContinueStmt": 17,
+        "CXXMemberCallExpr": 4,
+        "CXXOperatorCallExpr": 6,
+        "ExprWithCleanups": 1,
+        "MaterializeTemporaryExpr": 1,
+        "CXXBindTemporaryExpr": 1,
+        "CXXForRangeStmt": 1,
+        "DefaultStmt": 1,
+        "ReturnStmt": 2
+      },
+      "calls": {
+        "mapit_alloc": 6,
+        "mapit_next": 6,
+        "session_isActive": 11,
+        "_realloc_writefifo": 12,
+        "memcpy": 12,
+        "WFIFOSET": 12,
+        "mapit_free": 6,
+        "clif_send": 1,
+        "map_foreachinallarea": 2,
+        "map_id2bl": 1,
+        "party_search": 1,
+        "clif_session_isValid": 1,
+        "operator bool": 2,
+        "guild": 1,
+        "sd": 2,
+        "operator=": 1,
+        "bg": 1,
+        "umap_find": 2,
+        "bg_team_db": 1,
+        "bg_id": 1,
+        "begin": 1,
+        "__range3": 2,
+        "end": 1,
+        "ShowError": 1
+      },
+      "buffer_length_uses": [
+        {
+          "name": "len",
+          "declaration_id": "0x55555c566470",
+          "range": {
+            "begin": {
+              "spellingLoc": {
+                "offset": 13453,
+                "col": 20,
+                "tokLen": 3
+              },
+              "expansionLoc": {
+                "offset": 13438,
+                "col": 5,
+                "tokLen": 9,
+                "isMacroArgExpansion": true
+              }
+            },
+            "end": {
+              "spellingLoc": {
+                "offset": 13453,
+                "col": 20,
+                "tokLen": 3
+              },
+              "expansionLoc": {
+                "offset": 13438,
+                "col": 5,
+                "tokLen": 9,
+                "isMacroArgExpansion": true
+              }
+            }
+          },
+          "ancestors": [
+            {
+              "kind": "BinaryOperator",
+              "opcode": ">",
+              "castKind": null
+            },
+            {
+              "kind": "BinaryOperator",
+              "opcode": "+",
+              "castKind": null
+            },
+            {
+              "kind": "ImplicitCastExpr",
+              "opcode": null,
+              "castKind": "IntegralCast"
+            },
+            {
+              "kind": "ImplicitCastExpr",
+              "opcode": null,
+              "castKind": "LValueToRValue"
+            },
+            {
+              "kind": "ParenExpr",
+              "opcode": null,
+              "castKind": null
+            }
+          ]
+        },
+        {
+          "name": "len",
+          "declaration_id": "0x55555c566470",
+          "range": {
+            "begin": {
+              "spellingLoc": {
+                "offset": 13453,
+                "col": 20,
+                "tokLen": 3
+              },
+              "expansionLoc": {
+                "offset": 13438,
+                "col": 5,
+                "tokLen": 9,
+                "isMacroArgExpansion": true
+              }
+            },
+            "end": {
+              "spellingLoc": {
+                "offset": 13453,
+                "col": 20,
+                "tokLen": 3
+              },
+              "expansionLoc": {
+                "offset": 13438,
+                "col": 5,
+                "tokLen": 9,
+                "isMacroArgExpansion": true
+              }
+            }
+          },
+          "ancestors": [
+            {
+              "kind": "CompoundStmt",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "CallExpr",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "ImplicitCastExpr",
+              "opcode": null,
+              "castKind": "IntegralCast"
+            },
+            {
+              "kind": "ImplicitCastExpr",
+              "opcode": null,
+              "castKind": "LValueToRValue"
+            },
+            {
+              "kind": "ParenExpr",
+              "opcode": null,
+              "castKind": null
+            }
+          ]
+        },
+        {
+          "name": "buf",
+          "declaration_id": "0x55555c5663f8",
+          "range": {
+            "begin": {
+              "offset": 13489,
+              "col": 30,
+              "tokLen": 3
+            },
+            "end": {
+              "offset": 13489,
+              "col": 30,
+              "tokLen": 3
+            }
+          },
+          "ancestors": [
+            {
+              "kind": "CompoundStmt",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "IfStmt",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "CompoundStmt",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "CallExpr",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "ImplicitCastExpr",
+              "opcode": null,
+              "castKind": "LValueToRValue"
+            }
+          ]
+        },
+        {
+          "name": "len",
+          "declaration_id": "0x55555c566470",
+          "range": {
+            "begin": {
+              "offset": 13494,
+              "col": 35,
+              "tokLen": 3
+            },
+            "end": {
+              "offset": 13494,
+              "col": 35,
+              "tokLen": 3
+            }
+          },
+          "ancestors": [
+            {
+              "kind": "IfStmt",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "CompoundStmt",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "CallExpr",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "ImplicitCastExpr",
+              "opcode": null,
+              "castKind": "IntegralCast"
+            },
+            {
+              "kind": "ImplicitCastExpr",
+              "opcode": null,
+              "castKind": "LValueToRValue"
+            }
+          ]
+        },
+        {
+          "name": "len",
+          "declaration_id": "0x55555c566470",
+          "range": {
+            "begin": {
+              "offset": 13519,
+              "col": 19,
+              "tokLen": 3
+            },
+            "end": {
+              "offset": 13519,
+              "col": 19,
+              "tokLen": 3
+            }
+          },
+          "ancestors": [
+            {
+              "kind": "IfStmt",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "CompoundStmt",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "CallExpr",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "ImplicitCastExpr",
+              "opcode": null,
+              "castKind": "IntegralCast"
+            },
+            {
+              "kind": "ImplicitCastExpr",
+              "opcode": null,
+              "castKind": "LValueToRValue"
+            }
+          ]
+        },
+        {
+          "name": "len",
+          "declaration_id": "0x55555c566470",
+          "range": {
+            "begin": {
+              "spellingLoc": {
+                "offset": 13815,
+                "col": 20,
+                "tokLen": 3
+              },
+              "expansionLoc": {
+                "offset": 13800,
+                "col": 5,
+                "tokLen": 9,
+                "isMacroArgExpansion": true
+              }
+            },
+            "end": {
+              "spellingLoc": {
+                "offset": 13815,
+                "col": 20,
+                "tokLen": 3
+              },
+              "expansionLoc": {
+                "offset": 13800,
+                "col": 5,
+                "tokLen": 9,
+                "isMacroArgExpansion": true
+              }
+            }
+          },
+          "ancestors": [
+            {
+              "kind": "BinaryOperator",
+              "opcode": ">",
+              "castKind": null
+            },
+            {
+              "kind": "BinaryOperator",
+              "opcode": "+",
+              "castKind": null
+            },
+            {
+              "kind": "ImplicitCastExpr",
+              "opcode": null,
+              "castKind": "IntegralCast"
+            },
+            {
+              "kind": "ImplicitCastExpr",
+              "opcode": null,
+              "castKind": "LValueToRValue"
+            },
+            {
+              "kind": "ParenExpr",
+              "opcode": null,
+              "castKind": null
+            }
+          ]
+        },
+        {
+          "name": "len",
+          "declaration_id": "0x55555c566470",
+          "range": {
+            "begin": {
+              "spellingLoc": {
+                "offset": 13815,
+                "col": 20,
+                "tokLen": 3
+              },
+              "expansionLoc": {
+                "offset": 13800,
+                "col": 5,
+                "tokLen": 9,
+                "isMacroArgExpansion": true
+              }
+            },
+            "end": {
+              "spellingLoc": {
+                "offset": 13815,
+                "col": 20,
+                "tokLen": 3
+              },
+              "expansionLoc": {
+                "offset": 13800,
+                "col": 5,
+                "tokLen": 9,
+                "isMacroArgExpansion": true
+              }
+            }
+          },
+          "ancestors": [
+            {
+              "kind": "CompoundStmt",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "CallExpr",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "ImplicitCastExpr",
+              "opcode": null,
+              "castKind": "IntegralCast"
+            },
+            {
+              "kind": "ImplicitCastExpr",
+              "opcode": null,
+              "castKind": "LValueToRValue"
+            },
+            {
+              "kind": "ParenExpr",
+              "opcode": null,
+              "castKind": null
+            }
+          ]
+        },
+        {
+          "name": "buf",
+          "declaration_id": "0x55555c5663f8",
+          "range": {
+            "begin": {
+              "offset": 13851,
+              "col": 30,
+              "tokLen": 3
+            },
+            "end": {
+              "offset": 13851,
+              "col": 30,
+              "tokLen": 3
+            }
+          },
+          "ancestors": [
+            {
+              "kind": "CompoundStmt",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "IfStmt",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "CompoundStmt",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "CallExpr",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "ImplicitCastExpr",
+              "opcode": null,
+              "castKind": "LValueToRValue"
+            }
+          ]
+        },
+        {
+          "name": "len",
+          "declaration_id": "0x55555c566470",
+          "range": {
+            "begin": {
+              "offset": 13856,
+              "col": 35,
+              "tokLen": 3
+            },
+            "end": {
+              "offset": 13856,
+              "col": 35,
+              "tokLen": 3
+            }
+          },
+          "ancestors": [
+            {
+              "kind": "IfStmt",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "CompoundStmt",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "CallExpr",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "ImplicitCastExpr",
+              "opcode": null,
+              "castKind": "IntegralCast"
+            },
+            {
+              "kind": "ImplicitCastExpr",
+              "opcode": null,
+              "castKind": "LValueToRValue"
+            }
+          ]
+        },
+        {
+          "name": "len",
+          "declaration_id": "0x55555c566470",
+          "range": {
+            "begin": {
+              "offset": 13881,
+              "col": 19,
+              "tokLen": 3
+            },
+            "end": {
+              "offset": 13881,
+              "col": 19,
+              "tokLen": 3
+            }
+          },
+          "ancestors": [
+            {
+              "kind": "IfStmt",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "CompoundStmt",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "CallExpr",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "ImplicitCastExpr",
+              "opcode": null,
+              "castKind": "IntegralCast"
+            },
+            {
+              "kind": "ImplicitCastExpr",
+              "opcode": null,
+              "castKind": "LValueToRValue"
+            }
+          ]
+        },
+        {
+          "name": "buf",
+          "declaration_id": "0x55555c5663f8",
+          "range": {
+            "begin": {
+              "offset": 14050,
+              "col": 15,
+              "tokLen": 3
+            },
+            "end": {
+              "offset": 14050,
+              "col": 15,
+              "tokLen": 3
+            }
+          },
+          "ancestors": [
+            {
+              "kind": "CaseStmt",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "CaseStmt",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "IfStmt",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "CallExpr",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "ImplicitCastExpr",
+              "opcode": null,
+              "castKind": "LValueToRValue"
+            }
+          ]
+        },
+        {
+          "name": "len",
+          "declaration_id": "0x55555c566470",
+          "range": {
+            "begin": {
+              "offset": 14055,
+              "col": 20,
+              "tokLen": 3
+            },
+            "end": {
+              "offset": 14055,
+              "col": 20,
+              "tokLen": 3
+            }
+          },
+          "ancestors": [
+            {
+              "kind": "CaseStmt",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "CaseStmt",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "IfStmt",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "CallExpr",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "ImplicitCastExpr",
+              "opcode": null,
+              "castKind": "LValueToRValue"
+            }
+          ]
+        },
+        {
+          "name": "buf",
+          "declaration_id": "0x55555c5663f8",
+          "range": {
+            "begin": {
+              "offset": 14245,
+              "col": 11,
+              "tokLen": 3
+            },
+            "end": {
+              "offset": 14245,
+              "col": 11,
+              "tokLen": 3
+            }
+          },
+          "ancestors": [
+            {
+              "kind": "CompoundStmt",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "CaseStmt",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "CaseStmt",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "CallExpr",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "ImplicitCastExpr",
+              "opcode": null,
+              "castKind": "LValueToRValue"
+            }
+          ]
+        },
+        {
+          "name": "len",
+          "declaration_id": "0x55555c566470",
+          "range": {
+            "begin": {
+              "offset": 14250,
+              "col": 16,
+              "tokLen": 3
+            },
+            "end": {
+              "offset": 14250,
+              "col": 16,
+              "tokLen": 3
+            }
+          },
+          "ancestors": [
+            {
+              "kind": "CompoundStmt",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "CaseStmt",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "CaseStmt",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "CallExpr",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "ImplicitCastExpr",
+              "opcode": null,
+              "castKind": "LValueToRValue"
+            }
+          ]
+        },
+        {
+          "name": "buf",
+          "declaration_id": "0x55555c5663f8",
+          "range": {
+            "begin": {
+              "offset": 14435,
+              "col": 53,
+              "tokLen": 3
+            },
+            "end": {
+              "offset": 14435,
+              "col": 53,
+              "tokLen": 3
+            }
+          },
+          "ancestors": [
+            {
+              "kind": "SwitchStmt",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "CompoundStmt",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "CaseStmt",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "CallExpr",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "ImplicitCastExpr",
+              "opcode": null,
+              "castKind": "LValueToRValue"
+            }
+          ]
+        },
+        {
+          "name": "len",
+          "declaration_id": "0x55555c566470",
+          "range": {
+            "begin": {
+              "offset": 14440,
+              "col": 58,
+              "tokLen": 3
+            },
+            "end": {
+              "offset": 14440,
+              "col": 58,
+              "tokLen": 3
+            }
+          },
+          "ancestors": [
+            {
+              "kind": "SwitchStmt",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "CompoundStmt",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "CaseStmt",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "CallExpr",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "ImplicitCastExpr",
+              "opcode": null,
+              "castKind": "LValueToRValue"
+            }
+          ]
+        },
+        {
+          "name": "len",
+          "declaration_id": "0x55555c566470",
+          "range": {
+            "begin": {
+              "spellingLoc": {
+                "offset": 14861,
+                "col": 19,
+                "tokLen": 3
+              },
+              "expansionLoc": {
+                "offset": 14848,
+                "col": 6,
+                "tokLen": 9,
+                "isMacroArgExpansion": true
+              }
+            },
+            "end": {
+              "spellingLoc": {
+                "offset": 14861,
+                "col": 19,
+                "tokLen": 3
+              },
+              "expansionLoc": {
+                "offset": 14848,
+                "col": 6,
+                "tokLen": 9,
+                "isMacroArgExpansion": true
+              }
+            }
+          },
+          "ancestors": [
+            {
+              "kind": "BinaryOperator",
+              "opcode": ">",
+              "castKind": null
+            },
+            {
+              "kind": "BinaryOperator",
+              "opcode": "+",
+              "castKind": null
+            },
+            {
+              "kind": "ImplicitCastExpr",
+              "opcode": null,
+              "castKind": "IntegralCast"
+            },
+            {
+              "kind": "ImplicitCastExpr",
+              "opcode": null,
+              "castKind": "LValueToRValue"
+            },
+            {
+              "kind": "ParenExpr",
+              "opcode": null,
+              "castKind": null
+            }
+          ]
+        },
+        {
+          "name": "len",
+          "declaration_id": "0x55555c566470",
+          "range": {
+            "begin": {
+              "spellingLoc": {
+                "offset": 14861,
+                "col": 19,
+                "tokLen": 3
+              },
+              "expansionLoc": {
+                "offset": 14848,
+                "col": 6,
+                "tokLen": 9,
+                "isMacroArgExpansion": true
+              }
+            },
+            "end": {
+              "spellingLoc": {
+                "offset": 14861,
+                "col": 19,
+                "tokLen": 3
+              },
+              "expansionLoc": {
+                "offset": 14848,
+                "col": 6,
+                "tokLen": 9,
+                "isMacroArgExpansion": true
+              }
+            }
+          },
+          "ancestors": [
+            {
+              "kind": "CompoundStmt",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "CallExpr",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "ImplicitCastExpr",
+              "opcode": null,
+              "castKind": "IntegralCast"
+            },
+            {
+              "kind": "ImplicitCastExpr",
+              "opcode": null,
+              "castKind": "LValueToRValue"
+            },
+            {
+              "kind": "ParenExpr",
+              "opcode": null,
+              "castKind": null
+            }
+          ]
+        },
+        {
+          "name": "buf",
+          "declaration_id": "0x55555c5663f8",
+          "range": {
+            "begin": {
+              "offset": 14893,
+              "col": 27,
+              "tokLen": 3
+            },
+            "end": {
+              "offset": 14893,
+              "col": 27,
+              "tokLen": 3
+            }
+          },
+          "ancestors": [
+            {
+              "kind": "CompoundStmt",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "IfStmt",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "CompoundStmt",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "CallExpr",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "ImplicitCastExpr",
+              "opcode": null,
+              "castKind": "LValueToRValue"
+            }
+          ]
+        },
+        {
+          "name": "len",
+          "declaration_id": "0x55555c566470",
+          "range": {
+            "begin": {
+              "offset": 14898,
+              "col": 32,
+              "tokLen": 3
+            },
+            "end": {
+              "offset": 14898,
+              "col": 32,
+              "tokLen": 3
+            }
+          },
+          "ancestors": [
+            {
+              "kind": "IfStmt",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "CompoundStmt",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "CallExpr",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "ImplicitCastExpr",
+              "opcode": null,
+              "castKind": "IntegralCast"
+            },
+            {
+              "kind": "ImplicitCastExpr",
+              "opcode": null,
+              "castKind": "LValueToRValue"
+            }
+          ]
+        },
+        {
+          "name": "len",
+          "declaration_id": "0x55555c566470",
+          "range": {
+            "begin": {
+              "offset": 14921,
+              "col": 18,
+              "tokLen": 3
+            },
+            "end": {
+              "offset": 14921,
+              "col": 18,
+              "tokLen": 3
+            }
+          },
+          "ancestors": [
+            {
+              "kind": "IfStmt",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "CompoundStmt",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "CallExpr",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "ImplicitCastExpr",
+              "opcode": null,
+              "castKind": "IntegralCast"
+            },
+            {
+              "kind": "ImplicitCastExpr",
+              "opcode": null,
+              "castKind": "LValueToRValue"
+            }
+          ]
+        },
+        {
+          "name": "len",
+          "declaration_id": "0x55555c566470",
+          "range": {
+            "begin": {
+              "spellingLoc": {
+                "offset": 15773,
+                "col": 19,
+                "tokLen": 3
+              },
+              "expansionLoc": {
+                "offset": 15759,
+                "col": 5,
+                "tokLen": 9,
+                "isMacroArgExpansion": true
+              }
+            },
+            "end": {
+              "spellingLoc": {
+                "offset": 15773,
+                "col": 19,
+                "tokLen": 3
+              },
+              "expansionLoc": {
+                "offset": 15759,
+                "col": 5,
+                "tokLen": 9,
+                "isMacroArgExpansion": true
+              }
+            }
+          },
+          "ancestors": [
+            {
+              "kind": "BinaryOperator",
+              "opcode": ">",
+              "castKind": null
+            },
+            {
+              "kind": "BinaryOperator",
+              "opcode": "+",
+              "castKind": null
+            },
+            {
+              "kind": "ImplicitCastExpr",
+              "opcode": null,
+              "castKind": "IntegralCast"
+            },
+            {
+              "kind": "ImplicitCastExpr",
+              "opcode": null,
+              "castKind": "LValueToRValue"
+            },
+            {
+              "kind": "ParenExpr",
+              "opcode": null,
+              "castKind": null
+            }
+          ]
+        },
+        {
+          "name": "len",
+          "declaration_id": "0x55555c566470",
+          "range": {
+            "begin": {
+              "spellingLoc": {
+                "offset": 15773,
+                "col": 19,
+                "tokLen": 3
+              },
+              "expansionLoc": {
+                "offset": 15759,
+                "col": 5,
+                "tokLen": 9,
+                "isMacroArgExpansion": true
+              }
+            },
+            "end": {
+              "spellingLoc": {
+                "offset": 15773,
+                "col": 19,
+                "tokLen": 3
+              },
+              "expansionLoc": {
+                "offset": 15759,
+                "col": 5,
+                "tokLen": 9,
+                "isMacroArgExpansion": true
+              }
+            }
+          },
+          "ancestors": [
+            {
+              "kind": "CompoundStmt",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "CallExpr",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "ImplicitCastExpr",
+              "opcode": null,
+              "castKind": "IntegralCast"
+            },
+            {
+              "kind": "ImplicitCastExpr",
+              "opcode": null,
+              "castKind": "LValueToRValue"
+            },
+            {
+              "kind": "ParenExpr",
+              "opcode": null,
+              "castKind": null
+            }
+          ]
+        },
+        {
+          "name": "buf",
+          "declaration_id": "0x55555c5663f8",
+          "range": {
+            "begin": {
+              "offset": 15805,
+              "col": 27,
+              "tokLen": 3
+            },
+            "end": {
+              "offset": 15805,
+              "col": 27,
+              "tokLen": 3
+            }
+          },
+          "ancestors": [
+            {
+              "kind": "CompoundStmt",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "ForStmt",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "CompoundStmt",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "CallExpr",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "ImplicitCastExpr",
+              "opcode": null,
+              "castKind": "LValueToRValue"
+            }
+          ]
+        },
+        {
+          "name": "len",
+          "declaration_id": "0x55555c566470",
+          "range": {
+            "begin": {
+              "offset": 15810,
+              "col": 32,
+              "tokLen": 3
+            },
+            "end": {
+              "offset": 15810,
+              "col": 32,
+              "tokLen": 3
+            }
+          },
+          "ancestors": [
+            {
+              "kind": "ForStmt",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "CompoundStmt",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "CallExpr",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "ImplicitCastExpr",
+              "opcode": null,
+              "castKind": "IntegralCast"
+            },
+            {
+              "kind": "ImplicitCastExpr",
+              "opcode": null,
+              "castKind": "LValueToRValue"
+            }
+          ]
+        },
+        {
+          "name": "len",
+          "declaration_id": "0x55555c566470",
+          "range": {
+            "begin": {
+              "offset": 15833,
+              "col": 18,
+              "tokLen": 3
+            },
+            "end": {
+              "offset": 15833,
+              "col": 18,
+              "tokLen": 3
+            }
+          },
+          "ancestors": [
+            {
+              "kind": "ForStmt",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "CompoundStmt",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "CallExpr",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "ImplicitCastExpr",
+              "opcode": null,
+              "castKind": "IntegralCast"
+            },
+            {
+              "kind": "ImplicitCastExpr",
+              "opcode": null,
+              "castKind": "LValueToRValue"
+            }
+          ]
+        },
+        {
+          "name": "len",
+          "declaration_id": "0x55555c566470",
+          "range": {
+            "begin": {
+              "spellingLoc": {
+                "offset": 16138,
+                "col": 21,
+                "tokLen": 3
+              },
+              "expansionLoc": {
+                "offset": 16123,
+                "col": 6,
+                "tokLen": 9,
+                "isMacroArgExpansion": true
+              }
+            },
+            "end": {
+              "spellingLoc": {
+                "offset": 16138,
+                "col": 21,
+                "tokLen": 3
+              },
+              "expansionLoc": {
+                "offset": 16123,
+                "col": 6,
+                "tokLen": 9,
+                "isMacroArgExpansion": true
+              }
+            }
+          },
+          "ancestors": [
+            {
+              "kind": "BinaryOperator",
+              "opcode": ">",
+              "castKind": null
+            },
+            {
+              "kind": "BinaryOperator",
+              "opcode": "+",
+              "castKind": null
+            },
+            {
+              "kind": "ImplicitCastExpr",
+              "opcode": null,
+              "castKind": "IntegralCast"
+            },
+            {
+              "kind": "ImplicitCastExpr",
+              "opcode": null,
+              "castKind": "LValueToRValue"
+            },
+            {
+              "kind": "ParenExpr",
+              "opcode": null,
+              "castKind": null
+            }
+          ]
+        },
+        {
+          "name": "len",
+          "declaration_id": "0x55555c566470",
+          "range": {
+            "begin": {
+              "spellingLoc": {
+                "offset": 16138,
+                "col": 21,
+                "tokLen": 3
+              },
+              "expansionLoc": {
+                "offset": 16123,
+                "col": 6,
+                "tokLen": 9,
+                "isMacroArgExpansion": true
+              }
+            },
+            "end": {
+              "spellingLoc": {
+                "offset": 16138,
+                "col": 21,
+                "tokLen": 3
+              },
+              "expansionLoc": {
+                "offset": 16123,
+                "col": 6,
+                "tokLen": 9,
+                "isMacroArgExpansion": true
+              }
+            }
+          },
+          "ancestors": [
+            {
+              "kind": "CompoundStmt",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "CallExpr",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "ImplicitCastExpr",
+              "opcode": null,
+              "castKind": "IntegralCast"
+            },
+            {
+              "kind": "ImplicitCastExpr",
+              "opcode": null,
+              "castKind": "LValueToRValue"
+            },
+            {
+              "kind": "ParenExpr",
+              "opcode": null,
+              "castKind": null
+            }
+          ]
+        },
+        {
+          "name": "buf",
+          "declaration_id": "0x55555c5663f8",
+          "range": {
+            "begin": {
+              "offset": 16175,
+              "col": 31,
+              "tokLen": 3
+            },
+            "end": {
+              "offset": 16175,
+              "col": 31,
+              "tokLen": 3
+            }
+          },
+          "ancestors": [
+            {
+              "kind": "CompoundStmt",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "IfStmt",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "CompoundStmt",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "CallExpr",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "ImplicitCastExpr",
+              "opcode": null,
+              "castKind": "LValueToRValue"
+            }
+          ]
+        },
+        {
+          "name": "len",
+          "declaration_id": "0x55555c566470",
+          "range": {
+            "begin": {
+              "offset": 16180,
+              "col": 36,
+              "tokLen": 3
+            },
+            "end": {
+              "offset": 16180,
+              "col": 36,
+              "tokLen": 3
+            }
+          },
+          "ancestors": [
+            {
+              "kind": "IfStmt",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "CompoundStmt",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "CallExpr",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "ImplicitCastExpr",
+              "opcode": null,
+              "castKind": "IntegralCast"
+            },
+            {
+              "kind": "ImplicitCastExpr",
+              "opcode": null,
+              "castKind": "LValueToRValue"
+            }
+          ]
+        },
+        {
+          "name": "len",
+          "declaration_id": "0x55555c566470",
+          "range": {
+            "begin": {
+              "offset": 16211,
+              "col": 25,
+              "tokLen": 3
+            },
+            "end": {
+              "offset": 16211,
+              "col": 25,
+              "tokLen": 3
+            }
+          },
+          "ancestors": [
+            {
+              "kind": "IfStmt",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "CompoundStmt",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "CallExpr",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "ImplicitCastExpr",
+              "opcode": null,
+              "castKind": "IntegralCast"
+            },
+            {
+              "kind": "ImplicitCastExpr",
+              "opcode": null,
+              "castKind": "LValueToRValue"
+            }
+          ]
+        },
+        {
+          "name": "len",
+          "declaration_id": "0x55555c566470",
+          "range": {
+            "begin": {
+              "spellingLoc": {
+                "offset": 16627,
+                "col": 20,
+                "tokLen": 3
+              },
+              "expansionLoc": {
+                "offset": 16612,
+                "col": 5,
+                "tokLen": 9,
+                "isMacroArgExpansion": true
+              }
+            },
+            "end": {
+              "spellingLoc": {
+                "offset": 16627,
+                "col": 20,
+                "tokLen": 3
+              },
+              "expansionLoc": {
+                "offset": 16612,
+                "col": 5,
+                "tokLen": 9,
+                "isMacroArgExpansion": true
+              }
+            }
+          },
+          "ancestors": [
+            {
+              "kind": "BinaryOperator",
+              "opcode": ">",
+              "castKind": null
+            },
+            {
+              "kind": "BinaryOperator",
+              "opcode": "+",
+              "castKind": null
+            },
+            {
+              "kind": "ImplicitCastExpr",
+              "opcode": null,
+              "castKind": "IntegralCast"
+            },
+            {
+              "kind": "ImplicitCastExpr",
+              "opcode": null,
+              "castKind": "LValueToRValue"
+            },
+            {
+              "kind": "ParenExpr",
+              "opcode": null,
+              "castKind": null
+            }
+          ]
+        },
+        {
+          "name": "len",
+          "declaration_id": "0x55555c566470",
+          "range": {
+            "begin": {
+              "spellingLoc": {
+                "offset": 16627,
+                "col": 20,
+                "tokLen": 3
+              },
+              "expansionLoc": {
+                "offset": 16612,
+                "col": 5,
+                "tokLen": 9,
+                "isMacroArgExpansion": true
+              }
+            },
+            "end": {
+              "spellingLoc": {
+                "offset": 16627,
+                "col": 20,
+                "tokLen": 3
+              },
+              "expansionLoc": {
+                "offset": 16612,
+                "col": 5,
+                "tokLen": 9,
+                "isMacroArgExpansion": true
+              }
+            }
+          },
+          "ancestors": [
+            {
+              "kind": "CompoundStmt",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "CallExpr",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "ImplicitCastExpr",
+              "opcode": null,
+              "castKind": "IntegralCast"
+            },
+            {
+              "kind": "ImplicitCastExpr",
+              "opcode": null,
+              "castKind": "LValueToRValue"
+            },
+            {
+              "kind": "ParenExpr",
+              "opcode": null,
+              "castKind": null
+            }
+          ]
+        },
+        {
+          "name": "buf",
+          "declaration_id": "0x55555c5663f8",
+          "range": {
+            "begin": {
+              "offset": 16663,
+              "col": 30,
+              "tokLen": 3
+            },
+            "end": {
+              "offset": 16663,
+              "col": 30,
+              "tokLen": 3
+            }
+          },
+          "ancestors": [
+            {
+              "kind": "CompoundStmt",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "IfStmt",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "CompoundStmt",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "CallExpr",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "ImplicitCastExpr",
+              "opcode": null,
+              "castKind": "LValueToRValue"
+            }
+          ]
+        },
+        {
+          "name": "len",
+          "declaration_id": "0x55555c566470",
+          "range": {
+            "begin": {
+              "offset": 16668,
+              "col": 35,
+              "tokLen": 3
+            },
+            "end": {
+              "offset": 16668,
+              "col": 35,
+              "tokLen": 3
+            }
+          },
+          "ancestors": [
+            {
+              "kind": "IfStmt",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "CompoundStmt",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "CallExpr",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "ImplicitCastExpr",
+              "opcode": null,
+              "castKind": "IntegralCast"
+            },
+            {
+              "kind": "ImplicitCastExpr",
+              "opcode": null,
+              "castKind": "LValueToRValue"
+            }
+          ]
+        },
+        {
+          "name": "len",
+          "declaration_id": "0x55555c566470",
+          "range": {
+            "begin": {
+              "offset": 16693,
+              "col": 19,
+              "tokLen": 3
+            },
+            "end": {
+              "offset": 16693,
+              "col": 19,
+              "tokLen": 3
+            }
+          },
+          "ancestors": [
+            {
+              "kind": "IfStmt",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "CompoundStmt",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "CallExpr",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "ImplicitCastExpr",
+              "opcode": null,
+              "castKind": "IntegralCast"
+            },
+            {
+              "kind": "ImplicitCastExpr",
+              "opcode": null,
+              "castKind": "LValueToRValue"
+            }
+          ]
+        },
+        {
+          "name": "len",
+          "declaration_id": "0x55555c566470",
+          "range": {
+            "begin": {
+              "spellingLoc": {
+                "offset": 16817,
+                "col": 17,
+                "tokLen": 3
+              },
+              "expansionLoc": {
+                "offset": 16804,
+                "col": 4,
+                "tokLen": 9,
+                "isMacroArgExpansion": true
+              }
+            },
+            "end": {
+              "spellingLoc": {
+                "offset": 16817,
+                "col": 17,
+                "tokLen": 3
+              },
+              "expansionLoc": {
+                "offset": 16804,
+                "col": 4,
+                "tokLen": 9,
+                "isMacroArgExpansion": true
+              }
+            }
+          },
+          "ancestors": [
+            {
+              "kind": "BinaryOperator",
+              "opcode": ">",
+              "castKind": null
+            },
+            {
+              "kind": "BinaryOperator",
+              "opcode": "+",
+              "castKind": null
+            },
+            {
+              "kind": "ImplicitCastExpr",
+              "opcode": null,
+              "castKind": "IntegralCast"
+            },
+            {
+              "kind": "ImplicitCastExpr",
+              "opcode": null,
+              "castKind": "LValueToRValue"
+            },
+            {
+              "kind": "ParenExpr",
+              "opcode": null,
+              "castKind": null
+            }
+          ]
+        },
+        {
+          "name": "len",
+          "declaration_id": "0x55555c566470",
+          "range": {
+            "begin": {
+              "spellingLoc": {
+                "offset": 16817,
+                "col": 17,
+                "tokLen": 3
+              },
+              "expansionLoc": {
+                "offset": 16804,
+                "col": 4,
+                "tokLen": 9,
+                "isMacroArgExpansion": true
+              }
+            },
+            "end": {
+              "spellingLoc": {
+                "offset": 16817,
+                "col": 17,
+                "tokLen": 3
+              },
+              "expansionLoc": {
+                "offset": 16804,
+                "col": 4,
+                "tokLen": 9,
+                "isMacroArgExpansion": true
+              }
+            }
+          },
+          "ancestors": [
+            {
+              "kind": "CompoundStmt",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "CallExpr",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "ImplicitCastExpr",
+              "opcode": null,
+              "castKind": "IntegralCast"
+            },
+            {
+              "kind": "ImplicitCastExpr",
+              "opcode": null,
+              "castKind": "LValueToRValue"
+            },
+            {
+              "kind": "ParenExpr",
+              "opcode": null,
+              "castKind": null
+            }
+          ]
+        },
+        {
+          "name": "buf",
+          "declaration_id": "0x55555c5663f8",
+          "range": {
+            "begin": {
+              "offset": 16847,
+              "col": 25,
+              "tokLen": 3
+            },
+            "end": {
+              "offset": 16847,
+              "col": 25,
+              "tokLen": 3
+            }
+          },
+          "ancestors": [
+            {
+              "kind": "CaseStmt",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "IfStmt",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "CompoundStmt",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "CallExpr",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "ImplicitCastExpr",
+              "opcode": null,
+              "castKind": "LValueToRValue"
+            }
+          ]
+        },
+        {
+          "name": "len",
+          "declaration_id": "0x55555c566470",
+          "range": {
+            "begin": {
+              "offset": 16852,
+              "col": 30,
+              "tokLen": 3
+            },
+            "end": {
+              "offset": 16852,
+              "col": 30,
+              "tokLen": 3
+            }
+          },
+          "ancestors": [
+            {
+              "kind": "IfStmt",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "CompoundStmt",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "CallExpr",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "ImplicitCastExpr",
+              "opcode": null,
+              "castKind": "IntegralCast"
+            },
+            {
+              "kind": "ImplicitCastExpr",
+              "opcode": null,
+              "castKind": "LValueToRValue"
+            }
+          ]
+        },
+        {
+          "name": "len",
+          "declaration_id": "0x55555c566470",
+          "range": {
+            "begin": {
+              "offset": 16873,
+              "col": 16,
+              "tokLen": 3
+            },
+            "end": {
+              "offset": 16873,
+              "col": 16,
+              "tokLen": 3
+            }
+          },
+          "ancestors": [
+            {
+              "kind": "IfStmt",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "CompoundStmt",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "CallExpr",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "ImplicitCastExpr",
+              "opcode": null,
+              "castKind": "IntegralCast"
+            },
+            {
+              "kind": "ImplicitCastExpr",
+              "opcode": null,
+              "castKind": "LValueToRValue"
+            }
+          ]
+        },
+        {
+          "name": "len",
+          "declaration_id": "0x55555c566470",
+          "range": {
+            "begin": {
+              "spellingLoc": {
+                "offset": 17899,
+                "col": 18,
+                "tokLen": 3
+              },
+              "expansionLoc": {
+                "offset": 17886,
+                "col": 5,
+                "tokLen": 9,
+                "isMacroArgExpansion": true
+              }
+            },
+            "end": {
+              "spellingLoc": {
+                "offset": 17899,
+                "col": 18,
+                "tokLen": 3
+              },
+              "expansionLoc": {
+                "offset": 17886,
+                "col": 5,
+                "tokLen": 9,
+                "isMacroArgExpansion": true
+              }
+            }
+          },
+          "ancestors": [
+            {
+              "kind": "BinaryOperator",
+              "opcode": ">",
+              "castKind": null
+            },
+            {
+              "kind": "BinaryOperator",
+              "opcode": "+",
+              "castKind": null
+            },
+            {
+              "kind": "ImplicitCastExpr",
+              "opcode": null,
+              "castKind": "IntegralCast"
+            },
+            {
+              "kind": "ImplicitCastExpr",
+              "opcode": null,
+              "castKind": "LValueToRValue"
+            },
+            {
+              "kind": "ParenExpr",
+              "opcode": null,
+              "castKind": null
+            }
+          ]
+        },
+        {
+          "name": "len",
+          "declaration_id": "0x55555c566470",
+          "range": {
+            "begin": {
+              "spellingLoc": {
+                "offset": 17899,
+                "col": 18,
+                "tokLen": 3
+              },
+              "expansionLoc": {
+                "offset": 17886,
+                "col": 5,
+                "tokLen": 9,
+                "isMacroArgExpansion": true
+              }
+            },
+            "end": {
+              "spellingLoc": {
+                "offset": 17899,
+                "col": 18,
+                "tokLen": 3
+              },
+              "expansionLoc": {
+                "offset": 17886,
+                "col": 5,
+                "tokLen": 9,
+                "isMacroArgExpansion": true
+              }
+            }
+          },
+          "ancestors": [
+            {
+              "kind": "CompoundStmt",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "CallExpr",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "ImplicitCastExpr",
+              "opcode": null,
+              "castKind": "IntegralCast"
+            },
+            {
+              "kind": "ImplicitCastExpr",
+              "opcode": null,
+              "castKind": "LValueToRValue"
+            },
+            {
+              "kind": "ParenExpr",
+              "opcode": null,
+              "castKind": null
+            }
+          ]
+        },
+        {
+          "name": "buf",
+          "declaration_id": "0x55555c5663f8",
+          "range": {
+            "begin": {
+              "offset": 17930,
+              "col": 26,
+              "tokLen": 3
+            },
+            "end": {
+              "offset": 17930,
+              "col": 26,
+              "tokLen": 3
+            }
+          },
+          "ancestors": [
+            {
+              "kind": "CompoundStmt",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "IfStmt",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "CompoundStmt",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "CallExpr",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "ImplicitCastExpr",
+              "opcode": null,
+              "castKind": "LValueToRValue"
+            }
+          ]
+        },
+        {
+          "name": "len",
+          "declaration_id": "0x55555c566470",
+          "range": {
+            "begin": {
+              "offset": 17935,
+              "col": 31,
+              "tokLen": 3
+            },
+            "end": {
+              "offset": 17935,
+              "col": 31,
+              "tokLen": 3
+            }
+          },
+          "ancestors": [
+            {
+              "kind": "IfStmt",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "CompoundStmt",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "CallExpr",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "ImplicitCastExpr",
+              "opcode": null,
+              "castKind": "IntegralCast"
+            },
+            {
+              "kind": "ImplicitCastExpr",
+              "opcode": null,
+              "castKind": "LValueToRValue"
+            }
+          ]
+        },
+        {
+          "name": "len",
+          "declaration_id": "0x55555c566470",
+          "range": {
+            "begin": {
+              "offset": 17957,
+              "col": 17,
+              "tokLen": 3
+            },
+            "end": {
+              "offset": 17957,
+              "col": 17,
+              "tokLen": 3
+            }
+          },
+          "ancestors": [
+            {
+              "kind": "IfStmt",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "CompoundStmt",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "CallExpr",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "ImplicitCastExpr",
+              "opcode": null,
+              "castKind": "IntegralCast"
+            },
+            {
+              "kind": "ImplicitCastExpr",
+              "opcode": null,
+              "castKind": "LValueToRValue"
+            }
+          ]
+        },
+        {
+          "name": "len",
+          "declaration_id": "0x55555c566470",
+          "range": {
+            "begin": {
+              "spellingLoc": {
+                "offset": 18253,
+                "col": 20,
+                "tokLen": 3
+              },
+              "expansionLoc": {
+                "offset": 18238,
+                "col": 5,
+                "tokLen": 9,
+                "isMacroArgExpansion": true
+              }
+            },
+            "end": {
+              "spellingLoc": {
+                "offset": 18253,
+                "col": 20,
+                "tokLen": 3
+              },
+              "expansionLoc": {
+                "offset": 18238,
+                "col": 5,
+                "tokLen": 9,
+                "isMacroArgExpansion": true
+              }
+            }
+          },
+          "ancestors": [
+            {
+              "kind": "BinaryOperator",
+              "opcode": ">",
+              "castKind": null
+            },
+            {
+              "kind": "BinaryOperator",
+              "opcode": "+",
+              "castKind": null
+            },
+            {
+              "kind": "ImplicitCastExpr",
+              "opcode": null,
+              "castKind": "IntegralCast"
+            },
+            {
+              "kind": "ImplicitCastExpr",
+              "opcode": null,
+              "castKind": "LValueToRValue"
+            },
+            {
+              "kind": "ParenExpr",
+              "opcode": null,
+              "castKind": null
+            }
+          ]
+        },
+        {
+          "name": "len",
+          "declaration_id": "0x55555c566470",
+          "range": {
+            "begin": {
+              "spellingLoc": {
+                "offset": 18253,
+                "col": 20,
+                "tokLen": 3
+              },
+              "expansionLoc": {
+                "offset": 18238,
+                "col": 5,
+                "tokLen": 9,
+                "isMacroArgExpansion": true
+              }
+            },
+            "end": {
+              "spellingLoc": {
+                "offset": 18253,
+                "col": 20,
+                "tokLen": 3
+              },
+              "expansionLoc": {
+                "offset": 18238,
+                "col": 5,
+                "tokLen": 9,
+                "isMacroArgExpansion": true
+              }
+            }
+          },
+          "ancestors": [
+            {
+              "kind": "CompoundStmt",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "CallExpr",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "ImplicitCastExpr",
+              "opcode": null,
+              "castKind": "IntegralCast"
+            },
+            {
+              "kind": "ImplicitCastExpr",
+              "opcode": null,
+              "castKind": "LValueToRValue"
+            },
+            {
+              "kind": "ParenExpr",
+              "opcode": null,
+              "castKind": null
+            }
+          ]
+        },
+        {
+          "name": "buf",
+          "declaration_id": "0x55555c5663f8",
+          "range": {
+            "begin": {
+              "offset": 18289,
+              "col": 30,
+              "tokLen": 3
+            },
+            "end": {
+              "offset": 18289,
+              "col": 30,
+              "tokLen": 3
+            }
+          },
+          "ancestors": [
+            {
+              "kind": "CompoundStmt",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "IfStmt",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "CompoundStmt",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "CallExpr",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "ImplicitCastExpr",
+              "opcode": null,
+              "castKind": "LValueToRValue"
+            }
+          ]
+        },
+        {
+          "name": "len",
+          "declaration_id": "0x55555c566470",
+          "range": {
+            "begin": {
+              "offset": 18294,
+              "col": 35,
+              "tokLen": 3
+            },
+            "end": {
+              "offset": 18294,
+              "col": 35,
+              "tokLen": 3
+            }
+          },
+          "ancestors": [
+            {
+              "kind": "IfStmt",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "CompoundStmt",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "CallExpr",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "ImplicitCastExpr",
+              "opcode": null,
+              "castKind": "IntegralCast"
+            },
+            {
+              "kind": "ImplicitCastExpr",
+              "opcode": null,
+              "castKind": "LValueToRValue"
+            }
+          ]
+        },
+        {
+          "name": "len",
+          "declaration_id": "0x55555c566470",
+          "range": {
+            "begin": {
+              "offset": 18319,
+              "col": 19,
+              "tokLen": 3
+            },
+            "end": {
+              "offset": 18319,
+              "col": 19,
+              "tokLen": 3
+            }
+          },
+          "ancestors": [
+            {
+              "kind": "IfStmt",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "CompoundStmt",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "CallExpr",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "ImplicitCastExpr",
+              "opcode": null,
+              "castKind": "IntegralCast"
+            },
+            {
+              "kind": "ImplicitCastExpr",
+              "opcode": null,
+              "castKind": "LValueToRValue"
+            }
+          ]
+        },
+        {
+          "name": "len",
+          "declaration_id": "0x55555c566470",
+          "range": {
+            "begin": {
+              "spellingLoc": {
+                "offset": 19126,
+                "col": 18,
+                "tokLen": 3
+              },
+              "expansionLoc": {
+                "offset": 19113,
+                "col": 5,
+                "tokLen": 9,
+                "isMacroArgExpansion": true
+              }
+            },
+            "end": {
+              "spellingLoc": {
+                "offset": 19126,
+                "col": 18,
+                "tokLen": 3
+              },
+              "expansionLoc": {
+                "offset": 19113,
+                "col": 5,
+                "tokLen": 9,
+                "isMacroArgExpansion": true
+              }
+            }
+          },
+          "ancestors": [
+            {
+              "kind": "BinaryOperator",
+              "opcode": ">",
+              "castKind": null
+            },
+            {
+              "kind": "BinaryOperator",
+              "opcode": "+",
+              "castKind": null
+            },
+            {
+              "kind": "ImplicitCastExpr",
+              "opcode": null,
+              "castKind": "IntegralCast"
+            },
+            {
+              "kind": "ImplicitCastExpr",
+              "opcode": null,
+              "castKind": "LValueToRValue"
+            },
+            {
+              "kind": "ParenExpr",
+              "opcode": null,
+              "castKind": null
+            }
+          ]
+        },
+        {
+          "name": "len",
+          "declaration_id": "0x55555c566470",
+          "range": {
+            "begin": {
+              "spellingLoc": {
+                "offset": 19126,
+                "col": 18,
+                "tokLen": 3
+              },
+              "expansionLoc": {
+                "offset": 19113,
+                "col": 5,
+                "tokLen": 9,
+                "isMacroArgExpansion": true
+              }
+            },
+            "end": {
+              "spellingLoc": {
+                "offset": 19126,
+                "col": 18,
+                "tokLen": 3
+              },
+              "expansionLoc": {
+                "offset": 19113,
+                "col": 5,
+                "tokLen": 9,
+                "isMacroArgExpansion": true
+              }
+            }
+          },
+          "ancestors": [
+            {
+              "kind": "CompoundStmt",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "CallExpr",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "ImplicitCastExpr",
+              "opcode": null,
+              "castKind": "IntegralCast"
+            },
+            {
+              "kind": "ImplicitCastExpr",
+              "opcode": null,
+              "castKind": "LValueToRValue"
+            },
+            {
+              "kind": "ParenExpr",
+              "opcode": null,
+              "castKind": null
+            }
+          ]
+        },
+        {
+          "name": "buf",
+          "declaration_id": "0x55555c5663f8",
+          "range": {
+            "begin": {
+              "offset": 19157,
+              "col": 26,
+              "tokLen": 3
+            },
+            "end": {
+              "offset": 19157,
+              "col": 26,
+              "tokLen": 3
+            }
+          },
+          "ancestors": [
+            {
+              "kind": "CompoundStmt",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "CXXForRangeStmt",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "CompoundStmt",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "CallExpr",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "ImplicitCastExpr",
+              "opcode": null,
+              "castKind": "LValueToRValue"
+            }
+          ]
+        },
+        {
+          "name": "len",
+          "declaration_id": "0x55555c566470",
+          "range": {
+            "begin": {
+              "offset": 19162,
+              "col": 31,
+              "tokLen": 3
+            },
+            "end": {
+              "offset": 19162,
+              "col": 31,
+              "tokLen": 3
+            }
+          },
+          "ancestors": [
+            {
+              "kind": "CXXForRangeStmt",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "CompoundStmt",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "CallExpr",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "ImplicitCastExpr",
+              "opcode": null,
+              "castKind": "IntegralCast"
+            },
+            {
+              "kind": "ImplicitCastExpr",
+              "opcode": null,
+              "castKind": "LValueToRValue"
+            }
+          ]
+        },
+        {
+          "name": "len",
+          "declaration_id": "0x55555c566470",
+          "range": {
+            "begin": {
+              "offset": 19184,
+              "col": 17,
+              "tokLen": 3
+            },
+            "end": {
+              "offset": 19184,
+              "col": 17,
+              "tokLen": 3
+            }
+          },
+          "ancestors": [
+            {
+              "kind": "CXXForRangeStmt",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "CompoundStmt",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "CallExpr",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "ImplicitCastExpr",
+              "opcode": null,
+              "castKind": "IntegralCast"
+            },
+            {
+              "kind": "ImplicitCastExpr",
+              "opcode": null,
+              "castKind": "LValueToRValue"
+            }
+          ]
+        },
+        {
+          "name": "len",
+          "declaration_id": "0x55555c566470",
+          "range": {
+            "begin": {
+              "spellingLoc": {
+                "offset": 19445,
+                "col": 18,
+                "tokLen": 3
+              },
+              "expansionLoc": {
+                "offset": 19432,
+                "col": 5,
+                "tokLen": 9,
+                "isMacroArgExpansion": true
+              }
+            },
+            "end": {
+              "spellingLoc": {
+                "offset": 19445,
+                "col": 18,
+                "tokLen": 3
+              },
+              "expansionLoc": {
+                "offset": 19432,
+                "col": 5,
+                "tokLen": 9,
+                "isMacroArgExpansion": true
+              }
+            }
+          },
+          "ancestors": [
+            {
+              "kind": "BinaryOperator",
+              "opcode": ">",
+              "castKind": null
+            },
+            {
+              "kind": "BinaryOperator",
+              "opcode": "+",
+              "castKind": null
+            },
+            {
+              "kind": "ImplicitCastExpr",
+              "opcode": null,
+              "castKind": "IntegralCast"
+            },
+            {
+              "kind": "ImplicitCastExpr",
+              "opcode": null,
+              "castKind": "LValueToRValue"
+            },
+            {
+              "kind": "ParenExpr",
+              "opcode": null,
+              "castKind": null
+            }
+          ]
+        },
+        {
+          "name": "len",
+          "declaration_id": "0x55555c566470",
+          "range": {
+            "begin": {
+              "spellingLoc": {
+                "offset": 19445,
+                "col": 18,
+                "tokLen": 3
+              },
+              "expansionLoc": {
+                "offset": 19432,
+                "col": 5,
+                "tokLen": 9,
+                "isMacroArgExpansion": true
+              }
+            },
+            "end": {
+              "spellingLoc": {
+                "offset": 19445,
+                "col": 18,
+                "tokLen": 3
+              },
+              "expansionLoc": {
+                "offset": 19432,
+                "col": 5,
+                "tokLen": 9,
+                "isMacroArgExpansion": true
+              }
+            }
+          },
+          "ancestors": [
+            {
+              "kind": "CompoundStmt",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "CallExpr",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "ImplicitCastExpr",
+              "opcode": null,
+              "castKind": "IntegralCast"
+            },
+            {
+              "kind": "ImplicitCastExpr",
+              "opcode": null,
+              "castKind": "LValueToRValue"
+            },
+            {
+              "kind": "ParenExpr",
+              "opcode": null,
+              "castKind": null
+            }
+          ]
+        },
+        {
+          "name": "buf",
+          "declaration_id": "0x55555c5663f8",
+          "range": {
+            "begin": {
+              "offset": 19476,
+              "col": 26,
+              "tokLen": 3
+            },
+            "end": {
+              "offset": 19476,
+              "col": 26,
+              "tokLen": 3
+            }
+          },
+          "ancestors": [
+            {
+              "kind": "CompoundStmt",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "ForStmt",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "CompoundStmt",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "CallExpr",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "ImplicitCastExpr",
+              "opcode": null,
+              "castKind": "LValueToRValue"
+            }
+          ]
+        },
+        {
+          "name": "len",
+          "declaration_id": "0x55555c566470",
+          "range": {
+            "begin": {
+              "offset": 19481,
+              "col": 31,
+              "tokLen": 3
+            },
+            "end": {
+              "offset": 19481,
+              "col": 31,
+              "tokLen": 3
+            }
+          },
+          "ancestors": [
+            {
+              "kind": "ForStmt",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "CompoundStmt",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "CallExpr",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "ImplicitCastExpr",
+              "opcode": null,
+              "castKind": "IntegralCast"
+            },
+            {
+              "kind": "ImplicitCastExpr",
+              "opcode": null,
+              "castKind": "LValueToRValue"
+            }
+          ]
+        },
+        {
+          "name": "len",
+          "declaration_id": "0x55555c566470",
+          "range": {
+            "begin": {
+              "offset": 19503,
+              "col": 17,
+              "tokLen": 3
+            },
+            "end": {
+              "offset": 19503,
+              "col": 17,
+              "tokLen": 3
+            }
+          },
+          "ancestors": [
+            {
+              "kind": "ForStmt",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "CompoundStmt",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "CallExpr",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "ImplicitCastExpr",
+              "opcode": null,
+              "castKind": "IntegralCast"
+            },
+            {
+              "kind": "ImplicitCastExpr",
+              "opcode": null,
+              "castKind": "LValueToRValue"
+            }
+          ]
+        },
+        {
+          "name": "len",
+          "declaration_id": "0x55555c566470",
+          "range": {
+            "begin": {
+              "spellingLoc": {
+                "offset": 19798,
+                "col": 20,
+                "tokLen": 3
+              },
+              "expansionLoc": {
+                "offset": 19784,
+                "col": 6,
+                "tokLen": 9,
+                "isMacroArgExpansion": true
+              }
+            },
+            "end": {
+              "spellingLoc": {
+                "offset": 19798,
+                "col": 20,
+                "tokLen": 3
+              },
+              "expansionLoc": {
+                "offset": 19784,
+                "col": 6,
+                "tokLen": 9,
+                "isMacroArgExpansion": true
+              }
+            }
+          },
+          "ancestors": [
+            {
+              "kind": "BinaryOperator",
+              "opcode": ">",
+              "castKind": null
+            },
+            {
+              "kind": "BinaryOperator",
+              "opcode": "+",
+              "castKind": null
+            },
+            {
+              "kind": "ImplicitCastExpr",
+              "opcode": null,
+              "castKind": "IntegralCast"
+            },
+            {
+              "kind": "ImplicitCastExpr",
+              "opcode": null,
+              "castKind": "LValueToRValue"
+            },
+            {
+              "kind": "ParenExpr",
+              "opcode": null,
+              "castKind": null
+            }
+          ]
+        },
+        {
+          "name": "len",
+          "declaration_id": "0x55555c566470",
+          "range": {
+            "begin": {
+              "spellingLoc": {
+                "offset": 19798,
+                "col": 20,
+                "tokLen": 3
+              },
+              "expansionLoc": {
+                "offset": 19784,
+                "col": 6,
+                "tokLen": 9,
+                "isMacroArgExpansion": true
+              }
+            },
+            "end": {
+              "spellingLoc": {
+                "offset": 19798,
+                "col": 20,
+                "tokLen": 3
+              },
+              "expansionLoc": {
+                "offset": 19784,
+                "col": 6,
+                "tokLen": 9,
+                "isMacroArgExpansion": true
+              }
+            }
+          },
+          "ancestors": [
+            {
+              "kind": "CompoundStmt",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "CallExpr",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "ImplicitCastExpr",
+              "opcode": null,
+              "castKind": "IntegralCast"
+            },
+            {
+              "kind": "ImplicitCastExpr",
+              "opcode": null,
+              "castKind": "LValueToRValue"
+            },
+            {
+              "kind": "ParenExpr",
+              "opcode": null,
+              "castKind": null
+            }
+          ]
+        },
+        {
+          "name": "buf",
+          "declaration_id": "0x55555c5663f8",
+          "range": {
+            "begin": {
+              "offset": 19831,
+              "col": 28,
+              "tokLen": 3
+            },
+            "end": {
+              "offset": 19831,
+              "col": 28,
+              "tokLen": 3
+            }
+          },
+          "ancestors": [
+            {
+              "kind": "CompoundStmt",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "IfStmt",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "CompoundStmt",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "CallExpr",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "ImplicitCastExpr",
+              "opcode": null,
+              "castKind": "LValueToRValue"
+            }
+          ]
+        },
+        {
+          "name": "len",
+          "declaration_id": "0x55555c566470",
+          "range": {
+            "begin": {
+              "offset": 19836,
+              "col": 33,
+              "tokLen": 3
+            },
+            "end": {
+              "offset": 19836,
+              "col": 33,
+              "tokLen": 3
+            }
+          },
+          "ancestors": [
+            {
+              "kind": "IfStmt",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "CompoundStmt",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "CallExpr",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "ImplicitCastExpr",
+              "opcode": null,
+              "castKind": "IntegralCast"
+            },
+            {
+              "kind": "ImplicitCastExpr",
+              "opcode": null,
+              "castKind": "LValueToRValue"
+            }
+          ]
+        },
+        {
+          "name": "len",
+          "declaration_id": "0x55555c566470",
+          "range": {
+            "begin": {
+              "offset": 19860,
+              "col": 19,
+              "tokLen": 3
+            },
+            "end": {
+              "offset": 19860,
+              "col": 19,
+              "tokLen": 3
+            }
+          },
+          "ancestors": [
+            {
+              "kind": "IfStmt",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "CompoundStmt",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "CallExpr",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "ImplicitCastExpr",
+              "opcode": null,
+              "castKind": "IntegralCast"
+            },
+            {
+              "kind": "ImplicitCastExpr",
+              "opcode": null,
+              "castKind": "LValueToRValue"
+            }
+          ]
+        }
+      ],
+      "role": "read-only symbol metadata; semantic candidate not adopted"
+    },
+    {
+      "name": "clif_send_sub",
+      "signature": {
+        "qualType": "int32 (block_list *, __va_list_tag *)"
+      },
+      "location": {
+        "offset": 10707,
+        "file": "/home/otto/.hermes/cache/scratch/native-profile-replay-s2jdj4rn/public-source/src/map/clif.cpp",
+        "line": 401,
+        "col": 14,
+        "tokLen": 13
+      },
+      "source_sha256": "0b1db098158c240b090c6edb8417978ba495957c8a2df4cd9a0ab4cb39884ac5",
+      "body_source_sha256": "cc5199666ee7cedc35d14ad724695eacfed9cfccf525c452325b0103136758d5",
+      "body_byte_range": [
+        10749,
+        12589
+      ],
+      "body_ast_sha256": "39199d0b7630db4d65980884cc908ddd8fae00cff38bd08241eb4b07a2862773",
+      "ast_file": "/home/otto/.hermes/cache/scratch/native-sink-audit-7bc2c7qv/send-ast.stdout",
+      "ast_file_sha256": "8e78531f8a3c3751ca9f4e4904831f35e83473f76280ee9d06b515b80311aa7f",
+      "node_count": 395,
+      "node_kinds": {
+        "CompoundStmt": 10,
+        "DeclStmt": 6,
+        "VarDecl": 8,
+        "CStyleCastExpr": 9,
+        "ParenExpr": 23,
+        "DeclRefExpr": 79,
+        "BinaryOperator": 33,
+        "ImplicitCastExpr": 126,
+        "IfStmt": 11,
+        "UnaryOperator": 7,
+        "CallExpr": 9,
+        "MemberExpr": 22,
+        "ReturnStmt": 9,
+        "IntegerLiteral": 14,
+        "VAArgExpr": 4,
+        "SwitchStmt": 1,
+        "CaseStmt": 3,
+        "ConstantExpr": 3,
+        "BreakStmt": 3,
+        "CXXMemberCallExpr": 1,
+        "DoStmt": 1,
+        "ArraySubscriptExpr": 6,
+        "StringLiteral": 5,
+        "PredefinedExpr": 1,
+        "CXXBoolLiteralExpr": 1
+      },
+      "calls": {
+        "session_isActive": 1,
+        "npc_is_hidden_dynamicnpc": 1,
+        "getSCE": 1,
+        "sc": 1,
+        "sd": 1,
+        "battle_check_target": 1,
+        "_realloc_writefifo": 1,
+        "ShowError": 3,
+        "memcpy": 1,
+        "WFIFOSET": 1
+      },
+      "buffer_length_uses": [
+        {
+          "name": "buf",
+          "declaration_id": "0x55555c561c60",
+          "range": {
+            "begin": {
+              "offset": 10997,
+              "col": 2,
+              "tokLen": 3
+            },
+            "end": {
+              "offset": 10997,
+              "col": 2,
+              "tokLen": 3
+            }
+          },
+          "ancestors": [
+            {
+              "kind": "CompoundStmt",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "BinaryOperator",
+              "opcode": "=",
+              "castKind": null
+            }
+          ]
+        },
+        {
+          "name": "len",
+          "declaration_id": "0x55555c561cf0",
+          "range": {
+            "begin": {
+              "offset": 11031,
+              "col": 2,
+              "tokLen": 3
+            },
+            "end": {
+              "offset": 11031,
+              "col": 2,
+              "tokLen": 3
+            }
+          },
+          "ancestors": [
+            {
+              "kind": "CompoundStmt",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "BinaryOperator",
+              "opcode": "=",
+              "castKind": null
+            }
+          ]
+        },
+        {
+          "name": "len",
+          "declaration_id": "0x55555c561cf0",
+          "range": {
+            "begin": {
+              "spellingLoc": {
+                "offset": 11988,
+                "col": 16,
+                "tokLen": 3
+              },
+              "expansionLoc": {
+                "offset": 11974,
+                "col": 2,
+                "tokLen": 9,
+                "isMacroArgExpansion": true
+              }
+            },
+            "end": {
+              "spellingLoc": {
+                "offset": 11988,
+                "col": 16,
+                "tokLen": 3
+              },
+              "expansionLoc": {
+                "offset": 11974,
+                "col": 2,
+                "tokLen": 9,
+                "isMacroArgExpansion": true
+              }
+            }
+          },
+          "ancestors": [
+            {
+              "kind": "BinaryOperator",
+              "opcode": ">",
+              "castKind": null
+            },
+            {
+              "kind": "BinaryOperator",
+              "opcode": "+",
+              "castKind": null
+            },
+            {
+              "kind": "ImplicitCastExpr",
+              "opcode": null,
+              "castKind": "IntegralCast"
+            },
+            {
+              "kind": "ImplicitCastExpr",
+              "opcode": null,
+              "castKind": "LValueToRValue"
+            },
+            {
+              "kind": "ParenExpr",
+              "opcode": null,
+              "castKind": null
+            }
+          ]
+        },
+        {
+          "name": "len",
+          "declaration_id": "0x55555c561cf0",
+          "range": {
+            "begin": {
+              "spellingLoc": {
+                "offset": 11988,
+                "col": 16,
+                "tokLen": 3
+              },
+              "expansionLoc": {
+                "offset": 11974,
+                "col": 2,
+                "tokLen": 9,
+                "isMacroArgExpansion": true
+              }
+            },
+            "end": {
+              "spellingLoc": {
+                "offset": 11988,
+                "col": 16,
+                "tokLen": 3
+              },
+              "expansionLoc": {
+                "offset": 11974,
+                "col": 2,
+                "tokLen": 9,
+                "isMacroArgExpansion": true
+              }
+            }
+          },
+          "ancestors": [
+            {
+              "kind": "CompoundStmt",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "CallExpr",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "ImplicitCastExpr",
+              "opcode": null,
+              "castKind": "IntegralCast"
+            },
+            {
+              "kind": "ImplicitCastExpr",
+              "opcode": null,
+              "castKind": "LValueToRValue"
+            },
+            {
+              "kind": "ParenExpr",
+              "opcode": null,
+              "castKind": null
+            }
+          ]
+        },
+        {
+          "name": "buf",
+          "declaration_id": "0x55555c561c60",
+          "range": {
+            "begin": {
+              "offset": 12015,
+              "col": 22,
+              "tokLen": 3
+            },
+            "end": {
+              "offset": 12015,
+              "col": 22,
+              "tokLen": 3
+            }
+          },
+          "ancestors": [
+            {
+              "kind": "CompoundStmt",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "IfStmt",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "BinaryOperator",
+              "opcode": "==",
+              "castKind": null
+            },
+            {
+              "kind": "ImplicitCastExpr",
+              "opcode": null,
+              "castKind": "LValueToRValue"
+            }
+          ]
+        },
+        {
+          "name": "buf",
+          "declaration_id": "0x55555c561c60",
+          "range": {
+            "begin": {
+              "spellingLoc": {
+                "offset": 12179,
+                "col": 97,
+                "tokLen": 3
+              },
+              "expansionLoc": {
+                "offset": 12173,
+                "col": 91,
+                "tokLen": 5,
+                "isMacroArgExpansion": true
+              }
+            },
+            "end": {
+              "spellingLoc": {
+                "offset": 12179,
+                "col": 97,
+                "tokLen": 3
+              },
+              "expansionLoc": {
+                "offset": 12173,
+                "col": 91,
+                "tokLen": 5,
+                "isMacroArgExpansion": true
+              }
+            }
+          },
+          "ancestors": [
+            {
+              "kind": "ParenExpr",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "CStyleCastExpr",
+              "opcode": null,
+              "castKind": "NoOp"
+            },
+            {
+              "kind": "ImplicitCastExpr",
+              "opcode": null,
+              "castKind": "LValueToRValue"
+            },
+            {
+              "kind": "ParenExpr",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "ParenExpr",
+              "opcode": null,
+              "castKind": null
+            }
+          ]
+        },
+        {
+          "name": "buf",
+          "declaration_id": "0x55555c561c60",
+          "range": {
+            "begin": {
+              "offset": 12546,
+              "col": 23,
+              "tokLen": 3
+            },
+            "end": {
+              "offset": 12546,
+              "col": 23,
+              "tokLen": 3
+            }
+          },
+          "ancestors": [
+            {
+              "kind": "CompoundStmt",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "CallExpr",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "ImplicitCastExpr",
+              "opcode": null,
+              "castKind": "BitCast"
+            },
+            {
+              "kind": "ImplicitCastExpr",
+              "opcode": null,
+              "castKind": "LValueToRValue"
+            }
+          ]
+        },
+        {
+          "name": "len",
+          "declaration_id": "0x55555c561cf0",
+          "range": {
+            "begin": {
+              "offset": 12551,
+              "col": 28,
+              "tokLen": 3
+            },
+            "end": {
+              "offset": 12551,
+              "col": 28,
+              "tokLen": 3
+            }
+          },
+          "ancestors": [
+            {
+              "kind": "CompoundStmt",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "CallExpr",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "ImplicitCastExpr",
+              "opcode": null,
+              "castKind": "IntegralCast"
+            },
+            {
+              "kind": "ImplicitCastExpr",
+              "opcode": null,
+              "castKind": "LValueToRValue"
+            }
+          ]
+        },
+        {
+          "name": "len",
+          "declaration_id": "0x55555c561cf0",
+          "range": {
+            "begin": {
+              "offset": 12570,
+              "col": 14,
+              "tokLen": 3
+            },
+            "end": {
+              "offset": 12570,
+              "col": 14,
+              "tokLen": 3
+            }
+          },
+          "ancestors": [
+            {
+              "kind": "CompoundStmt",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "CallExpr",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "ImplicitCastExpr",
+              "opcode": null,
+              "castKind": "IntegralCast"
+            },
+            {
+              "kind": "ImplicitCastExpr",
+              "opcode": null,
+              "castKind": "LValueToRValue"
+            }
+          ]
+        }
+      ],
+      "role": "read-only symbol metadata; semantic candidate not adopted"
+    },
+    {
+      "name": "map_foreachinareaV",
+      "signature": {
+        "qualType": "int32 (int32 (*)(block_list *, __va_list_tag *), int16, int16, int16, int16, int16, int32, __va_list_tag *, bool)"
+      },
+      "location": {
+        "offset": 23404,
+        "file": "/home/otto/.hermes/cache/scratch/native-profile-replay-s2jdj4rn/public-source/src/map/map.cpp",
+        "line": 837,
+        "col": 7,
+        "tokLen": 18
+      },
+      "source_sha256": "9629e6b751ca3fd9d160e48c0beb80bf7bbe0c359fa7ecdb46698b074e6c1113",
+      "body_source_sha256": "def28032db36a391730fe54fcbdc548d2c819a986be6c54e2d749e2a04f79dc8",
+      "body_byte_range": [
+        23550,
+        25557
+      ],
+      "body_ast_sha256": "fe88ac18a6a087bb8be7cf45833c5e5390f65371c6a9ef875f3568fa7f3664a8",
+      "ast_file": "/home/otto/.hermes/cache/scratch/native-sink-audit-7bc2c7qv/area-ast.stdout",
+      "ast_file_sha256": "80d21f4c6770b4fe85222e1c8ed53df01f234dbabcebede0662e4f24dbbea66f",
+      "node_count": 568,
+      "node_kinds": {
+        "CompoundStmt": 13,
+        "DeclStmt": 7,
+        "VarDecl": 11,
+        "IntegerLiteral": 21,
+        "ImplicitCastExpr": 199,
+        "DeclRefExpr": 143,
+        "CXXConstructExpr": 2,
+        "IfStmt": 11,
+        "BinaryOperator": 78,
+        "ReturnStmt": 3,
+        "CallExpr": 13,
+        "CXXNullPtrLiteralExpr": 6,
+        "MemberExpr": 23,
+        "ParenExpr": 4,
+        "UnaryOperator": 10,
+        "ForStmt": 7,
+        "null": 7,
+        "ArraySubscriptExpr": 6,
+        "StringLiteral": 1,
+        "CXXDefaultArgExpr": 1,
+        "CXXBoolLiteralExpr": 1,
+        "CompoundAssignOperator": 1
+      },
+      "calls": {
+        "swap": 2,
+        "map_getmapdata": 1,
+        "i16max": 2,
+        "i16min": 2,
+        "path_search_long": 2,
+        "ShowWarning": 1,
+        "__builtin_va_copy": 1,
+        "func": 1,
+        "__builtin_va_end": 1
+      },
+      "buffer_length_uses": [],
+      "role": "read-only symbol metadata; semantic candidate not adopted"
+    },
+    {
+      "name": "map_foreachinallarea",
+      "signature": {
+        "qualType": "int32 (int32 (*)(block_list *, __va_list_tag *), int16, int16, int16, int16, int16, int32, ...)"
+      },
+      "location": {
+        "offset": 25565,
+        "file": "/home/otto/.hermes/cache/scratch/native-profile-replay-s2jdj4rn/public-source/src/map/map.cpp",
+        "line": 913,
+        "col": 7,
+        "tokLen": 20
+      },
+      "source_sha256": "9629e6b751ca3fd9d160e48c0beb80bf7bbe0c359fa7ecdb46698b074e6c1113",
+      "body_source_sha256": "4fb8a244d0766cb52c6d40aaf8ab72c6ae58c6481b97f9826f6951349b43cafc",
+      "body_byte_range": [
+        25688,
+        25853
+      ],
+      "body_ast_sha256": "9ad69209a944fe0c1454e77b13d5751e3765eec5197b3149cc4cb1d1412cd854",
+      "ast_file": "/home/otto/.hermes/cache/scratch/native-sink-audit-7bc2c7qv/foreach-ast.stdout",
+      "ast_file_sha256": "32468b6cbc172e68a0d520917fa779016654690ce86afc09f2505d398b91e485",
+      "node_count": 43,
+      "node_kinds": {
+        "CompoundStmt": 1,
+        "DeclStmt": 2,
+        "VarDecl": 2,
+        "IntegerLiteral": 1,
+        "CXXConstructExpr": 1,
+        "CallExpr": 3,
+        "ImplicitCastExpr": 14,
+        "DeclRefExpr": 16,
+        "BinaryOperator": 1,
+        "CXXBoolLiteralExpr": 1,
+        "ReturnStmt": 1
+      },
+      "calls": {
+        "__builtin_va_start": 1,
+        "map_foreachinareaV": 1,
+        "__builtin_va_end": 1
+      },
+      "buffer_length_uses": [],
+      "role": "read-only symbol metadata; semantic candidate not adopted"
+    },
+    {
+      "name": "WFIFOSET",
+      "signature": {
+        "qualType": "int32 (int32, size_t)"
+      },
+      "location": {
+        "offset": 22772,
+        "file": "/home/otto/.hermes/cache/scratch/native-profile-replay-s2jdj4rn/public-source/src/common/socket.cpp",
+        "line": 822,
+        "col": 7,
+        "tokLen": 8
+      },
+      "source_sha256": "80712b971c4fe325ee0905e54422da4776e010a3f0bb34ce7971c662678d23ba",
+      "body_source_sha256": "ab3dc42e94369331ad3be3945e03716c1531ac72a8dc38d47377ff15506e6c3e",
+      "body_byte_range": [
+        22803,
+        25474
+      ],
+      "body_ast_sha256": "44af5fb0b0ec8e7201c097aafb685ea3bc0aa19fbdb18ff9b132af6f0e91beb8",
+      "ast_file": "/home/otto/.hermes/cache/scratch/native-sink-audit-7bc2c7qv/fifo-ast.stdout",
+      "ast_file_sha256": "94b5a4814ff61b35bfc272f0c8331b5cd6d3cba8d3b0e1b4fa8f99ff99b77950",
+      "node_count": 434,
+      "node_kinds": {
+        "CompoundStmt": 7,
+        "DeclStmt": 3,
+        "VarDecl": 3,
+        "ImplicitCastExpr": 142,
+        "ArraySubscriptExpr": 7,
+        "DeclRefExpr": 72,
+        "IfStmt": 8,
+        "BinaryOperator": 43,
+        "UnaryOperator": 7,
+        "CallExpr": 13,
+        "MemberExpr": 29,
+        "CXXNullPtrLiteralExpr": 1,
+        "ReturnStmt": 5,
+        "IntegerLiteral": 41,
+        "StringLiteral": 8,
+        "ParenExpr": 33,
+        "CStyleCastExpr": 9,
+        "CompoundAssignOperator": 1,
+        "ConditionalOperator": 1,
+        "PredefinedExpr": 1
+      },
+      "calls": {
+        "session_isValid": 1,
+        "ShowFatalError": 2,
+        "ShowDebug": 1,
+        "exit": 2,
+        "ShowWarning": 1,
+        "ShowError": 2,
+        "set_eof": 1,
+        "flush_fifo": 1,
+        "_realloc_writefifo": 1,
+        "send_shortlist_add_fd": 1
+      },
+      "buffer_length_uses": [
+        {
+          "name": "len",
+          "declaration_id": "0x555555d9add0",
+          "range": {
+            "begin": {
+              "offset": 23022,
+              "col": 19,
+              "tokLen": 3
+            },
+            "end": {
+              "offset": 23022,
+              "col": 19,
+              "tokLen": 3
+            }
+          },
+          "ancestors": [
+            {
+              "kind": "CompoundStmt",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "IfStmt",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "BinaryOperator",
+              "opcode": ">",
+              "castKind": null
+            },
+            {
+              "kind": "BinaryOperator",
+              "opcode": "+",
+              "castKind": null
+            },
+            {
+              "kind": "ImplicitCastExpr",
+              "opcode": null,
+              "castKind": "LValueToRValue"
+            }
+          ]
+        },
+        {
+          "name": "len",
+          "declaration_id": "0x555555d9add0",
+          "range": {
+            "begin": {
+              "offset": 23276,
+              "col": 154,
+              "tokLen": 3
+            },
+            "end": {
+              "offset": 23276,
+              "col": 154,
+              "tokLen": 3
+            }
+          },
+          "ancestors": [
+            {
+              "kind": "CompoundStmt",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "CallExpr",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "CStyleCastExpr",
+              "opcode": null,
+              "castKind": "NoOp"
+            },
+            {
+              "kind": "ImplicitCastExpr",
+              "opcode": null,
+              "castKind": "IntegralCast"
+            },
+            {
+              "kind": "ImplicitCastExpr",
+              "opcode": null,
+              "castKind": "LValueToRValue"
+            }
+          ]
+        },
+        {
+          "name": "len",
+          "declaration_id": "0x555555d9add0",
+          "range": {
+            "begin": {
+              "offset": 23499,
+              "col": 6,
+              "tokLen": 3
+            },
+            "end": {
+              "offset": 23499,
+              "col": 6,
+              "tokLen": 3
+            }
+          },
+          "ancestors": [
+            {
+              "kind": "CompoundStmt",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "IfStmt",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "BinaryOperator",
+              "opcode": ">",
+              "castKind": null
+            },
+            {
+              "kind": "ImplicitCastExpr",
+              "opcode": null,
+              "castKind": "LValueToRValue"
+            }
+          ]
+        },
+        {
+          "name": "len",
+          "declaration_id": "0x555555d9add0",
+          "range": {
+            "begin": {
+              "offset": 23802,
+              "col": 122,
+              "tokLen": 3
+            },
+            "end": {
+              "offset": 23802,
+              "col": 122,
+              "tokLen": 3
+            }
+          },
+          "ancestors": [
+            {
+              "kind": "CompoundStmt",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "CallExpr",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "CStyleCastExpr",
+              "opcode": null,
+              "castKind": "NoOp"
+            },
+            {
+              "kind": "ImplicitCastExpr",
+              "opcode": null,
+              "castKind": "IntegralCast"
+            },
+            {
+              "kind": "ImplicitCastExpr",
+              "opcode": null,
+              "castKind": "LValueToRValue"
+            }
+          ]
+        },
+        {
+          "name": "len",
+          "declaration_id": "0x555555d9add0",
+          "range": {
+            "begin": {
+              "offset": 23851,
+              "col": 11,
+              "tokLen": 3
+            },
+            "end": {
+              "offset": 23851,
+              "col": 11,
+              "tokLen": 3
+            }
+          },
+          "ancestors": [
+            {
+              "kind": "CompoundStmt",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "IfStmt",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "IfStmt",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "BinaryOperator",
+              "opcode": "==",
+              "castKind": null
+            },
+            {
+              "kind": "ImplicitCastExpr",
+              "opcode": null,
+              "castKind": "LValueToRValue"
+            }
+          ]
+        },
+        {
+          "name": "len",
+          "declaration_id": "0x555555d9add0",
+          "range": {
+            "begin": {
+              "offset": 24292,
+              "col": 7,
+              "tokLen": 3
+            },
+            "end": {
+              "offset": 24292,
+              "col": 7,
+              "tokLen": 3
+            }
+          },
+          "ancestors": [
+            {
+              "kind": "IfStmt",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "CompoundStmt",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "IfStmt",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "BinaryOperator",
+              "opcode": ">",
+              "castKind": null
+            },
+            {
+              "kind": "ImplicitCastExpr",
+              "opcode": null,
+              "castKind": "LValueToRValue"
+            }
+          ]
+        },
+        {
+          "name": "len",
+          "declaration_id": "0x555555d9add0",
+          "range": {
+            "begin": {
+              "offset": 24507,
+              "col": 123,
+              "tokLen": 3
+            },
+            "end": {
+              "offset": 24507,
+              "col": 123,
+              "tokLen": 3
+            }
+          },
+          "ancestors": [
+            {
+              "kind": "CompoundStmt",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "IfStmt",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "CompoundStmt",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "CallExpr",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "ImplicitCastExpr",
+              "opcode": null,
+              "castKind": "LValueToRValue"
+            }
+          ]
+        },
+        {
+          "name": "len",
+          "declaration_id": "0x555555d9add0",
+          "range": {
+            "begin": {
+              "offset": 24577,
+              "col": 21,
+              "tokLen": 3
+            },
+            "end": {
+              "offset": 24577,
+              "col": 21,
+              "tokLen": 3
+            }
+          },
+          "ancestors": [
+            {
+              "kind": "CompoundStmt",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "IfStmt",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "BinaryOperator",
+              "opcode": ">",
+              "castKind": null
+            },
+            {
+              "kind": "BinaryOperator",
+              "opcode": "+",
+              "castKind": null
+            },
+            {
+              "kind": "ImplicitCastExpr",
+              "opcode": null,
+              "castKind": "LValueToRValue"
+            }
+          ]
+        },
+        {
+          "name": "len",
+          "declaration_id": "0x555555d9add0",
+          "range": {
+            "begin": {
+              "offset": 24814,
+              "col": 184,
+              "tokLen": 3
+            },
+            "end": {
+              "offset": 24814,
+              "col": 184,
+              "tokLen": 3
+            }
+          },
+          "ancestors": [
+            {
+              "kind": "CompoundStmt",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "IfStmt",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "CompoundStmt",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "CallExpr",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "ImplicitCastExpr",
+              "opcode": null,
+              "castKind": "LValueToRValue"
+            }
+          ]
+        },
+        {
+          "name": "len",
+          "declaration_id": "0x555555d9add0",
+          "range": {
+            "begin": {
+              "offset": 24899,
+              "col": 19,
+              "tokLen": 3
+            },
+            "end": {
+              "offset": 24899,
+              "col": 19,
+              "tokLen": 3
+            }
+          },
+          "ancestors": [
+            {
+              "kind": "CompoundStmt",
+              "opcode": null,
+              "castKind": null
+            },
+            {
+              "kind": "CompoundAssignOperator",
+              "opcode": "+=",
+              "castKind": null
+            },
+            {
+              "kind": "ImplicitCastExpr",
+              "opcode": null,
+              "castKind": "LValueToRValue"
+            }
+          ]
+        }
+      ],
+      "role": "read-only symbol metadata; semantic candidate not adopted"
+    },
+    {
+      "name": "_realloc_writefifo",
+      "signature": {
+        "qualType": "int32 (int32, size_t, const char *, int32, const char *)"
+      },
+      "location": {
+        "offset": 21317,
+        "file": "/home/otto/.hermes/cache/scratch/native-profile-replay-s2jdj4rn/public-source/src/common/socket.cpp",
+        "line": 773,
+        "col": 7,
+        "tokLen": 18
+      },
+      "source_sha256": "80712b971c4fe325ee0905e54422da4776e010a3f0bb34ce7971c662678d23ba",
+      "body_source_sha256": "c26dd178280cac0e41c2caedf36553d42f255dd52aab17400c2adee8054973f7",
+      "body_byte_range": [
+        21412,
+        22195
+      ],
+      "body_ast_sha256": "f8cfbdc9739ecba2252dacde50d1a3b0b5b1f27ec373f4852c90ce9a02e535a4",
+      "ast_file": "/home/otto/.hermes/cache/scratch/native-sink-audit-7bc2c7qv/realloc-ast.stdout",
+      "ast_file_sha256": "1301b1d4df880a0c8124d3b386c699c5ef532ddc6cd005152124742a62e8eb71",
+      "node_count": 187,
+      "node_kinds": {
+        "CompoundStmt": 3,
+        "DeclStmt": 1,
+        "VarDecl": 1,
+        "IfStmt": 3,
+        "UnaryOperator": 1,
+        "CallExpr": 2,
+        "ImplicitCastExpr": 62,
+        "DeclRefExpr": 37,
+        "ReturnStmt": 3,
+        "IntegerLiteral": 14,
+        "BinaryOperator": 20,
+        "MemberExpr": 12,
+        "ArraySubscriptExpr": 11,
+        "ParenExpr": 11,
+        "WhileStmt": 1,
+        "CompoundAssignOperator": 1,
+        "CStyleCastExpr": 2,
+        "ConditionalOperator": 1,
+        "UnaryExprOrTypeTraitExpr": 1
+      },
+      "calls": {
+        "session_isValid": 1,
+        "_mrealloc": 1
+      },
+      "buffer_length_uses": [],
+      "role": "read-only symbol metadata; semantic candidate not adopted"
+    },
+    {
+      "name": "clif_emotion",
+      "signature": {
+        "qualType": "void (const block_list &, emotion_type)"
+      },
+      "location": {
+        "offset": 289338,
+        "file": "/home/otto/.hermes/cache/scratch/native-profile-replay-s2jdj4rn/public-source/src/map/clif.cpp",
+        "line": 9412,
+        "col": 6,
+        "tokLen": 12
+      },
+      "source_sha256": "0b1db098158c240b090c6edb8417978ba495957c8a2df4cd9a0ab4cb39884ac5",
+      "body_source_sha256": "f1997d1169309f5c0e5ff58d3f8f11810984fe9f12e1f74e972c8ccec33b06f5",
+      "body_byte_range": [
+        289393,
+        289562
+      ],
+      "body_ast_sha256": "77acf7430f81ee3aefb470f90040b679afc405beda1306ad080589c9f4837c7a",
+      "ast_file": "/home/otto/.hermes/cache/scratch/native-profile-replay-s2jdj4rn/output/clang-clif_emotion.stdout",
+      "ast_file_sha256": "011989a6db9c24aab488a9818e0a2675434c1dbeadc58b1044b695cb5de90f5d",
+      "node_count": 38,
+      "node_kinds": {
+        "CompoundStmt": 1,
+        "DeclStmt": 1,
+        "VarDecl": 1,
+        "InitListExpr": 1,
+        "ImplicitValueInitExpr": 3,
+        "BinaryOperator": 3,
+        "MemberExpr": 4,
+        "DeclRefExpr": 11,
+        "ImplicitCastExpr": 7,
+        "CXXStaticCastExpr": 1,
+        "CallExpr": 1,
+        "UnaryOperator": 2,
+        "UnaryExprOrTypeTraitExpr": 1,
+        "ParenExpr": 1
+      },
+      "calls": {
+        "clif_send": 1
+      },
+      "buffer_length_uses": [],
+      "role": "read-only symbol metadata; semantic candidate not adopted"
+    }
+  ],
+  "source_dependencies": [
+    {
+      "path": "/home/otto/.hermes/cache/scratch/native-profile-replay-s2jdj4rn/public-source/src/map/clif.cpp",
+      "relative": "src/map/clif.cpp",
+      "sha256": "0b1db098158c240b090c6edb8417978ba495957c8a2df4cd9a0ab4cb39884ac5"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/native-profile-replay-s2jdj4rn/public-source/src/map/clif.hpp",
+      "relative": "src/map/clif.hpp",
+      "sha256": "3a9c9531ba63ded135885d69c378ebc818cfbdcf8d4e4ccbcd9bb75d8a42019c"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/native-profile-replay-s2jdj4rn/public-source/src/common/socket.hpp",
+      "relative": "src/common/socket.hpp",
+      "sha256": "36f4024c46cc3aed017e25019a8c651af15e485cbbec04477225d842c96f5346"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/native-profile-replay-s2jdj4rn/public-source/src/common/socket.cpp",
+      "relative": "src/common/socket.cpp",
+      "sha256": "80712b971c4fe325ee0905e54422da4776e010a3f0bb34ce7971c662678d23ba"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/native-profile-replay-s2jdj4rn/public-source/src/common/nullpo.hpp",
+      "relative": "src/common/nullpo.hpp",
+      "sha256": "3837626c3001f8da2c6ed5e45f3a784f0e4c4b598d322259e5a0c3cf82da015b"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/native-profile-replay-s2jdj4rn/public-source/src/common/malloc.hpp",
+      "relative": "src/common/malloc.hpp",
+      "sha256": "87e48e484ffd8687bd9903fec48be2422772332feabfe52f663466ae8ef2c443"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/native-profile-replay-s2jdj4rn/public-source/src/common/malloc.cpp",
+      "relative": "src/common/malloc.cpp",
+      "sha256": "2a94fc9cd3cec71584220c6d7b0cca2a2f0ae224460e0935db1d158003e62a9e"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/native-profile-replay-s2jdj4rn/public-source/src/map/map.cpp",
+      "relative": "src/map/map.cpp",
+      "sha256": "9629e6b751ca3fd9d160e48c0beb80bf7bbe0c359fa7ecdb46698b074e6c1113"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/native-profile-replay-s2jdj4rn/public-source/src/map/map.hpp",
+      "relative": "src/map/map.hpp",
+      "sha256": "1cb428d1145ec9c4045b2ae58c163be24bf1bd374fc8eea07eaf0c266621fe2b"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/native-profile-replay-s2jdj4rn/public-source/src/map/npc.cpp",
+      "relative": "src/map/npc.cpp",
+      "sha256": "90d582661668e5cb8567de5a7b92d067e5d0db479963b00bab340af9fe477534"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/native-profile-replay-s2jdj4rn/public-source/src/map/npc.hpp",
+      "relative": "src/map/npc.hpp",
+      "sha256": "3b0f0f6747074e5d8ee554f53660b6232dfe6b82ad2bf6e3c659cc811d56ddcc"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/native-profile-replay-s2jdj4rn/public-source/src/map/battle.cpp",
+      "relative": "src/map/battle.cpp",
+      "sha256": "26b32fe653933cede710edf9e48d3fa8a85dc88f0936b93632d00a03ad572578"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/native-profile-replay-s2jdj4rn/public-source/src/map/battle.hpp",
+      "relative": "src/map/battle.hpp",
+      "sha256": "9c3a13a51159cfb4169abaca0c637fc49f47e972ecc139830d601c6e8ab98aea"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/native-profile-replay-s2jdj4rn/public-source/src/map/status.cpp",
+      "relative": "src/map/status.cpp",
+      "sha256": "4f940555e088eeed58933cd8bcb9b62822a5affa99465d1d48a496fdee600be1"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/native-profile-replay-s2jdj4rn/public-source/src/map/status.hpp",
+      "relative": "src/map/status.hpp",
+      "sha256": "ba5bc4c34581995ba3a9e597e4995c8641497d8d6c0e226c209163716bbc187c"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/native-profile-replay-s2jdj4rn/public-source/src/map/clif_obfuscation.hpp",
+      "relative": "src/map/clif_obfuscation.hpp",
+      "sha256": "7cf1bac3b0659f3faa6a04b63eb5e24030c18746af969031442f625fd7b1b8e2"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/native-profile-replay-s2jdj4rn/public-source/src/custom/defines_post.hpp",
+      "relative": "src/custom/defines_post.hpp",
+      "sha256": "64e8ffea133190fd361801cbcbfd5bcc4fc2c499a93312f8ee347492f725ad4c"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/native-profile-replay-s2jdj4rn/public-source/src/config/packets.hpp",
+      "relative": "src/config/packets.hpp",
+      "sha256": "180f7ddaf5c978af0db7ed26215388265d51f59957ac7173d617870e2cc0964d"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/native-profile-replay-s2jdj4rn/public-source/src/map/packets.hpp",
+      "relative": "src/map/packets.hpp",
+      "sha256": "b4959224a48e1febb811d7c1474f2c1b703d324ae4db7e3a1053a85b80da57bc"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/native-profile-replay-s2jdj4rn/public-source/src/map/packets_struct.hpp",
+      "relative": "src/map/packets_struct.hpp",
+      "sha256": "5ab5ef13d2a1cdc60d84dcaf2e3be0b6e316b9630e61c3ac7ba0f930d4d31287"
+    }
+  ],
+  "candidate_contract": {
+    "signature": "int32 clif_send(const void* buf, int32 len, const block_list* bl, enum send_target type)",
+    "declaration_location": "src/map/clif.hpp:1225",
+    "definition_location": "src/map/clif.cpp:477-747",
+    "statement": "Under the exact reviewed profile and stated unresolved assumptions, clif_emotion supplies the address of its live local PACKET_ZC_EMOTION p and compiler-measured sizeof(p)=7 to clif_send AREA. The expanded sink does not rebind buf or len, derives recipient destinations from session FIFO state, and passes the original buf/len to its recursive SELF and AREA variadic callback path. Reached memcpy sites copy len bytes from supplied buffer to per-session FIFO; reached WFIFOSET sites receive unchanged len. This describes copy/queue requests only, not successful queueing or receipt.",
+    "preconditions_not_proven": [
+      "valid source block_list and valid selected session objects throughout calls",
+      "buf points to at least len readable bytes; len nonnegative and representable in size_t; local emotion provides 7 by reviewed layout",
+      "source storage does not overlap any session FIFO and remains live during synchronous enumeration",
+      "variadic pointer retrieval is valid under the actual ABI/language contract; see blocking unresolved U1",
+      "allocator and callbacks do not invalidate unrelated caller storage; exception/abort and global-state safety not proven"
+    ],
+    "caller": {
+      "function": "clif_emotion",
+      "location": "src/map/clif.cpp:9412-9420",
+      "local": "PACKET_ZC_EMOTION p{}",
+      "bindings": "AST VarDecl identity for &p and sizeof(p) is the same; header assignment then GID then type conversion then one clif_send; no caller buffer pointer stored",
+      "target": "AREA enum declaration identity, send_target underlying uint8_t; default promotions apply through ellipsis",
+      "length_authority": [
+        {
+          "frontend": "gcc",
+          "measured": {
+            "emotion": {
+              "id": 192,
+              "size": 7,
+              "offsets": [
+                0,
+                2,
+                6
+              ]
+            },
+            "stopmove": {
+              "id": 136,
+              "size": 10,
+              "offsets": [
+                0,
+                2,
+                6,
+                8
+              ]
+            },
+            "actors": {
+              "walking": 110,
+              "idle": 104,
+              "spawn": 103
+            }
+          }
+        },
+        {
+          "frontend": "clang",
+          "measured": {
+            "emotion": {
+              "id": 192,
+              "size": 7,
+              "offsets": [
+                0,
+                2,
+                6
+              ]
+            },
+            "stopmove": {
+              "id": 136,
+              "size": 10,
+              "offsets": [
+                0,
+                2,
+                6,
+                8
+              ]
+            },
+            "actors": {
+              "walking": 110,
+              "idle": 104,
+              "spawn": 103
+            }
+          }
+        }
+      ],
+      "lifetime": "automatic p exists through direct clif_send return; synchronous callback source supports non-escape candidate, but vararg and external dependency assumptions remain"
+    },
+    "buffer_roles": [
+      {
+        "path": "clif_send all raw buf uses",
+        "role": "copied / forwarded",
+        "uses": "12 active memcpy source operands; recursive clif_send(buf,len,bl,SELF); 2 map_foreachinallarea forwards; no active stores through buf, no pointer arithmetic on source, no header/packet_len-based replacement, no buf assignment",
+        "authority": "exact parameter declaration IDs and every use range/ancestor recorded in symbol_roles"
+      },
+      {
+        "path": "clif_send_sub buf",
+        "role": "unresolved typed alias then read-only / copied",
+        "uses": "assigned once from va_arg unsigned char*; equality comparison with WFIFOP; WBUFW(buf,0) read in rejection diagnostic; memcpy source; no pointee write/store or async raw-buffer storage observed",
+        "const_warning": "unsigned char* alias erases const intent; WBUFW casts to mutable uint16 lvalue but used only as read here; const signature alone was not used as proof"
+      },
+      {
+        "path": "len",
+        "role": "forwarded / copied bound",
+        "uses": "unchanged signed int32 parameter; WFIFOHEAD condition/allocation size, memcpy count converted to size_t, WFIFOSET count converted to size_t; callback va_arg int32 local initialized once; no per-recipient recomputation or narrowing inside sink"
+      },
+      {
+        "path": "WFIFO destination",
+        "role": "mutation",
+        "uses": "memcpy writes len bytes at session[fd]->wdata+wdata_size; WFIFOHEAD may realloc before copy; WFIFOSET mutates wdata_size and may reallocate after copy. Destination storage/pointers can change, not source pointer by direct code"
+      },
+      {
+        "path": "status_change::getSCE",
+        "role": "mutation unrelated to raw buffer",
+        "uses": "recipient predicate mutates lastStatus cache (status.cpp:1199-1209); const overload has const_cast (1212-1214). Sink is NOT generally side-effect-free"
+      }
+    ],
+    "AREA_route": "clif_send:519-525 optionally sends SELF when source PC and prev==nullptr; then map_foreachinallarea -> map_foreachinareaV(...,wall_check=false) -> immediate callback func with va_copy for each retained block. Collection is bounded by BL_LIST_MAX, map/coordinates/type/prev checks. No storing callback or raw buffer found in these bodies.",
+    "recipient_conditions": [
+      "session_isActive false skips callback before va_arg",
+      "AREA itself adds no AREA_WOS/WOC/WOSC exclusion",
+      "dynamic NPC ownership predicate may suppress",
+      "battle_config.update_enemy_position/clif_ally_only/intravision/SC_INTRAVISION/battle_check_target may suppress",
+      "WFIFOP==buf rejects after WFIFOHEAD (equality only; not general overlap/reallocation protection)",
+      "SELF route clif_session_isValid requires nonnull sd and active fd"
+    ],
+    "FIFO_length_outcome": "WFIFOSET accepts same size_t len but may return without committing invalid session/null wdata, zero length, excessive client packet, or pending FIFO overflow; >65535 or actual buffer overflow exits. Otherwise adds len to queue size, possibly flushes interserver FIFO via function pointer, reserves storage and adds fd to shortlist. Caller ignores WFIFOSET return and clif_send returns 0 even on no recipients/drop, so no delivery oracle.",
+    "async_escape": "No direct raw buf storage in reviewed sink/callback/foreach/FIFO bodies; only owned FIFO data and fd shortlist persist. WFIFOSET server branch can synchronously invoke flush_fifo -> session[fd]->func_send(fd). Unknown function-pointer target behavior and allocator effects remain unresolved, not silently exempted."
+  },
+  "unresolved_dependencies": [
+    {
+      "id": "U1",
+      "blocking": true,
+      "callee": "map_foreachinallarea -> clif_send_sub va_arg",
+      "locations": [
+        "clif.cpp:524-525",
+        "clif.cpp:416-419",
+        "map.cpp:913-920",
+        "map.cpp:903-905"
+      ],
+      "issue": "Actual argument is const void* buf but callback retrieves unsigned char*; source const block_list* is retrieved block_list*. Ellipsis does not automatically convert the pointer types. The permitted void/character-pointer va_arg exception and qualification rules require exact review, not an unsupported assertion that this is necessarily UB or necessarily valid. Clang success does not settle definedness. No pointer-bridge exception adopted. Fixed-underlying enum default promotion is present in active AST; pointer bridge remains unresolved."
+    },
+    {
+      "id": "U2",
+      "blocking": true,
+      "callee": "_realloc_writefifo -> _mrealloc",
+      "locations": [
+        "socket.cpp:773-797",
+        "malloc.hpp:46,98"
+      ],
+      "issue": "Active AST resolves _mrealloc, not assumed libc realloc. Implementation allocation failure/abort and storage validity not audited. Source FIFO disjointness requires manual contract; equality guard after realloc is insufficient for arbitrary aliases."
+    },
+    {
+      "id": "U3",
+      "blocking": true,
+      "callee": "WFIFOSET -> flush_fifo -> session[fd]->func_send",
+      "locations": [
+        "socket.cpp:875-876",
+        "socket.cpp:457-460"
+      ],
+      "issue": "Indirect SendFunc target not proven. Could narrow to independently established non-server player session flag, but this audit has not proven that flag invariant. No raw buf explicitly forwarded to indirect call; global alias/reentrancy behavior unresolved."
+    },
+    {
+      "id": "U4",
+      "blocking": true,
+      "callee": "map_foreachinareaV -> FreeBlockLock destructor -> map_freeblock_unlock",
+      "locations": [
+        "map.cpp:899",
+        "map.cpp:336-364",
+        "map.hpp:1099"
+      ],
+      "issue": "Direct callback immediate and va_copy source audited; deferred free/unlock/global-list reentrancy and compiled helper closure not completely audited. Raw buffer is not passed into lock helpers."
+    },
+    {
+      "id": "U5",
+      "blocking": false,
+      "callee": "battle_check_target; status_change::getSCE; npc_is_hidden_dynamicnpc",
+      "locations": [
+        "battle.cpp:7869",
+        "status.cpp:1199-1222",
+        "npc.cpp:1012-1015"
+      ],
+      "issue": "Exact recipient/world-condition result not proven; battle helper transitive effects not audited. NPC predicate source reads ownership; getSCE cache mutation documented. None receives raw buf or len, but no global noninterference proof claimed."
+    },
+    {
+      "id": "U6",
+      "blocking": true,
+      "callee": "memcpy and diagnostic ShowError/ShowWarning/ShowFatalError/ShowDebug, set_eof, exit, send_shortlist_add_fd",
+      "locations": [
+        "socket.cpp:822-889",
+        "clif.cpp:456-468",
+        "socket.cpp:1692-1716"
+      ],
+      "issue": "C-library memcpy semantics assumed only for valid disjoint ranges; allocator/diagnostic transitive closure not compiled/audited here. Shortlist source stores fd only. Fatal paths and errors do not supply receipt."
+    },
+    {
+      "id": "U7",
+      "blocking": false,
+      "callee": "non-AREA recipient routes: mapit_alloc/next/free; map_id2bl; party_search; util::umap_find and member iterators",
+      "locations": [
+        "clif.cpp:493-739"
+      ],
+      "issue": "All raw buf/len expression uses inventoried in expanded sink, but recipient-helper/global alias/loop closure outside AREA and recursive SELF is not approved. No generic all-routes sink adoption."
+    }
+  ],
+  "source_compiled_crosscheck": {
+    "full_TU_CPP": "/home/otto/.hermes/cache/scratch/native-sink-audit-7bc2c7qv/cpp.stdout",
+    "full_TU_CPP_sha256": "6f93d19c8af8a02621fd27ba90d0f45c1f79e54ff143758cd9bb88247209c24a",
+    "method": "Unchanged full TU own Clang preprocessing plus declaration-filtered expanded AST; body source ranges hashed separately. All parameter references and expanded macro node shapes retained. Constant source body hash is identity evidence, NOT semantic authority. No GCC-preprocessed token surgery.",
+    "manual_not_generic_dataflow": true
+  },
+  "commands": [
+    {
+      "name": "send-ast",
+      "command": [
+        "nix",
+        "develop",
+        "--offline",
+        "--no-write-lock-file",
+        "path:./spikes/007-native-packet-ast/toolchain",
+        "-c",
+        "/nix/store/2msw5nclhpsm80z65dqmjiv8kkras989-clang-wrapper-21.1.8/bin/clang++",
+        "-std=c++17",
+        "-DHAS_TLS",
+        "-fno-strict-aliasing",
+        "-DHAVE_GETADDRINFO",
+        "-DHAVE_SETRLIMIT",
+        "-DHAVE_STRNLEN",
+        "-DPACKETVER=20180704",
+        "-DPRERE",
+        "-DHAVE_MONOTONIC_CLOCK",
+        "-DHAS_TLS",
+        "-fno-strict-aliasing",
+        "-DHAVE_GETADDRINFO",
+        "-DHAVE_SETRLIMIT",
+        "-DHAVE_STRNLEN",
+        "-DPACKETVER=20180704",
+        "-DPRERE",
+        "-DHAVE_MONOTONIC_CLOCK",
+        "-I/home/otto/.hermes/cache/scratch/native-profile-replay-s2jdj4rn/public-source/src",
+        "-I/home/otto/.hermes/cache/scratch/native-profile-replay-s2jdj4rn/public-source/src/map",
+        "-I/home/otto/.hermes/cache/scratch/native-profile-replay-s2jdj4rn/public-source/src/common",
+        "-I/home/otto/.hermes/cache/scratch/native-profile-replay-s2jdj4rn/public-source/3rdparty/rapidyaml/src",
+        "-I/home/otto/.hermes/cache/scratch/native-profile-replay-s2jdj4rn/public-source/3rdparty/rapidyaml/ext/c4core/src",
+        "-I/home/otto/.hermes/cache/scratch/native-profile-replay-s2jdj4rn/public-source/3rdparty/libconfig",
+        "-I/nix/store/1w8g6rvhljfk44hx50qz4sc47sm1f28v-mariadb-connector-c-3.3.5-dev/include/mysql",
+        "-fsyntax-only",
+        "/home/otto/.hermes/cache/scratch/native-profile-replay-s2jdj4rn/public-source/src/map/clif.cpp",
+        "-Xclang",
+        "-ast-dump=json",
+        "-Xclang",
+        "-ast-dump-filter=clif_send"
+      ],
+      "exit": 0,
+      "stdout": "/home/otto/.hermes/cache/scratch/native-sink-audit-7bc2c7qv/send-ast.stdout",
+      "stderr": "/home/otto/.hermes/cache/scratch/native-sink-audit-7bc2c7qv/send-ast.stderr",
+      "stdout_sha256": "8e78531f8a3c3751ca9f4e4904831f35e83473f76280ee9d06b515b80311aa7f",
+      "stderr_sha256": "4fda7ff0c3c7bed1674fd37d52d3dad264b643d5acb438b0c2df2ecab29e891e"
+    },
+    {
+      "name": "macros",
+      "command": [
+        "nix",
+        "develop",
+        "--offline",
+        "--no-write-lock-file",
+        "path:./spikes/007-native-packet-ast/toolchain",
+        "-c",
+        "/nix/store/2msw5nclhpsm80z65dqmjiv8kkras989-clang-wrapper-21.1.8/bin/clang++",
+        "-std=c++17",
+        "-DHAS_TLS",
+        "-fno-strict-aliasing",
+        "-DHAVE_GETADDRINFO",
+        "-DHAVE_SETRLIMIT",
+        "-DHAVE_STRNLEN",
+        "-DPACKETVER=20180704",
+        "-DPRERE",
+        "-DHAVE_MONOTONIC_CLOCK",
+        "-DHAS_TLS",
+        "-fno-strict-aliasing",
+        "-DHAVE_GETADDRINFO",
+        "-DHAVE_SETRLIMIT",
+        "-DHAVE_STRNLEN",
+        "-DPACKETVER=20180704",
+        "-DPRERE",
+        "-DHAVE_MONOTONIC_CLOCK",
+        "-I/home/otto/.hermes/cache/scratch/native-profile-replay-s2jdj4rn/public-source/src",
+        "-I/home/otto/.hermes/cache/scratch/native-profile-replay-s2jdj4rn/public-source/src/map",
+        "-I/home/otto/.hermes/cache/scratch/native-profile-replay-s2jdj4rn/public-source/src/common",
+        "-I/home/otto/.hermes/cache/scratch/native-profile-replay-s2jdj4rn/public-source/3rdparty/rapidyaml/src",
+        "-I/home/otto/.hermes/cache/scratch/native-profile-replay-s2jdj4rn/public-source/3rdparty/rapidyaml/ext/c4core/src",
+        "-I/home/otto/.hermes/cache/scratch/native-profile-replay-s2jdj4rn/public-source/3rdparty/libconfig",
+        "-I/nix/store/1w8g6rvhljfk44hx50qz4sc47sm1f28v-mariadb-connector-c-3.3.5-dev/include/mysql",
+        "-E",
+        "-dM",
+        "/home/otto/.hermes/cache/scratch/native-profile-replay-s2jdj4rn/public-source/src/map/clif.cpp"
+      ],
+      "exit": 0,
+      "stdout": "/home/otto/.hermes/cache/scratch/native-sink-audit-7bc2c7qv/macros.stdout",
+      "stderr": "/home/otto/.hermes/cache/scratch/native-sink-audit-7bc2c7qv/macros.stderr",
+      "stdout_sha256": "fac1b00d31ad743038768376ec704fcba92bf734d9d6134e6d916b74661b0db8",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "cpp",
+      "command": [
+        "nix",
+        "develop",
+        "--offline",
+        "--no-write-lock-file",
+        "path:./spikes/007-native-packet-ast/toolchain",
+        "-c",
+        "/nix/store/2msw5nclhpsm80z65dqmjiv8kkras989-clang-wrapper-21.1.8/bin/clang++",
+        "-std=c++17",
+        "-DHAS_TLS",
+        "-fno-strict-aliasing",
+        "-DHAVE_GETADDRINFO",
+        "-DHAVE_SETRLIMIT",
+        "-DHAVE_STRNLEN",
+        "-DPACKETVER=20180704",
+        "-DPRERE",
+        "-DHAVE_MONOTONIC_CLOCK",
+        "-DHAS_TLS",
+        "-fno-strict-aliasing",
+        "-DHAVE_GETADDRINFO",
+        "-DHAVE_SETRLIMIT",
+        "-DHAVE_STRNLEN",
+        "-DPACKETVER=20180704",
+        "-DPRERE",
+        "-DHAVE_MONOTONIC_CLOCK",
+        "-I/home/otto/.hermes/cache/scratch/native-profile-replay-s2jdj4rn/public-source/src",
+        "-I/home/otto/.hermes/cache/scratch/native-profile-replay-s2jdj4rn/public-source/src/map",
+        "-I/home/otto/.hermes/cache/scratch/native-profile-replay-s2jdj4rn/public-source/src/common",
+        "-I/home/otto/.hermes/cache/scratch/native-profile-replay-s2jdj4rn/public-source/3rdparty/rapidyaml/src",
+        "-I/home/otto/.hermes/cache/scratch/native-profile-replay-s2jdj4rn/public-source/3rdparty/rapidyaml/ext/c4core/src",
+        "-I/home/otto/.hermes/cache/scratch/native-profile-replay-s2jdj4rn/public-source/3rdparty/libconfig",
+        "-I/nix/store/1w8g6rvhljfk44hx50qz4sc47sm1f28v-mariadb-connector-c-3.3.5-dev/include/mysql",
+        "-E",
+        "/home/otto/.hermes/cache/scratch/native-profile-replay-s2jdj4rn/public-source/src/map/clif.cpp"
+      ],
+      "exit": 0,
+      "stdout": "/home/otto/.hermes/cache/scratch/native-sink-audit-7bc2c7qv/cpp.stdout",
+      "stderr": "/home/otto/.hermes/cache/scratch/native-sink-audit-7bc2c7qv/cpp.stderr",
+      "stdout_sha256": "6f93d19c8af8a02621fd27ba90d0f45c1f79e54ff143758cd9bb88247209c24a",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "area-ast",
+      "command": [
+        "nix",
+        "develop",
+        "--offline",
+        "--no-write-lock-file",
+        "path:./spikes/007-native-packet-ast/toolchain",
+        "-c",
+        "/nix/store/2msw5nclhpsm80z65dqmjiv8kkras989-clang-wrapper-21.1.8/bin/clang++",
+        "-std=c++17",
+        "-DHAS_TLS",
+        "-fno-strict-aliasing",
+        "-DHAVE_GETADDRINFO",
+        "-DHAVE_SETRLIMIT",
+        "-DHAVE_STRNLEN",
+        "-DPACKETVER=20180704",
+        "-DPRERE",
+        "-DHAVE_MONOTONIC_CLOCK",
+        "-DHAS_TLS",
+        "-fno-strict-aliasing",
+        "-DHAVE_GETADDRINFO",
+        "-DHAVE_SETRLIMIT",
+        "-DHAVE_STRNLEN",
+        "-DPACKETVER=20180704",
+        "-DPRERE",
+        "-DHAVE_MONOTONIC_CLOCK",
+        "-I/home/otto/.hermes/cache/scratch/native-profile-replay-s2jdj4rn/public-source/src",
+        "-I/home/otto/.hermes/cache/scratch/native-profile-replay-s2jdj4rn/public-source/src/map",
+        "-I/home/otto/.hermes/cache/scratch/native-profile-replay-s2jdj4rn/public-source/src/common",
+        "-I/home/otto/.hermes/cache/scratch/native-profile-replay-s2jdj4rn/public-source/3rdparty/rapidyaml/src",
+        "-I/home/otto/.hermes/cache/scratch/native-profile-replay-s2jdj4rn/public-source/3rdparty/rapidyaml/ext/c4core/src",
+        "-I/home/otto/.hermes/cache/scratch/native-profile-replay-s2jdj4rn/public-source/3rdparty/libconfig",
+        "-I/nix/store/1w8g6rvhljfk44hx50qz4sc47sm1f28v-mariadb-connector-c-3.3.5-dev/include/mysql",
+        "-fsyntax-only",
+        "/home/otto/.hermes/cache/scratch/native-profile-replay-s2jdj4rn/public-source/src/map/map.cpp",
+        "-Xclang",
+        "-ast-dump=json",
+        "-Xclang",
+        "-ast-dump-filter=map_foreachinareaV"
+      ],
+      "exit": 0,
+      "stdout": "/home/otto/.hermes/cache/scratch/native-sink-audit-7bc2c7qv/area-ast.stdout",
+      "stderr": "/home/otto/.hermes/cache/scratch/native-sink-audit-7bc2c7qv/area-ast.stderr",
+      "stdout_sha256": "80d21f4c6770b4fe85222e1c8ed53df01f234dbabcebede0662e4f24dbbea66f",
+      "stderr_sha256": "f537ecd5fc6b933786cc2de254729442b7831bc2e97f1a1b9bcd6dae2ddf50b3"
+    },
+    {
+      "name": "foreach-ast",
+      "command": [
+        "nix",
+        "develop",
+        "--offline",
+        "--no-write-lock-file",
+        "path:./spikes/007-native-packet-ast/toolchain",
+        "-c",
+        "/nix/store/2msw5nclhpsm80z65dqmjiv8kkras989-clang-wrapper-21.1.8/bin/clang++",
+        "-std=c++17",
+        "-DHAS_TLS",
+        "-fno-strict-aliasing",
+        "-DHAVE_GETADDRINFO",
+        "-DHAVE_SETRLIMIT",
+        "-DHAVE_STRNLEN",
+        "-DPACKETVER=20180704",
+        "-DPRERE",
+        "-DHAVE_MONOTONIC_CLOCK",
+        "-DHAS_TLS",
+        "-fno-strict-aliasing",
+        "-DHAVE_GETADDRINFO",
+        "-DHAVE_SETRLIMIT",
+        "-DHAVE_STRNLEN",
+        "-DPACKETVER=20180704",
+        "-DPRERE",
+        "-DHAVE_MONOTONIC_CLOCK",
+        "-I/home/otto/.hermes/cache/scratch/native-profile-replay-s2jdj4rn/public-source/src",
+        "-I/home/otto/.hermes/cache/scratch/native-profile-replay-s2jdj4rn/public-source/src/map",
+        "-I/home/otto/.hermes/cache/scratch/native-profile-replay-s2jdj4rn/public-source/src/common",
+        "-I/home/otto/.hermes/cache/scratch/native-profile-replay-s2jdj4rn/public-source/3rdparty/rapidyaml/src",
+        "-I/home/otto/.hermes/cache/scratch/native-profile-replay-s2jdj4rn/public-source/3rdparty/rapidyaml/ext/c4core/src",
+        "-I/home/otto/.hermes/cache/scratch/native-profile-replay-s2jdj4rn/public-source/3rdparty/libconfig",
+        "-I/nix/store/1w8g6rvhljfk44hx50qz4sc47sm1f28v-mariadb-connector-c-3.3.5-dev/include/mysql",
+        "-fsyntax-only",
+        "/home/otto/.hermes/cache/scratch/native-profile-replay-s2jdj4rn/public-source/src/map/map.cpp",
+        "-Xclang",
+        "-ast-dump=json",
+        "-Xclang",
+        "-ast-dump-filter=map_foreachinallarea"
+      ],
+      "exit": 0,
+      "stdout": "/home/otto/.hermes/cache/scratch/native-sink-audit-7bc2c7qv/foreach-ast.stdout",
+      "stderr": "/home/otto/.hermes/cache/scratch/native-sink-audit-7bc2c7qv/foreach-ast.stderr",
+      "stdout_sha256": "32468b6cbc172e68a0d520917fa779016654690ce86afc09f2505d398b91e485",
+      "stderr_sha256": "f537ecd5fc6b933786cc2de254729442b7831bc2e97f1a1b9bcd6dae2ddf50b3"
+    },
+    {
+      "name": "fifo-ast",
+      "command": [
+        "nix",
+        "develop",
+        "--offline",
+        "--no-write-lock-file",
+        "path:./spikes/007-native-packet-ast/toolchain",
+        "-c",
+        "/nix/store/2msw5nclhpsm80z65dqmjiv8kkras989-clang-wrapper-21.1.8/bin/clang++",
+        "-std=c++17",
+        "-ffast-math",
+        "-DHAS_TLS",
+        "-fno-strict-aliasing",
+        "-DHAVE_GETADDRINFO",
+        "-DHAVE_SETRLIMIT",
+        "-DHAVE_STRNLEN",
+        "-DPACKETVER=20180704",
+        "-DPRERE",
+        "-DHAVE_MONOTONIC_CLOCK",
+        "-I/home/otto/.hermes/cache/scratch/native-profile-replay-s2jdj4rn/public-source",
+        "-I/home/otto/.hermes/cache/scratch/native-profile-replay-s2jdj4rn/public-source/src",
+        "-I/home/otto/.hermes/cache/scratch/native-profile-replay-s2jdj4rn/public-source/src/map",
+        "-I/home/otto/.hermes/cache/scratch/native-profile-replay-s2jdj4rn/public-source/src/common",
+        "-I/home/otto/.hermes/cache/scratch/native-profile-replay-s2jdj4rn/public-source/3rdparty/rapidyaml/src",
+        "-I/home/otto/.hermes/cache/scratch/native-profile-replay-s2jdj4rn/public-source/3rdparty/rapidyaml/ext/c4core/src",
+        "-I/home/otto/.hermes/cache/scratch/native-profile-replay-s2jdj4rn/public-source/3rdparty/libconfig",
+        "-I/nix/store/1w8g6rvhljfk44hx50qz4sc47sm1f28v-mariadb-connector-c-3.3.5-dev/include/mysql",
+        "-fsyntax-only",
+        "/home/otto/.hermes/cache/scratch/native-profile-replay-s2jdj4rn/public-source/src/common/socket.cpp",
+        "-Xclang",
+        "-ast-dump=json",
+        "-Xclang",
+        "-ast-dump-filter=WFIFOSET"
+      ],
+      "exit": 0,
+      "stdout": "/home/otto/.hermes/cache/scratch/native-sink-audit-7bc2c7qv/fifo-ast.stdout",
+      "stderr": "/home/otto/.hermes/cache/scratch/native-sink-audit-7bc2c7qv/fifo-ast.stderr",
+      "stdout_sha256": "94b5a4814ff61b35bfc272f0c8331b5cd6d3cba8d3b0e1b4fa8f99ff99b77950",
+      "stderr_sha256": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b"
+    },
+    {
+      "name": "realloc-ast",
+      "command": [
+        "nix",
+        "develop",
+        "--offline",
+        "--no-write-lock-file",
+        "path:./spikes/007-native-packet-ast/toolchain",
+        "-c",
+        "/nix/store/2msw5nclhpsm80z65dqmjiv8kkras989-clang-wrapper-21.1.8/bin/clang++",
+        "-std=c++17",
+        "-ffast-math",
+        "-DHAS_TLS",
+        "-fno-strict-aliasing",
+        "-DHAVE_GETADDRINFO",
+        "-DHAVE_SETRLIMIT",
+        "-DHAVE_STRNLEN",
+        "-DPACKETVER=20180704",
+        "-DPRERE",
+        "-DHAVE_MONOTONIC_CLOCK",
+        "-I/home/otto/.hermes/cache/scratch/native-profile-replay-s2jdj4rn/public-source",
+        "-I/home/otto/.hermes/cache/scratch/native-profile-replay-s2jdj4rn/public-source/src",
+        "-I/home/otto/.hermes/cache/scratch/native-profile-replay-s2jdj4rn/public-source/src/map",
+        "-I/home/otto/.hermes/cache/scratch/native-profile-replay-s2jdj4rn/public-source/src/common",
+        "-I/home/otto/.hermes/cache/scratch/native-profile-replay-s2jdj4rn/public-source/3rdparty/rapidyaml/src",
+        "-I/home/otto/.hermes/cache/scratch/native-profile-replay-s2jdj4rn/public-source/3rdparty/rapidyaml/ext/c4core/src",
+        "-I/home/otto/.hermes/cache/scratch/native-profile-replay-s2jdj4rn/public-source/3rdparty/libconfig",
+        "-I/nix/store/1w8g6rvhljfk44hx50qz4sc47sm1f28v-mariadb-connector-c-3.3.5-dev/include/mysql",
+        "-fsyntax-only",
+        "/home/otto/.hermes/cache/scratch/native-profile-replay-s2jdj4rn/public-source/src/common/socket.cpp",
+        "-Xclang",
+        "-ast-dump=json",
+        "-Xclang",
+        "-ast-dump-filter=_realloc_writefifo"
+      ],
+      "exit": 0,
+      "stdout": "/home/otto/.hermes/cache/scratch/native-sink-audit-7bc2c7qv/realloc-ast.stdout",
+      "stderr": "/home/otto/.hermes/cache/scratch/native-sink-audit-7bc2c7qv/realloc-ast.stderr",
+      "stdout_sha256": "1301b1d4df880a0c8124d3b386c699c5ef532ddc6cd005152124742a62e8eb71",
+      "stderr_sha256": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b"
+    },
+    {
+      "name": "socket-macros",
+      "command": [
+        "nix",
+        "develop",
+        "--offline",
+        "--no-write-lock-file",
+        "path:./spikes/007-native-packet-ast/toolchain",
+        "-c",
+        "/nix/store/2msw5nclhpsm80z65dqmjiv8kkras989-clang-wrapper-21.1.8/bin/clang++",
+        "-std=c++17",
+        "-ffast-math",
+        "-DHAS_TLS",
+        "-fno-strict-aliasing",
+        "-DHAVE_GETADDRINFO",
+        "-DHAVE_SETRLIMIT",
+        "-DHAVE_STRNLEN",
+        "-DPACKETVER=20180704",
+        "-DPRERE",
+        "-DHAVE_MONOTONIC_CLOCK",
+        "-I/home/otto/.hermes/cache/scratch/native-profile-replay-s2jdj4rn/public-source",
+        "-I/home/otto/.hermes/cache/scratch/native-profile-replay-s2jdj4rn/public-source/src",
+        "-I/home/otto/.hermes/cache/scratch/native-profile-replay-s2jdj4rn/public-source/src/map",
+        "-I/home/otto/.hermes/cache/scratch/native-profile-replay-s2jdj4rn/public-source/src/common",
+        "-I/home/otto/.hermes/cache/scratch/native-profile-replay-s2jdj4rn/public-source/3rdparty/rapidyaml/src",
+        "-I/home/otto/.hermes/cache/scratch/native-profile-replay-s2jdj4rn/public-source/3rdparty/rapidyaml/ext/c4core/src",
+        "-I/home/otto/.hermes/cache/scratch/native-profile-replay-s2jdj4rn/public-source/3rdparty/libconfig",
+        "-I/nix/store/1w8g6rvhljfk44hx50qz4sc47sm1f28v-mariadb-connector-c-3.3.5-dev/include/mysql",
+        "-E",
+        "-dM",
+        "/home/otto/.hermes/cache/scratch/native-profile-replay-s2jdj4rn/public-source/src/common/socket.cpp"
+      ],
+      "exit": 0,
+      "stdout": "/home/otto/.hermes/cache/scratch/native-sink-audit-7bc2c7qv/socket-macros.stdout",
+      "stderr": "/home/otto/.hermes/cache/scratch/native-sink-audit-7bc2c7qv/socket-macros.stderr",
+      "stdout_sha256": "628cfdc10f84b5b5fe1b89a38fce9c29e830a4692dc622a6fa14953135b98b52",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "compiler_command_count": 8,
+  "compiler_command_success_count": 8,
+  "candidate_case_count": 1,
+  "bounded_semantic_probe_cases": 0,
+  "reused_caller_AST_count": 1,
+  "new_exact_symbol_definition_count": 6,
+  "freeze": {
+    "manifest": "/home/otto/.hermes/cache/scratch/native-profile-replay-parent-freeze.json",
+    "manifest_sha256": "5a685f218b5d9d19a105e3860870177c8a5c8c2cc729aca424654014ff1d2800",
+    "count": 189,
+    "before": "/home/otto/.hermes/cache/scratch/native-sink-audit-7bc2c7qv/before.json",
+    "after": "/home/otto/.hermes/cache/scratch/native-sink-audit-7bc2c7qv/after.json",
+    "changed": [],
+    "all_identical": true
+  },
+  "warnings": [
+    "candidate contract still requires independent parent semantic/handle review; admission false",
+    "Source confidence does not authorize any unproven exception declaration",
+    "No runtime send, receipt, gameplay, combat, XP or loot evidence",
+    "No production/spike code, tests, pins, wiki, Git, old report or store edited; only owned new report and scratch evidence",
+    "Two original-source failed guards remain preserved, not waived",
+    "Initial compiler-command extraction assertion stopped before invocation; corrected selection by exact unchanged clif.cpp argument. No commands or headers altered to force profile guards",
+    "Five-minute budget exceeded during report assembly (elapsed recorded 320.373 seconds at evidence completion); stopped at exact unresolved frontier, no further compiler or semantic expansion."
+  ],
+  "next_frontier": "Resolve U1 typed variadic pointer bridge and U2 allocator validity before proposing a no-escape/immutability adoption; prove non-server player session invariant or audit U3 SendFunc target; independently review active AST/helper closure and all handles before integration.",
+  "elapsed_seconds": 320.373,
+  "time_cap_exceeded": true
+}

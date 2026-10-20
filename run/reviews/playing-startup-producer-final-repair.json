@@ -1,0 +1,313 @@
+{
+  "passed": true,
+  "independent_review_pending": true,
+  "bounded_two_agent_run_approved": false,
+  "native_acceptance": false,
+  "native_gameplay_acceptance": false,
+  "native_combat_acceptance": false,
+  "full_goal_acceptance": false,
+  "summary": "Startup producer repair passes both independently reproduced failures, all original 25 probes and 12 final-review probes. Startup owns the thread before start, does a bounded nonblocking join attempt on cancellation, and retains the thread/client/journals until termination is confirmed. Independent parent approval remains required.",
+  "scope": {
+    "repo": "/home/otto/dev/ro-bots",
+    "environment": "Pinned nix develop --offline --no-write-lock-file; uv run --offline --no-sync; synthetic clients/providers and actual Python worker threads",
+    "repair_cycle": "second and last automatic host repair",
+    "source_writers": "none other than this delegate",
+    "repository_files_modified": [
+      "run/reviews/playing-startup-producer-final-repair.json",
+      "src/robots/app/agent_runtime.py",
+      "tests/test_native_startup_producer_ownership.py"
+    ],
+    "production_launch": false,
+    "native_model_engine_sql_git_commands": false
+  },
+  "root_cause": "connect discarded self.thread on every BaseException from Thread.start, then closed client; host.stop could consequently close journals while the actual producer was still alive. CPython start launches before _started.wait; interruption before ident publication is ambiguous.",
+  "implementation": {
+    "startup_ownership": "_producer_start_pending set before Thread.start; no reconnect while pending",
+    "cancellation": "stop_flag set before protected reap; zero-timeout _join_producer attempt never blocks cancellation",
+    "confirmation": "clear thread and pending phase only after successful join and is_alive=False; unstarted real Thread join raises and remains explicitly owned",
+    "client_memory_order": "startup close withheld until producer confirmed terminated; disconnect joins before client close; host journals withheld for pending start even if ident=None/is_alive=False",
+    "origins": "bare raise preserves exact KeyboardInterrupt/SystemExit origin object and deepest start frame, including join errors; ordinary startup Exception with unconfirmed producer is raised rather than returning False",
+    "compatibility": "public connect/disconnect/host APIs unchanged; _join_producer gains optional keyword timeout with unchanged default online disconnect behavior; all participants shutdown attempted; no packet/world changes",
+    "diagnostics": "exception class only, no private exception strings"
+  },
+  "tdd": {
+    "red": {
+      "tests": 3,
+      "failures": 3,
+      "errors": 0,
+      "skips": 0,
+      "junit": "/home/otto/.hermes/cache/scratch/producer-repair-final/red.xml"
+    },
+    "red_log": "/home/otto/.hermes/cache/scratch/producer-repair-final/red.log",
+    "observed_failures": [
+      "thread became None while actual worker alive for KeyboardInterrupt/SystemExit",
+      "actual run_host finally memory.close observed alive=True"
+    ],
+    "first_green": {
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "junit": "/home/otto/.hermes/cache/scratch/producer-repair-final/green.xml"
+    },
+    "new_boundary_tests": {
+      "tests": 10,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "junit": "/home/otto/.hermes/cache/scratch/producer-repair-final/new.xml"
+    }
+  },
+  "verification": {
+    "quality_gates": {
+      "black": {
+        "command": [
+          "uv",
+          "run",
+          "--offline",
+          "--no-sync",
+          "black",
+          "--check",
+          "--workers",
+          "1",
+          "src",
+          "tests"
+        ],
+        "exit_code": 0,
+        "seconds": 0.31757161199857364,
+        "log": "/home/otto/.hermes/cache/scratch/producer-repair-final/black.log"
+      },
+      "ruff": {
+        "command": [
+          "uv",
+          "run",
+          "--offline",
+          "--no-sync",
+          "ruff",
+          "check",
+          "--no-cache",
+          "src",
+          "tests"
+        ],
+        "exit_code": 0,
+        "seconds": 0.06693879999875207,
+        "log": "/home/otto/.hermes/cache/scratch/producer-repair-final/ruff.log"
+      },
+      "mypy": {
+        "command": [
+          "uv",
+          "run",
+          "--offline",
+          "--no-sync",
+          "mypy",
+          "--cache-dir=/home/otto/.hermes/cache/scratch/producer-repair-final/mypy-final-fresh",
+          "src",
+          "tests"
+        ],
+        "exit_code": 0,
+        "seconds": 0.4160590890023741,
+        "log": "/home/otto/.hermes/cache/scratch/producer-repair-final/mypy.log",
+        "cold_confirmation": {
+          "command": [
+            "uv",
+            "run",
+            "--offline",
+            "--no-sync",
+            "mypy",
+            "--no-incremental",
+            "--cache-dir=/home/otto/.hermes/cache/scratch/producer-repair-final/mypy-last-cold",
+            "src",
+            "tests"
+          ],
+          "exit_code": 0,
+          "log": "/home/otto/.hermes/cache/scratch/producer-repair-final/mypy-cold.log",
+          "source_files": 166
+        }
+      },
+      "vulture": {
+        "command": [
+          "uv",
+          "run",
+          "--offline",
+          "--no-sync",
+          "vulture",
+          "src",
+          "vulture_whitelist.py"
+        ],
+        "exit_code": 0,
+        "seconds": 0.31632636900030775,
+        "log": "/home/otto/.hermes/cache/scratch/producer-repair-final/vulture.log"
+      },
+      "xenon": {
+        "command": [
+          "uv",
+          "run",
+          "--offline",
+          "--no-sync",
+          "xenon",
+          "src",
+          "--max-absolute",
+          "B",
+          "--max-modules",
+          "B",
+          "--max-average",
+          "A"
+        ],
+        "exit_code": 0,
+        "seconds": 0.41544570500263944,
+        "log": "/home/otto/.hermes/cache/scratch/producer-repair-final/xenon.log"
+      },
+      "duplicate": {
+        "command": [
+          "uv",
+          "run",
+          "--offline",
+          "--no-sync",
+          "pylint",
+          "--disable=all",
+          "--enable=duplicate-code",
+          "--persistent=no",
+          "--ignore-paths=tests",
+          "src"
+        ],
+        "exit_code": 0,
+        "seconds": 2.2203309379983693,
+        "log": "/home/otto/.hermes/cache/scratch/producer-repair-final/duplicate.log"
+      },
+      "bandit": {
+        "command": [
+          "uv",
+          "run",
+          "--offline",
+          "--no-sync",
+          "bandit",
+          "-q",
+          "-c",
+          "pyproject.toml",
+          "-r",
+          "src"
+        ],
+        "exit_code": 0,
+        "seconds": 0.7662869509986194,
+        "log": "/home/otto/.hermes/cache/scratch/producer-repair-final/bandit.log"
+      },
+      "coverage": {
+        "command": [
+          "uv",
+          "run",
+          "--offline",
+          "--no-sync",
+          "pytest",
+          "tests/test_native_startup_producer_ownership.py",
+          "tests/test_agent_host.py",
+          "tests/test_core_interruption_cleanup.py",
+          "tests/test_host_memory.py",
+          "tests/test_host_storage_failure.py",
+          "tests/test_host_native_vitals.py",
+          "tests/test_host_native_transport.py",
+          "tests/test_host_chat_commands.py",
+          "tests/test_host_chat_interruptions.py",
+          "tests/test_host_self_chat.py",
+          "tests/test_host_summary_cache.py",
+          "tests/test_playing_startup_cleanup.py",
+          "--cov=robots.app.agent_runtime",
+          "--cov-report=term-missing",
+          "--cov-fail-under=85",
+          "-p",
+          "no:cacheprovider",
+          "--junitxml=/home/otto/.hermes/cache/scratch/producer-repair-final/host-coverage.xml"
+        ],
+        "exit_code": 0,
+        "seconds": 7.185375641998689,
+        "log": "/home/otto/.hermes/cache/scratch/producer-repair-final/coverage.log"
+      }
+    },
+    "all_seven_source_static_gates_pass": true,
+    "junit": {
+      "red": {
+        "tests": 3,
+        "failures": 3,
+        "errors": 0,
+        "skips": 0,
+        "junit": "/home/otto/.hermes/cache/scratch/producer-repair-final/red.xml"
+      },
+      "green": {
+        "tests": 3,
+        "failures": 0,
+        "errors": 0,
+        "skips": 0,
+        "junit": "/home/otto/.hermes/cache/scratch/producer-repair-final/green.xml"
+      },
+      "new": {
+        "tests": 10,
+        "failures": 0,
+        "errors": 0,
+        "skips": 0,
+        "junit": "/home/otto/.hermes/cache/scratch/producer-repair-final/new.xml"
+      },
+      "regressions": {
+        "tests": 184,
+        "failures": 0,
+        "errors": 0,
+        "skips": 0,
+        "junit": "/home/otto/.hermes/cache/scratch/producer-repair-final/regressions.xml"
+      },
+      "host-coverage": {
+        "tests": 306,
+        "failures": 0,
+        "errors": 0,
+        "skips": 0,
+        "junit": "/home/otto/.hermes/cache/scratch/producer-repair-final/host-coverage.xml"
+      },
+      "final-probes": {
+        "tests": 47,
+        "failures": 0,
+        "errors": 0,
+        "skips": 0,
+        "junit": "/home/otto/.hermes/cache/scratch/producer-repair-final/final-probes.xml"
+      }
+    },
+    "unique_passing_cases": 343,
+    "original_and_review_probes": {
+      "original": 25,
+      "review": 12,
+      "new": 10,
+      "total": 47,
+      "junit": "/home/otto/.hermes/cache/scratch/producer-repair-final/final-probes.xml"
+    },
+    "host_runtime_coverage_percent": 92.82,
+    "host_runtime_coverage_minimum": 85,
+    "host_runtime_coverage_scope": "robots.app.agent_runtime; not a full-source coverage substitute",
+    "freeze_stable": true,
+    "protected_prior_review_files_compared": 173,
+    "protected_prior_review_changes": [],
+    "critical_hashes": {
+      "src/robots/app/agent_runtime.py": "c5afa6d4ddab3cf358b0b37d6b5aef0479aff7ffc52f349c15202c94f1580e4d",
+      "src/robots/app/playing_runtime.py": "56c143c8852a4884fc0632905be168f1c8e63988526b4aca151235de652fadc6",
+      "spikes/003-clientless-limbs/client.py": "e17e3b9e553269a1666e72910fd46fc58d4096f6b5ebf0d0e005a05a71f21e93",
+      "flake.lock": "c9c0bac69415b99a29ef3fe149b6f04ef54d291989bdf7218cf819ed52edf2a0",
+      "uv.lock": "2d7b4c187078488d7625e4fd4fa982745cab8d6a65b2ff3e382ffa286f1df245",
+      "Taskfile.yml": "bf60a77c96fb4cfb4c5475c73a6e7da5a7eef90fc9f63c06a9812cfcbbb1d31d",
+      "pyproject.toml": "e8ae0849a413bc3d705f081f609b92dae702bbd3e491b2c3aeb5d8665c458fba"
+    },
+    "freeze_before": "/home/otto/.hermes/cache/scratch/producer-repair-final/freeze-before.json",
+    "freeze_after": "/home/otto/.hermes/cache/scratch/producer-repair-final/freeze-after.json"
+  },
+  "issues": [
+    {
+      "kind": "full configured suite attempt timed out",
+      "details": "A full-source pytest coverage attempt reached approximately 75% then hit the 150-second bound; no completed physical JUnit/full-suite result was produced. The final scoped 306-case host coverage and 47-case probe runs are green. The accidental broad attempt included the explicitly discouraged actor suite. Parent-owned prior full gate must not be represented as freshly rerun by this delegate."
+    },
+    {
+      "kind": "existing dependency warning",
+      "details": "StarletteDeprecationWarning from FastAPI testclient; unchanged dependencies, not silenced."
+    }
+  ],
+  "limitations": [
+    "Asynchronous start state without successful join remains explicit nonacceptance: thread/client/journals retained and reconnect denied, not universally freed.",
+    "The existing online disconnect uses an unbounded join; a blocked inference may still block host shutdown. Cancellation startup itself uses a bounded zero-timeout join.",
+    "No native/server/model/engine/SQL or private fixture I/O exercised; offline contracts only.",
+    "A failed or interrupted client close is not retried blindly; existing startup/online retry policy preserved.",
+    "Whole-source coverage/task check did not complete here; prior parent 3416+65 / 94.67% result is historical, not proof of this final snapshot."
+  ]
+}

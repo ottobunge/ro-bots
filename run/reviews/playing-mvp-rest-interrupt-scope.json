@@ -1,0 +1,31 @@
+{
+  "intent": "Persistent REST interrupts combat execution; model decision is not silently replaced by the old autopilot",
+  "diagnostic_sha256": "d388c698ecfb5990dd631f3995390ede7d78ba63bc8141bf5c453ff5a9d64271",
+  "policy_decision": "Use configurable recovery HP ratio with default 0.75; this is an explicitly chosen executor recovery threshold, not a Ragnarok rule or species-based safety theorem",
+  "trigger": "Explicit DamageTaken REST or an actual active script REST below its own health trigger",
+  "release": "Received HP/MAXHP reach recovery ratio and actual native SELF standing acknowledgement gates resumed attacks",
+  "requirements": [
+    "No same/next-tick attacks, loot, mechanical patrol after REST",
+    "Preserve suspended script and farm plan instead of replacing them on heartbeat KEEP",
+    "Monster ATTACK and KEEP do not erase recovery",
+    "Explicit FLEE preempts resting motion without automatically changing REST to FLEE; preserve recovery combat suspension until safe resumption",
+    "Event/native draining and keepalive remain active",
+    "Attack requires standing and resolves pending motion instead of bypassing pose guards",
+    "Rest requests paced; repeat received sitting does not flood sends",
+    "No inferred HP, pose, target difficulty or unseen actors",
+    "No model calls per mechanical recovery tick"
+  ],
+  "owned_files": [
+    "src/robots/app/brain.py",
+    "src/robots/app/scripts.py",
+    "src/robots/app/agent_runtime.py",
+    "src/robots/app/playing_runtime.py",
+    "tests/test_native_rest_interrupt.py",
+    "tests/test_rest_recovery_script.py",
+    "tests/test_native_pose_recovery.py"
+  ],
+  "protected": "No packet table/manifest/new B6 tests edits; parallel finite packet review excludes recovery modules",
+  "native_effects_by_delegate": false,
+  "known_limit": "Rest under pursuit can still fail because sourced damage force-stands PCs; flee-then-rest is separate model policy, not silently imposed",
+  "all_six_milestones_open": true
+}

@@ -1,0 +1,23 @@
+{
+  "slice": "subgoal11 offline structured-plan admission and bounded replan lifecycle",
+  "decision": "wiki/decisions/adr-021-llm-planning-clef-execution.md",
+  "allowed_new_files": [
+    "src/robots/domain/planning.py",
+    "src/robots/ports/planning.py",
+    "src/robots/app/plan_lifecycle.py",
+    "tests/test_plan_lifecycle.py",
+    "run/reviews/llm-plan-lifecycle-core.json"
+  ],
+  "no_existing_source_or_public_skill_worker_files_modified": true,
+  "requirements": [
+    "typed LLM-proposed plans, identity/ruleset and supported phase validation",
+    "reject unknown prerequisites, stale/foreign replies and invalid deadlines",
+    "one in-flight replan request per lifecycle owner",
+    "bounded deduplication, cooldown and timeout state transitions",
+    "no LLM/CLEF/native calls inside the lifecycle core",
+    "genuine vertical tests-first evidence before new implementation"
+  ],
+  "not_full_planner_or_native_authority": true,
+  "full_provider_tools_brain_dashboard_persistence_and_live_acceptance_open": true,
+  "all_existing_goals_retained": true
+}

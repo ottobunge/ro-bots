@@ -1,0 +1,50 @@
+{
+  "status": "COMPLETE",
+  "completed_at_utc": "2026-10-15",
+  "scope": "Bounded NPC-dialogue clear for grind goals in EventDrivenBrain.step_script (window-8 root cause: retained non-terminal dialogue diverted the grind goal script forever; 69 dialogue actions, zero attacks)",
+  "production_changes": {
+    "file": "src/robots/app/brain.py",
+    "sha256": "2cff4edfc45389001cad198890cdea016ffaa49e23eafd6583ce99eea4489a1b",
+    "summary": [
+      "GRIND_DIALOGUE_BLOCK_BUDGET = 8: bounded received-step budget per dialogue session (epoch, map_name, npc_id, opened_sequence)",
+      "_grind_dialogue_block_expired: grind/farm goals only (_wants_farming); non-grind goals keep strict dialogue handling unchanged",
+      "_dialogue_clear_drive: one reviewed terminal/cancel action per received stage of a session through the existing playing_runtime dispatch contract: NpcNext at stage next; NpcClose at close/unsupported_input/string_input; exactly one NpcSelect(npc_id, 255) cancel at menu; stages with no reviewed send (text/waiting/blocked/opening/unsupported_shop) fail closed to _npc_step",
+      "step_script: budget not exceeded -> strict _npc_step (byte-identical behavior); budget exceeded and drive available -> fire once; drive already fired for this stage -> fall through to the normal goal-script tail (recovery -> needs_npc_preparation -> script), so the goal script resumes while the runtime's actuation gate (actuation_blocked) remains the unsafe-dispatch enforcement layer"
+    ],
+    "preserved": [
+      "strict dialogue handling for non-grind goals (quest/social/idle_town)",
+      "dialogue memory retention: _remember_npc unchanged, called first, pages remembered exactly once",
+      "cancel-deadlock repair semantics: menu cancel-255 fired once per received menu (never re-cancelled; the model's event answer stays authoritative); NpcClose/NpcNext routing and NativeNpcDialogue stage machine untouched",
+      "no new action types; no changes to handle_event, playing_runtime, or the native adapter"
+    ]
+  },
+  "tests": {
+    "file": "tests/test_brain_grind_dialogue_clear.py",
+    "sha256_after_black": "171c37fa9a84616d685a54237edf94c26969cc6704b19d073d5053daa49035d7",
+    "count": 7,
+    "tdd_order": "tests-first: RED run against production bytes whose step_script routing was unchanged (only the inert constant + init fields existed), then the routing change",
+    "red": {
+      "receipt": ".work/playing-grind-dialogue/red-brain-dialogue.xml",
+      "sha256": "3f9a0884d57fb84a7180a5eec79234ea17ba2c8d530635672497f0255dc2d70d",
+      "result": "3 failed (next/close/menu bounded-clear contracts: zero drives, zero Attack — live window-8 shape), 4 regression guards passed on current behavior"
+    },
+    "green_scoped": {
+      "receipt": ".work/playing-grind-dialogue/green-scoped.xml",
+      "sha256_note": "superseded by the post-black rerun; contents: 144 passed",
+      "command": "nix develop -c env PYTHONPATH=src:. .venv/bin/python -B -m pytest -q -o addopts= tests/test_brain_grind_dialogue_clear.py tests/test_brain.py tests/test_playing_runtime.py .work/playing-grind-cadence/tests/test_cadence_contracts.py .work/playing-grind-operator/tests/test_grind_operator_contracts.py",
+      "result": "144 passed"
+    },
+    "earlier_scoped": [
+      {"command": "new file + test_brain + native NPC dialogue/cancel/page-budget/guidance suites", "result": "138 passed", "receipt": ".work/playing-grind-dialogue/green-scoped.xml (first run)", "sha256": "d16a1dcfe4fd3e66ad6988d04b17be5f6da6b471048fea1862a320d5ca313b6e"},
+      {"command": "tests/test_playing_runtime.py + cadence + grind-operator namespaces", "result": "120 passed", "receipt": ".work/playing-grind-dialogue/playing-and-operators.xml", "sha256": "a28f4e394be60cc666d070ea40b7532fc12621076f5a80cd618d8d726dcbefd7"}
+    ]
+  },
+  "root_gate": {
+    "command": "cd /home/otto/dev/ro-bots && nix develop -c task check",
+    "result": "rc 0 — 5899 passed, 65 subtests passed (baseline 5892+65 exactly + 7 new tests), in 209s",
+    "log": ".work/playing-grind-dialogue/root-gate.log",
+    "lint_note": "first full attempt failed: black (test file), then ruff PT018 + xenon C on step_script; fixed by extracting _divert_grind_dialogue and splitting compound asserts; black reformat of brain.py is mechanical only"
+  },
+  "window9_packaging": ".work/playing-grind-operator/READY-TO-RUN.md Window 9 section: live command byte-identical to window 8 (cadence operator unchanged); acceptance = dialogue cleared once (<=1 drive per received stage), goal script runs, attack 0x437 at an observed Poring, damage/death/XP/loot receipts, OR honest blocker evidence",
+  "prohibited_respected": ["no live execution", "no spike edits", "no Git actions", "no private bundle bodies"]
+}

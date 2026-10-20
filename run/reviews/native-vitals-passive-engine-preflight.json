@@ -1,0 +1,101 @@
+{
+  "containers": [
+    {
+      "id": "71715cf83bb3f5104c600dbeb2cdd3b0be162a9c3a85cfbb228fcebb10326f50",
+      "service": "mariadb",
+      "running": true,
+      "health": "healthy",
+      "image": "sha256:ab3dff582d246358b6f6a1f6212f29ac64609fad883eb3dcfb0a89f6f7d0700e",
+      "volume_mounts": [
+        {
+          "name": "ro-bots-world-test",
+          "destination": "/var/lib/ro-bots"
+        },
+        {
+          "name": "ro-bots-world-test",
+          "destination": "/docker-entrypoint-initdb.d"
+        },
+        {
+          "name": "ro-bots-world-test",
+          "destination": "/var/lib/mysql"
+        }
+      ],
+      "port_bindings": {}
+    },
+    {
+      "id": "730324a591dffbd94d969048cc018b5e16eb793342f9a6e4ae6cf1969c604d01",
+      "service": "rathena-char",
+      "running": true,
+      "health": null,
+      "image": "sha256:3a0e4fcfd53a480977da75d4a9ecea6e407f6ac1e04a79e4805f8463e530b48b",
+      "volume_mounts": [
+        {
+          "name": "ro-bots-world-test",
+          "destination": "/world"
+        }
+      ],
+      "port_bindings": {
+        "16121/tcp": [
+          {
+            "HostIp": "127.0.0.1",
+            "HostPort": "16121"
+          }
+        ]
+      }
+    },
+    {
+      "id": "0c9ceffa6a794ded5bd93926a9b9ba787ddc6cce2ab02c193760dc163dde1f99",
+      "service": "rathena-map",
+      "running": true,
+      "health": null,
+      "image": "sha256:3a0e4fcfd53a480977da75d4a9ecea6e407f6ac1e04a79e4805f8463e530b48b",
+      "volume_mounts": [
+        {
+          "name": "ro-bots-world-test",
+          "destination": "/world"
+        }
+      ],
+      "port_bindings": {
+        "15121/tcp": [
+          {
+            "HostIp": "127.0.0.1",
+            "HostPort": "15121"
+          }
+        ]
+      }
+    },
+    {
+      "id": "420033e6a8ef31ab42b08e6be6a1488586923c958770bd46e63c8a460d4f9c2c",
+      "service": "rathena-login",
+      "running": true,
+      "health": null,
+      "image": "sha256:3a0e4fcfd53a480977da75d4a9ecea6e407f6ac1e04a79e4805f8463e530b48b",
+      "volume_mounts": [
+        {
+          "name": "ro-bots-world-test",
+          "destination": "/world"
+        }
+      ],
+      "port_bindings": {
+        "16900/tcp": [
+          {
+            "HostIp": "127.0.0.1",
+            "HostPort": "16900"
+          }
+        ]
+      }
+    }
+  ],
+  "volume": {
+    "name": "ro-bots-world-test",
+    "labels": {
+      "com.docker.compose.project": "ro-bots-test",
+      "com.docker.compose.volume": "world-data"
+    },
+    "driver": "local"
+  },
+  "exact_four_volume_users": true,
+  "mutations": false,
+  "no_native_connections_attempted": true,
+  "retry_note": "Raw terminal inspect exceeded JSON capture window; direct kernel had no terminal Docker endpoint. Used terminal-local bounded parse and compact projection without changing engine configuration."
+}

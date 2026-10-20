@@ -1,0 +1,215 @@
+{
+  "passed": true,
+  "status": "PASS: offline endpoint/PIN source and constructor contract only",
+  "security_concerns": [],
+  "logic_errors": [],
+  "summary": "Validated explicit endpoint/PIN forwarding and refusal of invalid new primitives before constructor calls; no native or provider activation.",
+  "source_sha256": {
+    "src/robots/app/agent_runtime.py": "70b38a71ee9108353b45edd4aeda0116aaa5daf0cb88a95b329d50f04a507288",
+    "tests/test_host_native_transport.py": "66cbafffeafd43eedae04b37be90b924a3ab1321535fc25c8e2e55e05b1eadf7"
+  },
+  "frozen_dependencies": {
+    "unchanged": true,
+    "before": "/home/otto/.hermes/cache/scratch/htr.amyKS8/freeze-before.json",
+    "after": "/home/otto/.hermes/cache/scratch/htr.amyKS8/freeze-final.json",
+    "scope": "All production Python modules; current spike client/packetdb and sibling Python helpers; selected existing host tests; pyproject.toml, uv.lock, Taskfile.yml, whitelist. No movement test edits or private fixture reads."
+  },
+  "contracts_reviewed": [
+    "Four positional legacy identity arguments retained; new transport options keyword-only.",
+    "Shared root endpoint is complete pair of plain IPv4 literal and plain integer port 1..65535; bool/subclass/coercion refused.",
+    "Per-row PIN is absent or plain four ASCII digits; explicit null invalid in loader; validation applies even to skipped/duplicate rows.",
+    "Default factory forwards login_host as login_ip, login_port, optional pincode; char_name and verbose=False preserved.",
+    "Injected factory receives exactly the original entry as its sole argument.",
+    "No secret values in validation messages, emitted validation logs, or object repr; bad IP error chaining suppressed.",
+    "Malformed identity rows and first duplicate legacy policy retained apart from deliberate strict validation of new PIN fields.",
+    "Legacy endpoint remains 127.0.0.1:6900 for compatibility, not permission or isolated-world selection; no global client defaults or schema alias changes."
+  ],
+  "test_evidence": {
+    "junit_path": "/home/otto/.hermes/cache/scratch/htr.amyKS8/final.xml",
+    "total": 222,
+    "unique": 222,
+    "scoped_repository_cases": 209,
+    "new_repository_cases": 31,
+    "additional_refusal_probes": 13,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "classname_counts": {
+      "tests.test_agent_host": 17,
+      "tests.test_host_chat_commands": 38,
+      "tests.test_host_chat_interruptions": 20,
+      "tests.test_host_memory": 16,
+      "tests.test_host_native_transport": 31,
+      "tests.test_host_storage_failure": 15,
+      "tests.test_host_summary_cache": 72,
+      "": 13
+    },
+    "coverage_path": "/home/otto/.hermes/cache/scratch/htr.amyKS8/coverage-final.json",
+    "full_module_coverage": {
+      "covered_lines": 522,
+      "num_statements": 574,
+      "percent_covered": 90.94076655052265,
+      "percent_covered_display": "91",
+      "missing_lines": 52,
+      "excluded_lines": 12,
+      "percent_statements_covered": 90.94076655052265,
+      "percent_statements_covered_display": "91"
+    },
+    "coverage_threshold": 85
+  },
+  "commands": {
+    "runner": "nix develop --offline -c; uv run --offline --no-sync; no installs",
+    "final_pytest": [
+      "uv",
+      "run",
+      "--offline",
+      "--no-sync",
+      "pytest",
+      "-p",
+      "offline_review_late",
+      "-p",
+      "no:cacheprovider",
+      "-q",
+      "-o",
+      "faulthandler_timeout=20",
+      "tests/test_agent_host.py",
+      "tests/test_host_chat_commands.py",
+      "tests/test_host_chat_interruptions.py",
+      "tests/test_host_memory.py",
+      "tests/test_host_native_transport.py",
+      "tests/test_host_storage_failure.py",
+      "tests/test_host_summary_cache.py",
+      "/home/otto/.hermes/cache/scratch/htr.amyKS8/test_independent_refusals.py",
+      "--basetemp=/home/otto/.hermes/cache/scratch/htr.amyKS8/pytest-final",
+      "--junitxml=/home/otto/.hermes/cache/scratch/htr.amyKS8/final.xml",
+      "--cov=robots.app.agent_runtime",
+      "--cov-report=json:/home/otto/.hermes/cache/scratch/htr.amyKS8/coverage-final.json",
+      "--cov-fail-under=85"
+    ],
+    "final_pytest_exit_code": 0,
+    "environment": {
+      "TMPDIR": "/home/otto/.hermes/cache/scratch/htr.amyKS8",
+      "COVERAGE_FILE": "/home/otto/.hermes/cache/scratch/htr.amyKS8/.coverage-final",
+      "UV_OFFLINE": "1",
+      "PYTHONDONTWRITEBYTECODE": "1",
+      "PYTHONPATH": "set inside nix command to scratch plugin/source/tests; inherited pytest flags unset"
+    },
+    "static_gates": [
+      {
+        "command": [
+          "uv",
+          "run",
+          "--offline",
+          "--no-sync",
+          "black",
+          "--check",
+          "--workers",
+          "1",
+          "src/robots/app/agent_runtime.py",
+          "tests/test_host_native_transport.py"
+        ],
+        "exit_code": 0,
+        "log": "/home/otto/.hermes/cache/scratch/htr.amyKS8/black.log"
+      },
+      {
+        "command": [
+          "uv",
+          "run",
+          "--offline",
+          "--no-sync",
+          "ruff",
+          "check",
+          "--no-cache",
+          "src/robots/app/agent_runtime.py",
+          "tests/test_host_native_transport.py"
+        ],
+        "exit_code": 0,
+        "log": "/home/otto/.hermes/cache/scratch/htr.amyKS8/ruff.log"
+      },
+      {
+        "command": [
+          "uv",
+          "run",
+          "--offline",
+          "--no-sync",
+          "mypy",
+          "--strict",
+          "--cache-dir=/home/otto/.hermes/cache/scratch/htr.amyKS8/mypy",
+          "src/robots/app/agent_runtime.py",
+          "tests/test_host_native_transport.py"
+        ],
+        "exit_code": 0,
+        "log": "/home/otto/.hermes/cache/scratch/htr.amyKS8/mypy.log"
+      },
+      {
+        "command": [
+          "uv",
+          "run",
+          "--offline",
+          "--no-sync",
+          "bandit",
+          "-q",
+          "-c",
+          "pyproject.toml",
+          "src/robots/app/agent_runtime.py"
+        ],
+        "exit_code": 0,
+        "log": "/home/otto/.hermes/cache/scratch/htr.amyKS8/bandit.log"
+      },
+      {
+        "command": [
+          "uv",
+          "run",
+          "--offline",
+          "--no-sync",
+          "vulture",
+          "src/robots/app/agent_runtime.py",
+          "tests/test_host_native_transport.py",
+          "vulture_whitelist.py",
+          "--min-confidence",
+          "85"
+        ],
+        "exit_code": 0,
+        "log": "/home/otto/.hermes/cache/scratch/htr.amyKS8/vulture.log"
+      },
+      {
+        "command": [
+          "uv",
+          "run",
+          "--offline",
+          "--no-sync",
+          "xenon",
+          "src/robots/app/agent_runtime.py",
+          "--max-absolute",
+          "B",
+          "--max-modules",
+          "B",
+          "--max-average",
+          "B"
+        ],
+        "exit_code": 0,
+        "log": "/home/otto/.hermes/cache/scratch/htr.amyKS8/xenon.log"
+      }
+    ]
+  },
+  "offline_boundary": "Scratch autouse plugin refuses real BotClient construction, socket connect/connect_ex/create_connection, and uvicorn.Server.run; provider autodetection replaced with StaticChatGenerator. Existing fake lifecycle regressions allowed; no real host activation, game connection, engines, SQL, live network, providers, or private fixture files.",
+  "suggestions": [
+    "Implementer reports 214 scoped cases without exact JUnit file/test selection. Discovered test_agent_host.py plus six test_host_*.py files contain 209 unique cases, all passed. Independent report does not adopt unreproduced 214 count; parent should reconcile its exact broader scope.",
+    "Parent must separately enforce exact declared-world endpoint, private file permissions/ownership, persona/account/character identity and activation approval. load_manifest still uses ordinary Path.read_text; this slice does not establish private-file safety."
+  ],
+  "review_harness_issues": [
+    "Initial scratch plugin imported production before coverage startup: 209 tests passed but coverage gate was 72.13%. Preserved initial JUnit/coverage/results; corrected import timing with a late autouse plugin and reran at unchanged source: 222 cases passed and 90.94% full-module coverage.",
+    "One attempted final invocation failed plugin discovery because nix shell resets PYTHONPATH; rerun set PYTHONPATH inside nix and passed.",
+    "One existing StarletteDeprecationWarning retained; no dependency changes."
+  ],
+  "initial_evidence": {
+    "results": "/home/otto/.hermes/cache/scratch/htr.amyKS8/results.json",
+    "junit": "/home/otto/.hermes/cache/scratch/htr.amyKS8/scoped.xml",
+    "coverage": "/home/otto/.hermes/cache/scratch/htr.amyKS8/coverage.json"
+  },
+  "authority_limits": "No native gameplay, cognition, memory milestone, world isolation, private manifest identity binding or whole-project task check approval. Parent owns final combined gates and any future activation.",
+  "repository_files_created": [
+    "run/reviews/host-native-transport-independent-review.json"
+  ],
+  "repository_files_modified": []
+}

@@ -1,0 +1,173 @@
+{
+  "status": "real_decisions_and_local_chat_verified",
+  "game_agents_started": false,
+  "real_clef_validation_calls": 10,
+  "real_chat_completions": 1,
+  "successful_clef_calls": 5,
+  "failed_clef_calls": 5,
+  "recommended_decision_provider": "make_private_decision with explicitly supplied owned Heavengraph flash endpoint",
+  "private_provider_endpoint": "[REDACTED]",
+  "workers_account_and_token": "[REDACTED]",
+  "providers": {
+    "local-clef": {
+      "status": "success",
+      "inference_calls": 1,
+      "latency_s": 0.6999161740022828,
+      "output": {
+        "answers": {
+          "next_action": {
+            "type": "choice",
+            "choice": "explore",
+            "probabilities": {
+              "explore": 0.9628338210628615,
+              "flee": 0.01579296450797959,
+              "rest": 0.02137321442915901
+            },
+            "confidence": 0.9442507315942923
+          }
+        }
+      },
+      "input": {
+        "state": {
+          "hp_percent": 90,
+          "danger": false
+        },
+        "questions": {
+          "next_action": {
+            "type": "choice",
+            "instructions": "Choose the safe next action.",
+            "criteria": {
+              "rest": "Recover when injured.",
+              "explore": "Explore when healthy and safe.",
+              "flee": "Escape danger."
+            }
+          }
+        }
+      },
+      "probability_sum": 1.0000000000000002
+    },
+    "workers-ai": {
+      "status": "success",
+      "inference_calls": 1,
+      "latency_s": 1.381217636000656,
+      "output": {
+        "answers": {
+          "next_action": {
+            "type": "choice",
+            "choice": "explore",
+            "probabilities": {
+              "rest": 0.0219,
+              "explore": 0.9617,
+              "flee": 0.0164
+            },
+            "confidence": 0.8885
+          }
+        }
+      },
+      "probability_sum": 1.0
+    },
+    "heavengraph-flash": {
+      "status": "success",
+      "inference_calls": 1,
+      "latency_s": 0.13942045600197162,
+      "output": {
+        "answers": {
+          "next_action": {
+            "type": "choice",
+            "choice": "explore",
+            "probabilities": {
+              "explore": 0.9637311123678269,
+              "flee": 0.01574489785618578,
+              "rest": 0.020523989775987204
+            },
+            "confidence": 0.9455966685517404
+          }
+        }
+      },
+      "probability_sum": 0.9999999999999999
+    }
+  },
+  "chat": {
+    "status": "success",
+    "inference_calls": 1,
+    "latency_s": 1.5282427120000648,
+    "output": "Wandering through a peaceful meadow feels like stepping into a quiet dream\u2014each breeze carrying the scent of wildflowers and stillness. \ud83c\udf3c\ud83c\udf3f",
+    "input": "Reply with one friendly sentence about exploring a peaceful meadow."
+  },
+  "servers": [
+    {
+      "kind": "chat",
+      "port": 8300,
+      "pid": 277254,
+      "session_id": "proc_68cd0acdfd1c",
+      "alive": true,
+      "health": {
+        "status": "ok"
+      },
+      "persist_on_release": true,
+      "restart_command": "nix develop --offline -c bash scripts/serve-playing-models.sh chat",
+      "private_log": "/home/otto/.hermes/cache/scratch/playing-chat-server.log"
+    },
+    {
+      "kind": "clef",
+      "port": 8302,
+      "pid": 290922,
+      "session_id": "proc_b8634275f421",
+      "alive": true,
+      "health": {
+        "status": "ok"
+      },
+      "persist_on_release": true,
+      "restart_command": "nix develop --offline -c bash scripts/serve-playing-models.sh clef",
+      "private_log": "/home/otto/.hermes/cache/scratch/playing-clef-server.log"
+    }
+  ],
+  "runtime_nix_store": "/nix/store/xvvpg3j4gkd2c6bqn96q8wwvf8xlhky3-llama-cpp-clef-rocm-0.5.0-clef-a7fb71f-rocm",
+  "weights": {
+    "Qwen3-4B-Instruct-2507-Q4_K_M.gguf": {
+      "sha256": "2fde00ce69dd4899c70d020845e2638353015bba0fdf161b3eb965f2bca4464e",
+      "bytes": 2497280736
+    },
+    "Clef-Flash-Q4_K_M.gguf": {
+      "sha256": "3243a51d7a7bb205fb4fcf402a7df763f7d31e6645a9c10e5754c4395ab85b66",
+      "bytes": 6486448192
+    }
+  },
+  "gpu_provenance": {
+    "local": "ROCm Nix binary and -ngl 99 launch verified; sampled utilization not tied to a successful inference, so utilization-based GPU verification remains incomplete",
+    "remote": "not independently verified; HTTP inference alone is not GPU provenance"
+  },
+  "quality": {
+    "scope": "owned module and tests",
+    "tests_passed": 18,
+    "coverage_percent": 89.25,
+    "black": "passed",
+    "ruff": "passed",
+    "mypy_strict": "passed",
+    "xenon_scoped": "passed",
+    "bandit": "passed",
+    "vulture": "passed",
+    "whole_source_duplicate_code": "passed",
+    "whole_source_xenon": "blocked: concurrently added native_navigation.py shortest_path rank C",
+    "full_suite": "not run while other delegates edit shared source"
+  },
+  "issues": [
+    "First two Workers AI probes omitted instructions and were rejected; corrected one-choice probes succeeded.",
+    "A later mixed-type probe incorrectly supplied string criteria to noul and was rejected by all three backends. Final reusable hosted/private constructors were revalidated successfully with the correct one-choice fixture.",
+    "SSH public-key denial remains; existing private HTTP inference is usable.",
+    "No new weights downloaded, no services restarted, no game/native/SQL/account operations performed."
+  ],
+  "artifacts": [
+    "/home/otto/.hermes/cache/scratch/playing-clef-inference.json",
+    "/home/otto/.hermes/cache/scratch/playing-clef-diagnostic.json",
+    "/home/otto/.hermes/cache/scratch/playing-local-inference.json",
+    "/home/otto/.hermes/cache/scratch/playing-alternative-inference.json",
+    "/home/otto/.hermes/cache/scratch/playing-final-inference.json",
+    "/home/otto/.hermes/cache/scratch/playing-constructor-inference.json"
+  ],
+  "source_sha256": {
+    "src/robots/adapters/playing_backends.py": "4db7c5c6e5316b0659c13d34d8ed9a1efba324989b519acac1f1d6cb1dbc3980",
+    "tests/test_playing_backends.py": "58d47a751bc6f47c996f84b7aeac3e419528f9dc3a46f29d1a6d9816a9aa03f7",
+    "scripts/serve-playing-models.sh": "e52fb94288769ab195f55f2c0753191e0b14091e7e1ee09de94bda96f6d7496d"
+  }
+}

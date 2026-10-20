@@ -1,0 +1,45 @@
+{
+  "status": "MAINTENANCE_CHAIN_REVIEW_PARENT_VERIFIED_CURRENT_ADMISSION_BLOCKED",
+  "review_sha256": "0dac3d98df270e63491accb1b2100e9955de0b793a6d61bb897399769718ed47",
+  "unchanged_frozen_paths": 350,
+  "receipts": {
+    "passing_receipt": {
+      "unique_cases": 15,
+      "failures": 0,
+      "sha256": "59ed50300c56b9f8aef73c2e17b6c92d378015a7fb42cd6b0da0e86448b11ddb"
+    },
+    "missing_binding_red_receipt": {
+      "unique_cases": 2,
+      "failures": 2,
+      "sha256": "7f41cb21bff421b0eb1aab8f462978d2725dccd7c593ff9c9b984903936115af"
+    }
+  },
+  "accepted_changed_source_bindings": 8,
+  "blocking_findings": [
+    {
+      "id": "imported-parent-module-pre-effect-source-binding",
+      "paths": [
+        "src/robots/__init__.py",
+        "src/robots/adapters/__init__.py"
+      ],
+      "site": "maintenance-candidate/live_recovery.py required_public_files/check_bindings; recovery.py _authorize; nested LIVE_HELPER -m robots.adapters.world_inventory",
+      "finding": "The real -m helper imports both package parents. Actual _authorize/check_bindings accepts injected drift for either module; neither is mandatory in required_public_files. Old157 includes them as a broader freeze but this CLI never consumes that freeze. Current bytes match accepted root and are independently frozen, but an approval cannot enforce their drift refusal before lock/private/effects. Two reached independent admission tests failed DID NOT RAISE DeniedError.",
+      "receipt": "/home/otto/dev/ro-bots/.work/native-item-guide-maintenance-independent-review/runtime-closure-red.xml",
+      "repair_or_external_guard_authority": "Parent must choose a separately reviewed exact pre-effect closure boundary. No new admission flag or binding issued."
+    },
+    {
+      "id": "path-only-new-quality-regression",
+      "finding": "Relocation introduces recovery.py line39 E501 137 > 100. Broader seven-file Ruff returns1 with52 findings vs51 original; mypy returns1 with31 errors vs31 original. Not clean, not waived.",
+      "new_diagnostic_metrics": [
+        [
+          "recovery.py",
+          "E501",
+          "Line too long (137 > 100)",
+          39
+        ]
+      ]
+    }
+  ],
+  "next_slice": "Exact package-parent pre-effect guard and reached path-only E501 correction; original review stays immutable. Separately reviewed successor candidate, not a live scope.",
+  "native_authority": "UNCHANGED_REVOKED"
+}

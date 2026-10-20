@@ -15,7 +15,7 @@ pub fn esc(s: &str) -> String {
 }
 
 fn attitude_label(attitude: &str) -> String {
-    attitude.replace('_', " ")
+    esc(&attitude.replace('_', " "))
 }
 
 fn online_badge(online: bool) -> &'static str {
@@ -34,7 +34,9 @@ pub fn index_page_html(roster: &RosterSnapshot) -> String {
         out,
         "<h1>ro-bots roster</h1><p class=\"seed\">seed: {} \
          (<a href=\"/config\">configurator</a>)</p>",
-        roster.seed
+        roster
+            .seed
+            .map_or_else(|| "not supplied".into(), |s| s.to_string())
     );
     for group in &roster.groups {
         let _ = write!(
@@ -71,12 +73,14 @@ pub fn index_page_html(roster: &RosterSnapshot) -> String {
 
 /// Configurator page (ADR-008): roster generation form.
 #[must_use]
-pub fn configurator_html(current_seed: u64) -> String {
+pub fn configurator_html(seed: Option<u64>) -> String {
+    let current_seed = seed.map_or_else(|| "not supplied".into(), |s| s.to_string());
+    let input_seed = seed.map_or_else(|| "42".into(), |s| s.to_string());
     let body = format!(
         "<h1>configurator</h1>\
          <p class=\"seed\">current seed: <b id=\"seed\">{current_seed}</b></p>\
          <form id=\"gen-form\">\
-         <label>agent seed <input type=\"number\" name=\"seed\" id=\"f-seed\" value=\"{current_seed}\" min=\"0\"></label>\
+         <label>agent seed <input type=\"number\" name=\"seed\" id=\"f-seed\" value=\"{input_seed}\" min=\"0\"></label>\
          <label>friend groups <input type=\"number\" name=\"friend_groups\" id=\"f-groups\" value=\"3\" min=\"0\"></label>\
          <label>solos <input type=\"number\" name=\"solos\" id=\"f-solos\" value=\"1\" min=\"0\"></label>\
          <label>friends per group min <input type=\"number\" name=\"friends_per_group_min\" id=\"f-min\" value=\"2\" min=\"1\"></label>\
@@ -126,7 +130,7 @@ pub fn feed_page_html(recent: &[ChatLine]) -> String {
          if (ev.kind === 'chat') {\n\
          const li = document.createElement('li');\n\
          const l = ev.payload.line;\n\
-         li.innerHTML = `<span class=\"at\">[${Math.floor(l.at)}]</span> &lt;<b>${l.sender}</b>&gt; ${l.text}`;\n\
+         li.textContent = `[${Math.floor(l.at)}] <${l.sender}> ${l.text}`;\n\
          chat.appendChild(li); if (chat.children.length > 100) chat.firstChild.remove();\n\
          } else {\n\
          const li = document.createElement('li');\n\
@@ -170,7 +174,7 @@ pub fn agent_page_html(detail: &AgentDetail) -> String {
         esc(&detail.current_plan),
         esc(&detail.personal_goal),
         esc(&detail.group_goal),
-        if detail.guild_goal.is_empty() { "<i>none</i>" } else { &detail.guild_goal }
+        if detail.guild_goal.is_empty() { "<i>none</i>".into() } else { esc(&detail.guild_goal) }
     );
 
     out.push_str("<h2>memory view (OptChat)</h2><ul class=\"memory\">");
@@ -178,9 +182,12 @@ pub fn agent_page_html(detail: &AgentDetail) -> String {
         let _ = write!(
             out,
             "<li class=\"l{}\"><b>L{}:{}</b> {}</li>",
-            line.level,
-            line.level,
-            line.index,
+            line.level
+                .map_or_else(|| "unknown".into(), |v| v.to_string()),
+            line.level
+                .map_or_else(|| "unknown".into(), |v| v.to_string()),
+            line.index
+                .map_or_else(|| "unknown".into(), |v| v.to_string()),
             esc(&line.summary)
         );
     }
@@ -188,16 +195,30 @@ pub fn agent_page_html(detail: &AgentDetail) -> String {
 
     out.push_str("<h2>reputation ledger</h2><table><tr><th>human</th><th>score</th><th>last reason</th></tr>");
     for entry in &detail.reputation {
+        if entry.score.is_none() {
+            let score =
+                |s: Option<f64>| s.map_or_else(|| "not supplied".into(), |s| format!("{s:.2}"));
+            let _ = write!(
+                out,
+                "<tr><td>{}</td><td>agent: {}; group: {}</td><td>not supplied</td></tr>",
+                esc(&entry.human),
+                score(entry.agent_score),
+                score(entry.group_score)
+            );
+            continue;
+        }
         // score is in -1..=1, so the percentage is in 0..=100 and rounds to
         // an exact i32; no truncation possible.
         #[allow(clippy::cast_possible_truncation)]
-        let pct = f64::midpoint(entry.score, 1.0).mul_add(100.0, 0.0).round() as i32;
+        let pct = f64::midpoint(entry.score.unwrap_or_default(), 1.0)
+            .mul_add(100.0, 0.0)
+            .round() as i32;
         let _ = write!(
             out,
             "<tr><td>{}</td><td><div class=\"bar\"><div class=\"fill\" style=\"width:{}%\"></div></div> {:.2}</td><td>{}</td></tr>",
             esc(&entry.human),
             pct,
-            entry.score,
+            entry.score.unwrap_or_default(),
             esc(&entry.last_reason)
         );
     }
@@ -209,7 +230,7 @@ pub fn agent_page_html(detail: &AgentDetail) -> String {
             out,
             "<li><b>{}</b> (lvl {}) — {} <br><small>{}</small></li>",
             esc(&c.name),
-            c.level,
+            c.level.map_or_else(|| "unknown".into(), |v| v.to_string()),
             esc(&c.class_path),
             esc(&c.build_summary)
         );
@@ -217,6 +238,9 @@ pub fn agent_page_html(detail: &AgentDetail) -> String {
     out.push_str("</ul>");
 
     out.push_str("<h2>schedule</h2><ul class=\"schedule\">");
+    if detail.personal_goal == "not supplied" && detail.schedule.is_empty() {
+        out.push_str("<li>not supplied by Python WorldFeed</li>");
+    }
     // Named constant here keeps the weekday table next to its only user.
     #[allow(clippy::items_after_statements)]
     const DAYS: [&str; 7] = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
@@ -236,7 +260,14 @@ pub fn agent_page_html(detail: &AgentDetail) -> String {
     // Related events for this agent (filter the shared stream by persona
     // mention in the payload — the MVP has no per-agent stream).
     out.push_str("<h2>related events</h2><ul id=\"agent-events\"></ul><script>");
-    let _ = write!(out, "const pid = '{}';", esc(&detail.persona_id));
+    // JSON quoting handles JS string delimiters; escaping '<' also prevents
+    // HTML's raw-text script parser from recognizing a closing script tag.
+    let pid = serde_json::to_string(&detail.persona_id)
+        .unwrap_or_else(|_| "\"\"".into())
+        .replace('<', "\\u003c")
+        .replace('\u{2028}', "\\u2028")
+        .replace('\u{2029}', "\\u2029");
+    let _ = write!(out, "const pid = {pid};");
     out.push_str(
         "const ul = document.getElementById('agent-events');\n\
          const es = new EventSource('/api/events');\n\
@@ -326,6 +357,7 @@ fn options(values: &[&str], selected: &str) -> String {
 
 /// Wrap page body in the shared HTML shell.
 fn shell(title: &str, body: &str) -> String {
+    let title = esc(title);
     format!(
         "<!DOCTYPE html><html><head><meta charset=\"utf-8\">\
          <title>ro-bots · {title}</title>\

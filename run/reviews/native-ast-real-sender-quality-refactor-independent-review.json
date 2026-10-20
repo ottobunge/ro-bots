@@ -1,0 +1,3475 @@
+{
+  "passed": true,
+  "candidate_scope_passed": true,
+  "quality_passed": true,
+  "security_concerns": [],
+  "logic_errors": [],
+  "quality_blockers": [],
+  "suggestions": [
+    "For any separately authorized future refactor, run the unchanged regression suite after each coherent helper extraction; the completed attempt tested all eight helpers together. No additional attempt or repair is authorized here."
+  ],
+  "summary": "Independent bounded quality-only review passed: coherent structural extraction preserves original predicates, first-failure ordering, metadata publication and full results; all owned quality commands and 15 unit methods pass.",
+  "scope": {
+    "user_choice": "Authorize quality-only refactoring and fresh review",
+    "authorized_work": "One quality-only structural refactoring attempt in tracer/tests: extract helpers and use equivalent assertions/test names; preserve behavior and supported grammar; clean Black/Ruff/mypy; fresh independent review",
+    "owned_code": [
+      "spikes/007-native-packet-ast/sender-proof/trace_sender.py",
+      "spikes/007-native-packet-ast/sender-proof/test_trace.py",
+      "spikes/007-native-packet-ast/sender-proof/README.md"
+    ],
+    "new_author_report": "run/reviews/native-ast-real-sender-quality-refactor.json",
+    "prior_candidate_scope_review_sha256": "59d25ddd5baa159c716e1131582f8c645031ce2ae6d0a9c7a192762200635ed2",
+    "prior_cleanup_report_sha256": "093c66b90b947e74d50c8c8660d5048c78625de3fdac80447dca150e87255d2d",
+    "baseline_owned_hashes": {
+      "trace_sender.py": "4adc11200b1343a2a555190cf9354f4ffdea9b2e2a9df1d9dcbb880c9d76cd68",
+      "test_trace.py": "1a9ff14bf6637a40548c392d255ff476466e2bfcdc76f4a9a629608c9a982578",
+      "README.md": "bafd450cf3c786e273e10f1c1a1ed613ac0ead2ec11efe1c3bcc2583221230fa"
+    },
+    "baseline_freeze": "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-final-freeze.json",
+    "one_explicit_attempt": true,
+    "automatic_repair_budget_reset": false,
+    "test_AST_body_or_byte_preservation_no_longer_required": "Equivalent assertions/test names explicitly permitted; preserve tested behavior, scenarios and strength",
+    "forbidden": [
+      "grammar expansion or new features",
+      "test weakening/skips",
+      "quality-threshold weakening or suppressions",
+      "original rejected generator changes",
+      "callback or CLI/pin/authority changes",
+      "server/package rebuild or deployment",
+      "runtime or world changes",
+      "historical evidence overwrite"
+    ],
+    "if_quality_or_review_fails": "stop and ask; no additional attempt implicitly authorized"
+  },
+  "review_bounds": {
+    "review_only": true,
+    "owned_output": "run/reviews/native-ast-real-sender-quality-refactor-independent-review.json",
+    "code_or_test_repairs": false,
+    "integration_performed": false,
+    "bounded_existing_grammar_only": true,
+    "arbitrary_CPP_CFG_correctness_claimed": false,
+    "full_configured_project_gates": "Parent responsibility; not asserted by this scoped independent report.",
+    "no_quality_waivers": true,
+    "full_AST_regenerated": false,
+    "run_proof_executed": false,
+    "no_server_world_runtime_model_SQL_callback_changes": true
+  },
+  "procedural_deviation": {
+    "baseline": "Existing tests GREEN; original quality RED (67 Ruff diagnostics retained).",
+    "combined_extraction_slice": true,
+    "per_helper_GREEN_observed": false,
+    "note": "Author evidence explicitly records baseline, one combined tracer extraction GREEN, assertion-style GREEN and final GREEN; no per-helper verification or new-behavior RED is invented. Functional equivalence was independently checked through eight exact normalized structural sections and fresh compiler executions."
+  },
+  "quality": {
+    "black": {
+      "exit": 0,
+      "output": "All done! \u2728 \ud83c\udf70 \u2728\n2 files would be left unchanged.\n"
+    },
+    "ruff": {
+      "exit": 0,
+      "output": "[]"
+    },
+    "mypy": {
+      "exit": 0,
+      "output": "Success: no issues found in 2 source files\n"
+    }
+  },
+  "quality_configuration": {
+    "root_pyproject_sha256": "e8ae0849a413bc3d705f081f609b92dae702bbd3e491b2c3aeb5d8665c458fba",
+    "strict_mypy": true,
+    "fresh_private_mypy_cache": true,
+    "ruff_resolved_limits": [
+      "linter.pylint.max_returns = 6",
+      "linter.pylint.max_branches = 12",
+      "linter.pylint.max_statements = 50",
+      "linter.pylint.max_statements_in_try = 5"
+    ],
+    "new_suppressions_or_ignore_rules": false
+  },
+  "tests": {
+    "exit": 0,
+    "count": 15,
+    "assertions_enabled": true
+  },
+  "counts": {
+    "physical_unit_methods": 15,
+    "fresh_compiler_probes": 20,
+    "clang_invocations": 20,
+    "gcc_compile_invocations": 20,
+    "gcc_execution_invocations": 20,
+    "differential_comparisons": 40
+  },
+  "test_strength": {
+    "entire_method_and_helper_bodies": {
+      "test_real_declaration_send_sizeof_identity": {
+        "entire_body_equal": true,
+        "assertions_before": 3,
+        "assertions_after": 3
+      },
+      "test_real_header_and_gcc_layout_join": {
+        "entire_body_equal": true,
+        "assertions_before": 3,
+        "assertions_after": 3
+      },
+      "test_unknown_helper_escape_denied_structurally": {
+        "entire_body_equal": true,
+        "assertions_before": 2,
+        "assertions_after": 2
+      },
+      "test_wrong_authorities_rejected_before_candidate": {
+        "entire_body_equal": true,
+        "assertions_before": 1,
+        "assertions_after": 1
+      },
+      "compiled": {
+        "entire_body_equal": true,
+        "assertions_before": 1,
+        "assertions_after": 1
+      },
+      "test_l1_helper_in_third_or_fourth_send_argument": {
+        "entire_body_equal": true,
+        "assertions_before": 1,
+        "assertions_after": 1
+      },
+      "test_l1_plain_actual_pointer_and_area_guard": {
+        "entire_body_equal": true,
+        "assertions_before": 1,
+        "assertions_after": 1
+      },
+      "test_l2_mutable_header_is_not_an_immutable_constant": {
+        "entire_body_equal": true,
+        "assertions_before": 1,
+        "assertions_after": 1
+      },
+      "test_l2_const_and_constexpr_integral_header_guards": {
+        "entire_body_equal": true,
+        "assertions_before": 1,
+        "assertions_after": 1
+      },
+      "test_l3_float_parameter_cast_is_not_integral_plain_read": {
+        "entire_body_equal": true,
+        "assertions_before": 1,
+        "assertions_after": 1
+      },
+      "test_l3_enum_to_integral_and_const_void_address_guard": {
+        "entire_body_equal": true,
+        "assertions_before": 1,
+        "assertions_after": 1
+      },
+      "compiled_record": {
+        "entire_body_equal": true,
+        "assertions_before": 1,
+        "assertions_after": 1
+      },
+      "test_l4_defined_union_overwrite_denied_before_metadata": {
+        "entire_body_equal": true,
+        "assertions_before": 4,
+        "assertions_after": 4
+      },
+      "test_l4_unsupported_layout_forms_fail_before_metadata": {
+        "entire_body_equal": true,
+        "assertions_before": 2,
+        "assertions_after": 2
+      },
+      "test_l4_ordinary_packed_short_aliases_remain_candidates": {
+        "entire_body_equal": true,
+        "assertions_before": 2,
+        "assertions_after": 2
+      },
+      "test_l4_header_requires_short_word_representation": {
+        "entire_body_equal": true,
+        "assertions_before": 2,
+        "assertions_after": 2
+      },
+      "test_field_level_packed_attribute_denied_before_metadata": {
+        "entire_body_equal": true,
+        "assertions_before": 5,
+        "assertions_after": 5
+      }
+    },
+    "normalizer_independently_audited": true,
+    "normalization": "Only known moved stdlib imports, exact unittest predicate/message conversion, equivalent not-in spelling and explicit subprocess.run check=False defaults. Preserve fixture string values, complete expectation dictionaries, loops/subtests, compile targets, return-code checks and exception contracts. Signatures/returns/decorators unchanged except lowercased test names and removed proven-unused optional compiled_record measured=None with no supplied callers.",
+    "optimized_Python": "Plain assertions require ordinary Python (not -O), explicitly documented; independent execution confirmed assertions enabled.",
+    "no_skips_or_scenarios_removed": true
+  },
+  "structural_equivalence": {
+    "eight_sections": {
+      "_bind_send": true,
+      "_bind_record": true,
+      "_bind_header": true,
+      "_check_layout": true,
+      "_check_extra_arguments": true,
+      "_check_initial_object": true,
+      "_check_assignments": true,
+      "_check_grammar": true,
+      "unchanged_public_helpers": true
+    },
+    "mechanical_normalization": "Map private reason/raise guards to original deny outcomes and rename only intermediate loop binding statement to st; compare complete AST statements per original section, including nested cast closures. Public pre-trace helpers exact AST-equal.",
+    "first_failure_order": "send identity -> supported record/header representation -> immutable header binding/publication -> GCC layout -> final send/cast/extra args -> fresh initialization -> writes/header order; unchanged.",
+    "helper_responsibilities_meaningful": true,
+    "exception_scope": "Only private _UnresolvedError caught; preexisting malformed compiler-node exceptions are not swallowed.",
+    "reason_replacement_equivalence": "Original reasons are empty before first grammar denial; replacing append(reason) with [reason] preserves first-failure output."
+  },
+  "fresh_compiler_equivalence": {
+    "physical_fixture_count": 20,
+    "same_actual_AST_per_old_new_pair": true,
+    "actual_GCC_compilation_and_execution": true,
+    "entire_results_compared": true,
+    "metadata_variants": [
+      "actual executed GCC JSON",
+      "None"
+    ],
+    "results": [
+      {
+        "name": "union",
+        "measurement": {
+          "id": 1,
+          "size": 4,
+          "offsets": [
+            0,
+            0
+          ]
+        },
+        "stdout": "{\"id\":1,\"size\":4,\"offsets\":[0,0]}\nsent_header=2 size=4\n",
+        "comparisons": [
+          {
+            "metadata": {
+              "id": 1,
+              "size": 4,
+              "offsets": [
+                0,
+                0
+              ]
+            },
+            "before": {
+              "identity_proven": true,
+              "decision": "UNRESOLVED",
+              "reasons": [
+                "unsupported record shape: requires plain non-overlapping scalar aggregate"
+              ],
+              "sink_contract_status": "UNREVIEWED",
+              "sender_semantic_admission": false,
+              "runtime_admission": false,
+              "object_id": "0x55555579a150",
+              "send_object_id": "0x55555579a150",
+              "sizeof_object_id": "0x55555579a150",
+              "object_type": "P",
+              "function_id": "0x555555799220",
+              "send_id": "0x55555579a6b8",
+              "sizeof_id": "0x55555579a630",
+              "sink_decl_id": "0x555555798a60"
+            },
+            "after": {
+              "identity_proven": true,
+              "decision": "UNRESOLVED",
+              "reasons": [
+                "unsupported record shape: requires plain non-overlapping scalar aggregate"
+              ],
+              "sink_contract_status": "UNREVIEWED",
+              "sender_semantic_admission": false,
+              "runtime_admission": false,
+              "object_id": "0x55555579a150",
+              "send_object_id": "0x55555579a150",
+              "sizeof_object_id": "0x55555579a150",
+              "object_type": "P",
+              "function_id": "0x555555799220",
+              "send_id": "0x55555579a6b8",
+              "sizeof_id": "0x55555579a630",
+              "sink_decl_id": "0x555555798a60"
+            },
+            "equal_entire_result": true
+          },
+          {
+            "metadata": null,
+            "before": {
+              "identity_proven": true,
+              "decision": "UNRESOLVED",
+              "reasons": [
+                "unsupported record shape: requires plain non-overlapping scalar aggregate"
+              ],
+              "sink_contract_status": "UNREVIEWED",
+              "sender_semantic_admission": false,
+              "runtime_admission": false,
+              "object_id": "0x55555579a150",
+              "send_object_id": "0x55555579a150",
+              "sizeof_object_id": "0x55555579a150",
+              "object_type": "P",
+              "function_id": "0x555555799220",
+              "send_id": "0x55555579a6b8",
+              "sizeof_id": "0x55555579a630",
+              "sink_decl_id": "0x555555798a60"
+            },
+            "after": {
+              "identity_proven": true,
+              "decision": "UNRESOLVED",
+              "reasons": [
+                "unsupported record shape: requires plain non-overlapping scalar aggregate"
+              ],
+              "sink_contract_status": "UNREVIEWED",
+              "sender_semantic_admission": false,
+              "runtime_admission": false,
+              "object_id": "0x55555579a150",
+              "send_object_id": "0x55555579a150",
+              "sizeof_object_id": "0x55555579a150",
+              "object_type": "P",
+              "function_id": "0x555555799220",
+              "send_id": "0x55555579a6b8",
+              "sizeof_id": "0x55555579a630",
+              "sink_decl_id": "0x555555798a60"
+            },
+            "equal_entire_result": true
+          }
+        ]
+      },
+      {
+        "name": "alias-union",
+        "measurement": {
+          "id": 1,
+          "size": 4,
+          "offsets": [
+            0,
+            0
+          ]
+        },
+        "stdout": "{\"id\":1,\"size\":4,\"offsets\":[0,0]}\nsent_header=2 size=4\n",
+        "comparisons": [
+          {
+            "metadata": {
+              "id": 1,
+              "size": 4,
+              "offsets": [
+                0,
+                0
+              ]
+            },
+            "before": {
+              "identity_proven": true,
+              "decision": "UNRESOLVED",
+              "reasons": [
+                "record declaration unavailable"
+              ],
+              "sink_contract_status": "UNREVIEWED",
+              "sender_semantic_admission": false,
+              "runtime_admission": false,
+              "object_id": "0x55555579a300",
+              "send_object_id": "0x55555579a300",
+              "sizeof_object_id": "0x55555579a300",
+              "object_type": "P",
+              "function_id": "0x555555799390",
+              "send_id": "0x55555579a848",
+              "sizeof_id": "0x55555579a7c0",
+              "sink_decl_id": "0x555555798c70"
+            },
+            "after": {
+              "identity_proven": true,
+              "decision": "UNRESOLVED",
+              "reasons": [
+                "record declaration unavailable"
+              ],
+              "sink_contract_status": "UNREVIEWED",
+              "sender_semantic_admission": false,
+              "runtime_admission": false,
+              "object_id": "0x55555579a300",
+              "send_object_id": "0x55555579a300",
+              "sizeof_object_id": "0x55555579a300",
+              "object_type": "P",
+              "function_id": "0x555555799390",
+              "send_id": "0x55555579a848",
+              "sizeof_id": "0x55555579a7c0",
+              "sink_decl_id": "0x555555798c70"
+            },
+            "equal_entire_result": true
+          },
+          {
+            "metadata": null,
+            "before": {
+              "identity_proven": true,
+              "decision": "UNRESOLVED",
+              "reasons": [
+                "record declaration unavailable"
+              ],
+              "sink_contract_status": "UNREVIEWED",
+              "sender_semantic_admission": false,
+              "runtime_admission": false,
+              "object_id": "0x55555579a300",
+              "send_object_id": "0x55555579a300",
+              "sizeof_object_id": "0x55555579a300",
+              "object_type": "P",
+              "function_id": "0x555555799390",
+              "send_id": "0x55555579a848",
+              "sizeof_id": "0x55555579a7c0",
+              "sink_decl_id": "0x555555798c70"
+            },
+            "after": {
+              "identity_proven": true,
+              "decision": "UNRESOLVED",
+              "reasons": [
+                "record declaration unavailable"
+              ],
+              "sink_contract_status": "UNREVIEWED",
+              "sender_semantic_admission": false,
+              "runtime_admission": false,
+              "object_id": "0x55555579a300",
+              "send_object_id": "0x55555579a300",
+              "sizeof_object_id": "0x55555579a300",
+              "object_type": "P",
+              "function_id": "0x555555799390",
+              "send_id": "0x55555579a848",
+              "sizeof_id": "0x55555579a7c0",
+              "sink_decl_id": "0x555555798c70"
+            },
+            "equal_entire_result": true
+          }
+        ]
+      },
+      {
+        "name": "anonymous-union",
+        "measurement": {
+          "id": 1,
+          "size": 8,
+          "offsets": [
+            0,
+            4
+          ]
+        },
+        "stdout": "{\"id\":1,\"size\":8,\"offsets\":[0,4]}\nsent_header=1 size=8\n",
+        "comparisons": [
+          {
+            "metadata": {
+              "id": 1,
+              "size": 8,
+              "offsets": [
+                0,
+                4
+              ]
+            },
+            "before": {
+              "identity_proven": true,
+              "decision": "UNRESOLVED",
+              "reasons": [
+                "unsupported record shape: requires plain non-overlapping scalar aggregate"
+              ],
+              "sink_contract_status": "UNREVIEWED",
+              "sender_semantic_admission": false,
+              "runtime_admission": false,
+              "object_id": "0x55555579a540",
+              "send_object_id": "0x55555579a540",
+              "sizeof_object_id": "0x55555579a540",
+              "object_type": "P",
+              "function_id": "0x55555579a450",
+              "send_id": "0x55555579ad28",
+              "sizeof_id": "0x55555579aca0",
+              "sink_decl_id": "0x555555799250"
+            },
+            "after": {
+              "identity_proven": true,
+              "decision": "UNRESOLVED",
+              "reasons": [
+                "unsupported record shape: requires plain non-overlapping scalar aggregate"
+              ],
+              "sink_contract_status": "UNREVIEWED",
+              "sender_semantic_admission": false,
+              "runtime_admission": false,
+              "object_id": "0x55555579a540",
+              "send_object_id": "0x55555579a540",
+              "sizeof_object_id": "0x55555579a540",
+              "object_type": "P",
+              "function_id": "0x55555579a450",
+              "send_id": "0x55555579ad28",
+              "sizeof_id": "0x55555579aca0",
+              "sink_decl_id": "0x555555799250"
+            },
+            "equal_entire_result": true
+          },
+          {
+            "metadata": null,
+            "before": {
+              "identity_proven": true,
+              "decision": "UNRESOLVED",
+              "reasons": [
+                "unsupported record shape: requires plain non-overlapping scalar aggregate"
+              ],
+              "sink_contract_status": "UNREVIEWED",
+              "sender_semantic_admission": false,
+              "runtime_admission": false,
+              "object_id": "0x55555579a540",
+              "send_object_id": "0x55555579a540",
+              "sizeof_object_id": "0x55555579a540",
+              "object_type": "P",
+              "function_id": "0x55555579a450",
+              "send_id": "0x55555579ad28",
+              "sizeof_id": "0x55555579aca0",
+              "sink_decl_id": "0x555555799250"
+            },
+            "after": {
+              "identity_proven": true,
+              "decision": "UNRESOLVED",
+              "reasons": [
+                "unsupported record shape: requires plain non-overlapping scalar aggregate"
+              ],
+              "sink_contract_status": "UNREVIEWED",
+              "sender_semantic_admission": false,
+              "runtime_admission": false,
+              "object_id": "0x55555579a540",
+              "send_object_id": "0x55555579a540",
+              "sizeof_object_id": "0x55555579a540",
+              "object_type": "P",
+              "function_id": "0x55555579a450",
+              "send_id": "0x55555579ad28",
+              "sizeof_id": "0x55555579aca0",
+              "sink_decl_id": "0x555555799250"
+            },
+            "equal_entire_result": true
+          }
+        ]
+      },
+      {
+        "name": "base",
+        "measurement": {
+          "id": 1,
+          "size": 8,
+          "offsets": [
+            0,
+            4
+          ]
+        },
+        "stdout": "{\"id\":1,\"size\":8,\"offsets\":[0,4]}\nsent_header=1 size=8\n",
+        "comparisons": [
+          {
+            "metadata": {
+              "id": 1,
+              "size": 8,
+              "offsets": [
+                0,
+                4
+              ]
+            },
+            "before": {
+              "identity_proven": true,
+              "decision": "UNRESOLVED",
+              "reasons": [
+                "unsupported record shape: requires plain non-overlapping scalar aggregate"
+              ],
+              "sink_contract_status": "UNREVIEWED",
+              "sender_semantic_admission": false,
+              "runtime_admission": false,
+              "object_id": "0x555555799eb0",
+              "send_object_id": "0x555555799eb0",
+              "sizeof_object_id": "0x555555799eb0",
+              "object_type": "P",
+              "function_id": "0x555555799dc8",
+              "send_id": "0x55555579a658",
+              "sizeof_id": "0x55555579a5d0",
+              "sink_decl_id": "0x555555799070"
+            },
+            "after": {
+              "identity_proven": true,
+              "decision": "UNRESOLVED",
+              "reasons": [
+                "unsupported record shape: requires plain non-overlapping scalar aggregate"
+              ],
+              "sink_contract_status": "UNREVIEWED",
+              "sender_semantic_admission": false,
+              "runtime_admission": false,
+              "object_id": "0x555555799eb0",
+              "send_object_id": "0x555555799eb0",
+              "sizeof_object_id": "0x555555799eb0",
+              "object_type": "P",
+              "function_id": "0x555555799dc8",
+              "send_id": "0x55555579a658",
+              "sizeof_id": "0x55555579a5d0",
+              "sink_decl_id": "0x555555799070"
+            },
+            "equal_entire_result": true
+          },
+          {
+            "metadata": null,
+            "before": {
+              "identity_proven": true,
+              "decision": "UNRESOLVED",
+              "reasons": [
+                "unsupported record shape: requires plain non-overlapping scalar aggregate"
+              ],
+              "sink_contract_status": "UNREVIEWED",
+              "sender_semantic_admission": false,
+              "runtime_admission": false,
+              "object_id": "0x555555799eb0",
+              "send_object_id": "0x555555799eb0",
+              "sizeof_object_id": "0x555555799eb0",
+              "object_type": "P",
+              "function_id": "0x555555799dc8",
+              "send_id": "0x55555579a658",
+              "sizeof_id": "0x55555579a5d0",
+              "sink_decl_id": "0x555555799070"
+            },
+            "after": {
+              "identity_proven": true,
+              "decision": "UNRESOLVED",
+              "reasons": [
+                "unsupported record shape: requires plain non-overlapping scalar aggregate"
+              ],
+              "sink_contract_status": "UNREVIEWED",
+              "sender_semantic_admission": false,
+              "runtime_admission": false,
+              "object_id": "0x555555799eb0",
+              "send_object_id": "0x555555799eb0",
+              "sizeof_object_id": "0x555555799eb0",
+              "object_type": "P",
+              "function_id": "0x555555799dc8",
+              "send_id": "0x55555579a658",
+              "sizeof_id": "0x55555579a5d0",
+              "sink_decl_id": "0x555555799070"
+            },
+            "equal_entire_result": true
+          }
+        ]
+      },
+      {
+        "name": "bitfield",
+        "measurement": {
+          "id": 1,
+          "size": 4,
+          "offsets": [
+            0
+          ]
+        },
+        "stdout": "{\"id\":1,\"size\":4,\"offsets\":[0]}\nsent_header=1 size=4\n",
+        "comparisons": [
+          {
+            "metadata": {
+              "id": 1,
+              "size": 4,
+              "offsets": [
+                0
+              ]
+            },
+            "before": {
+              "identity_proven": true,
+              "decision": "UNRESOLVED",
+              "reasons": [
+                "unsupported record shape: requires plain non-overlapping scalar aggregate"
+              ],
+              "sink_contract_status": "UNREVIEWED",
+              "sender_semantic_admission": false,
+              "runtime_admission": false,
+              "object_id": "0x555555799660",
+              "send_object_id": "0x555555799660",
+              "sizeof_object_id": "0x555555799660",
+              "object_type": "P",
+              "function_id": "0x555555799570",
+              "send_id": "0x55555579a9f8",
+              "sizeof_id": "0x55555579a970",
+              "sink_decl_id": "0x555555798e50"
+            },
+            "after": {
+              "identity_proven": true,
+              "decision": "UNRESOLVED",
+              "reasons": [
+                "unsupported record shape: requires plain non-overlapping scalar aggregate"
+              ],
+              "sink_contract_status": "UNREVIEWED",
+              "sender_semantic_admission": false,
+              "runtime_admission": false,
+              "object_id": "0x555555799660",
+              "send_object_id": "0x555555799660",
+              "sizeof_object_id": "0x555555799660",
+              "object_type": "P",
+              "function_id": "0x555555799570",
+              "send_id": "0x55555579a9f8",
+              "sizeof_id": "0x55555579a970",
+              "sink_decl_id": "0x555555798e50"
+            },
+            "equal_entire_result": true
+          },
+          {
+            "metadata": null,
+            "before": {
+              "identity_proven": true,
+              "decision": "UNRESOLVED",
+              "reasons": [
+                "unsupported record shape: requires plain non-overlapping scalar aggregate"
+              ],
+              "sink_contract_status": "UNREVIEWED",
+              "sender_semantic_admission": false,
+              "runtime_admission": false,
+              "object_id": "0x555555799660",
+              "send_object_id": "0x555555799660",
+              "sizeof_object_id": "0x555555799660",
+              "object_type": "P",
+              "function_id": "0x555555799570",
+              "send_id": "0x55555579a9f8",
+              "sizeof_id": "0x55555579a970",
+              "sink_decl_id": "0x555555798e50"
+            },
+            "after": {
+              "identity_proven": true,
+              "decision": "UNRESOLVED",
+              "reasons": [
+                "unsupported record shape: requires plain non-overlapping scalar aggregate"
+              ],
+              "sink_contract_status": "UNREVIEWED",
+              "sender_semantic_admission": false,
+              "runtime_admission": false,
+              "object_id": "0x555555799660",
+              "send_object_id": "0x555555799660",
+              "sizeof_object_id": "0x555555799660",
+              "object_type": "P",
+              "function_id": "0x555555799570",
+              "send_id": "0x55555579a9f8",
+              "sizeof_id": "0x55555579a970",
+              "sink_decl_id": "0x555555798e50"
+            },
+            "equal_entire_result": true
+          }
+        ]
+      },
+      {
+        "name": "overlap-attribute",
+        "measurement": {
+          "id": 1,
+          "size": 8,
+          "offsets": [
+            0,
+            4
+          ]
+        },
+        "stdout": "{\"id\":1,\"size\":8,\"offsets\":[0,4]}\nsent_header=1 size=8\n",
+        "comparisons": [
+          {
+            "metadata": {
+              "id": 1,
+              "size": 8,
+              "offsets": [
+                0,
+                4
+              ]
+            },
+            "before": {
+              "identity_proven": true,
+              "decision": "UNRESOLVED",
+              "reasons": [
+                "unsupported record shape: requires plain non-overlapping scalar aggregate"
+              ],
+              "sink_contract_status": "UNREVIEWED",
+              "sender_semantic_admission": false,
+              "runtime_admission": false,
+              "object_id": "0x55555579a210",
+              "send_object_id": "0x55555579a210",
+              "sizeof_object_id": "0x55555579a210",
+              "object_type": "P",
+              "function_id": "0x5555557992a0",
+              "send_id": "0x55555579a778",
+              "sizeof_id": "0x55555579a6f0",
+              "sink_decl_id": "0x555555798b80"
+            },
+            "after": {
+              "identity_proven": true,
+              "decision": "UNRESOLVED",
+              "reasons": [
+                "unsupported record shape: requires plain non-overlapping scalar aggregate"
+              ],
+              "sink_contract_status": "UNREVIEWED",
+              "sender_semantic_admission": false,
+              "runtime_admission": false,
+              "object_id": "0x55555579a210",
+              "send_object_id": "0x55555579a210",
+              "sizeof_object_id": "0x55555579a210",
+              "object_type": "P",
+              "function_id": "0x5555557992a0",
+              "send_id": "0x55555579a778",
+              "sizeof_id": "0x55555579a6f0",
+              "sink_decl_id": "0x555555798b80"
+            },
+            "equal_entire_result": true
+          },
+          {
+            "metadata": null,
+            "before": {
+              "identity_proven": true,
+              "decision": "UNRESOLVED",
+              "reasons": [
+                "unsupported record shape: requires plain non-overlapping scalar aggregate"
+              ],
+              "sink_contract_status": "UNREVIEWED",
+              "sender_semantic_admission": false,
+              "runtime_admission": false,
+              "object_id": "0x55555579a210",
+              "send_object_id": "0x55555579a210",
+              "sizeof_object_id": "0x55555579a210",
+              "object_type": "P",
+              "function_id": "0x5555557992a0",
+              "send_id": "0x55555579a778",
+              "sizeof_id": "0x55555579a6f0",
+              "sink_decl_id": "0x555555798b80"
+            },
+            "after": {
+              "identity_proven": true,
+              "decision": "UNRESOLVED",
+              "reasons": [
+                "unsupported record shape: requires plain non-overlapping scalar aggregate"
+              ],
+              "sink_contract_status": "UNREVIEWED",
+              "sender_semantic_admission": false,
+              "runtime_admission": false,
+              "object_id": "0x55555579a210",
+              "send_object_id": "0x55555579a210",
+              "sizeof_object_id": "0x55555579a210",
+              "object_type": "P",
+              "function_id": "0x5555557992a0",
+              "send_id": "0x55555579a778",
+              "sizeof_id": "0x55555579a6f0",
+              "sink_decl_id": "0x555555798b80"
+            },
+            "equal_entire_result": true
+          }
+        ]
+      },
+      {
+        "name": "unknown-attribute",
+        "measurement": {
+          "id": 1,
+          "size": 8,
+          "offsets": [
+            0,
+            4
+          ]
+        },
+        "stdout": "{\"id\":1,\"size\":8,\"offsets\":[0,4]}\nsent_header=1 size=8\n",
+        "comparisons": [
+          {
+            "metadata": {
+              "id": 1,
+              "size": 8,
+              "offsets": [
+                0,
+                4
+              ]
+            },
+            "before": {
+              "identity_proven": true,
+              "decision": "UNRESOLVED",
+              "reasons": [
+                "unsupported record shape: requires plain non-overlapping scalar aggregate"
+              ],
+              "sink_contract_status": "UNREVIEWED",
+              "sender_semantic_admission": false,
+              "runtime_admission": false,
+              "object_id": "0x55555579a210",
+              "send_object_id": "0x55555579a210",
+              "sizeof_object_id": "0x55555579a210",
+              "object_type": "P",
+              "function_id": "0x5555557992a0",
+              "send_id": "0x55555579a778",
+              "sizeof_id": "0x55555579a6f0",
+              "sink_decl_id": "0x555555798b80"
+            },
+            "after": {
+              "identity_proven": true,
+              "decision": "UNRESOLVED",
+              "reasons": [
+                "unsupported record shape: requires plain non-overlapping scalar aggregate"
+              ],
+              "sink_contract_status": "UNREVIEWED",
+              "sender_semantic_admission": false,
+              "runtime_admission": false,
+              "object_id": "0x55555579a210",
+              "send_object_id": "0x55555579a210",
+              "sizeof_object_id": "0x55555579a210",
+              "object_type": "P",
+              "function_id": "0x5555557992a0",
+              "send_id": "0x55555579a778",
+              "sizeof_id": "0x55555579a6f0",
+              "sink_decl_id": "0x555555798b80"
+            },
+            "equal_entire_result": true
+          },
+          {
+            "metadata": null,
+            "before": {
+              "identity_proven": true,
+              "decision": "UNRESOLVED",
+              "reasons": [
+                "unsupported record shape: requires plain non-overlapping scalar aggregate"
+              ],
+              "sink_contract_status": "UNREVIEWED",
+              "sender_semantic_admission": false,
+              "runtime_admission": false,
+              "object_id": "0x55555579a210",
+              "send_object_id": "0x55555579a210",
+              "sizeof_object_id": "0x55555579a210",
+              "object_type": "P",
+              "function_id": "0x5555557992a0",
+              "send_id": "0x55555579a778",
+              "sizeof_id": "0x55555579a6f0",
+              "sink_decl_id": "0x555555798b80"
+            },
+            "after": {
+              "identity_proven": true,
+              "decision": "UNRESOLVED",
+              "reasons": [
+                "unsupported record shape: requires plain non-overlapping scalar aggregate"
+              ],
+              "sink_contract_status": "UNREVIEWED",
+              "sender_semantic_admission": false,
+              "runtime_admission": false,
+              "object_id": "0x55555579a210",
+              "send_object_id": "0x55555579a210",
+              "sizeof_object_id": "0x55555579a210",
+              "object_type": "P",
+              "function_id": "0x5555557992a0",
+              "send_id": "0x55555579a778",
+              "sizeof_id": "0x55555579a6f0",
+              "sink_decl_id": "0x555555798b80"
+            },
+            "equal_entire_result": true
+          }
+        ]
+      },
+      {
+        "name": "wide-header",
+        "measurement": {
+          "id": 1,
+          "size": 8,
+          "offsets": [
+            0,
+            4
+          ]
+        },
+        "stdout": "{\"id\":1,\"size\":8,\"offsets\":[0,4]}\nsent_header=1 size=8\n",
+        "comparisons": [
+          {
+            "metadata": {
+              "id": 1,
+              "size": 8,
+              "offsets": [
+                0,
+                4
+              ]
+            },
+            "before": {
+              "identity_proven": true,
+              "decision": "UNRESOLVED",
+              "reasons": [
+                "unsupported record header representation: requires short word on pinned target"
+              ],
+              "sink_contract_status": "UNREVIEWED",
+              "sender_semantic_admission": false,
+              "runtime_admission": false,
+              "object_id": "0x555555799250",
+              "send_object_id": "0x555555799250",
+              "sizeof_object_id": "0x555555799250",
+              "object_type": "P",
+              "function_id": "0x555555799160",
+              "send_id": "0x55555579a5e8",
+              "sizeof_id": "0x55555579a560",
+              "sink_decl_id": "0x555555798a40"
+            },
+            "after": {
+              "identity_proven": true,
+              "decision": "UNRESOLVED",
+              "reasons": [
+                "unsupported record header representation: requires short word on pinned target"
+              ],
+              "sink_contract_status": "UNREVIEWED",
+              "sender_semantic_admission": false,
+              "runtime_admission": false,
+              "object_id": "0x555555799250",
+              "send_object_id": "0x555555799250",
+              "sizeof_object_id": "0x555555799250",
+              "object_type": "P",
+              "function_id": "0x555555799160",
+              "send_id": "0x55555579a5e8",
+              "sizeof_id": "0x55555579a560",
+              "sink_decl_id": "0x555555798a40"
+            },
+            "equal_entire_result": true
+          },
+          {
+            "metadata": null,
+            "before": {
+              "identity_proven": true,
+              "decision": "UNRESOLVED",
+              "reasons": [
+                "unsupported record header representation: requires short word on pinned target"
+              ],
+              "sink_contract_status": "UNREVIEWED",
+              "sender_semantic_admission": false,
+              "runtime_admission": false,
+              "object_id": "0x555555799250",
+              "send_object_id": "0x555555799250",
+              "sizeof_object_id": "0x555555799250",
+              "object_type": "P",
+              "function_id": "0x555555799160",
+              "send_id": "0x55555579a5e8",
+              "sizeof_id": "0x55555579a560",
+              "sink_decl_id": "0x555555798a40"
+            },
+            "after": {
+              "identity_proven": true,
+              "decision": "UNRESOLVED",
+              "reasons": [
+                "unsupported record header representation: requires short word on pinned target"
+              ],
+              "sink_contract_status": "UNREVIEWED",
+              "sender_semantic_admission": false,
+              "runtime_admission": false,
+              "object_id": "0x555555799250",
+              "send_object_id": "0x555555799250",
+              "sizeof_object_id": "0x555555799250",
+              "object_type": "P",
+              "function_id": "0x555555799160",
+              "send_id": "0x55555579a5e8",
+              "sizeof_id": "0x55555579a560",
+              "sink_decl_id": "0x555555798a40"
+            },
+            "equal_entire_result": true
+          }
+        ]
+      },
+      {
+        "name": "field-packed",
+        "measurement": {
+          "id": 1,
+          "size": 6,
+          "offsets": [
+            0,
+            2
+          ]
+        },
+        "stdout": "{\"id\":1,\"size\":6,\"offsets\":[0,2]}\nsent_header=1 size=6\n",
+        "comparisons": [
+          {
+            "metadata": {
+              "id": 1,
+              "size": 6,
+              "offsets": [
+                0,
+                2
+              ]
+            },
+            "before": {
+              "identity_proven": true,
+              "decision": "UNRESOLVED",
+              "reasons": [
+                "unsupported record shape: requires plain non-overlapping scalar aggregate"
+              ],
+              "sink_contract_status": "UNREVIEWED",
+              "sender_semantic_admission": false,
+              "runtime_admission": false,
+              "object_id": "0x55555579a1b0",
+              "send_object_id": "0x55555579a1b0",
+              "sizeof_object_id": "0x55555579a1b0",
+              "object_type": "P",
+              "function_id": "0x555555799240",
+              "send_id": "0x55555579a718",
+              "sizeof_id": "0x55555579a690",
+              "sink_decl_id": "0x555555798b20"
+            },
+            "after": {
+              "identity_proven": true,
+              "decision": "UNRESOLVED",
+              "reasons": [
+                "unsupported record shape: requires plain non-overlapping scalar aggregate"
+              ],
+              "sink_contract_status": "UNREVIEWED",
+              "sender_semantic_admission": false,
+              "runtime_admission": false,
+              "object_id": "0x55555579a1b0",
+              "send_object_id": "0x55555579a1b0",
+              "sizeof_object_id": "0x55555579a1b0",
+              "object_type": "P",
+              "function_id": "0x555555799240",
+              "send_id": "0x55555579a718",
+              "sizeof_id": "0x55555579a690",
+              "sink_decl_id": "0x555555798b20"
+            },
+            "equal_entire_result": true
+          },
+          {
+            "metadata": null,
+            "before": {
+              "identity_proven": true,
+              "decision": "UNRESOLVED",
+              "reasons": [
+                "unsupported record shape: requires plain non-overlapping scalar aggregate"
+              ],
+              "sink_contract_status": "UNREVIEWED",
+              "sender_semantic_admission": false,
+              "runtime_admission": false,
+              "object_id": "0x55555579a1b0",
+              "send_object_id": "0x55555579a1b0",
+              "sizeof_object_id": "0x55555579a1b0",
+              "object_type": "P",
+              "function_id": "0x555555799240",
+              "send_id": "0x55555579a718",
+              "sizeof_id": "0x55555579a690",
+              "sink_decl_id": "0x555555798b20"
+            },
+            "after": {
+              "identity_proven": true,
+              "decision": "UNRESOLVED",
+              "reasons": [
+                "unsupported record shape: requires plain non-overlapping scalar aggregate"
+              ],
+              "sink_contract_status": "UNREVIEWED",
+              "sender_semantic_admission": false,
+              "runtime_admission": false,
+              "object_id": "0x55555579a1b0",
+              "send_object_id": "0x55555579a1b0",
+              "sizeof_object_id": "0x55555579a1b0",
+              "object_type": "P",
+              "function_id": "0x555555799240",
+              "send_id": "0x55555579a718",
+              "sizeof_id": "0x55555579a690",
+              "sink_decl_id": "0x555555798b20"
+            },
+            "equal_entire_result": true
+          }
+        ]
+      },
+      {
+        "name": "reference",
+        "measurement": {
+          "id": 1,
+          "size": 16,
+          "offsets": [
+            0,
+            8
+          ]
+        },
+        "stdout": "{\"id\":1,\"size\":16,\"offsets\":[0,8]}\nsent_header=1 size=16\n",
+        "comparisons": [
+          {
+            "metadata": {
+              "id": 1,
+              "size": 16,
+              "offsets": [
+                0,
+                8
+              ]
+            },
+            "before": {
+              "identity_proven": true,
+              "decision": "UNRESOLVED",
+              "reasons": [
+                "unsupported record shape: requires plain non-overlapping scalar aggregate"
+              ],
+              "sink_contract_status": "UNREVIEWED",
+              "sender_semantic_admission": false,
+              "runtime_admission": false,
+              "object_id": "0x55555579a2b0",
+              "send_object_id": "0x55555579a2b0",
+              "sizeof_object_id": "0x55555579a2b0",
+              "object_type": "P",
+              "function_id": "0x55555579a1c0",
+              "send_id": "0x55555579a7e8",
+              "sizeof_id": "0x55555579a760",
+              "sink_decl_id": "0x555555798b70"
+            },
+            "after": {
+              "identity_proven": true,
+              "decision": "UNRESOLVED",
+              "reasons": [
+                "unsupported record shape: requires plain non-overlapping scalar aggregate"
+              ],
+              "sink_contract_status": "UNREVIEWED",
+              "sender_semantic_admission": false,
+              "runtime_admission": false,
+              "object_id": "0x55555579a2b0",
+              "send_object_id": "0x55555579a2b0",
+              "sizeof_object_id": "0x55555579a2b0",
+              "object_type": "P",
+              "function_id": "0x55555579a1c0",
+              "send_id": "0x55555579a7e8",
+              "sizeof_id": "0x55555579a760",
+              "sink_decl_id": "0x555555798b70"
+            },
+            "equal_entire_result": true
+          },
+          {
+            "metadata": null,
+            "before": {
+              "identity_proven": true,
+              "decision": "UNRESOLVED",
+              "reasons": [
+                "unsupported record shape: requires plain non-overlapping scalar aggregate"
+              ],
+              "sink_contract_status": "UNREVIEWED",
+              "sender_semantic_admission": false,
+              "runtime_admission": false,
+              "object_id": "0x55555579a2b0",
+              "send_object_id": "0x55555579a2b0",
+              "sizeof_object_id": "0x55555579a2b0",
+              "object_type": "P",
+              "function_id": "0x55555579a1c0",
+              "send_id": "0x55555579a7e8",
+              "sizeof_id": "0x55555579a760",
+              "sink_decl_id": "0x555555798b70"
+            },
+            "after": {
+              "identity_proven": true,
+              "decision": "UNRESOLVED",
+              "reasons": [
+                "unsupported record shape: requires plain non-overlapping scalar aggregate"
+              ],
+              "sink_contract_status": "UNREVIEWED",
+              "sender_semantic_admission": false,
+              "runtime_admission": false,
+              "object_id": "0x55555579a2b0",
+              "send_object_id": "0x55555579a2b0",
+              "sizeof_object_id": "0x55555579a2b0",
+              "object_type": "P",
+              "function_id": "0x55555579a1c0",
+              "send_id": "0x55555579a7e8",
+              "sizeof_id": "0x55555579a760",
+              "sink_decl_id": "0x555555798b70"
+            },
+            "equal_entire_result": true
+          }
+        ]
+      },
+      {
+        "name": "constructor",
+        "measurement": {
+          "id": 1,
+          "size": 8,
+          "offsets": [
+            0,
+            4
+          ]
+        },
+        "stdout": "{\"id\":1,\"size\":8,\"offsets\":[0,4]}\nsent_header=1 size=8\n",
+        "comparisons": [
+          {
+            "metadata": {
+              "id": 1,
+              "size": 8,
+              "offsets": [
+                0,
+                4
+              ]
+            },
+            "before": {
+              "identity_proven": true,
+              "decision": "UNRESOLVED",
+              "reasons": [
+                "unsupported record shape: requires plain non-overlapping scalar aggregate"
+              ],
+              "sink_contract_status": "UNREVIEWED",
+              "sender_semantic_admission": false,
+              "runtime_admission": false,
+              "object_id": "0x55555579aad0",
+              "send_object_id": "0x55555579aad0",
+              "sizeof_object_id": "0x55555579aad0",
+              "object_type": "P",
+              "function_id": "0x55555579a9e8",
+              "send_id": "0x55555579b3d8",
+              "sizeof_id": "0x55555579b350",
+              "sink_decl_id": "0x555555798e00"
+            },
+            "after": {
+              "identity_proven": true,
+              "decision": "UNRESOLVED",
+              "reasons": [
+                "unsupported record shape: requires plain non-overlapping scalar aggregate"
+              ],
+              "sink_contract_status": "UNREVIEWED",
+              "sender_semantic_admission": false,
+              "runtime_admission": false,
+              "object_id": "0x55555579aad0",
+              "send_object_id": "0x55555579aad0",
+              "sizeof_object_id": "0x55555579aad0",
+              "object_type": "P",
+              "function_id": "0x55555579a9e8",
+              "send_id": "0x55555579b3d8",
+              "sizeof_id": "0x55555579b350",
+              "sink_decl_id": "0x555555798e00"
+            },
+            "equal_entire_result": true
+          },
+          {
+            "metadata": null,
+            "before": {
+              "identity_proven": true,
+              "decision": "UNRESOLVED",
+              "reasons": [
+                "unsupported record shape: requires plain non-overlapping scalar aggregate"
+              ],
+              "sink_contract_status": "UNREVIEWED",
+              "sender_semantic_admission": false,
+              "runtime_admission": false,
+              "object_id": "0x55555579aad0",
+              "send_object_id": "0x55555579aad0",
+              "sizeof_object_id": "0x55555579aad0",
+              "object_type": "P",
+              "function_id": "0x55555579a9e8",
+              "send_id": "0x55555579b3d8",
+              "sizeof_id": "0x55555579b350",
+              "sink_decl_id": "0x555555798e00"
+            },
+            "after": {
+              "identity_proven": true,
+              "decision": "UNRESOLVED",
+              "reasons": [
+                "unsupported record shape: requires plain non-overlapping scalar aggregate"
+              ],
+              "sink_contract_status": "UNREVIEWED",
+              "sender_semantic_admission": false,
+              "runtime_admission": false,
+              "object_id": "0x55555579aad0",
+              "send_object_id": "0x55555579aad0",
+              "sizeof_object_id": "0x55555579aad0",
+              "object_type": "P",
+              "function_id": "0x55555579a9e8",
+              "send_id": "0x55555579b3d8",
+              "sizeof_id": "0x55555579b350",
+              "sink_decl_id": "0x555555798e00"
+            },
+            "equal_entire_result": true
+          }
+        ]
+      },
+      {
+        "name": "destructor",
+        "measurement": {
+          "id": 1,
+          "size": 8,
+          "offsets": [
+            0,
+            4
+          ]
+        },
+        "stdout": "{\"id\":1,\"size\":8,\"offsets\":[0,4]}\nsent_header=1 size=8\n",
+        "comparisons": [
+          {
+            "metadata": {
+              "id": 1,
+              "size": 8,
+              "offsets": [
+                0,
+                4
+              ]
+            },
+            "before": {
+              "identity_proven": true,
+              "decision": "UNRESOLVED",
+              "reasons": [
+                "unsupported record shape: requires plain non-overlapping scalar aggregate"
+              ],
+              "sink_contract_status": "UNREVIEWED",
+              "sender_semantic_admission": false,
+              "runtime_admission": false,
+              "object_id": "0x55555579a278",
+              "send_object_id": "0x55555579a278",
+              "sizeof_object_id": "0x55555579a278",
+              "object_type": "P",
+              "function_id": "0x55555579a1c0",
+              "send_id": "0x55555579a7a8",
+              "sizeof_id": "0x55555579a720",
+              "sink_decl_id": "0x555555798be0"
+            },
+            "after": {
+              "identity_proven": true,
+              "decision": "UNRESOLVED",
+              "reasons": [
+                "unsupported record shape: requires plain non-overlapping scalar aggregate"
+              ],
+              "sink_contract_status": "UNREVIEWED",
+              "sender_semantic_admission": false,
+              "runtime_admission": false,
+              "object_id": "0x55555579a278",
+              "send_object_id": "0x55555579a278",
+              "sizeof_object_id": "0x55555579a278",
+              "object_type": "P",
+              "function_id": "0x55555579a1c0",
+              "send_id": "0x55555579a7a8",
+              "sizeof_id": "0x55555579a720",
+              "sink_decl_id": "0x555555798be0"
+            },
+            "equal_entire_result": true
+          },
+          {
+            "metadata": null,
+            "before": {
+              "identity_proven": true,
+              "decision": "UNRESOLVED",
+              "reasons": [
+                "unsupported record shape: requires plain non-overlapping scalar aggregate"
+              ],
+              "sink_contract_status": "UNREVIEWED",
+              "sender_semantic_admission": false,
+              "runtime_admission": false,
+              "object_id": "0x55555579a278",
+              "send_object_id": "0x55555579a278",
+              "sizeof_object_id": "0x55555579a278",
+              "object_type": "P",
+              "function_id": "0x55555579a1c0",
+              "send_id": "0x55555579a7a8",
+              "sizeof_id": "0x55555579a720",
+              "sink_decl_id": "0x555555798be0"
+            },
+            "after": {
+              "identity_proven": true,
+              "decision": "UNRESOLVED",
+              "reasons": [
+                "unsupported record shape: requires plain non-overlapping scalar aggregate"
+              ],
+              "sink_contract_status": "UNREVIEWED",
+              "sender_semantic_admission": false,
+              "runtime_admission": false,
+              "object_id": "0x55555579a278",
+              "send_object_id": "0x55555579a278",
+              "sizeof_object_id": "0x55555579a278",
+              "object_type": "P",
+              "function_id": "0x55555579a1c0",
+              "send_id": "0x55555579a7a8",
+              "sizeof_id": "0x55555579a720",
+              "sink_decl_id": "0x555555798be0"
+            },
+            "equal_entire_result": true
+          }
+        ]
+      },
+      {
+        "name": "operator",
+        "measurement": {
+          "id": 1,
+          "size": 8,
+          "offsets": [
+            0,
+            4
+          ]
+        },
+        "stdout": "{\"id\":1,\"size\":8,\"offsets\":[0,4]}\nsent_header=1 size=8\n",
+        "comparisons": [
+          {
+            "metadata": {
+              "id": 1,
+              "size": 8,
+              "offsets": [
+                0,
+                4
+              ]
+            },
+            "before": {
+              "identity_proven": true,
+              "decision": "UNRESOLVED",
+              "reasons": [
+                "unsupported record shape: requires plain non-overlapping scalar aggregate"
+              ],
+              "sink_contract_status": "UNREVIEWED",
+              "sender_semantic_admission": false,
+              "runtime_admission": false,
+              "object_id": "0x55555579bc88",
+              "send_object_id": "0x55555579bc88",
+              "sizeof_object_id": "0x55555579bc88",
+              "object_type": "P",
+              "function_id": "0x55555579bbd0",
+              "send_id": "0x55555579c158",
+              "sizeof_id": "0x55555579c0c8",
+              "sink_decl_id": "0x5555557993d0"
+            },
+            "after": {
+              "identity_proven": true,
+              "decision": "UNRESOLVED",
+              "reasons": [
+                "unsupported record shape: requires plain non-overlapping scalar aggregate"
+              ],
+              "sink_contract_status": "UNREVIEWED",
+              "sender_semantic_admission": false,
+              "runtime_admission": false,
+              "object_id": "0x55555579bc88",
+              "send_object_id": "0x55555579bc88",
+              "sizeof_object_id": "0x55555579bc88",
+              "object_type": "P",
+              "function_id": "0x55555579bbd0",
+              "send_id": "0x55555579c158",
+              "sizeof_id": "0x55555579c0c8",
+              "sink_decl_id": "0x5555557993d0"
+            },
+            "equal_entire_result": true
+          },
+          {
+            "metadata": null,
+            "before": {
+              "identity_proven": true,
+              "decision": "UNRESOLVED",
+              "reasons": [
+                "unsupported record shape: requires plain non-overlapping scalar aggregate"
+              ],
+              "sink_contract_status": "UNREVIEWED",
+              "sender_semantic_admission": false,
+              "runtime_admission": false,
+              "object_id": "0x55555579bc88",
+              "send_object_id": "0x55555579bc88",
+              "sizeof_object_id": "0x55555579bc88",
+              "object_type": "P",
+              "function_id": "0x55555579bbd0",
+              "send_id": "0x55555579c158",
+              "sizeof_id": "0x55555579c0c8",
+              "sink_decl_id": "0x5555557993d0"
+            },
+            "after": {
+              "identity_proven": true,
+              "decision": "UNRESOLVED",
+              "reasons": [
+                "unsupported record shape: requires plain non-overlapping scalar aggregate"
+              ],
+              "sink_contract_status": "UNREVIEWED",
+              "sender_semantic_admission": false,
+              "runtime_admission": false,
+              "object_id": "0x55555579bc88",
+              "send_object_id": "0x55555579bc88",
+              "sizeof_object_id": "0x55555579bc88",
+              "object_type": "P",
+              "function_id": "0x55555579bbd0",
+              "send_id": "0x55555579c158",
+              "sizeof_id": "0x55555579c0c8",
+              "sink_decl_id": "0x5555557993d0"
+            },
+            "equal_entire_result": true
+          }
+        ]
+      },
+      {
+        "name": "packed-unsigned-alias",
+        "measurement": {
+          "id": 1,
+          "size": 6,
+          "offsets": [
+            0,
+            2
+          ]
+        },
+        "stdout": "{\"id\":1,\"size\":6,\"offsets\":[0,2]}\nsent_header=1 size=6\n",
+        "comparisons": [
+          {
+            "metadata": {
+              "id": 1,
+              "size": 6,
+              "offsets": [
+                0,
+                2
+              ]
+            },
+            "before": {
+              "identity_proven": true,
+              "decision": "IDENTITY_LAYOUT_CANDIDATE",
+              "reasons": [],
+              "sink_contract_status": "UNREVIEWED",
+              "sender_semantic_admission": false,
+              "runtime_admission": false,
+              "object_id": "0x55555579a330",
+              "send_object_id": "0x55555579a330",
+              "sizeof_object_id": "0x55555579a330",
+              "object_type": "P",
+              "function_id": "0x55555579a240",
+              "send_id": "0x55555579a898",
+              "sizeof_id": "0x55555579a810",
+              "sink_decl_id": "0x555555798cc0",
+              "record_id": "0x5555557986e0",
+              "header_field_id": "0x555555798980",
+              "header_field_name": "h",
+              "header_constant_id": "0x555555798a60",
+              "header_assignment_id": "0x55555579a508",
+              "header_value": 1,
+              "record_location": {
+                "offset": 137,
+                "line": 6,
+                "col": 32,
+                "tokLen": 1
+              },
+              "constant_location": {
+                "offset": 198,
+                "line": 8,
+                "col": 14,
+                "tokLen": 1
+              },
+              "measured_size": 6,
+              "measured_offsets": [
+                0,
+                2
+              ]
+            },
+            "after": {
+              "identity_proven": true,
+              "decision": "IDENTITY_LAYOUT_CANDIDATE",
+              "reasons": [],
+              "sink_contract_status": "UNREVIEWED",
+              "sender_semantic_admission": false,
+              "runtime_admission": false,
+              "object_id": "0x55555579a330",
+              "send_object_id": "0x55555579a330",
+              "sizeof_object_id": "0x55555579a330",
+              "object_type": "P",
+              "function_id": "0x55555579a240",
+              "send_id": "0x55555579a898",
+              "sizeof_id": "0x55555579a810",
+              "sink_decl_id": "0x555555798cc0",
+              "record_id": "0x5555557986e0",
+              "header_field_id": "0x555555798980",
+              "header_field_name": "h",
+              "header_constant_id": "0x555555798a60",
+              "header_assignment_id": "0x55555579a508",
+              "header_value": 1,
+              "record_location": {
+                "offset": 137,
+                "line": 6,
+                "col": 32,
+                "tokLen": 1
+              },
+              "constant_location": {
+                "offset": 198,
+                "line": 8,
+                "col": 14,
+                "tokLen": 1
+              },
+              "measured_size": 6,
+              "measured_offsets": [
+                0,
+                2
+              ]
+            },
+            "equal_entire_result": true
+          },
+          {
+            "metadata": null,
+            "before": {
+              "identity_proven": true,
+              "decision": "UNRESOLVED",
+              "reasons": [
+                "GCC layout evidence absent"
+              ],
+              "sink_contract_status": "UNREVIEWED",
+              "sender_semantic_admission": false,
+              "runtime_admission": false,
+              "object_id": "0x55555579a330",
+              "send_object_id": "0x55555579a330",
+              "sizeof_object_id": "0x55555579a330",
+              "object_type": "P",
+              "function_id": "0x55555579a240",
+              "send_id": "0x55555579a898",
+              "sizeof_id": "0x55555579a810",
+              "sink_decl_id": "0x555555798cc0",
+              "record_id": "0x5555557986e0",
+              "header_field_id": "0x555555798980",
+              "header_field_name": "h",
+              "header_constant_id": "0x555555798a60",
+              "header_assignment_id": "0x55555579a508",
+              "header_value": 1,
+              "record_location": {
+                "offset": 137,
+                "line": 6,
+                "col": 32,
+                "tokLen": 1
+              },
+              "constant_location": {
+                "offset": 198,
+                "line": 8,
+                "col": 14,
+                "tokLen": 1
+              }
+            },
+            "after": {
+              "identity_proven": true,
+              "decision": "UNRESOLVED",
+              "reasons": [
+                "GCC layout evidence absent"
+              ],
+              "sink_contract_status": "UNREVIEWED",
+              "sender_semantic_admission": false,
+              "runtime_admission": false,
+              "object_id": "0x55555579a330",
+              "send_object_id": "0x55555579a330",
+              "sizeof_object_id": "0x55555579a330",
+              "object_type": "P",
+              "function_id": "0x55555579a240",
+              "send_id": "0x55555579a898",
+              "sizeof_id": "0x55555579a810",
+              "sink_decl_id": "0x555555798cc0",
+              "record_id": "0x5555557986e0",
+              "header_field_id": "0x555555798980",
+              "header_field_name": "h",
+              "header_constant_id": "0x555555798a60",
+              "header_assignment_id": "0x55555579a508",
+              "header_value": 1,
+              "record_location": {
+                "offset": 137,
+                "line": 6,
+                "col": 32,
+                "tokLen": 1
+              },
+              "constant_location": {
+                "offset": 198,
+                "line": 8,
+                "col": 14,
+                "tokLen": 1
+              }
+            },
+            "equal_entire_result": true
+          }
+        ]
+      },
+      {
+        "name": "packed-signed-alias",
+        "measurement": {
+          "id": 1,
+          "size": 6,
+          "offsets": [
+            0,
+            2
+          ]
+        },
+        "stdout": "{\"id\":1,\"size\":6,\"offsets\":[0,2]}\nsent_header=1 size=6\n",
+        "comparisons": [
+          {
+            "metadata": {
+              "id": 1,
+              "size": 6,
+              "offsets": [
+                0,
+                2
+              ]
+            },
+            "before": {
+              "identity_proven": true,
+              "decision": "IDENTITY_LAYOUT_CANDIDATE",
+              "reasons": [],
+              "sink_contract_status": "UNREVIEWED",
+              "sender_semantic_admission": false,
+              "runtime_admission": false,
+              "object_id": "0x55555579a2c0",
+              "send_object_id": "0x55555579a2c0",
+              "sizeof_object_id": "0x55555579a2c0",
+              "object_type": "P",
+              "function_id": "0x55555579a1d0",
+              "send_id": "0x55555579a828",
+              "sizeof_id": "0x55555579a7a0",
+              "sink_decl_id": "0x555555798c00",
+              "record_id": "0x555555798650",
+              "header_field_id": "0x5555557988c0",
+              "header_field_name": "h",
+              "header_constant_id": "0x5555557989a0",
+              "header_assignment_id": "0x55555579a498",
+              "header_value": 1,
+              "record_location": {
+                "offset": 105,
+                "col": 50,
+                "tokLen": 1
+              },
+              "constant_location": {
+                "offset": 146,
+                "line": 5,
+                "col": 13,
+                "tokLen": 1
+              },
+              "measured_size": 6,
+              "measured_offsets": [
+                0,
+                2
+              ]
+            },
+            "after": {
+              "identity_proven": true,
+              "decision": "IDENTITY_LAYOUT_CANDIDATE",
+              "reasons": [],
+              "sink_contract_status": "UNREVIEWED",
+              "sender_semantic_admission": false,
+              "runtime_admission": false,
+              "object_id": "0x55555579a2c0",
+              "send_object_id": "0x55555579a2c0",
+              "sizeof_object_id": "0x55555579a2c0",
+              "object_type": "P",
+              "function_id": "0x55555579a1d0",
+              "send_id": "0x55555579a828",
+              "sizeof_id": "0x55555579a7a0",
+              "sink_decl_id": "0x555555798c00",
+              "record_id": "0x555555798650",
+              "header_field_id": "0x5555557988c0",
+              "header_field_name": "h",
+              "header_constant_id": "0x5555557989a0",
+              "header_assignment_id": "0x55555579a498",
+              "header_value": 1,
+              "record_location": {
+                "offset": 105,
+                "col": 50,
+                "tokLen": 1
+              },
+              "constant_location": {
+                "offset": 146,
+                "line": 5,
+                "col": 13,
+                "tokLen": 1
+              },
+              "measured_size": 6,
+              "measured_offsets": [
+                0,
+                2
+              ]
+            },
+            "equal_entire_result": true
+          },
+          {
+            "metadata": null,
+            "before": {
+              "identity_proven": true,
+              "decision": "UNRESOLVED",
+              "reasons": [
+                "GCC layout evidence absent"
+              ],
+              "sink_contract_status": "UNREVIEWED",
+              "sender_semantic_admission": false,
+              "runtime_admission": false,
+              "object_id": "0x55555579a2c0",
+              "send_object_id": "0x55555579a2c0",
+              "sizeof_object_id": "0x55555579a2c0",
+              "object_type": "P",
+              "function_id": "0x55555579a1d0",
+              "send_id": "0x55555579a828",
+              "sizeof_id": "0x55555579a7a0",
+              "sink_decl_id": "0x555555798c00",
+              "record_id": "0x555555798650",
+              "header_field_id": "0x5555557988c0",
+              "header_field_name": "h",
+              "header_constant_id": "0x5555557989a0",
+              "header_assignment_id": "0x55555579a498",
+              "header_value": 1,
+              "record_location": {
+                "offset": 105,
+                "col": 50,
+                "tokLen": 1
+              },
+              "constant_location": {
+                "offset": 146,
+                "line": 5,
+                "col": 13,
+                "tokLen": 1
+              }
+            },
+            "after": {
+              "identity_proven": true,
+              "decision": "UNRESOLVED",
+              "reasons": [
+                "GCC layout evidence absent"
+              ],
+              "sink_contract_status": "UNREVIEWED",
+              "sender_semantic_admission": false,
+              "runtime_admission": false,
+              "object_id": "0x55555579a2c0",
+              "send_object_id": "0x55555579a2c0",
+              "sizeof_object_id": "0x55555579a2c0",
+              "object_type": "P",
+              "function_id": "0x55555579a1d0",
+              "send_id": "0x55555579a828",
+              "sizeof_id": "0x55555579a7a0",
+              "sink_decl_id": "0x555555798c00",
+              "record_id": "0x555555798650",
+              "header_field_id": "0x5555557988c0",
+              "header_field_name": "h",
+              "header_constant_id": "0x5555557989a0",
+              "header_assignment_id": "0x55555579a498",
+              "header_value": 1,
+              "record_location": {
+                "offset": 105,
+                "col": 50,
+                "tokLen": 1
+              },
+              "constant_location": {
+                "offset": 146,
+                "line": 5,
+                "col": 13,
+                "tokLen": 1
+              }
+            },
+            "equal_entire_result": true
+          }
+        ]
+      },
+      {
+        "name": "replay-arg3-call",
+        "measurement": {
+          "id": 1,
+          "size": 8,
+          "offsets": [
+            0,
+            4
+          ]
+        },
+        "stdout": "{\"id\":1,\"size\":8,\"offsets\":[0,4]}\n",
+        "comparisons": [
+          {
+            "metadata": {
+              "id": 1,
+              "size": 8,
+              "offsets": [
+                0,
+                4
+              ]
+            },
+            "before": {
+              "identity_proven": true,
+              "decision": "UNRESOLVED",
+              "reasons": [
+                "unsupported cast kind/type in final send argument"
+              ],
+              "sink_contract_status": "UNREVIEWED",
+              "sender_semantic_admission": false,
+              "runtime_admission": false,
+              "object_id": "0x55555579a058",
+              "send_object_id": "0x55555579a058",
+              "sizeof_object_id": "0x55555579a058",
+              "object_type": "P",
+              "function_id": "0x555555799f90",
+              "send_id": "0x55555579a6a8",
+              "sizeof_id": "0x55555579a440",
+              "sink_decl_id": "0x5555557994a0",
+              "record_id": "0x555555798a88",
+              "header_field_id": "0x555555798c50",
+              "header_field_name": "h",
+              "header_constant_id": "0x555555798d38",
+              "header_assignment_id": "0x55555579a230",
+              "header_value": 1,
+              "record_location": {
+                "offset": 63,
+                "file": "/home/otto/.hermes/cache/scratch/native-quality-independent/replay-arg3-call.cpp",
+                "line": 4,
+                "col": 8,
+                "tokLen": 1
+              },
+              "constant_location": {
+                "offset": 98,
+                "col": 43,
+                "tokLen": 1
+              }
+            },
+            "after": {
+              "identity_proven": true,
+              "decision": "UNRESOLVED",
+              "reasons": [
+                "unsupported cast kind/type in final send argument"
+              ],
+              "sink_contract_status": "UNREVIEWED",
+              "sender_semantic_admission": false,
+              "runtime_admission": false,
+              "object_id": "0x55555579a058",
+              "send_object_id": "0x55555579a058",
+              "sizeof_object_id": "0x55555579a058",
+              "object_type": "P",
+              "function_id": "0x555555799f90",
+              "send_id": "0x55555579a6a8",
+              "sizeof_id": "0x55555579a440",
+              "sink_decl_id": "0x5555557994a0",
+              "record_id": "0x555555798a88",
+              "header_field_id": "0x555555798c50",
+              "header_field_name": "h",
+              "header_constant_id": "0x555555798d38",
+              "header_assignment_id": "0x55555579a230",
+              "header_value": 1,
+              "record_location": {
+                "offset": 63,
+                "file": "/home/otto/.hermes/cache/scratch/native-quality-independent/replay-arg3-call.cpp",
+                "line": 4,
+                "col": 8,
+                "tokLen": 1
+              },
+              "constant_location": {
+                "offset": 98,
+                "col": 43,
+                "tokLen": 1
+              }
+            },
+            "equal_entire_result": true
+          },
+          {
+            "metadata": null,
+            "before": {
+              "identity_proven": true,
+              "decision": "UNRESOLVED",
+              "reasons": [
+                "GCC layout evidence absent"
+              ],
+              "sink_contract_status": "UNREVIEWED",
+              "sender_semantic_admission": false,
+              "runtime_admission": false,
+              "object_id": "0x55555579a058",
+              "send_object_id": "0x55555579a058",
+              "sizeof_object_id": "0x55555579a058",
+              "object_type": "P",
+              "function_id": "0x555555799f90",
+              "send_id": "0x55555579a6a8",
+              "sizeof_id": "0x55555579a440",
+              "sink_decl_id": "0x5555557994a0",
+              "record_id": "0x555555798a88",
+              "header_field_id": "0x555555798c50",
+              "header_field_name": "h",
+              "header_constant_id": "0x555555798d38",
+              "header_assignment_id": "0x55555579a230",
+              "header_value": 1,
+              "record_location": {
+                "offset": 63,
+                "file": "/home/otto/.hermes/cache/scratch/native-quality-independent/replay-arg3-call.cpp",
+                "line": 4,
+                "col": 8,
+                "tokLen": 1
+              },
+              "constant_location": {
+                "offset": 98,
+                "col": 43,
+                "tokLen": 1
+              }
+            },
+            "after": {
+              "identity_proven": true,
+              "decision": "UNRESOLVED",
+              "reasons": [
+                "GCC layout evidence absent"
+              ],
+              "sink_contract_status": "UNREVIEWED",
+              "sender_semantic_admission": false,
+              "runtime_admission": false,
+              "object_id": "0x55555579a058",
+              "send_object_id": "0x55555579a058",
+              "sizeof_object_id": "0x55555579a058",
+              "object_type": "P",
+              "function_id": "0x555555799f90",
+              "send_id": "0x55555579a6a8",
+              "sizeof_id": "0x55555579a440",
+              "sink_decl_id": "0x5555557994a0",
+              "record_id": "0x555555798a88",
+              "header_field_id": "0x555555798c50",
+              "header_field_name": "h",
+              "header_constant_id": "0x555555798d38",
+              "header_assignment_id": "0x55555579a230",
+              "header_value": 1,
+              "record_location": {
+                "offset": 63,
+                "file": "/home/otto/.hermes/cache/scratch/native-quality-independent/replay-arg3-call.cpp",
+                "line": 4,
+                "col": 8,
+                "tokLen": 1
+              },
+              "constant_location": {
+                "offset": 98,
+                "col": 43,
+                "tokLen": 1
+              }
+            },
+            "equal_entire_result": true
+          }
+        ]
+      },
+      {
+        "name": "replay-arg4-call",
+        "measurement": {
+          "id": 1,
+          "size": 8,
+          "offsets": [
+            0,
+            4
+          ]
+        },
+        "stdout": "{\"id\":1,\"size\":8,\"offsets\":[0,4]}\n",
+        "comparisons": [
+          {
+            "metadata": {
+              "id": 1,
+              "size": 8,
+              "offsets": [
+                0,
+                4
+              ]
+            },
+            "before": {
+              "identity_proven": true,
+              "decision": "UNRESOLVED",
+              "reasons": [
+                "unsupported cast kind/type in final send argument"
+              ],
+              "sink_contract_status": "UNREVIEWED",
+              "sender_semantic_admission": false,
+              "runtime_admission": false,
+              "object_id": "0x555555799c68",
+              "send_object_id": "0x555555799c68",
+              "sizeof_object_id": "0x555555799c68",
+              "object_type": "P",
+              "function_id": "0x555555799ba0",
+              "send_id": "0x55555579a2d8",
+              "sizeof_id": "0x55555579a050",
+              "sink_decl_id": "0x5555557990b0",
+              "record_id": "0x555555798698",
+              "header_field_id": "0x555555798860",
+              "header_field_name": "h",
+              "header_constant_id": "0x555555798948",
+              "header_assignment_id": "0x555555799e40",
+              "header_value": 1,
+              "record_location": {
+                "offset": 63,
+                "file": "/home/otto/.hermes/cache/scratch/native-quality-independent/replay-arg4-call.cpp",
+                "line": 4,
+                "col": 8,
+                "tokLen": 1
+              },
+              "constant_location": {
+                "offset": 98,
+                "col": 43,
+                "tokLen": 1
+              }
+            },
+            "after": {
+              "identity_proven": true,
+              "decision": "UNRESOLVED",
+              "reasons": [
+                "unsupported cast kind/type in final send argument"
+              ],
+              "sink_contract_status": "UNREVIEWED",
+              "sender_semantic_admission": false,
+              "runtime_admission": false,
+              "object_id": "0x555555799c68",
+              "send_object_id": "0x555555799c68",
+              "sizeof_object_id": "0x555555799c68",
+              "object_type": "P",
+              "function_id": "0x555555799ba0",
+              "send_id": "0x55555579a2d8",
+              "sizeof_id": "0x55555579a050",
+              "sink_decl_id": "0x5555557990b0",
+              "record_id": "0x555555798698",
+              "header_field_id": "0x555555798860",
+              "header_field_name": "h",
+              "header_constant_id": "0x555555798948",
+              "header_assignment_id": "0x555555799e40",
+              "header_value": 1,
+              "record_location": {
+                "offset": 63,
+                "file": "/home/otto/.hermes/cache/scratch/native-quality-independent/replay-arg4-call.cpp",
+                "line": 4,
+                "col": 8,
+                "tokLen": 1
+              },
+              "constant_location": {
+                "offset": 98,
+                "col": 43,
+                "tokLen": 1
+              }
+            },
+            "equal_entire_result": true
+          },
+          {
+            "metadata": null,
+            "before": {
+              "identity_proven": true,
+              "decision": "UNRESOLVED",
+              "reasons": [
+                "GCC layout evidence absent"
+              ],
+              "sink_contract_status": "UNREVIEWED",
+              "sender_semantic_admission": false,
+              "runtime_admission": false,
+              "object_id": "0x555555799c68",
+              "send_object_id": "0x555555799c68",
+              "sizeof_object_id": "0x555555799c68",
+              "object_type": "P",
+              "function_id": "0x555555799ba0",
+              "send_id": "0x55555579a2d8",
+              "sizeof_id": "0x55555579a050",
+              "sink_decl_id": "0x5555557990b0",
+              "record_id": "0x555555798698",
+              "header_field_id": "0x555555798860",
+              "header_field_name": "h",
+              "header_constant_id": "0x555555798948",
+              "header_assignment_id": "0x555555799e40",
+              "header_value": 1,
+              "record_location": {
+                "offset": 63,
+                "file": "/home/otto/.hermes/cache/scratch/native-quality-independent/replay-arg4-call.cpp",
+                "line": 4,
+                "col": 8,
+                "tokLen": 1
+              },
+              "constant_location": {
+                "offset": 98,
+                "col": 43,
+                "tokLen": 1
+              }
+            },
+            "after": {
+              "identity_proven": true,
+              "decision": "UNRESOLVED",
+              "reasons": [
+                "GCC layout evidence absent"
+              ],
+              "sink_contract_status": "UNREVIEWED",
+              "sender_semantic_admission": false,
+              "runtime_admission": false,
+              "object_id": "0x555555799c68",
+              "send_object_id": "0x555555799c68",
+              "sizeof_object_id": "0x555555799c68",
+              "object_type": "P",
+              "function_id": "0x555555799ba0",
+              "send_id": "0x55555579a2d8",
+              "sizeof_id": "0x55555579a050",
+              "sink_decl_id": "0x5555557990b0",
+              "record_id": "0x555555798698",
+              "header_field_id": "0x555555798860",
+              "header_field_name": "h",
+              "header_constant_id": "0x555555798948",
+              "header_assignment_id": "0x555555799e40",
+              "header_value": 1,
+              "record_location": {
+                "offset": 63,
+                "file": "/home/otto/.hermes/cache/scratch/native-quality-independent/replay-arg4-call.cpp",
+                "line": 4,
+                "col": 8,
+                "tokLen": 1
+              },
+              "constant_location": {
+                "offset": 98,
+                "col": 43,
+                "tokLen": 1
+              }
+            },
+            "equal_entire_result": true
+          }
+        ]
+      },
+      {
+        "name": "replay-mutable",
+        "measurement": {
+          "id": 1,
+          "size": 8,
+          "offsets": [
+            0,
+            4
+          ]
+        },
+        "stdout": "{\"id\":1,\"size\":8,\"offsets\":[0,4]}\n",
+        "comparisons": [
+          {
+            "metadata": {
+              "id": 1,
+              "size": 8,
+              "offsets": [
+                0,
+                4
+              ]
+            },
+            "before": {
+              "identity_proven": true,
+              "decision": "UNRESOLVED",
+              "reasons": [
+                "header declaration is not immutable integral const/constexpr"
+              ],
+              "sink_contract_status": "UNREVIEWED",
+              "sender_semantic_admission": false,
+              "runtime_admission": false,
+              "object_id": "0x55555579a028",
+              "send_object_id": "0x55555579a028",
+              "sizeof_object_id": "0x55555579a028",
+              "object_type": "P",
+              "function_id": "0x555555799f60",
+              "send_id": "0x55555579a508",
+              "sizeof_id": "0x55555579a3f0",
+              "sink_decl_id": "0x555555799470"
+            },
+            "after": {
+              "identity_proven": true,
+              "decision": "UNRESOLVED",
+              "reasons": [
+                "header declaration is not immutable integral const/constexpr"
+              ],
+              "sink_contract_status": "UNREVIEWED",
+              "sender_semantic_admission": false,
+              "runtime_admission": false,
+              "object_id": "0x55555579a028",
+              "send_object_id": "0x55555579a028",
+              "sizeof_object_id": "0x55555579a028",
+              "object_type": "P",
+              "function_id": "0x555555799f60",
+              "send_id": "0x55555579a508",
+              "sizeof_id": "0x55555579a3f0",
+              "sink_decl_id": "0x555555799470"
+            },
+            "equal_entire_result": true
+          },
+          {
+            "metadata": null,
+            "before": {
+              "identity_proven": true,
+              "decision": "UNRESOLVED",
+              "reasons": [
+                "header declaration is not immutable integral const/constexpr"
+              ],
+              "sink_contract_status": "UNREVIEWED",
+              "sender_semantic_admission": false,
+              "runtime_admission": false,
+              "object_id": "0x55555579a028",
+              "send_object_id": "0x55555579a028",
+              "sizeof_object_id": "0x55555579a028",
+              "object_type": "P",
+              "function_id": "0x555555799f60",
+              "send_id": "0x55555579a508",
+              "sizeof_id": "0x55555579a3f0",
+              "sink_decl_id": "0x555555799470"
+            },
+            "after": {
+              "identity_proven": true,
+              "decision": "UNRESOLVED",
+              "reasons": [
+                "header declaration is not immutable integral const/constexpr"
+              ],
+              "sink_contract_status": "UNREVIEWED",
+              "sender_semantic_admission": false,
+              "runtime_admission": false,
+              "object_id": "0x55555579a028",
+              "send_object_id": "0x55555579a028",
+              "sizeof_object_id": "0x55555579a028",
+              "object_type": "P",
+              "function_id": "0x555555799f60",
+              "send_id": "0x55555579a508",
+              "sizeof_id": "0x55555579a3f0",
+              "sink_decl_id": "0x555555799470"
+            },
+            "equal_entire_result": true
+          }
+        ]
+      },
+      {
+        "name": "replay-float-cast",
+        "measurement": {
+          "id": 1,
+          "size": 8,
+          "offsets": [
+            0,
+            4
+          ]
+        },
+        "stdout": "{\"id\":1,\"size\":8,\"offsets\":[0,4]}\n",
+        "comparisons": [
+          {
+            "metadata": {
+              "id": 1,
+              "size": 8,
+              "offsets": [
+                0,
+                4
+              ]
+            },
+            "before": {
+              "identity_proven": true,
+              "decision": "UNRESOLVED",
+              "reasons": [
+                "unsupported scalar cast kind/type"
+              ],
+              "sink_contract_status": "UNREVIEWED",
+              "sender_semantic_admission": false,
+              "runtime_admission": false,
+              "object_id": "0x555555799c68",
+              "send_object_id": "0x555555799c68",
+              "sizeof_object_id": "0x555555799c68",
+              "object_type": "P",
+              "function_id": "0x555555799ba0",
+              "send_id": "0x55555579a278",
+              "sizeof_id": "0x55555579a160",
+              "sink_decl_id": "0x5555557990b0",
+              "record_id": "0x555555798698",
+              "header_field_id": "0x555555798860",
+              "header_field_name": "h",
+              "header_constant_id": "0x555555798948",
+              "header_assignment_id": "0x555555799e40",
+              "header_value": 1,
+              "record_location": {
+                "offset": 63,
+                "file": "/home/otto/.hermes/cache/scratch/native-quality-independent/replay-float-cast.cpp",
+                "line": 4,
+                "col": 8,
+                "tokLen": 1
+              },
+              "constant_location": {
+                "offset": 98,
+                "col": 43,
+                "tokLen": 1
+              }
+            },
+            "after": {
+              "identity_proven": true,
+              "decision": "UNRESOLVED",
+              "reasons": [
+                "unsupported scalar cast kind/type"
+              ],
+              "sink_contract_status": "UNREVIEWED",
+              "sender_semantic_admission": false,
+              "runtime_admission": false,
+              "object_id": "0x555555799c68",
+              "send_object_id": "0x555555799c68",
+              "sizeof_object_id": "0x555555799c68",
+              "object_type": "P",
+              "function_id": "0x555555799ba0",
+              "send_id": "0x55555579a278",
+              "sizeof_id": "0x55555579a160",
+              "sink_decl_id": "0x5555557990b0",
+              "record_id": "0x555555798698",
+              "header_field_id": "0x555555798860",
+              "header_field_name": "h",
+              "header_constant_id": "0x555555798948",
+              "header_assignment_id": "0x555555799e40",
+              "header_value": 1,
+              "record_location": {
+                "offset": 63,
+                "file": "/home/otto/.hermes/cache/scratch/native-quality-independent/replay-float-cast.cpp",
+                "line": 4,
+                "col": 8,
+                "tokLen": 1
+              },
+              "constant_location": {
+                "offset": 98,
+                "col": 43,
+                "tokLen": 1
+              }
+            },
+            "equal_entire_result": true
+          },
+          {
+            "metadata": null,
+            "before": {
+              "identity_proven": true,
+              "decision": "UNRESOLVED",
+              "reasons": [
+                "GCC layout evidence absent"
+              ],
+              "sink_contract_status": "UNREVIEWED",
+              "sender_semantic_admission": false,
+              "runtime_admission": false,
+              "object_id": "0x555555799c68",
+              "send_object_id": "0x555555799c68",
+              "sizeof_object_id": "0x555555799c68",
+              "object_type": "P",
+              "function_id": "0x555555799ba0",
+              "send_id": "0x55555579a278",
+              "sizeof_id": "0x55555579a160",
+              "sink_decl_id": "0x5555557990b0",
+              "record_id": "0x555555798698",
+              "header_field_id": "0x555555798860",
+              "header_field_name": "h",
+              "header_constant_id": "0x555555798948",
+              "header_assignment_id": "0x555555799e40",
+              "header_value": 1,
+              "record_location": {
+                "offset": 63,
+                "file": "/home/otto/.hermes/cache/scratch/native-quality-independent/replay-float-cast.cpp",
+                "line": 4,
+                "col": 8,
+                "tokLen": 1
+              },
+              "constant_location": {
+                "offset": 98,
+                "col": 43,
+                "tokLen": 1
+              }
+            },
+            "after": {
+              "identity_proven": true,
+              "decision": "UNRESOLVED",
+              "reasons": [
+                "GCC layout evidence absent"
+              ],
+              "sink_contract_status": "UNREVIEWED",
+              "sender_semantic_admission": false,
+              "runtime_admission": false,
+              "object_id": "0x555555799c68",
+              "send_object_id": "0x555555799c68",
+              "sizeof_object_id": "0x555555799c68",
+              "object_type": "P",
+              "function_id": "0x555555799ba0",
+              "send_id": "0x55555579a278",
+              "sizeof_id": "0x55555579a160",
+              "sink_decl_id": "0x5555557990b0",
+              "record_id": "0x555555798698",
+              "header_field_id": "0x555555798860",
+              "header_field_name": "h",
+              "header_constant_id": "0x555555798948",
+              "header_assignment_id": "0x555555799e40",
+              "header_value": 1,
+              "record_location": {
+                "offset": 63,
+                "file": "/home/otto/.hermes/cache/scratch/native-quality-independent/replay-float-cast.cpp",
+                "line": 4,
+                "col": 8,
+                "tokLen": 1
+              },
+              "constant_location": {
+                "offset": 98,
+                "col": 43,
+                "tokLen": 1
+              }
+            },
+            "equal_entire_result": true
+          }
+        ]
+      },
+      {
+        "name": "functional-float",
+        "measurement": {
+          "id": 1,
+          "size": 8,
+          "offsets": [
+            0,
+            4
+          ]
+        },
+        "stdout": "{\"id\":1,\"size\":8,\"offsets\":[0,4]}\nsent_header=1 size=8\n",
+        "comparisons": [
+          {
+            "metadata": {
+              "id": 1,
+              "size": 8,
+              "offsets": [
+                0,
+                4
+              ]
+            },
+            "before": {
+              "identity_proven": true,
+              "decision": "UNRESOLVED",
+              "reasons": [
+                "unsupported scalar cast kind/type"
+              ],
+              "sink_contract_status": "UNREVIEWED",
+              "sender_semantic_admission": false,
+              "runtime_admission": false,
+              "object_id": "0x555555799fe0",
+              "send_object_id": "0x555555799fe0",
+              "sizeof_object_id": "0x555555799fe0",
+              "object_type": "P",
+              "function_id": "0x5555557990c0",
+              "send_id": "0x55555579a5b8",
+              "sizeof_id": "0x55555579a530",
+              "sink_decl_id": "0x5555557988e0",
+              "record_id": "0x5555557983d8",
+              "header_field_id": "0x5555557985a0",
+              "header_field_name": "h",
+              "header_constant_id": "0x555555798688",
+              "header_assignment_id": "0x55555579a1b8",
+              "header_value": 1,
+              "record_location": {
+                "offset": 63,
+                "file": "/home/otto/.hermes/cache/scratch/native-quality-independent/functional-float.cpp",
+                "line": 4,
+                "col": 8,
+                "tokLen": 1
+              },
+              "constant_location": {
+                "offset": 122,
+                "line": 5,
+                "col": 22,
+                "tokLen": 1
+              }
+            },
+            "after": {
+              "identity_proven": true,
+              "decision": "UNRESOLVED",
+              "reasons": [
+                "unsupported scalar cast kind/type"
+              ],
+              "sink_contract_status": "UNREVIEWED",
+              "sender_semantic_admission": false,
+              "runtime_admission": false,
+              "object_id": "0x555555799fe0",
+              "send_object_id": "0x555555799fe0",
+              "sizeof_object_id": "0x555555799fe0",
+              "object_type": "P",
+              "function_id": "0x5555557990c0",
+              "send_id": "0x55555579a5b8",
+              "sizeof_id": "0x55555579a530",
+              "sink_decl_id": "0x5555557988e0",
+              "record_id": "0x5555557983d8",
+              "header_field_id": "0x5555557985a0",
+              "header_field_name": "h",
+              "header_constant_id": "0x555555798688",
+              "header_assignment_id": "0x55555579a1b8",
+              "header_value": 1,
+              "record_location": {
+                "offset": 63,
+                "file": "/home/otto/.hermes/cache/scratch/native-quality-independent/functional-float.cpp",
+                "line": 4,
+                "col": 8,
+                "tokLen": 1
+              },
+              "constant_location": {
+                "offset": 122,
+                "line": 5,
+                "col": 22,
+                "tokLen": 1
+              }
+            },
+            "equal_entire_result": true
+          },
+          {
+            "metadata": null,
+            "before": {
+              "identity_proven": true,
+              "decision": "UNRESOLVED",
+              "reasons": [
+                "GCC layout evidence absent"
+              ],
+              "sink_contract_status": "UNREVIEWED",
+              "sender_semantic_admission": false,
+              "runtime_admission": false,
+              "object_id": "0x555555799fe0",
+              "send_object_id": "0x555555799fe0",
+              "sizeof_object_id": "0x555555799fe0",
+              "object_type": "P",
+              "function_id": "0x5555557990c0",
+              "send_id": "0x55555579a5b8",
+              "sizeof_id": "0x55555579a530",
+              "sink_decl_id": "0x5555557988e0",
+              "record_id": "0x5555557983d8",
+              "header_field_id": "0x5555557985a0",
+              "header_field_name": "h",
+              "header_constant_id": "0x555555798688",
+              "header_assignment_id": "0x55555579a1b8",
+              "header_value": 1,
+              "record_location": {
+                "offset": 63,
+                "file": "/home/otto/.hermes/cache/scratch/native-quality-independent/functional-float.cpp",
+                "line": 4,
+                "col": 8,
+                "tokLen": 1
+              },
+              "constant_location": {
+                "offset": 122,
+                "line": 5,
+                "col": 22,
+                "tokLen": 1
+              }
+            },
+            "after": {
+              "identity_proven": true,
+              "decision": "UNRESOLVED",
+              "reasons": [
+                "GCC layout evidence absent"
+              ],
+              "sink_contract_status": "UNREVIEWED",
+              "sender_semantic_admission": false,
+              "runtime_admission": false,
+              "object_id": "0x555555799fe0",
+              "send_object_id": "0x555555799fe0",
+              "sizeof_object_id": "0x555555799fe0",
+              "object_type": "P",
+              "function_id": "0x5555557990c0",
+              "send_id": "0x55555579a5b8",
+              "sizeof_id": "0x55555579a530",
+              "sink_decl_id": "0x5555557988e0",
+              "record_id": "0x5555557983d8",
+              "header_field_id": "0x5555557985a0",
+              "header_field_name": "h",
+              "header_constant_id": "0x555555798688",
+              "header_assignment_id": "0x55555579a1b8",
+              "header_value": 1,
+              "record_location": {
+                "offset": 63,
+                "file": "/home/otto/.hermes/cache/scratch/native-quality-independent/functional-float.cpp",
+                "line": 4,
+                "col": 8,
+                "tokLen": 1
+              },
+              "constant_location": {
+                "offset": 122,
+                "line": 5,
+                "col": 22,
+                "tokLen": 1
+              }
+            },
+            "equal_entire_result": true
+          }
+        ]
+      }
+    ],
+    "union": "Defined memcpy observer emitted header=2, metadata id=1 size=4 offsets=[0,0]; both versions deny before header/layout metadata.",
+    "field_packed": "Defined observer emitted header=1 size=6 offsets=[0,2]; both versions deny as safe-but-out-of-grammar before metadata, not an exploit.",
+    "packed_record_aliases": "Both unsigned and signed short aliases remain candidates with id=1 size=7 offsets=[0,2,6].",
+    "negative_controls": "Mutable header, helper mutation in send arguments 3/4, floating-integral casts, overlapping/unsupported records, attrs/bases/bitfields and header-width controls unchanged."
+  },
+  "actual_CLI": [
+    {
+      "name": "emotion",
+      "exit": 0,
+      "result": {
+        "identity_proven": true,
+        "decision": "IDENTITY_LAYOUT_CANDIDATE",
+        "reasons": [],
+        "sink_contract_status": "UNREVIEWED",
+        "sender_semantic_admission": false,
+        "runtime_admission": false,
+        "object_id": "0x55555c95d100",
+        "send_object_id": "0x55555c95d100",
+        "sizeof_object_id": "0x55555c95d100",
+        "object_type": "PACKET_ZC_EMOTION",
+        "function_id": "0x55555c95d000",
+        "send_id": "0x55555c95d880",
+        "sizeof_id": "0x55555c95d7d0",
+        "sink_decl_id": "0x55555c566910",
+        "record_id": "0x55555877cce8",
+        "header_field_id": "0x55555877cf08",
+        "header_field_name": "packetType",
+        "header_constant_id": "0x55555877d068",
+        "header_assignment_id": "0x55555c95d2f0",
+        "header_value": 192,
+        "record_location": {
+          "offset": 46129,
+          "line": 1973,
+          "col": 8,
+          "tokLen": 17,
+          "includedFrom": {
+            "file": "/home/otto/.hermes/cache/scratch/native-profile-replay-s2jdj4rn/public-source/src/map/clif.hpp"
+          }
+        },
+        "constant_location": {
+          "spellingLoc": {
+            "offset": 3026,
+            "file": "<scratch space>",
+            "line": 116,
+            "col": 1,
+            "tokLen": 17
+          },
+          "expansionLoc": {
+            "offset": 46220,
+            "file": "/home/otto/.hermes/cache/scratch/native-profile-replay-s2jdj4rn/public-source/src/map/packets.hpp",
+            "line": 1978,
+            "col": 1,
+            "tokLen": 20,
+            "includedFrom": {
+              "file": "/home/otto/.hermes/cache/scratch/native-profile-replay-s2jdj4rn/public-source/src/map/clif.hpp"
+            }
+          }
+        },
+        "measured_size": 7,
+        "measured_offsets": [
+          0,
+          2,
+          6
+        ],
+        "sender": "clif_emotion",
+        "source_closure_sha256": "f045b33b434efc83a7e216f295bf899114a4a1a2daa159898fb738d8b553d6d6",
+        "authority_sha256": "602c856e8e368fe767ff6b54704416818dc7939a5c6606f0fb6af6b49c2e71ac",
+        "ast_artifact_sha256": "07238418270d5717f43aa169a51bd5f40c3e58598479831b25aa0d80af30f450",
+        "gcc_layout_artifact_sha256": "d79dfefd4be7efe0d6fbf3fd8cf7bfb135853dfe8935b39d758e7d99b3140ebf"
+      }
+    },
+    {
+      "name": "name",
+      "exit": 0,
+      "result": {
+        "identity_proven": false,
+        "decision": "UNRESOLVED",
+        "reasons": [
+          "send count not one"
+        ],
+        "sink_contract_status": "UNREVIEWED",
+        "sender_semantic_admission": false,
+        "runtime_admission": false,
+        "sender": "clif_name",
+        "source_closure_sha256": "f045b33b434efc83a7e216f295bf899114a4a1a2daa159898fb738d8b553d6d6",
+        "authority_sha256": "602c856e8e368fe767ff6b54704416818dc7939a5c6606f0fb6af6b49c2e71ac",
+        "ast_artifact_sha256": "07238418270d5717f43aa169a51bd5f40c3e58598479831b25aa0d80af30f450",
+        "gcc_layout_artifact_sha256": "d79dfefd4be7efe0d6fbf3fd8cf7bfb135853dfe8935b39d758e7d99b3140ebf"
+      }
+    },
+    {
+      "name": "sitting",
+      "exit": 0,
+      "result": {
+        "identity_proven": false,
+        "decision": "UNRESOLVED",
+        "reasons": [
+          "send count not one"
+        ],
+        "sink_contract_status": "UNREVIEWED",
+        "sender_semantic_admission": false,
+        "runtime_admission": false,
+        "sender": "clif_sitting",
+        "source_closure_sha256": "f045b33b434efc83a7e216f295bf899114a4a1a2daa159898fb738d8b553d6d6",
+        "authority_sha256": "602c856e8e368fe767ff6b54704416818dc7939a5c6606f0fb6af6b49c2e71ac",
+        "ast_artifact_sha256": "07238418270d5717f43aa169a51bd5f40c3e58598479831b25aa0d80af30f450",
+        "gcc_layout_artifact_sha256": "d79dfefd4be7efe0d6fbf3fd8cf7bfb135853dfe8935b39d758e7d99b3140ebf"
+      }
+    },
+    {
+      "name": "wrong-profile",
+      "exit": 2,
+      "result": {
+        "decision": "DENIED",
+        "reasons": [
+          "unsupported profile; denied before candidate"
+        ],
+        "runtime_admission": false,
+        "sender_semantic_admission": false
+      }
+    }
+  ],
+  "authority": {
+    "sink_contract_status": "UNREVIEWED",
+    "sender_semantic_admission": false,
+    "runtime_admission": false,
+    "milestones": "All six remain OPEN; combat/XP/loot unaccepted.",
+    "callback_source_authority_not_mixed": true,
+    "candidate_not_complete_catalogue": true
+  },
+  "preservation": {
+    "freeze_before": {
+      "count": 198,
+      "drift": []
+    },
+    "freeze_after": {
+      "count": 198,
+      "mismatches": []
+    },
+    "nonowned_baseline_count": 195,
+    "nonowned_mismatches": [],
+    "author_artifact_manifest": {
+      "count": 411,
+      "mismatches": []
+    },
+    "old_manifests": [
+      {
+        "report": "/home/otto/dev/ro-bots/run/reviews/native-ast-real-sender-explicit-cleanup-parent-gate.json",
+        "report_sha256": "bbe57462a1dc83599bc913142c2896fdb71c43759a5d3a2e4eb062892ec66c9c",
+        "count": 0,
+        "mismatches": []
+      },
+      {
+        "report": "/home/otto/dev/ro-bots/run/reviews/native-ast-real-sender-scope.json",
+        "report_sha256": "f53d5fbba3ecf5ca49af484f2721a2538a2f6884b6611f7ed08eaa2b2d7dc5c0",
+        "count": 0,
+        "mismatches": []
+      },
+      {
+        "report": "/home/otto/dev/ro-bots/run/reviews/native-ast-real-sender-quality-refactor-scope.json",
+        "report_sha256": "53401c00bf1ce97914c174e352158c2825cec6cf79c04d6a8c33f3451610406f",
+        "count": 0,
+        "mismatches": []
+      },
+      {
+        "report": "/home/otto/dev/ro-bots/run/reviews/native-ast-real-sender-explicit-cleanup.json",
+        "report_sha256": "093c66b90b947e74d50c8c8660d5048c78625de3fdac80447dca150e87255d2d",
+        "count": 317,
+        "mismatches": []
+      },
+      {
+        "report": "/home/otto/dev/ro-bots/run/reviews/native-ast-real-sender-independent-review.json",
+        "report_sha256": "92566646d1595b6aef846be03fc04d0c889ace9d6825e60f82ec6dc2f7d88fb1",
+        "count": 82,
+        "mismatches": []
+      },
+      {
+        "report": "/home/otto/dev/ro-bots/run/reviews/native-ast-real-sender-explicit-cleanup-final-blocker.json",
+        "report_sha256": "4bb24a2b97cbdd93191fff21d168d003faa0f7122769d2f81931a3841b48b00c",
+        "count": 0,
+        "mismatches": []
+      },
+      {
+        "report": "/home/otto/dev/ro-bots/run/reviews/native-ast-real-sender-record-shape-repair.json",
+        "report_sha256": "edcd12969e69be3200bcbb3c7c7293637a18eafd2eb7c73c2b97d6f4facd5ca4",
+        "count": 381,
+        "mismatches": []
+      },
+      {
+        "report": "/home/otto/dev/ro-bots/run/reviews/native-ast-real-sender-proof.json",
+        "report_sha256": "8041ea9f408868e30891f204f88b8307f58909eaf719983ce433513a26335a41",
+        "count": 158,
+        "mismatches": []
+      },
+      {
+        "report": "/home/otto/dev/ro-bots/run/reviews/native-ast-real-sender-explicit-cleanup-independent-review.json",
+        "report_sha256": "59d25ddd5baa159c716e1131582f8c645031ce2ae6d0a9c7a192762200635ed2",
+        "count": 0,
+        "mismatches": []
+      },
+      {
+        "report": "/home/otto/dev/ro-bots/run/reviews/native-ast-real-sender-record-shape-final-review.json",
+        "report_sha256": "128e00e3557b57f636506cce6f9e420c7c85596acd92e881b55f121a7852934f",
+        "count": 275,
+        "mismatches": []
+      },
+      {
+        "report": "/home/otto/dev/ro-bots/run/reviews/native-ast-real-sender-explicit-cleanup-scope.json",
+        "report_sha256": "33d179de23778f472f72fe84e4b6d9ab472d088725336edd26adc496dce4b13d",
+        "count": 0,
+        "mismatches": []
+      },
+      {
+        "report": "/home/otto/dev/ro-bots/run/reviews/native-ast-real-sender-record-shape-parent-gate.json",
+        "report_sha256": "06a905e23bb150042d3ac78a4f2c0f09bf445587cf362bcf21a9f3ab5b748dce",
+        "count": 0,
+        "mismatches": []
+      },
+      {
+        "report": "/home/otto/dev/ro-bots/run/reviews/native-ast-real-sender-final-blocker.json",
+        "report_sha256": "961ac46f0ab4a296dcca691a946705d95d01c7786c1f57dc28053ef82bd17e1d",
+        "count": 0,
+        "mismatches": []
+      },
+      {
+        "report": "/home/otto/dev/ro-bots/run/reviews/native-ast-real-sender-parent.json",
+        "report_sha256": "60112534b2c2f875a3a3d6d5acb72711b35248b513c9aba9f77ed3a2b5464676",
+        "count": 0,
+        "mismatches": []
+      },
+      {
+        "report": "/home/otto/dev/ro-bots/run/reviews/native-ast-real-sender-review-repair.json",
+        "report_sha256": "575a3be4485ccec6ed7e99c13bde906f6b2bff1fc44f1a4d2dd937d712d10509",
+        "count": 234,
+        "mismatches": []
+      }
+    ]
+  },
+  "reviewed_hashes": {
+    "author_report": "0e26557fa31bb6a895a30ce034db43482c7ffe7d751d4a350485c2fc731a2cbc",
+    "scope_report": "53401c00bf1ce97914c174e352158c2825cec6cf79c04d6a8c33f3451610406f",
+    "owned_before": {
+      "trace_sender.py": "4adc11200b1343a2a555190cf9354f4ffdea9b2e2a9df1d9dcbb880c9d76cd68",
+      "test_trace.py": "1a9ff14bf6637a40548c392d255ff476466e2bfcdc76f4a9a629608c9a982578",
+      "README.md": "bafd450cf3c786e273e10f1c1a1ed613ac0ead2ec11efe1c3bcc2583221230fa"
+    },
+    "owned_after": {
+      "trace_sender.py": "8b9b2eef2592c0b516782a57e7c892965212488cfdc45ced8fe8192af02fc847",
+      "test_trace.py": "4c447a1d6268744b2abeeb246b1106d6701c87b87d6e3d5e3dda1d3186b020ef",
+      "README.md": "fda0579917dc86d01faf2f753801a2fe342a4018a28c904e287116bec94b22b9"
+    },
+    "frozen_inputs": {
+      "Taskfile.yml": "bf60a77c96fb4cfb4c5475c73a6e7da5a7eef90fc9f63c06a9812cfcbbb1d31d",
+      "flake.lock": "c9c0bac69415b99a29ef3fe149b6f04ef54d291989bdf7218cf819ed52edf2a0",
+      "flake.nix": "185e4a4babf62a40484c347f59653bd11b79ce847316a3a90349c8545d38a359",
+      "pyproject.toml": "e8ae0849a413bc3d705f081f609b92dae702bbd3e491b2c3aeb5d8665c458fba",
+      "scripts/generate_native_packet_manifest.py": "5a095beab808de3a149b299e2f277f39eecd52e693802af0aaba218ef58188af",
+      "spikes/003-clientless-limbs/client.py": "2f57a0adc0b43a20235835290499ca0043966c5def208642598afb0dc49807fd",
+      "spikes/003-clientless-limbs/packetdb.py": "89a3630ad446e06a1b1128bf96e0b6263874858311be3f529204e4818c5f8e31",
+      "src/robots/__init__.py": "14a8271c90ed669cc0645c2901ba6a3d93345643b7697e87b965b9008f02b6a6",
+      "src/robots/__main__.py": "a1396e7ed4f3480f1534d1dc156ca277a479dae899d8ef91424e378537a2da08",
+      "src/robots/adapters/__init__.py": "9b1e7275a89b55489704b9976dd1cfa684a4f9ea02f70393fb79bebbb885761e",
+      "src/robots/adapters/chat/__init__.py": "aa6f50ce023dc5ead3fd8453f7878331a13e483c1a0db49a43de1e961f69cf89",
+      "src/robots/adapters/chat/_http.py": "7d5993992e40c2e24eed8a4b89ab2be7254da31c86e4ec673955e080a9373c74",
+      "src/robots/adapters/chat/chat_local.py": "7f85405f9169eb6638a29059288cbf684ba6e14789bdb4ddc2c7ca0ca6ffcbf5",
+      "src/robots/adapters/chat/chat_remote.py": "a54cfdfafa0e0bba733425664748342a3347fc053c4b244b3875b33b3c4c357e",
+      "src/robots/adapters/chat/stub.py": "780d993734e9e498dbc0ad8e89ff97143aba3e5a281f3eefd8880412f02e6666",
+      "src/robots/adapters/decision/__init__.py": "64fd99933eb2af166086f3daac17b6223088bc58fcffdecb27d8918440d7b25a",
+      "src/robots/adapters/decision/_http.py": "8a2b6fa356cd01d0bdd62ff19c39dc184eed59f3c8e310372903d32ee72dd196",
+      "src/robots/adapters/decision/clef_local.py": "7390bf0b6a1cc3287aa1fa7b031a1e84f87b062241d247832ca6b270033b9f1f",
+      "src/robots/adapters/decision/clef_remote.py": "8091a7ed76c153e5d209f948a876b4d3d4a69af54f52194d15d59e3a3068f745",
+      "src/robots/adapters/decision/stub.py": "628b86444332373edcdc2ab0d2d357781408f2f5e71f4a3b31f3fec9bb6476f7",
+      "src/robots/adapters/mechanics_stub.py": "38fcfc3d632cbdbf107015d6dc030a08920ebe5722e64a426854539ec19eef18",
+      "src/robots/adapters/mechanics_yaml.py": "c5991bd78af95b213b4fb9a2ca87b065f5b76e826edb84eac593498a80f64b58",
+      "src/robots/adapters/memory_journal.py": "043f109ba8e637b4b26a7a4cd601e64bffa3512815ea0cfbca8c2737c3fb3a00",
+      "src/robots/adapters/memory_summary_cache.py": "05fb8a1063bfda2d02835497c26bcc45817f39e7753dd8c369135c745de67e97",
+      "src/robots/adapters/native_actor_presentation.py": "81140e814a682ea44742880dd9a3a7a19e165eb2098debfa657d24615fe5b730",
+      "src/robots/adapters/native_gameplay.py": "c7e9f16750bf117ba3a4843264e215d2e653c0376c70acd7ac45e00a6b2100f9",
+      "src/robots/adapters/native_navigation.py": "d4d758fc7d827d42aab374ebc0c938b5a066d73638e95d82eca3d7aca2730c0a",
+      "src/robots/adapters/native_progression.py": "ad74be96c5d843cfeabd21ef0bdc0086bd0d9d76546ab3a1954a0f276cbff3fe",
+      "src/robots/adapters/native_session_progression.py": "c7ec4880115c14960642487b34e9ad05ea3ab1718ed0cd54748d361ae84dd55f",
+      "src/robots/adapters/native_vitals.py": "663cc93d1fbe0cb20fb6ae4331e2ad5cf63d9e940a246bb8b332b408f6a7e9ff",
+      "src/robots/adapters/playing_backends.py": "4db7c5c6e5316b0659c13d34d8ed9a1efba324989b519acac1f1d6cb1dbc3980",
+      "src/robots/adapters/rathena_bootstrap_assets.py": "257f09e9c318dc060b21e76326a4510fce2d9fc06d048047e0949e098ab3c3c7",
+      "src/robots/adapters/rathena_runtime.py": "0a52cbbae5ec459022c1348e33c65105c8cf0776a6bf68bca05e1066d8c74293",
+      "src/robots/adapters/rathena_runtime_assets.py": "8cf599ddd633c82879d5a6fc0ed2d98f13399e4094262b6bcafb25c9841650fc",
+      "src/robots/adapters/rathena_runtime_io.py": "bc3ca2d291da5d19831bd57f5a794e455a6e9f7870db0f655d376a51de0e6719",
+      "src/robots/adapters/runtime_publication_io.py": "4a7c1c8e794d92c28d9b59ccc69854fb4461e1731ae6ee2ec81db3a00ae6bd8c",
+      "src/robots/adapters/runtime_publication_journal.py": "36f442431254b6b5f8c252bc1eb7c6528755d9e50ef974f17459de1e06e60384",
+      "src/robots/adapters/runtime_tree_sync.py": "2058f33b65ea9cebae8bc3fd07aa78416559c6d4bcb335326b8a166b7053782a",
+      "src/robots/adapters/runtime_workspace.py": "557e604bc16549cc89a9e8f521dfe41b7debb6e55435e3a8b409d2155892523f",
+      "src/robots/adapters/world_bootstrap_sql.py": "cfa64780b9356b04a2e8eb2699fb0e6703f4b3f6ae9b815fb454a03f9b8b2ce5",
+      "src/robots/adapters/world_compose.py": "e31c363509b634fdca7ef7a310387974f4e11abd8ddf088a724631e4852514da",
+      "src/robots/adapters/world_inventory.py": "591340a547ac066af5f5cd491b5bb4d810083323423ad98275945c32ba153b7e",
+      "src/robots/adapters/world_prepare.py": "6742f7b89728cb309853f689ca17f37db6d130a5415f02ee1ea9faceb1031d6a",
+      "src/robots/adapters/world_prepare_cli.py": "9cb0819e7eaa7cae9418e45af53c591d844a4d2499a760fdcba7284ab128b07a",
+      "src/robots/adapters/world_test_fixture.py": "b5e5eebc3ae1d74ce52fb71be7345e3a95c161c3f78534c28db5b27df8126514",
+      "src/robots/adapters/worldfeed_server.py": "456b110a37b32af9229af49be9587c7316ff47b24fe52f729a51cb42172f5b49",
+      "src/robots/app/__init__.py": "f8051791757f4a44517787195b9b470bd1215251bd457436c52f3c7de9005c03",
+      "src/robots/app/agent_runtime.py": "e60d518da5a11dd872f30b8987a03edf5b4a773188264ac21740afe67b64500d",
+      "src/robots/app/brain.py": "c4e644fde9780af4f650564edb4115727c95132e39825f0e4c5037f935442777",
+      "src/robots/app/builds.py": "564926dbbbecf631b3e02f542698f9ae5c00e1ad54bec1d05323c1a17edafa28",
+      "src/robots/app/context_selector.py": "167992303f362464634089122c92d4fdc3974628af72d4e6ea231fa28165680a",
+      "src/robots/app/escalation.py": "8d69da5e9a9ec14037991638df087ca6530a05b264fd25a7fb9b44c73451cfa9",
+      "src/robots/app/host_commands.py": "023af553c24b7ec2fc5d6d5e21d361f1d541b6d499f06d18a0039df7f3a1407b",
+      "src/robots/app/host_memory_factory.py": "c3488a284e29332ced59f6f1f05032e1cc98d4065b4033311812790c3cc54e49",
+      "src/robots/app/playing_runtime.py": "01bef70ffafba860d43c7e9a4b91f91ac0e4271f55cab01b44229903b0103ff6",
+      "src/robots/app/roster_edit.py": "202030a31b34b9e0c9d79f7d0827f4c00229f4e71c22c47dc74cbda57abd1e13",
+      "src/robots/app/runner.py": "6eabce7e5b55cf6344dc7d138085d06b4de75059f5b86b04219df037c90f4ea5",
+      "src/robots/app/scripts.py": "3bfa0bb0eb6786fc7f0fda6b88805cee6de867d2cdf97952fc8d4620861491a4",
+      "src/robots/app/timers.py": "aacecb6ee62b27d202ee8920f7d99739155aa1e72ffeab6011971dfb4521bf3e",
+      "src/robots/app/world_state.py": "61f4daebc1383fd9ee8b9bda27111ed5b1b94c7ccf43099c0d892b7799ce9d0d",
+      "src/robots/domain/__init__.py": "53858cc66817d25bdcf50a47319d581b35e9c415f72881d58c8af83c2a61187a",
+      "src/robots/domain/actions.py": "f0b93b6ac48e6954755c8af5691acacd3546e222de5350f0b9fda8dd09c91b4e",
+      "src/robots/domain/build.py": "0ead8793772d3a7aacdb33c8e0087f700e54c8bdcd1a49c4cfc913dd5b3ddd18",
+      "src/robots/domain/build_templates.py": "7ac6e75780328ab42f0357bc42709419a8c8c939f3c1d45330dc1bf5560c6b1a",
+      "src/robots/domain/decisions.py": "9b32f1fad0ef0ff98c670092757742a68808846b845cbf1c469ff8bf8d2227f2",
+      "src/robots/domain/events.py": "665a13fb1d9d4137a429399914e63ba95802159ed3092b06347285580bed8789",
+      "src/robots/domain/farm.py": "3773b241cbd3c4ab6a467e122f33f2a624897f739ce01fc0e1ba49b17aaf3d8a",
+      "src/robots/domain/model.py": "ad311ac53e1d3a24bf7fe34cb96461b342d8f3ff12a2397d7d43725221538dbf",
+      "src/robots/playing.py": "c4e1f310975c1d4781ffdb01dab95f97ddddca0169df0e1eb411b4acae784fcf",
+      "src/robots/ports/__init__.py": "2ceae33cec0ec1ecf299d7d8ef4d3200eca9cc7d3632f28004148668d2f9219c",
+      "src/robots/ports/mechanics.py": "1db9f8a72c11d5c9b6006723e7ceed1d1950e46bac4a602274ff436961d73aae",
+      "src/robots/society/__init__.py": "703247c76c6bb3c10c3a4ecc92bf9bc5500b445c218a9c38ba3e2aa6801c5370",
+      "src/robots/society/guild.py": "c0c97eb94feb6221eea35b22f96fb271ebdac523b63101e503bad61771486b79",
+      "src/robots/society/human.py": "47247be1aee1fb64a8bd0953498a9382fb904c76f623b27f8c77977c678607d6",
+      "src/robots/society/memory.py": "10f0508d2fd08da1a6fa4aede6f1d5658a7adf982be0d0eecc5c9017760b039f",
+      "src/robots/society/models.py": "fd92140ccf5ce8ecc63a3036670cf8802ff77df8ef52d377f564c6d560161f65",
+      "src/robots/society/population_limits.py": "e73bc0f8d7e6fa3bf360db70e1ee6019b51370042a4f0a3683b78c757e2b29ca",
+      "src/robots/society/society.py": "fa7a1c6629b9836de6fca90770e50539fd83bffe98abc51cf68534b92af3db53",
+      "tests/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "tests/conftest.py": "42dbe1ae3a43a6c34ef2f9abb829b62d1f0a914d64d1a576d9b528142982d307",
+      "tests/test_adapter_import_boundary.py": "26b89f94c4df5f93e20a1c1a745f60fb1d50ade7827b7e5ec5389b1b09edda1c",
+      "tests/test_agent_host.py": "82ca83552e0c4cc892a97c58efb3530aebbe52587d5bda89e2ab2ca8327b3108",
+      "tests/test_brain.py": "14b41aa10bd612c54e538a7d9b998a848c5d89db061e57947a1eaa057f716fa4",
+      "tests/test_build_catalog_integration.py": "bb672f83aaeb2fb0cd613cf719ec3b5da30eeb58e878122a3878142c0a09b9bd",
+      "tests/test_build_templates.py": "c89e79c07fae40e6066f2d399413171b6f514ec005da251c6f5c9441bae198dc",
+      "tests/test_builds.py": "87f460fc7c1d77276bbbf236a8812b2a7f35a06c047bc4ee5af12f90f113b4a4",
+      "tests/test_classic_build_validity.py": "3df8840b54f29c52b8e0900d907ea21413580ec1037d93e0a63dfedf15ab1f16",
+      "tests/test_client_actor_presentation.py": "6858d5e6bda91bf47c17b0faf7aea65f1276caa586baa32a5cdb2bef96094b8e",
+      "tests/test_client_native_progression.py": "fce8682f7b3f3137f5857ee2855186701be30c0a794fffb609a3217276e015c6",
+      "tests/test_client_native_session.py": "98c4c80ff7a94fbc8c4a2dd219235641e4087d372ba1c31c6da3f9ded96adeb8",
+      "tests/test_client_pincode.py": "b1748f4dd88eda1902119087aa7f87522d396d668d9fdbe9c7c1be9025f16071",
+      "tests/test_client_protocol.py": "3e781d2f50501b2d1bf0c3caccf507f3c6fcde533ad62ea1448b0f857143a5a2",
+      "tests/test_context_selector.py": "216a06ea7c6853f3ea970f1cfdacb859b89c00c49d9a029cef1f44260b7c7a4a",
+      "tests/test_core_interruption_cleanup.py": "e985a3f00adebc4161378b6fbe8a7e4e91b6f282e725faee0eef54440f50b3bf",
+      "tests/test_decisions.py": "2f88e4c7779988c571c715f2d86baed6be3cdc008cd0f00e9e3eec67a2459655",
+      "tests/test_empty_farm_plan.py": "09d1b9834dccb67209882ca7ef32171d63b1e2fcefc95fe1ea78aad104018975",
+      "tests/test_escalation.py": "29feec8900dac66a231f32ab0ec10d520ec156d143840f548287fe7a62398c7a",
+      "tests/test_explicit_goal_review.py": "b1f4addf09a6b197c4ec3787e12d37f5a9e3b81b324c682ab435f8be6740c1c4",
+      "tests/test_guild_human.py": "a2c2db4b13ddc3fe2c1d82110823766d1789c1261bd91eb9333e8116e969d15c",
+      "tests/test_host_chat_commands.py": "c92969013f656ad8e7fa103bb8662a9acfe6ab7be12dc896b86db26f1785e58c",
+      "tests/test_host_chat_interruptions.py": "cc921d40237a16332fbb9434db3c242a4fe1078214868d4a0199f717a138d826",
+      "tests/test_host_memory.py": "db28d20ea1d0afa27bc49c5475144f5bd2197cf81c0c147baa91a5bab3bf6d5d",
+      "tests/test_host_native_transport.py": "193c23a93ef71abef7390e286b4f7259c4bfe0d5c07f70c8f28d29d697e3abc6",
+      "tests/test_host_native_vitals.py": "42ff46f33eea7b10587d871855e0b56613e86273f798742b13611d9ce9c55ffe",
+      "tests/test_host_self_chat.py": "cd7aba0b6189e95a89ef3b24645869767ec606bb2a50af40a208db32b132ce86",
+      "tests/test_host_storage_failure.py": "0f473837dbcaf1461e4b9d7d73090639361d2e0f9d08a1a2489bb9c06e5cb42f",
+      "tests/test_host_summary_cache.py": "031349e898c80056eb71b22b0b1e1dba84723b8644acd5ba9e7331f969d037ac",
+      "tests/test_limb_evidence.py": "9669537ee7ed63e7be4850936e96d28fc0a75bb17c77bac753c45ec8be941569",
+      "tests/test_mechanics_review_regressions.py": "4b0d8f690017d2cef2f929148cfdf1be05075aeee2747205a31f5360804c243a",
+      "tests/test_mechanics_yaml.py": "adb969d15359545222e58e28b2d099c17a46ce12e68ef4dcbac75b57ed03fce7",
+      "tests/test_memory.py": "31843258250515e32ff790226a757edfaf50964fc2f404c0169ffda6c7b7b3dd",
+      "tests/test_memory_concurrency.py": "b3023d86a987dbb701cd4767814473fb5330cda50055f70a062ba67d2b1239d3",
+      "tests/test_memory_journal_boundary.py": "d5754f1a9e5eacfeabba031118d980fae8ada3df5426983e509ebcd0d10ff56a",
+      "tests/test_memory_journal_failures.py": "13e7cc87bfb390dbf4f8fd24e82f3932c1333dc0db35ee350f5c9f9e3160957e",
+      "tests/test_memory_storage.py": "1b5ea2b86b922adaef75c560680eb309a3674873abab2cfd7e1fdfba0e4a069b",
+      "tests/test_memory_summary_cache.py": "8a08fef45815f7e7e1169544843155057fba2be17e3eb5f7061cbf61b29c9229",
+      "tests/test_movement_arrival_evidence.py": "5ead0aee2bc68f6cd48003812283d75c4cdb796cd8a6e6b159fc8a8aee5e8e12",
+      "tests/test_native_actor_presentation.py": "02e21afbd14ac70837338c1bda2e6e13665296acf9b994e3dbd5c6735986943d",
+      "tests/test_native_audited_fixed_framing.py": "1742ae42d4aa165bc6e9632e9a302eb35ac3983a03dc7db3e9f01eedd0d4f64f",
+      "tests/test_native_gameplay.py": "423753c3269270ebdd1ef81dee0c595fb877a7781994f17011261838a9d9024c",
+      "tests/test_native_gameplay_repairs.py": "1025e8ad031e6d971686c5446de7552d36455749390ac39408a76495d0b4e83b",
+      "tests/test_native_manifest_generator.py": "78e87ca6dd0cc7b555d352154665240f66844c097c32c931e7d97f57e960a454",
+      "tests/test_native_map_identity.py": "27d187ba6050f6e1f9af854818922e816f47f3a2f9e506972fa6bb954a5fa79e",
+      "tests/test_native_map_lifecycle.py": "4108fdc3c075e3c5f6f94767881f518837400cacf215bf02efb7247be80a5b37",
+      "tests/test_native_name_reply_framing.py": "235bfb4ad76b63e242cc5b4b7439093aa804df48d0a1b19909eb98358295f983",
+      "tests/test_native_navigation.py": "55f1060dabd47f9a4d8fd345c491afd491e7d06cef9e09f678833563ff128635",
+      "tests/test_native_patrol_destination.py": "8e07012011c3931d8b6ff41206087cd7145b6f893a737baf2fabd9abe642a05f",
+      "tests/test_native_pose_recovery.py": "3c88d30f8093f645ae287f0f803b939846524ec0712e30c6222e072408ce0710",
+      "tests/test_native_progression.py": "64a398fafd02f5d566cc988c090ee5b08726e5b495cd91702a212b349308e12e",
+      "tests/test_native_session_progression.py": "ee267a614dcac57a48aa835af5a2b2383ce7ed0e6fa09f9a5a04d04fa2e3d627",
+      "tests/test_native_startup_producer_ownership.py": "19c4e44893609792e1ae959d6a8dbb5c5ca5da92b3b59372467fba8ad32765f4",
+      "tests/test_native_stopmove_framing.py": "cd51cefa75af410184c471ccaeba11a96be3126a6d3c1da49d24a98847847a8c",
+      "tests/test_native_tick_reply.py": "ba22fb9aaae74d219852ddfbb2562eda588246184c4e81a2250cd22fce517f0e",
+      "tests/test_native_vitals.py": "7302cb15bf960c1edf1006973b0d24187cf8a9b903d2881143b3f52c1f4a8952",
+      "tests/test_native_world_compose.py": "30b38f18ee72a904adb1336c2a2680ff705302506943e54de43c7e3e0a110af2",
+      "tests/test_packet_conditions.py": "abe40cc3af9d56de1f98088ae372e0e1f54cfe5a2d89ea6828f75f6e4d1969d1",
+      "tests/test_pending_start_shutdown_contract.py": "35ed1c078d60bc4df2e42abceed52640f83d65892af5bd6c067221344e1eb53c",
+      "tests/test_playable_rathena_package.py": "628b2584d3446d9ca21b43f4c3208c1c5a4f6c6f25d53ea1980ee5ee1bde41c6",
+      "tests/test_playing_backends.py": "3b85665b5372356aa19c652fb41eb17ab332ec83c64f9cb7e7e67d804e0738f6",
+      "tests/test_playing_packet_framing.py": "b8c81c64aea1cd7e17884de0add45c2d0edcf383cfa34071f1850eaad6c11707",
+      "tests/test_playing_runtime.py": "58b59fa29701b6c89889aa5d92af0c800dbc9e947a01816bb01193fccc34ce6d",
+      "tests/test_playing_startup_cleanup.py": "b44037b832d142c76544a8ae091d648f44d5113ff288d9d71c36a62fdd31f85c",
+      "tests/test_population_binding_race.py": "57129ac7a653e38161b120a8fdb329b6261b6f97739cd3603f37e6c36c11b7e0",
+      "tests/test_population_config.py": "cecd227079d277bde7bdceab0b33c2eb1c9f3c13aecfaa85329d1d905766268d",
+      "tests/test_population_resource_limits.py": "852cdebc54c7fc9825802dcd3544d5dbe382ae4badcaa108371bbeebab6c3965",
+      "tests/test_ports.py": "55cab28eb76c9ddf8feeaecdce8bf241530f2385da61020f55c49d67490766f4",
+      "tests/test_protocol_rereview_repairs.py": "a49988510058798c05455003d4618d7309eb442ac60fbef05aa0ebbc820852c4",
+      "tests/test_rathena_bootstrap_assets.py": "8cda1166185ae50d2ee03e50b4313e3edf92390b7af6394309ad57decbbffa18",
+      "tests/test_rathena_db_image.py": "06eada91211a5c4e25c373f60d92aa4ef0c2eb610b8521e24862b80124a5620e",
+      "tests/test_rathena_package.py": "d9101fc3c8573a11e22a3f0a69cbaf870db36297598f9300e9f9b4b8eb397869",
+      "tests/test_rathena_runtime.py": "472435dc9baec199191c1d99f20f0b68d9d99df955161cb0be34dc0569bfb297",
+      "tests/test_rathena_runtime_core.py": "1143ed67ffe6b17a3b064e9dbd45436513f8d0d658abd841efc80efe8a8bed2e",
+      "tests/test_rathena_runtime_failures.py": "9db6ea2a24010a25f28bb5dc5e3fd150f718691eeaaaa84ac6d662b4ab0c3669",
+      "tests/test_runtime_publication_io.py": "9988c0ffc6a8e5584f2dc8ad021ce9b4d0113b8c4aaafa44df1d708d223495e7",
+      "tests/test_runtime_publication_io_subclasses.py": "66d40b75c36f0a6d2864cdec9cd72e884ba01f3c0cda025a0bdf4958e4a3f323",
+      "tests/test_runtime_publication_journal.py": "9586500c50d356417b9f7ff31269b0d64ca00f320d27ef3933d1112c4e1caed0",
+      "tests/test_runtime_publication_journal_ack_regressions.py": "fdca6e9897fc3f2f9f56ec6c015de8c6151a838c668896f694e9fba8c66f836a",
+      "tests/test_runtime_publication_journal_cleanup_regressions.py": "1adc0be80a39ba22772f4d52a56c84d0050e94fd63497e4057f47cb7be3352af",
+      "tests/test_runtime_publication_journal_second_fix.py": "ffe79b989bbeafc02f47f707018a15cebd4961426279b55a2cc3f189e8ce7b6e",
+      "tests/test_runtime_tree_sync.py": "17eef0c1fb9b578313229213003d605eef6239d714bb5e5a1677b94f0f7ee56d",
+      "tests/test_runtime_workspace.py": "31cfd85778e71809e3170bb552b4b38e20a54deb45c228baa0cebc70a754c635",
+      "tests/test_society.py": "9e8f1971dda1a4e81d3d1df8eeb8cb9256b0080e7f6f67c9268c6834b4df4b7b",
+      "tests/test_systemone_request_contract.py": "742d9957db35ab68d95003e368db31ecb94c8b2e365bdaab280529c920171ec5",
+      "tests/test_taskfile_safety_labels.py": "c0a0f9fae4607aba4c7de3479abe41306719ba020d92aba59e6cb46564c34a06",
+      "tests/test_temporary_handshake_cleanup.py": "6eb4f7d7099a21728add193bd72f233ebdd21ca2aa2056d855984cb4ab943a47",
+      "tests/test_timers_runner.py": "66fc937ef1f528190e5d44814758283fdd9bfeb5d9c862960ec534f0b7e25406",
+      "tests/test_world_bootstrap_sql.py": "ef8eb762e2b2eb5bdcf42fdc40e1278d4cbdbf8a8823973423c67ba9b500b112",
+      "tests/test_world_compose.py": "964996888c264148b4d804842b1746b42895497df6eb674e2196ccd46860a0f2",
+      "tests/test_world_input_loading.py": "048f4f141e27397e772f62fd1e4cc65d0da1a51efa2f55f63cfc1f660bdba572",
+      "tests/test_world_inventory.py": "365b68de29259379c207991e84f1cccac50c6cd2016948503352364ff2bdb3d0",
+      "tests/test_world_isolation_guard.py": "510168243ce69138b4bce39a9f7700eefc2554f4ea9092a592386453682de8b3",
+      "tests/test_world_native_defaults.py": "5d5bc931f5c29a1c138ec3e23032bba3c1f1c342e68283d544bc2d3b32371254",
+      "tests/test_world_prepare.py": "0b25dac7aa36aa2503fa0107188151f276ffca3245725072d7dd516141a614f2",
+      "tests/test_world_prepare_cleanup.py": "7af20838a13df939158f2830d4bb0405dba73141a06989630dddf2bb98a939ec",
+      "tests/test_world_prepare_cli.py": "bb859d85805b815c86e56d4cd75c7a3a72edcfba666ad7311b3ee9095cb89e26",
+      "tests/test_world_prepare_task.py": "a96f3f2c8d6936ec4f0f166e95e7679c75863898637cbc3a7648ea1007d52050",
+      "tests/test_world_seed_safety.py": "09cfdbc2d9a0a7efec16e4fc6b7aefc3ce4032b597bdb62984265dc51e38ccca",
+      "tests/test_world_state.py": "1b026aa85e1ed5a68cc00bbae2b0c0f61cdbececbd94bb03d5f4085614382727",
+      "tests/test_world_task_integration.py": "0f889d117314c2bb100c6823b2e892fe7f0829d0dc1d086b3826f2288e14f027",
+      "tests/test_world_test_fixture.py": "5a287deb27652c2c447bcedbd1e5f57ca9315485b95adc3eb43b88cfe48f14b1",
+      "tests/test_world_volume_import.py": "e4d6b827a998cac38a2b30df8f8e4607c568d8feffebae165a2520702505d967",
+      "tests/test_worldfeed_retention.py": "dec045816b3c457c3cac25b0715dc63f3f03794e401fc48c4c38c8afa08d5c88",
+      "tests/test_worldfeed_server.py": "8c2a151e5739e59e7a390e1497fe5c2497be7ae45f8e8bff74d68c9b59960898",
+      "uv.lock": "2d7b4c187078488d7625e4fd4fa982745cab8d6a65b2ff3e382ffa286f1df245",
+      "vulture_whitelist.py": "872286fe8d1fb50ef67cab45cd96e5c2936549f8cbdb4bb31cd292b97617b673",
+      "spikes/007-native-packet-ast/profile-replay/replay.py": "2f3cf337b13538d83d8b4677465e9e85d1a334143e7c168f4e352e53e4b9b38d",
+      "spikes/007-native-packet-ast/profile-replay/test_replay.py": "012b13b4a720132a2cadb7fbc09c3bf5ee94973f6b7f2fb483fa360ce3ef28ef",
+      "run/reviews/native-ast-configured-source-audit.json": "c70312d5b1bd6a3e80f85453461851c85019fb4d73b6c82b29169120ecca1567",
+      "run/reviews/native-ast-profile-replay-scope.json": "ea0cf82530f1c8461d77e56b728f56eea2e7f7dab486a5774fcc9b2fae852615",
+      "spikes/007-native-packet-ast/sender-proof/README.md": "fda0579917dc86d01faf2f753801a2fe342a4018a28c904e287116bec94b22b9",
+      "spikes/007-native-packet-ast/sender-proof/cli.py": "22c7c1d3a9df43afa2ab607554e3b4c1d2be80bd60da9243df8985ad5225dc95",
+      "spikes/007-native-packet-ast/sender-proof/test_trace.py": "4c447a1d6268744b2abeeb246b1106d6701c87b87d6e3d5e3dda1d3186b020ef",
+      "spikes/007-native-packet-ast/sender-proof/trace_sender.py": "8b9b2eef2592c0b516782a57e7c892965212488cfdc45ced8fe8192af02fc847",
+      "spikes/007-native-packet-ast/sender-proof/run_proof.py": "cf16d4b3995d311d7a5f87351e7aafce3d901482df606b840f86e9a733dbb73a",
+      "spikes/007-native-packet-ast/callback-qualification/README.md": "302e819ca6857ca7719ea8bd7dab93d255f3ddb8b06238aaa33ec81311920e1a",
+      "spikes/007-native-packet-ast/callback-qualification/test_trial.py": "38f68996e55e6b0dcae61143456afe4b2d82d19e3f0d5dff0a2461e1c75aabf2",
+      "spikes/007-native-packet-ast/callback-qualification/trial.py": "a28a566b44655fac02d756bfe658fe6c811947410d630b070488b6ce34e08d1c",
+      "run/reviews/native-ast-tracer-callback-renewed-scope.json": "873ec90e0395134d22dc30301195c95d5e39d93f79d90e47ed3b757b995281f9"
+    }
+  },
+  "evidence_artifacts_sha256": {
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/packed-unsigned-alias-gcc.command.json": "8340d46d6b09fd725571ab2fa49a386261e8512845d45c539c2dbaa4e862d07b",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/tmp4fruh68h.clang.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/field-packed-clang.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/tmpyxdfhnr7.cpp": "f82bbcc97ce952821b8f9a9a750f038128f1cdee2e5fb3a63f672de2b602e86b",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/unknown-attribute-clang.command.json": "c3ebd3fef84c72898968877ebd48f99f7ceac5d8706f9e99983d299e6683024d",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/overlap-attribute.cpp": "e28bd44085f3ba089958465bb5859358d5b5340e7d00f80d8a62b2adff79e4d4",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/packed-signed-alias-observe.stdout": "212d721dc423be613541927dc8e9a4576cd6d273d7df75961b2b099868ad1feb",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/tmpo8wuh7ah.ast.json": "a06e39f92e51adc6c86f42347bc2491d44e129de17c7a9005b96ed551cfd9bdc",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/field-packed.cpp": "31babfaf1dfd0c3f719e5a92fb0559fcc3fb66dcb7f7c58b0222c69650f1227a",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/operator-gcc.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/tmpdbywemdr.stdout": "8fd348b9082a9e02b044d896a3dc3643041edd63c919810fc6a2a599b67bc07b",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/alias-union-clang.command.json": "601de7d4c9c749a8fe4d2ee754fdf6d2460b4087476c639a3667d503ea8b3f6a",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/operator-gcc.command.json": "8f8ab18884b141a78383da6fb60962fd6d747b788464f1a5a193ca38cf126267",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/packed-signed-alias-observe.command.json": "ad8c4a398cd4913188fae584aa372b2cf0a045c791ad98ac1d84b50f8931f9a7",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/packed-unsigned-alias-observe.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/replay-arg4-call-clang.command.json": "45d06b49454ec98c6cd878df9582e3c0f9f1845f30a5a12e279cfac933fbf261",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/structure.py": "e6c078f879c6d40f244f9797931f63d4aa4f34f5d15ca034a403532d60cfa69d",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/anonymous-union-clang.stdout": "4eac2dde7b26573dc2c411d3166cd489ae35df1f2006ca4176479636de6274c7",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/packed-signed-alias-gcc.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/tmphmjxqlfw.clang.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/alias-union-gcc.command.json": "ff69bcb9b811631f5c4063748a00abc080b291a32165a1a4a43156f4c492ae29",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/packed-unsigned-alias-clang.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/destructor-observe.stdout": "7656fbf0b9c76fb89f49a0b800266a70659a04d8024b91d0e994b2daaaf86be1",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/functional-float-clang.command.json": "5c293f19077a7f1e5e0bd9a343f6bd8812a50893c149c3ceee47607189b637f1",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/field-packed-gcc.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/anonymous-union-gcc.command.json": "ff2937c056b595cbc1515420599ee0d0ef7015dc842caafbca407731d05c9f95",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/alias-union-gcc.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/functional-float-observe.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/operator-clang.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/unittest.command.json": "ccb58d3d39439fef243cba13c8421d82055fd94f9c6c4727f461954e63f199cf",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/tmpstgdjf6j.stdout": "e8c217fed1e839437ecd927d2e643ca3fd61b8b56c306b245d421b4b203311aa",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/constructor-gcc.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/freeze-before.json": "710c09fc98d031e7c47226aad1b174d147c5a66637cc40ea24be98c5e61e5fcb",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/replay-arg4-call-gcc.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/cli-sitting.stdout": "97d0e4baddf60e824b93d0073f05780d37ff0b775cd7c28717c64d0b4f436ea9",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/replay-float-cast-observe.command.json": "a36c5170d7d729166deae6b9e8070eebb255bb2bae7876a9741abb013136d9ec",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/bitfield.cpp": "b2f598f28ee6a288098e9c3607f481982315cb0a17f814e05af84e74e8c70a78",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/replay-float-cast-clang.stdout": "f107369ecbcfed56991571c9f6fc597fb7b317f98484075cd1355984f4771640",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/mypy.stdout": "f9b031e5c45aa702cd4fef028d465551cb20a2c4698e0913c7b00766b20ac4d8",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/operator-observe.command.json": "1fcc6af658e7cf9681cbafc2f35ac2af67010d82a3a7d8d50133c8177f1fe180",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/execution.json": "38472b93270b760bb6f34446074206210e401726ddaa2672e8ec8cd5d82c0e47",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/replay-float-cast.bin": "29bcffcdb6b8e3d4ac1ff9630dcac499eada53c42417a02e9a72bfed7f8a771c",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/unknown-attribute-clang.stdout": "f3ae1b5501d5433206cce82b0a1f54b42c882ec7ce9b4dd20b58cfd9f80d504a",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/tmppfnkkie2.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/replay-arg4-call-clang.stdout": "a15d28676da88a8eafa7badf5b3f90f6333570bcd3f6dd429c1a274246d7d492",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/tmp85dfwz27.bin": "ac71f879af018fd468d2813f3bd09905364e4bea0ac11770e5cbad19e9d349b6",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/union-observe.stdout": "7f77b9672612603c5e02fd38924c5cd66e2cf09f8d0c031b902318f186a8d9aa",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/overlap-attribute-clang.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/replay-arg4-call-observe.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/packed-signed-alias-clang.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/tmpq0x2pz5a.cpp": "0a40247ecd75b60d27c96975f3f0214014876355e8310bcc2899f53bbce5e647",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/tmphmjxqlfw.bin": "1fc39a2bb20fe1fa5ac7062a9650bfab2dbd4218194c80b1b0f40a9d7ce84725",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/overlap-attribute-gcc.command.json": "cb645ff3ff8e0b18703127959a8762b8124180a245dbdf83b5a21b7e9b96f180",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/tmp4fruh68h.gcc.stdout": "2455d2e351d9e64dd5e0d48c58d54589baf863f04d3e8dbbada574ae5f4d2f09",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/packed-signed-alias-gcc.command.json": "66ea29625928d7ce427f49945ec96bcdd0d72a53852b79e70f67e13123f89a1b",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/tmp85dfwz27.ast.json": "40cdae3c860ed01078be0ce526a9d2d892d8c74a21a56e1379d9dd441564859f",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/destructor-gcc.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/replay-mutable-observe.stdout": "6a8df598dddcb1d006fa589b246e7db5c83229036fcd529cab5ee894739f03e3",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/unknown-attribute-observe.command.json": "c9c7f5b3d3920110bf49ada378c96fdc8353dea1c1b1c5f3bd48a0c84fd037f7",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/cli-wrong-profile.command.json": "124949dd65c80709258cb212394a65eb9f7f729805fef623cc911e7b0bbfa5a6",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/reference-gcc.stderr": "f74a12d8797398249194cd2210cdbd774e05bf8c519dbb07960691e4031dc8e0",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/tmpsanh7202.gcc.stdout": "212d721dc423be613541927dc8e9a4576cd6d273d7df75961b2b099868ad1feb",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/anonymous-union-gcc.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/functional-float-gcc.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/tmp85dfwz27.clang.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/bitfield-observe.command.json": "27f40f85921859dabe1be86ef705c651a45232f48eafae6ba51862a97f634f0c",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/tmpxxm1irwo.cpp": "51e2a448e3608ea9e23c18f8a4666b66f6d26b8fcc87a1e90d0000006a86a260",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/unknown-attribute-gcc.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/replay-mutable.bin": "477f08d0c685f9ed22964401ed024360726f6c8def71fe48da05677040760d49",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/tmphmjxqlfw.gcc.stdout": "2455d2e351d9e64dd5e0d48c58d54589baf863f04d3e8dbbada574ae5f4d2f09",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/tmpq0x2pz5a.clang.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/bitfield-clang.command.json": "c402fdee8962eca4d18972f7086d1d0af3ff839fe38fdd96ae7e117cbc43f485",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/replay-mutable-clang.stdout": "6a9c31cb9bce8dd2e38217cab688c18c07a4ee4ffe1eabcf3a3987ff234e9a90",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/reference-observe.stdout": "36413d05769856ccd11d6684f06c05d28a61e3a40e07f02e4ace5cb997ca9d4c",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/black.command.json": "fa4607638788015f1c097e7fb511645eef5f68e7e7b4b9353a7131fa84d0452e",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/reference-clang.stdout": "9053344e784c1a0e340a5c2f6426285016d91ad12ac93e7d94176a1f638b2185",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/tmpfu9jyfr_.cpp": "4eb5039a11c4690eabb67af6a7eb9ef3717a49778c40ff5163f773ec8fae86f8",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/tmpfu9s32yp.stdout": "29e23cadd9a184d39173298dc1795c32c3bc9c8e08fc7193e4b94fcf731a225a",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/constructor.bin": "7e7fc0d14fe97a47f8160baf04dccfc56aabf590f698d9c517089a6f44420df9",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/constructor-clang.command.json": "c4e39a3f1f74f5014c8db7171a1db7d7bbdd7ca55d195319245d84eeeee520e7",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/cli-wrong-profile.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/replay-arg3-call-gcc.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/tmpq0x2pz5a.ast.json": "19ddab9bf485e4287c2b343be8854909a255363777614a180f6aec825538ae25",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/replay-mutable-clang.command.json": "1e97d55dc1a1ad61ebe2234acfb5765b20584a7b32e4d114b8deb6d90543dd3d",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/overlap-attribute-gcc.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/union-gcc.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/tmpco8v5abn.clang.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/base-observe.command.json": "5031c65f32fe8eb043a7294158ebe20f03f8ab5cbd2a05f73fbc901c78272ec8",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/reference-gcc.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/replay-arg4-call.bin": "f01039ed2caacf395f3f13175c673d0ef8179ed3f46c616d1e75c776e70bf7a7",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/packed-unsigned-alias-observe.stdout": "212d721dc423be613541927dc8e9a4576cd6d273d7df75961b2b099868ad1feb",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/constructor-gcc.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/wide-header-observe.stdout": "7656fbf0b9c76fb89f49a0b800266a70659a04d8024b91d0e994b2daaaf86be1",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/replay-arg4-call.cpp": "7092cf7d1952af95488f4cbea701acc70fb5947cc914c9f609b77d46c3bc5cfb",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/alias-union-observe.stdout": "7f77b9672612603c5e02fd38924c5cd66e2cf09f8d0c031b902318f186a8d9aa",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/ruff-settings.txt": "2c7e3079273c9487b2138c8ea5975399b25fe4f7a885da28a640b02e1b014b31",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/unittest.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/tmp4fruh68h.ast.json": "cc02591f9ef99f010b9e305c1ce1b2fb6dedd982f40da4cd2d9e362a7461ee7c",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/tmp_p7n2t8q.clang.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/tmpi2nik9gq.cpp": "998df380c58960257f1bb168ff8657fbc4154dc791165a3af09fe79da218ac70",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/reference.bin": "b10f81696fb8d3174739fcd7c77aa4e2e2ef0c78b3f0570d0ca30be9010ed9c1",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/replay-arg3-call-observe.stdout": "6a8df598dddcb1d006fa589b246e7db5c83229036fcd529cab5ee894739f03e3",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/overlap-attribute-observe.command.json": "61409adc925df6b66008c4bbed7734a08b3b841c5f0b24307d20ffdba2aa7d07",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/bitfield-gcc.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/overlap-attribute.bin": "c5eb87ce94db08087a872fdcb041c3a1a1aba8a6c51a6276d6d573b1e614a975",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/replay-mutable-gcc.command.json": "c34a409ccdbeef2503e7e0fabcb30be80f798237025588841c1555dc384bd61b",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/tmpo8wuh7ah.cpp": "52e01204b2e38380b5de1edd7f484a05dc5906b76ad98bb026ae132337ddf45c",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/tmpp0jcbs8w.cpp": "312efe79a3d03bc57c52753d0b18555544c11849ee342c82c319f6f656532eae",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/replay-arg4-call-gcc.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/destructor-clang.command.json": "4e993acf46adb2736601c0ff014d37b7167b0027c0b73c85884fa483c72a95ae",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/tmpsanh7202.ast.json": "598f8d2237367a2d52e7ac083eff3e72cfb6f2080e73b80d4cad2664f08adec4",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/constructor.cpp": "86ed81014ec0f4a9589c2dd35dea3694d122a57445aa4bc6d50de6da69d036c7",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/packed-unsigned-alias.cpp": "0f9c895bf08ceb8c946b1d765ddcbccd2b29200ba5333becd16d7bf8c7717e95",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/bitfield-clang.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/cli-emotion.stdout": "597dea97de3efe9f536596c9a30a1f438c8987ba86bb5f476660e56bedfe45f8",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/tmpfu9jyfr_.stdout": "c238933b58ea1443120517d822fb2dd27f48e348e6467fedb9901b74633fce2b",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/anonymous-union.cpp": "e9d35b4068a9b91af974001fe45153a3efef6b37621e1558a1c836e23db26627",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/base.cpp": "596980813097f318fb32fa3e660af4129a1e6d553de39bce433b0261b530ac5d",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/anonymous-union-gcc.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/destructor-clang.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/replay-arg4-call-clang.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/wide-header-observe.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/cli-sitting.command.json": "25f535277ae3d78a4085e01b50891ae0cb2393d69778c914c491560d70649a66",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/anonymous-union-observe.command.json": "4b1052be927a25189d5dc81acb58bdcd20f566a24c63dcb7339e28bcfc808336",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/tmpi2nik9gq.ast.json": "5ecfe5cc76a24f5313bae609e46c9221745f07a18f2351c285be07f5d5897d76",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/tmppfnkkie2.stdout": "7ddabcd7e572bf7418b46f7d5fb710952e21e8922956b9bc11c28b9d636c96a9",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/overlap-attribute-observe.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/tmppfnkkie2.cpp": "608fce4d4a4b184895649b675611341fb9362adbda0004b059a17a81384761e4",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/packed-signed-alias-observe.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/union.cpp": "62bb4f345c109285cb95bc1c84ee82a36289e329eeb95ad8f8d1594f00af5fb4",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/field-packed-observe.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/base.bin": "31226818dcd211fc93a952a31609c3eb1e4123d2230930894de2cc1fee74089b",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/union-gcc.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/tmppp8y4jxb.ast.json": "0fd83b6fa2ec2de573d515a55eda03cd82b4974576d6f9b97b658b76cff24073",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/ruff.stdout": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/reference-clang.command.json": "34982c4d6558ba35eabe1f72bdbaaa255705cf08ca31e923108b19b0298cc36a",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/tmpstgdjf6j.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/replay-mutable-clang.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/tmpxs2btz_b.stdout": "971f4c31bff736bcf1b897810086a93e0df1db795a9baf66fd16f3b79c58efe3",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/bitfield-gcc.command.json": "d47d31ce1f702ec775fbc40427c64c576fc5d86ef4ce7293bc4882ae4263a851",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/tmpi2nik9gq.clang.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/tmpyxdfhnr7.clang.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/mypy.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/base-gcc.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/replay-mutable-observe.command.json": "6611b9553a5b6cff407ff267ea5c43611176e17eca86bd16987460f3804679fa",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/tmpsanh7202.clang.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/overlap-attribute-observe.stdout": "7656fbf0b9c76fb89f49a0b800266a70659a04d8024b91d0e994b2daaaf86be1",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/replay-arg4-call-observe.command.json": "f5efbce5ca19d95e50408df682cafd39a6f4bbe3e7b2e41ea8f7c54448d7bb62",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/packed-signed-alias.bin": "9cb78220c18ecb647a7885aeeaeb501e7240db9961454210200c51e4f4e12b1f",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/tmphmjxqlfw.ast.json": "cd4e55cb58cbb92f940eb6511ffd614749e9c4a900015ea3fdcb2677d0e248e9",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/anonymous-union-observe.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/field-packed-gcc.command.json": "5424eb84a5afa1344e65fe615cd354e659480d461c2980dbb03736d7b270324e",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/packed-signed-alias-gcc.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/wide-header.cpp": "09e360c2209f88ff16ca480c0798246b46a8a00fa5b40f07277bf6089f3bd1bd",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/tmp85dfwz27.result.json": "05756e4e220a94512a64846d96de77293afc1593c79c2e948d6ff080243cf6e9",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/base-clang.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/wide-header-gcc.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/operator-observe.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/unknown-attribute-observe.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/bitfield-gcc.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/base-observe.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/packed-unsigned-alias-observe.command.json": "5d28adf2017be6ef13666eb96bd9833e6824b93ec5bfe0b607b8af900ab29b58",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/unknown-attribute-clang.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/functional-float-observe.stdout": "7656fbf0b9c76fb89f49a0b800266a70659a04d8024b91d0e994b2daaaf86be1",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/tmp4fruh68h.cpp": "ba0bd89592fbaff5485418e4e8eb8200933fffa2e8ffe676c7487969e85e2062",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/tmpdbywemdr.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/tmpco8v5abn.cpp": "4d9c54f73dd6c972cf2f9c8aa243ccedb60dd1aeb6f8616616cb446e6530b095",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/structure.json": "0eebaf3f4c9b6826728e46fbce4415fea9f16ff7423044018882afc0af202913",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/base-gcc.command.json": "9fa6e093934a94489f91fcc98731e5b69599611c2c1c01b5c711f174447c8be3",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/unknown-attribute.cpp": "126a2a7e5fc5d4bcc39f5340f983ba61935077b5840feb622353e91b1c7f90f7",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/tmpp0jcbs8w.clang.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/functional-float-gcc.command.json": "39a0bc989ab7f75b220bd5c41003cb1ff47d1e0b2649d45c651026cfa9965f64",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/finalize.py": "0feb2d6bdd60538b6f47ab231e67e0d9a512f6d64b68f42379e79bd059213cdb",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/tmpke1x1cfp.clang.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/tmpyxdfhnr7.ast.json": "4edec518dfb5c7cde7bd68bc2f297a854a389565a311015c6074b0d5c35698b8",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/cli-sitting.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/destructor-clang.stdout": "7bac4862c9bc85e6031e42fcc21f39519fe9499d8064f5c9e1dfc548d190985c",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/functional-float-gcc.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/tmphmjxqlfw.cpp": "500c0a1a7cca75301ce05c5a3990e5afe9f23a67d57bcdf1d3fbf6eee7a39d06",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/alias-union.cpp": "59087b4d09518379ec620976c02d1ae29987f522a156426024a62c5628d34ba8",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/anonymous-union.bin": "58b84ef7580212a48003868821964baa5497b24b6aa7e3a4696f897475e50149",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/functional-float.cpp": "5d9d019f300b50b6c73e8bae73115416ef9e4feef3d1fef8393dcf1c15ee262f",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/bitfield-observe.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/replay-arg3-call-gcc.command.json": "110c3d3ad9c51983909893eb73975a8b7a0ecf75031c9a9c5bcb1518b8dd7b9a",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/tmpke1x1cfp.ast.json": "337d9d043d5306c5051964faadfb01e35461b26efa7469f860996f7fa3cc63f4",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/anonymous-union-clang.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/operator-clang.command.json": "69c48e4fdb7f9ccb3fb14266333a7bc57db7ceacd542eb958c5da9ac48a82252",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/packed-unsigned-alias-gcc.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/reference-observe.command.json": "96a0a0995684895f829e46791c601998da7145321f95ed3807ae68d9b6194b68",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/tmpfu9jyfr_.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/tmpdbywemdr.cpp": "7b50ec581f8020d7d282731a5c3b718bbc95c59cf8debc6bee9c4e3485eb1e72",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/overlap-attribute-clang.stdout": "09dd4db1446d41f01f04f922535c2e3631c22784c68e54f1f44594f823379e85",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/overlap-attribute-clang.command.json": "b3e14b336c2d930d72454aa60479719a766bd0a765b05884813512567758bc5e",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/alias-union-clang.stdout": "d33bce5b0b5d485c329524ec5f1ec2ae39e44dc9dcf7a474fbe1bdc4d572771e",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/replay-arg3-call-observe.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/tmpstgdjf6j.cpp": "8b48fc6ea50102519091475db12978d8736da0c01bcb94acac8c9bfe1bd5bf7b",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/packed-signed-alias.cpp": "02862cc3cbc414a6dfdce98692a22f7537d4d48319c6919c851b1c7518c9b290",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/destructor-gcc.command.json": "7d25a9ac484b052d1fe090c47d999081ade806044ccec15e3f34fc717c477475",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/cli-name.command.json": "112d333d0846912ba319d0ad8a45e578bd5cbe07f8e352031ec5b2808f8d1238",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/alias-union-clang.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/anonymous-union-observe.stdout": "7656fbf0b9c76fb89f49a0b800266a70659a04d8024b91d0e994b2daaaf86be1",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/tmpo8wuh7ah.clang.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/mypy.command.json": "12428eafa4eb3efa6111a5ac675e6f56bfec7c593d8eabc4df7afc7152c1f6f4",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/unknown-attribute-observe.stdout": "7656fbf0b9c76fb89f49a0b800266a70659a04d8024b91d0e994b2daaaf86be1",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/replay-arg3-call-clang.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/cli-emotion.command.json": "56509bfc996bb31b712d688015a43c0a9290355b0256d47047bb4d43b5be4c47",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/tmpmnxu7mtp.cpp": "cf6ac874981bcbfba0aba7c2055946b3296c31527ffd0cd60791274a95b1a76f",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/black.stderr": "b9cf511501d306d2bd8355ccb165c8ddc0a6fdd62d7c72c4a7b1795cf8934c8c",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/cli-emotion.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/wide-header-gcc.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/replay-float-cast-gcc.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/unknown-attribute.bin": "0a471c256112b3e9c99ff58e81f363779c7e25d5f8d864903543d38cf87cc42d",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/tmpfu9s32yp.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/union-clang.stdout": "e5748f7309fe9f5e5f566aef34a099618cbccd885da5b650baa09c0ecafe0ded",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/tmpxs2btz_b.cpp": "7768d048413e6bc119fcccdde19fc933497d5b88b508ab618e13ecc5e3c109f8",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/reference-observe.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/constructor-clang.stdout": "5d31cff98d3fec2a424d90df236d17d33e93d1e66a53a5f0038db01d3f72485f",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/wide-header-gcc.command.json": "a6f5133eb678ea9753eaf068b99bba1512017049486ecbfbb1083ad961971ae7",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/union-observe.command.json": "ee0942c9e5666d07d23d3f23ec4192fb4a9ff63d1022a7a408bac6addc2e3715",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/operator-clang.stdout": "c54e4876d72e73ae45cab7bcc13412d8707fc628bd3a90f45d9d97da25506e57",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/replay-arg3-call-observe.command.json": "68bfbe009dffcd01071ea44657ef88382288e179a50c48922d9066bfd0b72491",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/ruff.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/wide-header-clang.stdout": "6552e5b938e0ba746e8c6a7ddd436bc3e9b6bd7488e4ce8ecb7e7d564fd3d31b",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/tmpp0jcbs8w.ast.json": "fced564549bb3b6b0fb0be5991f7ad7309008f56de6fc9562c0280a7b0aee009",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/wide-header.bin": "08f597f6e962d3353c5358d949ae22acacf803ce27f0d885981dc9f439ee76c0",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/base-clang.command.json": "ea04b78496e6ccef2af2eee5528a0dbba67777c524a141b1932f1d1fb5a1733b",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/destructor-observe.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/tmpco8v5abn.ast.json": "22af66010e0655dcd08f75a24ff3f405a2f08f65c9faf26ca0e5e1dd019d35dd",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/wide-header-clang.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/tmpsanh7202.gcc.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/destructor.bin": "baddcb6fed5a837ecc84fd2cf6a7a87c219e449efb1d3e11dcbe0fc29496e5eb",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/operator-observe.stdout": "7656fbf0b9c76fb89f49a0b800266a70659a04d8024b91d0e994b2daaaf86be1",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/tmpmnxu7mtp.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/operator.bin": "e9a60b1db1b23eaba230d8038ca00fc124b34b7ddec97c869fa8fe6e4ba54a73",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/unknown-attribute-gcc.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/replay-float-cast-observe.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/operator-gcc.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/tmpxxm1irwo.stdout": "d6de63d7cd44688c150688dd0205ac875a19947b919b3ee2d06369a7a4b67991",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/field-packed.bin": "6f2e9e0ba124ebb83c2ade63c0ca2e68482cb2da37ee89f4d2e475bc2408d78d",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/alias-union-observe.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/started": "34f968c9b80ec93262d7d1e25022d5d414cbed6ae9697c01bcfea2e5322a9d59",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/constructor-observe.stdout": "7656fbf0b9c76fb89f49a0b800266a70659a04d8024b91d0e994b2daaaf86be1",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/tmp_p7n2t8q.ast.json": "0968b676cf782aaa00ac5aced060b46193dd8d99a8b89d440ee9df4f53af38f6",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/functional-float-clang.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/functional-float-clang.stdout": "34d1bb65c1d252bc00c6833c24b0558319f75b25f1d157aa70f46d5e7749e86b",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/tmp85dfwz27.gcc.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/black.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/tmpke1x1cfp.cpp": "b7996f168c79fb14ba961414d9f3e03e09007eca918cbc4facc045417400b537",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/packed-unsigned-alias-clang.command.json": "2b4437fa68c693c6739b6e6805e7aa0dc5f7430d8bf46af634e5598acadc4be9",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/tmpsanh7202.bin": "a5f5f6b796e9f31efdc334c242d4fb6a718fba798ef6a5438fcf6f3adfcf490a",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/base-clang.stdout": "0ab20c0fac03d41c0d21f1927e7ba875c47917ac0122cf9b7c072d67160ebcc8",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/constructor-observe.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/packed-unsigned-alias-clang.stdout": "fddf491188f8092b455f91f78cefb393b7975475a4978b6e319d73fd3dd43b15",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/check.py": "883a12e80d9514024f30bfd9bdabbf87250eb858bd4bb8b00c8602c3a78dc8be",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/replay-mutable-observe.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/alias-union-observe.command.json": "486b3397bd44f8bb7bc23096e537768145dd72af7a95e54e48dd19431dc5c68a",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/tmppp8y4jxb.cpp": "397ec2593d7b6378bc8d03136b31e1555a167969f45eec3a73682ccc909b1208",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/replay-arg4-call-gcc.command.json": "f890746cfa24c287d343d30ee7200b33ae3ffc9460b8d9e160638ead4ef0d2c9",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/replay-float-cast.cpp": "0499b0857c53f8df95f76a4758013eb07bf10be5b886416ae965facf22a3a596",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/reference.cpp": "3fbdaff387c94f1d622d18ffe9345fd3d45f318b508d2f80158634714f1dc618",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/anonymous-union-clang.command.json": "c6983f8f0b465b8b38385879c918f68fd8298c0ef4287ff8b0f6c557e72535b5",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/bitfield.bin": "1cb7d7fdf9c972aebd47b45767a376706e96488a148d020349b646ce42c294b6",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/functional-float.bin": "179e190bc632cafdaf6ad1a8264f18f102b17cb4964e11b580e5a610b896ae52",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/functional-float-observe.command.json": "8e40a81d858a612f97c34804684a72923c661d6886177cff811730e3c01a1886",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/operator.cpp": "17f71adaff2be56d7da8c466da45e27eba1dd6f64fdf57abcf93eb257e1b9e07",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/replay-mutable.cpp": "182f06e49f0e07ed070d29bd6317c150a14b0a3e0f7428fad502caddae612352",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/alias-union.bin": "a36a24b2d93b54c4485c5575ae362760102b6b6a9681eb57b567435511975779",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/cli-name.stdout": "7df4dd8267fa98940a551f316950e738f37dd8892578873aeae7502f0fe6c505",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/packed-signed-alias-clang.command.json": "794dab186bbe24ac079edd1f455d4b57ea15f0c801edc8a8c278dab04b679b89",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/union.bin": "2db1331e5dc1b8134d9f34089fc8157611b16bf5ab962027652c5b88106ee66b",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/constructor-clang.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/replay-float-cast-observe.stdout": "6a8df598dddcb1d006fa589b246e7db5c83229036fcd529cab5ee894739f03e3",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/cli-wrong-profile.stdout": "82f0413cd3d48f4fa86301b4d82ed00c780c5491e9d0ed97168aae0b4c357781",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/replay-arg3-call-clang.command.json": "3ddfc7812207b898c8bc92b68b39ab380161cb9769e33485d46152ba1f58cf5e",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/tmpfu9s32yp.cpp": "a098659fe5cb5c065269f8d37a8d28939329811a936506211038704cae1ba406",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/tmpxxm1irwo.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/replay-arg3-call-gcc.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/tmp85dfwz27.cpp": "e57e4ec98f88b46af1d794ffa5fe53eaf166552f8e0bc9238d201db6299f47ab",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/replay-arg3-call.bin": "7cec336c41ca175e26772cfc99d2965ec8a6a71534a1d5d8597f2ee0a10d6acc",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/field-packed-gcc.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/field-packed-observe.stdout": "212d721dc423be613541927dc8e9a4576cd6d273d7df75961b2b099868ad1feb",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/wide-header-clang.command.json": "97241f8f0ea579ea8086154ae8f06ece095d590bc794069335ce95513a020b79",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/destructor-observe.command.json": "2cced6c02ba7a56405c390c84903614b152c5a0e9a905b2ced3c1ff7e6219954",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/constructor-gcc.command.json": "6d27b2727c91b073c756262eb1ed68e83ca0cbb8e5af6db56c5220b1902bab5b",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/union-observe.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/base-observe.stdout": "7656fbf0b9c76fb89f49a0b800266a70659a04d8024b91d0e994b2daaaf86be1",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/tmp_p7n2t8q.cpp": "dc2ed4fd603df4f66bcd67a90a4816c11653581bb5c68eb4e942245214647d3a",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/unittest.stderr": "8ca0eecf2917722c8c94067c9462a37fdca3801030c955938bfa7bc63287edfe",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/field-packed-observe.command.json": "2e2634f6c42bf556b5466b2908ca6329349f3e7a32afd97aa6597776e8a1b05f",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/reference-clang.stderr": "a92e6a067d1a1d5b310c2cea691419a70a8cf1f985273e8c366c9c926ac44f88",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/destructor.cpp": "d20fb93d9def83c34c7e53b1d1eb979a081be9e0d744670f6227d7a55efe0672",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/bitfield-clang.stdout": "966d0573b8a4877fafeac29df9254e3a5b56d03afedf9fa2aca4e4f308a848d0",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/replay-float-cast-clang.command.json": "2a9402b8ac24743d00764f8c7fcf2da18d51c5576ac853897ad4958d91a71f47",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/overlap-attribute-gcc.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/destructor-gcc.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/tmpsanh7202.cpp": "6d0b49742b3c705926cc4aca7debc619882ece77a7b8921a43290b5c73c651c8",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/tmpxs2btz_b.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/tmp4fruh68h.bin": "b3781367a5235cfa3ce3f4ab32f2585a33af8aa0f9dd4c0ec5d8dd5f17af5df3",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/replay-mutable-gcc.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/ruff.command.json": "2202a43ef6ed339fb0bcd981d659d7606c585f875127957a66aab0651eb176c7",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/tmp85dfwz27.gcc.stdout": "7f77b9672612603c5e02fd38924c5cd66e2cf09f8d0c031b902318f186a8d9aa",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/packed-unsigned-alias-gcc.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/replay-float-cast-gcc.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/replay-arg3-call-clang.stdout": "8efd5d345c7169f149f209c7d2cc0c781ebceca690ae5e48433b554373e704e0",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/alias-union-gcc.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/cli-name.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/constructor-observe.command.json": "0c22102b1677eb54d22aeb8c55609668cef6e6bea883acdc93810f8f88671851",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/packed-signed-alias-clang.stdout": "2421c34c68bc1ddd995839b9879aeb9f0df52f59be8da63cfcd4b6f94038c271",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/unknown-attribute-gcc.command.json": "f846809fa7635cd474e8593b74031051891bb9ea12569c12d635a39e99cd9c54",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/field-packed-clang.command.json": "b9fa5e70dd6df15a54774e312f8cf2951a7498c7a2a9679da9ef8003a1868882",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/reference-gcc.command.json": "a00105e3adf050e4cfb6ee1a8aa754069632dfb84ca080580704f1ca6c78a820",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/replay-mutable-gcc.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/packed-unsigned-alias.bin": "8c20ad246746d610f731f48b32b6c0c9a4d6a18444c44727aa02ebb5ac848ee2",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/tmpmnxu7mtp.stdout": "a4727f964d563f6f8feb7784a6fa32d88d29cef2a3f53e4c3be8ac2cf27d3248",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/bitfield-observe.stdout": "d202c9371b99f77332084fc160a026e04f97eeae110bc547e7b097ef0b0606b3",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/union-gcc.command.json": "c34278c81433dcbf4bf3540b88b7d6681c3a05b8365be4440f0e083599a93124",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/union-clang.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/wide-header-observe.command.json": "70dc553265664735dc6d8b33e0833914efd4d98e4fe62bb232532fd4984f1acd",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/base-gcc.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/field-packed-clang.stdout": "5e6bf7f6c441e12a9b6ee50c820385c205d96a53f14c358552a90b2d0cd3e356",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/replay-float-cast-gcc.command.json": "77d8dd07a2a278701ae38ef5b27b912b1d5089956403a4b7b171c5d00dd850a9",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/union-clang.command.json": "2ac865dcbfb42e7aad731217418d9a76c3d3c0caa9197b8a30184a60a8b6260a",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/replay-float-cast-clang.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/tmppp8y4jxb.clang.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/replay-arg3-call.cpp": "c9f9df488050b9464fbf1d74a32b93f1795dd68997eda8ef1643a7aa1e8eeb9a",
+    "/home/otto/.hermes/cache/scratch/native-quality-independent/replay-arg4-call-observe.stdout": "6a8df598dddcb1d006fa589b246e7db5c83229036fcd529cab5ee894739f03e3"
+  },
+  "issues_encountered": [
+    "Private structural-audit harness initially omitted the first grammar assignment and assumed every historical report had an artifacts key; corrected only the private harness, then reran successfully. No repository repairs."
+  ],
+  "elapsed_seconds_since_source_freeze": 249.00365233421326,
+  "partial": false,
+  "unverified_frontier": [
+    "No sender semantic/runtime admission, full-catalogue completeness or gameplay acceptance assessed.",
+    "Parent configured whole-project gates remain separate from independently verified owned Black/Ruff/strict-mypy commands."
+  ]
+}

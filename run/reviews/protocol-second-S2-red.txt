@@ -1,0 +1,22 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+_____ test_obsolete_generator_is_fail_closed_without_eval_or_legacy_routes _____
+
+    def test_obsolete_generator_is_fail_closed_without_eval_or_legacy_routes():
+        path = SPIKE / "scripts/gen_packetdb.py"
+        tree = ast.parse(path.read_text())
+        executable = [
+            node
+            for node in ast.walk(tree)
+            if isinstance(node, ast.Call)
+            and isinstance(node.func, ast.Name)
+            and node.func.id in {"eval", "exec"}
+        ]
+>       assert not executable, "alternate generator executes source text"
+E       AssertionError: alternate generator executes source text
+E       assert not [Call(func=Name(id='exec', ctx=Load()), args=[Call(func=Attribute(value=Name(...), attr='read_text', ctx=Load(...)), a...', ctx=Load())], keywords=[]), Call(func=Name(id='eval', ctx=Load()), args=[Name(id='expr', ctx=Load())], keywords=[])]
+
+tests/test_protocol_rereview_repairs.py:57: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_protocol_rereview_repairs.py::test_obsolete_generator_is_fail_closed_without_eval_or_legacy_routes
+1 failed in 0.02s

@@ -1,0 +1,1571 @@
+{
+  "version": 1,
+  "audit_domain": "npc-world-quests",
+  "recovery_status": "bounded cached-source synthesis completed; original interrupted batch not declared successful",
+  "scope_ref": "run/reviews/ro-gameplay-coverage-research-scope.json:1-49",
+  "mechanics_pin": "e985006171d2eb320ee512a653f4c83aea3d81b6",
+  "profile": "MAIN20180704/pre-renewal, no obfuscation",
+  "feature_count": 18,
+  "review_baseline": {
+    "reference": "run/reviews/playing-mvp-native-npc-approved.json:1-20",
+    "NPC_source_readiness": true,
+    "reported_prior_NPC_test_executions": 614,
+    "reported_prior_parent_gate": {
+      "tests": 4177,
+      "subtests": 65,
+      "coverage_percent": 95.37
+    },
+    "rerun_in_this_audit": false,
+    "native_NPC_dialogue_or_reward_accepted": false
+  },
+  "knowledge_boundary": "Operator public script inspection is not private agent received knowledge. Hidden NPC/quest populations, variables and catalog coordinates cannot become agent observations.",
+  "public_load_evidence": {
+    "root": "npc/pre-re/scripts_main.conf",
+    "runtime_authority": "public generator src/robots/adapters/rathena_runtime.py:145-159; no deployed private overrides inspected",
+    "active_public_path_count": 522,
+    "deployed_private_overrides": "unknown; not inspected",
+    "script_tree_cache": "/home/otto/.hermes/cache/scratch/ro-gameplay-audit/npc-world-quests/public-script-load-tree.json"
+  },
+  "cache_evidence": {
+    "retrieval_record_count": 25,
+    "source_ledger_count": 24,
+    "hash_checked_file_count": 24,
+    "hash_mismatches": [],
+    "known_retrieval_errors": [
+      {
+        "url": "https://irowiki.org/wiki/Quest_Window",
+        "error": "curl: (22) The requested URL returned error: 404\n"
+      }
+    ],
+    "no_new_retrieval": true
+  },
+  "native_effects": false,
+  "tests_builds_SQL_services_models_installs_git": false,
+  "feature_rows": [
+    {
+      "feature_id": "npc.target_safety",
+      "feature": "Received NPC identity and safe click",
+      "scope": "npc-world-quests recovery; source-only capability audit",
+      "ruleset_applicability": {
+        "MAIN20180704_pre_renewal": "public mechanics applicable; deployed availability unknown",
+        "renewal": "not evaluated except explicit comparison",
+        "unknown_config_flags": [
+          "deployed script overrides/removals",
+          "map enablement",
+          "rate and quest customizations"
+        ]
+      },
+      "agent_observations": "Received actor ID/type and current map/position; name response is not type authority.",
+      "legal_actions": "TalkToNpc only for received objecttype 6/12; approach then click.",
+      "prerequisites": "Known alive, healthy epoch/transport, confirmed arrival, observed stationary NPC within 3 cells and no incompatible motion.",
+      "native_positive_receipt": {
+        "accepted": false,
+        "required_evidence": "Matching server NPC UI for selected actor, without any PC/MOB attack."
+      },
+      "negative_tests": {
+        "classification": "required acceptance cases, not executed in this audit",
+        "cases": [
+          "Native safe-click behavior unaccepted.",
+          "Reject PC/MOB, name-only identity, stale epoch/map, dead/unknown life, absent/out-of-range actor."
+        ]
+      },
+      "current_support_tier": "offline_pipeline",
+      "support_limit": "Native safe-click behavior unaccepted.",
+      "implementation_refs": [
+        "src/robots/adapters/native_npc_dialogue.py:21-35",
+        "src/robots/app/playing_runtime.py:263-280",
+        "src/robots/app/playing_runtime.py:337-351"
+      ],
+      "source_refs": [
+        {
+          "source_id": 10,
+          "public_path": "src/map/clif.cpp",
+          "cache_path": "/home/otto/.hermes/cache/scratch/ro-gameplay-audit/npc-world-quests/fetched-9.txt",
+          "lines": [
+            12200,
+            12243
+          ],
+          "url": "https://raw.githubusercontent.com/rathena/rathena/e985006171d2eb320ee512a653f4c83aea3d81b6/src/map/clif.cpp",
+          "evidence_role": "pinned_mechanics"
+        },
+        {
+          "source_id": 8,
+          "public_path": "src/map/npc.cpp",
+          "cache_path": "/home/otto/.hermes/cache/scratch/ro-gameplay-audit/npc-world-quests/fetched-7.txt",
+          "lines": [
+            2212,
+            2235
+          ],
+          "url": "https://raw.githubusercontent.com/rathena/rathena/e985006171d2eb320ee512a653f4c83aea3d81b6/src/map/npc.cpp",
+          "evidence_role": "pinned_mechanics"
+        },
+        {
+          "source_id": 16,
+          "cache_path": "/home/otto/.hermes/cache/scratch/ro-gameplay-audit/npc-world-quests/fetched-15-plain.txt",
+          "url": "https://irowiki.org/classic/Novice",
+          "section_locator": "Novice / Training Grounds",
+          "evidence_role": "cached_player_guide_not_server_config"
+        }
+      ],
+      "dependency_priority": "P0",
+      "cross_references": []
+    },
+    {
+      "feature_id": "npc.dialogue_cursor",
+      "feature": "Talk / Next / Select / Close received UI",
+      "scope": "npc-world-quests recovery; source-only capability audit",
+      "ruleset_applicability": {
+        "MAIN20180704_pre_renewal": "public mechanics applicable; deployed availability unknown",
+        "renewal": "not evaluated except explicit comparison",
+        "unknown_config_flags": [
+          "deployed script overrides/removals",
+          "map enablement",
+          "rate and quest customizations"
+        ]
+      },
+      "agent_observations": "Bounded received text pages, stage, options and sequence.",
+      "legal_actions": "Next on next; Select by received index; Close on close or unsupported_input.",
+      "prerequisites": "Matching NPC ID; fresh stage/cursor; alive standing and motion-ready.",
+      "native_positive_receipt": {
+        "accepted": false,
+        "required_evidence": "Actual native conversation matching each requested stage; close means UI/request, not reward."
+      },
+      "negative_tests": {
+        "classification": "required acceptance cases, not executed in this audit",
+        "cases": [
+          "No native dialogue acceptance; close_requested/instructions_received cannot prove quest completion.",
+          "Preserve blank menu indices, allow cancel 255; reject stale/repeated stages, malformed UTF-8/frames, menu overflow."
+        ]
+      },
+      "current_support_tier": "offline_pipeline",
+      "support_limit": "No native dialogue acceptance; close_requested/instructions_received cannot prove quest completion.",
+      "implementation_refs": [
+        "src/robots/adapters/native_npc_dialogue.py:78-177",
+        "src/robots/app/playing_runtime.py:316-328"
+      ],
+      "source_refs": [
+        {
+          "source_id": 10,
+          "public_path": "src/map/clif.cpp",
+          "cache_path": "/home/otto/.hermes/cache/scratch/ro-gameplay-audit/npc-world-quests/fetched-9.txt",
+          "lines": [
+            2470,
+            2535
+          ],
+          "url": "https://raw.githubusercontent.com/rathena/rathena/e985006171d2eb320ee512a653f4c83aea3d81b6/src/map/clif.cpp",
+          "evidence_role": "pinned_mechanics"
+        },
+        {
+          "source_id": 10,
+          "public_path": "src/map/clif.cpp",
+          "cache_path": "/home/otto/.hermes/cache/scratch/ro-gameplay-audit/npc-world-quests/fetched-9.txt",
+          "lines": [
+            2630,
+            2692
+          ],
+          "url": "https://raw.githubusercontent.com/rathena/rathena/e985006171d2eb320ee512a653f4c83aea3d81b6/src/map/clif.cpp",
+          "evidence_role": "pinned_mechanics"
+        },
+        {
+          "source_id": 10,
+          "public_path": "src/map/clif.cpp",
+          "cache_path": "/home/otto/.hermes/cache/scratch/ro-gameplay-audit/npc-world-quests/fetched-9.txt",
+          "lines": [
+            13319,
+            13406
+          ],
+          "url": "https://raw.githubusercontent.com/rathena/rathena/e985006171d2eb320ee512a653f4c83aea3d81b6/src/map/clif.cpp",
+          "evidence_role": "pinned_mechanics"
+        },
+        {
+          "source_id": 16,
+          "cache_path": "/home/otto/.hermes/cache/scratch/ro-gameplay-audit/npc-world-quests/fetched-15-plain.txt",
+          "url": "https://irowiki.org/classic/Novice",
+          "section_locator": "Novice / Training Grounds",
+          "evidence_role": "cached_player_guide_not_server_config"
+        }
+      ],
+      "dependency_priority": "P0",
+      "cross_references": []
+    },
+    {
+      "feature_id": "npc.received_memory",
+      "feature": "Private received dialogue memory and guidance",
+      "scope": "npc-world-quests recovery; source-only capability audit",
+      "ruleset_applicability": {
+        "MAIN20180704_pre_renewal": "public mechanics applicable; deployed availability unknown",
+        "renewal": "not evaluated except explicit comparison",
+        "unknown_config_flags": [
+          "deployed script overrides/removals",
+          "map enablement",
+          "rate and quest customizations"
+        ]
+      },
+      "agent_observations": "Only received NPC pages with epoch/map/NPC/opened sequence provenance.",
+      "legal_actions": "Remember received pages; select only received options; no operator-script knowledge injection.",
+      "prerequisites": "Private per-agent memory; actual page receipt.",
+      "native_positive_receipt": {
+        "accepted": false,
+        "required_evidence": "Native pages journaled only to that agent and used without synthetic quest/reward facts."
+      },
+      "negative_tests": {
+        "classification": "required acceptance cases, not executed in this audit",
+        "cases": [
+          "Memory/guidance is not a quest state machine or earned progression.",
+          "Never import public hidden flags/populations/coordinates as observations; isolate agents and reject prompt-like game text as host authority."
+        ]
+      },
+      "current_support_tier": "offline_pipeline",
+      "support_limit": "Memory/guidance is not a quest state machine or earned progression.",
+      "implementation_refs": [
+        "src/robots/app/brain.py:211-265",
+        "src/robots/app/brain.py:344-354",
+        "src/robots/domain/npc.py:1-15"
+      ],
+      "source_refs": [
+        {
+          "source_id": 9,
+          "public_path": "src/map/script.cpp",
+          "cache_path": "/home/otto/.hermes/cache/scratch/ro-gameplay-audit/npc-world-quests/fetched-8.txt",
+          "lines": [
+            4994,
+            5031
+          ],
+          "url": "https://raw.githubusercontent.com/rathena/rathena/e985006171d2eb320ee512a653f4c83aea3d81b6/src/map/script.cpp",
+          "evidence_role": "pinned_mechanics"
+        },
+        {
+          "source_id": 21,
+          "cache_path": "/home/otto/.hermes/cache/scratch/ro-gameplay-audit/npc-world-quests/quest-guide.html",
+          "url": "https://irowiki.org/wiki/Quest",
+          "section_locator": "Quest overview",
+          "evidence_role": "cached_player_guide_not_server_config"
+        }
+      ],
+      "dependency_priority": "P0",
+      "cross_references": []
+    },
+    {
+      "feature_id": "npc.numeric_text_input",
+      "feature": "Numeric and text script input",
+      "scope": "npc-world-quests recovery; source-only capability audit",
+      "ruleset_applicability": {
+        "MAIN20180704_pre_renewal": "public mechanics applicable; deployed availability unknown",
+        "renewal": "not evaluated except explicit comparison",
+        "unknown_config_flags": [
+          "deployed script overrides/removals",
+          "map enablement",
+          "rate and quest customizations"
+        ]
+      },
+      "agent_observations": "0x142 / 0x1D4 are unsupported_input stages, not accepted answers.",
+      "legal_actions": "Fail closed; Close is available for unsupported_input; no numeric/string submit action.",
+      "prerequisites": "Actual bounded typed input implementation and packet/profile validation.",
+      "native_positive_receipt": {
+        "accepted": false,
+        "required_evidence": "Server accepts exact submitted value and advances correct script without truncation/replay."
+      },
+      "negative_tests": {
+        "classification": "required acceptance cases, not executed in this audit",
+        "cases": [
+          "Numeric/text submission is unimplemented.",
+          "Negative/out-of-range numbers, oversized/malformed text, mismatched NPC, stale input, repeated send."
+        ]
+      },
+      "current_support_tier": "missing",
+      "support_limit": "Numeric/text submission is unimplemented.",
+      "implementation_refs": [
+        "src/robots/adapters/native_npc_dialogue.py:11-17",
+        "src/robots/adapters/native_npc_dialogue.py:168-177",
+        "src/robots/domain/actions.py:59-78"
+      ],
+      "source_refs": [
+        {
+          "source_id": 9,
+          "public_path": "src/map/script.cpp",
+          "cache_path": "/home/otto/.hermes/cache/scratch/ro-gameplay-audit/npc-world-quests/fetched-8.txt",
+          "lines": [
+            6137,
+            6180
+          ],
+          "url": "https://raw.githubusercontent.com/rathena/rathena/e985006171d2eb320ee512a653f4c83aea3d81b6/src/map/script.cpp",
+          "evidence_role": "pinned_mechanics"
+        },
+        {
+          "source_id": 10,
+          "public_path": "src/map/clif.cpp",
+          "cache_path": "/home/otto/.hermes/cache/scratch/ro-gameplay-audit/npc-world-quests/fetched-9.txt",
+          "lines": [
+            13360,
+            13406
+          ],
+          "url": "https://raw.githubusercontent.com/rathena/rathena/e985006171d2eb320ee512a653f4c83aea3d81b6/src/map/clif.cpp",
+          "evidence_role": "pinned_mechanics"
+        },
+        {
+          "source_id": 21,
+          "cache_path": "/home/otto/.hermes/cache/scratch/ro-gameplay-audit/npc-world-quests/quest-guide.html",
+          "url": "https://irowiki.org/wiki/Quest",
+          "section_locator": "Quest overview",
+          "evidence_role": "cached_player_guide_not_server_config"
+        }
+      ],
+      "dependency_priority": "P1",
+      "cross_references": []
+    },
+    {
+      "feature_id": "npc.shop_selection",
+      "feature": "Buy/sell chooser and shop transactions",
+      "scope": "npc-world-quests recovery; source-only capability audit",
+      "ruleset_applicability": {
+        "MAIN20180704_pre_renewal": "public mechanics applicable; deployed availability unknown",
+        "renewal": "not evaluated except explicit comparison",
+        "unknown_config_flags": [
+          "deployed script overrides/removals",
+          "map enablement",
+          "rate and quest customizations"
+        ]
+      },
+      "agent_observations": "0xC4 classified unsupported_shop; no shop offer authority from dialogue.",
+      "legal_actions": "Do not translate shop selector into ordinary NPC Select; no supported shop submission.",
+      "prerequisites": "Received offer list, prices, item slots, funds/capacity and explicit economy transaction path.",
+      "native_positive_receipt": {
+        "accepted": false,
+        "required_evidence": "Server purchase/sell result plus matching inventory/currency updates."
+      },
+      "negative_tests": {
+        "classification": "required acceptance cases, not executed in this audit",
+        "cases": [
+          "Shop selector/transactions are unsupported; unsupported_shop has no Close encoder here.",
+          "Do not equate menu index with shop mode; reject stale quotes, insufficient funds/capacity, wrong slot/quantity, partial failure."
+        ]
+      },
+      "current_support_tier": "missing",
+      "support_limit": "Shop selector/transactions are unsupported; unsupported_shop has no Close encoder here.",
+      "implementation_refs": [
+        "src/robots/adapters/native_npc_dialogue.py:11-17",
+        "src/robots/adapters/native_npc_dialogue.py:168-177",
+        "src/robots/app/playing_runtime.py:296-328"
+      ],
+      "source_refs": [
+        {
+          "source_id": 10,
+          "public_path": "src/map/clif.cpp",
+          "cache_path": "/home/otto/.hermes/cache/scratch/ro-gameplay-audit/npc-world-quests/fetched-9.txt",
+          "lines": [
+            2224,
+            2235
+          ],
+          "url": "https://raw.githubusercontent.com/rathena/rathena/e985006171d2eb320ee512a653f4c83aea3d81b6/src/map/clif.cpp",
+          "evidence_role": "pinned_mechanics"
+        },
+        {
+          "source_id": 10,
+          "public_path": "src/map/clif.cpp",
+          "cache_path": "/home/otto/.hermes/cache/scratch/ro-gameplay-audit/npc-world-quests/fetched-9.txt",
+          "lines": [
+            12260,
+            12360
+          ],
+          "url": "https://raw.githubusercontent.com/rathena/rathena/e985006171d2eb320ee512a653f4c83aea3d81b6/src/map/clif.cpp",
+          "evidence_role": "pinned_mechanics"
+        },
+        {
+          "source_id": 19,
+          "cache_path": "/home/otto/.hermes/cache/scratch/ro-gameplay-audit/npc-world-quests/fetched-18-plain.txt",
+          "url": "https://irowiki.org/wiki/Kafra",
+          "section_locator": "Services",
+          "evidence_role": "cached_player_guide_not_server_config"
+        }
+      ],
+      "dependency_priority": "P1",
+      "cross_references": [
+        "economy-inventory: transaction/offer/inventory authority"
+      ]
+    },
+    {
+      "feature_id": "world.public_load_frontier",
+      "feature": "Public include-tree versus deployed content",
+      "scope": "npc-world-quests recovery; source-only capability audit",
+      "ruleset_applicability": {
+        "MAIN20180704_pre_renewal": "public mechanics applicable; deployed availability unknown",
+        "renewal": "not evaluated except explicit comparison",
+        "unknown_config_flags": [
+          "deployed script overrides/removals",
+          "map enablement",
+          "rate and quest customizations"
+        ]
+      },
+      "agent_observations": "No agent observation of active NPCs/hidden quests from operator public source.",
+      "legal_actions": "Use pinned public include-tree only as operator applicability evidence.",
+      "prerequisites": "Public generator imports pre-re root; evaluate common plus pre-re includes, not file existence.",
+      "native_positive_receipt": {
+        "accepted": false,
+        "required_evidence": "Received world/NPC availability on authorized deployment; private override status remains unknown."
+      },
+      "negative_tests": {
+        "classification": "required acceptance cases, not executed in this audit",
+        "cases": [
+          "Public default load does not prove deployed availability.",
+          "Do not substitute pre-re-only tree for common+pre-re; reject Eden inference from renewal file existence."
+        ]
+      },
+      "current_support_tier": "offline_model",
+      "support_limit": "Public default load does not prove deployed availability.",
+      "implementation_refs": [
+        "src/robots/adapters/rathena_runtime.py:155-159",
+        "/home/otto/.hermes/cache/scratch/ro-gameplay-audit/npc-world-quests/public-script-load-tree.json"
+      ],
+      "source_refs": [
+        {
+          "source_id": 1,
+          "public_path": "npc/pre-re/scripts_main.conf",
+          "cache_path": "/home/otto/.hermes/cache/scratch/ro-gameplay-audit/npc-world-quests/fetched-0.txt",
+          "lines": [
+            28,
+            41
+          ],
+          "url": "https://raw.githubusercontent.com/rathena/rathena/e985006171d2eb320ee512a653f4c83aea3d81b6/npc/pre-re/scripts_main.conf",
+          "evidence_role": "pinned_mechanics"
+        },
+        {
+          "source_id": 4,
+          "public_path": "npc/scripts_athena.conf",
+          "cache_path": "/home/otto/.hermes/cache/scratch/ro-gameplay-audit/npc-world-quests/fetched-3.txt",
+          "lines": [
+            121,
+            129
+          ],
+          "url": "https://raw.githubusercontent.com/rathena/rathena/e985006171d2eb320ee512a653f4c83aea3d81b6/npc/scripts_athena.conf",
+          "evidence_role": "pinned_mechanics"
+        },
+        {
+          "source_id": 2,
+          "public_path": "npc/pre-re/scripts_athena.conf",
+          "cache_path": "/home/otto/.hermes/cache/scratch/ro-gameplay-audit/npc-world-quests/fetched-1.txt",
+          "lines": [
+            40,
+            40
+          ],
+          "url": "https://raw.githubusercontent.com/rathena/rathena/e985006171d2eb320ee512a653f4c83aea3d81b6/npc/pre-re/scripts_athena.conf",
+          "evidence_role": "pinned_mechanics"
+        },
+        {
+          "source_id": 2,
+          "public_path": "npc/pre-re/scripts_athena.conf",
+          "cache_path": "/home/otto/.hermes/cache/scratch/ro-gameplay-audit/npc-world-quests/fetched-1.txt",
+          "lines": [
+            97,
+            97
+          ],
+          "url": "https://raw.githubusercontent.com/rathena/rathena/e985006171d2eb320ee512a653f4c83aea3d81b6/npc/pre-re/scripts_athena.conf",
+          "evidence_role": "pinned_mechanics"
+        },
+        {
+          "source_id": 21,
+          "cache_path": "/home/otto/.hermes/cache/scratch/ro-gameplay-audit/npc-world-quests/quest-guide.html",
+          "url": "https://irowiki.org/wiki/Quest",
+          "section_locator": "Quest overview",
+          "evidence_role": "cached_player_guide_not_server_config"
+        }
+      ],
+      "dependency_priority": "P0",
+      "cross_references": []
+    },
+    {
+      "feature_id": "world.portal_interface",
+      "feature": "Touch warps and map transitions",
+      "scope": "npc-world-quests recovery; source-only capability audit",
+      "ruleset_applicability": {
+        "MAIN20180704_pre_renewal": "public mechanics applicable; deployed availability unknown",
+        "renewal": "not evaluated except explicit comparison",
+        "unknown_config_flags": [
+          "deployed script overrides/removals",
+          "map enablement",
+          "rate and quest customizations"
+        ]
+      },
+      "agent_observations": "Current received map/position and public geometry; public warp catalog is not live arrival.",
+      "legal_actions": "Navigate to an observed/legal portal; server performs touch warp. UseWarp domain action is not a native generic warp executor.",
+      "prerequisites": "Reachable portal in enabled map; valid movement and received map-change handshake.",
+      "native_positive_receipt": {
+        "accepted": false,
+        "required_evidence": "Server map change plus position/load completion; old actors/UI cleared and new map movement acknowledged."
+      },
+      "negative_tests": {
+        "classification": "required acceptance cases, not executed in this audit",
+        "cases": [
+          "UseWarp exists in domain but native dispatch has no corresponding handler.",
+          "Reject stale portal/map, unsupported destination, blocked tile, no map-change response, old-map actor reuse."
+        ]
+      },
+      "current_support_tier": "offline_model",
+      "support_limit": "UseWarp exists in domain but native dispatch has no corresponding handler.",
+      "implementation_refs": [
+        "src/robots/domain/actions.py:49-54",
+        "src/robots/app/playing_runtime.py:296-314",
+        "src/robots/adapters/native_gameplay.py:375-402"
+      ],
+      "source_refs": [
+        {
+          "source_id": 23,
+          "public_path": "npc/scripts_warps.conf",
+          "cache_path": "/home/otto/.hermes/cache/scratch/ro-gameplay-audit/npc-world-quests/public-scripts_warps.conf",
+          "lines": [
+            27,
+            27
+          ],
+          "url": "https://raw.githubusercontent.com/rathena/rathena/e985006171d2eb320ee512a653f4c83aea3d81b6/npc/scripts_warps.conf",
+          "evidence_role": "pinned_mechanics"
+        },
+        {
+          "source_id": 14,
+          "public_path": "npc/warps/cities/prontera.txt",
+          "cache_path": "/home/otto/.hermes/cache/scratch/ro-gameplay-audit/npc-world-quests/fetched-13.txt",
+          "lines": [
+            20,
+            30
+          ],
+          "url": "https://raw.githubusercontent.com/rathena/rathena/e985006171d2eb320ee512a653f4c83aea3d81b6/npc/warps/cities/prontera.txt",
+          "evidence_role": "pinned_mechanics"
+        },
+        {
+          "source_id": 1,
+          "public_path": "npc/pre-re/scripts_main.conf",
+          "cache_path": "/home/otto/.hermes/cache/scratch/ro-gameplay-audit/npc-world-quests/fetched-0.txt",
+          "lines": [
+            34,
+            41
+          ],
+          "url": "https://raw.githubusercontent.com/rathena/rathena/e985006171d2eb320ee512a653f4c83aea3d81b6/npc/pre-re/scripts_main.conf",
+          "evidence_role": "pinned_mechanics"
+        },
+        {
+          "source_id": 19,
+          "cache_path": "/home/otto/.hermes/cache/scratch/ro-gameplay-audit/npc-world-quests/fetched-18-plain.txt",
+          "url": "https://irowiki.org/wiki/Kafra",
+          "section_locator": "Services",
+          "evidence_role": "cached_player_guide_not_server_config"
+        }
+      ],
+      "dependency_priority": "P0",
+      "cross_references": []
+    },
+    {
+      "feature_id": "world.safe_travel",
+      "feature": "Safe routing, arrivals and replan frontier",
+      "scope": "npc-world-quests recovery; source-only capability audit",
+      "ruleset_applicability": {
+        "MAIN20180704_pre_renewal": "public mechanics applicable; deployed availability unknown",
+        "renewal": "not evaluated except explicit comparison",
+        "unknown_config_flags": [
+          "deployed script overrides/removals",
+          "map enablement",
+          "rate and quest customizations"
+        ]
+      },
+      "agent_observations": "Received position/life/transport and same-map actors; public map geometry is not hidden population knowledge.",
+      "legal_actions": "MoveTo with native feedback; do not route using hidden script populations or invented live NPC positions.",
+      "prerequisites": "Confirmed arrival, epoch continuity, known alive, reachable geometry; hazard/resource and access policy needed.",
+      "native_positive_receipt": {
+        "accepted": false,
+        "required_evidence": "Every leg has native arrival; portals have server-confirmed destination; failures trigger bounded stop/replan."
+      },
+      "negative_tests": {
+        "classification": "required acceptance cases, not executed in this audit",
+        "cases": [
+          "Movement plumbing is not demonstrated end-to-end safe multi-map travel.",
+          "Death, gap/epoch reset, blocked cells, threats, unknown warp gate, insufficient fee, stale map/arrival."
+        ]
+      },
+      "current_support_tier": "offline_pipeline",
+      "support_limit": "Movement plumbing is not demonstrated end-to-end safe multi-map travel.",
+      "implementation_refs": [
+        "src/robots/app/playing_runtime.py:263-293",
+        "src/robots/app/playing_runtime.py:431-480",
+        "src/robots/adapters/native_gameplay.py:207-212"
+      ],
+      "source_refs": [
+        {
+          "source_id": 14,
+          "public_path": "npc/warps/cities/prontera.txt",
+          "cache_path": "/home/otto/.hermes/cache/scratch/ro-gameplay-audit/npc-world-quests/fetched-13.txt",
+          "lines": [
+            20,
+            30
+          ],
+          "url": "https://raw.githubusercontent.com/rathena/rathena/e985006171d2eb320ee512a653f4c83aea3d81b6/npc/warps/cities/prontera.txt",
+          "evidence_role": "pinned_mechanics"
+        },
+        {
+          "source_id": 8,
+          "public_path": "src/map/npc.cpp",
+          "cache_path": "/home/otto/.hermes/cache/scratch/ro-gameplay-audit/npc-world-quests/fetched-7.txt",
+          "lines": [
+            2212,
+            2235
+          ],
+          "url": "https://raw.githubusercontent.com/rathena/rathena/e985006171d2eb320ee512a653f4c83aea3d81b6/src/map/npc.cpp",
+          "evidence_role": "pinned_mechanics"
+        },
+        {
+          "source_id": 19,
+          "cache_path": "/home/otto/.hermes/cache/scratch/ro-gameplay-audit/npc-world-quests/fetched-18-plain.txt",
+          "url": "https://irowiki.org/wiki/Kafra",
+          "section_locator": "Services",
+          "evidence_role": "cached_player_guide_not_server_config"
+        }
+      ],
+      "dependency_priority": "P0",
+      "cross_references": []
+    },
+    {
+      "feature_id": "world.kafra_services",
+      "feature": "Kafra service menus and availability",
+      "scope": "npc-world-quests recovery; source-only capability audit",
+      "ruleset_applicability": {
+        "MAIN20180704_pre_renewal": "public mechanics applicable; deployed availability unknown",
+        "renewal": "not evaluated except explicit comparison",
+        "unknown_config_flags": [
+          "deployed script overrides/removals",
+          "map enablement",
+          "rate and quest customizations"
+        ]
+      },
+      "agent_observations": "Only actually received service labels and indices; menus vary by NPC.",
+      "legal_actions": "Talk/Next/Select primitives may request service, but not prove service effects.",
+      "prerequisites": "Observed eligible Kafra and received menu; public common plus pre-re scripts loaded by default.",
+      "native_positive_receipt": {
+        "accepted": false,
+        "required_evidence": "Each specific service result independently verified."
+      },
+      "negative_tests": {
+        "classification": "required acceptance cases, not executed in this audit",
+        "cases": [
+          "Service menus are not accepted storage/cart/save/teleport behaviors.",
+          "Reject assumed fixed menu indices or absent service; insufficient Basic Skill, fee or class."
+        ]
+      },
+      "current_support_tier": "offline_pipeline",
+      "support_limit": "Service menus are not accepted storage/cart/save/teleport behaviors.",
+      "implementation_refs": [
+        "src/robots/adapters/native_npc_dialogue.py:125-177",
+        "src/robots/app/playing_runtime.py:316-328"
+      ],
+      "source_refs": [
+        {
+          "source_id": 6,
+          "public_path": "npc/kafras/functions_kafras.txt",
+          "cache_path": "/home/otto/.hermes/cache/scratch/ro-gameplay-audit/npc-world-quests/fetched-5.txt",
+          "lines": [
+            118,
+            159
+          ],
+          "url": "https://raw.githubusercontent.com/rathena/rathena/e985006171d2eb320ee512a653f4c83aea3d81b6/npc/kafras/functions_kafras.txt",
+          "evidence_role": "pinned_mechanics"
+        },
+        {
+          "source_id": 4,
+          "public_path": "npc/scripts_athena.conf",
+          "cache_path": "/home/otto/.hermes/cache/scratch/ro-gameplay-audit/npc-world-quests/fetched-3.txt",
+          "lines": [
+            126,
+            129
+          ],
+          "url": "https://raw.githubusercontent.com/rathena/rathena/e985006171d2eb320ee512a653f4c83aea3d81b6/npc/scripts_athena.conf",
+          "evidence_role": "pinned_mechanics"
+        },
+        {
+          "source_id": 2,
+          "public_path": "npc/pre-re/scripts_athena.conf",
+          "cache_path": "/home/otto/.hermes/cache/scratch/ro-gameplay-audit/npc-world-quests/fetched-1.txt",
+          "lines": [
+            40,
+            40
+          ],
+          "url": "https://raw.githubusercontent.com/rathena/rathena/e985006171d2eb320ee512a653f4c83aea3d81b6/npc/pre-re/scripts_athena.conf",
+          "evidence_role": "pinned_mechanics"
+        },
+        {
+          "source_id": 19,
+          "cache_path": "/home/otto/.hermes/cache/scratch/ro-gameplay-audit/npc-world-quests/fetched-18-plain.txt",
+          "url": "https://irowiki.org/wiki/Kafra",
+          "section_locator": "Services",
+          "evidence_role": "cached_player_guide_not_server_config"
+        }
+      ],
+      "dependency_priority": "P1",
+      "cross_references": [
+        "economy-inventory: storage/cart/fees; combat-progression: skill prerequisites"
+      ]
+    },
+    {
+      "feature_id": "world.kafra_teleport",
+      "feature": "Paid/ticket NPC teleport",
+      "scope": "npc-world-quests recovery; source-only capability audit",
+      "ruleset_applicability": {
+        "MAIN20180704_pre_renewal": "public mechanics applicable; deployed availability unknown",
+        "renewal": "not evaluated except explicit comparison",
+        "unknown_config_flags": [
+          "deployed script overrides/removals",
+          "map enablement",
+          "rate and quest customizations"
+        ]
+      },
+      "agent_observations": "Received menu destination; current received funds/ticket if supported; no predicted relocation fact.",
+      "legal_actions": "Select only a received legal teleport destination.",
+      "prerequisites": "Actual service offered; ticket 7060 or sufficient configured fee; map/access enabled.",
+      "native_positive_receipt": {
+        "accepted": false,
+        "required_evidence": "Inventory or currency debit and server-confirmed map/position transition."
+      },
+      "negative_tests": {
+        "classification": "required acceptance cases, not executed in this audit",
+        "cases": [
+          "NPC teleport has no accepted effect-correlation/arrival workflow.",
+          "No funds/ticket, cancel, wrong service, destination unavailable, debit without arrival, duplicate debit."
+        ]
+      },
+      "current_support_tier": "missing",
+      "support_limit": "NPC teleport has no accepted effect-correlation/arrival workflow.",
+      "implementation_refs": [
+        "src/robots/adapters/native_npc_dialogue.py:144-177",
+        "src/robots/app/playing_runtime.py:296-328"
+      ],
+      "source_refs": [
+        {
+          "source_id": 6,
+          "public_path": "npc/kafras/functions_kafras.txt",
+          "cache_path": "/home/otto/.hermes/cache/scratch/ro-gameplay-audit/npc-world-quests/fetched-5.txt",
+          "lines": [
+            287,
+            325
+          ],
+          "url": "https://raw.githubusercontent.com/rathena/rathena/e985006171d2eb320ee512a653f4c83aea3d81b6/npc/kafras/functions_kafras.txt",
+          "evidence_role": "pinned_mechanics"
+        },
+        {
+          "source_id": 19,
+          "cache_path": "/home/otto/.hermes/cache/scratch/ro-gameplay-audit/npc-world-quests/fetched-18-plain.txt",
+          "url": "https://irowiki.org/wiki/Kafra",
+          "section_locator": "Services",
+          "evidence_role": "cached_player_guide_not_server_config"
+        }
+      ],
+      "dependency_priority": "P1",
+      "cross_references": [
+        "economy-inventory: ticket/currency debit"
+      ]
+    },
+    {
+      "feature_id": "world.save_death_return",
+      "feature": "Savepoint and death return",
+      "scope": "npc-world-quests recovery; source-only capability audit",
+      "ruleset_applicability": {
+        "MAIN20180704_pre_renewal": "public mechanics applicable; deployed availability unknown",
+        "renewal": "not evaluated except explicit comparison",
+        "unknown_config_flags": [
+          "deployed script overrides/removals",
+          "map enablement",
+          "rate and quest customizations"
+        ]
+      },
+      "agent_observations": "Received save dialogue and life/map/position are distinct; no direct savepoint truth from words.",
+      "legal_actions": "Request Save via received menu; death-return/restart needs separate implementation.",
+      "prerequisites": "Legal Kafra save; independently received death and supported return action.",
+      "native_positive_receipt": {
+        "accepted": false,
+        "required_evidence": "Subsequent authorized death-return produces expected map/position; no save claim from close alone."
+      },
+      "negative_tests": {
+        "classification": "required acceptance cases, not executed in this audit",
+        "cases": [
+          "Savepoint and server-confirmed death-return lifecycle unaccepted.",
+          "No-save NPC, old claimed save, return while alive, death during dialogue, restart timeout/wrong destination."
+        ]
+      },
+      "current_support_tier": "missing",
+      "support_limit": "Savepoint and server-confirmed death-return lifecycle unaccepted.",
+      "implementation_refs": [
+        "src/robots/app/playing_runtime.py:296-328",
+        "src/robots/adapters/native_gameplay.py:396-402"
+      ],
+      "source_refs": [
+        {
+          "source_id": 22,
+          "public_path": "npc/kafras/kafras.txt",
+          "cache_path": "/home/otto/.hermes/cache/scratch/ro-gameplay-audit/npc-world-quests/public-kafras.txt",
+          "lines": [
+            38,
+            46
+          ],
+          "url": "https://raw.githubusercontent.com/rathena/rathena/e985006171d2eb320ee512a653f4c83aea3d81b6/npc/kafras/kafras.txt",
+          "evidence_role": "pinned_mechanics"
+        },
+        {
+          "source_id": 9,
+          "public_path": "src/map/script.cpp",
+          "cache_path": "/home/otto/.hermes/cache/scratch/ro-gameplay-audit/npc-world-quests/fetched-8.txt",
+          "lines": [
+            10814,
+            10840
+          ],
+          "url": "https://raw.githubusercontent.com/rathena/rathena/e985006171d2eb320ee512a653f4c83aea3d81b6/src/map/script.cpp",
+          "evidence_role": "pinned_mechanics"
+        },
+        {
+          "source_id": 10,
+          "public_path": "src/map/clif.cpp",
+          "cache_path": "/home/otto/.hermes/cache/scratch/ro-gameplay-audit/npc-world-quests/fetched-9.txt",
+          "lines": [
+            11839,
+            11855
+          ],
+          "url": "https://raw.githubusercontent.com/rathena/rathena/e985006171d2eb320ee512a653f4c83aea3d81b6/src/map/clif.cpp",
+          "evidence_role": "pinned_mechanics"
+        },
+        {
+          "source_id": 19,
+          "cache_path": "/home/otto/.hermes/cache/scratch/ro-gameplay-audit/npc-world-quests/fetched-18-plain.txt",
+          "url": "https://irowiki.org/wiki/Kafra",
+          "section_locator": "Services",
+          "evidence_role": "cached_player_guide_not_server_config"
+        }
+      ],
+      "dependency_priority": "P1",
+      "cross_references": []
+    },
+    {
+      "feature_id": "world.dungeon_access",
+      "feature": "Quest-gated dungeon access",
+      "scope": "npc-world-quests recovery; source-only capability audit",
+      "ruleset_applicability": {
+        "MAIN20180704_pre_renewal": "public mechanics applicable; deployed availability unknown",
+        "renewal": "not evaluated except explicit comparison",
+        "unknown_config_flags": [
+          "deployed script overrides/removals",
+          "map enablement",
+          "rate and quest customizations"
+        ]
+      },
+      "agent_observations": "Received gate dialogue/current map; hidden aru_monas/prt_curse state is not observation.",
+      "legal_actions": "Earn prerequisite steps through permitted actions, then ask/touch received access interface.",
+      "prerequisites": "Pinned script gates and legal earned chain; actual deployment availability unknown.",
+      "native_positive_receipt": {
+        "accepted": false,
+        "required_evidence": "Authorized entry map/position plus correlated quest progress; denied gates never inferred successful."
+      },
+      "negative_tests": {
+        "classification": "required acceptance cases, not executed in this audit",
+        "cases": [
+          "No quest/access-state authority; Nameless hidden flags cannot be fabricated.",
+          "Missing prior quest, hidden trigger, unsupported input, denied warp, unsafe/repeated entry."
+        ]
+      },
+      "current_support_tier": "missing",
+      "support_limit": "No quest/access-state authority; Nameless hidden flags cannot be fabricated.",
+      "implementation_refs": [
+        "src/robots/adapters/native_npc_dialogue.py:11-17",
+        "src/robots/app/playing_runtime.py:296-328"
+      ],
+      "source_refs": [
+        {
+          "source_id": 13,
+          "public_path": "npc/quests/quests_nameless.txt",
+          "cache_path": "/home/otto/.hermes/cache/scratch/ro-gameplay-audit/npc-world-quests/fetched-12.txt",
+          "lines": [
+            65,
+            91
+          ],
+          "url": "https://raw.githubusercontent.com/rathena/rathena/e985006171d2eb320ee512a653f4c83aea3d81b6/npc/quests/quests_nameless.txt",
+          "evidence_role": "pinned_mechanics"
+        },
+        {
+          "source_id": 13,
+          "public_path": "npc/quests/quests_nameless.txt",
+          "cache_path": "/home/otto/.hermes/cache/scratch/ro-gameplay-audit/npc-world-quests/fetched-12.txt",
+          "lines": [
+            292,
+            301
+          ],
+          "url": "https://raw.githubusercontent.com/rathena/rathena/e985006171d2eb320ee512a653f4c83aea3d81b6/npc/quests/quests_nameless.txt",
+          "evidence_role": "pinned_mechanics"
+        },
+        {
+          "source_id": 24,
+          "public_path": "npc/pre-re/quests/quests_nameless.txt",
+          "cache_path": "/home/otto/.hermes/cache/scratch/ro-gameplay-audit/npc-world-quests/public-quests_nameless.txt",
+          "lines": [
+            11,
+            18
+          ],
+          "url": "https://raw.githubusercontent.com/rathena/rathena/e985006171d2eb320ee512a653f4c83aea3d81b6/npc/pre-re/quests/quests_nameless.txt",
+          "evidence_role": "pinned_mechanics"
+        },
+        {
+          "source_id": 21,
+          "cache_path": "/home/otto/.hermes/cache/scratch/ro-gameplay-audit/npc-world-quests/quest-guide.html",
+          "url": "https://irowiki.org/wiki/Quest",
+          "section_locator": "Quest overview",
+          "evidence_role": "cached_player_guide_not_server_config"
+        }
+      ],
+      "dependency_priority": "P1",
+      "cross_references": []
+    },
+    {
+      "feature_id": "world.instances",
+      "feature": "Instance generation, entry, cooldown and party",
+      "scope": "npc-world-quests recovery; source-only capability audit",
+      "ruleset_applicability": {
+        "MAIN20180704_pre_renewal": "public mechanics applicable; deployed availability unknown",
+        "renewal": "not evaluated except explicit comparison",
+        "unknown_config_flags": [
+          "deployed script overrides/removals",
+          "map enablement",
+          "rate and quest customizations"
+        ]
+      },
+      "agent_observations": "Received party and NPC dialogue are not instance ID/membership/cooldown authority.",
+      "legal_actions": "Use received reservation/entry menus only after legal party/level/cooldown checks.",
+      "prerequisites": "Endless Tower public common include; Captain level 50 gate, weight check; party >=2, leader generation, server timers.",
+      "native_positive_receipt": {
+        "accepted": false,
+        "required_evidence": "Server instance creation/identity, party membership, entry map and cooldown update; explicit errors handled."
+      },
+      "negative_tests": {
+        "classification": "required acceptance cases, not executed in this audit",
+        "cases": [
+          "No accepted instance lifecycle or cooldown reconciliation.",
+          "Nonleader, missing party/members, underlevel, reservation failure, no instance, expired window, party changed."
+        ]
+      },
+      "current_support_tier": "missing",
+      "support_limit": "No accepted instance lifecycle or cooldown reconciliation.",
+      "implementation_refs": [
+        "src/robots/adapters/native_npc_dialogue.py:125-177",
+        "src/robots/app/playing_runtime.py:296-328"
+      ],
+      "source_refs": [
+        {
+          "source_id": 4,
+          "public_path": "npc/scripts_athena.conf",
+          "cache_path": "/home/otto/.hermes/cache/scratch/ro-gameplay-audit/npc-world-quests/fetched-3.txt",
+          "lines": [
+            121,
+            121
+          ],
+          "url": "https://raw.githubusercontent.com/rathena/rathena/e985006171d2eb320ee512a653f4c83aea3d81b6/npc/scripts_athena.conf",
+          "evidence_role": "pinned_mechanics"
+        },
+        {
+          "source_id": 12,
+          "public_path": "npc/instances/EndlessTower.txt",
+          "cache_path": "/home/otto/.hermes/cache/scratch/ro-gameplay-audit/npc-world-quests/fetched-11.txt",
+          "lines": [
+            41,
+            50
+          ],
+          "url": "https://raw.githubusercontent.com/rathena/rathena/e985006171d2eb320ee512a653f4c83aea3d81b6/npc/instances/EndlessTower.txt",
+          "evidence_role": "pinned_mechanics"
+        },
+        {
+          "source_id": 12,
+          "public_path": "npc/instances/EndlessTower.txt",
+          "cache_path": "/home/otto/.hermes/cache/scratch/ro-gameplay-audit/npc-world-quests/fetched-11.txt",
+          "lines": [
+            205,
+            232
+          ],
+          "url": "https://raw.githubusercontent.com/rathena/rathena/e985006171d2eb320ee512a653f4c83aea3d81b6/npc/instances/EndlessTower.txt",
+          "evidence_role": "pinned_mechanics"
+        },
+        {
+          "source_id": 12,
+          "public_path": "npc/instances/EndlessTower.txt",
+          "cache_path": "/home/otto/.hermes/cache/scratch/ro-gameplay-audit/npc-world-quests/fetched-11.txt",
+          "lines": [
+            295,
+            314
+          ],
+          "url": "https://raw.githubusercontent.com/rathena/rathena/e985006171d2eb320ee512a653f4c83aea3d81b6/npc/instances/EndlessTower.txt",
+          "evidence_role": "pinned_mechanics"
+        },
+        {
+          "source_id": 21,
+          "cache_path": "/home/otto/.hermes/cache/scratch/ro-gameplay-audit/npc-world-quests/quest-guide.html",
+          "url": "https://irowiki.org/wiki/Quest",
+          "section_locator": "Quest overview",
+          "evidence_role": "cached_player_guide_not_server_config"
+        }
+      ],
+      "dependency_priority": "P1",
+      "cross_references": [
+        "social-guild-woe: received party membership"
+      ]
+    },
+    {
+      "feature_id": "quest.journal",
+      "feature": "Server quest journal list/add/delete/objectives/status",
+      "scope": "npc-world-quests recovery; source-only capability audit",
+      "ruleset_applicability": {
+        "MAIN20180704_pre_renewal": "public mechanics applicable; deployed availability unknown",
+        "renewal": "not evaluated except explicit comparison",
+        "unknown_config_flags": [
+          "deployed script overrides/removals",
+          "map enablement",
+          "rate and quest customizations"
+        ]
+      },
+      "agent_observations": "No reviewed NPC UI field carries authoritative quest log/objective/status.",
+      "legal_actions": "Implement profile-specific received quest reducer before planning from a journal.",
+      "prerequisites": "Pinned list/mission/add/delete/objective/status packets, quest catalog and epoch/reset rules.",
+      "native_positive_receipt": {
+        "accepted": false,
+        "required_evidence": "Actual received journal synchronized over add/progress/complete/delete/reconnect."
+      },
+      "negative_tests": {
+        "classification": "required acceptance cases, not executed in this audit",
+        "cases": [
+          "Talk support has no authoritative quest journal reducer.",
+          "Unknown quest ID, stale/duplicate/out-of-order delta, reset/gap, active flag confused with completion."
+        ]
+      },
+      "current_support_tier": "missing",
+      "support_limit": "Talk support has no authoritative quest journal reducer.",
+      "implementation_refs": [
+        "src/robots/domain/npc.py:1-15",
+        "src/robots/adapters/native_npc_dialogue.py:11-17"
+      ],
+      "source_refs": [
+        {
+          "source_id": 11,
+          "public_path": "src/map/quest.cpp",
+          "cache_path": "/home/otto/.hermes/cache/scratch/ro-gameplay-audit/npc-world-quests/fetched-10.txt",
+          "lines": [
+            536,
+            543
+          ],
+          "url": "https://raw.githubusercontent.com/rathena/rathena/e985006171d2eb320ee512a653f4c83aea3d81b6/src/map/quest.cpp",
+          "evidence_role": "pinned_mechanics"
+        },
+        {
+          "source_id": 11,
+          "public_path": "src/map/quest.cpp",
+          "cache_path": "/home/otto/.hermes/cache/scratch/ro-gameplay-audit/npc-world-quests/fetched-10.txt",
+          "lines": [
+            620,
+            621
+          ],
+          "url": "https://raw.githubusercontent.com/rathena/rathena/e985006171d2eb320ee512a653f4c83aea3d81b6/src/map/quest.cpp",
+          "evidence_role": "pinned_mechanics"
+        },
+        {
+          "source_id": 10,
+          "public_path": "src/map/clif.cpp",
+          "cache_path": "/home/otto/.hermes/cache/scratch/ro-gameplay-audit/npc-world-quests/fetched-9.txt",
+          "lines": [
+            17885,
+            18190
+          ],
+          "url": "https://raw.githubusercontent.com/rathena/rathena/e985006171d2eb320ee512a653f4c83aea3d81b6/src/map/clif.cpp",
+          "evidence_role": "pinned_mechanics"
+        },
+        {
+          "source_id": 21,
+          "cache_path": "/home/otto/.hermes/cache/scratch/ro-gameplay-audit/npc-world-quests/quest-guide.html",
+          "url": "https://irowiki.org/wiki/Quest",
+          "section_locator": "Quest overview",
+          "evidence_role": "cached_player_guide_not_server_config"
+        }
+      ],
+      "dependency_priority": "P0",
+      "cross_references": []
+    },
+    {
+      "feature_id": "quest.scripted_progression",
+      "feature": "Script variables, prerequisites and quest objectives",
+      "scope": "npc-world-quests recovery; source-only capability audit",
+      "ruleset_applicability": {
+        "MAIN20180704_pre_renewal": "public mechanics applicable; deployed availability unknown",
+        "renewal": "not evaluated except explicit comparison",
+        "unknown_config_flags": [
+          "deployed script overrides/removals",
+          "map enablement",
+          "rate and quest customizations"
+        ]
+      },
+      "agent_observations": "Received instructions are advice; hidden script flags and kill populations are not received facts.",
+      "legal_actions": "Track legally earned observable transitions; distinguish legacy script variables from journal quests.",
+      "prerequisites": "Level/job/items/time and preceding quest steps; some Nameless setquest calls are commented.",
+      "native_positive_receipt": {
+        "accepted": false,
+        "required_evidence": "Server-observed objective/status/access effects; explicitly unknown when no authoritative signal exists."
+      },
+      "negative_tests": {
+        "classification": "required acceptance cases, not executed in this audit",
+        "cases": [
+          "No earned-prerequisite/objective state machine; Goal.QUEST or quest memory kind is not implementation.",
+          "Repeat turn-in, hidden state guessed, guide-only prerequisite, kill credit inferred from attempts, nonjournal flags treated as quest log."
+        ]
+      },
+      "current_support_tier": "missing",
+      "support_limit": "No earned-prerequisite/objective state machine; Goal.QUEST or quest memory kind is not implementation.",
+      "implementation_refs": [
+        "src/robots/app/brain.py:211-228",
+        "src/robots/domain/decisions.py:30-30",
+        "src/robots/society/memory.py:29-29"
+      ],
+      "source_refs": [
+        {
+          "source_id": 13,
+          "public_path": "npc/quests/quests_nameless.txt",
+          "cache_path": "/home/otto/.hermes/cache/scratch/ro-gameplay-audit/npc-world-quests/fetched-12.txt",
+          "lines": [
+            68,
+            82
+          ],
+          "url": "https://raw.githubusercontent.com/rathena/rathena/e985006171d2eb320ee512a653f4c83aea3d81b6/npc/quests/quests_nameless.txt",
+          "evidence_role": "pinned_mechanics"
+        },
+        {
+          "source_id": 11,
+          "public_path": "src/map/quest.cpp",
+          "cache_path": "/home/otto/.hermes/cache/scratch/ro-gameplay-audit/npc-world-quests/fetched-10.txt",
+          "lines": [
+            757,
+            805
+          ],
+          "url": "https://raw.githubusercontent.com/rathena/rathena/e985006171d2eb320ee512a653f4c83aea3d81b6/src/map/quest.cpp",
+          "evidence_role": "pinned_mechanics"
+        },
+        {
+          "source_id": 9,
+          "public_path": "src/map/script.cpp",
+          "cache_path": "/home/otto/.hermes/cache/scratch/ro-gameplay-audit/npc-world-quests/fetched-8.txt",
+          "lines": [
+            21057,
+            21120
+          ],
+          "url": "https://raw.githubusercontent.com/rathena/rathena/e985006171d2eb320ee512a653f4c83aea3d81b6/src/map/script.cpp",
+          "evidence_role": "pinned_mechanics"
+        },
+        {
+          "source_id": 21,
+          "cache_path": "/home/otto/.hermes/cache/scratch/ro-gameplay-audit/npc-world-quests/quest-guide.html",
+          "url": "https://irowiki.org/wiki/Quest",
+          "section_locator": "Quest overview",
+          "evidence_role": "cached_player_guide_not_server_config"
+        }
+      ],
+      "dependency_priority": "P0",
+      "cross_references": [
+        "combat-progression: objective kills/job/level budgets"
+      ]
+    },
+    {
+      "feature_id": "quest.rewards",
+      "feature": "Server-confirmed item/currency/experience rewards",
+      "scope": "npc-world-quests recovery; source-only capability audit",
+      "ruleset_applicability": {
+        "MAIN20180704_pre_renewal": "public mechanics applicable; deployed availability unknown",
+        "renewal": "not evaluated except explicit comparison",
+        "unknown_config_flags": [
+          "deployed script overrides/removals",
+          "map enablement",
+          "rate and quest customizations"
+        ]
+      },
+      "agent_observations": "Dialogue text and close_requested are not items, EXP or completion receipts.",
+      "legal_actions": "Legal earned turn-in, then correlate authoritative inventory/currency/progression and quest updates.",
+      "prerequisites": "Proven objective completion; item capacity/weight and repeatability; exact transaction/result stream.",
+      "native_positive_receipt": {
+        "accepted": false,
+        "required_evidence": "Server reward result plus before/after inventory/currency/EXP and quest state, scoped to epoch and request."
+      },
+      "negative_tests": {
+        "classification": "required acceptance cases, not executed in this audit",
+        "cases": [
+          "No native NPC reward acceptance; neither text nor close proves anything granted.",
+          "No-capacity, missing items/objectives, duplicate claim, rejected/partial grant, unrelated concurrent inventory/EXP updates."
+        ]
+      },
+      "current_support_tier": "missing",
+      "support_limit": "No native NPC reward acceptance; neither text nor close proves anything granted.",
+      "implementation_refs": [
+        "src/robots/adapters/native_npc_dialogue.py:160-164",
+        "src/robots/domain/npc.py:1-15"
+      ],
+      "source_refs": [
+        {
+          "source_id": 9,
+          "public_path": "src/map/script.cpp",
+          "cache_path": "/home/otto/.hermes/cache/scratch/ro-gameplay-audit/npc-world-quests/fetched-8.txt",
+          "lines": [
+            7670,
+            7700
+          ],
+          "url": "https://raw.githubusercontent.com/rathena/rathena/e985006171d2eb320ee512a653f4c83aea3d81b6/src/map/script.cpp",
+          "evidence_role": "pinned_mechanics"
+        },
+        {
+          "source_id": 9,
+          "public_path": "src/map/script.cpp",
+          "cache_path": "/home/otto/.hermes/cache/scratch/ro-gameplay-audit/npc-world-quests/fetched-8.txt",
+          "lines": [
+            11142,
+            11180
+          ],
+          "url": "https://raw.githubusercontent.com/rathena/rathena/e985006171d2eb320ee512a653f4c83aea3d81b6/src/map/script.cpp",
+          "evidence_role": "pinned_mechanics"
+        },
+        {
+          "source_id": 9,
+          "public_path": "src/map/script.cpp",
+          "cache_path": "/home/otto/.hermes/cache/scratch/ro-gameplay-audit/npc-world-quests/fetched-8.txt",
+          "lines": [
+            21099,
+            21120
+          ],
+          "url": "https://raw.githubusercontent.com/rathena/rathena/e985006171d2eb320ee512a653f4c83aea3d81b6/src/map/script.cpp",
+          "evidence_role": "pinned_mechanics"
+        },
+        {
+          "source_id": 17,
+          "cache_path": "/home/otto/.hermes/cache/scratch/ro-gameplay-audit/npc-world-quests/fetched-16-plain.txt",
+          "url": "https://irowiki.org/classic/Training_Grounds_Novice_Test",
+          "section_locator": "Overview; Rewards",
+          "evidence_role": "cached_player_guide_not_server_config"
+        }
+      ],
+      "dependency_priority": "P0",
+      "cross_references": [
+        "economy-inventory: reward inventory/currency transaction correlation",
+        "combat-progression: EXP/job/stats budget receipts"
+      ]
+    },
+    {
+      "feature_id": "quest.starter_frontier",
+      "feature": "Smallest cached starter NPC reward candidate",
+      "scope": "npc-world-quests recovery; source-only capability audit",
+      "ruleset_applicability": {
+        "MAIN20180704_pre_renewal": "public mechanics applicable; deployed availability unknown",
+        "renewal": "not evaluated except explicit comparison",
+        "unknown_config_flags": [
+          "deployed script overrides/removals",
+          "map enablement",
+          "rate and quest customizations"
+        ]
+      },
+      "agent_observations": "Shion must be received in the actual starting map; public coordinates not live knowledge.",
+      "legal_actions": "Conditional candidate: first received Where should I go? branch, close; re-talk through received next pages.",
+      "prerequisites": "Public pre-re novice include proven; legal initial nov_1st_cos and nov_get_item flags NOT proven from received account history.",
+      "native_positive_receipt": {
+        "accepted": false,
+        "required_evidence": "Matching native Shion dialogue, earned first branch and authoritative +9 base EXP; not an item reward."
+      },
+      "negative_tests": {
+        "classification": "required acceptance cases, not executed in this audit",
+        "cases": [
+          "No accepted starter route: script load proven but actual initial/earned prerequisites and native reward are unproven.",
+          "Already-completed/returning account, wrong starting map/NPC, repeated EXP claim, different hidden branch, forged initial flags."
+        ]
+      },
+      "current_support_tier": "unknown",
+      "support_limit": "No accepted starter route: script load proven but actual initial/earned prerequisites and native reward are unproven.",
+      "implementation_refs": [
+        "src/robots/adapters/native_npc_dialogue.py:78-177",
+        "src/robots/app/brain.py:211-228"
+      ],
+      "source_refs": [
+        {
+          "source_id": 1,
+          "public_path": "npc/pre-re/scripts_main.conf",
+          "cache_path": "/home/otto/.hermes/cache/scratch/ro-gameplay-audit/npc-world-quests/fetched-0.txt",
+          "lines": [
+            37,
+            38
+          ],
+          "url": "https://raw.githubusercontent.com/rathena/rathena/e985006171d2eb320ee512a653f4c83aea3d81b6/npc/pre-re/scripts_main.conf",
+          "evidence_role": "pinned_mechanics"
+        },
+        {
+          "source_id": 3,
+          "public_path": "npc/pre-re/scripts_jobs.conf",
+          "cache_path": "/home/otto/.hermes/cache/scratch/ro-gameplay-audit/npc-world-quests/fetched-2.txt",
+          "lines": [
+            18,
+            18
+          ],
+          "url": "https://raw.githubusercontent.com/rathena/rathena/e985006171d2eb320ee512a653f4c83aea3d81b6/npc/pre-re/scripts_jobs.conf",
+          "evidence_role": "pinned_mechanics"
+        },
+        {
+          "source_id": 5,
+          "public_path": "npc/pre-re/jobs/novice/novice.txt",
+          "cache_path": "/home/otto/.hermes/cache/scratch/ro-gameplay-audit/npc-world-quests/fetched-4.txt",
+          "lines": [
+            202,
+            280
+          ],
+          "url": "https://raw.githubusercontent.com/rathena/rathena/e985006171d2eb320ee512a653f4c83aea3d81b6/npc/pre-re/jobs/novice/novice.txt",
+          "evidence_role": "pinned_mechanics"
+        },
+        {
+          "source_id": 5,
+          "public_path": "npc/pre-re/jobs/novice/novice.txt",
+          "cache_path": "/home/otto/.hermes/cache/scratch/ro-gameplay-audit/npc-world-quests/fetched-4.txt",
+          "lines": [
+            286,
+            329
+          ],
+          "url": "https://raw.githubusercontent.com/rathena/rathena/e985006171d2eb320ee512a653f4c83aea3d81b6/npc/pre-re/jobs/novice/novice.txt",
+          "evidence_role": "pinned_mechanics"
+        },
+        {
+          "source_id": 16,
+          "cache_path": "/home/otto/.hermes/cache/scratch/ro-gameplay-audit/npc-world-quests/fetched-15-plain.txt",
+          "url": "https://irowiki.org/classic/Novice",
+          "section_locator": "Novice / Training Grounds",
+          "evidence_role": "cached_player_guide_not_server_config"
+        },
+        {
+          "source_id": 17,
+          "cache_path": "/home/otto/.hermes/cache/scratch/ro-gameplay-audit/npc-world-quests/fetched-16-plain.txt",
+          "url": "https://irowiki.org/classic/Training_Grounds_Novice_Test",
+          "section_locator": "Overview; Rewards",
+          "evidence_role": "cached_player_guide_not_server_config"
+        }
+      ],
+      "dependency_priority": "P1",
+      "cross_references": [
+        "combat-progression: authoritative EXP receipt; economy-inventory: later item reward route not proved"
+      ]
+    },
+    {
+      "feature_id": "quest.renewal_eden_frontier",
+      "feature": "Renewal Eden guides versus active pre-re scope",
+      "scope": "npc-world-quests recovery; source-only capability audit",
+      "ruleset_applicability": {
+        "MAIN20180704_pre_renewal": "not applicable to cached public default include-tree",
+        "renewal": "candidate only; separate enabled-tree and gameplay verification required",
+        "unknown_config_flags": [
+          "custom deployment may explicitly enable scripts; not inspected"
+        ]
+      },
+      "agent_observations": "Cached guide is not received board/NPC availability.",
+      "legal_actions": "No Eden route asserted for active default pre-re tree.",
+      "prerequisites": "Renewal include at npc/re/scripts_athena.conf; not in cached active_public_paths. Deployed custom override unknown.",
+      "native_positive_receipt": {
+        "accepted": false,
+        "required_evidence": "For another ruleset: actual enabled boards, received objectives and server rewards."
+      },
+      "negative_tests": {
+        "classification": "required acceptance cases, not executed in this audit",
+        "cases": [
+          "Cached Renewal leveling guide cannot establish enabled starter quests here.",
+          "Do not import renewal level/reward tables or guide coordinates into pre-re observations; verify custom deployment separately."
+        ]
+      },
+      "current_support_tier": "not_applicable",
+      "support_limit": "Cached Renewal leveling guide cannot establish enabled starter quests here.",
+      "implementation_refs": [
+        "/home/otto/.hermes/cache/scratch/ro-gameplay-audit/npc-world-quests/public-script-load-tree.json"
+      ],
+      "source_refs": [
+        {
+          "source_id": 15,
+          "public_path": "npc/re/scripts_athena.conf",
+          "cache_path": "/home/otto/.hermes/cache/scratch/ro-gameplay-audit/npc-world-quests/fetched-14.txt",
+          "lines": [
+            200,
+            215
+          ],
+          "url": "https://raw.githubusercontent.com/rathena/rathena/e985006171d2eb320ee512a653f4c83aea3d81b6/npc/re/scripts_athena.conf",
+          "evidence_role": "pinned_mechanics"
+        },
+        {
+          "source_id": 1,
+          "public_path": "npc/pre-re/scripts_main.conf",
+          "cache_path": "/home/otto/.hermes/cache/scratch/ro-gameplay-audit/npc-world-quests/fetched-0.txt",
+          "lines": [
+            28,
+            41
+          ],
+          "url": "https://raw.githubusercontent.com/rathena/rathena/e985006171d2eb320ee512a653f4c83aea3d81b6/npc/pre-re/scripts_main.conf",
+          "evidence_role": "pinned_mechanics"
+        },
+        {
+          "source_id": 20,
+          "cache_path": "/home/otto/.hermes/cache/scratch/ro-gameplay-audit/npc-world-quests/fetched-20-plain.txt",
+          "url": "https://irowiki.org/wiki/Eden_Group_Leveling_Quests",
+          "section_locator": "Introduction; Level 1-11",
+          "evidence_role": "cached_player_guide_not_server_config"
+        }
+      ],
+      "dependency_priority": "P2",
+      "cross_references": []
+    }
+  ],
+  "source_ledger": [
+    {
+      "id": 1,
+      "url": "https://raw.githubusercontent.com/rathena/rathena/e985006171d2eb320ee512a653f4c83aea3d81b6/npc/pre-re/scripts_main.conf",
+      "title": "scripts_main.conf",
+      "accessed": "2026-10-08"
+    },
+    {
+      "id": 2,
+      "url": "https://raw.githubusercontent.com/rathena/rathena/e985006171d2eb320ee512a653f4c83aea3d81b6/npc/pre-re/scripts_athena.conf",
+      "title": "scripts_athena.conf",
+      "accessed": "2026-10-08"
+    },
+    {
+      "id": 3,
+      "url": "https://raw.githubusercontent.com/rathena/rathena/e985006171d2eb320ee512a653f4c83aea3d81b6/npc/pre-re/scripts_jobs.conf",
+      "title": "scripts_jobs.conf",
+      "accessed": "2026-10-08"
+    },
+    {
+      "id": 4,
+      "url": "https://raw.githubusercontent.com/rathena/rathena/e985006171d2eb320ee512a653f4c83aea3d81b6/npc/scripts_athena.conf",
+      "title": "scripts_athena.conf",
+      "accessed": "2026-10-08"
+    },
+    {
+      "id": 5,
+      "url": "https://raw.githubusercontent.com/rathena/rathena/e985006171d2eb320ee512a653f4c83aea3d81b6/npc/pre-re/jobs/novice/novice.txt",
+      "title": "novice.txt",
+      "accessed": "2026-10-08"
+    },
+    {
+      "id": 6,
+      "url": "https://raw.githubusercontent.com/rathena/rathena/e985006171d2eb320ee512a653f4c83aea3d81b6/npc/kafras/functions_kafras.txt",
+      "title": "functions_kafras.txt",
+      "accessed": "2026-10-08"
+    },
+    {
+      "id": 7,
+      "url": "https://raw.githubusercontent.com/rathena/rathena/e985006171d2eb320ee512a653f4c83aea3d81b6/npc/pre-re/kafras/kafras.txt",
+      "title": "kafras.txt",
+      "accessed": "2026-10-08"
+    },
+    {
+      "id": 8,
+      "url": "https://raw.githubusercontent.com/rathena/rathena/e985006171d2eb320ee512a653f4c83aea3d81b6/src/map/npc.cpp",
+      "title": "npc.cpp",
+      "accessed": "2026-10-08"
+    },
+    {
+      "id": 9,
+      "url": "https://raw.githubusercontent.com/rathena/rathena/e985006171d2eb320ee512a653f4c83aea3d81b6/src/map/script.cpp",
+      "title": "script.cpp",
+      "accessed": "2026-10-08"
+    },
+    {
+      "id": 10,
+      "url": "https://raw.githubusercontent.com/rathena/rathena/e985006171d2eb320ee512a653f4c83aea3d81b6/src/map/clif.cpp",
+      "title": "clif.cpp",
+      "accessed": "2026-10-08"
+    },
+    {
+      "id": 11,
+      "url": "https://raw.githubusercontent.com/rathena/rathena/e985006171d2eb320ee512a653f4c83aea3d81b6/src/map/quest.cpp",
+      "title": "quest.cpp",
+      "accessed": "2026-10-08"
+    },
+    {
+      "id": 12,
+      "url": "https://raw.githubusercontent.com/rathena/rathena/e985006171d2eb320ee512a653f4c83aea3d81b6/npc/instances/EndlessTower.txt",
+      "title": "EndlessTower.txt",
+      "accessed": "2026-10-08"
+    },
+    {
+      "id": 13,
+      "url": "https://raw.githubusercontent.com/rathena/rathena/e985006171d2eb320ee512a653f4c83aea3d81b6/npc/quests/quests_nameless.txt",
+      "title": "quests_nameless.txt",
+      "accessed": "2026-10-08"
+    },
+    {
+      "id": 14,
+      "url": "https://raw.githubusercontent.com/rathena/rathena/e985006171d2eb320ee512a653f4c83aea3d81b6/npc/warps/cities/prontera.txt",
+      "title": "prontera.txt",
+      "accessed": "2026-10-08"
+    },
+    {
+      "id": 15,
+      "url": "https://raw.githubusercontent.com/rathena/rathena/e985006171d2eb320ee512a653f4c83aea3d81b6/npc/re/scripts_athena.conf",
+      "title": "scripts_athena.conf",
+      "accessed": "2026-10-08"
+    },
+    {
+      "id": 16,
+      "url": "https://irowiki.org/classic/Novice",
+      "title": "Novice",
+      "accessed": "2026-10-08"
+    },
+    {
+      "id": 17,
+      "url": "https://irowiki.org/classic/Training_Grounds_Novice_Test",
+      "title": "Training_Grounds_Novice_Test",
+      "accessed": "2026-10-08"
+    },
+    {
+      "id": 18,
+      "url": "https://irowiki.org/wiki/Novice",
+      "title": "Novice",
+      "accessed": "2026-10-08"
+    },
+    {
+      "id": 19,
+      "url": "https://irowiki.org/wiki/Kafra",
+      "title": "Kafra",
+      "accessed": "2026-10-08"
+    },
+    {
+      "id": 20,
+      "url": "https://irowiki.org/wiki/Eden_Group_Leveling_Quests",
+      "title": "Eden_Group_Leveling_Quests",
+      "accessed": "2026-10-08"
+    },
+    {
+      "id": 21,
+      "url": "https://irowiki.org/wiki/Quest",
+      "title": "Quest guide",
+      "accessed": "2026-10-08"
+    },
+    {
+      "id": 22,
+      "url": "https://raw.githubusercontent.com/rathena/rathena/e985006171d2eb320ee512a653f4c83aea3d81b6/npc/kafras/kafras.txt",
+      "title": "npc/kafras/kafras.txt",
+      "accessed": "2026-10-08"
+    },
+    {
+      "id": 23,
+      "url": "https://raw.githubusercontent.com/rathena/rathena/e985006171d2eb320ee512a653f4c83aea3d81b6/npc/scripts_warps.conf",
+      "title": "npc/scripts_warps.conf",
+      "accessed": "2026-10-08"
+    },
+    {
+      "id": 24,
+      "url": "https://raw.githubusercontent.com/rathena/rathena/e985006171d2eb320ee512a653f4c83aea3d81b6/npc/pre-re/quests/quests_nameless.txt",
+      "title": "npc/pre-re/quests/quests_nameless.txt",
+      "accessed": "2026-10-08"
+    }
+  ],
+  "top_five_gaps": [
+    "Typed numeric/text input and real shop selection/transactions missing.",
+    "No authoritative quest journal/objective/earned-prerequisite state machine.",
+    "No end-to-end safe multi-map travel or accepted portal/Kafra/save/death-return effects.",
+    "No native NPC conversation or correlated server-confirmed reward acceptance.",
+    "No received instance identity/membership/cooldown or dungeon-access lifecycle."
+  ],
+  "starter_route_acceptance": {
+    "accepted": false,
+    "candidate": "Shion two-conversation +9 base EXP conditional branch",
+    "public_script_load_proven": true,
+    "legal_actual_initial_and_earned_prerequisites_proven": false,
+    "item_reward_route_proven": false,
+    "reason": "Cached public script permits a conditional route; actual received account history and native reward receipts absent."
+  }
+}

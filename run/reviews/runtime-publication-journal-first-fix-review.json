@@ -1,0 +1,364 @@
+{
+  "passed": false,
+  "status": "first_fix_scoped_independent_review_failed_no_publication_authority",
+  "security_concerns": [],
+  "logic_errors": [
+    {
+      "id": "JOURNAL-DIAGNOSTIC-001",
+      "severity": "medium",
+      "location": "src/robots/adapters/runtime_publication_journal.py:46-62,313-331",
+      "finding": "Normal public close consumes its sole nonlocal post-close diagnostic origin. JournalCleanupOwnership._after_attempt catches every BaseException and returns unresolved/diagnostic_failed even when no primary exception exists; close then returns normally.",
+      "contract_basis": "The documented diagnostic exception rule protects the primary failure (journal guide:65). It does not specify suppression of sole process-exit/cancellation origins. The unchanged shared close_owned propagates a nonlocal close failure in the absence of a primary (rathena_runtime_io:28-36). The review failure model requires origin preservation, not silent consumption of a new KeyboardInterrupt/SystemExit/GeneratorExit/custom cancellation arising on the supported public close path. Conservative unresolved status is appropriate but is not propagation.",
+      "actual_evidence": "Four fresh sole-diagnostic cases fail after actual normal close, with only owned-fd os.fstat patched. Each has a preceding real append/True acknowledgement, a single reached diagnostic, unpatched EBADF, separate-process lock acquisition, borrowed root valid, and unresolved/diagnostic_failed. The exact injected origin retains its fault_diagnostic traceback but the caller sees None. An additional four reached cases with a real-close wrapper independently reproduce this behavior. Four contrasted active-primary OSError + diagnostic nonlocal cases pass and preserve the exact primary; that secondary suppression remains intentional.",
+      "fresh_failing_testpaths": [
+        "/home/otto/.hermes/cache/scratch/journal-first-fix-rereview-1ecrtl3w/test_more_paths.py::test_pure_normal_close_diagnostic[KeyboardInterrupt]",
+        "/home/otto/.hermes/cache/scratch/journal-first-fix-rereview-1ecrtl3w/test_more_paths.py::test_pure_normal_close_diagnostic[SystemExit]",
+        "/home/otto/.hermes/cache/scratch/journal-first-fix-rereview-1ecrtl3w/test_more_paths.py::test_pure_normal_close_diagnostic[GeneratorExit]",
+        "/home/otto/.hermes/cache/scratch/journal-first-fix-rereview-1ecrtl3w/test_more_paths.py::test_pure_normal_close_diagnostic[Cancel]"
+      ],
+      "corroborating_failing_testpaths": [
+        "/home/otto/.hermes/cache/scratch/journal-first-fix-rereview-1ecrtl3w/test_fresh_review.py::test_diagnostic_nonlocal_contract[False-KeyboardInterrupt]",
+        "/home/otto/.hermes/cache/scratch/journal-first-fix-rereview-1ecrtl3w/test_fresh_review.py::test_diagnostic_nonlocal_contract[False-SystemExit]",
+        "/home/otto/.hermes/cache/scratch/journal-first-fix-rereview-1ecrtl3w/test_fresh_review.py::test_diagnostic_nonlocal_contract[False-GeneratorExit]",
+        "/home/otto/.hermes/cache/scratch/journal-first-fix-rereview-1ecrtl3w/test_fresh_review.py::test_diagnostic_nonlocal_contract[False-Cancel]"
+      ],
+      "calibration": "Not a false physical-release finding: the descriptor was actually released and an independent process could flock. It is loss of sole control flow. Eight failing parameterized executions are two distinct oracle variants, not eight defects. Parent-owned pure-diagnostic oracle was read, not run or edited; this report relies on newly owned fresh executions."
+    },
+    {
+      "id": "JOURNAL-OWNERSHIP-002",
+      "severity": "medium",
+      "location": "src/robots/adapters/runtime_publication_journal.py:195-202",
+      "finding": "The new ownership allocation has a reachable unprotected gap after os.open: os.getpid is evaluated before both _cleanup_ownership assignment and the constructor try. A nonlocal origin there leaves a real allocated writer fd without a public handoff capsule or one-attempt cleanup.",
+      "contract_basis": "The first-fix guide:68-77 promises the same original constructor exception carries the typed snapshot after writer allocation; the repair report says allocation ownership is recorded immediately and unresolved failures retain a supported public handoff. An interrupt at the explicitly called os.getpid seam after successful open contradicts that scope. This is not an arbitrary bytecode/dataclass-allocation fault invention.",
+      "actual_evidence": "Two fresh reached os.getpid interruption cases (KeyboardInterrupt/SystemExit) first establish a real private journal and positive lock acquisition. A delegating os.open observer captures the actual new descriptor; the getpid fault is reached once, the exact primary object and fault_getpid frame survive, but original_exception.journal_cleanup_ownership is absent and unpatched fstat confirms the descriptor is still live. The borrowed root remains valid. The separate subprocess can lock (flock has not yet been reached), so this allocation-gap case is not mislabeled as a held writer lock. Harness closes only its captured synthetic descriptor after these observations; that is not production handoff.",
+      "fresh_failing_testpaths": [
+        "/home/otto/.hermes/cache/scratch/journal-first-fix-rereview-1ecrtl3w/test_fresh_review.py::test_constructor_allocation_getpid_contract[KeyboardInterrupt]",
+        "/home/otto/.hermes/cache/scratch/journal-first-fix-rereview-1ecrtl3w/test_fresh_review.py::test_constructor_allocation_getpid_contract[SystemExit]"
+      ],
+      "calibration": "The injected failures model reachable nonlocal control flow at a newly introduced public-called OS seam, not a claim that Linux getpid ordinarily returns an I/O error. No obligation to preserve provenance from arbitrary unsupported bytecode or forged exception hooks is inferred."
+    }
+  ],
+  "suggestions": [
+    "Preserve a sole non-Exception diagnostic origin while keeping unresolved status observable; retain the intentional secondary-diagnostic suppression when a primary is active. No repair was made in this review.",
+    "Close the post-open/pre-ownership constructor gap without creating blind descriptor retries or treating fd/inode/PID observations as authority. Any source repair requires another frozen scoped review.",
+    "Keep lifecycle-controlled worker isolation explicit: this narrow handoff provides retained evidence for separately authorized owning-process teardown, not safe targeted cleanup for an arbitrary long-lived application."
+  ],
+  "summary": "Acknowledgement propagation is repaired and the narrowed one-attempt ownership handoff is demonstrable on reached cleanup paths, but sole diagnostic interrupts are swallowed and a new pre-capsule constructor interrupt gap loses the public handoff; scoped approval withheld.",
+  "recorded_at_utc": "2026-10-06T00:17:51.091022+00:00",
+  "target": {
+    "source": "src/robots/adapters/runtime_publication_journal.py",
+    "source_sha256": "303e75c81fce596c2e42dd8674b8492a14a3ce8951f0d1d527d4fa161d97eae2",
+    "shared_close_owned_sha256": "bc3ca2d291da5d19831bd57f5a794e455a6e9f7870db0f655d376a51de0e6719",
+    "source_lines": 337
+  },
+  "original_finding_assessment": {
+    "JOURNAL-ACK-001": {
+      "closure": "closed_for_frozen_acknowledgement_method_only",
+      "evidence": "18 fresh cases: OSError/ValueError deny False; KeyboardInterrupt/SystemExit/GeneratorExit/custom BaseException propagate exact origin and reached frame at root-fstat/file-fstat/entry-stat. All begin with actual append/True ack; poison then denies later ack without a second binding visit and later writes refuse. Holding the cooperative lock after poisoning is observed, not treated as an error."
+    },
+    "JOURNAL-OWNERSHIP-001": {
+      "closure": "partially_addressed_not_fully_closed",
+      "evidence": "Returned close and failed constructor expose immutable snapshots, preserve primary origins and optional identity, attempt once and never retry. Real valid-fd/EBADF and independent-process flock observations support pre-release versus release-before-raise distinctions. New allocation-gap finding prevents unconditional constructor closure.",
+      "contract_migration_assessment": "The migration is a genuine narrow observational handoff, not proof of physical release. Two independently owned normal-exit worker tests prove that a retained capsule accompanies a live blocked writer and kernel teardown releases it without manual descriptor close. This is operationally meaningful only where the caller/supervisor has separately established process ownership and a permitted controlled process boundary. No built-in supervisor, retry, kill or manager authority is present; capsule PID/inode/fd and forged snapshots cannot establish it. For a long-lived host lacking such a boundary, the unresolved status alone does not solve targeted cleanup.",
+      "old_oracle": "Original unconditional zero-live-fd constructor oracle and failed report preserved and not rerun; no claim that they pass."
+    }
+  },
+  "verified_positive_controls": [
+    "73 unchanged repository cases pass (original 51, acknowledgement regressions 6, cleanup regressions 16), including strict canonical schema/types/bounds/phases, generation/world binding, poison, borrowed root and restart denial.",
+    "Four new returned-close cases: OSError/KeyboardInterrupt x pre-release/release-before-raise. One close attempt; exact origin/frame, snapshot immutability and stale-before-close active snapshot, valid borrowed root, real owned-fd state, independent lock before harness disposal, denied later calls.",
+    "24 new constructor cases: file-fstat/flock/pread/invalid-decode x pre-release/release-before-raise x successful/EIO/SystemExit diagnostic. Original OSError object/errno/frame survives secondary KeyboardInterrupt and diagnostic errors; decode preserves its generated ValueError and _reject frame. Failed fstat/flock has expected_identity=None and conservative unresolved observation when needed. Pre-flock failure correctly has no writer lock.",
+    "Four additional failed-constructor KeyboardInterrupt cases preserve exact primary/frame against secondary close OSError plus diagnostic SystemExit, at first file-fstat and pread, each pre-release/released. Diagnostics never falsely claim release.",
+    "Real descriptor reuse for another inode and the same journal inode yields unresolved, performs no reclose, leaves foreign descriptor valid and allows separate-process lock acquisition. Snapshot forgery has no close/kill/recover/admit/publish action API.",
+    "Two new owned-process handoff cases, returned close and failed constructor: public capsule retained with actual live fd, independent subprocess blocked until child exits normally (exit 0), then independent subprocess acquires lock. No manual fd close is counted as process recovery.",
+    "Active-primary close errors survive four different diagnostic nonlocal origins. Ordinary EIO diagnostic failures conservatively remain unresolved even after independently confirmed physical release."
+  ],
+  "execution": {
+    "environment": "Existing pinned nix develop --offline --no-write-lock-file; UV_OFFLINE=1; PYTHONDONTWRITEBYTECODE=1; uv run --offline --frozen --no-sync. No installations or dependency/gate changes. Owned test/coverage/mypy/static cache outputs in fresh scratch.",
+    "repository_tests": {
+      "collected": 73,
+      "passed": 73,
+      "failed": 0,
+      "by_classname": {
+        "tests.test_runtime_publication_journal": {
+          "collected": 51,
+          "passed": 51,
+          "failed": 0
+        },
+        "tests.test_runtime_publication_journal_ack_regressions": {
+          "collected": 6,
+          "passed": 6,
+          "failed": 0
+        },
+        "tests.test_runtime_publication_journal_cleanup_regressions": {
+          "collected": 16,
+          "passed": 16,
+          "failed": 0
+        }
+      }
+    },
+    "fresh_independent_tests": {
+      "collected": 68,
+      "passed": 58,
+      "failed": 10,
+      "case_counts_verified_by_junit_xml": true,
+      "observations_verified_against_fresh_cases": true,
+      "by_observation_type": {
+        "ack": 18,
+        "returned_close": 4,
+        "constructor": 24,
+        "diagnostic_nonlocal": 8,
+        "allocation_getpid": 2,
+        "fd_reuse": 2,
+        "process_exit": 2,
+        "pure_normal_close_diagnostic": 4,
+        "nonlocal_constructor": 4
+      }
+    },
+    "all_executions": {
+      "collected": 141,
+      "passed": 131,
+      "failed": 10,
+      "note": "133 scoped executions (127 pass/6 fail, 6.951 s) plus 8 supplementary executions (4 pass/4 fail, 0.534 s); fresh failing expectations are not included in passing counts. Supplementary sole-diagnostic cases corroborate earlier cases, not independent defect counts."
+    },
+    "scoped_run": {
+      "exit_code": 1,
+      "log": "/home/otto/.hermes/cache/scratch/journal-first-fix-rereview-1ecrtl3w/scoped.log",
+      "junit_xml": "/home/otto/.hermes/cache/scratch/journal-first-fix-rereview-1ecrtl3w/scoped.xml",
+      "seconds": 6.951
+    },
+    "supplementary_run": {
+      "exit_code": 1,
+      "log": "/home/otto/.hermes/cache/scratch/journal-first-fix-rereview-1ecrtl3w/more.log",
+      "junit_xml": "/home/otto/.hermes/cache/scratch/journal-first-fix-rereview-1ecrtl3w/more.xml",
+      "seconds": 0.534
+    },
+    "journal_coverage": {
+      "json": "/home/otto/.hermes/cache/scratch/journal-first-fix-rereview-1ecrtl3w/scoped-coverage.json",
+      "summary": {
+        "covered_lines": 204,
+        "num_statements": 210,
+        "percent_covered": 97.14285714285714,
+        "percent_covered_display": "97",
+        "missing_lines": 6,
+        "excluded_lines": 0,
+        "percent_statements_covered": 97.14285714285714,
+        "percent_statements_covered_display": "97"
+      },
+      "missing_lines": [
+        164,
+        188,
+        256,
+        272,
+        274,
+        280
+      ],
+      "interpretation": "All new cleanup/diagnostic lines were reached; six uncovered lines are unchanged input/cap/readback branches. Coverage gate passes, but overall scoped pytest exits 1 on reached new behavioral assertions."
+    },
+    "static": {
+      "black": {
+        "command": [
+          "uv",
+          "run",
+          "--offline",
+          "--frozen",
+          "--no-sync",
+          "black",
+          "--check",
+          "src/robots/adapters/runtime_publication_journal.py",
+          "tests/test_runtime_publication_journal.py",
+          "tests/test_runtime_publication_journal_ack_regressions.py",
+          "tests/test_runtime_publication_journal_cleanup_regressions.py"
+        ],
+        "exit_code": 0,
+        "seconds": 0.4054357639979571,
+        "log": "/home/otto/.hermes/cache/scratch/journal-first-fix-rereview-1ecrtl3w/black.log",
+        "output": "All done! \u2728 \ud83c\udf70 \u2728\n4 files would be left unchanged.\n"
+      },
+      "ruff": {
+        "command": [
+          "uv",
+          "run",
+          "--offline",
+          "--frozen",
+          "--no-sync",
+          "ruff",
+          "check",
+          "--no-cache",
+          "src/robots/adapters/runtime_publication_journal.py",
+          "tests/test_runtime_publication_journal.py",
+          "tests/test_runtime_publication_journal_ack_regressions.py",
+          "tests/test_runtime_publication_journal_cleanup_regressions.py"
+        ],
+        "exit_code": 0,
+        "seconds": 0.02164459601044655,
+        "log": "/home/otto/.hermes/cache/scratch/journal-first-fix-rereview-1ecrtl3w/ruff.log",
+        "output": "All checks passed!\n"
+      },
+      "mypy": {
+        "command": [
+          "uv",
+          "run",
+          "--offline",
+          "--frozen",
+          "--no-sync",
+          "mypy",
+          "--cache-dir=/home/otto/.hermes/cache/scratch/journal-first-fix-rereview-1ecrtl3w/mypy-cache",
+          "src/robots/adapters/runtime_publication_journal.py",
+          "tests/test_runtime_publication_journal.py",
+          "tests/test_runtime_publication_journal_ack_regressions.py",
+          "tests/test_runtime_publication_journal_cleanup_regressions.py"
+        ],
+        "exit_code": 0,
+        "seconds": 0.20028595300391316,
+        "log": "/home/otto/.hermes/cache/scratch/journal-first-fix-rereview-1ecrtl3w/mypy.log",
+        "output": "Success: no issues found in 4 source files\n"
+      },
+      "bandit": {
+        "command": [
+          "uv",
+          "run",
+          "--offline",
+          "--frozen",
+          "--no-sync",
+          "bandit",
+          "-q",
+          "-c",
+          "pyproject.toml",
+          "src/robots/adapters/runtime_publication_journal.py"
+        ],
+        "exit_code": 0,
+        "seconds": 0.1871990149957128,
+        "log": "/home/otto/.hermes/cache/scratch/journal-first-fix-rereview-1ecrtl3w/bandit.log",
+        "output": ""
+      },
+      "whole_source_R0801": {
+        "command": [
+          "uv",
+          "run",
+          "--offline",
+          "--frozen",
+          "--no-sync",
+          "pylint",
+          "--disable=all",
+          "--enable=duplicate-code",
+          "--ignore-paths=tests",
+          "src"
+        ],
+        "exit_code": 0,
+        "seconds": 2.1395899999770336,
+        "log": "/home/otto/.hermes/cache/scratch/journal-first-fix-rereview-1ecrtl3w/whole_source_R0801.log",
+        "output": "\n------------------------------------\nYour code has been rated at 10.00/10\n\n"
+      }
+    },
+    "whole_source_duplicate_check_qualification": "R0801 returned 0 over the whole source tree at execution. Concurrent unrelated memory/cache work is not frozen as a journal dependency; this is not a completed stable whole-tree/full-suite verdict.",
+    "combined_gate": "Not run. Parent full combined gate remains deferred until unrelated memory writer completes. Historical full-suite counts are not current stability evidence."
+  },
+  "freeze": {
+    "parent_named_actual_dependencies": 18,
+    "before": "/home/otto/.hermes/cache/scratch/journal-first-fix-rereview-1ecrtl3w/before.json",
+    "after": "/home/otto/.hermes/cache/scratch/journal-first-fix-rereview-1ecrtl3w/after.json",
+    "matched_parent_before": true,
+    "changed": [],
+    "fingerprints": {
+      "Taskfile.yml": "63616950e21c15c455c2b6f90be4d588b77f31a62181fd7a93253d164a64a7fd",
+      "flake.lock": "c9c0bac69415b99a29ef3fe149b6f04ef54d291989bdf7218cf819ed52edf2a0",
+      "flake.nix": "185e4a4babf62a40484c347f59653bd11b79ce847316a3a90349c8545d38a359",
+      "pyproject.toml": "e8ae0849a413bc3d705f081f609b92dae702bbd3e491b2c3aeb5d8665c458fba",
+      "run/reviews/runtime-publication-journal-independent-review.json": "c93d479f2302d5178723ee9aa09fd737b6ceff1fec8da688a2a19a7acee90fca",
+      "run/reviews/runtime-publication-journal-parent-verification.json": "22e85793d01f83829f7ab03f8e2fb812dc542acaaa32451d536251e96f364c6e",
+      "src/robots/adapters/rathena_runtime.py": "0a52cbbae5ec459022c1348e33c65105c8cf0776a6bf68bca05e1066d8c74293",
+      "src/robots/adapters/rathena_runtime_assets.py": "8cf599ddd633c82879d5a6fc0ed2d98f13399e4094262b6bcafb25c9841650fc",
+      "src/robots/adapters/rathena_runtime_io.py": "bc3ca2d291da5d19831bd57f5a794e455a6e9f7870db0f655d376a51de0e6719",
+      "src/robots/adapters/runtime_publication_io.py": "4a7c1c8e794d92c28d9b59ccc69854fb4461e1731ae6ee2ec81db3a00ae6bd8c",
+      "src/robots/adapters/runtime_publication_journal.py": "303e75c81fce596c2e42dd8674b8492a14a3ce8951f0d1d527d4fa161d97eae2",
+      "src/robots/adapters/runtime_tree_sync.py": "2058f33b65ea9cebae8bc3fd07aa78416559c6d4bcb335326b8a166b7053782a",
+      "tests/test_runtime_publication_journal.py": "9586500c50d356417b9f7ff31269b0d64ca00f320d27ef3933d1112c4e1caed0",
+      "tests/test_runtime_publication_journal_ack_regressions.py": "fdca6e9897fc3f2f9f56ec6c015de8c6151a838c668896f694e9fba8c66f836a",
+      "tests/test_runtime_publication_journal_cleanup_regressions.py": "1adc0be80a39ba22772f4d52a56c84d0050e94fd63497e4057f47cb7be3352af",
+      "uv.lock": "2d7b4c187078488d7625e4fd4fa982745cab8d6a65b2ff3e382ffa286f1df245",
+      "vulture_whitelist.py": "872286fe8d1fb50ef67cab45cd96e5c2936549f8cbdb4bb31cd292b97617b673",
+      "wiki/guides/runtime-publication-journal.md": "b41b0d9223f11b728eeff8bd2c7e9031a5d72c0d0078022dc91963fa73816c12"
+    },
+    "scope_note": "Exactly the 18 parent-named journal source/helper/gate/test/guide/old-report dependencies. Unrelated mutable society/memory.py and concurrent new cache/test files are not journal dependencies and were not frozen as such."
+  },
+  "evidence": {
+    "scratch_root": "/home/otto/.hermes/cache/scratch/journal-first-fix-rereview-1ecrtl3w",
+    "fresh_harnesses": [
+      "/home/otto/.hermes/cache/scratch/journal-first-fix-rereview-1ecrtl3w/test_fresh_review.py",
+      "/home/otto/.hermes/cache/scratch/journal-first-fix-rereview-1ecrtl3w/test_more_paths.py"
+    ],
+    "observations": "/home/otto/.hermes/cache/scratch/journal-first-fix-rereview-1ecrtl3w/observations.jsonl",
+    "observation_count": 68,
+    "static_results": "/home/otto/.hermes/cache/scratch/journal-first-fix-rereview-1ecrtl3w/static-results.json",
+    "artifact_sha256": {
+      "test_fresh_review.py": "85007eb5aceb26b1106c0b5f0fba0f5fff169f0e56fdad797d7a99ec61ecc28a",
+      "test_more_paths.py": "e6609d7cc3ea5bb2b34f09a0a7ca20be5cb9ba6009d714a43c81825d37d1fe02",
+      "observations.jsonl": "131b094ace9996e9c69c4cb0f1d8f4854e92999c7d4449d3cbca9359be47d47d",
+      "scoped.log": "a0a433c70c3b426232d987791e2b83b924143b9684f0d9e231121f9d69f3159d",
+      "more.log": "53d6b4d0adbc49d512c462177a2ec9b346b53c52b3ff85a2839ae27ed4847006",
+      "scoped.xml": "4d4e1a04964003265c206ec1d1c4c9b5f5c497769deead20843db192923b9cd4",
+      "more.xml": "4b95e9b9a8eaa2c7b02a61868761aa067a5527bf697d4bbd2f88dd36cd4f9220",
+      "scoped-coverage.json": "7285b5904f5049737b665610e82f02abebed798040813418d1e2fc625b072516"
+    },
+    "failed_executions": [
+      {
+        "run": "scoped",
+        "classname": "",
+        "name": "test_diagnostic_nonlocal_contract[False-KeyboardInterrupt]"
+      },
+      {
+        "run": "scoped",
+        "classname": "",
+        "name": "test_diagnostic_nonlocal_contract[False-SystemExit]"
+      },
+      {
+        "run": "scoped",
+        "classname": "",
+        "name": "test_diagnostic_nonlocal_contract[False-GeneratorExit]"
+      },
+      {
+        "run": "scoped",
+        "classname": "",
+        "name": "test_diagnostic_nonlocal_contract[False-Cancel]"
+      },
+      {
+        "run": "scoped",
+        "classname": "",
+        "name": "test_constructor_allocation_getpid_contract[KeyboardInterrupt]"
+      },
+      {
+        "run": "scoped",
+        "classname": "",
+        "name": "test_constructor_allocation_getpid_contract[SystemExit]"
+      },
+      {
+        "run": "more",
+        "classname": "",
+        "name": "test_pure_normal_close_diagnostic[KeyboardInterrupt]"
+      },
+      {
+        "run": "more",
+        "classname": "",
+        "name": "test_pure_normal_close_diagnostic[SystemExit]"
+      },
+      {
+        "run": "more",
+        "classname": "",
+        "name": "test_pure_normal_close_diagnostic[GeneratorExit]"
+      },
+      {
+        "run": "more",
+        "classname": "",
+        "name": "test_pure_normal_close_diagnostic[Cancel]"
+      }
+    ]
+  },
+  "boundaries": [
+    "Only the new run/reviews/runtime-publication-journal-first-fix-review.json and owned new scratch review artifacts created. No source/tests/guides/old reports/gates/locks/whitelists edited; no staging, commit or push.",
+    "No SQL, engine, socket, provider, server/native binary, deployment, volume, account, world or private human file activity. Synthetic private files and owned process probes only.",
+    "No publication, workspace, manager, admission, process-kill, recovery or write authority granted. Flock evidence concerns cooperative writers of one synthetic journal, not hostile same-UID exclusion.",
+    "Neither PID reuse, a forged capsule, matching inode nor fd observations confer reclose/kill permissions; no such API actions exist. A supervisor must retain its independently established owning-process capability, not derive it from snapshot fields.",
+    "Original IO-003, EARLYCONSTRUCTION and world startup refusal 78 remain open/unchanged. The concurrent memory summary-cache change was neither edited nor approved.",
+    "The original failed independent report and its unconditional constructor oracle remain unchanged. This report cannot be reused after journal/source dependency changes."
+  ]
+}

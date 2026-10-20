@@ -1,0 +1,151 @@
+{
+ "task": "pin framing sizes for six remaining named packet IDs from pinned 20180704 rAthena source with C++ oracle evidence; TDD into spike packetdb; full root gate",
+ "date": "2026-10-14",
+ "operator": "playing-grind-protocol-completion",
+ "namespace": [
+  ".work/playing-grind-protocol-completion/**",
+  "run/reviews/playing-grind-protocol-completion.json"
+ ],
+ "status": "COMPLETE",
+ "pinned_source": "run/public-source/callback-qualified-e985006171d2 (PACKETVER=20180704 MAIN, pre-renewal; rathena/ working checkout headers verified byte-identical for the cited files)",
+ "per_id_verdicts": {
+  "0x099D": {
+   "verdict": "EXISTS at 20180704; ADDED to PACKET_DB as -1 (variable: int16 type@0 + int16 totalLen@2 + CHARACTER_INFO(155)[] tail)",
+   "evidence": [
+    "src/common/packets.hpp:614-627 dual branch, 20180704 takes #else -> HEADER_HC_ACK_CHARINFO_PER_PAGE=0x99d",
+    "src/char/char_clif.cpp:452-471 chclif_mmo_send099d (unguarded; len word + N*155; sent twice when count==3)",
+    "src/char/char_clif.cpp:892-898 sent ONLY in reply to client CH_CHARLIST_REQ; registration char_clif.cpp:1608"
+   ],
+   "live_emission": "char-server S->C only in direct reply to a client CH_CHARLIST_REQ 0x09A1 request; the bot client (spikes/003-clientless-limbs/client.py) never sends 0x09A1 (it only passively skips the 0x09A0 page-2 marker at client.py:351), so mid-live-run appearance is not expected - but the shared char-stream reader must frame it if the request flow is ever used",
+   "tdd": "RED: ValueError unknown packet 0x099d on pinned-shaped 314B frame; GREEN: parsed + trailing 0x09A0 frame preserved"
+  },
+  "0x02E1": {
+   "verdict": "NOT at 20180704; left OUT of size table (unknown-ID denial correct)",
+   "evidence": [
+    "src/map/packets.hpp:1412-1426 #if PACKETVER >= 20131223 defines ZC_NOTIFY_ACT as 0x8c8; 0x2e1 only in #else (old clients), packets.hpp:1428-1455",
+    "src/map/packets_struct.hpp:52-58 damageType: 0x2e1 only under PACKETVER < 20131223; 20180704 -> 0x8c8",
+    "src/map/clif.cpp:5216-5221 doc comment mentions 02e1 legacy layout; clif.cpp:5264-5270 clif_damage instantiates PACKET_ZC_NOTIFY_ACT (0x8c8, size 34, already in table)"
+   ],
+   "live_emission": "cannot be emitted by the 20180704 server (branch not compiled)"
+  },
+  "0x09A1": {
+   "verdict": "C->S ONLY at 20180704; left OUT of size table (unknown-ID denial correct - reader parses received S->C bytes only)",
+   "evidence": [
+    "src/common/packets.hpp:638-641 PACKET_CH_CHARLIST_REQ header 0x9a1, 2-byte struct",
+    "src/char/char_clif.cpp:1607-1609 parse-only registration (unguarded, guard depth 0 verified)"
+   ],
+   "live_emission": "the 20180704 server can never emit it; it only parses it"
+  },
+  "0x0B0B": {
+   "verdict": "NOT at 20180704; left OUT of size table",
+   "evidence": [
+    "src/map/packets_struct.hpp:1235-1244 guard RE>=20180829 || ZERO>=20180919 || MAIN>=20181002 - closed at MAIN 20180704"
+   ],
+   "live_emission": "cannot be emitted; pinned later-profile name at 0x0b0b is ZC_INVENTORY_END - the spike NAMES label 'ZC_ACK_COUNTDOWN' is a later-profile label (recorded here; NAMES left untouched, size table authoritative)",
+   "oracle": "guards_active 0x0b0b=0"
+  },
+  "0x0B1B": {
+   "verdict": "NOT at 20180704; left OUT of size table",
+   "evidence": [
+    "src/map/packets_struct.hpp:4028-4033 guard MAIN>=20190403 || RE>=20190320 || ZERO>=20190410 - closed"
+   ],
+   "live_emission": "cannot be emitted (ZC_NOTIFY_ACTORINIT belongs to >=20190403 profiles)",
+   "oracle": "guards_active 0x0b1b=0"
+  },
+  "0x0B72": {
+   "verdict": "NOT at 20180704; left OUT of size table",
+   "evidence": [
+    "src/common/packets.hpp:614-620 guard MAIN>=20201007 || RE>=20211103 defines 0xb72 branch; 20180704 #else defines 0x99d"
+   ],
+   "live_emission": "cannot be emitted; same content ships as 0x99D at this profile",
+   "oracle": "guards_active 0x0b72=0; HEADER_HC_ACK_CHARINFO_PER_PAGE=0x099d executed"
+  }
+ },
+ "cpp_oracle": {
+  "file": ".work/playing-grind-protocol-completion/evidence/oracle_pinned_layout.cpp",
+  "log": ".work/playing-grind-protocol-completion/evidence/oracle_pinned_layout.log",
+  "method": "nix develop -c g++ -x c++ -std=c++17 <config.log -D flags: -DPACKETVER=20180704 -DPRERE ...> -I<pinned>/src -I<pinned>/3rdparty/libconfig; compile + execute only (no server execution, no network)",
+  "key_output": [
+   "HEADER_HC_ACK_CHARINFO_PER_PAGE=0x099d",
+   "sizeof_PACKET_HC_ACK_CHARINFO_PER_PAGE=4",
+   "offsets type=0 len=2 characters=4",
+   "sizeof_CHARACTER_INFO=155",
+   "HEADER_CH_CHARLIST_REQ=0x09a1 sizeof=2 (C->S only)",
+   "guards_active 0x0b0b=0 0x0b1b=0 0x0b72=0"
+  ],
+  "static_asserts": "0x99d branch, base layout, and all three guard-closed conditions proven at compile time",
+  "correction_note": "v1 source referenced PACKETVER_RE_NUM/PACKETVER_ZERO_NUM in C++ expressions; undefined at MAIN (pinned #if guards rely on undefined->0). v2 replicates exact #if text + constexpr mirrors; v1 never produced a verdict",
+  "cpp_sha256": "68e6da33cc90599cf1d65ce897243a7717d551460f274a7a54df43347e5dcff9",
+  "log_sha256": "8c4045a223a0407f762e63f725ca1019f275b8f0b92900eada819307caa3a26e"
+ },
+ "tdd": {
+  "red": {
+   "junit": ".work/playing-grind-protocol-completion/evidence/junit-red-0x099D.xml",
+   "junit_sha256": "81d0b02868f7b612fbf868b2b81b869d379b7a4bc69314c22c4378ea97395f9d",
+   "identity": "test_charinfo_per_page_framing_from_pinned_layout FAILED with ValueError: unknown packet 0x099d at 0 (1 failed, 8 passed)",
+   "log_sha256": "9a4a63175abccab3d47b44755a00b9763c468b3f94e07596fd9bda398ff119f3"
+  },
+  "green": {
+   "junit": ".work/playing-grind-protocol-completion/evidence/junit-green-0x099D.xml",
+   "junit_sha256": "726097ae186c53ebfb2ba8823b60301740236655a5f22fdc264050f5342a7461",
+   "identity": "9 tests, 0 failures, 0 errors incl. test_charinfo_per_page_framing_from_pinned_layout and test_pinned_absent_ids_stay_unknown_denial"
+  },
+  "harness_defect_note": "first RED attempt exited 0: appended methods landed after the file's trailing __main__ block (dead code, 7 stale tests); never touched the candidate - corrected by restoring original bytes and inserting inside the class; preserved in red log",
+  "self_test": "packetdb.py __main__ self-test exit 0 after the entry"
+ },
+ "changed_files": {
+  "spikes/003-clientless-limbs/packetdb.py": {
+   "before_sha256": "497375189d242eda3072e3d86cbff1d98d736ec3742feee7035d84c3d129005b",
+   "after_sha256": "62b17288090bc0ee23c4e81728c0b0176d5c330f072cd60322ca45bbbe6880a2"
+  },
+  "spikes/003-clientless-limbs/test_packetdb.py": {
+   "before_sha256": "afdb0770e12525f85169ce24af2eaa23cf8015debc1c2a5cb2914c8f1400e7c3",
+   "after_sha256": "7bfa89759dd541af321f745257078da9bf7453b3489161c1011d7e91b45c5260"
+  }
+ },
+ "pin_revision_chain": {
+  "why": "six tests/ gate tests pin PACKET_DB count (897), exact addition sets, and byte-hash chains over packetdb.py; the reviewed 0x099D addition revises them per the established change chain (same procedure as the 0x01B3 cut-in slice)",
+  "old_new_identities": [
+   "test_native_emotion_framing.py::test_every_legacy_mapping_is_preserved: prior_890 excludes char_page; final union + char_page; len 897->898",
+   "test_native_npc_close_framing.py::test_all_889_mappings_macros_and_parser_preserved_bitexact: same reconstruction + hash chain strips char_page_block before the UNCHANGED f75d7db4.../7edfe9bb... digests; len 897->898",
+   "test_native_npc_cutin_framing.py::test_exact_single_addition_and_old_bytes (validate_exact_addition): table == baseline(896)|{0x01B3:67}|{0x099D:-1}, len 898; raw strips CUTIN_BLOCK+CHAR_PAGE_BLOCK and still equals the cutin-fix receipt before-digest 5f4eeb52b65e3f67ddc2e349bb68bbe25047171267c3c1b3a04b847f4fc45ef8",
+   "test_native_npc_dialogue.py::test_existing_890_registrations_preserved_and_unknown_stays_strict: set difference += 0x099D; len 897->898",
+   "test_native_shop.py::test_inherited_stream_frames_each_receipt_and_every_split: len 897->898",
+   "test_native_skill_context.py::test_stream_all_families_fragmented_and_coalesced: len 897->898"
+  ],
+  "before_digests": {
+   "test_native_npc_cutin_framing.py": "fa8683776d455e76286b62b885fdc41da7c2d72a193b2c23b055fe054c09332c",
+   "test_native_npc_dialogue.py": "eb0b9115a83bfad4dfec0f7804a7843f9fe53e68abb6da60d3f045409680b65b",
+   "test_native_shop.py": "8e609b67f0a12da8d885947d0043e47cbbd4c6a6ea9a85aeea321cdae1678d55",
+   "test_native_emotion_framing.py": "db679c458812c9253095d7c75efff271f21e9316e1b4175d89e90c32a0557b27",
+   "test_native_skill_context.py": "13feaba1fa517d819b1f7934d8e4c60b16ad621e3f34227f566d847058b86125",
+   "test_native_npc_close_framing.py": "82f09db2115eb8be42e2d94f07eb2338e973d679d854db27ba75cbbe3a2a78a9"
+  },
+  "after_manifest": ".work/playing-grind-protocol-completion/evidence/tests-after-manifest.json",
+  "scoped_junit": ".work/playing-grind-protocol-completion/evidence/junit-pin-revision.xml",
+  "scoped_junit_sha256": "33d5678c32b92fd08fd893e8c87f9c7052a0b921d1935bd77b35044fba0f7b71",
+  "scoped_result": "7 selected tests (10 cases incl. parametrize), 0 failures, 0 errors after pinned black reformat of test_native_npc_dialogue.py"
+ },
+ "quality_gates": {
+  "root_gate": {
+   "command": "env -u PYTEST_ADDOPTS -u PYTEST_DISABLE_PLUGIN_AUTOLOAD -u PYTEST_PLUGINS PYTHONOPTIMIZE=0 nix develop -c task check",
+   "workdir": "/home/otto/dev/ro-bots",
+   "exit_code": 0,
+   "summary": "5887 passed, 65 subtests passed, coverage 95.71% (>=85%); black 264 files unchanged; ruff/mypy/vulture/xenon steps passed",
+   "log": {
+    "path": ".work/playing-grind-protocol-completion/evidence/root-task-check.log",
+    "sha256": "71dc81a854cf235c6633a232a691a5590e356c3683636f460923ea5d670189c5"
+   },
+   "attempts": "attempt1 exit 201 (6 table-count pins red - expected, drove the reviewed pin revision); attempt2 exit 201 (black reformat on revised dialogue pin); attempt3 exit 0",
+   "junit_note": "root gate pytest junit lives under the project task; key revised identities listed in pin_revision_chain"
+  },
+  "scoped_spike_gates": "spike files are OUTSIDE every configured root-gate target (black/ruff/mypy run on src tests only); informational runs of the project-pinned tools on the two spike files fail BEFORE and AFTER identically (black 1->1, ruff 1->1 'Found 63 errors' class, mypy 1->1 '24 errors in 3 files' class, xenon 1->1 pre-existing blocks derive_table E/_unary C) - inherited scratch style, zero findings introduced; evidence .work/playing-grind-protocol-completion/evidence/scoped-gates.json",
+  "scoped_pytest_exit": 0
+ },
+ "prohibited_verified": "no live network/native/SQL/inference/containers; no server execution (oracle is compile+run of a standalone printf program against pinned headers); no private bundle bodies; no production src edits (changed: 2 spike files + 6 tests/ pin files in the reviewed change chain); no git actions",
+ "evidence_dir": ".work/playing-grind-protocol-completion/evidence",
+ "honest_unknowns": [
+  "HC_ACK_CHARINFO_PER_PAGE wire frames were never observed live (bot never sends 0x09A1); the -1 var-length entry is proven from the pinned struct + chclif_mmo_send099d source, not from a captured frame",
+  "0x007F precedent kept; no other table entries touched"
+ ]
+}

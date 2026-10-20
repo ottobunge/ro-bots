@@ -1,0 +1,75 @@
+{
+  "status": "new_goal_integration_gaps_reproduced_offline",
+  "subgoal": 11,
+  "decision": "wiki/decisions/adr-021-llm-planning-clef-execution.md",
+  "final_unique_cases": 4,
+  "behavioral_failures": 3,
+  "passes": 1,
+  "receipts": {
+    "initial-existing-brain.xml": {
+      "path": "/home/otto/.hermes/cache/scratch/llm-planner-brain-gap/initial-existing-brain.xml",
+      "sha256": "5659d3c4040434c6423c91d71e96c8fa77bffb5a0cdec5bb1da7311d49242db2",
+      "cases": 3,
+      "failures": 2,
+      "errors": 0,
+      "skips": 0
+    },
+    "existing-brain-corrected.xml": {
+      "path": "/home/otto/.hermes/cache/scratch/llm-planner-brain-gap/existing-brain-corrected.xml",
+      "sha256": "592e18fb3584b9ba3beed4ecd4b858779bfd47417f0825b3f99f83d248502f1e",
+      "cases": 3,
+      "failures": 2,
+      "errors": 0,
+      "skips": 0
+    },
+    "existing-brain-final.xml": {
+      "path": "/home/otto/.hermes/cache/scratch/llm-planner-brain-gap/existing-brain-final.xml",
+      "sha256": "d60b5568060258ca4cb11fe7ee5ba5fce5f19ab5a0440fc84a0d2593dfc95652",
+      "cases": 4,
+      "failures": 3,
+      "errors": 0,
+      "skips": 0
+    }
+  },
+  "artifact_hashes": {
+    "/home/otto/.hermes/cache/scratch/llm-planner-brain-gap/initial-existing-brain.xml": "5659d3c4040434c6423c91d71e96c8fa77bffb5a0cdec5bb1da7311d49242db2",
+    "/home/otto/.hermes/cache/scratch/llm-planner-brain-gap/existing-brain.xml": "5659d3c4040434c6423c91d71e96c8fa77bffb5a0cdec5bb1da7311d49242db2",
+    "/home/otto/.hermes/cache/scratch/llm-planner-brain-gap/initial-test_existing_brain_contract.py": "ded036f2b732a113b4a30817e166b272d96e0bac6ed2dbee0aa1963d5d767d8a",
+    "/home/otto/.hermes/cache/scratch/llm-planner-brain-gap/existing-brain-final.xml": "d60b5568060258ca4cb11fe7ee5ba5fce5f19ab5a0440fc84a0d2593dfc95652",
+    "/home/otto/.hermes/cache/scratch/llm-planner-brain-gap/existing-brain-corrected.xml": "592e18fb3584b9ba3beed4ecd4b858779bfd47417f0825b3f99f83d248502f1e",
+    "/home/otto/.hermes/cache/scratch/llm-planner-brain-gap/test_existing_brain_contract.py": "a8a1c3962bc3bb2e93d778ed9c11e9362feb0ec31f742aff98692c82520b6e68"
+  },
+  "source_hashes": {
+    "src/robots/app/brain.py": "f5351e49015174c610e50963d8c55f6d334fb2b6800fa8467e176ad63c3ab424",
+    "src/robots/adapters/playing_backends.py": "4db7c5c6e5316b0659c13d34d8ed9a1efba324989b519acac1f1d6cb1dbc3980",
+    "src/robots/domain/model.py": "42d151cc75a20ab654c26a196f2d298cce8553e7e4e1a9c76c3d204e32ebfd7d",
+    "src/robots/domain/decisions.py": "c19d0cf931b3337809cf2a97fc90062493e54444520dba1ac778f6c723fa34cb"
+  },
+  "verified_feature_freeze_unchanged": 277,
+  "findings": [
+    {
+      "boundary": "EventDrivenBrain._run_review/_setup_farm_plan",
+      "observed": "Heartbeat installs CLEF-authored FarmPlan with zero LLM calls.",
+      "required": "LLM investigation and structured admitted plan; CLEF executes rather than authors objective."
+    },
+    {
+      "boundary": "EventDrivenBrain._handle_world_event PlanExpired",
+      "observed": "Plan cleared; no evidenced planning escalation.",
+      "required": "Bounded replan request with reason/progress context and safe pending behavior."
+    },
+    {
+      "boundary": "EventDrivenBrain._react_to_chat / PlayingChat.generate_chat",
+      "observed": "String-only free-form chat prompt contains player message but omits current job/map; no investigation tool interface.",
+      "required": "Agent-bound current-context/tool access for chat and planning without unrelated private state."
+    }
+  ],
+  "working_contract": "20 mechanical script steps add no decision or LLM calls.",
+  "history": "Initial run retained one reached goal failure plus one harness AttributeError (FarmPlan.plan_id, not id). Corrected second run has two reached failures; final adds third chat-context failure. Overlapping runs are not summed.",
+  "limits": [
+    "Synthetic offline character/public-mob fixtures and effect spies, not real LLM/native execution.",
+    "Diagnostic probes are new-goal compatibility evidence, not complete future planner acceptance tests. Dedicated planner-call/tool assertions must replace the legacy chat/escalation proxy during integration.",
+    "No production code modified; do not reset other feature repair budgets.",
+    "Existing root suite and previous approvals do not cover these new subgoal11 contracts.",
+    "Plan core and skill-meaning independent review pending; full combined gate still required."
+  ]
+}

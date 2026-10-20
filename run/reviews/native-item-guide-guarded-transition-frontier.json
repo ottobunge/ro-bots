@@ -1,0 +1,22 @@
+{
+  "status": "GUARDED_TRANSITION_FRONTIER_IDENTIFIED_WORLD_IMPORTS_TARGET",
+  "discovery": "The owned world's map configuration closure genuinely imports npc/scripts_custom.conf, so the import target is a mandatory runtime dependency AND the publication target. The accepted composite denies a content request when either target is already an approval runtime key (content_guarded_transition_not_qualified), while snapshot/observe requires every closure import to be bound (bound_configuration_closure). Both predicates are reviewed and admission-safe; the world makes them mutually exclusive for this import.",
+  "evidence": [
+    "probe_closure: required closure keys 37; missing from approval exactly container:map:/world/runtime/npc/scripts_custom.conf; approval-only conf keys are the two inter_athena.conf entries",
+    "probe_stage: observe() denied bound_configuration_closure under the real approval",
+    "CLI runs: two pre-lifecycle denials with retained custody, zero lifecycle commands, world untouched",
+    "fresh readonly inspection: public import equals the exact BEFORE base (9de2dafd...); guide script absent-unknown"
+  ],
+  "resolution_required": "A reviewed TDD successor implementing the exact guarded before/after transition: validate_request may admit the import target key only when its bound digest equals import_before_sha256; after verified publication and readback, the approval's runtime binding for that key is replaced with the after digest (dataclasses.replace on effects.approval) and subsequent checkpoints/fingerprints use the updated binding; script target key stays denied; history immutable.",
+  "effects_so_far": {
+    "lifecycle_commands": 0,
+    "world_mutations": 0,
+    "public_writes": 0,
+    "native_authority": "UNCHANGED_REVOKED"
+  },
+  "receipts_preserved": [
+    ".work/native-item-guide-content-issuance/probe_stage.py",
+    ".work/native-item-guide-content-issuance/probe_closure.py",
+    "denied CLI receipts (denied / retained_lock variants) quoted in wiki log"
+  ]
+}

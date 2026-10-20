@@ -1,0 +1,11 @@
+{
+  "record": "PREFLIGHT_ARGV_BUG_FIXED_WINDOWS_PREFLIGHTED_DEFAULT_URL_NOT_DECISION_URL",
+  "date": "2026-10-20 (~01:4x)",
+  "root_cause": "engagement_window34.main(argv=None) passed None into _decision_backend_from_args, whose `argv or []` fell back to the DEFAULT localhost 8093 URL. Every window launch preflighted the DEFAULT endpoint and ignored --decision-url. The local-era windows never noticed (the default WAS the target); the heavengraph launches failed against the local 8093's corpse while heavengraph:8091 sat healthy at 0.65-1.85s per decide.",
+  "fixes": [
+    "main() resolves sys.argv[1:] before the builder (the live --decision-url is honored).",
+    "preflight_decision_backend captures the raw HTTP exchange into the receipt (raw.url/status/error) \u2014 the redacted wrapper made this undebuggable for hours."
+  ],
+  "heavengraph_deployment": "DONE: the serve.sh pattern (the idempotent flash 8091 / 27B 8092, 0.0.0.0, the nohup+setsid survival) launched via SSH (the gcr agent holds the key post-restart \u2014 no passphrase needed). The real-shape decides: 1.85s cold, 0.65s warm, 6/6 stable. The model files + the llama.cpp build + the service unit were ALREADY staged on heavengraph.",
+  "state": "window 56 LIVE with both agents on the field + the heavengraph decides. The picklog testifies on the first kill."
+}

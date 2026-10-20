@@ -1,0 +1,12 @@
+{
+  "record": "GRIND_WINDOW50_BOTH_STALLED_BACKEND_SLOT_OVERLOAD_4SLOT_RELAUNCH",
+  "date": "2026-10-19 (~17:3x)",
+  "findings": [
+    "Both agents logged in ON the field (the fx0 trap fix held \u2014 no shop-interior login), actors VISIBLE (attackable_actors_max 3/2), 164-166 walk-ish sends, but 0 movement, 0 own-pos ingests, 22 tick failures each.",
+    "THE DOMINANT CAUSE NAMED: 'decision backend unavailable at startup (PlayingBackendError)' \u2014 the 2-slot Clef backend cannot absorb TWO agents at the 6s cadence (~6 req/s vs the 2-slot queue) -> the httpx 30s timeouts -> the tick failures starve the observe/pump path. The w45-style good windows had staggered load; the aligned-cadence windows starve.",
+    "The connect-resilience fix held (the sessions were KEPT, no relogin churn)."
+  ],
+  "fix": "Clef backend relaunched with -np 4 -c 16384 (proc_2a3f78a35e4a, persist_on_release) \u2014 4 inference slots absorb both agents' aligned cadence.",
+  "also_open": "The 0x360 walk-ish sends with zero server movement need one look (either the wrong walk packet id in a lane path or the server-side rejection) \u2014 the next engaged window's readback will show whether the 4-slot backend alone restores movement.",
+  "state": "fx0 and fx1 both hold the field login now; the seed + health-gate fixes are in; the picklog is armed; the engagement floor keeps the verdicts honest."
+}

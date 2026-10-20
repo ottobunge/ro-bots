@@ -1,0 +1,98 @@
+{
+  "passed": true,
+  "security_concerns": [],
+  "logic_errors": [],
+  "suggestions": [],
+  "summary": "Approve the exact one-line schema repair and strict offline provider contract tests; no live inference or native acceptance.",
+  "scope": "Offline source/request contract only; reviewed files not modified. Only review report and scratch artifacts written.",
+  "production_diff": {
+    "exact_single_line_removal": true,
+    "removed_key": "goal_criterion_grind",
+    "baseline_sha256": "14f9ffa4b5dedd0326aa29b0b790e236dc5ae5775515fed51f5a41ec8f9b453a",
+    "current_sha256": "9b32f1fad0ef0ff98c670092757742a68808846b845cbf1c469ff8bf8d2227f2"
+  },
+  "results": {
+    "physical_xml_testcases": 120,
+    "selected_repository_tests": 75,
+    "independent_checks": 45,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "old_new_exact_comparisons": 40,
+    "beforestate_unchanged_cases": 5,
+    "goal_summaries_preserved": 5,
+    "provider_goal_cases": 20,
+    "provider_factory_http_calls": 0,
+    "heartbeat_questions": 11
+  },
+  "review_findings": [
+    "Production diff is exactly removal of unsupported top-level key; states, questions, memory/inventory behavior and goal helpers remain byte-for-byte unchanged.",
+    "Actual provider factories and decide methods exercised through MockTransport, without provider-side schema filtering or bypass; only model override is performed.",
+    "Wire state/questions equal original domain request; input state/request remain unchanged.",
+    "Strict test boundary intentionally requires exact model/state/questions subset; optional images is not exercised because this domain never emits it.",
+    "Empty answers only verify adapter envelope; not inference or gameplay evidence.",
+    "Added test source has no dangerous eval/exec, shell injection or deserialization calls; literal credentials are inert test-only fixtures, not discovered secrets.",
+    "Physical author XML verified: both RED runs 26 tests/21 failures; initial GREEN 70 tests/20 failures preserved; final/verified GREEN 75 tests/0 failures."
+  ],
+  "before_sha256": {
+    "src/robots/domain/decisions.py": "9b32f1fad0ef0ff98c670092757742a68808846b845cbf1c469ff8bf8d2227f2",
+    "tests/test_decisions.py": "2f88e4c7779988c571c715f2d86baed6be3cdc008cd0f00e9e3eec67a2459655",
+    "src/robots/app/brain.py": "06e1dd24666b3878e051ec5365f04d4b6af840eaf731057bcf498f62677dffe0",
+    "src/robots/adapters/playing_backends.py": "4db7c5c6e5316b0659c13d34d8ed9a1efba324989b519acac1f1d6cb1dbc3980",
+    "src/robots/domain/model.py": "ad311ac53e1d3a24bf7fe34cb96461b342d8f3ff12a2397d7d43725221538dbf",
+    "flake.lock": "c9c0bac69415b99a29ef3fe149b6f04ef54d291989bdf7218cf819ed52edf2a0",
+    "flake.nix": "185e4a4babf62a40484c347f59653bd11b79ce847316a3a90349c8545d38a359",
+    "pyproject.toml": "e8ae0849a413bc3d705f081f609b92dae702bbd3e491b2c3aeb5d8665c458fba",
+    "uv.lock": "2d7b4c187078488d7625e4fd4fa982745cab8d6a65b2ff3e382ffa286f1df245",
+    "Taskfile.yml": "bf60a77c96fb4cfb4c5475c73a6e7da5a7eef90fc9f63c06a9812cfcbbb1d31d",
+    "vulture_whitelist.py": "872286fe8d1fb50ef67cab45cd96e5c2936549f8cbdb4bb31cd292b97617b673",
+    "tests/test_systemone_request_contract.py": "742d9957db35ab68d95003e368db31ecb94c8b2e365bdaab280529c920171ec5",
+    "tests/test_brain.py": "14b41aa10bd612c54e538a7d9b998a848c5d89db061e57947a1eaa057f716fa4",
+    "tests/test_ports.py": "55cab28eb76c9ddf8feeaecdce8bf241530f2385da61020f55c49d67490766f4",
+    "tests/test_playing_backends.py": "3b85665b5372356aa19c652fb41eb17ab332ec83c64f9cb7e7e67d804e0738f6",
+    "tests/test_empty_farm_plan.py": "09d1b9834dccb67209882ca7ef32171d63b1e2fcefc95fe1ea78aad104018975",
+    "tests/conftest.py": "42dbe1ae3a43a6c34ef2f9abb829b62d1f0a914d64d1a576d9b528142982d307"
+  },
+  "after_sha256": {
+    "src/robots/domain/decisions.py": "9b32f1fad0ef0ff98c670092757742a68808846b845cbf1c469ff8bf8d2227f2",
+    "tests/test_decisions.py": "2f88e4c7779988c571c715f2d86baed6be3cdc008cd0f00e9e3eec67a2459655",
+    "src/robots/app/brain.py": "06e1dd24666b3878e051ec5365f04d4b6af840eaf731057bcf498f62677dffe0",
+    "src/robots/adapters/playing_backends.py": "4db7c5c6e5316b0659c13d34d8ed9a1efba324989b519acac1f1d6cb1dbc3980",
+    "src/robots/domain/model.py": "ad311ac53e1d3a24bf7fe34cb96461b342d8f3ff12a2397d7d43725221538dbf",
+    "flake.lock": "c9c0bac69415b99a29ef3fe149b6f04ef54d291989bdf7218cf819ed52edf2a0",
+    "flake.nix": "185e4a4babf62a40484c347f59653bd11b79ce847316a3a90349c8545d38a359",
+    "pyproject.toml": "e8ae0849a413bc3d705f081f609b92dae702bbd3e491b2c3aeb5d8665c458fba",
+    "uv.lock": "2d7b4c187078488d7625e4fd4fa982745cab8d6a65b2ff3e382ffa286f1df245",
+    "Taskfile.yml": "bf60a77c96fb4cfb4c5475c73a6e7da5a7eef90fc9f63c06a9812cfcbbb1d31d",
+    "vulture_whitelist.py": "872286fe8d1fb50ef67cab45cd96e5c2936549f8cbdb4bb31cd292b97617b673",
+    "tests/test_systemone_request_contract.py": "742d9957db35ab68d95003e368db31ecb94c8b2e365bdaab280529c920171ec5",
+    "tests/test_brain.py": "14b41aa10bd612c54e538a7d9b998a848c5d89db061e57947a1eaa057f716fa4",
+    "tests/test_ports.py": "55cab28eb76c9ddf8feeaecdce8bf241530f2385da61020f55c49d67490766f4",
+    "tests/test_playing_backends.py": "3b85665b5372356aa19c652fb41eb17ab332ec83c64f9cb7e7e67d804e0738f6",
+    "tests/test_empty_farm_plan.py": "09d1b9834dccb67209882ca7ef32171d63b1e2fcefc95fe1ea78aad104018975",
+    "tests/conftest.py": "42dbe1ae3a43a6c34ef2f9abb829b62d1f0a914d64d1a576d9b528142982d307"
+  },
+  "protected_snapshot_unchanged": true,
+  "test_execution": {
+    "environment": "Pinned nix develop --offline; uv run --offline --no-sync; pytest -o addopts=''; isolated TMPDIR/cache/basetemp/coverage root; bytecode writes disabled.",
+    "xml": "/home/otto/.hermes/cache/scratch/systemone-schema-independent-review/independent.xml",
+    "xml_sha256": "192593e2f44a72db781e58badab85c2b07b2343b313f19183710f5d30ad83d60",
+    "wall_result": "120 passed in 0.38s"
+  },
+  "limits": {
+    "network_schema_fetch_performed": false,
+    "primary_contract_attribution": "Supplied primary-schema reconnaissance; not independently fetched in explicitly offline review.",
+    "external_model_calls": 0,
+    "native_effects": 0,
+    "credentials_read": false,
+    "whole_suite_accepted": false,
+    "live_inference_accepted": false,
+    "native_accepted": false,
+    "full_goal_accepted": false
+  },
+  "issues": [
+    "Initial baseline lookup used repository-relative scratch path; corrected to author-reported allowed scratch path before comparison.",
+    "Initial XML split used classname; corrected using exact test names and asserted 75 selected plus 45 independent cases."
+  ],
+  "sensitive_endpoints": "[REDACTED]"
+}

@@ -1,0 +1,116 @@
+{
+  "status": "partial_blocked",
+  "scope": "Bounded offline E2E/seeding isolation safety only",
+  "recorded_at": "2026-10-05T12:05:58+02:00",
+  "safety_gates_passed": true,
+  "execution_enabled": false,
+  "live_volume_isolation_verified": false,
+  "full_gameplay_e2e_verified": false,
+  "changes": [
+    "Removed every unsafe legacy E2E/seeder execution helper, account-id range deletion, fixed account password, SQL printing, and native/TCP fallback path from the owned scripts.",
+    "Preserved Python main() exit-2 emergency guards and unconditional apply_sql refusal; shell E2E and world lifecycle entrypoints now also fail closed without launching Docker or another interpreter.",
+    "Added pure cleanup planning with exact manifest-owned account/character identifiers and names, strict run-specific account namespace, explicit test-world/project/volume identity, exact observed rows, offline evidence, duplicate/collision refusal, and extra-character refusal.",
+    "Added inert routing plans pinned to one observed immutable database container ID, an exact named volume mount, no published DB ports, a world-specific network, and explicit database identity; unavailable containers cannot trigger fallback.",
+    "Added inert reset plans naming only the exact owned stopped database container and ro-bots-world-test volume. No compose down -v, force, prune, broad volume removal, debug/prod deletion, server startup, or execution is included.",
+    "Compose now requires explicit root/user secret files and a world-owned database username; it has no reusable password defaults or DB port publication. Its explicit internal network name matches the offline route contract.",
+    "Removed inaccurate live isolation/E2E claims from comments in the owned files."
+  ],
+  "files_modified": [
+    "scripts/e2e_runner.py",
+    "scripts/seed_test_agents.py",
+    "scripts/e2e.sh",
+    "scripts/world.sh",
+    "docker-compose.worlds.yml"
+  ],
+  "files_created": [
+    "tests/test_world_seed_safety.py",
+    "run/reviews/world-seed-safety.json"
+  ],
+  "parent_owned_guard_tests_modified": false,
+  "other_repository_source_files_modified": false,
+  "tdd_evidence": [
+    {
+      "slice": "Exact manifest-owned cleanup plan",
+      "red": "Missing cleanup_plan assertion failed before implementation.",
+      "green": "Exact parameterized account/character predicates and unrelated-ID exclusion passed."
+    },
+    {
+      "slice": "Ownership/routing/offline contract",
+      "red": "38 invalid-evidence cases and four ambiguous-ownership cases failed because the initial planner did not reject them.",
+      "green": "Explicit validation rejected every case before process or manifest-write spies were reached."
+    },
+    {
+      "slice": "Owned exact reset plan",
+      "red": "Eight reset cases failed on missing reset_plan before implementation.",
+      "green": "Exact test-only command tuples passed; running, foreign, unknown, and mismatched volume evidence was refused."
+    },
+    {
+      "slice": "Shell lifecycle and Compose secrets",
+      "red": "15 shell lifecycle cases plus the secret-file requirement failed against the old lifecycle/configuration, using a fake Docker executable only.",
+      "green": "All shell lifecycle mutations were refused with exit 2 and without invoking the fake Docker executable; explicit secret-file requirements passed."
+    },
+    {
+      "slice": "Pinned database route",
+      "red": "Four route cases failed on missing database_route before implementation.",
+      "green": "One immutable container route was planned; unavailable states were refused without fallback or process invocation."
+    },
+    {
+      "slice": "Shell E2E guard and matching network configuration",
+      "red": "Two tests failed because the E2E shell still launched an interpreter and Compose lacked the planned explicit internal network name.",
+      "green": "The shell guard launches no interpreter and the network configuration matches the inert contract."
+    }
+  ],
+  "verification": [
+    {
+      "command": "nix develop -c uv run pytest tests/test_world_seed_safety.py tests/test_world_isolation_guard.py -o faulthandler_timeout=10 --tb=short -rA",
+      "result": "82 passed in 0.24s; no skips or warnings",
+      "new_safety_cases": 79,
+      "parent_emergency_guard_cases": 3
+    },
+    {
+      "command": "nix develop -c uv run ruff check scripts/seed_test_agents.py scripts/e2e_runner.py tests/test_world_seed_safety.py",
+      "result": "All checks passed"
+    },
+    {
+      "command": "nix develop -c uv run black --check scripts/seed_test_agents.py scripts/e2e_runner.py tests/test_world_seed_safety.py",
+      "result": "Three files unchanged"
+    },
+    {
+      "command": "nix develop -c uv run mypy scripts/seed_test_agents.py scripts/e2e_runner.py tests/test_world_seed_safety.py",
+      "result": "Success: no issues found in three source files"
+    },
+    {
+      "command": "bash -n scripts/e2e.sh scripts/world.sh",
+      "result": "Passed"
+    },
+    {
+      "command": "git diff --check -- scripts/e2e.sh scripts/world.sh scripts/e2e_runner.py scripts/seed_test_agents.py docker-compose.worlds.yml tests/test_world_seed_safety.py",
+      "result": "Passed"
+    },
+    {
+      "command": "nix develop -c uv run python (read-only yaml.safe_load validation)",
+      "result": "Compose YAML parsed; DB ports empty, network internal, test volume external; no container runtime contacted"
+    },
+    {
+      "command": "Actual CLI subprocess checks under nix develop for both Python entrypoints, E2E shell, and world.sh wipe",
+      "result": "All four returned exit 2 with blocked diagnostics; no Docker/DB/server/network startup or real reset executed"
+    }
+  ],
+  "limits_and_blockers": [
+    "The new APIs return inert plans only. Caller-supplied observations and JSON are explicitly not live ownership proof or authority to execute.",
+    "No trusted Docker/DB observer exists yet to acquire fresh ownership, network, mount, volume-user, database-world marker, active-account, and offline observations under an exclusive world lock.",
+    "No mutation executor exists yet: fresh per-step reinspection, transactional row locks, complete account/character ownership revalidation, affected-row checks, error/rollback handling, and exact post-write readback remain mandatory before enabling execution.",
+    "Cleanup plan tests verify exact scope and exclusion of unrelated IDs, not real database deletion or persistence. Related character-state tables and full seeding/insertion/bootstrap behavior remain unimplemented.",
+    "The deterministic legacy seeder was removed, not promoted to a verified replacement. Fresh credential provisioning, private secret transport, world marker bootstrap, and manifests for an actual isolated world remain future executor work.",
+    "world.sh status is also blocked; no read-only live observer has been added. FORCE, KEEP, WORLD_KIND, ALLOW_ISOLATED, or a CLI config path cannot bypass the guards.",
+    "Compose syntax and configuration assertions are not a Docker Compose runtime/render gate, deployed network/volume proof, container-rAthena credential/routing acceptance, or real volume reset verification.",
+    "Full gameplay E2E remains invalid/unimplemented independently of this safety slice. Synthetic heartbeat/movement/party evidence and the former unsafe gameplay runner were removed rather than repaired here.",
+    "Only owned scoped tests and gates were run. Repository-wide checks, dependency audit, documentation updates, independent review, commits, and live acceptance remain with the parent."
+  ],
+  "secret_handling": {
+    "generated_credentials": false,
+    "generated_secret_sql_printed_or_written": false,
+    "report_contains_credentials": false,
+    "real_database_or_world_data_touched": false
+  }
+}

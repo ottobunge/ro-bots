@@ -1,0 +1,112 @@
+{
+  "closes_window1_gaps": [
+    "gap (a) no committed travel: CommittedTravel commits one public spawn-knowledge candidate; re-evaluates only on arrival or 90s budget; NoRoute degrades to existing patrol with recorded events",
+    "gap (b) receipt seams: action-level dispatched_actions counters at the perform_native dispatch site + decision_calls seam fed from brain.decision_count (failures stay None/uncertain)",
+    "runtime diagnostic: visible actors, attackable count, floor items, position, map, committed route state; sampled ~5s (cap 200) in the live receipt"
+  ],
+  "date": "2026-10-15",
+  "evidence_readback": {
+    "green_junit_sha256": "6e64702177d26ea3bd1e10531a986fd4119e3a4a5fec21e66d99e15eff60ca1e",
+    "red_junit_sha256": "2dd89e4bea3531adc225edfb1910b125ea3ae3f113f6122811f8782b4e52b13e",
+    "root_gate_log_sha256": "73d1fc76122d596e1ed212496a78001368474172b8a2ab5db182f8459a6373c2"
+  },
+  "live_executed": false,
+  "namespace": [
+    ".work/playing-grind-travel/**",
+    "run/reviews/playing-grind-travel.json"
+  ],
+  "offline_built": true,
+  "operator": "playing-grind-travel",
+  "operator_file_untouched": {
+    "claim": "no write to grind_operator.py was performed by this slice; all travel wiring lives in grind_travel_operator.py which imports it, and its 19 contract tests pass unchanged",
+    "current_sha256": "07e9b395bebc4e65660aa1d8fcdf7bd81e7ea8bcecaa9d7adabbefda2993e92e",
+    "digest_note": "current digest differs from the digest in run/reviews/playing-grind-operator.json (that offline receipt predates window 1, whose live work updated the file before this slice started); identity vs that older receipt is therefore NOT claimed",
+    "file": ".work/playing-grind-operator/grind_operator.py",
+    "prior_receipt_sha256": "e31180ef70be8242fd5"
+  },
+  "tracked_tree_note": "git status over src/tests/rathena carries the project's standing uncommitted baseline (untracked robots modules + modified files, same tree the window-1 receipt's green gate ran over with identical totals); this slice added no edits under src/, tests/ or rathena/ - writes were confined to .work/playing-grind-travel/**, .work/playing-grind-operator/READY-TO-RUN.md and run/reviews/playing-grind-travel.json",
+  "prohibited_verified": "no live network/native/SQL/inference/containers; no production src edits; no git actions",
+  "quality_gates": {
+    "root_gate": {
+      "command": "env -u PYTEST_ADDOPTS -u PYTEST_DISABLE_PLUGIN_AUTOLOAD -u PYTEST_PLUGINS PYTHONOPTIMIZE=0 nix develop -c task check",
+      "exit": 0,
+      "log": {
+        "path": ".work/playing-grind-travel/evidence/root-task-check.log",
+        "sha256": "73d1fc76122d596e1ed212496a78001368474172b8a2ab5db182f8459a6373c2"
+      },
+      "log_exit_marker": "ROOT_GATE_EXIT=0",
+      "summary": "5887 passed, 65 subtests passed, coverage 95.71% (>=85%) \u2014 identical totals to the window-1 baseline gate; production src/tests untouched",
+      "workdir": "/home/otto/dev/ro-bots"
+    },
+    "scoped_black": {
+      "note": "black config scopes src/tests only (force-excludes .work): 'No Python files are present' = no-op by config, recorded honestly"
+    },
+    "scoped_mypy_strict": {
+      "exit": 0,
+      "summary": "Success: no issues found in 3 source files (MYPYPATH=src+operator namespace)"
+    },
+    "scoped_pytest": {
+      "exit": 0,
+      "summary": "34 passed, 0 failed (travel 15 + operator 19)"
+    },
+    "scoped_ruff": {
+      "exit": 0,
+      "summary": "All checks passed! (.work/playing-grind-travel/)"
+    },
+    "scoped_xenon_modules": {
+      "exit": 0,
+      "summary": "max-absolute B / max-modules B / max-average A: no findings on the 3 modules"
+    }
+  },
+  "ready_to_run_updated": {
+    "content": "Window 2 section: exact command (python -m grind_travel_operator, PYTHONPATH adds travel namespace, --playground, private manifest), acceptance = 0x437 at observed attackable actor + damage/XP/loot receipts OR honest named blocker with runtime diagnostic proving what the client saw",
+    "file": ".work/playing-grind-operator/READY-TO-RUN.md",
+    "sha256": "d76d069a2a60b40e38b0f2d5ba27baf19a14da1a6bb5cba9b40c1d3bdaa4c5bd"
+  },
+  "source_digests": {
+    "grind_travel_operator.py": "297479601d8c64ebba686bf2ccb707fc710785ac96a1567c2819d47c01eca3d0",
+    "spawn_knowledge.py": "466e81b64f53ca16754f4fbd25269f1f567feda7506616aa10db218b6f964c72",
+    "travel.py": "545d123961ea6641f798c9b88daa81d421d3a0afbe848ad5c2339994d000d7ff"
+  },
+  "spawn_knowledge_authority": {
+    "honesty_note": "pre-re data declares whole-map Poring presence (rect 0,0,0,0), no cell clusters; candidate cells are a deterministic bounded sample of public walkable geometry around the pinned warp arrival cell \u2014 no hidden server state",
+    "renewal_variant_present_not_governing": "rathena/npc/re/mobs/fields/prontera.txt lines 94/97/100 have cell clusters; runtime root selects db/pre-re so the pre-re declaration governs",
+    "source": "project pinned PUBLIC rathena worktree rathena/ (commit e985006171d2 lineage)",
+    "spawn_line": {
+      "file": "rathena/npc/pre-re/mobs/fields/prontera.txt",
+      "line": 107,
+      "sha256": "7e5d29e7ac85a5b9f225065325f40609d5de8899afa7e9a6a6e83dd64e54fbd8",
+      "text": "prt_fild08,0,0\tmonster\tPoring\t1002,70"
+    },
+    "warp_anchor": {
+      "cross_cited_by": "src/robots/adapters/native_navigation.py starter_route docstring digest 434fe0da... matches",
+      "file": "rathena/npc/warps/cities/prontera.txt",
+      "line": 24,
+      "sha256": "434fe0daf761275cf731c343a501c02d88355a524b9c9a87d1f00c510ae3f4d7",
+      "text": "prontera,156,22,0\twarp\tprt001\t3,2,prt_fild08,170,375"
+    }
+  },
+  "task": "committed spawn-knowledge travel + honest dispatch counters/diagnostics for the grind operator; window 2 packaging",
+  "tdd": {
+    "green": {
+      "identities": "junit parsed: GREEN tests=34 failures=0 errors=0; RED tests=1 failures=1 (named contract)",
+      "junit": {
+        "path": ".work/playing-grind-travel/evidence/GREEN-travel.xml",
+        "sha256": "6e64702177d26ea3bd1e10531a986fd4119e3a4a5fec21e66d99e15eff60ca1e"
+      },
+      "summary": "34 passed: 15 new travel contracts + the operator's 19 unchanged contract tests"
+    },
+    "note": "RED taken against stub modules before implementation; GREEN regenerated against the final source bytes",
+    "red": {
+      "junit": {
+        "path": ".work/playing-grind-travel/evidence/RED-travel.xml",
+        "sha256": "2dd89e4bea3531adc225edfb1910b125ea3ae3f113f6122811f8782b4e52b13e"
+      },
+      "reached": "behavioral NotImplementedError on the first named spawn-knowledge contract (stubs), 14 tests collected"
+    }
+  },
+  "window2_live_acceptance": {
+    "requirement": "live window via the READY-TO-RUN Window 2 command under the same preflight (fixture ownership, offline SQL readback, provider health) \u2014 coordinator-owned",
+    "status": "NOT_EXECUTED_OFFLINE"
+  }
+}

@@ -1,0 +1,1680 @@
+{
+  "passed": false,
+  "candidate_scope_passed": true,
+  "quality_passed": false,
+  "security_concerns": [],
+  "logic_errors": [],
+  "quality_blockers": [
+    {
+      "increased_ruff_kinds_vs_original_baseline": {
+        "I001": 1,
+        "PT009": 11,
+        "PLC0415": 3,
+        "PLW1510": 2,
+        "N802": 4,
+        "UP034": 5,
+        "ARG002": 1
+      }
+    },
+    {
+      "trace_complexity_baseline": [
+        "Too many return statements (27 > 6)",
+        "Too many branches (29 > 12)",
+        "Too many statements (101 > 50)"
+      ],
+      "trace_complexity_current": [
+        "Too many return statements (29 > 6)",
+        "Too many branches (31 > 12)",
+        "Too many statements (110 > 50)"
+      ]
+    }
+  ],
+  "suggestions": [
+    "Stop and obtain a new explicit user decision; no further cleanup is authorized. Do not waive per-kind/complexity regressions based on lower global lint count."
+  ],
+  "scope": "Fresh independent read-only review of exactly one explicitly authorized cleanup; candidate-only, not production/runtime/sink approval.",
+  "normalization": {
+    "original_count": 14,
+    "current_count": 15,
+    "retained": {
+      "ProofTests.test_real_declaration_send_sizeof_identity": true,
+      "ProofTests.test_real_header_and_gcc_layout_join": true,
+      "ProofTests.test_unknown_helper_escape_denied_structurally": true,
+      "ProofTests.test_wrong_authorities_rejected_before_candidate": true,
+      "ReviewedOmissionTests.test_L1_helper_in_third_or_fourth_send_argument": true,
+      "ReviewedOmissionTests.test_L1_plain_actual_pointer_and_AREA_guard": true,
+      "ReviewedOmissionTests.test_L2_mutable_header_is_not_an_immutable_constant": true,
+      "ReviewedOmissionTests.test_L2_const_and_constexpr_integral_header_guards": true,
+      "ReviewedOmissionTests.test_L3_float_parameter_cast_is_not_integral_plain_read": true,
+      "ReviewedOmissionTests.test_L3_enum_to_integral_and_const_void_address_guard": true,
+      "RecordShapeTests.test_L4_defined_union_overwrite_denied_before_metadata": true,
+      "RecordShapeTests.test_L4_unsupported_layout_forms_fail_before_metadata": true,
+      "RecordShapeTests.test_L4_ordinary_packed_short_aliases_remain_candidates": true,
+      "RecordShapeTests.test_L4_header_requires_short_word_representation": true
+    },
+    "source_function_deltas": {
+      "trace": [
+        "--- \n",
+        "+++ \n",
+        "@@ -734,34 +734,16 @@\n",
+        "                   func=Name(id='integral_type', ctx=Load()),",
+        "                   args=[",
+        "                     Name(id='n', ctx=Load())]),",
+        "-                Call(",
+        "-                  func=Name(id='all', ctx=Load()),",
+        "-                  args=[",
+        "-                    GeneratorExp(",
+        "-                      elt=Compare(",
+        "-                        left=Call(",
+        "-                          func=Attribute(",
+        "-                            value=Name(id='c', ctx=Load()),",
+        "-                            attr='get',",
+        "-                            ctx=Load()),",
+        "-                          args=[",
+        "-                            Constant(value='kind')]),",
+        "-                        ops=[",
+        "-                          Eq()],",
+        "-                        comparators=[",
+        "-                          Constant(value='PackedAttr')]),",
+        "-                      generators=[",
+        "-                        comprehension(",
+        "-                          target=Name(id='c', ctx=Store()),",
+        "-                          iter=Call(",
+        "-                            func=Attribute(",
+        "-                              value=Name(id='n', ctx=Load()),",
+        "-                              attr='get',",
+        "-                              ctx=Load()),",
+        "-                            args=[",
+        "-                              Constant(value='inner'),",
+        "-                              List(ctx=Load())]),",
+        "-                          is_async=0)])])]),",
+        "+                UnaryOp(",
+        "+                  op=Not(),",
+        "+                  operand=Call(",
+        "+                    func=Attribute(",
+        "+                      value=Name(id='n', ctx=Load()),",
+        "+                      attr='get',",
+        "+                      ctx=Load()),",
+        "+                    args=[",
+        "+                      Constant(value='inner'),",
+        "+                      List(ctx=Load())]))]),",
+        "             generators=[",
+        "               comprehension(",
+        "                 target=Name(id='n', ctx=Store()),"
+      ]
+    },
+    "cast_runtime_identity": true,
+    "measurement_runtime_is_dict": true,
+    "retained_test_helpers": {
+      "ReviewedOmissionTests.compiled": true,
+      "RecordShapeTests.compiled_record": true
+    }
+  },
+  "quality": {
+    "baseline": {
+      "ruff": {
+        "exit": 1,
+        "count": 150,
+        "kinds": {
+          "E401": 3,
+          "I001": 3,
+          "PT009": 16,
+          "PLC0415": 2,
+          "E501": 40,
+          "E702": 37,
+          "PLW1510": 1,
+          "N802": 6,
+          "E701": 38,
+          "PLR0911": 1,
+          "PLR0912": 1,
+          "PLR0915": 1,
+          "PLW2901": 1
+        },
+        "metrics": [
+          "Too many return statements (27 > 6)",
+          "Too many branches (29 > 12)",
+          "Too many statements (101 > 50)"
+        ]
+      },
+      "black": {
+        "exit": 1,
+        "stdout": "",
+        "stderr": "would reformat /home/otto/.hermes/cache/scratch/sender-record-repair2-3m48zvmq/test_trace.py\nwould reformat /home/otto/.hermes/cache/scratch/sender-record-repair2-3m48zvmq/trace_sender.py\n\nOh no! \ud83d\udca5 \ud83d\udc94 \ud83d\udca5\n2 files would be reformatted.\n"
+      },
+      "mypy": {
+        "exit": 1,
+        "error_count": 88,
+        "kinds": {
+          "no-untyped-def": 21,
+          "no-untyped-call": 66,
+          "attr-defined": 1
+        }
+      }
+    },
+    "current": {
+      "ruff": {
+        "exit": 1,
+        "count": 67,
+        "kinds": {
+          "I001": 4,
+          "PT009": 27,
+          "E401": 3,
+          "PLC0415": 5,
+          "PLW1510": 3,
+          "N802": 10,
+          "UP034": 5,
+          "ARG002": 1,
+          "E501": 5,
+          "PLR0911": 1,
+          "PLR0912": 1,
+          "PLR0915": 1,
+          "PLW2901": 1
+        },
+        "metrics": [
+          "Too many return statements (29 > 6)",
+          "Too many branches (31 > 12)",
+          "Too many statements (110 > 50)"
+        ]
+      },
+      "black": {
+        "exit": 0,
+        "stdout": "",
+        "stderr": "All done! \u2728 \ud83c\udf70 \u2728\n2 files would be left unchanged.\n"
+      },
+      "mypy": {
+        "exit": 0,
+        "error_count": 0,
+        "kinds": {}
+      }
+    },
+    "increased_kinds": {
+      "I001": 1,
+      "PT009": 11,
+      "PLC0415": 3,
+      "PLW1510": 2,
+      "N802": 4,
+      "UP034": 5,
+      "ARG002": 1
+    }
+  },
+  "tests": {
+    "exit": 0,
+    "stdout": "",
+    "stderr": "test_real_declaration_send_sizeof_identity (test_trace.ProofTests.test_real_declaration_send_sizeof_identity) ... ok\ntest_real_header_and_gcc_layout_join (test_trace.ProofTests.test_real_header_and_gcc_layout_join) ... ok\ntest_unknown_helper_escape_denied_structurally (test_trace.ProofTests.test_unknown_helper_escape_denied_structurally) ... ok\ntest_wrong_authorities_rejected_before_candidate (test_trace.ProofTests.test_wrong_authorities_rejected_before_candidate) ... ok\ntest_L4_defined_union_overwrite_denied_before_metadata (test_trace.RecordShapeTests.test_L4_defined_union_overwrite_denied_before_metadata) ... ok\ntest_L4_header_requires_short_word_representation (test_trace.RecordShapeTests.test_L4_header_requires_short_word_representation) ... ok\ntest_L4_ordinary_packed_short_aliases_remain_candidates (test_trace.RecordShapeTests.test_L4_ordinary_packed_short_aliases_remain_candidates) ... ok\ntest_L4_unsupported_layout_forms_fail_before_metadata (test_trace.RecordShapeTests.test_L4_unsupported_layout_forms_fail_before_metadata) ... ok\ntest_field_level_packed_attribute_denied_before_metadata (test_trace.RecordShapeTests.test_field_level_packed_attribute_denied_before_metadata) ... ok\ntest_L1_helper_in_third_or_fourth_send_argument (test_trace.ReviewedOmissionTests.test_L1_helper_in_third_or_fourth_send_argument) ... ok\ntest_L1_plain_actual_pointer_and_AREA_guard (test_trace.ReviewedOmissionTests.test_L1_plain_actual_pointer_and_AREA_guard) ... ok\ntest_L2_const_and_constexpr_integral_header_guards (test_trace.ReviewedOmissionTests.test_L2_const_and_constexpr_integral_header_guards) ... ok\ntest_L2_mutable_header_is_not_an_immutable_constant (test_trace.ReviewedOmissionTests.test_L2_mutable_header_is_not_an_immutable_constant) ... ok\ntest_L3_enum_to_integral_and_const_void_address_guard (test_trace.ReviewedOmissionTests.test_L3_enum_to_integral_and_const_void_address_guard) ... ok\ntest_L3_float_parameter_cast_is_not_integral_plain_read (test_trace.ReviewedOmissionTests.test_L3_float_parameter_cast_is_not_integral_plain_read) ... ok\n\n----------------------------------------------------------------------\nRan 15 tests in 1.590s\n\nOK\n",
+    "physical_methods": 15
+  },
+  "actual_counts": {
+    "physical_unittest_methods": 15,
+    "executed_unittest_methods": 15,
+    "fresh_compiler_probes": 8,
+    "matching_compiler_probes": 8
+  },
+  "compiler_probes": [
+    {
+      "name": "field-packed",
+      "source_sha256": "31babfaf1dfd0c3f719e5a92fb0559fcc3fb66dcb7f7c58b0222c69650f1227a",
+      "metadata": {
+        "id": 1,
+        "size": 6,
+        "offsets": [
+          0,
+          2
+        ]
+      },
+      "GCC_stdout": "{\"id\":1,\"size\":6,\"offsets\":[0,2]}\nsent_header=1 size=6\n",
+      "result": {
+        "identity_proven": true,
+        "decision": "UNRESOLVED",
+        "reasons": [
+          "unsupported record shape: requires plain non-overlapping scalar aggregate"
+        ],
+        "sink_contract_status": "UNREVIEWED",
+        "sender_semantic_admission": false,
+        "runtime_admission": false,
+        "object_id": "0x55555579a1b0",
+        "send_object_id": "0x55555579a1b0",
+        "sizeof_object_id": "0x55555579a1b0",
+        "object_type": "P",
+        "function_id": "0x555555799240",
+        "send_id": "0x55555579a718",
+        "sizeof_id": "0x55555579a690",
+        "sink_decl_id": "0x555555798b20"
+      },
+      "without_metadata": {
+        "identity_proven": true,
+        "decision": "UNRESOLVED",
+        "reasons": [
+          "unsupported record shape: requires plain non-overlapping scalar aggregate"
+        ],
+        "sink_contract_status": "UNREVIEWED",
+        "sender_semantic_admission": false,
+        "runtime_admission": false,
+        "object_id": "0x55555579a1b0",
+        "send_object_id": "0x55555579a1b0",
+        "sizeof_object_id": "0x55555579a1b0",
+        "object_type": "P",
+        "function_id": "0x555555799240",
+        "send_id": "0x55555579a718",
+        "sizeof_id": "0x55555579a690",
+        "sink_decl_id": "0x555555798b20"
+      },
+      "expected": "UNRESOLVED",
+      "matched": true,
+      "denied_before_header_and_metadata": true
+    },
+    {
+      "name": "union",
+      "source_sha256": "62bb4f345c109285cb95bc1c84ee82a36289e329eeb95ad8f8d1594f00af5fb4",
+      "metadata": {
+        "id": 1,
+        "size": 4,
+        "offsets": [
+          0,
+          0
+        ]
+      },
+      "GCC_stdout": "{\"id\":1,\"size\":4,\"offsets\":[0,0]}\nsent_header=2 size=4\n",
+      "result": {
+        "identity_proven": true,
+        "decision": "UNRESOLVED",
+        "reasons": [
+          "unsupported record shape: requires plain non-overlapping scalar aggregate"
+        ],
+        "sink_contract_status": "UNREVIEWED",
+        "sender_semantic_admission": false,
+        "runtime_admission": false,
+        "object_id": "0x55555579a150",
+        "send_object_id": "0x55555579a150",
+        "sizeof_object_id": "0x55555579a150",
+        "object_type": "P",
+        "function_id": "0x555555799220",
+        "send_id": "0x55555579a6b8",
+        "sizeof_id": "0x55555579a630",
+        "sink_decl_id": "0x555555798a60"
+      },
+      "without_metadata": {
+        "identity_proven": true,
+        "decision": "UNRESOLVED",
+        "reasons": [
+          "unsupported record shape: requires plain non-overlapping scalar aggregate"
+        ],
+        "sink_contract_status": "UNREVIEWED",
+        "sender_semantic_admission": false,
+        "runtime_admission": false,
+        "object_id": "0x55555579a150",
+        "send_object_id": "0x55555579a150",
+        "sizeof_object_id": "0x55555579a150",
+        "object_type": "P",
+        "function_id": "0x555555799220",
+        "send_id": "0x55555579a6b8",
+        "sizeof_id": "0x55555579a630",
+        "sink_decl_id": "0x555555798a60"
+      },
+      "expected": "UNRESOLVED",
+      "matched": true,
+      "denied_before_header_and_metadata": true
+    },
+    {
+      "name": "packed-unsigned-alias",
+      "source_sha256": "0f9c895bf08ceb8c946b1d765ddcbccd2b29200ba5333becd16d7bf8c7717e95",
+      "metadata": {
+        "id": 1,
+        "size": 6,
+        "offsets": [
+          0,
+          2
+        ]
+      },
+      "GCC_stdout": "{\"id\":1,\"size\":6,\"offsets\":[0,2]}\nsent_header=1 size=6\n",
+      "result": {
+        "identity_proven": true,
+        "decision": "IDENTITY_LAYOUT_CANDIDATE",
+        "reasons": [],
+        "sink_contract_status": "UNREVIEWED",
+        "sender_semantic_admission": false,
+        "runtime_admission": false,
+        "object_id": "0x55555579a750",
+        "send_object_id": "0x55555579a750",
+        "sizeof_object_id": "0x55555579a750",
+        "object_type": "P",
+        "function_id": "0x55555579a660",
+        "send_id": "0x55555579acb8",
+        "sizeof_id": "0x55555579ac30",
+        "sink_decl_id": "0x5555557990e0",
+        "record_id": "0x555555798b00",
+        "header_field_id": "0x555555798da0",
+        "header_field_name": "h",
+        "header_constant_id": "0x555555798e80",
+        "header_assignment_id": "0x55555579a928",
+        "header_value": 1,
+        "record_location": {
+          "offset": 137,
+          "line": 6,
+          "col": 32,
+          "tokLen": 1
+        },
+        "constant_location": {
+          "offset": 198,
+          "line": 8,
+          "col": 14,
+          "tokLen": 1
+        },
+        "measured_size": 6,
+        "measured_offsets": [
+          0,
+          2
+        ]
+      },
+      "without_metadata": {
+        "identity_proven": true,
+        "decision": "UNRESOLVED",
+        "reasons": [
+          "GCC layout evidence absent"
+        ],
+        "sink_contract_status": "UNREVIEWED",
+        "sender_semantic_admission": false,
+        "runtime_admission": false,
+        "object_id": "0x55555579a750",
+        "send_object_id": "0x55555579a750",
+        "sizeof_object_id": "0x55555579a750",
+        "object_type": "P",
+        "function_id": "0x55555579a660",
+        "send_id": "0x55555579acb8",
+        "sizeof_id": "0x55555579ac30",
+        "sink_decl_id": "0x5555557990e0",
+        "record_id": "0x555555798b00",
+        "header_field_id": "0x555555798da0",
+        "header_field_name": "h",
+        "header_constant_id": "0x555555798e80",
+        "header_assignment_id": "0x55555579a928",
+        "header_value": 1,
+        "record_location": {
+          "offset": 137,
+          "line": 6,
+          "col": 32,
+          "tokLen": 1
+        },
+        "constant_location": {
+          "offset": 198,
+          "line": 8,
+          "col": 14,
+          "tokLen": 1
+        }
+      },
+      "expected": "IDENTITY_LAYOUT_CANDIDATE",
+      "matched": true
+    },
+    {
+      "name": "packed-signed-alias",
+      "source_sha256": "02862cc3cbc414a6dfdce98692a22f7537d4d48319c6919c851b1c7518c9b290",
+      "metadata": {
+        "id": 1,
+        "size": 6,
+        "offsets": [
+          0,
+          2
+        ]
+      },
+      "GCC_stdout": "{\"id\":1,\"size\":6,\"offsets\":[0,2]}\nsent_header=1 size=6\n",
+      "result": {
+        "identity_proven": true,
+        "decision": "IDENTITY_LAYOUT_CANDIDATE",
+        "reasons": [],
+        "sink_contract_status": "UNREVIEWED",
+        "sender_semantic_admission": false,
+        "runtime_admission": false,
+        "object_id": "0x55555579a2c0",
+        "send_object_id": "0x55555579a2c0",
+        "sizeof_object_id": "0x55555579a2c0",
+        "object_type": "P",
+        "function_id": "0x55555579a1d0",
+        "send_id": "0x55555579a828",
+        "sizeof_id": "0x55555579a7a0",
+        "sink_decl_id": "0x555555798c00",
+        "record_id": "0x555555798650",
+        "header_field_id": "0x5555557988c0",
+        "header_field_name": "h",
+        "header_constant_id": "0x5555557989a0",
+        "header_assignment_id": "0x55555579a498",
+        "header_value": 1,
+        "record_location": {
+          "offset": 105,
+          "col": 50,
+          "tokLen": 1
+        },
+        "constant_location": {
+          "offset": 146,
+          "line": 5,
+          "col": 13,
+          "tokLen": 1
+        },
+        "measured_size": 6,
+        "measured_offsets": [
+          0,
+          2
+        ]
+      },
+      "without_metadata": {
+        "identity_proven": true,
+        "decision": "UNRESOLVED",
+        "reasons": [
+          "GCC layout evidence absent"
+        ],
+        "sink_contract_status": "UNREVIEWED",
+        "sender_semantic_admission": false,
+        "runtime_admission": false,
+        "object_id": "0x55555579a2c0",
+        "send_object_id": "0x55555579a2c0",
+        "sizeof_object_id": "0x55555579a2c0",
+        "object_type": "P",
+        "function_id": "0x55555579a1d0",
+        "send_id": "0x55555579a828",
+        "sizeof_id": "0x55555579a7a0",
+        "sink_decl_id": "0x555555798c00",
+        "record_id": "0x555555798650",
+        "header_field_id": "0x5555557988c0",
+        "header_field_name": "h",
+        "header_constant_id": "0x5555557989a0",
+        "header_assignment_id": "0x55555579a498",
+        "header_value": 1,
+        "record_location": {
+          "offset": 105,
+          "col": 50,
+          "tokLen": 1
+        },
+        "constant_location": {
+          "offset": 146,
+          "line": 5,
+          "col": 13,
+          "tokLen": 1
+        }
+      },
+      "expected": "IDENTITY_LAYOUT_CANDIDATE",
+      "matched": true
+    },
+    {
+      "name": "replay-arg3-call",
+      "source_sha256": "c9f9df488050b9464fbf1d74a32b93f1795dd68997eda8ef1643a7aa1e8eeb9a",
+      "metadata": {
+        "id": 1,
+        "size": 8,
+        "offsets": [
+          0,
+          4
+        ]
+      },
+      "GCC_stdout": "{\"id\":1,\"size\":8,\"offsets\":[0,4]}\n",
+      "result": {
+        "identity_proven": true,
+        "decision": "UNRESOLVED",
+        "reasons": [
+          "unsupported cast kind/type in final send argument"
+        ],
+        "sink_contract_status": "UNREVIEWED",
+        "sender_semantic_admission": false,
+        "runtime_admission": false,
+        "object_id": "0x55555579a058",
+        "send_object_id": "0x55555579a058",
+        "sizeof_object_id": "0x55555579a058",
+        "object_type": "P",
+        "function_id": "0x555555799f90",
+        "send_id": "0x55555579a6a8",
+        "sizeof_id": "0x55555579a440",
+        "sink_decl_id": "0x5555557994a0",
+        "record_id": "0x555555798a88",
+        "header_field_id": "0x555555798c50",
+        "header_field_name": "h",
+        "header_constant_id": "0x555555798d38",
+        "header_assignment_id": "0x55555579a230",
+        "header_value": 1,
+        "record_location": {
+          "offset": 63,
+          "file": "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/replay-arg3-call.cpp",
+          "line": 4,
+          "col": 8,
+          "tokLen": 1
+        },
+        "constant_location": {
+          "offset": 98,
+          "col": 43,
+          "tokLen": 1
+        }
+      },
+      "without_metadata": {
+        "identity_proven": true,
+        "decision": "UNRESOLVED",
+        "reasons": [
+          "GCC layout evidence absent"
+        ],
+        "sink_contract_status": "UNREVIEWED",
+        "sender_semantic_admission": false,
+        "runtime_admission": false,
+        "object_id": "0x55555579a058",
+        "send_object_id": "0x55555579a058",
+        "sizeof_object_id": "0x55555579a058",
+        "object_type": "P",
+        "function_id": "0x555555799f90",
+        "send_id": "0x55555579a6a8",
+        "sizeof_id": "0x55555579a440",
+        "sink_decl_id": "0x5555557994a0",
+        "record_id": "0x555555798a88",
+        "header_field_id": "0x555555798c50",
+        "header_field_name": "h",
+        "header_constant_id": "0x555555798d38",
+        "header_assignment_id": "0x55555579a230",
+        "header_value": 1,
+        "record_location": {
+          "offset": 63,
+          "file": "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/replay-arg3-call.cpp",
+          "line": 4,
+          "col": 8,
+          "tokLen": 1
+        },
+        "constant_location": {
+          "offset": 98,
+          "col": 43,
+          "tokLen": 1
+        }
+      },
+      "expected": "UNRESOLVED",
+      "matched": true
+    },
+    {
+      "name": "replay-arg4-call",
+      "source_sha256": "7092cf7d1952af95488f4cbea701acc70fb5947cc914c9f609b77d46c3bc5cfb",
+      "metadata": {
+        "id": 1,
+        "size": 8,
+        "offsets": [
+          0,
+          4
+        ]
+      },
+      "GCC_stdout": "{\"id\":1,\"size\":8,\"offsets\":[0,4]}\n",
+      "result": {
+        "identity_proven": true,
+        "decision": "UNRESOLVED",
+        "reasons": [
+          "unsupported cast kind/type in final send argument"
+        ],
+        "sink_contract_status": "UNREVIEWED",
+        "sender_semantic_admission": false,
+        "runtime_admission": false,
+        "object_id": "0x555555799c68",
+        "send_object_id": "0x555555799c68",
+        "sizeof_object_id": "0x555555799c68",
+        "object_type": "P",
+        "function_id": "0x555555799ba0",
+        "send_id": "0x55555579a2d8",
+        "sizeof_id": "0x55555579a050",
+        "sink_decl_id": "0x5555557990b0",
+        "record_id": "0x555555798698",
+        "header_field_id": "0x555555798860",
+        "header_field_name": "h",
+        "header_constant_id": "0x555555798948",
+        "header_assignment_id": "0x555555799e40",
+        "header_value": 1,
+        "record_location": {
+          "offset": 63,
+          "file": "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/replay-arg4-call.cpp",
+          "line": 4,
+          "col": 8,
+          "tokLen": 1
+        },
+        "constant_location": {
+          "offset": 98,
+          "col": 43,
+          "tokLen": 1
+        }
+      },
+      "without_metadata": {
+        "identity_proven": true,
+        "decision": "UNRESOLVED",
+        "reasons": [
+          "GCC layout evidence absent"
+        ],
+        "sink_contract_status": "UNREVIEWED",
+        "sender_semantic_admission": false,
+        "runtime_admission": false,
+        "object_id": "0x555555799c68",
+        "send_object_id": "0x555555799c68",
+        "sizeof_object_id": "0x555555799c68",
+        "object_type": "P",
+        "function_id": "0x555555799ba0",
+        "send_id": "0x55555579a2d8",
+        "sizeof_id": "0x55555579a050",
+        "sink_decl_id": "0x5555557990b0",
+        "record_id": "0x555555798698",
+        "header_field_id": "0x555555798860",
+        "header_field_name": "h",
+        "header_constant_id": "0x555555798948",
+        "header_assignment_id": "0x555555799e40",
+        "header_value": 1,
+        "record_location": {
+          "offset": 63,
+          "file": "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/replay-arg4-call.cpp",
+          "line": 4,
+          "col": 8,
+          "tokLen": 1
+        },
+        "constant_location": {
+          "offset": 98,
+          "col": 43,
+          "tokLen": 1
+        }
+      },
+      "expected": "UNRESOLVED",
+      "matched": true
+    },
+    {
+      "name": "replay-mutable",
+      "source_sha256": "182f06e49f0e07ed070d29bd6317c150a14b0a3e0f7428fad502caddae612352",
+      "metadata": {
+        "id": 1,
+        "size": 8,
+        "offsets": [
+          0,
+          4
+        ]
+      },
+      "GCC_stdout": "{\"id\":1,\"size\":8,\"offsets\":[0,4]}\n",
+      "result": {
+        "identity_proven": true,
+        "decision": "UNRESOLVED",
+        "reasons": [
+          "header declaration is not immutable integral const/constexpr"
+        ],
+        "sink_contract_status": "UNREVIEWED",
+        "sender_semantic_admission": false,
+        "runtime_admission": false,
+        "object_id": "0x55555579a028",
+        "send_object_id": "0x55555579a028",
+        "sizeof_object_id": "0x55555579a028",
+        "object_type": "P",
+        "function_id": "0x555555799f60",
+        "send_id": "0x55555579a508",
+        "sizeof_id": "0x55555579a3f0",
+        "sink_decl_id": "0x555555799470"
+      },
+      "without_metadata": {
+        "identity_proven": true,
+        "decision": "UNRESOLVED",
+        "reasons": [
+          "header declaration is not immutable integral const/constexpr"
+        ],
+        "sink_contract_status": "UNREVIEWED",
+        "sender_semantic_admission": false,
+        "runtime_admission": false,
+        "object_id": "0x55555579a028",
+        "send_object_id": "0x55555579a028",
+        "sizeof_object_id": "0x55555579a028",
+        "object_type": "P",
+        "function_id": "0x555555799f60",
+        "send_id": "0x55555579a508",
+        "sizeof_id": "0x55555579a3f0",
+        "sink_decl_id": "0x555555799470"
+      },
+      "expected": "UNRESOLVED",
+      "matched": true
+    },
+    {
+      "name": "replay-float-cast",
+      "source_sha256": "0499b0857c53f8df95f76a4758013eb07bf10be5b886416ae965facf22a3a596",
+      "metadata": {
+        "id": 1,
+        "size": 8,
+        "offsets": [
+          0,
+          4
+        ]
+      },
+      "GCC_stdout": "{\"id\":1,\"size\":8,\"offsets\":[0,4]}\n",
+      "result": {
+        "identity_proven": true,
+        "decision": "UNRESOLVED",
+        "reasons": [
+          "unsupported scalar cast kind/type"
+        ],
+        "sink_contract_status": "UNREVIEWED",
+        "sender_semantic_admission": false,
+        "runtime_admission": false,
+        "object_id": "0x555555799c68",
+        "send_object_id": "0x555555799c68",
+        "sizeof_object_id": "0x555555799c68",
+        "object_type": "P",
+        "function_id": "0x555555799ba0",
+        "send_id": "0x55555579a278",
+        "sizeof_id": "0x55555579a160",
+        "sink_decl_id": "0x5555557990b0",
+        "record_id": "0x555555798698",
+        "header_field_id": "0x555555798860",
+        "header_field_name": "h",
+        "header_constant_id": "0x555555798948",
+        "header_assignment_id": "0x555555799e40",
+        "header_value": 1,
+        "record_location": {
+          "offset": 63,
+          "file": "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/replay-float-cast.cpp",
+          "line": 4,
+          "col": 8,
+          "tokLen": 1
+        },
+        "constant_location": {
+          "offset": 98,
+          "col": 43,
+          "tokLen": 1
+        }
+      },
+      "without_metadata": {
+        "identity_proven": true,
+        "decision": "UNRESOLVED",
+        "reasons": [
+          "GCC layout evidence absent"
+        ],
+        "sink_contract_status": "UNREVIEWED",
+        "sender_semantic_admission": false,
+        "runtime_admission": false,
+        "object_id": "0x555555799c68",
+        "send_object_id": "0x555555799c68",
+        "sizeof_object_id": "0x555555799c68",
+        "object_type": "P",
+        "function_id": "0x555555799ba0",
+        "send_id": "0x55555579a278",
+        "sizeof_id": "0x55555579a160",
+        "sink_decl_id": "0x5555557990b0",
+        "record_id": "0x555555798698",
+        "header_field_id": "0x555555798860",
+        "header_field_name": "h",
+        "header_constant_id": "0x555555798948",
+        "header_assignment_id": "0x555555799e40",
+        "header_value": 1,
+        "record_location": {
+          "offset": 63,
+          "file": "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/replay-float-cast.cpp",
+          "line": 4,
+          "col": 8,
+          "tokLen": 1
+        },
+        "constant_location": {
+          "offset": 98,
+          "col": 43,
+          "tokLen": 1
+        }
+      },
+      "expected": "UNRESOLVED",
+      "matched": true
+    }
+  ],
+  "actual_CLI": {
+    "emotion": {
+      "exit": 0,
+      "result": {
+        "identity_proven": true,
+        "decision": "IDENTITY_LAYOUT_CANDIDATE",
+        "reasons": [],
+        "sink_contract_status": "UNREVIEWED",
+        "sender_semantic_admission": false,
+        "runtime_admission": false,
+        "object_id": "0x55555c95d100",
+        "send_object_id": "0x55555c95d100",
+        "sizeof_object_id": "0x55555c95d100",
+        "object_type": "PACKET_ZC_EMOTION",
+        "function_id": "0x55555c95d000",
+        "send_id": "0x55555c95d880",
+        "sizeof_id": "0x55555c95d7d0",
+        "sink_decl_id": "0x55555c566910",
+        "record_id": "0x55555877cce8",
+        "header_field_id": "0x55555877cf08",
+        "header_field_name": "packetType",
+        "header_constant_id": "0x55555877d068",
+        "header_assignment_id": "0x55555c95d2f0",
+        "header_value": 192,
+        "record_location": {
+          "offset": 46129,
+          "line": 1973,
+          "col": 8,
+          "tokLen": 17,
+          "includedFrom": {
+            "file": "/home/otto/.hermes/cache/scratch/native-profile-replay-s2jdj4rn/public-source/src/map/clif.hpp"
+          }
+        },
+        "constant_location": {
+          "spellingLoc": {
+            "offset": 3026,
+            "file": "<scratch space>",
+            "line": 116,
+            "col": 1,
+            "tokLen": 17
+          },
+          "expansionLoc": {
+            "offset": 46220,
+            "file": "/home/otto/.hermes/cache/scratch/native-profile-replay-s2jdj4rn/public-source/src/map/packets.hpp",
+            "line": 1978,
+            "col": 1,
+            "tokLen": 20,
+            "includedFrom": {
+              "file": "/home/otto/.hermes/cache/scratch/native-profile-replay-s2jdj4rn/public-source/src/map/clif.hpp"
+            }
+          }
+        },
+        "measured_size": 7,
+        "measured_offsets": [
+          0,
+          2,
+          6
+        ],
+        "sender": "clif_emotion",
+        "source_closure_sha256": "f045b33b434efc83a7e216f295bf899114a4a1a2daa159898fb738d8b553d6d6",
+        "authority_sha256": "602c856e8e368fe767ff6b54704416818dc7939a5c6606f0fb6af6b49c2e71ac",
+        "ast_artifact_sha256": "07238418270d5717f43aa169a51bd5f40c3e58598479831b25aa0d80af30f450",
+        "gcc_layout_artifact_sha256": "d79dfefd4be7efe0d6fbf3fd8cf7bfb135853dfe8935b39d758e7d99b3140ebf"
+      }
+    },
+    "name": {
+      "exit": 0,
+      "result": {
+        "identity_proven": false,
+        "decision": "UNRESOLVED",
+        "reasons": [
+          "send count not one"
+        ],
+        "sink_contract_status": "UNREVIEWED",
+        "sender_semantic_admission": false,
+        "runtime_admission": false,
+        "sender": "clif_name",
+        "source_closure_sha256": "f045b33b434efc83a7e216f295bf899114a4a1a2daa159898fb738d8b553d6d6",
+        "authority_sha256": "602c856e8e368fe767ff6b54704416818dc7939a5c6606f0fb6af6b49c2e71ac",
+        "ast_artifact_sha256": "07238418270d5717f43aa169a51bd5f40c3e58598479831b25aa0d80af30f450",
+        "gcc_layout_artifact_sha256": "d79dfefd4be7efe0d6fbf3fd8cf7bfb135853dfe8935b39d758e7d99b3140ebf"
+      }
+    },
+    "sitting": {
+      "exit": 0,
+      "result": {
+        "identity_proven": false,
+        "decision": "UNRESOLVED",
+        "reasons": [
+          "send count not one"
+        ],
+        "sink_contract_status": "UNREVIEWED",
+        "sender_semantic_admission": false,
+        "runtime_admission": false,
+        "sender": "clif_sitting",
+        "source_closure_sha256": "f045b33b434efc83a7e216f295bf899114a4a1a2daa159898fb738d8b553d6d6",
+        "authority_sha256": "602c856e8e368fe767ff6b54704416818dc7939a5c6606f0fb6af6b49c2e71ac",
+        "ast_artifact_sha256": "07238418270d5717f43aa169a51bd5f40c3e58598479831b25aa0d80af30f450",
+        "gcc_layout_artifact_sha256": "d79dfefd4be7efe0d6fbf3fd8cf7bfb135853dfe8935b39d758e7d99b3140ebf"
+      }
+    },
+    "wrong-profile": {
+      "exit": 2,
+      "result": {
+        "decision": "DENIED",
+        "reasons": [
+          "unsupported profile; denied before candidate"
+        ],
+        "runtime_admission": false,
+        "sender_semantic_admission": false
+      }
+    }
+  },
+  "reviewed_source_hashes": {
+    "trace_sender.py": "4adc11200b1343a2a555190cf9354f4ffdea9b2e2a9df1d9dcbb880c9d76cd68",
+    "test_trace.py": "1a9ff14bf6637a40548c392d255ff476466e2bfcdc76f4a9a629608c9a982578",
+    "README.md": "bafd450cf3c786e273e10f1c1a1ed613ac0ead2ec11efe1c3bcc2583221230fa",
+    "cli.py": "22c7c1d3a9df43afa2ab607554e3b4c1d2be80bd60da9243df8985ad5225dc95"
+  },
+  "source_freeze": {
+    "path": "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-final-freeze.json",
+    "sha256": "73ba72b8b1128feece42223b9b94cc9ac428d4313deceaac919da68d2995d31f",
+    "before": {
+      "count": 198,
+      "mismatches": []
+    },
+    "after": {
+      "count": 198,
+      "mismatches": []
+    },
+    "nonowned_count": 195,
+    "all_nonowned_stable": true,
+    "reviewed_source_hashes_match_author": true
+  },
+  "preservation": {
+    "native-ast-real-sender-explicit-cleanup.json": {
+      "report_sha256": "093c66b90b947e74d50c8c8660d5048c78625de3fdac80447dca150e87255d2d",
+      "count": 317,
+      "mismatches": []
+    },
+    "native-ast-real-sender-record-shape-final-review.json": {
+      "report_sha256": "128e00e3557b57f636506cce6f9e420c7c85596acd92e881b55f121a7852934f",
+      "count": 275,
+      "mismatches": []
+    },
+    "native-ast-real-sender-record-shape-repair.json": {
+      "report_sha256": "edcd12969e69be3200bcbb3c7c7293637a18eafd2eb7c73c2b97d6f4facd5ca4",
+      "count": 381,
+      "mismatches": []
+    },
+    "native-ast-real-sender-proof.json": {
+      "report_sha256": "8041ea9f408868e30891f204f88b8307f58909eaf719983ce433513a26335a41",
+      "count": 158,
+      "mismatches": []
+    },
+    "native-ast-real-sender-review-repair.json": {
+      "report_sha256": "575a3be4485ccec6ed7e99c13bde906f6b2bff1fc44f1a4d2dd937d712d10509",
+      "count": 234,
+      "mismatches": []
+    },
+    "native-ast-real-sender-independent-review.json": {
+      "count": 82,
+      "report_sha256": "92566646d1595b6aef846be03fc04d0c889ace9d6825e60f82ec6dc2f7d88fb1",
+      "mismatches": []
+    }
+  },
+  "commands": [
+    {
+      "name": "current-ruff",
+      "command": [
+        "/home/otto/dev/ro-bots/.venv/bin/ruff",
+        "check",
+        "--no-cache",
+        "--config",
+        "/home/otto/dev/ro-bots/pyproject.toml",
+        "--output-format",
+        "json",
+        "/home/otto/dev/ro-bots/spikes/007-native-packet-ast/sender-proof/trace_sender.py",
+        "/home/otto/dev/ro-bots/spikes/007-native-packet-ast/sender-proof/test_trace.py"
+      ],
+      "cwd": "/home/otto/dev/ro-bots",
+      "exit": 1
+    },
+    {
+      "name": "baseline-ruff",
+      "command": [
+        "/home/otto/dev/ro-bots/.venv/bin/ruff",
+        "check",
+        "--no-cache",
+        "--config",
+        "/home/otto/dev/ro-bots/pyproject.toml",
+        "--output-format",
+        "json",
+        "/home/otto/.hermes/cache/scratch/sender-record-repair2-3m48zvmq/trace_sender.py",
+        "/home/otto/.hermes/cache/scratch/sender-record-repair2-3m48zvmq/test_trace.py"
+      ],
+      "cwd": "/home/otto/dev/ro-bots",
+      "exit": 1
+    },
+    {
+      "name": "current-black",
+      "command": [
+        "/home/otto/dev/ro-bots/.venv/bin/black",
+        "--check",
+        "--workers",
+        "1",
+        "--config",
+        "/home/otto/dev/ro-bots/pyproject.toml",
+        "/home/otto/dev/ro-bots/spikes/007-native-packet-ast/sender-proof/trace_sender.py",
+        "/home/otto/dev/ro-bots/spikes/007-native-packet-ast/sender-proof/test_trace.py"
+      ],
+      "cwd": "/home/otto/dev/ro-bots",
+      "exit": 0
+    },
+    {
+      "name": "baseline-black",
+      "command": [
+        "/home/otto/dev/ro-bots/.venv/bin/black",
+        "--check",
+        "--workers",
+        "1",
+        "--config",
+        "/home/otto/dev/ro-bots/pyproject.toml",
+        "/home/otto/.hermes/cache/scratch/sender-record-repair2-3m48zvmq/trace_sender.py",
+        "/home/otto/.hermes/cache/scratch/sender-record-repair2-3m48zvmq/test_trace.py"
+      ],
+      "cwd": "/home/otto/dev/ro-bots",
+      "exit": 1
+    },
+    {
+      "name": "current-mypy",
+      "command": [
+        "/home/otto/dev/ro-bots/.venv/bin/mypy",
+        "--no-incremental",
+        "--cache-dir",
+        "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/current-mypy-cache",
+        "--config-file",
+        "/home/otto/dev/ro-bots/pyproject.toml",
+        "/home/otto/dev/ro-bots/spikes/007-native-packet-ast/sender-proof/trace_sender.py",
+        "/home/otto/dev/ro-bots/spikes/007-native-packet-ast/sender-proof/test_trace.py"
+      ],
+      "cwd": "/home/otto/dev/ro-bots",
+      "exit": 0
+    },
+    {
+      "name": "baseline-mypy",
+      "command": [
+        "/home/otto/dev/ro-bots/.venv/bin/mypy",
+        "--no-incremental",
+        "--cache-dir",
+        "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/baseline-mypy-cache",
+        "--config-file",
+        "/home/otto/dev/ro-bots/pyproject.toml",
+        "/home/otto/.hermes/cache/scratch/sender-record-repair2-3m48zvmq/trace_sender.py",
+        "/home/otto/.hermes/cache/scratch/sender-record-repair2-3m48zvmq/test_trace.py"
+      ],
+      "cwd": "/home/otto/dev/ro-bots",
+      "exit": 1
+    },
+    {
+      "name": "tests",
+      "command": [
+        "python3",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "/home/otto/dev/ro-bots/spikes/007-native-packet-ast/sender-proof",
+        "-v"
+      ],
+      "cwd": "/home/otto/dev/ro-bots",
+      "exit": 0
+    },
+    {
+      "name": "field-packed-clang",
+      "command": [
+        "clang++",
+        "-std=c++17",
+        "-fsyntax-only",
+        "-Xclang",
+        "-ast-dump=json",
+        "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/field-packed.cpp"
+      ],
+      "cwd": "/home/otto/dev/ro-bots",
+      "exit": 0
+    },
+    {
+      "name": "field-packed-gcc",
+      "command": [
+        "g++",
+        "-std=c++17",
+        "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/field-packed.cpp",
+        "-o",
+        "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/field-packed.bin"
+      ],
+      "cwd": "/home/otto/dev/ro-bots",
+      "exit": 0
+    },
+    {
+      "name": "field-packed-execute",
+      "command": [
+        "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/field-packed.bin"
+      ],
+      "cwd": "/home/otto/dev/ro-bots",
+      "exit": 0
+    },
+    {
+      "name": "union-clang",
+      "command": [
+        "clang++",
+        "-std=c++17",
+        "-fsyntax-only",
+        "-Xclang",
+        "-ast-dump=json",
+        "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/union.cpp"
+      ],
+      "cwd": "/home/otto/dev/ro-bots",
+      "exit": 0
+    },
+    {
+      "name": "union-gcc",
+      "command": [
+        "g++",
+        "-std=c++17",
+        "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/union.cpp",
+        "-o",
+        "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/union.bin"
+      ],
+      "cwd": "/home/otto/dev/ro-bots",
+      "exit": 0
+    },
+    {
+      "name": "union-execute",
+      "command": [
+        "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/union.bin"
+      ],
+      "cwd": "/home/otto/dev/ro-bots",
+      "exit": 0
+    },
+    {
+      "name": "packed-unsigned-alias-clang",
+      "command": [
+        "clang++",
+        "-std=c++17",
+        "-fsyntax-only",
+        "-Xclang",
+        "-ast-dump=json",
+        "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/packed-unsigned-alias.cpp"
+      ],
+      "cwd": "/home/otto/dev/ro-bots",
+      "exit": 0
+    },
+    {
+      "name": "packed-unsigned-alias-gcc",
+      "command": [
+        "g++",
+        "-std=c++17",
+        "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/packed-unsigned-alias.cpp",
+        "-o",
+        "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/packed-unsigned-alias.bin"
+      ],
+      "cwd": "/home/otto/dev/ro-bots",
+      "exit": 0
+    },
+    {
+      "name": "packed-unsigned-alias-execute",
+      "command": [
+        "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/packed-unsigned-alias.bin"
+      ],
+      "cwd": "/home/otto/dev/ro-bots",
+      "exit": 0
+    },
+    {
+      "name": "packed-signed-alias-clang",
+      "command": [
+        "clang++",
+        "-std=c++17",
+        "-fsyntax-only",
+        "-Xclang",
+        "-ast-dump=json",
+        "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/packed-signed-alias.cpp"
+      ],
+      "cwd": "/home/otto/dev/ro-bots",
+      "exit": 0
+    },
+    {
+      "name": "packed-signed-alias-gcc",
+      "command": [
+        "g++",
+        "-std=c++17",
+        "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/packed-signed-alias.cpp",
+        "-o",
+        "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/packed-signed-alias.bin"
+      ],
+      "cwd": "/home/otto/dev/ro-bots",
+      "exit": 0
+    },
+    {
+      "name": "packed-signed-alias-execute",
+      "command": [
+        "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/packed-signed-alias.bin"
+      ],
+      "cwd": "/home/otto/dev/ro-bots",
+      "exit": 0
+    },
+    {
+      "name": "replay-arg3-call-clang",
+      "command": [
+        "clang++",
+        "-std=c++17",
+        "-fsyntax-only",
+        "-Xclang",
+        "-ast-dump=json",
+        "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/replay-arg3-call.cpp"
+      ],
+      "cwd": "/home/otto/dev/ro-bots",
+      "exit": 0
+    },
+    {
+      "name": "replay-arg3-call-gcc",
+      "command": [
+        "g++",
+        "-std=c++17",
+        "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/replay-arg3-call.cpp",
+        "-o",
+        "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/replay-arg3-call.bin"
+      ],
+      "cwd": "/home/otto/dev/ro-bots",
+      "exit": 0
+    },
+    {
+      "name": "replay-arg3-call-execute",
+      "command": [
+        "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/replay-arg3-call.bin"
+      ],
+      "cwd": "/home/otto/dev/ro-bots",
+      "exit": 0
+    },
+    {
+      "name": "replay-arg4-call-clang",
+      "command": [
+        "clang++",
+        "-std=c++17",
+        "-fsyntax-only",
+        "-Xclang",
+        "-ast-dump=json",
+        "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/replay-arg4-call.cpp"
+      ],
+      "cwd": "/home/otto/dev/ro-bots",
+      "exit": 0
+    },
+    {
+      "name": "replay-arg4-call-gcc",
+      "command": [
+        "g++",
+        "-std=c++17",
+        "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/replay-arg4-call.cpp",
+        "-o",
+        "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/replay-arg4-call.bin"
+      ],
+      "cwd": "/home/otto/dev/ro-bots",
+      "exit": 0
+    },
+    {
+      "name": "replay-arg4-call-execute",
+      "command": [
+        "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/replay-arg4-call.bin"
+      ],
+      "cwd": "/home/otto/dev/ro-bots",
+      "exit": 0
+    },
+    {
+      "name": "replay-mutable-clang",
+      "command": [
+        "clang++",
+        "-std=c++17",
+        "-fsyntax-only",
+        "-Xclang",
+        "-ast-dump=json",
+        "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/replay-mutable.cpp"
+      ],
+      "cwd": "/home/otto/dev/ro-bots",
+      "exit": 0
+    },
+    {
+      "name": "replay-mutable-gcc",
+      "command": [
+        "g++",
+        "-std=c++17",
+        "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/replay-mutable.cpp",
+        "-o",
+        "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/replay-mutable.bin"
+      ],
+      "cwd": "/home/otto/dev/ro-bots",
+      "exit": 0
+    },
+    {
+      "name": "replay-mutable-execute",
+      "command": [
+        "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/replay-mutable.bin"
+      ],
+      "cwd": "/home/otto/dev/ro-bots",
+      "exit": 0
+    },
+    {
+      "name": "replay-float-cast-clang",
+      "command": [
+        "clang++",
+        "-std=c++17",
+        "-fsyntax-only",
+        "-Xclang",
+        "-ast-dump=json",
+        "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/replay-float-cast.cpp"
+      ],
+      "cwd": "/home/otto/dev/ro-bots",
+      "exit": 0
+    },
+    {
+      "name": "replay-float-cast-gcc",
+      "command": [
+        "g++",
+        "-std=c++17",
+        "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/replay-float-cast.cpp",
+        "-o",
+        "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/replay-float-cast.bin"
+      ],
+      "cwd": "/home/otto/dev/ro-bots",
+      "exit": 0
+    },
+    {
+      "name": "replay-float-cast-execute",
+      "command": [
+        "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/replay-float-cast.bin"
+      ],
+      "cwd": "/home/otto/dev/ro-bots",
+      "exit": 0
+    },
+    {
+      "name": "cli-emotion",
+      "command": [
+        "python3",
+        "-B",
+        "/home/otto/dev/ro-bots/spikes/007-native-packet-ast/sender-proof/cli.py",
+        "clif_emotion"
+      ],
+      "cwd": "/home/otto/dev/ro-bots",
+      "exit": 0
+    },
+    {
+      "name": "cli-name",
+      "command": [
+        "python3",
+        "-B",
+        "/home/otto/dev/ro-bots/spikes/007-native-packet-ast/sender-proof/cli.py",
+        "clif_name"
+      ],
+      "cwd": "/home/otto/dev/ro-bots",
+      "exit": 0
+    },
+    {
+      "name": "cli-sitting",
+      "command": [
+        "python3",
+        "-B",
+        "/home/otto/dev/ro-bots/spikes/007-native-packet-ast/sender-proof/cli.py",
+        "clif_sitting"
+      ],
+      "cwd": "/home/otto/dev/ro-bots",
+      "exit": 0
+    },
+    {
+      "name": "cli-wrong-profile",
+      "command": [
+        "python3",
+        "-B",
+        "/home/otto/dev/ro-bots/spikes/007-native-packet-ast/sender-proof/cli.py",
+        "clif_emotion",
+        "--profile",
+        "20211103"
+      ],
+      "cwd": "/home/otto/dev/ro-bots",
+      "exit": 2
+    }
+  ],
+  "sender_semantic_admission": false,
+  "runtime_admission": false,
+  "sink_contract_status": "UNREVIEWED",
+  "all_six_milestones": "OPEN",
+  "run_proof_executed": false,
+  "full_AST_regenerated": false,
+  "repairs_performed": false,
+  "remaining_frontier": [
+    "No general C++ safety claim; bounded recognizer only.",
+    "Sink U2-U7 and sender/runtime admission remain unresolved.",
+    "Whole-project runtime, deployment, gameplay and integration acceptance not exercised or authorized."
+  ],
+  "evidence_artifacts_sha256": {
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/tmplshqel0s.cpp": "a098659fe5cb5c065269f8d37a8d28939329811a936506211038704cae1ba406",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/field-packed-clang.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/current-ruff.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/field-packed.cpp": "31babfaf1dfd0c3f719e5a92fb0559fcc3fb66dcb7f7c58b0222c69650f1227a",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/current-ruff.stdout": "afeab4be7797bf8332154ea1decd0a5fa91dfafa4a32e36679b3ac1bfe767d1f",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/tmpod4scouy.cpp": "500c0a1a7cca75301ce05c5a3990e5afe9f23a67d57bcdf1d3fbf6eee7a39d06",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/packed-signed-alias-gcc.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/packed-unsigned-alias-clang.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/tmp_d7owy42.clang.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/field-packed-gcc.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/replay-arg4-call-gcc.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/cli-sitting.stdout": "97d0e4baddf60e824b93d0073f05780d37ff0b775cd7c28717c64d0b4f436ea9",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/replay-float-cast-clang.stdout": "596e78dfd3ba867558f7bbf9d34477c8b0334b6b8ecfe2ed07e94d6efade262c",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/replay-float-cast.bin": "29bcffcdb6b8e3d4ac1ff9630dcac499eada53c42417a02e9a72bfed7f8a771c",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/tmpply0kzne.bin": "7dc896eddb687e02af4e72342008ae24128fc5b02b460261c261e00c22e55cc0",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/replay-arg4-call-clang.stdout": "f93e48d9575af9b3ae096b50ab2735375cc55aab6c100ff1a7bf4952f91501a2",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/tmpszkaixqh.clang.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/packed-signed-alias-clang.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/tests.stderr": "dd13957d03fcad02e6d618e4594e55458e58a08e9c9df6cf5e2b6f94b1b357b0",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/field-packed-execute.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/tmpu76ovu7i.ast.json": "b72d8ed8c1ea10f6530b491108c6d24f1334ea7472b8116f7477c22b419ea246",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/replay-mutable-execute.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/tmp4l8i80g_.cpp": "b7996f168c79fb14ba961414d9f3e03e09007eca918cbc4facc045417400b537",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/tmp0lo56lby.cpp": "6d0b49742b3c705926cc4aca7debc619882ece77a7b8921a43290b5c73c651c8",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/tmpmqs1oevb.stdout": "d2b743c0557ec25df1c9b472cf21beab078bd67bd8afeac8b3e3aa25a3246bdc",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/replay-mutable.bin": "477f08d0c685f9ed22964401ed024360726f6c8def71fe48da05677040760d49",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/replay-mutable-clang.stdout": "4a1ad9398d9912888977a9c95f8c1110fc9b07a7008b0ef85ef4064242c0a535",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/tmpply0kzne.result.json": "05756e4e220a94512a64846d96de77293afc1593c79c2e948d6ff080243cf6e9",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/tmp_d7owy42.cpp": "998df380c58960257f1bb168ff8657fbc4154dc791165a3af09fe79da218ac70",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/tmp4dyh24tb.ast.json": "f77cf49147673b959ca53ee20cfc7c6a4c6968825cd908ca313a67514d00383f",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/tmp8p9jj6xp.clang.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/cli-wrong-profile.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/replay-arg3-call-gcc.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/tmpm1rf9v_j.cpp": "608fce4d4a4b184895649b675611341fb9362adbda0004b059a17a81384761e4",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/union-gcc.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/tmpi1zma406.stdout": "1aa7ff64c12b207c516be093270db0338b225d626a3e2d94b1c6cc411359a636",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/current-black.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/baseline-mypy.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/replay-arg4-call.bin": "f01039ed2caacf395f3f13175c673d0ef8179ed3f46c616d1e75c776e70bf7a7",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/replay-arg4-call.cpp": "7092cf7d1952af95488f4cbea701acc70fb5947cc914c9f609b77d46c3bc5cfb",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/tmpm1rf9v_j.stdout": "24370d9cb51821e64485f9c0483eb81ef0302b41d5d67edd1803e4e4b5d9cef2",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/replay-arg4-call-gcc.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/tmp0lo56lby.ast.json": "3d2a4761958106a960794c7859e6d5e64675e5e3aa2bc728dfe88f12c15ef81c",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/packed-unsigned-alias.cpp": "0f9c895bf08ceb8c946b1d765ddcbccd2b29200ba5333becd16d7bf8c7717e95",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/cli-emotion.stdout": "597dea97de3efe9f536596c9a30a1f438c8987ba86bb5f476660e56bedfe45f8",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/tmpszkaixqh.ast.json": "21335354149a6d182a957d2fe87b0dec41d22bceb1cedc5ae5b929e63afdf569",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/packed-signed-alias-execute.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/replay-arg4-call-clang.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/tmp8p9jj6xp.ast.json": "d767fc980906fcda8639ba6c26bc7d2cf31593b90662fed649f02d45d1b79966",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/tmp8ei33672.bin": "59e80eb77596f7bbbb6bd507eababff83e5a5318a1ccce2748fdeaef4c205269",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/tmpu76ovu7i.cpp": "dc2ed4fd603df4f66bcd67a90a4816c11653581bb5c68eb4e942245214647d3a",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/tmpply0kzne.ast.json": "1bb73f6589531bc9094147e8541bf4b5fe590701990ccd9bb87e2b723f1b05ce",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/union.cpp": "62bb4f345c109285cb95bc1c84ee82a36289e329eeb95ad8f8d1594f00af5fb4",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/tmp4dyh24tb.cpp": "312efe79a3d03bc57c52753d0b18555544c11849ee342c82c319f6f656532eae",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/union-execute.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/union-gcc.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/current-black.stderr": "b9cf511501d306d2bd8355ccb165c8ddc0a6fdd62d7c72c4a7b1795cf8934c8c",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/replay-mutable-clang.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/current-mypy.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/field-packed-execute.stdout": "212d721dc423be613541927dc8e9a4576cd6d273d7df75961b2b099868ad1feb",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/tmpod4scouy.gcc.stdout": "2455d2e351d9e64dd5e0d48c58d54589baf863f04d3e8dbbada574ae5f4d2f09",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/tmpm1rf9v_j.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/packed-signed-alias.bin": "9cb78220c18ecb647a7885aeeaeb501e7240db9961454210200c51e4f4e12b1f",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/tmpply0kzne.gcc.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/baseline-mypy.stdout": "5ea9ca0ae4e531baf8b649493a1c4a5e00fb5d8b688ee8ce7884e458a1f0c312",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/replay-mutable-execute.stdout": "6a8df598dddcb1d006fa589b246e7db5c83229036fcd529cab5ee894739f03e3",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/packed-signed-alias-gcc.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/packed-unsigned-alias-execute.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/tests.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/tmp8ei33672.gcc.stdout": "2455d2e351d9e64dd5e0d48c58d54589baf863f04d3e8dbbada574ae5f4d2f09",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/tmpv3jb4d9z.stdout": "b0745525e438ff739688c0c6c4f87507cd8a86461bd386c93badda66bd7a7f31",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/tmpod4scouy.clang.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/cli-sitting.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/tmpply0kzne.clang.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/tmpod4scouy.ast.json": "a3946a2b6cbc3cb24f0aa53dc9a1c4ab228cfff29b2bec96f8c5b0434167069a",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/tmplshqel0s.stdout": "82cb813d77abfbb06bcad7854d0899c36ab1c69bc9baeafbc82e740dcb5b8542",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/tmpod4scouy.bin": "e3e37e25bb4a7be20ccabcbc742218291d88bdb105a6713e88cb0c98c05f9fc0",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/replay-arg3-call-execute.stdout": "6a8df598dddcb1d006fa589b246e7db5c83229036fcd529cab5ee894739f03e3",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/tmp7jjk1958.ast.json": "ee1ab858e954f6cad0e0c2cae0821bd80a5134bd5050a58e5c4ce5241d5a91df",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/tmp8ei33672.ast.json": "868a7d7265316dc10ce57db03187c8dbd2bbef175c23c7c581fd6c6b004f9079",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/replay-float-cast-execute.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/packed-unsigned-alias-gcc.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/tmp4l8i80g_.ast.json": "f97ad24f1a3136305ec0938c72d80fdca5cefe51e1017abc45283cc24b3ffff6",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/packed-unsigned-alias-execute.stdout": "212d721dc423be613541927dc8e9a4576cd6d273d7df75961b2b099868ad1feb",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/packed-signed-alias.cpp": "02862cc3cbc414a6dfdce98692a22f7537d4d48319c6919c851b1c7518c9b290",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/tmpbmoinz3o.cpp": "51e2a448e3608ea9e23c18f8a4666b66f6d26b8fcc87a1e90d0000006a86a260",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/tmp7jjk1958.clang.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/tmp0lo56lby.bin": "cc7a964f733df49175ab81acdfa3be46f2b0de7ca255d0ba414df306e1513cf3",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/tmpply0kzne.gcc.stdout": "7f77b9672612603c5e02fd38924c5cd66e2cf09f8d0c031b902318f186a8d9aa",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/replay-arg3-call-clang.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/tmpszkaixqh.cpp": "4d9c54f73dd6c972cf2f9c8aa243ccedb60dd1aeb6f8616616cb446e6530b095",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/cli-emotion.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/tmp0lo56lby.gcc.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/baseline-ruff.stdout": "8557b2fe8253b00fac84f478759a84a28436cdce8e47b37dd35aaaebac4ae945",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/tmp7jjk1958.cpp": "f82bbcc97ce952821b8f9a9a750f038128f1cdee2e5fb3a63f672de2b602e86b",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/replay-float-cast-gcc.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/tmpcvj9jlr0.stdout": "b75a2723d538b4d9742018bed13c65fe72d132eb33e7a8003f964456a2bb667e",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/union-clang.stdout": "4b5c1b5b40c3cc86e3cbc63cac781d63bdbc6ec508b9ce5e2fb5174843ec845b",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/tmp8ei33672.cpp": "ba0bd89592fbaff5485418e4e8eb8200933fffa2e8ffe676c7487969e85e2062",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/tmprz21u1f0.ast.json": "aea98244b54598d2e17aec8f5a0ec5bbcb929b3b26aa951b7ef2b381dd9ea44d",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/tmp4l8i80g_.clang.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/tmpcvj9jlr0.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/tmp7nhddx3i.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/tmpbmoinz3o.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/tmpi1zma406.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/tmpv3jb4d9z.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/baseline-black.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/tmpmqs1oevb.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/field-packed.bin": "6f2e9e0ba124ebb83c2ade63c0ca2e68482cb2da37ee89f4d2e475bc2408d78d",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/tmp0lo56lby.gcc.stdout": "212d721dc423be613541927dc8e9a4576cd6d273d7df75961b2b099868ad1feb",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/packed-unsigned-alias-clang.stdout": "12bd38828b146d4113cd68520b86017f10afe5080a0fb12e969cb50993c8bc8c",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/replay-arg4-call-execute.stdout": "6a8df598dddcb1d006fa589b246e7db5c83229036fcd529cab5ee894739f03e3",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/tmp_d7owy42.ast.json": "0d8d35e235fce43572cc3ee4c8fc938caa54c68dc123a8325e99b50ccb3f72fb",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/replay-float-cast.cpp": "0499b0857c53f8df95f76a4758013eb07bf10be5b886416ae965facf22a3a596",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/tmpbmoinz3o.stdout": "9a9a377b53b9d6f54655f8a974886ccb8b55358807deab6e533f6f481e131f47",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/tmp7nhddx3i.stdout": "27d35c6b49ea269412d12da75a0116eb47063394737120aa86301e31db706c42",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/baseline-black.stderr": "4708d047253c5a8d630121bcba661a156a73a6bb8d1366ddc3aa1d218663efe0",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/tmp7nhddx3i.cpp": "7b50ec581f8020d7d282731a5c3b718bbc95c59cf8debc6bee9c4e3485eb1e72",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/replay-mutable.cpp": "182f06e49f0e07ed070d29bd6317c150a14b0a3e0f7428fad502caddae612352",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/cli-name.stdout": "7df4dd8267fa98940a551f316950e738f37dd8892578873aeae7502f0fe6c505",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/tmpcvj9jlr0.cpp": "8b48fc6ea50102519091475db12978d8736da0c01bcb94acac8c9bfe1bd5bf7b",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/union.bin": "2db1331e5dc1b8134d9f34089fc8157611b16bf5ab962027652c5b88106ee66b",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/cli-wrong-profile.stdout": "82f0413cd3d48f4fa86301b4d82ed00c780c5491e9d0ed97168aae0b4c357781",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/body-delta.json": "ab57f27da7c59fcbb3ba818a701cd1b1a07a5ca2d69b4d59a95dcb6cc295e810",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/packed-signed-alias-execute.stdout": "212d721dc423be613541927dc8e9a4576cd6d273d7df75961b2b099868ad1feb",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/replay-arg3-call-gcc.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/replay-arg3-call.bin": "7cec336c41ca175e26772cfc99d2965ec8a6a71534a1d5d8597f2ee0a10d6acc",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/tmpv3jb4d9z.cpp": "cf6ac874981bcbfba0aba7c2055946b3296c31527ffd0cd60791274a95b1a76f",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/field-packed-gcc.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/replay-float-cast-execute.stdout": "6a8df598dddcb1d006fa589b246e7db5c83229036fcd529cab5ee894739f03e3",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/union-execute.stdout": "7f77b9672612603c5e02fd38924c5cd66e2cf09f8d0c031b902318f186a8d9aa",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/replay-arg4-call-execute.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/tmp0mki5mkd.clang.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/tmp8p9jj6xp.cpp": "52e01204b2e38380b5de1edd7f484a05dc5906b76ad98bb026ae132337ddf45c",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/tmprz21u1f0.clang.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/tmpmqs1oevb.cpp": "4eb5039a11c4690eabb67af6a7eb9ef3717a49778c40ff5163f773ec8fae86f8",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/tmpi1zma406.cpp": "7768d048413e6bc119fcccdde19fc933497d5b88b508ab618e13ecc5e3c109f8",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/baseline-ruff.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/tmpu76ovu7i.clang.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/tmp0mki5mkd.cpp": "397ec2593d7b6378bc8d03136b31e1555a167969f45eec3a73682ccc909b1208",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/replay-mutable-gcc.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/tmp0mki5mkd.ast.json": "88ff55f610caeef69d5b8f644f72a3b2acab80cb998088a2973006475499089a",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/tmprz21u1f0.cpp": "0a40247ecd75b60d27c96975f3f0214014876355e8310bcc2899f53bbce5e647",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/packed-unsigned-alias-gcc.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/replay-float-cast-gcc.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/replay-arg3-call-clang.stdout": "bdbf6d1ab724c132298495e7d6a7282e56c132b906f9064d8679378df59b9257",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/current-mypy.stdout": "f9b031e5c45aa702cd4fef028d465551cb20a2c4698e0913c7b00766b20ac4d8",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/tmp4dyh24tb.clang.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/cli-name.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/packed-signed-alias-clang.stdout": "1faf64d95cfdd7472dfa49dcabd29518f5fc8e8bfc9321a6a98565b691c94446",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/tmp8ei33672.clang.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/replay-mutable-gcc.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/packed-unsigned-alias.bin": "8c20ad246746d610f731f48b32b6c0c9a4d6a18444c44727aa02ebb5ac848ee2",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/tmp0lo56lby.clang.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/union-clang.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/tmpply0kzne.cpp": "e57e4ec98f88b46af1d794ffa5fe53eaf166552f8e0bc9238d201db6299f47ab",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/field-packed-clang.stdout": "5c004816b32400bc6575f2be101809c12a81e0a8352931d5f71e69f0ace0d35f",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/replay-float-cast-clang.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/replay-arg3-call-execute.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/replay-arg3-call.cpp": "c9f9df488050b9464fbf1d74a32b93f1795dd68997eda8ef1643a7aa1e8eeb9a",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/tmplshqel0s.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/current-mypy-cache/CACHEDIR.TAG": "f1c13afc555358c9033b0f1f30aaa177fe88bda40f4b8a24598400d547876adc",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/current-mypy-cache/.gitignore": "6a69da670d11530d37f0f0cfdc7bed30b78ea6434e24f7a73208b982e29d322c",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/baseline-mypy-cache/CACHEDIR.TAG": "f1c13afc555358c9033b0f1f30aaa177fe88bda40f4b8a24598400d547876adc",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/baseline-mypy-cache/.gitignore": "6a69da670d11530d37f0f0cfdc7bed30b78ea6434e24f7a73208b982e29d322c",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/baseline-mypy-cache/3.14/cache.5.db": "fd41bcc18b470bc33ec1bc6dcb65a26eacb1dfb444b6f2ed3d83a425cfc09af7",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/baseline-mypy-cache/3.14/cache.9.db": "d92b284739e4de059b1c16c3cd7bc4f1f57ead012767763cf5f0f01e0bf23d5d",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/baseline-mypy-cache/3.14/cache.2.db": "04a7f7dbbe7888d25089a2188605fafeb56d82106bff5f6f000f463cc688ea80",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/baseline-mypy-cache/3.14/cache.10.db": "922d44aefc06079e64293ba36b238ffac698def5f93ef0c163887b86b303dd80",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/baseline-mypy-cache/3.14/cache.6.db": "0df60c1363cd531493024d1fcd4ffdd4501d40f24a01b7360b92166119a549be",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/baseline-mypy-cache/3.14/cache.8.db": "815bf68405adc600d4c9770917e955c2d834d4f8eebf5f411cf7e36cd3dace4b",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/baseline-mypy-cache/3.14/cache.0.db": "86f520b770fa6f40acabb58e9ed76686388d80e98e446a1268d0b16082b6eb6e",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/baseline-mypy-cache/3.14/cache.7.db": "646ffd6c3a0fc72854b3d38eaa04401165a8793160ff1425c1c4866e20290f2b",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/baseline-mypy-cache/3.14/cache.11.db": "f00521fc76b5442e096588236904c65d84ae667757a9388a96b7e85623ae3654",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/baseline-mypy-cache/3.14/cache.12.db": "afa235574696b75f1f951327c522cf55669445e87e41aa0907b6e524fbc8c1ac",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/baseline-mypy-cache/3.14/cache.1.db": "de8fd4e72006ed5949d5dc5a64ae809621f33ca798facc8575b798287598ac79",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/baseline-mypy-cache/3.14/cache.4.db": "249f4fe3a45b21402d50e771872cfc3e4b537cecd188539f9d4fcd05c3d9b7b8",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/baseline-mypy-cache/3.14/cache.15.db": "1699d56074a2ebd8fe4dfa119e41a8b8d12afa88c454b8feb69c98371cb73690",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/baseline-mypy-cache/3.14/cache.3.db": "c6e5f7522f73bac658504f7272a6f3227dc8fdbc6beb060852a7844cb794f5aa",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/baseline-mypy-cache/3.14/cache.13.db": "77bfc55b84835d244f5184251717fccbee9afb6b2097385bf0f6fedb87f900ac",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/baseline-mypy-cache/3.14/cache.14.db": "aaf412a2cf959e4e6446fd5cc08e754e0ef62ba9dc78463f9d3020bff61d041c",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/current-mypy-cache/3.14/cache.5.db": "d9a2ed5a928e38c46403cdec910d94ee5b40ced2e3e473614dd9cb8758298b4c",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/current-mypy-cache/3.14/cache.9.db": "d879b5b64126b875e84cebce1f468c8de65d8a9b4ee18554dc09cc827fdf8aad",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/current-mypy-cache/3.14/cache.2.db": "9d43cb76b246c6e4a2c3245ed3fb8806c9562665fc141b44880e2721e1cfca94",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/current-mypy-cache/3.14/cache.10.db": "77d397332aa88192d156c2df2cbb6ab1765e8cab83429365023ef6f6fc60a6ba",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/current-mypy-cache/3.14/cache.6.db": "77edaee8f178dfed6e59cd4d823d0bf29bca28ca461907f72f11137c4e8726ab",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/current-mypy-cache/3.14/cache.8.db": "d9d2694f4ce396c4fd0579623455fd0650872ea11e0add9a8bc585feb3349528",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/current-mypy-cache/3.14/cache.0.db": "fdbb2410eb0db88f5bde2cf83cc36061ec640866b6f377e272012b35195da9ed",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/current-mypy-cache/3.14/cache.7.db": "efe3e9adf3c296455054b48ac5bdad0a13a98bf5ef923e19b64e808f3b00da9d",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/current-mypy-cache/3.14/cache.11.db": "fcce5822d960e7384c1741d9b18be4b7c2d745aaeb9b79dde8f0e193705e051b",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/current-mypy-cache/3.14/cache.12.db": "ff1797669d7e2befa7359ce766e00c356441ead518111b9dba327aaf3239f02e",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/current-mypy-cache/3.14/cache.1.db": "3a8cd20fe8fc2c8a1050daf367cc916d2ada852f61eb80301ea4a6f9152a4041",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/current-mypy-cache/3.14/cache.4.db": "73bcde3914c046f3cbce193b0c7a27b0e9f75a7230e65de2a3072f761faef52b",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/current-mypy-cache/3.14/cache.15.db": "1e67f7dde1920b72c9cf105417d5ff020ad541e683ca9c6a72060835c20e012d",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/current-mypy-cache/3.14/cache.3.db": "82dcca3a0a60172293c3c9b3723aecbf8f89cddeb036f0921fa074dfe020247e",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/current-mypy-cache/3.14/cache.13.db": "edb0c1b26817f15e76f8f17a58c9dfbd0365a12f213a341fe308de1626123777",
+    "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8/current-mypy-cache/3.14/cache.14.db": "857e2128a80b8a9ce79b8dca341f806b59c320dc7a1b6e904a20ce0b3ebbf7ca",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/before-trace_sender.py": "096628098957275599da7da9a34c678d8d4c763bb871b8301669606a3dde4a8a",
+    "/home/otto/.hermes/cache/scratch/native-explicit-cleanup-20261007/before-test_trace.py": "4c48676433e4dcfc70efc9bdd1d766171751584ca492b2cdf08573ae37b12d18",
+    "/home/otto/dev/ro-bots/pyproject.toml": "e8ae0849a413bc3d705f081f609b92dae702bbd3e491b2c3aeb5d8665c458fba",
+    "/home/otto/dev/ro-bots/run/reviews/native-ast-real-sender-explicit-cleanup-scope.json": "33d179de23778f472f72fe84e4b6d9ab472d088725336edd26adc496dce4b13d",
+    "/home/otto/.hermes/cache/scratch/independent-explicit-cleanup-review-20261007.py": "d066468fa754a79ae713224843b75ccc51c1f23364310df574c64e4480c29039",
+    "/home/otto/.hermes/cache/scratch/independent-explicit-cleanup-finalize-20261007.py": "d0c1f34a479d20890a8f83097144ef98db162ecafb8ef92ea335d4ca13d06b38"
+  },
+  "reviewer_scratch": "/home/otto/.hermes/cache/scratch/independent-cleanup-1lp5lqs8",
+  "before_after_fresh_probe_comparison": [
+    {
+      "name": "field-packed",
+      "before_decision": "IDENTITY_LAYOUT_CANDIDATE",
+      "after_decision": "UNRESOLVED",
+      "entire_trace_equal": false
+    },
+    {
+      "name": "union",
+      "before_decision": "UNRESOLVED",
+      "after_decision": "UNRESOLVED",
+      "entire_trace_equal": true
+    },
+    {
+      "name": "packed-unsigned-alias",
+      "before_decision": "IDENTITY_LAYOUT_CANDIDATE",
+      "after_decision": "IDENTITY_LAYOUT_CANDIDATE",
+      "entire_trace_equal": true
+    },
+    {
+      "name": "packed-signed-alias",
+      "before_decision": "IDENTITY_LAYOUT_CANDIDATE",
+      "after_decision": "IDENTITY_LAYOUT_CANDIDATE",
+      "entire_trace_equal": true
+    },
+    {
+      "name": "replay-arg3-call",
+      "before_decision": "UNRESOLVED",
+      "after_decision": "UNRESOLVED",
+      "entire_trace_equal": true
+    },
+    {
+      "name": "replay-arg4-call",
+      "before_decision": "UNRESOLVED",
+      "after_decision": "UNRESOLVED",
+      "entire_trace_equal": true
+    },
+    {
+      "name": "replay-mutable",
+      "before_decision": "UNRESOLVED",
+      "after_decision": "UNRESOLVED",
+      "entire_trace_equal": true
+    },
+    {
+      "name": "replay-float-cast",
+      "before_decision": "UNRESOLVED",
+      "after_decision": "UNRESOLVED",
+      "entire_trace_equal": true
+    }
+  ],
+  "type_and_security_review": {
+    "blanket_type_ignores_or_noqa_added": false,
+    "all_original_function_bodies_preserved_except_field_child_guard": true,
+    "casts_runtime_identity_not_coercions": true,
+    "Measurement_TypedDict_runtime_constructor_plain_dict": true,
+    "optional_id_annotations_preserve_None": true,
+    "Any_scoped_to_heterogeneous_compiler_AST_nodes": true,
+    "result_and_measurement_keys_explicitly_typed": true,
+    "new_executable_module_state": "typing/collections imports, ASTNode alias, Measurement and TraceResult TypedDict definitions only; no new I/O/shell/network/eval/credential behavior",
+    "unsupported_field_attribute_guard": "all FieldDecl inner children denied, including PackedAttr; allowed record-level PackedAttr/MaxFieldAlignmentAttr unchanged",
+    "grammar_discrepancy_not_false_header_exploit": true
+  },
+  "summary": "Candidate-scope semantics pass; explicit cleanup remains partial and rejected overall because original-baseline Ruff kinds and trace complexity regressions remain unwaived. No further repair authorized.",
+  "review_completed_at": "2026-10-07T12:16:13.552039+02:00",
+  "review_started_at": "2026-10-07T12:13:04+02:00",
+  "review_scope_complete": true,
+  "budget_frontier": "Requested bounded read-only candidate and scoped root-configured quality review complete. No full-project quality/runtime/deployment or sink proof attempted.",
+  "scope_authorization_sha256": "33d179de23778f472f72fe84e4b6d9ab472d088725336edd26adc496dce4b13d",
+  "author_report_sha256": "093c66b90b947e74d50c8c8660d5048c78625de3fdac80447dca150e87255d2d"
+}

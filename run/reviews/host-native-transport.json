@@ -1,0 +1,135 @@
+{
+  "status": "offline-source-contract-verified",
+  "authority": "Constructor spies only; no real client creation/connect, AgentHost activation, network/SQL/engine/provider or private fixture actions. Endpoint validity is not world ownership or activation permission.",
+  "api": {
+    "entry_keyword_only": {
+      "login_host": "IPv4 literal; default 127.0.0.1",
+      "login_port": "plain int 1..65535; legacy default 6900",
+      "pincode": "optional plain four ASCII digit string; no secret values in errors/repr"
+    },
+    "manifest": "Optional shared root login_host/login_port complete pair; optional per-row pincode, strictly validated even on skipped/duplicate rows. Explicit null pincode is invalid. No account endpoint overrides or schema aliases.",
+    "constructor_mapping": "login_host -> login_ip; login_port -> login_port; pincode -> pincode; char_name and verbose=False unchanged",
+    "injected_factory": "Exactly client_factory(entry), no new arguments",
+    "legacy": "Four positional ManifestEntry arguments and legacy manifest skip/first duplicate behavior retained; absent endpoint remains 127.0.0.1:6900 and does not select the isolated native world."
+  },
+  "changed_files": [
+    "src/robots/app/agent_runtime.py",
+    "tests/test_host_native_transport.py",
+    "run/reviews/host-native-transport.json"
+  ],
+  "source_sha256": {
+    "src/robots/app/agent_runtime.py": "70b38a71ee9108353b45edd4aeda0116aaa5daf0cb88a95b329d50f04a507288",
+    "tests/test_host_native_transport.py": "66cbafffeafd43eedae04b37be90b924a3ab1321535fc25c8e2e55e05b1eadf7"
+  },
+  "runner": "nix develop --offline -c uv run --offline --no-sync; no installs",
+  "gates": {
+    "black": "passed targeted source and new tests, workers=1",
+    "ruff": "passed targeted source and new tests",
+    "mypy": "passed --strict targeted source and new tests",
+    "bandit": "passed production file using pyproject.toml",
+    "vulture": "passed source/new tests/whitelist at confidence 85",
+    "xenon": "passed production file at absolute/module/average B",
+    "pytest": "214 scoped regressions passed; 31 new cases; agent_runtime full module coverage 89.90%, threshold 85 unchanged"
+  },
+  "evidence": {
+    "junit": {
+      "direct-red": {
+        "name": "pytest",
+        "errors": "0",
+        "failures": "1",
+        "skipped": "0",
+        "tests": "1",
+        "time": "0.306",
+        "timestamp": "2026-10-06T07:52:15.470613+02:00",
+        "hostname": "framework"
+      },
+      "direct-green": {
+        "name": "pytest",
+        "errors": "0",
+        "failures": "0",
+        "skipped": "0",
+        "tests": "1",
+        "time": "0.311",
+        "timestamp": "2026-10-06T07:52:36.286376+02:00",
+        "hostname": "framework"
+      },
+      "loader-red": {
+        "name": "pytest",
+        "errors": "0",
+        "failures": "1",
+        "skipped": "0",
+        "tests": "1",
+        "time": "0.233",
+        "timestamp": "2026-10-06T07:52:52.517965+02:00",
+        "hostname": "framework"
+      },
+      "loader-green": {
+        "name": "pytest",
+        "errors": "0",
+        "failures": "0",
+        "skipped": "0",
+        "tests": "2",
+        "time": "0.227",
+        "timestamp": "2026-10-06T07:53:03.836088+02:00",
+        "hostname": "framework"
+      },
+      "validation-red": {
+        "name": "pytest",
+        "errors": "0",
+        "failures": "24",
+        "skipped": "0",
+        "tests": "26",
+        "time": "0.218",
+        "timestamp": "2026-10-06T07:53:22.227492+02:00",
+        "hostname": "framework"
+      },
+      "validation-green": {
+        "name": "pytest",
+        "errors": "0",
+        "failures": "0",
+        "skipped": "0",
+        "tests": "26",
+        "time": "0.266",
+        "timestamp": "2026-10-06T07:53:43.412494+02:00",
+        "hostname": "framework"
+      },
+      "final": {
+        "name": "pytest",
+        "errors": "0",
+        "failures": "0",
+        "skipped": "0",
+        "tests": "31",
+        "time": "0.226",
+        "timestamp": "2026-10-06T07:54:50.755913+02:00",
+        "hostname": "framework"
+      },
+      "regression-final": {
+        "name": "pytest",
+        "errors": "0",
+        "failures": "0",
+        "skipped": "0",
+        "tests": "214",
+        "time": "4.784",
+        "timestamp": "2026-10-06T07:55:28.358297+02:00",
+        "hostname": "framework"
+      }
+    },
+    "coverage": {
+      "covered_lines": 516,
+      "num_statements": 574,
+      "percent_covered": 89.89547038327527,
+      "percent_covered_display": "90",
+      "missing_lines": 58,
+      "excluded_lines": 12,
+      "percent_statements_covered": 89.89547038327527,
+      "percent_statements_covered_display": "90"
+    }
+  },
+  "junit_directory": "/home/otto/.hermes/cache/scratch",
+  "issues": [
+    "Initial Xenon C loader complexity resolved by extracting root endpoint helper; final B gate passed.",
+    "One existing StarletteDeprecationWarning in scoped regressions; no dependency changes.",
+    "Whole-project final gate deferred to parent after concurrent worker stabilizes; no whole-app 99% claim."
+  ],
+  "live_acceptance": "Not run and not claimed. Parent must bind exact fresh world/accounts/personas before any activation; old native server defaults/global LOGIN_PORT untouched."
+}

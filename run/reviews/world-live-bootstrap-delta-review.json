@@ -1,0 +1,123 @@
+{
+  "verdict": "PASS",
+  "scope": "Independent offline review of root-directory listing mode and relocated MariaDB healthcheck configuration only",
+  "fingerprint_before": {
+    "nix/world-init/import-stage.py": "ffe9f376b2a27edd35c3499b17af3fbcc2b303a257cdce974a17bd4881e14ae3",
+    "tests/test_world_volume_import.py": "e4d6b827a998cac38a2b30df8f8e4607c568d8feffebae165a2520702505d967",
+    "docker-compose.native.yml": "f62e867cc4477d6502a0d354f5a433583eb66cc7d557166dfe3770e3822d7890",
+    "tests/test_native_world_compose.py": "30b38f18ee72a904adb1336c2a2680ff705302506943e54de43c7e3e0a110af2",
+    "nix/world-init/flake.nix": "38dad75d31dcd8a5975d42063018e7fccfddb634e50bed79bc60c1a507e97345",
+    "nix/world-init/flake.lock": "c9c0bac69415b99a29ef3fe149b6f04ef54d291989bdf7218cf819ed52edf2a0",
+    "flake.nix": "185e4a4babf62a40484c347f59653bd11b79ce847316a3a90349c8545d38a359",
+    "flake.lock": "c9c0bac69415b99a29ef3fe149b6f04ef54d291989bdf7218cf819ed52edf2a0",
+    "pyproject.toml": "e8ae0849a413bc3d705f081f609b92dae702bbd3e491b2c3aeb5d8665c458fba",
+    "uv.lock": "2d7b4c187078488d7625e4fd4fa982745cab8d6a65b2ff3e382ffa286f1df245"
+  },
+  "fingerprint_after": {
+    "nix/world-init/import-stage.py": "ffe9f376b2a27edd35c3499b17af3fbcc2b303a257cdce974a17bd4881e14ae3",
+    "tests/test_world_volume_import.py": "e4d6b827a998cac38a2b30df8f8e4607c568d8feffebae165a2520702505d967",
+    "docker-compose.native.yml": "f62e867cc4477d6502a0d354f5a433583eb66cc7d557166dfe3770e3822d7890",
+    "tests/test_native_world_compose.py": "30b38f18ee72a904adb1336c2a2680ff705302506943e54de43c7e3e0a110af2",
+    "nix/world-init/flake.nix": "38dad75d31dcd8a5975d42063018e7fccfddb634e50bed79bc60c1a507e97345",
+    "nix/world-init/flake.lock": "c9c0bac69415b99a29ef3fe149b6f04ef54d291989bdf7218cf819ed52edf2a0",
+    "flake.nix": "185e4a4babf62a40484c347f59653bd11b79ce847316a3a90349c8545d38a359",
+    "flake.lock": "c9c0bac69415b99a29ef3fe149b6f04ef54d291989bdf7218cf819ed52edf2a0",
+    "pyproject.toml": "e8ae0849a413bc3d705f081f609b92dae702bbd3e491b2c3aeb5d8665c458fba",
+    "uv.lock": "2d7b4c187078488d7625e4fd4fa982745cab8d6a65b2ff3e382ffa286f1df245"
+  },
+  "stable": true,
+  "tests": {
+    "passed": 28,
+    "failed": 0,
+    "errors": 0,
+    "skipped": 0,
+    "excluded": "test_actual_preparation_copy_has_679_public_assets_and_seven_configs depends on concurrently evolving world_prepare.py; not frozen or accepted by this review",
+    "junit": "/home/otto/.hermes/cache/scratch/bootstrap-review-s9e87vz0/scoped.xml"
+  },
+  "gates": {
+    "black": 0,
+    "ruff": 0,
+    "mypy_strict_import_stage": 0
+  },
+  "probes": {
+    "synthetic_copy_modes_source_unchanged_and_requested_owners": {
+      "pass": true,
+      "ownership_calls_mocked": true,
+      "counts": {
+        "runtime_files": 1,
+        "memory_files": 0,
+        "logs_files": 0,
+        "sql_files": 5,
+        "secret_files": 2
+      }
+    },
+    "source_stat": {
+      "pass": true,
+      "original_exception_preserved": true,
+      "no_success_return": true,
+      "root_remains_0700": true
+    },
+    "child_creation": {
+      "pass": true,
+      "original_exception_preserved": true,
+      "no_success_return": true,
+      "root_remains_0700": true
+    },
+    "copy_interrupt": {
+      "pass": true,
+      "original_exception_preserved": true,
+      "no_success_return": true,
+      "root_remains_0700": true
+    },
+    "final_root_chmod": {
+      "pass": true,
+      "original_exception_preserved": true,
+      "no_success_return": true,
+      "root_remains_0700": true
+    }
+  },
+  "findings": [
+    {
+      "root_mode": "0755",
+      "private_files": "0600",
+      "private_subtrees": "0700",
+      "effect": "Allows non-owner directory listing and traversal, not file-content reads or writes; host source unchanged; root remains importer-owned",
+      "scope": "UID/GID assignment probed through mocked ownership calls; not a physical UID999 execution"
+    },
+    {
+      "healthcheck": "--defaults-extra-file=/var/lib/ro-bots/db/.my-healthcheck.cnf",
+      "ordering": "Before --connect and --innodb_initialized",
+      "public_selected_image_script": {
+        "path": "/home/otto/.hermes/cache/scratch/hc-ww35j131/healthcheck.sh",
+        "sha256": "592f89cb39308f8425693221b0476932918e2f3e451cad39b822e23ea0103ef0",
+        "default_datadir": "/var/lib/mysql",
+        "option_parser_lines": [
+          346,
+          354
+        ],
+        "client_forwarding_lines": [
+          41,
+          47,
+          70,
+          77
+        ]
+      },
+      "effect": "Overrides the hardcoded default healthcheck credential path without embedding secrets or weakening health probes"
+    }
+  ],
+  "parent_evidence": {
+    "directory_fix": "first-test-world-init-directory-fix.json read; actual UID999 listing/read reported by parent, not independently rerun",
+    "database_native_health": "Parent-attributed only; no engine, SQL, native or provider calls by reviewer"
+  },
+  "limitations": [
+    "No full-suite or historical coverage claim; historical 52/232 and earlier full gates are not re-counted here",
+    "No claim that rebuilt world-init image has been built, loaded or used; parent rebuild pending at delegation",
+    "No native initialization/gameplay acceptance; subsequent char configuration failure is outside this review",
+    "Failed copies may leave partial output by existing documented contract; no rollback claim"
+  ],
+  "artifacts": {
+    "scratch": "/home/otto/.hermes/cache/scratch/bootstrap-review-s9e87vz0",
+    "report": "run/reviews/world-live-bootstrap-delta-review.json"
+  },
+  "environment_issue": "Direct nix develop ./nix/world-init refused untracked flake. Recovered using path: of scratch allowlist containing only flake.nix, flake.lock and import-stage.py; no staging, no whole checkout import."
+}

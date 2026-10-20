@@ -1,0 +1,17 @@
+{
+  "status": "GRIND_WINDOW14_APPROACH_WALKS_LIVE_ATTACKS_SENT_DAMAGE_BROADCASTS_RX",
+  "completed_at": "2026-10-15T23:49:50.731199+00:00",
+  "raw_receipt": "run/reviews/playing-grind-operator-live-window14.json",
+  "breakthrough": {
+    "approach_live": "fixture_1 walked 44 MoveTo (43 matched acks) into the spawn cluster to [166,366], held 2 attackable ids in sight, authored and SENT 18 x0x437 attacks in range (zero 0x139-flood shape)",
+    "damage_broadcasts": "17 x0x8C8 damage frames received on fixture_1, accumulating across the attack phase (12->16->17); fixture_0 observed 17 damage + 2 mob-vanish frames passively",
+    "xp_events": "fixture_0 observed XP-change events (deltas recorded) - first non-barrier XP signals"
+  },
+  "remaining_gaps": [
+    "species starvation: fixture_0 saw ONLY Lunatics all window (1780 script steps, plan target absent) -> zero attacks; plans author a single target species and the <=1 replan guard does not retarget to observed species",
+    "reader stability: fixture_1 rx thread died at ~t+500s (alive False, no stderr) -> post-close counters uncertain, so the chain cannot be PROVEN even though damage broadcasts correlate with the attack burst",
+    "acceptance instrumentation: accepted_wire needs 0x8C8 source/target decode so bot-dealt damage is attributable, not inferred"
+  ],
+  "next": "window 15: (1) species-adaptive target widening in FarmScript/GrindScript when the authored target is not in sight (production scripts.py, TDD); (2) reader-thread stability fix; (3) 0x8C8 attribution in the emission capture; acceptance = attributed damage + death + XP + loot on ONE bot.",
+  "native_authority": "UNCHANGED_REVOKED"
+}

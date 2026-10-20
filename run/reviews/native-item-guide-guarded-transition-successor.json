@@ -1,0 +1,290 @@
+{
+  "status": "COMPLETE_OFFLINE_QUALIFICATION",
+  "candidate": "/home/otto/dev/ro-bots/.work/native-item-guide-guarded-transition-successor/content",
+  "base": ".work/native-item-guide-maintenance-precondition-successor/maintenance-content-candidate (adopted per run/reviews/native-item-guide-precondition-successor-adopted-offline.json; live_recovery 7d7ff94dfe3c3e0ffa23b578aa15676ea0d78c285b8a55055d4ee74bdbfadada; frontier run/reviews/native-item-guide-guarded-transition-frontier.json)",
+  "completion_summary": {
+    "named_faults_closed": [
+      "E2E contracts recovered_offline: root cause was validate_world's runtime_drift predicate comparing post-publication world fingerprints against the pre-publication cycle baseline; the guarded advance now moves the baseline's import fingerprint to the same verified AFTER digest (content/recovery.py fresh_content_checkpoint, nonlocal baseline + dataclasses.replace). Both failing contracts now pass.",
+      "Effects protocol typing: declared approval: Approval on the recovery.Effects Protocol (3 attr-defined errors resolved).",
+      "Black: content/recovery.py and content/live_recovery.py reformatted by the qualified black; both verified AST-equal (include_attributes=False); black --check now clean."
+    ],
+    "root_cause_e2e": "publish() calls checkpoint() twice (pre-write and post-readback). The post-readback call re-ran _checkpoint -> validate_world, whose baseline comparison (recovery.py validate_world 'runtime_drift') still held the cycle-start observation with IMPORT at BEFORE while the verified world observes AFTER. The prior worker had rebound the approval (approved_runtime_drift check) but not the baseline. Exact raise site: content/recovery.py:369 via _checkpoint line 556. Fix mirrors the reviewed approval advance onto baseline.fingerprints for the one bound import key only; every other baseline observation (roles, db state, all other keys) keeps its pre-publication value; no predicate changed.",
+    "harness_corrections": [
+      "harness/publication/test_controls.py::test_guarded_public_import_is_not_silently_waived_or_rebound: UnboundLocalError - the 'guarded last binding' assertion preceded the guarded construction; statement moved after construction, assertion text unchanged (failed receipt preserved in green/guarded-transition-successor-full.xml).",
+      "harness/publication/test_guarded_transition.py::run_guarded: returned the pre-admission approval read instead of the entering approval (requested: fresh admission carrying the one-shot content request and BEFORE import binding) that both contracts bind on; one-line return correction, assertions unchanged."
+    ]
+  },
+  "modules": {
+    "byte_identical_copies": {
+      "item_guide_files.py": "528b12b88c2ca5a3bacdb0c4786666af7d8caf1042943395814890ac3773ef18",
+      "rootless_socket_reader.py": "a8339f4af3359d6ae283879ce1031a4bcc8e589e9822a203e6a3c68acafd49ae"
+    },
+    "changed": {
+      "item_guide_publication.py": {
+        "before": "26fd4a66042424014917748f84c67ef724886c62d20074c163726ad05f1154aa",
+        "after": "ec94b628c3d5d45d8ba256f9fe8b9c7f1fee6362669be57ff063e5e1709facb0",
+        "diff": "green/item_guide_publication.py.diff (final copy: green/final/item_guide_publication.py.diff)"
+      },
+      "live_recovery.py": {
+        "before": "7d7ff94dfe3c3e0ffa23b578aa15676ea0d78c285b8a55055d4ee74bdbfadada",
+        "after": "dfa0ed0565c26055a5f165a620bdfc2bbb178a3963b880f13009b69188047b39",
+        "diff": "green/final/live_recovery.py.diff"
+      },
+      "recovery.py": {
+        "before": "a538ef5b444acab01b698e9474c3296c37e7683110d7fd441d54b65c305ce1e8",
+        "after": "295eab4ee5d0baa0e177947c940d622391915fe5a7405c067318d3129e630a13",
+        "diff": "green/final/recovery.py.diff"
+      }
+    }
+  },
+  "semantic_changes": [
+    "validate_request: script target key denied always; import target key admitted only when its bound digest equals request.import_before_sha256; AFTER/foreign digests still denied; unbound runtime unchanged",
+    "Effects.publish_content: only at the post-readback checkpoint (state.write_attempted, both targets helper- and archive-verified), the import key bound at BEFORE is replaced with request.import_after_sha256 via dataclasses.replace (new frozen Approval) and the one-shot content request is consumed on the advanced approval, so the unchanged BEFORE-only admission predicate is never re-evaluated against the legitimately advanced AFTER binding; approvals without the guarded key untouched (all prior cases unchanged)",
+    "recovery._cycle/fresh_content_checkpoint: reads effects.approval at call time for _checkpoint/_authorize and rebinds the cycle approval after verified publication, so approval_drift cannot fire; fingerprints re-observe the AFTER digest and match the updated approval; stale BEFORE binding denied via approval_drift; six-command order, probe/absence, one-attempt/no-rollback, all historical authority unchanged",
+    "recovery.fresh_content_checkpoint: the guarded approval advance also advances the cycle baseline's import fingerprint to the same verified AFTER digest (dataclasses.replace on the frozen World), so validate_world's unchanged runtime_drift comparison tracks the identical transition; only a bound import key moves, all other baseline observations keep their pre-publication values, and the unbound-import historical path is bit-for-bit unchanged (expected is None -> no rebind)"
+  ],
+  "test_evidence": {
+    "red_receipts_preserved": {
+      "contracts": "red/guarded-transition-contracts-red.xml (sha256 6678f23bdef904133e3fbb3d0e10f7b55c2d20f2d51682ace0d2f37440f62298, 3 named RED vs base-freeze)",
+      "full_base": "red/guarded-transition-full-base.xml (sha256 8b719d72958443468d5783e4c3f77ed22d4d454f260fdfd95c7381d31bb4aaea, 107 tests / 3 RED)",
+      "note": "RED chronology preserved; implementation completed without redesign"
+    },
+    "prior_partial_green_receipts_preserved": {
+      "contracts": {
+        "path": "green/guarded-transition-contracts-green.xml",
+        "sha256": "56dff8f1922a43c60373dd7e6cccd88e0b3cef8377748182cd4d35aa387124ba",
+        "stats": {
+          "tests": 9,
+          "failures": 2,
+          "errors": 0,
+          "skipped": 0
+        }
+      },
+      "full": {
+        "path": "green/guarded-transition-successor-full.xml",
+        "sha256": "4418928ab3bf5d99b46480933d630a0b98d3fc291c0065686ee08fe1c25e1df0",
+        "stats": {
+          "tests": 107,
+          "failures": 3,
+          "errors": 0,
+          "skipped": 0
+        }
+      },
+      "gate_logs": "green/gates/*.log (black exit 1 / mypy exit 1 / ruff exit 0 / xenon exit 0) kept untouched"
+    },
+    "final_green": {
+      "contracts": {
+        "path": "green/final/guarded-transition-contracts-final.xml",
+        "sha256": "ba0b434144c054eaf68e548f263694814fee4bcc61370d66f358b3e37c5af523",
+        "stats": {
+          "tests": 9,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        }
+      },
+      "full": {
+        "path": "green/final/guarded-transition-successor-full-final.xml",
+        "sha256": "bfe10a653854f655c83156294d9bf77c01d0a65f57fcadd54970ecf533426660",
+        "stats": {
+          "tests": 107,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        }
+      }
+    },
+    "retention_verification": {
+      "prior_98_retained": true,
+      "prior_98_count": 98,
+      "prior_subset_of_final": true,
+      "identical_testcase_id_sets": true,
+      "total_tests_final": 107,
+      "final_failures_errors_skips": [
+        0,
+        0,
+        0
+      ],
+      "new_cases": 9
+    }
+  },
+  "recorded_test_revision": {
+    "identity": "publication.test_controls::test_guarded_public_import_is_not_silently_waived_or_rebound (name kept)",
+    "old_assertion": "import target key bound at the BEFORE digest -> recover denied pre-lock (documented frontier collision)",
+    "new_assertion": "rebound foreign digest denied pre-lock with zero public calls/commands; BEFORE-bound admission proven through validate_request; guarded last binding asserted",
+    "reason": "source-backed policy correction: the reviewed transition admits the BEFORE-bound import key by design"
+  },
+  "recorded_test_revision_verification": {
+    "identity": "publication.test_controls::test_guarded_public_import_is_not_silently_waived_or_rebound (name kept)",
+    "final_state": "present in the final full run and passing; rebound-foreign denial pre-lock with zero public calls/commands; BEFORE-bound admission proven through validate_request; guarded last binding asserted",
+    "harness_oracle_correction": "assertion ordering fix recorded in completion_summary.harness_corrections; failed UnboundLocalError receipt preserved"
+  },
+  "quality_gates_final": {
+    "black": {
+      "exit": 0,
+      "tail": [
+        "3 files would be left unchanged."
+      ],
+      "log": "green/final/gates/black.log",
+      "apply_receipt": "green/final/gates/black-apply.log (2 files reformatted, both AST-equal)"
+    },
+    "ruff": {
+      "exit": 0,
+      "tail": [
+        "All checks passed!"
+      ],
+      "log": "green/final/gates/ruff.log"
+    },
+    "mypy_strict": {
+      "exit": 0,
+      "tail": [
+        "Success: no issues found in 3 source files"
+      ],
+      "log": "green/final/gates/mypy.log"
+    },
+    "xenon_B_B_A": {
+      "exit": 0,
+      "tail": [
+        "(clean)"
+      ],
+      "log": "green/final/gates/xenon.log",
+      "args": "xenon <content dir> --max-absolute B --max-modules B --max-average A"
+    }
+  },
+  "qualified_command": "nix develop --offline --no-write-lock-file path:./spikes/007-native-packet-ast/toolchain -c env -u PYTEST_ADDOPTS -u PYTEST_DISABLE_PLUGIN_AUTOLOAD PYTHONOPTIMIZE=0 PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=src:. TMPDIR=<scratch>/gts-tmp .venv/bin/python -B -m pytest <harness --ignore=harness/publication/fixture-support> --override-ini addopts='' --junitxml=<own>.xml -q",
+  "live_effects": {
+    "lifecycle_commands": 0,
+    "world_mutations": 0,
+    "public_writes": 0,
+    "native_authority": "UNCHANGED_REVOKED",
+    "approvals_issued": "none (test-local synthetic approvals only)"
+  },
+  "remaining_parent_steps": [
+    "issue the maintenance approval binding container:map:/world/runtime/npc/scripts_custom.conf at BEFORE 9de2dafdf7236f49557587ee9100923d33da2a31bff15f7b005a93235aa3ad4a, with the refreshed CHECK TABLE receipt path/digest binding and the captured map epoch baseline",
+    "fresh v2 receipt binding verified against the live database under the original lock",
+    "one-shot guarded publication CLI run over the six-command maintenance cycle with post-verified binding advance to AFTER a811c282f67f3b3da7a85dfe4f54f9241f9e32a9caa72a91f6fc87d52da232a5"
+  ],
+  "history_partial_record": {
+    "status": "PARTIAL_SEE_GAPS",
+    "candidate": "/home/otto/dev/ro-bots/.work/native-item-guide-guarded-transition-successor/content",
+    "base": ".work/native-item-guide-maintenance-precondition-successor/maintenance-content-candidate (adopted per run/reviews/native-item-guide-precondition-successor-adopted-offline.json; live_recovery 7d7ff94dfe3c3e0ffa23b578aa15676ea0d78c285b8a55055d4ee74bdbfadada; frontier run/reviews/native-item-guide-guarded-transition-frontier.json)",
+    "modules": {
+      "byte_identical_copies": {
+        "item_guide_files.py": "528b12b88c2ca5a3bacdb0c4786666af7d8caf1042943395814890ac3773ef18",
+        "rootless_socket_reader.py": "a8339f4af3359d6ae283879ce1031a4bcc8e589e9822a203e6a3c68acafd49ae"
+      },
+      "changed": {
+        "item_guide_publication.py": {
+          "before": "26fd4a66042424014917748f84c67ef724886c62d20074c163726ad05f1154aa",
+          "after": "ec94b628c3d5d45d8ba256f9fe8b9c7f1fee6362669be57ff063e5e1709facb0",
+          "diff": "green/item_guide_publication.py.diff"
+        },
+        "live_recovery.py": {
+          "before": "7d7ff94dfe3c3e0ffa23b578aa15676ea0d78c285b8a55055d4ee74bdbfadada",
+          "after": "5e692798049d73f3e6e8793e0bdbe4c3added596f8fbf752d39c2eae9400c205",
+          "diff": "green/live_recovery.py.diff"
+        },
+        "recovery.py": {
+          "before": "a538ef5b444acab01b698e9474c3296c37e7683110d7fd441d54b65c305ce1e8",
+          "after": "4baaf5543024be896cb0a0ab39b194152e27a7e449f5ecca147c117bccb8c43b",
+          "diff": "green/recovery.py.diff"
+        }
+      }
+    },
+    "semantic_changes": [
+      "validate_request: script target key denied always; import target key admitted only when its bound digest equals request.import_before_sha256; AFTER/foreign digests still denied; unbound runtime unchanged",
+      "Effects.publish_content: only at the post-readback checkpoint (state.write_attempted, both targets helper- and archive-verified), the import key bound at BEFORE is replaced with request.import_after_sha256 via dataclasses.replace (new frozen Approval) and the one-shot content request is consumed on the advanced approval, so the unchanged BEFORE-only admission predicate is never re-evaluated against the legitimately advanced AFTER binding; approvals without the guarded key untouched (all prior cases unchanged)",
+      "recovery._cycle/fresh_content_checkpoint: reads effects.approval at call time for _checkpoint/_authorize and rebinds the cycle approval after verified publication, so approval_drift cannot fire; fingerprints re-observe the AFTER digest and match the updated approval; stale BEFORE binding denied via approval_drift; six-command order, probe/absence, one-attempt/no-rollback, all historical authority unchanged"
+    ],
+    "test_evidence": {
+      "red_contracts_xml": {
+        "path": "red/guarded-transition-contracts-red.xml",
+        "sha256": "6678f23bdef904133e3fbb3d0e10f7b55c2d20f2d51682ace0d2f37440f62298",
+        "tests": "9",
+        "failures": "3",
+        "named_red": [
+          "test_import_target_bound_at_before_is_admitted",
+          "test_verified_publication_advances_import_binding_and_fingerprints_match",
+          "test_old_before_binding_denied_and_drift_cannot_fire_after_replace"
+        ],
+        "note": "run against stashed byte-identical base (base-freeze/); characterization denials (AFTER/foreign/script/unbound) already green at RED"
+      },
+      "red_full_base_xml": {
+        "path": "red/guarded-transition-full-base.xml",
+        "sha256": "8b719d72958443468d5783e4c3f77ed22d4d454f260fdfd95c7381d31bb4aaea",
+        "tests": "107",
+        "failures": "3",
+        "prior_98_passing_on_byte_identical_base": true
+      },
+      "green_contracts_xml": {
+        "path": "green/guarded-transition-contracts-green.xml",
+        "sha256": "56dff8f1922a43c60373dd7e6cccd88e0b3cef8377748182cd4d35aa387124ba",
+        "tests": "9",
+        "failures": "2",
+        "errors": "0"
+      },
+      "green_full_xml": {
+        "path": "green/guarded-transition-successor-full.xml",
+        "sha256": "4418928ab3bf5d99b46480933d630a0b98d3fc291c0065686ee08fe1c25e1df0",
+        "tests": "107",
+        "failures": "3",
+        "errors": "0",
+        "time_s": "24.360"
+      },
+      "retained_prior_cases": 98,
+      "prior_subset_of_retained": true,
+      "new_cases": 9
+    },
+    "recorded_test_revision": {
+      "identity": "publication.test_controls::test_guarded_public_import_is_not_silently_waived_or_rebound (name kept)",
+      "old_assertion": "import target key bound at the BEFORE digest -> recover denied pre-lock (documented frontier collision)",
+      "new_assertion": "rebound foreign digest denied pre-lock with zero public calls/commands; BEFORE-bound admission proven through validate_request; guarded last binding asserted",
+      "reason": "source-backed policy correction: the reviewed transition admits the BEFORE-bound import key by design"
+    },
+    "harness_notes": [
+      "predecessor harness adapted by path literals only (test_maintenance_precondition_successor.py, guard/conftest.py, guard/test_actual_chain.py, publication/conftest.py, publication/test_publication.py); namespace docstring updated; fixture-support copied unchanged and excluded from collection",
+      "test_guarded_transition.py uses test_publication's module-scoped primitive-logs projection (FakeInputs.logs padding) after an in-process bisect showed log_truncated_record without it; assertions unchanged; run_guarded attaches denial trace evidence to failure messages"
+    ],
+    "quality_gates": {
+      "black": {
+        "exit": 1,
+        "tail": [
+          "",
+          "Oh no! \ud83d\udca5 \ud83d\udc94 \ud83d\udca5",
+          "1 file would be reformatted, 2 files would be left unchanged."
+        ]
+      },
+      "ruff": {
+        "exit": 0,
+        "tail": [
+          "All checks passed!"
+        ]
+      },
+      "mypy": {
+        "exit": 1,
+        "tail": [
+          ".work/native-item-guide-guarded-transition-successor/content/recovery.py:594: error: \"Effects\" has no attribute \"approval\"  [attr-defined]",
+          ".work/native-item-guide-guarded-transition-successor/content/recovery.py:600: error: \"Effects\" has no attribute \"approval\"  [attr-defined]",
+          "Found 3 errors in 1 file (checked 3 source files)"
+        ]
+      },
+      "xenon": {
+        "exit": 0,
+        "tail": []
+      }
+    },
+    "qualified_command": "nix develop --offline --no-write-lock-file path:./spikes/007-native-packet-ast/toolchain -c env -u PYTEST_ADDOPTS -u PYTEST_DISABLE_PLUGIN_AUTOLOAD PYTHONOPTIMIZE=0 PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=src:. TMPDIR=<scratch>/gts-tmp .venv/bin/python -B -m pytest <harness --ignore=harness/publication/fixture-support> --override-ini addopts='' --junitxml=<own>.xml -q",
+    "live_effects": {
+      "lifecycle_commands": 0,
+      "world_mutations": 0,
+      "public_writes": 0,
+      "native_authority": "UNCHANGED_REVOKED",
+      "approvals_issued": "none (test-local synthetic approvals only)"
+    },
+    "remaining_parent_steps": [
+      "issue the maintenance approval binding container:map:/world/runtime/npc/scripts_custom.conf at BEFORE 9de2dafdf7236f49557587ee9100923d33da2a31bff15f7b005a93235aa3ad4a, with the refreshed CHECK TABLE receipt path/digest binding and the captured map epoch baseline",
+      "fresh v2 receipt binding verified against the live database under the original lock",
+      "one-shot guarded publication CLI run over the six-command maintenance cycle with post-verified binding advance to AFTER a811c282f67f3b3da7a85dfe4f54f9241f9e32a9caa72a91f6fc87d52da232a5"
+    ]
+  }
+}

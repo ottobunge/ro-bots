@@ -1,0 +1,132 @@
+{
+  "schema": "native-ast-configured-source-authority-audit-v1",
+  "passed_readonly_audit": true,
+  "verdict": "PARTIAL: immutable packaging authorities explain the mismatch; exact configured custom header is not retained in the inspected installed output. Replay construction and compiler validation require a separately authorized continuation.",
+  "completed_world_criteria": false,
+  "scope": {
+    "authorization": "run/reviews/native-ast-spike-authorization.json",
+    "production_changes": false,
+    "rebuilds": false,
+    "patch_execution": false,
+    "compiler_execution": false,
+    "runtime_or_world_effects": false,
+    "network": false,
+    "output_owned": "run/reviews/native-ast-configured-source-audit.json"
+  },
+  "authorities": {
+    "installed_package": "/nix/store/plsvbs632sakjv9cl1pbzvjnnqs8y06n-rathena-playable-20180704-e985006171d2",
+    "installed_deriver": "/nix/store/jji9zi09559qdmm37i6mla5fkchrqn8m-rathena-playable-20180704-e985006171d2.drv",
+    "deriver_sha256": "299b9b6bec77725932a6a3330904e5b832f53b5d954112d83944d1104d459985",
+    "upstream_source": "/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source",
+    "revision": "e985006171d2eb320ee512a653f4c83aea3d81b6",
+    "source_nar_hash": "sha256:1lmcw3d56v8gnn3sqx0z0vmd486iwpkzcxvlz7hhbaq3yv0bm656",
+    "packaging_source_discovered": "nix/playable-world/flake.nix",
+    "packaging_source_role": "readable recipe corroboration; installed derivation and its immutable inputs take precedence over working-tree files",
+    "immutable_runtime_header": {
+      "path": "/nix/store/vyinaqa9rn5p4f2nhnjxwvl1wkp67ar2-runtime-root.hpp",
+      "sha256": "16636e986015152f0097b3026393b5f0825f54aacbbedc990d9191821db2e35c"
+    },
+    "immutable_transform": {
+      "path": "/nix/store/fb7ngqlgpfpdagnvpbkrq5l8k31shiab-apply-runtime-root.py",
+      "sha256": "8c428de7d442fca02aef9971f5c9456148aba4d374745e7df6bd953190de5e37"
+    },
+    "immutable_profile_script": {
+      "path": "/nix/store/mxqp69l8bmhshydkc96wc7m11x99kn1m-profile-evidence.py",
+      "sha256": "34cdaa59cf4bd18a43f60539686ef1637db817d9435c087e79cf1e834e5c4c64"
+    },
+    "configure_sha256": "2f9bb7bcf1f959c2946e4ff6d565d8fa1c17cbfcc6820b8f245960eeb96aa867",
+    "upstream_core_sha256": "e64fc8fc0c6bb1a025ebf6ac9c80cf026dfdb1a386eb3d1d7c678d4ca782a117",
+    "upstream_defines_post_sha256": "1426910d5f3a91bac9b0ed5bbd6083cfec0bb48e09c56637c509a86dab2407c0"
+  },
+  "configured_source_chain": [
+    {
+      "stage": "unpack",
+      "authority": "installed derivation env.src",
+      "effect": "pinned upstream source; derivation patches field is empty"
+    },
+    {
+      "stage": "postPatch",
+      "authority": "installed derivation env.postPatch and immutable transform/header inputs",
+      "changes": [
+        "install runtime-root.hpp into src/common/runtime-root.hpp",
+        "rewrite src/common/core.cpp with hash/anchor checks, add runtime-root.hpp include, replace argv relocation block with early runtime-root preparation while preserving startup tail",
+        "write core-start.cpp as a copy of transformed Core",
+        "append newline then #undef PACKET_OBFUSCATION and #undef PACKET_OBFUSCATION_WARN to src/custom/defines_post.hpp"
+      ],
+      "cpp_layout_relevance": "Custom header changes conditional compilation and potentially conditional fields; new common header and Core rewrite change include/body authority even though the principal profile mismatch is the custom header. No other source writes occur in the reviewed transform."
+    },
+    {
+      "stage": "configure",
+      "flags": "--enable-packetver=20180704 --enable-prere=yes --disable-lto --with-mysql=/nix/store/1w8g6rvhljfk44hx50qz4sc47sm1f28v-mariadb-connector-c-3.3.5-dev/bin/mysql_config --with-pcre",
+      "authority": "installed derivation env.configureFlags and pinned configure",
+      "outputs_declared": ["Makefile", "src/common/Makefile", "3rdparty/libconfig/Makefile", "3rdparty/yaml-cpp/Makefile", "3rdparty/rapidyaml/Makefile", "3rdparty/httplib/Makefile", "src/char/Makefile", "src/login/Makefile", "src/map/Makefile", "src/tool/Makefile", "src/web/Makefile"],
+      "finding": "configure uses confdefs.h to compute DEFS; no ac_config_headers declaration was found in this pinned configure. The inspected upstream source has Makefile.in templates, not configured Makefiles, config.status or config.log. Configure/platform outcomes are reflected in installed role recipe/flags, not an installed config.h."
+    },
+    {
+      "stage": "postConfigure",
+      "authority": "immutable profile-evidence.py",
+      "effect": "write profile-oracle.cpp, extract first native object recipe for common/login/char/map, keep -D/-f/-std tokens, compile/run a standalone oracle per role, retain profiles.json and role recipe/flag text",
+      "limitation": "Recipe text retains Make variables and is not a fully expanded clif.cpp command; reduced cppflags omit include paths, optimization options and compiler wrapper/environment inputs. Retained profiles report obfuscation false but oracle does not explicitly reject PACKET_OBFUSCATION_WARN. Future replay must check both macros."
+    },
+    {
+      "stage": "build/install",
+      "authority": "installed derivation makeFlags and installPhase",
+      "effect": "build login/char/map; retain three role binaries and public evidence, but no custom header or configured-source archive is installed"
+    }
+  ],
+  "obfuscation_mismatch": {
+    "explanation": "The original upstream src/custom/defines_post.hpp is an empty customization header, not a header that itself defines obfuscation. src/config/packets.hpp lines 44-56 define PACKET_OBFUSCATION and PACKET_OBFUSCATION_WARN for this packet version. src/config/core.hpp includes packets.hpp at line 116 and custom/defines_post.hpp at line 126. The installed package's reviewed postPatch appends undefinitions to that late header; the raw pinned upstream tree lacks those appended bytes. Thus unchanged upstream parsing reproduces a different profile from the package build.",
+    "expected_replayed_defines_post_sha256": "64e8ffea133190fd361801cbcbfd5bcc4fc2c499a93312f8ee347492f725ad4c",
+    "expected_hash_method": "SHA256 of original immutable header bytes plus the exact literal append bytes, calculated in memory only; no header written",
+    "guards": "Keep the original upstream profile failure and source evidence intact. No forced include, -U workaround, custom command-line replacement, or waiver of installed-profile guards.",
+    "not_proven": "Knowing the recipe and predicted header bytes is not recovered built-header evidence or binary-equivalence proof."
+  },
+  "available_artifacts": {
+    "inventory_method": "Recursively enumerate regular files in the exact installed package; inspect direct installed derivation inputs and package references; enumerate config/header/archive candidate filenames in the exact pinned upstream source. No global store scan, build directories, private files or unrelated outputs inspected.",
+    "installed_regular_file_count": 19,
+    "installed_metadata": ["runtime-root.hpp", "LICENSE", "profiles.json", "profile-oracle.cpp", "apply-runtime-root.py", "map-compile-recipe.txt", "map-cppflags.txt", "core-start.cpp", "profile-evidence.py", "common-cppflags.txt", "common-compile-recipe.txt", "char-compile-recipe.txt", "package.json", "login-cppflags.txt", "char-cppflags.txt", "login-compile-recipe.txt"],
+    "installed_binaries": ["libexec/rathena/login-server", "libexec/rathena/char-server", "libexec/rathena/map-server"],
+    "retained_exact_core": {
+      "relative_path": "share/rathena-playable/core-start.cpp",
+      "sha256": "765d822dedc1c2fe5a92f22393690b80bf3e47253c5df4589d08386440e5700c"
+    },
+    "profiles_sha256": "ee2af351afee975ad4145d0e38412dfac0779cd123435f318f8c876349bc0148",
+    "profile_oracle_sha256": "5637539546f516693aeb7d9647feb066b6a13f4127d9f86ea1436a176b82c8c1",
+    "map_recipe_sha256": "8488711230e38fb3a48a9d19dca18b50b3a93780fd9287775768723af9358878",
+    "map_cppflags_sha256": "7986f2fdeb11e55ee707ac27eb4701a64b90361ce1636bb728025fb92a99291d",
+    "common_recipe_sha256": "6f34412ae0dce99f61282f24e14e5af0d48898260ee88cd5c68ccdb4f0412efa",
+    "common_cppflags_sha256": "954039d16213ba5f52a2e849365c60052a2c656a0d3cf67fa69cf6e9fc4130e3",
+    "char_recipe_sha256": "f315d2f0bca320ce34b455a2652b29872a77c3e8f774678ce2c0fd8d93f3c810",
+    "char_cppflags_sha256": "965fb44700559b0480a2fc7f40be29045a3436f1e6fff3c795cf935409a0085e",
+    "login_recipe_sha256": "12f05d6665ece0008cfa97956dda410d41e3e3742be7c89de600fefdf6d9d9dd",
+    "login_cppflags_sha256": "b13d56727d6a04815135309833ff4d3df85f3461140867329c1910c84511b0b0",
+    "bounded_absence": "No exact built src/custom/defines_post.hpp or configured-source/header archive in inspected installed output, direct transform inputs or pinned upstream inventory. This is not a universal absence claim about the entire Nix store or other retained build evidence."
+  },
+  "safe_frontier_plan_not_executed": [
+    "Require parent authorization before any configured closure is constructed. Use a new private scratch closure or explicitly public-only tiny Nix source; never import the whole checkout, root getFlake, private runtime assets, SQL, logs, credentials or models.",
+    "Bind installed derivation SHA, pinned source NAR/revision, immutable transform/header/profile-script SHA, installed core/profile/oracle/recipe evidence hashes. Retain the original source and failed profile evidence as a separate negative control.",
+    "Construct only from the immutable source plus reviewed exact transformations. Prefer extracting retained core-start.cpp into the new closure's src/common/core.cpp and retained runtime-root.hpp into src/common/runtime-root.hpp; replay the exact literal append into ONLY the separate closure's src/custom/defines_post.hpp. Check its expected SHA above. Never mutate the upstream store tree or replay by macro flags. Compare separately replayed Core bytes to the retained transformed Core SHA if transform replay is chosen instead of extraction.",
+    "Inventory/hash every copied source and changed file; prove only the reviewed three source/header paths differ. The copied clif.cpp and native packet/struct headers remain byte-identical to the pinned source. Keep generated evidence and makefiles separate from source-difference accounting.",
+    "For header/profile replay, use retained per-role cppflags and explicit source includes. For full clif.cpp syntax, expand the retained map recipe using pinned src/map/Makefile.in: COMMON_INCLUDE=-I../common/, RA_INCLUDE=-I../, LIBCONFIG_INCLUDE=-I../../3rdparty/libconfig, RAPIDYAML_INCLUDE=-I../../3rdparty/rapidyaml/src -I../../3rdparty/rapidyaml/ext/c4core/src; resolve PCRE_CFLAGS from the installed derivation's /nix/store/dsdb5hp6flwnryijygq79m7mshh1dxkn-pcre-8.45-dev and the pinned configure substitution rather than inventing flags. MySQL include paths are recorded in the retained recipe. Preserve role cwd semantics and report any unavailable original generated substitutions as unresolved, not exact expanded-build-command recovery.",
+    "Use only existing offline Nix inputs: stdenv /nix/store/rplwbx3hgs4wzc9hcs6r3cgp9r048fgl-stdenv-linux, public native Python input /nix/store/lb41b0anx1f98y9y5s9mdv97gjgsq740-python3-3.14.7, zlib /nix/store/879xd5x23lfd4l93jz71yaz06wa15yc1-zlib-1.3.2-dev, PCRE dev above, MariaDB connector /nix/store/1w8g6rvhljfk44hx50qz4sc47sm1f28v-mariadb-connector-c-3.3.5-dev. Validate actual wrapper builtin includes/sysroot against retained stdenv setup; do not silently use host /usr/include from textual recipe placeholders. No dependencies/install/fetch/rebuild in this audit.",
+    "Under separately authorized continuation, hash and record resolved commands using GCC /nix/store/j1938gsbvbhkyz4kbmvjk56r479mkw3s-gcc-wrapper-16.2.0/bin/g++ and Clang /nix/store/2msw5nclhpsm80z65dqmjiv8kkras989-clang-wrapper-21.1.8/bin/clang++. GCC is the runtime build-compiler authority supplied by the parent; Clang is an AST frontend, not the actual server compiler. This audit did not independently run compiler versions or recover the historical expanded compiler environment.",
+    "Dump relevant macros for common/login/char/map with GCC and Clang on the constructed closure: PACKETVER=20180704, PACKETVER_MAIN_NUM=20180704, PINCODE supported; RENEWAL/PACKETVER_RE/PACKETVER_ZERO/PACKET_OBFUSCATION/PACKET_OBFUSCATION_WARN absent. Run retained native profile-oracle body with GCC and separately with Clang and compare JSON to all four installed profiles; add explicit WARN rejection in separate validation input without changing the retained original oracle.",
+    "Run GCC full unchanged clif.cpp -fsyntax-only and compiler-backed sizeof/offsetof/conditional-field/layout oracles in the exact constructed closure. Keep genuine GCC evidence primary; compare Clang observations conservatively. Have Clang preprocess its own translation unit before bounded AST syntax/extraction of clif_emotion, clif_name and clif_sitting; do not feed GCC preprocessed output to Clang and call GCC bf16/builtin incompatibility a source failure. Retain failures, macro dump, include resolution, exact commands and hashes; no server binary execution.",
+    "Profile and bounded AST success would establish only offline feasibility under a reviewed reconstructed public closure, not bit-for-bit installed binary equivalence, complete catalogue coverage, runtime integration, generator acceptance or any gameplay/world criterion. Parent decides continuation and integration; original rejected generator and unchanged 263 catalogue bytes remain independent."
+  ],
+  "actions_performed": [
+    "Read scoped authorization and server-packaging skill guidance",
+    "Locate public packaging sources via bounded search and read recipe/transform/profile script",
+    "Query installed derivation read-only, print only public build/profile allowlist and input identities",
+    "Enumerate exact package output and upstream configuration/archive candidates",
+    "Hash public immutable inputs, original headers/Core/configure, installed evidence and derivation",
+    "Read pinned include order and Makefile template include variables",
+    "Compute predicted appended header hash in memory; do not write or execute replay",
+    "Write this new audit artifact only"
+  ],
+  "issues": [
+    "First derivation parser assumed legacy JSON keyed by full drv path and failed with KeyError; retry correctly used the modern derivations object. First read-only invocation omitted --offline; corrected retry used --offline. No build/fetch command was invoked.",
+    "Exact configured custom header and expanded clif.cpp compile command were not recovered; standalone reconstruction remains a plan, not validation.",
+    "Production-freeze stability and previous compiler/binding unit results are parent-supplied context, not reverified or claimed by this audit."
+  ]
+}

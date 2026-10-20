@@ -1,0 +1,35 @@
+{
+  "status": "ACTUAL_BOUND_RESPONSE_DISPATCH_FEATURE_RED_REACHED",
+  "baseline": {
+    "path": "/home/otto/.hermes/cache/scratch/npc-bound-response/baseline.json",
+    "sha256": "53d38d71928edb307f042c480e986bfb98c427182115d0ce7e78f63bcb03db2d",
+    "bindings": 405
+  },
+  "owned_source": [
+    "src/robots/domain/actions.py",
+    "src/robots/app/playing_runtime.py"
+  ],
+  "owned_new_test": "tests/test_npc_bound_response.py",
+  "owned_new_report": "run/reviews/npc-bound-response.json",
+  "action": "NpcRespond(identity:PlanningIdentity, intent:NpcIntent), no arbitrary answer/operation fields",
+  "contract": [
+    "Recognize bound action in actual perform_native NPC dispatch",
+    "Re-observe current client receipt and use approved npc_intent_matches before any request",
+    "Emit only same-owner current NEXT or exact received-index CHOOSE via existing controller encoders",
+    "Use qualified observation clock/request state without an extra unvalidated clock or receive refresh between binding check and local controller request",
+    "Stale identity/epoch/map/open/prompt/stage/option or readiness loss sends nothing; once-only waiting stage enforces duplicate rejection",
+    "Unknown/malformed/close/name/free-text intents denied; legacy unbound Next/Select/Close/Name behavior preserved",
+    "Sending is only a request; no progress/reward inferred"
+  ],
+  "first_red": {
+    "path": "/home/otto/.hermes/cache/scratch/npc-bound-response/parent-bound-dispatch-red.xml",
+    "cause": "Actual dispatcher routes proposed typed bound response to unsupported-action rejection",
+    "prototype": "Scratch-only dataclass permits reached dispatcher failure before domain action exists; not production implementation"
+  },
+  "not_authorized": [
+    "PlannedBrain/AgentHost/execution/controller/domain-plan changes",
+    "Native/network/provider effects",
+    "Host phase activation or NPC intent authorship policy"
+  ],
+  "full_goals": "OPEN"
+}

@@ -1,0 +1,322 @@
+PT018 Assertion should be broken down into multiple parts
+  --> tests/test_protocol_rereview_repairs.py:18:5
+   |
+16 | def load_module(name: str, path: Path) -> Any:
+17 |     spec = importlib.util.spec_from_file_location(name, path)
+18 |     assert spec is not None and spec.loader is not None
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+19 |     module = importlib.util.module_from_spec(spec)
+20 |     spec.loader.exec_module(module)
+   |
+help: Break down assertion into multiple parts
+
+PLC0415 `import` should be at the top-level of a file
+  --> tests/test_protocol_rereview_repairs.py:25:5
+   |
+24 | def test_obsolete_probe_has_no_literal_credentials_or_import_connections(monkeypatch):
+25 |     import client
+   |     ^^^^^^^^^^^^^
+26 |
+27 |     calls = []
+   |
+
+PLC0415 `import` should be at the top-level of a file
+  --> tests/test_protocol_rereview_repairs.py:82:5
+   |
+80 | @pytest.mark.parametrize("wire_id", [11, 21])
+81 | def test_movement_accepts_only_account_wire_actor(limbs, monkeypatch, wire_id):
+82 |     from types import SimpleNamespace
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+83 |
+84 |     clock = Clock()
+   |
+
+PLC0415 `import` should be at the top-level of a file
+   --> tests/test_protocol_rereview_repairs.py:98:5
+    |
+ 97 | def fixture_document():
+ 98 |     import secrets
+    |     ^^^^^^^^^^^^^^
+ 99 |
+100 |     return {
+    |
+
+PLC0415 `import` should be at the top-level of a file
+   --> tests/test_protocol_rereview_repairs.py:150:5
+    |
+148 |     limbs, success, stuck
+149 | ):
+150 |     from types import SimpleNamespace
+    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+151 |
+152 |     clock = Clock()
+    |
+
+PLC0415 `import` should be at the top-level of a file
+   --> tests/test_protocol_rereview_repairs.py:196:5
+    |
+195 | def test_connect_preserves_origin_when_cleanup_also_fails(monkeypatch):
+196 |     import client
+    |     ^^^^^^^^^^^^^
+197 |     import secrets
+    |
+
+I001 [*] Import block is un-sorted or un-formatted
+   --> tests/test_protocol_rereview_repairs.py:196:5
+    |
+195 |   def test_connect_preserves_origin_when_cleanup_also_fails(monkeypatch):
+196 | /     import client
+197 | |     import secrets
+    | |__________________^
+198 |
+199 |       bot = client.BotClient("offline", secrets.token_hex(8), verbose=False)
+    |
+help: Organize imports
+    |
+195 | def test_connect_preserves_origin_when_cleanup_also_fails(monkeypatch):
+    -     import client
+196 |     import secrets
+197 |
+198 +     import client
+199 +
+200 |     bot = client.BotClient("offline", secrets.token_hex(8), verbose=False)
+    |
+
+PLC0415 `import` should be at the top-level of a file
+   --> tests/test_protocol_rereview_repairs.py:197:5
+    |
+195 | def test_connect_preserves_origin_when_cleanup_also_fails(monkeypatch):
+196 |     import client
+197 |     import secrets
+    |     ^^^^^^^^^^^^^^
+198 |
+199 |     bot = client.BotClient("offline", secrets.token_hex(8), verbose=False)
+    |
+
+PT011 `pytest.raises(ValueError)` is too broad, set the `match` parameter or use a more specific exception
+   --> tests/test_protocol_rereview_repairs.py:214:24
+    |
+212 |     monkeypatch.setattr(bot, "close", close)
+213 |     monkeypatch.setattr(bot, "_login_server", login)
+214 |     with pytest.raises(ValueError) as caught:
+    |                        ^^^^^^^^^^
+215 |         bot.connect()
+216 |     assert caught.value is origin
+    |
+
+PLC0415 `import` should be at the top-level of a file
+   --> tests/test_protocol_rereview_repairs.py:223:5
+    |
+221 | @pytest.fixture(scope="session")
+222 | def native_layout(tmp_path_factory):
+223 |     import hashlib
+    |     ^^^^^^^^^^^^^^
+224 |     import re
+225 |     import shlex
+    |
+
+PLC0415 `import` should be at the top-level of a file
+   --> tests/test_protocol_rereview_repairs.py:224:5
+    |
+222 | def native_layout(tmp_path_factory):
+223 |     import hashlib
+224 |     import re
+    |     ^^^^^^^^^
+225 |     import shlex
+226 |     import subprocess
+    |
+
+PLC0415 `import` should be at the top-level of a file
+   --> tests/test_protocol_rereview_repairs.py:225:5
+    |
+223 |     import hashlib
+224 |     import re
+225 |     import shlex
+    |     ^^^^^^^^^^^^
+226 |     import subprocess
+    |
+
+PLC0415 `import` should be at the top-level of a file
+   --> tests/test_protocol_rereview_repairs.py:226:5
+    |
+224 |     import re
+225 |     import shlex
+226 |     import subprocess
+    |     ^^^^^^^^^^^^^^^^^
+227 |
+228 |     native = ROOT / "rathena"
+    |
+
+PT018 Assertion should be broken down into multiple parts
+   --> tests/test_protocol_rereview_repairs.py:240:5
+    |
+238 |     assert match is not None
+239 |     flags = [flag for flag in shlex.split(match[1]) if flag.startswith("-D")]
+240 |     assert "-DPACKETVER=20180704" in flags and "-DPRERE" in flags
+    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+241 |     header = (native / "src/map/packets_struct.hpp").read_text()
+242 |     declarations = []
+    |
+help: Break down assertion into multiple parts
+
+PLC0415 `import` should be at the top-level of a file
+   --> tests/test_protocol_rereview_repairs.py:282:9
+    |
+280 | class FakeSocket:
+281 |     def __init__(self, chunks):
+282 |         from collections import deque
+    |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+283 |
+284 |         self.chunks = deque(chunks)
+    |
+
+PLC0415 `import` should be at the top-level of a file
+   --> tests/test_protocol_rereview_repairs.py:310:5
+    |
+308 | @pytest.mark.parametrize("slots", [(5,), (2, 7)])
+309 | def test_character_selection_uses_native_sparse_wire_slot(native_layout, monkeypatch, slots):
+310 |     import client
+    |     ^^^^^^^^^^^^^
+311 |     import secrets
+312 |     import struct
+    |
+
+I001 [*] Import block is un-sorted or un-formatted
+   --> tests/test_protocol_rereview_repairs.py:310:5
+    |
+308 |   @pytest.mark.parametrize("slots", [(5,), (2, 7)])
+309 |   def test_character_selection_uses_native_sparse_wire_slot(native_layout, monkeypatch, slots):
+310 | /     import client
+311 | |     import secrets
+312 | |     import struct
+    | |_________________^
+313 |
+314 |       size, name_offset, slot_offset = native_layout[:3]
+    |
+help: Organize imports
+    |
+309 | def test_character_selection_uses_native_sparse_wire_slot(native_layout, monkeypatch, slots):
+    -     import client
+310 |     import secrets
+311 |     import struct
+312 |
+313 +     import client
+314 +
+315 |     size, name_offset, slot_offset = native_layout[:3]
+    |
+
+PLC0415 `import` should be at the top-level of a file
+   --> tests/test_protocol_rereview_repairs.py:311:5
+    |
+309 | def test_character_selection_uses_native_sparse_wire_slot(native_layout, monkeypatch, slots):
+310 |     import client
+311 |     import secrets
+    |     ^^^^^^^^^^^^^^
+312 |     import struct
+    |
+
+PLC0415 `import` should be at the top-level of a file
+   --> tests/test_protocol_rereview_repairs.py:312:5
+    |
+310 |     import client
+311 |     import secrets
+312 |     import struct
+    |     ^^^^^^^^^^^^^
+313 |
+314 |     size, name_offset, slot_offset = native_layout[:3]
+    |
+
+PLC0415 `import` should be at the top-level of a file
+   --> tests/test_protocol_rereview_repairs.py:338:5
+    |
+337 | def test_walking_name_matches_pinned_unaltered_native_struct(native_layout):
+338 |     import client
+    |     ^^^^^^^^^^^^^
+339 |     import struct
+    |
+
+I001 [*] Import block is un-sorted or un-formatted
+   --> tests/test_protocol_rereview_repairs.py:338:5
+    |
+337 |   def test_walking_name_matches_pinned_unaltered_native_struct(native_layout):
+338 | /     import client
+339 | |     import struct
+    | |_________________^
+340 |
+341 |       size, aid, gid, move, name = native_layout[3:8]
+    |
+help: Organize imports
+    |
+337 | def test_walking_name_matches_pinned_unaltered_native_struct(native_layout):
+    -     import client
+338 |     import struct
+339 |
+340 +     import client
+341 +
+342 |     size, aid, gid, move, name = native_layout[3:8]
+    |
+
+PLC0415 `import` should be at the top-level of a file
+   --> tests/test_protocol_rereview_repairs.py:339:5
+    |
+337 | def test_walking_name_matches_pinned_unaltered_native_struct(native_layout):
+338 |     import client
+339 |     import struct
+    |     ^^^^^^^^^^^^^
+340 |
+341 |     size, aid, gid, move, name = native_layout[3:8]
+    |
+
+PLC0415 `import` should be at the top-level of a file
+   --> tests/test_protocol_rereview_repairs.py:354:5
+    |
+353 | def test_fifo_manifest_is_nonblocking_and_rejected(limbs, monkeypatch, tmp_path):
+354 |     import os
+    |     ^^^^^^^^^
+355 |
+356 |     path = tmp_path / "fixture-fifo"
+    |
+
+PLC0415 `import` should be at the top-level of a file
+   --> tests/test_protocol_rereview_repairs.py:370:5
+    |
+369 | def test_failed_socket_release_is_retained_and_blocks_connect(monkeypatch):
+370 |     import client
+    |     ^^^^^^^^^^^^^
+371 |     import secrets
+    |
+
+I001 [*] Import block is un-sorted or un-formatted
+   --> tests/test_protocol_rereview_repairs.py:370:5
+    |
+369 |   def test_failed_socket_release_is_retained_and_blocks_connect(monkeypatch):
+370 | /     import client
+371 | |     import secrets
+    | |__________________^
+372 |
+373 |       bot = client.BotClient("offline", secrets.token_hex(8), verbose=False)
+    |
+help: Organize imports
+    |
+369 | def test_failed_socket_release_is_retained_and_blocks_connect(monkeypatch):
+    -     import client
+370 |     import secrets
+371 |
+372 +     import client
+373 +
+374 |     bot = client.BotClient("offline", secrets.token_hex(8), verbose=False)
+    |
+
+PLC0415 `import` should be at the top-level of a file
+   --> tests/test_protocol_rereview_repairs.py:371:5
+    |
+369 | def test_failed_socket_release_is_retained_and_blocks_connect(monkeypatch):
+370 |     import client
+371 |     import secrets
+    |     ^^^^^^^^^^^^^^
+372 |
+373 |     bot = client.BotClient("offline", secrets.token_hex(8), verbose=False)
+    |
+
+Found 26 errors.
+[*] 4 fixable with the `--fix` option (2 hidden fixes can be enabled with the `--unsafe-fixes` option).

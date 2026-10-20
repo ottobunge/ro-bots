@@ -1,0 +1,234 @@
+{
+  "schema_version": 1,
+  "slice": "first host-owned operator public chat",
+  "recorded_at": "2026-10-05T12:51:31.567950+00:00",
+  "repository": "/home/otto/dev/ro-bots",
+  "approval": "implementer execution evidence only; fresh frozen parent review required",
+  "supported_scope": {
+    "entry": "AgentHost.start_worldfeed injects typed CommandDispatcher; POST /commands",
+    "request": {
+      "type": "force_action",
+      "action": "chat",
+      "persona_id": "owned ScheduledAgent ID",
+      "args": "literal nonempty string",
+      "command_id": "[A-Za-z0-9_-]{1,128}"
+    },
+    "execution": "owning ScheduledAgent.tick drains at most 64 requests; existing client.say only; never HTTP-thread send",
+    "readback": "GET /commands/{command_id}",
+    "statuses": {
+      "queued": "accepted in bounded process-local queue, not applied",
+      "dispatched": "say returned, no server delivery confirmation",
+      "failed": "known pre-send failure (including intent audit failure)",
+      "cancelled": "offline/disconnect/stop before send admission",
+      "uncertain": "send in flight or say raised after possible wire effect"
+    },
+    "delivery_confirmation": false,
+    "bounds": {
+      "pending": 64,
+      "terminal_cache": 256,
+      "tick_drain": 64
+    },
+    "id_lifetime": "pending/in-flight plus latest 256 terminal results in this process; retained same canonical payload replays status, conflicts rejected; eviction permits reuse, no dedupe guarantee after eviction/restart",
+    "errors": {
+      "invalid_or_unsupported": 400,
+      "unknown_or_unowned": 404,
+      "queue_full": 429,
+      "offline_or_stopping": 409,
+      "host_stopped": 503
+    },
+    "validation": "strict string arguments and safe IDs; reject extra keys/control-category Unicode/empty/untyped chat; UTF-8 packet total <=65535 including actual client char_name, separator, NUL and 4-byte header",
+    "chat_limit_provenance": "local spikes/003-clientless-limbs/client.py BotClient.say and packetdb.py pack; this is transport encoding ceiling, not server chat acceptance",
+    "audit": "bounded admission/status records; worker writes command-ID intent before send and unconfirmed dispatch memory after return; pre-send memory failure fails without send, post-send memory failure stays dispatched with sanitized audit_error_class",
+    "legacy": "create_app(WorldState) without injected dispatcher remains notes-only, not host execution; non-force API behavior unchanged",
+    "unsupported": [
+      "other host force actions",
+      "goal/party/connect/disconnect/schedule/persona host command lifecycle",
+      "durable command-ID dedupe",
+      "server acknowledgement",
+      "command lifecycle SSE",
+      "Rust ForceAction/browser translation"
+    ]
+  },
+  "red_green_evidence": [
+    {
+      "slice": "HTTP to owned tick to fake say and status",
+      "red": "1 failed: legacy response status None != queued; no queue path",
+      "green": "1 passed"
+    },
+    {
+      "slice": "typed validation, safe IDs, host ownership and failclosed unsupported actions",
+      "red": "21 failed: 200 instead of 400/404",
+      "green": "22 passed"
+    },
+    {
+      "slice": "idempotency, concurrent duplicate admission and queue/cache bounds",
+      "red": "3 failed: new timestamp on replay, overflow 200 not 429, eight sends on duplicate",
+      "green": "25 passed"
+    },
+    {
+      "slice": "offline/stop/disconnect cancellation",
+      "red": "3 failed: offline accepted, stop still queued, reconnect sent old request",
+      "green": "28 passed"
+    },
+    {
+      "slice": "send/memory failure and cancel all offline pending",
+      "red": "4 failed: send exception escaped, memory exception escaped, missing audit classification, two stale sends after relogin",
+      "green": "34 passed after these and concurrent audit/inflight fixes"
+    },
+    {
+      "slice": "stop during blocked audit and in-flight status",
+      "red": "2 failed: no pre-send intent audit reached and in-flight status queued not uncertain",
+      "green": "34 passed; bounded Event waits and joins, no timing sleeps"
+    },
+    {
+      "slice": "lost client connection and bounded tick drain under reentrant HTTP admission",
+      "red": "2 failed: lost connection admitted and tick drained 100 not 64",
+      "green": "133-test scoped regression gate passed"
+    },
+    {
+      "slice": "unknown field conflicts",
+      "red": "1 failed: credential-like extra field ignored (200 not 400)",
+      "green": "final 135-test scoped gate passed"
+    },
+    {
+      "slice": "exact UTF-8 encoded byte boundary",
+      "classification": "additional contract regression verification, passed without new production behavior"
+    }
+  ],
+  "executed_gates": [
+    {
+      "command": "nix develop -c bash -c 'uv run --offline black --check src/robots/app/agent_runtime.py src/robots/app/host_commands.py src/robots/adapters/worldfeed_server.py tests/test_host_chat_commands.py && uv run --offline ruff check src/robots/app/agent_runtime.py src/robots/app/host_commands.py src/robots/adapters/worldfeed_server.py tests/test_host_chat_commands.py && uv run --offline mypy src/robots/app/agent_runtime.py src/robots/app/host_commands.py src/robots/adapters/worldfeed_server.py tests/test_host_chat_commands.py && uv run --offline xenon src/robots/app/host_commands.py src/robots/app/agent_runtime.py src/robots/adapters/worldfeed_server.py --max-absolute B --max-modules B --max-average A && uv run --offline vulture src/robots/app/host_commands.py src/robots/app/agent_runtime.py src/robots/adapters/worldfeed_server.py vulture_whitelist.py && uv run --offline bandit -q -c pyproject.toml src/robots/app/host_commands.py src/robots/app/agent_runtime.py src/robots/adapters/worldfeed_server.py && uv run --offline pylint --disable=all --enable=duplicate-code src/robots/app/host_commands.py src/robots/app/agent_runtime.py src/robots/adapters/worldfeed_server.py && uv run --offline pytest tests/test_host_chat_commands.py tests/test_agent_host.py tests/test_host_memory.py tests/test_host_storage_failure.py tests/test_core_interruption_cleanup.py tests/test_worldfeed_server.py tests/test_worldfeed_retention.py -o addopts= -q --tb=short -o faulthandler_timeout=20'",
+      "result": {
+        "output": "warning: Git tree '/home/otto/dev/ro-bots' is dirty\nro-bots dev shell — try: task --list\nAll done! ✨ 🍰 ✨\n4 files would be left unchanged.\nAll checks passed!\nSuccess: no issues found in 4 source files\n\n--------------------------------------------------------------------\nYour code has been rated at 10.00/10 (previous run: 10.00/10, +0.00)\n\n........................................................................ [ 53%]\n...............................................................          [100%]\n=============================== warnings summary ===============================\n.venv/lib/python3.14/site-packages/fastapi/testclient.py:1\n  /home/otto/dev/ro-bots/.venv/lib/python3.14/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.\n    from starlette.testclient import TestClient as TestClient  # noqa\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n135 passed, 1 warning in 4.27s",
+        "exit_code": 0,
+        "error": null
+      },
+      "hashes_before": {
+        "src/robots/app/agent_runtime.py": "615fcda30c1bdacaa89e065e9c012230fb818361815d652026c789e575901c6c",
+        "src/robots/app/host_commands.py": "023af553c24b7ec2fc5d6d5e21d361f1d541b6d499f06d18a0039df7f3a1407b",
+        "src/robots/adapters/worldfeed_server.py": "456b110a37b32af9229af49be9587c7316ff47b24fe52f729a51cb42172f5b49",
+        "tests/test_host_chat_commands.py": "c92969013f656ad8e7fa103bb8662a9acfe6ab7be12dc896b86db26f1785e58c",
+        "src/robots/app/world_state.py": "61f4daebc1383fd9ee8b9bda27111ed5b1b94c7ccf43099c0d892b7799ce9d0d",
+        "src/robots/society/society.py": "fa7a1c6629b9836de6fca90770e50539fd83bffe98abc51cf68534b92af3db53",
+        "src/robots/society/population_limits.py": "d61bf6aeb698f924d10c34bd09de871a0569c95b51d90c7661b9f98ec9e7e869",
+        "src/robots/adapters/world_inventory.py": "3393e28c5dfe3f16a75ad6b945764799863f981296b0ffd8921c99051466f866",
+        "tests/test_world_inventory.py": "10187d5842946dc610f3714866ae5f9225ef1bbefcf716659efd0160e056cdcb",
+        "src/robots/app/brain.py": "e67e13169fb19c1fea9e27e6fd2857a11989328210d899c0b8c8ee1e8c932ed2",
+        "src/robots/society/memory.py": "29dc3abf394daa6107ee72215f7d514220d6262d0e22351911d2bc24246a3ff2",
+        "spikes/003-clientless-limbs/client.py": "d3026f448857c7ec804469cf584ca1f3089c6ad8188224d2b2cb9389e707eb05",
+        "spikes/003-clientless-limbs/packetdb.py": "d106ae277a6c7f75cf597c9051651a27e0ba6fa3663575608e0033048b18f9d4"
+      },
+      "hashes_after": {
+        "src/robots/app/agent_runtime.py": "615fcda30c1bdacaa89e065e9c012230fb818361815d652026c789e575901c6c",
+        "src/robots/app/host_commands.py": "023af553c24b7ec2fc5d6d5e21d361f1d541b6d499f06d18a0039df7f3a1407b",
+        "src/robots/adapters/worldfeed_server.py": "456b110a37b32af9229af49be9587c7316ff47b24fe52f729a51cb42172f5b49",
+        "tests/test_host_chat_commands.py": "c92969013f656ad8e7fa103bb8662a9acfe6ab7be12dc896b86db26f1785e58c",
+        "src/robots/app/world_state.py": "61f4daebc1383fd9ee8b9bda27111ed5b1b94c7ccf43099c0d892b7799ce9d0d",
+        "src/robots/society/society.py": "fa7a1c6629b9836de6fca90770e50539fd83bffe98abc51cf68534b92af3db53",
+        "src/robots/society/population_limits.py": "d61bf6aeb698f924d10c34bd09de871a0569c95b51d90c7661b9f98ec9e7e869",
+        "src/robots/adapters/world_inventory.py": "3393e28c5dfe3f16a75ad6b945764799863f981296b0ffd8921c99051466f866",
+        "tests/test_world_inventory.py": "10187d5842946dc610f3714866ae5f9225ef1bbefcf716659efd0160e056cdcb",
+        "src/robots/app/brain.py": "e67e13169fb19c1fea9e27e6fd2857a11989328210d899c0b8c8ee1e8c932ed2",
+        "src/robots/society/memory.py": "29dc3abf394daa6107ee72215f7d514220d6262d0e22351911d2bc24246a3ff2",
+        "spikes/003-clientless-limbs/client.py": "d3026f448857c7ec804469cf584ca1f3089c6ad8188224d2b2cb9389e707eb05",
+        "spikes/003-clientless-limbs/packetdb.py": "d106ae277a6c7f75cf597c9051651a27e0ba6fa3663575608e0033048b18f9d4"
+      },
+      "changed_during_gate": []
+    },
+    {
+      "command": "nix develop -c uv run --offline pytest tests/test_host_chat_commands.py -o addopts= -q --tb=short -o faulthandler_timeout=20",
+      "result": {
+        "output": "warning: Git tree '/home/otto/dev/ro-bots' is dirty\nro-bots dev shell — try: task --list\n......................................                                   [100%]\n=============================== warnings summary ===============================\n.venv/lib/python3.14/site-packages/fastapi/testclient.py:1\n  /home/otto/dev/ro-bots/.venv/lib/python3.14/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.\n    from starlette.testclient import TestClient as TestClient  # noqa\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n38 passed, 1 warning in 0.67s",
+        "exit_code": 0,
+        "error": null
+      },
+      "hashes_before": {
+        "src/robots/app/agent_runtime.py": "615fcda30c1bdacaa89e065e9c012230fb818361815d652026c789e575901c6c",
+        "src/robots/app/host_commands.py": "023af553c24b7ec2fc5d6d5e21d361f1d541b6d499f06d18a0039df7f3a1407b",
+        "src/robots/adapters/worldfeed_server.py": "456b110a37b32af9229af49be9587c7316ff47b24fe52f729a51cb42172f5b49",
+        "tests/test_host_chat_commands.py": "c92969013f656ad8e7fa103bb8662a9acfe6ab7be12dc896b86db26f1785e58c",
+        "src/robots/app/world_state.py": "61f4daebc1383fd9ee8b9bda27111ed5b1b94c7ccf43099c0d892b7799ce9d0d",
+        "src/robots/society/society.py": "fa7a1c6629b9836de6fca90770e50539fd83bffe98abc51cf68534b92af3db53",
+        "src/robots/society/population_limits.py": "d61bf6aeb698f924d10c34bd09de871a0569c95b51d90c7661b9f98ec9e7e869",
+        "src/robots/adapters/world_inventory.py": "87020959047038f63b5ce1fc191ce90d16cab5115cd4ac4e008371025eee3423",
+        "tests/test_world_inventory.py": "381782891fe3d3a052a113c9515e56e4cb6ff3e929896d9f54743c132aad037b",
+        "src/robots/app/brain.py": "e67e13169fb19c1fea9e27e6fd2857a11989328210d899c0b8c8ee1e8c932ed2",
+        "src/robots/society/memory.py": "29dc3abf394daa6107ee72215f7d514220d6262d0e22351911d2bc24246a3ff2",
+        "spikes/003-clientless-limbs/client.py": "d3026f448857c7ec804469cf584ca1f3089c6ad8188224d2b2cb9389e707eb05",
+        "spikes/003-clientless-limbs/packetdb.py": "d106ae277a6c7f75cf597c9051651a27e0ba6fa3663575608e0033048b18f9d4"
+      },
+      "hashes_after": {
+        "src/robots/app/agent_runtime.py": "615fcda30c1bdacaa89e065e9c012230fb818361815d652026c789e575901c6c",
+        "src/robots/app/host_commands.py": "023af553c24b7ec2fc5d6d5e21d361f1d541b6d499f06d18a0039df7f3a1407b",
+        "src/robots/adapters/worldfeed_server.py": "456b110a37b32af9229af49be9587c7316ff47b24fe52f729a51cb42172f5b49",
+        "tests/test_host_chat_commands.py": "c92969013f656ad8e7fa103bb8662a9acfe6ab7be12dc896b86db26f1785e58c",
+        "src/robots/app/world_state.py": "61f4daebc1383fd9ee8b9bda27111ed5b1b94c7ccf43099c0d892b7799ce9d0d",
+        "src/robots/society/society.py": "fa7a1c6629b9836de6fca90770e50539fd83bffe98abc51cf68534b92af3db53",
+        "src/robots/society/population_limits.py": "d61bf6aeb698f924d10c34bd09de871a0569c95b51d90c7661b9f98ec9e7e869",
+        "src/robots/adapters/world_inventory.py": "87020959047038f63b5ce1fc191ce90d16cab5115cd4ac4e008371025eee3423",
+        "tests/test_world_inventory.py": "381782891fe3d3a052a113c9515e56e4cb6ff3e929896d9f54743c132aad037b",
+        "src/robots/app/brain.py": "e67e13169fb19c1fea9e27e6fd2857a11989328210d899c0b8c8ee1e8c932ed2",
+        "src/robots/society/memory.py": "29dc3abf394daa6107ee72215f7d514220d6262d0e22351911d2bc24246a3ff2",
+        "spikes/003-clientless-limbs/client.py": "d3026f448857c7ec804469cf584ca1f3089c6ad8188224d2b2cb9389e707eb05",
+        "spikes/003-clientless-limbs/packetdb.py": "d106ae277a6c7f75cf597c9051651a27e0ba6fa3663575608e0033048b18f9d4"
+      },
+      "changed_during_gate": []
+    },
+    {
+      "command": "UV_OFFLINE=true nix develop -c task check",
+      "result": {
+        "output": "warning: Git tree '/home/otto/dev/ro-bots' is dirty\nro-bots dev shell — try: task --list\ntask: [check] uv run black --check src tests\nwould reformat /home/otto/dev/ro-bots/tests/test_world_inventory.py\nwould reformat /home/otto/dev/ro-bots/src/robots/adapters/world_inventory.py\n\nOh no! 💥 💔 💥\n2 files would be reformatted, 86 files would be left unchanged.\ntask: Failed to run task \"check\": exit status 1",
+        "exit_code": 201,
+        "error": null
+      },
+      "hashes_before": {
+        "src/robots/app/agent_runtime.py": "615fcda30c1bdacaa89e065e9c012230fb818361815d652026c789e575901c6c",
+        "src/robots/app/host_commands.py": "d05ae37c9a059d49330510eccdc849863c6d252278c74ce1518c1f060a376fb3",
+        "src/robots/adapters/worldfeed_server.py": "456b110a37b32af9229af49be9587c7316ff47b24fe52f729a51cb42172f5b49",
+        "tests/test_host_chat_commands.py": "e3b2d84756c36f4bc22051a1cee393a2378bc8b30a013b3d7214571ad76dadeb",
+        "src/robots/app/world_state.py": "61f4daebc1383fd9ee8b9bda27111ed5b1b94c7ccf43099c0d892b7799ce9d0d",
+        "src/robots/society/society.py": "fa7a1c6629b9836de6fca90770e50539fd83bffe98abc51cf68534b92af3db53",
+        "src/robots/society/population_limits.py": "d61bf6aeb698f924d10c34bd09de871a0569c95b51d90c7661b9f98ec9e7e869",
+        "src/robots/adapters/world_inventory.py": "0e680dc0e4b5d187f0a12eeb4c84f977e4697cfa6300a7f46bcbc22a04e2fde1",
+        "tests/test_world_inventory.py": "6d60c6aa751cb52987dfb8983c5f411d55618a1bb8f4db6372c2bfbc9fd1ed43",
+        "src/robots/app/brain.py": "e67e13169fb19c1fea9e27e6fd2857a11989328210d899c0b8c8ee1e8c932ed2",
+        "src/robots/society/memory.py": "29dc3abf394daa6107ee72215f7d514220d6262d0e22351911d2bc24246a3ff2",
+        "spikes/003-clientless-limbs/client.py": "d3026f448857c7ec804469cf584ca1f3089c6ad8188224d2b2cb9389e707eb05",
+        "spikes/003-clientless-limbs/packetdb.py": "d106ae277a6c7f75cf597c9051651a27e0ba6fa3663575608e0033048b18f9d4"
+      },
+      "hashes_after": {
+        "src/robots/app/agent_runtime.py": "615fcda30c1bdacaa89e065e9c012230fb818361815d652026c789e575901c6c",
+        "src/robots/app/host_commands.py": "d05ae37c9a059d49330510eccdc849863c6d252278c74ce1518c1f060a376fb3",
+        "src/robots/adapters/worldfeed_server.py": "456b110a37b32af9229af49be9587c7316ff47b24fe52f729a51cb42172f5b49",
+        "tests/test_host_chat_commands.py": "e3b2d84756c36f4bc22051a1cee393a2378bc8b30a013b3d7214571ad76dadeb",
+        "src/robots/app/world_state.py": "61f4daebc1383fd9ee8b9bda27111ed5b1b94c7ccf43099c0d892b7799ce9d0d",
+        "src/robots/society/society.py": "fa7a1c6629b9836de6fca90770e50539fd83bffe98abc51cf68534b92af3db53",
+        "src/robots/society/population_limits.py": "d61bf6aeb698f924d10c34bd09de871a0569c95b51d90c7661b9f98ec9e7e869",
+        "src/robots/adapters/world_inventory.py": "0e680dc0e4b5d187f0a12eeb4c84f977e4697cfa6300a7f46bcbc22a04e2fde1",
+        "tests/test_world_inventory.py": "6d60c6aa751cb52987dfb8983c5f411d55618a1bb8f4db6372c2bfbc9fd1ed43",
+        "src/robots/app/brain.py": "e67e13169fb19c1fea9e27e6fd2857a11989328210d899c0b8c8ee1e8c932ed2",
+        "src/robots/society/memory.py": "29dc3abf394daa6107ee72215f7d514220d6262d0e22351911d2bc24246a3ff2",
+        "spikes/003-clientless-limbs/client.py": "d3026f448857c7ec804469cf584ca1f3089c6ad8188224d2b2cb9389e707eb05",
+        "spikes/003-clientless-limbs/packetdb.py": "d106ae277a6c7f75cf597c9051651a27e0ba6fa3663575608e0033048b18f9d4"
+      },
+      "limitation": "full check stopped on Black formatting of parent-owned world_inventory.py/test_world_inventory.py; not edited or repaired",
+      "changed_during_gate": []
+    }
+  ],
+  "files_created": [
+    "src/robots/app/host_commands.py",
+    "tests/test_host_chat_commands.py",
+    "run/reviews/host-chat-command-first-slice.json"
+  ],
+  "files_modified": [
+    "src/robots/app/agent_runtime.py",
+    "src/robots/adapters/worldfeed_server.py"
+  ],
+  "effects": "in-process FastAPI TestClient and FakeGameClient only; injected scripted decision/static chat/society+tick clocks/client, uv offline. No game/native/provider/Docker/SQL/staging/credential effects, commits or pushes.",
+  "limitations": [
+    "Full combined parent gate and frozen independent review still required.",
+    "One existing Starlette TestClient httpx deprecation warning.",
+    "Dependency audit not run: network forbidden.",
+    "Rust intentionally still refuses ForceAction; browser dashboard integration not claimed."
+  ]
+}

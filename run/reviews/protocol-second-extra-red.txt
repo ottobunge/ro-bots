@@ -1,0 +1,68 @@
+FF                                                                       [100%]
+=================================== FAILURES ===================================
+________________ test_fifo_manifest_is_nonblocking_and_rejected ________________
+
+limbs = <module 'rereview_limbs' from '/home/otto/dev/ro-bots/spikes/003-clientless-limbs/test_limbs.py'>
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7ffff5cc6520>
+tmp_path = PosixPath('/home/otto/.hermes/cache/scratch/nix-shell.HlZXQw/pytest-of-otto/pytest-1/test_fifo_manifest_is_nonblock0')
+
+    def test_fifo_manifest_is_nonblocking_and_rejected(limbs, monkeypatch, tmp_path):
+        import os
+    
+        path = tmp_path / "fixture-fifo"
+        os.mkfifo(path, 0o600)
+        real_open = limbs.os.open
+    
+        def checked_open(filename, flags):
+            assert flags & os.O_NONBLOCK, "FIFO open would block before regular-file check"
+            return real_open(filename, flags)
+    
+        monkeypatch.setattr(limbs.os, "open", checked_open)
+        with pytest.raises(ValueError, match="private"):
+>           limbs.load_fixture(path)
+
+tests/test_protocol_rereview_repairs.py:366: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+spikes/003-clientless-limbs/test_limbs.py:72: in load_fixture
+    fd = os.open(path, os.O_RDONLY | os.O_NOFOLLOW)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+filename = PosixPath('/home/otto/.hermes/cache/scratch/nix-shell.HlZXQw/pytest-of-otto/pytest-1/test_fifo_manifest_is_nonblock0/fixture-fifo')
+flags = 131072
+
+    def checked_open(filename, flags):
+>       assert flags & os.O_NONBLOCK, "FIFO open would block before regular-file check"
+E       AssertionError: FIFO open would block before regular-file check
+E       assert (131072 & 2048)
+E        +  where 2048 = <module 'os' (frozen)>.O_NONBLOCK
+
+tests/test_protocol_rereview_repairs.py:361: AssertionError
+__________ test_failed_socket_release_is_retained_and_blocks_connect ___________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7ffff5cc69e0>
+
+    def test_failed_socket_release_is_retained_and_blocks_connect(monkeypatch):
+        import client
+        import secrets
+    
+        bot = client.BotClient("offline", secrets.token_hex(8), verbose=False)
+    
+        class CannotClose:
+            def shutdown(self, how):
+                pass
+    
+            def close(self):
+                raise OSError()
+    
+        sock = CannotClose()
+        bot.sock = sock
+>       with pytest.raises(RuntimeError, match="socket"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE RuntimeError
+
+tests/test_protocol_rereview_repairs.py:384: Failed
+=========================== short test summary info ============================
+FAILED tests/test_protocol_rereview_repairs.py::test_fifo_manifest_is_nonblocking_and_rejected
+FAILED tests/test_protocol_rereview_repairs.py::test_failed_socket_release_is_retained_and_blocks_connect
+2 failed, 28 deselected in 0.05s

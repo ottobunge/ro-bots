@@ -1,0 +1,85 @@
+{
+  "bindings": {
+    "content/item_guide_files.py": "fea245419226cb3a98ac681db72a0ecb1f5874abc9154e094884664a5ec686d6",
+    "content/item_guide_publication.py": "1206af30bb54fbb357e4daedd9a261887e328d4ed1cef9fc7cc7f5e14fcf01ce",
+    "content/live_recovery.py": "0a1998ffbec5391a93aa8e508d33ae39091dd9d930386ca521d1bbaa347c8112",
+    "content/recovery.py": "c7087e41d14ba44e01583957060a5e35a0eb8ae56f18af62341a8a130abbd2d8",
+    "content/rootless_socket_reader.py": "26e7fbd2194f79c2c4508cbf11241fc643cb997ffee158d476bc29a33b6e484a",
+    "green/densify-guard-green.log": "88dbc9e645515ad1290e027c7287071b7f93995d4ae91761651413a22abff536",
+    "green/densify-publication-green.log": "4bf5a196d2ea9895359ddb6680f0d3db89dc6564fee05bab36e6b3fe92eaf10c",
+    "green/pred-control-environment-baseline.log": "00bb79117adabdbdf01b562308fcc278114c0518233a874d0c842db17cf93ac2",
+    "harness/publication/conftest.py": "9e9f662f394e018ab249311a64b7c24cfd9db6517a3546545adac17c54042391",
+    "harness/publication/test_controls.py": "2df68b1fc8b9e6837c839b59402835aafb3c83317c0f343ab7e2fc265c52e6a9",
+    "harness/publication/test_densify_transition.py": "4ca237274de249caca8bc7e72e1f94bd801e870ceb7f51c3b6eb3ff85f2b3412",
+    "harness/publication/test_publication.py": "de1258d820743b57bb1451cfd95eadf121e29f1ce29435e8d0e5ebe868d01fca",
+    "harness/publication/test_spawn_transition.py": "32d33edd14a461ea0ab2f66a06a22c12478e2b5b3e87849dfd83dc0f3ef9ecc4",
+    "issue_spawn.py": "3ef7c783b8e5ce690246e510a379c01abe902d60621d830fc8522f1de7900db4",
+    "public/spawn/prontera.txt": "feabfbd067d1f65d44ab63152c52aa189a8225fe52264f3b7f0a240db38c2bfb",
+    "public/spawn/prontera.txt.before": "7e5d29e7ac85a5b9f225065325f40609d5de8899afa7e9a6a6e83dd64e54fbd8",
+    "public/spawn/scripts_athena.conf": "fddc415f816017323657e5b4af0e0e8b9accc2f7e1d89b2020c5993b2af794a3",
+    "public/spawn/scripts_athena.conf.before": "4fb0a4031c5563d052999c88672c96b12a401b38397a47a6fbdafad14475c353",
+    "public/spawn/scripts_custom.conf": "a811c282f67f3b3da7a85dfe4f54f9241f9e32a9caa72a91f6fc87d52da232a5",
+    "red/densify-contracts-red.log": "3ae91c798d476f7c8d76de09ba87df94f83139b2efd78874d629a8651a27cfb9"
+  },
+  "completed_at": "2026-10-15T21:43:38+00:00",
+  "densify_payload": {
+    "after": "feabfbd067d1f65d44ab63152c52aa189a8225fe52264f3b7f0a240db38c2bfb",
+    "after_bytes": 5986,
+    "before": "7e5d29e7ac85a5b9f225065325f40609d5de8899afa7e9a6a6e83dd64e54fbd8",
+    "clusters": [
+      "prt_fild08,180,370,120,120 monster Lunatic 1063,40",
+      "prt_fild08,190,365,100,100 monster Pupa 1008,20",
+      "prt_fild08,170,375,150,150 monster Poring 1002,70",
+      "prt_fild08,175,370,140,140 monster Drops 1113,10"
+    ],
+    "format_precedent": "pinned rathena e985006171d2 src/map/npc.cpp:5230 (w1=<map name>{,<x>,<y>{,<xs>,<ys>}}) + :5233 (five-field sscanf); deployed prontera.txt line 25 (prt_fild00,285,138,10,10 monster Green Plant) already loads via the rectangle form",
+    "note": "task e.g. counts (140/60/30/40) superseded by live-read counts: densification moves the area, it does not grow the population; counts bound from the live-read file",
+    "transform": "exact in-place replacement of the four whole-map prt_fild08 lines; species/ids/counts preserved (Poring 1002 x70, Lunatic 1063 x40, Pupa 1008 x20, Drops 1113 x10 = 140 total); rest-of-file byte-equal (verified by inverse substitution)"
+  },
+  "generalization": {
+    "fingerprint_advance": "live_recovery verified_publication_checkpoint iterates request.guarded_targets via dataclasses.replace after verified helper+archive readbacks; recovery fresh_content_checkpoint iterates publication.GUARDED_PATHS",
+    "helper": "new densify-probe/densify-publish ops open mobs/fields below pre-re via densify_parents (existing parents() chain untouched); in-place ftruncate+write with pinned athena/stable byte checks and fresh-fd identity readbacks",
+    "prior_cases": "item-guide pair, scripts_custom stable pair, athena pair all pass adapted 1:1 (builders express the same pairs through guarded_targets); failure-set equality vs predecessor control established",
+    "request": "guarded_targets: tuple[(path, before, after)] replaces the two explicit pair fields; decode_request converts JSON list-of-3-lists with explicit shape denial; scope table drives item-guide/spawn-enable/spawn-densify expected requests",
+    "write_targets": "state_writes carries only changing targets (densify: prontera.txt only); pinned pairs are before==after and never written"
+  },
+  "issue_adaptation": {
+    "offline_contract_check": "real validate_request run in pinned env: densify request validates at the three before digests; prontera foreign/at-after, athena foreign, stable-at-item-guide-before all deny content_guarded_transition_not_qualified",
+    "script": "issue_spawn.py issues the densify approval only (no execution): stable import pinned a811c282..., athena pinned fddc415f..., prontera bound at 7e5d29e7...; asserts live athena bytes == spawn-enable AFTER payload and live prontera bytes == densify baseline payload; Request carries all three guarded pairs with state_writes=(prontera.txt,)"
+  },
+  "live_reads": {
+    "athena_live_sha256": "fddc415f816017323657e5b4af0e0e8b9accc2f7e1d89b2020c5993b2af794a3",
+    "authorized": "ONE read-only docker cp batch (map ced219e3...:npc/pre-re/mobs/fields/prontera.txt + scripts_athena.conf)",
+    "prontera_before_sha256": "7e5d29e7ac85a5b9f225065325f40609d5de8899afa7e9a6a6e83dd64e54fbd8",
+    "prontera_bytes": 5938,
+    "prontera_lines": 141
+  },
+  "namespace": ".work/native-spawn-densify-successor",
+  "parent_next": "run .work/playing-grind-operator/READY-TO-RUN.md Window-12 sections (publication then grind; acceptance = attackable contact, 0x437, damage/death/XP/loot)",
+  "predecessor": {
+    "athena_after_live_verified": "fddc415f816017323657e5b4af0e0e8b9accc2f7e1d89b2020c5993b2af794a3",
+    "content_item_guide_files": "310756c00dd6025256dd561e7a73e6320e101e97614dfd3e13ac9d827282b8b9",
+    "content_item_guide_publication": "c6e7c42aa2c024190f948b3ae9a22b29fcef9856d5c23928ae6945e7ccd1dc36",
+    "copy_verified": "147 files byte-identical at copy time (sha256, /tmp digests vs copied digests, changed=0); 136 predecessor-evidence files pruned (backups, red/green receipts, issuance receipts, private approvals)",
+    "namespace": ".work/native-spawn-enable-successor"
+  },
+  "prohibited_respected": "no live execution (no issuance run, no publication, no window 12); writes confined to .work/native-spawn-densify-successor/ + run/reviews/native-spawn-densify-successor.json + READY-TO-RUN.md Window-12 section; single authorized read-only docker cp batch; no Git actions",
+  "root_gate": {
+    "command": "cd /home/otto/dev/ro-bots && nix develop -c task check",
+    "delta_vs_baseline": "0 (5899+65 unchanged; my files live under .work/ and run/reviews, outside project test collection)",
+    "log": "/tmp/root-gate.log (ephemeral; totals bound here)",
+    "result": "5899 passed, 65 subtests passed, coverage 95.72% (>= 85), exit 0"
+  },
+  "scoped_gates": {
+    "guard_suite": ".work/native-spawn-densify-successor/green/densify-guard-green.log \u2014 25/25, exit 0",
+    "offline_issue_contract": "densify request validates at befores; foreign/after/stable drift denies content_guarded_transition_not_qualified (real validate_request, pinned env)",
+    "publication_suite": ".work/native-spawn-densify-successor/green/densify-publication-green.log \u2014 failure-set equality vs predecessor control (57 shared environment-epoch failures) + 2 densify cycle tests blocked by the same reader_namespace epoch; all offline densify contracts and adapted prior cases pass"
+  },
+  "task": "native-spawn-densify-successor: third guarded publication target (prt_fild08 densification)",
+  "tdd": {
+    "environment_epoch_disclosure": "the rootless reader user-namespace pin (rootless_socket_reader.py reader_namespace) denies in BOTH namespaces after the 2026-10-15 reboot; issuance recomputes rootless-reader-context live, so the parent publication is unaffected; cycle-test re-qualification follows the parent re-pin",
+    "green_guard_suite": "green/densify-guard-green.log: 25/25 exit 0 (predecessor control identical)",
+    "green_publication_suite": "green/densify-publication-green.log: failure set == predecessor control run failure set (57 shared: post-reboot reader-namespace epoch, user ns inode moved, same denial reader_namespace) + exactly the 2 densify full-cycle tests blocked by that same environment epoch (their spawn-cycle analogues fail identically in the predecessor control); all 14 offline densify contracts + adapted prior cases pass",
+    "red": "red/densify-contracts-red.log: 14 failed / 2 passed against the byte-identical predecessor copy (unchanged content modules); failures name the construction gap (no third pair, no densify ops); the 2 passes are predecessor-held invariants (operation-name denial, payload file invariants). Test-infra-only edits after the RED run: lazy prontera constants (avoid collection error), helper_world custom-dir layout, DensifyInputs base -> SpawnInputs, trace width revert"
+  }
+}

@@ -1,0 +1,261 @@
+{
+ "class": "Swordman",
+ "playstyle": "tank (VIT sword-and-board)",
+ "playstyle_axis": "tank",
+ "summary": "1H sword + Guard; STR for damage, VIT for HP/status resist. Holds fields with Magnum Break AoE, survives everything at low cost.",
+ "stat_progression": [
+  {
+   "phase": "early",
+   "base_level": 30,
+   "stat_point_budget": 210,
+   "points_spent": 151,
+   "points_left": 59,
+   "allocation": {
+    "str": 30,
+    "vit": 20,
+    "dex": 10,
+    "agi": 1,
+    "int": 1,
+    "luk": 1
+   },
+   "leftover_into": "STR"
+  },
+  {
+   "phase": "job change ~40",
+   "base_level": 40,
+   "stat_point_budget": 305,
+   "points_spent": 268,
+   "points_left": 37,
+   "allocation": {
+    "str": 40,
+    "vit": 30,
+    "dex": 20,
+    "agi": 1,
+    "int": 1,
+    "luk": 1
+   },
+   "leftover_into": "STR"
+  },
+  {
+   "phase": "job 50",
+   "base_level": 50,
+   "stat_point_budget": 420,
+   "points_spent": 392,
+   "points_left": 28,
+   "allocation": {
+    "str": 50,
+    "vit": 40,
+    "dex": 20,
+    "int": 9,
+    "agi": 1,
+    "luk": 1
+   },
+   "leftover_into": "VIT or INT (Magnum spam)"
+  }
+ ],
+ "skill_order": [
+  {
+   "skill": "Bash",
+   "levels": "1-5 then ->10",
+   "at": "job 1-16",
+   "prereqs": [],
+   "why": "130-400% ATK nuke, +acc 5-50%; SP 8 (lv1-5) / 15 (lv6-10)"
+  },
+  {
+   "skill": "Provoke",
+   "levels": 5,
+   "at": "job ~6-10",
+   "prereqs": [],
+   "why": "Endure prereq; -DEF 10-30% amplifies your own hits; SP lv+3"
+  },
+  {
+   "skill": "Endure",
+   "levels": 1,
+   "at": "job ~11",
+   "prereqs": [
+    "Provoke 5"
+   ],
+   "why": "No-flinch escape + MDEF while active; 1 pt is enough for tanking utility"
+  },
+  {
+   "skill": "Bash",
+   "levels": "->10",
+   "at": "job 12-21",
+   "prereqs": [],
+   "why": "400% finisher"
+  },
+  {
+   "skill": "Magnum Break",
+   "levels": 10,
+   "at": "job 22-31",
+   "prereqs": [
+    "Bash 5"
+   ],
+   "why": "5x5 fire AoE 120-300% + 20% fire ench 10s; 30 SP + small HP; mob-clearing"
+  },
+  {
+   "skill": "Increase HP Recovery",
+   "levels": 4,
+   "at": "job 32-35",
+   "prereqs": [],
+   "why": "+5 HP/tick per lv + 40% potion efficiency at 4; zenysaver"
+  },
+  {
+   "skill": "Sword Mastery",
+   "levels": 10,
+   "at": "job 36-45 (into job 41-50 budget)",
+   "prereqs": [],
+   "why": "+4 ATK/lv flat on 1H swords and daggers"
+  },
+  {
+   "skill": "Quest: Fatal Blow / Berserk / HP Recovery While Moving",
+   "levels": 1,
+   "at": "job 30+ (quest)",
+   "prereqs": [
+    "Bash 6 / Provoke 5 (Berserk)"
+   ],
+   "why": "Free via Swordman Skill Quest; FB stuns on Bash"
+  }
+ ],
+ "skill_point_budget": {
+  "job40_points": 40,
+  "job50_points": 50,
+  "novice_spare": 1,
+  "note": "order above spends exactly 40 by job 45 pattern; trim Increase HP Recovery to fit"
+ },
+ "equipment_order": [
+  {
+   "order": 1,
+   "id": 1201,
+   "name": "Knife [3]",
+   "price_z": 50,
+   "why": "starter (ATK 17)"
+  },
+  {
+   "order": 2,
+   "id": 1101,
+   "name": "Sword [3]",
+   "price_z": 100,
+   "why": "ATK 25, 1H sword; Sword Mastery applies"
+  },
+  {
+   "order": 3,
+   "id": 2303,
+   "name": "Jacket",
+   "price_z": 200,
+   "why": "DEF 2 (server), cheap armor step"
+  },
+  {
+   "order": 4,
+   "id": 2401,
+   "name": "Sandals",
+   "price_z": 400,
+   "why": "DEF 1 shoes"
+  },
+  {
+   "order": 5,
+   "id": 2101,
+   "name": "Guard",
+   "price_z": 500,
+   "why": "shield, DEF 3 (server item_db); -5 ASPD"
+  },
+  {
+   "order": 6,
+   "id": 1104,
+   "name": "Falchion [3]",
+   "price_z": 1500,
+   "why": "ATK 39"
+  },
+  {
+   "order": 7,
+   "id": 2501,
+   "name": "Hood",
+   "price_z": 1000,
+   "why": "garment DEF 2 (server)"
+  },
+  {
+   "order": 8,
+   "id": 1107,
+   "name": "Blade [3]",
+   "price_z": 2900,
+   "why": "ATK 53 endgame-NPC 1H before drops"
+  }
+ ],
+ "grinding": [
+  {
+   "map": "prt_fild08",
+   "phase": "Lv 10-25",
+   "mobs": [
+    {
+     "id": 1008,
+     "name": "Pupa",
+     "level": 4,
+     "hp": 66,
+     "exp": "36/27"
+    },
+    {
+     "id": 1002,
+     "name": "Poring",
+     "level": 1,
+     "hp": 60,
+     "exp": "27/20"
+    },
+    {
+     "id": 1007,
+     "name": "Fabre",
+     "level": 6,
+     "hp": 72,
+     "exp": "54/41",
+     "notes": "Earth 1, passive"
+    }
+   ]
+  },
+  {
+   "map": "prontera fields / culverts (classic iRO spawns - confirm on server)",
+   "phase": "Lv 25-50",
+   "mobs": [
+    {
+     "id": 1052,
+     "name": "Rocker",
+     "level": 15,
+     "hp": 185,
+     "exp": "99/74"
+    },
+    {
+     "id": 1015,
+     "name": "Zombie",
+     "level": 17,
+     "hp": 234,
+     "exp": "117/87",
+     "notes": "Undead 1, aggressive; Magnum Break fire does well vs Undead 1"
+    },
+    {
+     "id": 1013,
+     "name": "Wolf",
+     "level": 45,
+     "hp": 1219,
+     "exp": "342/386",
+     "notes": "passive, assists; only with VIT pool + Guard"
+    }
+   ]
+  }
+ ],
+ "do_not_waste": [
+  "Two-Handed Sword Mastery (tank uses shield)",
+  "Endure above 1 (only Provoke-5 prereq needed for the no-flinch utility)",
+  "INT beyond ~9 (SP for Magnum only)",
+  "AGI (flee-tanking contradicts the VIT plan)"
+ ],
+ "renewal_differences": "Pre-re and renewal share the skill numbers, but stat effects diverge: renewal STR also adds 0.5% weapon ATK, VIT soft-DEF/HP and Angelus behave differently (renewal Angelus adds %HP instead of pure soft-DEF), MaxHP uses renewal's job-base table, and Bash's stun/accuracy values were retuned in some updates. The iRO wiki corpus class page reflects current iRO (renewal); the formulas cited here are the db/pre-re branches in rathena/src/map/status.cpp and skill.cpp.",
+ "sources": [
+  "iro-wiki corpus page 'Stats' (stat per-point effects, raise-cost floor((X-1)/10)+2, 48 pts at BLv1, level-up points floor(X/5)+3)",
+  "iro-wiki corpus page 'Total stat point requirement' (cumulative cost table)",
+  "rathena/src/map/status.cpp status_base_atk (pre-re status ATK: STR+(STR/10)^2+DEX/5+LUK/5 melee; DEX+(DEX/10)^2+STR/5 ranged; MATK min INT+(INT/7)^2 max INT+(INT/5)^2)",
+  "rathena/db/pre-re/skill_tree.yml (authoritative server skill prerequisites)",
+  "rathena/db/pre-re/skill_db.yml (SP costs, cast times)",
+  "iro-wiki corpus '<Class> Job Change Guide' + rathena/npc/pre-re/jobs/1-1/<class>.txt (job change)",
+  "iro-wiki corpus pages 'Swordman' (job bonuses, ASPD table, builds), 'Bash', 'Provoke', 'Magnum Break', 'Endure', 'Sword Mastery', 'Increase HP Recovery', 'Swordman Skill Quest'",
+  "iro-db monsters 1008/1002/1007/1052/1015/1013; items 1101/1104/1107/2101/2303/2401/2501",
+  "job bonuses at job 40/50 from corpus 'Swordman' Job Bonuses table: j40 STR+4 VIT+3 DEX+3 AGI+1 LUK+1; j50 STR+7 VIT+4 DEX+3 AGI+2 LUK+2"
+ ]
+}

@@ -1,0 +1,189 @@
+{
+  "finding": "CHAT-OUTGOING-NAME-BUDGET",
+  "repair_cycle": 1,
+  "status": "IMPLEMENTED_OFFLINE_NOT_SELF_APPROVED",
+  "budget": "min(253, 255 - len((selected_wire_name + ' : ').encode('utf-8')))",
+  "required_signature": "public_chat_text(text: str, sender_name: str) -> str",
+  "native_seam": "self.wire.say(public_chat_text(text, self.wire.char_name))",
+  "next_verifier_requirement": "Call public_chat_text(raw, wire.char_name) and compare peer RX against actual emitted text, never raw model text.",
+  "synthetic_budget_examples": {
+    "WireNovice": {
+      "name_bytes": 10,
+      "text_budget": 242,
+      "old_ascii_budget": 253,
+      "delta": -11
+    },
+    "SelectedPeer": {
+      "name_bytes": 12,
+      "text_budget": 240,
+      "old_ascii_budget": 253,
+      "delta": -13
+    },
+    "界🙂": {
+      "name_bytes": 7,
+      "text_budget": 245
+    }
+  },
+  "contracts_changed": [
+    "Helper sender_name is required; no fallback persona/default name.",
+    "Existing 27-case owned test suite retains Unicode/error/readiness/party semantics; generated ASCII and operator Say expectations change from253 to242 bytes for WireNovice.",
+    "Short ASCII frontier changes from253 to242; 2/3/4-byte edge placements move relative to242, pure CJK expected84->80 and emoji63->60.",
+    "Incoming253-byte constant remains unchanged; longest valid UTF-8 prefix now respects both caps.",
+    "Negative sender budget raises ValueError before serialization; zero budget produces empty text; strict encoding of full input and name propagates errors before sends."
+  ],
+  "tdd": [
+    {
+      "slice": "SelectedPeer full-message relay survives outgoing cap",
+      "red": "red-relay.xml: reached assertion failure, not collection/import error",
+      "green": "green-relay.xml: passed"
+    },
+    {
+      "slice": "Extreme selected sender must fail closed",
+      "red": "red-sender.xml: two DID NOT RAISE ValueError assertion failures",
+      "green": "green-focused.xml: both pass"
+    }
+  ],
+  "evidence_kind": "Source-shaped simulation using actual BotClient.say serializer and fake sink, NOT native peer delivery.",
+  "source_branches": {
+    "pinned_revision": "e985006",
+    "profile": "MAIN20180704 pre-re",
+    "incoming": "clif.cpp10454-10553: text+wireNUL1+modernincrement1<=255",
+    "outgoing": "clif.cpp6756-6774: strlen(full)+1<=256 and safestrncpy len-1 visible bytes",
+    "dispatch": "clif.cpp11516-11535: full output to GlobalMessage, uncapped self echo"
+  },
+  "preserved_history": "Prior incoming-only fix review and original live truncation evidence untouched; that approval is bounded historical evidence, not full peer-safe approval.",
+  "scope": "Only helper, runtime Say argument, owned tests, this new report, private scratch changed. No native/model/SQL/network/service/Git effects; no caps, encoder, packet maps, party254, REST, pose, health, keepalive, providers or gates changed.",
+  "acceptance": {
+    "independent_review_required": true,
+    "new_parent_root_required": true,
+    "native_peer_RX_verified": false,
+    "all_milestones_open": true
+  },
+  "artifacts_directory": "/home/otto/.hermes/cache/scratch/chat-peer-repair1",
+  "artifact_manifest": "/home/otto/.hermes/cache/scratch/chat-peer-repair1/artifact-manifest.json",
+  "verification": {
+    "before": {
+      "src/robots/adapters/native_chat_text.py": "a5a8e0610f14fae6a9465af5ebb968dd7b01d19fd8cbe24efbb07a237b4c8747",
+      "src/robots/app/playing_runtime.py": "51e7ec6ed02227ed8a3c2a03af3b9073ff9a3a1800b54441c7cb9e5b9506718c",
+      "tests/test_native_chat_text.py": "2e352fcc78f04f7e1e234ea2548950618639cddd04a48e740e8dc8144e6d84da"
+    },
+    "after": {
+      "src/robots/adapters/native_chat_text.py": "bccfcf770f28f14f569bf782d1f5df0de86f91bf4c7e641abd8b1dd7782ee13e",
+      "src/robots/app/playing_runtime.py": "c78eb0278e98de8eda5ef31544356164e74fea491bf540ab2da587a9d2d731f0",
+      "tests/test_native_chat_text.py": "f0ac4154bdd398a97ee58e311d87036e8588573c2e9628697aeaaedd640d8995"
+    },
+    "runtime_inverse_bytes_identical": true,
+    "runtime_inverse_ast_identical": true,
+    "counts": {
+      "tests.test_native_chat_text": 35,
+      "tests.test_playing_runtime": 91,
+      "tests.test_native_rest_interrupt": 26,
+      "tests.test_native_pose_recovery": 14,
+      "tests.test_native_playing_keepalive": 18
+    },
+    "xml": {
+      "red-sender.xml": {
+        "sha256": "89b69dd1ca61909922403111f0ee72fa4ccf42e2912a19712780fffc92d4794c",
+        "tests": 2,
+        "failures": 2,
+        "errors": 0
+      },
+      "green-focused.xml": {
+        "sha256": "ea644da57e7b4fd70dbd845a66e891dfb3e673c8c868afe3d4f532fc888776ac",
+        "tests": 184,
+        "failures": 0,
+        "errors": 0
+      },
+      "green-relay.xml": {
+        "sha256": "7df2e8a935d67f1f02264fec54953abc5fff906fb4fc16e18c1f174deb7d8882",
+        "tests": 1,
+        "failures": 0,
+        "errors": 0
+      },
+      "red-relay.xml": {
+        "sha256": "9c0afd52f3fb475833b71a4596c815963d01bd3052d3c6d33abc94377930f366",
+        "tests": 1,
+        "failures": 1,
+        "errors": 0
+      }
+    },
+    "clif_source_sha256": "0b1db098158c240b090c6edb8417978ba495957c8a2df4cd9a0ab4cb39884ac5",
+    "serializer_sha256": "2f57a0adc0b43a20235835290499ca0043966c5def208642598afb0dc49807fd",
+    "gates": {
+      "focused": {
+        "command": [
+          ".venv/bin/python",
+          "-m",
+          "pytest",
+          "tests/test_native_chat_text.py",
+          "tests/test_playing_runtime.py",
+          "tests/test_native_rest_interrupt.py",
+          "tests/test_native_pose_recovery.py",
+          "tests/test_native_playing_keepalive.py",
+          "--junitxml=/home/otto/.hermes/cache/scratch/chat-peer-repair1/green-focused.xml"
+        ],
+        "exit_code": 0
+      },
+      "black": {
+        "command": [
+          ".venv/bin/black",
+          "--check",
+          "--workers",
+          "1",
+          "src/robots/adapters/native_chat_text.py",
+          "src/robots/app/playing_runtime.py",
+          "tests/test_native_chat_text.py"
+        ],
+        "exit_code": 0
+      },
+      "ruff": {
+        "command": [
+          ".venv/bin/ruff",
+          "check",
+          "src/robots/adapters/native_chat_text.py",
+          "src/robots/app/playing_runtime.py",
+          "tests/test_native_chat_text.py"
+        ],
+        "exit_code": 0
+      },
+      "mypy": {
+        "command": [
+          ".venv/bin/mypy",
+          "--strict",
+          "--cache-dir",
+          "/home/otto/.hermes/cache/scratch/chat-peer-repair1/mypy",
+          "src/robots/adapters/native_chat_text.py",
+          "src/robots/app/playing_runtime.py",
+          "tests/test_native_chat_text.py"
+        ],
+        "exit_code": 0
+      },
+      "xenon": {
+        "command": [
+          ".venv/bin/xenon",
+          "--max-absolute",
+          "B",
+          "--max-modules",
+          "B",
+          "--max-average",
+          "A",
+          "src"
+        ],
+        "exit_code": 0
+      },
+      "duplicate": {
+        "command": [
+          ".venv/bin/pylint",
+          "--disable=all",
+          "--enable=duplicate-code",
+          "src"
+        ],
+        "exit_code": 0
+      }
+    }
+  },
+  "issues_encountered": [
+    "Initial Black/Ruff/mypy gates caught formatting, redundant UTF-8 spelling and Any return; fixed locally, final gates all zero.",
+    "write_file refused a stale post-patch overwrite; no write occurred, replaced by targeted owned edits."
+  ]
+}

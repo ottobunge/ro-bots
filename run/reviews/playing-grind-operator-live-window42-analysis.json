@@ -1,0 +1,10 @@
+{
+  "record": "GRIND_WINDOW42_BOTH_JOINS_STALLED_HONEST_VERDICT_SETUP_RESUMES_ACROSS_WINDOWS",
+  "date": "2026-10-19",
+  "findings": [
+    "Both agents' client-side map joins stalled this window (own_pos 0 both; fx1's first stall \u2014 intermittent per window, not per character). The honest window_verdict refused a false pass (passed: false).",
+    "The stat allocation RESUMED across the window boundary exactly as designed: fx1 sent its second 8-spend batch (0xbb: 8 \u2014 the DEX leg after w41's STR leg; the server had applied w41's spends, points 48->32->24->16 across the two windows). Setup phase = resumable, proven live.",
+    "The join stall is now THE dominant flakiness: intermittent per window per agent (fx1 joined fine in w34-40)."
+  ],
+  "next": "The wire classification patch (run/reviews/rest-farm-balance.json, patch-ready: BotClient._map_server outcome classification naming the stall shape) + the fx0 save-state operational fix. After that: windows become reliable enough for the economy-closure acceptance."
+}

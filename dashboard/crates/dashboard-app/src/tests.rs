@@ -20,6 +20,61 @@ fn test_state() -> AppState {
     AppState::new(Arc::new(world_feed::MockWorldFeed::new(42)))
 }
 
+#[test]
+fn backend_default_is_live_and_mock_requires_explicit_selection() {
+    assert_eq!(
+        crate::BackendMode::parse(None).unwrap(),
+        crate::BackendMode::Live
+    );
+    assert_eq!(
+        crate::BackendMode::parse(Some("mock")).unwrap(),
+        crate::BackendMode::Mock
+    );
+    assert!(crate::BackendMode::parse(Some("auto")).is_err());
+}
+
+#[tokio::test]
+async fn unavailable_live_router_is_labeled_and_never_returns_fake_agents() {
+    let feed = world_feed::live::HttpWorldFeed::new(
+        "http://127.0.0.1:1",
+        world_feed::live::LiveConfig::default(),
+    )
+    .unwrap();
+    let app = build_router(AppState::new(Arc::new(feed)));
+    let res = app
+        .clone()
+        .oneshot(Request::get("/api/roster").body(Body::empty()).unwrap())
+        .await
+        .unwrap();
+    assert_eq!(res.status(), StatusCode::SERVICE_UNAVAILABLE);
+    let res = app
+        .clone()
+        .oneshot(Request::get("/").body(Body::empty()).unwrap())
+        .await
+        .unwrap();
+    let html = String::from_utf8(
+        axum::body::to_bytes(res.into_body(), usize::MAX)
+            .await
+            .unwrap()
+            .to_vec(),
+    )
+    .unwrap();
+    assert!(html.contains("LIVE"));
+    assert!(html.contains("unavailable"));
+    assert!(html.contains("not supplied"));
+    let res = app
+        .oneshot(Request::get("/api/health").body(Body::empty()).unwrap())
+        .await
+        .unwrap();
+    let health: Value = serde_json::from_slice(
+        &axum::body::to_bytes(res.into_body(), usize::MAX)
+            .await
+            .unwrap(),
+    )
+    .unwrap();
+    assert_eq!(health["mode"], "live");
+}
+
 #[tokio::test]
 async fn roster_page_lists_groups_and_agents() {
     let app = build_router(test_state());
@@ -76,6 +131,71 @@ async fn agent_page_renders_memory_and_reputation() {
     assert!(html.contains("reputation ledger"));
     assert!(html.contains("force actions"));
     assert!(html.contains("edit persona"));
+}
+
+#[tokio::test]
+async fn inspector_http_escapes_editable_title() {
+    use world_feed::{Command, PersonaEdit};
+    let state = test_state();
+    let id = state.feed.roster().agents[0].persona_id.clone();
+    let name = "</title><script>window.__review_xss=1</script><title>";
+    state
+        .feed
+        .apply_command(Command::EditPersona {
+            persona_id: id.clone(),
+            edit: PersonaEdit {
+                name: name.into(),
+                playstyle: "mage".into(),
+                attitude: "clique".into(),
+                chattiness: 0.5,
+                schedule: vec![],
+            },
+        })
+        .unwrap();
+    let res = build_router(state)
+        .oneshot(
+            Request::get(format!("/agent/{id}"))
+                .body(Body::empty())
+                .unwrap(),
+        )
+        .await
+        .unwrap();
+    assert_eq!(res.status(), StatusCode::OK);
+    let html = String::from_utf8(
+        axum::body::to_bytes(res.into_body(), usize::MAX)
+            .await
+            .unwrap()
+            .to_vec(),
+    )
+    .unwrap();
+    assert!(html.contains(&format!(
+        "<title>ro-bots · {}</title>",
+        crate::render::esc(name)
+    )));
+    assert!(!html.contains(name));
+}
+
+#[test]
+fn upstream_strings_are_safe_in_remaining_render_contexts() {
+    let state = test_state();
+    let id = &state.feed.roster().agents[0].persona_id;
+    let mut detail = state.feed.agent_detail(id).unwrap();
+    detail.attitude = "<img src=x onerror=alert(1)>".into();
+    detail.guild_goal = "<script>alert(2)</script>".into();
+    detail.persona_id = "';alert(3);//</script>".into();
+    let html = crate::render::agent_page_html(&detail);
+    assert!(html.contains(&crate::render::esc(&detail.attitude)));
+    assert!(!html.contains(&detail.attitude));
+    assert!(html.contains(&crate::render::esc(&detail.guild_goal)));
+    assert!(!html.contains(&detail.guild_goal));
+    assert!(html.contains("const pid = \"';alert(3);//\\u003c/script>\";"));
+    let mut roster = state.feed.roster();
+    roster.groups[0].attitude.clone_from(&detail.attitude);
+    roster.agents[0].attitude.clone_from(&detail.attitude);
+    assert!(!crate::render::index_page_html(&roster).contains(&detail.attitude));
+    let feed = crate::render::feed_page_html(&[]);
+    assert!(!feed.contains("innerHTML"));
+    assert!(feed.contains("li.textContent = `[${Math.floor(l.at)}] <${l.sender}> ${l.text}`"));
 }
 
 #[tokio::test]
@@ -173,7 +293,7 @@ async fn commands_endpoint_regenerates_roster() {
         .unwrap();
     assert_eq!(res.status(), StatusCode::OK);
     let roster = state.feed.roster();
-    assert_eq!(roster.seed, 777);
+    assert_eq!(roster.seed, Some(777));
     assert_eq!(roster.agents.len(), 2 * 2 + 1);
 }
 

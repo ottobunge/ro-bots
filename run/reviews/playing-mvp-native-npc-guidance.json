@@ -1,0 +1,575 @@
+{
+  "status": "PARTIAL_COMPLEXITY_MEMORY_SCHEMA_AND_PARENT_REVIEW_REQUIRED",
+  "budget_overrun_recorded": true,
+  "stopped_on_parent_instruction": true,
+  "not_self_approved": true,
+  "live_effects": false,
+  "root_gates_owner": "parent; no root gate run here, disjoint equipment writer active",
+  "working_frontier": [
+    "Received actor6/12 NPC discovery, honest ID/name/distance; type0 never clicked",
+    "Known-empty native Novice preparation stage under chosen goal, explicit KEEP unchanged; bounded public-map exploration",
+    "Current native Talk/Next/Select/Close byte encoders with life/transport/map/epoch/identity/range/pose/motion guards",
+    "Real PlayingDecision request boundary exercised offline with bounded received text/menu, one choice question, original one-based indices including empty labels, cancel255",
+    "Receipt-paced one request per new UI stage; opening5s, response5s, menu/text15s, overall120s, max32 requests/64 presentations/16 pages/4096 text bytes",
+    "Private existing Memory inclusion and per-conversation page deduplication; no shared experiences",
+    "Active native dialogue suppresses retained combat/loot/movement; low-health Rest preserved",
+    "Close UI request explicitly not quest/reward/equipment ACK; instructions can survive map transition without gear readiness claim"
+  ],
+  "blockers": [
+    {
+      "file": "src/robots/app/playing_runtime.py",
+      "api": "_consume_metadata",
+      "issue": "Latest received NPC-name integration makes this existing dispatcher Xenon rank C. Last reduced-file Xenon invocation also reported average B. Stop directive prevents another refactor cycle; parent must resolve on the stable snapshot."
+    },
+    {
+      "file": "src/robots/society/memory.py",
+      "api": "NoteKind Literal at line28",
+      "issue": "npc_dialogue is absent; memory_journal validator uses get_args(NoteKind). Ownership explicitly forbids editing Memory files. Brain currently uses supported other with received NPC provenance, NOT the required npc_dialogue tag.",
+      "parent_fix": "Add npc_dialogue to NoteKind under an owned schema test, switch brain _remember_npc kind to npc_dialogue; verify durable replay before claiming complete named-kind acceptance."
+    },
+    {
+      "file": "tests/test_playing_runtime.py",
+      "issue": "Two existing original cases assert nearby == () for types6/12. Those must now assert received NPC with honest distance and remain excluded from players/monsters. Tests left unchanged."
+    },
+    {
+      "file": "tests/test_native_npc_close_framing.py",
+      "issue": "Historical exact890 table/source-byte equality assertion must admit ONLY these six newly proven rows; preserve old890 mappings/hash check."
+    },
+    {
+      "file": "tests/test_native_emotion_framing.py",
+      "issue": "Historical table count invariant must admit exactly six NPC additions; preserve old entries. Original tests left unchanged."
+    }
+  ],
+  "limits": [
+    "No native login, inference, network, SQL, service, fixture or equipment effects performed",
+    "Unsupported shop remains blocked without any purchase/currency action; inputs aborted via CZ_CLOSE_DIALOG source default END branch (logs unexpected-state error), no arbitrary input submitted",
+    "Unknown framing remains strict; this is a narrow static packet subset, not exhaustive server catalogue",
+    "Current instruction flag means received instructions plus UI close request, not equipment, quest or server acknowledgement",
+    "Fresh native NPC interaction and parent combined whole-source gates/review remain open"
+  ],
+  "source_oracles": {
+    "manifest": "protocol/main-20180704-pre-re-npc-dialogue.json",
+    "revision": "e985006171d2eb320ee512a653f4c83aea3d81b6",
+    "profile": "MAIN20180704/pre-re/obfuscationABSENT",
+    "immutable_binding": "tests.test_native_protocol_manifest.test_immutable_source_profile_sender_binding called before compiler",
+    "full_headers": "config/core.hpp,map/packets.hpp,map/packets_struct.hpp unchanged; installed CPPFLAGS and reviewed include closure",
+    "compiled_layout_count": 9,
+    "numeric_request_proofs": [
+      "clif_packetdb.hpp62: 00B8 size7 NPC@2 choice@6; clif.cpp13312-13343 one-based1..254/cancel255",
+      "clif_packetdb.hpp63: 00B9 size6 NPC@2; clif.cpp13346-13355"
+    ],
+    "oracle_artifact": "/home/otto/.hermes/cache/scratch/npc-guidance/final-name/test_source_bound_unchanged_np0/oracle.json",
+    "additional_name_oracle": "Unchanged full-header static_assert sizeof(PACKET_ZC_ACK_REQNAMEALL_NPC)==58 and offsetof(name)==10; 0ADF remains an existing registration",
+    "response_registrations": {
+      "0x00B4": -1,
+      "0x00B5": 6,
+      "0x00B7": -1,
+      "0x00C4": 6,
+      "0x0142": 6,
+      "0x01D4": 6
+    },
+    "old_registration_count": 890,
+    "new_registration_count": 896,
+    "old_packetdb_bytes_sha256": "f75d7db42e9df276c5be3a47b1a875eb66c642366600de7bdf398f467cbb9d31",
+    "old_bytes_exactly_recovered_by_removing_added_block": true
+  },
+  "menu_example": {
+    "received": "Equipment::Training",
+    "actual_options": [
+      [
+        1,
+        "Equipment"
+      ],
+      [
+        2,
+        ""
+      ],
+      [
+        3,
+        "Training"
+      ]
+    ],
+    "choice_question": "npc_menu",
+    "answer": "3",
+    "action": "NpcSelect(npc_id=321, received_index=3)",
+    "encoded_hex": "b8004101000003",
+    "authority": "Synthetic executed pipeline, not live receipt"
+  },
+  "checks": {
+    "scoped_black": "PASS latest 4 changed files; earlier 11 owned files PASS",
+    "scoped_ruff": "PASS latest 4 changed files; earlier 11 owned files PASS",
+    "scoped_strict_mypy": "PASS latest 4 changed files; earlier 11 owned files PASS",
+    "scoped_xenon": "FAIL latest _consume_metadata rank C after received-name integration; no further changes allowed by stop directive",
+    "scoped_duplicate_code": "PASS 10.00 before final received-name integration, NOT re-run after stop",
+    "latest_npc_result": "30 tests PASS on current snapshot; final-npc.xml overwritten with latest 30-case run",
+    "regression_frontier": "331 tests/2 old NPC-visibility expectation failures before latest name integration; no final root or further regressions after stop",
+    "early_whole_source_xenon_duplicate": "PASS before equipment writer",
+    "xml": [
+      {
+        "path": "/home/otto/.hermes/cache/scratch/npc-guidance/final-npc.xml",
+        "tests": 30,
+        "failures": 0,
+        "failed_names": []
+      },
+      {
+        "path": "/home/otto/.hermes/cache/scratch/npc-guidance/final-regressions.xml",
+        "tests": 331,
+        "failures": 2,
+        "failed_names": [
+          "test_unproven_actor_is_not_player_or_monster[6]",
+          "test_unproven_actor_is_not_player_or_monster[12]"
+        ]
+      },
+      {
+        "path": "/home/otto/.hermes/cache/scratch/npc-guidance/green-guidance-continuity.xml",
+        "tests": 30,
+        "failures": 0,
+        "failed_names": []
+      },
+      {
+        "path": "/home/otto/.hermes/cache/scratch/npc-guidance/green-layout.xml",
+        "tests": 3,
+        "failures": 0,
+        "failed_names": []
+      },
+      {
+        "path": "/home/otto/.hermes/cache/scratch/npc-guidance/green-menu-framing.xml",
+        "tests": 4,
+        "failures": 0,
+        "failed_names": []
+      },
+      {
+        "path": "/home/otto/.hermes/cache/scratch/npc-guidance/green-motion-bounds.xml",
+        "tests": 27,
+        "failures": 0,
+        "failed_names": []
+      },
+      {
+        "path": "/home/otto/.hermes/cache/scratch/npc-guidance/green-provider.xml",
+        "tests": 24,
+        "failures": 0,
+        "failed_names": []
+      },
+      {
+        "path": "/home/otto/.hermes/cache/scratch/npc-guidance/green-refactor.xml",
+        "tests": 21,
+        "failures": 0,
+        "failed_names": []
+      },
+      {
+        "path": "/home/otto/.hermes/cache/scratch/npc-guidance/green-safety-memory.xml",
+        "tests": 21,
+        "failures": 0,
+        "failed_names": []
+      },
+      {
+        "path": "/home/otto/.hermes/cache/scratch/npc-guidance/green-talk.xml",
+        "tests": 1,
+        "failures": 0,
+        "failed_names": []
+      },
+      {
+        "path": "/home/otto/.hermes/cache/scratch/npc-guidance/historical-invariant-failures.xml",
+        "tests": 2,
+        "failures": 2,
+        "failed_names": [
+          "test_every_legacy_mapping_is_preserved",
+          "test_all_889_mappings_macros_and_parser_preserved_bitexact"
+        ]
+      },
+      {
+        "path": "/home/otto/.hermes/cache/scratch/npc-guidance/red-framing.xml",
+        "tests": 2,
+        "failures": 1,
+        "failed_names": [
+          "test_dialogue_frames_individual_coalesced_and_bytewise"
+        ]
+      },
+      {
+        "path": "/home/otto/.hermes/cache/scratch/npc-guidance/red-guidance-continuity.xml",
+        "tests": 26,
+        "failures": 2,
+        "failed_names": [
+          "test_received_instruction_survives_map_change_without_claiming_gear",
+          "test_preparation_preserves_existing_recovery_pose_barrier"
+        ]
+      },
+      {
+        "path": "/home/otto/.hermes/cache/scratch/npc-guidance/red-menu.xml",
+        "tests": 2,
+        "failures": 1,
+        "failed_names": [
+          "test_next_menu_clef_original_index_and_close_pipeline"
+        ]
+      },
+      {
+        "path": "/home/otto/.hermes/cache/scratch/npc-guidance/red-motion-bounds.xml",
+        "tests": 24,
+        "failures": 3,
+        "failed_names": [
+          "test_received_self_motion_denies_click_without_inferred_arrival",
+          "test_nonfinite_clock_denies_npc_requests",
+          "test_passive_stage_flood_is_finitely_bounded"
+        ]
+      },
+      {
+        "path": "/home/otto/.hermes/cache/scratch/npc-guidance/red-received-name.xml",
+        "tests": 1,
+        "failures": 1,
+        "failed_names": [
+          "test_empty_native_novice_brain_talk_receives_instructions"
+        ]
+      },
+      {
+        "path": "/home/otto/.hermes/cache/scratch/npc-guidance/red-safety-memory.xml",
+        "tests": 19,
+        "failures": 10,
+        "failed_names": [
+          "test_current_actor_vanish_invalidates_next",
+          "test_map_receipt_invalidates_old_dialogue",
+          "test_distance_change_invalidates_dialogue",
+          "test_dead_actor_cannot_click_and_zero_sp_can",
+          "test_epoch_resets_conversation_and_transport_invalidates",
+          "test_frame_gap_invalidates_dialogue",
+          "test_received_instructions_private_memory_reaches_clef_once",
+          "test_guidance_does_not_restart_forever_after_received_instruction_close",
+          "test_preparation_overrides_retained_grind_script_not_explicit_goal",
+          "test_no_npc_observed_explores_only_public_walkable_map_bounded"
+        ]
+      },
+      {
+        "path": "/home/otto/.hermes/cache/scratch/npc-guidance/red-talk.xml",
+        "tests": 1,
+        "failures": 1,
+        "failed_names": [
+          "test_empty_native_novice_brain_talk_receives_instructions"
+        ]
+      },
+      {
+        "path": "/home/otto/.hermes/cache/scratch/npc-guidance/regressions-first.xml",
+        "tests": 278,
+        "failures": 2,
+        "failed_names": [
+          "test_unproven_actor_is_not_player_or_monster[6]",
+          "test_unproven_actor_is_not_player_or_monster[12]"
+        ]
+      }
+    ]
+  },
+  "files": [
+    "src/robots/adapters/native_npc_dialogue.py",
+    "src/robots/domain/npc.py",
+    "spikes/003-clientless-limbs/packetdb.py",
+    "src/robots/domain/actions.py",
+    "src/robots/domain/model.py",
+    "src/robots/domain/events.py",
+    "src/robots/domain/decisions.py",
+    "src/robots/app/playing_runtime.py",
+    "src/robots/app/brain.py",
+    "src/robots/app/scripts.py",
+    "tests/test_native_npc_dialogue.py",
+    "tests/test_native_npc_guidance.py",
+    "protocol/main-20180704-pre-re-npc-dialogue.json"
+  ],
+  "source_before_sha256": {
+    "spikes/003-clientless-limbs/packetdb.py": "f75d7db42e9df276c5be3a47b1a875eb66c642366600de7bdf398f467cbb9d31",
+    "src/robots/domain/actions.py": "f0b93b6ac48e6954755c8af5691acacd3546e222de5350f0b9fda8dd09c91b4e",
+    "src/robots/domain/model.py": "de0fdb909243c97b7e1c1cf9cfd76501aa4d1f22be8eaed145f67db3a60b69e5",
+    "src/robots/domain/events.py": "665a13fb1d9d4137a429399914e63ba95802159ed3092b06347285580bed8789",
+    "src/robots/domain/decisions.py": "13833517dc092fe4e58d0f2c62c6f32f1c15566032b57a02da1cdb2452fe9ff8",
+    "src/robots/app/playing_runtime.py": "fd1912b1e6282eceb2985c3736356dee50e286ef41081725fc0628ef49a28440",
+    "src/robots/app/brain.py": "1412ae23dfed96a058ba4adea596f00e85a0f6ba55f296b5745a104ee7bbef53",
+    "src/robots/app/scripts.py": "3bfa0bb0eb6786fc7f0fda6b88805cee6de867d2cdf97952fc8d4620861491a4"
+  },
+  "source_after_sha256": {
+    "src/robots/adapters/native_npc_dialogue.py": "a6bca5ed9d724d6886dd4383025252949d74f0f67e3c80108f19cde2d47017dd",
+    "src/robots/domain/npc.py": "193a17bda93ee478bf633bba07bc68e7fffb98f723f2e463ba88548943be2e8f",
+    "spikes/003-clientless-limbs/packetdb.py": "5f4eeb52b65e3f67ddc2e349bb68bbe25047171267c3c1b3a04b847f4fc45ef8",
+    "src/robots/domain/actions.py": "ecf784957834be018f54d08a061bb0425965547d424687b1d1bc6adbb8f2c3e3",
+    "src/robots/domain/model.py": "4b65f18758741526d0c59b9431392c30369b4af158194f3be930b1ee7fbac375",
+    "src/robots/domain/events.py": "90c1fcf91a139762e8a7a81ac84fab13e5f136f48a2ff3f217a71a7542305a05",
+    "src/robots/domain/decisions.py": "19ffc2b9f69cf290cff7cfc3c4eae2129898d84389feb5baf1c42e1e1b6cdaf7",
+    "src/robots/app/playing_runtime.py": "7544206adc64da5051930b3c87d718c34b6c2092be4af22682849442418b5f35",
+    "src/robots/app/brain.py": "fc7d55d1616e644bd0614e664bf9e3522c965e78681ff7d431ab9c8f5f3ebc8b",
+    "src/robots/app/scripts.py": "43384b6c4303c5446541bb1e859afb8ff19d70cdc31ed3611b0a6742f23d0608",
+    "tests/test_native_npc_dialogue.py": "624a8799d96663d756d15295169f95bc2714d5120be72f9142be58ad66a95976",
+    "tests/test_native_npc_guidance.py": "e8ceab8cb91a363c1b7d83ce87a9b9b1b86223e4d03e878d284b747c494e927f",
+    "protocol/main-20180704-pre-re-npc-dialogue.json": "93abea2b0d3435aa7443dbaabf7451bd3614d3d97bfe3a1e2dae8d48f9e3da52"
+  },
+  "protected_old_source_hashes": {
+    "src/robots/playing.py": {
+      "before": "c4e1f310975c1d4781ffdb01dab95f97ddddca0169df0e1eb411b4acae784fcf",
+      "after": "c4e1f310975c1d4781ffdb01dab95f97ddddca0169df0e1eb411b4acae784fcf"
+    },
+    "src/robots/__main__.py": {
+      "before": "a1396e7ed4f3480f1534d1dc156ca277a479dae899d8ef91424e378537a2da08",
+      "after": "a1396e7ed4f3480f1534d1dc156ca277a479dae899d8ef91424e378537a2da08"
+    },
+    "src/robots/__init__.py": {
+      "before": "14a8271c90ed669cc0645c2901ba6a3d93345643b7697e87b965b9008f02b6a6",
+      "after": "14a8271c90ed669cc0645c2901ba6a3d93345643b7697e87b965b9008f02b6a6"
+    },
+    "src/robots/adapters/native_session_progression.py": {
+      "before": "c7ec4880115c14960642487b34e9ad05ea3ab1718ed0cd54748d361ae84dd55f",
+      "after": "c7ec4880115c14960642487b34e9ad05ea3ab1718ed0cd54748d361ae84dd55f"
+    },
+    "src/robots/adapters/runtime_tree_sync.py": {
+      "before": "2058f33b65ea9cebae8bc3fd07aa78416559c6d4bcb335326b8a166b7053782a",
+      "after": "2058f33b65ea9cebae8bc3fd07aa78416559c6d4bcb335326b8a166b7053782a"
+    },
+    "src/robots/adapters/memory_summary_cache.py": {
+      "before": "05fb8a1063bfda2d02835497c26bcc45817f39e7753dd8c369135c745de67e97",
+      "after": "05fb8a1063bfda2d02835497c26bcc45817f39e7753dd8c369135c745de67e97"
+    },
+    "src/robots/adapters/native_actor_presentation.py": {
+      "before": "81140e814a682ea44742880dd9a3a7a19e165eb2098debfa657d24615fe5b730",
+      "after": "81140e814a682ea44742880dd9a3a7a19e165eb2098debfa657d24615fe5b730"
+    },
+    "src/robots/adapters/native_vitals.py": {
+      "before": "663cc93d1fbe0cb20fb6ae4331e2ad5cf63d9e940a246bb8b332b408f6a7e9ff",
+      "after": "663cc93d1fbe0cb20fb6ae4331e2ad5cf63d9e940a246bb8b332b408f6a7e9ff"
+    },
+    "src/robots/adapters/native_encounter_stream.py": {
+      "before": "fd67733cb31272183cff5bd049506c380654347a9d6daeb566f0e0c18cff2ee0",
+      "after": "fd67733cb31272183cff5bd049506c380654347a9d6daeb566f0e0c18cff2ee0"
+    },
+    "src/robots/adapters/world_bootstrap_sql.py": {
+      "before": "cfa64780b9356b04a2e8eb2699fb0e6703f4b3f6ae9b815fb454a03f9b8b2ce5",
+      "after": "cfa64780b9356b04a2e8eb2699fb0e6703f4b3f6ae9b815fb454a03f9b8b2ce5"
+    },
+    "src/robots/adapters/native_chat_text.py": {
+      "before": "bccfcf770f28f14f569bf782d1f5df0de86f91bf4c7e641abd8b1dd7782ee13e",
+      "after": "bccfcf770f28f14f569bf782d1f5df0de86f91bf4c7e641abd8b1dd7782ee13e"
+    },
+    "src/robots/adapters/worldfeed_server.py": {
+      "before": "456b110a37b32af9229af49be9587c7316ff47b24fe52f729a51cb42172f5b49",
+      "after": "456b110a37b32af9229af49be9587c7316ff47b24fe52f729a51cb42172f5b49"
+    },
+    "src/robots/adapters/mechanics_yaml.py": {
+      "before": "c5991bd78af95b213b4fb9a2ca87b065f5b76e826edb84eac593498a80f64b58",
+      "after": "c5991bd78af95b213b4fb9a2ca87b065f5b76e826edb84eac593498a80f64b58"
+    },
+    "src/robots/adapters/memory_journal.py": {
+      "before": "043f109ba8e637b4b26a7a4cd601e64bffa3512815ea0cfbca8c2737c3fb3a00",
+      "after": "043f109ba8e637b4b26a7a4cd601e64bffa3512815ea0cfbca8c2737c3fb3a00"
+    },
+    "src/robots/adapters/world_prepare.py": {
+      "before": "6742f7b89728cb309853f689ca17f37db6d130a5415f02ee1ea9faceb1031d6a",
+      "after": "6742f7b89728cb309853f689ca17f37db6d130a5415f02ee1ea9faceb1031d6a"
+    },
+    "src/robots/adapters/native_navigation.py": {
+      "before": "d4d758fc7d827d42aab374ebc0c938b5a066d73638e95d82eca3d7aca2730c0a",
+      "after": "d4d758fc7d827d42aab374ebc0c938b5a066d73638e95d82eca3d7aca2730c0a"
+    },
+    "src/robots/adapters/runtime_publication_io.py": {
+      "before": "4a7c1c8e794d92c28d9b59ccc69854fb4461e1731ae6ee2ec81db3a00ae6bd8c",
+      "after": "4a7c1c8e794d92c28d9b59ccc69854fb4461e1731ae6ee2ec81db3a00ae6bd8c"
+    },
+    "src/robots/adapters/world_prepare_cli.py": {
+      "before": "9cb0819e7eaa7cae9418e45af53c591d844a4d2499a760fdcba7284ab128b07a",
+      "after": "9cb0819e7eaa7cae9418e45af53c591d844a4d2499a760fdcba7284ab128b07a"
+    },
+    "src/robots/adapters/playing_backends.py": {
+      "before": "4db7c5c6e5316b0659c13d34d8ed9a1efba324989b519acac1f1d6cb1dbc3980",
+      "after": "4db7c5c6e5316b0659c13d34d8ed9a1efba324989b519acac1f1d6cb1dbc3980"
+    },
+    "src/robots/adapters/runtime_workspace.py": {
+      "before": "557e604bc16549cc89a9e8f521dfe41b7debb6e55435e3a8b409d2155892523f",
+      "after": "557e604bc16549cc89a9e8f521dfe41b7debb6e55435e3a8b409d2155892523f"
+    },
+    "src/robots/adapters/world_test_fixture.py": {
+      "before": "b5e5eebc3ae1d74ce52fb71be7345e3a95c161c3f78534c28db5b27df8126514",
+      "after": "b5e5eebc3ae1d74ce52fb71be7345e3a95c161c3f78534c28db5b27df8126514"
+    },
+    "src/robots/adapters/native_encounter_context.py": {
+      "before": "1bb5e71378d1f68a0bd54a2e294c85650cb1f4fcc25882648a57bfe8acdb7dc7",
+      "after": "1bb5e71378d1f68a0bd54a2e294c85650cb1f4fcc25882648a57bfe8acdb7dc7"
+    },
+    "src/robots/adapters/__init__.py": {
+      "before": "9b1e7275a89b55489704b9976dd1cfa684a4f9ea02f70393fb79bebbb885761e",
+      "after": "9b1e7275a89b55489704b9976dd1cfa684a4f9ea02f70393fb79bebbb885761e"
+    },
+    "src/robots/adapters/rathena_bootstrap_assets.py": {
+      "before": "257f09e9c318dc060b21e76326a4510fce2d9fc06d048047e0949e098ab3c3c7",
+      "after": "257f09e9c318dc060b21e76326a4510fce2d9fc06d048047e0949e098ab3c3c7"
+    },
+    "src/robots/adapters/native_gameplay.py": {
+      "before": "c7e9f16750bf117ba3a4843264e215d2e653c0376c70acd7ac45e00a6b2100f9",
+      "after": "c7e9f16750bf117ba3a4843264e215d2e653c0376c70acd7ac45e00a6b2100f9"
+    },
+    "src/robots/adapters/rathena_runtime_assets.py": {
+      "before": "8cf599ddd633c82879d5a6fc0ed2d98f13399e4094262b6bcafb25c9841650fc",
+      "after": "8cf599ddd633c82879d5a6fc0ed2d98f13399e4094262b6bcafb25c9841650fc"
+    },
+    "src/robots/adapters/native_progression.py": {
+      "before": "ad74be96c5d843cfeabd21ef0bdc0086bd0d9d76546ab3a1954a0f276cbff3fe",
+      "after": "ad74be96c5d843cfeabd21ef0bdc0086bd0d9d76546ab3a1954a0f276cbff3fe"
+    },
+    "src/robots/adapters/rathena_runtime_io.py": {
+      "before": "bc3ca2d291da5d19831bd57f5a794e455a6e9f7870db0f655d376a51de0e6719",
+      "after": "bc3ca2d291da5d19831bd57f5a794e455a6e9f7870db0f655d376a51de0e6719"
+    },
+    "src/robots/adapters/runtime_publication_journal.py": {
+      "before": "36f442431254b6b5f8c252bc1eb7c6528755d9e50ef974f17459de1e06e60384",
+      "after": "36f442431254b6b5f8c252bc1eb7c6528755d9e50ef974f17459de1e06e60384"
+    },
+    "src/robots/adapters/world_compose.py": {
+      "before": "e31c363509b634fdca7ef7a310387974f4e11abd8ddf088a724631e4852514da",
+      "after": "e31c363509b634fdca7ef7a310387974f4e11abd8ddf088a724631e4852514da"
+    },
+    "src/robots/adapters/rathena_runtime.py": {
+      "before": "0a52cbbae5ec459022c1348e33c65105c8cf0776a6bf68bca05e1066d8c74293",
+      "after": "0a52cbbae5ec459022c1348e33c65105c8cf0776a6bf68bca05e1066d8c74293"
+    },
+    "src/robots/adapters/mechanics_stub.py": {
+      "before": "38fcfc3d632cbdbf107015d6dc030a08920ebe5722e64a426854539ec19eef18",
+      "after": "38fcfc3d632cbdbf107015d6dc030a08920ebe5722e64a426854539ec19eef18"
+    },
+    "src/robots/adapters/rules_knowledge.py": {
+      "before": "0877ca90583eb882a18f031fd0d4e4d28f5d45e2940d74462f47c018c5c52732",
+      "after": "0877ca90583eb882a18f031fd0d4e4d28f5d45e2940d74462f47c018c5c52732"
+    },
+    "src/robots/adapters/world_inventory.py": {
+      "before": "591340a547ac066af5f5cd491b5bb4d810083323423ad98275945c32ba153b7e",
+      "after": "591340a547ac066af5f5cd491b5bb4d810083323423ad98275945c32ba153b7e"
+    },
+    "src/robots/ports/__init__.py": {
+      "before": "2ceae33cec0ec1ecf299d7d8ef4d3200eca9cc7d3632f28004148668d2f9219c",
+      "after": "2ceae33cec0ec1ecf299d7d8ef4d3200eca9cc7d3632f28004148668d2f9219c"
+    },
+    "src/robots/ports/mechanics.py": {
+      "before": "1db9f8a72c11d5c9b6006723e7ceed1d1950e46bac4a602274ff436961d73aae",
+      "after": "1db9f8a72c11d5c9b6006723e7ceed1d1950e46bac4a602274ff436961d73aae"
+    },
+    "src/robots/domain/build_templates.py": {
+      "before": "7ac6e75780328ab42f0357bc42709419a8c8c939f3c1d45330dc1bf5560c6b1a",
+      "after": "7ac6e75780328ab42f0357bc42709419a8c8c939f3c1d45330dc1bf5560c6b1a"
+    },
+    "src/robots/domain/farm.py": {
+      "before": "3773b241cbd3c4ab6a467e122f33f2a624897f739ce01fc0e1ba49b17aaf3d8a",
+      "after": "3773b241cbd3c4ab6a467e122f33f2a624897f739ce01fc0e1ba49b17aaf3d8a"
+    },
+    "src/robots/domain/__init__.py": {
+      "before": "53858cc66817d25bdcf50a47319d581b35e9c415f72881d58c8af83c2a61187a",
+      "after": "53858cc66817d25bdcf50a47319d581b35e9c415f72881d58c8af83c2a61187a"
+    },
+    "src/robots/domain/build.py": {
+      "before": "0ead8793772d3a7aacdb33c8e0087f700e54c8bdcd1a49c4cfc913dd5b3ddd18",
+      "after": "0ead8793772d3a7aacdb33c8e0087f700e54c8bdcd1a49c4cfc913dd5b3ddd18"
+    },
+    "src/robots/app/agent_runtime.py": {
+      "before": "597bec8b2735ee8e4a3846d8428cc3a1eb4872fa386b478a6607d800106fac26",
+      "after": "597bec8b2735ee8e4a3846d8428cc3a1eb4872fa386b478a6607d800106fac26"
+    },
+    "src/robots/app/roster_edit.py": {
+      "before": "202030a31b34b9e0c9d79f7d0827f4c00229f4e71c22c47dc74cbda57abd1e13",
+      "after": "202030a31b34b9e0c9d79f7d0827f4c00229f4e71c22c47dc74cbda57abd1e13"
+    },
+    "src/robots/app/builds.py": {
+      "before": "564926dbbbecf631b3e02f542698f9ae5c00e1ad54bec1d05323c1a17edafa28",
+      "after": "564926dbbbecf631b3e02f542698f9ae5c00e1ad54bec1d05323c1a17edafa28"
+    },
+    "src/robots/app/escalation.py": {
+      "before": "8d69da5e9a9ec14037991638df087ca6530a05b264fd25a7fb9b44c73451cfa9",
+      "after": "8d69da5e9a9ec14037991638df087ca6530a05b264fd25a7fb9b44c73451cfa9"
+    },
+    "src/robots/app/__init__.py": {
+      "before": "f8051791757f4a44517787195b9b470bd1215251bd457436c52f3c7de9005c03",
+      "after": "f8051791757f4a44517787195b9b470bd1215251bd457436c52f3c7de9005c03"
+    },
+    "src/robots/app/world_state.py": {
+      "before": "61f4daebc1383fd9ee8b9bda27111ed5b1b94c7ccf43099c0d892b7799ce9d0d",
+      "after": "61f4daebc1383fd9ee8b9bda27111ed5b1b94c7ccf43099c0d892b7799ce9d0d"
+    },
+    "src/robots/app/host_memory_factory.py": {
+      "before": "c3488a284e29332ced59f6f1f05032e1cc98d4065b4033311812790c3cc54e49",
+      "after": "c3488a284e29332ced59f6f1f05032e1cc98d4065b4033311812790c3cc54e49"
+    },
+    "src/robots/app/host_commands.py": {
+      "before": "023af553c24b7ec2fc5d6d5e21d361f1d541b6d499f06d18a0039df7f3a1407b",
+      "after": "023af553c24b7ec2fc5d6d5e21d361f1d541b6d499f06d18a0039df7f3a1407b"
+    },
+    "src/robots/app/runner.py": {
+      "before": "6eabce7e5b55cf6344dc7d138085d06b4de75059f5b86b04219df037c90f4ea5",
+      "after": "6eabce7e5b55cf6344dc7d138085d06b4de75059f5b86b04219df037c90f4ea5"
+    },
+    "src/robots/app/timers.py": {
+      "before": "aacecb6ee62b27d202ee8920f7d99739155aa1e72ffeab6011971dfb4521bf3e",
+      "after": "aacecb6ee62b27d202ee8920f7d99739155aa1e72ffeab6011971dfb4521bf3e"
+    },
+    "src/robots/app/context_selector.py": {
+      "before": "167992303f362464634089122c92d4fdc3974628af72d4e6ea231fa28165680a",
+      "after": "167992303f362464634089122c92d4fdc3974628af72d4e6ea231fa28165680a"
+    },
+    "src/robots/society/models.py": {
+      "before": "fd92140ccf5ce8ecc63a3036670cf8802ff77df8ef52d377f564c6d560161f65",
+      "after": "fd92140ccf5ce8ecc63a3036670cf8802ff77df8ef52d377f564c6d560161f65"
+    },
+    "src/robots/society/population_limits.py": {
+      "before": "e73bc0f8d7e6fa3bf360db70e1ee6019b51370042a4f0a3683b78c757e2b29ca",
+      "after": "e73bc0f8d7e6fa3bf360db70e1ee6019b51370042a4f0a3683b78c757e2b29ca"
+    },
+    "src/robots/society/__init__.py": {
+      "before": "703247c76c6bb3c10c3a4ecc92bf9bc5500b445c218a9c38ba3e2aa6801c5370",
+      "after": "703247c76c6bb3c10c3a4ecc92bf9bc5500b445c218a9c38ba3e2aa6801c5370"
+    },
+    "src/robots/society/society.py": {
+      "before": "fa7a1c6629b9836de6fca90770e50539fd83bffe98abc51cf68534b92af3db53",
+      "after": "fa7a1c6629b9836de6fca90770e50539fd83bffe98abc51cf68534b92af3db53"
+    },
+    "src/robots/society/human.py": {
+      "before": "47247be1aee1fb64a8bd0953498a9382fb904c76f623b27f8c77977c678607d6",
+      "after": "47247be1aee1fb64a8bd0953498a9382fb904c76f623b27f8c77977c678607d6"
+    },
+    "src/robots/society/guild.py": {
+      "before": "c0c97eb94feb6221eea35b22f96fb271ebdac523b63101e503bad61771486b79",
+      "after": "c0c97eb94feb6221eea35b22f96fb271ebdac523b63101e503bad61771486b79"
+    },
+    "src/robots/society/memory.py": {
+      "before": "10f0508d2fd08da1a6fa4aede6f1d5658a7adf982be0d0eecc5c9017760b039f",
+      "after": "10f0508d2fd08da1a6fa4aede6f1d5658a7adf982be0d0eecc5c9017760b039f"
+    },
+    "src/robots/adapters/decision/stub.py": {
+      "before": "628b86444332373edcdc2ab0d2d357781408f2f5e71f4a3b31f3fec9bb6476f7",
+      "after": "628b86444332373edcdc2ab0d2d357781408f2f5e71f4a3b31f3fec9bb6476f7"
+    },
+    "src/robots/adapters/decision/clef_local.py": {
+      "before": "7390bf0b6a1cc3287aa1fa7b031a1e84f87b062241d247832ca6b270033b9f1f",
+      "after": "7390bf0b6a1cc3287aa1fa7b031a1e84f87b062241d247832ca6b270033b9f1f"
+    },
+    "src/robots/adapters/decision/_http.py": {
+      "before": "8a2b6fa356cd01d0bdd62ff19c39dc184eed59f3c8e310372903d32ee72dd196",
+      "after": "8a2b6fa356cd01d0bdd62ff19c39dc184eed59f3c8e310372903d32ee72dd196"
+    },
+    "src/robots/adapters/decision/clef_remote.py": {
+      "before": "8091a7ed76c153e5d209f948a876b4d3d4a69af54f52194d15d59e3a3068f745",
+      "after": "8091a7ed76c153e5d209f948a876b4d3d4a69af54f52194d15d59e3a3068f745"
+    },
+    "src/robots/adapters/decision/__init__.py": {
+      "before": "64fd99933eb2af166086f3daac17b6223088bc58fcffdecb27d8918440d7b25a",
+      "after": "64fd99933eb2af166086f3daac17b6223088bc58fcffdecb27d8918440d7b25a"
+    },
+    "src/robots/adapters/chat/chat_remote.py": {
+      "before": "a54cfdfafa0e0bba733425664748342a3347fc053c4b244b3875b33b3c4c357e",
+      "after": "a54cfdfafa0e0bba733425664748342a3347fc053c4b244b3875b33b3c4c357e"
+    },
+    "src/robots/adapters/chat/stub.py": {
+      "before": "780d993734e9e498dbc0ad8e89ff97143aba3e5a281f3eefd8880412f02e6666",
+      "after": "780d993734e9e498dbc0ad8e89ff97143aba3e5a281f3eefd8880412f02e6666"
+    },
+    "src/robots/adapters/chat/_http.py": {
+      "before": "7d5993992e40c2e24eed8a4b89ab2be7254da31c86e4ec673955e080a9373c74",
+      "after": "7d5993992e40c2e24eed8a4b89ab2be7254da31c86e4ec673955e080a9373c74"
+    },
+    "src/robots/adapters/chat/chat_local.py": {
+      "before": "7f85405f9169eb6638a29059288cbf684ba6e14789bdb4ddc2c7ca0ca6ffcbf5",
+      "after": "7f85405f9169eb6638a29059288cbf684ba6e14789bdb4ddc2c7ca0ca6ffcbf5"
+    },
+    "src/robots/adapters/chat/__init__.py": {
+      "before": "aa6f50ce023dc5ead3fd8453f7878331a13e483c1a0db49a43de1e961f69cf89",
+      "after": "aa6f50ce023dc5ead3fd8453f7878331a13e483c1a0db49a43de1e961f69cf89"
+    }
+  },
+  "existing_tests_modified": [],
+  "no_commits": true
+}

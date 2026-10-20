@@ -1,0 +1,105 @@
+{
+  "scope": "Fixed-scope read-only test-world engine inventory, not seed/reset authorization",
+  "implementation_complete": true,
+  "independent_approval": false,
+  "source_hashes_before": {
+    "src/robots/adapters/world_inventory.py": "cccc670a6bee8918dc0deb0ca1d94c5469b520e047899b86bd165929f5647bca",
+    "tests/test_world_inventory.py": "c4ed1aa6b5c0a8023af26084c4dd680021cd89d1d47cab19ec7be564d95c1ec8",
+    "Taskfile.yml": "63616950e21c15c455c2b6f90be4d588b77f31a62181fd7a93253d164a64a7fd"
+  },
+  "source_hashes_after": {
+    "src/robots/adapters/world_inventory.py": "cccc670a6bee8918dc0deb0ca1d94c5469b520e047899b86bd165929f5647bca",
+    "tests/test_world_inventory.py": "c4ed1aa6b5c0a8023af26084c4dd680021cd89d1d47cab19ec7be564d95c1ec8",
+    "Taskfile.yml": "63616950e21c15c455c2b6f90be4d588b77f31a62181fd7a93253d164a64a7fd"
+  },
+  "snapshot_stable": true,
+  "verification": {
+    "scoped_gates": {
+      "command": "nix develop --offline -c bash -c 'uv run --offline --no-sync black --check src/robots/adapters/world_inventory.py tests/test_world_inventory.py && uv run --offline --no-sync ruff check src/robots/adapters/world_inventory.py tests/test_world_inventory.py && uv run --offline --no-sync mypy src/robots/adapters/world_inventory.py tests/test_world_inventory.py && uv run --offline --no-sync xenon src/robots/adapters/world_inventory.py --max-absolute B --max-modules B --max-average A && uv run --offline --no-sync bandit -q -c pyproject.toml src/robots/adapters/world_inventory.py && uv run --offline --no-sync vulture src/robots/adapters/world_inventory.py && uv run --offline --no-sync pylint --disable=all --enable=duplicate-code src/robots/adapters/world_inventory.py && uv run --offline --no-sync pytest tests/test_world_inventory.py tests/test_taskfile_safety_labels.py tests/test_world_isolation_guard.py tests/test_world_seed_safety.py --no-cov -o addopts=\"\" -q --tb=short && git diff --check'",
+      "exit_code": 0,
+      "passed_tests": 121,
+      "world_inventory_tests": 31,
+      "coverage": "not measured",
+      "gate_names": [
+        "Black",
+        "Ruff",
+        "strict mypy",
+        "Xenon",
+        "Bandit",
+        "Vulture",
+        "Pylint duplicate-code",
+        "pytest",
+        "git diff --check"
+      ]
+    },
+    "real_read_only_engine": {
+      "command": "nix develop --offline -c task world:inventory",
+      "exit_code": 0,
+      "observed": {
+        "world": "test",
+        "volume_exists": false,
+        "containers": [],
+        "volume_users": [],
+        "inventory_stable": true,
+        "mutation_authorized": false
+      }
+    }
+  },
+  "tdd": {
+    "initial_missing_module": "Collection error fixed before genuine behavioral RED; not counted as proof",
+    "vertical_cycles": [
+      {
+        "behavior": "Absent-world inventory",
+        "red": "1 failed, 1 passed",
+        "green": "2 passed"
+      },
+      {
+        "behavior": "Existing test volume and foreign users",
+        "red": "1 failed, 2 passed",
+        "green": "3 passed"
+      },
+      {
+        "behavior": "Malformed/duplicate/excessive IDs and foreign volume names",
+        "red": "6 failed, 3 passed",
+        "green": "9 passed"
+      },
+      {
+        "behavior": "Sanitized inspect schema/identity validation",
+        "red": "10 failed, 9 passed",
+        "green": "19 passed"
+      },
+      {
+        "behavior": "Filter/mount consistency and observation drift",
+        "red": "3 failed, 19 passed",
+        "green": "22 passed"
+      },
+      {
+        "behavior": "Allowlisted engine adapter and CLI/error handling",
+        "red": "7 failed, 22 passed",
+        "green": "29 passed"
+      },
+      {
+        "behavior": "Fixed-scope Taskfile and absent-volume contradiction",
+        "red": "2 failed, 29 passed",
+        "green": "31 passed in combined scoped run"
+      }
+    ]
+  },
+  "security_notes": [
+    "No engine mutation verbs or shell commands admitted; only exact ls/inspect tuples and full lowercase hexadecimal container IDs",
+    "Selected inspection format omits environment and secrets; output contains identity/state and booleans, not foreign label values",
+    "B404/B603 narrowly suppressed at subprocess import/call after full command allowlist and shell=False; no global security configuration weakened",
+    "Engine failures sanitized; 10-second per-command timeout; metadata parser limits inspect JSON to262144characters",
+    "Container ID lists limited to64 per query; union may contain up to128 inspected objects per snapshot"
+  ],
+  "limitations": [
+    "Two matching projected observations are not an atomic snapshot, continuously monitored ownership, exclusive world lock, or execution authorization",
+    "Labels are classification hints, not trusted identity proof",
+    "No SQL/offline-character/fixture ownership inspection, provisioning, reset, seeding, or gameplay execution",
+    "Parser size cap is not a bound on subprocess capture memory or engine output generation",
+    "Live environment lacks test resources: no real existing-container/volume inspect path exercised; present and foreign cases use explicit test fixtures",
+    "No whole-repository gate claim while independent population/chat implementations are changing other source files"
+  ],
+  "external_mutations": false,
+  "staged_committed_pushed": false
+}

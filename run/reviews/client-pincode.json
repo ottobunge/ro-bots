@@ -1,0 +1,82 @@
+{
+  "schema": 1,
+  "scope": "source-backed offline PIN authentication; injected transports only",
+  "profile": "MAIN/pre-re PACKETVER=20180704",
+  "world_policy_changed": false,
+  "native_gameplay_verified": false,
+  "api": "BotClient(..., pincode: str | None = None); optional account manifest key pincode",
+  "validation": "Supplied PIN must be an exact str of four ASCII digits. None is allowed only as a client API value, not as a present manifest field. Errors never contain supplied values.",
+  "protocol": {
+    "status": {"id": "0x08B9", "size": 12, "layout": "packed int16 packetType; uint32 seed; uint32 AID; uint16 result"},
+    "check": {"id": "0x08B8", "size": 10, "layout": "packed int16 packetType; uint32 AID; char pin[4]"},
+    "success_state": 0,
+    "request_state": 1,
+    "attempt_limit_per_handshake": 1,
+    "fail_closed": ["missing required supplied PIN", "invalid supplied PIN", "account echo mismatch", "PIN status AID mismatch", "absent success status", "repeated challenge", "failure and unknown states"],
+    "encryption": "Inverse of char_pincode_decrypt permutation. Ascending shuffle indices 1..9; seed=(0x881234 + seed*0x3498) modulo 2^32; swap table[i] with table[seed modulo (i+1)]. Encode plaintext digits as ASCII inverse-table indices.",
+    "character_selection": "Wait for both character list and account-matched state 0 before 0x0066. Preserve incremental per-socket framing and queued coalesced frames.",
+    "shared_packetdb_need": "Parent-owned packetdb.py lacks outbound 0x08B8: add fixed size 10 and name CH_SECOND_PASSWD_ACK, backed by common/packets.hpp:551-556 and char_clif.cpp:1611. Client currently emits this exact source-proven outbound struct directly without changing shared packetdb."
+  },
+  "source_authority": {
+    "root": "/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source",
+    "revision": "e985006171d2eb320ee512a653f4c83aea3d81b6",
+    "locations": [
+      "src/common/packets.hpp:551-564 packet structs/headers",
+      "src/char/char_clif.cpp:146-225 status sender and PIN check receiver",
+      "src/char/char_clif.cpp:1611 registered sizeof(PACKET_CH_SECOND_PASSWD_ACK)",
+      "src/char/char.cpp:2153-2187 native decrypt implementation",
+      "src/char/char.hpp:110-129 state enum; PACKETVER>=20180124 aliases PINCODE_PASSED to PINCODE_OK",
+      "src/char/char_logif.cpp:52-85 disabled and enabled state flow",
+      "src/char/char_logif.cpp:362-365 character list precedes PIN status",
+      "src/config/packets.hpp:83 PACKETVER_SUPPORTS_PINCODE"
+    ],
+    "note": "No src/char/pincode.cpp exists in this pin; implementation is in char.cpp.",
+    "sha256": {
+      "src/char/char_clif.cpp": "f50dedd4cf46d0d3bea95c9410f1f0f04c5f7b525e6691b2afb9c4a3677c5654",
+      "src/char/char.cpp": "141dd411c11ec9663d49e1274203ba28bdf3761cce0f98782a8cfd37ee34cdff",
+      "src/char/char.hpp": "f3bb7f873b1028bf6a23d04e1416427337a81e1cd495908b9c207120c3a37134",
+      "src/char/char_logif.cpp": "04725ee1160d7124c6094e0f760639dfc4675e7303712eeac748e622fba6829b",
+      "src/common/packets.hpp": "c92279bf163e9546b649397638c19e57c3eb515b49e841c13f88a5fb97bba693",
+      "src/config/packets.hpp": "180f7ddaf5c978af0db7ed26215388265d51f59957ac7173d617870e2cc0964d"
+    }
+  },
+  "tdd_observations": [
+    "Initial required-PIN replay failed because old client selected character before PIN success; after fail-closed status gate, this test passed.",
+    "Nine seed/order replays failed on absent pincode constructor API; after source-derived encryption/handshake implementation, all passed.",
+    "Validation/account-echo/harness additions exposed 16 failures; after narrowly scoped validation and forwarding, all 40 PIN tests passed."
+  ],
+  "final_verification": {
+    "command": "TMPDIR=/home/otto/.hermes/cache/scratch/pin-t nix develop --offline path:/home/otto/dev/ro-bots/nix/playable-world --command env -u PYTHONPATH -u PYTEST_ADDOPTS -u PYTEST_DISABLE_PLUGIN_AUTOLOAD .venv/bin/python -m pytest tests/test_client_pincode.py tests/test_client_protocol.py tests/test_protocol_rereview_repairs.py tests/test_temporary_handshake_cleanup.py tests/test_limb_evidence.py tests/test_packet_conditions.py -q --tb=no --junitxml=/home/otto/.hermes/cache/scratch/pincode-final.xml",
+    "junit": "/home/otto/.hermes/cache/scratch/pincode-final.xml",
+    "total": 171,
+    "unique": 171,
+    "passed": 164,
+    "failed": 7,
+    "errors": 0,
+    "new_pin_tests_passed": 40,
+    "black_check": "PASS: all three owned Python files",
+    "ruff_new_tests": "PASS",
+    "strict_mypy_new_tests": "PASS: no issues in one source file",
+    "ruff_owned_legacy_spikes": "FAIL: 86 diagnostics, largely existing spike style; no broad suppressions added",
+    "strict_mypy_owned_legacy_spikes": "FAIL: 62 diagnostics across spikes and imported shared packetdb; no broad type suppression or shared edits",
+    "remaining_regression_failure_cause": "Existing synthetic character-success replays omit the account-matched 0x08B9 state-0 frame that pinned MAIN emits even when PIN policy is disabled. Do not restore absent-status acceptance.",
+    "parent_required_fixture_repairs": [
+      "tests/test_protocol_rereview_repairs.py:360 insert struct.pack('<HIIH', 0x08B9, seed, 11, 0) into the synthetic stream before its zone notification (two parametrized failures)",
+      "tests/test_temporary_handshake_cleanup.py:209 accepted_frames('char') insert the same account-matched state-0 frame before zone bytes (five failures)"
+    ],
+    "environment_recovery": "Used existing UV venv and offline pinned tiny public Nix devShell. Unset injected Nix PYTHONPATH to avoid mixing Nix pytest/plugin metadata with the existing venv. No installs.",
+    "frozen_closure_sha256_before_equals_after": true
+  },
+  "frozen_closure_sha256": {
+    "spikes/003-clientless-limbs/client.py": "52de26b4b5ded1029c53322b26454a63e8d0f709097535fb6c1642ddfd73d924",
+    "spikes/003-clientless-limbs/test_limbs.py": "fab29db2807b13ed6f53cded49c36af4899cf18f13bc007dff52f217add52bb2",
+    "spikes/003-clientless-limbs/packetdb.py": "d106ae277a6c7f75cf597c9051651a27e0ba6fa3663575608e0033048b18f9d4",
+    "tests/test_client_pincode.py": "11def831c6b589e821f6fc844f80c9f5ac53cb0b62b6610a73bcdcdbd9906f12",
+    "tests/test_client_protocol.py": "3e781d2f50501b2d1bf0c3caccf507f3c6fcde533ad62ea1448b0f857143a5a2",
+    "tests/test_protocol_rereview_repairs.py": "587c6aee7058cb18c5537fd41b46cba5e847254817590cfa74c088f198843110",
+    "tests/test_temporary_handshake_cleanup.py": "4c4daa3740b5c3f12441d1c3042a655b4208473904528509b816f38ffd269d79",
+    "tests/test_limb_evidence.py": "9669537ee7ed63e7be4850936e96d28fc0a75bb17c77bac753c45ec8be941569",
+    "tests/test_packet_conditions.py": "abe40cc3af9d56de1f98088ae372e0e1f54cfe5a2d89ea6828f75f6e4d1969d1"
+  },
+  "external_side_effects": "None: no engine, service launch, live network, SQL, provider, private user-file access, world-policy write, seed mutation, or git staging."
+}

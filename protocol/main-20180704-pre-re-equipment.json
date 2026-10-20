@@ -1,0 +1,439 @@
+{
+  "schema": "pinned-native-equipment-codec/v1",
+  "profile": {
+    "role": "map",
+    "packetver": 20180704,
+    "client_family": "MAIN",
+    "ruleset": "pre-re",
+    "obfuscation": "ABSENT"
+  },
+  "provenance": {
+    "revision": "e985006171d2eb320ee512a653f4c83aea3d81b6",
+    "package": "/nix/store/0w1nfsmj8gaipcidhgx2nkg4axqxcbbr-rathena-playable-callback-qualified-20180704-e985006171d2-callback-qualified",
+    "package_nar_hash": "sha256-hIVo2RvlabG8Jw362W7PxdXkQx2CDYihvHKwhZjP0Es=",
+    "variant": "callback-qualified",
+    "profiles_sha256": "ee2af351afee975ad4145d0e38412dfac0779cd123435f318f8c876349bc0148",
+    "configured_source_sha256": "1fd585266bbcf2268b2cec9e901100fad68b904a8b2a8c049c5869c56af43e12",
+    "qualified_clif_sha256": "ace16f15be3b60f730522d620b73a68a9f2cc384016aadce9c985888aea9a1ac",
+    "map_cppflags_sha256": "7986f2fdeb11e55ee707ac27eb4701a64b90361ce1636bb728025fb92a99291d",
+    "map_compile_recipe_sha256": "8488711230e38fb3a48a9d19dca18b50b3a93780fd9287775768723af9358878"
+  },
+  "configured_source": "/home/otto/.hermes/cache/scratch/callback-package-hut2_cuz/configured-variant",
+  "cppflags": "-std=c++17 -DHAS_TLS -fno-strict-aliasing -DHAVE_GETADDRINFO -DHAVE_SETRLIMIT -DHAVE_STRNLEN -DPACKETVER=20180704 -DPRERE -DHAVE_MONOTONIC_CLOCK -DHAS_TLS -fno-strict-aliasing -DHAVE_GETADDRINFO -DHAVE_SETRLIMIT -DHAVE_STRNLEN -DPACKETVER=20180704 -DPRERE -DHAVE_MONOTONIC_CLOCK",
+  "measurements": {
+    "records": {
+      "EQUIPITEM_INFO": {
+        "size": 57,
+        "alignment": 1,
+        "fields": {
+          "index": {
+            "offset": 0,
+            "width": 2
+          },
+          "ITID": {
+            "offset": 2,
+            "width": 2
+          },
+          "type": {
+            "offset": 4,
+            "width": 1
+          },
+          "location": {
+            "offset": 5,
+            "width": 4
+          },
+          "WearState": {
+            "offset": 9,
+            "width": 4
+          },
+          "RefiningLevel": {
+            "offset": 13,
+            "width": 1
+          },
+          "slot": {
+            "offset": 14,
+            "width": 8
+          },
+          "HireExpireDate": {
+            "offset": 22,
+            "width": 4
+          },
+          "bindOnEquipType": {
+            "offset": 26,
+            "width": 2
+          },
+          "wItemSpriteNumber": {
+            "offset": 28,
+            "width": 2
+          },
+          "option_count": {
+            "offset": 30,
+            "width": 1
+          },
+          "option_data": {
+            "offset": 31,
+            "width": 25
+          },
+          "Flag": {
+            "offset": 56,
+            "width": 1
+          }
+        }
+      },
+      "ItemOptions": {
+        "size": 5,
+        "alignment": 1,
+        "fields": {
+          "index": {
+            "offset": 0,
+            "width": 2
+          },
+          "value": {
+            "offset": 2,
+            "width": 2
+          },
+          "param": {
+            "offset": 4,
+            "width": 1
+          }
+        }
+      },
+      "EQUIPSLOTINFO": {
+        "size": 8,
+        "alignment": 1,
+        "fields": {
+          "card": {
+            "offset": 0,
+            "width": 8
+          }
+        }
+      },
+      "packet_itemlist_equip": {
+        "size": 34204,
+        "alignment": 1,
+        "fields": {
+          "PacketType": {
+            "offset": 0,
+            "width": 2
+          },
+          "PacketLength": {
+            "offset": 2,
+            "width": 2
+          },
+          "list": {
+            "offset": 4,
+            "width": 34200
+          }
+        }
+      },
+      "PACKET_CZ_REQ_WEAR_EQUIP": {
+        "size": 8,
+        "alignment": 1,
+        "fields": {
+          "packetType": {
+            "offset": 0,
+            "width": 2
+          },
+          "index": {
+            "offset": 2,
+            "width": 2
+          },
+          "position": {
+            "offset": 4,
+            "width": 4
+          }
+        }
+      },
+      "PACKET_ZC_REQ_WEAR_EQUIP_ACK": {
+        "size": 11,
+        "alignment": 1,
+        "fields": {
+          "PacketType": {
+            "offset": 0,
+            "width": 2
+          },
+          "index": {
+            "offset": 2,
+            "width": 2
+          },
+          "wearLocation": {
+            "offset": 4,
+            "width": 4
+          },
+          "wItemSpriteNumber": {
+            "offset": 8,
+            "width": 2
+          },
+          "result": {
+            "offset": 10,
+            "width": 1
+          }
+        }
+      },
+      "PACKET_ZC_REQ_TAKEOFF_EQUIP_ACK": {
+        "size": 9,
+        "alignment": 1,
+        "fields": {
+          "packetType": {
+            "offset": 0,
+            "width": 2
+          },
+          "index": {
+            "offset": 2,
+            "width": 2
+          },
+          "wearLocation": {
+            "offset": 4,
+            "width": 4
+          },
+          "flag": {
+            "offset": 8,
+            "width": 1
+          }
+        }
+      }
+    },
+    "flags_byte_masks": {
+      "IsIdentified": 1,
+      "IsDamaged": 2,
+      "PlaceETCTab": 4,
+      "SpareBits": 248
+    },
+    "item_id_width": 2,
+    "max_item_options": 5,
+    "max_inventory_configured": 100,
+    "packet_headers": {
+      "inventory_equipment": 2573,
+      "equip_request": 2456,
+      "equip_ack": 2457,
+      "unequip_ack": 2458
+    },
+    "equip_results": {
+      "success": 0,
+      "level_failure": 1,
+      "failure": 2
+    }
+  },
+  "requests": {
+    "0x0998": {
+      "size": 8,
+      "authority": "full-header compiler record"
+    },
+    "0x00AB": {
+      "size": 4,
+      "index_offset": 2,
+      "index_width": 2,
+      "index_cpp_accessor": "RFIFOW",
+      "authority": "clif_packetdb.hpp:59 registration and clif.cpp:12183 handler; no C++ request record declared or fabricated"
+    }
+  },
+  "unequip_results": {
+    "success": 0,
+    "failure": 1,
+    "authority": "clif.cpp:4338-4348 inverts bool success under active PACKETVER>=20110824; PACKETVER=20180704 compiler-proven"
+  },
+  "source_authority": [
+    {
+      "path": "src/map/packets_struct.hpp",
+      "lines": [
+        410,
+        507
+      ]
+    },
+    {
+      "path": "src/map/packets_struct.hpp",
+      "lines": [
+        1196,
+        1203
+      ]
+    },
+    {
+      "path": "src/map/packets_struct.hpp",
+      "lines": [
+        1268,
+        1276
+      ]
+    },
+    {
+      "path": "src/map/packets.hpp",
+      "lines": [
+        1006,
+        1013
+      ]
+    },
+    {
+      "path": "src/map/packets.hpp",
+      "lines": [
+        1502,
+        1509
+      ]
+    },
+    {
+      "path": "src/map/clif.hpp",
+      "lines": [
+        523,
+        533
+      ]
+    },
+    {
+      "path": "src/map/clif.cpp",
+      "lines": [
+        122,
+        127
+      ]
+    },
+    {
+      "path": "src/map/clif.cpp",
+      "lines": [
+        2932,
+        2995
+      ]
+    },
+    {
+      "path": "src/map/clif.cpp",
+      "lines": [
+        3080,
+        3093
+      ]
+    },
+    {
+      "path": "src/map/clif.cpp",
+      "lines": [
+        4303,
+        4350
+      ]
+    },
+    {
+      "path": "src/map/clif.cpp",
+      "lines": [
+        12164,
+        12192
+      ]
+    },
+    {
+      "path": "src/map/clif_packetdb.hpp",
+      "lines": [
+        59,
+        59
+      ]
+    },
+    {
+      "path": "src/map/pc.cpp",
+      "lines": [
+        12015,
+        12070
+      ]
+    },
+    {
+      "path": "src/map/pc.cpp",
+      "lines": [
+        12398,
+        12416
+      ]
+    }
+  ],
+  "header_and_sender_sha256": {
+    "src/config/core.hpp": "ba04ee9f32d9d334f59b345326105864ddc5fed296ebbaf9d599c26e48aea7ae",
+    "src/map/packets.hpp": "b4959224a48e1febb811d7c1474f2c1b703d324ae4db7e3a1053a85b80da57bc",
+    "src/map/packets_struct.hpp": "5ab5ef13d2a1cdc60d84dcaf2e3be0b6e316b9630e61c3ac7ba0f930d4d31287",
+    "src/map/map.hpp": "1cb428d1145ec9c4045b2ae58c163be24bf1bd374fc8eea07eaf0c266621fe2b",
+    "src/map/clif.hpp": "3a9c9531ba63ded135885d69c378ebc818cfbdcf8d4e4ccbcd9bb75d8a42019c",
+    "src/map/clif.cpp": "ace16f15be3b60f730522d620b73a68a9f2cc384016aadce9c985888aea9a1ac",
+    "src/map/pc.cpp": "d12704c1ef7f8321c255175b6f61aa396209b931e2b1687fbbd16963d1def652",
+    "src/map/clif_packetdb.hpp": "51c8a9ebd591e0dd4f444f829253a14d449615425405cb8a95f28a6dea460e66"
+  },
+  "compiler_proof": {
+    "directory": "/home/otto/.hermes/cache/scratch/native-equipment-proof",
+    "probe_sha256": "7aaa9fb6f7766747cc86e1618ee132ea8c51f901c7ca6804dd536cd434920b55",
+    "runner_sha256": "c18852ff3d0ced722c8c0068ebe9fc1bca62d4deb45b4f0d9a306bb5b5fca27b",
+    "profile_binding_test": "test_native_protocol_manifest.test_immutable_source_profile_sender_binding invoked before every compilation",
+    "outputs": {
+      "g++": {
+        "command": [
+          "/nix/store/j1938gsbvbhkyz4kbmvjk56r479mkw3s-gcc-wrapper-16.2.0/bin/g++",
+          "-std=c++17",
+          "-DHAS_TLS",
+          "-fno-strict-aliasing",
+          "-DHAVE_GETADDRINFO",
+          "-DHAVE_SETRLIMIT",
+          "-DHAVE_STRNLEN",
+          "-DPACKETVER=20180704",
+          "-DPRERE",
+          "-DHAVE_MONOTONIC_CLOCK",
+          "-DHAS_TLS",
+          "-fno-strict-aliasing",
+          "-DHAVE_GETADDRINFO",
+          "-DHAVE_SETRLIMIT",
+          "-DHAVE_STRNLEN",
+          "-DPACKETVER=20180704",
+          "-DPRERE",
+          "-DHAVE_MONOTONIC_CLOCK",
+          "-I/home/otto/.hermes/cache/scratch/callback-package-hut2_cuz/configured-variant/src",
+          "-I/home/otto/.hermes/cache/scratch/callback-package-hut2_cuz/configured-variant/src/common",
+          "-I/home/otto/.hermes/cache/scratch/callback-package-hut2_cuz/configured-variant/3rdparty/libconfig",
+          "-I/home/otto/.hermes/cache/scratch/callback-package-hut2_cuz/configured-variant/3rdparty/rapidyaml/src",
+          "-I/home/otto/.hermes/cache/scratch/callback-package-hut2_cuz/configured-variant/3rdparty/rapidyaml/ext/c4core/src",
+          "-I/nix/store/1w8g6rvhljfk44hx50qz4sc47sm1f28v-mariadb-connector-c-3.3.5-dev/include",
+          "-I/nix/store/1w8g6rvhljfk44hx50qz4sc47sm1f28v-mariadb-connector-c-3.3.5-dev/include/mysql",
+          "/home/otto/.hermes/cache/scratch/native-equipment-proof/equipment.cpp",
+          "-o",
+          "/home/otto/.hermes/cache/scratch/native-equipment-proof/g++"
+        ],
+        "stdout_sha256": "8e662f760c9c8ff313d876275321c6fef70fc44649843c8f39197dbd1dd4375c",
+        "compile_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "clang++": {
+        "command": [
+          "/nix/store/2msw5nclhpsm80z65dqmjiv8kkras989-clang-wrapper-21.1.8/bin/clang++",
+          "-std=c++17",
+          "-DHAS_TLS",
+          "-fno-strict-aliasing",
+          "-DHAVE_GETADDRINFO",
+          "-DHAVE_SETRLIMIT",
+          "-DHAVE_STRNLEN",
+          "-DPACKETVER=20180704",
+          "-DPRERE",
+          "-DHAVE_MONOTONIC_CLOCK",
+          "-DHAS_TLS",
+          "-fno-strict-aliasing",
+          "-DHAVE_GETADDRINFO",
+          "-DHAVE_SETRLIMIT",
+          "-DHAVE_STRNLEN",
+          "-DPACKETVER=20180704",
+          "-DPRERE",
+          "-DHAVE_MONOTONIC_CLOCK",
+          "-I/home/otto/.hermes/cache/scratch/callback-package-hut2_cuz/configured-variant/src",
+          "-I/home/otto/.hermes/cache/scratch/callback-package-hut2_cuz/configured-variant/src/common",
+          "-I/home/otto/.hermes/cache/scratch/callback-package-hut2_cuz/configured-variant/3rdparty/libconfig",
+          "-I/home/otto/.hermes/cache/scratch/callback-package-hut2_cuz/configured-variant/3rdparty/rapidyaml/src",
+          "-I/home/otto/.hermes/cache/scratch/callback-package-hut2_cuz/configured-variant/3rdparty/rapidyaml/ext/c4core/src",
+          "-I/nix/store/1w8g6rvhljfk44hx50qz4sc47sm1f28v-mariadb-connector-c-3.3.5-dev/include",
+          "-I/nix/store/1w8g6rvhljfk44hx50qz4sc47sm1f28v-mariadb-connector-c-3.3.5-dev/include/mysql",
+          "/home/otto/.hermes/cache/scratch/native-equipment-proof/equipment.cpp",
+          "-o",
+          "/home/otto/.hermes/cache/scratch/native-equipment-proof/clang++"
+        ],
+        "stdout_sha256": "8e662f760c9c8ff313d876275321c6fef70fc44649843c8f39197dbd1dd4375c",
+        "compile_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    "bitfield_fixture": "zero-initialize EQUIPITEM_INFO, assign individual bitfield, memcpy to unsigned char array, read at offsetof whole Flag; no offsetof bitfield"
+  },
+  "semantics": {
+    "allowed_locations": "pc_equippoint permitted slots, not class/sex/level eligibility",
+    "wear_state": "actual received it->equip, including zero",
+    "inventory_index": "client_index(server_index)=server_index+2, not itemID or actorID",
+    "empty_list": "empty one-frame equipment list only; not whole inventory completion",
+    "options": "retain all 5 signed index/value and uint8 param slots plus received option_count",
+    "unknown_item_effects": "not evaluated or mapped to zero bonuses",
+    "expiry": "raw signed stamp only",
+    "max_inventory": "compiler observes 100; not imposed as current legal capacity by this pure representation codec",
+    "ack": "raw result preserved with optional known enum; no session/epoch/request correlation or state application"
+  },
+  "frontiers": [
+    "No runtime/collector/tracker/action integration.",
+    "ACK framing adoption and stream regressions remain required; existing audit found 0999/099A absent. Shared packet table not read or changed while NPC writer active.",
+    "Current inventory ownership, class/sex/level/slot legality and pending-request correlation remain required before actuation.",
+    "No actual gear frame received, NPC reward acquisition or equipped acceptance; pinned MAIN/pre-re scope only."
+  ]
+}

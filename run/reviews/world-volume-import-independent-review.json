@@ -1,0 +1,193 @@
+{
+  "verdict": "PASS",
+  "scope": "Independent offline review of actual built Docker archive and trusted prepared-stage filesystem importer; ADR-019 simple per-world named-volume scope only.",
+  "reviewed_at": "2026-10-06T05:31:54.803270+02:00",
+  "reviewed_public_sources": [
+    "nix/world-init/import-stage.py",
+    "nix/world-init/flake.nix",
+    "nix/world-init/flake.lock"
+  ],
+  "existing_test_source": "tests/test_world_volume_import.py",
+  "parent_report": "run/reviews/world-volume-import-parent-verification.json",
+  "image": {
+    "artifact": "/nix/store/5qxdq538vilhm4fbz5brh9spi68mvr3w-ro-bots-world-init.tar.gz",
+    "bytes": 97332210,
+    "sha256": "cbdee09f0f4275cf2082962c2e634b1a355782c1abe3a69b5bc9824d41ae8996",
+    "nar": "sha256-QY7d9xVdQ4a0Z7o21Thmmr2sI7n02ICLraEgn35jwgI=",
+    "script_matches_public_source": true,
+    "script_matches_store_helper": true,
+    "entrypoint": [
+      "/nix/store/lb41b0anx1f98y9y5s9mdv97gjgsq740-python3-3.14.7/bin/python3",
+      "/nix/store/y59lwj6g5nwxfi97j8khy7f8sxnsrl7s-world-volume-import/libexec/import-stage.py"
+    ],
+    "cmd": [
+      "--source",
+      "/prepared",
+      "--destination",
+      "/world",
+      "--runtime-uid",
+      "10000",
+      "--runtime-gid",
+      "10000",
+      "--mysql-uid",
+      "999",
+      "--mysql-gid",
+      "999"
+    ],
+    "user": "0:0",
+    "no_anonymous_volumes": true,
+    "layers": 25,
+    "scope": "Docker archive inspection only; not engine/container execution",
+    "archive_python_executable_verified": true,
+    "archive_python_link_chain": [
+      "nix/store/lb41b0anx1f98y9y5s9mdv97gjgsq740-python3-3.14.7/bin/python3",
+      "nix/store/lb41b0anx1f98y9y5s9mdv97gjgsq740-python3-3.14.7/bin/python3.14"
+    ]
+  },
+  "artifact_sha_and_nar_stable_before_after": true,
+  "source_fingerprint_count": 18,
+  "source_fingerprints_before": {
+    "flake.lock": "c9c0bac69415b99a29ef3fe149b6f04ef54d291989bdf7218cf819ed52edf2a0",
+    "flake.nix": "185e4a4babf62a40484c347f59653bd11b79ce847316a3a90349c8545d38a359",
+    "nix/world-init/flake.lock": "c9c0bac69415b99a29ef3fe149b6f04ef54d291989bdf7218cf819ed52edf2a0",
+    "nix/world-init/flake.nix": "38dad75d31dcd8a5975d42063018e7fccfddb634e50bed79bc60c1a507e97345",
+    "nix/world-init/import-stage.py": "84b5a4cc07711b715964a5499463eb29f733b97eaddcba7277169eae953b580e",
+    "pyproject.toml": "e8ae0849a413bc3d705f081f609b92dae702bbd3e491b2c3aeb5d8665c458fba",
+    "run/reviews/world-volume-import-parent-verification.json": "79b19165500eee58635b049cae3732fbf8fea88a48640b97df9e0aec04a7316c",
+    "src/robots/adapters/rathena_bootstrap_assets.py": "257f09e9c318dc060b21e76326a4510fce2d9fc06d048047e0949e098ab3c3c7",
+    "src/robots/adapters/rathena_runtime.py": "0a52cbbae5ec459022c1348e33c65105c8cf0776a6bf68bca05e1066d8c74293",
+    "src/robots/adapters/rathena_runtime_assets.py": "8cf599ddd633c82879d5a6fc0ed2d98f13399e4094262b6bcafb25c9841650fc",
+    "src/robots/adapters/rathena_runtime_io.py": "bc3ca2d291da5d19831bd57f5a794e455a6e9f7870db0f655d376a51de0e6719",
+    "src/robots/adapters/world_bootstrap_sql.py": "cfa64780b9356b04a2e8eb2699fb0e6703f4b3f6ae9b815fb454a03f9b8b2ce5",
+    "src/robots/adapters/world_compose.py": "e31c363509b634fdca7ef7a310387974f4e11abd8ddf088a724631e4852514da",
+    "src/robots/adapters/world_prepare.py": "c663f60dc2dcd74e088f76e2424fd63126938e4500582581bb50e7fbfd055c19",
+    "src/robots/domain/model.py": "697646631c2eae15dc01e6cc0219502b1c7a8ed6d830089060e5ee37c700bbbe",
+    "tests/conftest.py": "42dbe1ae3a43a6c34ef2f9abb829b62d1f0a914d64d1a576d9b528142982d307",
+    "tests/test_world_volume_import.py": "2bdc7cbd5d37a2a6467dbf59d20c647066ac72b20deb8388b85cefea8bafc1cd",
+    "uv.lock": "2d7b4c187078488d7625e4fd4fa982745cab8d6a65b2ff3e382ffa286f1df245"
+  },
+  "source_fingerprints_after": {
+    "flake.lock": "c9c0bac69415b99a29ef3fe149b6f04ef54d291989bdf7218cf819ed52edf2a0",
+    "flake.nix": "185e4a4babf62a40484c347f59653bd11b79ce847316a3a90349c8545d38a359",
+    "nix/world-init/flake.lock": "c9c0bac69415b99a29ef3fe149b6f04ef54d291989bdf7218cf819ed52edf2a0",
+    "nix/world-init/flake.nix": "38dad75d31dcd8a5975d42063018e7fccfddb634e50bed79bc60c1a507e97345",
+    "nix/world-init/import-stage.py": "84b5a4cc07711b715964a5499463eb29f733b97eaddcba7277169eae953b580e",
+    "pyproject.toml": "e8ae0849a413bc3d705f081f609b92dae702bbd3e491b2c3aeb5d8665c458fba",
+    "run/reviews/world-volume-import-parent-verification.json": "79b19165500eee58635b049cae3732fbf8fea88a48640b97df9e0aec04a7316c",
+    "src/robots/adapters/rathena_bootstrap_assets.py": "257f09e9c318dc060b21e76326a4510fce2d9fc06d048047e0949e098ab3c3c7",
+    "src/robots/adapters/rathena_runtime.py": "0a52cbbae5ec459022c1348e33c65105c8cf0776a6bf68bca05e1066d8c74293",
+    "src/robots/adapters/rathena_runtime_assets.py": "8cf599ddd633c82879d5a6fc0ed2d98f13399e4094262b6bcafb25c9841650fc",
+    "src/robots/adapters/rathena_runtime_io.py": "bc3ca2d291da5d19831bd57f5a794e455a6e9f7870db0f655d376a51de0e6719",
+    "src/robots/adapters/world_bootstrap_sql.py": "cfa64780b9356b04a2e8eb2699fb0e6703f4b3f6ae9b815fb454a03f9b8b2ce5",
+    "src/robots/adapters/world_compose.py": "e31c363509b634fdca7ef7a310387974f4e11abd8ddf088a724631e4852514da",
+    "src/robots/adapters/world_prepare.py": "c663f60dc2dcd74e088f76e2424fd63126938e4500582581bb50e7fbfd055c19",
+    "src/robots/domain/model.py": "697646631c2eae15dc01e6cc0219502b1c7a8ed6d830089060e5ee37c700bbbe",
+    "tests/conftest.py": "42dbe1ae3a43a6c34ef2f9abb829b62d1f0a914d64d1a576d9b528142982d307",
+    "tests/test_world_volume_import.py": "2bdc7cbd5d37a2a6467dbf59d20c647066ac72b20deb8388b85cefea8bafc1cd",
+    "uv.lock": "2d7b4c187078488d7625e4fd4fa982745cab8d6a65b2ff3e382ffa286f1df245"
+  },
+  "source_and_specific_test_dependencies_unchanged": true,
+  "matches_parent_current_source_fingerprints": true,
+  "public_fixture_artifact_nars_checked_before_by_tests_and_after_independently": {
+    "/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source": "sha256-ppi6wPYDqwXh+XR39ufl0SDS6gYfdKyHtQ9tU9rgrNI=",
+    "/nix/store/bnacwjisnzz146j80sdha606j3j96ipc-rathena-server-20180704-e985006171d2": "sha256-j/yjHMH+WB16iaKl1GEnNpzqfu+EKSgcvPP0NnsrjhA="
+  },
+  "tests": {
+    "passed": 52,
+    "existing_regressions": 28,
+    "fresh_independent_cases": 24,
+    "unique_junit_cases": 52,
+    "failures": 0,
+    "errors": 0,
+    "skips": 0,
+    "junit": "/home/otto/.hermes/cache/scratch/wi-8zpjlcye/junit-final.xml",
+    "independent_harness": "/home/otto/.hermes/cache/scratch/wi-8zpjlcye/test_independent.py",
+    "environment": "Project pinned nix develop with uv run --no-sync; existing dependencies only; process-scoped scratch TMPDIR; inherited pytest disable/autoload flags unset.",
+    "pytest_version": "9.1.1",
+    "coverage_version": "7.16.2"
+  },
+  "coverage": {
+    "script": "nix/world-init/import-stage.py",
+    "statements_covered": 124,
+    "statements_total": 124,
+    "branches_covered": 46,
+    "branches_total": 46,
+    "percentage": 100.0,
+    "method": "Configured pytest-cov plus supported coverage subprocess patch; final measured run, no synthetic counts or exclusions.",
+    "json": "/home/otto/.hermes/cache/scratch/wi-8zpjlcye/coverage-final.json"
+  },
+  "actual_filesystem_fixture": {
+    "actual_archive_store_entrypoint_executed_on_host": true,
+    "runtime_files": 683,
+    "public_assets": 679,
+    "public_data_files_copied": 676,
+    "configs_copied": 7,
+    "all_public_bytes_match": true,
+    "all_private_config_bytes_match": true,
+    "sql_bytes_match": true,
+    "schema_projection_preserved": true,
+    "default_login_row_absent": true,
+    "both_secret_bytes_match": true,
+    "private_values": "[REDACTED]",
+    "private_hashes": "[REDACTED]",
+    "observed_uid": 1000,
+    "observed_gid": 100,
+    "cross_uid_10000_999_verified": false,
+    "empty_db": true,
+    "no_metadata_copied": true,
+    "counts": {
+      "logs_files": 0,
+      "memory_files": 0,
+      "runtime_files": 683,
+      "secret_files": 2,
+      "sql_files": 5
+    }
+  },
+  "independently_verified_contracts": [
+    "Already existing empty real destination required; nonempty/old DB destinations unchanged, never adopted or deleted.",
+    "Source and destination symlinks and ancestor symlinks refused; nested source symlinks/FIFO rejected before destination effects.",
+    "Exact five SQL names and two secrets required; unexpected source ELF refused; all three known legacy role ELFs omitted.",
+    "Owners are exact built-in integers; bool, wrong primitive type and out-of-range configurations refused before effects.",
+    "All 676 public data assets, seven private configs, five root SQL files and both secrets byte-identical in actual fresh prepared fixture; pinned schema projection preserved and default login row absent.",
+    "Root mode 0711, all destination subdirectories 0700, all copied files 0600; actual host same-UID chown observed at UID 1000/GID 100; DB directory fresh and empty.",
+    "Prepared-root metadata/credential JSON is not imported; diagnostics do not expose tested private caller values.",
+    "Opaque zero-length SQL is copied, not parsed; this is intentionally a filesystem copy contract.",
+    "Ordinary injected copy/chown failures propagate without a success receipt; partial output may remain and subsequent import refuses it.",
+    "Actual archive/store Python entrypoint ran on a host-only scratch fixture with host owners; this is not container execution.",
+    "Small flake copies only public helper source and immutable Python closure; archive script bytes match reviewed source, root User 0:0 and default IDs/paths match, no anonymous VOLUME."
+  ],
+  "source_findings": [],
+  "static_gate_evidence": {
+    "parent_reported": [
+      "Black",
+      "Ruff",
+      "strict mypy",
+      "Vulture85",
+      "Bandit",
+      "Xenon B/B/A"
+    ],
+    "independently_rerun": false,
+    "note": "No broad/shared gates rerun; parent gate labels are attributed, not asserted as fresh independent execution."
+  },
+  "issues_encountered": [
+    "Initial JUnit grouping expected a named scratch module classname; pytest emits an empty classname for the external harness. Corrected grouping using actual observed classes and exact unique testcase IDs; all 52 cases were passing."
+  ],
+  "limitations": [
+    "Production cross-UID 10000/999 ownership and readers are pending; host 1000/100 tests do not prove them.",
+    "No engine calls, image loading, volume creation/mounting, SQL execution, native server startup or gameplay acceptance.",
+    "Operator-selected trusted stable source and separate empty destination; no hostile same-UID, concurrent replacement, power-loss, rollback, durable receipt or publication-manager guarantees.",
+    "Image inspected, not independently rebuilt; no second-clean-build reproducibility claim."
+  ],
+  "engine_mutations": false,
+  "image_loaded": false,
+  "world_initialized": false,
+  "sql_executed": false,
+  "native_started": false,
+  "production_cross_uid_execution": false,
+  "minimal_next_action": "No source fixes required in this reviewed offline scope. Before claiming mounted-volume operation, separately authorize and observe container/root cross-UID 10000/999 ownership and reader access for the exact selected empty world volume.",
+  "created_repository_files": [
+    "run/reviews/world-volume-import-independent-review.json"
+  ],
+  "modified_existing_repository_files": [],
+  "scratch": "/home/otto/.hermes/cache/scratch/wi-8zpjlcye"
+}

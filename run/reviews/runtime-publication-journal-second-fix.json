@@ -1,0 +1,388 @@
+{
+  "status": "second_final_bounded_repair_scoped_green_independent_review_pending",
+  "recorded_at_local": "2026-10-06T02:44:53.750460+02:00",
+  "scoped_verification_passed": true,
+  "independent_approval": false,
+  "repair_cycle": 2,
+  "findings_addressed_pending_review": {
+    "JOURNAL-DIAGNOSTIC-001": "Diagnostic returns snapshot and optional exact non-Exception origin. close captures active primary with sys.exception before diagnosis, installs unresolved/diagnostic_failed snapshot before propagating a sole origin, and never masks an active close/constructor primary. Ordinary diagnostic EIO remains conservative without a new exception; EBADF is observational only.",
+    "JOURNAL-OWNERSHIP-002": "os.getpid is called once before os.open. Reached interrupt creates neither writer descriptor nor journal leaf and preserves exact origin/frame; no handoff is asserted for an unallocated resource. Existing allocated constructor handoff remains unchanged."
+  },
+  "tdd": {
+    "red-diagnostic": {
+      "collected": 21,
+      "passed": 17,
+      "failed": 4,
+      "by_classname": {
+        "tests.test_runtime_publication_journal_second_fix": {
+          "collected": 21,
+          "passed": 17,
+          "failed": 4
+        }
+      },
+      "junit_xml": "/home/otto/.hermes/cache/scratch/journal-second-fix-hgo72oqe/red-diagnostic.xml"
+    },
+    "green-diagnostic": {
+      "collected": 21,
+      "passed": 21,
+      "failed": 0,
+      "by_classname": {
+        "tests.test_runtime_publication_journal_second_fix": {
+          "collected": 21,
+          "passed": 21,
+          "failed": 0
+        }
+      },
+      "junit_xml": "/home/otto/.hermes/cache/scratch/journal-second-fix-hgo72oqe/green-diagnostic.xml"
+    },
+    "red-allocation": {
+      "collected": 2,
+      "passed": 0,
+      "failed": 2,
+      "by_classname": {
+        "tests.test_runtime_publication_journal_second_fix": {
+          "collected": 2,
+          "passed": 0,
+          "failed": 2
+        }
+      },
+      "junit_xml": "/home/otto/.hermes/cache/scratch/journal-second-fix-hgo72oqe/red-allocation.xml"
+    },
+    "green-allocation": {
+      "collected": 2,
+      "passed": 2,
+      "failed": 0,
+      "by_classname": {
+        "tests.test_runtime_publication_journal_second_fix": {
+          "collected": 2,
+          "passed": 2,
+          "failed": 0
+        }
+      },
+      "junit_xml": "/home/otto/.hermes/cache/scratch/journal-second-fix-hgo72oqe/green-allocation.xml"
+    },
+    "final_scoped": {
+      "collected": 112,
+      "passed": 112,
+      "failed": 0,
+      "by_classname": {
+        "tests.test_runtime_publication_journal": {
+          "collected": 51,
+          "passed": 51,
+          "failed": 0
+        },
+        "tests.test_runtime_publication_journal_ack_regressions": {
+          "collected": 6,
+          "passed": 6,
+          "failed": 0
+        },
+        "tests.test_runtime_publication_journal_cleanup_regressions": {
+          "collected": 16,
+          "passed": 16,
+          "failed": 0
+        },
+        "tests.test_runtime_publication_journal_second_fix": {
+          "collected": 39,
+          "passed": 39,
+          "failed": 0
+        }
+      },
+      "junit_xml": "/home/otto/.hermes/cache/scratch/journal-second-fix-hgo72oqe/final/scoped.xml"
+    }
+  },
+  "new_regressions": {
+    "total": 39,
+    "sole_diagnostic": 5,
+    "primary_close_diagnostic_contrasts": 16,
+    "preallocation_identity": 2,
+    "allocated_constructor_contrasts": 16
+  },
+  "evidence_rationale": [
+    "Sole diagnostic RED uses unpatched actual normal os.close after append/True acknowledgement, validates owned descriptor before close, observes unpatched EBADF at the single diagnostic seam and afterwards, verifies independent-process flock release and valid borrowed root, then fails only exact-origin propagation (4 cases).",
+    "Allocation RED delegates to actual os.open and records its real live fd, visits getpid once and preserves exact origin/frame, then fails the no-allocation assertion (2 cases). GREEN proves no owned allocation and no leaf; positive constructor/append/lock control precedes each fault case.",
+    "Close-primary OSError/KeyboardInterrupt survives all four secondary nonlocal diagnostics before and after physical release. Constructor first-file-fstat/pread with OSError/KeyboardInterrupt survives secondary close GeneratorExit plus EIO/SystemExit diagnostic, retaining typed snapshot including absent initial identity.",
+    "All original 51 cases and existing 6 acknowledgement/16 cleanup regressions are unchanged and pass; original failed reports and old scratch harnesses were not edited or rerun."
+  ],
+  "verification": {
+    "scoped": {
+      "command": [
+        "uv",
+        "run",
+        "--offline",
+        "--frozen",
+        "--no-sync",
+        "pytest",
+        "tests/test_runtime_publication_journal.py",
+        "tests/test_runtime_publication_journal_ack_regressions.py",
+        "tests/test_runtime_publication_journal_cleanup_regressions.py",
+        "tests/test_runtime_publication_journal_second_fix.py",
+        "--cov=robots.adapters.runtime_publication_journal",
+        "--cov-report=term-missing",
+        "--cov-report=json:/home/otto/.hermes/cache/scratch/journal-second-fix-hgo72oqe/final/coverage.json",
+        "--cov-fail-under=85",
+        "--basetemp=/home/otto/.hermes/cache/scratch/journal-second-fix-hgo72oqe/final/scoped-tmp",
+        "--junitxml=/home/otto/.hermes/cache/scratch/journal-second-fix-hgo72oqe/final/scoped.xml"
+      ],
+      "exit_code": 0,
+      "seconds": 15.764040406036656,
+      "log": "/home/otto/.hermes/cache/scratch/journal-second-fix-hgo72oqe/final/scoped.log",
+      "output": "........................................................................ [ 64%]\n........................................                                 [100%]\n================================ tests coverage ================================\n_______________ coverage: platform linux, python 3.14.7-final-0 ________________\n\nName                                                 Stmts   Miss  Cover   Missing\n----------------------------------------------------------------------------------\nsrc/robots/adapters/runtime_publication_journal.py     217      6    97%   170, 194, 263, 279, 281, 287\n----------------------------------------------------------------------------------\nTOTAL                                                  217      6    97%\nCoverage JSON written to file /home/otto/.hermes/cache/scratch/journal-second-fix-hgo72oqe/final/coverage.json\nRequired test coverage of 85% reached. Total coverage: 97.24%\n112 passed in 15.12s\n"
+    },
+    "black": {
+      "command": [
+        "uv",
+        "run",
+        "--offline",
+        "--frozen",
+        "--no-sync",
+        "black",
+        "--check",
+        "src/robots/adapters/runtime_publication_journal.py",
+        "tests/test_runtime_publication_journal.py",
+        "tests/test_runtime_publication_journal_ack_regressions.py",
+        "tests/test_runtime_publication_journal_cleanup_regressions.py",
+        "tests/test_runtime_publication_journal_second_fix.py"
+      ],
+      "exit_code": 0,
+      "seconds": 0.4865694720065221,
+      "log": "/home/otto/.hermes/cache/scratch/journal-second-fix-hgo72oqe/final/black.log",
+      "output": "All done! \u2728 \ud83c\udf70 \u2728\n5 files would be left unchanged.\n"
+    },
+    "ruff": {
+      "command": [
+        "uv",
+        "run",
+        "--offline",
+        "--frozen",
+        "--no-sync",
+        "ruff",
+        "check",
+        "--no-cache",
+        "src/robots/adapters/runtime_publication_journal.py",
+        "tests/test_runtime_publication_journal.py",
+        "tests/test_runtime_publication_journal_ack_regressions.py",
+        "tests/test_runtime_publication_journal_cleanup_regressions.py",
+        "tests/test_runtime_publication_journal_second_fix.py"
+      ],
+      "exit_code": 0,
+      "seconds": 0.02203952899435535,
+      "log": "/home/otto/.hermes/cache/scratch/journal-second-fix-hgo72oqe/final/ruff.log",
+      "output": "All checks passed!\n"
+    },
+    "mypy": {
+      "command": [
+        "uv",
+        "run",
+        "--offline",
+        "--frozen",
+        "--no-sync",
+        "mypy",
+        "--cache-dir=/home/otto/.hermes/cache/scratch/journal-second-fix-hgo72oqe/final/mypy-cache",
+        "src/robots/adapters/runtime_publication_journal.py",
+        "tests/test_runtime_publication_journal.py",
+        "tests/test_runtime_publication_journal_ack_regressions.py",
+        "tests/test_runtime_publication_journal_cleanup_regressions.py",
+        "tests/test_runtime_publication_journal_second_fix.py"
+      ],
+      "exit_code": 0,
+      "seconds": 4.137524588033557,
+      "log": "/home/otto/.hermes/cache/scratch/journal-second-fix-hgo72oqe/final/mypy.log",
+      "output": "Success: no issues found in 5 source files\n"
+    },
+    "bandit": {
+      "command": [
+        "uv",
+        "run",
+        "--offline",
+        "--frozen",
+        "--no-sync",
+        "bandit",
+        "-q",
+        "-c",
+        "pyproject.toml",
+        "src/robots/adapters/runtime_publication_journal.py"
+      ],
+      "exit_code": 0,
+      "seconds": 0.149298066040501,
+      "log": "/home/otto/.hermes/cache/scratch/journal-second-fix-hgo72oqe/final/bandit.log",
+      "output": ""
+    },
+    "xenon": {
+      "command": [
+        "uv",
+        "run",
+        "--offline",
+        "--frozen",
+        "--no-sync",
+        "xenon",
+        "src/robots/adapters/runtime_publication_journal.py",
+        "--max-absolute",
+        "B",
+        "--max-modules",
+        "B",
+        "--max-average",
+        "A"
+      ],
+      "exit_code": 0,
+      "seconds": 0.18663461500545964,
+      "log": "/home/otto/.hermes/cache/scratch/journal-second-fix-hgo72oqe/final/xenon.log",
+      "output": ""
+    },
+    "whole_source_R0801": {
+      "command": [
+        "uv",
+        "run",
+        "--offline",
+        "--frozen",
+        "--no-sync",
+        "pylint",
+        "--disable=all",
+        "--enable=duplicate-code",
+        "--ignore-paths=tests",
+        "src"
+      ],
+      "exit_code": 0,
+      "seconds": 2.5708774880040437,
+      "log": "/home/otto/.hermes/cache/scratch/journal-second-fix-hgo72oqe/final/whole_source_R0801.log",
+      "output": "\n------------------------------------\nYour code has been rated at 10.00/10\n\n"
+    }
+  },
+  "journal_coverage": {
+    "summary": {
+      "covered_lines": 211,
+      "num_statements": 217,
+      "percent_covered": 97.23502304147465,
+      "percent_covered_display": "97",
+      "missing_lines": 6,
+      "excluded_lines": 0,
+      "percent_statements_covered": 97.23502304147465,
+      "percent_statements_covered_display": "97"
+    },
+    "missing_lines": [
+      170,
+      194,
+      263,
+      279,
+      281,
+      287
+    ],
+    "json": "/home/otto/.hermes/cache/scratch/journal-second-fix-hgo72oqe/final/coverage.json"
+  },
+  "initial_static_failure": {
+    "log": "/home/otto/.hermes/cache/scratch/journal-second-fix-hgo72oqe/ruff.log",
+    "finding": "Only new regression-test style: broad raises, statement count and positional count. Preserved first gate output; refactored repeated assertions into test helpers and added precise raises match/keyword-only parameters. No production semantic third fix, gate edit or exemption."
+  },
+  "static_added_source_scan": {
+    "findings": [],
+    "patterns": [
+      "(api_key|secret|password|token|passwd)\\s*=\\s*[\\\"\\'][^\\\"\\']{6,}",
+      "os\\.system\\(",
+      "shell\\s*=\\s*True",
+      "\\beval\\(",
+      "\\bexec\\(",
+      "pickle\\.loads?\\("
+    ]
+  },
+  "freeze": {
+    "before": {
+      "Taskfile.yml": "63616950e21c15c455c2b6f90be4d588b77f31a62181fd7a93253d164a64a7fd",
+      "flake.lock": "c9c0bac69415b99a29ef3fe149b6f04ef54d291989bdf7218cf819ed52edf2a0",
+      "flake.nix": "185e4a4babf62a40484c347f59653bd11b79ce847316a3a90349c8545d38a359",
+      "pyproject.toml": "e8ae0849a413bc3d705f081f609b92dae702bbd3e491b2c3aeb5d8665c458fba",
+      "run/reviews/runtime-publication-journal-independent-review.json": "c93d479f2302d5178723ee9aa09fd737b6ceff1fec8da688a2a19a7acee90fca",
+      "run/reviews/runtime-publication-journal-parent-verification.json": "22e85793d01f83829f7ab03f8e2fb812dc542acaaa32451d536251e96f364c6e",
+      "src/robots/adapters/rathena_runtime.py": "0a52cbbae5ec459022c1348e33c65105c8cf0776a6bf68bca05e1066d8c74293",
+      "src/robots/adapters/rathena_runtime_assets.py": "8cf599ddd633c82879d5a6fc0ed2d98f13399e4094262b6bcafb25c9841650fc",
+      "src/robots/adapters/rathena_runtime_io.py": "bc3ca2d291da5d19831bd57f5a794e455a6e9f7870db0f655d376a51de0e6719",
+      "src/robots/adapters/runtime_publication_io.py": "4a7c1c8e794d92c28d9b59ccc69854fb4461e1731ae6ee2ec81db3a00ae6bd8c",
+      "src/robots/adapters/runtime_publication_journal.py": "303e75c81fce596c2e42dd8674b8492a14a3ce8951f0d1d527d4fa161d97eae2",
+      "src/robots/adapters/runtime_tree_sync.py": "2058f33b65ea9cebae8bc3fd07aa78416559c6d4bcb335326b8a166b7053782a",
+      "tests/test_runtime_publication_journal.py": "9586500c50d356417b9f7ff31269b0d64ca00f320d27ef3933d1112c4e1caed0",
+      "tests/test_runtime_publication_journal_ack_regressions.py": "fdca6e9897fc3f2f9f56ec6c015de8c6151a838c668896f694e9fba8c66f836a",
+      "tests/test_runtime_publication_journal_cleanup_regressions.py": "1adc0be80a39ba22772f4d52a56c84d0050e94fd63497e4057f47cb7be3352af",
+      "uv.lock": "2d7b4c187078488d7625e4fd4fa982745cab8d6a65b2ff3e382ffa286f1df245",
+      "vulture_whitelist.py": "872286fe8d1fb50ef67cab45cd96e5c2936549f8cbdb4bb31cd292b97617b673",
+      "wiki/guides/runtime-publication-journal.md": "b41b0d9223f11b728eeff8bd2c7e9031a5d72c0d0078022dc91963fa73816c12",
+      "run/reviews/runtime-publication-journal-first-fix-review.json": "4128403062f3508d47379b19186f8a429943c7a3ca125c34af98f5f8fd2c5193"
+    },
+    "after": {
+      "Taskfile.yml": "63616950e21c15c455c2b6f90be4d588b77f31a62181fd7a93253d164a64a7fd",
+      "flake.lock": "c9c0bac69415b99a29ef3fe149b6f04ef54d291989bdf7218cf819ed52edf2a0",
+      "flake.nix": "185e4a4babf62a40484c347f59653bd11b79ce847316a3a90349c8545d38a359",
+      "pyproject.toml": "e8ae0849a413bc3d705f081f609b92dae702bbd3e491b2c3aeb5d8665c458fba",
+      "run/reviews/runtime-publication-journal-independent-review.json": "c93d479f2302d5178723ee9aa09fd737b6ceff1fec8da688a2a19a7acee90fca",
+      "run/reviews/runtime-publication-journal-parent-verification.json": "22e85793d01f83829f7ab03f8e2fb812dc542acaaa32451d536251e96f364c6e",
+      "src/robots/adapters/rathena_runtime.py": "0a52cbbae5ec459022c1348e33c65105c8cf0776a6bf68bca05e1066d8c74293",
+      "src/robots/adapters/rathena_runtime_assets.py": "8cf599ddd633c82879d5a6fc0ed2d98f13399e4094262b6bcafb25c9841650fc",
+      "src/robots/adapters/rathena_runtime_io.py": "bc3ca2d291da5d19831bd57f5a794e455a6e9f7870db0f655d376a51de0e6719",
+      "src/robots/adapters/runtime_publication_io.py": "4a7c1c8e794d92c28d9b59ccc69854fb4461e1731ae6ee2ec81db3a00ae6bd8c",
+      "src/robots/adapters/runtime_publication_journal.py": "36f442431254b6b5f8c252bc1eb7c6528755d9e50ef974f17459de1e06e60384",
+      "src/robots/adapters/runtime_tree_sync.py": "2058f33b65ea9cebae8bc3fd07aa78416559c6d4bcb335326b8a166b7053782a",
+      "tests/test_runtime_publication_journal.py": "9586500c50d356417b9f7ff31269b0d64ca00f320d27ef3933d1112c4e1caed0",
+      "tests/test_runtime_publication_journal_ack_regressions.py": "fdca6e9897fc3f2f9f56ec6c015de8c6151a838c668896f694e9fba8c66f836a",
+      "tests/test_runtime_publication_journal_cleanup_regressions.py": "1adc0be80a39ba22772f4d52a56c84d0050e94fd63497e4057f47cb7be3352af",
+      "uv.lock": "2d7b4c187078488d7625e4fd4fa982745cab8d6a65b2ff3e382ffa286f1df245",
+      "vulture_whitelist.py": "872286fe8d1fb50ef67cab45cd96e5c2936549f8cbdb4bb31cd292b97617b673",
+      "wiki/guides/runtime-publication-journal.md": "70fe2dad777bcd06070c0631f4050bc9670ec36d1c18ab7faaa6351ed4f6ec5d",
+      "run/reviews/runtime-publication-journal-first-fix-review.json": "4128403062f3508d47379b19186f8a429943c7a3ca125c34af98f5f8fd2c5193"
+    },
+    "changed": [
+      "src/robots/adapters/runtime_publication_journal.py",
+      "wiki/guides/runtime-publication-journal.md"
+    ],
+    "new_test_sha256": "ffe79b989bbeafc02f47f707018a15cebd4961426279b55a2cc3f189e8ce7b6e",
+    "actual_source_lines": 349,
+    "scope_note": "Shared helper/gates/locks/original tests/failed reports unchanged. Concurrent unrelated host writer is not a journal dependency. Whole-source R0801 execution is not a stable combined-suite verdict."
+  },
+  "scratch_root": "/home/otto/.hermes/cache/scratch/journal-second-fix-hgo72oqe",
+  "artifact_sha256": {
+    "/home/otto/.hermes/cache/scratch/journal-second-fix-hgo72oqe/red-diagnostic.xml": "dda4136a7f0d8b349059c4f4e54ee1878d2de64db64098e56f794d073087abdf",
+    "/home/otto/.hermes/cache/scratch/journal-second-fix-hgo72oqe/coverage.json": "7f4b06f86b0622650cb404a6121d8a3033c3a5da5e2d00ad9350270b7cecdd27",
+    "/home/otto/.hermes/cache/scratch/journal-second-fix-hgo72oqe/.coverage": "6369bbd42f2a01a0754a063ea970ed8b6e0c784150db4d7e83284dc74d5afe07",
+    "/home/otto/.hermes/cache/scratch/journal-second-fix-hgo72oqe/source-before.py": "303e75c81fce596c2e42dd8674b8492a14a3ce8951f0d1d527d4fa161d97eae2",
+    "/home/otto/.hermes/cache/scratch/journal-second-fix-hgo72oqe/red-allocation.xml": "02534b4c5ad871c6ddfd1bca150ee22bbb6b4d348b1e5f7bdccf3decfaef3ff5",
+    "/home/otto/.hermes/cache/scratch/journal-second-fix-hgo72oqe/green-allocation.xml": "66be16eb9316b44d77a367add1f857816be49e6443494d4712bcc111a01d941a",
+    "/home/otto/.hermes/cache/scratch/journal-second-fix-hgo72oqe/whole_source_R0801.log": "bbb6ffa7d7107b760478161908c009d3b85b078b80d54e3ad8dcd57bfe91a142",
+    "/home/otto/.hermes/cache/scratch/journal-second-fix-hgo72oqe/xenon.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/journal-second-fix-hgo72oqe/red-allocation.log": "e2f4377bc603956db011e63471ae535fcad12919165c6096dffefd7af5688cb2",
+    "/home/otto/.hermes/cache/scratch/journal-second-fix-hgo72oqe/red-diagnostic.log": "63fc18b9965386c999681f5098b09f6972813cb5308c531242c8e130e5c017d4",
+    "/home/otto/.hermes/cache/scratch/journal-second-fix-hgo72oqe/verification.json": "de6b23a61c420330894d9f3413b5d42693831ef0cb16b42a7df529455c6d95cb",
+    "/home/otto/.hermes/cache/scratch/journal-second-fix-hgo72oqe/bandit.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/journal-second-fix-hgo72oqe/green-diagnostic.log": "0e29fec101c973d7cfcb1cb534285da6eeacc5cf30385d3c758fea0b0ddb9c47",
+    "/home/otto/.hermes/cache/scratch/journal-second-fix-hgo72oqe/report.py": "d39a7433909c2cf1faf4e10a3af71934c4ec20018be66b5eb31d445e1d3c7b5b",
+    "/home/otto/.hermes/cache/scratch/journal-second-fix-hgo72oqe/mypy.log": "e317872697c2cbfdefa321527a6efe73290dff3a390b0fa8723b87092eccba6a",
+    "/home/otto/.hermes/cache/scratch/journal-second-fix-hgo72oqe/scoped.xml": "89b07773b07d03e9e2a38af6b5def9f12172aad9426c2733abe535a08527197f",
+    "/home/otto/.hermes/cache/scratch/journal-second-fix-hgo72oqe/ruff.log": "606b38b69c4c24ea8dc89ac368ad1a3c4345f147338f589deaff97202d104a7b",
+    "/home/otto/.hermes/cache/scratch/journal-second-fix-hgo72oqe/before.json": "a0ec87ffee9e7a4767588d3db22ab18982779c1dcfc9fcc397409b5ac7e5c633",
+    "/home/otto/.hermes/cache/scratch/journal-second-fix-hgo72oqe/verify.py": "a5b8a7d010acbaea37f0921d48e1183894c0c1ff157517d0ae0788ff7f1dc167",
+    "/home/otto/.hermes/cache/scratch/journal-second-fix-hgo72oqe/green-allocation.log": "e807b1cf7370b5d8827d9beab035c7b54c734c1ac172899893f4ed63ebcdcf68",
+    "/home/otto/.hermes/cache/scratch/journal-second-fix-hgo72oqe/scoped.log": "d926ae92ad072c198b008421856d2be852e13629d090c4cd2e25d0d2db113b3d",
+    "/home/otto/.hermes/cache/scratch/journal-second-fix-hgo72oqe/green-diagnostic.xml": "4f9fc232b302fb9565b3c5954559659006e3885611e1225ad616ef5966e56483",
+    "/home/otto/.hermes/cache/scratch/journal-second-fix-hgo72oqe/black.log": "25369eabb8c122f861d58ddb255f81f4b9ee797f42f3882975bef953218258ed",
+    "/home/otto/.hermes/cache/scratch/journal-second-fix-hgo72oqe/final/coverage.json": "c8feb5ac39fa064841844e4288989bac5434dfcfb11a8f80f1d7f1841fd74bb1",
+    "/home/otto/.hermes/cache/scratch/journal-second-fix-hgo72oqe/final/.coverage": "a4cf3b2602de7fd2a8213dcfe2e2b1219319d9976663d9d34ba6d268098eda53",
+    "/home/otto/.hermes/cache/scratch/journal-second-fix-hgo72oqe/final/whole_source_R0801.log": "bbb6ffa7d7107b760478161908c009d3b85b078b80d54e3ad8dcd57bfe91a142",
+    "/home/otto/.hermes/cache/scratch/journal-second-fix-hgo72oqe/final/xenon.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/journal-second-fix-hgo72oqe/final/verification.json": "90b7beef2bfedf4af88e730d0f8cdd5064780b3bfb2e3e5535eb165875de4efb",
+    "/home/otto/.hermes/cache/scratch/journal-second-fix-hgo72oqe/final/bandit.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/journal-second-fix-hgo72oqe/final/mypy.log": "e317872697c2cbfdefa321527a6efe73290dff3a390b0fa8723b87092eccba6a",
+    "/home/otto/.hermes/cache/scratch/journal-second-fix-hgo72oqe/final/scoped.xml": "ee61bc0eba818b1b6e2edc7812ac5f9e8a6cd6e8fcb75a273a64b4ed58e4d38a",
+    "/home/otto/.hermes/cache/scratch/journal-second-fix-hgo72oqe/final/ruff.log": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+    "/home/otto/.hermes/cache/scratch/journal-second-fix-hgo72oqe/final/scoped.log": "ea66b6262888551fe9ec8e459a9e995fde8266e6c2f4f24c635106ff31f05b1e",
+    "/home/otto/.hermes/cache/scratch/journal-second-fix-hgo72oqe/final/black.log": "25369eabb8c122f861d58ddb255f81f4b9ee797f42f3882975bef953218258ed"
+  },
+  "files_created_or_modified": [
+    "src/robots/adapters/runtime_publication_journal.py",
+    "tests/test_runtime_publication_journal_second_fix.py",
+    "run/reviews/runtime-publication-journal-second-fix.json",
+    "wiki/guides/runtime-publication-journal.md"
+  ],
+  "boundaries": [
+    "One-attempt shared close_owned unchanged. No retries, process termination, recovery, manager, tree/publication/admission authority or new provenance guarantees.",
+    "PID/fd/inode observations are data only; independently established owning-process authority remains necessary for controlled teardown of an unresolved writer. Same-inode observations never authorize reclose.",
+    "Only owned private fixtures and known captured test descriptors disposed after observations with patches restored; no bulk fd cleanup or human file changes.",
+    "Existing pinned nix develop --offline --no-write-lock-file and uv run --offline --frozen --no-sync; no installs, lock/pin/gate/whitelist changes, staging, commit or push.",
+    "No full task check while concurrent host writer is active; completed combined verification and fresh independent frozen review remain parent-owned. No further repair is authorized after a failed second-cycle review.",
+    "No SQL/server/engine/socket/provider/native/world/private-human-file activity. Broader ownership/early-construction/IO findings remain open."
+  ]
+}

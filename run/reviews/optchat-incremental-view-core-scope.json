@@ -1,0 +1,37 @@
+{
+  "authority_revision": "3c190e06f34aba0c69f49042c526093269604935",
+  "core_audit_sha256": "b7e2cad364d7ac0835f74d86aae9f9a6fbf5218c35848db152249ca781dc612c",
+  "provider_audit_sha256": "ec9e23507b97f52b27eeb22488bfbf6dc88223e1e84e47b5c83d20385690da8b",
+  "work": "finite offline production-library incremental view core, not live adoption or full UniiChat equivalence",
+  "defaults_utf8_bytes": {
+    "low": 64000,
+    "high": 128000,
+    "node": 512
+  },
+  "allowed_files": [
+    "src/robots/society/optchat_view.py",
+    "tests/test_optchat_view.py",
+    "run/reviews/optchat-incremental-view-core.json"
+  ],
+  "required_contracts": [
+    "inclusive-last due rank / oldest tie / sibling built-parent only",
+    "whole [0,T) coverage / append-only prefix between batches",
+    "high-to-low batch / persistable coordinate and pending-batch state",
+    "read does not refit or add timestamps",
+    "strict UTF-8 including id and separators / node limits",
+    "exact snapshot round-trip and failure on invalid/missing reference state"
+  ],
+  "prohibited": [
+    "changes to existing memory, raw journals, cached summary nodes, provider adapters, active profiles, current backend contexts, live sessions",
+    "implicit old-state migration or recompute-on-restore",
+    "claiming KV hits or literal entire system compliance from pure core"
+  ],
+  "existing_37_requirement_audit_counts": {
+    "PASS": 6,
+    "FAIL": 20,
+    "ADAPTED": 6,
+    "UNKNOWN": 5
+  },
+  "RO_budget_and_live_provider_adoption_choice_deferred": true,
+  "all_milestones_open": true
+}

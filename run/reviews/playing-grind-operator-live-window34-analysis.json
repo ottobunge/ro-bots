@@ -1,0 +1,16 @@
+{
+  "record": "GRIND_WINDOW34_ENGAGEMENT_PROVEN_FIX_HELD_FIRST_AGENT_FULLY_LIVE",
+  "date": "2026-10-19 (window ran 02:37-03:07 CEST)",
+  "context": "First live window after (a) the connect-resilience production fix (agent_runtime keeps authenticated sessions on PlayingBackendError), (b) the world recovery from the host reboot (pin-restart piano via scripts/recover-world-ips.sh), (c) the decision-backend restart (the 2.5-day-old server had been wedging).",
+  "headline": {
+    "host_fixture_1": "FULLY ENGAGED: 105 decision calls (0 failures), 1,374 authored plan steps ALL dispatched (phases authored==dispatched 1374), 184 walks / 184 acks, 54 attacks dispatched, 1 attributed bot-dealt damage, xp_gain_total 46 (positive), all 4 species tracked (Poring/Lunatic/Drops/Pupa), 16 attackables seen, 547 actor frames, ONE continuous session (map_loads 0 = no churn), script_routes script:1374 vs npc_guidance_route:95 (authored-plan precedence holds).",
+    "host_fixture_0": "JOIN RACE: aid bound (2000000) and 41 decisions, but 0 map_loads / 0 own_position and 'tick failed' warnings \u2014 the map join never completed client-side this window. Next-window watch item; not the churn (no teardown loop)."
+  },
+  "economy_note": "No mob kill this window (attacked_target_deaths 0; the agent itself died once \u2014 level-1 novice vs the field). Kill->loot->sell->return leg remains for the next window; the kill itself has prior live proof (w26/w28).",
+  "verdict": "Milestone-B engagement leg: decisions + movement + combat + XP now proven live post-fix. The window_verdict guard ran; receipt passed with real engagement (not the w32 false pass).",
+  "artifacts": {
+    "receipt": "run/reviews/playing-grind-operator-live-window34.json",
+    "composition": ".work/engagement-diagnosis/engagement_window34.py (preflight passed; pacer 6s)",
+    "backend": "llama-server restarted post-reboot, healthy all window (decision_failures None)"
+  }
+}

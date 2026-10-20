@@ -1,0 +1,64 @@
+FF                                                                       [100%]
+=================================== FAILURES ===================================
+______________ test_movement_accepts_only_account_wire_actor[11] _______________
+
+limbs = <module 'rereview_limbs' from '/home/otto/dev/ro-bots/spikes/003-clientless-limbs/test_limbs.py'>
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7ffff5cc1f30>
+wire_id = 11
+
+    @pytest.mark.parametrize("wire_id", [11, 21])
+    def test_movement_accepts_only_account_wire_actor(limbs, monkeypatch, wire_id):
+        from types import SimpleNamespace
+    
+        clock = Clock()
+        budget = limbs.Budget(59, clock=clock.monotonic, sleep=clock.sleep)
+        b = SimpleNamespace(actors={})
+        a = SimpleNamespace(aid=11, gid=21, x=165, y=145)
+    
+        def move(x, y):
+            b.actors[wire_id] = {"gid": wire_id, "char_id": 21, "x": x, "y": y}
+    
+        a.move = move
+        monkeypatch.setattr(limbs, "connect_pair", lambda *_: (a, b))
+>       assert limbs.limb_move([], budget).startswith("OK") == (wire_id == a.aid)
+E       AssertionError: assert False == (11 == 11)
+E        +  where False = <built-in method startswith of str object at 0x7ffff5b2e430>('OK')
+E        +    where <built-in method startswith of str object at 0x7ffff5b2e430> = 'FAIL no A destination'.startswith
+E        +      where 'FAIL no A destination' = <function limb_move at 0x7ffff5b61900>([], <rereview_limbs.Budget object at 0x7ffff5d37770>)
+E        +        where <function limb_move at 0x7ffff5b61900> = <module 'rereview_limbs' from '/home/otto/dev/ro-bots/spikes/003-clientless-limbs/test_limbs.py'>.limb_move
+E        +  and   11 = namespace(aid=11, gid=21, x=165, y=145, move=<function test_movement_accepts_only_account_wire_actor.<locals>.move at 0x7ffff5b341a0>).aid
+
+tests/test_protocol_rereview_repairs.py:94: AssertionError
+______________ test_movement_accepts_only_account_wire_actor[21] _______________
+
+limbs = <module 'rereview_limbs' from '/home/otto/dev/ro-bots/spikes/003-clientless-limbs/test_limbs.py'>
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7ffff5cc0510>
+wire_id = 21
+
+    @pytest.mark.parametrize("wire_id", [11, 21])
+    def test_movement_accepts_only_account_wire_actor(limbs, monkeypatch, wire_id):
+        from types import SimpleNamespace
+    
+        clock = Clock()
+        budget = limbs.Budget(59, clock=clock.monotonic, sleep=clock.sleep)
+        b = SimpleNamespace(actors={})
+        a = SimpleNamespace(aid=11, gid=21, x=165, y=145)
+    
+        def move(x, y):
+            b.actors[wire_id] = {"gid": wire_id, "char_id": 21, "x": x, "y": y}
+    
+        a.move = move
+        monkeypatch.setattr(limbs, "connect_pair", lambda *_: (a, b))
+>       assert limbs.limb_move([], budget).startswith("OK") == (wire_id == a.aid)
+E       AssertionError: assert True == (21 == 11)
+E        +  where True = <built-in method startswith of str object at 0x7ffff5b71110>('OK')
+E        +    where <built-in method startswith of str object at 0x7ffff5b71110> = 'OK B saw exact A destination'.startswith
+E        +      where 'OK B saw exact A destination' = <function limb_move at 0x7ffff5b62140>([], <rereview_limbs.Budget object at 0x7ffff5b392b0>)
+E        +        where <function limb_move at 0x7ffff5b62140> = <module 'rereview_limbs' from '/home/otto/dev/ro-bots/spikes/003-clientless-limbs/test_limbs.py'>.limb_move
+E        +  and   11 = namespace(aid=11, gid=21, x=165, y=145, move=<function test_movement_accepts_only_account_wire_actor.<locals>.move at 0x7ffff5b62610>).aid
+
+tests/test_protocol_rereview_repairs.py:94: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_protocol_rereview_repairs.py::test_movement_accepts_only_account_wire_actor[11]
+FAILED tests/test_protocol_rereview_repairs.py::test_movement_accepts_only_account_wire_actor[21]
+2 failed in 0.03s

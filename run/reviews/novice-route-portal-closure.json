@@ -1,0 +1,113 @@
+{
+  "schema": "ordinary-novice-portal-closure/v1",
+  "status": "PUBLIC_SOURCE_PORTAL_GAP_CLOSED_LIVE_PREREQUISITES_OPEN",
+  "source_revision": "e985006171d2eb320ee512a653f4c83aea3d81b6",
+  "ruleset": "MAIN/pre-re/20180704",
+  "source_root": "/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source",
+  "configured_mirror": "/home/otto/dev/ro-bots/run/public-source/callback-qualified-e985006171d2",
+  "mirror_route_assets_available": false,
+  "default_include_chain_proven": true,
+  "startup_include_entry": "src/map/map.cpp:5357-5363 -> map_reloadnpc(false); :4263-4266 -> npc/pre-re/scripts_main.conf",
+  "configured_manifest_matches": ["src/map/npc.cpp", "src/map/map.cpp", "src/map/pc.cpp"],
+  "finite_interaction_scope": "two ordinary portal crossings, one currently perceived shop open/BUY, at most one quantity1 purchase and one owned-index equip; optional allocations need separate fresh admission",
+  "deployed_include_chain": "UNKNOWN",
+  "current_npc_presence": "UNKNOWN",
+  "route_script_class_or_quest_gate": false,
+  "deployed_access_overrides": "UNKNOWN",
+  "field_warp": {
+    "source": "npc/pre-re/warps/fields/prontera_fild.txt:65",
+    "center": [
+      170,
+      378
+    ],
+    "span": [
+      3,
+      2
+    ],
+    "inclusive_rectangle": [
+      167,
+      376,
+      173,
+      380
+    ],
+    "walkable_trigger": [
+      171,
+      376
+    ],
+    "destination_map": "prontera",
+    "destination": [
+      156,
+      26
+    ],
+    "nominal_center_walkable": false
+  },
+  "shop_door": {
+    "trigger": [
+      175,
+      219
+    ],
+    "destination_map": "prt_in",
+    "destination": [
+      168,
+      128
+    ]
+  },
+  "first_prep_interaction": {
+    "name": "Weapon Dealer#prt",
+    "source_position": [
+      172,
+      130
+    ],
+    "walk_approach": [
+      172,
+      129
+    ],
+    "required_primitive": "actor-bound open-shop -> BUY -> received price list -> quantity1 purchase -> correlated acquisition",
+    "item": 1201,
+    "nominal_price_zeny": 50,
+    "received_currency": "UNKNOWN",
+    "received_price": "UNKNOWN"
+  },
+  "source_hashes": {
+    "npc/pre-re/scripts_main.conf": "cf5a2547073b5134983334653936aa91dfb1479e5f8af47c41275d0046e0491e",
+    "npc/scripts_warps.conf": "ef4914fe0cca49c6e6f900b2b7224fcdeb276fd1a6a48b9c521f2241510ae118",
+    "npc/pre-re/scripts_warps.conf": "c55844d37142ffbef9471683567b0867dd735cd8f183035ce6f54515398194bf",
+    "npc/scripts_athena.conf": "0b2962864ee0006765763decbdfca94c7bd72a377cbf1c11627036f7dd285e0d",
+    "npc/pre-re/warps/fields/prontera_fild.txt": "95bb6688dff1489103dae3588552a6678f8d858075fa475f318a4191788b31e0",
+    "npc/warps/cities/prontera.txt": "434fe0daf761275cf731c343a501c02d88355a524b9c9a87d1f00c510ae3f4d7",
+    "npc/pre-re/warps/cities/prontera.txt": "5c76624a333fc8716c9622f99b8e9666f7350b93a0c502ca9068be7231fe5742",
+    "npc/merchants/shops.txt": "220c099d0a501c021959a0bda8a8507d1956ef260026d4227773c0010ff79e56",
+    "src/map/npc.cpp": "90d582661668e5cb8567de5a7b92d067e5d0db479963b00bab340af9fe477534",
+    "src/map/pc.cpp": "d12704c1ef7f8321c255175b6f61aa396209b931e2b1687fbbd16963d1def652",
+    "db/pre-re/job_noenter_map.txt": "c2dba5f281c9dbe64b158ee784cff81c1e18b9ef46addbd0d9d61b57026928e1",
+    "db/import-tmpl/job_noenter_map.txt": "c2dba5f281c9dbe64b158ee784cff81c1e18b9ef46addbd0d9d61b57026928e1",
+    "src/map/map.cpp": "9629e6b751ca3fd9d160e48c0beb80bf7bbe0c359fa7ecdb46698b074e6c1113",
+    "db/pre-re/item_db_equip.yml": "2536c42cc9414f4935e7304f5969228740a5f0308b1acdb2581e5891d25450f7",
+    "conf/map_athena.conf": "5b54eb9f510d8b657015bbb546e1cd5cdb526f623fa7b0a0d9abcd3dcd712b77",
+    "src/map/pc.hpp": "e9ad34a7661c061804328ad486f97a19100f1068e2836e4037d474fc4e469b58"
+  },
+  "pilot_sha256": "9f71440c4362b3497cce9cbe02a84dea0e378d60355d8973b2da46d7c0e0764e",
+  "pilot_is_preparation_acceptance": false,
+  "effects": {
+    "network": false,
+    "native": false,
+    "model": false,
+    "world_or_private": false,
+    "sql": false,
+    "git": false,
+    "source_or_config_write": false
+  },
+  "completion_claim": false,
+  "report": "/home/otto/dev/ro-bots/.work/novice-route-portal-closure/route.md",
+  "evidence": "/home/otto/dev/ro-bots/.work/novice-route-portal-closure/source-excerpts.md",
+  "cache_evidence": "/home/otto/dev/ro-bots/.work/novice-route-portal-closure/cache-route.json",
+  "remaining_live_prerequisites": [
+    "fresh received map/position/session/life/pose and bounded ordinary movement admission",
+    "deployed include/class access and actual map transition/LoadEnd receipts",
+    "current perceived shop actor and shop-specific admission/dispatch",
+    "received currency/price/capacity/inventory and correlated acquisition",
+    "received owned-index equipment dispatch/ACK/WearState",
+    "received current stats/free status points and learned skills/free skill points/eligibility before optional allocations",
+    "one actual perceived weak-monster damage/XP/loot encounter after preparation"
+  ]
+}

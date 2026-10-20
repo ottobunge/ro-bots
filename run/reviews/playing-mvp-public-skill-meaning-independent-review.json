@@ -1,0 +1,154 @@
+{
+  "passed": true,
+  "security_concerns": [],
+  "logic_errors": [],
+  "quality_blockers": [],
+  "summary": "PASS: frozen opt-in Basic Skill public-meaning slice is source-grounded, receipt-gated, bounded and advisory only.",
+  "scope": "Independent read-only offline review; no repair, inference, socket, SQL, Docker, native service, private configuration or Git mutation. New disjoint planning files excluded. Whole-root combined gate remains parent-owned and pending.",
+  "candidate": {
+    "path": "/home/otto/dev/ro-bots/run/reviews/playing-mvp-public-skill-meaning.json",
+    "sha256": "961f04e6631c5ea1b91095b570cba8f179122b02f88c35940b6030cbabbf3674",
+    "owned_hashes_matched": 8,
+    "gate_log_hashes_matched": 9,
+    "source_evidence_artifacts_matched": 2
+  },
+  "freeze": {
+    "expected_path": "/home/otto/.hermes/cache/scratch/public-skill-meaning-independent-freeze.json",
+    "expected_sha256": "52717f70b6395e2317f7b3bc236caa56f7de1632e7376c01437a34c8f382b6fb",
+    "count": 277,
+    "before": {
+      "path": "/home/otto/.hermes/cache/scratch/public-skill-meaning-independent-review/freeze-before.json",
+      "sha256": "c1198e6fc41ac4757fa8bd5e2cd0014ae8cdaa653b6eebc14bb690aca0fec62b"
+    },
+    "after": {
+      "path": "/home/otto/.hermes/cache/scratch/public-skill-meaning-independent-review/freeze-after.json",
+      "sha256": "c1198e6fc41ac4757fa8bd5e2cd0014ae8cdaa653b6eebc14bb690aca0fec62b"
+    },
+    "before_drift": [],
+    "after_drift": []
+  },
+  "verification": {
+    "junit": {
+      "path": "/home/otto/.hermes/cache/scratch/public-skill-meaning-independent-review/independent.xml",
+      "sha256": "fd2a34f0ad84ccf1d8bf9f938a5bdba107532486af8bae6c460a6c808800e61d"
+    },
+    "physical_cases": 269,
+    "unique_cases": 269,
+    "existing_cases": 261,
+    "fresh_cases": 8,
+    "failures": 0,
+    "errors": 0,
+    "skips": 0,
+    "fresh_test_identities": [
+      {
+        "classname": "",
+        "name": "test_whole_card_provenance_pin[revision-0000000000000000000000000000000000000000]"
+      },
+      {
+        "classname": "",
+        "name": "test_whole_card_provenance_pin[db_path-db/re/skill_db.yml]"
+      },
+      {
+        "classname": "",
+        "name": "test_whole_card_provenance_pin[declared_type-Passive]"
+      },
+      {
+        "classname": "",
+        "name": "test_ruleset_isolation_through_model_seam"
+      },
+      {
+        "classname": "",
+        "name": "test_unknown_received_id_never_looks_up_basic_by_name"
+      },
+      {
+        "classname": "",
+        "name": "test_utf8_full_envelope_exact_fit_then_truncation"
+      },
+      {
+        "classname": "",
+        "name": "test_opt_in_unknown_and_private_memory_are_not_promoted"
+      },
+      {
+        "classname": "",
+        "name": "test_class_freshness_failure_erases_known_public_annotation"
+      }
+    ],
+    "new_module_coverage_percent": 100.0,
+    "coverage": {
+      "path": "/home/otto/.hermes/cache/scratch/public-skill-meaning-independent-review/coverage.json",
+      "sha256": "93009c8ac555f06ad1138a57bf6ed29252829e993b10a19032f1f6794f804dd9"
+    },
+    "pytest_log": {
+      "path": "/home/otto/.hermes/cache/scratch/public-skill-meaning-independent-review/pytest.log",
+      "sha256": "734511b11fd449abf508fb637a09fe2353d3948166a292f9bc801fe19e5467e5"
+    },
+    "fresh_probe_source": {
+      "path": "/home/otto/.hermes/cache/scratch/public-skill-meaning-independent-review/test_independent_meaning.py",
+      "sha256": "826baf24c9e8d0104cc708a190126e8666d9fac3c9e43b7ca2b29c6091ca35fd"
+    },
+    "quality": {
+      "black": {
+        "exit_code": 0,
+        "path": "/home/otto/.hermes/cache/scratch/public-skill-meaning-independent-review/black.log",
+        "sha256": "0b479fee9c3c70313b9c5c7a6339ecd413b78bbea93f1ad5050f49bdd3a655af"
+      },
+      "ruff": {
+        "exit_code": 0,
+        "path": "/home/otto/.hermes/cache/scratch/public-skill-meaning-independent-review/ruff.log",
+        "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
+      },
+      "mypy": {
+        "exit_code": 0,
+        "path": "/home/otto/.hermes/cache/scratch/public-skill-meaning-independent-review/mypy.log",
+        "sha256": "050c52a2b0c61e8b681ef5c485e0bc03340b8d55148e0acef27d744c8be42033"
+      }
+    },
+    "quality_scope": "Owned six production modules plus owned test file; mypy fresh scratch cache, Black check only, Ruff no cache. Parent historical whole-source gate logs hash-verified, not claimed as current combined-root gates.",
+    "historical_receipts": "All seven actual XML receipt hashes and physical failure/error/skip counts verified: first-red 1/1 failure; incremental-red 19/1; negative-red 24/3; budget-red 25/1; corresponding first/incremental/final greens 1/19/261 zero failure/error/skip. Not additive unique test totals."
+  },
+  "findings": [
+    {
+      "contract": "Source-grounded semantics",
+      "result": "Actual pinned rAthena checkout HEAD e985006171d2eb320ee512a653f4c83aea3d81b6, clif.cpp full SHA and all five exact source ranges match. Both actual skill_db YAML files match pinned hashes and Id 1 / NV_BASIC / Description Basic Skill / MaxLevel 9 row; omitted Type remains null. Description is display name, not tooltip. Public conditional trade/emotion/sit/chatroom/party-create checks and SU alternative are accurately paraphrased without current setting/permission promises. pc.cpp permission excerpt and full hash also match."
+    },
+    {
+      "contract": "Received facts and model projection",
+      "result": "Actual inherited framing/BotClient dispatch -> PlayingClient -> frozen BotState -> build_decision_request exercised. Basic ID1 effective level9 and all numeric facts remain separate from skill_rules_knowledge. Global completeness, permanent ownership and cast legality remain UNKNOWN; unreceived rows remain unknown with observed_count null. Source-grounded meaning does not infer learned skills from persona/template or raw names."
+    },
+    {
+      "contract": "Ruleset and provenance",
+      "result": "Operational JSON loader pins entire card metadata, text, paths, source hashes and revision; duplicate keys/rows, bool IDs/schema, unknown IDs/ruleset, count and byte limits deny. Fresh revision/path/Type tampering reaches content/provenance guard. Selection uses only catalog ruleset plus received IDs; an injected wrong-ruleset card returns empty model advice and explicit uncovered_count rather than mismatched provenance."
+    },
+    {
+      "contract": "UTF-8 bounds",
+      "result": "Complete compact serialized advice including provenance and envelope is <=2048 UTF-8 bytes with <=8 cards; catalog <=32 cards and <=262144 bytes. Independent full-envelope exact2048 fit and additional multibyte overflow probe passes, with explicit truncation. Direct trusted constructor synthetic cards used for budget tests do not establish operational provenance admission."
+    },
+    {
+      "contract": "No private-memory or native promotion",
+      "result": "Public catalog remains opt-in and immutable. Loader is read-only with no provider/transport/private Memory dependency; request adds metadata inside state only, memory_view unchanged, no new top-level SystemOne fields. Real factory assembly shares public catalog only and makes no sockets/inference. Existing actuation checks remain unchanged and do not consume public advice as authorization. Health, epoch/client/map/gap invalidation regressions and fresh class-freshness denial erase annotations."
+    }
+  ],
+  "suggestions": [
+    "Candidate limitation text says all ten criteria remain OPEN; standing ledger has eleven. Documentation correction is parent-owned; this bounded feature review does not close any criterion."
+  ],
+  "limitations": [
+    "Basic Skill ID1 only, not full tooltip, nine-level table, all-skills coverage or acquisition/casting legality.",
+    "Renewal catalog source evidence and offline selection only; current native CLI explicitly chooses pre-re, not Renewal activation.",
+    "Configured source variant contains no DB directory; actual pinned checkout DB bytes establish metadata, not configured DB closure.",
+    "PublicSkillKnowledge direct constructor is a trusted injection seam with structural checks, not the strict loader provenance guarantee.",
+    "Combined whole-root gate, planning/execution adoption and separately authorized native acceptance remain OPEN."
+  ],
+  "created_files": [
+    "/home/otto/.hermes/cache/scratch/public-skill-meaning-independent-review/test_independent_meaning.py",
+    "/home/otto/.hermes/cache/scratch/public-skill-meaning-independent-review/independent.xml",
+    "/home/otto/.hermes/cache/scratch/public-skill-meaning-independent-review/coverage.json",
+    "/home/otto/.hermes/cache/scratch/public-skill-meaning-independent-review/pytest.log",
+    "/home/otto/.hermes/cache/scratch/public-skill-meaning-independent-review/black.log",
+    "/home/otto/.hermes/cache/scratch/public-skill-meaning-independent-review/ruff.log",
+    "/home/otto/.hermes/cache/scratch/public-skill-meaning-independent-review/mypy.log",
+    "/home/otto/.hermes/cache/scratch/public-skill-meaning-independent-review/freeze-before.json",
+    "/home/otto/.hermes/cache/scratch/public-skill-meaning-independent-review/freeze-after.json",
+    "/home/otto/dev/ro-bots/run/reviews/playing-mvp-public-skill-meaning-independent-review.json"
+  ],
+  "production_or_data_repairs": []
+}

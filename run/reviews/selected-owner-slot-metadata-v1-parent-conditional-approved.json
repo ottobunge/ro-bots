@@ -1,0 +1,23 @@
+{
+  "status": "CONDITIONAL_OFFLINE_SLOT_HELPER_APPROVED_CALLER_STILL_UNQUALIFIED",
+  "review_report_sha256": "7ed854aea4ed38dc1e4fa46a2b8be5d3981e6fb3a66b175c5beb44550d65eba7",
+  "independent_unique_cases": 14,
+  "caller_gaps": {
+    "concrete_default_incompatibilities": [
+      "guards.py:38-48 HELPERS binds only the old engine/live/baseline helpers; candidate path/hash is absent and helper rejects it at probe.py:314-316.",
+      "probe.py:320-326 invokes helpers without --persona-id; candidate requires that explicit argument.",
+      "probe.py:332-339 requires legacy ownership/offline/world-count stdout fields, absent by design from selected-only candidate output."
+    ],
+    "private_input_alignment": "Original Inputs location/private-directory/config/manifest versus scheduled-native-host-private-location pointer exact alignment has NOT been qualified. No private pointer contents were read.",
+    "freshness_and_lock": "Helper reads cached engine-preflight/deployment JSON and performs a fresh DB inspect, but neither cache nor synthetic tests establish fresh foreign-volume exclusion, current world topology, input-drift exclusion or physically held FixtureLock. Existing locked caller must freshly execute unchanged engine/live preflights and drift checks across the selected read.",
+    "canonical_lock": "Unchanged passive-skill-context-executor-repair1/native_launcher.py:84-140; path remains npc-native-host-pilot/probe.py:351 private_directory.parent / native-fixture-observer.lock. No new lock framework or physical-lock claim.",
+    "future_wire_identity": "Any later consumer must separately match selected persona with actual wire AID/GID/exact name/current client/session; no consumer is implemented or adopted.",
+    "live_approved": false,
+    "adopted": false,
+    "actual_allowance": "UNKNOWN",
+    "actual_allowance_read_performed": false
+  },
+  "inherited_ruff_findings": 10,
+  "actual_allowance": "UNKNOWN",
+  "live_read_or_adoption": false
+}

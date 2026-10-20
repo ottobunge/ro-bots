@@ -1,0 +1,582 @@
+{
+  "status": "SOURCE_QUALIFIED_EXPLICIT_POLICY_PROPOSAL_ONLY_REACHED_ACTUAL_CLIENT_RED",
+  "proposal_adopted": false,
+  "implementation_changed": false,
+  "approval_issued": false,
+  "native_authority": "UNCHANGED_REVOKED",
+  "native_sessions": 0,
+  "native_messages_sent": 0,
+  "native_purchases": 0,
+  "model_calls": 0,
+  "server_changes": false,
+  "private_configuration_read": false,
+  "sql": false,
+  "docker": false,
+  "root_gates": false,
+  "git_commit": false,
+  "source_root": "run/public-source/callback-qualified-e985006171d2",
+  "revision": "e985006171d2eb320ee512a653f4c83aea3d81b6",
+  "profile": "MAIN/pre-re20180704",
+  "existing_five_second_policy": "UNCHANGED; ordinary C5 does not guarantee B1/B0 refresh; normal unchanged receipts can be older than5 even with active C6",
+  "legal_current_client_all_resource_refresh_established": false,
+  "bank_check": "Non-spending source bank-vault check09AB->09A6 is not wallet Zeny; deposit/withdraw are mutation endpoints, not permitted refreshes",
+  "new_policy": {
+    "name": "finite received-state-current lane v1",
+    "choice_owner": "parent",
+    "resource_age_5_seconds_required": false,
+    "value_validity": "Latest actual same-stream receipts conditional on audited supported paths, complete receive continuity, finite clocks, no unresolved or unsupported effects",
+    "preparation_budget_seconds_proposed": 120,
+    "preparation_anchor": "oldest original observed_at in initial complete baseline, never renewed",
+    "preparation_budget_origin": "explicit proposal, not native resource guarantee",
+    "active_c6_deadline_seconds": 5,
+    "existing_npc_absolute_cap_retained": true,
+    "pending_mutations_separate": true,
+    "atomic_server_legality_claimed": false,
+    "blind_fresh_removal_is_approved": false
+  },
+  "all_global_zeny_write_completeness_proven": false,
+  "invalidation_limits": [
+    "pc_delitem suppression flags can defeat receive-only stock/weight proof",
+    "Current client has no general Zeny/max-weight pending mutation ledger or restricted resource lane",
+    "Socket backlog/unobserved server mutations remain possible; last received is not atomic current server state",
+    "Initial B1 receipt is not guaranteed by the audited C5/LoadEnd paths",
+    "Actual loaded item/shop/discount, runtime script exclusion and owner/world profile require parent qualification"
+  ],
+  "tests": {
+    "frontier": {
+      "xml": ".work/native-resource-freshness-frontier/frontier.xml",
+      "sha256": "b3c9ea20ec3e41ffaa042b3c3f1177b3d02a7b96ff35f9d7096e06baeaf1af49",
+      "unique_cases": 1,
+      "failures": 0,
+      "errors": 1,
+      "skipped": 0
+    },
+    "inherited": {
+      "xml": ".work/native-resource-freshness-frontier/inherited.xml",
+      "sha256": "3842afe4de313abec1b6b770718f22978a41c26a2452599ccfcea7d165aa5894",
+      "unique_cases": 3,
+      "failures": 0,
+      "errors": 3,
+      "skipped": 0
+    },
+    "frontier-qualified": {
+      "xml": ".work/native-resource-freshness-frontier/frontier-qualified.xml",
+      "sha256": "e8285d3269d9e716119091b396fe211609e95d13134570b175cbfd1b22321949",
+      "unique_cases": 6,
+      "failures": 4,
+      "errors": 0,
+      "skipped": 0
+    },
+    "inherited-qualified": {
+      "xml": ".work/native-resource-freshness-frontier/inherited-qualified.xml",
+      "sha256": "ba86f8c48f801081c8e92fb7679a73812fcc56217eb98f998a9e9a05761cb9e1",
+      "unique_cases": 87,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    }
+  },
+  "qualified_frontier_controls_passed": 2,
+  "qualified_inherited_cases_passed": 87,
+  "proposed_policy_reached_red_cases": 4,
+  "future_matrix_cases": 33,
+  "actual_client_red_contract": ".work/native-resource-freshness-frontier/test_actual_client_frontier.py",
+  "smallest_red_selector": "test_proposed_latest_continuous_receipts_mint_without_redating[older0]",
+  "source_inputs_snapshot_count": 44,
+  "source_drift": [],
+  "evidence_index": ".work/native-resource-freshness-frontier/source-excerpts.json",
+  "proposal": ".work/native-resource-freshness-frontier/proposal.md",
+  "matrix": ".work/native-resource-freshness-frontier/policy-test-matrix.json",
+  "execution": ".work/native-resource-freshness-frontier/execution-qualified.json",
+  "scope_note": "Synthetic source-shaped frames and explicit test facts only; mint controls send no C8. Existing regression effects use spies. No live actions. Full-root and independent review not run.",
+  "issues": [
+    {
+      "phase": "source discovery",
+      "result": "missing",
+      "detail": "Exploratory packet_db.py spelling is absent. Actual client imports packetdb.py; exact actual bytes subsequently snapshotted."
+    },
+    {
+      "phase": "Nix qualification",
+      "result": "failed",
+      "detail": "Absolute-path getFlake encountered unrelated ignored fixture-fifo with unsupported type. Corrected to git+file:///home/otto/dev/ro-bots; no foreign fixture changed."
+    },
+    {
+      "phase": "first scoped tests",
+      "result": "collection error, not behavioral RED",
+      "detail": "First pinned Nix environment lacked uvicorn; frontier XML has1 collection error and inherited XML3 collection errors. Preserved separate logs/XML."
+    },
+    {
+      "phase": "offline dependency qualification",
+      "result": "scoped environment qualified",
+      "detail": "Python3.14.7 and pytest/httpx/pyyaml/uvicorn/fastapi from root locked nixpkgs. Not claimed equivalent to full project uv dependency closure; no root gates."
+    }
+  ],
+  "artifacts": {
+    ".work/native-resource-freshness-frontier/audit_sources.py": {
+      "sha256": "58c523d52c3fc1c3bd69056f5e25e755bfbd5272102e4e7d3633116bee03b3ea",
+      "bytes": 4705
+    },
+    ".work/native-resource-freshness-frontier/bounded-lexical-scan.json": {
+      "sha256": "58f1613db3688d100d08a8f4d1daa332020079bfc0ea5ad09088ef6fd5b61475",
+      "bytes": 54133
+    },
+    ".work/native-resource-freshness-frontier/complete_evidence.py": {
+      "sha256": "3dd60db4d19cacb13e72405f27ea8f7162cde68013b8aa0d62c27242765b2c07",
+      "bytes": 4632
+    },
+    ".work/native-resource-freshness-frontier/discovery/.work_owned-shop-command-inspection_conf_groups.yml.txt": {
+      "sha256": "eb6d872c1df537a2a756a80949789e6f656d4ab7adebb6c2a519170906834dc7",
+      "bytes": 1340
+    },
+    ".work/native-resource-freshness-frontier/discovery/run_public-source_callback-qualified-e985006171d2_src_map_clif.cpp.txt": {
+      "sha256": "6d31bc4023a765f991f1966180bfe4f4d73dcaeb2fa4ab96e96f829cf0d1b71e",
+      "bytes": 3249
+    },
+    ".work/native-resource-freshness-frontier/discovery/run_public-source_callback-qualified-e985006171d2_src_map_pc.cpp.txt": {
+      "sha256": "3116443c8197307c34f59fc68ca670f92046e34d8ed3f54ce446e5c130a1ef56",
+      "bytes": 12381
+    },
+    ".work/native-resource-freshness-frontier/discovery/src_robots_adapters_native_npc_dialogue.py.txt": {
+      "sha256": "5bdd64fd4acdd1c134fbf85c65f820312299eb46c498687129c3571974f02dd6",
+      "bytes": 5678
+    },
+    ".work/native-resource-freshness-frontier/discovery/src_robots_app_playing_runtime.py.txt": {
+      "sha256": "9b7c65c2c000542af7652518cf2e3ae09e74efc9c4e27c2e7d0cb6d023df37e6",
+      "bytes": 2315
+    },
+    ".work/native-resource-freshness-frontier/excerpts/.work_owned-shop-command-inspection_conf_groups.yml-44-55.txt": {
+      "sha256": "efb97c5babdc28821814de7a4c168e251e816c4faebed17fca19e651189ed08d",
+      "bytes": 357
+    },
+    ".work/native-resource-freshness-frontier/excerpts/run_public-source_callback-qualified-e985006171d2_src_map_atcommand.cpp-7944-7970.txt": {
+      "sha256": "750c32d7cb93ca45efaeb5aec6eeb98ee22a115425ee872873360f0d7a8de841",
+      "bytes": 650
+    },
+    ".work/native-resource-freshness-frontier/excerpts/run_public-source_callback-qualified-e985006171d2_src_map_clif.cpp-10748-10765.txt": {
+      "sha256": "857f6e8471e958930af718f7f43ceef70dc7224677f28027b64d5ca5a8f98684",
+      "bytes": 690
+    },
+    ".work/native-resource-freshness-frontier/excerpts/run_public-source_callback-qualified-e985006171d2_src_map_clif.cpp-10781-10794.txt": {
+      "sha256": "cdabba533430aca8c227c4aab777f02e715ab4a77fe3f5f91302c2dd53869395",
+      "bytes": 437
+    },
+    ".work/native-resource-freshness-frontier/excerpts/run_public-source_callback-qualified-e985006171d2_src_map_clif.cpp-12255-12326.txt": {
+      "sha256": "07fa1f046e50cffe7c47552ba9d4466c7297b68801067fdde8559eab4db0f253",
+      "bytes": 2640
+    },
+    ".work/native-resource-freshness-frontier/excerpts/run_public-source_callback-qualified-e985006171d2_src_map_clif.cpp-2236-2261.txt": {
+      "sha256": "e24fbaf72982081fb5fe14f35e79eea0de409c60012e422315d9c71eca4a8e69",
+      "bytes": 1201
+    },
+    ".work/native-resource-freshness-frontier/excerpts/run_public-source_callback-qualified-e985006171d2_src_map_clif.cpp-3548-3570.txt": {
+      "sha256": "b7272aa1e391ab2892f9168f32b4519813ae46b79922736437a8d3293ed3c062",
+      "bytes": 853
+    },
+    ".work/native-resource-freshness-frontier/excerpts/run_public-source_callback-qualified-e985006171d2_src_map_clif.cpp-3636-3645.txt": {
+      "sha256": "7c9506faf58de4c38c462b846fd820f723bf66b091c381543b4c89dfde79e0db",
+      "bytes": 356
+    },
+    ".work/native-resource-freshness-frontier/excerpts/run_public-source_callback-qualified-e985006171d2_src_map_clif.cpp-3734-3736.txt": {
+      "sha256": "39083bd72152c1ab4e705a4abf67eb35c365b5b51e440570f088f55d63c5457b",
+      "bytes": 91
+    },
+    ".work/native-resource-freshness-frontier/excerpts/run_public-source_callback-qualified-e985006171d2_src_map_clif.cpp-7456-7578.txt": {
+      "sha256": "5fd52cf684deb9b364d2efa022bfac83c3d5e1240e73c43a126ece1695f995fd",
+      "bytes": 4090
+    },
+    ".work/native-resource-freshness-frontier/excerpts/run_public-source_callback-qualified-e985006171d2_src_map_clif.cpp-9840-9919.txt": {
+      "sha256": "0a27ba643b445c9867cb4af0e01fa3f395892b35417a0abb3b9d05a8782058c7",
+      "bytes": 2492
+    },
+    ".work/native-resource-freshness-frontier/excerpts/run_public-source_callback-qualified-e985006171d2_src_map_npc.cpp-2387-2418.txt": {
+      "sha256": "7206a46fccb68eb0af6fbab222da88f932fa784637ea1867db03edd2809802d8",
+      "bytes": 729
+    },
+    ".work/native-resource-freshness-frontier/excerpts/run_public-source_callback-qualified-e985006171d2_src_map_npc.cpp-2796-2948.txt": {
+      "sha256": "a35273d64b5e747200f56760607f142e44942166855802ca46a780ce4fe27a91",
+      "bytes": 5156
+    },
+    ".work/native-resource-freshness-frontier/excerpts/run_public-source_callback-qualified-e985006171d2_src_map_packets.hpp-2236-2240.txt": {
+      "sha256": "5de42b3035cd3341beb7ee163e77b5e463b4f6b756ac6ce970cd580183cc6e81",
+      "bytes": 279
+    },
+    ".work/native-resource-freshness-frontier/excerpts/run_public-source_callback-qualified-e985006171d2_src_map_packets.hpp-338-359.txt": {
+      "sha256": "7b7802e265d0f48a07d5783d5b96e151164ca98ea6e9c71922574bcd8ecede9a",
+      "bytes": 601
+    },
+    ".work/native-resource-freshness-frontier/excerpts/run_public-source_callback-qualified-e985006171d2_src_map_packets.hpp-536-552.txt": {
+      "sha256": "b4f84f2e24de72fc2c3ce33c0ea676709c0d78a7e57901d8f947017ae68881f7",
+      "bytes": 387
+    },
+    ".work/native-resource-freshness-frontier/excerpts/run_public-source_callback-qualified-e985006171d2_src_map_pc.cpp-10411-10418.txt": {
+      "sha256": "6f2a0244a15a1f4fe6e30d1374b900979f3fbf794e0fec67e2eecc44c8f2aad1",
+      "bytes": 218
+    },
+    ".work/native-resource-freshness-frontier/excerpts/run_public-source_callback-qualified-e985006171d2_src_map_pc.cpp-10460-10488.txt": {
+      "sha256": "119e4d0626914a4e9ad3cff0220339945587fc74617ddde0342d51cd36fc74e4",
+      "bytes": 1174
+    },
+    ".work/native-resource-freshness-frontier/excerpts/run_public-source_callback-qualified-e985006171d2_src_map_pc.cpp-10650-10658.txt": {
+      "sha256": "b6d72ba98490d76eb99d15a186ee2acf67e6b3b45b1b51121948ed8ab472b9ae",
+      "bytes": 243
+    },
+    ".work/native-resource-freshness-frontier/excerpts/run_public-source_callback-qualified-e985006171d2_src_map_pc.cpp-5795-5856.txt": {
+      "sha256": "3ed9c50fad6096892cc98f566ef9b96a80589968851ab1d3b4451a1ef2f628d5",
+      "bytes": 2056
+    },
+    ".work/native-resource-freshness-frontier/excerpts/run_public-source_callback-qualified-e985006171d2_src_map_pc.cpp-5970-6020.txt": {
+      "sha256": "bca17af2dd30132a05b1573f9b9b830b665f9820035338b8de824f03a34e8025",
+      "bytes": 1630
+    },
+    ".work/native-resource-freshness-frontier/excerpts/run_public-source_callback-qualified-e985006171d2_src_map_pc.cpp-6064-6090.txt": {
+      "sha256": "b46d549875c69a1a0688401838ea12a51ab9db2faff39d5d9e1c5fb79bfda714",
+      "bytes": 948
+    },
+    ".work/native-resource-freshness-frontier/excerpts/run_public-source_callback-qualified-e985006171d2_src_map_pc.cpp-6093-6128.txt": {
+      "sha256": "04a58bf818bdf2d11b208bfe1bf33d4a434a1d85677a5ccf494ab5df0d3c5c05",
+      "bytes": 1540
+    },
+    ".work/native-resource-freshness-frontier/excerpts/run_public-source_callback-qualified-e985006171d2_src_map_status.cpp-3653-3701.txt": {
+      "sha256": "650dc753715059ee81a459356983bf6b534dfd9ba99093746bbadcc7fce9a618",
+      "bytes": 1941
+    },
+    ".work/native-resource-freshness-frontier/excerpts/spikes_003-clientless-limbs_client.py-489-506.txt": {
+      "sha256": "2b5e3c0ac72b292c89100604001cc54f8898540aa533360a4f88a37d098fb68c",
+      "bytes": 947
+    },
+    ".work/native-resource-freshness-frontier/excerpts/spikes_003-clientless-limbs_client.py-531-541.txt": {
+      "sha256": "35497c63407746c399544a71efcd5bb905634e1d8ad1d521cf7220c74164f3cb",
+      "bytes": 458
+    },
+    ".work/native-resource-freshness-frontier/excerpts/spikes_003-clientless-limbs_client.py-584-596.txt": {
+      "sha256": "1e249f975901da2dca73b7bc5fac6f5a208169158358cea95aceca119fdea071",
+      "bytes": 616
+    },
+    ".work/native-resource-freshness-frontier/excerpts/spikes_003-clientless-limbs_client.py-700-717.txt": {
+      "sha256": "777eb377885496138614a4afaa91f5940abb3d02a47dc4eecaa8da460d46bb4e",
+      "bytes": 968
+    },
+    ".work/native-resource-freshness-frontier/excerpts/src_robots_adapters_native_capacity.py-116-198.txt": {
+      "sha256": "146af6c509565a81ef41a10fbd6b5a2b3fadd91043a7696c41b1fbea1fb5c148",
+      "bytes": 3504
+    },
+    ".work/native-resource-freshness-frontier/excerpts/src_robots_adapters_native_capacity.py-12-35.txt": {
+      "sha256": "74886ad8e27eb6aeeafb0d8ba81d59e413ee9e24007ac871b7e14c18272370a4",
+      "bytes": 791
+    },
+    ".work/native-resource-freshness-frontier/excerpts/src_robots_adapters_native_capacity.py-75-97.txt": {
+      "sha256": "963484bf41084dabafda2cd49254d642c83441a8fba72a02a13c88ae36a8b902",
+      "bytes": 875
+    },
+    ".work/native-resource-freshness-frontier/excerpts/src_robots_adapters_native_gameplay.py-215-247.txt": {
+      "sha256": "8ddd5bf2e6814a7a96d30b6347a7a28a522607b6094666eb8decedf53ebf0ab6",
+      "bytes": 1321
+    },
+    ".work/native-resource-freshness-frontier/excerpts/src_robots_adapters_native_gameplay.py-249-302.txt": {
+      "sha256": "da9627240d8960a9ecf3c4ed23a4274bce1e47cc431589e906bab3eae6c3f1cd",
+      "bytes": 2272
+    },
+    ".work/native-resource-freshness-frontier/excerpts/src_robots_adapters_native_purchase.py-154-210.txt": {
+      "sha256": "3f82c12363b59a93aee17868e8ce1720b286a104d5964c6877d80ab1f26de3f9",
+      "bytes": 2623
+    },
+    ".work/native-resource-freshness-frontier/excerpts/src_robots_adapters_native_purchase.py-247-280.txt": {
+      "sha256": "5f602b71129db87e959bb7e81152216556ffc669e3c664c61553297d0147dc4a",
+      "bytes": 1544
+    },
+    ".work/native-resource-freshness-frontier/excerpts/src_robots_adapters_native_purchase.py-299-358.txt": {
+      "sha256": "a9cc7e387c46c25a686b2765d27b113719e77631fa6088ef492f26bb06a9fe45",
+      "bytes": 2695
+    },
+    ".work/native-resource-freshness-frontier/excerpts/src_robots_adapters_native_purchase.py-67-103.txt": {
+      "sha256": "845492216194ab0b73abbcc2a275c2a8bf9e756c0c97a08ac0bc966c1cc6d8a0",
+      "bytes": 1729
+    },
+    ".work/native-resource-freshness-frontier/excerpts/src_robots_adapters_native_shop_context.py-31-49.txt": {
+      "sha256": "c76c876faa0c8eb2838986658c186379c099db94e7459d09b2a6d5b36a8d85ab",
+      "bytes": 812
+    },
+    ".work/native-resource-freshness-frontier/excerpts/src_robots_adapters_native_shop_context.py-65-127.txt": {
+      "sha256": "e3336ffcefaecd8314551e0e673920b7a987c2d1aba8d22805375ce6133ee166",
+      "bytes": 2639
+    },
+    ".work/native-resource-freshness-frontier/excerpts/src_robots_app_playing_runtime.py-1343-1375.txt": {
+      "sha256": "422cde157ca26fce06b2506e593cedd4cf140d6fe60e31c78af375c2afdacc96",
+      "bytes": 1421
+    },
+    ".work/native-resource-freshness-frontier/excerpts/src_robots_app_playing_runtime.py-1434-1449.txt": {
+      "sha256": "1d67efaf14b933f69d8fc5f242a085bfb1aa596fa032334eb6a54e75eec95842",
+      "bytes": 875
+    },
+    ".work/native-resource-freshness-frontier/excerpts/src_robots_app_playing_runtime.py-248-255.txt": {
+      "sha256": "19eed1b9f53548c31200c19887bbeba59e170c2bd565da7997a3d48a166c6527",
+      "bytes": 383
+    },
+    ".work/native-resource-freshness-frontier/excerpts/src_robots_app_playing_runtime.py-348-483.txt": {
+      "sha256": "32a8267dd8c9113238c5313eaefdae45354f67b584f78b104b56a0e79b9a7bc2",
+      "bytes": 6144
+    },
+    ".work/native-resource-freshness-frontier/excerpts/src_robots_app_playing_runtime.py-631-743.txt": {
+      "sha256": "a7b23fb0d15345c8a3405f715cd3f911b8003cc672eb75d5bcf55348122372e8",
+      "bytes": 4965
+    },
+    ".work/native-resource-freshness-frontier/excerpts/src_robots_app_playing_runtime.py-958-992.txt": {
+      "sha256": "8837e888f8499d4b68acf99418fefe5bb8125ee40ffb599a768409f87aee5f1c",
+      "bytes": 1596
+    },
+    ".work/native-resource-freshness-frontier/execution-qualified.json": {
+      "sha256": "661a9a783ad0b81d9b1595f06dee45900a413b917916b2d532122d40f736cf8e",
+      "bytes": 1497
+    },
+    ".work/native-resource-freshness-frontier/execution.json": {
+      "sha256": "3354aa1815d8b0db15945353fee1116e4154e27354e4be64c8261647fc284de9",
+      "bytes": 1284
+    },
+    ".work/native-resource-freshness-frontier/frontier-qualified.log": {
+      "sha256": "27670e40b72698111184234644b9fbfe9eca12a72919ef498310fe3422150e7b",
+      "bytes": 8754
+    },
+    ".work/native-resource-freshness-frontier/frontier-qualified.xml": {
+      "sha256": "e8285d3269d9e716119091b396fe211609e95d13134570b175cbfd1b22321949",
+      "bytes": 7763
+    },
+    ".work/native-resource-freshness-frontier/frontier.log": {
+      "sha256": "c3f6c6c2cf59e4dc119743a1c4b75f4cb66ae40723f1cdb612aa95b5bbf5a0aa",
+      "bytes": 3370
+    },
+    ".work/native-resource-freshness-frontier/frontier.xml": {
+      "sha256": "b3c9ea20ec3e41ffaa042b3c3f1177b3d02a7b96ff35f9d7096e06baeaf1af49",
+      "bytes": 2902
+    },
+    ".work/native-resource-freshness-frontier/inherited-qualified.log": {
+      "sha256": "de31685fe495d9b2d9275906f9eae2b97d236ab35fb631e9331e3b811c174014",
+      "bytes": 10402
+    },
+    ".work/native-resource-freshness-frontier/inherited-qualified.xml": {
+      "sha256": "ba86f8c48f801081c8e92fb7679a73812fcc56217eb98f998a9e9a05761cb9e1",
+      "bytes": 12382
+    },
+    ".work/native-resource-freshness-frontier/inherited.log": {
+      "sha256": "e50f6af0a6ad6b045148e431d2133f2e097121c1b7b1b0fac266327fb51aa752",
+      "bytes": 7638
+    },
+    ".work/native-resource-freshness-frontier/inherited.xml": {
+      "sha256": "3842afe4de313abec1b6b770718f22978a41c26a2452599ccfcea7d165aa5894",
+      "bytes": 7302
+    },
+    ".work/native-resource-freshness-frontier/package_report.py": {
+      "sha256": "3f0c5b07c2bf64bf2a7e333f138956f6b625f83fae5085fc4d2c40343709b4cd",
+      "bytes": 12392
+    },
+    ".work/native-resource-freshness-frontier/physical-test-results.json": {
+      "sha256": "fcf5253134ceed186c40d3a82e987e02d9af6f7d7a766aef67bd69f64a2f47ed",
+      "bytes": 14219
+    },
+    ".work/native-resource-freshness-frontier/policy-test-matrix.json": {
+      "sha256": "ad305527adbc459aa1c580101e100938032c6374b73ea88c4427fe93d7737d8f",
+      "bytes": 8330
+    },
+    ".work/native-resource-freshness-frontier/proposal.md": {
+      "sha256": "b75f11438383c2050fbce6a48ca1d454847aa05ccb8f61ac209fd3b68a6ffdb0",
+      "bytes": 14542
+    },
+    ".work/native-resource-freshness-frontier/setup-issues.json": {
+      "sha256": "b156bc1ecd596edb223207a710f0dc1ceedf302ddd9f317af41a8f51e2d621e4",
+      "bytes": 996
+    },
+    ".work/native-resource-freshness-frontier/snapshots/.work/owned-shop-command-inspection/conf_groups.yml": {
+      "sha256": "14bc6f09281186948bf576719ba8dc974bdb581ac3aee52fdfc24e1724889185",
+      "bytes": 6221
+    },
+    ".work/native-resource-freshness-frontier/snapshots/flake.lock": {
+      "sha256": "c9c0bac69415b99a29ef3fe149b6f04ef54d291989bdf7218cf819ed52edf2a0",
+      "bytes": 567
+    },
+    ".work/native-resource-freshness-frontier/snapshots/flake.nix": {
+      "sha256": "185e4a4babf62a40484c347f59653bd11b79ce847316a3a90349c8545d38a359",
+      "bytes": 11822
+    },
+    ".work/native-resource-freshness-frontier/snapshots/protocol/main-20180704-pre-re-shop.json": {
+      "sha256": "1aec7ab527e3dfcee394f050871ae601419d1bb54f784fd0722f000a7beb0289",
+      "bytes": 35329
+    },
+    ".work/native-resource-freshness-frontier/snapshots/pyproject.toml": {
+      "sha256": "e8ae0849a413bc3d705f081f609b92dae702bbd3e491b2c3aeb5d8665c458fba",
+      "bytes": 2652
+    },
+    ".work/native-resource-freshness-frontier/snapshots/run/public-source/callback-qualified-e985006171d2/src/map/atcommand.cpp": {
+      "sha256": "03b397c420471e802de620b11185976a528138842d8783f67c70fe2f71cb869c",
+      "bytes": 369385
+    },
+    ".work/native-resource-freshness-frontier/snapshots/run/public-source/callback-qualified-e985006171d2/src/map/battle.cpp": {
+      "sha256": "26b32fe653933cede710edf9e48d3fa8a85dc88f0936b93632d00a03ad572578",
+      "bytes": 377226
+    },
+    ".work/native-resource-freshness-frontier/snapshots/run/public-source/callback-qualified-e985006171d2/src/map/buyingstore.cpp": {
+      "sha256": "0daa9c410b03fc3561fbc1570b103deb83cabc9d9cfbf49db0eb132c622c1913",
+      "bytes": 28290
+    },
+    ".work/native-resource-freshness-frontier/snapshots/run/public-source/callback-qualified-e985006171d2/src/map/chat.cpp": {
+      "sha256": "0410b3f6a7a919ee813ec8f50fb9af00af8bbb69eb70a426b35d5ba7f9e93823",
+      "bytes": 11891
+    },
+    ".work/native-resource-freshness-frontier/snapshots/run/public-source/callback-qualified-e985006171d2/src/map/clif.cpp": {
+      "sha256": "ace16f15be3b60f730522d620b73a68a9f2cc384016aadce9c985888aea9a1ac",
+      "bytes": 776024
+    },
+    ".work/native-resource-freshness-frontier/snapshots/run/public-source/callback-qualified-e985006171d2/src/map/intif.cpp": {
+      "sha256": "96815313d0897d651698abef0eeb49a01df3bc4af269937a9ad6c256aca0dcb8",
+      "bytes": 104340
+    },
+    ".work/native-resource-freshness-frontier/snapshots/run/public-source/callback-qualified-e985006171d2/src/map/mail.cpp": {
+      "sha256": "00cb44a098584c8b9623e02077e64ea5c3fbb16ca5afc85e5c90f047d4cf3d30",
+      "bytes": 14655
+    },
+    ".work/native-resource-freshness-frontier/snapshots/run/public-source/callback-qualified-e985006171d2/src/map/mob.cpp": {
+      "sha256": "4a5691708b1774c129089237d8380c2bf5c689d68a78a03483bd751fdcf63aa7",
+      "bytes": 223458
+    },
+    ".work/native-resource-freshness-frontier/snapshots/run/public-source/callback-qualified-e985006171d2/src/map/npc.cpp": {
+      "sha256": "90d582661668e5cb8567de5a7b92d067e5d0db479963b00bab340af9fe477534",
+      "bytes": 194209
+    },
+    ".work/native-resource-freshness-frontier/snapshots/run/public-source/callback-qualified-e985006171d2/src/map/packets.hpp": {
+      "sha256": "b4959224a48e1febb811d7c1474f2c1b703d324ae4db7e3a1053a85b80da57bc",
+      "bytes": 55863
+    },
+    ".work/native-resource-freshness-frontier/snapshots/run/public-source/callback-qualified-e985006171d2/src/map/packets_struct.hpp": {
+      "sha256": "5ab5ef13d2a1cdc60d84dcaf2e3be0b6e316b9630e61c3ac7ba0f930d4d31287",
+      "bytes": 157544
+    },
+    ".work/native-resource-freshness-frontier/snapshots/run/public-source/callback-qualified-e985006171d2/src/map/party.cpp": {
+      "sha256": "5a87d5e1ce5260145aa7dc7b5dd3f0a9c878c05c2f20d8e7db893b38a723d75f",
+      "bytes": 42180
+    },
+    ".work/native-resource-freshness-frontier/snapshots/run/public-source/callback-qualified-e985006171d2/src/map/pc.cpp": {
+      "sha256": "d12704c1ef7f8321c255175b6f61aa396209b931e2b1687fbbd16963d1def652",
+      "bytes": 498055
+    },
+    ".work/native-resource-freshness-frontier/snapshots/run/public-source/callback-qualified-e985006171d2/src/map/pc.hpp": {
+      "sha256": "e9ad34a7661c061804328ad486f97a19100f1068e2836e4037d474fc4e469b58",
+      "bytes": 63846
+    },
+    ".work/native-resource-freshness-frontier/snapshots/run/public-source/callback-qualified-e985006171d2/src/map/script.cpp": {
+      "sha256": "e5554910bef9448542ebd19b7e6e9db529c8e75d6077b0770c8a9ce05c7034c0",
+      "bytes": 787173
+    },
+    ".work/native-resource-freshness-frontier/snapshots/run/public-source/callback-qualified-e985006171d2/src/map/skill.cpp": {
+      "sha256": "aad3c2f3968e0ddf38b89aff953d77a4cae66a0aa54b539a47723dd5f25b6c04",
+      "bytes": 520916
+    },
+    ".work/native-resource-freshness-frontier/snapshots/run/public-source/callback-qualified-e985006171d2/src/map/status.cpp": {
+      "sha256": "4f940555e088eeed58933cd8bcb9b62822a5affa99465d1d48a496fdee600be1",
+      "bytes": 507489
+    },
+    ".work/native-resource-freshness-frontier/snapshots/run/public-source/callback-qualified-e985006171d2/src/map/trade.cpp": {
+      "sha256": "a989bf38399d7b14bb0c822e6825385e00ec812d2c438695b1387c12f976f30e",
+      "bytes": 21593
+    },
+    ".work/native-resource-freshness-frontier/snapshots/run/public-source/callback-qualified-e985006171d2/src/map/vending.cpp": {
+      "sha256": "605f67a293ee137ff97bbaf04a168c0287a9c615fb20644433e644921d180193",
+      "bytes": 24968
+    },
+    ".work/native-resource-freshness-frontier/snapshots/run/reviews/inventory-purchase-combined-parent-adopted.json": {
+      "sha256": "75977d1cf7eb5d68a226e4625efabb21029d86dc8aa9dae70c09b9050e2e34c4",
+      "bytes": 2180
+    },
+    ".work/native-resource-freshness-frontier/snapshots/run/reviews/native-shop-resource-refresh-frontier.json": {
+      "sha256": "4016def50d0bf0a2b271fef6eed3386c27e0bbf8fd74c339d77c1e67ee7fb454",
+      "bytes": 2062
+    },
+    ".work/native-resource-freshness-frontier/snapshots/run/reviews/owned-shop-command-inspection.json": {
+      "sha256": "88367880562721c822ac41f374fb5d1241e23ba5ba63b8b9c4eca78f8be4dc51",
+      "bytes": 1423
+    },
+    ".work/native-resource-freshness-frontier/snapshots/spikes/003-clientless-limbs/client.py": {
+      "sha256": "2f57a0adc0b43a20235835290499ca0043966c5def208642598afb0dc49807fd",
+      "bytes": 46008
+    },
+    ".work/native-resource-freshness-frontier/snapshots/spikes/003-clientless-limbs/packetdb.py": {
+      "sha256": "497375189d242eda3072e3d86cbff1d98d736ec3742feee7035d84c3d129005b",
+      "bytes": 40445
+    },
+    ".work/native-resource-freshness-frontier/snapshots/src/robots/adapters/native_capacity.py": {
+      "sha256": "598e1702eb4e88112998435ed0791807fbc67673b49645c84931129392a05c76",
+      "bytes": 7117
+    },
+    ".work/native-resource-freshness-frontier/snapshots/src/robots/adapters/native_gameplay.py": {
+      "sha256": "3140239a1e24c15c08c071690a24af1bdaa00be8838e3743f339131dcac8758d",
+      "bytes": 15128
+    },
+    ".work/native-resource-freshness-frontier/snapshots/src/robots/adapters/native_npc_dialogue.py": {
+      "sha256": "b96a6c7d1940a2128cc81633e7baf55c380841fb6c57306846e8a1140eba9a5e",
+      "bytes": 11278
+    },
+    ".work/native-resource-freshness-frontier/snapshots/src/robots/adapters/native_purchase.py": {
+      "sha256": "67afdd0d9ca3e736a5d8e0e96f295fa81239ecab584baaa9a835de4b544857d8",
+      "bytes": 14020
+    },
+    ".work/native-resource-freshness-frontier/snapshots/src/robots/adapters/native_shop.py": {
+      "sha256": "85c24a75df5dd070446d4f45347af8fc6422638b3359503797709fcac8d2c1c9",
+      "bytes": 4525
+    },
+    ".work/native-resource-freshness-frontier/snapshots/src/robots/adapters/native_shop_context.py": {
+      "sha256": "85cf1a54fd02ef8f05879c1526d281f14294af50948e7e61f7bf25bc778e7cfa",
+      "bytes": 4747
+    },
+    ".work/native-resource-freshness-frontier/snapshots/src/robots/app/playing_runtime.py": {
+      "sha256": "45e9fbaaafd6bb45413ab6f3228cbaeae887c9e81cb794b0752eac7c3d655c56",
+      "bytes": 59268
+    },
+    ".work/native-resource-freshness-frontier/snapshots/src/robots/domain/capacity.py": {
+      "sha256": "77826c4e88d9d175b4a1069c3cb681529003991ac61ab3ccc9504c6ab46e232d",
+      "bytes": 1232
+    },
+    ".work/native-resource-freshness-frontier/snapshots/src/robots/domain/shop.py": {
+      "sha256": "0b6ef3a6301d4e6e49c789ccbefd2dfab802aa9f040c8f18588968493e0f053e",
+      "bytes": 2557
+    },
+    ".work/native-resource-freshness-frontier/snapshots/tests/test_native_equipment.py": {
+      "sha256": "3916492e3f2c128833382a66af33290ec61c659934c7549648abc45fbe9b1b85",
+      "bytes": 9009
+    },
+    ".work/native-resource-freshness-frontier/snapshots/tests/test_native_purchase_retirement.py": {
+      "sha256": "c6138b40292504fbb940ea9f4d83544f3078553161139be7eef996d1baad9170",
+      "bytes": 1274
+    },
+    ".work/native-resource-freshness-frontier/snapshots/tests/test_native_self_metadata_context.py": {
+      "sha256": "3185041003c4e9a0eb3ad90c1e4e1fca5cde82d6371a98048663bbf6a98334f5",
+      "bytes": 12319
+    },
+    ".work/native-resource-freshness-frontier/snapshots/tests/test_native_shop_purchase.py": {
+      "sha256": "5ac891ca8af11a2cf2eab9b613bc3198c903e8b1503e36b611b2a8e749cfa27c",
+      "bytes": 14598
+    },
+    ".work/native-resource-freshness-frontier/snapshots/tests/test_native_shop_selection.py": {
+      "sha256": "4e4271acd5e1b3b3272d180483ec8d8fb82ce20eb34885f933cd0b2eb00fa8c1",
+      "bytes": 11393
+    },
+    ".work/native-resource-freshness-frontier/snapshots/tests/test_playing_runtime.py": {
+      "sha256": "abaa1506bdf961556e186402b43c24659d4beeb0a4ac7b9ca094f357d4a07bda",
+      "bytes": 19113
+    },
+    ".work/native-resource-freshness-frontier/source-excerpts.json": {
+      "sha256": "8a239d7dddaf1f9b6d2cea6e76aabbe2a2af4d768285eda7bf4740f0026e1d76",
+      "bytes": 19901
+    },
+    ".work/native-resource-freshness-frontier/source-manifest.json": {
+      "sha256": "70291ede2bc60cc3871b1fb26f28e2d10db4b053a841a2d09512679faa298449",
+      "bytes": 13369
+    },
+    ".work/native-resource-freshness-frontier/test_actual_client_frontier.py": {
+      "sha256": "f0dd5a713d5b49ec2e328862c71f98e208b571fef66c07f1d0a586c7c97393ae",
+      "bytes": 3629
+    }
+  },
+  "next_owner_tasks": [
+    "Choose/adopt an explicit policy rather than implicitly waiving5s",
+    "Implement source-qualified restricted lane/pending invalidation and strict receipt checks",
+    "Reach full finite actual-client contract and independent completed-snapshot review",
+    "Qualify actual loaded/public-world assumptions before any separately authorized native activation"
+  ]
+}

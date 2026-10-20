@@ -1,0 +1,64 @@
+{
+  "slice": "window-29 goal-level merchant driver (playing-grind-merchantdriver)",
+  "status": "COMPLETE",
+  "completed_at": "2026-10-18T00:00:00+02:00",
+  "production_changes": {
+    "files": ["src/robots/app/scripts.py"],
+    "seam_choice": "GrindScript/FarmScript engage decision (smallest honest seam; brain.py unchanged, pinned plan untouched)",
+    "symbols_added": [
+      "MERCHANT_ZENY_MIN = 50",
+      "MERCHANT_ROUTE {prt_fild08:(170,378), prontera:(177,221), prt_in:(172,130)}",
+      "DEALER_TALK_RANGE = 2",
+      "merchant_drive_cell(state)",
+      "_merchant_step(state)",
+      "_dealer_talk(state, dealer_cell)"
+    ],
+    "wiring": "_merchant_step tried in GrindScript.step and FarmScript.step right after the rest branch, before monster engage/loot/idle",
+    "source_sha256": {
+      "src/robots/app/scripts.py (red / green)": [
+        "e9e6ff692106ff6f5282b647ff54f95a793f0c9023b4ae09fd2bc3164ea6f377",
+        "006d4c8de0d182766ef4af32323a250d02c1a16fe127c51489a72bc46603e667"
+      ],
+      "tests/test_merchant_drive.py (red / green)": [
+        "d159ab97b3ab81704015ecee1366a03f4173dc858cd82d0a6512cf1b75ebc24e",
+        "b6660ed563bd5687cff05190742132723f08839d728cc178a130783376d08161"
+      ]
+    }
+  },
+  "tdd": {
+    "red": {
+      "receipt": ".work/playing-grind-merchantdriver/evidence/red-receipt.txt",
+      "form": "ImportError: cannot import name 'MERCHANT_ROUTE' from 'robots.app.scripts' — identical new test bytes against the unchanged predecessor source (hash e9e6ff69...)"
+    },
+    "green_scoped": {
+      "receipt": ".work/playing-grind-merchantdriver/evidence/green-receipt-scoped.txt",
+      "tests": 22,
+      "neighboring_regression_run": "test_empty_farm_plan + test_explicit_goal_review + test_farm_target_widening + test_grind_approach_range + test_grind_target_commitment + test_recorded_goal_keep + test_shop_sell_loop",
+      "scoped_total_passed": 126
+    }
+  },
+  "gates": {
+    "root": {
+      "command": "cd /home/otto/dev/ro-bots && nix develop -c task check",
+      "result": "exit 0; 5996 passed, 65 subtests passed, coverage 95.47% (>=85); black --check src tests clean; ruff, mypy (whole), bandit, vulture, xenon B/B/A, pylint duplicate-code all inside the same gate",
+      "log": ".work/playing-grind-merchantdriver/evidence/full-gate.log",
+      "baseline": "5974 passed + 65 subtests; delta = exactly the 22 new merchant-driver contracts"
+    }
+  },
+  "mechanism_citations": {
+    "dealer": "rathena npc/merchants/shops.txt:255 prt_in,172,130 shop Weapon Dealer#prt (1201:-1,1204:-1 on the sell list)",
+    "field_warp": "rathena npc/pre-re/warps/fields/prontera_fild.txt:65 prt_fild08,170,378,0 warp prtf004 3,2,prontera,156,26",
+    "town_warp": "rathena npc/warps/cities/prontera.txt:25 prontera,177,221,0 warp prt05 2,2,prt_in,168,128",
+    "zeny_authority": "BotState.zeny, received 0x00b1 param 20 receipts only; unknown -> drive None (fail-closed)",
+    "release": "any wanted weapon id (1201/1202/1204) present in received state.inventory -> drive None (worn weapons stay in received inventory)"
+  },
+  "packaging": ".work/playing-grind-operator/READY-TO-RUN.md Window-29 section (live command, acceptance, prohibitions)",
+  "blockers": [
+    "ZENY BOOTSTRAP (coordinator decision required before window 29): the live world pins start_zeny: 0 (run/worlds/test-first-live-86e7c36895db/native-defaults-patch/conf/char_athena.conf:20); kills pay no zeny and loot sells only at the dealer, so no agent can legitimately reach zeny>=50 before a first dealer sale, which itself requires the drive. Unresolved, window 29 honestly records the fail-closed farming path (zero dealer trips). Coordinator-owned fixes: raise the world's start_zeny to >=50 for the window-29 admission, or an operator-trusted balance seed with bind_shop_purchase_facts-style disclosure.",
+    "No live execution performed (prohibited): window 29 remains coordinator-owned."
+  ],
+  "out_of_scope_left_unknown": [
+    "Server acceptance of the TalkToNpc at the dealer cell (received 0xc4 marker) — live-window evidence, offline contracts only here",
+    "prtf004 walk-through timing on prt_fild08 (warp re-derive is state-driven per evaluation)"
+  ]
+}

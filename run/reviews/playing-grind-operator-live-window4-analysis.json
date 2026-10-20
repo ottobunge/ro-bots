@@ -1,0 +1,17 @@
+{
+  "status": "GRIND_WINDOW4_GATE_RELEASE_VERIFIED_TARGET_SPECIES_REPLAN_FRONTIER",
+  "completed_at": "2026-10-15T00:08:38.858440+00:00",
+  "raw_receipt": "run/reviews/playing-grind-operator-live-window4.json",
+  "breakthrough": {
+    "walk_chain_closed": "fixture_0: walk_sends 8, walk_acks 8, walk_ack_matches 8, own_position_ingests 8, arrival_confirmed true - the pending-gate fix works end to end",
+    "map_contact": "fixture_0 ingested 63 actor frames (3 distinct attackable ids, max 2 simultaneous); fixture_1 ingested 51 frames, 1 attackable visible at last sample",
+    "decisions": "decision_calls now counted: 8 and 9 per agent"
+  },
+  "remaining_gap": {
+    "attacks_zero_despite_visibility": "attackable mobs visible in 45/56 (fx0) and 36/56 (fx1) samples; zero Attack dispatches",
+    "cause": "active script is the plan-driven FarmScript: attacks ONLY the plan target species (plan: farm Pupa). prt_fild08 pinned pre-re spawns are whole-map: Poring x70, Lunatic x40, Pupa x20, Drops x10 - observed actors were non-Pupa, so strict targeting correctly held fire (src/robots/app/scripts.py FarmScript.step targets filter)"
+  },
+  "next": "bounded replan-on-unmet-target (ADR-021 adaptation): when the plan target species is never engaged within a bounded budget while non-target attackables are observed, request a replan with the observed species context; the new plan (e.g., farm Poring) then completes attack->damage->XP->loot",
+  "world_after": "fixtures offline via host.stop; roles running; guard AFTER unchanged",
+  "native_authority": "UNCHANGED_REVOKED"
+}

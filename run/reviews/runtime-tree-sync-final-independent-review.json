@@ -1,0 +1,562 @@
+{
+  "passed": true,
+  "security_concerns": [],
+  "logic_errors": [],
+  "suggestions": [],
+  "summary": "Fresh independent scoped pass for final source-only private-tree synchronization and unchanged imported descriptor cleanup; no publication, admission, construction, durability or world authority.",
+  "recorded_at_utc": "2026-10-05T22:33:49.716873+00:00",
+  "scope": "Read-only independent review after runtime_tree_sync narrow descriptor-cleanup deduplication. Actual owned scratch fixtures; no implementation edits and no archived reviewer fixture replay.",
+  "entrypoint": "robots.adapters.runtime_tree_sync.sync_private_tree(root_fd)",
+  "reviewed_source_hashes_before": {
+    "src/robots/adapters/runtime_tree_sync.py": "2058f33b65ea9cebae8bc3fd07aa78416559c6d4bcb335326b8a166b7053782a",
+    "src/robots/adapters/rathena_runtime_io.py": "bc3ca2d291da5d19831bd57f5a794e455a6e9f7870db0f655d376a51de0e6719",
+    "tests/test_runtime_tree_sync.py": "17eef0c1fb9b578313229213003d605eef6239d714bb5e5a1677b94f0f7ee56d"
+  },
+  "reviewed_source_hashes_after": {
+    "src/robots/adapters/runtime_tree_sync.py": "2058f33b65ea9cebae8bc3fd07aa78416559c6d4bcb335326b8a166b7053782a",
+    "src/robots/adapters/rathena_runtime_io.py": "bc3ca2d291da5d19831bd57f5a794e455a6e9f7870db0f655d376a51de0e6719",
+    "tests/test_runtime_tree_sync.py": "17eef0c1fb9b578313229213003d605eef6239d714bb5e5a1677b94f0f7ee56d"
+  },
+  "snapshot": {
+    "named_public_files_frozen_count": 143,
+    "parent_gate_named_public_files_count": 140,
+    "additional_immutable_evidence_files_count": 3,
+    "changed": [],
+    "parent_gate_after_hash_mismatches": [],
+    "full_before_after_artifact": "/home/otto/.hermes/cache/scratch/tree-sync-final-independent-o1ftalss/verification.json",
+    "freeze_excludes": "All-dependency/environment freeze; only the explicitly named public files were fingerprinted."
+  },
+  "deduplication": {
+    "import": "from robots.adapters.rathena_runtime_io import close_owned as _close_owned",
+    "function_identity_matches_existing_shared_helper": true,
+    "both_modules_share_process_os_module_object": true,
+    "review_result": "Callbacks patched the real shared os module only inside this isolated process and restored it. Active original OSError, KeyboardInterrupt and fixture-owned BaseException objects and origin frames survive cleanup double faults; cleanup notes are generic; borrowed FD is never passed to owned close.",
+    "unchanged_shared_helper_source": true,
+    "no_blind_close_retry": true,
+    "before_release_fault_limit": "Artificial close-before-kernel-release fault leaves actual fixture handles open. Probe verified one independent attempt per handle and manually released only those retained fixture handles afterward; no production recovery guarantee is inferred."
+  },
+  "execution": {
+    "dependency_policy": "Pinned nix develop --offline --no-write-lock-file and uv run --offline --no-sync. No installs, pin edits, staging, commits, push, whole-checkout path import or global hooks.",
+    "fresh_independent_case_count": 41,
+    "fresh_independent_passed_count": 41,
+    "repository_sync_test_passed_count": 40,
+    "combined_distinct_case_count": 81,
+    "repeated_probe_invocations_not_counted_as_new_cases": true,
+    "repository_test_summary": "40 passed in 1.61s",
+    "repository_helper_statement_coverage_percent": 95.1923076923077,
+    "repository_helper_statements": 104,
+    "repository_helper_missing_statement_count": 5,
+    "repository_helper_missing_lines": [
+      32,
+      81,
+      82,
+      97,
+      98
+    ],
+    "all_five_missing_lines_reached_by_independent_runtime_trace": true,
+    "coverage_claim_limit": "Repository coverage is the pytest-cov measured value; independent sys.settrace line reachability is separate evidence, not a merged coverage/branch-coverage percentage.",
+    "coverage_threshold_unchanged": 85,
+    "commands": {
+      "independent_probes": {
+        "command": [
+          "nix",
+          "develop",
+          "--offline",
+          "--no-write-lock-file",
+          "-c",
+          "uv",
+          "run",
+          "--offline",
+          "--no-sync",
+          "python",
+          "-B",
+          "/home/otto/.hermes/cache/scratch/tree-sync-final-independent-o1ftalss/probes.py"
+        ],
+        "exit_code": 0,
+        "elapsed_seconds": 1.799,
+        "log": "/home/otto/.hermes/cache/scratch/tree-sync-final-independent-o1ftalss/independent_probes.log"
+      },
+      "repository_sync_tests_with_coverage": {
+        "command": [
+          "nix",
+          "develop",
+          "--offline",
+          "--no-write-lock-file",
+          "-c",
+          "uv",
+          "run",
+          "--offline",
+          "--no-sync",
+          "pytest",
+          "-p",
+          "no:cacheprovider",
+          "tests/test_runtime_tree_sync.py",
+          "--cov=robots.adapters.runtime_tree_sync",
+          "--cov-report=term-missing",
+          "--cov-report=json:/home/otto/.hermes/cache/scratch/tree-sync-final-independent-o1ftalss/coverage.json",
+          "--cov-fail-under=85"
+        ],
+        "exit_code": 0,
+        "elapsed_seconds": 3.925,
+        "log": "/home/otto/.hermes/cache/scratch/tree-sync-final-independent-o1ftalss/repository_sync_tests_with_coverage.log"
+      },
+      "black": {
+        "command": [
+          "nix",
+          "develop",
+          "--offline",
+          "--no-write-lock-file",
+          "-c",
+          "uv",
+          "run",
+          "--offline",
+          "--no-sync",
+          "black",
+          "--check",
+          "src/robots/adapters/runtime_tree_sync.py",
+          "tests/test_runtime_tree_sync.py"
+        ],
+        "exit_code": 0,
+        "elapsed_seconds": 1.791,
+        "log": "/home/otto/.hermes/cache/scratch/tree-sync-final-independent-o1ftalss/black.log"
+      },
+      "ruff": {
+        "command": [
+          "nix",
+          "develop",
+          "--offline",
+          "--no-write-lock-file",
+          "-c",
+          "uv",
+          "run",
+          "--offline",
+          "--no-sync",
+          "ruff",
+          "check",
+          "--no-cache",
+          "src/robots/adapters/runtime_tree_sync.py",
+          "tests/test_runtime_tree_sync.py"
+        ],
+        "exit_code": 0,
+        "elapsed_seconds": 1.589,
+        "log": "/home/otto/.hermes/cache/scratch/tree-sync-final-independent-o1ftalss/ruff.log"
+      },
+      "mypy": {
+        "command": [
+          "nix",
+          "develop",
+          "--offline",
+          "--no-write-lock-file",
+          "-c",
+          "uv",
+          "run",
+          "--offline",
+          "--no-sync",
+          "mypy",
+          "--cache-dir",
+          "/home/otto/.hermes/cache/scratch/tree-sync-final-independent-o1ftalss/mypy",
+          "src/robots/adapters/runtime_tree_sync.py"
+        ],
+        "exit_code": 0,
+        "elapsed_seconds": 1.869,
+        "log": "/home/otto/.hermes/cache/scratch/tree-sync-final-independent-o1ftalss/mypy.log"
+      },
+      "bandit": {
+        "command": [
+          "nix",
+          "develop",
+          "--offline",
+          "--no-write-lock-file",
+          "-c",
+          "uv",
+          "run",
+          "--offline",
+          "--no-sync",
+          "bandit",
+          "-q",
+          "-c",
+          "pyproject.toml",
+          "src/robots/adapters/runtime_tree_sync.py"
+        ],
+        "exit_code": 0,
+        "elapsed_seconds": 1.235,
+        "log": "/home/otto/.hermes/cache/scratch/tree-sync-final-independent-o1ftalss/bandit.log"
+      },
+      "cleanup_duplicate_code": {
+        "command": [
+          "nix",
+          "develop",
+          "--offline",
+          "--no-write-lock-file",
+          "-c",
+          "uv",
+          "run",
+          "--offline",
+          "--no-sync",
+          "pylint",
+          "--disable=all",
+          "--enable=duplicate-code",
+          "src/robots/adapters/runtime_tree_sync.py",
+          "src/robots/adapters/rathena_runtime_io.py"
+        ],
+        "exit_code": 0,
+        "elapsed_seconds": 2.366,
+        "log": "/home/otto/.hermes/cache/scratch/tree-sync-final-independent-o1ftalss/cleanup_duplicate_code.log"
+      }
+    },
+    "independent_case_results": [
+      {
+        "case": "actual_fsync_order_and_safe_opens",
+        "passed": true,
+        "fd_count_restored": true
+      },
+      {
+        "case": "renamed_parent_replacement_anchor",
+        "passed": true,
+        "fd_count_restored": true
+      },
+      {
+        "case": "global_cap_exact_synthetic6_real_multidir",
+        "passed": true,
+        "fd_count_restored": true
+      },
+      {
+        "case": "global_cap_over_synthetic6_real_multidir",
+        "passed": true,
+        "fd_count_restored": true
+      },
+      {
+        "case": "fsync_leaf_OSError_released_double_cleanup",
+        "passed": true,
+        "fd_count_restored": true
+      },
+      {
+        "case": "fsync_leaf_KeyboardInterrupt_released_double_cleanup",
+        "passed": true,
+        "fd_count_restored": true
+      },
+      {
+        "case": "fsync_leaf_Stop_released_double_cleanup",
+        "passed": true,
+        "fd_count_restored": true
+      },
+      {
+        "case": "fsync_nested_directory_OSError_released_double_cleanup",
+        "passed": true,
+        "fd_count_restored": true
+      },
+      {
+        "case": "fsync_nested_directory_KeyboardInterrupt_released_double_cleanup",
+        "passed": true,
+        "fd_count_restored": true
+      },
+      {
+        "case": "fsync_nested_directory_Stop_released_double_cleanup",
+        "passed": true,
+        "fd_count_restored": true
+      },
+      {
+        "case": "fsync_borrowed_root_OSError_released_double_cleanup",
+        "passed": true,
+        "fd_count_restored": true
+      },
+      {
+        "case": "fsync_borrowed_root_KeyboardInterrupt_released_double_cleanup",
+        "passed": true,
+        "fd_count_restored": true
+      },
+      {
+        "case": "fsync_borrowed_root_Stop_released_double_cleanup",
+        "passed": true,
+        "fd_count_restored": true
+      },
+      {
+        "case": "before_release_no_retry_manual_fixture_recovery",
+        "passed": true,
+        "fd_count_restored": true
+      },
+      {
+        "case": "nested_open_origin_sanitization",
+        "passed": true,
+        "fd_count_restored": true
+      },
+      {
+        "case": "nested_stat_origin_sanitization",
+        "passed": true,
+        "fd_count_restored": true
+      },
+      {
+        "case": "nested_scandir_origin_sanitization",
+        "passed": true,
+        "fd_count_restored": true
+      },
+      {
+        "case": "scan_cleanup_without_active_origin",
+        "passed": true,
+        "fd_count_restored": true
+      },
+      {
+        "case": "scan_iteration_and_released_cleanup_double_fault",
+        "passed": true,
+        "fd_count_restored": true
+      },
+      {
+        "case": "reached_changed_nameset_synthetic_actual_scans",
+        "passed": true,
+        "fd_count_restored": true
+      },
+      {
+        "case": "reached_actual_nameset_addition_after_fstat",
+        "passed": true,
+        "fd_count_restored": true
+      },
+      {
+        "case": "actual_inode_f_before_open",
+        "passed": true,
+        "fd_count_restored": true
+      },
+      {
+        "case": "actual_inode_f_after_sync",
+        "passed": true,
+        "fd_count_restored": true
+      },
+      {
+        "case": "actual_inode_a_before_open",
+        "passed": true,
+        "fd_count_restored": true
+      },
+      {
+        "case": "actual_inode_a_after_sync",
+        "passed": true,
+        "fd_count_restored": true
+      },
+      {
+        "case": "actual_chmod_after_file_fsync",
+        "passed": true,
+        "fd_count_restored": true
+      },
+      {
+        "case": "reject_uid_synthetic",
+        "passed": true,
+        "fd_count_restored": true
+      },
+      {
+        "case": "reject_socket_synthetic",
+        "passed": true,
+        "fd_count_restored": true
+      },
+      {
+        "case": "reject_symlink",
+        "passed": true,
+        "fd_count_restored": true
+      },
+      {
+        "case": "reject_fifo",
+        "passed": true,
+        "fd_count_restored": true
+      },
+      {
+        "case": "reject_borrowed_file",
+        "passed": true,
+        "fd_count_restored": true
+      },
+      {
+        "case": "reject_root_mode",
+        "passed": true,
+        "fd_count_restored": true
+      },
+      {
+        "case": "reject_file_mode",
+        "passed": true,
+        "fd_count_restored": true
+      },
+      {
+        "case": "reject_special_mode",
+        "passed": true,
+        "fd_count_restored": true
+      },
+      {
+        "case": "success_path_released_close_fault",
+        "passed": true,
+        "fd_count_restored": true
+      },
+      {
+        "case": "invalid_fd_true",
+        "passed": true,
+        "fd_count_restored": true
+      },
+      {
+        "case": "invalid_fd_false",
+        "passed": true,
+        "fd_count_restored": true
+      },
+      {
+        "case": "invalid_fd_none",
+        "passed": true,
+        "fd_count_restored": true
+      },
+      {
+        "case": "invalid_fd_string",
+        "passed": true,
+        "fd_count_restored": true
+      },
+      {
+        "case": "invalid_fd_float",
+        "passed": true,
+        "fd_count_restored": true
+      },
+      {
+        "case": "closed_fd_sanitized",
+        "passed": true,
+        "fd_count_restored": true
+      }
+    ],
+    "probe_results_artifact": "/home/otto/.hermes/cache/scratch/tree-sync-final-independent-o1ftalss/probe-results.json",
+    "fresh_harness": "/home/otto/.hermes/cache/scratch/tree-sync-final-independent-o1ftalss/probes.py",
+    "coverage_artifact": "/home/otto/.hermes/cache/scratch/tree-sync-final-independent-o1ftalss/coverage.json"
+  },
+  "positive_actual_fsync_observations": {
+    "positive": {
+      "actual_fsync_count": 8,
+      "file_count": 4,
+      "directory_count": 4,
+      "relative_safe_open_count": 10,
+      "all_files_before_any_directory": true,
+      "bottom_up": true,
+      "borrowed_root_last": true
+    },
+    "renamed_anchor": {
+      "actual_fsync_count": 8,
+      "file_count": 4,
+      "directory_count": 4,
+      "relative_safe_open_count": 10,
+      "all_files_before_any_directory": true,
+      "bottom_up": true,
+      "borrowed_root_last": true
+    }
+  },
+  "independent_global_cap": {
+    "calibration": [
+      {
+        "synthetic_limit": 6,
+        "actual_nonroot_entries": 6,
+        "largest_actual_directory_scan": 2,
+        "refused": false,
+        "actual_fsync_calls": 7
+      },
+      {
+        "synthetic_limit": 6,
+        "actual_nonroot_entries": 7,
+        "largest_actual_directory_scan": 3,
+        "refused": true,
+        "actual_fsync_calls": 2
+      }
+    ],
+    "synthetic_constant_only": true,
+    "fixture_topology": "Two actual private child directories containing actual private regular files; each directory scan stays below the process-local limit.",
+    "exact_limit_result": "Six nonroot entries acknowledge four files and three directories, borrowed root last.",
+    "exceeded_result": "Seven nonroot entries reject at the global aggregate branch (97-98), although the largest single directory scan is only three. Two file fsyncs may precede refusal; no directory fsync and no return acknowledgement.",
+    "production_boundary_limit": 8192,
+    "production_physical_boundary_evidence": "Fresh execution of unchanged repository tests covers actual single-directory 8192/8193 entries and directory depth32/33. Independent multi-directory calibration does not claim 8192 physical entries."
+  },
+  "namespace_scan_and_metadata_probes": {
+    "actual_changed_nameset": "A new owned regular file was physically created between _verify actual root fstat and its second actual root scandir. No stat metadata mocking; nameset rejection lines81-82 reached.",
+    "synthetic_nameset_control": "Separate process-local scan-result alteration also reaches the nameset refusal branch; explicitly synthetic, not physical mutation evidence.",
+    "scan_cleanup_without_active_origin": "Actual scandir iterator closed once, then injected OSError propagated by identity with sanitized args and origin frame; line32 reached and descriptor count restored.",
+    "scan_iteration_cleanup_double_fault": "Fixture-owned BaseException raised during iteration; actual scan close then OSError cleanup fault preserves original object/frame with one generic note and restored descriptor count.",
+    "socket_type": "S_IFSOCK synthetic metadata from actual borrowed root fstat; no actual socket was created, opened, bound or contacted.",
+    "other_cases": "Actual symlink/FIFO/file-FD/nonprivate modes/special bits; synthetic foreign UID; closed/bool/nonint FD; actual inode replacement before open and after fsync; actual chmod; real parent/root namespace replacement anchors original descriptor rather than replacement tree.",
+    "bounds_and_cwd": "Fresh unchanged repository suite additionally exercises physical depth32/33, entries8192/8193, and changed cwd with renamed parent.",
+    "error_sanitization": "OSError identity and errno retained; strerror, filename, filename2 and args sanitized. Raw exception traceback locals are not publication evidence."
+  },
+  "source_security_review": {
+    "result": "No scoped source evidence of secret literals, credential parser, user eval/exec, shell execution, pickle, SQL, backdoor or exfiltration. Metadata-only relative no-follow/nonblocking/CLOEXEC opens; no private content read or hashed.",
+    "reviewed_call_targets": [
+      "ValueError",
+      "_bounded_names",
+      "_check",
+      "_close_owned",
+      "_entry",
+      "_same",
+      "_sync_directories",
+      "_sync_files",
+      "_verify",
+      "any",
+      "children.items",
+      "children.keys",
+      "getattr",
+      "isinstance",
+      "kind",
+      "len",
+      "names.append",
+      "origin.add_note",
+      "os.fstat",
+      "os.fsync",
+      "os.geteuid",
+      "os.open",
+      "os.scandir",
+      "os.stat",
+      "scan.close",
+      "set",
+      "snapshot[1].items",
+      "stat.S_IMODE",
+      "stat.S_ISDIR",
+      "sys.exception"
+    ],
+    "limits": "This is scoped source review and private scratch contract verification, not repository-wide security/dependency audit or hostile same-UID exclusion."
+  },
+  "parent_evidence_not_independently_rerun": {
+    "artifact": "run/reviews/publication-primitives-parent-final-task-check.json",
+    "snapshot_hashes_match": true,
+    "configured_gate_reported_passed_tests": 1142,
+    "configured_gate_reported_passed_subtests": 65,
+    "configured_gate_reported_coverage_percent": 93.71,
+    "configured_gate_reported_elapsed_seconds": 188.094,
+    "focused_followup_reported_passed_tests": 122,
+    "focused_followup_reported_elapsed_seconds": 13.1,
+    "independent_full_suite_or_audit_run": false
+  },
+  "historical_report": {
+    "artifact": "run/reviews/runtime-tree-sync.json",
+    "preserved_unchanged": true,
+    "historical_source_hash": "b521c3413a9ea3fc263797029cd2fc9eb9dce56f1fd83c6d774d286e7c904588",
+    "current_source_hash": "2058f33b65ea9cebae8bc3fd07aa78416559c6d4bcb335326b8a166b7053782a",
+    "interpretation": "Historical implementer report is not current-hash approval. Interrupted previous reviewer partial is not used as approval."
+  },
+  "cached_primary_authorities_read_only": [
+    {
+      "artifact": "/home/otto/.hermes/cache/scratch/publication-manuals-durable-f6809pnl/fsync.html",
+      "rule": "File sync does not itself acknowledge the containing directory; directory descriptor requires a separate sync."
+    },
+    {
+      "artifact": "/home/otto/.hermes/cache/scratch/runtime-publication-contract/close.html",
+      "rule": "Linux releases descriptor early; failed close must not be blindly retried against a potentially reused descriptor."
+    }
+  ],
+  "authority": {
+    "conditional_supported_syscall_and_observation_acknowledgement_only": true,
+    "publication_admission_launch_or_world_authority": false,
+    "original_IO003_closed": false,
+    "original_EARLY_CONSTRUCTION_closed": false,
+    "atomic_seal_or_multi_file_transaction": false,
+    "content_closure_validation": false,
+    "URI_identity_or_root_path_binding": false,
+    "hostile_same_UID_exclusion": false,
+    "power_loss_hardware_durability": false,
+    "native_gameplay_or_full_goal_approval": false,
+    "existing_builder_markers_manager_catalog_schema_native_refusal78_compiler_pins_world_guards_changed": false
+  },
+  "effects": "Owned private physical scratch fixtures only. No SQL, server, engine, provider, gateway, native gameplay, user private files, network operations or live-world effects.",
+  "created_repository_files": [
+    "run/reviews/runtime-tree-sync-final-independent-review.json"
+  ],
+  "modified_existing_repository_files": [],
+  "issues_encountered": [],
+  "limitations": [
+    "Same-UID mutations after the last supported observation remain possible; metadata equality is not a content seal.",
+    "Borrowed root FD anchors an inode, not the requested source URI/root pathname or a construction receipt.",
+    "Success-path close or unsupported fsync failures refuse acknowledgement; an error is not publication rollback.",
+    "Existing independent probe artifact contains only fresh fixture case labels, public source hashes and metadata observations, never private payloads or private name hashes.",
+    "Original publication and construction findings remain open; full repository goal and live acceptance are not inferred from parent gates."
+  ]
+}

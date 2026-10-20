@@ -1,0 +1,189 @@
+{
+  "diagnostic_only": true,
+  "no_production_test_git_world_sql_inference_or_native_changes": true,
+  "actual_run": "run/reviews/playing-mvp-live-after-keep-goal.json",
+  "elapsed_s": 51.937035823008046,
+  "max_host_step_s": 1.6238192109885858,
+  "recorded_counts": [
+    {
+      "fixture_index": 0,
+      "decision_calls": 11,
+      "damage_reactions": {
+        "rest": 6,
+        "keep": 2
+      },
+      "monster_reactions": {
+        "flee": 1,
+        "attack": 1
+      },
+      "startup_goal_choice": "keep",
+      "action_request_records": 128,
+      "action_request_type_counts": {
+        "0": 122,
+        "2": 6
+      },
+      "received_act3_frames": 54,
+      "received_stopmove_frames": 131,
+      "positive_self_hits_to_observed_eligible_targets": 14,
+      "positive_hit_amounts": {
+        "1": 14
+      },
+      "hp_initial": 86,
+      "hp_last": 19,
+      "hp_min": 19,
+      "keepalive_sends": 2,
+      "clock_replies": 2
+    },
+    {
+      "fixture_index": 1,
+      "decision_calls": 15,
+      "damage_reactions": {
+        "rest": 11
+      },
+      "monster_reactions": {
+        "flee": 2,
+        "attack": 1
+      },
+      "startup_goal_choice": "grind",
+      "action_request_records": 130,
+      "action_request_type_counts": {
+        "0": 112,
+        "2": 18
+      },
+      "received_act3_frames": 61,
+      "received_stopmove_frames": 83,
+      "positive_self_hits_to_observed_eligible_targets": 16,
+      "positive_hit_amounts": {
+        "1": 16
+      },
+      "hp_initial": 86,
+      "hp_last": 4,
+      "hp_min": 3,
+      "keepalive_sends": 2,
+      "clock_replies": 2
+    }
+  ],
+  "total_real_clef_calls": 26,
+  "total_positive_self_eligible_hits": 30,
+  "synthetic_offline_trace": {
+    "evidence_kind": "synthetic offline trace using recorded startup and rest answers; no native I/O or inference",
+    "same_tick": [
+      "sit",
+      "37047b00000000"
+    ],
+    "next_tick": [
+      "37047b00000000"
+    ],
+    "attack_while_received_sitting": [
+      "37047b00000000"
+    ],
+    "move_requests_stand_at_hp78_of86": "stand",
+    "pending_motion_exists": true,
+    "attack_send_while_pending_motion": true,
+    "script_actions_hp19_of86": [
+      "sit"
+    ],
+    "script_actions_hp22_of86": [
+      "37047b00000000"
+    ],
+    "script_class": "GrindScript",
+    "proposed_no_attack_after_rest_contract_passes_current_code": false
+  },
+  "existing_offline_tests": {
+    "passed": 20,
+    "elapsed_s": 0.23,
+    "scope": [
+      "tests/test_brain.py::test_damage_rest_reaction",
+      "tests/test_native_pose_recovery.py",
+      "tests/test_playing_runtime.py::test_native_attack_bytes_and_death_denial",
+      "tests/test_playing_runtime.py::test_attack_denies_unseen_and_self"
+    ],
+    "new_regression_tests_written": false,
+    "candidate_fix_implemented": false
+  },
+  "root_cause": {
+    "brain": "brain.py:231-238 returns one Rest action without replacing/suspending _script or _plan; react_monster attack replaces script at 216-223. Generic next_action is not executed as an action dispatch.",
+    "host": "agent_runtime.py:559-583 builds one state, delivers events immediately, then timers, then unconditionally steps script in same tick; 636-642 executes reaction immediately. There is no _action_queue or _last_script arbitration in current app source.",
+    "script": "scripts.py:62-73 and 96-112 rest only while received hp_ratio <0.25; no hysteresis/recovery owner. At or above 0.25 attacks resume. BotState.hp_ratio derives hp/max_hp at model.py:80-82.",
+    "native": "playing_runtime.py:226-249 validates received state then sends Attack if alive and eligible, with no pose, recovery or pending-motion interlock. Rest reaches wire.sit, not an enum-only no-op. client.py:613-617 emits action2/3. Movement alone uses _require_standing at playing_runtime.py:274-296,476-490. Pending motion does not hold brain script steps or Attack.",
+    "keepalive": "playing_runtime.py:320-360 pumps keepalive while draining native events before cognition. Recovery must not skip this drain or weaken received-state readiness.",
+    "evidence_limit": "Retained decision summaries have no request snapshots or decision timestamps. Aggregate ACT3 includes damage and pose, not a proved count of SELF sit/stand. Stopmove 0x0088 is not stopattack. Exact live per-rest wire ordering cannot be reconstructed; offline actual-code trace proves the causal seam."
+  },
+  "pinned_public_server": {
+    "commit": "e985006171d2eb320ee512a653f4c83aea3d81b6",
+    "action_semantics": "rathena/src/map/clif.cpp:11697-11830: normal0 vs repeat7; unit_stop_attack before switch at11711; sit requires NV_BASIC>=3 or SU_BASIC_SKILL>=1 when basic_skill_check; pc_setsit then clif_sitting at11773-11775. No attack-triggered stand call in this handler.",
+    "sit_stop": "rathena/src/map/pc.hpp:1149 pc_setsit stops walking and attack, sets sitting. This does not prevent host sending a fresh attack next.",
+    "damage_stand": "rathena/src/map/pc.cpp:9682-9695 sourced positive HP damage force-stands a sitting character, independent of healthy HP. pc_setstand:13099-13118 publishes standing and resets sitting regen ticks. Thus sitting under ongoing attack cannot be assumed sustained recovery.",
+    "attack_checks": "rathena/src/map/pc.hpp:1156-1167 and unit.cpp:2902-2977,3376-3397 show normal attack dispatch/gates without an HP recovery ownership check; no claim every recorded attack was accepted.",
+    "regen": "rathena/src/map/status.cpp:15489-15493 sitting pose enables sitting regen bonus."
+  },
+  "minimal_candidate_not_policy_change_applied": {
+    "scope": [
+      "src/robots/app/brain.py",
+      "src/robots/app/scripts.py",
+      "src/robots/app/playing_runtime.py",
+      "owned regression tests after parent approval"
+    ],
+    "interrupt": "On explicit react_damage=rest acquire persistent recovery/RestScript ownership before returning immediate Rest; retain prior combat script and FarmPlan as suspended rather than replace goal. step_script must not fall through to saved script until recovery completes.",
+    "priority": "Later monster attack, heartbeat KEEP and next_action=grind must not erase recovery automatically. Define explicit precedence/cancellation for FLEE and goal changes rather than silently override Clef choices. Preserve FLEE; do not auto-convert REST to FLEE.",
+    "recovery_contract": "Use configured/script-layer recovery threshold distinct from entry 0.25, derived only from fresh received HP/maxHP; numeric resume ratio is a parent policy decision, not inferred target mechanics. Stay suspended across same/next ticks, tiny HP rebounds, forced server standing and missing acknowledgements.",
+    "pose_contract": "After received HP threshold is met, request standing through existing paced bounded SELF pose gate; release combat only after received matching SELF standing. Received standing alone never proves HP recovery. Guard Attack as well as MoveTo; no optimistic HP/pose mutation.",
+    "mechanical_contract": "Prevent empty ACTIVE recovery output from triggering mechanical_actions loot/patrol fallback; emit/retain explicit recovery intent or suppress only mechanical fallback while recovery owns execution. Event drain/keepalive and strict readiness remain active.",
+    "under_attack": "Source forces stand after sourced damage, so interruption fixes contradictory executor behavior but does not promise survival. Flee-then-rest is a separate explicit policy decision if resting under pursuit is ineffective."
+  },
+  "regression_cases": [
+    "Vertical ScheduledAgent.tick + real EventDrivenBrain + PlayingClient using recorded startup/rest answers and synthetic received fixtures: no Attack in same tick or following ticks after rest while HP below configured resume threshold.",
+    "Received SELF sitting then server-forced standing while HP still low must not resume combat; peer/nonpose/malformed/stale frames never authorize resume.",
+    "HP 19/86 ->22/86 must not bounce from sit to attack merely crossing entry threshold; exact resume threshold and maxHP changes use received values.",
+    "HP recovered but no SELF standing receipt: only paced bounded stand requests; no attack until standing receipt. Send intent is never standing.",
+    "Damage plus MonsterSpotted attack in either order, batched damage KEEP, heartbeat KEEP and generic next_action=grind cannot accidentally erase recovery. Explicit FLEE behavior preserved with documented cancellation/resume rules.",
+    "While recovering, native event drain and 20s keepalive pump continue; transport/frame/epoch/death/invalid vitals still deny execution; no fabricated readiness, HP, life or inventory.",
+    "Recovery emits no patrol/loot fallback when there are no monsters. Suspended FarmPlan/script/goal survive and resume once only after health and pose conditions.",
+    "Attack cannot bypass pose recovery after rest; pending movement never implicitly authorizes combat resumption. Preserve received-arrival semantics."
+  ],
+  "equipment_and_target_limits": {
+    "damage": "All positive eligible SELF hits are1; this does not identify weapon stats, species, level or a damage formula. Runtime actor IDs are not species IDs.",
+    "metadata": "playing_runtime.py:372-390,542-545 can derive species only from observed actor frames; decisions.py:44,65 sends name/kind/distance, not equipment statistics or raw species/level metadata. This old report did not retain request/raw species evidence, so no global map mob lookup.",
+    "gear": "Fresh owned preflight frontier shows both selected Novice level10 characters inventory empty and base/jobXP0; empty SQL inventory readback is not final weapon-field authority. Gear/build verification remains open. No forced equip/potions or new policy inference."
+  },
+  "frontier": {
+    "run_passed": false,
+    "native_90_second_survival_verified": false,
+    "unknown_frame": "0x00b6",
+    "unknown_offset": 74,
+    "preceding_frames": [
+      "0x196",
+      "0xab2",
+      "0x80"
+    ],
+    "supported_cleanup_confirmed": [
+      true,
+      true
+    ],
+    "immediate_sql_offline_readback_failed": true,
+    "later_fresh_owned_preflight_both_offline": true,
+    "saved_hp": [
+      43,
+      43
+    ],
+    "saved_positions": [
+      [
+        150,
+        150
+      ],
+      [
+        152,
+        150
+      ]
+    ],
+    "saved_map": "prontera",
+    "saved_state_proves_revival_mechanism": false,
+    "xp_gain_or_loot_verified": false,
+    "all_six_milestones_open": true,
+    "death_or_respawn_caveat": "No recorded death receipts; parser failure may prevent publication of preceding full-buffer frames. Do not infer death/resurrection, NPC quest completion or auto-respawn from0x80/0x00b6 or saved position."
+  },
+  "issues": [
+    "Initial private synthetic harness used a damage response as startup review and picked another script; corrected to replay the actual startup KEEP response before the recorded damage REST response.",
+    "No implementation or live survival validation performed; existing 20 green contracts do not assert persistent recovery."
+  ]
+}

@@ -1,0 +1,106 @@
+{
+ "record": "REST_FARM_BALANCE_LANE_DIAGNOSIS_AND_COMPOSITION_REPAIR",
+ "date": "2026-10-19",
+ "lane": ".work/rest-farm-balance/** + run/reviews/rest-farm-balance.json; no src/ edits",
+ "item_1_rest_dominance": {
+  "root_cause": "EventDrivenBrain recovery latch (brain.py _step_recovery, brain.py:435-449) releases ONLY on hp_ratio >= recovery_hp_ratio (0.75). The latch is engaged by the decision-model react_damage 'rest' answer at ANY hp (brain.py:470-474; DEFAULT_STUB_ANSWERS react_damage=rest) and by the script hp<0.25 rest. In w35 the 10th damage receipt (t~833s) engaged the latch and the self-death receipt (deaths [2000001], ZC 0x0080 flag 1, own aid) presented HP=1 (clif.cpp:3683-3690 death presentation; native_vitals.py maps 0x00B0 param 5 = SP_HP) so the ratio never reached 0.75 again; Rest() dispatched every script step (2,387) while perform_native refused the dead sends, freezing wire counters. The named 'in-range monster stops rest' interrupt does NOT exist anywhere: tests/test_native_rest_interrupt.py pins the opposite (rest holds with an in-range monster; comments 'these tests pin rest/recovery, not approach'). The receipts' 'xp 76' label is the HP regen stream (param 5, 64->76), not experience \u2014 the kill-commit gate's xp_delta_positive is satisfied by resting, an operator receipt defect.",
+  "composition_fix": ".work RestBalancePolicy on the brain._step_recovery seam: R1 dead-received fail-closed (state.alive is False clears the latch and emits nothing); R2 in-range interrupt (attackable within MELEE_RANGE and hp_ratio >= the script 0.25 floor breaks rest so the goal script re-engages)",
+  "repaired_dead_receipt": {
+   "alive_after_death": false,
+   "dead_phase_rest": 0,
+   "is_recovering_final": false,
+   "policy_dead_breaks": 61
+  },
+  "repaired_hurt_in_range_receipt": {
+   "hp_ratio": 0.46511627906976744,
+   "range_breaks": 1,
+   "attacks_after_break": 60,
+   "is_recovering_final": false
+  },
+  "patch_ready_production_change": {
+   "file": "src/robots/app/brain.py",
+   "function": "EventDrivenBrain._step_recovery (+ _step_goal_script rest latch)",
+   "change": [
+    "First line: if state.alive is False: self._recovering = False; self._escape = None; return ScriptOutcome((), ScriptStatus.ACTIVE) \u2014 extract as named predicate _received_death(state) to keep xenon <= B.",
+    "While self._recovering and before returning Rest(): if state.hp_ratio >= REST_BREAK_HP_FLOOR (new scripts.py constant 0.25, the scripts' own rest floor) and _attackable_in_melee_range(state) (any nearby_monsters cell within MELEE_RANGE, Chebyshev, tracked position only): clear self._recovering and return None so the goal script engages. Named predicate helper, no inlined branch.",
+    "Optional operator receipt fix: stop labeling 0x00B0 param 5 as xp; param 5 is SP_HP (map.hpp:498-505); kill evidence must not use it."
+   ],
+   "red_first_test": "tests/test_native_rest_interrupt.py new: test_dead_received_stops_rest_dispatch and test_in_range_attackable_breaks_rest_above_rest_floor (same scenario shapes as .work/rest-farm-balance/tests/test_rest_balance.py, driven through PoseWire/setup like the existing rest tests)"
+  },
+  "tests": {
+   "pair": "3 RED (fixes disabled) -> 8 GREEN (fixes enabled), final harness",
+   "file": ".work/rest-farm-balance/tests/test_rest_balance.py",
+   "red_evidence": "evidence/red-run.txt",
+   "green_evidence": "evidence/green-run.txt",
+   "invocation": "nix develop -c uv run python -m pytest .work/rest-farm-balance/tests/ -v"
+  }
+ },
+ "item_2_fx0_join_stall": {
+  "root_cause": "Named packet/step: ZC_ACCEPT_ENTER 0x02EB never arrives on fixture_0's map session, so BotClient._map_server (spikes/003-clientless-limbs/client.py:470) never sends LoadEndAck 0x007D; its 15s budget raises RuntimeError('no ZC_ACCEPT_ENTER from map-server') and the half-joined session is all the receipts show. Server truth (pinned rAthena e985006171d2): clif_parse_WantToConnection (clif.cpp:10647) answers a valid CZ_ENTER with 0x0283 SC_NOTIFY_AUTH then, after the char-server auth round-trip, clif_authok (clif.cpp:754-767) sends 0x02EB; double login answers 0x0081 err 8; malformed CZ_ENTER answers 0x006A. fx0's w34/w35 census received the post-auth map stream (0x91 prt_in [168,128], 0x9FF x6 spawns, 0x00B0 x20 status hp 86/86, 0x0ACB x4, 0x0360<->0x007F 1:1 keepalive) but NONE of 0x0283/0x02EB/0x0081/0x006A \u2014 an auth-handshake silence shape, not an rx desync (actor_parse_errors 0, every frame parsed). The stream shape matches an already-loaded server-side session for the fx0 account/char (previous session epoch not turned over), consistent with fx1 (field save) joining fine every window over the SAME production stack.",
+  "bisect_receipts": {
+   "fx0_shape": {
+    "shape": "fx0 (0x0283 and 0x02EB absent, map stream present)",
+    "connect_error_class": "RuntimeError",
+    "connect_error": "no ZC_ACCEPT_ENTER from map-server",
+    "world_model_received": {
+     "map_name": "prt_in",
+     "position": [
+      168,
+      128
+     ],
+     "actors": 6,
+     "status_hp": 86
+    },
+    "classification": "stalled_auth_handshake_no_sc_notify_auth_no_zc_accept_enter",
+    "health_gate": "degraded_join:stalled_auth_handshake_no_sc_notify_auth_no_zc_accept_enter"
+   },
+   "fx1_shape": {
+    "shape": "fx1 (0x0283 + 0x02EB present)",
+    "connect_returned": true,
+    "load_end_ack_sent": true,
+    "connected_map": true,
+    "map_name": "prt_in",
+    "position": [
+     168,
+     128
+    ]
+   }
+  },
+  "composition_fix": "join_health_gate: only a completed join (LoadEndAck out) is healthy; the fx0 counter shape degrades to degraded_join:stalled_auth_handshake_no_sc_notify_auth_no_zc_accept_enter \u2014 the w34/w35 receipts reported transport healthy for a stalled join",
+  "patch_ready_production_change": {
+   "file": "spikes/003-clientless-limbs/client.py (the wire class production instantiates)",
+   "function": "BotClient._map_server handshake poll (client.py:457-481)",
+   "change": [
+    "Classify the wait loop outcomes instead of one 0x02EB gate: 0x0283 = auth pending (keep waiting), 0x02EB = accept -> LoadEndAck (unchanged), 0x0081/0x006A = refuse with the exact server error, and a 0x0091-without-0x02EB burst = the already-loaded-session shape: fail the handshake with a distinct error (e.g. 'map session pre-exists for account; relogin required') after a bounded budget instead of the generic no-ZC_ACCEPT_ENTER RuntimeError.",
+    "Keep the 15s budget; surface the classification in the receipt counters the operator already collects (sent_pids/rx_pids) so windows name the stall instead of reporting transport healthy.",
+    "Operational unblock for fx0 (owner action, not code): force the server-side session epoch to turn over (fresh login after the old session is dropped) or move fx0's save off the prt_in shop interior to a field cell like fx1; the production stack is identical for fx1 and joins every window."
+   ],
+   "red_first_test": "tests/test_client_protocol.py new: test_map_join_names_preexisting_session_when_map_change_precedes_accept_enter (same ScriptedSocket replay shape as .work/rest-farm-balance/tests/test_join_bisect.py)"
+  },
+  "tests": {
+   "pair": "RED (health gate disabled / fx0 shape) -> GREEN (gate enabled / fx1 shape)",
+   "file": ".work/rest-farm-balance/tests/test_join_bisect.py",
+   "red_evidence": "evidence/red-run.txt",
+   "green_evidence": "evidence/green-run.txt",
+   "invocation": "nix develop -c uv run python -m pytest .work/rest-farm-balance/tests/ -v"
+  }
+ },
+ "evidence_index": {
+  "red_run": ".work/rest-farm-balance/evidence/red-run.txt (3 failed: the two rest-balance fixed-behavior tests + the join health-gate test, with the in-lane fixes disabled)",
+  "green_run": ".work/rest-farm-balance/evidence/green-run.txt (8 passed)",
+  "repaired_windows": [
+   ".work/rest-farm-balance/evidence/rest-repaired-dead.json",
+   ".work/rest-farm-balance/evidence/rest-repaired-hurt-in-range.json"
+  ],
+  "join_bisect": [
+   ".work/rest-farm-balance/evidence/join-fx0-stall.json",
+   ".work/rest-farm-balance/evidence/join-fx1-green.json"
+  ],
+  "live_receipts": [
+   "run/reviews/playing-grind-operator-live-window34.json",
+   "run/reviews/playing-grind-operator-live-window35.json",
+   "run/reviews/playing-grind-operator-live-window35-analysis.json"
+  ],
+  "pinned_source": "run/public-source/callback-qualified-e985006171d2 (clif.cpp:754-767 clif_authok, clif.cpp:10647 clif_parse_WantToConnection)"
+ }
+}

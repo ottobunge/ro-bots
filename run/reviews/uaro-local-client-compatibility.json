@@ -1,0 +1,301 @@
+{
+  "schema": 1,
+  "status": "AVAILABLE_UARO_BUNDLE_IDENTIFIED_PRIVATE_SERVER_PAIR_NOT_QUALIFIED",
+  "scope": "Finite static read-only client metadata qualification; only the two expressly owned new paths written. No client/installer/DLL code executed; no connections, GRF parsing, decryption, protection analysis or account-state inspection.",
+  "evidence_artifact": ".work/uaro-local-client-compatibility/static-evidence.json",
+  "artifacts": [
+    {
+      "relative_path": "uaRO.exe",
+      "bytes": 29726720,
+      "sha256": "f2f25a89917563237bb6faf60058cc536b7f42469af32fba556842f9f0cb9569"
+    },
+    {
+      "relative_path": "data.grf",
+      "bytes": 4338333891,
+      "sha256": "938901934be411aa481d4f83d019a2397fe466691a8a633be25317d6a5779c7e",
+      "inspection": "opaque whole-file hash only"
+    },
+    {
+      "relative_path": "uaro.grf",
+      "bytes": 255271629,
+      "sha256": "b51911f9cef09a8719e33db6108053acc4aae13a8108a05a65f065d2556008cc",
+      "inspection": "opaque whole-file hash only"
+    },
+    {
+      "relative_path": "uaro2.grf",
+      "bytes": 829487296,
+      "sha256": "6fa46a71912f521eae5d93ca0c4b21dcf4dbc9e636b19627bf9056c720ddb779",
+      "inspection": "opaque whole-file hash only"
+    },
+    {
+      "relative_path": "uaro_proxy_fix_30092026.grf",
+      "bytes": 643,
+      "sha256": "ed8e13018f995b450dc6d43bdfd2e3ec1cd5ec3384399ebf24502b32b9a4fd53",
+      "inspection": "opaque whole-file hash only"
+    }
+  ],
+  "pe": {
+    "pe_offset": 384,
+    "coff_offset": 388,
+    "optional_offset": 408,
+    "optional_size": 224,
+    "section_table_offset": 632,
+    "section_count": 16,
+    "machine_hex": "0x14c",
+    "optional_magic_hex": "0x10b",
+    "coff_timestamp_raw": 1715817600,
+    "coff_timestamp_authority": "NOT a protocol date",
+    "bounds": "DOS pointer, COFF, optional header, section table/raw spans and selected directory RVAs checked against actual file length",
+    "import_status": "VISIBLE_STATIC_DESCRIPTORS_ONLY",
+    "visible_import_dlls": [
+      "BaseSDK.dll",
+      "GdiPlus.dll",
+      "IAPSDK.dll",
+      "IPHLPAPI.DLL",
+      "MSVCP140.dll",
+      "VCRUNTIME140.dll",
+      "advapi32.dll",
+      "bcrypt.dll",
+      "binkw32.dll",
+      "d3d9.dll",
+      "d3dx9_43.dll",
+      "ddraw.dll",
+      "gdi32.dll",
+      "granny2.dll",
+      "ijl15.dll",
+      "imm32.dll",
+      "kernel32.dll",
+      "mss32.dll",
+      "netapi32.dll",
+      "ole32.dll",
+      "oleaut32.dll",
+      "psapi.dll",
+      "shell32.dll",
+      "shlwapi.dll",
+      "ucrtbase.dll",
+      "user32.dll",
+      "wininet.dll",
+      "winmm.dll",
+      "ws2_32.dll"
+    ],
+    "resource_status": "NO_RT_VERSION_FIXED_DATA",
+    "fixed_versions": []
+  },
+  "identity": {
+    "available_executable": "uaRO.exe",
+    "client_build_date": "UNKNOWN",
+    "packet_family": "UNKNOWN",
+    "packetver": "UNKNOWN",
+    "confidence": "High for actual PE offsets/x86 format/hash and absent readable RT_VERSION fixed data under the bounded parser. No protocol identity inferred from COFF time, filename, import libraries, old Lua errors, or existing server profile. Static visible DLL descriptors do not exhaust dynamically loaded dependencies or reveal protocol mappings."
+  },
+  "configuration": {
+    "scoped_loose_clientinfo_sclientinfo_data_ini_found": [],
+    "excluded_private_directories": [
+      "Replay",
+      "ScreenShot",
+      "_tmpEmblem",
+      "memo",
+      "savedata"
+    ],
+    "ini_evidence": {
+      "plugin.ini": [],
+      "dinput.ini": [
+        {
+          "section": "ROExt",
+          "key": "MouseFreedom"
+        },
+        {
+          "section": "ROExt",
+          "key": "RemapMouseButtons"
+        },
+        {
+          "section": "ROExt",
+          "key": "RemapAltF4"
+        },
+        {
+          "section": "ROExt",
+          "key": "KeyRemap"
+        },
+        {
+          "section": "ROExt",
+          "key": "AutoFreeCPU"
+        },
+        {
+          "section": "ROExt",
+          "key": "WindowOnTop"
+        },
+        {
+          "section": "ROExt",
+          "key": "WindowLock"
+        },
+        {
+          "section": "ROExt",
+          "key": "WindowPosX"
+        },
+        {
+          "section": "ROExt",
+          "key": "WindowPosY"
+        },
+        {
+          "section": "ROExt",
+          "key": "WindowWidth"
+        },
+        {
+          "section": "ROExt",
+          "key": "WindowHeight"
+        },
+        {
+          "section": "ROExt",
+          "key": "CodePage"
+        }
+      ]
+    },
+    "plugin_ini_limit": "The INI-section/equal-key parser found no rows in plugin.ini. Parent-supplied earlier inspection identified graphics/LGP fields. This is not a claim that the file is empty. No values were extracted or published.",
+    "actual_executable_supported_lookup": "UNKNOWN: no official uaRO private-server connection-file selection or override contract established. Creating XML is not proof this executable will read it.",
+    "public_generic_shape": "rAthena documents clientinfo XML connection address/port/version. XML version matches login client_version_to_connect, not the protocol PACKETVER. This generic document does not establish uaRO support or authorization."
+  },
+  "resources": {
+    "prior_header_evidence": [
+      {
+        "path": "/home/otto/Games/uaro-ge-lab/client/data.grf",
+        "bytes": 4338333891,
+        "signature": "Event Horizon",
+        "header_version": "0x300",
+        "compatibility_with_plain_20180704": "UNKNOWN",
+        "modified": false
+      },
+      {
+        "path": "/home/otto/Games/uaro-ge-lab/client/uaro.grf",
+        "bytes": 255271629,
+        "signature": "Master of Magic",
+        "header_version": "0x200",
+        "compatibility_with_plain_20180704": "UNKNOWN",
+        "modified": false
+      },
+      {
+        "path": "/home/otto/Games/uaro-ge-lab/client/uaro2.grf",
+        "bytes": 829487296,
+        "signature": "Master of Magic",
+        "header_version": "0x200",
+        "compatibility_with_plain_20180704": "UNKNOWN",
+        "modified": false
+      }
+    ],
+    "prior_header_provenance": "run/reviews/user-ragnarok-flake-inspection.json; not re-parsed in this qualification",
+    "loose_non_account_candidate_counts": {
+      "AI": 8,
+      "System": 57,
+      "Skin": 14,
+      "data": 6,
+      "BGM": 208
+    },
+    "loose_non_account_candidate_total": 293,
+    "completeness": "Historical official-uaRO world entry in the preserved lab establishes operational usability for that supplied server/runtime combination, not completeness for every map or compatibility with an own server.",
+    "base_vs_overlay": "data.grf is a candidate large base archive with known nonstandard Event Horizon/0x300 header. uaro.grf/uaro2.grf are candidate uaRO overlays with known Master of Magic/0x200 headers, but content/completeness and base dependency are UNVERIFIED. The 643-byte extra GRF is inventoried and hashed only. Names/sizes/standard header do not prove self-contained resources or licensed reuse.",
+    "unsupported_boundary": "The base format is NOT QUALIFIED for another executable or any stock reader. No corruption verdict and no universal unsupported-format claim; no index/content parsing, decryption or keys.",
+    "no_restoration_needed_from_this_evidence": true
+  },
+  "protection": {
+    "local_boundary": "Only public root filename/size metadata establishes gepard.dll/gepard.license/gepard.register presence. No contents of these files read; no server-auth strings, keys or anti-cheat mechanisms inspected.",
+    "official_public_evidence": "Official uaRO troubleshooting documents a Gepard server-license validation error. That shows a possible additional runtime licensing dependency, not a private-server entitlement or implementation contract.",
+    "pair_status": "UNKNOWN: authorized vendor/server-owner support must establish licensing and supported server integration for this exact client. Stock rAthena acceptance has NOT been established. No invented license-compatible component, DNS/hosts redirect, handshake spoof, client modification or bypass."
+  },
+  "reusable_without_original_changes": {
+    "immediate": "Metadata/hashes, official public gameplay documentation as reference, and reviewed runtime recipes. No asset copied or adopted.",
+    "conditional_loose_assets": "AI/System/NavigationData/BGM/Skin/data filenames can be candidates after provenance, licensing and matching-resource qualification; metadata presence is not ownership/redistribution permission or completeness.",
+    "runtime_recipe": "Separate historical uaRO GE-Proton11-7/UMU lab recipe has official-uaRO world-entry evidence. User RagnarokOnline GE-Proton9-27 + steam-run-free flake is a different runtime-only recipe, not a client bundle. Do not run its original-prefix-hardcoded launcher or copy the game/prefix into Nix store."
+  },
+  "server_and_ai_architecture": {
+    "unchanged": true,
+    "existing_profile_from_prior_review": {
+      "family": "MAIN",
+      "packetver": 20180704,
+      "ruleset": "pre-renewal",
+      "source_revision": "e985006171d2eb320ee512a653f4c83aea3d81b6",
+      "provenance": "run/reviews/human-client-source-discovery.json; not newly compiled or runtime-observed"
+    },
+    "warning": "This existing profile is not uaRO-client authority. An actual client date/family/obfuscation/custom extensions decision must requalify server and bot framing/manifests/layouts together. Preserve the existing clientless ordinary-player transport, received-state/planner/CLEF guards and incremental server-side MVP architecture; no new executor or protection emulation. Current server source/config/data/SQL unchanged."
+  },
+  "mvp_server_side_now": [
+    "Define a uaRO-like starting map/NPC/ruleset goal using public documentation and existing authorized server assets; similarity is not an exact uaRO data clone.",
+    "List and review source-backed candidate protocol mappings offline once an authoritative client profile is supplied; do not guess 2018 or silently migrate.",
+    "Implement and qualify incremental own-server NPC/shop/combat/warp behavior through the existing bot transport at the already reviewed profile independently of unavailable GUI acceptance. No such changes performed here."
+  ],
+  "next_pair_qualification_gates": [
+    {
+      "gate": "Exact available-client authority",
+      "required": "Publisher/vendor-provided build identifier, MAIN/RE/ZERO protocol family, packet date, obfuscation/custom protocol requirements and patch provenance bound to this uaRO.exe SHA-256. Unknown fields remain unknown."
+    },
+    {
+      "gate": "Authorized connection configuration",
+      "required": "Publisher-supported independently scoped connection configuration/artifact and exact lookup behavior, explicitly permitting own-server use; no protected archive extraction, hosts redirect or patch."
+    },
+    {
+      "gate": "Protection entitlement and integration",
+      "required": "Legitimate Gepard/vendor/server-owner agreement and documented supported server-side components for the candidate pairing, or a separately supplied authorized compatible client. Merely having a license file is insufficient."
+    },
+    {
+      "gate": "Resource closure",
+      "required": "Authorized matching base/overlay/loose-resource load-order and format contract from publisher/vendor; do not infer archive contents from sizes or restore small guessed files."
+    },
+    {
+      "gate": "Matched server and bot profile",
+      "required": "Separately reviewed source/build flags plus source-backed packet/struct/framing regressions for the exact confirmed client profile; update adapters/manifests only in a new authorized scope."
+    },
+    {
+      "gate": "Later isolated acceptance",
+      "required": "Only after preceding gates and separate authorization: project-owned isolated runtime/prefix and configuration, then observed own-world login/map/NPC/shop/combat/warp/reconnect evidence. No launches or attempts in this task."
+    }
+  ],
+  "sources": [
+    {
+      "kind": "primary",
+      "title": "rAthena Clientinfo.xml wiki",
+      "url": "https://github.com/rathena/rathena/wiki/Clientinfo.xml",
+      "retrieval": "web.run turn0view0"
+    },
+    {
+      "kind": "primary",
+      "title": "Microsoft PE Format",
+      "url": "https://learn.microsoft.com/en-us/windows/win32/debug/pe-format",
+      "retrieval": "web.run turn0view1"
+    },
+    {
+      "kind": "primary",
+      "title": "Official uaRO troubleshooting",
+      "url": "https://wiki.uaro.net/troubleshooting/",
+      "retrieval": "web.run turn0search0; no public licensing endpoint values retained"
+    },
+    {
+      "kind": "local_prior_evidence",
+      "path": "/home/otto/repos/agent/wiki/concepts/uaro-ge-proton-framework.md",
+      "note": "Historical 2026-10-05 official-uaRO world-entry evidence; no present launch verification"
+    },
+    {
+      "kind": "local_prior_evidence",
+      "path": "run/reviews/user-ragnarok-flake-inspection.json"
+    },
+    {
+      "kind": "local_prior_evidence",
+      "path": "run/reviews/human-client-source-discovery.json"
+    }
+  ],
+  "preservation": {
+    "original_installation_opened": false,
+    "prefix_or_registry_opened": false,
+    "account_savedata_opened": false,
+    "client_or_installer_launched": false,
+    "dll_loaded": false,
+    "network_connection_attempted": false,
+    "protected_archive_parsed": false,
+    "game_files_written": false,
+    "source_config_git_sql_changed": false,
+    "read_mode": "Client content reads used O_RDONLY|O_NOFOLLOW|O_NOATIME; regular files only. Non-account directory discovery used read-only metadata traversal. No original-tree full preservation scan performed, so no invented byte-for-byte historical verification claim."
+  },
+  "issues": [
+    "No bounded readable RT_VERSION fixed data; exact protocol remains unknown.",
+    "No supported loose connection configuration found in the inspected non-account tree, nor established by public uaRO sources.",
+    "Public vendor licensing integration details for a private-server pairing were not established.",
+    "No private-server GUI compatibility or full resource completeness proof."
+  ]
+}

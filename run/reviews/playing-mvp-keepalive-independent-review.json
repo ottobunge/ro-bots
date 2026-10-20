@@ -1,0 +1,161 @@
+{
+  "passed": true,
+  "security_concerns": [],
+  "logic_errors": [],
+  "quality_blockers": [],
+  "suggestions": [
+    {
+      "blocking": false,
+      "finding": "Keep the synthetic/offline verdict separate from parent live receipt and final combined root gate; serial host stalls exceeding 60 seconds remain outside this pacing promise."
+    }
+  ],
+  "scope": "ADR020 finite-MVP bounded keepalive review: PlayingClient pacing/readiness/epoch/lifecycle/failure ownership, unchanged wire encoding and ScheduledAgent pump seam. No generic C++/concurrency proof, whole-milestone approval, media/admission or goal-choice verdict.",
+  "frozen_count": 19,
+  "freeze_before_matches": true,
+  "freeze_after_matches": true,
+  "frozen_changed_paths": [],
+  "findings": [
+    {
+      "source": "rathena/src/common/socket.cpp:396,1016-1026; rathena/conf/packet_athena.conf:21-22; src/robots/app/playing_runtime.py:47-49,341-360",
+      "finding": "Positive inbound recv refreshes server rdata_tick; non-server inactivity >60 seconds sets EOF. 20-second pacing is justified for this pinned 60-second configuration, not arbitrary deployment configuration."
+    },
+    {
+      "source": "run/reviews/playing-mvp-live-timeout-config.json",
+      "finding": "Parent read-only deployed configuration evidence records stall_time=60, zero extra imports and deployed config SHA a90ca0f9edcf0504e2e3bbba4828f3664839527df1a4c10eb0090e16ad42f122. This is not the pinned public whole-file SHA; independent reviewer did not access live services."
+    },
+    {
+      "source": "src/robots/app/agent_runtime.py:559-582,729-742,778-786; src/robots/app/playing_runtime.py:320-322",
+      "finding": "Actual ScheduledAgent.tick reaches native drain after strict state projection and before native-event/timer cognition and script execution. Independent repeated idle ticks confirm keepalive precedes script step. Operator command dispatch happens earlier; no universal claim about all work preceding the pump."
+    },
+    {
+      "source": "src/robots/app/playing_runtime.py:145-182,341-360",
+      "finding": "Exact-True running/map/reader plus live socket, no receive/dispatch errors, contiguous frames, received position and valid vitals/progression gate sends. Getters remain send-free. Same-clock calls and missed intervals do not burst."
+    },
+    {
+      "source": "src/robots/app/playing_runtime.py:128-140,509-523,529-532; spikes/003-clientless-limbs/client.py:484-518",
+      "finding": "Timers are per client and reset on native epochs and explicit connect/close boundaries, not ordinary same-epoch map receipts. Wire connect owns prior-transport close. Send poison blocks state/readiness before epoch reset and clears only after successful lifecycle completion or successful send."
+    },
+    {
+      "source": "src/robots/app/playing_runtime.py:348-360; independent fresh fixture",
+      "finding": "Finite/non-reversed clock checks deny invalid numerical clock values; malformed nonnumeric clock values raise TypeError before sending, without guessed timestamps. Callback control-flow exception origin propagates unchanged."
+    },
+    {
+      "source": "src/robots/app/playing_runtime.py:356-360,128-140; independent fresh fixture",
+      "finding": "Poison is set before fallible send. ConnectionError and KeyboardInterrupt exact objects and deepest send frame survive; no automatic retry. Failed close/connect retain poison and exact lifecycle origin, successful close clears poison while offline readiness still denies sends."
+    },
+    {
+      "source": "spikes/003-clientless-limbs/client.py:632-634; spikes/003-clientless-limbs/packetdb.py:267,299",
+      "finding": "Existing wire keepalive sends six-byte 0x0360; reply 0x007F remains fixed six bytes. No encoding/packet-table changes were made by review."
+    }
+  ],
+  "actual_tests": {
+    "scoped": {
+      "tests": 146,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "exit_code": 0,
+      "command": "PYTHONDONTWRITEBYTECODE=1 nix develop --offline --no-write-lock-file path:./spikes/007-native-packet-ast/toolchain -c /home/otto/dev/ro-bots/.venv/bin/pytest tests/test_native_playing_keepalive.py tests/test_playing_runtime.py tests/test_playing_startup_cleanup.py tests/test_native_pose_recovery.py tests/test_native_tick_reply.py -q -o addopts='' -p no:cacheprovider --junitxml=/home/otto/.hermes/cache/scratch/keepalive-independent/scoped.xml"
+    },
+    "fresh": {
+      "tests": 8,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "exit_code": 0,
+      "command": "PYTHONDONTWRITEBYTECODE=1 nix develop --offline --no-write-lock-file path:./spikes/007-native-packet-ast/toolchain -c /home/otto/dev/ro-bots/.venv/bin/pytest /home/otto/.hermes/cache/scratch/keepalive-independent/test_fresh_keepalive.py -q -o addopts='' -p no:cacheprovider --junitxml=/home/otto/.hermes/cache/scratch/keepalive-independent/fresh.xml"
+    },
+    "quality": {
+      "black": {
+        "command": [
+          "/home/otto/dev/ro-bots/.venv/bin/black",
+          "--check",
+          "--workers",
+          "1",
+          "src/robots/app/playing_runtime.py",
+          "tests/test_native_playing_keepalive.py"
+        ],
+        "exit_code": 0,
+        "output": "All done! \u2728 \ud83c\udf70 \u2728\n2 files would be left unchanged.\n"
+      },
+      "ruff": {
+        "command": [
+          "/home/otto/dev/ro-bots/.venv/bin/ruff",
+          "check",
+          "src/robots/app/playing_runtime.py",
+          "tests/test_native_playing_keepalive.py"
+        ],
+        "exit_code": 0,
+        "output": "All checks passed!\n"
+      },
+      "mypy": {
+        "command": [
+          "/home/otto/dev/ro-bots/.venv/bin/mypy",
+          "--strict",
+          "--cache-dir=/home/otto/.hermes/cache/scratch/keepalive-independent/mypy",
+          "src/robots/app/playing_runtime.py",
+          "tests/test_native_playing_keepalive.py"
+        ],
+        "exit_code": 0,
+        "output": "Success: no issues found in 2 source files\n"
+      }
+    }
+  },
+  "actual_probes": [
+    "Synthetic 91-second idle host interval with nonzero baseline, repeated same-clock ticks: exactly 120/140/160/180; no user actions or sends; keepalive precedes actual script step.",
+    "Synthetic 91-second moving interval with receipts and one Rest: four paced keepalives, 91 move requests, pending movement not mutated by drain.",
+    "ConnectionError and KeyboardInterrupt send origins, failed close and failed connect, poison denial, supported successful-close recovery.",
+    "Nonfinite/reversed/malformed clocks and exact KeyboardInterrupt clock callback; zero sends.",
+    "Strict health denial for truthy non-True flags/liveness, missing reader/socket, receive/dispatch failure and frame gap.",
+    "Independent client baselines, native-epoch reset and successful close/reconnect fresh baseline.",
+    "Same-epoch warp does not reset pace; repeated getters send nothing; a late tick sends once, not a missed-interval burst."
+  ],
+  "artifacts_sha256": {
+    "src/robots/app/playing_runtime.py": "e305b545b2724e68cd1b20ab7c4659e621784759dfa83c4614fe80ea07b759f4",
+    "src/robots/app/agent_runtime.py": "e60d518da5a11dd872f30b8987a03edf5b4a773188264ac21740afe67b64500d",
+    "src/robots/adapters/native_gameplay.py": "c7e9f16750bf117ba3a4843264e215d2e653c0376c70acd7ac45e00a6b2100f9",
+    "src/robots/adapters/native_session_progression.py": "c7ec4880115c14960642487b34e9ad05ea3ab1718ed0cd54748d361ae84dd55f",
+    "src/robots/adapters/native_vitals.py": "663cc93d1fbe0cb20fb6ae4331e2ad5cf63d9e940a246bb8b332b408f6a7e9ff",
+    "src/robots/domain/model.py": "ad311ac53e1d3a24bf7fe34cb96461b342d8f3ff12a2397d7d43725221538dbf",
+    "src/robots/domain/actions.py": "f0b93b6ac48e6954755c8af5691acacd3546e222de5350f0b9fda8dd09c91b4e",
+    "spikes/003-clientless-limbs/client.py": "2f57a0adc0b43a20235835290499ca0043966c5def208642598afb0dc49807fd",
+    "spikes/003-clientless-limbs/packetdb.py": "7edfe9bb2a93559e29832f6446a9d8b852c6caafe2e406a6516986176e302c67",
+    "rathena/src/common/socket.cpp": "80712b971c4fe325ee0905e54422da4776e010a3f0bb34ce7971c662678d23ba",
+    "rathena/conf/packet_athena.conf": "2ed28c39b774d8b20fcce160faaf1e12a549127fcc10a3a6702851270f2a3484",
+    "tests/test_native_playing_keepalive.py": "b816746b20d70eef071b16c2bdf240d13e2bdc86fb6057366fb03d9a71c8a12c",
+    "tests/test_playing_runtime.py": "58b59fa29701b6c89889aa5d92af0c800dbc9e947a01816bb01193fccc34ce6d",
+    "tests/test_playing_startup_cleanup.py": "b44037b832d142c76544a8ae091d648f44d5113ff288d9d71c36a62fdd31f85c",
+    "tests/test_native_pose_recovery.py": "3c88d30f8093f645ae287f0f803b939846524ec0712e30c6222e072408ce0710",
+    "tests/test_native_tick_reply.py": "ba22fb9aaae74d219852ddfbb2562eda588246184c4e81a2250cd22fce517f0e",
+    "run/reviews/playing-mvp-keepalive-fix.json": "5b85938747cb449670e7098a17eea4c65f64715145286eb5d9466a37c5cf2753",
+    "run/reviews/playing-mvp-keepalive-parent-gate.json": "61f8affb769115c7df1bfeb69db35a561071574e32016d1361e59654a5fd3283",
+    "run/reviews/playing-mvp-live-timeout-config.json": "28e27662350c0e1294b1891333b8cec15e7364c223ae300bf231fbe877996ddd",
+    "/home/otto/.hermes/cache/scratch/playing-mvp-keepalive-review-freeze.json": "7fe44d2a57872e16a7c4eebff160253f4a956fb72f1dbcbccdf95b9e29c4cdd7",
+    "/home/otto/.hermes/cache/scratch/keepalive-independent/before.json": "f212e5785c41635c98acc27d7dfacf6c37199fcbb07166f2b64f610b7d0dc4c1",
+    "/home/otto/.hermes/cache/scratch/keepalive-independent/after.json": "f212e5785c41635c98acc27d7dfacf6c37199fcbb07166f2b64f610b7d0dc4c1",
+    "/home/otto/.hermes/cache/scratch/keepalive-independent/scoped.xml": "87dc6662545ed7586c72f2a418a1c96d2f9beddc6e7800a42660bdb871109ce2",
+    "/home/otto/.hermes/cache/scratch/keepalive-independent/fresh.xml": "561370d49afe8b638c4c1cc0b010b6b34e04614f6dda6550e4f9e0e56a4a4a4e",
+    "/home/otto/.hermes/cache/scratch/keepalive-independent/quality.json": "e5ee92331ebc800b652b5daceb4e243def12700312af2f5a333adea6547c1684",
+    "/home/otto/.hermes/cache/scratch/keepalive-independent/test_fresh_keepalive.py": "2f7399938f0c3bb52cac2dcb804c9d544c55bce8f0c9d183570bb989d9828178"
+  },
+  "issues_encountered": [
+    {
+      "blocking": false,
+      "finding": "Initial scratch harness collection failed because external scratch pytest root could not import repository tests; fixed only scratch harness by explicitly adding exact repository/src paths, then all eight probes passed. No dependencies installed."
+    }
+  ],
+  "not_verified": [
+    "No native/server receipt or new 90-second live session; 91-second results are synthetic clock/spies only.",
+    "No world, SQL, service, network, native client construction or inference/provider effects.",
+    "No guarantee for serial ticks blocked beyond server timeout, atomic concurrent readiness/send, or arbitrary server stall_time settings.",
+    "No full-source/root combined gate during concurrent goal-choice worker edits; parent owns final combined gate.",
+    "Concurrent brain.py and goal tests are intentionally not frozen and are not an adoption blocker for this stable feature snapshot.",
+    "No broad claim that every prior EOF was caused by missing keepalive."
+  ],
+  "files_created": [
+    "run/reviews/playing-mvp-keepalive-independent-review.json",
+    "private scratch only"
+  ],
+  "source_repairs": false,
+  "live_effects": false
+}

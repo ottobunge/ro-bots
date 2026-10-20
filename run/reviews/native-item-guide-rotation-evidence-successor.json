@@ -1,0 +1,97 @@
+{
+  "status": "ROTATION_EVIDENCE_SUCCESSOR_COMPLETE_OFFLINE",
+  "namespace": {
+    "workspace": "/home/otto/dev/ro-bots/.work/native-item-guide-rotation-evidence-successor",
+    "review": "/home/otto/dev/ro-bots/run/reviews/native-item-guide-rotation-evidence-successor.json",
+    "scope": "Owned namespace only; no live Docker, SQL, lock, publication, approvals or production edits; lifecycle_commands=0; world_untouched=true"
+  },
+  "parent": {
+    "adopted_base": ".work/native-item-guide-guarded-transition-successor/content",
+    "adoption_receipt": "run/reviews/native-item-guide-guarded-transition-parent-adopted.json",
+    "frontier_receipt": "run/reviews/native-item-guide-rotation-frontier.json",
+    "frontier_facts": [
+      "owned mariadb docker log honestly empty (0 records, with and without --since)",
+      "bound v2 receipt carries the same-lifetime epoch startup_events: 15 stderr events, 11 error-category, body digests",
+      "honest empty live cursor vs proof inventory mismatch denied fixed_historical_error_inventory",
+      "carried-errors-in-cursor cannot pass validate_cursor (ordinal bounds vs records=0)"
+    ]
+  },
+  "module_digests": {
+    "live_recovery.py": {
+      "sha256": "e0695f1f994df8be7d5b19923c7bd6934fff7c98085848bbd5cf3e10afe1c789",
+      "prior_adopted_sha256": "dfa0ed0565c26055a5f165a620bdfc2bbb178a3963b880f13009b69188047b39",
+      "revised": true
+    },
+    "recovery.py": {
+      "sha256": "295eab4ee5d0baa0e177947c940d622391915fe5a7405c067318d3129e630a13",
+      "byte_identical_to_adopted": true
+    },
+    "item_guide_publication.py": {
+      "sha256": "ec94b628c3d5d45d8ba256f9fe8b9c7f1fee6362669be57ff063e5e1709facb0",
+      "byte_identical_to_adopted": true
+    },
+    "item_guide_files.py": {
+      "sha256": "528b12b88c2ca5a3bacdb0c4786666af7d8caf1042943395814890ac3773ef18",
+      "byte_identical_to_adopted": true
+    },
+    "rootless_socket_reader.py": {
+      "sha256": "a8339f4af3359d6ae283879ce1031a4bcc8e589e9822a203e6a3c68acafd49ae",
+      "byte_identical_to_adopted": true
+    }
+  },
+  "production_diff": {
+    "file": "content/live_recovery.py only; diff at green/live_recovery.py.diff (12f3ef9c4b2e2e9cd97ae34e8745d04848e969b1d778fe25e170ad51bac76eec)",
+    "hunks": [
+      "rotation_attributed_observed helper: admits the receipt-carried error inventory only when observed==[], the proof's error-category expected list is non-empty, and every captured stream is an honestly empty cursor (records==0, sha256==sha256(b\"\")); any observed record, empty proof inventory or retained stream record keeps the caller's exact sorted comparison. validate_error_inventory's mariadb branch delegates to it; the map branch, login/char roles and the final require text are byte-equal to the adopted base.",
+      "database_role: observed error markers are counted in maintenance mode even without the ready marker (same policy as native_facts' complete-or-maintenance rule), so an honestly empty rotated mariadb stream projects sql_errors=0 instead of None and passes validate_role(running, maintenance=True) with a healthy healthcheck; strict mode keeps the fail-closed unknown."
+    ],
+    "attribution_semantics": "The carried startup inventory is attributed via the digest-bound table-health receipt in the same approval, never via live observability; operation_errors receipts keep the live cursor-derived lifetime inventory (empty under rotation) and basis bound-pre-operation."
+  },
+  "tdd": {
+    "red": {
+      "receipt": ".work/native-item-guide-rotation-evidence-successor/red/rotation-evidence-red.xml (477714bffba7e3aedaf8cdce77bd76e9c568e8653271a51dfb449d2b1f8097d9)",
+      "provenance": "Identical new test bytes run against the stashed byte-identical base (base-freeze/ equals the adopted predecessor modules, hash-verified before the RED run)",
+      "reached_failures": [
+        "test_rotation_empty_cursor_admits_receipt_carried_inventory -> DeniedError fixed_historical_error_inventory",
+        "test_check_error_baselines_admit_rotation_receipt -> DeniedError fixed_historical_error_inventory",
+        "test_empty_mariadb_log_downstream_role_chain[maintenance-rotation] -> DeniedError role_fault",
+        "test_rotation_cycle_reaches_recovered_offline_with_proof_attributed_inventory -> Receipt denied, no commands",
+        "test_rotation_cycle_advances_import_binding_and_refuses_stale_approval -> Receipt denied, no commands"
+      ],
+      "controls_green_on_base": 8
+    },
+    "adapted_base_fidelity": {
+      "receipt": ".work/native-item-guide-rotation-evidence-successor/red/rotation-adapted-base.xml (1489988c7932a0cdefc0e1a6b8dec259401ac7c753632862c3212847d4d91bfb)",
+      "result": "107 prior cases pass against the byte-identical base (115 passed total with the 8 retention controls; 5 failures are exactly the new RED tests)"
+    },
+    "green": {
+      "receipt": ".work/native-item-guide-rotation-evidence-successor/green/rotation-evidence-full-green.xml (f271c023f3a5afcd83f090d761b30471ee851a57d2b8695df1ec2440d4a8a8f8)",
+      "result": "120 passed, 120 unique testcase identities, 0 failures/errors",
+      "prior_retained": 107,
+      "new": 13
+    }
+  },
+  "e2e_rotation_fixture": {
+    "file": "harness/publication/test_rotation_evidence_cycle.py",
+    "modeling": "Maintenance-mode publication spy: mariadb docker log honestly empty for its current epoch (both streams records=0, sha256(b\"\")), synthetic digest-bound receipt in the observed v2 producer shape (15 stderr events, 11 error-category, body digests, same-lifetime started_at), pinned map assets served with production uid/gid/mode metadata, guarded BEFORE import binding, full six-command cycle with publication verified and the import binding advanced BEFORE->AFTER; stale BEFORE approval denied with approval_drift; advanced approval authorizes and re-observed fingerprints match.",
+    "outcome": "recovered_offline with proof-attributed inventory: operation receipt records basis bound-pre-operation, new_operation_errors=0, inventory=[] (carried events stay receipt-attributed)"
+  },
+  "qualified_invocation": "nix develop --offline --no-write-lock-file path:./spikes/007-native-packet-ast/toolchain -c env -u PYTEST_ADDOPTS -u PYTEST_DISABLE_PLUGIN_AUTOLOAD PYTHONOPTIMIZE=0 PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=src:. TMPDIR=<scratch> .venv/bin/python -B -m pytest <namespace>/harness --ignore=<namespace>/harness/publication/fixture-support --override-ini addopts='' --junitxml=<own>.xml -q",
+  "gates": {
+    "scope": "changed module content/live_recovery.py in the qualified toolchain",
+    "black": "exit 0 (green/gates/black.log 1a56c7cd8457fd05d978cfbd139d7bfd86e86acaa9b57668e718ef8bccc0cf48)",
+    "ruff": "exit 0 (green/gates/ruff.log 82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18)",
+    "mypy_strict": "exit 0, no issues in 1 source file (green/gates/mypy.log 5d4b6d285b77932e3d08212c3b4974d0a803f98ec60408ac6ccf6a063fa6c19e)",
+    "xenon": "exit 0 at --max-absolute B --max-modules B --max-average A; empty log on pass (green/gates/xenon.log sha256 e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855)",
+    "xenon_history": "first diff candidate ranked C on validate_error_inventory; refactored the admission into rotation_attributed_observed so the function keeps the adopted B rank with zero added decisions"
+  },
+  "inherited_debt": "Unchanged inherited whole-root disclosure (51 Ruff / 31 mypy findings outside this successor's scope) remains as previously recorded; this successor ran scoped gates on its one changed module per the guarded-transition gate pattern",
+  "forbidden_alternatives_respected": {
+    "no_falsified_zero_error_history": true,
+    "no_mariadb_restart_or_lifecycle_mutation": true,
+    "no_live_execution": true,
+    "no_budget_reset": true
+  },
+  "native_authority": "UNCHANGED_REVOKED",
+  "remaining_boundary": "Offline qualification only; live activation of this successor against the owned world remains parent-owned, as with the adopted predecessor"
+}

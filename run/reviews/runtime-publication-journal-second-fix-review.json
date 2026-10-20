@@ -1,0 +1,410 @@
+{
+  "passed": true,
+  "status": "frozen_scoped_independent_review_passed_no_authority_approval",
+  "security_concerns": [],
+  "logic_errors": [],
+  "suggestions": [
+    "Make the existing active-sys.exception policy explicit for callers: a normal close executed inside an unrelated active except treats that exception as primary and suppresses a new secondary diagnostic origin. Four fresh contrasts confirm this documented active-primary policy; this verdict does not claim blanket mask freedom.",
+    "Retain unresolved snapshots only as observations. A long-lived host without a separately owned, authorized process boundary still lacks safe targeted cleanup; no PID/inode/fd field grants that authority."
+  ],
+  "summary": "Both second-cycle findings are closed on this frozen scoped snapshot; exact sole/primary control flow and preallocation safety pass real owned-resource probes, while the original unconditional cleanup obligation remains narrowed to an observational handoff, not release or admission authority.",
+  "recorded_at_utc": "2026-10-06T01:02:48.441178+00:00",
+  "target": {
+    "source": "src/robots/adapters/runtime_publication_journal.py",
+    "source_sha256": "36f442431254b6b5f8c252bc1eb7c6528755d9e50ef974f17459de1e06e60384",
+    "source_lines": 349,
+    "new_repository_test": "tests/test_runtime_publication_journal_second_fix.py",
+    "new_repository_test_sha256": "ffe79b989bbeafc02f47f707018a15cebd4961426279b55a2cc3f189e8ce7b6e",
+    "shared_close_owned_sha256": "bc3ca2d291da5d19831bd57f5a794e455a6e9f7870db0f655d376a51de0e6719",
+    "scope": "Historical schema-1 journal and unchanged shared close helper; no runtime builder, memory-cache backend, tree commit, supervisor, workspace, manager, world, or admission approval."
+  },
+  "finding_closure": {
+    "JOURNAL-DIAGNOSTIC-001": {
+      "closure": "closed_for_supported_reviewed_public_close_and_constructor_diagnostic_seams",
+      "evidence": "Five sole diagnostic cases use actual unpatched normal os.close after actual append/True ack and inject only owned post-close fstat. Four non-Exception objects propagate with origin frames after unresolved/diagnostic_failed snapshot assignment; ordinary EIO returns conservatively. Unpatched EBADF and fresh-process flock prove release independently; repeated close performs no additional diagnostic and ack/write deny. Sixteen close-primary contrasts preserve first OSError/KeyboardInterrupt before/after physical release against four different diagnostic nonlocal origins. Sixteen additional constructors use actual normal cleanup close and preserve their original fstat/pread primary against those four origins.",
+      "active_primary_policy": "sys.exception includes active caller except state, not just a close failure. Four fresh normal-close-in-external-except contrasts preserve that caller primary and intentionally suppress the diagnostic. Constructor active-primary contrasts separately pass. Not a claim that every diagnostic raised in every lexical caller context escapes."
+    },
+    "JOURNAL-OWNERSHIP-002": {
+      "closure": "closed_for_explicit_getpid_preallocation_and_reached_allocated_OS_seams",
+      "evidence": "Four getpid KeyboardInterrupt/SystemExit cases distinguish a fresh leaf from already-existing history and use a separate positive control. Exact objects/frames survive one PID call; owned writer open/close counts are zero, borrowed root remains valid, no capsule is claimed, no new leaf appears, pre-existing bytes stay unchanged. Forty-two allocated cases record exactly one PID call/open/close attempt at flock/first-file-fstat/pread/malformed replay, with pre-release and release-before-raise cleanup and normal/EIO/SystemExit diagnostics. Original errors expose typed owner-PID snapshots, absent initial identity where appropriate, released_observed/identity_unknown/descriptor_present/diagnostic_failed observations accurately without granting authority.",
+      "failure_model": "Explicit called OS seams only. No arbitrary bytecode/dataclass-allocation interruption immunity is asserted; typed snapshot construction is data, not a security capability."
+    },
+    "JOURNAL-ACK-001": {
+      "closure": "closed_for_frozen_acknowledgement_method",
+      "evidence": "Twelve fresh root-fstat/file-fstat/entry-stat x KeyboardInterrupt/SystemExit/GeneratorExit/custom BaseException cases start at real append/True ack, poison and propagate exact origin/frame, visit only once, deny later acknowledgements and writes. Ordinary denial regressions in unchanged repository tests also pass."
+    },
+    "JOURNAL-OWNERSHIP-001": {
+      "closure": "partially_addressed_original_unconditional_release_not_closed; narrowed_observational_handoff_contract_verified",
+      "evidence": "Public snapshots remain reachable after one attempt and on first allocated constructor failures. Two real same-inode/other-inode descriptor reuse probes remain unresolved and never reclose the replacement; stale active snapshots do not become live authority. Two newly owned workers retain actually live unresolved descriptors and locks until normal exit 0, then the kernel releases them and fresh processes can flock. No manual descriptor close is counted as process recovery.",
+      "contract_migration": "An independently owned and separately authorized process boundary makes the retained handoff operationally meaningful. No cleanup for arbitrary long-lived host targets, process kill/recovery/retry action API, or hostile same-UID exclusion is implemented. The original failed zero-live-descriptors oracle/report is unchanged, not rerun, and not claimed to pass."
+    }
+  },
+  "verified_positive_controls": [
+    "112 unchanged repository cases pass: original 51 + acknowledgement 6 + cleanup 16 + second-repair 39.",
+    "Five new restart-denial cases span intent/prepared/committed/uncertain/quarantined. Historical records reopen under a new generation; old ack remains False and all old-ID phases refuse without disk mutation.",
+    "Actual 8192 canonical records replay and refuse further append; actual 8193 reject unchanged. Actual sparse 32 MiB + 1 file rejects without truncation/content change. Fixed byte/record constants remain unchanged.",
+    "Strict version-1 six-field canonical replay, generation/world/transaction phases, binding, byte limits, poison and thread serialization are covered by the read original tests plus fresh bounded/restart cases. No userspace flush/retry/repair loop is introduced.",
+    "Borrowed roots stay valid. Physical FD/flock observations precede fixture-only disposal; descriptors disposed manually are solely captured synthetic allocations and never reported as production recovery.",
+    "Snapshot forgery exposes no close/kill/recover/admit/publish action API. Snapshot PID and inode fields are not authorization evidence."
+  ],
+  "execution": {
+    "environment": "Existing pinned nix develop --offline --no-write-lock-file; uv run --offline --frozen --no-sync; UV_OFFLINE=1 and PYTHONDONTWRITEBYTECODE=1. Separate scratch COVERAGE_FILE, basetemp, no pytest cache, mypy/Pylint/XDG cache directories. No install/pin/lock/gate/whitelist change.",
+    "final_test_counts": {
+      "repository": {
+        "collected": 112,
+        "passed": 112,
+        "failed": 0,
+        "skipped": 0,
+        "by_classname": {
+          "tests.test_runtime_publication_journal": {
+            "collected": 51,
+            "passed": 51,
+            "failed": 0,
+            "skipped": 0
+          },
+          "tests.test_runtime_publication_journal_ack_regressions": {
+            "collected": 6,
+            "passed": 6,
+            "failed": 0,
+            "skipped": 0
+          },
+          "tests.test_runtime_publication_journal_cleanup_regressions": {
+            "collected": 16,
+            "passed": 16,
+            "failed": 0,
+            "skipped": 0
+          },
+          "tests.test_runtime_publication_journal_second_fix": {
+            "collected": 39,
+            "passed": 39,
+            "failed": 0,
+            "skipped": 0
+          }
+        }
+      },
+      "fresh_independent": {
+        "collected": 111,
+        "passed": 111,
+        "failed": 0,
+        "skipped": 0,
+        "by_classname": {
+          "": {
+            "collected": 111,
+            "passed": 111,
+            "failed": 0,
+            "skipped": 0
+          }
+        }
+      }
+    },
+    "final_total": 223,
+    "fresh_observation_counts": {
+      "sole": 5,
+      "primary_close": 16,
+      "external_except": 4,
+      "preallocation": 4,
+      "allocated": 42,
+      "reuse": 2,
+      "process_exit": 2,
+      "restart": 5,
+      "ack": 12,
+      "constructor_normal_close": 16,
+      "bounded_records": 2,
+      "bounded_bytes": 1
+    },
+    "observation_count": 111,
+    "case_counts_verified_from_junit": true,
+    "junit_xml": "/home/otto/.hermes/cache/scratch/journal-second-final-independent-6dwwr_3c/scoped.xml",
+    "journal_coverage": {
+      "summary": {
+        "covered_lines": 213,
+        "num_statements": 217,
+        "percent_covered": 98.15668202764977,
+        "percent_covered_display": "98",
+        "missing_lines": 4,
+        "excluded_lines": 0,
+        "percent_statements_covered": 98.15668202764977,
+        "percent_statements_covered_display": "98"
+      },
+      "missing_lines": [
+        194,
+        279,
+        281,
+        287
+      ],
+      "threshold_unchanged": 85,
+      "json": "/home/otto/.hermes/cache/scratch/journal-second-final-independent-6dwwr_3c/coverage.json"
+    },
+    "results": {
+      "scoped": {
+        "command": [
+          "uv",
+          "run",
+          "--offline",
+          "--frozen",
+          "--no-sync",
+          "pytest",
+          "-p",
+          "no:cacheprovider",
+          "-c",
+          "pyproject.toml",
+          "tests/test_runtime_publication_journal.py",
+          "tests/test_runtime_publication_journal_ack_regressions.py",
+          "tests/test_runtime_publication_journal_cleanup_regressions.py",
+          "tests/test_runtime_publication_journal_second_fix.py",
+          "/home/otto/.hermes/cache/scratch/journal-second-final-independent-6dwwr_3c/test_final_review.py",
+          "/home/otto/.hermes/cache/scratch/journal-second-final-independent-6dwwr_3c/test_extra_review.py",
+          "--basetemp=/home/otto/.hermes/cache/scratch/journal-second-final-independent-6dwwr_3c/final-pytest-tmp",
+          "--junitxml=/home/otto/.hermes/cache/scratch/journal-second-final-independent-6dwwr_3c/scoped.xml",
+          "--cov=robots.adapters.runtime_publication_journal",
+          "--cov-report=term-missing",
+          "--cov-report=json:/home/otto/.hermes/cache/scratch/journal-second-final-independent-6dwwr_3c/coverage.json",
+          "--cov-fail-under=85"
+        ],
+        "exit_code": 0,
+        "seconds": 22.019127804029267,
+        "log": "/home/otto/.hermes/cache/scratch/journal-second-final-independent-6dwwr_3c/scoped.log",
+        "output": "........................................................................ [ 32%]\n........................................................................ [ 64%]\n........................................................................ [ 96%]\n.......                                                                  [100%]\n================================ tests coverage ================================\n_______________ coverage: platform linux, python 3.14.7-final-0 ________________\n\nName                                                 Stmts   Miss  Cover   Missing\n----------------------------------------------------------------------------------\nsrc/robots/adapters/runtime_publication_journal.py     217      4    98%   194, 279, 281, 287\n----------------------------------------------------------------------------------\nTOTAL                                                  217      4    98%\nCoverage JSON written to file /home/otto/.hermes/cache/scratch/journal-second-final-independent-6dwwr_3c/coverage.json\nRequired test coverage of 85% reached. Total coverage: 98.16%\n223 passed in 21.29s\n"
+      },
+      "black": {
+        "command": [
+          "uv",
+          "run",
+          "--offline",
+          "--frozen",
+          "--no-sync",
+          "black",
+          "--check",
+          "src/robots/adapters/runtime_publication_journal.py",
+          "tests/test_runtime_publication_journal.py",
+          "tests/test_runtime_publication_journal_ack_regressions.py",
+          "tests/test_runtime_publication_journal_cleanup_regressions.py",
+          "tests/test_runtime_publication_journal_second_fix.py"
+        ],
+        "exit_code": 0,
+        "seconds": 0.1900302039575763,
+        "log": "/home/otto/.hermes/cache/scratch/journal-second-final-independent-6dwwr_3c/black.log",
+        "output": "All done! \u2728 \ud83c\udf70 \u2728\n5 files would be left unchanged.\n"
+      },
+      "ruff": {
+        "command": [
+          "uv",
+          "run",
+          "--offline",
+          "--frozen",
+          "--no-sync",
+          "ruff",
+          "check",
+          "--no-cache",
+          "src/robots/adapters/runtime_publication_journal.py",
+          "tests/test_runtime_publication_journal.py",
+          "tests/test_runtime_publication_journal_ack_regressions.py",
+          "tests/test_runtime_publication_journal_cleanup_regressions.py",
+          "tests/test_runtime_publication_journal_second_fix.py"
+        ],
+        "exit_code": 0,
+        "seconds": 0.022093440988101065,
+        "log": "/home/otto/.hermes/cache/scratch/journal-second-final-independent-6dwwr_3c/ruff.log",
+        "output": "All checks passed!\n"
+      },
+      "mypy": {
+        "command": [
+          "uv",
+          "run",
+          "--offline",
+          "--frozen",
+          "--no-sync",
+          "mypy",
+          "--cache-dir=/home/otto/.hermes/cache/scratch/journal-second-final-independent-6dwwr_3c/mypy-cache",
+          "src/robots/adapters/runtime_publication_journal.py",
+          "tests/test_runtime_publication_journal.py",
+          "tests/test_runtime_publication_journal_ack_regressions.py",
+          "tests/test_runtime_publication_journal_cleanup_regressions.py",
+          "tests/test_runtime_publication_journal_second_fix.py"
+        ],
+        "exit_code": 0,
+        "seconds": 0.18679789296584204,
+        "log": "/home/otto/.hermes/cache/scratch/journal-second-final-independent-6dwwr_3c/mypy.log",
+        "output": "Success: no issues found in 5 source files\n"
+      },
+      "bandit": {
+        "command": [
+          "uv",
+          "run",
+          "--offline",
+          "--frozen",
+          "--no-sync",
+          "bandit",
+          "-q",
+          "-c",
+          "pyproject.toml",
+          "src/robots/adapters/runtime_publication_journal.py"
+        ],
+        "exit_code": 0,
+        "seconds": 0.17509111802792177,
+        "log": "/home/otto/.hermes/cache/scratch/journal-second-final-independent-6dwwr_3c/bandit.log",
+        "output": ""
+      },
+      "xenon": {
+        "command": [
+          "uv",
+          "run",
+          "--offline",
+          "--frozen",
+          "--no-sync",
+          "xenon",
+          "src/robots/adapters/runtime_publication_journal.py",
+          "--max-absolute",
+          "B",
+          "--max-modules",
+          "B",
+          "--max-average",
+          "A"
+        ],
+        "exit_code": 0,
+        "seconds": 0.21136802597902715,
+        "log": "/home/otto/.hermes/cache/scratch/journal-second-final-independent-6dwwr_3c/xenon.log",
+        "output": ""
+      },
+      "whole_source_R0801": {
+        "command": [
+          "uv",
+          "run",
+          "--offline",
+          "--frozen",
+          "--no-sync",
+          "pylint",
+          "--disable=all",
+          "--enable=duplicate-code",
+          "--ignore-paths=tests",
+          "src"
+        ],
+        "exit_code": 0,
+        "seconds": 2.5918645820347592,
+        "log": "/home/otto/.hermes/cache/scratch/journal-second-final-independent-6dwwr_3c/whole_source_R0801.log",
+        "output": "\n--------------------------------------------------------------------\nYour code has been rated at 10.00/10 (previous run: 10.00/10, +0.00)\n\n"
+      }
+    },
+    "initial_execution": "Initial fresh 78-case harness plus 112 repository cases passed 190/190 before supplementary coverage; logs, JUnit, observations and coverage retained in initial-execution/. Final counts refer only to final 223-case run, not duplicate executions.",
+    "static_source_scan": {
+      "findings": [],
+      "patterns": [
+        "(api_key|secret|password|token|passwd)\\s*=\\s*[\\\"\\'][^\\\"\\']{6,}",
+        "os\\.system\\(",
+        "shell\\s*=\\s*True",
+        "\\beval\\(",
+        "\\bexec\\(",
+        "pickle\\.loads?\\("
+      ],
+      "scope": "Entire untracked journal source read; static tools cover journal + four repository test files. Fresh scratch probes are functional evidence, not proposed production code."
+    },
+    "whole_source_duplicate_scope": "R0801 scanned all src; all 56 Python source hashes stable before/after. This static whole-source capture is not a full-suite, memory-cache review, backend cleanup approval, or integration verdict.",
+    "combined_gate": "Not run by reviewer. Parent owns full configured gate; no audit/native build performed."
+  },
+  "freeze": {
+    "scoped_files_count": 23,
+    "before": {
+      "Taskfile.yml": "63616950e21c15c455c2b6f90be4d588b77f31a62181fd7a93253d164a64a7fd",
+      "flake.lock": "c9c0bac69415b99a29ef3fe149b6f04ef54d291989bdf7218cf819ed52edf2a0",
+      "flake.nix": "185e4a4babf62a40484c347f59653bd11b79ce847316a3a90349c8545d38a359",
+      "pyproject.toml": "e8ae0849a413bc3d705f081f609b92dae702bbd3e491b2c3aeb5d8665c458fba",
+      "run/reviews/runtime-publication-journal-first-fix-review.json": "4128403062f3508d47379b19186f8a429943c7a3ca125c34af98f5f8fd2c5193",
+      "run/reviews/runtime-publication-journal-independent-review.json": "c93d479f2302d5178723ee9aa09fd737b6ceff1fec8da688a2a19a7acee90fca",
+      "run/reviews/runtime-publication-journal-parent-verification.json": "22e85793d01f83829f7ab03f8e2fb812dc542acaaa32451d536251e96f364c6e",
+      "run/reviews/runtime-publication-journal-second-fix.json": "195563d5ba17b95870d3799f144d386c49476cb4e931cd3291f74fea4c485345",
+      "src/robots/__init__.py": "14a8271c90ed669cc0645c2901ba6a3d93345643b7697e87b965b9008f02b6a6",
+      "src/robots/adapters/__init__.py": "0682851ebbbbcccfb31e82a108d69a92193252f3eda2498f893dc078f3a68b1d",
+      "src/robots/adapters/rathena_runtime.py": "0a52cbbae5ec459022c1348e33c65105c8cf0776a6bf68bca05e1066d8c74293",
+      "src/robots/adapters/rathena_runtime_assets.py": "8cf599ddd633c82879d5a6fc0ed2d98f13399e4094262b6bcafb25c9841650fc",
+      "src/robots/adapters/rathena_runtime_io.py": "bc3ca2d291da5d19831bd57f5a794e455a6e9f7870db0f655d376a51de0e6719",
+      "src/robots/adapters/runtime_publication_io.py": "4a7c1c8e794d92c28d9b59ccc69854fb4461e1731ae6ee2ec81db3a00ae6bd8c",
+      "src/robots/adapters/runtime_publication_journal.py": "36f442431254b6b5f8c252bc1eb7c6528755d9e50ef974f17459de1e06e60384",
+      "src/robots/adapters/runtime_tree_sync.py": "2058f33b65ea9cebae8bc3fd07aa78416559c6d4bcb335326b8a166b7053782a",
+      "tests/test_runtime_publication_journal.py": "9586500c50d356417b9f7ff31269b0d64ca00f320d27ef3933d1112c4e1caed0",
+      "tests/test_runtime_publication_journal_ack_regressions.py": "fdca6e9897fc3f2f9f56ec6c015de8c6151a838c668896f694e9fba8c66f836a",
+      "tests/test_runtime_publication_journal_cleanup_regressions.py": "1adc0be80a39ba22772f4d52a56c84d0050e94fd63497e4057f47cb7be3352af",
+      "tests/test_runtime_publication_journal_second_fix.py": "ffe79b989bbeafc02f47f707018a15cebd4961426279b55a2cc3f189e8ce7b6e",
+      "uv.lock": "2d7b4c187078488d7625e4fd4fa982745cab8d6a65b2ff3e382ffa286f1df245",
+      "vulture_whitelist.py": "872286fe8d1fb50ef67cab45cd96e5c2936549f8cbdb4bb31cd292b97617b673",
+      "wiki/guides/runtime-publication-journal.md": "70fe2dad777bcd06070c0631f4050bc9670ec36d1c18ab7faaa6351ed4f6ec5d"
+    },
+    "after": {
+      "Taskfile.yml": "63616950e21c15c455c2b6f90be4d588b77f31a62181fd7a93253d164a64a7fd",
+      "flake.lock": "c9c0bac69415b99a29ef3fe149b6f04ef54d291989bdf7218cf819ed52edf2a0",
+      "flake.nix": "185e4a4babf62a40484c347f59653bd11b79ce847316a3a90349c8545d38a359",
+      "pyproject.toml": "e8ae0849a413bc3d705f081f609b92dae702bbd3e491b2c3aeb5d8665c458fba",
+      "run/reviews/runtime-publication-journal-first-fix-review.json": "4128403062f3508d47379b19186f8a429943c7a3ca125c34af98f5f8fd2c5193",
+      "run/reviews/runtime-publication-journal-independent-review.json": "c93d479f2302d5178723ee9aa09fd737b6ceff1fec8da688a2a19a7acee90fca",
+      "run/reviews/runtime-publication-journal-parent-verification.json": "22e85793d01f83829f7ab03f8e2fb812dc542acaaa32451d536251e96f364c6e",
+      "run/reviews/runtime-publication-journal-second-fix.json": "195563d5ba17b95870d3799f144d386c49476cb4e931cd3291f74fea4c485345",
+      "src/robots/__init__.py": "14a8271c90ed669cc0645c2901ba6a3d93345643b7697e87b965b9008f02b6a6",
+      "src/robots/adapters/__init__.py": "0682851ebbbbcccfb31e82a108d69a92193252f3eda2498f893dc078f3a68b1d",
+      "src/robots/adapters/rathena_runtime.py": "0a52cbbae5ec459022c1348e33c65105c8cf0776a6bf68bca05e1066d8c74293",
+      "src/robots/adapters/rathena_runtime_assets.py": "8cf599ddd633c82879d5a6fc0ed2d98f13399e4094262b6bcafb25c9841650fc",
+      "src/robots/adapters/rathena_runtime_io.py": "bc3ca2d291da5d19831bd57f5a794e455a6e9f7870db0f655d376a51de0e6719",
+      "src/robots/adapters/runtime_publication_io.py": "4a7c1c8e794d92c28d9b59ccc69854fb4461e1731ae6ee2ec81db3a00ae6bd8c",
+      "src/robots/adapters/runtime_publication_journal.py": "36f442431254b6b5f8c252bc1eb7c6528755d9e50ef974f17459de1e06e60384",
+      "src/robots/adapters/runtime_tree_sync.py": "2058f33b65ea9cebae8bc3fd07aa78416559c6d4bcb335326b8a166b7053782a",
+      "tests/test_runtime_publication_journal.py": "9586500c50d356417b9f7ff31269b0d64ca00f320d27ef3933d1112c4e1caed0",
+      "tests/test_runtime_publication_journal_ack_regressions.py": "fdca6e9897fc3f2f9f56ec6c015de8c6151a838c668896f694e9fba8c66f836a",
+      "tests/test_runtime_publication_journal_cleanup_regressions.py": "1adc0be80a39ba22772f4d52a56c84d0050e94fd63497e4057f47cb7be3352af",
+      "tests/test_runtime_publication_journal_second_fix.py": "ffe79b989bbeafc02f47f707018a15cebd4961426279b55a2cc3f189e8ce7b6e",
+      "uv.lock": "2d7b4c187078488d7625e4fd4fa982745cab8d6a65b2ff3e382ffa286f1df245",
+      "vulture_whitelist.py": "872286fe8d1fb50ef67cab45cd96e5c2936549f8cbdb4bb31cd292b97617b673",
+      "wiki/guides/runtime-publication-journal.md": "70fe2dad777bcd06070c0631f4050bc9670ec36d1c18ab7faaa6351ed4f6ec5d"
+    },
+    "changed": [],
+    "whole_source_python_count": 56,
+    "whole_source_changed": [],
+    "whole_source_before": "/home/otto/.hermes/cache/scratch/journal-second-final-independent-6dwwr_3c/whole-source-before.json",
+    "whole_source_after": "/home/otto/.hermes/cache/scratch/journal-second-final-independent-6dwwr_3c/whole-source-after.json",
+    "old_failed_reports_immutable": true,
+    "note": "Includes scoped source/tests, shared helper/runtime backend source, gates/locks/whitelist/guide, original failed reports, parent verification and implementer second-fix report. No unrelated host code is approved."
+  },
+  "evidence": {
+    "scratch_root": "/home/otto/.hermes/cache/scratch/journal-second-final-independent-6dwwr_3c",
+    "fresh_harnesses": [
+      "/home/otto/.hermes/cache/scratch/journal-second-final-independent-6dwwr_3c/test_final_review.py",
+      "/home/otto/.hermes/cache/scratch/journal-second-final-independent-6dwwr_3c/test_extra_review.py"
+    ],
+    "observations": "/home/otto/.hermes/cache/scratch/journal-second-final-independent-6dwwr_3c/observations.jsonl",
+    "artifact_sha256": {
+      "after.json": "dd3edb4b363173203ae8a8d7f31bcfd0118e48d387b75a34a3560d89950efbe5",
+      "bandit.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "before.json": "dd3edb4b363173203ae8a8d7f31bcfd0118e48d387b75a34a3560d89950efbe5",
+      "black.log": "25369eabb8c122f861d58ddb255f81f4b9ee797f42f3882975bef953218258ed",
+      "coverage.json": "cbd8cbafc155065b68506c9ff8032c869d58be73b2fea690f860c03f0b179edf",
+      "execution.json": "3a9149cf6806d25a1c586b055628f29d9bc5bcc79d23de42716dc5b9f54d8f8a",
+      "mypy.log": "e317872697c2cbfdefa321527a6efe73290dff3a390b0fa8723b87092eccba6a",
+      "observations.jsonl": "7f86acc3e3a05c3f6303613b168989dce5f8d8f3e4fa1f2af9b7d286dc2ff587",
+      "publish_review.py": "378fb1098d35e73eeca671ac9f2866f242e4d2317a1eed39e4cddef72f7d602f",
+      "ruff.log": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+      "run_review.py": "31bea57106333b41ff4cfa1935b8c4f28b9bdc7256725c914aa09010f4afce47",
+      "scoped.coverage": "fe571de34393b14fb33e36abe192eb1d8015d41e0935bd980042ef7b309fe020",
+      "scoped.log": "9a5284bdc036cee779991793906989c40044beed637381a8704bc8444681c06f",
+      "scoped.xml": "566ad401049ee39438ed3d14d21e477b8031be03e7e948c557c9c3cca9ece548",
+      "test_extra_review.py": "18154060b3603a776c69fe5a3d08edfeab2676ed3912737858ff32d2ff29226f",
+      "test_final_review.py": "53770451ee2a495910d4fb6d33cb4189a8d82d4a7e1b6df3ff322ebbeae926ad",
+      "whole-source-after.json": "0bc2cd340b9a523982a3ca7992dd0e6bd699fdd23e560c25ca2f678245211c72",
+      "whole-source-before.json": "0bc2cd340b9a523982a3ca7992dd0e6bd699fdd23e560c25ca2f678245211c72",
+      "whole_source_R0801.log": "8cbfc8cd0b04a4858b0b78b74c6df9631a1695e105e6911d4b57fbcc43b218b5",
+      "xenon.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "authority_approval": false,
+  "repair_cycles_already_used": 2,
+  "new_repair_cycles": 0,
+  "files_created_or_modified": [
+    "/home/otto/dev/ro-bots/run/reviews/runtime-publication-journal-second-fix-review.json",
+    "/home/otto/.hermes/cache/scratch/journal-second-final-independent-6dwwr_3c/** (owned new scratch only)"
+  ],
+  "issues_encountered": [],
+  "boundaries": [
+    "No source, repository tests, guides, fixtures, old reports, gates, lock files or whitelist edited; no install, stage, commit, push or whole-private-checkout Nix import.",
+    "No SQL/server/socket/provider/world/native/client/engine/private-human-profile effects. Owned synthetic roots and owned Python child processes only.",
+    "Schema-1 append acknowledgement is not schema-2 receipt, tree commit, fresh workspace construction identity, manager authority, recovery, admission or world launch.",
+    "IO-003 and EARLYCONSTRUCTION remain open; existing startup/reset refusal unchanged. Privileged and hostile same-UID mutation guarantees are excluded; flock concerns cooperative writers only.",
+    "This passed verdict applies only to the hash-frozen scoped snapshot. It grants no process-target cleanup or broader authority and is invalid after dependency changes.",
+    "Maximum two repair cycles already reached; this review makes zero new cycles. Any later defect requires an exact failing frontier and explicit parent/user repair authority, not automatic third repair."
+  ]
+}

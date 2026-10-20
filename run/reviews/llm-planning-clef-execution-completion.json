@@ -1,0 +1,316 @@
+{
+  "status": "PARTIAL_STABLE_CANDIDATE_NOT_ADOPTED",
+  "scope": "run/reviews/llm-planning-clef-execution-completion-scope.json",
+  "source_hashes": {
+    "tests/test_llm_planning_clef_execution.py": "dee2354a6ce3f3def9da740968597ede93ed6093a261d583629302474995b500",
+    "src/robots/app/planning_brain.py": "a489a21b49c109b618bffb19f8db77df5705035848f80c1d6dd072347e8b81fc",
+    "src/robots/app/execution_decisions.py": "c166ae0940e9506775f9d7b7003516a9f30e6aec4127b2539c6f11fbba1fd66e"
+  },
+  "baseline": {
+    "inputs": 349,
+    "protected_unchanged": 346,
+    "changed": [
+      "src/robots/app/planning_brain.py",
+      "src/robots/app/execution_decisions.py",
+      "tests/test_llm_planning_clef_execution.py"
+    ],
+    "freeze": "/home/otto/.hermes/cache/scratch/llm-planning-clef-execution-completion/final-candidate-freeze.json",
+    "freeze_sha256": "de5695e1b23e7296474f2d5e5168a025d14beb022ec258a32f54fbcd14908d20"
+  },
+  "case_accounting": {
+    "baseline_cases_retained": 255,
+    "baseline_missing": [],
+    "final_physical_cases": 282,
+    "final_unique_cases": 282,
+    "added_cases": 27,
+    "final_clef_repository_cases": 39,
+    "final_rest_repository_cases": 20
+  },
+  "selected_final_passing_receipt": "/home/otto/.hermes/cache/scratch/llm-planning-clef-execution-completion/final-refactor-green.xml",
+  "quality": {
+    "black": {
+      "exit_code": 0,
+      "command": [
+        "black",
+        "--check",
+        "--workers",
+        "1",
+        "src",
+        "tests"
+      ]
+    },
+    "ruff": {
+      "exit_code": 0,
+      "command": [
+        "ruff",
+        "check",
+        "--no-cache",
+        "src",
+        "tests"
+      ]
+    },
+    "mypy": {
+      "exit_code": 0,
+      "command": [
+        "mypy",
+        "--cache-dir",
+        "/home/otto/.hermes/cache/scratch/llm-planning-clef-execution-completion/mypy-cache"
+      ]
+    },
+    "vulture": {
+      "exit_code": 0,
+      "command": [
+        "vulture",
+        "src",
+        "vulture_whitelist.py"
+      ]
+    },
+    "xenon": {
+      "exit_code": 0,
+      "command": [
+        "xenon",
+        "src",
+        "--max-absolute",
+        "B",
+        "--max-modules",
+        "B",
+        "--max-average",
+        "A"
+      ]
+    },
+    "duplicate": {
+      "exit_code": 0,
+      "command": [
+        "pylint",
+        "--disable=all",
+        "--enable=duplicate-code",
+        "--ignore-paths=tests",
+        "src"
+      ]
+    },
+    "bandit": {
+      "exit_code": 0,
+      "command": [
+        "bandit",
+        "-q",
+        "-c",
+        "pyproject.toml",
+        "-r",
+        "src"
+      ]
+    }
+  },
+  "original_artifacts_preserved": 13,
+  "immutable_inputs": {
+    "/home/otto/dev/ro-bots/run/reviews/llm-planning-clef-execution.json": "2e88bb1dee79ce8f270ea1dc4bda39d37a53900f7209814da3d16addc577cba4",
+    "/home/otto/dev/ro-bots/run/reviews/llm-planning-clef-execution-parent-partial.json": "f23a95e792fb47bab77465221d62cfcc46842038b65e2627fe9ddaea955fb954",
+    "/home/otto/dev/ro-bots/run/reviews/llm-planning-clef-execution-completion-scope.json": "e888aefbef16ce45e57c7d7833e63977ef5039a799a8eb89a37c5b86b4a2b82f",
+    "/home/otto/.hermes/cache/scratch/llm-planning-clef-execution/test_execution_event.py": "ee26c0bb96110827e2c8181397c6dc5f3d237079deaedd1544d9c210eb03c51f",
+    "/home/otto/.hermes/cache/scratch/llm-planning-clef-execution-completion/test_cleanup_origin.py": "496ed180c505dc4731102cb1ae840bb3bfb4f1cee1a26399b1d85832613a8496"
+  },
+  "artifacts": {
+    "/home/otto/.hermes/cache/scratch/llm-planning-clef-execution-completion/request-red.xml": {
+      "sha256": "e1295cb8a7f3953055fea882003cf339b93f24bf7c7fe9976c9bb13e4ac2b5f8",
+      "testcases": 5,
+      "unique_testcases": 5,
+      "failures": 5,
+      "errors": 0,
+      "skips": 0
+    },
+    "/home/otto/.hermes/cache/scratch/llm-planning-clef-execution-completion/parent-combined-regression.xml": {
+      "sha256": "075a5cbe0cd9e4e99a7b30cac282d7006f224c8a6aaabb0b7dd45a052d465864",
+      "testcases": 255,
+      "unique_testcases": 255,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0
+    },
+    "/home/otto/.hermes/cache/scratch/llm-planning-clef-execution-completion/combined-green.xml": {
+      "sha256": "6e8cebd40fd37b69feaf6e8cfd843b1b395ec08553734558876345e68f90b649",
+      "testcases": 278,
+      "unique_testcases": 278,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0
+    },
+    "/home/otto/.hermes/cache/scratch/llm-planning-clef-execution-completion/parent-cleanup-origin-red.xml": {
+      "sha256": "935383eafbc1a2a36bc6ed48ddad1477865342002cbb56700add767218f27eb3",
+      "testcases": 1,
+      "unique_testcases": 1,
+      "failures": 1,
+      "errors": 0,
+      "skips": 0
+    },
+    "/home/otto/.hermes/cache/scratch/llm-planning-clef-execution-completion/final-refactor-green.xml": {
+      "sha256": "e3a92af277fff16deae5f8bedcc79d97691af5846ed0cae052cf6e5337e9e919",
+      "testcases": 282,
+      "unique_testcases": 282,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0
+    },
+    "/home/otto/.hermes/cache/scratch/llm-planning-clef-execution-completion/final-combined-green.xml": {
+      "sha256": "fff7f79ea203363d383834a5c3b52e1c30bda1cc6baf6addeaf4150567fd199a",
+      "testcases": 282,
+      "unique_testcases": 282,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0
+    },
+    "/home/otto/.hermes/cache/scratch/llm-planning-clef-execution-completion/completion-contracts-green.xml": {
+      "sha256": "a3611748ef6d5871216f4d0b78e38e30f355a3426cc781c5a9aefb644f4af8fc",
+      "testcases": 35,
+      "unique_testcases": 35,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0
+    },
+    "/home/otto/.hermes/cache/scratch/llm-planning-clef-execution-completion/request-green.xml": {
+      "sha256": "b8a1addd1451fb2b9f9238142beaceb9cd5e8b5776cfbb5757125070c0729d27",
+      "testcases": 5,
+      "unique_testcases": 5,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0
+    },
+    "/home/otto/.hermes/cache/scratch/llm-planning-clef-execution-completion/cleanup-reproduced-red.xml": {
+      "sha256": "1579de200a0351491713b5f7dd022ab99594a04897cc272d4ed5675c0e4dbd7b",
+      "testcases": 1,
+      "unique_testcases": 1,
+      "failures": 1,
+      "errors": 0,
+      "skips": 0
+    },
+    "/home/otto/.hermes/cache/scratch/llm-planning-clef-execution-completion/timeout-green.xml": {
+      "sha256": "0570bd55fe997d2beb18171691fca907237262105defb1f322258ce6308287a9",
+      "testcases": 6,
+      "unique_testcases": 6,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0
+    },
+    "/home/otto/.hermes/cache/scratch/llm-planning-clef-execution-completion/source-request-followup.xml": {
+      "sha256": "58b415cbf97810f6ff9a9346993d3c3a622a6161a5732a5e1d5d90da4212bced",
+      "testcases": 9,
+      "unique_testcases": 9,
+      "failures": 1,
+      "errors": 0,
+      "skips": 0
+    },
+    "/home/otto/.hermes/cache/scratch/llm-planning-clef-execution-completion/timeout-red.xml": {
+      "sha256": "97486f7f178939d596257ab84783774a7e222a83101e649d26b2f94618a21d66",
+      "testcases": 6,
+      "unique_testcases": 6,
+      "failures": 3,
+      "errors": 0,
+      "skips": 0
+    },
+    "/home/otto/.hermes/cache/scratch/llm-planning-clef-execution-completion/worker-red.xml": {
+      "sha256": "2ec237a8a28225cfbdb5a18fae184192a7a1ee354aca05e8a43cea926e11320c",
+      "testcases": 10,
+      "unique_testcases": 10,
+      "failures": 4,
+      "errors": 0,
+      "skips": 0
+    },
+    "/home/otto/.hermes/cache/scratch/llm-planning-clef-execution-completion/cleanup-green.xml": {
+      "sha256": "3c0c5f772262ee222c151900fa2a5215d83b88b09a042a4409812a57831c758a",
+      "testcases": 1,
+      "unique_testcases": 1,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0
+    },
+    "/home/otto/.hermes/cache/scratch/llm-planning-clef-execution-completion/source-event-budget-red.xml": {
+      "sha256": "7b8b9f1f898cb2356a5917e5f3673eb8b6eeb2f1138dc96f2b5213d3f2c0b1a8",
+      "testcases": 2,
+      "unique_testcases": 2,
+      "failures": 1,
+      "errors": 0,
+      "skips": 0
+    },
+    "/home/otto/.hermes/cache/scratch/llm-planning-clef-execution-completion/host-client-error-frontier-red.xml": {
+      "sha256": "bf98b54741b5f4ba43e3d1744aecd8bfaff34045086c585ba463b9cb24d45dcb",
+      "testcases": 2,
+      "unique_testcases": 2,
+      "failures": 2,
+      "errors": 0,
+      "skips": 0
+    },
+    "/home/otto/.hermes/cache/scratch/llm-planning-clef-execution-completion/quality-ruff-budget-red.txt": {
+      "sha256": "cf82c5dfa0da60550d5bd4ad5f628c1e76efebe7abe312970fa8a33da87201aa"
+    },
+    "/home/otto/.hermes/cache/scratch/llm-planning-clef-execution-completion/quality-ruff-first.txt": {
+      "sha256": "3c56fba6cc3181805865028f8bafb0032e776a3bb0ca3267512563bb7d4853fd"
+    },
+    "/home/otto/.hermes/cache/scratch/llm-planning-clef-execution-completion/quality-xenon.txt": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "/home/otto/.hermes/cache/scratch/llm-planning-clef-execution-completion/quality-mypy.txt": {
+      "sha256": "93d9f832446e7bcc0bc32263a9022d5d03cadcf85fa5fbe7adf224137999ad2e"
+    },
+    "/home/otto/.hermes/cache/scratch/llm-planning-clef-execution-completion/quality-duplicate-first.txt": {
+      "sha256": "bbb6ffa7d7107b760478161908c009d3b85b078b80d54e3ad8dcd57bfe91a142"
+    },
+    "/home/otto/.hermes/cache/scratch/llm-planning-clef-execution-completion/quality-bandit-first.txt": {
+      "sha256": "2ee20ac6a3a915ff1204f17c53260bcc2ebfb848f37624608d13ddfdf1cc35ff"
+    },
+    "/home/otto/.hermes/cache/scratch/llm-planning-clef-execution-completion/quality-black.txt": {
+      "sha256": "b6eb1d334db3d96650b4aacfc2a47a82d4e989f489e734851d417ed82a290de4"
+    },
+    "/home/otto/.hermes/cache/scratch/llm-planning-clef-execution-completion/quality-vulture-first.txt": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "/home/otto/.hermes/cache/scratch/llm-planning-clef-execution-completion/quality-mypy-first.txt": {
+      "sha256": "af469e2f9215f4c18d70076b341d8f462f1f78f814e4c4ee6c66054ef6127759"
+    },
+    "/home/otto/.hermes/cache/scratch/llm-planning-clef-execution-completion/quality-duplicate.txt": {
+      "sha256": "8cbfc8cd0b04a4858b0b78b74c6df9631a1695e105e6911d4b57fbcc43b218b5"
+    },
+    "/home/otto/.hermes/cache/scratch/llm-planning-clef-execution-completion/quality-vulture.txt": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "/home/otto/.hermes/cache/scratch/llm-planning-clef-execution-completion/quality-ruff.txt": {
+      "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
+    },
+    "/home/otto/.hermes/cache/scratch/llm-planning-clef-execution-completion/quality-bandit.txt": {
+      "sha256": "2ee20ac6a3a915ff1204f17c53260bcc2ebfb848f37624608d13ddfdf1cc35ff"
+    },
+    "/home/otto/.hermes/cache/scratch/llm-planning-clef-execution-completion/quality-xenon-first.txt": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "/home/otto/.hermes/cache/scratch/llm-planning-clef-execution-completion/quality-black-first.txt": {
+      "sha256": "b6eb1d334db3d96650b4aacfc2a47a82d4e989f489e734851d417ed82a290de4"
+    },
+    "/home/otto/.hermes/cache/scratch/llm-planning-clef-execution-completion/quality-xenon-budget-red.txt": {
+      "sha256": "6b3ff416ffb36a21a04f522beef6363a23e65c8275f6ce324bd5d10bcbc626bc"
+    }
+  },
+  "verified": [
+    "Parent actual-host completed KeyboardInterrupt cleanup RED reproduced unchanged, then minimal close propagation GREEN.",
+    "Timeout freshness is evaluated before logical expiration using current execution plan, generation, version, owner, native epoch, map and capabilities; stale timeout does not escalate or impose a new current HOLD.",
+    "Current timeout requests one bounded LLM replan while retaining physical execution ownership; no worker replacement or reconnect before join.",
+    "Ordinary unavailable capture and serialization budget/nonfinite/surrogate errors cause current-version HOLD and quarantine replay, without provider startup or recursive replan.",
+    "Actual captured malformed UTF-8 inventory and nonfinite received actor data fail closed; oversized ScriptFailed payload rejected before capture or event-key retention, without truncation.",
+    "Capture KeyboardInterrupt propagates pointer-identical origin with HOLD, not ordinary-error swallowing.",
+    "Two actual host constructions preserve distinct owner/world/character inventory and private notes in detached bounded requests, excluding late mutations; captured decide callable survives later monkeypatch.",
+    "Known-unsent cancellation prevents decide invocation, but retains physical job until join. Claimed worker close refuses unconfirmed release, attempts client cleanup and blocks reconnect.",
+    "Thread.start before native start releases known-unstarted ownership; after real start retains worker for confirmed join. Ordinary start error becomes HOLD; KeyboardInterrupt propagates exact origin.",
+    "Finished KeyboardInterrupt/SystemExit preserves exact origin/deepest decision frame through host polling and stop, including secondary ordinary PlanningRuntime.close failure; both brain runtimes and client cleanup attempted."
+  ],
+  "chronology": [
+    "cleanup-reproduced-red -> cleanup-green -> timeout-red -> timeout-green -> request-red -> request-green; vertical primary defect sequence.",
+    "worker-red contains reached Thread.start ownership failures and out-of-scope host client-cleanup origin failures; unsent/inflight cancellation were already-green coverage followups, not fabricated RED.",
+    "Source Unicode first followup failed at synthetic journal append, not capture. Corrected fixture supplies invalid inventory to real capture; no journal change. Failure receipt retained.",
+    "Source event oversized payload pre-capture guard reached source-event-budget-red before guard implementation.",
+    "Scope boundary: failing host/client-cleanup origin assertion is preserved in scratch; repository cleanup cases explicitly exercise secondary planning-runtime cleanup, not the unfixed client-error aggregation contract.",
+    "Formatting/refactor quality failures preserved in first/budget-red receipts; unchanged whole-source thresholds pass on final candidate."
+  ],
+  "remaining": [
+    "BLOCKING named cleanup-origin contract: when client cleanup raises ordinary RuntimeError alongside completed decision KeyboardInterrupt/SystemExit, protected agent_runtime._raise_cleanup_errors raises BaseExceptionGroup instead of pointer-identical origin. Two actual-host failures preserved in host-client-error-frontier-red.xml; fixing requires parent-owned host cleanup boundary outside these three files.",
+    "Parent configured full-root check/audit and frozen independent review still required; this is scoped offline contract/whole-project static quality evidence, not adoption or live acceptance."
+  ],
+  "request_failure_policy": "Quarantine failed lifecycle version until a new admitted version provides fresh context. Do not automatically replan through unavailable capture. HOLD suppresses only new SIT request; existing REST pose/barrier reconciliation remains unchanged.",
+  "counter_policy": "Execution decisions counts dispatch attempts; actual decide invocation asserted separately by cancellation tests. Logical timeouts retain job physically.",
+  "effects": "Offline synthetic effect boundaries only; no providers/network/native sessions/services/SQL/Docker/Git/CLI activation or protected source/test writes."
+}

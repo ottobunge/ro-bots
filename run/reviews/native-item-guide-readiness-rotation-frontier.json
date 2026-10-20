@@ -1,0 +1,13 @@
+{
+  "status": "NATIVE_READINESS_ROTATION_FRONTIER_IDENTIFIED",
+  "facts": [
+    "All four owned roles are running with unchanged PIDs (docker state verified).",
+    "Every role's docker log is rotation-empty (0 records), so log-based readiness markers (server-ready, peer-connected) are unavailable.",
+    "validate_role running+maintenance requires operation_healthy True for login/char/map; operation health derives from log markers (facts.ready/peer_marker) plus socket classification — all unavailable, so role_running denies for the three native roles while mariadb (healthcheck-based) passes.",
+    "SQL guarded query and rotation-attributed mariadb inventory now pass; the cycle denies at the first checkpoint's validate_world with zero lifecycle commands."
+  ],
+  "honest_path": "Fresh listener/peer connection evidence via read-only TCP connect probes to the roles' configured loopback ports (16900/16121/15121) plus peer-pair verification, substituted for the rotated log markers under maintenance mode only. Strict mode stays fail-closed.",
+  "world_untouched": true,
+  "lifecycle_commands": 0,
+  "native_authority": "UNCHANGED_REVOKED"
+}

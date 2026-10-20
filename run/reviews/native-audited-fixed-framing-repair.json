@@ -1,0 +1,426 @@
+{
+  "verdict": "offline_framing_repaired_pending_combined_independent_review",
+  "native_acceptance": false,
+  "gameplay_acceptance": false,
+  "full_goal_acceptance": false,
+  "native_effects": false,
+  "authority": {
+    "root": "/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source/src",
+    "flags": [
+      "-DPACKETVER=20180704",
+      "-DPRERE"
+    ],
+    "compiled_profile_macros": [
+      "#define PACKETVER 20180704",
+      "#define PACKETVER_MAIN_NUM PACKETVER",
+      "#define PACKET_OBFUSCATION ",
+      "#define PRERE 1"
+    ],
+    "undefined_verified": [
+      "PACKETVER_RE",
+      "PACKETVER_ZERO",
+      "RENEWAL"
+    ],
+    "obfuscation": "Header support macro defined; runtime obfuscation off is supplied deployment context, not independently re-read here. S->C fixed framing is not C->S key shuffle."
+  },
+  "assumptions": [
+    "Exact pinned MESSAGE_SIZE/TALKBOX_MESSAGE_SIZE guard block substituted for excluded map.hpp only; unrelated ryml_std.hpp dependency remains unavailable. No invented guards/constants.",
+    "Full packet definitions unchanged; common/mmo constants provided by actual pinned includes.",
+    "Emitter preprocessing is pinned audit evidence, not a full server build or observed scenario.",
+    "No protocol completeness or mandatory-real-run claim; 009D collector semantics separate."
+  ],
+  "source_delta": {
+    "before_sha256": "40e99900dfde77bca0595075a76bb0dd4f791c381500fb88cb3c37c9fe84efe6",
+    "after_sha256": "89a3630ad446e06a1b1128bf96e0b6263874858311be3f529204e4818c5f8e31",
+    "all_19_function_asts_unchanged": true,
+    "all_existing_registry_entries_unchanged": true,
+    "only_14_expected_new_PACKET_DB_and_NAMES_entries": true
+  },
+  "vertical_tdd": [
+    {
+      "id": "0x0111",
+      "size": 39,
+      "name": "ZC_ADD_SKILL",
+      "red": 1,
+      "green": 0,
+      "red_evidence": "/home/otto/.hermes/cache/scratch/audited-fixed-repair/00-red.txt",
+      "green_evidence": "/home/otto/.hermes/cache/scratch/audited-fixed-repair/00-green.txt"
+    },
+    {
+      "id": "0x0139",
+      "size": 16,
+      "name": "ZC_ATTACK_FAILURE_FOR_DISTANCE",
+      "red": 1,
+      "green": 0,
+      "red_evidence": "/home/otto/.hermes/cache/scratch/audited-fixed-repair/01-red.txt",
+      "green_evidence": "/home/otto/.hermes/cache/scratch/audited-fixed-repair/01-green.txt"
+    },
+    {
+      "id": "0x0AB2",
+      "size": 7,
+      "name": "ZC_GROUP_ISALIVE",
+      "red": 1,
+      "green": 0,
+      "red_evidence": "/home/otto/.hermes/cache/scratch/audited-fixed-repair/02-red.txt",
+      "green_evidence": "/home/otto/.hermes/cache/scratch/audited-fixed-repair/02-green.txt"
+    },
+    {
+      "id": "0x009D",
+      "size": 17,
+      "name": "ZC_ITEM_ENTRY",
+      "red": 1,
+      "green": 0,
+      "red_evidence": "/home/otto/.hermes/cache/scratch/audited-fixed-repair/03-red.txt",
+      "green_evidence": "/home/otto/.hermes/cache/scratch/audited-fixed-repair/03-green.txt"
+    },
+    {
+      "id": "0x02B8",
+      "size": 22,
+      "name": "ZC_ITEM_PICKUP_PARTY",
+      "red": 1,
+      "green": 0,
+      "red_evidence": "/home/otto/.hermes/cache/scratch/audited-fixed-repair/04-red.txt",
+      "green_evidence": "/home/otto/.hermes/cache/scratch/audited-fixed-repair/04-green.txt"
+    },
+    {
+      "id": "0x0117",
+      "size": 18,
+      "name": "ZC_NOTIFY_GROUNDSKILL",
+      "red": 1,
+      "green": 0,
+      "red_evidence": "/home/otto/.hermes/cache/scratch/audited-fixed-repair/05-red.txt",
+      "green_evidence": "/home/otto/.hermes/cache/scratch/audited-fixed-repair/05-green.txt"
+    },
+    {
+      "id": "0x0ABD",
+      "size": 10,
+      "name": "ZC_NOTIFY_MEMBERINFO_TO_GROUPM",
+      "red": 1,
+      "green": 0,
+      "red_evidence": "/home/otto/.hermes/cache/scratch/audited-fixed-repair/06-red.txt",
+      "green_evidence": "/home/otto/.hermes/cache/scratch/audited-fixed-repair/06-green.txt"
+    },
+    {
+      "id": "0x0441",
+      "size": 4,
+      "name": "ZC_SKILLINFO_DELETE",
+      "red": 1,
+      "green": 0,
+      "red_evidence": "/home/otto/.hermes/cache/scratch/audited-fixed-repair/07-red.txt",
+      "green_evidence": "/home/otto/.hermes/cache/scratch/audited-fixed-repair/07-green.txt"
+    },
+    {
+      "id": "0x010E",
+      "size": 11,
+      "name": "ZC_SKILLINFO_UPDATE",
+      "red": 1,
+      "green": 0,
+      "red_evidence": "/home/otto/.hermes/cache/scratch/audited-fixed-repair/08-red.txt",
+      "green_evidence": "/home/otto/.hermes/cache/scratch/audited-fixed-repair/08-green.txt"
+    },
+    {
+      "id": "0x07E1",
+      "size": 15,
+      "name": "ZC_SKILLINFO_UPDATE2",
+      "red": 1,
+      "green": 0,
+      "red_evidence": "/home/otto/.hermes/cache/scratch/audited-fixed-repair/09-red.txt",
+      "green_evidence": "/home/otto/.hermes/cache/scratch/audited-fixed-repair/09-green.txt"
+    },
+    {
+      "id": "0x0120",
+      "size": 6,
+      "name": "ZC_SKILL_DISAPPEAR",
+      "red": 1,
+      "green": 0,
+      "red_evidence": "/home/otto/.hermes/cache/scratch/audited-fixed-repair/10-red.txt",
+      "green_evidence": "/home/otto/.hermes/cache/scratch/audited-fixed-repair/10-green.txt"
+    },
+    {
+      "id": "0x043D",
+      "size": 8,
+      "name": "ZC_SKILL_POSTDELAY",
+      "red": 1,
+      "green": 0,
+      "red_evidence": "/home/otto/.hermes/cache/scratch/audited-fixed-repair/11-red.txt",
+      "green_evidence": "/home/otto/.hermes/cache/scratch/audited-fixed-repair/11-green.txt"
+    },
+    {
+      "id": "0x07FB",
+      "size": 25,
+      "name": "ZC_USESKILL_ACK",
+      "red": 1,
+      "green": 0,
+      "red_evidence": "/home/otto/.hermes/cache/scratch/audited-fixed-repair/12-red.txt",
+      "green_evidence": "/home/otto/.hermes/cache/scratch/audited-fixed-repair/12-green.txt"
+    },
+    {
+      "id": "0x09CB",
+      "size": 17,
+      "name": "ZC_USE_SKILL",
+      "red": 1,
+      "green": 0,
+      "red_evidence": "/home/otto/.hermes/cache/scratch/audited-fixed-repair/13-red.txt",
+      "green_evidence": "/home/otto/.hermes/cache/scratch/audited-fixed-repair/13-green.txt"
+    }
+  ],
+  "compiler_proof": [
+    {
+      "id": "0x0111",
+      "size": 39,
+      "name": "ZC_ADD_SKILL",
+      "definition": "struct PACKET_ZC_ADD_SKILL {\n int16 packetType;\n struct SKILLDATA skill;\n} __attribute__",
+      "direct_active_sizeof_senders": [
+        "clif_addskill"
+      ],
+      "runtime_required_proof": false
+    },
+    {
+      "id": "0x0139",
+      "size": 16,
+      "name": "ZC_ATTACK_FAILURE_FOR_DISTANCE",
+      "definition": "struct PACKET_ZC_ATTACK_FAILURE_FOR_DISTANCE {\n int16 PacketType;\n uint32 targetAID;\n int16 targetXPos;\n int16 targetYPos;\n int16 xPos;\n int16 yPos;\n int16 currentAttRange;\n} __attribute__",
+      "direct_active_sizeof_senders": [
+        "clif_movetoattack"
+      ],
+      "runtime_required_proof": false
+    },
+    {
+      "id": "0x0AB2",
+      "size": 7,
+      "name": "ZC_GROUP_ISALIVE",
+      "definition": "struct PACKET_ZC_GROUP_ISALIVE {\n int16 packetType;\n uint32 AID;\n uint8 isDead;\n} __attribute__",
+      "direct_active_sizeof_senders": [
+        "clif_party_dead"
+      ],
+      "runtime_required_proof": false
+    },
+    {
+      "id": "0x009D",
+      "size": 17,
+      "name": "ZC_ITEM_ENTRY",
+      "definition": "struct PACKET_ZC_ITEM_ENTRY {\n int16 packetType;\n uint32 AID;\n\n\n\n uint16 itemId;\n\n uint8 identify;\n uint16 x;\n uint16 y;\n uint16 amount;\n uint8 subX;\n uint8 subY;\n} __attribute__",
+      "direct_active_sizeof_senders": [
+        "clif_getareachar_item"
+      ],
+      "runtime_required_proof": false
+    },
+    {
+      "id": "0x02B8",
+      "size": 22,
+      "name": "ZC_ITEM_PICKUP_PARTY",
+      "definition": "struct PACKET_ZC_ITEM_PICKUP_PARTY {\n int16 packetType;\n uint32 AID;\n\n\n\n uint16 itemId;\n\n uint8 identified;\n uint8 damaged;\n uint8 refine;\n struct EQUIPSLOTINFO slot;\n uint16 location;\n uint8 itemType;\n} __attribute__",
+      "direct_active_sizeof_senders": [
+        "clif_party_show_picker"
+      ],
+      "runtime_required_proof": false
+    },
+    {
+      "id": "0x0117",
+      "size": 18,
+      "name": "ZC_NOTIFY_GROUNDSKILL",
+      "definition": "struct PACKET_ZC_NOTIFY_GROUNDSKILL {\n int16 PacketType;\n uint16 SKID;\n uint32 AID;\n int16 level;\n int16 xPos;\n int16 yPos;\n uint32 startTime;\n} __attribute__",
+      "direct_active_sizeof_senders": [
+        "clif_skill_poseffect"
+      ],
+      "runtime_required_proof": false
+    },
+    {
+      "id": "0x0ABD",
+      "size": 10,
+      "name": "ZC_NOTIFY_MEMBERINFO_TO_GROUPM",
+      "definition": "struct PACKET_ZC_NOTIFY_MEMBERINFO_TO_GROUPM {\n int16 PacketType;\n int AID;\n int16 job;\n int16 level;\n} __attribute__",
+      "direct_active_sizeof_senders": [
+        "clif_party_job_and_level"
+      ],
+      "runtime_required_proof": false
+    },
+    {
+      "id": "0x0441",
+      "size": 4,
+      "name": "ZC_SKILLINFO_DELETE",
+      "definition": "struct PACKET_ZC_SKILLINFO_DELETE {\n uint16 packetType;\n uint16 skillID;\n} __attribute__",
+      "direct_active_sizeof_senders": [
+        "clif_deleteskill"
+      ],
+      "runtime_required_proof": false
+    },
+    {
+      "id": "0x010E",
+      "size": 11,
+      "name": "ZC_SKILLINFO_UPDATE",
+      "definition": "struct PACKET_ZC_SKILLINFO_UPDATE{\n uint16 packetType;\n uint16 skillId;\n uint16 level;\n uint16 sp;\n uint16 range2;\n bool upFlag;\n} __attribute__",
+      "direct_active_sizeof_senders": [
+        "clif_skillup"
+      ],
+      "runtime_required_proof": false
+    },
+    {
+      "id": "0x07E1",
+      "size": 15,
+      "name": "ZC_SKILLINFO_UPDATE2",
+      "definition": "struct PACKET_ZC_SKILLINFO_UPDATE2 {\n int16 packetType;\n uint16 id;\n int32 inf;\n uint16 level;\n uint16 sp;\n uint16 range2;\n uint8 upFlag;\n} __attribute__",
+      "direct_active_sizeof_senders": [
+        "clif_skillinfo"
+      ],
+      "runtime_required_proof": false
+    },
+    {
+      "id": "0x0120",
+      "size": 6,
+      "name": "ZC_SKILL_DISAPPEAR",
+      "definition": "struct PACKET_ZC_SKILL_DISAPPEAR {\n int16 packetType;\n uint32 GID;\n} __attribute__",
+      "direct_active_sizeof_senders": [
+        "clif_clearchar_skillunit",
+        "clif_skill_delunit"
+      ],
+      "runtime_required_proof": false
+    },
+    {
+      "id": "0x043D",
+      "size": 8,
+      "name": "ZC_SKILL_POSTDELAY",
+      "definition": "struct PACKET_ZC_SKILL_POSTDELAY {\n int16 PacketType;\n uint16 SKID;\n uint32 DelayTM;\n} __attribute__",
+      "direct_active_sizeof_senders": [
+        "clif_skill_cooldown"
+      ],
+      "runtime_required_proof": false
+    },
+    {
+      "id": "0x07FB",
+      "size": 25,
+      "name": "ZC_USESKILL_ACK",
+      "definition": "struct PACKET_ZC_USESKILL_ACK {\n int16 packetType;\n uint32 srcId;\n uint32 dstId;\n uint16 x;\n uint16 y;\n uint16 skillId;\n uint32 element;\n uint32 delayTime;\n uint8 disposable;\n} __attribute__",
+      "direct_active_sizeof_senders": [
+        "clif_skillcasting"
+      ],
+      "runtime_required_proof": false
+    },
+    {
+      "id": "0x09CB",
+      "size": 17,
+      "name": "ZC_USE_SKILL",
+      "definition": "struct PACKET_ZC_USE_SKILL {\n int16 PacketType;\n uint16 SKID;\n int32 level;\n uint32 targetAID;\n uint32 srcAID;\n int8 result;\n} __attribute__",
+      "direct_active_sizeof_senders": [
+        "clif_skill_nodamage"
+      ],
+      "runtime_required_proof": false
+    }
+  ],
+  "oracle_output": "ZC_ADD_SKILL 273 39\nZC_ATTACK_FAILURE_FOR_DISTANCE 313 16\nZC_GROUP_ISALIVE 2738 7\nZC_ITEM_ENTRY 157 17\nZC_ITEM_PICKUP_PARTY 696 22\nZC_NOTIFY_GROUNDSKILL 279 18\nZC_NOTIFY_MEMBERINFO_TO_GROUPM 2749 10\nZC_SKILLINFO_DELETE 1089 4\nZC_SKILLINFO_UPDATE 270 11\nZC_SKILLINFO_UPDATE2 2017 15\nZC_SKILL_DISAPPEAR 288 6\nZC_SKILL_POSTDELAY 1085 8\nZC_USESKILL_ACK 2043 25\nZC_USE_SKILL 2507 17\n",
+  "artifact_hashes": {
+    "/home/otto/.hermes/cache/scratch/audited-fixed-repair/oracle/packets-extract.hpp": "48a4b28cc04a4a63058aa147628f525913e3ea963691a9023872464a34d281cb",
+    "/home/otto/.hermes/cache/scratch/audited-fixed-repair/oracle/active-header.i": "73c6aad93a093bbe9afec245337bf06fd457ecb14ba2f6c1babc47dc9dfdda97",
+    "/home/otto/.hermes/cache/scratch/audited-fixed-repair/oracle/sizes.txt": "efce6ff752ac41addd6db2680950f84c9379137e691e2bd26b48c301c38c3bfc",
+    "/home/otto/.hermes/cache/scratch/audited-fixed-repair/oracle/oracle.cpp": "88517a8c952303359610029fa4d230dc176e154b56db0e2ebf6c92308a7476d5",
+    "/home/otto/.hermes/cache/scratch/audited-fixed-repair/oracle/oracle": "d6d3dd3a75f3d3dce5bdb901e0e5e98c2273ac92df379b85008f8e0db17e42f2"
+  },
+  "audit_evidence_hashes": {
+    "/home/otto/.hermes/cache/scratch/fixed-sender-audit/packetdb-before.py": "db55d456de1f848dae44a05f62e4c7aa892c0f2206c33fd7284e2a9a9032921b",
+    "/home/otto/.hermes/cache/scratch/fixed-sender-audit/active-header.i": "d11630e5f9bd25cf31d77e2792bc05ed07f672d152ff74951521301184bdd387",
+    "/home/otto/.hermes/cache/scratch/fixed-sender-audit/active-emitter.i": "93afb9a96348dcbe5af6b3b7b679eb6854f50bf4adf4eaf4f62cb41af0dc33f6",
+    "/home/otto/.hermes/cache/scratch/fixed-sender-audit/inventory.cpp": "87df9f76decbffb7b5f399c6690ad8baf935276603a30cdf28e5eb3427b0d892",
+    "/home/otto/.hermes/cache/scratch/fixed-sender-audit/inventory": "27045d0c5730df3ddba3529ca481da016044f0095139eb39ab9a46c71ba58936",
+    "/home/otto/.hermes/cache/scratch/fixed-sender-audit/sizes.txt": "862b4bfd580fa8c8cc726e216e8c6d1fbc66e919289768bc6795d59293f60d42",
+    "/home/otto/.hermes/cache/scratch/fixed-sender-audit/offsets.cpp": "a5bb9456f792b7901d916a5b688d33b4965c3c2e584364abe54be11d458a0be7",
+    "/home/otto/.hermes/cache/scratch/fixed-sender-audit/offsets": "c2adc79c881bf6c42de1a3a49ae5dc756b76f69fe1abe693ff2f9ca2cca76b3b",
+    "/home/otto/.hermes/cache/scratch/fixed-sender-audit/offsets.txt": "d632dc0d68655dd340e56176be7e7284b9ace47b3b7c9a83219a4529adc5d05a"
+  },
+  "protected_dependencies": {
+    "/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source/src/map/clif.cpp": "0b1db098158c240b090c6edb8417978ba495957c8a2df4cd9a0ab4cb39884ac5",
+    "/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source/src/map/packets.hpp": "b4959224a48e1febb811d7c1474f2c1b703d324ae4db7e3a1053a85b80da57bc",
+    "/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source/src/map/packets_struct.hpp": "5ab5ef13d2a1cdc60d84dcaf2e3be0b6e316b9630e61c3ac7ba0f930d4d31287",
+    "/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source/src/map/clif_packetdb.hpp": "51c8a9ebd591e0dd4f444f829253a14d449615425405cb8a95f28a6dea460e66",
+    "/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source/src/map/clif_shuffle.hpp": "befba011ca4b2d1186c16fba325a7240a4ff5375e252d2fb4cc62d503c66d2a0",
+    "/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source/src/common/packets.hpp": "c92279bf163e9546b649397638c19e57c3eb515b49e841c13f88a5fb97bba693",
+    "/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source/src/common/mmo.hpp": "883ec2048b726d51f897218989ca66c476bcdbc969d683025fe09a0bf280fa6d",
+    "/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source/src/config/packets.hpp": "180f7ddaf5c978af0db7ed26215388265d51f59957ac7173d617870e2cc0964d",
+    "/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source/src/config/core.hpp": "ba04ee9f32d9d334f59b345326105864ddc5fed296ebbaf9d599c26e48aea7ae",
+    "/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source/src/custom/defines_pre.hpp": "5869f323357e51017732bb8db2901f2de53fc5d19f27fb89706b15dc5f1dce7f",
+    "/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source/src/custom/defines_post.hpp": "1426910d5f3a91bac9b0ed5bbd6083cfec0bb48e09c56637c509a86dab2407c0",
+    "/home/otto/dev/ro-bots/spikes/003-clientless-limbs/client.py": "2f57a0adc0b43a20235835290499ca0043966c5def208642598afb0dc49807fd",
+    "/home/otto/dev/ro-bots/src/robots/adapters/native_gameplay.py": "c7e9f16750bf117ba3a4843264e215d2e653c0376c70acd7ac45e00a6b2100f9",
+    "/home/otto/dev/ro-bots/flake.nix": "185e4a4babf62a40484c347f59653bd11b79ce847316a3a90349c8545d38a359",
+    "/home/otto/dev/ro-bots/flake.lock": "c9c0bac69415b99a29ef3fe149b6f04ef54d291989bdf7218cf819ed52edf2a0",
+    "/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source/src/map/map.hpp": "1cb428d1145ec9c4045b2ae58c163be24bf1bd374fc8eea07eaf0c266621fe2b",
+    "/home/otto/dev/ro-bots/nix/playable-world/flake.nix": "abf784d2fa46c2ed46c71f5d1dad0fcea158deca34c20c3d8aa9ee1fc3f23be2",
+    "/home/otto/dev/ro-bots/nix/playable-world/flake.lock": "c9c0bac69415b99a29ef3fe149b6f04ef54d291989bdf7218cf819ed52edf2a0",
+    "/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source/src/common/cbasetypes.hpp": "5ae18835ab3374a4ed613c613d2f65be8ea1fdd35c2194b84ce3f6d23f58a007",
+    "/home/otto/dev/ro-bots/src/robots/app/playing_runtime.py": "01bef70ffafba860d43c7e9a4b91f91ac0e4271f55cab01b44229903b0103ff6",
+    "/home/otto/dev/ro-bots/src/robots/app/brain.py": "c4e644fde9780af4f650564edb4115727c95132e39825f0e4c5037f935442777",
+    "/home/otto/dev/ro-bots/tests/test_brain.py": "14b41aa10bd612c54e538a7d9b998a848c5d89db061e57947a1eaa057f716fa4"
+  },
+  "dependency_drift": {},
+  "verification": {
+    "junit": "/home/otto/.hermes/cache/scratch/audited-fixed-repair/final-regressions.xml",
+    "counts": {
+      "tests": 243,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "physical_tests_by_module": {
+      "tests.test_native_audited_fixed_framing": 33,
+      "tests.test_native_stopmove_framing": 11,
+      "tests.test_native_name_reply_framing": 6,
+      "tests.test_native_tick_reply": 14,
+      "tests.test_client_protocol": 42,
+      "tests.test_playing_packet_framing": 11,
+      "tests.test_native_gameplay": 82,
+      "tests.test_protocol_rereview_repairs": 31,
+      "tests.test_packet_conditions.ConditionTests": 6,
+      "tests.test_packet_conditions.DirectiveTests": 4,
+      "tests.test_packet_conditions.NativeCreationTests": 3
+    },
+    "owned_black": 0,
+    "owned_ruff": 0,
+    "owned_fresh_mypy": 0,
+    "subtest_loops": {
+      "per_family_every_split": true,
+      "bytewise": true,
+      "every_incomplete_fixed_prefix": true,
+      "coalesced_and_repeated_mixed_damage9FD_name_clock_stop": true,
+      "unknown_FAFA_contextual_rejection": true,
+      "reader_SELF_disguise_peer_NPC": true
+    },
+    "legacy_debt_not_waived": {
+      "client_ruff": 46,
+      "client_mypy": 13,
+      "packetdb_mypy": 2
+    },
+    "subtest_execution_counts": {
+      "every_split_checks": 9946,
+      "bytewise_feed_checks": 9932,
+      "truncation_checks": 201,
+      "reassembly_checks": 201,
+      "unknown_id_checks": 14
+    },
+    "quality_evidence": "/home/otto/.hermes/cache/scratch/audited-fixed-repair/quality.json"
+  },
+  "boundaries": {
+    "position_arrival_class_life_party_XP_skill_inventory_promotion_added": false,
+    "0088_does_not_bypass_fresh_matching_0087_barrier": true,
+    "name_does_not_classify_actor": true
+  },
+  "issues": [
+    "Requested uv --offline --no-sync global option is invalid in pinned uv; used supported uv --offline run --no-sync with UV_OFFLINE=1 UV_NO_SYNC=1.",
+    "Tool batching reached 50-call limit after 10 slices; no failing-test bypass, remaining four RED/GREEN slices resumed and retained.",
+    "Initial owned Black check requested formatting; formatted only owned new test and passed final check."
+  ],
+  "remaining": [
+    "Parent combined independent review and whole-suite gate on completed frozen snapshot.",
+    "No native activation or live acceptance authorized."
+  ],
+  "compiler_command": [
+    "g++",
+    "-DPACKETVER=20180704",
+    "-DPRERE",
+    "-I/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source/src",
+    "-I/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source/src/map",
+    "/home/otto/.hermes/cache/scratch/audited-fixed-repair/oracle/oracle.cpp",
+    "-o",
+    "/home/otto/.hermes/cache/scratch/audited-fixed-repair/oracle/oracle"
+  ],
+  "compiler_path": "/nix/store/j1938gsbvbhkyz4kbmvjk56r479mkw3s-gcc-wrapper-16.2.0/bin/g++",
+  "owned_test_sha256": "1742ae42d4aa165bc6e9632e9a302eb35ac3983a03dc7db3e9f01eedd0d4f64f"
+}

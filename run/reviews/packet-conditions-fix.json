@@ -1,0 +1,138 @@
+{
+  "task": "packetdb strict condition/directive review blockers and native character creation framing",
+  "status": "scoped implementation complete; independent parent re-review still required",
+  "repo": "/home/otto/dev/ro-bots",
+  "modified_files": [
+    "spikes/003-clientless-limbs/packetdb.py"
+  ],
+  "created_files": [
+    "tests/test_packet_conditions.py",
+    "run/reviews/packet-conditions-fix.json"
+  ],
+  "scope_respected": {
+    "no_other_source_edits": true,
+    "no_staging_commits_push": true,
+    "no_database_server_provider_calls": true,
+    "no_native_connections": true,
+    "dependencies_commands": "nix develop only; uv run uses project dependencies"
+  },
+  "changes": [
+    "Replaced unrestricted eval and fail-open exception fallback with strict recursive-descent C guard subset.",
+    "Support macro identifiers, defined(NAME)/defined NAME, decimal/hex/octal integer operands, unary signs, comparisons, parentheses, &&/||/! with C precedence. Reject calls, imports, builtin identifiers, attributes, unknown numeric macros, unsupported arithmetic/bitwise operators, suffixes and increment/decrement. Validate both boolean operands even if unreachable.",
+    "Track outer activity, previous matches, current branch and else state independently. Reject unmatched/duplicate/unterminated/malformed/unsupported directives with path and line context, including inactive branches. Support include guards, integer/empty flag definitions, undef, pinned packet registration macro definitions, and comments.",
+    "Native profile is PACKETVER=20180704 MAIN/pre-re, from config.log flags and compiler-preprocessed actual headers, not default 20211103 RE. Empty flag replacements are not silently numeric truthy values.",
+    "Registered native CH_MAKE_CHAR 0x0A39=36; corrected HC_ACCEPT_MAKECHAR 0x006D=157 (CHARACTER_INFO=155); verified HC_REFUSE_MAKECHAR 0x006E=3.",
+    "Self-test accounts explicitly for raw numeric registrations shadowed by verified native struct/final shuffle lengths; checks both raw and embedded lengths instead of blanket exclusions.",
+    "Added offline compiler oracle using actual CPPFLAGS from config.log; compiler verifies MAIN/pre-re and native creation IDs/sizes and its 820-entry numeric table exactly equals derive_table(). Exported pack/parse_stream/length_of APIs and implementations remain compatible."
+  ],
+  "native_provenance": {
+    "rathena_commit": "e985006171d2eb320ee512a653f4c83aea3d81b6",
+    "flags": "config.log CPPFLAGS: -DPACKETVER=20180704 -DPRERE",
+    "headers": [
+      "src/config/core.hpp",
+      "src/config/packets.hpp",
+      "src/custom/defines_pre.hpp",
+      "src/custom/defines_post.hpp",
+      "src/common/packets.hpp",
+      "src/map/clif_packetdb.hpp",
+      "src/map/clif_shuffle.hpp"
+    ],
+    "compiler_macro_evidence": "g++ -E -dM: PACKETVER=20180704, PACKETVER_MAIN_NUM=PACKETVER, PRERE=1; PACKETVER_RE/RE_NUM/ZERO/ZERO_NUM/RENEWAL absent; PACKET_OBFUSCATION/WARN empty defined flags.",
+    "compiler_size_output": "2617 36 155 109 157 110 3 (request ID/size; CHARACTER_INFO; success ID/size; failure ID/size)",
+    "raw_numeric_shadow_lengths": {
+      "0x006D": [
+        149,
+        157
+      ],
+      "0x035F": [
+        6,
+        5
+      ],
+      "0x0437": [
+        5,
+        7
+      ]
+    }
+  },
+  "tdd_observed_cycles": [
+    {
+      "red": "malicious/unsupported expressions: 11 assertion failures",
+      "green": "1 new test + 7 old regressions"
+    },
+    {
+      "red": "native date 20211103 != 20180704",
+      "green": "3 new tests + 7 old"
+    },
+    {
+      "red": "elif table selected 7/8 instead of first matching 5/7",
+      "green": "4 new tests + 7 old"
+    },
+    {
+      "red": "malformed directives: 10 assertion failures, 3 IndexErrors from implementation",
+      "green": "5 new tests + 7 old"
+    },
+    {
+      "red": "include guard and pinned header unsupported #ifndef",
+      "green": "7 new tests + 7 old; corrected initial validation expectation to raw pre-shuffle sizes after reading pinned source"
+    },
+    {
+      "red": "native request length 2 != 36",
+      "green": "8 new tests + 7 old"
+    },
+    {
+      "red": "empty flag numeric accepted, signed operand unsupported (1 failure + 4 expected ValueErrors)",
+      "green": "10 new tests + 7 old"
+    },
+    {
+      "red": "self-test rejects 3 intentional native shadow registrations",
+      "green": "11 new tests + 7 old"
+    },
+    {
+      "validation": "compiler oracle passes: exact profile, packet sizeof values and numeric table comparison"
+    },
+    {
+      "red": "++1, --1 and unterminated block comment accepted (3 assertion failures)",
+      "green": "12 new tests + 7 old"
+    },
+    {
+      "validation": "additional malicious guard side-effect marker remains absent; final 13 new + 7 existing tests pass"
+    }
+  ],
+  "verification_results": [
+    {
+      "command": "nix develop -c uv run pytest -o addopts= -q tests/test_packet_conditions.py spikes/003-clientless-limbs/test_packetdb.py",
+      "output": "warning: Git tree '/home/otto/dev/ro-bots' is dirty\nro-bots dev shell \u2014 try: task --list\n....................                                                            [100%]\n20 passed, 65 subtests passed in 0.75s",
+      "exit_code": 0,
+      "error": null
+    },
+    {
+      "command": "nix develop -c python3 spikes/003-clientless-limbs/packetdb.py",
+      "output": "warning: Git tree '/home/otto/dev/ro-bots' is dirty\nro-bots dev shell \u2014 try: task --list\npacketdb self-test: 820 ids derived, 864 embedded, mismatches=0",
+      "exit_code": 0,
+      "error": null
+    },
+    {
+      "command": "nix develop -c ruff check --select E9,F63,F7,F82 tests/test_packet_conditions.py spikes/003-clientless-limbs/packetdb.py",
+      "output": "warning: Git tree '/home/otto/dev/ro-bots' is dirty\nro-bots dev shell \u2014 try: task --list\nAll checks passed!",
+      "exit_code": 0,
+      "error": null
+    },
+    {
+      "command": "git diff --check; git -C rathena rev-parse HEAD; sha256sum spikes/003-clientless-limbs/packetdb.py tests/test_packet_conditions.py; date -Iseconds",
+      "output": "e985006171d2eb320ee512a653f4c83aea3d81b6\nf7e022155ce3c4da2bb28ad6f55ffc35ecf2fd9f29462ebbe39c40dade012444  spikes/003-clientless-limbs/packetdb.py\nf8d63150120bf23bb8d37d06ee98ee1b316c67951c743bbf6b1f109d191aebad  tests/test_packet_conditions.py\n2026-10-05T11:59:43+02:00",
+      "exit_code": 0,
+      "error": null
+    }
+  ],
+  "issues_encountered": [
+    "nix develop python3 alone has no pytest module; used stdlib unittest for incremental RED/GREEN, then nix develop -c uv run pytest for project-integrated final validation.",
+    "Initial compiler probe needed rathena/3rdparty/libconfig include path; fixed probe and permanent oracle; no source/header/toolchain hacks.",
+    "Raw clif_packetdb.hpp movement/action lengths are pre-shuffle 6/5; final runtime sizes remain 5/7. Tests distinguish raw derivation from final overrides.",
+    "Full broad Ruff check reports style findings (exception-message conventions, function complexity, unittest-vs-pytest assertions and inherited spike conventions). No broad lint-clean claim; focused syntax/error checks pass."
+  ],
+  "frontier": [
+    "This is a scoped fix, not full native regeneration of inherited 20211103 snapshot. Unrelated modern IDs/struct sizes remain historical entries outside this task.",
+    "The parser intentionally implements a strict subset, not all C preprocessor features. Includes, arbitrary function macros, arithmetic/bitwise/ternary operators, integer suffixes, macro replacement expressions and directive continuations are rejected rather than assumed true.",
+    "No live acceptance attempted or claimed. No full unrelated repository suite run; parent must independently re-review."
+  ]
+}

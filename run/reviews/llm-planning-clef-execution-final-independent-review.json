@@ -1,0 +1,176 @@
+{
+  "status": "PASS_FINAL_FROZEN_OFFLINE_EXECUTION_CONTROL_AND_NAMED_HOST_CLEANUP",
+  "passed": true,
+  "security_concerns": [],
+  "logic_errors": [],
+  "quality_errors": [],
+  "suggestions": [],
+  "summary": "Independent current-snapshot source review and real offline AgentHost probes pass; no repairs or live effects.",
+  "freeze": {
+    "path": "/home/otto/.hermes/cache/scratch/llm-planning-clef-execution-final-independent-freeze.json",
+    "sha256": "ba4426facd69c315b9210c6088dbe2a98d0de8fa6afbdaa87f26d580c8938ed1",
+    "inputs": 358,
+    "before_drift": [],
+    "after_drift": [],
+    "component_reports_in_manifest": 69
+  },
+  "matching_parent_gate": {
+    "path": "/home/otto/dev/ro-bots/run/reviews/llm-planning-clef-execution-final-combined-parent-gate.json",
+    "sha256": "81b7da147d60f42442088b530477e27088b858c386dd071d475fd8c38482828d",
+    "check_exit": 0,
+    "audit_exit": 0,
+    "physical_unique_cases": 5017,
+    "subtests_passed": 65,
+    "coverage_percent": 95.37,
+    "outcomes": {
+      "failures": 0,
+      "errors": 0,
+      "skips": 0
+    },
+    "all_artifact_hashes_verified": true,
+    "rerun_by_reviewer": false
+  },
+  "fresh_execution": {
+    "scoped_receipt": "/home/otto/.hermes/cache/scratch/llm-planning-clef-execution-final-review/scoped.xml",
+    "scoped_physical_unique": 303,
+    "scoped_files": 16,
+    "fresh_receipt": "/home/otto/.hermes/cache/scratch/llm-planning-clef-execution-final-review/fresh.xml",
+    "fresh_physical_unique": 17,
+    "fresh_probe_functions": 5,
+    "failures": 0,
+    "errors": 0,
+    "skips": 0,
+    "physical_ids": "/home/otto/.hermes/cache/scratch/llm-planning-clef-execution-final-review/physical-cases.json",
+    "scoped_ids_contained_in_root": true,
+    "historical_completion_repository_ids_retained": 280,
+    "historical_scratch_overlap_not_added_to_unique_total": [
+      [
+        "",
+        "test_active_rest_heartbeat_dispatches_nonblocking_execution_decision"
+      ],
+      [
+        "",
+        "test_completed_execution_error_survives_host_stop"
+      ]
+    ],
+    "fresh_review_tests_are_followups_not_historical_RED": true
+  },
+  "contracts_verified": [
+    "Real Host/Planner/Core admission; every fresh planning job investigates before submit; no manual admission or replacement runtime.",
+    "Heartbeat invokes one off-owner blocked decision; receive-vitals and keepalive continue; ordinary ticks/coalesced events do not add model jobs; HOLD pauses new intents.",
+    "Current 30-second timeout produces one bounded fresh investigated LLM replan. Map/life/active-plan/identity/version obsolescence cannot escalate; expired late reply cannot apply. Both workers remain physically owned until join.",
+    "Two owner/world captures keep private notes/inventory detached and separate, model/state/questions-only request body within 32768 UTF-8 bytes. Unavailable capture, NaN, lone surrogate and multi-byte overflow hold without model/worker/fallback/per-tick replan.",
+    "Finished KeyboardInterrupt and SystemExit preserve exact object/deepest provider frame despite ordinary client-close failure; all agents cleanup attempted and secondary exception objects retained. Repository tests also cover hostile diagnostic hooks, nested merging, ordinary group/single/empty policy.",
+    "Known-unsent cancellation wins before claim without model invocation; claimed and real-start-then-error execution workers retain owner/reconnect denial until confirmed join; no dispatch guard held over provider call.",
+    "Source admits only Heartbeat/DamageTaken/ScriptFailed for valid current plans. Repository suite independently covers ScriptFailed input denial, REST pose/arrival ownership, 75-percent HP-and-SP recovery, static skill/resource safety gates, stale epoch/version/map/life reply rejection, safe capture-control origin and default compatibility."
+  ],
+  "quality": {
+    "black": {
+      "exit_code": 0,
+      "command": [
+        "nix",
+        "develop",
+        "--offline",
+        "--no-write-lock-file",
+        "path:./spikes/007-native-packet-ast/toolchain",
+        "-c",
+        "env",
+        "PYTHONDONTWRITEBYTECODE=1",
+        ".venv/bin/python",
+        "-B",
+        "-m",
+        "black",
+        "--check",
+        "--workers",
+        "1",
+        "src",
+        "tests"
+      ],
+      "log": "/home/otto/.hermes/cache/scratch/llm-planning-clef-execution-final-review/black.log"
+    },
+    "ruff": {
+      "exit_code": 0,
+      "command": [
+        "nix",
+        "develop",
+        "--offline",
+        "--no-write-lock-file",
+        "path:./spikes/007-native-packet-ast/toolchain",
+        "-c",
+        "env",
+        "PYTHONDONTWRITEBYTECODE=1",
+        ".venv/bin/ruff",
+        "check",
+        "--no-cache",
+        "src",
+        "tests"
+      ],
+      "log": "/home/otto/.hermes/cache/scratch/llm-planning-clef-execution-final-review/ruff.log"
+    },
+    "mypy": {
+      "exit_code": 0,
+      "command": [
+        "nix",
+        "develop",
+        "--offline",
+        "--no-write-lock-file",
+        "path:./spikes/007-native-packet-ast/toolchain",
+        "-c",
+        "env",
+        "PYTHONDONTWRITEBYTECODE=1",
+        ".venv/bin/python",
+        "-B",
+        "-m",
+        "mypy",
+        "--cache-dir",
+        "/home/otto/.hermes/cache/scratch/llm-planning-clef-execution-final-review/mypy-cache-fresh"
+      ],
+      "log": "/home/otto/.hermes/cache/scratch/llm-planning-clef-execution-final-review/mypy.log"
+    }
+  },
+  "quality_scope": "Configured whole src/tests Black/Ruff and strict mypy, 239 files; no waivers or source edits. Parent matching root retains other configured analysis/coverage/audit gates.",
+  "security_scan": {
+    "files": [
+      "src/robots/app/execution_decisions.py",
+      "src/robots/app/planning_brain.py",
+      "src/robots/app/planning_job_context.py",
+      "src/robots/app/planning_execution.py",
+      "src/robots/app/agent_runtime.py:_raise_cleanup_errors"
+    ],
+    "findings": [],
+    "manual_review": "No added dynamic execution, credential literals, private path disclosure, callbacks/journals in execution worker context, SQL/native/provider effects or authority escalation."
+  },
+  "history": {
+    "chain_reports": [
+      "run/reviews/llm-planning-clef-execution.json",
+      "run/reviews/llm-planning-clef-execution-completion.json",
+      "run/reviews/llm-planning-clef-host-cleanup-scope.json",
+      "run/reviews/llm-planning-clef-host-cleanup-completion.json",
+      "run/reviews/llm-planning-clef-host-cleanup-quality-completion.json"
+    ],
+    "chain_artifacts_verified": 56,
+    "chain_hash_errors": [],
+    "initial_147_and_completion_282": "Historical PARTIAL records, not adopted as current verdict; named blockers closed by current completion/helper/test-quality chain. Failed GREEN-named receipts preserved and not counted as passing.",
+    "prior_interrupted_review": "Not recovered or adopted.",
+    "quality_correction": "Only final test file changed; production cleanup helper matches completion digest. Failed root style receipts retained; repair budget not reset."
+  },
+  "artifact_registry": {
+    "path": "/home/otto/.hermes/cache/scratch/llm-planning-clef-execution-final-review/artifact-registry.json",
+    "sha256": "0d3eb1cc51be33b29141091ab9a6c29ce2620b348c2730e49aafbb308e1c9098"
+  },
+  "limits": [
+    "Finite first-phase IDLE/REST execution controller only; not global lifecycle guarantees.",
+    "No provider inference, native connection, SQL/Docker/service/provisioning or source/docs/config/Git modifications.",
+    "Logical expiry is not worker termination or confirmed client release. Cleanup metadata allocation failure may retain original without every secondary; first control-flow origin wins when several exist.",
+    "Later normal stop in synthetic fixtures is harness recovery, not proof of release under an unresolved real client close.",
+    "Model capacity/warm cache/physical KV reuse, phase traversal/auto-admission/free-form general chat/population and all six milestones/11 criteria remain OPEN."
+  ],
+  "writes": [
+    "run/reviews/llm-planning-clef-execution-final-independent-review.json",
+    "/home/otto/.hermes/cache/scratch/llm-planning-clef-execution-final-review/ (new review probes, XML, logs, case IDs, registry and caches only)"
+  ],
+  "issues_encountered": [
+    "Initial read used nonexistent src/ro_bots; corrected to actual src/robots without writes.",
+    "An over-broad archival registry walker treated three historical source digests as current and two relative receipt labels as repo paths. These were accounting-oracle errors, not source or artifact failures; exact named CLEF chain registry verified 56 artifacts with zero mismatches. Current 358-input freeze independently remains exact."
+  ]
+}

@@ -1,0 +1,187 @@
+{
+  "status": "PARTIAL",
+  "approval": "NOT_APPROVED",
+  "live_effects": false,
+  "outcome": "Genuine full PlayingClient/EventDrivenBrain cancel RED reproduced; no production modification because a truthful new terminal stage cannot escape the frozen brain NPC dispatch, and removing the view causes per-tick preparation retry.",
+  "modified_production_files": [],
+  "created_repository_files": [
+    "tests/test_native_npc_cancel_recovery.py",
+    "run/reviews/playing-mvp-native-npc-cancel-recovery.json"
+  ],
+  "red": {
+    "fixture": "/home/otto/.hermes/cache/scratch/npc-cancel-recovery/test_cancel_red.py",
+    "wire_path": "received B4/B7 -> actual decision cancel -> NpcSelect(321,255) -> B8(321,255) -> waiting -> 5.1s silent -> blocked/failed/active",
+    "failures": 1,
+    "expected_failure": "cancel permanently retains local NPC suppression",
+    "no_equipment_or_instruction_ack": true
+  },
+  "source_qualified": {
+    "local_source": "rathena/src/map",
+    "clif.cpp13312-13343": "255 accepted and npc_scriptcont called; not an acknowledgement",
+    "script.cpp5174-5177": "menu cancel sets END",
+    "script.cpp5274-5276": "select cancel sets END",
+    "script.cpp5294-5358": "prompt uses same menu UI; cancel returns 255 and sets RUN",
+    "illustration_01B3": "not used as acknowledgement; lacks NPC identity"
+  },
+  "scope_blocker": {
+    "brain.py173-175_and_324-355": "Every non-close_requested dialogue is intercepted before NpcGuidanceScript; new cancel_abandoned cannot finish retained brain execution within authorized files.",
+    "scripts.py133-141": "Empty native Novice remains needs_npc_preparation when instructions flag remains false; view=None emits TalkToNpc every tick.",
+    "playing_runtime.py334-358": "Actuation uses active/failed and all-or-nothing send poison; do not clear failed, reuse close_requested as fake native close, or infer success from sending 255.",
+    "required_parent_choice": "Authorize minimal brain dispatch recognition of explicitly locally-abandoned/unknown-server-state terminal plus explicit retry/suppression policy distinct from instructions_received; controller-only change cannot establish full scheduled behavior. No guard waiver made."
+  },
+  "verification": {
+    "passed": 589,
+    "new_guard_cases": 20,
+    "black": "PASS",
+    "ruff": "PASS",
+    "strict_mypy_owned": "PASS",
+    "whole_source_xenon": "PASS unchanged B/B/A",
+    "whole_source_duplicate_code": "PASS",
+    "full_root_check": "NOT_RUN",
+    "native_cancel_branch": "NOT_RUN"
+  },
+  "covered_unchanged_guards": [
+    "prompt B4/B5/B7 before 5s",
+    "invalid bool/non-int/uint8 choices",
+    "repeat cancel sends",
+    "foreign NPC cannot extend wait",
+    "exact OSError/KeyboardInterrupt/SystemExit send origins and poison",
+    "epoch/map/actor/transport/frame-gap boundaries",
+    "noncancel timeout remains fail-closed",
+    "existing keepalive/REST/pose/encounter/close/cutin regressions"
+  ],
+  "not_implemented_or_claimed": [
+    "bounded local abandon",
+    "full scheduled retained combat/motion release",
+    "late UI tombstone or same-counter reuse recovery",
+    "universal cancel closes server",
+    "quest/items/equipment readiness",
+    "native completion",
+    "new source/parser/protocol packages",
+    "durable mirror",
+    "full 3216 source profile audit"
+  ],
+  "preserved_failed_artifacts": [
+    "red.log",
+    "red.xml",
+    "scoped.log (policy probe import error; retry separately passed)",
+    "gates.log (initial strict-mypy errors; final-gates.log passed)"
+  ],
+  "snapshots": {
+    "baseline_file_count": 251,
+    "changed_baseline_files": [],
+    "baseline_sources_unchanged": true,
+    "full_source_profile_3216_not_reaudited": true
+  },
+  "test_only_policy_probe": {
+    "unchanged": {
+      "active": true,
+      "failed": true,
+      "brain_status": "ACTIVE",
+      "brain_actions": [],
+      "guidance_status": "ACTIVE",
+      "instructions_received": false,
+      "needs_preparation": true,
+      "sent_count": 2
+    },
+    "cancel_abandoned": {
+      "active": true,
+      "failed": true,
+      "brain_status": "ACTIVE",
+      "brain_actions": [],
+      "guidance_status": "ACTIVE",
+      "instructions_received": false,
+      "needs_preparation": true,
+      "sent_count": 2
+    },
+    "close_requested": {
+      "active": false,
+      "failed": true,
+      "brain_status": "DONE",
+      "brain_actions": [],
+      "guidance_status": "DONE",
+      "instructions_received": false,
+      "needs_preparation": true,
+      "sent_count": 2
+    },
+    "removed": {
+      "active": false,
+      "failed": true,
+      "brain_status": "ACTIVE",
+      "brain_actions": [
+        "TalkToNpc"
+      ],
+      "guidance_status": "ACTIVE",
+      "instructions_received": false,
+      "needs_preparation": true,
+      "sent_count": 2
+    }
+  },
+  "artifact_registry": [
+    {
+      "path": "/home/otto/.hermes/cache/scratch/npc-cancel-recovery/after.json",
+      "bytes": 26821,
+      "sha256": "cdbce0ff65812e2d5d91928988a9547d9fcf64084be541e1edb5f44abc684a92"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/npc-cancel-recovery/before.json",
+      "bytes": 26821,
+      "sha256": "cdbce0ff65812e2d5d91928988a9547d9fcf64084be541e1edb5f44abc684a92"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/npc-cancel-recovery/final-gates.log",
+      "bytes": 998,
+      "sha256": "f37b7ac11afa344cab56e4bd9fa957374a710d9b01ff650bd48fdeeb24fd0711"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/npc-cancel-recovery/final-scoped.xml",
+      "bytes": 78225,
+      "sha256": "ec2de727baab25acc2d0becdbac98d27d7e14fbd831d58f43bc2759bf2c78d59"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/npc-cancel-recovery/gates.log",
+      "bytes": 785,
+      "sha256": "dcda7787396968219a6e8ac286d76cb9d20f9f0a72548e3a5c418b2923db08b3"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/npc-cancel-recovery/policy-probe.json",
+      "bytes": 983,
+      "sha256": "8d514ad6faebe3db52838d7caa76ebed2e35d258ffbe667f32cc5cb45b0e7785"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/npc-cancel-recovery/policy-probe.log",
+      "bytes": 983,
+      "sha256": "8d514ad6faebe3db52838d7caa76ebed2e35d258ffbe667f32cc5cb45b0e7785"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/npc-cancel-recovery/policy_probe.py",
+      "bytes": 1226,
+      "sha256": "ab5c55f4e0164e0ccca65dc9d2c9aa11582b729f6930b4c6a595b810aca1ede3"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/npc-cancel-recovery/red.log",
+      "bytes": 2289,
+      "sha256": "fec5eb06a7cbf41cc03f0d04996c5abbea84bd0c892fc70d94120cb35f68d0c0"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/npc-cancel-recovery/red.xml",
+      "bytes": 1762,
+      "sha256": "28ea9406ebab0d219564f54feef9098adece4c2659b4a1636b415acfaa8ec61e"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/npc-cancel-recovery/scoped.log",
+      "bytes": 1177,
+      "sha256": "fc94543f068967774e9a65930d6041d94e4f6950a80251244bb1138bf2769ae8"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/npc-cancel-recovery/scoped.xml",
+      "bytes": 78225,
+      "sha256": "0862aeca3c7e7818976e2e8df17599de945658ca3b73a7b1060a9d74714255f1"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/npc-cancel-recovery/test_cancel_red.py",
+      "bytes": 2405,
+      "sha256": "399e4f4f21f365cfd65ab65f56f1247257f3cf5a93bc2016d27751072e3f60ed"
+    }
+  ]
+}

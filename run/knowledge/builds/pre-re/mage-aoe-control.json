@@ -1,0 +1,203 @@
+{
+ "class": "Mage",
+ "playstyle": "evasive/lethal (fire-wall kiter)",
+ "playstyle_axis": "evasive/lethal",
+ "summary": "Field-control mage: Fire Wall channels + knockback, Safety Wall pocket, never touched. Higher skill ceiling, best at dense passive fields.",
+ "stat_progression": [
+  {
+   "phase": "job change ~40",
+   "base_level": 40,
+   "stat_point_budget": 305,
+   "points_spent": 257,
+   "points_left": 48,
+   "allocation": {
+    "int": 40,
+    "dex": 30,
+    "agi": 10,
+    "vit": 10,
+    "str": 1,
+    "luk": 1
+   },
+   "leftover_into": "INT (42 pts left at 305 - keep raising INT/DEX as levels come)"
+  },
+  {
+   "phase": "job 50",
+   "base_level": 50,
+   "stat_point_budget": 420,
+   "points_spent": 365,
+   "points_left": 55,
+   "allocation": {
+    "int": 50,
+    "dex": 40,
+    "vit": 10,
+    "agi": 10,
+    "str": 1,
+    "luk": 1
+   },
+   "leftover_into": "INT"
+  }
+ ],
+ "skill_order": [
+  {
+   "skill": "Fire Bolt",
+   "levels": 4,
+   "at": "job 1-4",
+   "prereqs": [],
+   "why": "Fire Ball prereq"
+  },
+  {
+   "skill": "Fire Ball",
+   "levels": 5,
+   "at": "job 5-9",
+   "prereqs": [
+    "Fire Bolt 4"
+   ],
+   "why": "Fire Wall prereq; splash"
+  },
+  {
+   "skill": "Sight",
+   "levels": 1,
+   "at": "job 10",
+   "prereqs": [],
+   "why": "Fire Wall prereq"
+  },
+  {
+   "skill": "Fire Wall",
+   "levels": 10,
+   "at": "job 11-20",
+   "prereqs": [
+    "Fire Ball 5",
+    "Sight 1"
+   ],
+   "why": "50% MATK per contact, knockback; the defining AoE-kite tool"
+  },
+  {
+   "skill": "Napalm Beat",
+   "levels": 7,
+   "at": "job 21-27",
+   "prereqs": [],
+   "why": "Safety Wall prereq + cheap AoE"
+  },
+  {
+   "skill": "Soul Strike",
+   "levels": 5,
+   "at": "job 28-32",
+   "prereqs": [
+    "Napalm Beat 4"
+   ],
+   "why": "Safety Wall prereq; bonus vs Undead"
+  },
+  {
+   "skill": "Safety Wall",
+   "levels": 3,
+   "at": "job 33-35",
+   "prereqs": [
+    "Napalm Beat 7",
+    "Soul Strike 5"
+   ],
+   "why": "blocks melee at a cell; 1 Blue Gemstone"
+  },
+  {
+   "skill": "Increase SP Recovery",
+   "levels": 5,
+   "at": "job 36-40",
+   "prereqs": [],
+   "why": "sustain the wall loop"
+  }
+ ],
+ "skill_point_budget": {
+  "job40_points": 40,
+  "job50_points": 50,
+  "job50_add": [
+   "Safety Wall ->5-10 (gemstone cost grows: SP 30/35/40 at lv1/6/11 cap 10)",
+   "Soul Strike ->7-10",
+   "Increase SP Recovery ->8-10"
+  ]
+ },
+ "equipment_order": [
+  {
+   "order": 1,
+   "id": 1601,
+   "name": "Rod [3]",
+   "price_z": 50,
+   "why": "MATK 30"
+  },
+  {
+   "order": 2,
+   "id": 2303,
+   "name": "Jacket",
+   "price_z": 200,
+   "why": "DEF"
+  },
+  {
+   "order": 3,
+   "id": 2401,
+   "name": "Sandals",
+   "price_z": 400,
+   "why": "shoes"
+  },
+  {
+   "order": 4,
+   "id": 501,
+   "name": "Red Potions",
+   "price_z": "10z/50z (see sources)",
+   "why": "mistake insurance"
+  },
+  {
+   "order": 5,
+   "id": 718,
+   "name": "Blue Gemstone",
+   "price_z": "loot/vendor",
+   "why": "Safety Wall catalyst (1/cast)"
+  }
+ ],
+ "grinding": [
+  {
+   "map": "prt_fild08 / dense passive fields",
+   "phase": "Lv 20-50",
+   "mobs": [
+    {
+     "id": 1007,
+     "name": "Fabre",
+     "level": 6,
+     "hp": 72,
+     "exp": "54/41",
+     "notes": "wall-channeled groups"
+    },
+    {
+     "id": 1050,
+     "name": "Thief Bug",
+     "level": 10,
+     "hp": 89,
+     "exp": "72/54",
+     "notes": "Fire 1: Fire Ball/Fire Wall 150%"
+    },
+    {
+     "id": 1051,
+     "name": "Thief Bug Egg",
+     "level": 21,
+     "hp": 354,
+     "exp": "126/143",
+     "notes": "immobile, assists"
+    }
+   ]
+  }
+ ],
+ "do_not_waste": [
+  "Thunderstorm before Wizard (cast too long pre-Wizard SP pool)",
+  "Frost Nova chain (needs Cold Bolt 5 + Frost Diver; level-hungry)",
+  "DEX beyond cast comfort before INT is maxed"
+ ],
+ "renewal_differences": "Same divergence as the bolt build plus: Fire Wall knockback and Safety Wall gem costs are era-stable, but renewal rebalanced Safety Wall HP scaling and Fire Wall hit counts; renewal DEX no longer trivializes casts via fixed-cast floors.",
+ "sources": [
+  "iro-wiki corpus page 'Stats' (stat per-point effects, raise-cost floor((X-1)/10)+2, 48 pts at BLv1, level-up points floor(X/5)+3)",
+  "iro-wiki corpus page 'Total stat point requirement' (cumulative cost table)",
+  "rathena/src/map/status.cpp status_base_atk (pre-re status ATK: STR+(STR/10)^2+DEX/5+LUK/5 melee; DEX+(DEX/10)^2+STR/5 ranged; MATK min INT+(INT/7)^2 max INT+(INT/5)^2)",
+  "rathena/db/pre-re/skill_tree.yml (authoritative server skill prerequisites)",
+  "rathena/db/pre-re/skill_db.yml (SP costs, cast times)",
+  "iro-wiki corpus '<Class> Job Change Guide' + rathena/npc/pre-re/jobs/1-1/<class>.txt (job change)",
+  "iro-wiki corpus pages 'Fire Wall', 'Fire Ball', 'Safety Wall', 'Soul Strike', 'Napalm Beat', 'Sight'",
+  "iro-db monsters 1007/1050/1051; items 1601/718",
+  "rathena/db/pre-re/skill_tree.yml (MG_FIREWALL needs MG_FIREBALL 5 + MG_SIGHT 1; MG_SAFETYWALL needs MG_NAPALMBEAT 7 + MG_SOULSTRIKE 5)"
+ ]
+}

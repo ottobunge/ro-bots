@@ -1,0 +1,191 @@
+{
+  "schema": "selected-owner-slot-caller-v2-independent-review/v1",
+  "passed": true,
+  "security_concerns": [],
+  "logic_errors": [],
+  "suggestions": [],
+  "summary": "Full v2 caller and unchanged locked helper chain passed bounded conditional offline independent review; no live permission or approval issued.",
+  "candidate": ".work/operators/selected-owner-slot-caller-v2/caller.py",
+  "candidate_sha256": "83c725dfdad189828a9e2c326d77ceb4735aadd677a63ea36b8cad6681a6acfd",
+  "reviewed_source_lines": 373,
+  "scope": "Trusted same-UID ordinary misconfiguration (ADR-018); full current caller reviewed, not predicate-only. No hostile same-UID isolation, universal descendant termination, allocation guarantee, native authority or gameplay acceptance.",
+  "tests": {
+    "original": {
+      "path": ".work/selected-owner-slot-caller-v2-independent-review/original-tests.xml",
+      "sha256": "ac4a6ff88fb83f88789aa4004d91f8e579bc403b132dc4a40e720793c8f92564",
+      "physical_tests": 13,
+      "unique_tests": 13,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "ids": [
+        ".work.selected-owner-slot-caller-v2.test_caller::test_default_sequence",
+        ".work.selected-owner-slot-caller-v2.test_caller::test_denial_boundaries[source]",
+        ".work.selected-owner-slot-caller-v2.test_caller::test_denial_boundaries[purpose]",
+        ".work.selected-owner-slot-caller-v2.test_caller::test_denial_boundaries[revoked]",
+        ".work.selected-owner-slot-caller-v2.test_caller::test_denial_boundaries[alignment]",
+        ".work.selected-owner-slot-caller-v2.test_caller::test_denial_boundaries[engine]",
+        ".work.selected-owner-slot-caller-v2.test_caller::test_denial_boundaries[helper]",
+        ".work.selected-owner-slot-caller-v2.test_caller::test_denial_boundaries[malformed]",
+        ".work.selected-owner-slot-caller-v2.test_caller::test_denial_boundaries[drift]",
+        ".work.selected-owner-slot-caller-v2.test_caller::test_release_failure_retains_quarantined_real_owner",
+        ".work.selected-owner-slot-caller-v2.test_caller::test_independent_pilot_paths_read_only_scheduled_bodies",
+        ".work.selected-owner-slot-caller-v2.test_caller::test_scheduled_config_scope_mismatch_denied_before_private_reads",
+        ".work.selected-owner-slot-caller-v2.test_metadata_input_choice::test_metadata_reader_selects_scheduled_inputs_without_rewriting_native_pilot"
+      ]
+    },
+    "material_probes": {
+      "path": ".work/selected-owner-slot-caller-v2-independent-review/material-probes-final.xml",
+      "sha256": "852a76319025b14b58232a88eb53ad01b557b31affa3d2d8a98a1e8e63e1b70b",
+      "physical_tests": 3,
+      "unique_tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "ids": [
+        ".work.selected-owner-slot-caller-v2-independent-review.test_material_probes::test_post_selected_private_and_source_drift_denies_publication",
+        ".work.selected-owner-slot-caller-v2-independent-review.test_material_probes::test_expiry_after_successful_selected_child_denies_return",
+        ".work.selected-owner-slot-caller-v2-independent-review.test_material_probes::test_primary_control_flow_and_physically_held_quarantined_release"
+      ],
+      "post_rerun_drift": []
+    },
+    "original_id_set_matches_frozen": true,
+    "original_v1_mapping_count": 10,
+    "new_policy_cases": 3,
+    "additional_probes": 3,
+    "material_probes_initial_harness_oracle_failure": {
+      "path": ".work/selected-owner-slot-caller-v2-independent-review/material-probes.xml",
+      "sha256": "89236ddb03198abe8eca68e6717c45f2abc437acbabc88c6d3660137bcb87aef",
+      "physical_tests": 3,
+      "unique_tests": 3,
+      "failures": 1,
+      "errors": 0,
+      "skips": 0,
+      "ids": [
+        ".work.selected-owner-slot-caller-v2-independent-review.test_material_probes::test_post_selected_private_and_source_drift_denies_publication",
+        ".work.selected-owner-slot-caller-v2-independent-review.test_material_probes::test_expiry_after_successful_selected_child_denies_return",
+        ".work.selected-owner-slot-caller-v2-independent-review.test_material_probes::test_primary_control_flow_and_physically_held_quarantined_release"
+      ]
+    }
+  },
+  "probes_cover": [
+    "Private and selected-helper source drift after successful selected stdout deny publication and release actual lock",
+    "Scope expiry after successful selected stdout denies return",
+    "Exact KeyboardInterrupt origin/deepest frame survives unlock+close failures; held FD quarantined; second process physically refused; no retry; test-only recovery permits second-process acquisition"
+  ],
+  "isolation": "Original test sources unchanged. Only synthetic primitive filesystem/subprocess/issuance seams replaced; original caller, descriptor loader, FixtureLock, live/engine/baseline/selected helper and world_inventory execute. Reviewer pytest plugin maps caller mkdir/write_text publication into owned namespace; helper cache/output writes remain fixture-intercepted in memory. Explicit basetemp/cache/XML namespaces avoid frozen evidence writes.",
+  "frozen_verification": {
+    "source_bindings": 14,
+    "receipt_declarations": 3,
+    "checked_combined_artifact_bindings": 41,
+    "mismatches_before": [],
+    "mismatches_after": [],
+    "saved_original_artifacts": 43,
+    "saved_original_artifact_drift": [],
+    "v1_source_bytes_preserved": true,
+    "exact_v1_v2_diff_matches": true,
+    "changed_function_ASTs": [
+      "aligned"
+    ]
+  },
+  "contract_review": {
+    "pre_private_admission": "Exact 10-field status/purpose/capabilities/persona; finite numeric issuance/expiry maximum 300 seconds; exact 11-source and 3-public bindings, inherited dependency literals checked; optimization refused first",
+    "private_loader": "Original pilot_inputs.read_private opens O_RDONLY|O_NOFOLLOW|O_NONBLOCK; descriptor regular-file/same-user/0600, <=65536 bytes and exact digest; validated two personas/exact unique pairs/endpoint/PIN; only scheduled scope inputs read",
+    "lock": "Original physical FixtureLock at Path(private_directory).parent/native-fixture-observer.lock; acquisition before repeated scope/source/public/private validation and all helpers; failure ownership retained, release one attempt, original exception preserved",
+    "chain": "Fresh LIVE stdout only after world_inventory double stable observation -> engine exact roles/deployment/native image/DB volume mount -> legacy baseline fresh DB inspect, exact owned account/password/PIN/name/offline and all-world offline. Then selected helper explicit --persona-id; baseline fixed reads plus one exact selected fixed SQL read",
+    "selection": "Exact six-key result envelope and nine-key SELF owner projection; exact aid/cid/name, strict int raw allowance 0..100, false provenance flags, strict true readonly/passed and zero native/inference; no peers/credentials exported",
+    "freshness": "Recheck admission, source/public and private hashes after LIVE and after selected call; failed process stdout or stale helper output is not success. Publish caller result only after release succeeds",
+    "input_policy": "Both public pointer hashes exact; scheduled config/manifest and parent inputs exact; pilot private_directory equal preserves canonical lock; pilot config/manifest intentionally independent and never fallback"
+  },
+  "local_quality": {
+    "frozen_log_hashes_verified": true,
+    "Black": 0,
+    "Ruff": 0,
+    "strict_mypy": 0,
+    "Xenon_B_B_A": 0,
+    "new_gates_run": false,
+    "selected_helper_inherited_ruff": 10,
+    "globally_clean": false
+  },
+  "cli_without_approval": [
+    {
+      "optimized": false,
+      "exit_code": 2,
+      "stdout_empty": true,
+      "stderr": "metadata inspection refused; no native authority\n"
+    },
+    {
+      "optimized": true,
+      "exit_code": 2,
+      "stdout_empty": true,
+      "stderr": "metadata inspection refused; no native authority\n"
+    }
+  ],
+  "parent_bounded_read_requirements": {
+    "approval_path": "/home/otto/dev/ro-bots/run/reviews/selected-owner-slot-caller-v2-readonly-approved.json",
+    "issuer": "Parent only after reconciling this independent report and matching snapshot; caller is not its issuer",
+    "exact_fields": [
+      "status",
+      "purpose",
+      "capabilities",
+      "issued_at",
+      "expires_at",
+      "persona_id",
+      "source_hashes",
+      "public_hashes",
+      "private_hashes",
+      "inputs"
+    ],
+    "status": "PARENT_APPROVED_SELECTED_OWNER_SLOT_METADATA_READONLY_V2",
+    "purpose": "selected-owner-slot-metadata-only",
+    "capabilities": [
+      "metadata-inspection",
+      "fixed-sql-reads"
+    ],
+    "time": "Strict actual numeric non-bool issued_at/expires_at: issued_at <= now < expires_at <= issued_at+300; refreshed under lock before LIVE, before selected and after selected; no cleanup grace or retry",
+    "persona_id": "Explicit one scheduled manifest persona; match validated exact_pairs; unknown identity denied",
+    "source_hashes": {
+      "/home/otto/dev/ro-bots/.work/operators/selected-owner-slot-caller-v2/caller.py": "83c725dfdad189828a9e2c326d77ceb4735aadd677a63ea36b8cad6681a6acfd",
+      "/home/otto/dev/ro-bots/.work/operators/npc-native-host-pilot/pilot_inputs.py": "0075dc98214c5d79c9bdeecd72477dd2e860660c805a122c404319010eb2a89b",
+      "/home/otto/dev/ro-bots/.work/operators/npc-native-host-pilot/guards.py": "9d48b233fcc12ddad2be919df00d4196a9efa5c9e0f408aa9551288885529117",
+      "/home/otto/dev/ro-bots/.work/operators/passive-skill-context-executor-repair1/native_launcher.py": "1ccce03fc6d57107690300aeb1f3f6bfb568bc01f781d2ca64e912cf7a92f1aa",
+      "/home/otto/dev/ro-bots/.work/operators/native-observer-helper-repair2/playing-mvp-engine-preflight.py": "25542ee689eb3bb616a1eb6e3d6f20a314565ec24708ae02f3a7437c1a7b6551",
+      "/home/otto/dev/ro-bots/.work/operators/native-observer-helper-repair2/playing-mvp-live-preflight.py": "6a815cf9ff0328aceed9825e62a3f69365af2c7a1767a468d33e6227c04444cc",
+      "/home/otto/dev/ro-bots/.work/operators/native-observer-helper-repair2/playing-mvp-readonly-baseline.py": "2e142fd9a0cb14b39591fda36153f253f227cf1cd42a6bdaaff6f9e37ec60ff7",
+      "/home/otto/dev/ro-bots/.work/operators/selected-owner-slot-metadata-v1/playing-mvp-readonly-baseline.py": "09fbe56de037bca515237b74a94f570a56d645c507b491711c2591f0461ed175",
+      "/home/otto/dev/ro-bots/src/robots/adapters/world_inventory.py": "591340a547ac066af5f5cd491b5bb4d810083323423ad98275945c32ba153b7e",
+      "/home/otto/dev/ro-bots/src/robots/__init__.py": "14a8271c90ed669cc0645c2901ba6a3d93345643b7697e87b965b9008f02b6a6",
+      "/home/otto/dev/ro-bots/src/robots/adapters/__init__.py": "9b1e7275a89b55489704b9976dd1cfa684a4f9ea02f70393fb79bebbb885761e"
+    },
+    "public_hashes": {
+      "/home/otto/dev/ro-bots/run/reviews/scheduled-native-host-private-location.json": "aec240d6923153cfa43b4b82af78344c413792d4df3a652d11795e42cbdcb6f0",
+      "/home/otto/dev/ro-bots/.work/private/npc-pilot/location.json": "a63fa43b535364d9c419db187cf96088aa1c741bf665ab5c0be4ee94c0cb8277",
+      "/home/otto/dev/ro-bots/run/reviews/playing-mvp-qualified-deployment.json": "cd622737107fb3a53be4a840a38df25eead9f81a0d765c08b34451ae74976bed"
+    },
+    "inputs": {
+      "config": "/home/otto/dev/ro-bots/run/worlds/test-first-live-86e7c36895db/host-idle-3c6ada4253/idle-config.json",
+      "host_manifest": "/home/otto/dev/ro-bots/run/worlds/test-first-live-86e7c36895db/host-idle-3c6ada4253/host-manifest.json",
+      "private_directory": "/home/otto/dev/ro-bots/run/worlds/test-first-live-86e7c36895db/host-idle-3c6ada4253"
+    },
+    "private_hashes": {
+      "config": "Parent must bind exact selected scheduled config SHA256 without disclosure",
+      "host_manifest": "Parent must bind exact selected scheduled manifest SHA256 without disclosure"
+    },
+    "shared_lock_directory_matches": true,
+    "operational_readiness": "Separate fresh exact owned-world/role/image/volume/no-foreign-use, DB healthy, exact fixtures and all characters offline under SAME held lock; unknown facts deny. Offline verdict is not actual target readiness. Parent may issue only one bounded metadata/fixed-read operation; no slot purchase, online atomic state, new native session, provider/model or playing-core consumer permission."
+  },
+  "live_read_performed": false,
+  "approval_issued": false,
+  "private_bodies_read": false,
+  "actual_allowance": "UNKNOWN",
+  "root_gates_run": false,
+  "created_paths": [
+    ".work/selected-owner-slot-caller-v2-independent-review/",
+    "run/reviews/selected-owner-slot-caller-v2-independent-review.json"
+  ],
+  "issues": [
+    "Initial private-drift probe at test_material_probes.py:44 correctly reached ValueError fixture private digest refused, but reviewer regex incorrectly expected drift. Original 1-failure/2-pass XML and log preserved; corrected scratch oracle accepts drift|digest without changing any production source. Final 3 probes pass.",
+    "One bounded corrective harness call exceeded planned nine-call budget; no additional material cases or expanded code scope.",
+    "Initial broad discovery output truncated; all load-bearing sources subsequently read in bounded batches. Editor-only Pyright diagnostics on dynamic scratch probes are not production quality findings."
+  ]
+}

@@ -1,0 +1,89 @@
+{
+ "status": "COMPLETE",
+ "namespace": "native-item-guide-execids-successor",
+ "base": "byte-identical adopted base .work/native-item-guide-publish-inspect-successor/content (live_recovery sha 0d965cc0b6c376c5a5169f38201f5dfd093417f780d1ec86689f077d760d6a5c with publish_row_normalization State.Health.Log normalization; other four modules byte-identical to the listener base per run/reviews/native-item-guide-publish-inspect-successor.json)",
+ "frontier": "run/reviews/native-item-guide-execids-volatile-frontier.json",
+ "fix_summary": "publish_row_normalization: extended the pure publish-equality projection to also neutralize the TOP-LEVEL ExecIDs list on both sides of the single publish_content row equality with constant marker VOLATILE_EXEC_IDS ('volatile-exec-history'); present-vs-absent preserved (key present -> marker, absent stays absent); every other field strictly compared incl. State.Health.Status/FailingStreak, Id, Name, mounts, config, network, image, labels and unknown fields (fail-closed). validate_world/validate_role/fingerprint paths untouched: inspect_digest hashes only the selected stable field allowlist (Id/Image/Path/Args/Config/HostConfig/Mounts/NetworkSettings), proven to exclude ExecIDs. reader_execids_projection (reader path) untouched.",
+ "changed_modules": {
+  "content/live_recovery.py": {
+   "base_freeze_sha256": "0d965cc0b6c376c5a5169f38201f5dfd093417f780d1ec86689f077d760d6a5c",
+   "green_sha256": "5834be23396887d085113d5fa175d1b9707ed69aa1a8d0660bb3225bbe7503be"
+  }
+ },
+ "byte_identical_modules": {
+  "item_guide_files.py": "528b12b88c2ca5a3bacdb0c4786666af7d8caf1042943395814890ac3773ef18",
+  "item_guide_publication.py": "ec94b628c3d5d45d8ba256f9fe8b9c7f1fee6362669be57ff063e5e1709facb0",
+  "recovery.py": "83a85cdfd6f78b7c1683c0d51c19a1f48b4820e45970b35a7ff3fa86ecb2e736",
+  "rootless_socket_reader.py": "a8339f4af3359d6ae283879ce1031a4bcc8e589e9822a203e6a3c68acafd49ae"
+ },
+ "public_carry": {
+  "public/item-guide.txt": {
+   "pinned": "0cb282af4dbce1496716ac86719302e0239209f65c9deff31a3330cd83314f14",
+   "actual": "0cb282af4dbce1496716ac86719302e0239209f65c9deff31a3330cd83314f14",
+   "match": true
+  },
+  "public/scripts_custom.conf": {
+   "pinned": "9de2dafdf7236f49557587ee9100923d33da2a31bff15f7b005a93235aa3ad4a",
+   "actual": "9de2dafdf7236f49557587ee9100923d33da2a31bff15f7b005a93235aa3ad4a",
+   "match": true
+  },
+  "note": "ROOT = Path(__file__).parent.parent resolves to the namespace root from content/item_guide_publication.py, so public/ is carried in-namespace beside content/."
+ },
+ "red_receipt": {
+  "junit": ".work/native-item-guide-execids-successor/red/execids-drift-red.xml",
+  "sha256": "7946f3bdffb2c89f2591ef3dbb787abea8ea212e02b67cdc7f3c0fbbdc5188d3",
+  "base": "byte-identical adopted base (content == base-freeze at RED time)",
+  "denial_identity": "content_inspect_drift",
+  "cases": [
+   {
+    "name": "test_advancing_execids_cycle_publishes_verified",
+    "result": "FAIL"
+   },
+   {
+    "name": "test_stable_execids_cycle_still_publishes_verified",
+    "result": "PASS"
+   },
+   {
+    "name": "test_unknown_late_inspect_field_still_denies",
+    "result": "PASS"
+   }
+  ],
+  "advancing_failure": "denials ['content_inspect_drift'], Receipt status uncertain_partial_state, publication write_attempted=False (zero public writes)",
+  "interpreter": "nix develop -c uv run pytest (PYTHONOPTIMIZE=0, PYTHONDONTWRITEBYTECODE=1, private TMPDIR under .hermes/cache/scratch, PYTEST_ADDOPTS/PYTEST_DISABLE_PLUGIN_AUTOLOAD unset)"
+ },
+ "harness_correction": {
+  "scope": "own new test only; RED receipt unaffected (its failure was reached on the denial assertion, before the corrected line)",
+  "old_assertion": "spy.inspect['mariadb']['ExecIDs'] == [exec_id(0), exec_id(1)]",
+  "new_assertion": "append-only growth: ExecIDs[:2] == [exec_id(0), exec_id(1)] and len >= 2 (the seam ticks on every publish-chain inspect read including the post-publication checkpoint; predecessor contract ticks >= 1 kept)"
+ },
+ "green_new_tests": {
+  "junit": ".work/native-item-guide-execids-successor/green/execids-successor-full-green.xml",
+  "sha256": "41a51fab702663485e94f0e2b96b36acee810c46ef23f52ee158a0a0f82fcf9a",
+  "new_cases": [
+   "test_advancing_execids_cycle_publishes_verified",
+   "test_stable_execids_cycle_still_publishes_verified",
+   "test_unknown_late_inspect_field_still_denies"
+  ]
+ },
+ "full_adapted_suite": {
+  "junit": ".work/native-item-guide-execids-successor/green/execids-successor-full-green.xml",
+  "junit_sha256": "41a51fab702663485e94f0e2b96b36acee810c46ef23f52ee158a0a0f82fcf9a",
+  "log": ".work/native-item-guide-execids-successor/green/execids-successor-full-green.log",
+  "tests": "160",
+  "failures": "0",
+  "errors": "0",
+  "skipped": "0",
+  "id_set": "exact match with inherited 157 testcase IDs (0 missing, 0 extra) + 3 new (160 total); compared by (classname-with-namespace-segment-normalized, name) pairs, the only permitted difference being the namespace relocation",
+  "selector": "explicit 17-file list (16 inherited harness modules + new test_execids_drift_cycle.py); fixture-support/ predecessor-generation harness modules excluded from collection as in the inherited selection; --import-mode=importlib",
+  "adaptation": "ns-path remap in 41 harness files + digest rebinding of the changed live_recovery.py digest in 19 guard synthetic-approval.json fixtures (old 0d965cc0... -> new 5834be23...); intentionally-wrong digests in drift-denial fixtures untouched"
+ },
+ "gates": {
+  "black": "1 file would be left unchanged",
+  "ruff": "All checks passed",
+  "mypy": "Success: no issues found in 1 source file (strict project config)",
+  "xenon": "exit 0 (B/B/A thresholds)"
+ },
+ "interpreter": "nix develop -c uv run pytest (PYTHONOPTIMIZE=0, PYTHONDONTWRITEBYTECODE=1, private TMPDIR under .hermes/cache/scratch, PYTEST_ADDOPTS/PYTEST_DISABLE_PLUGIN_AUTOLOAD unset)",
+ "prohibitions": "no live docker/SQL/lock/publication/TCP (synthetic offline only); no approvals altered; no production edits outside namespace; no git actions; strict mode not weakened",
+ "native_authority": "UNCHANGED_REVOKED"
+}

@@ -1,0 +1,210 @@
+{
+ "class": "Mage",
+ "playstyle": "grinder (bolt nuker)",
+ "playstyle_axis": "grinder",
+ "summary": "Single-target bolt artillery. Range 9 casting kills before contact; MATK scales purely off INT (pre-re: min INT+(INT/7)^2, max INT+(INT/5)^2).",
+ "stat_progression": [
+  {
+   "phase": "early",
+   "base_level": 30,
+   "stat_point_budget": 210,
+   "points_spent": 149,
+   "points_left": 61,
+   "allocation": {
+    "int": 30,
+    "dex": 20,
+    "agi": 9,
+    "str": 1,
+    "vit": 1,
+    "luk": 1
+   },
+   "leftover_into": "INT"
+  },
+  {
+   "phase": "job change ~40",
+   "base_level": 40,
+   "stat_point_budget": 305,
+   "points_spent": 268,
+   "points_left": 37,
+   "allocation": {
+    "int": 40,
+    "dex": 30,
+    "agi": 20,
+    "str": 1,
+    "vit": 1,
+    "luk": 1
+   },
+   "leftover_into": "INT/DEX"
+  },
+  {
+   "phase": "job 50",
+   "base_level": 50,
+   "stat_point_budget": 420,
+   "points_spent": 376,
+   "points_left": 44,
+   "allocation": {
+    "int": 50,
+    "dex": 40,
+    "agi": 20,
+    "str": 1,
+    "vit": 1,
+    "luk": 1
+   },
+   "leftover_into": "INT then DEX (cast speed)"
+  }
+ ],
+ "skill_order": [
+  {
+   "skill": "Fire Bolt",
+   "levels": "1-10",
+   "at": "job 1-10",
+   "prereqs": [],
+   "why": "n bolts x 100% MATK; SP 10+2lv; range 9"
+  },
+  {
+   "skill": "Lightning Bolt",
+   "levels": 10,
+   "at": "job 11-20",
+   "prereqs": [],
+   "why": "anti-Water-element (Poring/Drops are Water 1 on prt_fild08)"
+  },
+  {
+   "skill": "Increase SP Recovery",
+   "levels": 10,
+   "at": "job 21-30",
+   "prereqs": [],
+   "why": "+3 SP/tick per lv; fund continuous bolts"
+  },
+  {
+   "skill": "Sight",
+   "levels": 1,
+   "at": "job 31",
+   "prereqs": [],
+   "why": "reveal; also Fire Wall prereq later"
+  },
+  {
+   "skill": "Napalm Beat",
+   "levels": 9,
+   "at": "job 32-40",
+   "prereqs": [],
+   "why": "cheap Ghost AoE poke; SP 9-18"
+  }
+ ],
+ "skill_point_budget": {
+  "job40_points": 40,
+  "job50_points": 50,
+  "job50_add": [
+   "Stone Curse 1 (1 Red Gemstone per cast, SP 26-lv)",
+   "Cold Bolt 5 -> Frost Diver 1 (freeze utility)",
+   "Napalm Beat -> 10"
+  ]
+ },
+ "equipment_order": [
+  {
+   "order": 1,
+   "id": 1601,
+   "name": "Rod [3]",
+   "price_z": 50,
+   "why": "ATK 15 / MATK 30 - the only cheap MATK staff; mage ASPD rod penalty is irrelevant for casters"
+  },
+  {
+   "order": 2,
+   "id": 2303,
+   "name": "Jacket",
+   "price_z": 200,
+   "why": "DEF 2"
+  },
+  {
+   "order": 3,
+   "id": 2401,
+   "name": "Sandals",
+   "price_z": 400,
+   "why": "shoes"
+  },
+  {
+   "order": 4,
+   "id": 2501,
+   "name": "Hood",
+   "price_z": 1000,
+   "why": "garment"
+  },
+  {
+   "order": 5,
+   "id": 501,
+   "name": "Red Potion stock",
+   "price_z": "10z (iRO NPC) / 50z (server Buy)",
+   "why": "glass cannon: carry potions"
+  }
+ ],
+ "grinding": [
+  {
+   "map": "prt_fild08",
+   "phase": "Lv 1-40 (safe, element-advantaged)",
+   "mobs": [
+    {
+     "id": 1002,
+     "name": "Poring",
+     "level": 1,
+     "hp": 60,
+     "exp": "27/20",
+     "notes": "Water 1: Lightning Bolt hits for 150%"
+    },
+    {
+     "id": 1113,
+     "name": "Drops",
+     "level": 2,
+     "hp": 45,
+     "exp": "27/20",
+     "notes": "Fire 1: Cold Bolt hits for 150% (post-job-40 plan)"
+    },
+    {
+     "id": 1008,
+     "name": "Pupa",
+     "level": 4,
+     "hp": 66,
+     "exp": "36/27",
+     "notes": "Earth 1 immobile: Fire Bolt 150% free kills"
+    }
+   ]
+  },
+  {
+   "map": "geffen/mjolnir fields (classic iRO spawns - confirm on server)",
+   "phase": "Lv 40+",
+   "mobs": [
+    {
+     "id": 1054,
+     "name": "Male Thief Bug",
+     "level": 30,
+     "hp": 595,
+     "exp": "198/224",
+     "notes": "Shadow 1 aggressive"
+    },
+    {
+     "id": 1077,
+     "name": "Poison Spore",
+     "level": 26,
+     "hp": 456,
+     "exp": "198/224"
+    }
+   ]
+  }
+ ],
+ "do_not_waste": [
+  "Safety Wall chain early (Napalm 7 + Soul Strike 5 = 12 pts; solo nuker kills faster than it gets hit)",
+  "Fire Ball / Fire Wall unless switching to the AoE-control build",
+  "Energy Coat quest before job 40 (mana-hungry, better as wizard)"
+ ],
+ "renewal_differences": "Biggest era split for mages: pre-re has a single variable cast time reduced by DEX (and INT at half), while renewal splits fixed/variable cast. Pre-re MATK formula (status.cpp status_base_matk_min/max) has no renewal equip-MATK layer. The corpus skill pages list renewal fix/var splits - server values live in db/pre-re/skill_db.yml CastTime.",
+ "sources": [
+  "iro-wiki corpus page 'Stats' (stat per-point effects, raise-cost floor((X-1)/10)+2, 48 pts at BLv1, level-up points floor(X/5)+3)",
+  "iro-wiki corpus page 'Total stat point requirement' (cumulative cost table)",
+  "rathena/src/map/status.cpp status_base_atk (pre-re status ATK: STR+(STR/10)^2+DEX/5+LUK/5 melee; DEX+(DEX/10)^2+STR/5 ranged; MATK min INT+(INT/7)^2 max INT+(INT/5)^2)",
+  "rathena/db/pre-re/skill_tree.yml (authoritative server skill prerequisites)",
+  "rathena/db/pre-re/skill_db.yml (SP costs, cast times)",
+  "iro-wiki corpus '<Class> Job Change Guide' + rathena/npc/pre-re/jobs/1-1/<class>.txt (job change)",
+  "iro-wiki corpus pages 'Mage', 'Fire Bolt', 'Lightning Bolt', 'Cold Bolt', 'Napalm Beat', 'Stone Curse', 'Frost Diver', 'Frost Nova', 'Increase SP Recovery', 'Mage Job Change Guide'",
+  "iro-db monsters 1002/1113/1008/1054/1077 (incl. per-mob elemental_damage tables); item 1601",
+  "corpus 'Mage' Job Bonuses: j40 INT+5 AGI+3 DEX+3 LUK+1; j50 INT+8 AGI+4 DEX+3 LUK+3",
+  "rathena/src/map/skill.cpp skill_calc_heal/default (pre-re MATK baseline), status.cpp status_base_matk_min/max"
+ ]
+}

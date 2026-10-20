@@ -1,0 +1,1212 @@
+{
+  "schema": 1,
+  "finding_id": "L3-TEMP",
+  "passed": true,
+  "status": "accepted_scoped_offline",
+  "review_type": "fresh independent read-only final review of single explicitly authorized extra L3-TEMP repair",
+  "created_at": "2026-10-05T12:09:16.571494+00:00",
+  "repo": "/home/otto/dev/ro-bots",
+  "authority": "run/reviews/protocol-second-cycle-review.json",
+  "implementation_report": "run/reviews/temporary-handshake-cleanup-fix.json",
+  "implementation_report_used_as_oracle": false,
+  "security_concerns": [],
+  "logic_errors": [],
+  "suggestions": [],
+  "summary": "PASS scoped offline: temporary login/character ownership and framing survive failed/interrupted release; original exceptions and tracebacks survive cleanup; shared harness budgets block retry/later limbs/PASS. No new supported-path blocker found.",
+  "scope_complete": true,
+  "scope_definition": "Full current client.py and test_limbs.py, README, new cleanup regressions and five unchanged prior protocol regression files; exact L3-TEMP authority and complete repair report including long embedded log/source fields; actual prior blocker transports and fresh independent adversarial tests. Existing supported transports and exception types only. Prior six resolved findings inherited with unchanged exclusions and rerun regressions, not broadened into exhaustive protocol/app review.",
+  "review_observations": [
+    {
+      "files": {
+        "spikes/003-clientless-limbs/client.py": [
+          95,
+          148,
+          159,
+          164,
+          166,
+          167,
+          171,
+          175,
+          178
+        ]
+      },
+      "result": "Explicit temporary ownership is installed before socket timeout setup/yield. _release_handshake_socket invokes supported socket exit and removes ownership/framing only after normal return. Failures retain both socket/framing and private original cleanup objects."
+    },
+    {
+      "files": {
+        "spikes/003-clientless-limbs/client.py": [
+          171,
+          176,
+          178,
+          369,
+          391,
+          397
+        ]
+      },
+      "result": "Bare re-raise preserves the original refused/read/interrupt exception; completed handshake exit failure itself remains the origin. Class-only notes do not echo secondary messages. Prior cleanup must succeed before connect clears framing or starts another handshake."
+    },
+    {
+      "files": {
+        "spikes/003-clientless-limbs/client.py": [
+          401,
+          406,
+          408,
+          414,
+          421,
+          428,
+          441,
+          445,
+          449
+        ]
+      },
+      "result": "Every temporary transport is attempted independently; shutdown, map close, reader query/join are also attempted despite BaseException. Unknown release remains referenced; successful eventual release is idempotent. Conservative retention of a closed map resource after another cleanup failure is allowed, not loss of ownership."
+    },
+    {
+      "files": {
+        "spikes/003-clientless-limbs/test_limbs.py": [
+          166,
+          170,
+          193,
+          195,
+          198,
+          204,
+          206,
+          209,
+          225,
+          226,
+          244,
+          252
+        ]
+      },
+      "result": "Every instantiated participant remains in the cleanup list. Normal close return with temporary/map/reader ownership still present also poisons the budget. Cleanup BaseException cannot skip another participant; retained clients block retries, direct connect_pair calls, later limbs and PASS. Origin BaseException may propagate instead of producing a limb result but cannot produce PASS."
+    },
+    {
+      "result": "No new credential literals, source eval/exec, deserialization, SQL execution, shell invocation or network destination logic added by scoped repair; test credentials are randomly synthesized in memory and not used externally."
+    }
+  ],
+  "verification": [
+    {
+      "kind": "independent scoped offline protocol/compiler suite",
+      "exit_code": 0,
+      "tests_passed": 138,
+      "subtests_passed": 65,
+      "command": "PYTHONDONTWRITEBYTECODE=1 timeout -k 2 120 nix develop --offline -c uv run --offline --no-sync pytest -p no:cacheprovider -o addopts= -q tests/test_temporary_handshake_cleanup.py tests/test_protocol_rereview_repairs.py tests/test_client_protocol.py tests/test_limb_evidence.py tests/test_packet_conditions.py spikes/003-clientless-limbs/test_packetdb.py --basetemp=/home/otto/.hermes/cache/scratch/temporary-handshake-independent/pytest-rerun -o faulthandler_timeout=10",
+      "output": "warning: Git tree '/home/otto/dev/ro-bots' is dirty\nro-bots dev shell \u2014 try: task --list\n........................................................................ [ 52%]\n..................................................................              [100%]\n138 passed, 65 subtests passed in 1.48s\n"
+    },
+    {
+      "kind": "exact previous independent failure probe unmodified",
+      "exit_code": 1,
+      "expected_negative_assertion": "assert not b.unreleased_clients",
+      "output": "warning: Git tree '/home/otto/dev/ro-bots' is dirty\nro-bots dev shell \u2014 try: task --list\nTraceback (most recent call last):\n  File \"/home/otto/.hermes/cache/scratch/temporary-handshake-independent/prior_failure_probe.py\", line 40, in <module>\n    assert not b.unreleased_clients\n           ^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError\n",
+      "interpretation": "Original defect-detection assertion now fails because cleanup ownership is retained. Original script stops after login; same original setup with only repaired expectation assertions then executed both login and character below. This is not a regression failure."
+    },
+    {
+      "kind": "both actual prior blocker probes with repaired expectations only",
+      "exit_code": 0,
+      "result": {
+        "prior_defect_reproduced": false,
+        "cases": [
+          {
+            "stage": "login",
+            "retry_attempts": [
+              [
+                100.0,
+                1
+              ]
+            ],
+            "temporary_socket_closed": false,
+            "unreleased_clients": 1,
+            "limb_passed": false,
+            "result_detail": "FAIL RuntimeError; cleanup failed: RuntimeError",
+            "origin_cleanup_errors_retained": 4
+          },
+          {
+            "stage": "char",
+            "retry_attempts": [
+              [
+                100.0,
+                1
+              ]
+            ],
+            "temporary_socket_closed": false,
+            "unreleased_clients": 1,
+            "limb_passed": false,
+            "result_detail": "FAIL RuntimeError; cleanup failed: RuntimeError",
+            "origin_cleanup_errors_retained": 4
+          }
+        ],
+        "network_calls": 0
+      },
+      "command": "PYTHONDONTWRITEBYTECODE=1 timeout -k 2 60 nix develop --offline -c uv run --offline --no-sync python /home/otto/.hermes/cache/scratch/temporary-handshake-independent/prior_failure_probe_repaired_expectations.py"
+    },
+    {
+      "kind": "fresh independent actual-method adversarial probes",
+      "exit_code": 0,
+      "result": {
+        "passed": true,
+        "cases": [
+          {
+            "kind": "actual-fixture-harness",
+            "stage": "login",
+            "completed": false,
+            "participant": 1,
+            "cleanup": "OSError",
+            "attempts": [
+              [
+                100.0,
+                1
+              ]
+            ],
+            "cleanup_attempts": 4,
+            "origin_identity_verified": false,
+            "handshake_traceback_retained": true,
+            "blocked_retry_later_pass": true,
+            "eventual_release_idempotent": true,
+            "poison_survives_manual_release": true
+          },
+          {
+            "kind": "actual-fixture-harness",
+            "stage": "login",
+            "completed": false,
+            "participant": 1,
+            "cleanup": "KeyboardInterrupt",
+            "attempts": [
+              [
+                100.0,
+                1
+              ]
+            ],
+            "cleanup_attempts": 4,
+            "origin_identity_verified": false,
+            "handshake_traceback_retained": true,
+            "blocked_retry_later_pass": true,
+            "eventual_release_idempotent": true,
+            "poison_survives_manual_release": true
+          },
+          {
+            "kind": "actual-fixture-harness",
+            "stage": "login",
+            "completed": false,
+            "participant": 1,
+            "cleanup": "SystemExit",
+            "attempts": [
+              [
+                100.0,
+                1
+              ]
+            ],
+            "cleanup_attempts": 4,
+            "origin_identity_verified": false,
+            "handshake_traceback_retained": true,
+            "blocked_retry_later_pass": true,
+            "eventual_release_idempotent": true,
+            "poison_survives_manual_release": true
+          },
+          {
+            "kind": "actual-fixture-harness",
+            "stage": "login",
+            "completed": false,
+            "participant": 2,
+            "cleanup": "OSError",
+            "attempts": [
+              [
+                100.0,
+                1
+              ],
+              [
+                100.0,
+                2
+              ]
+            ],
+            "cleanup_attempts": 4,
+            "origin_identity_verified": false,
+            "handshake_traceback_retained": true,
+            "blocked_retry_later_pass": true,
+            "eventual_release_idempotent": true,
+            "poison_survives_manual_release": true
+          },
+          {
+            "kind": "actual-fixture-harness",
+            "stage": "login",
+            "completed": false,
+            "participant": 2,
+            "cleanup": "KeyboardInterrupt",
+            "attempts": [
+              [
+                100.0,
+                1
+              ],
+              [
+                100.0,
+                2
+              ]
+            ],
+            "cleanup_attempts": 4,
+            "origin_identity_verified": false,
+            "handshake_traceback_retained": true,
+            "blocked_retry_later_pass": true,
+            "eventual_release_idempotent": true,
+            "poison_survives_manual_release": true
+          },
+          {
+            "kind": "actual-fixture-harness",
+            "stage": "login",
+            "completed": false,
+            "participant": 2,
+            "cleanup": "SystemExit",
+            "attempts": [
+              [
+                100.0,
+                1
+              ],
+              [
+                100.0,
+                2
+              ]
+            ],
+            "cleanup_attempts": 4,
+            "origin_identity_verified": false,
+            "handshake_traceback_retained": true,
+            "blocked_retry_later_pass": true,
+            "eventual_release_idempotent": true,
+            "poison_survives_manual_release": true
+          },
+          {
+            "kind": "actual-fixture-harness",
+            "stage": "login",
+            "completed": true,
+            "participant": 1,
+            "cleanup": "OSError",
+            "attempts": [
+              [
+                100.0,
+                1
+              ]
+            ],
+            "cleanup_attempts": 4,
+            "origin_identity_verified": true,
+            "handshake_traceback_retained": true,
+            "blocked_retry_later_pass": true,
+            "eventual_release_idempotent": true,
+            "poison_survives_manual_release": true
+          },
+          {
+            "kind": "actual-fixture-harness",
+            "stage": "login",
+            "completed": true,
+            "participant": 1,
+            "cleanup": "KeyboardInterrupt",
+            "attempts": [
+              [
+                100.0,
+                1
+              ]
+            ],
+            "cleanup_attempts": 4,
+            "origin_identity_verified": true,
+            "handshake_traceback_retained": true,
+            "blocked_retry_later_pass": true,
+            "eventual_release_idempotent": true,
+            "poison_survives_manual_release": true
+          },
+          {
+            "kind": "actual-fixture-harness",
+            "stage": "login",
+            "completed": true,
+            "participant": 1,
+            "cleanup": "SystemExit",
+            "attempts": [
+              [
+                100.0,
+                1
+              ]
+            ],
+            "cleanup_attempts": 4,
+            "origin_identity_verified": true,
+            "handshake_traceback_retained": true,
+            "blocked_retry_later_pass": true,
+            "eventual_release_idempotent": true,
+            "poison_survives_manual_release": true
+          },
+          {
+            "kind": "actual-fixture-harness",
+            "stage": "login",
+            "completed": true,
+            "participant": 2,
+            "cleanup": "OSError",
+            "attempts": [
+              [
+                100.0,
+                1
+              ],
+              [
+                100.0,
+                2
+              ]
+            ],
+            "cleanup_attempts": 4,
+            "origin_identity_verified": true,
+            "handshake_traceback_retained": true,
+            "blocked_retry_later_pass": true,
+            "eventual_release_idempotent": true,
+            "poison_survives_manual_release": true
+          },
+          {
+            "kind": "actual-fixture-harness",
+            "stage": "login",
+            "completed": true,
+            "participant": 2,
+            "cleanup": "KeyboardInterrupt",
+            "attempts": [
+              [
+                100.0,
+                1
+              ],
+              [
+                100.0,
+                2
+              ]
+            ],
+            "cleanup_attempts": 4,
+            "origin_identity_verified": true,
+            "handshake_traceback_retained": true,
+            "blocked_retry_later_pass": true,
+            "eventual_release_idempotent": true,
+            "poison_survives_manual_release": true
+          },
+          {
+            "kind": "actual-fixture-harness",
+            "stage": "login",
+            "completed": true,
+            "participant": 2,
+            "cleanup": "SystemExit",
+            "attempts": [
+              [
+                100.0,
+                1
+              ],
+              [
+                100.0,
+                2
+              ]
+            ],
+            "cleanup_attempts": 4,
+            "origin_identity_verified": true,
+            "handshake_traceback_retained": true,
+            "blocked_retry_later_pass": true,
+            "eventual_release_idempotent": true,
+            "poison_survives_manual_release": true
+          },
+          {
+            "kind": "actual-fixture-harness",
+            "stage": "char",
+            "completed": false,
+            "participant": 1,
+            "cleanup": "OSError",
+            "attempts": [
+              [
+                100.0,
+                1
+              ]
+            ],
+            "cleanup_attempts": 4,
+            "origin_identity_verified": false,
+            "handshake_traceback_retained": true,
+            "blocked_retry_later_pass": true,
+            "eventual_release_idempotent": true,
+            "poison_survives_manual_release": true
+          },
+          {
+            "kind": "actual-fixture-harness",
+            "stage": "char",
+            "completed": false,
+            "participant": 1,
+            "cleanup": "KeyboardInterrupt",
+            "attempts": [
+              [
+                100.0,
+                1
+              ]
+            ],
+            "cleanup_attempts": 4,
+            "origin_identity_verified": false,
+            "handshake_traceback_retained": true,
+            "blocked_retry_later_pass": true,
+            "eventual_release_idempotent": true,
+            "poison_survives_manual_release": true
+          },
+          {
+            "kind": "actual-fixture-harness",
+            "stage": "char",
+            "completed": false,
+            "participant": 1,
+            "cleanup": "SystemExit",
+            "attempts": [
+              [
+                100.0,
+                1
+              ]
+            ],
+            "cleanup_attempts": 4,
+            "origin_identity_verified": false,
+            "handshake_traceback_retained": true,
+            "blocked_retry_later_pass": true,
+            "eventual_release_idempotent": true,
+            "poison_survives_manual_release": true
+          },
+          {
+            "kind": "actual-fixture-harness",
+            "stage": "char",
+            "completed": false,
+            "participant": 2,
+            "cleanup": "OSError",
+            "attempts": [
+              [
+                100.0,
+                1
+              ],
+              [
+                100.0,
+                2
+              ]
+            ],
+            "cleanup_attempts": 4,
+            "origin_identity_verified": false,
+            "handshake_traceback_retained": true,
+            "blocked_retry_later_pass": true,
+            "eventual_release_idempotent": true,
+            "poison_survives_manual_release": true
+          },
+          {
+            "kind": "actual-fixture-harness",
+            "stage": "char",
+            "completed": false,
+            "participant": 2,
+            "cleanup": "KeyboardInterrupt",
+            "attempts": [
+              [
+                100.0,
+                1
+              ],
+              [
+                100.0,
+                2
+              ]
+            ],
+            "cleanup_attempts": 4,
+            "origin_identity_verified": false,
+            "handshake_traceback_retained": true,
+            "blocked_retry_later_pass": true,
+            "eventual_release_idempotent": true,
+            "poison_survives_manual_release": true
+          },
+          {
+            "kind": "actual-fixture-harness",
+            "stage": "char",
+            "completed": false,
+            "participant": 2,
+            "cleanup": "SystemExit",
+            "attempts": [
+              [
+                100.0,
+                1
+              ],
+              [
+                100.0,
+                2
+              ]
+            ],
+            "cleanup_attempts": 4,
+            "origin_identity_verified": false,
+            "handshake_traceback_retained": true,
+            "blocked_retry_later_pass": true,
+            "eventual_release_idempotent": true,
+            "poison_survives_manual_release": true
+          },
+          {
+            "kind": "actual-fixture-harness",
+            "stage": "char",
+            "completed": true,
+            "participant": 1,
+            "cleanup": "OSError",
+            "attempts": [
+              [
+                100.0,
+                1
+              ]
+            ],
+            "cleanup_attempts": 4,
+            "origin_identity_verified": true,
+            "handshake_traceback_retained": true,
+            "blocked_retry_later_pass": true,
+            "eventual_release_idempotent": true,
+            "poison_survives_manual_release": true
+          },
+          {
+            "kind": "actual-fixture-harness",
+            "stage": "char",
+            "completed": true,
+            "participant": 1,
+            "cleanup": "KeyboardInterrupt",
+            "attempts": [
+              [
+                100.0,
+                1
+              ]
+            ],
+            "cleanup_attempts": 4,
+            "origin_identity_verified": true,
+            "handshake_traceback_retained": true,
+            "blocked_retry_later_pass": true,
+            "eventual_release_idempotent": true,
+            "poison_survives_manual_release": true
+          },
+          {
+            "kind": "actual-fixture-harness",
+            "stage": "char",
+            "completed": true,
+            "participant": 1,
+            "cleanup": "SystemExit",
+            "attempts": [
+              [
+                100.0,
+                1
+              ]
+            ],
+            "cleanup_attempts": 4,
+            "origin_identity_verified": true,
+            "handshake_traceback_retained": true,
+            "blocked_retry_later_pass": true,
+            "eventual_release_idempotent": true,
+            "poison_survives_manual_release": true
+          },
+          {
+            "kind": "actual-fixture-harness",
+            "stage": "char",
+            "completed": true,
+            "participant": 2,
+            "cleanup": "OSError",
+            "attempts": [
+              [
+                100.0,
+                1
+              ],
+              [
+                100.0,
+                2
+              ]
+            ],
+            "cleanup_attempts": 4,
+            "origin_identity_verified": true,
+            "handshake_traceback_retained": true,
+            "blocked_retry_later_pass": true,
+            "eventual_release_idempotent": true,
+            "poison_survives_manual_release": true
+          },
+          {
+            "kind": "actual-fixture-harness",
+            "stage": "char",
+            "completed": true,
+            "participant": 2,
+            "cleanup": "KeyboardInterrupt",
+            "attempts": [
+              [
+                100.0,
+                1
+              ],
+              [
+                100.0,
+                2
+              ]
+            ],
+            "cleanup_attempts": 4,
+            "origin_identity_verified": true,
+            "handshake_traceback_retained": true,
+            "blocked_retry_later_pass": true,
+            "eventual_release_idempotent": true,
+            "poison_survives_manual_release": true
+          },
+          {
+            "kind": "actual-fixture-harness",
+            "stage": "char",
+            "completed": true,
+            "participant": 2,
+            "cleanup": "SystemExit",
+            "attempts": [
+              [
+                100.0,
+                1
+              ],
+              [
+                100.0,
+                2
+              ]
+            ],
+            "cleanup_attempts": 4,
+            "origin_identity_verified": true,
+            "handshake_traceback_retained": true,
+            "blocked_retry_later_pass": true,
+            "eventual_release_idempotent": true,
+            "poison_survives_manual_release": true
+          },
+          {
+            "kind": "origin-identity-traceback",
+            "stage": "login",
+            "origin": "ValueError",
+            "cleanup": "OSError",
+            "passed": true
+          },
+          {
+            "kind": "origin-identity-traceback",
+            "stage": "login",
+            "origin": "ValueError",
+            "cleanup": "KeyboardInterrupt",
+            "passed": true
+          },
+          {
+            "kind": "origin-identity-traceback",
+            "stage": "login",
+            "origin": "ValueError",
+            "cleanup": "SystemExit",
+            "passed": true
+          },
+          {
+            "kind": "origin-identity-traceback",
+            "stage": "login",
+            "origin": "KeyboardInterrupt",
+            "cleanup": "OSError",
+            "passed": true
+          },
+          {
+            "kind": "origin-identity-traceback",
+            "stage": "login",
+            "origin": "KeyboardInterrupt",
+            "cleanup": "KeyboardInterrupt",
+            "passed": true
+          },
+          {
+            "kind": "origin-identity-traceback",
+            "stage": "login",
+            "origin": "KeyboardInterrupt",
+            "cleanup": "SystemExit",
+            "passed": true
+          },
+          {
+            "kind": "origin-identity-traceback",
+            "stage": "login",
+            "origin": "SystemExit",
+            "cleanup": "OSError",
+            "passed": true
+          },
+          {
+            "kind": "origin-identity-traceback",
+            "stage": "login",
+            "origin": "SystemExit",
+            "cleanup": "KeyboardInterrupt",
+            "passed": true
+          },
+          {
+            "kind": "origin-identity-traceback",
+            "stage": "login",
+            "origin": "SystemExit",
+            "cleanup": "SystemExit",
+            "passed": true
+          },
+          {
+            "kind": "origin-identity-traceback",
+            "stage": "char",
+            "origin": "ValueError",
+            "cleanup": "OSError",
+            "passed": true
+          },
+          {
+            "kind": "origin-identity-traceback",
+            "stage": "char",
+            "origin": "ValueError",
+            "cleanup": "KeyboardInterrupt",
+            "passed": true
+          },
+          {
+            "kind": "origin-identity-traceback",
+            "stage": "char",
+            "origin": "ValueError",
+            "cleanup": "SystemExit",
+            "passed": true
+          },
+          {
+            "kind": "origin-identity-traceback",
+            "stage": "char",
+            "origin": "KeyboardInterrupt",
+            "cleanup": "OSError",
+            "passed": true
+          },
+          {
+            "kind": "origin-identity-traceback",
+            "stage": "char",
+            "origin": "KeyboardInterrupt",
+            "cleanup": "KeyboardInterrupt",
+            "passed": true
+          },
+          {
+            "kind": "origin-identity-traceback",
+            "stage": "char",
+            "origin": "KeyboardInterrupt",
+            "cleanup": "SystemExit",
+            "passed": true
+          },
+          {
+            "kind": "origin-identity-traceback",
+            "stage": "char",
+            "origin": "SystemExit",
+            "cleanup": "OSError",
+            "passed": true
+          },
+          {
+            "kind": "origin-identity-traceback",
+            "stage": "char",
+            "origin": "SystemExit",
+            "cleanup": "KeyboardInterrupt",
+            "passed": true
+          },
+          {
+            "kind": "origin-identity-traceback",
+            "stage": "char",
+            "origin": "SystemExit",
+            "cleanup": "SystemExit",
+            "passed": true
+          },
+          {
+            "kind": "all-owned-resources-baseexceptions",
+            "temporary_count": 2,
+            "shutdown_close_join_attempted": true,
+            "eventual_release_idempotent": true
+          },
+          {
+            "kind": "native-unconnected-context-release",
+            "descriptor_closed": true,
+            "bind_connect_listen_calls": 0
+          }
+        ],
+        "case_count": 44,
+        "external_network_calls": 0
+      },
+      "command": "PYTHONDONTWRITEBYTECODE=1 timeout -k 2 90 nix develop --offline -c uv run --offline --no-sync python /home/otto/.hermes/cache/scratch/temporary-handshake-independent/independent_probes.py",
+      "coverage": "24 refused/completed login/character cases, each first/second participant, with OSError/KeyboardInterrupt/SystemExit cleanup; 18 injected origin identity/recv traceback cases; one multiple-temp/map/reader/shutdown BaseException case; one local unconnected real descriptor context-exit close case. Transport close itself asserts ownership/framing remain through release confirmation."
+    },
+    {
+      "kind": "hash-pinned native compiler fixtures",
+      "exit_code": 0,
+      "layout_values": [
+        155,
+        88,
+        118,
+        110,
+        5,
+        9,
+        63,
+        86,
+        103,
+        79,
+        104,
+        80
+      ],
+      "profile": [
+        "-DPACKETVER=20180704",
+        "-DPRERE"
+      ],
+      "family": "MAIN/pre-renewal",
+      "procedure": "Suite compiled actual full common header and unchanged complete target packed struct excerpts, plus native creation struct sizing and preprocessed numeric-table oracle. Local executable rerun. Not full map-header build or character-creation support."
+    },
+    {
+      "kind": "strict packetdb CLI self-test",
+      "exit_code": 0,
+      "output": "warning: Git tree '/home/otto/dev/ro-bots' is dirty\nro-bots dev shell \u2014 try: task --list\npacketdb self-test: 820 ids derived, 864 embedded, mismatches=0\n"
+    },
+    {
+      "kind": "standalone packetdb unittest",
+      "exit_code": 0,
+      "output": "warning: Git tree '/home/otto/dev/ro-bots' is dirty\nro-bots dev shell \u2014 try: task --list\n.......\n----------------------------------------------------------------------\nRan 7 tests in 0.003s\n\nOK\n",
+      "note": "7 included in 138; do not sum unique test totals."
+    },
+    {
+      "kind": "git diff --check",
+      "exit_code": 0,
+      "output": ""
+    },
+    {
+      "kind": "fingerprints before and after review",
+      "source_drift": [],
+      "repair_hash_mismatch": [],
+      "excluded_hash_mismatch": []
+    }
+  ],
+  "source_hashes_before": {
+    "flake.lock": {
+      "sha256": "c9c0bac69415b99a29ef3fe149b6f04ef54d291989bdf7218cf819ed52edf2a0",
+      "bytes": 567
+    },
+    "flake.nix": {
+      "sha256": "cc218c50ff3b05761d59b9b951f5da2daca3435d2c5cff975b909fe7df8c1ee3",
+      "bytes": 890
+    },
+    "pyproject.toml": {
+      "sha256": "e8ae0849a413bc3d705f081f609b92dae702bbd3e491b2c3aeb5d8665c458fba",
+      "bytes": 2652
+    },
+    "rathena/config.log": {
+      "sha256": "6bb759d7b65d463ecd38ca81f484659ec2dc6e7885b017a964b9c611114e9d78",
+      "bytes": 48741
+    },
+    "rathena/sql-files/main.sql": {
+      "sha256": "40bafce9c3aa14dd997d911b6dd42151d4b0e7afae9273d1ba96993ffdea1c80",
+      "bytes": 41941
+    },
+    "rathena/src/char/char_clif.cpp": {
+      "sha256": "f50dedd4cf46d0d3bea95c9410f1f0f04c5f7b525e6691b2afb9c4a3677c5654",
+      "bytes": 50916
+    },
+    "rathena/src/common/packets.hpp": {
+      "sha256": "c92279bf163e9546b649397638c19e57c3eb515b49e841c13f88a5fb97bba693",
+      "bytes": 17432
+    },
+    "rathena/src/config/core.hpp": {
+      "sha256": "ba04ee9f32d9d334f59b345326105864ddc5fed296ebbaf9d599c26e48aea7ae",
+      "bytes": 4512
+    },
+    "rathena/src/config/packets.hpp": {
+      "sha256": "180f7ddaf5c978af0db7ed26215388265d51f59957ac7173d617870e2cc0964d",
+      "bytes": 2956
+    },
+    "rathena/src/login/login.hpp": {
+      "sha256": "2110c6e91e833069e0d2158f444038209e75b68024f408787a23e54d5e11fd19",
+      "bytes": 8875
+    },
+    "rathena/src/login/loginclif.cpp": {
+      "sha256": "85b9ef68f01890d505e5ef6089f6fb286516e2a35625f14fbcd79b03a36d9d93",
+      "bytes": 18190
+    },
+    "rathena/src/map/clif.cpp": {
+      "sha256": "0b1db098158c240b090c6edb8417978ba495957c8a2df4cd9a0ab4cb39884ac5",
+      "bytes": 775974
+    },
+    "rathena/src/map/clif_packetdb.hpp": {
+      "sha256": "51c8a9ebd591e0dd4f444f829253a14d449615425405cb8a95f28a6dea460e66",
+      "bytes": 79471
+    },
+    "rathena/src/map/clif_shuffle.hpp": {
+      "sha256": "befba011ca4b2d1186c16fba325a7240a4ff5375e252d2fb4cc62d503c66d2a0",
+      "bytes": 288273
+    },
+    "rathena/src/map/packets_struct.hpp": {
+      "sha256": "5ab5ef13d2a1cdc60d84dcaf2e3be0b6e316b9630e61c3ac7ba0f930d4d31287",
+      "bytes": 157544
+    },
+    "run/reviews/protocol-second-cycle-review.json": {
+      "sha256": "b1b9913572862993e833f0fe62b9f542ed6ff7f342250891c30e7dc9e15269cb",
+      "bytes": 25485
+    },
+    "run/reviews/protocol-second-cycle.json": {
+      "sha256": "bbc0eedd3f5e2ae1329565cc43883726cbc17e3573d1a21a175e1f81eb4aba84",
+      "bytes": 18025
+    },
+    "run/reviews/spike-protocol-rereview.json": {
+      "sha256": "cdb6cbad726d391410a7c88bea35832c739ed942b39c215a6757cadd73a0444e",
+      "bytes": 21317
+    },
+    "run/reviews/temporary-handshake-cleanup-fix.json": {
+      "sha256": "8173b9c6f3be616c483013ecb896c4cce9a2e7d3f8d1345569496dff4d5c6084",
+      "bytes": 39786
+    },
+    "spikes/003-clientless-limbs/README.md": {
+      "sha256": "5a87856a051a57891b349105cebfd31633e2a737e19cbc2a3a696de2ad4512dc",
+      "bytes": 12814
+    },
+    "spikes/003-clientless-limbs/client.py": {
+      "sha256": "d3026f448857c7ec804469cf584ca1f3089c6ad8188224d2b2cb9389e707eb05",
+      "bytes": 36041
+    },
+    "spikes/003-clientless-limbs/packetdb.py": {
+      "sha256": "d106ae277a6c7f75cf597c9051651a27e0ba6fa3663575608e0033048b18f9d4",
+      "bytes": 37159
+    },
+    "spikes/003-clientless-limbs/scripts/gen_packetdb.py": {
+      "sha256": "b07c857779277391f1b0c1935bd27a60b13eaa8e65b28bc119b36398a383c7f2",
+      "bytes": 297
+    },
+    "spikes/003-clientless-limbs/scripts/probe_map.py": {
+      "sha256": "85109472752d9cd0c2912f7fd0cc41fba08219171a9dd0b2ce272f6eaff9c47b",
+      "bytes": 300
+    },
+    "spikes/003-clientless-limbs/scripts/seed_fixture.py": {
+      "sha256": "03de2f4f659c8df0a3c5e9c41d74c3cb2493176f420aead8a7022f5631ecdb0e",
+      "bytes": 3284
+    },
+    "spikes/003-clientless-limbs/seed_test.sql": {
+      "sha256": "c041c5cb431bc340740ae7b617dd21caedd4c81101a1f8418ef99f81e360d0f0",
+      "bytes": 5655
+    },
+    "spikes/003-clientless-limbs/test_limbs.py": {
+      "sha256": "cc1f4b66e489375fd89b0f3c2232cc165358a61167b4669ba12952be2466613b",
+      "bytes": 16173
+    },
+    "spikes/003-clientless-limbs/test_packetdb.py": {
+      "sha256": "afdb0770e12525f85169ce24af2eaa23cf8015debc1c2a5cb2914c8f1400e7c3",
+      "bytes": 3586
+    },
+    "tests/test_client_protocol.py": {
+      "sha256": "3e781d2f50501b2d1bf0c3caccf507f3c6fcde533ad62ea1448b0f857143a5a2",
+      "bytes": 18039
+    },
+    "tests/test_limb_evidence.py": {
+      "sha256": "9669537ee7ed63e7be4850936e96d28fc0a75bb17c77bac753c45ec8be941569",
+      "bytes": 13263
+    },
+    "tests/test_packet_conditions.py": {
+      "sha256": "abe40cc3af9d56de1f98088ae372e0e1f54cfe5a2d89ea6828f75f6e4d1969d1",
+      "bytes": 10259
+    },
+    "tests/test_protocol_rereview_repairs.py": {
+      "sha256": "587c6aee7058cb18c5537fd41b46cba5e847254817590cfa74c088f198843110",
+      "bytes": 13878
+    },
+    "tests/test_temporary_handshake_cleanup.py": {
+      "sha256": "4c4daa3740b5c3f12441d1c3042a655b4208473904528509b816f38ffd269d79",
+      "bytes": 12023
+    },
+    "uv.lock": {
+      "sha256": "2d7b4c187078488d7625e4fd4fa982745cab8d6a65b2ff3e382ffa286f1df245",
+      "bytes": 251692
+    }
+  },
+  "source_hashes_after": {
+    "flake.lock": {
+      "sha256": "c9c0bac69415b99a29ef3fe149b6f04ef54d291989bdf7218cf819ed52edf2a0",
+      "bytes": 567
+    },
+    "flake.nix": {
+      "sha256": "cc218c50ff3b05761d59b9b951f5da2daca3435d2c5cff975b909fe7df8c1ee3",
+      "bytes": 890
+    },
+    "pyproject.toml": {
+      "sha256": "e8ae0849a413bc3d705f081f609b92dae702bbd3e491b2c3aeb5d8665c458fba",
+      "bytes": 2652
+    },
+    "rathena/config.log": {
+      "sha256": "6bb759d7b65d463ecd38ca81f484659ec2dc6e7885b017a964b9c611114e9d78",
+      "bytes": 48741
+    },
+    "rathena/sql-files/main.sql": {
+      "sha256": "40bafce9c3aa14dd997d911b6dd42151d4b0e7afae9273d1ba96993ffdea1c80",
+      "bytes": 41941
+    },
+    "rathena/src/char/char_clif.cpp": {
+      "sha256": "f50dedd4cf46d0d3bea95c9410f1f0f04c5f7b525e6691b2afb9c4a3677c5654",
+      "bytes": 50916
+    },
+    "rathena/src/common/packets.hpp": {
+      "sha256": "c92279bf163e9546b649397638c19e57c3eb515b49e841c13f88a5fb97bba693",
+      "bytes": 17432
+    },
+    "rathena/src/config/core.hpp": {
+      "sha256": "ba04ee9f32d9d334f59b345326105864ddc5fed296ebbaf9d599c26e48aea7ae",
+      "bytes": 4512
+    },
+    "rathena/src/config/packets.hpp": {
+      "sha256": "180f7ddaf5c978af0db7ed26215388265d51f59957ac7173d617870e2cc0964d",
+      "bytes": 2956
+    },
+    "rathena/src/login/login.hpp": {
+      "sha256": "2110c6e91e833069e0d2158f444038209e75b68024f408787a23e54d5e11fd19",
+      "bytes": 8875
+    },
+    "rathena/src/login/loginclif.cpp": {
+      "sha256": "85b9ef68f01890d505e5ef6089f6fb286516e2a35625f14fbcd79b03a36d9d93",
+      "bytes": 18190
+    },
+    "rathena/src/map/clif.cpp": {
+      "sha256": "0b1db098158c240b090c6edb8417978ba495957c8a2df4cd9a0ab4cb39884ac5",
+      "bytes": 775974
+    },
+    "rathena/src/map/clif_packetdb.hpp": {
+      "sha256": "51c8a9ebd591e0dd4f444f829253a14d449615425405cb8a95f28a6dea460e66",
+      "bytes": 79471
+    },
+    "rathena/src/map/clif_shuffle.hpp": {
+      "sha256": "befba011ca4b2d1186c16fba325a7240a4ff5375e252d2fb4cc62d503c66d2a0",
+      "bytes": 288273
+    },
+    "rathena/src/map/packets_struct.hpp": {
+      "sha256": "5ab5ef13d2a1cdc60d84dcaf2e3be0b6e316b9630e61c3ac7ba0f930d4d31287",
+      "bytes": 157544
+    },
+    "run/reviews/protocol-second-cycle-review.json": {
+      "sha256": "b1b9913572862993e833f0fe62b9f542ed6ff7f342250891c30e7dc9e15269cb",
+      "bytes": 25485
+    },
+    "run/reviews/protocol-second-cycle.json": {
+      "sha256": "bbc0eedd3f5e2ae1329565cc43883726cbc17e3573d1a21a175e1f81eb4aba84",
+      "bytes": 18025
+    },
+    "run/reviews/spike-protocol-rereview.json": {
+      "sha256": "cdb6cbad726d391410a7c88bea35832c739ed942b39c215a6757cadd73a0444e",
+      "bytes": 21317
+    },
+    "run/reviews/temporary-handshake-cleanup-fix.json": {
+      "sha256": "8173b9c6f3be616c483013ecb896c4cce9a2e7d3f8d1345569496dff4d5c6084",
+      "bytes": 39786
+    },
+    "spikes/003-clientless-limbs/README.md": {
+      "sha256": "5a87856a051a57891b349105cebfd31633e2a737e19cbc2a3a696de2ad4512dc",
+      "bytes": 12814
+    },
+    "spikes/003-clientless-limbs/client.py": {
+      "sha256": "d3026f448857c7ec804469cf584ca1f3089c6ad8188224d2b2cb9389e707eb05",
+      "bytes": 36041
+    },
+    "spikes/003-clientless-limbs/packetdb.py": {
+      "sha256": "d106ae277a6c7f75cf597c9051651a27e0ba6fa3663575608e0033048b18f9d4",
+      "bytes": 37159
+    },
+    "spikes/003-clientless-limbs/scripts/gen_packetdb.py": {
+      "sha256": "b07c857779277391f1b0c1935bd27a60b13eaa8e65b28bc119b36398a383c7f2",
+      "bytes": 297
+    },
+    "spikes/003-clientless-limbs/scripts/probe_map.py": {
+      "sha256": "85109472752d9cd0c2912f7fd0cc41fba08219171a9dd0b2ce272f6eaff9c47b",
+      "bytes": 300
+    },
+    "spikes/003-clientless-limbs/scripts/seed_fixture.py": {
+      "sha256": "03de2f4f659c8df0a3c5e9c41d74c3cb2493176f420aead8a7022f5631ecdb0e",
+      "bytes": 3284
+    },
+    "spikes/003-clientless-limbs/seed_test.sql": {
+      "sha256": "c041c5cb431bc340740ae7b617dd21caedd4c81101a1f8418ef99f81e360d0f0",
+      "bytes": 5655
+    },
+    "spikes/003-clientless-limbs/test_limbs.py": {
+      "sha256": "cc1f4b66e489375fd89b0f3c2232cc165358a61167b4669ba12952be2466613b",
+      "bytes": 16173
+    },
+    "spikes/003-clientless-limbs/test_packetdb.py": {
+      "sha256": "afdb0770e12525f85169ce24af2eaa23cf8015debc1c2a5cb2914c8f1400e7c3",
+      "bytes": 3586
+    },
+    "tests/test_client_protocol.py": {
+      "sha256": "3e781d2f50501b2d1bf0c3caccf507f3c6fcde533ad62ea1448b0f857143a5a2",
+      "bytes": 18039
+    },
+    "tests/test_limb_evidence.py": {
+      "sha256": "9669537ee7ed63e7be4850936e96d28fc0a75bb17c77bac753c45ec8be941569",
+      "bytes": 13263
+    },
+    "tests/test_packet_conditions.py": {
+      "sha256": "abe40cc3af9d56de1f98088ae372e0e1f54cfe5a2d89ea6828f75f6e4d1969d1",
+      "bytes": 10259
+    },
+    "tests/test_protocol_rereview_repairs.py": {
+      "sha256": "587c6aee7058cb18c5537fd41b46cba5e847254817590cfa74c088f198843110",
+      "bytes": 13878
+    },
+    "tests/test_temporary_handshake_cleanup.py": {
+      "sha256": "4c4daa3740b5c3f12441d1c3042a655b4208473904528509b816f38ffd269d79",
+      "bytes": 12023
+    },
+    "uv.lock": {
+      "sha256": "2d7b4c187078488d7625e4fd4fa982745cab8d6a65b2ff3e382ffa286f1df245",
+      "bytes": 251692
+    }
+  },
+  "excluded_validated_paths_unchanged": true,
+  "prior_findings": [
+    {
+      "id": "S1",
+      "status": "fixed",
+      "note": "Prior final acceptance preserved; unchanged scoped regressions rerun."
+    },
+    {
+      "id": "S2",
+      "status": "fixed",
+      "note": "Prior final acceptance preserved; unchanged scoped regressions rerun."
+    },
+    {
+      "id": "L1",
+      "status": "fixed",
+      "note": "Prior final acceptance preserved; unchanged scoped regressions rerun."
+    },
+    {
+      "id": "L2",
+      "status": "fixed",
+      "note": "Prior final acceptance preserved; unchanged scoped regressions rerun."
+    },
+    {
+      "id": "L3",
+      "status": "fixed",
+      "note": "L3-TEMP is now independently accepted within the supported cooperative cleanup contract."
+    },
+    {
+      "id": "L4",
+      "status": "fixed",
+      "note": "Prior final acceptance preserved; unchanged scoped regressions rerun."
+    },
+    {
+      "id": "L5",
+      "status": "fixed",
+      "note": "Prior final acceptance preserved; unchanged scoped regressions rerun."
+    }
+  ],
+  "full_reproductions": {
+    "prior_exact_source": "\nimport sys, importlib.util, json, struct, secrets\nfrom pathlib import Path\nfrom types import SimpleNamespace\nfrom unittest.mock import patch\nroot=Path.cwd(); spike=root/'spikes/003-clientless-limbs'; sys.path.insert(0,str(spike))\ndef load(n,p):\n s=importlib.util.spec_from_file_location(n,p); m=importlib.util.module_from_spec(s); s.loader.exec_module(m); return m\nr=load('probe_helpers',root/'tests/test_protocol_rereview_repairs.py')\nresults=[]\nfor stage in ['login','char']:\n l=load('temp_cleanup_probe',spike/'test_limbs.py'); clock=r.Clock(); b=l.Budget(59,clock=clock.monotonic,sleep=clock.sleep); l.fixture=r.fixture_document(); made=[]; connects=[]; sockets=[]\n class Socket(r.FakeSocket):\n  def close(self): raise OSError('sanitized synthetic close failure')\n  def __exit__(self,*args): self.close()\n class LiveReader:\n  def __init__(self): self.live=True\n  def is_alive(self): return self.live\n  def join(self,**kw): self.live=False\n class MapSocket:\n  def shutdown(self,*args): pass\n  def close(self): pass\n actual_login=l.FixtureClient._login_server; actual_char=l.FixtureClient._char_server\n def login(bot):\n  i=1 if bot.user.endswith('-1') else 2; bot.aid,bot.gid=10+i,20+i; connects.append([clock.now,i]); made.append(bot)\n  if stage=='login' and len(connects)==1: return actual_login(bot)\n  return '127.0.0.1',1\n def chars(bot,*args):\n  if stage=='char' and len(connects)==1: return actual_char(bot,*args)\n  return '127.0.0.1',1\n def maps(bot,*args): bot.sock=MapSocket(); bot.rx_thread=LiveReader()\n def create(*args,**kw):\n  raw=r.client.pdb.pack(0x006a,bytes(21)) if stage=='login' else struct.pack('<I',11)+r.client.pdb.pack(0x006c,b'\\x01')\n  sock=Socket([raw]); sockets.append(sock); return sock\n def limb(clients,budget): l.connect_pair(clients,budget); return 'OK synthetic evidence'\n with patch.object(l.time,'monotonic',clock.monotonic),patch.object(l.FixtureClient,'_login_server',login),patch.object(l.FixtureClient,'_char_server',chars),patch.object(l.FixtureClient,'_map_server',maps),patch('socket.create_connection',create):\n  l.run_limb('close-failure',limb,b,retries=1)\n assert sockets and not sockets[0].closed\n # The failed temporary transport is not represented by any tracked resource.\n assert not b.unreleased_clients\n assert made[0].sock is None and made[0].rx_thread is None and not made[0]._handshake_buffers and not made[0]._handshake_packets\n assert l.results[-1][1] is True\n results.append({'stage':stage,'retry_attempts':connects,'temporary_socket_closed':sockets[0].closed,'unreleased_clients':len(b.unreleased_clients),'limb_passed':l.results[-1][1],'result_detail':l.results[-1][3],'origin_cleanup_errors_retained':len(made[0].cleanup_errors)})\nprint('RESULT_JSON='+json.dumps({'reproduced':True,'cases':results,'network_calls':0}))\n",
+    "prior_repaired_expectations_source": "\nimport sys, importlib.util, json, struct, secrets\nfrom pathlib import Path\nfrom types import SimpleNamespace\nfrom unittest.mock import patch\nroot=Path.cwd(); spike=root/'spikes/003-clientless-limbs'; sys.path.insert(0,str(spike))\ndef load(n,p):\n s=importlib.util.spec_from_file_location(n,p); m=importlib.util.module_from_spec(s); s.loader.exec_module(m); return m\nr=load('probe_helpers',root/'tests/test_protocol_rereview_repairs.py')\nresults=[]\nfor stage in ['login','char']:\n l=load('temp_cleanup_probe',spike/'test_limbs.py'); clock=r.Clock(); b=l.Budget(59,clock=clock.monotonic,sleep=clock.sleep); l.fixture=r.fixture_document(); made=[]; connects=[]; sockets=[]\n class Socket(r.FakeSocket):\n  def close(self): raise OSError('sanitized synthetic close failure')\n  def __exit__(self,*args): self.close()\n class LiveReader:\n  def __init__(self): self.live=True\n  def is_alive(self): return self.live\n  def join(self,**kw): self.live=False\n class MapSocket:\n  def shutdown(self,*args): pass\n  def close(self): pass\n actual_login=l.FixtureClient._login_server; actual_char=l.FixtureClient._char_server\n def login(bot):\n  i=1 if bot.user.endswith('-1') else 2; bot.aid,bot.gid=10+i,20+i; connects.append([clock.now,i]); made.append(bot)\n  if stage=='login' and len(connects)==1: return actual_login(bot)\n  return '127.0.0.1',1\n def chars(bot,*args):\n  if stage=='char' and len(connects)==1: return actual_char(bot,*args)\n  return '127.0.0.1',1\n def maps(bot,*args): bot.sock=MapSocket(); bot.rx_thread=LiveReader()\n def create(*args,**kw):\n  raw=r.client.pdb.pack(0x006a,bytes(21)) if stage=='login' else struct.pack('<I',11)+r.client.pdb.pack(0x006c,b'\\x01')\n  sock=Socket([raw]); sockets.append(sock); return sock\n def limb(clients,budget): l.connect_pair(clients,budget); return 'OK synthetic evidence'\n with patch.object(l.time,'monotonic',clock.monotonic),patch.object(l.FixtureClient,'_login_server',login),patch.object(l.FixtureClient,'_char_server',chars),patch.object(l.FixtureClient,'_map_server',maps),patch('socket.create_connection',create):\n  l.run_limb('close-failure',limb,b,retries=1)\n assert sockets and not sockets[0].closed\n # Expect repaired behavior; original setup and actual calls unchanged.\n assert b.unreleased_clients == [made[0]]\n assert made[0].sock is None and made[0].rx_thread is None and made[0]._temporary_sockets == [sockets[0]] and sockets[0] in made[0]._handshake_buffers and sockets[0] in made[0]._handshake_packets\n assert l.results[-1][1] is False\n assert connects == [[100.0,1]]\n assert made[0].cleanup_errors\n results.append({'stage':stage,'retry_attempts':connects,'temporary_socket_closed':sockets[0].closed,'unreleased_clients':len(b.unreleased_clients),'limb_passed':l.results[-1][1],'result_detail':l.results[-1][3],'origin_cleanup_errors_retained':len(made[0].cleanup_errors)})\nprint('RESULT_JSON='+json.dumps({'prior_defect_reproduced':False,'cases':results,'network_calls':0}))\n",
+    "fresh_independent_probe_source": "import sys, json, struct, secrets, socket, importlib.util\nfrom pathlib import Path\nfrom collections import deque\nfrom unittest.mock import patch\nROOT=Path.cwd(); SPIKE=ROOT/'spikes/003-clientless-limbs'; sys.path.insert(0,str(SPIKE))\ndef load(name,path):\n    spec=importlib.util.spec_from_file_location(name,path); mod=importlib.util.module_from_spec(spec); spec.loader.exec_module(mod); return mod\nC=load('fresh_review_client',SPIKE/'client.py')\nclass Clock:\n    def __init__(self): self.now=100.0\n    def monotonic(self): return self.now\n    def sleep(self,seconds): self.now+=seconds\nclass Transport:\n    def __init__(self,chunks=(),error=None): self.chunks=deque(chunks); self.error=error; self.closed=False; self.closes=0; self.shutdowns=0; self.owner=None; self.recv_error=None; self.close_owned_checks=0\n    def settimeout(self,value): pass\n    def sendall(self,value): pass\n    def recv(self,n):\n        if self.chunks:\n            raw=self.chunks.popleft(); self.chunks.appendleft(raw[n:]) if len(raw)>n else None; return raw[:n]\n        if self.recv_error is not None: raise self.recv_error\n        raise AssertionError('unexpected receive')\n    def shutdown(self,*a): self.shutdowns+=1\n    def close(self):\n        self.closes+=1\n        if self.owner is not None:\n            assert self in self.owner._temporary_sockets\n            assert self in self.owner._handshake_buffers\n            assert self in self.owner._handshake_packets\n            self.close_owned_checks+=1\n        if self.error is not None: raise self.error\n        self.closed=True\n    def __exit__(self,*args): assert args==(None,None,None); self.close()\nclass Reader:\n    def __init__(self,error=None): self.live=True; self.error=error; self.joins=0\n    def is_alive(self): return self.live\n    def join(self,**kw):\n        self.joins+=1\n        if self.error is not None: raise self.error\n        self.live=False\n\ndef frames(stage,completed,name='Offline1',aid=11,gid=21):\n    if not completed:\n        return C.pdb.pack(0x006a,bytes(21)) if stage=='login' else struct.pack('<I',aid)+C.pdb.pack(0x006c,b'\\x01')\n    if stage=='login':\n        raw=bytearray(80); struct.pack_into('<HH',raw,0,0x0ac4,80); struct.pack_into('<I',raw,8,aid); raw[64:68]=bytes([127,0,0,1]); struct.pack_into('<H',raw,68,6121); return bytes(raw)\n    raw=bytearray(182); struct.pack_into('<HH',raw,0,0x006b,182); struct.pack_into('<I',raw,27,gid); raw[115:139]=name.encode().ljust(24,b'\\0'); raw[145]=5\n    zone=bytearray(28); struct.pack_into('<HI',zone,0,0x0071,gid); zone[22:26]=bytes([127,0,0,1]); struct.pack_into('<H',zone,26,5121)\n    return struct.pack('<I',aid)+bytes(raw)+bytes(zone)\ndef names(error):\n    out=[]; tb=error.__traceback__\n    while tb: out.append(tb.tb_frame.f_code.co_name); tb=tb.tb_next\n    return out\nresults=[]\nfor stage in ['login','char']:\n for completed in [False,True]:\n  for target in [1,2]:\n   for cleanup_type in [OSError,KeyboardInterrupt,SystemExit]:\n    L=load('fresh_review_limbs',SPIKE/'test_limbs.py'); clock=Clock(); budget=L.Budget(59,clock=clock.monotonic,sleep=clock.sleep)\n    L.fixture={'schema':1,'isolated_disposable':True,'login_host':'127.0.0.1','login_port':6900,'accounts':[{'username':f'offline-{i}','password':secrets.token_hex(8),'character':f'Offline{i}','account_id':10+i,'char_id':20+i} for i in [1,2]]}\n    cleanup=cleanup_type('PRIVATE-SYNTHETIC'); transport=Transport([frames(stage,completed,f'Offline{target}',10+target,20+target)],cleanup); attempts=[]; made=[]; origin_errors=[]; map_resources=[]\n    actual_login=L.FixtureClient._login_server; actual_char=L.FixtureClient._char_server; actual_connect=L.FixtureClient.connect\n    def login(bot):\n        i=int(bot.user[-1]); attempts.append([clock.now,i]); made.append(bot); bot.aid=10+i; bot.gid=20+i\n        if stage=='login' and i==target: transport.owner=bot; return actual_login(bot)\n        return '127.0.0.1',1\n    def char(bot,*args):\n        if stage=='char' and int(bot.user[-1])==target: transport.owner=bot; return actual_char(bot,*args)\n        return '127.0.0.1',1\n    def map_stage(bot,*args):\n        bot.sock=Transport(); bot.rx_thread=Reader(); map_resources.append((bot.sock,bot.rx_thread))\n    def connect(bot,**kw):\n        try: return actual_connect(bot,**kw)\n        except BaseException as origin: origin_errors.append(origin); raise\n    def limb(participants,shared): L.connect_pair(participants,shared); return 'OK synthetic'\n    with patch.object(L.time,'monotonic',clock.monotonic),patch.object(L.FixtureClient,'_login_server',login),patch.object(L.FixtureClient,'_char_server',char),patch.object(L.FixtureClient,'_map_server',map_stage),patch.object(L.FixtureClient,'connect',connect),patch('socket.create_connection',lambda *a,**kw: transport):\n        propagated=None\n        try: L.run_limb('first',limb,budget)\n        except BaseException as origin: propagated=origin\n        assert attempts==[[100.0,i] for i in range(1,target+1)]\n        assert budget.unreleased_clients==[made[-1]] and made[-1]._temporary_sockets==[transport]\n        assert not transport.closed and transport.close_owned_checks>=3\n        assert transport in made[-1]._handshake_buffers and transport in made[-1]._handshake_packets\n        assert cleanup in made[-1].cleanup_errors\n        assert all(s.closed and r.joins==1 and not r.live for s,r in map_resources)\n        assert not any(result[1] for result in L.results)\n        assert all('PRIVATE' not in result[3] for result in L.results)\n        if completed:\n            assert origin_errors[0] is cleanup and 'close' in names(cleanup)\n            if cleanup_type is not OSError: assert propagated is cleanup\n        else:\n            assert isinstance(origin_errors[0],RuntimeError)\n            assert ('_login_server' if stage=='login' else '_char_server') in names(origin_errors[0])\n            assert propagated is None\n        assert all('PRIVATE' not in n for n in getattr(origin_errors[0],'__notes__',[]))\n        clock.sleep(30); L.run_limb('later',limb,budget)\n        try: L.connect_pair([],budget)\n        except RuntimeError: pass\n        else: raise AssertionError('direct pair bypass')\n        assert attempts==[[100.0,i] for i in range(1,target+1)]\n        transport.error=None; made[-1].close(); count=transport.closes; made[-1].close(); assert count==transport.closes\n        assert transport.closed and not made[-1]._temporary_sockets and not made[-1]._handshake_buffers and not made[-1]._handshake_packets\n        L.run_limb('after-manual-release',limb,budget); assert len(attempts)==target and not L.results[-1][1]\n    results.append({'kind':'actual-fixture-harness','stage':stage,'completed':completed,'participant':target,'cleanup':cleanup_type.__name__,'attempts':attempts,'cleanup_attempts':count,'origin_identity_verified':completed,'handshake_traceback_retained':True,'blocked_retry_later_pass':True,'eventual_release_idempotent':True,'poison_survives_manual_release':True})\nfor stage in ['login','char']:\n for origin_type in [ValueError,KeyboardInterrupt,SystemExit]:\n  for cleanup_type in [OSError,KeyboardInterrupt,SystemExit]:\n    bot=C.BotClient('offline',secrets.token_hex(8),verbose=False); bot.aid=11\n    origin=origin_type('PRIVATE-ORIGIN'); cleanup=cleanup_type('PRIVATE-CLEANUP'); transport=Transport([struct.pack('<I',11)] if stage=='char' else [],cleanup); transport.owner=bot; transport.recv_error=origin\n    with patch('socket.create_connection',lambda *a,**k:transport),patch.object(bot,'_login_server',bot._login_server if stage=='login' else lambda:('127.0.0.1',1)):\n        try: bot.connect()\n        except BaseException as caught:\n            assert caught is origin and 'recv' in names(caught)\n            assert all('PRIVATE' not in note for note in getattr(caught,'__notes__',[]))\n        else: raise AssertionError('missing origin')\n        assert bot._temporary_sockets==[transport] and cleanup in bot.cleanup_errors\n    transport.error=None; bot.close(); bot.close()\n    results.append({'kind':'origin-identity-traceback','stage':stage,'origin':origin_type.__name__,'cleanup':cleanup_type.__name__,'passed':True})\n# Multiple temporary transports, shutdown, map close and reader join all fail independently.\nbot=C.BotClient('offline',secrets.token_hex(8),verbose=False)\ntemps=[Transport(error=KeyboardInterrupt()),Transport(error=SystemExit())]\nbot._temporary_sockets.extend(temps); bot.sock=Transport(error=KeyboardInterrupt()); bot.rx_thread=Reader(SystemExit())\nmap_sock=bot.sock; reader=bot.rx_thread; calls=[]\ndef interrupted_shutdown(*a): calls.append('shutdown'); raise SystemExit()\nmap_sock.shutdown=interrupted_shutdown\ntry: bot.close()\nexcept RuntimeError: pass\nelse: raise AssertionError('cleanup failure swallowed')\nassert [t.closes for t in temps]==[1,1] and map_sock.closes==1 and reader.joins==1 and calls==['shutdown']\nassert bot._temporary_sockets==temps and bot.sock is map_sock and bot.rx_thread is reader\nfor t in temps: t.error=None\nmap_sock.error=None; map_sock.shutdown=lambda *a:None; reader.error=None\nbot.close(); counts=[t.closes for t in temps]+[map_sock.closes,reader.joins]; bot.close(); assert counts==[t.closes for t in temps]+[map_sock.closes,reader.joins]\nassert not bot._temporary_sockets and bot.sock is None and bot.rx_thread is None\nresults.append({'kind':'all-owned-resources-baseexceptions','temporary_count':2,'shutdown_close_join_attempted':True,'eventual_release_idempotent':True})\n# Local unconnected native socket only: no bind/connect/listen or traffic.\nbot=C.BotClient('offline',secrets.token_hex(8),verbose=False); native=socket.socket(); assert native.fileno()>=0; bot._temporary_sockets.append(native); bot.close(); assert native.fileno()==-1 and not bot._temporary_sockets; bot.close()\nresults.append({'kind':'native-unconnected-context-release','descriptor_closed':True,'bind_connect_listen_calls':0})\nprint('RESULT_JSON='+json.dumps({'passed':True,'cases':results,'case_count':len(results),'external_network_calls':0}))\n"
+  },
+  "limitations": [
+    "Normal socket.__exit__(None,None,None) return is release confirmation at the supported transport contract, not proof against an arbitrary lying transport or a broad kernel-release guarantee. Only one actual local unconnected descriptor was exercised; no bind/connect/listen or network traffic.",
+    "Injected deterministic failure and interruption probes are not evidence of an observed real OS socket leak or a native login/gameplay failure.",
+    "Monotonic deadlines are cooperative; blocking acquisition/shutdown/close/join cannot be forcibly bounded by Python checks. External timeout containment is not hard real-time cleanup.",
+    "No guarantee under SIGKILL, power loss, process/interpreter termination, or acquisition that does not return.",
+    "Repeatedly raising the same synthetic cleanup object extends its traceback, but original origin identity and original raising frame remain. Private cleanup exception objects remain internal; class-only secondary notes/results tested.",
+    "An affected harness budget remains permanently poisoned even after manual successful release; no automatic retry/later-limb recovery is approved.",
+    "Source and dependency fingerprints were stable at review boundaries; no claim of atomic freeze of unrelated concurrent Rust/mechanics work. No broad task-check/full-app or network CVE audit acceptance from this independent review."
+  ],
+  "exclusions_preserved": [
+    "No supplied real private fixture credentials or live authorization; no fixture accounts invented or connected.",
+    "No current native chat/movement/sit-stand/party acceptance, immediate rerun acceptance, general adapter acceptance, autonomous grinding or world isolation acceptance.",
+    "Historical README PASS timings are preserved history only and cannot establish repaired wire logic; offline fake tests do not supersede the defects reproduced here.",
+    "Character creation remains intentionally disabled before wire writes, despite compiler-verified native request/response framing lengths.",
+    "No MariaDB anonymous-block syntax/execution, transactional locking/rollback/concurrency, post-write live DB readback or SQL deployment was exercised.",
+    "Pinned native login/char/skill tables use MyISAM and MUST remain blocked by the InnoDB engine guard; no engine migration is authorized or performed.",
+    "Isolation/stopped flags and offline snapshots are operator attestations/models, not proof of fresh exclusive ownership or absence of in-memory sessions. No unsafe lifecycle/seed execution route is approved.",
+    "Inherited 20211103 snapshot outside exercised/native-corrected families is not fully regenerated. Unknown/unsupported families are not automatically blockers unless a supported path demonstrably misuses them; walking name and sparse slot are demonstrated supported-path mismatches.",
+    "Post-reply party correlation is not causal/cryptographic proof against delayed or injected traffic; very fast valid replies or bounded logs may produce fail-closed false negatives.",
+    "No broad app quality/full-suite acceptance or credential rotation claim; this report does not validate unrelated working-tree changes."
+  ],
+  "issues_encountered": [
+    "Initial suite launch raced scratch-parent creation: 130 passed,65 subtests and8 fixture setup FileNotFoundError errors. Established parent directory then reran identical source/tests:138 passed,65 subtests. No production/test changes.",
+    "Unmodified prior defect probe correctly exits1 at the obsolete forgotten-owner assertion. Both stages rerun with only expectations changed and no transport/call changes; defect no longer reproduced.",
+    "Dirty working tree and unrelated concurrent work observed; review remained protocol-scope read-only.",
+    "Report assembly first attempted to parse tool-truncated terminal stdout, which failed before any repository report write. Rebuilt via lossless gzip/base64 transport and parsed full JSON successfully."
+  ],
+  "escalation": {
+    "required": false,
+    "automatic_fix_cycle_allowed": false,
+    "remaining_blocker_ids": [],
+    "action": "No further repair authorized; hand any failed acceptance to parent/operator. Scoped offline acceptance only."
+  },
+  "constraints": {
+    "source_edits": false,
+    "test_edits": false,
+    "staging": false,
+    "commits": false,
+    "push": false,
+    "provider_calls": 0,
+    "network_game_calls": 0,
+    "database_calls": 0,
+    "sql_execution": false,
+    "live_smoke": false,
+    "credentials_printed": false,
+    "native_unconnected_sockets": 1,
+    "bind_connect_listen_calls": 0,
+    "only_repository_write": "run/reviews/temporary-handshake-cleanup-review.json",
+    "other_artifacts": "Scratch-only probe sources, evidence logs, hash snapshots, pytest outputs and compiler binaries; bytecode/cache writes disabled."
+  }
+}

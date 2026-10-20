@@ -1,0 +1,330 @@
+{
+  "passed": false,
+  "verdict": "BLOCKED",
+  "summary": "One reached invalid-timing denial defect: oversized numeric duration raises OverflowError instead of rejecting the typed proposal.",
+  "scope": "Completed offline plan-admission/replanning core only; three new production modules and author test module; no existing brain/provider/native/SkillMeaning re-review.",
+  "security_concerns": [],
+  "logic_errors": [
+    {
+      "id": "CORE-TIMING-001",
+      "severity": "blocking",
+      "contract": "Reject invalid deadlines/durations through PlanLifecycle.admit without disrupting serialized owner state.",
+      "location": "src/robots/domain/planning.py:16-17 (positive_number), reached from plan_timing_valid:174 and PlanLifecycle.admit:103",
+      "input": "A typed ProposedPlan constructed with duration=10**400, otherwise valid identity, phases, conditions, finite monotonic clock and current capabilities.",
+      "expected": "admit returns False with outcome timing, increments rejected, and releases the matching pending request without resetting the attempt budget.",
+      "actual": {
+        "exception": "OverflowError",
+        "message": "int too large to convert to float",
+        "pending_retained": true,
+        "active": null,
+        "version": 0,
+        "outcome": "idle",
+        "counters": {
+          "requests": 1,
+          "coalesced": 0,
+          "admitted": 0,
+          "rejected": 0,
+          "timeouts": 0
+        }
+      },
+      "why_in_scope": "Integers are accepted explicitly by positive_number and are valid arguments to float-annotated Python numeric APIs; this is no raw-dict decoder request or hostile clock. Value is plainly outside the documented 86400 bound but isfinite converts it before checking that bound.",
+      "test": "test_oversized_integer_duration_denied_without_arithmetic_exception",
+      "repro": "/home/otto/.hermes/cache/scratch/llm-plan-lifecycle-core-independent-review/repro_oversized_duration.py",
+      "repro_command": "TMPDIR=/home/otto/.hermes/cache/scratch/llm-plan-lifecycle-core-independent-review PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=src nix develop --offline --no-write-lock-file path:./spikes/007-native-packet-ast/toolchain -c .venv/bin/python /home/otto/.hermes/cache/scratch/llm-plan-lifecycle-core-independent-review/repro_oversized_duration.py",
+      "evidence": [
+        "/home/otto/.hermes/cache/scratch/llm-plan-lifecycle-core-independent-review/fresh-tests.xml",
+        "/home/otto/.hermes/cache/scratch/llm-plan-lifecycle-core-independent-review/fresh-tests.log",
+        "/home/otto/.hermes/cache/scratch/llm-plan-lifecycle-core-independent-review/repro.json"
+      ]
+    }
+  ],
+  "quality_blockers": [],
+  "suggestions": [],
+  "fresh_tests": {
+    "xml": "/home/otto/.hermes/cache/scratch/llm-plan-lifecycle-core-independent-review/fresh-tests.xml",
+    "physical_cases": 10,
+    "unique_ids": 10,
+    "ids": [
+      {
+        "classname": ".hermes.cache.scratch.llm-plan-lifecycle-core-independent-review.test_independent_plan_core",
+        "name": "test_duplicate_reason_preserves_correlation_and_deadline"
+      },
+      {
+        "classname": ".hermes.cache.scratch.llm-plan-lifecycle-core-independent-review.test_independent_plan_core",
+        "name": "test_old_timeout_reply_cannot_consume_new_request_or_replace_plan"
+      },
+      {
+        "classname": ".hermes.cache.scratch.llm-plan-lifecycle-core-independent-review.test_independent_plan_core",
+        "name": "test_malformed_typed_shape_missing_travel_destination_rejected"
+      },
+      {
+        "classname": ".hermes.cache.scratch.llm-plan-lifecycle-core-independent-review.test_independent_plan_core",
+        "name": "test_current_prerequisite_loss_denies_action_but_metadata_remains"
+      },
+      {
+        "classname": ".hermes.cache.scratch.llm-plan-lifecycle-core-independent-review.test_independent_plan_core",
+        "name": "test_mixed_travel_rest_cannot_hide_missing_implicit_vitals"
+      },
+      {
+        "classname": ".hermes.cache.scratch.llm-plan-lifecycle-core-independent-review.test_independent_plan_core",
+        "name": "test_ruleset_literal_case_mismatch_is_foreign_not_normalized"
+      },
+      {
+        "classname": ".hermes.cache.scratch.llm-plan-lifecycle-core-independent-review.test_independent_plan_core",
+        "name": "test_rejection_timeout_budget_cannot_reset_and_success_keeps_cooldown"
+      },
+      {
+        "classname": ".hermes.cache.scratch.llm-plan-lifecycle-core-independent-review.test_independent_plan_core",
+        "name": "test_clock_only_reads_no_sleep_or_native_provider_calls"
+      },
+      {
+        "classname": ".hermes.cache.scratch.llm-plan-lifecycle-core-independent-review.test_independent_plan_core",
+        "name": "test_oversized_integer_duration_denied_without_arithmetic_exception"
+      },
+      {
+        "classname": ".hermes.cache.scratch.llm-plan-lifecycle-core-independent-review.test_independent_plan_core",
+        "name": "test_rest_fallback_is_metadata_and_not_native_recovery_authority"
+      }
+    ],
+    "failures": 1,
+    "errors": 0,
+    "skips": 0
+  },
+  "author_tests_rerun": {
+    "xml": "/home/otto/.hermes/cache/scratch/llm-plan-lifecycle-core-independent-review/author-tests.xml",
+    "physical_cases": 25,
+    "unique_ids": 25,
+    "ids": [
+      {
+        "classname": "tests.test_plan_lifecycle",
+        "name": "test_request_admission_execution_path"
+      },
+      {
+        "classname": "tests.test_plan_lifecycle",
+        "name": "test_foreign_identity_denied[agent-other]"
+      },
+      {
+        "classname": "tests.test_plan_lifecycle",
+        "name": "test_foreign_identity_denied[world-other]"
+      },
+      {
+        "classname": "tests.test_plan_lifecycle",
+        "name": "test_foreign_identity_denied[character-other]"
+      },
+      {
+        "classname": "tests.test_plan_lifecycle",
+        "name": "test_foreign_identity_denied[session_epoch-2]"
+      },
+      {
+        "classname": "tests.test_plan_lifecycle",
+        "name": "test_foreign_identity_denied[ruleset-renewal]"
+      },
+      {
+        "classname": "tests.test_plan_lifecycle",
+        "name": "test_unsupported_phase_or_map_denied[phase0]"
+      },
+      {
+        "classname": "tests.test_plan_lifecycle",
+        "name": "test_unsupported_phase_or_map_denied[phase1]"
+      },
+      {
+        "classname": "tests.test_plan_lifecycle",
+        "name": "test_current_unknown_prerequisite_denied"
+      },
+      {
+        "classname": "tests.test_plan_lifecycle",
+        "name": "test_invalid_timing_denied[duration-True]"
+      },
+      {
+        "classname": "tests.test_plan_lifecycle",
+        "name": "test_invalid_timing_denied[duration-nan]"
+      },
+      {
+        "classname": "tests.test_plan_lifecycle",
+        "name": "test_invalid_timing_denied[review_at-100.0]"
+      },
+      {
+        "classname": "tests.test_plan_lifecycle",
+        "name": "test_invalid_timing_denied[review_at-inf]"
+      },
+      {
+        "classname": "tests.test_plan_lifecycle",
+        "name": "test_stale_token_cannot_replace_active"
+      },
+      {
+        "classname": "tests.test_plan_lifecycle",
+        "name": "test_single_flight_reasons_are_deduplicated_and_bounded"
+      },
+      {
+        "classname": "tests.test_plan_lifecycle",
+        "name": "test_timeout_cooldown_and_retry_exhaustion"
+      },
+      {
+        "classname": "tests.test_plan_lifecycle",
+        "name": "test_invalid_reply_consumes_attempt_and_releases_request"
+      },
+      {
+        "classname": "tests.test_plan_lifecycle",
+        "name": "test_identity_switch_invalidates_old_context_and_reply"
+      },
+      {
+        "classname": "tests.test_plan_lifecycle",
+        "name": "test_reason_and_config_bounds"
+      },
+      {
+        "classname": "tests.test_plan_lifecycle",
+        "name": "test_empty_plan_unsafe_fallback_and_target_bool_denied"
+      },
+      {
+        "classname": "tests.test_plan_lifecycle",
+        "name": "test_execution_reads_revalidate_without_requesting"
+      },
+      {
+        "classname": "tests.test_plan_lifecycle",
+        "name": "test_success_resets_retry_episode_but_keeps_cooldown"
+      },
+      {
+        "classname": "tests.test_plan_lifecycle",
+        "name": "test_observable_conditions_must_be_typed"
+      },
+      {
+        "classname": "tests.test_plan_lifecycle",
+        "name": "test_mutable_phase_sequence_denied"
+      },
+      {
+        "classname": "tests.test_plan_lifecycle",
+        "name": "test_prerequisite_metadata_is_bounded"
+      }
+    ],
+    "failures": 0,
+    "errors": 0,
+    "skips": 0
+  },
+  "quality": {
+    "fresh-tests": {
+      "exit_code": 1,
+      "command": [
+        ".venv/bin/python",
+        "-m",
+        "pytest",
+        "/home/otto/.hermes/cache/scratch/llm-plan-lifecycle-core-independent-review/test_independent_plan_core.py",
+        "-o",
+        "addopts=",
+        "-p",
+        "no:cacheprovider",
+        "--junitxml=/home/otto/.hermes/cache/scratch/llm-plan-lifecycle-core-independent-review/fresh-tests.xml",
+        "-q"
+      ]
+    },
+    "author-tests": {
+      "exit_code": 0,
+      "command": [
+        ".venv/bin/python",
+        "-m",
+        "pytest",
+        "tests/test_plan_lifecycle.py",
+        "-o",
+        "addopts=",
+        "-p",
+        "no:cacheprovider",
+        "--junitxml=/home/otto/.hermes/cache/scratch/llm-plan-lifecycle-core-independent-review/author-tests.xml",
+        "-q"
+      ]
+    },
+    "black": {
+      "exit_code": 0,
+      "command": [
+        ".venv/bin/black",
+        "--check",
+        "src/robots/domain/planning.py",
+        "src/robots/ports/planning.py",
+        "src/robots/app/plan_lifecycle.py",
+        "tests/test_plan_lifecycle.py"
+      ]
+    },
+    "ruff": {
+      "exit_code": 0,
+      "command": [
+        ".venv/bin/ruff",
+        "check",
+        "--no-cache",
+        "src/robots/domain/planning.py",
+        "src/robots/ports/planning.py",
+        "src/robots/app/plan_lifecycle.py",
+        "tests/test_plan_lifecycle.py"
+      ]
+    },
+    "mypy": {
+      "exit_code": 0,
+      "command": [
+        ".venv/bin/mypy",
+        "--cache-dir",
+        "/home/otto/.hermes/cache/scratch/llm-plan-lifecycle-core-independent-review/mypy-cache",
+        "src/robots/domain/planning.py",
+        "src/robots/ports/planning.py",
+        "src/robots/app/plan_lifecycle.py",
+        "tests/test_plan_lifecycle.py"
+      ]
+    }
+  },
+  "quality_scope": "Project-configured Black/Ruff/strict mypy on four owned files; fresh private mypy cache. Scratch probe style is not a production gate. Parent concurrent whole-root check/audit is separate and not claimed here.",
+  "verified_behaviors": [
+    "Duplicate coalescing preserves token/deadline and unique reasons",
+    "Timeout old reply leaves new pending request and existing active plan/version unchanged",
+    "Malformed typed travel/empty safety metadata denied",
+    "Current lost vitals deny capability-revalidated read while None remains metadata-only",
+    "Mixed travel/rest cannot hide unknown implicit vitals",
+    "Literal Classic vs classic ruleset rejected",
+    "Rejection and timeout retain attempt budget; successful admission retains request-issuance cooldown",
+    "Fake-clock reads with denied socket/sleep spies cause no effect; no provider/native imports in scoped production source",
+    "REST fallback for IDLE metadata does not become native recovery authority"
+  ],
+  "freeze": {
+    "registry": "/home/otto/.hermes/cache/scratch/skill-meaning-plan-core-combined-freeze.json",
+    "registry_sha256": "65d3c57b90539814b39e1024d50fe1d987baefa256d524f7e4e077729d2bf6df",
+    "input_count": 283,
+    "before_mismatches": [],
+    "after_mismatches": [],
+    "source_sha256": {
+      "src/robots/domain/planning.py": "f62f0f687a6b58c5b3e66c3e17fd750dc49dfbc57017fee22d97d06b5ca65b57",
+      "src/robots/ports/planning.py": "04dae988220f7acfc6e9e2d6ac9650c4e58b90b2c95c32a991b96fdd2eb64d04",
+      "src/robots/app/plan_lifecycle.py": "5cc4ded4107193e85ce023c9488423f1409fe35c8cb1a7209f934da48cab4f1b",
+      "tests/test_plan_lifecycle.py": "067bf70414346a038a2bc217d5abf4f541570891f24cf20f8f87e6cb5c882db3"
+    }
+  },
+  "author_evidence": {
+    "report_sha256": "e5ff899a2f4083687aaa3d60f9c139f1409de13e4da07f82b2cde48e80abba71",
+    "artifact_count": 91,
+    "artifact_hash_mismatches": [],
+    "actual_red_green_pairs": 17,
+    "chronology": "17 paired reached RED/GREEN receipts parsed; grouped later assertions are follow-up checks, not independently demonstrated REDs. No source rollback or repair."
+  },
+  "artifact_sha256": {
+    "/home/otto/.hermes/cache/scratch/llm-plan-lifecycle-core-independent-review/author-tests.log": "a891ad32de10b87e8bfa16cb704b52e46b88dfcbad5b1cf5db40884d92d2a1a0",
+    "/home/otto/.hermes/cache/scratch/llm-plan-lifecycle-core-independent-review/author-tests.xml": "3cb31836b9ad1892ed0ce661dbb60bd849a8dc9e95d0142ab026627f34d180e2",
+    "/home/otto/.hermes/cache/scratch/llm-plan-lifecycle-core-independent-review/black.log": "26a5fd9505f2b5608a20c4fed4b4c4795e0783d03b72ade02a6af34dae8ad086",
+    "/home/otto/.hermes/cache/scratch/llm-plan-lifecycle-core-independent-review/commands.json": "fc9b567dd00c301a3a8f550d52e74fd66c4ce45ee0b72a4e155381826f755841",
+    "/home/otto/.hermes/cache/scratch/llm-plan-lifecycle-core-independent-review/freeze-after.json": "40ca8afd330c948af1ed7cda60d09e16f77ffc203940f6bc969381a0fd363549",
+    "/home/otto/.hermes/cache/scratch/llm-plan-lifecycle-core-independent-review/freeze-before.json": "1140b833bc80118f57d302fbb1861c667efc676b32111bfbef0e51c42e1c49eb",
+    "/home/otto/.hermes/cache/scratch/llm-plan-lifecycle-core-independent-review/fresh-tests.log": "8dbb5bfcab867646e04d13823723f03dd4f944ed3111b95cd5965b98c788b98d",
+    "/home/otto/.hermes/cache/scratch/llm-plan-lifecycle-core-independent-review/fresh-tests.xml": "fbaf7fcab429f9c33dd0686fef0540c025c4264a4db988a1eeb017cfb562883f",
+    "/home/otto/.hermes/cache/scratch/llm-plan-lifecycle-core-independent-review/mypy.log": "71144743c83babea384888a735db0c4daba3d4d7b7942b6839984bd5c21b52bb",
+    "/home/otto/.hermes/cache/scratch/llm-plan-lifecycle-core-independent-review/repro.json": "2907b23c6d56f07259be1b752ca973f982bdd8acd6223da50a278b2c3f4cdf8f",
+    "/home/otto/.hermes/cache/scratch/llm-plan-lifecycle-core-independent-review/repro_oversized_duration.py": "cb4baa9cd58db90f5f6c1fa73e6fa589f45fc869bb3b441d36060c697ab1aec2",
+    "/home/otto/.hermes/cache/scratch/llm-plan-lifecycle-core-independent-review/ruff.log": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+    "/home/otto/.hermes/cache/scratch/llm-plan-lifecycle-core-independent-review/security-scan.json": "da20e03b0b965b4f267eefc902030d19733c2798c822ba3dc5630e5ba5b21ea8",
+    "/home/otto/.hermes/cache/scratch/llm-plan-lifecycle-core-independent-review/test_independent_plan_core.py": "0160d17e1880ce7ee45236de4c000f36148dabca995acbe4bff9183a5c6bc90b",
+    "/home/otto/.hermes/cache/scratch/llm-plan-lifecycle-core-independent-review/xml-receipts.json": "3d204d4f8eeef1e75128af7bd2f7d9189f80fc2590a374ebd95b222c17db070a"
+  },
+  "boundaries": [
+    "Serialized single owner only; no concurrent-thread/global-owner registry claim",
+    "Caller supplies finite monotonic clock and currently observed capabilities",
+    "Capabilities-free execution_plan(None) and fallback remain metadata only",
+    "Native mechanics/resources/action validation, actual LLM/tool bindings, scheduling, existing brain/provider/chat integration, persistence/restart/dashboard/live acceptance remain OPEN",
+    "Existing-brain compatibility report concerns next scope, not this blocker",
+    "All six milestones and eleven acceptance criteria remain OPEN",
+    "Review is not activation or native permission"
+  ],
+  "effects": "Only owned independent report and scratch evidence written. No source repairs, Git mutations, TCP/provider/inference/SQL/Docker/private config/service effects.",
+  "repair_permission": "No repair performed; any future core correction must be separately authorized and confined to this named fault under the new-core bounded budget."
+}

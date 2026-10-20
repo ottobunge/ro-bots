@@ -1,0 +1,77 @@
+{
+  "scope": "Read-only independent offline PIN protocol and integrated replay/packet metadata review; no live authorization",
+  "protocol_verdict": "PASS on frozen source subset",
+  "overall_verdict": "PIN protocol passes; new PIN-line lint diagnostics require correction before claiming clean new-code quality",
+  "frozen_sources_unchanged": true,
+  "source_fingerprints": {
+    "spikes/003-clientless-limbs/client.py": "d3cce70dc9109f14b76a7f05d84bdf66d2511b88ed45c4622ea92e25eb026fc0",
+    "spikes/003-clientless-limbs/test_limbs.py": "fab29db2807b13ed6f53cded49c36af4899cf18f13bc007dff52f217add52bb2",
+    "spikes/003-clientless-limbs/packetdb.py": "1c2be6705938f5ab575cc822b690dba583f8a7719b9469f794fcbb661c032cf3",
+    "tests/test_client_pincode.py": "b1748f4dd88eda1902119087aa7f87522d396d668d9fdbe9c7c1be9025f16071",
+    "tests/test_protocol_rereview_repairs.py": "7c4e051d767b819243b3479c1d0942356ff6c2460c32b95d9e67922d71382b8e",
+    "tests/test_temporary_handshake_cleanup.py": "6eb4f7d7099a21728add193bd72f233ebdd21ca2aa2056d855984cb4ab943a47"
+  },
+  "native_source_root": "/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source",
+  "native_revision": "e985006171d2eb320ee512a653f4c83aea3d81b6",
+  "native_source_fingerprints": {
+    "src/char/char.cpp": "141dd411c11ec9663d49e1274203ba28bdf3761cce0f98782a8cfd37ee34cdff",
+    "src/char/char.hpp": "f3bb7f873b1028bf6a23d04e1416427337a81e1cd495908b9c207120c3a37134",
+    "src/char/char_clif.cpp": "f50dedd4cf46d0d3bea95c9410f1f0f04c5f7b525e6691b2afb9c4a3677c5654",
+    "src/char/char_logif.cpp": "04725ee1160d7124c6094e0f760639dfc4675e7303712eeac748e622fba6829b",
+    "src/common/packets.hpp": "c92279bf163e9546b649397638c19e57c3eb515b49e841c13f88a5fb97bba693"
+  },
+  "independent_execution": {
+    "tests": 93,
+    "pin_tests": 41,
+    "failures": 0,
+    "errors": 0,
+    "pytest_elapsed_seconds": 1.13,
+    "junit": "/home/otto/.hermes/cache/scratch/pinreview-rj7v76fi/independent.xml",
+    "additional_fail_closed_probes": 4,
+    "inverse_native_xor_decrypt_vectors": 405,
+    "metadata_roundtrip_pass": true,
+    "extra_probe": "/home/otto/.hermes/cache/scratch/pinreview-rj7v76fi/probe.py",
+    "toolchain": "Pinned nix develop --offline plus uv run --offline --no-sync; no installs"
+  },
+  "protocol_findings": [
+    "char.cpp:2153-2187 native decrypt uses uint32 wrapping and ascending permutation swaps; client inverse matches independent XOR-swap transcription for 405 synthetic vectors including overflow edges and all decimal digits",
+    "common/packets.hpp:551-564 defines packed 0x08B8 int16/u32/char[4] size10 and 0x08B9 int16/u32/u32/u16 size12; char_clif.cpp:1611 registers native PIN reply handler; shared packet metadata matches",
+    "char.hpp:122-124 aliases PINCODE_PASSED to state0 for MAIN20180704; char_clif.cpp:219-221 sends this after successful comparison",
+    "char_logif.cpp:80-83 emits state0 even with PIN policy disabled; 363-365 sends character list before PIN status. Corrected synthetic streams retain native ordering and require status rather than bypassing it",
+    "Exact four ASCII digits and plain str validation reject invalid input without credential echo; FixtureClient forwards optional account pincode",
+    "Account echo and PIN status IDs must match; character list plus explicit success precede select; one challenge response only; unsupported/repeated pre-selection states fail closed",
+    "Existing coalesced/fragmented framing, sparse native character slot selection, end-to-end monotonic deadline, failed-attempt backoff and temporary transport cleanup replays all passed together"
+  ],
+  "quality_findings": {
+    "new_pin_test_ruff_black_strict_mypy": "PASS",
+    "spike_ruff_diagnostics": 86,
+    "spike_mypy_diagnostics": 62,
+    "baseline_attribution": "Not established for all spike diagnostics; no blanket legacy waiver or whole-spike clean claim",
+    "new_pin_line_EM101": {
+      "spikes/003-clientless-limbs/client.py": [65, 240, 269, 274, 289, 303],
+      "spikes/003-clientless-limbs/test_limbs.py": [61]
+    },
+    "adjacent_existing_line_EM101": {
+      "spikes/003-clientless-limbs/client.py": [305]
+    },
+    "minimal_fix": "For the listed new PIN raises, assign unchanged sanitized literal to message then raise ValueError(message) or RuntimeError(message). Do not weaken assertions, ignore rules, deadlines, or cleanup; rerun frozen scoped review after edits.",
+    "new_pin_line_mypy_errors": "None at the changed PIN validation, state handling, or account.get forwarding lines; surrounding spike typing remains non-clean",
+    "diagnostics_artifacts": [
+      "/home/otto/.hermes/cache/scratch/pinreview-rj7v76fi/ruff-spikes.json",
+      "/home/otto/.hermes/cache/scratch/pinreview-rj7v76fi/scoped-ruff.json",
+      "/home/otto/.hermes/cache/scratch/pinreview-rj7v76fi/mypy-spikes.txt"
+    ]
+  },
+  "limits": [
+    "No actual native server handshake or four-limb gameplay performed; injected transports and source/compiler layout evidence only",
+    "No physical release proof for unknown callback contracts beyond the tested supported cleanup semantics",
+    "Post-selection PIN statuses are ignored in the zone-wait branch; verdict covers native ordinary handshake and pre-selection fail-closed behavior, not arbitrary post-selection status revocation",
+    "Parent full configured gate, exact isolated fixture provisioning/ownership checks, and authorized live observations remain separate prerequisites"
+  ],
+  "world_pin_policy_changed": false,
+  "live_actions": false,
+  "sql_executed": false,
+  "accounts_created": false,
+  "production_or_test_sources_modified": false,
+  "private_values": "[REDACTED]"
+}

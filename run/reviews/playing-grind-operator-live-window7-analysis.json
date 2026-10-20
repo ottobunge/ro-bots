@@ -1,0 +1,41 @@
+{
+  "status": "GRIND_WINDOW7_PROJECTION_INNOCENT_SCRIPT_CADENCE_FRONTIER",
+  "completed_at": "2026-10-15T01:57:54.345366+00:00",
+  "raw_receipt": "run/reviews/playing-grind-operator-live-window7.json (55 projection samples/agent)",
+  "decisive_evidence": {
+    "fixture_1_last_sample": {
+      "nearby_monsters": [
+        {
+          "id": 110019407,
+          "name": "Poring",
+          "species_job": 1002,
+          "distance": 6.708
+        }
+      ],
+      "plan_target_mobs": [
+        "Poring"
+      ],
+      "projected": true,
+      "exception": null
+    },
+    "fixture_0": {
+      "walk_sends": 59,
+      "walk_ack_matches": 59,
+      "own_position_ingests": 59,
+      "final_position": [
+        209,
+        374
+      ],
+      "note": "travel committed and walking the whole window; its visible mob was a Pupa (1008) - non-target, correctly held"
+    },
+    "fixture_1": {
+      "walk_sends": 0,
+      "emotes_only": "0x90,0xb8,0xb9",
+      "note": "a Poring INSIDE engagement range with the plan matching - and the script still never evaluated to Attack"
+    }
+  },
+  "root_cause_named": "script evaluation rides Heartbeat events produced at HEARTBEAT_MIN_S..MAX_S = 300..1200s (agent_runtime); a bounded 300s window can contain zero script evaluations regardless of what the projection offers. The mechanical 0.25s tick drives host.step but not the brain script step.",
+  "fix_seam": "operator-level: deliver Heartbeat (the same deliver_event seam the replan watcher already uses) on the mechanical tick cadence so FarmScript evaluates continuously; no production edit expected",
+  "next": "cadence slice (offline TDD) then window 8: first attack -> damage -> death -> XP -> loot",
+  "native_authority": "UNCHANGED_REVOKED"
+}

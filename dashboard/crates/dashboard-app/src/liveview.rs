@@ -14,6 +14,18 @@ use crate::AppState;
 fn LiveViewRoot(state: AppState) -> Element {
     let mut roster = use_signal(|| state.feed.roster());
     let mut events: Signal<Vec<WorldEvent>> = use_signal(Vec::new);
+    let mut health = use_signal(|| state.feed.health());
+    let poll_feed = state.feed.clone();
+    use_future(move || {
+        let poll_feed = poll_feed.clone();
+        async move {
+            loop {
+                roster.set(poll_feed.roster());
+                health.set(poll_feed.health());
+                tokio::time::sleep(std::time::Duration::from_secs(2)).await;
+            }
+        }
+    });
 
     use_future(move || {
         let feed = state.feed.clone();
@@ -44,12 +56,22 @@ fn LiveViewRoot(state: AppState) -> Element {
     });
 
     let snapshot = roster();
+    let seed_label = snapshot
+        .seed
+        .map_or_else(|| "not supplied".into(), |s| s.to_string());
     let event_rows: Vec<(String, String, String)> = events()
         .iter()
         .take(40)
         .map(|ev| {
             (
-                format!("{:.0}-{:?}", ev.ts, ev.kind),
+                format!(
+                    "{}-{:.6}-{:?}",
+                    ev.payload
+                        .get("sequence")
+                        .map_or_else(|| "mock".into(), ToString::to_string),
+                    ev.ts,
+                    ev.kind
+                ),
                 event_class(ev).to_string(),
                 format!(
                     "[{:.0}] {}{} {}",
@@ -67,7 +89,8 @@ fn LiveViewRoot(state: AppState) -> Element {
         .collect();
     rsx! {
         h1 { "ro-bots liveview" }
-        p { class: "seed", "seed: {snapshot.seed}" }
+        p { "{health().mode} | {health().status} | events: {health().events_status}" }
+        p { class: "seed", "seed: {seed_label}" }
         div {
             for group in snapshot.groups.iter() {
                 section {
@@ -127,6 +150,7 @@ fn kind_label(kind: EventKind) -> &'static str {
         EventKind::Reputation => "reputation",
         EventKind::Wipe => "wipe",
         EventKind::CommandAck => "command",
+        EventKind::Source => "source",
     }
 }
 

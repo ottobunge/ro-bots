@@ -1,0 +1,79 @@
+{
+  "checkpoint": "integrated offline verification; independent reviews pending",
+  "verification": {
+    "python_task_check": {
+      "exit_code": 0,
+      "tests": 591,
+      "subtests": 65,
+      "coverage_percent": 93.44,
+      "source_files_checked": 78,
+      "warning": "existing Starlette TestClient deprecation"
+    },
+    "python_task_audit": {
+      "exit_code": 0,
+      "result": "No known vulnerabilities found"
+    },
+    "rust_dashboard_check": {
+      "exit_code": 0,
+      "tests": 37,
+      "gates": [
+        "fmt",
+        "clippy",
+        "test",
+        "audit",
+        "machete",
+        "doc"
+      ]
+    },
+    "catalog_consumer_red_green": {
+      "red": "2 TypeError failures with actual pre-re/re catalog; optional price_tier was compared to int",
+      "green": "15 focused tests passed; unknown tiers excluded, not assigned invented values"
+    }
+  },
+  "hash_verification": {
+    "core-interruption-cleanup-fix": {
+      "files_checked": 4,
+      "mismatches": []
+    },
+    "protocol-second-cycle": {
+      "files_checked": 13,
+      "mismatches": []
+    },
+    "mechanics-pre-re": {
+      "counts": {
+        "equipment_rows": 2017,
+        "player_equipment": 1923,
+        "skill_rows": 1228,
+        "class_trees": 77
+      },
+      "mismatches": []
+    },
+    "mechanics-re": {
+      "counts": {
+        "equipment_rows": 12982,
+        "player_equipment": 12787,
+        "skill_rows": 1635,
+        "class_trees": 175
+      },
+      "mismatches": []
+    },
+    "current_source_sha256": {
+      "src/robots/app/builds.py": "564926dbbbecf631b3e02f542698f9ae5c00e1ad54bec1d05323c1a17edafa28",
+      "tests/test_build_catalog_integration.py": "bb672f83aaeb2fb0cd613cf719ec3b5da30eeb58e878122a3878142c0a09b9bd",
+      "src/robots/adapters/mechanics_yaml.py": "8c528a479470f3543dd9a7e49e7b574eca767b5208f611da3b185836cd958e2b",
+      "src/robots/domain/build.py": "0ead8793772d3a7aacdb33c8e0087f700e54c8bdcd1a49c4cfc913dd5b3ddd18",
+      "src/robots/app/agent_runtime.py": "c05942f8f02059af78f43273a8d59c67eda8c77ed2e6263cb27e9f5a7cdfdef8",
+      "src/robots/adapters/memory_journal.py": "043f109ba8e637b4b26a7a4cd601e64bffa3512815ea0cfbca8c2737c3fb3a00",
+      "src/robots/society/memory.py": "29dc3abf394daa6107ee72215f7d514220d6262d0e22351911d2bc24246a3ff2"
+    },
+    "rust_tests": 37
+  },
+  "acceptance_exclusions": [
+    "independent reviews pending, not approved",
+    "no native gameplay acceptance or live smoke",
+    "no character-creation, real account reconciliation, gameplay command executor or isolated E2E/reset acceptance",
+    "mechanics are base metadata, not full scripts/combos/refine/damage formulas or legality certification",
+    "Rust verified through compilation and isolated loopback/serialization, not real game/Docker/browser acceptance",
+    "no staging, commits or push"
+  ]
+}

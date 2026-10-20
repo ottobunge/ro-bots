@@ -1,0 +1,24 @@
+{
+  "finding": "CHAT-OUTGOING-NAME-BUDGET",
+  "repair_cycle": 1,
+  "maximum_automatic_cycles": 2,
+  "basis": "Real clipped reply of252 UTF8bytes accepted by incoming handler but one exact owned-map clif_GlobalMessage truncation warning and zero exact peer matches",
+  "source": "clif.cpp6756-6774 outgoing cap plus10454-10553 incoming cap",
+  "budget": "min(253,255-len((selected_wire_name+\" : \").encode(\"utf-8\"))) bytes, preserving complete code points",
+  "owned_files": [
+    "src/robots/adapters/native_chat_text.py",
+    "src/robots/app/playing_runtime.py",
+    "tests/test_native_chat_text.py",
+    "run/reviews/playing-mvp-native-chat-peer-budget-repair1.json"
+  ],
+  "requirements": [
+    "Actual legacy say serialization and source-shaped outgoing relay test fails before new production change",
+    "Require caller pass the actual selected wire char_name for full peer-safe budget",
+    "No arbitrary fixed-character count or removal of NUL/sender prefix",
+    "Both incoming and outgoing caps must hold; short messages fitting both remain byte-identical",
+    "No REST/pose/health/motion/keepalive/packet/party/context semantics changes",
+    "Preserve previous incoming-size fix approval as bounded historical evidence, not full peer-safe approval",
+    "No native/model/SQL/service/Git effects by repair delegate"
+  ],
+  "all_milestones_open": true
+}

@@ -1,0 +1,189 @@
+{
+  "passed": false,
+  "offline_behavior_contract_verified": true,
+  "new_helper_quality_gates_passed": true,
+  "security_concerns": [],
+  "logic_errors": [],
+  "quality_concerns": [
+    {
+      "scope": "Unwaived existing spike-client quality debt; not a newly discovered session-contract defect",
+      "file": "spikes/003-clientless-limbs/client.py",
+      "ruff_findings": 46,
+      "metrics": {
+        "constructor_statements": 61,
+        "char_server_branches": 33,
+        "char_server_statements": 116,
+        "dispatch_world_branches": 26,
+        "dispatch_world_statements": 94
+      },
+      "strict_mypy_errors_observed": 13,
+      "xenon_B_B_A": "FAIL: _char_server F, _dispatch_world E, close C, _map_server C, _recv_loop C; average B",
+      "artifacts": [
+        "/home/otto/.hermes/cache/scratch/native-session-review/ruff_client.log",
+        "/home/otto/.hermes/cache/scratch/native-session-review/mypy_client.log",
+        "/home/otto/.hermes/cache/scratch/native-session-review/xenon_client.log"
+      ],
+      "waived": false
+    },
+    {
+      "scope": "Unchanged packetdb static-scan debt, not credentials or a production authentication defect",
+      "file": "spikes/003-clientless-limbs/packetdb.py",
+      "bandit_exit_code": 1,
+      "findings": "8 low findings: B105 compares parser token to literal defined at454 (false positive); seven B101 assertions at706-712 are standalone self-test checks, not production security guards",
+      "artifact": "/home/otto/.hermes/cache/scratch/native-session-review/bandit_packetdb.log",
+      "waived": false
+    }
+  ],
+  "summary": "Frozen session-ready client and provenance-tagged Novice baseline pass independent offline behavior review; overall passed remains false because whole-client static quality debt is explicit and unwaived. No new security or logic blocker found within the stated contract.",
+  "scope": {
+    "repository": "/home/otto/dev/ro-bots",
+    "source_read_only": true,
+    "source_modified": false,
+    "excluded_evolving_siblings": [
+      "src/robots/adapters/native_navigation.py",
+      "src/robots/adapters/native_gameplay.py"
+    ],
+    "excluded_from_closure_and_static_verdict": true,
+    "root_suite_and_whole_src_duplicate_gate": "Deferred to parent on stable combined snapshot, not asserted by scoped checks",
+    "native_connections_sql_engine_inference_execution": false,
+    "private_credentials_read": false,
+    "milestone_or_cognition_approval": false,
+    "implementation_report_read": "run/reviews/native-session-playing-implementation.json",
+    "prior_native_capture_read": "run/reviews/playing-world-initial-frame-capture.json"
+  },
+  "frozen_closure": {
+    "before_after_identical": true,
+    "owned_hashes_match_implementation": true,
+    "before_artifact": "/home/otto/.hermes/cache/scratch/native-session-review/before.json",
+    "sha256": {
+      "spikes/003-clientless-limbs/client.py": "e17e3b9e553269a1666e72910fd46fc58d4096f6b5ebf0d0e005a05a71f21e93",
+      "spikes/003-clientless-limbs/packetdb.py": "1c2be6705938f5ab575cc822b690dba583f8a7719b9469f794fcbb661c032cf3",
+      "src/robots/adapters/native_session_progression.py": "c7ec4880115c14960642487b34e9ad05ea3ab1718ed0cd54748d361ae84dd55f",
+      "src/robots/adapters/native_progression.py": "ad74be96c5d843cfeabd21ef0bdc0086bd0d9d76546ab3a1954a0f276cbff3fe",
+      "src/robots/adapters/native_vitals.py": "663cc93d1fbe0cb20fb6ae4331e2ad5cf63d9e940a246bb8b332b408f6a7e9ff",
+      "src/robots/adapters/native_actor_presentation.py": "81140e814a682ea44742880dd9a3a7a19e165eb2098debfa657d24615fe5b730",
+      "src/robots/adapters/__init__.py": "9b1e7275a89b55489704b9976dd1cfa684a4f9ea02f70393fb79bebbb885761e",
+      "tests/test_client_native_session.py": "98c4c80ff7a94fbc8c4a2dd219235641e4087d372ba1c31c6da3f9ded96adeb8",
+      "tests/test_native_session_progression.py": "ee267a614dcac57a48aa835af5a2b2383ce7ed0e6fa09f9a5a04d04fa2e3d627",
+      "pyproject.toml": "e8ae0849a413bc3d705f081f609b92dae702bbd3e491b2c3aeb5d8665c458fba",
+      "flake.nix": "185e4a4babf62a40484c347f59653bd11b79ce847316a3a90349c8545d38a359",
+      "flake.lock": "c9c0bac69415b99a29ef3fe149b6f04ef54d291989bdf7218cf819ed52edf2a0",
+      "uv.lock": "2d7b4c187078488d7625e4fd4fa982745cab8d6a65b2ff3e382ffa286f1df245"
+    }
+  },
+  "source_authority": {
+    "root": "/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source",
+    "profile": "e985006171d2eb320ee512a653f4c83aea3d81b6 MAIN/pre-re PACKETVER20180704",
+    "independently_read": [
+      "src/common/packets.hpp:31-117 CHARACTER_INFO packed fields",
+      "src/char/char.cpp:910-1060 listing/reload SQL fields and bindings",
+      "src/char/char.cpp:1774-1834 selected character ID/class/levels/slot wire fields",
+      "src/char/char_clif.cpp:1074-1127 authenticated account/slot selection and status reload",
+      "src/char/char_mapif.cpp:1024-1076 matched auth node and selected cached status in2afd",
+      "src/map/chrif.cpp:659-702 status size, account/character/login matching before pc_authok",
+      "src/map/pc.cpp:2091-2105 status copy and invalid-class repair",
+      "src/map/clif.cpp:138-141 explicit disguise alias",
+      "src/map/clif.cpp:2153-2188 same-server position versus cross-server routing",
+      "src/map/packets_struct.hpp:2591-2604 exact MAIN appearance layout"
+    ],
+    "not_atomic": "Listing and selection reload use the same class/base/job columns and selected identity source but distinct SQL reads. No atomic transaction, arbitrary concurrent external DB mutation immunity, or perpetual current-class guarantee is claimed.",
+    "class_zero": "Only supported actual raw class0 projects Novice. Unknown raw classes deny even though pc_authok may repair invalid server classes to Novice.",
+    "sha256": {
+      "src/char/char.cpp": "141dd411c11ec9663d49e1274203ba28bdf3761cce0f98782a8cfd37ee34cdff",
+      "src/char/char_clif.cpp": "f50dedd4cf46d0d3bea95c9410f1f0f04c5f7b525e6691b2afb9c4a3677c5654",
+      "src/char/char_mapif.cpp": "3000a98802978df0d6bed0b668d329cac8c49d87a52131b4d148b76dc6fd5d6d",
+      "src/map/chrif.cpp": "0bd37260959702dcad627052069cdb18712230f15fa6aabaf893b5dc88334f19",
+      "src/map/pc.cpp": "d12704c1ef7f8321c255175b6f61aa396209b931e2b1687fbbd16963d1def652",
+      "src/map/clif.cpp": "0b1db098158c240b090c6edb8417978ba495957c8a2df4cd9a0ab4cb39884ac5",
+      "src/map/packets_struct.hpp": "5ab5ef13d2a1cdc60d84dcaf2e3be0b6e316b9630e61c3ac7ba0f930d4d31287",
+      "src/common/packets.hpp": "c92279bf163e9546b649397638c19e57c3eb515b49e841c13f88a5fb97bba693",
+      "src/common/mmo.hpp": "883ec2048b726d51f897218989ca66c476bcdbc969d683025fe09a0bf280fa6d"
+    }
+  },
+  "verified_contract": [
+    "The full94-line helper was reviewed. It requires exact selected snapshot type, matching bounded positive exact-int CID, raw actual class0, literal class_fresh True, positive exact-int equal selection/map/native epochs, and valid positive baseline levels.",
+    "Actual SELF11/55 override independently, including decreases; explicit invalid updates0/-1/bool/float/oversized deny instead of falling back. base_source and job_source distinguish selection from self_update; caller mapping remains unchanged.",
+    "Old require_native_progression remains received-only: absent11 or55 denies even when a valid selected baseline exists. No persona or synthetic status_params injected.",
+    "Client native_frame_snapshot returns epoch/base and immutable tuple of seq/monotonic_time/pid/raw. Ring4096, lifetime sequence allocation/insertion/snapshot share threading.Lock. Valid known unhandled frames are included once; handshake/PIN frames bypass dispatch and are excluded.",
+    "Reconnect increments epoch and hides old-reader frames before join; after reader stops it clears again and sets sequence base before map transport. Old late dispatch increments lifetime sequence but cannot enter new-epoch ring. Close clears historical selection, authority and retained ring.",
+    "Self AID and explicit (-aid)&0xffffffff alias LOOK_BASE0 invalidate without interpreting sprite value as class. Exact11-byte/header validation precedes mutation. Peer BASE and self LOOK_WEAPON2 preserve freshness. No ACK or later nonbase appearance rearms invalidated class.",
+    "0091 retains actual map name/coordinates without invalidating the selected baseline;0092/0ac7 invalidate class/map epoch. Entry positions are applied once by the receive reader. Map handshake queue polling cannot rewind a later received0091. move does not set current position.",
+    "Malformed dispatched frames are omitted from ring but retain existing reader dispatch_errors poison. Consumers must gate complete client health before reading progression/frames and deny sequence gaps; bounded ring alone is not a health oracle.",
+    "Actor walking destinations remain presentation metadata, not arrival or current player coordinates. Transport liveness, death/alive truth, perception readiness and actual gameplay remain parent responsibilities."
+  ],
+  "verification": {
+    "environment": "Pinned nix develop --offline --no-write-lock-file; all project tools uv run --offline --no-sync. Reviewer caches/coverage/JUnit/logs use allowed scratch directory.",
+    "regressions": {
+      "passed_test_items": 1242,
+      "passed_subtests": 65,
+      "junit_cases_including_subtests": 1307,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 2.175,
+      "junit": "/home/otto/.hermes/cache/scratch/native-session-review/regressions.xml",
+      "log": "/home/otto/.hermes/cache/scratch/native-session-review/regressions.log",
+      "files": [
+        "tests/test_client_native_session.py",
+        "tests/test_native_session_progression.py",
+        "tests/test_client_native_progression.py",
+        "tests/test_client_protocol.py",
+        "tests/test_client_pincode.py",
+        "tests/test_protocol_rereview_repairs.py",
+        "tests/test_temporary_handshake_cleanup.py",
+        "tests/test_native_progression.py",
+        "tests/test_native_vitals.py",
+        "tests/test_client_actor_presentation.py",
+        "tests/test_native_actor_presentation.py",
+        "tests/test_core_interruption_cleanup.py",
+        "tests/test_packet_conditions.py",
+        "spikes/003-clientless-limbs/test_packetdb.py"
+      ]
+    },
+    "independent_probes": {
+      "passed": 26,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 0.306,
+      "source": "/home/otto/.hermes/cache/scratch/native-session-review/test_independent_session.py",
+      "junit": "/home/otto/.hermes/cache/scratch/native-session-review/probes.xml",
+      "log": "/home/otto/.hermes/cache/scratch/native-session-review/probes.log",
+      "topics": "exact authority types/epochs/identity; invalid current updates; independent sources and old API denial; peer/alias appearance and no ACK rearm; malformed actor reader poison with later valid frame; eviction gap; late post-close dispatch; bad baseline cannot be repaired by updates; malformed LOOK exact framing"
+    },
+    "helper_coverage": {
+      "statements": 37,
+      "missed": 0,
+      "percent": 100,
+      "required_percent": 85,
+      "artifact": "/home/otto/.hermes/cache/scratch/native-session-review/coverage.json"
+    },
+    "static_gates": {
+      "black_new_helper_two_tests_whole_client": "PASS",
+      "ruff_new_helper_two_tests": "PASS",
+      "ruff_completed_helper_dependency_closure": "PASS",
+      "strict_mypy_new_helper_two_tests": "PASS",
+      "bandit_completed_helpers_init_client": "PASS",
+      "vulture_completed_helpers_init_whitelist_min85": "PASS",
+      "xenon_completed_helpers_init_B_B_A": "PASS",
+      "pylint_duplicate_completed_helpers_init": "PASS10.00/10; scoped only, not whole-src approval",
+      "whole_client_ruff_mypy_xenon": "FAIL; explicit quality_concerns above",
+      "packetdb_bandit": "FAIL; eight low diagnostics classified above",
+      "commands_and_exit_codes": "/home/otto/.hermes/cache/scratch/native-session-review/gates.json",
+      "additional_commands_and_exit_codes": "/home/otto/.hermes/cache/scratch/native-session-review/additional_gates.json"
+    }
+  },
+  "prior_native_evidence": {
+    "sha256": "78587af24318fcc3453022982c43addd3dd51df22422168d4498a6c230b4403d",
+    "read_only_not_reexecuted": true,
+    "observed_in_supplied_artifact": "Both fixtures selected actual class0/base10/job10, no received SELF11/55, initial SELF LOOK_WEAPON2 and one0091 each. Capture reports healthy readers, native vitals and supported cleanup/offline final readback; brains disabled and no inference/game actions.",
+    "limitation": "This existing capture motivates the explicit initial baseline contract; it is not independent native receipt of the newly reviewed frozen client and does not establish gameplay or cognition acceptance."
+  },
+  "remaining": [
+    "Parent owns final stable combined root gates, whole-src duplicate/complexity checks excluding no final files after workers finish.",
+    "Unwaived spike-client static debt prevents unconditional all-quality approval; the new helper and offline session behavior are verified separately.",
+    "Parent must publish normative ADR20/session-baseline addendum without weakening the existing received-only API contract.",
+    "Parent collector must retain full transport/reader/error/vitals/perception/death gate, reject retained-frame gaps and bind consumers to current epoch.",
+    "Current-frozen-client native receipt and real gameplay remain unverified by this review; no connection or execution authorization is conferred."
+  ]
+}

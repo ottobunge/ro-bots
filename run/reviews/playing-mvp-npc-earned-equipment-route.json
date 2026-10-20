@@ -1,0 +1,423 @@
+{
+  "schema": "playing-mvp-npc-earned-equipment-route/v1",
+  "scope": "read-only public-source implementation reconnaissance; no native/model/network/SQL/world/service/compiler/Git writes",
+  "status": "finite conditional advisory route; acquisition and equip not accepted",
+  "profile": {
+    "revision": "e985006171d2eb320ee512a653f4c83aea3d81b6",
+    "packetver": 20180704,
+    "client_family": "MAIN",
+    "ruleset": "pre-re",
+    "npc_db_manifest_coverage": false,
+    "authority_note": "3216 configured-source file authority contains no NPC files. Public NPC/database worktree files are separately revision-pinned using the local rathena ref plus exact SHA256; no active installed NPC closure claim."
+  },
+  "observed": {
+    "fixture_index": 1,
+    "npc_id_from_received_context_only": 110005545,
+    "epoch": 1,
+    "sequence": 82,
+    "received_dialogue_string_count": 11,
+    "script": "npc/quests/seals/brisingamen_seal.txt",
+    "script_lines": [
+      588,
+      612
+    ],
+    "ordered_hash_matches": 11,
+    "menu_labels_source_matched": [
+      "Who are you?",
+      "What's new?",
+      "Can you sing?"
+    ],
+    "menu_indices_received": [
+      1,
+      2,
+      3
+    ],
+    "selected_index_received": 255,
+    "source_branch": "outer seal-window condition false, male introductory presentation, inferred only for that interaction under matched source",
+    "quest_flags_known": false,
+    "inventory": "complete empty",
+    "job": 0,
+    "base_level": 10,
+    "job_level": 10,
+    "stats_context": "delegated baseline: six base1/bonus+1, free stat/skill points0, learned skills0; not re-observed by this scout",
+    "reward_received": false
+  },
+  "menu_branch_trace": [
+    {
+      "index": 1,
+      "label": "Who are you?",
+      "lines": [
+        613,
+        652
+      ],
+      "effects": "biography, cutins, Next, close2; no reward/warp/quest/stat/skill mutation"
+    },
+    {
+      "index": 2,
+      "label": "What's new?",
+      "lines": [
+        653,
+        772
+      ],
+      "effects": "second received menu required: Prontera/seaside/desert/borderlands; informational dialogue and close2 only; no reward/warp/quest/stat/skill mutation",
+      "practical_information_candidate": "About Prontera! explains nearby front gate at663-665; not yet received in the live report; tavern gossip is not starter gear instruction"
+    },
+    {
+      "index": 3,
+      "label": "Can you sing?",
+      "lines": [
+        773,
+        839
+      ],
+      "effects": "song submenu. Each song requires Zeny>499 and deducts500 on play; otherwise refusal; cutin/audio/close2. No item/XP/skill/stat reward."
+    },
+    {
+      "index": 255,
+      "label": "cancel",
+      "effects": "source uses select, not prompt; cancel is not menu branch success. Actual run stalled locally in waiting/blocked; no closure or continuation receipt recorded. Repairwriter owns recovery."
+    }
+  ],
+  "route": {
+    "type": "ADVISORY, not received agent knowledge or autonomous success",
+    "objective": "obtain one ordinary-shop Knife1201 and prove it worn",
+    "steps": [
+      "Finish independently owned NPC-cancel recovery first; do not reuse stale epoch1/menu82 as permission to select. Fresh guarded recontact only under future authorization.",
+      "If cognition independently selects What's new? then subsequently received About Prontera!, retain actual gate instruction. This optional information branch produces no equipment. Never force these choices as autonomous proof.",
+      "Otherwise declare route advisory. Discover town gate/path and Weapon Dealer#prt through ordinary perception/map/navigation; no source-derived NPC instance IDs or global catalog injection. Shop exists in source npc/merchants/shops.txt:255; exact active loading and actual offer require receipts.",
+      "Receive current Zeny and actual shop offer for Knife1201. Public pre-re database Buy50, Novice allowed, minimum level1, right hand, weight400 internal units. Authorize exactly quantity1 only if received final price <= received budget, weight/capacity and state admit it. No stat/skill points needed by this item recipe.",
+      "Perform ordinary shop purchase; require fresh shop purchase success, acquisition receipt/current inventory index and matching budget delta. If Zeny is insufficient or unreceived, STOP with funding-needed, do not fabricate a reward; combat/loot/sell would be a distinct future receipt-grounded funding slice, not this proven route.",
+      "Retain identified/nonbroken equipment metadata; check current mechanics and ownership; send one reviewed equip intent for current index/right-hand. Require correlated fresh ACK and subsequent current worn-state evidence before gear-ready."
+    ]
+  },
+  "exact_next_seams": [
+    {
+      "boundary": "NPC recovery -> cognitive preparation policy",
+      "handoff": "Repairwriter owns playing_runtime.py/native_npc_dialogue.py/test_native_npc_cancel_recovery.py. Closure vs bounded abandonment must feed preparation planning and suppress per-tick recontact; no new fixture/point/gear seeding."
+    },
+    {
+      "boundary": "public advice -> received instruction/navigation",
+      "handoff": "No received starter-equipment instruction exists in these11 strings. New source menu knowledge stays engineering evidence. Need real continuation/menu receipt then matching travel0091 -> LoadEnd007D -> same-client/epoch perception/arrival; existing warp support must be exercised, not assumed missing."
+    },
+    {
+      "boundary": "shop actuation and state",
+      "handoff": "Implement received shop menu/offer, current Zeny, exact quantity1 purchase intent, fresh result and inventory acquisition. Configured clif_buylist2236-2264 exposes price/discountPrice; clif_parse_NpcBuyListSend12299-12326 consumes purchase list00C8 and clears npc_shopid; clif_npc_buy_result12287 sends00CA. Exact active header/registry/layout bindings for shop menu/list need separate targeted source review; this scout does not claim live decoding."
+    },
+    {
+      "boundary": "acquisition receipt vs current equipment",
+      "handoff": "native_gameplay.py312-326 retains successful0A37 index/item/quantity; current list281-294 retains only(item,quantity), losing WearState and other gear metadata. The live report has empty acquisition counts, not a grant. Preserve equipment metadata from list and new-item receipt, or obtain a reviewed fresh snapshot; no synthetic worn state."
+    },
+    {
+      "boundary": "equipment representations -> guarded actuator",
+      "handoff": "native_equipment.py offers0998 size8 and0999 size11 codec only. No native_equipment integration imports/calls found by scoped src search outside codec; direct client literal search is not full inherited parse_stream proof. Add actual sender/receive framing/dispatch and current ownership/NativeMechanics snapshot. Gate class/level/sex/map restriction/broken/strip-status/equip cooldown/slot conflict and already-worn rules from manifest-matched pc.cpp1850-1970 and12015-12070."
+    },
+    {
+      "boundary": "ACK correlation",
+      "handoff": "Bind actual client identity + session epoch + map/session readiness + received inventory index/item generation + one pending equip intent + post-send receive sequence. Wire ACK has no request nonce: late same-index ACK after index reuse or a second overlapping intent is ambiguous; fail closed or require fresh authoritative snapshot. Unknown result bytes/failure/silence cannot be success. Allowed-locations is not current WearState."
+    }
+  ],
+  "unknowns": [
+    "Private god_brising and numeric world seal flags are unknown; matched closed-window dialogue does not identify their values or authorize all server quest state. Never SQL-query them.",
+    "Exact active NPC/database import closure absent from3216 authority. Local public scripts support advice only until actual received offer/result.",
+    "Base10/job10 does not confer tutorial reward eligibility. The separately inspected pre-re novice tutorial has BaseLevel<8 XP gating at455-479; no level1 reward or free-point assumptions for these fixtures. No return-to-training-ground route is established.",
+    "No received current shop budget, offer, carried gear metadata, current-wear state or shop/equip result exists in this report.",
+    "Current job/sex/status/map restrictions and skill/stat freshness need received state and reviewed NativeMechanics; source compatibility alone is not native eligibility.",
+    "No affordable route is guaranteed when Zeny is unknown; funding slice remains explicitly outside acceptance."
+  ],
+  "subsequent_acceptance": [
+    "Offline TDD: full inherited stream framing fixed/variable/incremental/coalesced for chosen active shop/equipment families, malformed/unknown fail closed, metadata preservation, stale epoch/client, late ACK/index reuse, insufficient money/weight, failure result, cancellation, bounded retries. Existing28 equipment codec tests remain representations only.",
+    "Stable completed source review + unchanged configured gate before separately authorized live run; do not alter the repairwriter files here.",
+    "Authorized ordinary-player run must show cognition-selected received menu/path, actual warp/perception where used, received budget/offer, one1201 acquisition at actual index, successful correlated equip plus current-wear evidence; no forced choice, SQL gear/point grant or fabricated Clef context.",
+    "Report legal purchase/acquisition, wear, NPC information and XP/progression separately. A Knife receipt/wear is finite preparation progress, not all-gameplay acceptance or proof of XP. If budget/offer/eligibility absent, finish bounded with exact blocker, not PASS."
+  ],
+  "evidence": {
+    "files": [
+      {
+        "path": "/home/otto/.hermes/cache/scratch/callback-package-hut2_cuz/configured-variant/src/map/pc.cpp",
+        "bytes": 498055,
+        "sha256": "d12704c1ef7f8321c255175b6f61aa396209b931e2b1687fbbd16963d1def652",
+        "expected_manifest_sha256": "d12704c1ef7f8321c255175b6f61aa396209b931e2b1687fbbd16963d1def652",
+        "manifest_match": true,
+        "excerpts": [
+          {
+            "lines": [
+              1850,
+              1970
+            ],
+            "text": "uint8 pc_isequip( const map_session_data* sd, int32 n )\n{\n\tconst item_data* item;\n\n\tnullpo_retr(ITEM_EQUIP_ACK_FAIL, sd);\n\n\titem = sd->inventory_data[n];\n\n\tif(pc_has_permission(sd, PC_PERM_USE_ALL_EQUIPMENT))\n\t\treturn ITEM_EQUIP_ACK_OK;\n\n\tif(item == nullptr)\n\t\treturn ITEM_EQUIP_ACK_FAIL;\n\n\tif (sd->sc.getSCE(SC_SPIRIT) && sd->sc.getSCE(SC_SPIRIT)->val2 == SL_SUPERNOVICE) {\n\t\t//Spirit of Super Novice equip bonuses. [Skotlex]\n\t\tif (sd->status.base_level >= 90 && item->equip & EQP_HELM)\n\t\t\treturn ITEM_EQUIP_ACK_OK; //Can equip all helms\n\n\t\tif (sd->status.base_level >= 96 && item->equip & EQP_ARMS && item->type == IT_WEAPON && item->weapon_level == 4)\n\t\t\tswitch (item->subtype) { //In weapons, the look determines type of weapon.\n\t\t\t\tcase W_DAGGER: //All level 4 - Daggers\n\t\t\t\tcase W_1HSWORD: //All level 4 - 1H Swords\n\t\t\t\tcase W_1HAXE: //All level 4 - 1H Axes\n\t\t\t\tcase W_2HAXE: // All level 4 - 2H Axes (works, but low ASPD)\n\t\t\t\tcase W_MACE: //All level 4 - 1H Maces\n\t\t\t\tcase W_STAFF: //All level 4 - 1H Staves\n\t\t\t\tcase W_2HSTAFF: //All level 4 - 2H Staves\n\t\t\t\t\treturn ITEM_EQUIP_ACK_OK;\n\t\t\t}\n\t}\n\n\tif(item->elv && sd->status.base_level < static_cast<uint32>(item->elv))\n\t\treturn ITEM_EQUIP_ACK_FAILLEVEL;\n\tif(item->elvmax && sd->status.base_level > static_cast<uint32>(item->elvmax))\n\t\treturn ITEM_EQUIP_ACK_FAILLEVEL;\n\tif(item->sex != SEX_BOTH && sd->status.sex != item->sex)\n\t\treturn ITEM_EQUIP_ACK_FAIL;\n\n\t// Broken equip\n\tif (sd->inventory.u.items_inventory[n].attribute == 1)\n\t\treturn ITEM_EQUIP_ACK_FAIL;\n\n\t//fail to equip if item is restricted\n\tif (!battle_config.allow_equip_restricted_item && itemdb_isNoEquip(item, sd->m))\n\t\treturn ITEM_EQUIP_ACK_FAIL;\n\n\tif (item->equip&EQP_AMMO) {\n\t\tswitch (item->subtype) {\n\t\t\tcase AMMO_ARROW:\n\t\t\t\tif (battle_config.ammo_check_weapon && sd->status.weapon != W_BOW && sd->status.weapon != W_MUSICAL && sd->status.weapon != W_WHIP) {\n\t\t\t\t\tclif_msg( *sd, MSI_FAIL_NEED_EQUIPPED_BOW );\n\t\t\t\t\treturn ITEM_EQUIP_ACK_FAIL;\n\t\t\t\t}\n\t\t\t\tbreak;\n\t\t\tcase AMMO_DAGGER:\n\t\t\t\tif (!pc_checkskill(sd, AS_VENOMKNIFE))\n\t\t\t\t\treturn ITEM_EQUIP_ACK_FAIL;\n\t\t\t\tbreak;\n\t\t\tcase AMMO_BULLET:\n\t\t\tcase AMMO_SHELL:\n\t\t\t\tif (battle_config.ammo_check_weapon && sd->status.weapon != W_REVOLVER && sd->status.weapon != W_RIFLE && sd->status.weapon != W_GATLING && sd->status.weapon != W_SHOTGUN\n#ifdef RENEWAL\n\t\t\t\t\t&& sd->status.weapon != W_GRENADE\n#endif\n\t\t\t\t\t) {\n\t\t\t\t\tclif_msg( *sd, MSI_WRONG_BULLET );\n\t\t\t\t\treturn ITEM_EQUIP_ACK_FAIL;\n\t\t\t\t}\n\t\t\t\tbreak;\n#ifndef RENEWAL\n\t\t\tcase AMMO_GRENADE:\n\t\t\t\tif (battle_config.ammo_check_weapon && sd->status.weapon != W_GRENADE) {\n\t\t\t\t\tclif_msg( *sd, MSI_WRONG_BULLET );\n\t\t\t\t\treturn ITEM_EQUIP_ACK_FAIL;\n\t\t\t\t}\n\t\t\t\tbreak;\n#endif\n\t\t\tcase AMMO_CANNONBALL:\n\t\t\t\tif (!pc_ismadogear(sd) && (sd->status.class_ == JOB_MECHANIC_T || sd->status.class_ == JOB_MECHANIC)) {\n\t\t\t\t\tclif_msg( *sd, MSI_USESKILL_FAIL_MADOGEAR ); // Item can only be used when Mado Gear is mounted.\n\t\t\t\t\treturn ITEM_EQUIP_ACK_FAIL;\n\t\t\t\t}\n\t\t\t\tif (sd->state.active && !pc_iscarton(sd) && //Check if sc data is already loaded\n\t\t\t\t\t(sd->status.class_ == JOB_GENETIC_T || sd->status.class_ == JOB_GENETIC)) {\n\t\t\t\t\tclif_msg( *sd, MSI_USESKILL_FAIL_CART ); // Only available when cart is mounted.\n\t\t\t\t\treturn ITEM_EQUIP_ACK_FAIL;\n\t\t\t\t}\n\t\t\t\tbreak;\n\t\t}\n\t}\n\n\tif (!sd->sc.empty()) {\n\t\tif(item->equip & EQP_ARMS && item->type == IT_WEAPON && sd->sc.getSCE(SC_STRIPWEAPON)) // Also works with left-hand weapons [DracoRPG]\n\t\t\treturn ITEM_EQUIP_ACK_FAIL;\n\t\tif(item->equip & EQP_SHIELD && item->type == IT_ARMOR && sd->sc.getSCE(SC_STRIPSHIELD))\n\t\t\treturn ITEM_EQUIP_ACK_FAIL;\n\t\tif(item->equip & EQP_ARMOR && sd->sc.getSCE(SC_STRIPARMOR))\n\t\t\treturn ITEM_EQUIP_ACK_FAIL;\n\t\tif(item->equip & EQP_HEAD_TOP && sd->sc.getSCE(SC_STRIPHELM))\n\t\t\treturn ITEM_EQUIP_ACK_FAIL;\n\t\tif(item->equip & EQP_ACC && sd->sc.getSCE(SC__STRIPACCESSORY))\n\t\t\treturn ITEM_EQUIP_ACK_FAIL;\n\t\tif (item->equip & EQP_ARMS && sd->sc.getSCE(SC__WEAKNESS))\n\t\t\treturn ITEM_EQUIP_ACK_FAIL;\n\t\tif (item->equip & EQP_SHADOW_GEAR && sd->sc.getSCE(SC_SHADOW_STRIP))\n\t\t\treturn ITEM_EQUIP_ACK_FAIL;\n\t\tif(item->equip && (sd->sc.getSCE(SC_KYOUGAKU) || sd->sc.getSCE(SC_SUHIDE)))\n\t\t\treturn ITEM_EQUIP_ACK_FAIL;\n\t}\n\n\t//Not equipable by class. [Skotlex]\n\tif (!pc_job_can_use_item(sd,item))\n\t\treturn ITEM_EQUIP_ACK_FAIL;\n\n\tif (!pc_isItemClass(sd, item))\n\t\treturn ITEM_EQUIP_ACK_FAIL;\n\n\treturn ITEM_EQUIP_ACK_OK;\n}\n"
+          },
+          {
+            "lines": [
+              12015,
+              12070
+            ],
+            "text": "bool pc_equipitem(map_session_data *sd,int16 n,int32 req_pos,bool equipswitch)\n{\n\tint32 i, pos, flag = 0, iflag;\n\tstruct item_data *id;\n\tint16* equip_index;\n\n\tnullpo_retr(false,sd);\n\n\tif( n < 0 || n >= MAX_INVENTORY ) {\n\t\tif( equipswitch ){\n\t\t\tclif_equipswitch_add( sd, n, req_pos, ITEM_EQUIP_ACK_FAIL );\n\t\t}else{\n\t\t\t// Does not deserve an answer... [Lemongrass]\n\t\t\t//clif_equipitemack( sd, ITEM_EQUIP_ACK_FAIL, n );\n\t\t}\n\t\treturn false;\n\t}\n\tif( DIFF_TICK(sd->canequip_tick,gettick()) > 0 ) {\n\t\tif( equipswitch ){\n\t\t\tclif_equipswitch_add( sd, n, req_pos, ITEM_EQUIP_ACK_FAIL );\n\t\t}else{\n\t\t\tclif_equipitemack( *sd, ITEM_EQUIP_ACK_FAIL, n );\n\t\t}\n\t\treturn false;\n\t}\n\n\tif (!(id = sd->inventory_data[n]))\n\t\treturn false;\n\tpos = pc_equippoint(sd,n); //With a few exceptions, item should go in all specified slots.\n\n\tif(battle_config.battle_log && !equipswitch)\n\t\tShowInfo(\"equip %u (%d) %x:%x\\n\",sd->inventory.u.items_inventory[n].nameid,n,id?id->equip:0,req_pos);\n\n\tuint8 res = pc_isequip( sd, n );\n\n\tif( res != ITEM_EQUIP_ACK_OK ){\n\t\tif( equipswitch ){\n\t\t\tclif_equipswitch_add( sd, n, req_pos, res );\n\t\t}else{\n\t\t\tclif_equipitemack( *sd, res, n );\t// fail\n\t\t}\n\t\treturn false;\n\t}\n\n\tif( equipswitch && id->type == IT_AMMO ){\n\t\tclif_equipswitch_add( sd, n, req_pos, ITEM_EQUIP_ACK_FAIL );\n\t\treturn false;\n\t}\n\n\tif (!(pos&req_pos) || sd->inventory.u.items_inventory[n].equip != 0) {\n\t\tif( equipswitch ){\n\t\t\tclif_equipswitch_add( sd, n, req_pos, ITEM_EQUIP_ACK_FAIL );\n\t\t}else{\n\t\t\tclif_equipitemack( *sd, ITEM_EQUIP_ACK_FAIL, n );\t// fail\n\t\t}\n\t\treturn false;"
+          }
+        ]
+      },
+      {
+        "path": "/home/otto/.hermes/cache/scratch/callback-package-hut2_cuz/configured-variant/qualified-clif.cpp",
+        "bytes": 776024,
+        "sha256": "ace16f15be3b60f730522d620b73a68a9f2cc384016aadce9c985888aea9a1ac",
+        "expected_manifest_sha256": "ace16f15be3b60f730522d620b73a68a9f2cc384016aadce9c985888aea9a1ac",
+        "manifest_match": true,
+        "excerpts": [
+          {
+            "lines": [
+              12260,
+              12305
+            ],
+            "text": "void clif_parse_NpcBuySellSelected( int32 fd, map_session_data* sd ){\n\tconst PACKET_CZ_ACK_SELECT_DEALTYPE* p = reinterpret_cast<PACKET_CZ_ACK_SELECT_DEALTYPE*>( RFIFOP( fd, 0 ) );\n\n\tif( sd == nullptr ){\n\t\treturn;\n\t}\n\n\tif (sd->state.trading)\n\t\treturn;\n\n\tnpc_buysellsel( sd, p->GID, p->type );\n}\n\n\n/// Notification about the result of a purchase attempt from an NPC shop (ZC_PC_PURCHASE_RESULT).\n/// 00ca <result>.B\n/// result:\n///     0 = \"The deal has successfully completed.\"\n///     1 = \"You do not have enough zeny.\"\n///     2 = \"You are over your Weight Limit.\"\n///     3 = \"Out of the maximum capacity, you have too many items.\"\n///     9 = \"Amounts are exceeded the possession of the item is not available for purchase.\"\n///    10 = \"Props open-air store sales will be traded in RODEX\"\n///    11 = \"The exchange failed.\"\n///    12 = \"The exchange was well done.\"\n///    13 = \"The item is already sold and out of stock.\"\n///    14 = \"There is not enough goods to exchange.\"\nvoid clif_npc_buy_result( map_session_data* sd, e_purchase_result result ){\n\tPACKET_ZC_PC_PURCHASE_RESULT p = {};\n\n\tp.packetType = HEADER_ZC_PC_PURCHASE_RESULT;\n\tp.result = (uint8)result;\n\n\tclif_send( &p, sizeof( p ), sd, SELF );\n}\n\n\n/// Request to buy chosen items from npc shop.\n/// 00c8 <packet len>.W { <amount>.W <name id>.W }* (CZ_PC_PURCHASE_ITEMLIST)\nvoid clif_parse_NpcBuyListSend( int32 fd, map_session_data* sd ){\n\tconst PACKET_CZ_PC_PURCHASE_ITEMLIST *p = reinterpret_cast<PACKET_CZ_PC_PURCHASE_ITEMLIST*>( RFIFOP( fd, 0 ) );\n\n\tuint16 n = ( p->packetLength - sizeof( *p ) ) / sizeof( p->items[0] );\n\te_purchase_result result;\n\n\tif( sd->state.trading || !sd->npc_shopid )"
+          },
+          {
+            "lines": [
+              12299,
+              12344
+            ],
+            "text": "void clif_parse_NpcBuyListSend( int32 fd, map_session_data* sd ){\n\tconst PACKET_CZ_PC_PURCHASE_ITEMLIST *p = reinterpret_cast<PACKET_CZ_PC_PURCHASE_ITEMLIST*>( RFIFOP( fd, 0 ) );\n\n\tuint16 n = ( p->packetLength - sizeof( *p ) ) / sizeof( p->items[0] );\n\te_purchase_result result;\n\n\tif( sd->state.trading || !sd->npc_shopid )\n\t\tresult = e_purchase_result::PURCHASE_FAIL_MONEY;\n\telse{\n\t\tstd::vector<s_npc_buy_list> items = {};\n\n\t\titems.reserve( n );\n\n\t\tfor( uint16 i = 0; i < n; i++ ){\n\t\t\ts_npc_buy_list item = {};\n\n\t\t\titem.nameid = p->items[i].itemId;\n\t\t\titem.qty = p->items[i].amount;\n\n\t\t\titems.push_back( item );\n\t\t}\n\n\t\tresult = npc_buylist( sd, items );\n\t}\n\n\tsd->npc_shopid = 0; //Clear shop data.\n\tclif_npc_buy_result(sd, result);\n}\n\n\n/// Notification about the result of a sell attempt to an NPC shop (ZC_PC_SELL_RESULT).\n/// 00cb <result>.B\n/// result:\n///     0 = \"The deal has successfully completed.\"\n///     1 = \"The deal has failed.\"\nvoid clif_npc_sell_result(map_session_data* sd, unsigned char result)\n{\n\tint32 fd = sd->fd;\n\n\tWFIFOHEAD(fd,packet_len(0xcb));\n\tWFIFOW(fd,0) = 0xcb;\n\tWFIFOB(fd,2) = result;\n\tWFIFOSET(fd,packet_len(0xcb));\n}\n\n"
+          },
+          {
+            "lines": [
+              2236,
+              2281
+            ],
+            "text": "void clif_buylist( const map_session_data& sd, const npc_data& nd ){\n\tPACKET_ZC_PC_PURCHASE_ITEMLIST* p = reinterpret_cast<PACKET_ZC_PC_PURCHASE_ITEMLIST*>( packet_buffer );\n\n\tp->packetType = HEADER_ZC_PC_PURCHASE_ITEMLIST;\n\tp->packetLength = sizeof( *p );\n\n\tfor( int32 i = 0, count = 0, discount = npc_shop_discount( &nd ); i < nd.u.shop.count; i++ ){\n\t\tint32 val = nd.u.shop.shop_item[i].value;\n\n\t\tp->items[count].price = val;\n\t\tp->items[count].discountPrice = ( discount ) ? pc_modifybuyvalue( &sd, val ) : val;\n\t\tp->items[count].itemType = itemtype( nd.u.shop.shop_item[i].nameid );\n\t\tp->items[count].itemId = client_nameid( nd.u.shop.shop_item[i].nameid );\n#if PACKETVER_MAIN_NUM >= 20210203 || PACKETVER_RE_NUM >= 20211103\n\t\tstd::shared_ptr<item_data> id = item_db.find(nd.u.shop.shop_item[i].nameid);\n\n\t\tp->items[count].viewSprite = id->look;\n\t\tp->items[count].location = pc_equippoint_sub( &sd, id.get() );\n#endif\n\n\t\tp->packetLength += static_cast<decltype(p->packetLength)>( sizeof( p->items[0] ) );\n\t\tcount++;\n\t}\n\n\tclif_send( p, p->packetLength, &sd, SELF );\n}\n\n\n/// Presents list of items, that can be sold to an NPC shop.\n/// 00c7 <packet len>.W { <index>.W <price>.L <overcharge price>.L }* (ZC_PC_SELL_ITEMLIST)\nvoid clif_selllist( const map_session_data& sd){\n\tif( !sd.npc_shopid ){\n\t\treturn;\n\t}\n\n\tnpc_data* nd = map_id2nd( sd.npc_shopid );\n\n\tif( nd == nullptr ){\n\t\treturn;\n\t}\n\n\tPACKET_ZC_PC_SELL_ITEMLIST *packet = reinterpret_cast<PACKET_ZC_PC_SELL_ITEMLIST*>(packet_buffer);\n\n\tpacket->packetType = HEADER_ZC_PC_SELL_ITEMLIST;\n\tpacket->packetLength = sizeof( *packet );\n"
+          },
+          {
+            "lines": [
+              12287,
+              12332
+            ],
+            "text": "void clif_npc_buy_result( map_session_data* sd, e_purchase_result result ){\n\tPACKET_ZC_PC_PURCHASE_RESULT p = {};\n\n\tp.packetType = HEADER_ZC_PC_PURCHASE_RESULT;\n\tp.result = (uint8)result;\n\n\tclif_send( &p, sizeof( p ), sd, SELF );\n}\n\n\n/// Request to buy chosen items from npc shop.\n/// 00c8 <packet len>.W { <amount>.W <name id>.W }* (CZ_PC_PURCHASE_ITEMLIST)\nvoid clif_parse_NpcBuyListSend( int32 fd, map_session_data* sd ){\n\tconst PACKET_CZ_PC_PURCHASE_ITEMLIST *p = reinterpret_cast<PACKET_CZ_PC_PURCHASE_ITEMLIST*>( RFIFOP( fd, 0 ) );\n\n\tuint16 n = ( p->packetLength - sizeof( *p ) ) / sizeof( p->items[0] );\n\te_purchase_result result;\n\n\tif( sd->state.trading || !sd->npc_shopid )\n\t\tresult = e_purchase_result::PURCHASE_FAIL_MONEY;\n\telse{\n\t\tstd::vector<s_npc_buy_list> items = {};\n\n\t\titems.reserve( n );\n\n\t\tfor( uint16 i = 0; i < n; i++ ){\n\t\t\ts_npc_buy_list item = {};\n\n\t\t\titem.nameid = p->items[i].itemId;\n\t\t\titem.qty = p->items[i].amount;\n\n\t\t\titems.push_back( item );\n\t\t}\n\n\t\tresult = npc_buylist( sd, items );\n\t}\n\n\tsd->npc_shopid = 0; //Clear shop data.\n\tclif_npc_buy_result(sd, result);\n}\n\n\n/// Notification about the result of a sell attempt to an NPC shop (ZC_PC_SELL_RESULT).\n/// 00cb <result>.B\n/// result:\n///     0 = \"The deal has successfully completed.\""
+          }
+        ]
+      },
+      {
+        "path": "/home/otto/dev/ro-bots/rathena/npc/quests/seals/brisingamen_seal.txt",
+        "bytes": 144931,
+        "sha256": "2244773b857e63eb547bf0ec0a89890fbb487e87c968b3fad09a31989909bafb",
+        "expected_manifest_sha256": null,
+        "manifest_match": null,
+        "excerpts": [
+          {
+            "lines": [
+              27,
+              28
+            ],
+            "text": "\tif ($God2 >= $@god_check1 && $God3 < $@god_check2) {\n\t\tif (god_brising > 49) {"
+          },
+          {
+            "lines": [
+              588,
+              612
+            ],
+            "text": "\telse {\n\t\tmes \"[Nelliorde]\";\n\t\tmes \"Hello there!\";\n\t\tmes \"Isn't it such\";\n\t\tmes \"a glorious day?\";\n\t\tmes \"You know of me,\";\n\t\tmes \"do you not?\";\n\t\tnext;\n\t\tmes \"[Nelliorde]\";\n\t\tif (Sex == SEX_MALE) {\n\t\t\tmes \"Hahahaha, forgive my rudeness,\";\n\t\t\tmes \"but I fail to remember your name, although your face does seem rather familiar.\";\n\t\t}\n\t\telse {\n\t\t\tmes \"Oh well well...\";\n\t\t\tmes \"How could I ever\";\n\t\t\tmes \"forget the lovely\";\n\t\t\tmes \"\"+ strcharinfo(0) +\"?\";\n\t\t}\n\t\tnext;\n\t\tcutin \"god_nelluad01\",2;\n\t\tmes \"[Nelliorde]\";\n\t\tmes \"So, aren't you curious about me? Feel free to ask me whatever you like! I'm the vagabond that will wander the earth till the end of his days, your friend who loves to sing under the moonlight~\";\n\t\tnext;\n\t\tswitch(select(\"Who are you?:What's new?:Can you sing?\")) {"
+          },
+          {
+            "lines": [
+              653,
+              673
+            ],
+            "text": "\t\tcase 2:\n\t\t\tmes \"[Nelliorde]\";\n\t\t\tmes \"You wish to\";\n\t\t\tmes \"hear of some news?\";\n\t\t\tmes \"What kind of news do\";\n\t\t\tmes \"you wish to know about?\";\n\t\t\tnext;\n\t\t\tswitch(select(\"About Prontera!:About seaside areas.:Is the desert still hot?:How about the borderlands?\")) {\n\t\t\tcase 1:\n\t\t\t\tmes \"[Nelliorde]\";\n\t\t\t\tmes \"What?! Prontera?!\";\n\t\t\t\tmes \"Can you not see that the front\";\n\t\t\t\tmes \"gate of Prontera is right before you? You should at least know where you are, adventurer.\";\n\t\t\t\tnext;\n\t\t\t\tmes \"[Nelliorde]\";\n\t\t\t\tmes \"Anyways, I know one interesting bit of news about Prontera. But it's a secret. Shh! Are you... Single?\";\n\t\t\t\tnext;\n\t\t\t\tmes \"[Nelliorde]\";\n\t\t\t\tmes \"If so, go visit the tavern. I met a guy there who took me a nice place. Oh yes. He took me the place where singles are forbidden~!\";\n\t\t\t\tclose2;\n\t\t\t\tbreak;"
+          },
+          {
+            "lines": [
+              773,
+              844
+            ],
+            "text": "\t\tcase 3:\n\t\t\tmes \"[Nelliorde]\";\n\t\t\tmes \"Can I sing, you ask?\";\n\t\t\tmes \"Certainly, and if I may say so, pleasureably. Which song would\";\n\t\t\tmes \"you care to hear?\";\n\t\t\tnext;\n\t\t\tswitch(select(\"Bragi's Poem:Eternal Chaos:Assassin in the Sunset\")) {\n\t\t\tcase 1:\n\t\t\t\tif (Zeny > 499) {\n\t\t\t\t\tcutin \"god_nelluad02\",2;\n\t\t\t\t\tmes \"[Nelliorde]\";\n\t\t\t\t\tmes \"Bragi's Poem!\";\n\t\t\t\t\tmes \"What a good choice!\";\n\t\t\t\t\tmes \"I must say this song\";\n\t\t\t\t\tmes \"represents the\";\n\t\t\t\t\tmes \"heart of a poet!\";\n\t\t\t\t\tsoundeffect \"bragis_poem.wav\",1;\n\t\t\t\t\tset Zeny,Zeny-500;\n\t\t\t\t\tclose2;\n\t\t\t\t}\n\t\t\t\telse {\n\t\t\t\t\tmes \"[Nelliorde]\";\n\t\t\t\t\tmes \"Please forgive me, but I cannot play a song for free. The world is harsh, and a frail Bard such as myself must have some means\";\n\t\t\t\t\tmes \"to survive~\";\n\t\t\t\t\tclose2;\n\t\t\t\t}\n\t\t\t\tbreak;\n\t\t\tcase 2:\n\t\t\t\tif (Zeny > 499) {\n\t\t\t\t\tcutin \"god_nelluad02\",2;\n\t\t\t\t\tmes \"[Nelliorde]\";\n\t\t\t\t\tmes \"You must like robust\";\n\t\t\t\t\tmes \"and energetic music, eh?\";\n\t\t\t\t\tmes \"As you wish~\";\n\t\t\t\t\tsoundeffect \"chaos_of_eternity.wav\",1;\n\t\t\t\t\tset Zeny,Zeny-500;\n\t\t\t\t\tclose2;\n\t\t\t\t}\n\t\t\t\telse {\n\t\t\t\t\tmes \"[Nelliorde]\";\n\t\t\t\t\tmes \"Please forgive me, but I cannot play a song for free. The world is harsh, and a frail Bard such as myself must have some means\";\n\t\t\t\t\tmes \"to survive~\";\n\t\t\t\t\tclose2;\n\t\t\t\t}\n\t\t\t\tbreak;\n\t\t\tcase 3:\n\t\t\t\tif (Zeny > 499) {\n\t\t\t\t\tcutin \"god_nelluad02\",2;\n\t\t\t\t\tmes \"[Nelliorde]\";\n\t\t\t\t\tmes \"Excellent choice!\";\n\t\t\t\t\tmes \"Somehow, the image of\";\n\t\t\t\t\tmes \"the setting sun fits\";\n\t\t\t\t\tmes \"well with Assassins.\";\n\t\t\t\t\tmes \"Don't you agree?\";\n\t\t\t\t\tsoundeffect \"assassin_of_sunset.wav\",1;\n\t\t\t\t\tset Zeny,Zeny-500;\n\t\t\t\t\tclose2;\n\t\t\t\t}\n\t\t\t\telse {\n\t\t\t\t\tmes \"[Nelliorde]\";\n\t\t\t\t\tmes \"Please forgive me, but I cannot play a song for free. The world is harsh, and a frail Bard such as myself must have some means\";\n\t\t\t\t\tmes \"to survive~\";\n\t\t\t\t\tclose2;\n\t\t\t\t}\n\t\t\t\tbreak;\n\t\t\t}\n\t\t\tbreak;\n\t\t}\n\t}\n\tcutin \"\",255;\n\tend;\n}"
+          }
+        ]
+      },
+      {
+        "path": "/home/otto/dev/ro-bots/rathena/npc/merchants/shops.txt",
+        "bytes": 25042,
+        "sha256": "220c099d0a501c021959a0bda8a8507d1956ef260026d4227773c0010ff79e56",
+        "expected_manifest_sha256": null,
+        "manifest_match": null,
+        "excerpts": [
+          {
+            "lines": [
+              255,
+              255
+            ],
+            "text": "prt_in,172,130,0\tshop\tWeapon Dealer#prt\t54,1750:-1,1751:-1,1701:-1,1201:-1,1204:-1,1207:-1,1601:-1,1101:-1,1104:-1,1107:-1,1110:-1,1113:-1,1122:-1,1119:-1,1123:-1,1126:-1,1129:-1,1116:-1,1301:-1"
+          }
+        ]
+      },
+      {
+        "path": "/home/otto/dev/ro-bots/rathena/db/pre-re/item_db_equip.yml",
+        "bytes": 808389,
+        "sha256": "2536c42cc9414f4935e7304f5969228740a5f0308b1acdb2581e5891d25450f7",
+        "expected_manifest_sha256": null,
+        "manifest_match": null,
+        "excerpts": [
+          {
+            "lines": [
+              2262,
+              2296
+            ],
+            "text": "  - Id: 1201\n    AegisName: Knife\n    Name: Knife\n    Type: Weapon\n    SubType: Dagger\n    Buy: 50\n    Weight: 400\n    Attack: 17\n    Range: 1\n    Slots: 3\n    Jobs:\n      Alchemist: true\n      Archer: true\n      Assassin: true\n      BardDancer: true\n      Blacksmith: true\n      Crusader: true\n      Hunter: true\n      Knight: true\n      Mage: true\n      Merchant: true\n      Ninja: true\n      Novice: true\n      Rogue: true\n      Sage: true\n      SoulLinker: true\n      SuperNovice: true\n      Swordman: true\n      Thief: true\n      Wizard: true\n    Locations:\n      Right_Hand: true\n    WeaponLevel: 1\n    EquipLevelMin: 1\n    Refineable: true"
+          }
+        ]
+      },
+      {
+        "path": "/home/otto/dev/ro-bots/src/robots/adapters/native_gameplay.py",
+        "bytes": 14742,
+        "sha256": "c7e9f16750bf117ba3a4843264e215d2e653c0376c70acd7ac45e00a6b2100f9",
+        "expected_manifest_sha256": null,
+        "manifest_match": null,
+        "excerpts": [
+          {
+            "lines": [
+              241,
+              255
+            ],
+            "text": "    def ingest(self, seq: int, at: float, pid: int, raw: bytes) -> None:\n        if not self._receipt_ready(seq, at, pid, raw):\n            return\n        if pid in (0x0991, 0x0A0D):\n            self._inventory_list(pid, raw)\n        elif pid == 0x0ADD:\n            self._floor_item(seq, at, raw)\n        elif pid == 0x00A1:\n            self._floor.pop(int.from_bytes(raw[2:6], \"little\"), None)\n        elif pid == 0x0A37:\n            self._pickup(seq, at, raw)\n        elif pid in (0x09FD, 0x09FE, 0x09FF):\n            self._actor(seq, at, raw)\n        else:\n            self._other(seq, at, pid, raw)"
+          },
+          {
+            "lines": [
+              281,
+              294
+            ],
+            "text": "    def _inventory_list(self, pid: int, raw: bytes) -> None:\n        error = \"Malformed inventory list\"\n        size = 24 if pid == 0x0991 else 57\n        if len(raw) < 4 or int.from_bytes(raw[2:4], \"little\") != len(raw) or (len(raw) - 4) % size:\n            raise ValueError(error)\n        pending: dict[int, tuple[int, int]] = {}\n        for offset in range(4, len(raw), size):\n            index, item = struct.unpack_from(\"<HH\", raw, offset)\n            amount = struct.unpack_from(\"<h\", raw, offset + 5)[0] if pid == 0x0991 else 1\n            if amount <= 0 or index in pending:\n                raise ValueError(error)\n            pending[index] = (item, amount)\n        self._capacity(len(self._inventory.keys() | pending.keys()), MAX_INVENTORY_SLOTS)\n        self._inventory.update(pending)"
+          },
+          {
+            "lines": [
+              312,
+              326
+            ],
+            "text": "    def _pickup(self, seq: int, at: float, raw: bytes) -> None:\n        if raw[24] != 0:\n            return\n        index, amount, item = struct.unpack_from(\"<HhH\", raw, 2)\n        error = \"Successful pickup requires positive signed amount\"\n        previous = self._inventory.get(index, (item, 0))\n        if amount <= 0 or previous[0] != item:\n            raise ValueError(error)\n        self._capacity(\n            len(self._inventory) + int(index not in self._inventory), MAX_INVENTORY_SLOTS\n        )\n        self._capacity(len(self._acquired) + int(item not in self._acquired), MAX_ITEM_TYPES)\n        self._inventory[index] = (item, previous[1] + amount)\n        self._acquired[item] = self._acquired.get(item, 0) + amount\n        self._pickups.append(ObservedPickup(seq, at, index, item, amount))"
+          }
+        ]
+      },
+      {
+        "path": "/home/otto/dev/ro-bots/src/robots/adapters/native_equipment.py",
+        "bytes": 6023,
+        "sha256": "b00c9efa6f47258b4889c478c4587fe261c5b3678474e072666e3614b3701eac",
+        "expected_manifest_sha256": null,
+        "manifest_match": null,
+        "excerpts": [
+          {
+            "lines": [
+              1,
+              14
+            ],
+            "text": "\"\"\"Pinned MAIN20180704 pre-re equipment byte representations, without actuation.\n\nAuthority: protocol/main-20180704-pre-re-equipment.json and its unchanged-header\nGCC/Clang measurements. These are single-frame immutable observations, not current\ninventory/session trackers. No quantity, bonus, expiry interpretation, eligibility,\nownership, request correlation, or successful application is inferred. Preserve\nopaque spare flags and all five option slots, including slots beyond option_count.\n\nBefore any actual use of request bytes, the caller must verify a current owned\ninventory in the matching session, class/level/sex/slot legality and other server\nconstraints, adopt receive framing and correlate a fresh ACK. A send or silence\nnever establishes success; even a decoded success for another index/epoch does not\napply to the account. This module deliberately provides no transport or actuator.\n\"\"\""
+          },
+          {
+            "lines": [
+              49,
+              77
+            ],
+            "text": "def encode_equip_request(inventory_index: int, position: int) -> bytes:\n    \"\"\"Represent bytes only, without asserting equip eligibility.\"\"\"\n    _integer(inventory_index, 2, 65535)\n    _integer(position, 0, 0xFFFFFFFF)\n    return struct.pack(\"<HHI\", 0x0998, inventory_index, position)\n\n\ndef encode_unequip_request(inventory_index: int) -> bytes:\n    \"\"\"Represent bytes only, without asserting ownership or current wear.\"\"\"\n    _integer(inventory_index, 2, 65535)\n    return struct.pack(\"<HH\", 0x00AB, inventory_index)\n\n\n@dataclass(frozen=True, slots=True)\nclass EquipAcknowledgement:\n    inventory_index: int\n    wear_location: int\n    sprite: int\n    raw_result: int\n    result: EquipResult | None\n\n\ndef decode_equip_ack(data: bytes) -> EquipAcknowledgement:\n    \"\"\"Decode only; this does not correlate a request or establish ownership.\"\"\"\n    _fixed_frame(data, 0x0999, 11)\n    _, index, wear, sprite, raw = struct.unpack(\"<HHIHB\", data)\n    _integer(index, 2, 65535)\n    result = EquipResult(raw) if raw in (0, 1, 2) else None\n    return EquipAcknowledgement(index, wear, sprite, raw, result)"
+          }
+        ]
+      },
+      {
+        "path": "/home/otto/dev/ro-bots/protocol/main-20180704-pre-re-equipment.json",
+        "bytes": 13712,
+        "sha256": "c3e34b0a01ed9af39848426f80b035585549aaa3573a3ef9bd76b7d67f0a356a",
+        "expected_manifest_sha256": null,
+        "manifest_match": null,
+        "excerpts": []
+      },
+      {
+        "path": "/home/otto/dev/ro-bots/spikes/003-clientless-limbs/client.py",
+        "bytes": 46008,
+        "sha256": "2f57a0adc0b43a20235835290499ca0043966c5def208642598afb0dc49807fd",
+        "expected_manifest_sha256": null,
+        "manifest_match": null,
+        "excerpts": []
+      }
+    ],
+    "page_proof": [
+      {
+        "line": 589,
+        "received_sha256": "c3ff251c38cbeeeced2e5f1f8e2289e2da21ff27b9e7185e774f4cda093e8e17",
+        "literal": "[Nelliorde]",
+        "matches": true
+      },
+      {
+        "line": 590,
+        "received_sha256": "89b8b8e486421463d7e0f5caf60fb9cb35ce169b76e657ab21fc4d1d6b093603",
+        "literal": "Hello there!",
+        "matches": true
+      },
+      {
+        "line": 591,
+        "received_sha256": "cd4a3530ddc2bb74493615bce3f462811738136816787d1c745564d06e431097",
+        "literal": "Isn't it such",
+        "matches": true
+      },
+      {
+        "line": 592,
+        "received_sha256": "1da46d48afdc16a32c1e16fcc0740f43d9d90012b247864bc559ec13c403f0eb",
+        "literal": "a glorious day?",
+        "matches": true
+      },
+      {
+        "line": 593,
+        "received_sha256": "56e6cef03beea904c0b2939cd3121f4d1b3290592ce52e2051503fff819fcdbc",
+        "literal": "You know of me,",
+        "matches": true
+      },
+      {
+        "line": 594,
+        "received_sha256": "cacae9fa262d9cc5c31e1e5e275c648ed3dc7a1c4a5b13e60c88233134db4110",
+        "literal": "do you not?",
+        "matches": true
+      },
+      {
+        "line": 596,
+        "received_sha256": "c3ff251c38cbeeeced2e5f1f8e2289e2da21ff27b9e7185e774f4cda093e8e17",
+        "literal": "[Nelliorde]",
+        "matches": true
+      },
+      {
+        "line": 598,
+        "received_sha256": "547c0f78585a4c5160bbcad19ff21bbfc6a7056e5d92c571e40c3bb8a01e3027",
+        "literal": "Hahahaha, forgive my rudeness,",
+        "matches": true
+      },
+      {
+        "line": 599,
+        "received_sha256": "a56af235a35e5f51fba01d75bf017047f5c99b270239ab58090b6c62d1ae6627",
+        "literal": "but I fail to remember your name, although your face does seem rather familiar.",
+        "matches": true
+      },
+      {
+        "line": 609,
+        "received_sha256": "c3ff251c38cbeeeced2e5f1f8e2289e2da21ff27b9e7185e774f4cda093e8e17",
+        "literal": "[Nelliorde]",
+        "matches": true
+      },
+      {
+        "line": 610,
+        "received_sha256": "fb7b4003f7f9a8d5f1830b14b2538d0bc0c1e0fbb3cf5cafcf855f4ded401414",
+        "literal": "So, aren't you curious about me? Feel free to ask me whatever you like! I'm the vagabond that will wander the earth till the end of his days, your friend who loves to sing under the moonlight~",
+        "matches": true
+      }
+    ],
+    "client_direct_literal_search": {
+      "hits": [],
+      "not_a_full_dependency_registry_audit": true
+    },
+    "live_proof": {
+      "path": "/home/otto/dev/ro-bots/run/reviews/playing-mvp-live-npc-guidance-cutin.json",
+      "bytes": 28499,
+      "sha256": "330bcbf0c02192ceaa53733c04f076da0c9c157c610c80a0c3befef0a6866d8d",
+      "received_pages_ref": "agents[1].npc_states[2].page_hashes",
+      "menu_context_ref": "agents[1].decision_npc_contexts[0]",
+      "requests_ref": "agents[1].npc_requests",
+      "negative_reward_refs": [
+        "agents[1].acquired_counts",
+        "agents[1].xp_receipts",
+        "after.characters[1].inventory"
+      ]
+    }
+  },
+  "issues": [
+    "Initial source extractor expected int pc_isequip; actual signature uint8. Read-only extraction failed with StopIteration; corrected without source modification.",
+    "Live report archives page hashes rather than raw received strings/menu labels. Ordered11/11 public literal hash matching reconstructs dialogue engineering evidence; submenu instructions are explicitly unreceived."
+  ]
+}

@@ -1,0 +1,117 @@
+{
+  "passed": true,
+  "security_concerns": [],
+  "logic_errors": [],
+  "summary": "Independent offline approval of the frozen optional summary-cache adapter/Memory contract; no supported new security or logic defect found, with measured performance and inherited cleanup limitations explicitly retained.",
+  "scope": "JsonlSummaryNodeStore, SummaryNode/SummaryNodeStore, optional MemoryLog/Memory summary_store integration, and unchanged shared JsonlExperienceStore dependency. Synthetic private files and injected local summarizers only; not host, CLI, native, provider, engine, world or full OptChat acceptance.",
+  "review_method": {
+    "source_and_tests_read_fully": [
+      "src/robots/society/memory.py",
+      "src/robots/adapters/memory_summary_cache.py",
+      "src/robots/adapters/memory_journal.py",
+      "tests/test_memory_summary_cache.py",
+      "tests/test_memory.py",
+      "tests/test_memory_storage.py",
+      "tests/test_memory_concurrency.py",
+      "tests/test_memory_journal_boundary.py",
+      "tests/test_memory_journal_failures.py",
+      "tests/test_core_interruption_cleanup.py"
+    ],
+    "implementation_report_read": "run/reviews/memory-summary-cache.json",
+    "implementation_report_is_not_independent_approval": true,
+    "runtime": "Existing pinned nix develop --offline -c uv run --offline --no-sync; Python 3.14.7, pytest 9.1.1; no installation or dependency/pin changes.",
+    "isolated_scratch": "/home/otto/.hermes/cache/scratch/cache-independent-0rpzk5e4",
+    "cache_coverage_and_temp_isolation": "Owned COVERAGE_FILE, pytest cache_dir, basetemp and TMPDIR; PYTHONDONTWRITEBYTECODE=1; no shared .coverage or test-cache writes.",
+    "full_gate": "Not rerun; parent owns expensive combined gate. No baseline stash, source edits, stage, commit, push, global install, whitelist or gate changes.",
+    "tests_first_evidence": "Implementation report distinguishes raw-only restart recomputing 7 old nodes (behavioral RED) from missing summary_store keyword (API RED). These historical RED claims were read, not independently rerun. Fresh review exercises working feature and negative controls."
+  },
+  "verification": {
+    "total_executed_cases": 210,
+    "failures": 0,
+    "errors": 0,
+    "skips": 0,
+    "fresh_independent_cases": 71,
+    "existing_summary_cache_cases": 68,
+    "existing_scoped_regression_cases": 71,
+    "existing_regression_counts": {
+      "tests/test_memory.py": 24,
+      "tests/test_memory_storage.py": 21,
+      "tests/test_memory_concurrency.py": 3,
+      "tests/test_memory_journal_boundary.py": 14,
+      "tests/test_memory_journal_failures.py": 9
+    },
+    "execution_batches": [
+      {"cases": 201, "failures": 0, "errors": 0, "skips": 0, "log": "/home/otto/.hermes/cache/scratch/cache-independent-0rpzk5e4/tests.log", "junit": "/home/otto/.hermes/cache/scratch/cache-independent-0rpzk5e4/results.xml"},
+      {"cases": 9, "exit_code": 0, "failures": 0, "errors": 0, "skips": 0, "log": "/home/otto/.hermes/cache/scratch/cache-independent-0rpzk5e4/extra-tests.log", "junit": "/home/otto/.hermes/cache/scratch/cache-independent-0rpzk5e4/extra-results.xml"}
+    ],
+    "counts_method": "Parsed actual JUnit testcase elements and suite attributes using Python; independent evidence rows separately counted. Counts are not the implementer's claimed 195 scoped regressions.",
+    "static_checks": ["Scoped ruff check --no-cache: passed", "Scoped black --check: 3 files unchanged"],
+    "coverage": "No independent coverage percentage claimed. Implementer-reported coverage and whole-source static checks were not reproduced here."
+  },
+  "positive_controls_and_reached_probes": {
+    "restart_view_zoom": "Four integer-timestamp raw notes created 7 nodes with CountingSummarizer. Fresh subprocess Exploding mode reproduced exact prior facade view/zoom, float-canonical raw notes and zero old-node summarizer calls. Second fresh subprocess appended fifth note and built exactly 1 missing node after zero prior calls.",
+    "boundary_graph": "Continued restart through 9 notes retained every old node, obtained 16 total nodes and a new L3:0 parent, and expanded that parent through Memory.zoom_line. Only injected local algorithm call counts, never actual LLM requests or prices.",
+    "partial_resume": "Real persisted partial tree with 3 acknowledged nodes restored and built exactly 4 missing nodes; old texts unchanged.",
+    "namespace": "Empty other world/persona/policy namespaces are positive controls; copied populated cache rejected and poisoned under all 3 changed identities, with source files unchanged.",
+    "source_binding": "Independently reconstructed canonical SHA-256 prefix in private test process; integer timestamps canonicalized to float. Text/kind/timestamp mutation, reorder and truncation rejected without rewrite. Appended unchanged prefixes accepted across restarts.",
+    "malformed_streams": "21 fresh cases: exact integer version, outer duplicate field, inner noncanonical encoding, wrong outer purpose, unknown/missing inner fields, huge/negative/bool coordinates, negative/regressed source counts, digest corruption, duplicate node, missing closure, gap, torn/oversized/invalid UTF-8/invalid JSON. Failures poison the adapter and preserve bytes; no erase or fallback. Actual facade constructor corruption probe also failed before visibility and released both normal writer locks.",
+    "preflight_and_reentrance": "Public repeated load succeeded on valid data. Load after close rejected then remained poisoned. Noncanonical INNER payload rejection reached before backend second validation, so backend.load cannot weaken the strict schema. Noncanonical OUTER ordering/whitespace accepted as intended, with canonical inner text retained.",
+    "uncertain_write": "12 fresh parameterized cases covering reached fsync, flush, write and short-write injections with OSError/KeyboardInterrupt/SystemExit origins where applicable. Short writes produce their own incomplete-write OSError, not an injected origin. Escaping injected errors preserve identity, errno where present, and originating traceback frame; no core node/built/dirty progress. Later view/zoom/ensure reject before repeating summarization (calls remain 1).",
+    "cleanup": "4 dual-close/restore cases: raw and cache close both attempted, primary object/errno/frame preserved even when add_note raises, release-before-raise locks actually reopened. Raw restore interruption also preserved exact origin and released both ordinary stores.",
+    "actual_pre_release_interrupt": "2 probes interrupt actual inherited backend os.close before releasing raw or cache file fd. Residual file/directory fd and writer flock observed BEFORE harness recovery; other store released; propagated origin carries incomplete-cleanup note. Backend fd slot already -1 does NOT prove physical release. Only exact owned fixture descriptors manually recovered; no production retry.",
+    "input_bounds": "Fresh NaN, integer timestamp overflow and bool timestamp rejected before writes; exact str subclasses for identity/summary/source text/kind rejected before overridden len/encode. Existing 68 cache cases additionally exercise source-count/node-count/level/index caps, Unicode byte limits, surrogate/control/newline summary refusal and encoded outer-row bounds.",
+    "resource_admission": "Fresh reduced MAX_NODES positive/negative control accepted first node and rejected next without disk/core-node publication, then core poisoned. This is bounded admission, not unbounded lifetime capacity.",
+    "thread_serialization": "4 fresh blocked-summary probes: remember/view/zoom/close wait on same private Memory RLock before acknowledgement; local nodes and built counters unadvanced while blocked, both threads join without errors. Uses actual raw/cache files, not merely backend flock.",
+    "private_files_and_exclusion": "Fresh subprocess excluded from live cache writer, succeeds after normal close. Real leaf 0600/directory 0700 checks; ancestor symlink, leaf symlink and public leaf refused without writes. Cooperative initial metadata/path protections delegated to shared backend, not perpetual authority or hostile-same-UID protection. Storage envelope other/0.0 rows remain separate from agent raw notes."
+  },
+  "contract": {
+    "api": "Existing positional summarizer API preserved; store and summary_store remain optional keyword arguments with None defaults. Default in-memory and raw-only memory regression tests passed. Core trusts SummaryNodeStore.load contract to validate caps, source bindings, contiguous per-level prefixes and child closure; no arbitrary malicious custom-store security claim.",
+    "namespace": "Separate summary-cache/world/persona/policy/nodes.jsonl with exact builtin safe identifiers; policy is opaque caller configuration, not verified model weights.",
+    "encoding": "Required exact 10-field canonical INNER JSON payload, version exact int 1 not bool/float; strict OUTER schema/version/identity/purpose with float timestamp 0.0 and kind other. OUTER whitespace/key order need not be canonical, consistent with backend regular JSON writes.",
+    "source_digest": "Private SHA-256 over canonical UTF-8 [float(ts), kind, text] plus newline per note for each source_count prefix; source digest values never copied into this report.",
+    "caps": {"nodes": 8192, "level": 20, "source_notes": 1000000, "source_text_utf8_bytes": 65536, "summary_utf8_bytes": 4096, "outer_row_utf8_bytes": 16384},
+    "durability_order": "Cache backend acknowledges before adapter _accept and before core _nodes/_built progress; full facade view/zoom, durable raw append plus visible notes, summary build and close serialized by existing private RLock.",
+    "read_bound_qualification": "Retained TextIO.readline(16385) bounds characters, not raw bytes. UTF-8 byte-size validation follows on bounded text. TextIO decoding may read ahead in its own buffer; not a strict 16385-byte syscall/read guarantee."
+  },
+  "suggestions": [
+    {"priority": "non-blocking", "subject": "Repeated source-prefix hashing", "evidence": "Fresh real-file builds at 32 notes/63 nodes called _note_encoding 4000 times; 64 notes/127 nodes called it 16192 times. Asserted measured formula (2 * node_count - 1) * note_count for full builds. Every restored node also validates its full saved prefix.", "recommendation": "Consider carefully validated per-load prefix digest reuse or equivalent caching without losing public mutable-source binding checks. Existing admission caps bound inputs, not inexpensive work or latency. No GPU/LLM latency/cost measurement claimed."},
+    {"priority": "non-blocking", "subject": "Private backend stream coupling", "evidence": "Cache preflight intentionally uses shared backend._file before backend.load.", "recommendation": "Preserve focused compatibility regressions when backend retained-stream implementation changes; avoid implying a stable public backend interface."}
+  ],
+  "limitations": [
+    "Unchanged shared backend can retain fd/flock on process interruption before os.close while its fd ownership slot is already -1. Observed with actual injections; incomplete-cleanup notes are truthful, not recovery or universal release proof. This inherited limitation is not misreported as a new cache logic defect.",
+    "No host factory/CLI cache wiring, model inference, native/private-human data, provider, SQL, engine, socket/server, world effects or gameplay exercised.",
+    "No full combined gate, whole-source duplication/security scan, model-policy proof, power-loss simulation, hostile same-UID protection or indefinite cache-growth approval.",
+    "Implementer report's 195 regressions and coverage percentages are not independent review counts. Only executed 68 owned cache tests, 71 old regressions, and 71 fresh private probes are approved here.",
+    "This scoped verdict cannot resolve unrelated runtime_publication_journal findings or parent combined-gate acceptance."
+  ],
+  "frozen_inputs": {
+    "unchanged_before_after": true,
+    "changed_paths": [],
+    "sha256_before_and_after": {
+      "src/robots/society/memory.py": "10f0508d2fd08da1a6fa4aede6f1d5658a7adf982be0d0eecc5c9017760b039f",
+      "src/robots/adapters/memory_summary_cache.py": "05fb8a1063bfda2d02835497c26bcc45817f39e7753dd8c369135c745de67e97",
+      "src/robots/adapters/memory_journal.py": "043f109ba8e637b4b26a7a4cd601e64bffa3512815ea0cfbca8c2737c3fb3a00",
+      "tests/test_memory_summary_cache.py": "8a08fef45815f7e7e1169544843155057fba2be17e3eb5f7061cbf61b29c9229",
+      "tests/test_memory.py": "31843258250515e32ff790226a757edfaf50964fc2f404c0169ffda6c7b7b3dd",
+      "tests/test_memory_storage.py": "1b5ea2b86b922adaef75c560680eb309a3674873abab2cfd7e1fdfba0e4a069b",
+      "tests/test_memory_concurrency.py": "b3023d86a987dbb701cd4767814473fb5330cda50055f70a062ba67d2b1239d3",
+      "tests/test_core_interruption_cleanup.py": "e985a3f00adebc4161378b6fbe8a7e4e91b6f282e725faee0eef54440f50b3bf",
+      "tests/test_memory_journal_boundary.py": "d5754f1a9e5eacfeabba031118d980fae8ada3df5426983e509ebcd0d10ff56a",
+      "tests/test_memory_journal_failures.py": "13e7cc87bfb390dbf4f8fd24e82f3932c1333dc0db35ee350f5c9f9e3160957e",
+      "Taskfile.yml": "63616950e21c15c455c2b6f90be4d588b77f31a62181fd7a93253d164a64a7fd",
+      "pyproject.toml": "e8ae0849a413bc3d705f081f609b92dae702bbd3e491b2c3aeb5d8665c458fba",
+      "flake.nix": "185e4a4babf62a40484c347f59653bd11b79ce847316a3a90349c8545d38a359",
+      "flake.lock": "c9c0bac69415b99a29ef3fe149b6f04ef54d291989bdf7218cf819ed52edf2a0",
+      "uv.lock": "2d7b4c187078488d7625e4fd4fa982745cab8d6a65b2ff3e382ffa286f1df245"
+    },
+    "approval_invalid_if_reviewed_inputs_change": true
+  },
+  "artifacts": {
+    "report": "run/reviews/memory-summary-cache-independent-review.json",
+    "fresh_harnesses": ["/home/otto/.hermes/cache/scratch/cache-independent-0rpzk5e4/test_independent_cache.py", "/home/otto/.hermes/cache/scratch/cache-independent-0rpzk5e4/test_extra_review.py"],
+    "reached_flags": ["/home/otto/.hermes/cache/scratch/cache-independent-0rpzk5e4/probe-evidence.jsonl", "/home/otto/.hermes/cache/scratch/cache-independent-0rpzk5e4/extra-evidence.jsonl"],
+    "blocking_bug_replay": null
+  },
+  "files_created": ["run/reviews/memory-summary-cache-independent-review.json", "new owned scratch probes/logs/JUnit/private fixture files under /home/otto/.hermes/cache/scratch/cache-independent-0rpzk5e4"],
+  "source_tests_reports_wiki_gates_locks_pins_modified": false
+}

@@ -1,0 +1,114 @@
+{
+  "schema": "native-capacity-context-independent-review/v1",
+  "passed": false,
+  "status": "SCOPED_REVIEW_BLOCKED_BY_REACHED_OWNER_INVENTORY_PREDICATE",
+  "security_concerns": [],
+  "logic_errors": [
+    {
+      "id": "owner-replacement-retains-or-replays-complete-inventory",
+      "severity": "blocking",
+      "summary": "Same-epoch selected-character reference, planning-session, socket and reader replacement clear capacity but leave the previous complete inventory known. Same-epoch wire replacement clears capacity yet resets the tracker and replays the replacement wire's retained pre-boundary inventory as complete. No post-boundary inventory was received.",
+      "contract": "Replacement invalidates capacity and inventory-known; old complete inventory must not replay/rearm across owner replacement, including equal DTO/reference-value collisions.",
+      "source_locations": [
+        "src/robots/adapters/native_capacity.py:69-87 (_bind invalidates only its own receipt and skips retained tail)",
+        "src/robots/app/playing_runtime.py:282-294 (_reset_epoch runs on wire replacement)",
+        "src/robots/app/playing_runtime.py:307-319 (capacity.observe returns success after replacement, so tracker._deny is not reached)",
+        "src/robots/app/playing_runtime.py:332-359 (retained frames feed the gameplay tracker independently of capacity's owner cursor)",
+        "src/robots/app/playing_runtime.py:403,418 (old inventory is published with inventory_known=true)",
+        "src/robots/app/playing_runtime.py:1158-1189 (replacement wire creates a fresh tracker and metadata cursor at base)",
+        "src/robots/adapters/native_gameplay.py:206-227 (new tracker can replay the retained auth/inventory/weight barrier)"
+      ],
+      "reproduction_source": ".work/native-capacity-context-independent-review/test_review_boundaries.py",
+      "reached_assertion": "test_review_boundaries.py:40: assert not after.inventory_known",
+      "physical_failed_cases": ["selection", "session", "socket", "reader", "wire"],
+      "observed": "All five cases return BotState with capacity_receipt=null and inventory_known=true. The probes establish a complete received inventory and capacity before each replacement, then receive no new inventory after it.",
+      "classification": "Independent post-GREEN verification failure; not historical tests-first RED.",
+      "receipt": ".work/native-capacity-context-independent-review/boundaries.xml",
+      "receipt_sha256": "331580e427129485834cfa3ecfa77eba6d075254bbe2b8794ea38367b906ce4e"
+    }
+  ],
+  "suggestions": [
+    "On an authorized follow-up, carry owner-replacement disposition to the actual gameplay tracker and prevent same-epoch retained inventory replay. Preserve the new-epoch first-record behavior and inherited NPC clock/cancellation policy; implementation was not modified in this review."
+  ],
+  "reviewed_source_files": [
+    "src/robots/domain/model.py",
+    "src/robots/app/playing_runtime.py",
+    "src/robots/domain/capacity.py",
+    "src/robots/adapters/native_capacity.py",
+    "tests/test_native_capacity_context.py"
+  ],
+  "consumer_review": "Reviewed actual BotClient construction, existing framer, dispatch and retained ring through PlayingClient/BotState; inspected legacy NPC/session/map/pose/vitals/skill/currency/shop interaction paths and unchanged gameplay collector. Capacity DTOs are immutable detached values without callbacks/owner references. B0/24 and B0/25 remain signed 32-bit, exact eight-byte frames in original units, independent/partial provenance, legitimate zero/overweight and negative historical values. Capacity clock rejection remains separate from inherited NPC clock policy. Warp preserves capacity history, and inventory mutation sequence is not spend freshness.",
+  "integrity": {
+    "freeze": ".work/native-capacity-context/parent-combined-freeze.json",
+    "freeze_sha256": "27150141db164aeae89f9b1e6ed5fdfa9d4b7399493981856c02a101b7552b50",
+    "physical_freeze_paths": 331,
+    "freeze_pre_mismatches": [],
+    "freeze_post_mismatches": [],
+    "protected_baseline": ".work/native-capacity-context/baseline.json",
+    "protected_baseline_sha256": "6f1a79dab7644d12b0a8268987ec41253b32ac467022881b5f1a9db820df3a03",
+    "protected_physical_paths": 265,
+    "protected_pre_mismatches": [],
+    "protected_post_mismatches": [],
+    "worker_report_sha256": "f4dd078e9496e786f34c00a7dd0611812bd88360e659d06d92ef2f95dd309b00",
+    "registered_receipts_verified": 8,
+    "registered_logs_verified": 28,
+    "profile_evidence_verified": 4,
+    "owned_source_hashes_verified": 5,
+    "registered_hash_mismatches": [],
+    "receipt_physical_count_declaration_mismatches": [],
+    "historical_failed_receipts_preserved": true,
+    "worker_current_passing_regressions": 810,
+    "prior_shop_freeze_common_changed_files": ["src/robots/app/playing_runtime.py", "src/robots/domain/model.py"],
+    "approved_old_new_hashes": {
+      "src/robots/domain/model.py": {"old": "4a1a0eae1615c2a1447858ae8b211f2e7c8a94ebca474ed7f98bcdec9e4a734a", "new": "b5fb6e2be7f979fa8e7d1ae50cba3177bafa3d0989b7a627841e561b417ccbfc", "prior_freeze_old_match": true},
+      "src/robots/app/playing_runtime.py": {"old": "01c0e8c2650bb0a845e5590e82a9da71a4840ec2e4fa9c55181ceef62a04c61e", "new": "6ffcd91cd95322eeb9d9547836b3810ce18bdc72176ca87e5819c77d020e5522", "prior_freeze_old_match": true}
+    },
+    "details": ".work/native-capacity-context-independent-review/pre-integrity.json",
+    "post_and_identity_details": ".work/native-capacity-context-independent-review/verification.json"
+  },
+  "execution": {
+    "qualified_environment": "nix develop --offline --no-write-lock-file path:./spikes/007-native-packet-ast/toolchain; env PYTHONOPTIMIZE=0 PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=src:.; .venv/bin/python -B -m pytest",
+    "scoped_arguments": "tests/test_native_capacity_context.py .work/native-capacity-context-independent-review/test_frontier.py --override-ini addopts='' --override-ini cache_dir=.work/native-capacity-context-independent-review/pytest-cache --junitxml=.work/native-capacity-context-independent-review/review.xml -q",
+    "boundary_arguments": ".work/native-capacity-context-independent-review/test_review_boundaries.py --override-ini addopts='' --override-ini cache_dir=.work/native-capacity-context-independent-review/pytest-cache --junitxml=.work/native-capacity-context-independent-review/boundaries.xml -q",
+    "plugins_preserved": true,
+    "coverage_writes_requested": false,
+    "scoped_passed": 39,
+    "scoped_failures": 0,
+    "scoped_errors": 0,
+    "scoped_skips": 0,
+    "scoped_unique_physical_ids": 39,
+    "expected_physical_ids": 39,
+    "missing_ids": [],
+    "unexpected_ids": [],
+    "additional_boundary_physical_cases": 5,
+    "additional_boundary_failed": 5,
+    "additional_boundary_errors": 0,
+    "additional_boundary_skips": 0,
+    "frontier_copy_sha256": "75b7605a9f63c81e69f12633d37ec9663fff4835de41e67e5d35c9b2303a3591",
+    "frontier_copy_byte_identical": true,
+    "frontier_copy_reason": "Original tracer writes observed.json beside its source. Execute an identical owned copy to avoid modifying the frozen worker evidence.",
+    "only_explicit_test_identity_mapping": {
+      "name": "test_actual_received_acquisition_then_capacity_frontier",
+      "original_classname": ".work.native-capacity-context.test_frontier",
+      "owned_copy_classname": ".work.native-capacity-context-independent-review.test_frontier"
+    },
+    "scoped_receipt_sha256": "e8ac049387218618ed2219bcfdb2ef5e9882137d9d19b7fdf62e0f58e9b2bd01"
+  },
+  "quality_evidence": "Verified recorded whole-source Black/Ruff, fresh-cache mypy declaration and Success in 256 source files, Xenon B/B/A command/exit and bound empty log, duplicate-code command/exit and bound 10.00/10 log. No duplicate whole-source scans or root gates were run.",
+  "running_state": "Read-only process snapshot observed parent-owned run_parent_gates.py/root pytest and an existing llama-server. Review launched only scoped offline pytest. No implementation writer was observed; frozen/protected source hashes remained identical before and after review.",
+  "effects": {
+    "implementation_modified": false,
+    "git_modified_by_review": false,
+    "native_guard_modified": false,
+    "native_connection_or_query": false,
+    "model_call": false,
+    "purchase_or_c8_dispatch": false,
+    "root_gate_or_audit_run_by_review": false,
+    "writes_owned_only": true
+  },
+  "created": [
+    ".work/native-capacity-context-independent-review/ (pre/post integrity, byte-identical frontier copy, five-case post-GREEN probe, isolated cache, observations, logs and XML)",
+    "run/reviews/native-capacity-context-independent-review.json"
+  ],
+  "remaining": "Scoped existing tests pass, but independent review is blocked by the reached owner/inventory contract. Parent owns root gates/audit. No native acceptance, spending readiness, supported human uaRO profile, loaded item-price authority or character-slot availability is established."
+}

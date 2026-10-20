@@ -1,0 +1,73 @@
+{
+  "scope": "Offline trusted-user host preparation CLI; no container, volume, SQL or native execution",
+  "owned_files": [
+    "src/robots/adapters/world_prepare_cli.py",
+    "tests/test_world_prepare_cli.py",
+    "run/reviews/world-prepare-cli.json"
+  ],
+  "dependencies_before": {
+    "src/robots/adapters/world_prepare.py": "c663f60dc2dcd74e088f76e2424fd63126938e4500582581bb50e7fbfd055c19",
+    "src/robots/adapters/world_compose.py": "7608719b9e6e407ee1e567f0581a091731c654a6de91fcae2358d87373069800",
+    "src/robots/adapters/rathena_runtime.py": "0a52cbbae5ec459022c1348e33c65105c8cf0776a6bf68bca05e1066d8c74293",
+    "src/robots/adapters/rathena_runtime_io.py": "bc3ca2d291da5d19831bd57f5a794e455a6e9f7870db0f655d376a51de0e6719"
+  },
+  "dependencies_after": {
+    "src/robots/adapters/world_prepare.py": "c663f60dc2dcd74e088f76e2424fd63126938e4500582581bb50e7fbfd055c19",
+    "src/robots/adapters/world_compose.py": "7608719b9e6e407ee1e567f0581a091731c654a6de91fcae2358d87373069800",
+    "src/robots/adapters/rathena_runtime.py": "0a52cbbae5ec459022c1348e33c65105c8cf0776a6bf68bca05e1066d8c74293",
+    "src/robots/adapters/rathena_runtime_io.py": "bc3ca2d291da5d19831bd57f5a794e455a6e9f7870db0f655d376a51de0e6719"
+  },
+  "dependencies_unchanged": true,
+  "whole_repository_frozen": false,
+  "tdd": {
+    "first_red": "Actual module subprocess failed: No module named robots.adapters.world_prepare_cli",
+    "first_green": "Actual module subprocess prepared and verified a new private 694-file stage",
+    "settings_red": "Private settings-file positive failed with unsupported arguments before implementation",
+    "settings_green": "Generated private fixture JSON accepted and credential equality checked without exposing values"
+  },
+  "verification": {
+    "environment": "Pinned project nix develop --offline; uv run --offline --no-sync; PYTEST_DISABLE_PLUGIN_AUTOLOAD unset only inside test process",
+    "cli_tests": 37,
+    "scoped_tests": 131,
+    "errors": 0,
+    "failures": 0,
+    "skipped": 0,
+    "module_coverage_percent": 96.42857142857143,
+    "covered_statements": 81,
+    "total_statements": 84,
+    "static_gates": {
+      "black_check": "passed",
+      "ruff": "passed",
+      "strict_mypy": "passed on CLI and owned tests",
+      "bandit": "passed",
+      "vulture_confidence_85": "passed",
+      "xenon_B_B_A": "passed"
+    },
+    "junit": "/home/otto/.hermes/cache/scratch/world-prepare-cli-junit.xml",
+    "coverage_json": "/home/otto/.hermes/cache/scratch/world-prepare-cli-coverage.json",
+    "actual_module_subprocess": true,
+    "pinned_public_asset_files": 679,
+    "prepared_stage_files_including_compose_inputs": 694,
+    "owned_directories_0700_and_files_0600": true,
+    "private_compose_inputs_read_back": true,
+    "all_three_ports_match_native_configs": true,
+    "independent_generated_credentials_checked_without_values": true,
+    "settings_file_max_bytes": 32768,
+    "settings_file_exact_mode": "0600",
+    "settings_leaf_and_ancestor_symlinks_rejected": true,
+    "existing_target_sentinel_unchanged": true,
+    "sanitized_errors_and_nonlocal_control_flow_verified": true,
+    "metadata_write_failure_returns_no_success_and_retains_private_partial_stage": true
+  },
+  "compose_inputs_format": "Flat private JSON mapping: WORLD_KIND, WORLD_PROJECT, WORLD_VOLUME, WORLD_DB_NAME, WORLD_DB_USER, WORLD_SCHEMA_DIR, WORLD_DB_ROOT_SECRET_FILE, WORLD_DB_USER_SECRET_FILE, WORLD_LOGIN_PORT, WORLD_CHAR_PORT, WORLD_MAP_PORT",
+  "prepared": true,
+  "provisioning": false,
+  "host_bind_mount_ready": false,
+  "pending": [
+    "Parent Taskfile integration and controller loading of persisted compose-inputs.json",
+    "Operator-supplied actual runnable image references; no placeholder or AGENT_IMAGE fallback",
+    "Volume import with runtime UID 10000 and verified MariaDB reader UID/permissions",
+    "Private SQL 0600 plus directory 0700 is not a directly MariaDB-user-readable host bind mount",
+    "SQL provisioning, native parsing/startup and real account/gameplay acceptance remain unexercised"
+  ]
+}

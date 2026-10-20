@@ -1,0 +1,330 @@
+{
+  "passed": false,
+  "status": "independent-review-blocked",
+  "scope": "Completed frozen offline private source-bound view-store MVP only",
+  "security_concerns": [],
+  "logic_errors": [
+    {
+      "id": "origin-masked-during-unconfirmed-cleanup",
+      "severity": "high",
+      "file": "src/robots/adapters/optchat_view_store.py",
+      "lines": [
+        144,
+        149
+      ],
+      "finding": "Reached load callback origin is masked by fallible origin.__dict__ access when close also fails. A legal OSError/KeyboardInterrupt/SystemExit subclass with an unavailable diagnostic __dict__ raises RuntimeError instead of propagating the original object and deepest callback frame.",
+      "reproduction": "Scratch test_custom_exception_dict_preserves_origin_on_cleanup_failure, parameters oserror, keyboard, exit. Store is initialized and saved on actual private filesystem; load reaches node callback; real lock close is interrupted; origin.__dict__ property raises RuntimeError. Physical lock remains held and second-process constructor returns 17 before harness cleanup. No constructor-admission bypass or untrusted-code-sandbox claim.",
+      "observed": "All three parameters fail only the original exception identity assertion: original exception masked by RuntimeError(\"diagnostic attribute unavailable\").",
+      "impact": "Cancellation or exit can be replaced by an ordinary exception; caller does not receive the promised original control-flow object or the cleanup owner diagnostic while writer ownership remains unconfirmed.",
+      "required_acceptance": "Diagnostics cannot replace the origin even when their attribute access is fallible. Preserve exact origin and deepest callback frame and expose unconfirmed ownership using a supported safe handoff. No repair performed."
+    }
+  ],
+  "quality_blockers": [],
+  "suggestions": [],
+  "summary": "Exact persistence, bindings, publication and physical ownership probes pass, but three reached failure-origin regressions prevent independent approval.",
+  "freeze": {
+    "manifest": "/home/otto/.hermes/cache/scratch/optchat-view-store-independent-freeze.json",
+    "sha256": "665d7b589c5a020c08701b43ac57fe4288ea48fb1bfc7eafdb26e37cee177c37",
+    "before": {
+      "count": 263,
+      "drift": []
+    },
+    "after": {
+      "count": 263,
+      "drift": []
+    }
+  },
+  "tests": {
+    "combined": {
+      "cases": 334,
+      "failures": 3,
+      "errors": 0,
+      "skips": 0
+    },
+    "independent": {
+      "cases": 20,
+      "failures": 3,
+      "errors": 0,
+      "skips": 0
+    },
+    "existing": {
+      "cases": 314,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0
+    },
+    "unique_cases": 334,
+    "failed_case_names": [
+      "test_custom_exception_dict_preserves_origin_on_cleanup_failure[oserror]",
+      "test_custom_exception_dict_preserves_origin_on_cleanup_failure[keyboard]",
+      "test_custom_exception_dict_preserves_origin_on_cleanup_failure[exit]"
+    ]
+  },
+  "execution": {
+    "tests": {
+      "exit_code": 1,
+      "command": "env -u PYTEST_ADDOPTS -u PYTEST_DISABLE_PLUGIN_AUTOLOAD PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=/home/otto/dev/ro-bots/src nix develop --offline --no-write-lock-file path:./spikes/007-native-packet-ast/toolchain -c .venv/bin/python -m pytest tests/test_optchat_view_store.py tests/test_optchat_view.py tests/test_host_memory.py tests/test_host_summary_cache.py tests/test_memory_concurrency.py tests/test_memory_journal_boundary.py tests/test_memory_journal_failures.py tests/test_memory_storage.py tests/test_memory_summary_cache.py /home/otto/.hermes/cache/scratch/optchat-view-store-independent-review/test_independent.py -p no:cacheprovider -o addopts= --basetemp=/home/otto/.hermes/cache/scratch/optchat-view-store-independent-review/fresh-fs --tb=short --junitxml=/home/otto/.hermes/cache/scratch/optchat-view-store-independent-review/independent.xml",
+      "log": "/home/otto/.hermes/cache/scratch/optchat-view-store-independent-review/independent.log",
+      "sha256": "109771d4f308141e0e6ea2614d2926b2c507feec9012584c4335f08c5100b3d2"
+    },
+    "black": {
+      "command": [
+        "/home/otto/dev/ro-bots/.venv/bin/black",
+        "--check",
+        "--workers",
+        "1",
+        "src/robots/adapters/optchat_view_store.py",
+        "tests/test_optchat_view_store.py"
+      ],
+      "exit_code": 0,
+      "log": "/home/otto/.hermes/cache/scratch/optchat-view-store-independent-review/black.log",
+      "sha256": "b9cf511501d306d2bd8355ccb165c8ddc0a6fdd62d7c72c4a7b1795cf8934c8c"
+    },
+    "ruff": {
+      "command": [
+        "/home/otto/dev/ro-bots/.venv/bin/ruff",
+        "check",
+        "--no-cache",
+        "src/robots/adapters/optchat_view_store.py",
+        "tests/test_optchat_view_store.py"
+      ],
+      "exit_code": 0,
+      "log": "/home/otto/.hermes/cache/scratch/optchat-view-store-independent-review/ruff.log",
+      "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
+    },
+    "mypy": {
+      "command": [
+        "/home/otto/dev/ro-bots/.venv/bin/mypy",
+        "--cache-dir=/home/otto/.hermes/cache/scratch/optchat-view-store-independent-review/mypy",
+        "src/robots/adapters/optchat_view_store.py",
+        "tests/test_optchat_view_store.py"
+      ],
+      "exit_code": 0,
+      "log": "/home/otto/.hermes/cache/scratch/optchat-view-store-independent-review/mypy.log",
+      "sha256": "f9b031e5c45aa702cd4fef028d465551cb20a2c4698e0913c7b00766b20ac4d8"
+    },
+    "xenon-whole": {
+      "command": [
+        "/home/otto/dev/ro-bots/.venv/bin/xenon",
+        "--max-absolute",
+        "B",
+        "--max-modules",
+        "B",
+        "--max-average",
+        "A",
+        "src"
+      ],
+      "exit_code": 0,
+      "log": "/home/otto/.hermes/cache/scratch/optchat-view-store-independent-review/xenon-whole.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "duplicates-whole": {
+      "command": [
+        "/home/otto/dev/ro-bots/.venv/bin/pylint",
+        "--enable=duplicate-code",
+        "src"
+      ],
+      "exit_code": 0,
+      "log": "/home/otto/.hermes/cache/scratch/optchat-view-store-independent-review/duplicates-whole.log",
+      "sha256": "bbb6ffa7d7107b760478161908c009d3b85b078b80d54e3ad8dcd57bfe91a142"
+    }
+  },
+  "xml_registry": [
+    {
+      "cases": 334,
+      "failures": 3,
+      "errors": 0,
+      "skips": 0,
+      "path": "/home/otto/.hermes/cache/scratch/optchat-view-store-independent-review/independent.xml",
+      "sha256": "35c7dc0d3040aa87eab8d1b5dfc7456f99e637b1f30cd93434acf0f70709a00a"
+    }
+  ],
+  "candidate_evidence": {
+    "xml_registry": [
+      {
+        "cases": 2,
+        "failures": 2,
+        "errors": 0,
+        "skips": 0,
+        "path": "/home/otto/.hermes/cache/scratch/optchat-view-store/00-scaffold-red.xml",
+        "sha256": "10037ace4fc2eb18ad67cc19de95d2cc4ec895ed4b4d278b9d24c9ca11cd6259"
+      },
+      {
+        "cases": 2,
+        "failures": 1,
+        "errors": 0,
+        "skips": 0,
+        "path": "/home/otto/.hermes/cache/scratch/optchat-view-store/01-exact-red.xml",
+        "sha256": "01043b960a6499d28c0c7daae1517e882c3e2f36daca4e03059c16dd20c50efb"
+      },
+      {
+        "cases": 2,
+        "failures": 0,
+        "errors": 0,
+        "skips": 0,
+        "path": "/home/otto/.hermes/cache/scratch/optchat-view-store/02-exact-green.xml",
+        "sha256": "81d9df5d99981d2ef3e7c70528c11180650a709fd510638bdc0effe03ae2d3b1"
+      },
+      {
+        "cases": 22,
+        "failures": 20,
+        "errors": 0,
+        "skips": 0,
+        "path": "/home/otto/.hermes/cache/scratch/optchat-view-store/03-bindings-red.xml",
+        "sha256": "c840ddf63da58bc1e61255b5b44c1caf946e53cd156be9004ef5e4aab755e975"
+      },
+      {
+        "cases": 22,
+        "failures": 0,
+        "errors": 0,
+        "skips": 0,
+        "path": "/home/otto/.hermes/cache/scratch/optchat-view-store/04-bindings-green.xml",
+        "sha256": "2a08adc64e05fd834c2a24d7732efabea1245059d19bf5e0727ee85a076f3388"
+      },
+      {
+        "cases": 35,
+        "failures": 12,
+        "errors": 0,
+        "skips": 0,
+        "path": "/home/otto/.hermes/cache/scratch/optchat-view-store/05-ownership-schema-red.xml",
+        "sha256": "ab00a2b040f5caf91264bb652dd87aafd198c57aa4a5d49384c5f331fcc41bf1"
+      },
+      {
+        "cases": 8,
+        "failures": 7,
+        "errors": 0,
+        "skips": 0,
+        "path": "/home/otto/.hermes/cache/scratch/optchat-view-store/06-real-lock-red.xml",
+        "sha256": "c1dbc12530c65c6dc3614b49e578ec12251b072ddebcd97c7cde74b0a27b1ae5"
+      },
+      {
+        "cases": 35,
+        "failures": 0,
+        "errors": 0,
+        "skips": 0,
+        "path": "/home/otto/.hermes/cache/scratch/optchat-view-store/07-ownership-schema-green.xml",
+        "sha256": "40cc32225a40fdcf69bb35f7f9d1ae79005850d351cb3496f0fe5d1f525ad442"
+      },
+      {
+        "cases": 37,
+        "failures": 3,
+        "errors": 0,
+        "skips": 0,
+        "path": "/home/otto/.hermes/cache/scratch/optchat-view-store/08-durability-cleanup-red.xml",
+        "sha256": "596cf25544e385ddf9982e2853a428286a15b4b342dde9c9b4d793f81fb1ad5d"
+      },
+      {
+        "cases": 4,
+        "failures": 4,
+        "errors": 0,
+        "skips": 0,
+        "path": "/home/otto/.hermes/cache/scratch/optchat-view-store/09-cleanup-red.xml",
+        "sha256": "817902f5ea631dfbce18ccd16697465b83c436aaae53dfb00e6dd192307a42e2"
+      },
+      {
+        "cases": 43,
+        "failures": 0,
+        "errors": 0,
+        "skips": 0,
+        "path": "/home/otto/.hermes/cache/scratch/optchat-view-store/10-durability-cleanup-green.xml",
+        "sha256": "ec1b5933a9c668fbc80c6fa71f722f476b55ee8117922e5451304b3ffe911fda"
+      },
+      {
+        "cases": 57,
+        "failures": 2,
+        "errors": 0,
+        "skips": 0,
+        "path": "/home/otto/.hermes/cache/scratch/optchat-view-store/11-fresh-contract-red.xml",
+        "sha256": "319dbdd3bda179bc353ca2754a30b2360498207f0fa28e07f36fffd0d9a62d40"
+      },
+      {
+        "cases": 57,
+        "failures": 0,
+        "errors": 0,
+        "skips": 0,
+        "path": "/home/otto/.hermes/cache/scratch/optchat-view-store/12-fresh-contract-green.xml",
+        "sha256": "e8836ab07d76384d2eee000a731883c82f0e14dd6a84bc982a98536d43bf159d"
+      },
+      {
+        "cases": 246,
+        "failures": 1,
+        "errors": 0,
+        "skips": 0,
+        "path": "/home/otto/.hermes/cache/scratch/optchat-view-store/13-combined.xml",
+        "sha256": "c8a4595d28bc953b47c952ddc68ac503bf62f2c4002734de0ba2ee6187e1fbe4"
+      },
+      {
+        "cases": 2,
+        "failures": 2,
+        "errors": 0,
+        "skips": 0,
+        "path": "/home/otto/.hermes/cache/scratch/optchat-view-store/14-unconfirmed-close-red.xml",
+        "sha256": "b206d50e12eee54cf6c1be43def6a045b64b413c9b1990bdfe54d7ef79b86e96"
+      },
+      {
+        "cases": 61,
+        "failures": 0,
+        "errors": 0,
+        "skips": 0,
+        "path": "/home/otto/.hermes/cache/scratch/optchat-view-store/15-final-probes.xml",
+        "sha256": "f639fcd4f477b00c8b16c2bec8c74e4561dc1cff18c42a8940dedca90db567b0"
+      },
+      {
+        "cases": 314,
+        "failures": 0,
+        "errors": 0,
+        "skips": 0,
+        "path": "/home/otto/.hermes/cache/scratch/optchat-view-store/16-final-combined.xml",
+        "sha256": "e0064f59c80c0f099cc1c3364254f22c5b5689581e6a580d701148c81258ccd7"
+      },
+      {
+        "cases": 314,
+        "failures": 0,
+        "errors": 0,
+        "skips": 0,
+        "path": "/home/otto/.hermes/cache/scratch/optchat-view-store/17-final-combined.xml",
+        "sha256": "07d1de4a3d017e0624c979909082268098e46cce8ee1e7271c9b7d2944822bf5"
+      }
+    ],
+    "errors": []
+  },
+  "overlapping_test_runs_not_added_as_unique": true,
+  "verified_effects": [
+    "All frozen 61 store, 50 core and 203 legacy cases pass again in fresh private test directories, including fresh-process exact restoration and original UTF-8 newline alias binding.",
+    "17/20 independently authored probes pass: exact persisted empty/nonempty state, explicit load-before-save, parsed NaN/duplicate/boolean/unknown/invalid-length denial, world/persona/policy/source/node binding, pre/post publication origin and poison semantics, retained pending files, exact reopened visible state after uncertain rename, and actual subprocess writer lock before cleanup.",
+    "Before-close and release-before-raise cases each attempt descriptor release once, close the retained directory, leave honest unconfirmed diagnostic state, and physically distinguish held versus released writer lock before harness recovery.",
+    "Scoped Black/Ruff/fresh-cache strict project mypy, whole-source Xenon B/B/A and duplicate-code gates return zero.",
+    "All 18 candidate XML files and six candidate execution log hashes physically match recorded registry; historical overlapping RED/GREEN executions are not added as distinct coverage."
+  ],
+  "limits": [
+    "Caller verifies actual owned raw prefix and immutable original node closure; SourcePrefixBinding validates shape, not source ownership or resource authority.",
+    "Trusted same-UID ADR-018 boundary and inherited private-root helper interruption limitations remain; not an adversarial Python or filesystem sandbox.",
+    "1 MiB checkpoint MVP limit; no universal core maximum-state serializability, all-power-loss, exactly-once, token-budget, cache-cost or KV savings claims.",
+    "No live adoption, provider/profile selection, raw journal reads, migration, existing bot effects or full OptChat milestone acceptance.",
+    "No repairs, source writes, root quality gate, staging or acceptance-ledger changes; parent owns concurrent root checks/audit."
+  ],
+  "artifacts": [
+    "/home/otto/.hermes/cache/scratch/optchat-view-store-independent-review/before.json",
+    "/home/otto/.hermes/cache/scratch/optchat-view-store-independent-review/after.json",
+    "/home/otto/.hermes/cache/scratch/optchat-view-store-independent-review/test_independent.py",
+    "/home/otto/.hermes/cache/scratch/optchat-view-store-independent-review/quality.py",
+    "/home/otto/.hermes/cache/scratch/optchat-view-store-independent-review/quality.json",
+    "/home/otto/.hermes/cache/scratch/optchat-view-store-independent-review/candidate-evidence.json",
+    "/home/otto/.hermes/cache/scratch/optchat-view-store-independent-review/independent.xml",
+    "/home/otto/.hermes/cache/scratch/optchat-view-store-independent-review/independent.log",
+    "/home/otto/.hermes/cache/scratch/optchat-view-store-independent-review/build_report.py"
+  ],
+  "artifact_hashes": {
+    "/home/otto/.hermes/cache/scratch/optchat-view-store-independent-review/before.json": "b71fd101e80b6a33f8474bb0a600d5166f627db739a5de760686f2d122eec7ba",
+    "/home/otto/.hermes/cache/scratch/optchat-view-store-independent-review/after.json": "28ee0a0de43fd35e89e6f90490c2e81012969a3399099db3454f01ecf41faca2",
+    "/home/otto/.hermes/cache/scratch/optchat-view-store-independent-review/test_independent.py": "365c3d8c46e53fa36b8bd9a27d3eda20c76ed58d94b55571455a0568051f14e1",
+    "/home/otto/.hermes/cache/scratch/optchat-view-store-independent-review/quality.py": "f718e6c83837aa3eafbf073870d5a23a8d60c565ddb9427f77b2a3db56302480",
+    "/home/otto/.hermes/cache/scratch/optchat-view-store-independent-review/quality.json": "8fbfa3f15c3f8a30d48a8a591ceb5a95ac706d9663af9434c5ab7cebeb22b1ce",
+    "/home/otto/.hermes/cache/scratch/optchat-view-store-independent-review/candidate-evidence.json": "40083b831d0e28b4a55fbac52683ff2e39380653e4469cd4260a1bc926db582c",
+    "/home/otto/.hermes/cache/scratch/optchat-view-store-independent-review/independent.xml": "35c7dc0d3040aa87eab8d1b5dfc7456f99e637b1f30cd93434acf0f70709a00a",
+    "/home/otto/.hermes/cache/scratch/optchat-view-store-independent-review/independent.log": "109771d4f308141e0e6ea2614d2926b2c507feec9012584c4335f08c5100b3d2",
+    "/home/otto/.hermes/cache/scratch/optchat-view-store-independent-review/build_report.py": "362c177b181cec638d5949fda6bed3203afee8749c122045fea71335668e91fe"
+  },
+  "source_modified": false,
+  "activation": false
+}

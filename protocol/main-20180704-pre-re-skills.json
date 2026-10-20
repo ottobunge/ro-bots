@@ -1,0 +1,39 @@
+{
+  "schema": "reviewed-static-protocol/v1",
+  "profile": {"role": "map", "packetver": 20180704, "client_family": "MAIN", "ruleset": "pre-re", "obfuscation": "ABSENT"},
+  "binding": "e985006171d2/MAIN/pre-re/20180704/received-skills",
+  "source_revision": "e985006171d2eb320ee512a653f4c83aea3d81b6",
+  "authority_handoff": "run/reviews/playing-mvp-native-learned-skill-receipt-handoff.json",
+  "source": {
+    "declaration": "src/map/packets_struct.hpp",
+    "declaration_sha256": "5ab5ef13d2a1cdc60d84dcaf2e3be0b6e316b9630e61c3ac7ba0f930d4d31287",
+    "sender": "src/map/clif.cpp",
+    "sender_sha256": "ace16f15be3b60f730522d620b73a68a9f2cc384016aadce9c985888aea9a1ac",
+    "sender_lines": [5693, 5888]
+  },
+  "layout_proof": {
+    "cpp": "/home/otto/.hermes/cache/scratch/native-learned-skill-receipt/layout.cpp",
+    "cpp_sha256": "e3f2059da6da68dee6cc52e1dffde4a614daaf6cfd7e3bcc0c99661857b72f5b",
+    "gcc_stdout": "/home/otto/.hermes/cache/scratch/native-learned-skill-receipt/layout-gpp.stdout",
+    "clang_stdout": "/home/otto/.hermes/cache/scratch/native-learned-skill-receipt/layout-clangpp.stdout",
+    "stdout_sha256": "2f5668eb6c0d71223bd24cb721989e7e7e5fb300061bc0d4b7c92798f3ce1cf5",
+    "claim": "Reuse preserved measured full-header GCC/Clang results; no fresh compile or other profile claim."
+  },
+  "packets": [
+    {"id": 271, "name": "ZC_SKILLINFO_LIST", "length": -1, "prefix_size": 4, "header_type": "int16", "length_offset": 2, "length_type": "int16", "row_size": 37, "max_size": 8192},
+    {"id": 273, "name": "ZC_ADD_SKILL", "length": 39, "row_offset": 2, "row_size": 37},
+    {"id": 270, "name": "ZC_SKILLINFO_UPDATE", "length": 11, "fields": {"id": ["uint16", 2], "level": ["uint16", 4], "sp": ["uint16", 6], "range": ["uint16", 8], "up_flag_raw": ["uint8", 10]}},
+    {"id": 2017, "name": "ZC_SKILLINFO_UPDATE2", "length": 15, "fields": {"id": ["uint16", 2], "inf": ["int32", 4], "level": ["uint16", 8], "sp": ["uint16", 10], "range": ["uint16", 12], "up_flag_raw": ["uint8", 14]}}
+  ],
+  "SKILLDATA": {"id": ["uint16", 0], "inf": ["int32", 2], "level": ["uint16", 6], "sp": ["uint16", 8], "range": ["uint16", 10], "name": ["raw24", 12], "up_flag_raw": ["uint8", 36]},
+  "semantics": {
+    "levels": "Reported effective levels, including zero tree entries; permanent, copied and temporary ownership UNKNOWN.",
+    "complete": "UNKNOWN even for empty LIST; partner and overflow ADD/UPDATE continuations are possible.",
+    "upgrade": "All uint8 values opaque; 1 is an upgrade hint, never spend/prerequisite/casting authority.",
+    "free_points": "Independent received status, never evidence of skill absence.",
+    "delete": "0x0441 invalidates conservatively using existing framing; no added lengths.",
+    "retention": "256 observed rows maximum; overflow poisons UNKNOWN rather than fabricating absence.",
+    "decision": "At most 8 numeric rows, explicit displayed subset/truncation; compact skills section <=2048 UTF-8 bytes."
+  },
+  "limits": ["Only measured MAIN20180704 pre-re supported.", "No allocation, casting, SQL, live telemetry, inference or milestone acceptance."]
+}

@@ -1,0 +1,154 @@
+{
+  "status": "PASS_OFFLINE_INDEPENDENT_REVIEW",
+  "result": "The frozen native public Say fix correctly enforces the pinned legacy serializer's 253-byte UTF-8 text budget without changing readiness, REST, pose, motion, keepalive or party behavior. Native peer delivery and the final stable whole-root gate remain unverified by this review.",
+  "independent_review": true,
+  "security_concerns": [],
+  "logic_errors": [],
+  "quality_blockers": [],
+  "native_effects": false,
+  "model_effects": false,
+  "sql_effects": false,
+  "service_effects": false,
+  "git_effects": false,
+  "source_or_test_edits": false,
+  "live_delivery_verified": false,
+  "all_milestones_open": true,
+  "scope": {
+    "owned_repository_output": "run/reviews/playing-mvp-native-chat-text-independent-review.json",
+    "private_evidence_directory": "/home/otto/.hermes/cache/scratch/native-chat-text-independent-review",
+    "reviewed_function": "public_chat_text(text: str) -> str",
+    "integration": "PlayingClient._social Say argument only, after build_native_state",
+    "root_gates": "Not run while the unrelated encounter-cursor repair is concurrent; parent must check the final stable combined snapshot. Prior root results are not acceptance of this chat-fix snapshot."
+  },
+  "freeze": {
+    "manifest": "/home/otto/.hermes/cache/scratch/native-chat-text-review-freeze.json",
+    "file_count": 13,
+    "verified_before": true,
+    "verified_after": true,
+    "drift": [],
+    "sha256": {
+      "src/robots/adapters/native_chat_text.py": "a5a8e0610f14fae6a9465af5ebb968dd7b01d19fd8cbe24efbb07a237b4c8747",
+      "src/robots/app/playing_runtime.py": "51e7ec6ed02227ed8a3c2a03af3b9073ff9a3a1800b54441c7cb9e5b9506718c",
+      "spikes/003-clientless-limbs/client.py": "2f57a0adc0b43a20235835290499ca0043966c5def208642598afb0dc49807fd",
+      "spikes/003-clientless-limbs/packetdb.py": "f75d7db42e9df276c5be3a47b1a875eb66c642366600de7bdf398f467cbb9d31",
+      "tests/test_native_chat_text.py": "2e352fcc78f04f7e1e234ea2548950618639cddd04a48e740e8dc8144e6d84da",
+      "tests/test_native_rest_interrupt.py": "7f31b62d61346e48dee4fe5c8bab7765d5a994d5ccc028c0811d51262f1a88b5",
+      "tests/test_playing_runtime.py": "805770a5692e9694bee4ec8dd5ec03060bfa886196cda5cafb563dae60c5c2b0",
+      "tests/test_native_pose_recovery.py": "3c88d30f8093f645ae287f0f803b939846524ec0712e30c6222e072408ce0710",
+      "tests/test_native_playing_keepalive.py": "b816746b20d70eef071b16c2bdf240d13e2bdc86fb6057366fb03d9a71c8a12c",
+      "run/reviews/playing-mvp-native-chat-text-fix.json": "d331f6bddcd7f66fb4a1193e0221a267065be52bb9949d393f57cf7c8f1728f3",
+      "run/reviews/playing-mvp-native-chat-text-parent-gate.json": "ea9698d8c1caaf0a98a1e8c446f69a9c7b5c9e4f70773c5c031a46fde7c4568e",
+      "run/reviews/playing-mvp-native-chat-text-scope.json": "59467f679e9b962821df6ccc7ff1fc3f62603ce18b1e3fb9d69f8794042ac0dc",
+      "run/reviews/playing-mvp-chat-size-frontier.json": "a1b6dfe3aa210612661cadbac7dc9da1afdf99c8a05425b466fb49600c8048ec"
+    }
+  },
+  "budget_authority": {
+    "revision": "e985006171d2eb320ee512a653f4c83aea3d81b6",
+    "profile": "MAIN/pre-re PACKETVER=20180704, obfuscation absent",
+    "source_root": "/home/otto/.hermes/cache/scratch/callback-package-hut2_cuz/configured-variant",
+    "immutable_source_profile_binding_executed": true,
+    "source_ranges_inspected": [
+      "src/map/map.hpp:280-286",
+      "src/map/clif.cpp:10454-10553",
+      "src/map/clif_packetdb.hpp:482-498",
+      "spikes/003-clientless-limbs/client.py:607-611",
+      "src/robots/app/playing_runtime.py:242-315"
+    ],
+    "source_sha256": {
+      "src/map/map.hpp": "1cb428d1145ec9c4045b2ae58c163be24bf1bd374fc8eea07eaf0c266621fe2b",
+      "src/map/clif.cpp": "ace16f15be3b60f730522d620b73a68a9f2cc384016aadce9c985888aea9a1ac",
+      "src/map/clif_packetdb.hpp": "51c8a9ebd591e0dd4f444f829253a14d449615425405cb8a95f28a6dea460e66",
+      "src/map/clif_shuffle.hpp": "befba011ca4b2d1186c16fba325a7240a4ff5375e252d2fb4cc62d503c66d2a0"
+    },
+    "derivation": "The handler subtracts the four-byte header and exact selected-name/separator bytes. Legacy BotClient.say retains one wire NUL; the active post-20151001 handler increments messageLength by one. CHAT_SIZE_MAX=256 rejects messageLength>255: 253+1+1=255 is within the length bound, whereas 254+1+1=256 is rejected.",
+    "fresh_compiler_oracles": {
+      "gcc": "GCC 16.2.0 compile exit 0, executable exit 0",
+      "clang": "Clang 21.1.8 compile exit 0, executable exit 0",
+      "headers": "Full unchanged config/core.hpp, map/packets.hpp and map/map.hpp",
+      "flags": "Exact CPPFLAGS from tests/test_native_protocol_manifest.py, equal to immutable map-cppflags.txt; existing reviewed include closure, no profile overrides or forced headers",
+      "both_stdout": "packetver=20180704 main=20180704 chat_size_max=256 text_max=253 accepted=255 rejected_next=256",
+      "limit": "Executed full-header macro/profile and source-backed arithmetic proof, not execution of the server chat handler; length admission is not delivery admission."
+    }
+  },
+  "fresh_verification": {
+    "focused_pytest": {
+      "passed": 242,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "elapsed_s": 3.17,
+      "files": [
+        "tests/test_native_chat_text.py",
+        "tests/test_playing_runtime.py",
+        "tests/test_native_rest_interrupt.py",
+        "tests/test_native_pose_recovery.py",
+        "tests/test_native_playing_keepalive.py",
+        "tests/test_client_protocol.py",
+        "tests/test_native_protocol_manifest.py"
+      ],
+      "command": "nix shell --offline /nix/store/j1938gsbvbhkyz4kbmvjk56r479mkw3s-gcc-wrapper-16.2.0 -c sh -c 'export PYTHONDONTWRITEBYTECODE=1; .venv/bin/python -m pytest -o addopts=\"\" -p no:cacheprovider [listed seven files] --junitxml=[private evidence]/regressions-nix.xml'"
+    },
+    "initial_failed_run_preserved": {
+      "passed": 241,
+      "failures": 1,
+      "cause": "g++ absent from inherited PATH; the manifest GCC oracle stopped at compiler discovery, not a code assertion",
+      "resolution": "Reran in the existing offline Nix GCC wrapper environment, without installations or source changes",
+      "artifacts": ["regressions.log", "regressions.xml"]
+    },
+    "fresh_serializer_boundary_cases": 8,
+    "serializer_cases": "ASCII, CJK and four-byte emoji at exactly 253 and 254 input bytes, plus empty and embedded-NUL strings; longest complete prefix, one real 0x00F3 variable-length frame, exact mixed-case name/separator/header/length and existing terminal NUL asserted",
+    "strict_unicode_cases": "Two malformed whole inputs, including a surrogate beyond the clipping frontier, raised UnicodeEncodeError before any send",
+    "readiness_probe": "Unavailable transport rejects before malformed-suffix encoding; a fresh reader-liveness KeyboardInterrupt propagates the identical BaseException object with no send",
+    "party_probe": "Existing independent non-NUL 254-byte party helper output remained byte-identical",
+    "raw_serializer_negative_control": "Unbounded original BotClient.say emitted the synthetic 286-byte reply, producing source-calculated messageLength 288, beyond 255; no socket or server was used",
+    "isolated_import_probe": "python -I imported the helper and checked a CJK prefix without importing httpx or yaml"
+  },
+  "scope_preservation": {
+    "runtime_original_sha256": "29f7a642a72218de2b6ef9bd7a29957f7e42902b1ee60494af08155eedb0f200",
+    "runtime_modified_sha256": "51e7ec6ed02227ed8a3c2a03af3b9073ff9a3a1800b54441c7cb9e5b9506718c",
+    "proof": "Reversing exactly one helper import and one self.wire.say(public_chat_text(text)) call restored byte-identical original runtime and equal AST. Public helper signature independently inspected.",
+    "unchanged": [
+      "transport/vitals/position/progression readiness and action order",
+      "REST recovery threshold 0.75 and cancellation of pending motion",
+      "received SELF pose and fresh standing recovery barrier",
+      "20-second keepalive timing, packet mapping and failure policy",
+      "party framing and its separate text budget",
+      "legacy client encoder, name capitalization, header, separator and NUL",
+      "native unknown-packet fail-closed behavior"
+    ],
+    "utf8_policy": "Strict encoding validates the full input; short valid strings are returned unchanged; longer strings preserve the longest whole-code-point prefix. No replacement decoding, arbitrary interior-byte removal, splitting, extra sends or ellipsis."
+  },
+  "historical_evidence_preserved": {
+    "native_failure": "Frozen frontier/parent artifacts record a real 282-character, 286-UTF8-byte completion, one owned-server too-long warning and zero peer reply receipts. This review did not reaccess live services or private model text.",
+    "physical_author_xml_counts_checked": {
+      "red-vertical.xml": {"tests": 1, "failures": 1, "credited_as_budget_red": false},
+      "red-vertical-budget.xml": {"tests": 1, "failures": 1},
+      "red-utf8.xml": {"tests": 2, "failures": 1},
+      "green-final.xml": {"tests": 353, "failures": 0}
+    },
+    "initial_fixture_failure_not_credited": "The initial missing fake log-method failure was not the budget RED."
+  },
+  "limits_and_remaining": [
+    "Parent must run final whole-root check/audit after the concurrent encounter-cursor repair completes; this review ran no whole-source gates mid-repair.",
+    "Actual peer RX of the fixed current source remains unverified. Compare receipt to the clipped transmitted text, not the original full model completion; send return/counters are not delivery.",
+    "Embedded NULs are intentionally preserved and may truncate server-visible text. Exact original-text delivery is not promised for these inputs.",
+    "Prefix clipping may end mid-word or omit semantic content; command sanitization, persona/prompt changes, other outputs and generalized profile budgets are outside this fix.",
+    "The reviewed byte limit is specific to this pinned MAIN20180704 legacy-NUL public-chat path, not every client/profile or the party helper.",
+    "No source repairs, world/model/native sessions, SQL writes, service lifecycle changes or Git mutations were performed."
+  ],
+  "private_artifact_sha256": {
+    "probe.py": "c77cfb88c7e941b1f95f21ac48a1ebc85138fd11d103b03d8fc62ab656357c4b",
+    "independent-budget.cpp": "200073d4a787bdd12320c44a721709916f235fd3eb8cd945fb4f1766c5bbe6b1",
+    "probes.json": "cce0435f05ee9f01b09bcc4c7816af0220b3cc5bde9e7ae8ff556fda30dfdea6",
+    "freeze-before.json": "963953887beda840c7e914cc63057534bfcb71065e628d8cc9534a58e51073fd",
+    "freeze-after.json": "707cf205cf890a68d00c7bb369ba79e4d6a4f46bd28588f720b36b01b787d619",
+    "regressions-nix.log": "e134b589b59c99dbb278fcc11634bff7280d29114e2fddf0ac435403528dfc31",
+    "regressions-nix.xml": "2551e99b066284356a53e8d7b2dc324146de3c197c05c9a8ef7abf0c5cc50097",
+    "regressions.log": "7bbf08d94c9bcbff85de3575d965d60afd4111f091d99190e6e17a54516059e7",
+    "regressions.xml": "824b4d228cd0f452f0c1bad44413918d57df52ef64e06719b2c4bf48470b5e16",
+    "g++-command.json": "04cdd665fe4aa3cadea27381cb120119185c1a705e42245dc8f0e57140395edc",
+    "clang++-command.json": "7cdeda1dff10c02fec8a17914b8819d00a1125f90e1034eb0820a2954b0bd9a6",
+    "g++-compile.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "clang++-compile.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  }
+}

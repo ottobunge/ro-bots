@@ -1,0 +1,69 @@
+{
+  "status": "READ_ONLY_DEPLOYED_PUBLIC_NPC_ASSET_OBSERVATION",
+  "target": "ro-bots-test-rathena-map-1",
+  "project": "ro-bots-test",
+  "volume": "ro-bots-world-test",
+  "image_id": "sha256:d6aa8e108909e6c0ab6f18bedf1cd8c34dc11d2194f7ca65322d46a331a6a469",
+  "service_running": true,
+  "records": [
+    {
+      "path": "npc/scripts_main.conf",
+      "status": "COPY_FAILED",
+      "exit_code": 1,
+      "missing_path_reported": false
+    },
+    {
+      "path": "npc/scripts_pre-re.conf",
+      "status": "COPY_FAILED",
+      "exit_code": 1,
+      "missing_path_reported": false
+    },
+    {
+      "path": "npc/pre-re/scripts_main.conf",
+      "status": "COPIED_READ_ONLY",
+      "bytes": 1908,
+      "sha256": "cf5a2547073b5134983334653936aa91dfb1479e5f8af47c41275d0046e0491e",
+      "checkout_source_matches": true
+    },
+    {
+      "path": "npc/pre-re/scripts_jobs.conf",
+      "status": "COPIED_READ_ONLY",
+      "bytes": 804,
+      "sha256": "8ab291ecd1937b833f4315070a89f4766042e2e1e3a073f82723e5bd57313ed0",
+      "checkout_source_matches": true
+    },
+    {
+      "path": "npc/scripts_athena.conf",
+      "status": "COPIED_READ_ONLY",
+      "bytes": 10376,
+      "sha256": "0b2962864ee0006765763decbdfca94c7bd72a377cbf1c11627036f7dd285e0d",
+      "checkout_source_matches": true
+    },
+    {
+      "path": "npc/pre-re/jobs/novice/novice.txt",
+      "status": "COPIED_READ_ONLY",
+      "bytes": 152868,
+      "sha256": "7455223bc331bc3f8649e16d0af496d4360cb7a849c26ac922508a99b722ed21",
+      "checkout_source_matches": true
+    },
+    {
+      "path": "npc/merchants/novice_exchange.txt",
+      "status": "COPIED_READ_ONLY",
+      "bytes": 10917,
+      "sha256": "4e8c9ac39e6af5e215b31bc99e39fa7b1031b6b7f1a5def78229f666234120e8",
+      "checkout_source_matches": true
+    }
+  ],
+  "failed_probes": [
+    "Native image has no /bin/sh; shell probe exit127",
+    "execute_code kernel does not inherit terminal engine environment; attempted default unavailable endpoint; no daemon changes"
+  ],
+  "method": "docker cp exact allowlisted public NPC files into private scratch, using existing terminal engine; no container or volume writes",
+  "not_proved": [
+    "NPC import activation in running map process",
+    "Server reward eligibility",
+    "Received NPC or quest reward",
+    "Human joinability"
+  ],
+  "full_goals": "OPEN"
+}

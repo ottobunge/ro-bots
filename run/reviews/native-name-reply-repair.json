@@ -1,0 +1,155 @@
+{
+  "schema": 1,
+  "verdict": "scoped offline framing repair verified; parent combined gate and independent re-review required",
+  "native_acceptance": false,
+  "full_goal_acceptance": false,
+  "owned_files": [
+    "spikes/003-clientless-limbs/packetdb.py",
+    "tests/test_native_name_reply_framing.py",
+    "run/reviews/native-name-reply-repair.json"
+  ],
+  "production_delta": "Add only PACKET_DB[0x0ADF]=58 and NAMES[0x0ADF]=ZC_ACK_REQNAMEALL_NPC; comments identify compiled authority. 0x0A30 already registered at 106, left unchanged. No legacy family correction claim.",
+  "compiled_authority": {
+    "source": "/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source/src",
+    "flags": [
+      "-DPACKETVER=20180704",
+      "-DPRERE"
+    ],
+    "re_zero_renewal": false,
+    "name_length": "unaltered mmo.hpp #define NAME_LENGTH (23 + 1)",
+    "output": "24 2783 58 0 2 6 10 34 2608 106 0 2 6 30 54 78 102",
+    "npc": {
+      "header": "0x0ADF",
+      "sizeof": 58,
+      "offsets": {
+        "packet_id": 0,
+        "gid": 2,
+        "groupId": 6,
+        "name": 10,
+        "title": 34
+      }
+    },
+    "player": {
+      "header": "0x0A30",
+      "sizeof": 106,
+      "offsets": {
+        "packet_id": 0,
+        "gid": 2,
+        "name": 6,
+        "party_name": 30,
+        "guild_name": 54,
+        "position_name": 78,
+        "title_id": 102
+      }
+    },
+    "struct_source": "packets_struct.hpp:3563-3602 unaltered full guard/header excerpts",
+    "emission": "clif.cpp:9987-10082 NPC/etc and ordinary mob branches emit sizeof(packet), not HP packet",
+    "source_hashes": {
+      "map/packets_struct.hpp": "5ab5ef13d2a1cdc60d84dcaf2e3be0b6e316b9630e61c3ac7ba0f930d4d31287",
+      "map/clif.cpp": "0b1db098158c240b090c6edb8417978ba495957c8a2df4cd9a0ab4cb39884ac5",
+      "common/mmo.hpp": "883ec2048b726d51f897218989ca66c476bcdbc969d683025fe09a0bf280fa6d",
+      "config/packets.hpp": "180f7ddaf5c978af0db7ed26215388265d51f59957ac7173d617870e2cc0964d"
+    },
+    "oracle_cpp": "/home/otto/.hermes/cache/scratch/nr/nix-shell.9243wT/pytest-of-otto/pytest-0/test_compiled_name_reply_famil0/name-oracle.cpp",
+    "oracle_cpp_sha256": "275950472314dfca2bff4b68e1f5a182cea8697303247b2c610c3d8073f23a4c",
+    "oracle_binary": "/home/otto/.hermes/cache/scratch/nr/nix-shell.9243wT/pytest-of-otto/pytest-0/test_compiled_name_reply_famil0/name-oracle",
+    "oracle_binary_sha256": "bfba62ba6a49daabac652131a1ec9548610cb06b0a3ee6484cfdec11feb49022"
+  },
+  "tdd": {
+    "red": "Compiled oracle PASS while actual parse_stream NPC reply raises unknown 0x0ADF; one expected failure, one pass before registry edit. Earlier test harness regex and printf mistakes corrected before production changes.",
+    "green": "2/2 pass after literal registration; expanded owned file 6 physical tests pass in scoped regressions.",
+    "junit": {
+      "red": {
+        "name": "pytest",
+        "errors": "0",
+        "failures": "1",
+        "skipped": "0",
+        "tests": "2",
+        "time": "0.195",
+        "timestamp": "2026-10-07T04:19:16.849894+02:00",
+        "hostname": "framework"
+      },
+      "green": {
+        "name": "pytest",
+        "errors": "0",
+        "failures": "0",
+        "skipped": "0",
+        "tests": "2",
+        "time": "0.157",
+        "timestamp": "2026-10-07T04:19:32.946136+02:00",
+        "hostname": "framework"
+      },
+      "regressions": {
+        "name": "pytest",
+        "errors": "0",
+        "failures": "0",
+        "skipped": "0",
+        "tests": "948",
+        "time": "1.456",
+        "timestamp": "2026-10-07T04:20:11.754519+02:00",
+        "hostname": "framework"
+      }
+    },
+    "junit_paths": [
+      "/home/otto/.hermes/cache/scratch/nr/red.xml",
+      "/home/otto/.hermes/cache/scratch/nr/green.xml",
+      "/home/otto/.hermes/cache/scratch/nr/regressions.xml"
+    ]
+  },
+  "framing": {
+    "new_physical_test_cases": 6,
+    "coalesced_split_checks": 758,
+    "truncated_prefix_checks": 162,
+    "one_byte_fragment_steps": 756,
+    "repeated_reply_counts": 2,
+    "coverage": "Both compiled name reply families before/after valid 9FD/9FF; every split and one-byte chunks; repeated replies; unknown FAFA raises with preceding context; actual FakeSocket receive loop dispatches sequence 1,2,3 once, drain does not redispatch; no position/class/vitals/alive/actor authority."
+  },
+  "gates": {
+    "command_prefix": "TMPDIR=/home/otto/.hermes/cache/scratch/nr nix develop --offline -c; UV_OFFLINE=1 uv run --no-sync",
+    "scoped_regressions": 948,
+    "selection": [
+      "test_native_name_reply_framing.py",
+      "test_native_tick_reply.py",
+      "test_client_protocol.py",
+      "test_protocol_rereview_repairs.py",
+      "test_playing_packet_framing.py",
+      "test_client_native_session.py",
+      "test_native_actor_presentation.py",
+      "test_native_gameplay_repairs.py"
+    ],
+    "owned_test_black": "PASS",
+    "owned_test_ruff": "PASS",
+    "owned_test_fresh_mypy": "PASS",
+    "legacy_debt_not_waived": {
+      "client_packetdb_mypy": 15,
+      "client_ruff": 46,
+      "packetdb_ruff": 40,
+      "all_003_spike_mypy": 82,
+      "all_003_spike_ruff": 151
+    },
+    "whole_src_statics_and_whole_suite": "not rerun in scoped delegate; parent combined gate pending"
+  },
+  "freeze": {
+    "before": {
+      "/home/otto/dev/ro-bots/spikes/003-clientless-limbs/packetdb.py": "acd9f587243f2b918dfbba1897bbe4209bb62dd123befe2d17ee3754ac4f8999",
+      "/home/otto/dev/ro-bots/spikes/003-clientless-limbs/client.py": "2f57a0adc0b43a20235835290499ca0043966c5def208642598afb0dc49807fd",
+      "/home/otto/dev/ro-bots/flake.nix": "185e4a4babf62a40484c347f59653bd11b79ce847316a3a90349c8545d38a359",
+      "/home/otto/dev/ro-bots/flake.lock": "c9c0bac69415b99a29ef3fe149b6f04ef54d291989bdf7218cf819ed52edf2a0",
+      "/home/otto/dev/ro-bots/uv.lock": "2d7b4c187078488d7625e4fd4fa982745cab8d6a65b2ff3e382ffa286f1df245"
+    },
+    "after": {
+      "/home/otto/dev/ro-bots/spikes/003-clientless-limbs/packetdb.py": "db55d456de1f848dae44a05f62e4c7aa892c0f2206c33fd7284e2a9a9032921b",
+      "/home/otto/dev/ro-bots/spikes/003-clientless-limbs/client.py": "2f57a0adc0b43a20235835290499ca0043966c5def208642598afb0dc49807fd",
+      "/home/otto/dev/ro-bots/flake.nix": "185e4a4babf62a40484c347f59653bd11b79ce847316a3a90349c8545d38a359",
+      "/home/otto/dev/ro-bots/flake.lock": "c9c0bac69415b99a29ef3fe149b6f04ef54d291989bdf7218cf819ed52edf2a0",
+      "/home/otto/dev/ro-bots/uv.lock": "2d7b4c187078488d7625e4fd4fa982745cab8d6a65b2ff3e382ffa286f1df245"
+    },
+    "other_captured_hashes_unchanged": true,
+    "helpers_AST_unchanged": true,
+    "brain_observed_sha256": "c4e644fde9780af4f650564edb4115727c95132e39825f0e4c5037f935442777",
+    "clock_test_observed_sha256": "ba22fb9aaae74d219852ddfbb2562eda588246184c4e81a2250cd22fce517f0e",
+    "owned_test_sha256": "235bfb4ad76b63e242cc5b4b7439093aa804df48d0a1b19909eb98358295f983",
+    "clock_registry": "0x007F=6 unchanged"
+  },
+  "limits": "No native/model/SQL/engine/credentials/Git actions. No old assertions, source helpers, thresholds or pins modified. Raw receive/auth payloads excluded from this report [REDACTED]. Actual playing-session retry not performed."
+}

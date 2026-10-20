@@ -1,0 +1,104 @@
+{
+  "review": "native-self-character-progression-frontier",
+  "verdict": "SOURCE_AUDIT_ONLY_NOT_IMPLEMENTED_NOT_NATIVE_ACCEPTED",
+  "scope": "Selected self-character job/class ID, base level and job level only. No actor classification, inventory, persona substitution, global SQL, inference or native clients.",
+  "authority": {
+    "source_root": "/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source",
+    "revision": "e985006171d2eb320ee512a653f4c83aea3d81b6",
+    "profile": "PACKETVER=20180704 MAIN PRERE/pre-re",
+    "package_anchor": "nix/playable-world/flake.nix:8,22; pinned package profile, not default packet header",
+    "compiler_probe": "Successful small public-header C++ layout oracle via nix develop --offline --no-write-lock-file; -std=c++17 -DPACKETVER=20180704 -DPRERE; static_assert(PACKETVER_MAIN_NUM == 20180704). No server build or socket activity.",
+    "compiler_stdout": "char=155 GID=0 joblevel=24 job=64 level=72 name=88 CharNum=118 sex=154 list=27 page=4 status=8 var=2 count=4 long=8 sprite=11 AID=2 type=6 val=7 val2=9 novice=0 sword=1 knight=7 knight2=13 bard=19 dancer=20 highnovice=4001 paladin=4015",
+    "stable_repository_hashes_sha256": {
+      "spikes/003-clientless-limbs/client.py": "f4432d814522833d52d575d83b681b0f6ad85e98f886708ba4015ecb2c9bb557",
+      "spikes/003-clientless-limbs/packetdb.py": "1c2be6705938f5ab575cc822b690dba583f8a7719b9469f794fcbb661c032cf3",
+      "src/robots/app/agent_runtime.py": "4c99c3a952c5a96d1446c196b7b3aa737107601d69aa9ddaa7d7b0af6fcb4e60",
+      "src/robots/domain/model.py": "697646631c2eae15dc01e6cc0219502b1c7a8ed6d830089060e5ee37c700bbbe",
+      "src/robots/adapters/mechanics_yaml.py": "c5991bd78af95b213b4fb9a2ca87b065f5b76e826edb84eac593498a80f64b58"
+    },
+    "native_hashes_sha256": {
+      "src/common/packets.hpp": "c92279bf163e9546b649397638c19e57c3eb515b49e841c13f88a5fb97bba693",
+      "src/common/mmo.hpp": "883ec2048b726d51f897218989ca66c476bcdbc969d683025fe09a0bf280fa6d",
+      "src/map/packets_struct.hpp": "5ab5ef13d2a1cdc60d84dcaf2e3be0b6e316b9630e61c3ac7ba0f930d4d31287",
+      "src/map/map.hpp": "1cb428d1145ec9c4045b2ae58c163be24bf1bd374fc8eea07eaf0c266621fe2b",
+      "src/map/clif.cpp": "0b1db098158c240b090c6edb8417978ba495957c8a2df4cd9a0ab4cb39884ac5",
+      "src/map/pc.cpp": "d12704c1ef7f8321c255175b6f61aa396209b931e2b1687fbbd16963d1def652",
+      "src/char/char.cpp": "141dd411c11ec9663d49e1274203ba28bdf3761cce0f98782a8cfd37ee34cdff"
+    }
+  },
+  "selected_character_snapshot": {
+    "anchor": "src/common/packets.hpp:31-118,252-282,614-626; src/char/char.cpp:1774-1834",
+    "packet": "0x006B PACKET_HC_ACCEPT_ENTER, int16 packetType@0/int16 packetLength@2, 27-byte header followed by packed CHARACTER_INFO[155]",
+    "relative_character_fields": {
+      "GID": {"offset": 0, "type": "uint32", "source": "p.char_id"},
+      "joblevel": {"offset": 24, "type": "int32", "source": "p.job_level"},
+      "job": {"offset": 64, "type": "int16", "source": "p.class_"},
+      "level": {"offset": 72, "type": "int16", "source": "p.base_level"},
+      "name": {"offset": 88, "type": "char[24]"},
+      "CharNum": {"offset": 118, "type": "uint8", "source": "p.slot"},
+      "sex": {"offset": 154, "type": "uint8"}
+    },
+    "guards": "exp and jobexp int64 at PACKETVER>=20170830; HP branch PACKETVER>=20081217 (not MAIN>=20220330/RE>=20211103 wide-vitals branch); body at >=20141022; CharNum uint8 at >=20081217; sex tail present for this compiled profile. sizeof/offsets above are oracle output, not guessed arithmetic.",
+    "selection": "BotClient._char_server client.py:246-269,315-327 stores only local (cid,name,CharNum). Match exact requested name, select its wire CharNum in 0x0066, never enumerate. Selected GID must bind retained snapshot and returned 0x0AC5/0x0071 CID; current returned CID is logged, not checked against self.gid (339-357). Future mismatch must deny readiness.",
+    "currently_discarded": "joblevel, job, level and sex are not retained; there is no persistent characters/selected-slot progression model. char_list is local and gone after selection. CHARACTER_INFO is a native-source struct, not an existing full Python decoder.",
+    "other_snapshot_frames": "0x099D PACKET_HC_ACK_CHARINFO_PER_PAGE header=4 plus same CHARACTER_INFO, not modern 0x0B72 for this profile; current handshake has no 0x099D decoding branch. 0x006D MAKECHAR success header=2 plus CHARACTER_INFO=157; current _create_char fails closed. Neither registration nor source layout establishes receipt or support. Keep creation disabled in this vertical.",
+    "freshness": "A received selected list row is actual native snapshot authority for that connection's selected character, not a continuous post-growth job oracle. Keep provenance/epoch and snapshot-vs-current distinctions explicit. No persona fallback."
+  },
+  "continuous_levels": {
+    "packet": "0x00B0 PACKET_ZC_PAR_CHANGE is packed <HHi>, exactly 8 bytes: PacketType int16@0, varID uint16@2, count int32@4",
+    "ids": {"SP_BASELEVEL": 11, "SP_JOBLEVEL": 55, "SP_CLASS": 19},
+    "anchors": "src/map/map.hpp:498-505 enum _sp; packets_struct.hpp:354-366; clif.cpp:3548-3569,3649-3654; pc.cpp:8271-8275,8342-8345,10920-10931,10982-10984",
+    "meaning": "clif_updatestatus sends SP_BASELEVEL from sd.status.base_level and SP_JOBLEVEL from sd.status.job_level via SELF clif_par_change. pc base/job growth calls these; jobchange resets job level to 1 and sends it, and may clamp/send base level. Permit decreasing values: resets/rebirth/changes are not monotonic XP counters.",
+    "current_client": "packetdb.py:97 already frames 0x00B0=8. client.py:613-620 validates header/size and retains ONLY IDs5/6/7/8. IDs11/55 are currently discarded. Expand a separately owned progression model rather than claim registration means data is available.",
+    "not_0x00B1": "0x00B1 PACKET_ZC_LONGPAR_CHANGE is also 8 bytes but not base/job levels. clif_updatestatus uses it for SP_ZENY=20. At this >=20170830 profile base/job and next-exp counters use clif_longlongpar_change (0x0ACB <HHq>, 12 bytes; packetdb.py:283), not old 0x00B1 EXP behavior.",
+    "class_warning": "SP_CLASS=19 exists as a script/status parameter, but clif_updatestatus has no SP_CLASS emission branch here. Do not infer received self-job updates from enum existence or a generic 0x00B0 registration."
+  },
+  "job_updates_and_blocker": {
+    "emission": "pc_jobchange pc.cpp:10846-11004 updates status.class_=job (10913), resets job level (10920), then status_set_viewdata and clif_changelook LOOK_BASE (10998-10999). clif.cpp:3935-3960 sends PACKET_ZC_SPRITE_CHANGE with sendLookType=0x01D7 for PACKETVER>=4 (packets_struct.hpp:316-320).",
+    "compiled_layout": "MAIN20180704: 11 bytes, packetType int16@0, AID uint32@2, type uint8@6, val uint16@7, val2 uint16@9. LOOK_BASE=0 (map.hpp:595-610). Wider uint32 val/val2 branch is MAIN>=20181121 OR RE>=20180704 OR ZERO>=20181114; MAIN20180704 does NOT take the RE branch.",
+    "current_client": "packetdb.py:119 already frames 0x01D7=11; _dispatch has no sprite-change branch, so these changes are discarded.",
+    "identity": "Only self aid, not self gid or arbitrary peer AID, may affect self progression. Disguised self emissions use disguised_bl_id in clif.cpp:4102-4104; do not guess its identity transform in this vertical.",
+    "authority_limit": "0x01D7 type LOOK_BASE is appearance, not a dedicated actual-job parameter. clif_changelook normally broadcasts AREA; clif_sprite_change accepts arbitrary look values. status.cpp:9396-9452 can adapt knight/crusader/lord-knight/paladin to mounted looks and supports non-PC view data/disguise. Therefore a LOOK_BASE value alone is NOT sufficient proof that status.class_ changed to that exact received ID. No unconditional promotion to current actual job.",
+    "minimal_safe_policy": "Retain selected snapshot raw actual job ID; treat self LOOK_BASE change as job freshness invalidation (including same-looking/unsupported or disguised cases), optionally expose a separately named raw look ID. Gate cognition/build use after invalidation. Do not turn it into guessed Novice or normalize an appearance into an actual class without additional reviewed authority. A continuous exact-job refresh path remains unresolved in this audit.",
+    "blocker": "Selected actual class is resolved from CHARACTER_INFO; base/job level stream is resolved from SELF0x00B0. Continuous actual job after growth is NOT resolved by a dedicated truthful job-status frame. Future stage must prove a supported received authoritative refresh/reselection or a tightly bounded appearance contract covering disguise/costume/variant effects; no global SQL fallback."
+  },
+  "job_names_and_compatibility": {
+    "native_constants": "common/mmo.hpp enum e_job:888 onward is unguarded by RENEWAL; numeric IDs shared in this source, not proof all classes/build rules exist in every ruleset. Probe verified JOB_NOVICE=0, JOB_SWORDMAN=1, JOB_KNIGHT=7, JOB_KNIGHT2=13, JOB_BARD=19, JOB_DANCER=20, JOB_NOVICE_HIGH=4001, JOB_PALADIN=4015.",
+    "source_names": "pc.cpp:7874 onward job_name switches enum e_job to localized msg_txt numbers, e.g. mounted Knight2 returns the same label as Knight; names are not wire strings. A future allowlisted source-derived mapping must distinguish exact raw ID, display name, family and tier/variant. Raw ID0 is received Novice, never missing-data truthiness.",
+    "host_types": "robots.domain.model.BotState.job:str, base_level:int (model.py:55-60), no job_level/raw-job field. Use a separate frozen NativeProgression projection with Optional received raw_job_id/base_level/job_level, provenance and validity. For valid known supported snapshots only, fill current BotState.job and base_level. For unreceived/invalid/unknown/unsupported job, retain explicit raw/unknown diagnostic and raise NativeTelemetryUnavailable before constructing an action-ready BotState; do not assign base_level0 or Novice. This avoids changing BotState's current nonnullable types.",
+    "catalog": "mechanics_yaml.py:124-156 uses job permission families (Swordman, BardDancer, SuperNovice, SoulLinker etc.) and _CLASSES tier permissions; methods:586 aliases Swordsman->Swordman. App builds uses Swordsman and distinct Bard/Dancer; build_templates includes High Novice and Paladin. Do not feed JOB_SWORDMAN enum spelling directly as a host class string, conflate Bard/Dancer with BardDancer family, or erase upper/baby distinctions. Mechanic item/build restrictions must remain independently enforced; a recognized job ID grants no legal-build/equipment proof.",
+    "smallest_allowlist": "First stage may explicitly support only source-verified ID0->Novice plus received native levels, denying all unsupported received IDs with raw-ID evidence. Expanding known classes needs explicit enum-to-host-name and catalog-family/tier mapping tests; never label every character Novice. This is a bounded vertical, not all-class coverage.",
+    "sex": "Preserve selected CHARACTER_INFO sex and packet profile. pc_jobchange:10867-10869 uses pc_mapid2jobid(b_class, sd.status.sex), adjusting bard/dancer to actual sex. Do not infer current class from persona gender or classify same constants as all-ruleset correctness."
+  },
+  "lifecycle_contract": {
+    "connect": "Clear progression before any connection attempt and again after old reader joins, like existing vitals clear at client.py:421-425. Retain newly selected CHARACTER_INFO only under the new selection/connection epoch.",
+    "map_allocation": "client.py:369 clears status_params before opening map transport. A future progression reset must distinguish selected-login snapshot from map-level counters: do not accidentally erase the just-received selected snapshot then silently restore from persona. Bind explicitly to the new map epoch and require fresh SELF levels for current readiness.",
+    "disconnect_failure": "Deny projection on stopped/disconnected/null-socket/dead-reader/rx_error/dispatch_errors; retained integers are not ready. On failed selection/transport clear or invalidate job and levels. Do not change accepted vitals cleanup in this audit.",
+    "warp": "client.py:706-708 only updates coordinates for 0x0091/0x0092; no new progression guard exists. Same-map-server warp is not proof of job change, but future strict vertical should invalidate action-ready progression on transition and require its defined revalidation authority. Cross-server warp must create a new transport epoch, invalidate old counters and cannot promote stale snapshots. If no fresh levels/job refresh arrives, remain unavailable rather than waiting forever or falling back. Map-transfer implementation/revalidation is future work, not tested."
+  },
+  "future_vertical_RED_contract_not_executed": {
+    "owned_files_suggestion": [
+      "spikes/003-clientless-limbs/client.py: retained selected-self snapshot, guarded level retention, self-look invalidation and epoch ownership",
+      "src/robots/adapters/native_progression.py: new pure NativeProgression/require_native_progression projection and explicit unknown denial",
+      "src/robots/app/agent_runtime.py: current session gate plus projection into BotState, replacing lines677-678 and correcting misleading docstring657-658",
+      "tests/test_native_progression.py and scoped tests/test_client_protocol.py/tests/test_host_native_progression.py: new future RED contracts; no files created here"
+    ],
+    "source_shaped_contract": "Future fixture bytes must be 0x006B <HHBBB20s> header27 + exact155-byte rows: GID uint32@0, joblevel int32@24, actual job int16@64, base level int16@72, exact name[24]@88, nonordinal CharNum uint8@118 and sex@154. Select second enumerated row with nonordinal slot, assert 0x0066 sends THAT CharNum and only THAT row projects. Map-routing CID mismatch must deny. This is proposed source-shaped fixture, not actual received evidence.",
+    "cases": [
+      "Unreceived fields -> explicit unavailable; raw received job0 -> genuine Novice; known unsupported/unknown received ID remains raw and denied, never coerced to0 or persona.",
+      "Selected raw snapshot job/base/job levels differ from persona; valid supported state uses native levels, exact selected-row identity and source spelling mapping.",
+      "Exact8-byte <HHi> 0x00B0 IDs11 and55 overwrite level counters, including decrease to1; other parameter IDs do not become progression. Wrong header/size, nonpositive levels and invalid types deny; no guessed level caps from persona.",
+      "0x00B1 and0x0ACB counter values cannot overwrite base/job level; SP_CLASS enum presence cannot manufacture a received actual job.",
+      "Exact11-byte self0x01D7 <HIBHH>, type0 invalidates actual-job freshness without promoting appearance. Peer updates and non-base look fields do not overwrite self job. Unsupported/mounted/disguised look cases deny where authority is missing.",
+      "Malformed or partial character rows, slot collisions/ambiguous names, stale epoch, failed connect, old-reader late dispatch, stopped session, warp/reconnect all fail closed without persona/SQL/local guesses.",
+      "Host integration must call pure projection under same observational native-session safety as vitals; no unknown level forced through nonnullable BotState and no unrelated actor/inventory changes."
+    ],
+    "stages": "Stage1 selected snapshot retention + native current levels + known-job bounded support/unknown denial and look invalidation. Stage2 authoritative continuous job refresh/map transition contract. Only later separately authorized passive native receipt can confirm decoding; cognition/actions/gameplay/milestones remain separate. No tests or live clients run for this review."
+  },
+  "execution_and_limits": {
+    "performed": "Read public repository/native source and protocol/verification skills; read-only git status; hash public files; compiled and ran a small offline public-header sizeof/offsetof oracle in allowed TMPDIR; created only this review plus scratch oracle.",
+    "not_performed": "No source/test edits, Git writes, engine, SQL, sockets, native-client execution, inference or private fixture/credential reads. No synthesized test execution, configured gates, native acceptance or milestone closures.",
+    "baseline": "Client/app hashes match delegated frozen values. Existing vitals acceptance and suite counts are delegated context, not rerun or reopened. Brains remain OFF by task context; positiveHP is not alive/death truth. Concurrent actor auditor scope left untouched.",
+    "issues": "No tool blocker. Main semantic blocker is job-look-vs-actual-class authority after change; packet registration alone is not usable telemetry. Shared checkout already dirty; unrelated edits left untouched."
+  }
+}

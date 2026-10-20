@@ -1,0 +1,96 @@
+{
+  "passed": false,
+  "status": "scoped_independent_review_failed_no_authority_approval",
+  "security_concerns": [],
+  "logic_errors": [
+    {
+      "id": "JOURNAL-ACK-001",
+      "severity": "medium",
+      "location": "src/robots/adapters/runtime_publication_journal.py:244-258",
+      "finding": "Acknowledgement catches BaseException from binding and silently returns False, swallowing KeyboardInterrupt and SystemExit rather than preserving nonlocal control flow. Poisoning and denial are appropriate; suppressing these origins is not documented by the public method or implementer contract.",
+      "contract_basis": "Review requires supported public-path interrupt/failure-origin preservation. The acknowledgement docstring at line 245 describes event acknowledgement, not suppression of process exit/cancellation. The implementation report contract.poison promises denial after reached failure, while the general failure model in wiki/guides/runtime-publication-contract.md:45-51,151-152 preserves interrupts and origins; that proposal is not misapplied as schema-2 authority for this schema-1 helper.",
+      "actual_evidence": "Nine calibrated acknowledgement cases reached actual borrowed-root fstat, owned-file fstat or fixed-entry stat: OSError, KeyboardInterrupt and SystemExit all returned False and poisoned. Each had a preceding successful append/True acknowledgement and the injected origin traceback retained the reached fault frame. All six interrupt/exit combinations suppressed the origin. Separate expected-contract oracles for KeyboardInterrupt and SystemExit both failed as assertions, not import failures.",
+      "calibration": "OSError-to-False denial is treated as the intended query boundary, not a separate defect. This finding does not claim a false acknowledgement, publication or world admission.",
+      "replay": "test_independent_journal.py::test_ack_failure_behavior; test_expected_contract.py::test_ack_preserves_nonlocal_controlflow"
+    },
+    {
+      "id": "JOURNAL-OWNERSHIP-001",
+      "severity": "medium",
+      "location": "src/robots/adapters/runtime_publication_journal.py:175-178,261-269; unchanged shared helper src/robots/adapters/rathena_runtime_io.py:28-36",
+      "finding": "A reached pre-release close failure retains the owned file descriptor and cooperative writer lock without a supported recoverable ownership/status boundary. close sets _closed before attempting release, so another close silently does nothing while the lock still excludes a fresh process. Failed construction returns no journal object and leaves its allocated fd/lock live after a pre-release cleanup failure; the origin gets only a generic cleanup note.",
+      "contract_basis": "The implementer report contract.serialization describes an owned lifetime writer fd until explicit close, and contract.cleanup says pre-release and released failures are distinguished. Existing tests at tests/test_runtime_publication_journal.py:434-462 only prove one attempt and manually close a retained descriptor in fixture code. The bounded review specifically requires distinguishing harness cleanup from production release and establishing explicit recoverability/status on supported pre-release failures. The unchanged close_owned helper is accepted: this finding does not prescribe blind close retries or changing that helper.",
+      "actual_evidence": "Four close cases paired OSError/KeyboardInterrupt with release-before-raise versus raise-before-release. Released cases had EBADF and a fresh subprocess could open; pre-release cases retained a valid regular-file fd, _closed=True, second close made no syscall, acknowledgement denied, and an independent subprocess was still locked. Two constructor compound-fault cases preserved the original KeyboardInterrupt and sanitized cleanup note; pre-release cleanup retained one extra /proc/self/fd entry and blocked a fresh subprocess, released cleanup retained zero and reopened normally. A separate original-read-OSError plus pre-release cleanup-KeyboardInterrupt oracle also failed because the owned descriptor remained live.",
+      "calibration": "All ownership/lock observations occurred before explicit harness-only cleanup. Harness finally blocks then released only captured synthetic descriptors, after which subprocess reopening succeeded. OSError-before-release is a labeled injection, not a claim that Linux EIO necessarily retains an fd; pre-release KeyboardInterrupt independently demonstrates the supported control-flow boundary. No stronger same-UID/privileged exclusion, automatic rollback, or guaranteed physical release after every kernel close error is asserted.",
+      "replay": "test_independent_journal.py::test_close_recoverability; test_independent_journal.py::test_constructor_compound_cleanup; test_expected_contract.py::test_constructor_prerelease_interrupt_keeps_recoverable_ownership"
+    }
+  ],
+  "suggestions": [
+    "If acknowledgement intentionally converts ordinary binding I/O errors to a poisoned False result, document that query boundary separately from propagation of nonlocal control flow.",
+    "Specify an explicit unresolved-cleanup ownership/status boundary without retrying a potentially released/reused descriptor. A one-attempt policy is not proof of cleanup completion.",
+    "Constructor os.open and initial borrowed-root fstat are outside the redaction try block. Reached injected OSError objects retain their original filename there. This is a scope note, not a security finding: the actual open accepts a fixed public basename and the report only promises generated-error redaction on append/close. Do not generalize that promise to all constructor errors.",
+    "The allowed reason enum is not coupled to the event enum. No such coupling is specified by this data-only journal contract, so accepting intent/io_failure is not classified as an error."
+  ],
+  "summary": "Data-only journal persistence, strict replay, generation/phase denial and append failure handling passed scoped checks, but acknowledgement suppresses nonlocal control flow and pre-release cleanup failures strand owned writer resources; scoped approval withheld.",
+  "target": {
+    "source": "src/robots/adapters/runtime_publication_journal.py",
+    "source_sha256": "d1300c7b7038b311aa363d4bdb50d2c9a2b441d68904809a44b2268274d0aea2",
+    "tests": "tests/test_runtime_publication_journal.py",
+    "test_sha256": "9586500c50d356417b9f7ff31269b0d64ca00f320d27ef3933d1112c4e1caed0",
+    "implementer_report": "run/reviews/runtime-publication-journal.json",
+    "shared_helpers_reviewed": ["rathena_runtime_io.check_output", "rathena_runtime_io.close_owned", "rathena_runtime_io.unique_object"]
+  },
+  "execution": {
+    "started_local": "2026-10-06T01:39:10+02:00",
+    "final_checks_local": "2026-10-06T01:44:18.678909+02:00",
+    "environment": "existing pinned nix develop --offline; UV_OFFLINE=1; uv run --offline --frozen --no-sync; PYTHONDONTWRITEBYTECODE=1; no dependency installation",
+    "existing_tests": {"passed": 51, "failed": 0, "seconds": 0.63, "journal_statement_coverage_percent": 94.82758620689656},
+    "combined_scoped_tests": {"passed": 123, "failed": 0, "existing": 51, "fresh_independent": 72, "seconds": 8.43, "journal_statements_covered": 174, "journal_statements_total": 174, "journal_statement_coverage_percent": 100.0, "coverage_fail_under": 85},
+    "expected_contract_regressions": {"failed": 3, "passed": 0, "seconds": 0.33, "exit_code": 1, "interpretation": "Reached assertion failures substantiate findings; excluded from the 123 passing characterization/regression count."},
+    "focused_static": {"black_check": 0, "ruff_no_cache": 0, "mypy_source_and_existing_tests": 0, "bandit": 0, "xenon": 0},
+    "whole_source_R0801": {"exit_code": 0, "command": "pylint --disable=all --enable=duplicate-code --ignore-paths=tests src"},
+    "full_configured_gate": "Not rerun by this reviewer; parent owns broader gates. Implementer-reported 1196 tests + 65 subtests / 93.75% are not independent evidence here."
+  },
+  "verified_positive_controls": [
+    "Actual 0700 owned scratch roots, exact 0600 single-link no-follow journal, borrowed root descriptor identity/mode unchanged.",
+    "Cooperative writer lock is held across poisoned lifetime and denied an actual separate subprocess; normal close/restart released it and restored historical records with a different generation and False old acknowledgement.",
+    "Old transaction IDs in intent/prepared/committed/uncertain/quarantined phases cannot advance or restart in the new generation; invalid transitions and world disagreement reject without file mutation.",
+    "Strict canonical six-field UTF-8 JSONL replay refuses duplicate/unknown keys, malformed types, whitespace/CRLF, torn rows, invalid phases/generations and overlong records without truncation or repair.",
+    "Actual 8192-row history is accepted and further append denied without writing; actual 8193-row history and sparse 32 MiB + 1 file are refused unchanged. Artificial lowered byte/record bounds separately reach append refusal branches; they are not mislabeled as full-size records.",
+    "Actual entry replacement and hard links revoke binding/acknowledgement; foreign replacement bytes are not written. Borrowed root-fd rebinding and metadata checks are covered by existing tests.",
+    "Constructor open/root-fstat/file-fstat/flock/pread faults preserve reached origin object/traceback and release normally allocated writer fds; invalid decode also releases. Compound cleanup faults preserve the original error rather than masking it.",
+    "Actual one-write append faults, short write, file/root fsync, pre-read/readback, readback mismatch, and pre/post binding faults poison without retry, preserve confirmed snapshots as historical observations, and deny volatile acknowledgement.",
+    "Complete failed-append bytes reopen in a fresh process as historical only; torn short-write bytes remain unchanged and cannot reopen. No committed-looking record creates restart authority.",
+    "Exact built-in root int and record/ack string checks precede overridable subtype behavior. Existing append/close thread serialization test passes."
+  ],
+  "freeze": {
+    "before": "/home/otto/.hermes/cache/scratch/journal-independent-51qer9t3/before.json",
+    "after": "/home/otto/.hermes/cache/scratch/journal-independent-51qer9t3/after.json",
+    "fingerprinted_files": 112,
+    "fingerprinted_python_files_including_whitelist": 107,
+    "source_test_dependency_and_gate_changes": [],
+    "gates_and_dependencies": ["Taskfile.yml", "pyproject.toml", "uv.lock", "flake.nix", "flake.lock", "vulture_whitelist.py", "all existing src/tests Python files"],
+    "applicable_original_snapshot": "/home/otto/.hermes/cache/scratch/publication-journal-before.json",
+    "applicable_original_snapshot_files": 104,
+    "applicable_original_snapshot_changes": []
+  },
+  "evidence": {
+    "scratch_root": "/home/otto/.hermes/cache/scratch/journal-independent-51qer9t3",
+    "replay_harness": "test_independent_journal.py",
+    "replay_harness_sha256": "24b4e3d7c0eebed79b5405b6d09fc24f46ca5abf45c58a457e645e311c83039b",
+    "expected_contract_harness": "test_expected_contract.py",
+    "expected_contract_harness_sha256": "d79e3bc85107ca969069ceda7be13d0f9601cb14a2175abf36e5246112b15771",
+    "logs": ["existing.log", "independent.log", "combined.log", "expected-contract-final.log", "mypy-final.log"],
+    "structured_results": ["existing-coverage.json", "independent-coverage.json", "combined-coverage.json", "static.json", "observations.json", "freeze-summary.json"],
+    "observations": 15,
+    "replay_command": "nix develop --offline -c env UV_OFFLINE=1 PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=/home/otto/dev/ro-bots/src COVERAGE_FILE=/home/otto/.hermes/cache/scratch/journal-independent-51qer9t3/replay.coverage uv run --offline --frozen --no-sync pytest -p no:cacheprovider -c pyproject.toml tests/test_runtime_publication_journal.py /home/otto/.hermes/cache/scratch/journal-independent-51qer9t3/test_independent_journal.py --basetemp=/home/otto/.hermes/cache/scratch/journal-independent-51qer9t3/replay-tmp --cov=robots.adapters.runtime_publication_journal --cov-report=term-missing --cov-fail-under=85",
+    "expected_regression_command": "nix develop --offline -c env UV_OFFLINE=1 PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=/home/otto/dev/ro-bots/src uv run --offline --frozen --no-sync pytest -p no:cacheprovider -c pyproject.toml /home/otto/.hermes/cache/scratch/journal-independent-51qer9t3/test_expected_contract.py --basetemp=/home/otto/.hermes/cache/scratch/journal-independent-51qer9t3/expected-replay-tmp"
+  },
+  "boundaries": [
+    "Only this new review report and owned private scratch artifacts written; no src/tests/wiki/old reports/gates/locks/whitelists edited, staged, committed or pushed.",
+    "No SQL, engine, socket, provider, native binary, service, account, deployment or world effects; owned subprocesses import only the journal and use synthetic private roots.",
+    "Schema-1 records and acknowledgement are historical journal data events, not schema-2 receipts, tree commit, workspace identity, recovery or admission.",
+    "Unsupported power-loss, privileged mutator, hostile same-UID exclusion and multifile atomicity guarantees are not inferred or tested as this journal's promises.",
+    "Original IO-003 failure-marker and EARLYCONSTRUCTION findings remain open; startup refusal 78 and existing world launch/reset guards are unchanged.",
+    "No source repair performed. Any future changes require a new frozen review rather than reusing this verdict."
+  ]
+}

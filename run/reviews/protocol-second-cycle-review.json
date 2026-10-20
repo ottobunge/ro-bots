@@ -1,0 +1,545 @@
+{
+  "schema": 1,
+  "cycle": 2,
+  "passed": false,
+  "status": "escalate",
+  "review_type": "independent read-only final second-cycle supported-path protocol review",
+  "created_at": "2026-10-05T11:18:03.767674+00:00",
+  "repo": "/home/otto/dev/ro-bots",
+  "summary": "FAIL: six findings fully resolved; L3 participant/map cleanup is repaired, but temporary login/char socket close failures are forgotten. Independently reproduced retry and PASS with a non-released temporary transport. Stop/escalate; no third automatic fix cycle.",
+  "review_authority": "run/reviews/spike-protocol-rereview.json",
+  "implementation_report": "run/reviews/protocol-second-cycle.json",
+  "implementation_report_used_as_oracle": false,
+  "security_concerns": [],
+  "logic_errors": [
+    {
+      "id": "L3-TEMP",
+      "original_finding": "L3",
+      "severity": "high",
+      "files": {
+        "spikes/003-clientless-limbs/client.py": [
+          147,
+          148,
+          149,
+          150,
+          151,
+          152,
+          153,
+          154,
+          155,
+          156,
+          369,
+          370,
+          371,
+          372,
+          373,
+          374,
+          375,
+          379,
+          407
+        ],
+        "spikes/003-clientless-limbs/test_limbs.py": [
+          193,
+          195,
+          197,
+          198,
+          199,
+          200,
+          201,
+          202,
+          205,
+          209,
+          210,
+          214
+        ]
+      },
+      "description": "Temporary login/char transports are owned only by the local context manager. Framing references are removed before the socket context exits. If transport close raises, no temporary transport or cleanup failure is retained on the BotClient. The ordinary connection failure is lock-delayed, but the harness sees sock/rx_thread both None, does not poison the budget, retries and can PASS. A cleanup exception can also replace the original handshake exception before connect sees it.",
+      "evidence": "Actual _login_server and _char_server/_handshake_socket, FixtureClient.connect, connect_pair and run_limb were exercised offline with a context socket whose close raises OSError without marking release. After the first refused handshake, both framing dictionaries and tracked resources were empty and cleanup_errors was empty; a retry at synthetic t=130 after t=100 was allowed and the limb recorded PASS. This was reproduced independently for login and character transports.",
+      "reproductions": [
+        {
+          "stage": "login",
+          "retry_attempts": [
+            [
+              100.0,
+              1
+            ],
+            [
+              130.0,
+              1
+            ],
+            [
+              130.0,
+              2
+            ]
+          ],
+          "temporary_socket_closed": false,
+          "unreleased_clients": 0,
+          "limb_passed": true,
+          "result_detail": "OK synthetic evidence",
+          "origin_cleanup_errors_retained": 0
+        },
+        {
+          "stage": "char",
+          "retry_attempts": [
+            [
+              100.0,
+              1
+            ],
+            [
+              130.0,
+              1
+            ],
+            [
+              130.0,
+              2
+            ]
+          ],
+          "temporary_socket_closed": false,
+          "unreleased_clients": 0,
+          "limb_passed": true,
+          "result_detail": "OK synthetic evidence",
+          "origin_cleanup_errors_retained": 0
+        }
+      ],
+      "acceptance_limit": "Deterministic injected transport close failures; not a claim of an observed real OS descriptor leak or live game connection. The supported login/char cleanup path fails the same conservative non-releasing-close contract already enforced for map sockets.",
+      "why_in_scope": "This is an existing supported handshake resource lifecycle, not an unimplemented packet family. It violates the requested no-retry/no-PASS-with-retained-resources criterion and the implementation claim that any cleanup failure poisons the budget.",
+      "escalation_frontier": "STOP after cycle 2. Require operator/parent decision on explicit temporary-transport ownership and cleanup-failure propagation to the shared budget. Track close uncertainty/failure, retain transport/origin evidence, independently attempt all participant cleanup, and block retry/later limbs/PASS while release is unconfirmed. No source repair or third automatic fix cycle performed."
+    }
+  ],
+  "original_findings": [
+    {
+      "id": "S1",
+      "status": "fixed",
+      "evidence": "Full retired probe source has only sys import, main diagnostic/return 2, and __main__ guard. No client import, credentials, connection or alternate route. Import and main fail-closed regression passed."
+    },
+    {
+      "id": "S2",
+      "status": "fixed",
+      "evidence": "Full retired generator source has only sys import, main diagnostic/return 2, and __main__ guard. eval_cond/derive removed; no eval/exec. Strict packetdb grammar and compiler numeric-table oracle passed."
+    },
+    {
+      "id": "L1",
+      "status": "fixed",
+      "evidence": "limb_move compares info[gid] to a.aid; actual actor dispatch preserves wire/account ID@5 and separate char_id@9. Independent end-to-end dispatch/limb probes accept wire 11 and reject colliding character numeric wire 21, both char_id=21; WBUFPOS2 destination and native name assertions pass. Native clif.cpp:1381-1382 emits these distinct identities."
+    },
+    {
+      "id": "L2",
+      "status": "fixed",
+      "evidence": "connect_pair records BaseException at every connect/identity-validation attempt and preserves shared clock+30 boundary regardless of exception type. Scoped first-participant regressions plus 16 independent second-participant char/map OSError/ValueError/ConnectionError/RuntimeError cases with retries 0/1 pass. Final failed attempt boundary survives later limbs. Unsupported native 0x083e parse failure also enforces the boundary, for either participant."
+    },
+    {
+      "id": "L3",
+      "status": "partially_fixed",
+      "evidence": "run_limb closes every listed participant independently, prevents PASS/retry/later limbs on close error or remaining map sock/reader, retains affected clients, and sanitizes classifications. BotClient.close retains failed map socket/reader references; connect retains origin and secondary close errors. Independent two simultaneous actual map-close failures verify both cleanup attempts. However temporary login/char close failures bypass this accounting and can retry/PASS: remaining blocker L3-TEMP."
+    },
+    {
+      "id": "L4",
+      "status": "fixed",
+      "evidence": "_char_server parses native CHARACTER_INFO CharNum uint8@118 into each list tuple and sends the selected character wire slot. Actual coalesced echo/list/zone receive/pending regression passes singleton slot 5 and noncontiguous slots 2/7. Native compiler independently returns size155/name88/CharNum118; native char_clif.cpp selects by char_num/slot, not enumeration."
+    },
+    {
+      "id": "L5",
+      "status": "fixed",
+      "evidence": "ENTRY_NAME_OFF_WALK=86. Standalone fixture now native size110/name@86 with full name assertion intact. Hash-pinned unaltered native struct compiler oracle passes walking size110/AID5/GID9/MoveData63/name86, spawn size103/name79, idle size104/name80. Independent dispatch test has nonzero XYZ at bytes83-85 and still parses only NativeWalkingName."
+    }
+  ],
+  "verification": [
+    {
+      "kind": "independently executed scoped offline suite",
+      "exit_code": 0,
+      "command": "PYTHONDONTWRITEBYTECODE=1 timeout -k 2 120 nix develop --offline -c uv run --offline --no-sync pytest -p no:cacheprovider -o addopts= -q tests/test_protocol_rereview_repairs.py tests/test_client_protocol.py tests/test_limb_evidence.py tests/test_packet_conditions.py spikes/003-clientless-limbs/test_packetdb.py --basetemp=<scratch directory> -o faulthandler_timeout=10",
+      "result": "117 passed, 65 subtests passed in 1.55s",
+      "tests_passed": 117,
+      "subtests_passed": 65
+    },
+    {
+      "kind": "independently executed standalone packetdb unittest suite",
+      "exit_code": 0,
+      "command": "PYTHONDONTWRITEBYTECODE=1 timeout -k 2 60 nix develop --offline -c uv run --offline --no-sync python spikes/003-clientless-limbs/test_packetdb.py",
+      "result": "Ran 7 tests in 0.006s; OK",
+      "note": "These 7 tests are also included in scoped117; do not sum as unique tests."
+    },
+    {
+      "kind": "independently executed strict packetdb CLI self-test",
+      "exit_code": 0,
+      "command": "PYTHONDONTWRITEBYTECODE=1 timeout -k 2 60 nix develop --offline -c uv run --offline --no-sync python spikes/003-clientless-limbs/packetdb.py",
+      "result": "820 ids derived, 864 embedded, mismatches=0",
+      "note": "Numeric/self-test acceptance is not exhaustive native-family acceptance."
+    },
+    {
+      "kind": "additional independent inline adversarial checks",
+      "exit_code": 0,
+      "passed_cases": 22,
+      "checks": [
+        "second-participant-char-OSError-retries0",
+        "second-participant-char-OSError-retries1",
+        "second-participant-char-ValueError-retries0",
+        "second-participant-char-ValueError-retries1",
+        "second-participant-char-ConnectionError-retries0",
+        "second-participant-char-ConnectionError-retries1",
+        "second-participant-char-RuntimeError-retries0",
+        "second-participant-char-RuntimeError-retries1",
+        "second-participant-map-OSError-retries0",
+        "second-participant-map-OSError-retries1",
+        "second-participant-map-ValueError-retries0",
+        "second-participant-map-ValueError-retries1",
+        "second-participant-map-ConnectionError-retries0",
+        "second-participant-map-ConnectionError-retries1",
+        "second-participant-map-RuntimeError-retries0",
+        "second-participant-map-RuntimeError-retries1",
+        "real-dispatch-movement-wire-11",
+        "real-dispatch-movement-wire-21",
+        "actual-close-two-failures-origin-False",
+        "actual-close-two-failures-origin-True",
+        "native-refusal-lock-boundary-participant-1",
+        "native-refusal-lock-boundary-participant-2"
+      ],
+      "lock_examples": [
+        {
+          "stage": "char",
+          "retries": 0,
+          "attempts": [
+            [
+              100.0,
+              11
+            ],
+            [
+              100.0,
+              12
+            ],
+            [
+              130.0,
+              11
+            ],
+            [
+              130.0,
+              12
+            ]
+          ],
+          "boundary": 160.0
+        },
+        {
+          "stage": "char",
+          "retries": 1,
+          "attempts": [
+            [
+              100.0,
+              11
+            ],
+            [
+              100.0,
+              12
+            ],
+            [
+              130.0,
+              11
+            ],
+            [
+              130.0,
+              12
+            ]
+          ],
+          "boundary": 160.0
+        },
+        {
+          "stage": "map",
+          "retries": 0,
+          "attempts": [
+            [
+              100.0,
+              11
+            ],
+            [
+              100.0,
+              12
+            ],
+            [
+              130.0,
+              11
+            ],
+            [
+              130.0,
+              12
+            ]
+          ],
+          "boundary": 160.0
+        },
+        {
+          "stage": "map",
+          "retries": 1,
+          "attempts": [
+            [
+              100.0,
+              11
+            ],
+            [
+              100.0,
+              12
+            ],
+            [
+              130.0,
+              11
+            ],
+            [
+              130.0,
+              12
+            ]
+          ],
+          "boundary": 160.0
+        }
+      ],
+      "note": "Mocks and actual supported client/harness methods only; live socket creation forbidden except explicit offline fake transport substitution."
+    },
+    {
+      "kind": "independent negative temporary-cleanup probes",
+      "exit_code": 0,
+      "reproduced_blocker_cases": 2,
+      "result": {
+        "reproduced": true,
+        "cases": [
+          {
+            "stage": "login",
+            "retry_attempts": [
+              [
+                100.0,
+                1
+              ],
+              [
+                130.0,
+                1
+              ],
+              [
+                130.0,
+                2
+              ]
+            ],
+            "temporary_socket_closed": false,
+            "unreleased_clients": 0,
+            "limb_passed": true,
+            "result_detail": "OK synthetic evidence",
+            "origin_cleanup_errors_retained": 0
+          },
+          {
+            "stage": "char",
+            "retry_attempts": [
+              [
+                100.0,
+                1
+              ],
+              [
+                130.0,
+                1
+              ],
+              [
+                130.0,
+                2
+              ]
+            ],
+            "temporary_socket_closed": false,
+            "unreleased_clients": 0,
+            "limb_passed": true,
+            "result_detail": "OK synthetic evidence",
+            "origin_cleanup_errors_retained": 0
+          }
+        ],
+        "network_calls": 0
+      },
+      "note": "Successful probe execution proves the defect, not implementation acceptance."
+    },
+    {
+      "kind": "hash-pinned native compiler oracle independently rerun",
+      "exit_code": 0,
+      "layout_values": [
+        155,
+        88,
+        118,
+        110,
+        5,
+        9,
+        63,
+        86,
+        103,
+        79,
+        104,
+        80
+      ],
+      "procedure": "Actual config.log -D flags; full common/packets.hpp plus exact unaltered complete walking/spawn/idle packed struct excerpts from map/packets_struct.hpp; g++ C++17 compilation then local executable. Not a full map-header build."
+    },
+    {
+      "kind": "source snapshot comparison",
+      "result": "All implementation-report owned hashes still match current files; independently captured source hashes stable across review probes.",
+      "implementation_hash_differences": []
+    }
+  ],
+  "native_source_commit": "e985006171d2eb320ee512a653f4c83aea3d81b6",
+  "native_profile": {
+    "flags": [
+      "-DPACKETVER=20180704",
+      "-DPRERE"
+    ],
+    "family": "MAIN",
+    "ruleset": "pre-renewal"
+  },
+  "reviewed_source_hashes": {
+    "rathena/config.log": {
+      "sha256": "6bb759d7b65d463ecd38ca81f484659ec2dc6e7885b017a964b9c611114e9d78",
+      "bytes": 48741
+    },
+    "rathena/sql-files/main.sql": {
+      "sha256": "40bafce9c3aa14dd997d911b6dd42151d4b0e7afae9273d1ba96993ffdea1c80",
+      "bytes": 41941
+    },
+    "rathena/src/char/char_clif.cpp": {
+      "sha256": "f50dedd4cf46d0d3bea95c9410f1f0f04c5f7b525e6691b2afb9c4a3677c5654",
+      "bytes": 50916
+    },
+    "rathena/src/common/packets.hpp": {
+      "sha256": "c92279bf163e9546b649397638c19e57c3eb515b49e841c13f88a5fb97bba693",
+      "bytes": 17432
+    },
+    "rathena/src/config/core.hpp": {
+      "sha256": "ba04ee9f32d9d334f59b345326105864ddc5fed296ebbaf9d599c26e48aea7ae",
+      "bytes": 4512
+    },
+    "rathena/src/config/packets.hpp": {
+      "sha256": "180f7ddaf5c978af0db7ed26215388265d51f59957ac7173d617870e2cc0964d",
+      "bytes": 2956
+    },
+    "rathena/src/login/login.hpp": {
+      "sha256": "2110c6e91e833069e0d2158f444038209e75b68024f408787a23e54d5e11fd19",
+      "bytes": 8875
+    },
+    "rathena/src/login/loginclif.cpp": {
+      "sha256": "85b9ef68f01890d505e5ef6089f6fb286516e2a35625f14fbcd79b03a36d9d93",
+      "bytes": 18190
+    },
+    "rathena/src/map/clif.cpp": {
+      "sha256": "0b1db098158c240b090c6edb8417978ba495957c8a2df4cd9a0ab4cb39884ac5",
+      "bytes": 775974
+    },
+    "rathena/src/map/clif_packetdb.hpp": {
+      "sha256": "51c8a9ebd591e0dd4f444f829253a14d449615425405cb8a95f28a6dea460e66",
+      "bytes": 79471
+    },
+    "rathena/src/map/clif_shuffle.hpp": {
+      "sha256": "befba011ca4b2d1186c16fba325a7240a4ff5375e252d2fb4cc62d503c66d2a0",
+      "bytes": 288273
+    },
+    "rathena/src/map/packets_struct.hpp": {
+      "sha256": "5ab5ef13d2a1cdc60d84dcaf2e3be0b6e316b9630e61c3ac7ba0f930d4d31287",
+      "bytes": 157544
+    },
+    "run/reviews/protocol-second-cycle.json": {
+      "sha256": "bbc0eedd3f5e2ae1329565cc43883726cbc17e3573d1a21a175e1f81eb4aba84",
+      "bytes": 18025
+    },
+    "run/reviews/spike-protocol-rereview.json": {
+      "sha256": "cdb6cbad726d391410a7c88bea35832c739ed942b39c215a6757cadd73a0444e",
+      "bytes": 21317
+    },
+    "spikes/003-clientless-limbs/README.md": {
+      "sha256": "29d676355586f69c7f8e23ab2dbbc12e3bab17e9d867f70dab6b33352b39fd6a",
+      "bytes": 12321
+    },
+    "spikes/003-clientless-limbs/client.py": {
+      "sha256": "fd7076aed2a48727130a34468bdbfbe16c8e9a94687880bc86e77d325e23aa9d",
+      "bytes": 34146
+    },
+    "spikes/003-clientless-limbs/packetdb.py": {
+      "sha256": "d106ae277a6c7f75cf597c9051651a27e0ba6fa3663575608e0033048b18f9d4",
+      "bytes": 37159
+    },
+    "spikes/003-clientless-limbs/scripts/gen_packetdb.py": {
+      "sha256": "b07c857779277391f1b0c1935bd27a60b13eaa8e65b28bc119b36398a383c7f2",
+      "bytes": 297
+    },
+    "spikes/003-clientless-limbs/scripts/probe_map.py": {
+      "sha256": "85109472752d9cd0c2912f7fd0cc41fba08219171a9dd0b2ce272f6eaff9c47b",
+      "bytes": 300
+    },
+    "spikes/003-clientless-limbs/scripts/seed_fixture.py": {
+      "sha256": "03de2f4f659c8df0a3c5e9c41d74c3cb2493176f420aead8a7022f5631ecdb0e",
+      "bytes": 3284
+    },
+    "spikes/003-clientless-limbs/seed_test.sql": {
+      "sha256": "c041c5cb431bc340740ae7b617dd21caedd4c81101a1f8418ef99f81e360d0f0",
+      "bytes": 5655
+    },
+    "spikes/003-clientless-limbs/test_limbs.py": {
+      "sha256": "d7a85bda1876b0bc28e8475d969e01bb443c7cbe5a49c82ef29eebfe98bc2ef5",
+      "bytes": 16028
+    },
+    "spikes/003-clientless-limbs/test_packetdb.py": {
+      "sha256": "afdb0770e12525f85169ce24af2eaa23cf8015debc1c2a5cb2914c8f1400e7c3",
+      "bytes": 3586
+    },
+    "tests/test_client_protocol.py": {
+      "sha256": "3e781d2f50501b2d1bf0c3caccf507f3c6fcde533ad62ea1448b0f857143a5a2",
+      "bytes": 18039
+    },
+    "tests/test_limb_evidence.py": {
+      "sha256": "9669537ee7ed63e7be4850936e96d28fc0a75bb17c77bac753c45ec8be941569",
+      "bytes": 13263
+    },
+    "tests/test_packet_conditions.py": {
+      "sha256": "abe40cc3af9d56de1f98088ae372e0e1f54cfe5a2d89ea6828f75f6e4d1969d1",
+      "bytes": 10259
+    },
+    "tests/test_protocol_rereview_repairs.py": {
+      "sha256": "587c6aee7058cb18c5537fd41b46cba5e847254817590cfa74c088f198843110",
+      "bytes": 13878
+    }
+  },
+  "scope_complete": true,
+  "scope_definition": "Full original/implementation reports and exclusions, full client/harness/packetdb/retired companions/seed renderer/SQL/README, all five scoped regression files, targeted pinned native identity/slot/auth-lock sources and native compiler fixtures. Existing supported paths only; not unrelated concurrent repository changes or exhaustive protocol implementation.",
+  "suggestions": [
+    {
+      "id": "NONBLOCK-REFUSAL",
+      "description": "Native 0x083e framing/uint32 diagnostics remain unsupported and fail closed. Independent refusal probe verifies lock-aware failure, not decode support."
+    },
+    {
+      "id": "NONBLOCK-FRESHNESS",
+      "description": "Tuple identity reuse/bounded raw-log pruning may conservatively reject fresh valid party evidence. No demonstrated stale-evidence acceptance or broad causal proof; no escalation of this excluded future improvement into a blocker."
+    }
+  ],
+  "not_accepted": [
+    "No supplied real private fixture credentials or live authorization; no fixture accounts invented or connected.",
+    "No current native chat/movement/sit-stand/party acceptance, immediate rerun acceptance, general adapter acceptance, autonomous grinding or world isolation acceptance.",
+    "Historical README PASS timings are preserved history only and cannot establish repaired wire logic; offline fake tests do not supersede the defects reproduced here.",
+    "Character creation remains intentionally disabled before wire writes, despite compiler-verified native request/response framing lengths.",
+    "No MariaDB anonymous-block syntax/execution, transactional locking/rollback/concurrency, post-write live DB readback or SQL deployment was exercised.",
+    "Pinned native login/char/skill tables use MyISAM and MUST remain blocked by the InnoDB engine guard; no engine migration is authorized or performed.",
+    "Isolation/stopped flags and offline snapshots are operator attestations/models, not proof of fresh exclusive ownership or absence of in-memory sessions. No unsafe lifecycle/seed execution route is approved.",
+    "Inherited 20211103 snapshot outside exercised/native-corrected families is not fully regenerated. Unknown/unsupported families are not automatically blockers unless a supported path demonstrably misuses them; walking name and sparse slot are demonstrated supported-path mismatches.",
+    "Post-reply party correlation is not causal/cryptographic proof against delayed or injected traffic; very fast valid replies or bounded logs may produce fail-closed false negatives.",
+    "No broad app quality/full-suite acceptance or credential rotation claim; this report does not validate unrelated working-tree changes."
+  ],
+  "issues_encountered": [
+    "Scoped117 and standalone/compiler gates are green but do not cover temporary transport cleanup failure. Additional offline adversarial probes reproduced that remaining supported-path blocker.",
+    "Concurrent dirty working tree observed; no source/test hashes in the requested protocol implementation scope changed during this review. No broad fresh task-check/full-app acceptance claimed."
+  ],
+  "escalation": {
+    "required": true,
+    "automatic_fix_cycle_allowed": false,
+    "remaining_blocker_ids": [
+      "L3-TEMP"
+    ],
+    "action": "Stop and hand exact temporary login/char transport cleanup frontier to parent/operator."
+  },
+  "failure_probe_source": "\nimport sys, importlib.util, json, struct, secrets\nfrom pathlib import Path\nfrom types import SimpleNamespace\nfrom unittest.mock import patch\nroot=Path.cwd(); spike=root/'spikes/003-clientless-limbs'; sys.path.insert(0,str(spike))\ndef load(n,p):\n s=importlib.util.spec_from_file_location(n,p); m=importlib.util.module_from_spec(s); s.loader.exec_module(m); return m\nr=load('probe_helpers',root/'tests/test_protocol_rereview_repairs.py')\nresults=[]\nfor stage in ['login','char']:\n l=load('temp_cleanup_probe',spike/'test_limbs.py'); clock=r.Clock(); b=l.Budget(59,clock=clock.monotonic,sleep=clock.sleep); l.fixture=r.fixture_document(); made=[]; connects=[]; sockets=[]\n class Socket(r.FakeSocket):\n  def close(self): raise OSError('sanitized synthetic close failure')\n  def __exit__(self,*args): self.close()\n class LiveReader:\n  def __init__(self): self.live=True\n  def is_alive(self): return self.live\n  def join(self,**kw): self.live=False\n class MapSocket:\n  def shutdown(self,*args): pass\n  def close(self): pass\n actual_login=l.FixtureClient._login_server; actual_char=l.FixtureClient._char_server\n def login(bot):\n  i=1 if bot.user.endswith('-1') else 2; bot.aid,bot.gid=10+i,20+i; connects.append([clock.now,i]); made.append(bot)\n  if stage=='login' and len(connects)==1: return actual_login(bot)\n  return '127.0.0.1',1\n def chars(bot,*args):\n  if stage=='char' and len(connects)==1: return actual_char(bot,*args)\n  return '127.0.0.1',1\n def maps(bot,*args): bot.sock=MapSocket(); bot.rx_thread=LiveReader()\n def create(*args,**kw):\n  raw=r.client.pdb.pack(0x006a,bytes(21)) if stage=='login' else struct.pack('<I',11)+r.client.pdb.pack(0x006c,b'\\x01')\n  sock=Socket([raw]); sockets.append(sock); return sock\n def limb(clients,budget): l.connect_pair(clients,budget); return 'OK synthetic evidence'\n with patch.object(l.time,'monotonic',clock.monotonic),patch.object(l.FixtureClient,'_login_server',login),patch.object(l.FixtureClient,'_char_server',chars),patch.object(l.FixtureClient,'_map_server',maps),patch('socket.create_connection',create):\n  l.run_limb('close-failure',limb,b,retries=1)\n assert sockets and not sockets[0].closed\n # The failed temporary transport is not represented by any tracked resource.\n assert not b.unreleased_clients\n assert made[0].sock is None and made[0].rx_thread is None and not made[0]._handshake_buffers and not made[0]._handshake_packets\n assert l.results[-1][1] is True\n results.append({'stage':stage,'retry_attempts':connects,'temporary_socket_closed':sockets[0].closed,'unreleased_clients':len(b.unreleased_clients),'limb_passed':l.results[-1][1],'result_detail':l.results[-1][3],'origin_cleanup_errors_retained':len(made[0].cleanup_errors)})\nprint('RESULT_JSON='+json.dumps({'reproduced':True,'cases':results,'network_calls':0}))\n",
+  "constraints": {
+    "source_edits": false,
+    "test_edits": false,
+    "staging": false,
+    "commits": false,
+    "push": false,
+    "provider_calls": 0,
+    "network_game_calls": 0,
+    "database_calls": 0,
+    "sql_execution": false,
+    "live_smoke": false,
+    "credentials_printed": false,
+    "only_repository_write": "run/reviews/protocol-second-cycle-review.json",
+    "compiler_and_pytest_outputs": "Scratch only; pytest cache disabled and bytecode writes disabled."
+  }
+}

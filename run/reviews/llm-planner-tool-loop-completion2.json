@@ -1,0 +1,203 @@
+{
+  "status": "GREEN_OFFLINE_CANDIDATE_PENDING_INDEPENDENT_REVIEW_ROOT_GATE_AND_REAL_PROVIDER",
+  "completion_cycle": 2,
+  "maximum_cycles": 2,
+  "budget_exhausted": true,
+  "further_automatic_repair_loops": false,
+  "classification": "Final bounded usability/context-discovery completion; prior real-provider safety denials remain valid and immutable.",
+  "modified_files": [
+    "src/robots/app/llm_planner.py",
+    "tests/test_llm_planner.py"
+  ],
+  "implemented": [
+    "Exact current caller capabilities in every model payload, sorted supported phase/map/fresh-fact vocabularies, explicit ADVISORY attribution and UNKNOWN native/resource authorization.",
+    "Actual submit_plan schema is constrained with the same round snapshot; default _schemas() full enum vocabulary retained.",
+    "Capability lookups occur after owner-bound character checks and are rebound before model call; final fresh capability validation unchanged.",
+    "Trusted system protocol: exactly one function call, no parallel calls, investigate before submit_plan, listed read-only topics and public_rule rule_topic skill:<id> syntax; strict response/correlation guards unchanged."
+  ],
+  "tdd": {
+    "context_red": "red-context.xml: real production Reader/model payload/lifecycle assertion failed on absent caller_capabilities before production edit; schema constraints asserted by the same tracer test.",
+    "context_green": "green-context.xml: 1 passing typed lifecycle tracer before protocol slice.",
+    "protocol_red": "red-protocol.xml: trusted one-call protocol assertion failed while strict multi-call denial remained intact.",
+    "protocol_green": "Final green.xml includes protocol case.",
+    "followups": "Six post-implementation physical followup cases verify refresh/final denial, three empty vocabularies, missing capabilities and binding drift; not claimed as historical REDs."
+  },
+  "final_tests": {
+    "cases": 59,
+    "unique": 59,
+    "failures": 0,
+    "errors": 0,
+    "skips": 0
+  },
+  "test_source_counts": {
+    "tests.test_llm_planner": 37,
+    "": 22
+  },
+  "original_regression_history": "29 original repository cases + 18 independent cases + 4 post-repair cases = 51 preserved regressions; eight new physical cases (six test functions). No original regression removed.",
+  "quality_gates": {
+    "tests": {
+      "command": [
+        ".venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "-o",
+        "addopts=",
+        "-p",
+        "no:cacheprovider",
+        "tests/test_llm_planner.py",
+        "/home/otto/.hermes/cache/scratch/llm-planner-tool-loop-independent-review/test_independent.py",
+        "/home/otto/.hermes/cache/scratch/llm-planner-tool-loop-repair1-independent-review/test_repair_snapshot.py",
+        "--junitxml=/home/otto/.hermes/cache/scratch/llm-planner-tool-loop-completion2/green.xml"
+      ],
+      "exit_code": 0,
+      "log": "/home/otto/.hermes/cache/scratch/llm-planner-tool-loop-completion2/tests.log"
+    },
+    "black": {
+      "command": [
+        ".venv/bin/black",
+        "--check",
+        "--workers",
+        "1",
+        "src/robots/ports/planning_model.py",
+        "src/robots/adapters/planning_llm.py",
+        "src/robots/app/llm_planner.py",
+        "tests/test_llm_planner.py"
+      ],
+      "exit_code": 0,
+      "log": "/home/otto/.hermes/cache/scratch/llm-planner-tool-loop-completion2/black.log"
+    },
+    "ruff": {
+      "command": [
+        ".venv/bin/ruff",
+        "check",
+        "--no-cache",
+        "src/robots/ports/planning_model.py",
+        "src/robots/adapters/planning_llm.py",
+        "src/robots/app/llm_planner.py",
+        "tests/test_llm_planner.py"
+      ],
+      "exit_code": 0,
+      "log": "/home/otto/.hermes/cache/scratch/llm-planner-tool-loop-completion2/ruff.log"
+    },
+    "mypy": {
+      "command": [
+        ".venv/bin/mypy",
+        "--strict",
+        "--cache-dir=/home/otto/.hermes/cache/scratch/llm-planner-tool-loop-completion2/mypy",
+        "src/robots/ports/planning_model.py",
+        "src/robots/adapters/planning_llm.py",
+        "src/robots/app/llm_planner.py",
+        "tests/test_llm_planner.py"
+      ],
+      "exit_code": 0,
+      "log": "/home/otto/.hermes/cache/scratch/llm-planner-tool-loop-completion2/mypy.log"
+    },
+    "xenon": {
+      "command": [
+        ".venv/bin/xenon",
+        "src",
+        "--max-absolute",
+        "B",
+        "--max-modules",
+        "B",
+        "--max-average",
+        "A"
+      ],
+      "exit_code": 0,
+      "log": "/home/otto/.hermes/cache/scratch/llm-planner-tool-loop-completion2/xenon.log"
+    },
+    "dup": {
+      "command": [
+        ".venv/bin/pylint",
+        "--disable=all",
+        "--enable=duplicate-code",
+        "--ignore-paths=tests",
+        "src"
+      ],
+      "exit_code": 0,
+      "log": "/home/otto/.hermes/cache/scratch/llm-planner-tool-loop-completion2/dup.log"
+    },
+    "vulture": {
+      "command": [
+        ".venv/bin/vulture",
+        "src",
+        "vulture_whitelist.py"
+      ],
+      "exit_code": 0,
+      "log": "/home/otto/.hermes/cache/scratch/llm-planner-tool-loop-completion2/vulture.log"
+    },
+    "bandit": {
+      "command": [
+        ".venv/bin/bandit",
+        "-q",
+        "-c",
+        "pyproject.toml",
+        "-r",
+        "src"
+      ],
+      "exit_code": 0,
+      "log": "/home/otto/.hermes/cache/scratch/llm-planner-tool-loop-completion2/bandit.log"
+    }
+  },
+  "quality_notes": [
+    "Initial candidate passed 59 cases but Ruff/mypy and Xenon failed. Preserved candidate1 logs; split compound test assertions and extracted capability-schema projection to retain normal B/B/A complexity thresholds.",
+    "Final all eight scoped/whole gates exit 0. Bandit emitted existing unrelated B105 nosec warnings, retained in log. No gate waivers or whitelist edits."
+  ],
+  "freeze": {
+    "inputs": 297,
+    "before_mismatches": [],
+    "after_changed": [
+      "src/robots/app/llm_planner.py",
+      "tests/test_llm_planner.py"
+    ],
+    "protected_unchanged": 295,
+    "sha256": "676420fbfef469abec708d6cd7162ecdc4f3be2de27595793a6f6f94da8d8e3e"
+  },
+  "source_hashes": {
+    "src/robots/app/llm_planner.py": "62524db2c3ceb0c7b6c3e315d6def5007035de1859984429677dc3193c6f86a0",
+    "tests/test_llm_planner.py": "30fba3ee4de222d69656466a794d3ea44b4345d13ed67ca2a008476a36d4baed"
+  },
+  "artifacts": {
+    "/home/otto/.hermes/cache/scratch/llm-planner-tool-loop-completion2/after-freeze.json": "a4e714be58dc13d124742bf68253fd9345874e307f57a5415dd2bd261af3f26c",
+    "/home/otto/.hermes/cache/scratch/llm-planner-tool-loop-completion2/vulture.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/llm-planner-tool-loop-completion2/green-context.xml": "35ddd93030e1b001bbf718cd757258c8b8cd5f9f460d56ada42393d633fa7b5a",
+    "/home/otto/.hermes/cache/scratch/llm-planner-tool-loop-completion2/xenon.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/llm-planner-tool-loop-completion2/candidate1-vulture.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/llm-planner-tool-loop-completion2/green.xml": "2cbdcd11746bb9a59d86521a0de776a05e432c7b58423e3421e87e442f164dc9",
+    "/home/otto/.hermes/cache/scratch/llm-planner-tool-loop-completion2/bandit.log": "2ee20ac6a3a915ff1204f17c53260bcc2ebfb848f37624608d13ddfdf1cc35ff",
+    "/home/otto/.hermes/cache/scratch/llm-planner-tool-loop-completion2/before-freeze.json": "2ba630651ec5b34d0b1e84662099dd6fe9c480339c0b757391d4dafeb94ec4ed",
+    "/home/otto/.hermes/cache/scratch/llm-planner-tool-loop-completion2/candidate1-gates.json": "18c15c58e97102228c8027f60b800e432462a3e6aa16b27d1353f2abb0113146",
+    "/home/otto/.hermes/cache/scratch/llm-planner-tool-loop-completion2/red-context.xml": "b2156b2e91f9952129df703ad07ea70c34b0108cdfc9fc01b63a6b28878d1ee5",
+    "/home/otto/.hermes/cache/scratch/llm-planner-tool-loop-completion2/candidate1-ruff.log": "c9bdc1610202f9431a01a0791b6fff2f051ed17c8e821d0cf5e3503e342c95a0",
+    "/home/otto/.hermes/cache/scratch/llm-planner-tool-loop-completion2/dup.log": "8cbfc8cd0b04a4858b0b78b74c6df9631a1695e105e6911d4b57fbcc43b218b5",
+    "/home/otto/.hermes/cache/scratch/llm-planner-tool-loop-completion2/candidate1-format.log": "5ecd1c40709726ef62980f615f0ea31d818820c4ff3b5b01d8ae996222b20825",
+    "/home/otto/.hermes/cache/scratch/llm-planner-tool-loop-completion2/candidate1-tests.log": "a83948d5ffcf88618db1f8e8534c20877a3fcacd9226515007843ccc456e3db8",
+    "/home/otto/.hermes/cache/scratch/llm-planner-tool-loop-completion2/candidate1-green.xml": "3800bcd4a63ee381897245ac482821f5bc636bc0ab928c7ae392877e26a2c8ce",
+    "/home/otto/.hermes/cache/scratch/llm-planner-tool-loop-completion2/mypy.log": "71144743c83babea384888a735db0c4daba3d4d7b7942b6839984bd5c21b52bb",
+    "/home/otto/.hermes/cache/scratch/llm-planner-tool-loop-completion2/tests.log": "92846e76e3562ba2611ca5c2b4d277fd39f1efaa1b7b7d90c4bfd30320a1db51",
+    "/home/otto/.hermes/cache/scratch/llm-planner-tool-loop-completion2/candidate1-after-freeze.json": "5d83ce75806fa21941df91af39c86a0123a645e1056373c0391eec4dc4cffda5",
+    "/home/otto/.hermes/cache/scratch/llm-planner-tool-loop-completion2/gates.json": "24deed7e74cb441074e3fdc3ac3d61d91e0195d70103114546b54efe3dd76fc9",
+    "/home/otto/.hermes/cache/scratch/llm-planner-tool-loop-completion2/candidate1-results.json": "82d2ded3414174c585050da7128a1080b0149723ee62af982efb858759ccca47",
+    "/home/otto/.hermes/cache/scratch/llm-planner-tool-loop-completion2/candidate1-xenon.log": "32eb3e710a99752059d970ed88877c87058153a75280c6e43ac3cc02d505e95a",
+    "/home/otto/.hermes/cache/scratch/llm-planner-tool-loop-completion2/candidate1-dup.log": "8cbfc8cd0b04a4858b0b78b74c6df9631a1695e105e6911d4b57fbcc43b218b5",
+    "/home/otto/.hermes/cache/scratch/llm-planner-tool-loop-completion2/results.json": "b39020e6bed81b5d333694fe17af8556386e8842bbc20acafbc2ae6d2b65f317",
+    "/home/otto/.hermes/cache/scratch/llm-planner-tool-loop-completion2/red-protocol.xml": "66d00e19acb06ac139b15cfbf1d3a2bdfd3976f5dba38afa286a4a812150fb3e",
+    "/home/otto/.hermes/cache/scratch/llm-planner-tool-loop-completion2/candidate1-bandit.log": "2ee20ac6a3a915ff1204f17c53260bcc2ebfb848f37624608d13ddfdf1cc35ff",
+    "/home/otto/.hermes/cache/scratch/llm-planner-tool-loop-completion2/red-protocol.log": "d3d99af81e9e02e4070e3a50bd471148f79cb21e4a8f7d1c32eac32ed778e94b",
+    "/home/otto/.hermes/cache/scratch/llm-planner-tool-loop-completion2/ruff.log": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+    "/home/otto/.hermes/cache/scratch/llm-planner-tool-loop-completion2/format.log": "7a55b4457b0193aa92cd83153593aed78e11dbf649419e33eba5040089c4c198",
+    "/home/otto/.hermes/cache/scratch/llm-planner-tool-loop-completion2/verify.py": "37fbea65a86bb45b692fd3762f81403920b782e164ecd8d0b1b0ea8878e266a0",
+    "/home/otto/.hermes/cache/scratch/llm-planner-tool-loop-completion2/candidate1-black.log": "26a5fd9505f2b5608a20c4fed4b4c4795e0783d03b72ade02a6af34dae8ad086",
+    "/home/otto/.hermes/cache/scratch/llm-planner-tool-loop-completion2/candidate1-mypy.log": "762776a51a93cac7a255b97e49aa13cd4e4bc31e5a7d88d52a8332e2dab15531",
+    "/home/otto/.hermes/cache/scratch/llm-planner-tool-loop-completion2/red-context.log": "10711a232da218410321966cbfb0c7c9a9b4cc2f83f7d2ee73e9d6d71e7b661a",
+    "/home/otto/.hermes/cache/scratch/llm-planner-tool-loop-completion2/black.log": "26a5fd9505f2b5608a20c4fed4b4c4795e0783d03b72ade02a6af34dae8ad086"
+  },
+  "no_effects": "Offline ScriptedModel and httpx.MockTransport fixtures only; no real inference, HTTP/provider calls, native, SQL, Docker, service, private-journal or Git effects.",
+  "remaining": [
+    "Parent independent completed-snapshot review and main root gate.",
+    "Parent-authorized real-provider acceptance remains unverified; prior two failed probes are not converted to passes.",
+    "Whole goal, all six milestones and eleven standing criteria remain OPEN."
+  ],
+  "toolchain": "Pinned offline nix develop --offline --no-write-lock-file path:./spikes/007-native-packet-ast/toolchain; existing .venv; owned scratch TMPDIR."
+}

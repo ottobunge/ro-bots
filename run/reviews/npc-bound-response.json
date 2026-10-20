@@ -1,0 +1,754 @@
+{
+  "status": "BOUNDED_OFFLINE_BOUND_DISPATCH_IMPLEMENTED_SCOPED_GREEN_PENDING_PARENT_REVIEW",
+  "scope": {
+    "modified": [
+      "src/robots/domain/actions.py",
+      "src/robots/app/playing_runtime.py"
+    ],
+    "created": [
+      "tests/test_npc_bound_response.py",
+      "run/reviews/npc-bound-response.json"
+    ],
+    "offline_wire_only": true,
+    "host_planning_activation": false,
+    "native_network_world_sql_provider_effects": false,
+    "controller_protocol_capture_cache_old_tests_git_deps_services_modified": false
+  },
+  "api": {
+    "action": "frozen/slots NpcRespond(identity: PlanningIdentity, intent: NpcIntent)",
+    "dispatcher": "Actual PlayingClient.perform_native -> _respond_npc; no state-builder/legacy dispatcher reentry",
+    "response": "Existing NativeNpcDialogue.request(NpcNext or NpcSelect, qualified observation.observed_at) -> existing _send_npc",
+    "return": "Existing perform_native None semantics preserved; no Quest/progress/reward result introduced"
+  },
+  "source_sha256": {
+    "src/robots/domain/actions.py": "238cbf0b8af1de3e1c272e0678f58ddc14d23dcab49914abb1fe1bf0b7e5e48a",
+    "src/robots/app/playing_runtime.py": "3738b8408d32b4f626149ab1a859c76d74912ea6d12152835de57f8cd578197a",
+    "tests/test_npc_bound_response.py": "88d4230e54fbb3ccb94e0f14d66be5518416f08b0d2b492b6962e60bb2acd8b8"
+  },
+  "behavior": [
+    "Reject ordinary bad identity/type/direct malformed intents before clock/snapshot callbacks, using PlanningIdentity.__post_init__ and NpcIntent.valid, not duplicate validators.",
+    "Get actual fresh planning_npc_observation(identity); require approved npc_intent_matches(intent, observation, identity, observation.observed_at).",
+    "NEXT maps to existing NpcNext(current observed NPC ID); CHOOSE maps to existing NpcSelect(current observed NPC ID, exact validated received index). No CLOSE, selected-name/free-text or cancel255 typed intents.",
+    "One qualified clock and one receiver snapshot; no unvalidated callback or receiver refresh between exact binding match and local controller request.",
+    "Valid send consumes the UI to waiting; duplicate action has no resend. A newer prompt denies old binding even when index3 still exists, and requires a new explicit bound action.",
+    "Inherited fresh readiness/identity/actor/map/epoch/pose/motion/transport/continuity/budget/deadline/cached-map guards deny before request. Expected telemetry loss gives no send; unexpected callback exceptions keep original BaseException/deepest callback frame.",
+    "Existing send failure poisons controller and retains exact original BaseException/deepest send frame. Later prompts/duplicate actions never resend or infer reward.",
+    "Legacy primitive dataclass signatures and _npc_action request path remain unchanged. Legacy Attack Boolean guard extracted verbatim into _attack solely after reached Xenon rank-C failure; no guard order or behavior change."
+  ],
+  "trust_boundary": {
+    "assumption": "Single host-owner controller mutation; local receipt matching is not atomic server legality.",
+    "caller_metadata": [
+      "agent",
+      "world",
+      "ruleset"
+    ],
+    "unknown": [
+      "server acceptance/race/rejection",
+      "quest eligibility/rewards/progression",
+      "global receipt uniqueness across client replacement with repeated epoch/counters"
+    ],
+    "nonce_or_uid_security_model_added": false
+  },
+  "tdd": {
+    "behavioral_red": {
+      "01-dispatch-red.xml": "Unchanged parent tracer reaches actual unsupported-action branch; then minimal NEXT route passes unchanged tracer.",
+      "02-choose-red.xml": "Four CHOOSE exact-index responses missing; added existing NpcSelect mapping.",
+      "03-binding-red.xml": "Seven new-prompt/same-index reuse and binding drift cases incorrectly sent; added approved observer + npc_intent_matches.",
+      "04-payload-red.xml": "30 malformed/opaque identity/intent cases reached observation callbacks; added reusable domain preflight.",
+      "05-qualified-readiness-red.xml": "Seven cases reentered state-builder/unbound route or raised expected readiness loss; added dedicated early bound route with one qualified clock."
+    },
+    "green_receipts": [
+      "01-dispatch-green.xml",
+      "02-choose-green.xml",
+      "03-binding-green.xml",
+      "04-payload-green.xml",
+      "05-qualified-readiness-green.xml"
+    ],
+    "already_green_characterizations": "Inherited boundaries, observer guards, callbacks/send-origin, frozen record, legacy regressions and parent capture/planner/REST/CLEF paths are follow-up current behavior characterizations, not retroactive source REDs.",
+    "preserved_extended_first_run": "07-extended-characterizations-first.xml has one immutable MappingProxy test-harness error (repair: new empty MapCache), plus two stronger equal-receipt-tuple replacement assertions; no source change was made for these findings.",
+    "replacement_scenario_adjustment": "Final regression follows approved producer same-epoch replacement lifecycle: unsolicited received prompt is denied before explicit reopening; new opened/prompt sequences then distinguish fresh action. Exact tuple-collision failure remains separately preserved and disclosed, not counted as GREEN.",
+    "quality_history": {
+      "initial": "initial-quality.json",
+      "failures": [
+        "Black formatting",
+        "Ruff style/parametrize",
+        "mypy unreachable/type/frozen-write",
+        "whole-src Xenon rank-C perform_native"
+      ],
+      "repair": "Widen domain-preflight input annotations to object; type Wire callback seams; dynamic frozen-field mutation test; mechanical formatting/import order; extract unchanged Attack guard responsibility. Gates/thresholds unchanged."
+    }
+  },
+  "verification": {
+    "selected_current_runs": [
+      {
+        "name": "final2-scoped",
+        "command": [
+          "nix",
+          "develop",
+          "--offline",
+          "--no-write-lock-file",
+          "path:./spikes/007-native-packet-ast/toolchain",
+          "-c",
+          "env",
+          "PYTHONOPTIMIZE=0",
+          "PYTHONDONTWRITEBYTECODE=1",
+          "PYTHONPATH=/home/otto/dev/ro-bots/src:/home/otto/dev/ro-bots",
+          "PYTEST_DISABLE_PLUGIN_AUTOLOAD=1",
+          ".venv/bin/python",
+          "-B",
+          "-m",
+          "pytest",
+          "-q",
+          "-o",
+          "addopts=",
+          "-p",
+          "no:cacheprovider",
+          "--junitxml=/home/otto/.hermes/cache/scratch/npc-bound-response/final2-scoped.xml",
+          "tests/test_host_native_transport.py",
+          "tests/test_host_native_vitals.py",
+          "tests/test_llm_planner.py",
+          "tests/test_llm_planning_clef_execution.py",
+          "tests/test_llm_planning_host_cleanup.py",
+          "tests/test_llm_planning_host_construction.py",
+          "tests/test_llm_planning_host_tick.py",
+          "tests/test_llm_planning_rest_execution.py",
+          "tests/test_movement_arrival_evidence.py",
+          "tests/test_native_audited_fixed_framing.py",
+          "tests/test_native_gameplay.py",
+          "tests/test_native_gameplay_repairs.py",
+          "tests/test_native_name_reply_framing.py",
+          "tests/test_native_npc_cancel_recovery.py",
+          "tests/test_native_npc_close_framing.py",
+          "tests/test_native_npc_completion_quality.py",
+          "tests/test_native_npc_cutin_framing.py",
+          "tests/test_native_npc_dialogue.py",
+          "tests/test_native_npc_guidance.py",
+          "tests/test_native_npc_memory_journal.py",
+          "tests/test_native_npc_name_input.py",
+          "tests/test_native_npc_page_budget.py",
+          "tests/test_native_playing_keepalive.py",
+          "tests/test_native_pose_recovery.py",
+          "tests/test_native_rest_interrupt.py",
+          "tests/test_native_textinput.py",
+          "tests/test_npc_plan_contract.py",
+          "tests/test_npc_planning_observation.py",
+          "tests/test_plan_lifecycle.py",
+          "tests/test_planning_context.py",
+          "tests/test_planning_job_context.py",
+          "tests/test_playing_packet_framing.py",
+          "tests/test_playing_runtime.py",
+          "/home/otto/.hermes/cache/scratch/npc-planning-observation/test_actual_observer.py",
+          "/home/otto/.hermes/cache/scratch/npc-capture-characterization/test_existing_capture.py",
+          "/home/otto/.hermes/cache/scratch/npc-planning-observation/test_cached_map_completion.py",
+          "tests/test_npc_bound_response.py",
+          "/home/otto/.hermes/cache/scratch/npc-bound-response/test_bound_dispatch.py"
+        ],
+        "exit_code": 0,
+        "physical_cases": 1599,
+        "unique_ids": 1599,
+        "prior_unique_ids": 1466,
+        "missing_prior_ids": [],
+        "failures": 0,
+        "errors": 0,
+        "skips": 0,
+        "xml": "/home/otto/.hermes/cache/scratch/npc-bound-response/final2-scoped.xml",
+        "sha256": "be49d0546d1630039bb3cd7103ee30bb79a36d532938327dbf5ef9f4c7b5f41f"
+      },
+      {
+        "name": "final2-probes",
+        "command": [
+          "nix",
+          "develop",
+          "--offline",
+          "--no-write-lock-file",
+          "path:./spikes/007-native-packet-ast/toolchain",
+          "-c",
+          "env",
+          "PYTHONOPTIMIZE=0",
+          "PYTHONDONTWRITEBYTECODE=1",
+          "PYTHONPATH=/home/otto/dev/ro-bots/src:/home/otto/dev/ro-bots",
+          "PYTEST_DISABLE_PLUGIN_AUTOLOAD=1",
+          ".venv/bin/python",
+          "-B",
+          "-m",
+          "pytest",
+          "-q",
+          "-o",
+          "addopts=",
+          "-p",
+          "no:cacheprovider",
+          "--junitxml=/home/otto/.hermes/cache/scratch/npc-bound-response/final2-probes.xml",
+          "/home/otto/.hermes/cache/scratch/npc-planning-observation-independent-review/test_independent_observer.py"
+        ],
+        "exit_code": 0,
+        "physical_cases": 6,
+        "unique_ids": 6,
+        "prior_unique_ids": 6,
+        "missing_prior_ids": [],
+        "failures": 0,
+        "errors": 0,
+        "skips": 0,
+        "xml": "/home/otto/.hermes/cache/scratch/npc-bound-response/final2-probes.xml",
+        "sha256": "ac83c928eb458c51b7de2041c0ee3df0d837e49f24bf10dc458fa2268ddb299e"
+      }
+    ],
+    "unique_physical_union": 1605,
+    "new_bound_response_cases": 132,
+    "preserved_prior_raw_ids": 1472,
+    "prior_scope_ids_missing": [],
+    "prior_probe_ids_missing": [],
+    "new_dispatcher_tracer_cases": 1,
+    "identity_registry": {
+      "path": "/home/otto/.hermes/cache/scratch/npc-bound-response/final2-test-identities.json",
+      "sha256": "d209c3667ff1e1e053d64566996322b88a4c8eb881806e4545e162faac17fca6"
+    },
+    "prior_combined_run": "final-scoped.xml passed all1605 but wrapper failed raw six probe-ID comparison due external pytest root/classname. Final2 separate raw matching runs rectify invocation context without ID normalization. Original receipt retained.",
+    "quality": {
+      "label": "final",
+      "sources": {
+        "src/robots/domain/actions.py": "238cbf0b8af1de3e1c272e0678f58ddc14d23dcab49914abb1fe1bf0b7e5e48a",
+        "src/robots/app/playing_runtime.py": "3738b8408d32b4f626149ab1a859c76d74912ea6d12152835de57f8cd578197a",
+        "tests/test_npc_bound_response.py": "88d4230e54fbb3ccb94e0f14d66be5518416f08b0d2b492b6962e60bb2acd8b8"
+      },
+      "gates": {
+        "black": {
+          "command": [
+            ".venv/bin/black",
+            "--check",
+            "--workers",
+            "1",
+            "src/robots/domain/actions.py",
+            "src/robots/app/playing_runtime.py",
+            "tests/test_npc_bound_response.py"
+          ],
+          "exit_code": 0,
+          "log": "/home/otto/.hermes/cache/scratch/npc-bound-response/final-black.log",
+          "sha256": "45a468fa6205768496f23f1716ebb7575e9b723449d2099b88bf2afef60b721f",
+          "output": "All done! \u2728 \ud83c\udf70 \u2728\n3 files would be left unchanged.\n"
+        },
+        "ruff": {
+          "command": [
+            ".venv/bin/ruff",
+            "check",
+            "--no-cache",
+            "src/robots/domain/actions.py",
+            "src/robots/app/playing_runtime.py",
+            "tests/test_npc_bound_response.py"
+          ],
+          "exit_code": 0,
+          "log": "/home/otto/.hermes/cache/scratch/npc-bound-response/final-ruff.log",
+          "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+          "output": "All checks passed!\n"
+        },
+        "mypy": {
+          "command": [
+            ".venv/bin/mypy",
+            "--cache-dir",
+            "/home/otto/.hermes/cache/scratch/npc-bound-response/final-mypy-cache"
+          ],
+          "exit_code": 0,
+          "log": "/home/otto/.hermes/cache/scratch/npc-bound-response/final-mypy.log",
+          "sha256": "a42483da6eb6abe89372a32f4e9d50d3c5a5b7357a2fccadd80063feaccbce62",
+          "output": "Success: no issues found in 245 source files\n"
+        },
+        "xenon": {
+          "command": [
+            ".venv/bin/xenon",
+            "src",
+            "--max-absolute",
+            "B",
+            "--max-modules",
+            "B",
+            "--max-average",
+            "A"
+          ],
+          "exit_code": 0,
+          "log": "/home/otto/.hermes/cache/scratch/npc-bound-response/final-xenon.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "output": ""
+        },
+        "duplicate-code": {
+          "command": [
+            ".venv/bin/pylint",
+            "--disable=all",
+            "--enable=duplicate-code",
+            "--ignore-paths=tests",
+            "src"
+          ],
+          "exit_code": 0,
+          "log": "/home/otto/.hermes/cache/scratch/npc-bound-response/final-duplicate-code.log",
+          "sha256": "8cbfc8cd0b04a4858b0b78b74c6df9631a1695e105e6911d4b57fbcc43b218b5",
+          "output": "\n--------------------------------------------------------------------\nYour code has been rated at 10.00/10 (previous run: 10.00/10, +0.00)\n\n"
+        },
+        "bandit": {
+          "command": [
+            ".venv/bin/bandit",
+            "-q",
+            "-c",
+            "pyproject.toml",
+            "-r",
+            "src"
+          ],
+          "exit_code": 0,
+          "log": "/home/otto/.hermes/cache/scratch/npc-bound-response/final-bandit.log",
+          "sha256": "2ee20ac6a3a915ff1204f17c53260bcc2ebfb848f37624608d13ddfdf1cc35ff",
+          "output": "[tester]\tWARNING\tnosec encountered (B105), but no failed test on file src/robots/adapters/rathena_runtime.py:129\n[tester]\tWARNING\tnosec encountered (B105), but no failed test on file src/robots/adapters/rathena_runtime.py:130\n[tester]\tWARNING\tnosec encountered (B105), but no failed test on file src/robots/adapters/rathena_runtime.py:131\n[tester]\tWARNING\tnosec encountered (B105), but no failed test on file src/robots/adapters/rathena_runtime.py:133\n[tester]\tWARNING\tnosec encountered (B105), but no failed test on file src/robots/adapters/rathena_runtime.py:131\n[tester]\tWARNING\tnosec encountered (B105), but no failed test on file src/robots/adapters/rathena_runtime.py:132\n[tester]\tWARNING\tnosec encountered (B105), but no failed test on file src/robots/adapters/rathena_runtime.py:133\n"
+        },
+        "vulture": {
+          "command": [
+            ".venv/bin/vulture",
+            "src",
+            "vulture_whitelist.py"
+          ],
+          "exit_code": 0,
+          "log": "/home/otto/.hermes/cache/scratch/npc-bound-response/final-vulture.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "output": ""
+        }
+      }
+    },
+    "preservation": {
+      "baseline_bindings": 405,
+      "baseline_distinct_paths": 403,
+      "excluded_owned_bindings": [
+        "src/robots/app/playing_runtime.py",
+        "src/robots/domain/actions.py"
+      ],
+      "protected_bindings": 403,
+      "protected_distinct_paths": 401,
+      "protected_drift": []
+    }
+  },
+  "receipt_tuple_collision": {
+    "status": "PRESERVED_STRONGER_BOUNDARY_RED_REQUIRES_PARENT_POLICY_IF_GLOBAL_REPLAY_GUARANTEE_IS_REQUIRED",
+    "test": "/home/otto/.hermes/cache/scratch/npc-bound-response/test_receipt_tuple_collision.py",
+    "test_sha256": "a48fb6408ce1b1b957894aba996520170012392ed9a43ed996559a9217ed4093",
+    "receipt": {
+      "path": "/home/otto/.hermes/cache/scratch/npc-bound-response/receipt-tuple-collision-red.xml",
+      "sha256": "8ea3b06fd21e21396738c059efcea9b0ba9f6dff45813e8867428058f32b5334",
+      "physical_cases": 1,
+      "unique_ids": 1,
+      "failures": 1,
+      "errors": 0,
+      "skips": 0,
+      "failed_ids": [
+        [
+          ".hermes.cache.scratch.npc-bound-response.test_receipt_tuple_collision",
+          "test_replacement_reopened_with_identical_receipt_tuple_cannot_distinguish_old_intent"
+        ]
+      ]
+    },
+    "observed": "Replacing wire with same metadata/epoch/counters, explicitly reopening, and receiving identical ID/map/opened/prompt/stage makes old and fresh typed intents exactly equal. Current approved npc_intent_matches permits the old record to send. This is not denied by inherited instance reset after an explicit reopen.",
+    "scope_limit": "No new nonce/UID model or domain/controller/host metadata redesign authorized. Unconditional cross-replacement replay rejection cannot distinguish equal old/fresh records under current two-field action/approved intent contract; parent must determine whether this stronger guarantee is required or separately authorize epoch/generation policy.",
+    "not_hidden_or_fixed": true
+  },
+  "freeze": {
+    "path": "/home/otto/.hermes/cache/scratch/npc-bound-response/final-freeze.json",
+    "sha256": "39dcbf356cd885953cf5c19b919b42013a1040591a5712c79ad1b42330312c2e",
+    "bindings": 409,
+    "distinct_paths": 407
+  },
+  "xml_receipt_registry": {
+    "01-dispatch-green.xml": {
+      "path": "/home/otto/.hermes/cache/scratch/npc-bound-response/01-dispatch-green.xml",
+      "sha256": "1d5387683b107a3e9286604499becc97288110d6813a67c1ef11f75042477128",
+      "physical_cases": 1,
+      "unique_ids": 1,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "failed_ids": []
+    },
+    "01-dispatch-red.xml": {
+      "path": "/home/otto/.hermes/cache/scratch/npc-bound-response/01-dispatch-red.xml",
+      "sha256": "3ae83c84a1d7444b1ce6dd415e59b2a66e86533fbb5b90f4ff4fc3a5476ab0ed",
+      "physical_cases": 1,
+      "unique_ids": 1,
+      "failures": 1,
+      "errors": 0,
+      "skips": 0,
+      "failed_ids": [
+        [
+          ".hermes.cache.scratch.npc-bound-response.test_bound_dispatch",
+          "test_actual_dispatcher_sends_one_receipt_bound_next_response"
+        ]
+      ]
+    },
+    "02-choose-green.xml": {
+      "path": "/home/otto/.hermes/cache/scratch/npc-bound-response/02-choose-green.xml",
+      "sha256": "9fcb1dc54b1ec1ba466efb7a28fb9ba2b915e441f1c062a8d4c59374965ab15c",
+      "physical_cases": 5,
+      "unique_ids": 5,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "failed_ids": []
+    },
+    "02-choose-red.xml": {
+      "path": "/home/otto/.hermes/cache/scratch/npc-bound-response/02-choose-red.xml",
+      "sha256": "f1da81efe2390cb678e5e30fa26063b7d0d483dfbdcdd41a75e9aaf5cc414507",
+      "physical_cases": 4,
+      "unique_ids": 4,
+      "failures": 4,
+      "errors": 0,
+      "skips": 0,
+      "failed_ids": [
+        [
+          "tests.test_npc_bound_response",
+          "test_choose_exact_received_index_once[1]"
+        ],
+        [
+          "tests.test_npc_bound_response",
+          "test_choose_exact_received_index_once[2]"
+        ],
+        [
+          "tests.test_npc_bound_response",
+          "test_choose_exact_received_index_once[3]"
+        ],
+        [
+          "tests.test_npc_bound_response",
+          "test_choose_exact_received_index_once[254]"
+        ]
+      ]
+    },
+    "03-binding-green.xml": {
+      "path": "/home/otto/.hermes/cache/scratch/npc-bound-response/03-binding-green.xml",
+      "sha256": "6109b11fc3a1b6e3a9487ba4c3e5f725705fa1ab25692d1617c586456f17ccf4",
+      "physical_cases": 12,
+      "unique_ids": 12,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "failed_ids": []
+    },
+    "03-binding-red.xml": {
+      "path": "/home/otto/.hermes/cache/scratch/npc-bound-response/03-binding-red.xml",
+      "sha256": "b6340b478407ed72c9717a8270692af4b153f4bca901af39af925369d997cc27",
+      "physical_cases": 11,
+      "unique_ids": 11,
+      "failures": 7,
+      "errors": 0,
+      "skips": 0,
+      "failed_ids": [
+        [
+          "tests.test_npc_bound_response",
+          "test_new_prompt_denies_old_action_then_requires_explicit_fresh_action[181]"
+        ],
+        [
+          "tests.test_npc_bound_response",
+          "test_new_prompt_denies_old_action_then_requires_explicit_fresh_action[183]"
+        ],
+        [
+          "tests.test_npc_bound_response",
+          "test_changed_intent_binding_denies_without_consuming_current_menu[epoch-2]"
+        ],
+        [
+          "tests.test_npc_bound_response",
+          "test_changed_intent_binding_denies_without_consuming_current_menu[map_name-izlude]"
+        ],
+        [
+          "tests.test_npc_bound_response",
+          "test_changed_intent_binding_denies_without_consuming_current_menu[opened_sequence-3]"
+        ],
+        [
+          "tests.test_npc_bound_response",
+          "test_changed_intent_binding_denies_without_consuming_current_menu[prompt_sequence-6]"
+        ],
+        [
+          "tests.test_npc_bound_response",
+          "test_changed_intent_binding_denies_without_consuming_current_menu[expected_stage-next]"
+        ]
+      ]
+    },
+    "04-payload-green.xml": {
+      "path": "/home/otto/.hermes/cache/scratch/npc-bound-response/04-payload-green.xml",
+      "sha256": "248d6919fe70b5b1633de1a6ed5424c99bc3d822e3728c4e8ef9351bb8c11bcf",
+      "physical_cases": 42,
+      "unique_ids": 42,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "failed_ids": []
+    },
+    "04-payload-red.xml": {
+      "path": "/home/otto/.hermes/cache/scratch/npc-bound-response/04-payload-red.xml",
+      "sha256": "913357b40923ceb4d4bc3b50ba9f08b62fb1e1ffdcf95e38f9ce7b7487780b2d",
+      "physical_cases": 41,
+      "unique_ids": 41,
+      "failures": 30,
+      "errors": 0,
+      "skips": 0,
+      "failed_ids": [
+        [
+          "tests.test_npc_bound_response",
+          "test_opaque_payload_denied_before_observation_without_poisoning[identity-None]"
+        ],
+        [
+          "tests.test_npc_bound_response",
+          "test_opaque_payload_denied_before_observation_without_poisoning[identity-True]"
+        ],
+        [
+          "tests.test_npc_bound_response",
+          "test_opaque_payload_denied_before_observation_without_poisoning[identity-payload2]"
+        ],
+        [
+          "tests.test_npc_bound_response",
+          "test_opaque_payload_denied_before_observation_without_poisoning[identity-choose]"
+        ],
+        [
+          "tests.test_npc_bound_response",
+          "test_opaque_payload_denied_before_observation_without_poisoning[identity-payload4]"
+        ],
+        [
+          "tests.test_npc_bound_response",
+          "test_opaque_payload_denied_before_observation_without_poisoning[intent-None]"
+        ],
+        [
+          "tests.test_npc_bound_response",
+          "test_opaque_payload_denied_before_observation_without_poisoning[intent-True]"
+        ],
+        [
+          "tests.test_npc_bound_response",
+          "test_opaque_payload_denied_before_observation_without_poisoning[intent-payload2]"
+        ],
+        [
+          "tests.test_npc_bound_response",
+          "test_opaque_payload_denied_before_observation_without_poisoning[intent-choose]"
+        ],
+        [
+          "tests.test_npc_bound_response",
+          "test_opaque_payload_denied_before_observation_without_poisoning[intent-payload4]"
+        ],
+        [
+          "tests.test_npc_bound_response",
+          "test_malformed_direct_intent_denied_before_observation[npc_id-True]"
+        ],
+        [
+          "tests.test_npc_bound_response",
+          "test_malformed_direct_intent_denied_before_observation[npc_id-0]"
+        ],
+        [
+          "tests.test_npc_bound_response",
+          "test_malformed_direct_intent_denied_before_observation[npc_id-4294967296]"
+        ],
+        [
+          "tests.test_npc_bound_response",
+          "test_malformed_direct_intent_denied_before_observation[epoch-False]"
+        ],
+        [
+          "tests.test_npc_bound_response",
+          "test_malformed_direct_intent_denied_before_observation[map_name-None]"
+        ],
+        [
+          "tests.test_npc_bound_response",
+          "test_malformed_direct_intent_denied_before_observation[map_name-prontera.gat]"
+        ],
+        [
+          "tests.test_npc_bound_response",
+          "test_malformed_direct_intent_denied_before_observation[opened_sequence--1]"
+        ],
+        [
+          "tests.test_npc_bound_response",
+          "test_malformed_direct_intent_denied_before_observation[prompt_sequence-5]"
+        ],
+        [
+          "tests.test_npc_bound_response",
+          "test_malformed_direct_intent_denied_before_observation[operation-choose]"
+        ],
+        [
+          "tests.test_npc_bound_response",
+          "test_malformed_direct_intent_denied_before_observation[operation-close]"
+        ],
+        [
+          "tests.test_npc_bound_response",
+          "test_malformed_direct_intent_denied_before_observation[operation-submit_name]"
+        ],
+        [
+          "tests.test_npc_bound_response",
+          "test_malformed_direct_intent_denied_before_observation[operation-value11]"
+        ],
+        [
+          "tests.test_npc_bound_response",
+          "test_malformed_direct_intent_denied_before_observation[expected_stage-string_input]"
+        ],
+        [
+          "tests.test_npc_bound_response",
+          "test_malformed_direct_intent_denied_before_observation[option_index-None]"
+        ],
+        [
+          "tests.test_npc_bound_response",
+          "test_malformed_direct_intent_denied_before_observation[option_index-True]"
+        ],
+        [
+          "tests.test_npc_bound_response",
+          "test_malformed_direct_intent_denied_before_observation[option_index-0]"
+        ],
+        [
+          "tests.test_npc_bound_response",
+          "test_malformed_direct_intent_denied_before_observation[option_index-255]"
+        ],
+        [
+          "tests.test_npc_bound_response",
+          "test_malformed_direct_intent_denied_before_observation[option_index-3.0]"
+        ],
+        [
+          "tests.test_npc_bound_response",
+          "test_malformed_direct_intent_denied_before_observation[option_index-3]"
+        ],
+        [
+          "tests.test_npc_bound_response",
+          "test_invalid_identity_record_reuses_domain_identity_validation"
+        ]
+      ]
+    },
+    "05-qualified-readiness-green.xml": {
+      "path": "/home/otto/.hermes/cache/scratch/npc-bound-response/05-qualified-readiness-green.xml",
+      "sha256": "04f31d61bd5b633e9ee08c73fa359f22211d6e71b49e9737e640fb5a16435450",
+      "physical_cases": 49,
+      "unique_ids": 49,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "failed_ids": []
+    },
+    "05-qualified-readiness-red.xml": {
+      "path": "/home/otto/.hermes/cache/scratch/npc-bound-response/05-qualified-readiness-red.xml",
+      "sha256": "e2146390caea132f335af948a7c74e3bfe21366e20b55129fbd5fe1106c36733",
+      "physical_cases": 48,
+      "unique_ids": 48,
+      "failures": 7,
+      "errors": 0,
+      "skips": 0,
+      "failed_ids": [
+        [
+          "tests.test_npc_bound_response",
+          "test_qualified_one_clock_one_snapshot_direct_controller_request[181]"
+        ],
+        [
+          "tests.test_npc_bound_response",
+          "test_qualified_one_clock_one_snapshot_direct_controller_request[183]"
+        ],
+        [
+          "tests.test_npc_bound_response",
+          "test_readiness_loss_denies_without_request_or_exception[transport]"
+        ],
+        [
+          "tests.test_npc_bound_response",
+          "test_readiness_loss_denies_without_request_or_exception[vitals]"
+        ],
+        [
+          "tests.test_npc_bound_response",
+          "test_readiness_loss_denies_without_request_or_exception[class]"
+        ],
+        [
+          "tests.test_npc_bound_response",
+          "test_readiness_loss_denies_without_request_or_exception[gap]"
+        ],
+        [
+          "tests.test_npc_bound_response",
+          "test_readiness_loss_denies_without_request_or_exception[closed]"
+        ]
+      ]
+    },
+    "06-inherited-characterizations-first.xml": {
+      "path": "/home/otto/.hermes/cache/scratch/npc-bound-response/06-inherited-characterizations-first.xml",
+      "sha256": "4b6de0c6120f3ee7d1d4e44e0c91e0cd296e2ed0640cf1af6dd887acba311a09",
+      "physical_cases": 127,
+      "unique_ids": 127,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "failed_ids": []
+    },
+    "07-extended-characterizations-first.xml": {
+      "path": "/home/otto/.hermes/cache/scratch/npc-bound-response/07-extended-characterizations-first.xml",
+      "sha256": "9b236cc2fbd139e3de8445b92ebb316d9e0ccbf51ad4208a568c7215c86bd85e",
+      "physical_cases": 133,
+      "unique_ids": 133,
+      "failures": 3,
+      "errors": 0,
+      "skips": 0,
+      "failed_ids": [
+        [
+          "tests.test_npc_bound_response",
+          "test_map_cache_qualification_loss_denies_response[removed-cache]"
+        ],
+        [
+          "tests.test_npc_bound_response",
+          "test_boundary_reopen_requires_fresh_explicit_action_after_epoch_or_wire_reset[181]"
+        ],
+        [
+          "tests.test_npc_bound_response",
+          "test_boundary_reopen_requires_fresh_explicit_action_after_epoch_or_wire_reset[183]"
+        ]
+      ]
+    },
+    "final-scoped.xml": {
+      "path": "/home/otto/.hermes/cache/scratch/npc-bound-response/final-scoped.xml",
+      "sha256": "2e5a34e1027b71ffaf64c20bff402bed09b396fedf9a9e0e64b5b2e329fe9c16",
+      "physical_cases": 1605,
+      "unique_ids": 1605,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "failed_ids": []
+    },
+    "final2-probes.xml": {
+      "path": "/home/otto/.hermes/cache/scratch/npc-bound-response/final2-probes.xml",
+      "sha256": "ac83c928eb458c51b7de2041c0ee3df0d837e49f24bf10dc458fa2268ddb299e",
+      "physical_cases": 6,
+      "unique_ids": 6,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "failed_ids": []
+    },
+    "final2-scoped.xml": {
+      "path": "/home/otto/.hermes/cache/scratch/npc-bound-response/final2-scoped.xml",
+      "sha256": "be49d0546d1630039bb3cd7103ee30bb79a36d532938327dbf5ef9f4c7b5f41f",
+      "physical_cases": 1599,
+      "unique_ids": 1599,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "failed_ids": []
+    },
+    "parent-bound-dispatch-red.xml": {
+      "path": "/home/otto/.hermes/cache/scratch/npc-bound-response/parent-bound-dispatch-red.xml",
+      "sha256": "c88842aaccc9ab2c3ca79e954bdd224b5daedf990bd87d35d94e9c2e04295089",
+      "physical_cases": 1,
+      "unique_ids": 1,
+      "failures": 1,
+      "errors": 0,
+      "skips": 0,
+      "failed_ids": [
+        [
+          ".hermes.cache.scratch.npc-bound-response.test_bound_dispatch",
+          "test_actual_dispatcher_sends_one_receipt_bound_next_response"
+        ]
+      ]
+    },
+    "receipt-tuple-collision-red.xml": {
+      "path": "/home/otto/.hermes/cache/scratch/npc-bound-response/receipt-tuple-collision-red.xml",
+      "sha256": "8ea3b06fd21e21396738c059efcea9b0ba9f6dff45813e8867428058f32b5334",
+      "physical_cases": 1,
+      "unique_ids": 1,
+      "failures": 1,
+      "errors": 0,
+      "skips": 0,
+      "failed_ids": [
+        [
+          ".hermes.cache.scratch.npc-bound-response.test_receipt_tuple_collision",
+          "test_replacement_reopened_with_identical_receipt_tuple_cannot_distinguish_old_intent"
+        ]
+      ]
+    }
+  },
+  "remaining": [
+    "Independent completed-snapshot parent review",
+    "Matching parent full Root check/audit after changed source (historical Root5345/65/95.44 is not current proof)",
+    "Explicit policy for repeated identical receipt tuples across same-epoch wire replacement if stronger replay exclusion is required",
+    "Host planned NPC execution/activation and actual live native acceptance/progression remain OPEN"
+  ],
+  "full_goals": "OPEN"
+}

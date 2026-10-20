@@ -1,0 +1,12 @@
+{
+  "status": "MAP_ROLE_FAULT_ROTATION_FRONTIER_IDENTIFIED",
+  "instrumented_denial": "validate_world DENIED role_fault; role map DENIED role_fault; mariadb/login/char OK",
+  "cause": "After the owned map stops, its journald-backed docker log projects no records; native_role leaves sql_errors=None for the map, so validate_role role_fault (type(sql_errors) is int) denies before graceful_finish. The rotation successor fixed this projection only for database_role (mariadb). Login/char will hit the same after their stop/start legs: the compose log driver is journald, so docker logs stays empty for all roles.",
+  "world_state": {
+    "map": "STOPPED (this cycle TERMed it; publication not attempted, no public writes)",
+    "login/char/mariadb": "running",
+    "fixtures": "offline (0,0) per observations"
+  },
+  "next": "Maintenance-mode error projection for native roles (map/login/char) mirrors the accepted database_role rotation fix: count markers from the honestly empty rotated stream (sql_errors=0) in maintenance mode; strict mode fail-closed. Then restore map via one owned docker start, re-issue fresh, and run the full cycle.",
+  "native_authority": "UNCHANGED_REVOKED"
+}

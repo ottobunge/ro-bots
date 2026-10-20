@@ -1,0 +1,11 @@
+{
+  "record": "GRIND_WINDOW36_REST_FIX_LIVE_322_ATTACKS_COMMITMENT_IS_THE_REMAINING_GAP",
+  "date": "2026-10-19",
+  "rest_fix_verdict": "LANDED AND WORKING: rest actions 2,387 (w35) -> 2 (w36); attacks 32 -> 322; attributed bot-dealt 1 -> 64. The latch rules (R1 death fail-closed, R2 in-range break at hp>=0.25) held all window.",
+  "engagement": "fx1: 76 decisions, 390 walks, 322 attacks, 249 actor frames, 4 species. fx0: STILL join-stalled (map_loads 0, own_pos 0, 44 decisions) \u2014 the session-epoch turnover did NOT clear it; the slice's alternative (save-state difference / shop-interior save) is the remaining lead.",
+  "remaining_gap": {
+    "commitment_under_live_cadence": "68 attributed attacks but only 64 total damage and 0 mob deaths \u2014 the damage SPREADS across gids instead of stacking 50 onto one Poring (w26 held one gid to its pinned HP with 139 dmg). With the rest fix the tick cadence changed; KILL_COMMIT_WINDOW=30 may expire before the kill or the distance re-pick oscillates between gids. THIS is now the decisive kill->loot blocker.",
+    "survival": "fx1 died again (deaths [2000001]) \u2014 a level-1 novice trading hits on the field dies; the death resets it to its save and costs the accumulated target damage."
+  },
+  "next": "Commitment slice: why the gid commitment expires/oscillates at the live cadence; and fx0's save-state lead (move the save off the shop interior or bisect the 0x91-without-0x2EB server-side session shape)."
+}

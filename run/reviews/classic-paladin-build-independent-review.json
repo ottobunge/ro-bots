@@ -1,0 +1,1940 @@
+{
+  "schema_version": 1,
+  "status": "research_core_supported_with_bounded_acquisition_correction_not_executable_approval",
+  "review_scope": "read-only public pinned native source plus independent pure computational probes; criterion7 research only",
+  "source_revision": "e985006171d2eb320ee512a653f4c83aea3d81b6",
+  "native_source_root": "/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source",
+  "verified_nar_hash": "sha256-ppi6wPYDqwXh+XR39ufl0SDS6gYfdKyHtQ9tU9rgrNI=",
+  "reviewed_artifacts": [
+    "run/reviews/classic-paladin-build-evidence.json",
+    "wiki/guides/classic-paladin-build-evidence.md"
+  ],
+  "independence": "Fresh standalone solver; did not import project root or original finalize/solver; no original reproducibility write path run. Existing pinned nix develop / uv offline only.",
+  "findings": [
+    {
+      "id": "shared_skill_pool",
+      "status": "supported",
+      "claim": "The original 57-point inherited Crusader closure is not restricted to an obsolete Crusader49 wallet after becoming Paladin. Original final goals independently close to 16 skills: Swordman10 prerequisite points already covered by first49, Crusader57 and Paladin10; final second-job spend67 of69, complete at Paladin job68. Do not reinterpret the 77-point goals-only closure as one pool or erase first-job requirements.",
+      "citation_ids": [
+        1,
+        7,
+        8
+      ],
+      "source_ranges": [
+        "src/map/pc.cpp:2518-2540,2601-2751,2893-3005,8317-8340,9129-9164,10881-10892,13422-13701"
+      ]
+    },
+    {
+      "id": "normalization_and_wallet_limits",
+      "status": "supported_with_qualification",
+      "claim": "A single status.skill_point does not grant unrestricted early access. With player_skillup_limit=yes and player_skillfree=no, paid novice points must reach9, then paid points after subtracting9 must reach change_level_2nd-1 before second-job tree normalization. Native jobchange records actual first-job change level. Candidate paid Basic9+first49 meets both gates before Paladin; inherited Crusader skills then draw from the same available points, with tree max/prerequisite/base/job checks. These gates do not impose a separate49 ceiling on inherited Crusader skills after Paladin access. Reset and earlier-first-skill spending need stage-aware handling.",
+      "citation_ids": [
+        7,
+        14
+      ],
+      "source_ranges": [
+        "src/map/pc.cpp:2893-3005,10881-10892",
+        "conf/battle/player.conf:30-44"
+      ]
+    },
+    {
+      "id": "stage_allocations",
+      "status": "supported_as_source_candidate",
+      "claim": "First49 sequence and nontrans Crusader49 sequence independently replay without prerequisite/cap errors. Both reborn variants consume67/69 and finish at job68; party variant breakdown is Crusader62+Paladin5, not57+10; solo is57+10. Each of the three final67-point sequences was replayed on the actual Paladin inherited tree, with learned Basic9/High Swordman49 carried in. Entries have no positive declared base/job gates; a base99 witness is legal, but experience gains or optimal base/job co-progression were not simulated. Two remaining points are discretion within the actual Paladin tree and caps, not arbitrary skill/class grants.",
+      "citation_ids": [
+        1,
+        8,
+        7
+      ]
+    },
+    {
+      "id": "rebirth_and_class_path",
+      "status": "supported_with_precision_notes",
+      "claim": "Native IDs independently evaluated:0,1,14,4001,4002,4015; source max jobs10,50,50,10,50,70 and max base99. Valkyrie checks BaseLevel>98, JobLevel>49 and eligible normal second class; Weight=0,Zeny=0,no cart/falcon/riding and SkillPoint=0 precede change to High Novice/resetlvl(1). Paid skills and stats reset, base/job become1, skill wallet0, stats1 and initial stat points100. Quest skills are exceptional: quest_skill_reset=no means not every old quest skill is wiped; High Swordman grants three quest skills. The checked Valkyrie branch has no explicit checkpet predicate: dialogue mentioning pets is not proof of an executable pet gate. Paladin NPC requires ADVJOB=Paladin, Class=High Swordman, job40+, SkillPoint=0; candidate waits for50. F_CanChangeJob checks Basic9 under basicskillcheck. Source path legality is conditional on quests and imports, not proof of executed changes.",
+      "citation_ids": [
+        13,
+        8,
+        9,
+        7,
+        10,
+        11,
+        18,
+        14
+      ],
+      "source_ranges": [
+        "npc/jobs/valkyrie.txt:44-108,148-155",
+        "src/map/pc.cpp:9237-9273,9477-9529",
+        "npc/jobs/2-2a/Paladin.txt:36-64",
+        "npc/pre-re/jobs/1-1/swordman.txt:41-66",
+        "npc/other/Global_Functions.txt:626-628"
+      ]
+    },
+    {
+      "id": "nonlinear_stats",
+      "status": "supported",
+      "claim": "Independent summed pre-re incremental costs and cumulative curve differences reproduce original975 cost, normal base99 budget1273 and reborn1325, residuals298/350, and earliest reborn budget availability base82. Example1240 leaves85; alternative1487 exceeds1325. Omitted AGI/LUK are explicitly assumed base1, not inferred intended endpoint. No variant spends the residual or silently replaces user stat goals. Actual class-specific cap lookup must preserve job-db MaxStats/import precedence; public configured normal/trans defaults are99.",
+      "citation_ids": [
+        3,
+        7,
+        14,
+        19
+      ],
+      "source_ranges": [
+        "src/map/pc.cpp:8739-8764,8798-8828,9237-9273,14001 onward,14383,15234-15244",
+        "conf/battle/player.conf:105-125"
+      ]
+    },
+    {
+      "id": "equipment_identity",
+      "status": "supported_public_source_static_compatibility",
+      "claim": "All15 raw exact-name item candidates match the research projection. Six of seven display names are ambiguous; Cross Shield2130 alone is unique. Native job masks use distinct first/2-1/2-2 positions, so Swordman permission alone cannot imply Paladin permission; these actual candidates explicitly allow Crusader or All. Omitted Classes defaults All and Gender defaults Both; present-null declarations must not be normalized to omission. All15 candidates permit Paladin upper branch under static public metadata. Blade candidates are 1hSword/Right_Hand and do not conflict with Cross Shield/Left_Hand; native overlapping slot equipping displaces prior items. Cross Shield requires base80 and not High Swordman. Rosary variants min bases20/90/1 and Rosary_C trade restrictions must remain distinct. None is silently selected. Status/broken/map restrictions, scripts/cards/refines are not proven by static compatibility.",
+      "citation_ids": [
+        4,
+        12,
+        7
+      ],
+      "source_ranges": [
+        "src/map/itemdb.cpp:330-442,3201-3231",
+        "src/map/pc.cpp:1771-1842,1850-1968,12045-12158"
+      ]
+    },
+    {
+      "id": "acquisition",
+      "status": "supported_for_recorded_regular_rows_but_not_exhaustive_all_rewards",
+      "claim": "All recorded shop rows and46 ordinary Drops rows reproduce exactly. Cross Shield source regular drop is mob1919/Rate15, and moc_fild21 spawn line314 exists (other source maps also exist). Shop default -1/database Buy is not a live market tier. The broader all-drop completeness claim has one omission: Boots_2406 in Stormy Knight1251 MvpDrops Rate500. Independent all-category projection yields47 rows, not46. MVP reward rows should be labeled separately from ordinary loot, never inserted as an equivalent live probability. Recorded ordinary-drop examples remain supported; no map access, episode import, NPC shop runtime, farm feasibility or actual item acquisition was verified.",
+      "citation_ids": [
+        5,
+        6,
+        15
+      ],
+      "source_ranges": [
+        "db/pre-re/mob_db.yml:11594-11636",
+        "npc/pre-re/mobs/fields/morocc.txt:302-305,312-316"
+      ]
+    },
+    {
+      "id": "integration_boundary",
+      "status": "not_approved_executable",
+      "claim": "Current template keeps original skills/stat goals/class path/equipment/milestones unchanged; adapter only aliases Swordsman to Swordman and exact display-name ambiguity already fails closed. High Novice/High Swordsman literals unresolved; milestone base70 cannot represent the earlier base99 rebirth and cannot equip base80 Cross Shield. Future TDD integration must represent life/class/base/job, normalization and real per-stage spend/rebirth, explicit native identities and acquisition availability. No build executor, equipment receipt, gameplay, damage model, private-import equivalence or whole-class coverage approval.",
+      "repository_refs": [
+        "src/robots/adapters/mechanics_yaml.py:585-590",
+        "src/robots/domain/build_templates.py:tank-sac-paladin"
+      ],
+      "citation_ids": [
+        9,
+        4
+      ]
+    }
+  ],
+  "probe_summary": {
+    "total": 63,
+    "passed": 62,
+    "failed": [
+      {
+        "name": "complete equipment drop projection",
+        "passed": false,
+        "evidence": {
+          "source_drop_rows": 47,
+          "reported_drop_rows": 46
+        }
+      }
+    ],
+    "interpretation": "63 bounded assertions, not project regression-suite or live-game tests. Sole failed assertion is broader Drops+MvpDrops completeness."
+  },
+  "evidence": {
+    "checks": [
+      {
+        "name": "original_retained full closure",
+        "passed": true,
+        "evidence": {
+          "CR_AUTOGUARD": 5,
+          "CR_SHIELDBOOMERANG": 5,
+          "PA_SHIELDCHAIN": 5,
+          "CR_REFLECTSHIELD": 5,
+          "PA_SACRIFICE": 5,
+          "CR_TRUST": 10,
+          "CR_DEVOTION": 5,
+          "SM_ENDURE": 5,
+          "AL_HEAL": 5,
+          "CR_SHIELDCHARGE": 3,
+          "CR_GRANDCROSS": 4,
+          "SM_PROVOKE": 5,
+          "AL_DEMONBANE": 5,
+          "CR_HOLYCROSS": 6,
+          "AL_DP": 3,
+          "AL_CURE": 1
+        }
+      },
+      {
+        "name": "original_retained declaring class decomposition",
+        "passed": true,
+        "evidence": {
+          "Crusader": 57,
+          "Paladin": 10,
+          "Swordman": 10
+        }
+      },
+      {
+        "name": "original_retained first-job full closure",
+        "passed": true,
+        "evidence": null
+      },
+      {
+        "name": "original_retained first sequence",
+        "passed": true,
+        "evidence": {
+          "points": 49,
+          "last_job": 50,
+          "errors": [],
+          "minimum_declared_base": 0
+        }
+      },
+      {
+        "name": "original_retained final sequence",
+        "passed": true,
+        "evidence": {
+          "points": 67,
+          "last_job": 68,
+          "errors": [],
+          "minimum_declared_base": 0
+        }
+      },
+      {
+        "name": "original_retained detail projection",
+        "passed": true,
+        "evidence": null
+      },
+      {
+        "name": "party_devotion full closure",
+        "passed": true,
+        "evidence": {
+          "CR_AUTOGUARD": 5,
+          "CR_SHIELDBOOMERANG": 5,
+          "PA_SHIELDCHAIN": 5,
+          "CR_REFLECTSHIELD": 5,
+          "CR_TRUST": 10,
+          "CR_DEVOTION": 5,
+          "SM_ENDURE": 5,
+          "AL_HEAL": 5,
+          "CR_DEFENDER": 5,
+          "CR_SHIELDCHARGE": 3,
+          "CR_GRANDCROSS": 4,
+          "SM_PROVOKE": 5,
+          "AL_DEMONBANE": 5,
+          "CR_HOLYCROSS": 6,
+          "AL_DP": 3,
+          "AL_CURE": 1
+        }
+      },
+      {
+        "name": "party_devotion declaring class decomposition",
+        "passed": true,
+        "evidence": {
+          "Crusader": 62,
+          "Paladin": 5,
+          "Swordman": 10
+        }
+      },
+      {
+        "name": "party_devotion first-job full closure",
+        "passed": true,
+        "evidence": null
+      },
+      {
+        "name": "party_devotion first sequence",
+        "passed": true,
+        "evidence": {
+          "points": 49,
+          "last_job": 50,
+          "errors": [],
+          "minimum_declared_base": 0
+        }
+      },
+      {
+        "name": "party_devotion final sequence",
+        "passed": true,
+        "evidence": {
+          "points": 67,
+          "last_job": 68,
+          "errors": [],
+          "minimum_declared_base": 0
+        }
+      },
+      {
+        "name": "party_devotion detail projection",
+        "passed": true,
+        "evidence": null
+      },
+      {
+        "name": "solo_shield_mr full closure",
+        "passed": true,
+        "evidence": {
+          "CR_AUTOGUARD": 10,
+          "CR_SHIELDBOOMERANG": 5,
+          "PA_SHIELDCHAIN": 5,
+          "CR_REFLECTSHIELD": 5,
+          "PA_SACRIFICE": 5,
+          "CR_TRUST": 10,
+          "CR_DEVOTION": 3,
+          "SM_ENDURE": 5,
+          "CR_DEFENDER": 5,
+          "KN_RIDING": 1,
+          "KN_CAVALIERMASTERY": 5,
+          "CR_SHIELDCHARGE": 3,
+          "CR_GRANDCROSS": 4,
+          "SM_PROVOKE": 5,
+          "CR_HOLYCROSS": 6
+        }
+      },
+      {
+        "name": "solo_shield_mr declaring class decomposition",
+        "passed": true,
+        "evidence": {
+          "Crusader": 57,
+          "Paladin": 10,
+          "Swordman": 10
+        }
+      },
+      {
+        "name": "solo_shield_mr first-job full closure",
+        "passed": true,
+        "evidence": null
+      },
+      {
+        "name": "solo_shield_mr first sequence",
+        "passed": true,
+        "evidence": {
+          "points": 49,
+          "last_job": 50,
+          "errors": [],
+          "minimum_declared_base": 0
+        }
+      },
+      {
+        "name": "solo_shield_mr final sequence",
+        "passed": true,
+        "evidence": {
+          "points": 67,
+          "last_job": 68,
+          "errors": [],
+          "minimum_declared_base": 0
+        }
+      },
+      {
+        "name": "solo_shield_mr detail projection",
+        "passed": true,
+        "evidence": null
+      },
+      {
+        "name": "nontrans complete closure and 49 point sequence",
+        "passed": true,
+        "evidence": {
+          "points": 49,
+          "last_job": 50,
+          "errors": [],
+          "minimum_declared_base": 0
+        }
+      },
+      {
+        "name": "class ID/caps Novice",
+        "passed": true,
+        "evidence": {
+          "id": 0,
+          "caps": {
+            "MaxBaseLevel": 99,
+            "MaxJobLevel": 10
+          }
+        }
+      },
+      {
+        "name": "class ID/caps Swordsman",
+        "passed": true,
+        "evidence": {
+          "id": 1,
+          "caps": {
+            "MaxBaseLevel": 99,
+            "MaxJobLevel": 50
+          }
+        }
+      },
+      {
+        "name": "class ID/caps Crusader",
+        "passed": true,
+        "evidence": {
+          "id": 14,
+          "caps": {
+            "MaxBaseLevel": 99,
+            "MaxJobLevel": 50
+          }
+        }
+      },
+      {
+        "name": "class ID/caps High Novice",
+        "passed": true,
+        "evidence": {
+          "id": 4001,
+          "caps": {
+            "MaxBaseLevel": 99,
+            "MaxJobLevel": 10
+          }
+        }
+      },
+      {
+        "name": "class ID/caps High Swordsman",
+        "passed": true,
+        "evidence": {
+          "id": 4002,
+          "caps": {
+            "MaxBaseLevel": 99,
+            "MaxJobLevel": 50
+          }
+        }
+      },
+      {
+        "name": "class ID/caps Paladin",
+        "passed": true,
+        "evidence": {
+          "id": 4015,
+          "caps": {
+            "MaxBaseLevel": 99,
+            "MaxJobLevel": 70
+          }
+        }
+      },
+      {
+        "name": "all reported nonlinear stat arithmetic",
+        "passed": true,
+        "evidence": {
+          "costs": {
+            "STR": 263,
+            "AGI": 0,
+            "VIT": 530,
+            "INT": 47,
+            "DEX": 135,
+            "LUK": 0
+          },
+          "total": 975,
+          "normal_base99": 1273,
+          "reborn_base99": 1325,
+          "reborn_remaining": 350,
+          "normal_remaining": 298,
+          "earliest_reborn_base": 82,
+          "safe_alternative_cost": 1240,
+          "illegal_alternative_cost": 1487
+        }
+      },
+      {
+        "name": "all exact display-name rows Blade",
+        "passed": true,
+        "evidence": null
+      },
+      {
+        "name": "fail-closed cardinality Blade",
+        "passed": true,
+        "evidence": null
+      },
+      {
+        "name": "equipment restrictions 1107",
+        "passed": true,
+        "evidence": null
+      },
+      {
+        "name": "equipment restrictions 1108",
+        "passed": true,
+        "evidence": null
+      },
+      {
+        "name": "equipment restrictions 1109",
+        "passed": true,
+        "evidence": null
+      },
+      {
+        "name": "all exact display-name rows Cross Shield",
+        "passed": true,
+        "evidence": null
+      },
+      {
+        "name": "fail-closed cardinality Cross Shield",
+        "passed": true,
+        "evidence": null
+      },
+      {
+        "name": "equipment restrictions 2130",
+        "passed": true,
+        "evidence": null
+      },
+      {
+        "name": "all exact display-name rows Helm",
+        "passed": true,
+        "evidence": null
+      },
+      {
+        "name": "fail-closed cardinality Helm",
+        "passed": true,
+        "evidence": null
+      },
+      {
+        "name": "equipment restrictions 2228",
+        "passed": true,
+        "evidence": null
+      },
+      {
+        "name": "equipment restrictions 2229",
+        "passed": true,
+        "evidence": null
+      },
+      {
+        "name": "all exact display-name rows Full Plate",
+        "passed": true,
+        "evidence": null
+      },
+      {
+        "name": "fail-closed cardinality Full Plate",
+        "passed": true,
+        "evidence": null
+      },
+      {
+        "name": "equipment restrictions 2316",
+        "passed": true,
+        "evidence": null
+      },
+      {
+        "name": "equipment restrictions 2317",
+        "passed": true,
+        "evidence": null
+      },
+      {
+        "name": "all exact display-name rows Manteau",
+        "passed": true,
+        "evidence": null
+      },
+      {
+        "name": "fail-closed cardinality Manteau",
+        "passed": true,
+        "evidence": null
+      },
+      {
+        "name": "equipment restrictions 2505",
+        "passed": true,
+        "evidence": null
+      },
+      {
+        "name": "equipment restrictions 2506",
+        "passed": true,
+        "evidence": null
+      },
+      {
+        "name": "all exact display-name rows Boots",
+        "passed": true,
+        "evidence": null
+      },
+      {
+        "name": "fail-closed cardinality Boots",
+        "passed": true,
+        "evidence": null
+      },
+      {
+        "name": "equipment restrictions 2405",
+        "passed": true,
+        "evidence": null
+      },
+      {
+        "name": "equipment restrictions 2406",
+        "passed": true,
+        "evidence": null
+      },
+      {
+        "name": "all exact display-name rows Rosary",
+        "passed": true,
+        "evidence": null
+      },
+      {
+        "name": "fail-closed cardinality Rosary",
+        "passed": true,
+        "evidence": null
+      },
+      {
+        "name": "equipment restrictions 2608",
+        "passed": true,
+        "evidence": null
+      },
+      {
+        "name": "equipment restrictions 2626",
+        "passed": true,
+        "evidence": null
+      },
+      {
+        "name": "equipment restrictions 2694",
+        "passed": true,
+        "evidence": null
+      },
+      {
+        "name": "complete equipment drop projection",
+        "passed": false,
+        "evidence": {
+          "source_drop_rows": 47,
+          "reported_drop_rows": 46
+        }
+      },
+      {
+        "name": "all relevant public shop rows",
+        "passed": true,
+        "evidence": {
+          "source_rows": 26,
+          "reported_rows": 26
+        }
+      },
+      {
+        "name": "captured HTML hash https://irowiki.org/classic/Paladin",
+        "passed": true,
+        "evidence": null
+      },
+      {
+        "name": "captured HTML hash https://irowiki.org/classic/Martyr%27s_Reckoning",
+        "passed": true,
+        "evidence": null
+      },
+      {
+        "name": "captured HTML hash https://irowiki.org/classic/Rapid_Smiting",
+        "passed": true,
+        "evidence": null
+      },
+      {
+        "name": "captured HTML hash https://irowiki.org/classic/Sacrifice",
+        "passed": true,
+        "evidence": null
+      },
+      {
+        "name": "frozen source and reviewed repository artifacts",
+        "passed": true,
+        "evidence": {}
+      },
+      {
+        "name": "reported pinned native SHA256s",
+        "passed": true,
+        "evidence": null
+      }
+    ],
+    "plans": {
+      "original_retained": {
+        "closure": {
+          "CR_AUTOGUARD": 5,
+          "CR_SHIELDBOOMERANG": 5,
+          "PA_SHIELDCHAIN": 5,
+          "CR_REFLECTSHIELD": 5,
+          "PA_SACRIFICE": 5,
+          "CR_TRUST": 10,
+          "CR_DEVOTION": 5,
+          "SM_ENDURE": 5,
+          "AL_HEAL": 5,
+          "CR_SHIELDCHARGE": 3,
+          "CR_GRANDCROSS": 4,
+          "SM_PROVOKE": 5,
+          "AL_DEMONBANE": 5,
+          "CR_HOLYCROSS": 6,
+          "AL_DP": 3,
+          "AL_CURE": 1
+        },
+        "by_declaring_class": {
+          "Crusader": 57,
+          "Paladin": 10,
+          "Swordman": 10
+        },
+        "first_sequence": {
+          "points": 49,
+          "last_job": 50,
+          "errors": [],
+          "minimum_declared_base": 0
+        },
+        "paladin_sequence": {
+          "points": 67,
+          "last_job": 68,
+          "errors": [],
+          "minimum_declared_base": 0
+        },
+        "remaining_at_job70": 2,
+        "stat_plan_unchanged_unknown_final_user_spending": true
+      },
+      "party_devotion": {
+        "closure": {
+          "CR_AUTOGUARD": 5,
+          "CR_SHIELDBOOMERANG": 5,
+          "PA_SHIELDCHAIN": 5,
+          "CR_REFLECTSHIELD": 5,
+          "CR_TRUST": 10,
+          "CR_DEVOTION": 5,
+          "SM_ENDURE": 5,
+          "AL_HEAL": 5,
+          "CR_DEFENDER": 5,
+          "CR_SHIELDCHARGE": 3,
+          "CR_GRANDCROSS": 4,
+          "SM_PROVOKE": 5,
+          "AL_DEMONBANE": 5,
+          "CR_HOLYCROSS": 6,
+          "AL_DP": 3,
+          "AL_CURE": 1
+        },
+        "by_declaring_class": {
+          "Crusader": 62,
+          "Paladin": 5,
+          "Swordman": 10
+        },
+        "first_sequence": {
+          "points": 49,
+          "last_job": 50,
+          "errors": [],
+          "minimum_declared_base": 0
+        },
+        "paladin_sequence": {
+          "points": 67,
+          "last_job": 68,
+          "errors": [],
+          "minimum_declared_base": 0
+        },
+        "remaining_at_job70": 2,
+        "stat_plan_unchanged_unknown_final_user_spending": true
+      },
+      "solo_shield_mr": {
+        "closure": {
+          "CR_AUTOGUARD": 10,
+          "CR_SHIELDBOOMERANG": 5,
+          "PA_SHIELDCHAIN": 5,
+          "CR_REFLECTSHIELD": 5,
+          "PA_SACRIFICE": 5,
+          "CR_TRUST": 10,
+          "CR_DEVOTION": 3,
+          "SM_ENDURE": 5,
+          "CR_DEFENDER": 5,
+          "KN_RIDING": 1,
+          "KN_CAVALIERMASTERY": 5,
+          "CR_SHIELDCHARGE": 3,
+          "CR_GRANDCROSS": 4,
+          "SM_PROVOKE": 5,
+          "CR_HOLYCROSS": 6
+        },
+        "by_declaring_class": {
+          "Crusader": 57,
+          "Paladin": 10,
+          "Swordman": 10
+        },
+        "first_sequence": {
+          "points": 49,
+          "last_job": 50,
+          "errors": [],
+          "minimum_declared_base": 0
+        },
+        "paladin_sequence": {
+          "points": 67,
+          "last_job": 68,
+          "errors": [],
+          "minimum_declared_base": 0
+        },
+        "remaining_at_job70": 2,
+        "stat_plan_unchanged_unknown_final_user_spending": true
+      }
+    },
+    "stats": {
+      "costs": {
+        "STR": 263,
+        "AGI": 0,
+        "VIT": 530,
+        "INT": 47,
+        "DEX": 135,
+        "LUK": 0
+      },
+      "total": 975,
+      "normal_base99": 1273,
+      "reborn_base99": 1325,
+      "reborn_remaining": 350,
+      "normal_remaining": 298,
+      "earliest_reborn_base": 82,
+      "safe_alternative_cost": 1240,
+      "illegal_alternative_cost": 1487
+    },
+    "equipment": {
+      "Blade": [
+        {
+          "id": 1107,
+          "aegis": "Blade",
+          "slots": 3,
+          "jobs": {
+            "Alchemist": true,
+            "Assassin": true,
+            "Blacksmith": true,
+            "Crusader": true,
+            "Knight": true,
+            "Merchant": true,
+            "Novice": true,
+            "Rogue": true,
+            "SuperNovice": true,
+            "Swordman": true,
+            "Thief": true
+          },
+          "classes": {
+            "All": true
+          },
+          "gender": "Both",
+          "location": {
+            "Right_Hand": true
+          },
+          "base_min": 2,
+          "base_max": 0,
+          "subtype": "1hSword",
+          "paladin_branch": true,
+          "upper": true,
+          "trade": null
+        },
+        {
+          "id": 1108,
+          "aegis": "Blade_",
+          "slots": 4,
+          "jobs": {
+            "Alchemist": true,
+            "Assassin": true,
+            "Blacksmith": true,
+            "Crusader": true,
+            "Knight": true,
+            "Merchant": true,
+            "Novice": true,
+            "Rogue": true,
+            "SuperNovice": true,
+            "Swordman": true,
+            "Thief": true
+          },
+          "classes": {
+            "All": true
+          },
+          "gender": "Both",
+          "location": {
+            "Right_Hand": true
+          },
+          "base_min": 2,
+          "base_max": 0,
+          "subtype": "1hSword",
+          "paladin_branch": true,
+          "upper": true,
+          "trade": null
+        },
+        {
+          "id": 1109,
+          "aegis": "Blade__",
+          "slots": 0,
+          "jobs": {
+            "Alchemist": true,
+            "Assassin": true,
+            "Blacksmith": true,
+            "Crusader": true,
+            "Knight": true,
+            "Merchant": true,
+            "Novice": true,
+            "Rogue": true,
+            "SuperNovice": true,
+            "Swordman": true,
+            "Thief": true
+          },
+          "classes": {
+            "All": true
+          },
+          "gender": "Both",
+          "location": {
+            "Right_Hand": true
+          },
+          "base_min": 2,
+          "base_max": 0,
+          "subtype": "1hSword",
+          "paladin_branch": true,
+          "upper": true,
+          "trade": null
+        }
+      ],
+      "Cross Shield": [
+        {
+          "id": 2130,
+          "aegis": "Cross_Shield",
+          "slots": 1,
+          "jobs": {
+            "Crusader": true
+          },
+          "classes": {
+            "All": true
+          },
+          "gender": "Both",
+          "location": {
+            "Left_Hand": true
+          },
+          "base_min": 80,
+          "base_max": 0,
+          "subtype": null,
+          "paladin_branch": true,
+          "upper": true,
+          "trade": null
+        }
+      ],
+      "Helm": [
+        {
+          "id": 2228,
+          "aegis": "Helm",
+          "slots": 0,
+          "jobs": {
+            "Crusader": true,
+            "Knight": true,
+            "Swordman": true
+          },
+          "classes": {
+            "All": true
+          },
+          "gender": "Both",
+          "location": {
+            "Head_Top": true
+          },
+          "base_min": 0,
+          "base_max": 0,
+          "subtype": null,
+          "paladin_branch": true,
+          "upper": true,
+          "trade": null
+        },
+        {
+          "id": 2229,
+          "aegis": "Helm_",
+          "slots": 1,
+          "jobs": {
+            "Crusader": true,
+            "Knight": true,
+            "Swordman": true
+          },
+          "classes": {
+            "All": true
+          },
+          "gender": "Both",
+          "location": {
+            "Head_Top": true
+          },
+          "base_min": 0,
+          "base_max": 0,
+          "subtype": null,
+          "paladin_branch": true,
+          "upper": true,
+          "trade": null
+        }
+      ],
+      "Full Plate": [
+        {
+          "id": 2316,
+          "aegis": "Plate_Armor",
+          "slots": 0,
+          "jobs": {
+            "Crusader": true,
+            "Knight": true,
+            "Swordman": true
+          },
+          "classes": {
+            "All": true
+          },
+          "gender": "Both",
+          "location": {
+            "Armor": true
+          },
+          "base_min": 40,
+          "base_max": 0,
+          "subtype": null,
+          "paladin_branch": true,
+          "upper": true,
+          "trade": null
+        },
+        {
+          "id": 2317,
+          "aegis": "Plate_Armor_",
+          "slots": 1,
+          "jobs": {
+            "Crusader": true,
+            "Knight": true,
+            "Swordman": true
+          },
+          "classes": {
+            "All": true
+          },
+          "gender": "Both",
+          "location": {
+            "Armor": true
+          },
+          "base_min": 40,
+          "base_max": 0,
+          "subtype": null,
+          "paladin_branch": true,
+          "upper": true,
+          "trade": null
+        }
+      ],
+      "Manteau": [
+        {
+          "id": 2505,
+          "aegis": "Manteau",
+          "slots": 0,
+          "jobs": {
+            "Alchemist": true,
+            "Assassin": true,
+            "Blacksmith": true,
+            "Crusader": true,
+            "Knight": true,
+            "Merchant": true,
+            "Rogue": true,
+            "StarGladiator": true,
+            "Swordman": true,
+            "Taekwon": true,
+            "Thief": true
+          },
+          "classes": {
+            "All": true
+          },
+          "gender": "Both",
+          "location": {
+            "Garment": true
+          },
+          "base_min": 0,
+          "base_max": 0,
+          "subtype": null,
+          "paladin_branch": true,
+          "upper": true,
+          "trade": null
+        },
+        {
+          "id": 2506,
+          "aegis": "Manteau_",
+          "slots": 1,
+          "jobs": {
+            "Alchemist": true,
+            "Assassin": true,
+            "Blacksmith": true,
+            "Crusader": true,
+            "Knight": true,
+            "Merchant": true,
+            "Rogue": true,
+            "StarGladiator": true,
+            "Swordman": true,
+            "Taekwon": true,
+            "Thief": true
+          },
+          "classes": {
+            "All": true
+          },
+          "gender": "Both",
+          "location": {
+            "Garment": true
+          },
+          "base_min": 0,
+          "base_max": 0,
+          "subtype": null,
+          "paladin_branch": true,
+          "upper": true,
+          "trade": null
+        }
+      ],
+      "Boots": [
+        {
+          "id": 2405,
+          "aegis": "Boots",
+          "slots": 0,
+          "jobs": {
+            "Alchemist": true,
+            "Archer": true,
+            "Assassin": true,
+            "BardDancer": true,
+            "Blacksmith": true,
+            "Crusader": true,
+            "Gunslinger": true,
+            "Hunter": true,
+            "Knight": true,
+            "Merchant": true,
+            "Rogue": true,
+            "StarGladiator": true,
+            "Swordman": true,
+            "Taekwon": true,
+            "Thief": true
+          },
+          "classes": {
+            "All": true
+          },
+          "gender": "Both",
+          "location": {
+            "Shoes": true
+          },
+          "base_min": 0,
+          "base_max": 0,
+          "subtype": null,
+          "paladin_branch": true,
+          "upper": true,
+          "trade": null
+        },
+        {
+          "id": 2406,
+          "aegis": "Boots_",
+          "slots": 1,
+          "jobs": {
+            "Alchemist": true,
+            "Archer": true,
+            "Assassin": true,
+            "BardDancer": true,
+            "Blacksmith": true,
+            "Crusader": true,
+            "Gunslinger": true,
+            "Hunter": true,
+            "Knight": true,
+            "Merchant": true,
+            "Rogue": true,
+            "StarGladiator": true,
+            "Swordman": true,
+            "Taekwon": true,
+            "Thief": true
+          },
+          "classes": {
+            "All": true
+          },
+          "gender": "Both",
+          "location": {
+            "Shoes": true
+          },
+          "base_min": 0,
+          "base_max": 0,
+          "subtype": null,
+          "paladin_branch": true,
+          "upper": true,
+          "trade": null
+        }
+      ],
+      "Rosary": [
+        {
+          "id": 2608,
+          "aegis": "Rosary",
+          "slots": 0,
+          "jobs": {
+            "All": true,
+            "Novice": false,
+            "SuperNovice": false
+          },
+          "classes": {
+            "All": true
+          },
+          "gender": "Both",
+          "location": {
+            "Both_Accessory": true
+          },
+          "base_min": 20,
+          "base_max": 0,
+          "subtype": null,
+          "paladin_branch": true,
+          "upper": true,
+          "trade": null
+        },
+        {
+          "id": 2626,
+          "aegis": "Rosary_",
+          "slots": 1,
+          "jobs": {
+            "All": true,
+            "Novice": false,
+            "SuperNovice": false
+          },
+          "classes": {
+            "All": true
+          },
+          "gender": "Both",
+          "location": {
+            "Both_Accessory": true
+          },
+          "base_min": 90,
+          "base_max": 0,
+          "subtype": null,
+          "paladin_branch": true,
+          "upper": true,
+          "trade": null
+        },
+        {
+          "id": 2694,
+          "aegis": "Rosary_C",
+          "slots": 0,
+          "jobs": {
+            "All": true,
+            "Novice": false,
+            "SuperNovice": false
+          },
+          "classes": {
+            "All": true
+          },
+          "gender": "Both",
+          "location": {
+            "Both_Accessory": true
+          },
+          "base_min": 1,
+          "base_max": 0,
+          "subtype": null,
+          "paladin_branch": true,
+          "upper": true,
+          "trade": {
+            "NoDrop": true,
+            "NoTrade": true,
+            "NoSell": true,
+            "NoCart": true,
+            "NoStorage": true,
+            "NoGuildStorage": true,
+            "NoMail": true,
+            "NoAuction": true
+          }
+        }
+      ]
+    },
+    "drops": {
+      "Blade_": [
+        {
+          "mob_id": 1053,
+          "mob_name": "Thief Bug Female",
+          "drop": {
+            "Item": "Blade_",
+            "Rate": 15
+          }
+        }
+      ],
+      "Plate_Armor_": [
+        {
+          "mob_id": 1046,
+          "mob_name": "Doppelganger",
+          "drop": {
+            "Item": "Plate_Armor_",
+            "Rate": 250
+          }
+        },
+        {
+          "mob_id": 1268,
+          "mob_name": "Bloody Knight",
+          "drop": {
+            "Item": "Plate_Armor_",
+            "Rate": 5
+          }
+        },
+        {
+          "mob_id": 1355,
+          "mob_name": "Treasure Chest",
+          "drop": {
+            "Item": "Plate_Armor_",
+            "Rate": 35,
+            "StealProtected": true
+          }
+        },
+        {
+          "mob_id": 1366,
+          "mob_name": "Lava Golem",
+          "drop": {
+            "Item": "Plate_Armor_",
+            "Rate": 1
+          }
+        },
+        {
+          "mob_id": 1388,
+          "mob_name": "Arc Angeling",
+          "drop": {
+            "Item": "Plate_Armor_",
+            "Rate": 3
+          }
+        },
+        {
+          "mob_id": 1634,
+          "mob_name": "Seyren Windsor",
+          "drop": {
+            "Item": "Plate_Armor_",
+            "Rate": 1
+          }
+        },
+        {
+          "mob_id": 1652,
+          "mob_name": "Egnigem Cenia",
+          "drop": {
+            "Item": "Plate_Armor_",
+            "Rate": 1
+          }
+        },
+        {
+          "mob_id": 2071,
+          "mob_name": "Headless Mule",
+          "drop": {
+            "Item": "Plate_Armor_",
+            "Rate": 5
+          }
+        },
+        {
+          "mob_id": 2071,
+          "mob_name": "Headless Mule",
+          "drop": {
+            "Item": "Plate_Armor_",
+            "Rate": 1
+          }
+        }
+      ],
+      "Manteau_": [
+        {
+          "mob_id": 1192,
+          "mob_name": "Wraith",
+          "drop": {
+            "Item": "Manteau_",
+            "Rate": 2
+          }
+        },
+        {
+          "mob_id": 1251,
+          "mob_name": "Stormy Knight",
+          "drop": {
+            "Item": "Manteau_",
+            "Rate": 500
+          }
+        },
+        {
+          "mob_id": 1291,
+          "mob_name": "Wraith Dead",
+          "drop": {
+            "Item": "Manteau_",
+            "Rate": 8
+          }
+        },
+        {
+          "mob_id": 1363,
+          "mob_name": "Treasure Chest",
+          "drop": {
+            "Item": "Manteau_",
+            "Rate": 43
+          }
+        },
+        {
+          "mob_id": 1365,
+          "mob_name": "Apocalypse",
+          "drop": {
+            "Item": "Manteau_",
+            "Rate": 20
+          }
+        },
+        {
+          "mob_id": 1504,
+          "mob_name": "Dullahan",
+          "drop": {
+            "Item": "Manteau_",
+            "Rate": 1
+          }
+        },
+        {
+          "mob_id": 1699,
+          "mob_name": "Ancient Mimic",
+          "drop": {
+            "Item": "Manteau_",
+            "Rate": 1
+          }
+        },
+        {
+          "mob_id": 1702,
+          "mob_name": "Baroness of Retribution",
+          "drop": {
+            "Item": "Manteau_",
+            "Rate": 5
+          }
+        },
+        {
+          "mob_id": 1978,
+          "mob_name": "Hell Apocalypse",
+          "drop": {
+            "Item": "Manteau_",
+            "Rate": 20
+          }
+        }
+      ],
+      "Plate_Armor": [
+        {
+          "mob_id": 1257,
+          "mob_name": "Injustice",
+          "drop": {
+            "Item": "Plate_Armor",
+            "Rate": 2
+          }
+        },
+        {
+          "mob_id": 1366,
+          "mob_name": "Lava Golem",
+          "drop": {
+            "Item": "Plate_Armor",
+            "Rate": 2
+          }
+        }
+      ],
+      "Rosary_": [
+        {
+          "mob_id": 1191,
+          "mob_name": "Mimic",
+          "drop": {
+            "Item": "Rosary_",
+            "Rate": 1
+          }
+        },
+        {
+          "mob_id": 1339,
+          "mob_name": "Treasure Chest",
+          "drop": {
+            "Item": "Rosary_",
+            "Rate": 300
+          }
+        },
+        {
+          "mob_id": 1379,
+          "mob_name": "Nightmare Terror",
+          "drop": {
+            "Item": "Rosary_",
+            "Rate": 1
+          }
+        },
+        {
+          "mob_id": 1737,
+          "mob_name": "Aliza",
+          "drop": {
+            "Item": "Rosary_",
+            "Rate": 10
+          }
+        }
+      ],
+      "Rosary_C": [],
+      "Blade__": [],
+      "Helm": [],
+      "Rosary": [
+        {
+          "mob_id": 1061,
+          "mob_name": "Nightmare",
+          "drop": {
+            "Item": "Rosary",
+            "Rate": 2
+          }
+        },
+        {
+          "mob_id": 1198,
+          "mob_name": "Dark Priest",
+          "drop": {
+            "Item": "Rosary",
+            "Rate": 30
+          }
+        },
+        {
+          "mob_id": 1379,
+          "mob_name": "Nightmare Terror",
+          "drop": {
+            "Item": "Rosary",
+            "Rate": 30
+          }
+        }
+      ],
+      "Boots": [
+        {
+          "mob_id": 1101,
+          "mob_name": "Baphomet Jr.",
+          "drop": {
+            "Item": "Boots",
+            "Rate": 50
+          }
+        }
+      ],
+      "Blade": [],
+      "Manteau": [
+        {
+          "mob_id": 1192,
+          "mob_name": "Wraith",
+          "drop": {
+            "Item": "Manteau",
+            "Rate": 10
+          }
+        },
+        {
+          "mob_id": 1260,
+          "mob_name": "Dark Frame",
+          "drop": {
+            "Item": "Manteau",
+            "Rate": 30
+          }
+        },
+        {
+          "mob_id": 1504,
+          "mob_name": "Dullahan",
+          "drop": {
+            "Item": "Manteau",
+            "Rate": 13
+          }
+        }
+      ],
+      "Boots_": [
+        {
+          "mob_id": 1099,
+          "mob_name": "Argiope",
+          "drop": {
+            "Item": "Boots_",
+            "Rate": 5
+          }
+        },
+        {
+          "mob_id": 1251,
+          "mob_name": "Stormy Knight",
+          "drop": {
+            "Item": "Boots_",
+            "Rate": 500
+          }
+        },
+        {
+          "mob_id": 1305,
+          "mob_name": "Ancient Worm",
+          "drop": {
+            "Item": "Boots_",
+            "Rate": 9
+          }
+        },
+        {
+          "mob_id": 1357,
+          "mob_name": "Treasure Chest",
+          "drop": {
+            "Item": "Boots_",
+            "Rate": 273
+          }
+        },
+        {
+          "mob_id": 1512,
+          "mob_name": "Yao Jun",
+          "drop": {
+            "Item": "Boots_",
+            "Rate": 1
+          }
+        },
+        {
+          "mob_id": 1618,
+          "mob_name": "Ungoliant",
+          "drop": {
+            "Item": "Boots_",
+            "Rate": 500
+          }
+        },
+        {
+          "mob_id": 1632,
+          "mob_name": "Gremlin",
+          "drop": {
+            "Item": "Boots_",
+            "Rate": 1
+          }
+        },
+        {
+          "mob_id": 1658,
+          "mob_name": "Egnigem Cenia",
+          "drop": {
+            "Item": "Boots_",
+            "Rate": 1000
+          }
+        },
+        {
+          "mob_id": 1773,
+          "mob_name": "Hodremlin",
+          "drop": {
+            "Item": "Boots_",
+            "Rate": 2
+          }
+        },
+        {
+          "mob_id": 1999,
+          "mob_name": "Centipede Larva",
+          "drop": {
+            "Item": "Boots_",
+            "Rate": 9
+          }
+        }
+      ],
+      "Helm_": [
+        {
+          "mob_id": 1268,
+          "mob_name": "Bloody Knight",
+          "drop": {
+            "Item": "Helm_",
+            "Rate": 45
+          }
+        },
+        {
+          "mob_id": 1361,
+          "mob_name": "Treasure Chest",
+          "drop": {
+            "Item": "Helm_",
+            "Rate": 50,
+            "StealProtected": true
+          }
+        },
+        {
+          "mob_id": 1634,
+          "mob_name": "Seyren Windsor",
+          "drop": {
+            "Item": "Helm_",
+            "Rate": 12
+          }
+        },
+        {
+          "mob_id": 1751,
+          "mob_name": "Valkyrie Randgris",
+          "drop": {
+            "Item": "Helm_",
+            "Rate": 5000
+          }
+        }
+      ],
+      "Cross_Shield": [
+        {
+          "mob_id": 1919,
+          "mob_name": "Incarnation of Morocc",
+          "drop": {
+            "Item": "Cross_Shield",
+            "Rate": 15
+          }
+        }
+      ]
+    },
+    "web": [
+      {
+        "url": "https://irowiki.org/classic/Paladin",
+        "raw_sha256": "71952e8a1fff81199b0406aa24188d423c47a6ff51d9614c8da95befe342a206",
+        "text_sha256": "be4ec46430f60b84b64bc3ab495bd1b6c2b5b3b3786e22c78a9997349dd7f48f",
+        "text_length": 24479,
+        "read_status": "full local captured text read and HTML SHA256 independently matched; new web extraction unavailable in this session",
+        "mechanical_authority": false,
+        "citation_id": 20
+      },
+      {
+        "url": "https://irowiki.org/classic/Martyr%27s_Reckoning",
+        "raw_sha256": "5079cfa016aa67dd3ef218ab228722dcf2ce59f672d7d3c04ab3716c392cb614",
+        "text_sha256": "afb2479e9f65f4b432ec9719a72a786ad87dc2b76764562aaa9629ad04613d13",
+        "text_length": 8654,
+        "read_status": "full local captured text read and HTML SHA256 independently matched; new web extraction unavailable in this session",
+        "mechanical_authority": false,
+        "citation_id": 21
+      },
+      {
+        "url": "https://irowiki.org/classic/Rapid_Smiting",
+        "raw_sha256": "e7d279b55aee44bf95b8cb4856fc216f14bc9bb709805de2c7461522934f8e29",
+        "text_sha256": "8e1dca876901d5c7871f4c76ae1998589f69d3b5359d83e51eb78ee9ecd52025",
+        "text_length": 8389,
+        "read_status": "full local captured text read and HTML SHA256 independently matched; new web extraction unavailable in this session",
+        "mechanical_authority": false,
+        "citation_id": 22
+      },
+      {
+        "url": "https://irowiki.org/classic/Sacrifice",
+        "raw_sha256": "3bbeff7753eb8f9088c74dc1e4e73fb37c1d316e30b4cfc213c2a447e9f9e9d9",
+        "text_sha256": "27ac6ff6233a3a346f29bc14a843e1062db98195c11fdfe31eb7b6bae167016c",
+        "text_length": 8315,
+        "read_status": "full local captured text read and HTML SHA256 independently matched; new web extraction unavailable in this session",
+        "mechanical_authority": false,
+        "citation_id": 23
+      }
+    ],
+    "before_sha256": {
+      "/home/otto/dev/ro-bots/src/robots/adapters/mechanics_yaml.py": "c5991bd78af95b213b4fb9a2ca87b065f5b76e826edb84eac593498a80f64b58",
+      "/home/otto/dev/ro-bots/src/robots/domain/build_templates.py": "7ac6e75780328ab42f0357bc42709419a8c8c939f3c1d45330dc1bf5560c6b1a",
+      "/home/otto/dev/ro-bots/wiki/guides/classic-paladin-build-evidence.md": "d8d3a2e5fa1bff0631bd1c4c367e11ec481a750854c7e6f9a4482faa6c62a3c9",
+      "/home/otto/dev/ro-bots/run/reviews/classic-paladin-build-evidence.json": "172a4042a36fb29cfb0d732cd8ef2cc620fdce3342e2e116064f8df04ecd73af",
+      "/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source/db/pre-re/skill_tree.yml": "fafe80390ac7c4ad79b4fb258614684250ccc9b72155d9218ea4ee7c063c7f54",
+      "/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source/db/pre-re/skill_db.yml": "f9846f5fe3074451c87930a451df80390e8fbadf692b9e67e388b67c07340541",
+      "/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source/db/pre-re/statpoint.yml": "aba4f653a0361f72763c3d31654aa2b639c2638d7f517e967f3a74c0e299c04d",
+      "/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source/db/pre-re/item_db_equip.yml": "2536c42cc9414f4935e7304f5969228740a5f0308b1acdb2581e5891d25450f7",
+      "/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source/db/pre-re/mob_db.yml": "4f045e32eb176c695cb11e94a68013867a437072aef0cee7438313826dc54e12",
+      "/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source/npc/merchants/shops.txt": "220c099d0a501c021959a0bda8a8507d1956ef260026d4227773c0010ff79e56",
+      "/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source/src/map/pc.cpp": "d12704c1ef7f8321c255175b6f61aa396209b931e2b1687fbbd16963d1def652",
+      "/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source/db/pre-re/job_exp.yml": "9d9cdee1dc7f375bb900469a51cb34e46935dc08c1c78e2dbd40b37aea014e43",
+      "/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source/npc/jobs/valkyrie.txt": "a151f75c56e45ea6c71886d1062d9c6a4ad5c2ec3bdc276b508f925d34e31953",
+      "/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source/npc/jobs/2-2a/Paladin.txt": "9b5e38631e7ad142d6b3a8380ce32ffc93eb9bce367653c45dfa3d9bd5bccbcc",
+      "/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source/npc/pre-re/jobs/1-1/swordman.txt": "01811672d73011f90ef53b43b415c08b2209cb04a189237941f26c7676257ec9",
+      "/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source/src/map/itemdb.cpp": "3b51a2bbcb44c5ffbdb5dc04683dd4f567c2da92f56a4bc0008aa9a93de5efe5",
+      "/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source/src/common/mmo.hpp": "883ec2048b726d51f897218989ca66c476bcdbc969d683025fe09a0bf280fa6d",
+      "/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source/conf/battle/player.conf": "32e5e5cdb5c78c86cb0936759d3be6d5e5e973d6c8a1ccb7fba6b45f9e424e5c",
+      "/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source/npc/pre-re/mobs/fields/morocc.txt": "008f17519bae8998fd474d4043099d1fd94c168054a426b70fdc72d2bd31a1a5",
+      "/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source/npc/jobs/2-2/crusader.txt": "eaeaaa9361bf217894a2b48e972303a2c82fe56637bfe6949e01039461a756f1",
+      "/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source/src/map/skill.hpp": "ea112b585e8b33228f064bcd22ebc55d7e55274fff29280d7276e435e2b00513"
+    },
+    "after_sha256": {
+      "/home/otto/dev/ro-bots/src/robots/adapters/mechanics_yaml.py": "c5991bd78af95b213b4fb9a2ca87b065f5b76e826edb84eac593498a80f64b58",
+      "/home/otto/dev/ro-bots/src/robots/domain/build_templates.py": "7ac6e75780328ab42f0357bc42709419a8c8c939f3c1d45330dc1bf5560c6b1a",
+      "/home/otto/dev/ro-bots/wiki/guides/classic-paladin-build-evidence.md": "d8d3a2e5fa1bff0631bd1c4c367e11ec481a750854c7e6f9a4482faa6c62a3c9",
+      "/home/otto/dev/ro-bots/run/reviews/classic-paladin-build-evidence.json": "172a4042a36fb29cfb0d732cd8ef2cc620fdce3342e2e116064f8df04ecd73af",
+      "/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source/db/pre-re/skill_tree.yml": "fafe80390ac7c4ad79b4fb258614684250ccc9b72155d9218ea4ee7c063c7f54",
+      "/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source/db/pre-re/skill_db.yml": "f9846f5fe3074451c87930a451df80390e8fbadf692b9e67e388b67c07340541",
+      "/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source/db/pre-re/statpoint.yml": "aba4f653a0361f72763c3d31654aa2b639c2638d7f517e967f3a74c0e299c04d",
+      "/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source/db/pre-re/item_db_equip.yml": "2536c42cc9414f4935e7304f5969228740a5f0308b1acdb2581e5891d25450f7",
+      "/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source/db/pre-re/mob_db.yml": "4f045e32eb176c695cb11e94a68013867a437072aef0cee7438313826dc54e12",
+      "/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source/npc/merchants/shops.txt": "220c099d0a501c021959a0bda8a8507d1956ef260026d4227773c0010ff79e56",
+      "/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source/src/map/pc.cpp": "d12704c1ef7f8321c255175b6f61aa396209b931e2b1687fbbd16963d1def652",
+      "/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source/db/pre-re/job_exp.yml": "9d9cdee1dc7f375bb900469a51cb34e46935dc08c1c78e2dbd40b37aea014e43",
+      "/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source/npc/jobs/valkyrie.txt": "a151f75c56e45ea6c71886d1062d9c6a4ad5c2ec3bdc276b508f925d34e31953",
+      "/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source/npc/jobs/2-2a/Paladin.txt": "9b5e38631e7ad142d6b3a8380ce32ffc93eb9bce367653c45dfa3d9bd5bccbcc",
+      "/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source/npc/pre-re/jobs/1-1/swordman.txt": "01811672d73011f90ef53b43b415c08b2209cb04a189237941f26c7676257ec9",
+      "/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source/src/map/itemdb.cpp": "3b51a2bbcb44c5ffbdb5dc04683dd4f567c2da92f56a4bc0008aa9a93de5efe5",
+      "/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source/src/common/mmo.hpp": "883ec2048b726d51f897218989ca66c476bcdbc969d683025fe09a0bf280fa6d",
+      "/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source/conf/battle/player.conf": "32e5e5cdb5c78c86cb0936759d3be6d5e5e973d6c8a1ccb7fba6b45f9e424e5c",
+      "/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source/npc/pre-re/mobs/fields/morocc.txt": "008f17519bae8998fd474d4043099d1fd94c168054a426b70fdc72d2bd31a1a5",
+      "/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source/npc/jobs/2-2/crusader.txt": "eaeaaa9361bf217894a2b48e972303a2c82fe56637bfe6949e01039461a756f1",
+      "/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source/src/map/skill.hpp": "ea112b585e8b33228f064bcd22ebc55d7e55274fff29280d7276e435e2b00513"
+    },
+    "native_class_ids": {
+      "JOB_NOVICE": 0,
+      "JOB_SWORDMAN": 1,
+      "JOB_CRUSADER": 14,
+      "JOB_NOVICE_HIGH": 4001,
+      "JOB_SWORDMAN_HIGH": 4002,
+      "JOB_PALADIN": 4015
+    },
+    "class_caps": {
+      "Novice": {
+        "MaxBaseLevel": 99,
+        "MaxJobLevel": 10
+      },
+      "Swordman": {
+        "MaxBaseLevel": 99,
+        "MaxJobLevel": 50
+      },
+      "Crusader": {
+        "MaxBaseLevel": 99,
+        "MaxJobLevel": 50
+      },
+      "Novice_High": {
+        "MaxBaseLevel": 99,
+        "MaxJobLevel": 10
+      },
+      "Swordman_High": {
+        "MaxBaseLevel": 99,
+        "MaxJobLevel": 50
+      },
+      "Paladin": {
+        "MaxBaseLevel": 99,
+        "MaxJobLevel": 70
+      }
+    }
+  },
+  "sources": [
+    {
+      "citation_id": 1,
+      "url": "https://github.com/rathena/rathena/blob/e985006171d2eb320ee512a653f4c83aea3d81b6/db/pre-re/skill_tree.yml",
+      "path": "/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source/db/pre-re/skill_tree.yml",
+      "sha256": "fafe80390ac7c4ad79b4fb258614684250ccc9b72155d9218ea4ee7c063c7f54",
+      "read_status": "read pinned native source; relevant code ranges or full YAML parsed",
+      "method": "local source read; NAR digest independently verified; no native execution"
+    },
+    {
+      "citation_id": 2,
+      "url": "https://github.com/rathena/rathena/blob/e985006171d2eb320ee512a653f4c83aea3d81b6/db/pre-re/skill_db.yml",
+      "path": "/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source/db/pre-re/skill_db.yml",
+      "sha256": "f9846f5fe3074451c87930a451df80390e8fbadf692b9e67e388b67c07340541",
+      "read_status": "read pinned native source; relevant code ranges or full YAML parsed",
+      "method": "local source read; NAR digest independently verified; no native execution"
+    },
+    {
+      "citation_id": 3,
+      "url": "https://github.com/rathena/rathena/blob/e985006171d2eb320ee512a653f4c83aea3d81b6/db/pre-re/statpoint.yml",
+      "path": "/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source/db/pre-re/statpoint.yml",
+      "sha256": "aba4f653a0361f72763c3d31654aa2b639c2638d7f517e967f3a74c0e299c04d",
+      "read_status": "read pinned native source; relevant code ranges or full YAML parsed",
+      "method": "local source read; NAR digest independently verified; no native execution"
+    },
+    {
+      "citation_id": 4,
+      "url": "https://github.com/rathena/rathena/blob/e985006171d2eb320ee512a653f4c83aea3d81b6/db/pre-re/item_db_equip.yml",
+      "path": "/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source/db/pre-re/item_db_equip.yml",
+      "sha256": "2536c42cc9414f4935e7304f5969228740a5f0308b1acdb2581e5891d25450f7",
+      "read_status": "read pinned native source; relevant code ranges or full YAML parsed",
+      "method": "local source read; NAR digest independently verified; no native execution"
+    },
+    {
+      "citation_id": 5,
+      "url": "https://github.com/rathena/rathena/blob/e985006171d2eb320ee512a653f4c83aea3d81b6/db/pre-re/mob_db.yml",
+      "path": "/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source/db/pre-re/mob_db.yml",
+      "sha256": "4f045e32eb176c695cb11e94a68013867a437072aef0cee7438313826dc54e12",
+      "read_status": "read pinned native source; relevant code ranges or full YAML parsed",
+      "method": "local source read; NAR digest independently verified; no native execution"
+    },
+    {
+      "citation_id": 6,
+      "url": "https://github.com/rathena/rathena/blob/e985006171d2eb320ee512a653f4c83aea3d81b6/npc/merchants/shops.txt",
+      "path": "/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source/npc/merchants/shops.txt",
+      "sha256": "220c099d0a501c021959a0bda8a8507d1956ef260026d4227773c0010ff79e56",
+      "read_status": "read pinned native source; relevant code ranges or full YAML parsed",
+      "method": "local source read; NAR digest independently verified; no native execution"
+    },
+    {
+      "citation_id": 7,
+      "url": "https://github.com/rathena/rathena/blob/e985006171d2eb320ee512a653f4c83aea3d81b6/src/map/pc.cpp",
+      "path": "/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source/src/map/pc.cpp",
+      "sha256": "d12704c1ef7f8321c255175b6f61aa396209b931e2b1687fbbd16963d1def652",
+      "read_status": "read pinned native source; relevant code ranges or full YAML parsed",
+      "method": "local source read; NAR digest independently verified; no native execution"
+    },
+    {
+      "citation_id": 8,
+      "url": "https://github.com/rathena/rathena/blob/e985006171d2eb320ee512a653f4c83aea3d81b6/db/pre-re/job_exp.yml",
+      "path": "/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source/db/pre-re/job_exp.yml",
+      "sha256": "9d9cdee1dc7f375bb900469a51cb34e46935dc08c1c78e2dbd40b37aea014e43",
+      "read_status": "read pinned native source; relevant code ranges or full YAML parsed",
+      "method": "local source read; NAR digest independently verified; no native execution"
+    },
+    {
+      "citation_id": 9,
+      "url": "https://github.com/rathena/rathena/blob/e985006171d2eb320ee512a653f4c83aea3d81b6/npc/jobs/valkyrie.txt",
+      "path": "/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source/npc/jobs/valkyrie.txt",
+      "sha256": "a151f75c56e45ea6c71886d1062d9c6a4ad5c2ec3bdc276b508f925d34e31953",
+      "read_status": "read pinned native source; relevant code ranges or full YAML parsed",
+      "method": "local source read; NAR digest independently verified; no native execution"
+    },
+    {
+      "citation_id": 10,
+      "url": "https://github.com/rathena/rathena/blob/e985006171d2eb320ee512a653f4c83aea3d81b6/npc/jobs/2-2a/Paladin.txt",
+      "path": "/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source/npc/jobs/2-2a/Paladin.txt",
+      "sha256": "9b5e38631e7ad142d6b3a8380ce32ffc93eb9bce367653c45dfa3d9bd5bccbcc",
+      "read_status": "read pinned native source; relevant code ranges or full YAML parsed",
+      "method": "local source read; NAR digest independently verified; no native execution"
+    },
+    {
+      "citation_id": 11,
+      "url": "https://github.com/rathena/rathena/blob/e985006171d2eb320ee512a653f4c83aea3d81b6/npc/pre-re/jobs/1-1/swordman.txt",
+      "path": "/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source/npc/pre-re/jobs/1-1/swordman.txt",
+      "sha256": "01811672d73011f90ef53b43b415c08b2209cb04a189237941f26c7676257ec9",
+      "read_status": "read pinned native source; relevant code ranges or full YAML parsed",
+      "method": "local source read; NAR digest independently verified; no native execution"
+    },
+    {
+      "citation_id": 12,
+      "url": "https://github.com/rathena/rathena/blob/e985006171d2eb320ee512a653f4c83aea3d81b6/src/map/itemdb.cpp",
+      "path": "/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source/src/map/itemdb.cpp",
+      "sha256": "3b51a2bbcb44c5ffbdb5dc04683dd4f567c2da92f56a4bc0008aa9a93de5efe5",
+      "read_status": "read pinned native source; relevant code ranges or full YAML parsed",
+      "method": "local source read; NAR digest independently verified; no native execution"
+    },
+    {
+      "citation_id": 13,
+      "url": "https://github.com/rathena/rathena/blob/e985006171d2eb320ee512a653f4c83aea3d81b6/src/common/mmo.hpp",
+      "path": "/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source/src/common/mmo.hpp",
+      "sha256": "883ec2048b726d51f897218989ca66c476bcdbc969d683025fe09a0bf280fa6d",
+      "read_status": "read pinned native source; relevant code ranges or full YAML parsed",
+      "method": "local source read; NAR digest independently verified; no native execution"
+    },
+    {
+      "citation_id": 14,
+      "url": "https://github.com/rathena/rathena/blob/e985006171d2eb320ee512a653f4c83aea3d81b6/conf/battle/player.conf",
+      "path": "/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source/conf/battle/player.conf",
+      "sha256": "32e5e5cdb5c78c86cb0936759d3be6d5e5e973d6c8a1ccb7fba6b45f9e424e5c",
+      "read_status": "read pinned native source; relevant code ranges or full YAML parsed",
+      "method": "local source read; NAR digest independently verified; no native execution"
+    },
+    {
+      "citation_id": 15,
+      "url": "https://github.com/rathena/rathena/blob/e985006171d2eb320ee512a653f4c83aea3d81b6/npc/pre-re/mobs/fields/morocc.txt",
+      "path": "/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source/npc/pre-re/mobs/fields/morocc.txt",
+      "sha256": "008f17519bae8998fd474d4043099d1fd94c168054a426b70fdc72d2bd31a1a5",
+      "read_status": "read pinned native source; relevant code ranges or full YAML parsed",
+      "method": "local source read; NAR digest independently verified; no native execution"
+    },
+    {
+      "citation_id": 16,
+      "url": "https://github.com/rathena/rathena/blob/e985006171d2eb320ee512a653f4c83aea3d81b6/npc/jobs/2-2/crusader.txt",
+      "path": "/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source/npc/jobs/2-2/crusader.txt",
+      "sha256": "eaeaaa9361bf217894a2b48e972303a2c82fe56637bfe6949e01039461a756f1",
+      "read_status": "read pinned native source; relevant code ranges or full YAML parsed",
+      "method": "local source read; NAR digest independently verified; no native execution"
+    },
+    {
+      "citation_id": 17,
+      "url": "https://github.com/rathena/rathena/blob/e985006171d2eb320ee512a653f4c83aea3d81b6/src/map/skill.hpp",
+      "path": "/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source/src/map/skill.hpp",
+      "sha256": "ea112b585e8b33228f064bcd22ebc55d7e55274fff29280d7276e435e2b00513",
+      "read_status": "read pinned native source; relevant code ranges or full YAML parsed",
+      "method": "local source read; NAR digest independently verified; no native execution"
+    },
+    {
+      "citation_id": 18,
+      "url": "https://github.com/rathena/rathena/blob/e985006171d2eb320ee512a653f4c83aea3d81b6/npc/other/Global_Functions.txt",
+      "path": "/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source/npc/other/Global_Functions.txt",
+      "sha256": "6d1ce65db0038de1867c9c0f7113fbbec813054d1d403a4903337d130f96d5fe",
+      "read_status": "read pinned native source; relevant code ranges or full YAML parsed",
+      "method": "local source read; NAR digest independently verified; no native execution"
+    },
+    {
+      "citation_id": 19,
+      "url": "https://github.com/rathena/rathena/blob/e985006171d2eb320ee512a653f4c83aea3d81b6/db/pre-re/job_stats.yml",
+      "path": "/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source/db/pre-re/job_stats.yml",
+      "sha256": "fbdec3205fa96c364f6f7fcced30fc0322d5f933878f88734e96bd89e01a3f76",
+      "read_status": "read pinned native source; relevant code ranges or full YAML parsed",
+      "method": "local source read; NAR digest independently verified; no native execution"
+    },
+    {
+      "url": "https://irowiki.org/classic/Paladin",
+      "raw_sha256": "71952e8a1fff81199b0406aa24188d423c47a6ff51d9614c8da95befe342a206",
+      "text_sha256": "be4ec46430f60b84b64bc3ab495bd1b6c2b5b3b3786e22c78a9997349dd7f48f",
+      "text_length": 24479,
+      "read_status": "full local captured text read and HTML SHA256 independently matched; new web extraction unavailable in this session",
+      "mechanical_authority": false,
+      "citation_id": 20,
+      "method": "original fetched HTML captures; independently opened local text and hashed raw HTML; not newly live-fetched by reviewer"
+    },
+    {
+      "url": "https://irowiki.org/classic/Martyr%27s_Reckoning",
+      "raw_sha256": "5079cfa016aa67dd3ef218ab228722dcf2ce59f672d7d3c04ab3716c392cb614",
+      "text_sha256": "afb2479e9f65f4b432ec9719a72a786ad87dc2b76764562aaa9629ad04613d13",
+      "text_length": 8654,
+      "read_status": "full local captured text read and HTML SHA256 independently matched; new web extraction unavailable in this session",
+      "mechanical_authority": false,
+      "citation_id": 21,
+      "method": "original fetched HTML captures; independently opened local text and hashed raw HTML; not newly live-fetched by reviewer"
+    },
+    {
+      "url": "https://irowiki.org/classic/Rapid_Smiting",
+      "raw_sha256": "e7d279b55aee44bf95b8cb4856fc216f14bc9bb709805de2c7461522934f8e29",
+      "text_sha256": "8e1dca876901d5c7871f4c76ae1998589f69d3b5359d83e51eb78ee9ecd52025",
+      "text_length": 8389,
+      "read_status": "full local captured text read and HTML SHA256 independently matched; new web extraction unavailable in this session",
+      "mechanical_authority": false,
+      "citation_id": 22,
+      "method": "original fetched HTML captures; independently opened local text and hashed raw HTML; not newly live-fetched by reviewer"
+    },
+    {
+      "url": "https://irowiki.org/classic/Sacrifice",
+      "raw_sha256": "3bbeff7753eb8f9088c74dc1e4e73fb37c1d316e30b4cfc213c2a447e9f9e9d9",
+      "text_sha256": "27ac6ff6233a3a346f29bc14a843e1062db98195c11fdfe31eb7b6bae167016c",
+      "text_length": 8315,
+      "read_status": "full local captured text read and HTML SHA256 independently matched; new web extraction unavailable in this session",
+      "mechanical_authority": false,
+      "citation_id": 23,
+      "method": "original fetched HTML captures; independently opened local text and hashed raw HTML; not newly live-fetched by reviewer"
+    }
+  ],
+  "citation_ledger": "/home/otto/.hermes/cache/scratch/paladin-independent-review/citations.json",
+  "remaining_gaps": [
+    "Class alias/native identity integration is unimplemented.",
+    "Life/class/base/job progression and reset gates not integrated into executable build planner.",
+    "Ambiguous equipment choice requires explicit ID/Aegis identity; never silently choose slotted or event variants.",
+    "Complete all-category acquisition evidence omits one MVP reward row in original report; preserve ordinary/MVP distinction.",
+    "Actual NPC/map/import load closure and quest/access feasibility not exercised; no private imports read.",
+    "Battle damage/HP/SP, effects, refines/cards/combos, farming and economic evidence unknown.",
+    "Stat residual disposition/user endpoint remains unspecified.",
+    "Whole-class source-equivalence and native receipt/gameplay acceptance remain open."
+  ],
+  "issues_encountered": [
+    "Initial broad NPC text probe hit a non-UTF8 file; switched to targeted source search/read without altering source.",
+    "Independent external web extraction failed because configured backend is search-only. Used existing actual HTML/text captures, independently hashing all four. This reviewer does not claim newly live-fetched pages."
+  ],
+  "no_effects": {
+    "native_binary_or_server": true,
+    "sql_or_account_changes": true,
+    "provider_or_gateway_edits": true,
+    "template_or_adapter_edits": true,
+    "staging_commit_push": true
+  },
+  "created_repository_files": [
+    "run/reviews/classic-paladin-build-independent-review.json"
+  ],
+  "scratch_files": [
+    "/home/otto/.hermes/cache/scratch/paladin-independent-review/before.json",
+    "/home/otto/.hermes/cache/scratch/paladin-independent-review/probe.py",
+    "/home/otto/.hermes/cache/scratch/paladin-independent-review/probe-results.json",
+    "/home/otto/.hermes/cache/scratch/paladin-independent-review/finalize_review.py",
+    "/home/otto/.hermes/cache/scratch/paladin-independent-review/citations.json"
+  ],
+  "probe_sha256": "0d1862b691bec13703b331efcb693077671ba25ccae6bac9305f39dad5f315a6",
+  "citation_verification_output": "info: stats: 48 prose sentence(s), 8 with declared provenance (17%) \u2014 8 cited, 0 marked [unverified] (a sentence may be both); 12 distinct source(s) cited, 23 in ledger (19 with evidence quotes)\nwarn: registered in the ledger but not cited in this draft: [2], [10], [11], [16], [17], [18], [19], [20], [21], [22], [23]\ncitations OK\n",
+  "citation_verification_note": "Non-strict citation/evidence verification: isolated ledger includes additional inspected sources beyond concise prose draft; source-range references and full parsed probes are primary evidence, not quote-coverage approval."
+}

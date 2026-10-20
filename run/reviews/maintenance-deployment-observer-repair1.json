@@ -1,0 +1,1368 @@
+{
+  "schema": "maintenance-deployment-observer-repair1/v1",
+  "status": "PASS_OFFLINE_SCOPED; INDEPENDENT_COMPLETED_SNAPSHOT_REVIEW_PENDING",
+  "passed": true,
+  "repair_budget": {
+    "name": "deployment-observer repair1/1",
+    "consumed": 1,
+    "native_pilot_and_strict_assembly_budgets_reset": false
+  },
+  "summary": "Repaired only configuration grammar, owned Podman bridge attachment metadata and the literal map-port mapping. Current 45 raw testcase IDs plus six new cases pass under primitive transport spies. No operational admission or live recovery.",
+  "owned_source_changes": [
+    "/home/otto/.hermes/cache/scratch/npc-owned-recovery/live_recovery.py",
+    "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_deployment_observer.py"
+  ],
+  "baseline": {
+    "accepted_adapter_archive": "/home/otto/.hermes/cache/scratch/npc-owned-recovery/deployment-observer-repair1/accepted-live_recovery.py",
+    "accepted_adapter_sha256": "d103c4a3cbc8a3e7dd746ef078ec61ff6b42c48e44ddf54f6ee4d7ca79992c0f",
+    "root_cause_preflight": {
+      "path": "/home/otto/dev/ro-bots/run/reviews/npc-native-maintenance-runtime-preflight.json",
+      "sha256": "d141eb5d03db787032feec942f4e1257f0ea928f5efdccba478e94f85b162059",
+      "lifecycle_calls": 0
+    },
+    "latest_offline_review": {
+      "path": "/home/otto/dev/ro-bots/run/reviews/npc-native-owned-maintenance-independent-review.json",
+      "sha256": "3302bfc1b0bd2e3c3bd7056179b4059dfba902f3790ec1953846b10bbee48840"
+    }
+  },
+  "repairs": [
+    {
+      "defect": "Configuration grammar",
+      "root_cause": "A universal colon/strip/comment parser differed from the pinned native per-role sscanf grammars.",
+      "implemented": "Native fgets 1023-byte chunks; untrimmed keys and width limits; battle first non-whitespace value/import token; login and char full value tails; char control characters become underscores; map inline comments/tab boundary and trailing-space removal. Recursive imports preserve parser and native order; bound-file, cycle, depth and canonical relative-root path guards remain fail-closed.",
+      "reached_red_receipts": [
+        "configuration-red",
+        "import-denial-probe",
+        "grammar-whitespace-red"
+      ],
+      "green_receipts": [
+        "configuration-green",
+        "configuration-closure-green",
+        "grammar-whitespace-green"
+      ],
+      "native_authority_lines": {
+        "src/map/battle.cpp": [
+          9158,
+          9211
+        ],
+        "src/login/login.cpp": [
+          591,
+          734
+        ],
+        "src/char/char.cpp": [
+          2916,
+          3123
+        ],
+        "src/map/map.cpp": [
+          4114,
+          4213
+        ],
+        "src/common/strlib.cpp": [
+          13,
+          27
+        ]
+      }
+    },
+    {
+      "defect": "Rootless Podman network metadata",
+      "root_cause": "Owned selected attachments were denied solely for generic bridge NetworkMode and blank EndpointID.",
+      "implemented": "Accept bridge only alongside the selected owned-network identity, exact role/project/service IDs, owned membership, matching running NetworkID and member IP, and unique running addresses. Explicit blank selected EndpointID may pair with blank/absent member EndpointID on bridge; nonempty endpoint identity still must match. Missing selected endpoint or wrong populated stopped NetworkID denies. No unknown engine metadata is defaulted.",
+      "reached_red_receipts": [
+        "podman-red"
+      ],
+      "green_receipts": [
+        "podman-green",
+        "podman-denials"
+      ],
+      "sanitized_observed_shape": {
+        "HostConfig.NetworkMode": "bridge",
+        "selected_network_exact": true,
+        "selected_EndpointID": "",
+        "selected_NetworkID_matches_network_inspect": true,
+        "actual_owned_members_exact": true,
+        "member_IP_agreement": true
+      },
+      "new_positive_path": "Default adapter and unchanged helper chain execute the six synthetic lifecycle transitions with missing stopped attachments, changing start IPs, blank bridge endpoints and absent member EndpointID."
+    },
+    {
+      "defect": "Literal map-port mapping",
+      "root_cause": "PORTS[map] was 16122 while native configuration and publication were 15121.",
+      "implemented": "Use literal login 16900, char 16121, map 15121. Require bound role configuration and exact configured/public publication agreement. Existing PID-owned socket classification uses these same constants; wrong observed listeners do not become ready.",
+      "native_port_observation": {
+        "login": 16900,
+        "char": 16121,
+        "map": 15121
+      },
+      "reached_red_receipts": [
+        "map-port-red",
+        "port-validation-red",
+        "publication-red"
+      ],
+      "green_receipts": [
+        "map-port-green",
+        "ports-validation-green"
+      ]
+    }
+  ],
+  "vertical_tdd": {
+    "method": "One observed defect reached a behavioral assertion RED before its minimal implementation, then GREEN. Import refusal and whitespace/parser edge cases were individually reached before their follow-up corrections. No production code rollback was used to manufacture RED.",
+    "all_receipts": {
+      "configuration-red": {
+        "command": [
+          "/home/otto/dev/ro-bots/.venv/bin/python",
+          "-B",
+          "-m",
+          "pytest",
+          "-q",
+          "-o",
+          "addopts=",
+          "-p",
+          "no:cacheprovider",
+          "--confcutdir=/home/otto/.hermes/cache/scratch/npc-owned-recovery",
+          "--rootdir=/home/otto",
+          "--basetemp=/home/otto/.hermes/cache/scratch/npc-owned-recovery/deployment-observer-repair1/configuration-red-tmp",
+          "--junitxml=/home/otto/.hermes/cache/scratch/npc-owned-recovery/deployment-observer-repair1/configuration-red.xml",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_deployment_observer.py"
+        ],
+        "exit": 1,
+        "elapsed_seconds": 0.49262749403715134,
+        "log": "/home/otto/.hermes/cache/scratch/npc-owned-recovery/deployment-observer-repair1/configuration-red.log",
+        "sha256": "df64e0bf80cac516c8977ff0c4279fca6a52f3bc25340551c895f27076d75537"
+      },
+      "configuration-green": {
+        "command": [
+          "/home/otto/dev/ro-bots/.venv/bin/python",
+          "-B",
+          "-m",
+          "pytest",
+          "-q",
+          "-o",
+          "addopts=",
+          "-p",
+          "no:cacheprovider",
+          "--confcutdir=/home/otto/.hermes/cache/scratch/npc-owned-recovery",
+          "--rootdir=/home/otto",
+          "--basetemp=/home/otto/.hermes/cache/scratch/npc-owned-recovery/deployment-observer-repair1/configuration-green-tmp",
+          "--junitxml=/home/otto/.hermes/cache/scratch/npc-owned-recovery/deployment-observer-repair1/configuration-green.xml",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_deployment_observer.py"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 0.44163229200057685,
+        "log": "/home/otto/.hermes/cache/scratch/npc-owned-recovery/deployment-observer-repair1/configuration-green.log",
+        "sha256": "e596cce97643441f2f2c7ef01ee068b6705ce1e028a07a32ba3bd3b3d35d7353"
+      },
+      "import-denial-probe": {
+        "command": [
+          "/home/otto/dev/ro-bots/.venv/bin/python",
+          "-B",
+          "-m",
+          "pytest",
+          "-q",
+          "-o",
+          "addopts=",
+          "-p",
+          "no:cacheprovider",
+          "--confcutdir=/home/otto/.hermes/cache/scratch/npc-owned-recovery",
+          "--rootdir=/home/otto",
+          "--basetemp=/home/otto/.hermes/cache/scratch/npc-owned-recovery/deployment-observer-repair1/import-denial-probe-tmp",
+          "--junitxml=/home/otto/.hermes/cache/scratch/npc-owned-recovery/deployment-observer-repair1/import-denial-probe.xml",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_deployment_observer.py::test_configuration_imports_fail_closed"
+        ],
+        "exit": 1,
+        "elapsed_seconds": 0.24928493099287152,
+        "log": "/home/otto/.hermes/cache/scratch/npc-owned-recovery/deployment-observer-repair1/import-denial-probe.log",
+        "sha256": "1c467a9bcc15f4f3ad711a9f487678375ec5333b8dc052b47ab1c0f188789578"
+      },
+      "podman-red": {
+        "command": [
+          "/home/otto/dev/ro-bots/.venv/bin/python",
+          "-B",
+          "-m",
+          "pytest",
+          "-q",
+          "-o",
+          "addopts=",
+          "-p",
+          "no:cacheprovider",
+          "--confcutdir=/home/otto/.hermes/cache/scratch/npc-owned-recovery",
+          "--rootdir=/home/otto",
+          "--basetemp=/home/otto/.hermes/cache/scratch/npc-owned-recovery/deployment-observer-repair1/podman-red-tmp",
+          "--junitxml=/home/otto/.hermes/cache/scratch/npc-owned-recovery/deployment-observer-repair1/podman-red.xml",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_deployment_observer.py::test_podman_owned_bridge_metadata_and_stopped_transition"
+        ],
+        "exit": 1,
+        "elapsed_seconds": 0.2815190289984457,
+        "log": "/home/otto/.hermes/cache/scratch/npc-owned-recovery/deployment-observer-repair1/podman-red.log",
+        "sha256": "03f60d653f46602039778d0e81d697382fec070a8d89408799ceae2db4c97bcb"
+      },
+      "configuration-closure-green": {
+        "command": [
+          "/home/otto/dev/ro-bots/.venv/bin/python",
+          "-B",
+          "-m",
+          "pytest",
+          "-q",
+          "-o",
+          "addopts=",
+          "-p",
+          "no:cacheprovider",
+          "--confcutdir=/home/otto/.hermes/cache/scratch/npc-owned-recovery",
+          "--rootdir=/home/otto",
+          "--basetemp=/home/otto/.hermes/cache/scratch/npc-owned-recovery/deployment-observer-repair1/configuration-closure-green-tmp",
+          "--junitxml=/home/otto/.hermes/cache/scratch/npc-owned-recovery/deployment-observer-repair1/configuration-closure-green.xml",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_deployment_observer.py::test_native_configuration_grammar_and_import_order",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_deployment_observer.py::test_configuration_imports_fail_closed"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 0.3281623779912479,
+        "log": "/home/otto/.hermes/cache/scratch/npc-owned-recovery/deployment-observer-repair1/configuration-closure-green.log",
+        "sha256": "449f48faab28952069f2e297454c2a3b0f42069bcbc27c7b2b56439fc80297ed"
+      },
+      "podman-green": {
+        "command": [
+          "/home/otto/dev/ro-bots/.venv/bin/python",
+          "-B",
+          "-m",
+          "pytest",
+          "-q",
+          "-o",
+          "addopts=",
+          "-p",
+          "no:cacheprovider",
+          "--confcutdir=/home/otto/.hermes/cache/scratch/npc-owned-recovery",
+          "--rootdir=/home/otto",
+          "--basetemp=/home/otto/.hermes/cache/scratch/npc-owned-recovery/deployment-observer-repair1/podman-green-tmp",
+          "--junitxml=/home/otto/.hermes/cache/scratch/npc-owned-recovery/deployment-observer-repair1/podman-green.xml",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_deployment_observer.py::test_podman_owned_bridge_metadata_and_stopped_transition"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 0.34217504400294274,
+        "log": "/home/otto/.hermes/cache/scratch/npc-owned-recovery/deployment-observer-repair1/podman-green.log",
+        "sha256": "c91dad03511eb111dba9f317cdb7962c64ec389c7d259de488e167c78aac1b31"
+      },
+      "podman-denials": {
+        "command": [
+          "/home/otto/dev/ro-bots/.venv/bin/python",
+          "-B",
+          "-m",
+          "pytest",
+          "-q",
+          "-o",
+          "addopts=",
+          "-p",
+          "no:cacheprovider",
+          "--confcutdir=/home/otto/.hermes/cache/scratch/npc-owned-recovery",
+          "--rootdir=/home/otto",
+          "--basetemp=/home/otto/.hermes/cache/scratch/npc-owned-recovery/deployment-observer-repair1/podman-denials-tmp",
+          "--junitxml=/home/otto/.hermes/cache/scratch/npc-owned-recovery/deployment-observer-repair1/podman-denials.xml",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_deployment_observer.py::test_podman_network_foreign_wrong_and_unknown_metadata_denies"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 0.4722401369945146,
+        "log": "/home/otto/.hermes/cache/scratch/npc-owned-recovery/deployment-observer-repair1/podman-denials.log",
+        "sha256": "fa8e3e1f0a4b084326a7027307e5cc3a94f799f9733ea598c3b878fa3c70f37c"
+      },
+      "map-port-red": {
+        "command": [
+          "/home/otto/dev/ro-bots/.venv/bin/python",
+          "-B",
+          "-m",
+          "pytest",
+          "-q",
+          "-o",
+          "addopts=",
+          "-p",
+          "no:cacheprovider",
+          "--confcutdir=/home/otto/.hermes/cache/scratch/npc-owned-recovery",
+          "--rootdir=/home/otto",
+          "--basetemp=/home/otto/.hermes/cache/scratch/npc-owned-recovery/deployment-observer-repair1/map-port-red-tmp",
+          "--junitxml=/home/otto/.hermes/cache/scratch/npc-owned-recovery/deployment-observer-repair1/map-port-red.xml",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_deployment_observer.py::test_actual_map_port_reaches_default_assembly_and_listener"
+        ],
+        "exit": 1,
+        "elapsed_seconds": 0.46487976296339184,
+        "log": "/home/otto/.hermes/cache/scratch/npc-owned-recovery/deployment-observer-repair1/map-port-red.log",
+        "sha256": "ed058e7f4f216d14c90ab69a9056a7e8973f7974a9991440545400b1be771b87"
+      },
+      "map-port-green": {
+        "command": [
+          "/home/otto/dev/ro-bots/.venv/bin/python",
+          "-B",
+          "-m",
+          "pytest",
+          "-q",
+          "-o",
+          "addopts=",
+          "-p",
+          "no:cacheprovider",
+          "--confcutdir=/home/otto/.hermes/cache/scratch/npc-owned-recovery",
+          "--rootdir=/home/otto",
+          "--basetemp=/home/otto/.hermes/cache/scratch/npc-owned-recovery/deployment-observer-repair1/map-port-green-tmp",
+          "--junitxml=/home/otto/.hermes/cache/scratch/npc-owned-recovery/deployment-observer-repair1/map-port-green.xml",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_deployment_observer.py::test_actual_map_port_reaches_default_assembly_and_listener"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 1.0258974519674666,
+        "log": "/home/otto/.hermes/cache/scratch/npc-owned-recovery/deployment-observer-repair1/map-port-green.log",
+        "sha256": "6edbdf6855c1e52b6d4717078920b961e1ebf9a67b233ef94fd73219a3da75b8"
+      },
+      "port-validation-red": {
+        "command": [
+          "/home/otto/dev/ro-bots/.venv/bin/python",
+          "-B",
+          "-m",
+          "pytest",
+          "-q",
+          "-o",
+          "addopts=",
+          "-p",
+          "no:cacheprovider",
+          "--confcutdir=/home/otto/.hermes/cache/scratch/npc-owned-recovery",
+          "--rootdir=/home/otto",
+          "--basetemp=/home/otto/.hermes/cache/scratch/npc-owned-recovery/deployment-observer-repair1/port-validation-red-tmp",
+          "--junitxml=/home/otto/.hermes/cache/scratch/npc-owned-recovery/deployment-observer-repair1/port-validation-red.xml",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_deployment_observer.py::test_wrong_configured_or_observed_ports_deny"
+        ],
+        "exit": 1,
+        "elapsed_seconds": 0.26862767001148313,
+        "log": "/home/otto/.hermes/cache/scratch/npc-owned-recovery/deployment-observer-repair1/port-validation-red.log",
+        "sha256": "494b657da4c7e0a3a0bb6c43d41c825e7f30cfe557226e1597d7dd22f3540544"
+      },
+      "publication-red": {
+        "command": [
+          "/home/otto/dev/ro-bots/.venv/bin/python",
+          "-B",
+          "-m",
+          "pytest",
+          "-q",
+          "-o",
+          "addopts=",
+          "-p",
+          "no:cacheprovider",
+          "--confcutdir=/home/otto/.hermes/cache/scratch/npc-owned-recovery",
+          "--rootdir=/home/otto",
+          "--basetemp=/home/otto/.hermes/cache/scratch/npc-owned-recovery/deployment-observer-repair1/publication-red-tmp",
+          "--junitxml=/home/otto/.hermes/cache/scratch/npc-owned-recovery/deployment-observer-repair1/publication-red.xml",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_deployment_observer.py::test_wrong_configured_or_observed_ports_deny"
+        ],
+        "exit": 1,
+        "elapsed_seconds": 0.3480665080132894,
+        "log": "/home/otto/.hermes/cache/scratch/npc-owned-recovery/deployment-observer-repair1/publication-red.log",
+        "sha256": "5a8ad30b6525e9058068fa19ab6000c48843c7abec322955ff6bd7342f015f25"
+      },
+      "ports-validation-green": {
+        "command": [
+          "/home/otto/dev/ro-bots/.venv/bin/python",
+          "-B",
+          "-m",
+          "pytest",
+          "-q",
+          "-o",
+          "addopts=",
+          "-p",
+          "no:cacheprovider",
+          "--confcutdir=/home/otto/.hermes/cache/scratch/npc-owned-recovery",
+          "--rootdir=/home/otto",
+          "--basetemp=/home/otto/.hermes/cache/scratch/npc-owned-recovery/deployment-observer-repair1/ports-validation-green-tmp",
+          "--junitxml=/home/otto/.hermes/cache/scratch/npc-owned-recovery/deployment-observer-repair1/ports-validation-green.xml",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_deployment_observer.py::test_wrong_configured_or_observed_ports_deny",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_deployment_observer.py::test_actual_map_port_reaches_default_assembly_and_listener"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 1.1814154930179939,
+        "log": "/home/otto/.hermes/cache/scratch/npc-owned-recovery/deployment-observer-repair1/ports-validation-green.log",
+        "sha256": "3459dd0fd3d0918a7a46de3c450cbd0bf495e128eeaf38ff04b2267ff461d462"
+      },
+      "new-six-green": {
+        "command": [
+          "/home/otto/dev/ro-bots/.venv/bin/python",
+          "-B",
+          "-m",
+          "pytest",
+          "-q",
+          "-o",
+          "addopts=",
+          "-p",
+          "no:cacheprovider",
+          "--confcutdir=/home/otto/.hermes/cache/scratch/npc-owned-recovery",
+          "--rootdir=/home/otto",
+          "--basetemp=/home/otto/.hermes/cache/scratch/npc-owned-recovery/deployment-observer-repair1/new-six-green-tmp",
+          "--junitxml=/home/otto/.hermes/cache/scratch/npc-owned-recovery/deployment-observer-repair1/new-six-green.xml",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_deployment_observer.py"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 1.2592041510506533,
+        "log": "/home/otto/.hermes/cache/scratch/npc-owned-recovery/deployment-observer-repair1/new-six-green.log",
+        "sha256": "01a500f809b9d9a3ea7f89f8c0701d3ed699d0c6f851f3ac4717a8596e4f46b5"
+      },
+      "format": {
+        "command": [
+          "/home/otto/dev/ro-bots/.venv/bin/black",
+          "--config",
+          "pyproject.toml",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/live_recovery.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_deployment_observer.py"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 0.8234120110282674,
+        "log": "/home/otto/.hermes/cache/scratch/npc-owned-recovery/deployment-observer-repair1/format.log",
+        "sha256": "dbf1fff6d71be8a6019abfe9d66183e170ace8f97d3f36ec85437798d12cb6be"
+      },
+      "black-initial": {
+        "command": [
+          "/home/otto/dev/ro-bots/.venv/bin/black",
+          "--check",
+          "--config",
+          "pyproject.toml",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/recovery.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/live_recovery.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_maintenance.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_deployment_observer.py"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 0.1771527410019189,
+        "log": "/home/otto/.hermes/cache/scratch/npc-owned-recovery/deployment-observer-repair1/black-initial.log",
+        "sha256": "26a5fd9505f2b5608a20c4fed4b4c4795e0783d03b72ade02a6af34dae8ad086"
+      },
+      "ruff-initial": {
+        "command": [
+          "/home/otto/dev/ro-bots/.venv/bin/ruff",
+          "check",
+          "--config",
+          "pyproject.toml",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/recovery.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/live_recovery.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_maintenance.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_deployment_observer.py"
+        ],
+        "exit": 1,
+        "elapsed_seconds": 0.011920933960936964,
+        "log": "/home/otto/.hermes/cache/scratch/npc-owned-recovery/deployment-observer-repair1/ruff-initial.log",
+        "sha256": "cb391c68ed057b55ff54cadb72a907b1b2dd1ad5d1b7ca933505a10820baf046"
+      },
+      "mypy-initial": {
+        "command": [
+          "/home/otto/dev/ro-bots/.venv/bin/mypy",
+          "--strict",
+          "--no-incremental",
+          "--cache-dir=/home/otto/.hermes/cache/scratch/npc-owned-recovery/deployment-observer-repair1/fresh-mypy",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/recovery.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/live_recovery.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_maintenance.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_deployment_observer.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_live_recovery.py"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 1.3073837740230374,
+        "log": "/home/otto/.hermes/cache/scratch/npc-owned-recovery/deployment-observer-repair1/mypy-initial.log",
+        "sha256": "e317872697c2cbfdefa321527a6efe73290dff3a390b0fa8723b87092eccba6a"
+      },
+      "xenon-initial": {
+        "command": [
+          "/home/otto/dev/ro-bots/.venv/bin/xenon",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/recovery.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/live_recovery.py",
+          "src",
+          "--max-absolute",
+          "B",
+          "--max-modules",
+          "B",
+          "--max-average",
+          "A"
+        ],
+        "exit": 1,
+        "elapsed_seconds": 0.37621831300202757,
+        "log": "/home/otto/.hermes/cache/scratch/npc-owned-recovery/deployment-observer-repair1/xenon-initial.log",
+        "sha256": "417b3e854d9457d653b9f95ea97d2b51ce7125af6134f6ff34ff867fbdb01e65"
+      },
+      "duplicates-initial": {
+        "command": [
+          "/home/otto/dev/ro-bots/.venv/bin/pylint",
+          "--disable=all",
+          "--enable=duplicate-code",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/recovery.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/live_recovery.py",
+          "src",
+          "/home/otto/.hermes/cache/scratch/passive-skill-context-executor-repair1/native_launcher.py"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 3.6808500210172497,
+        "log": "/home/otto/.hermes/cache/scratch/npc-owned-recovery/deployment-observer-repair1/duplicates-initial.log",
+        "sha256": "8cbfc8cd0b04a4858b0b78b74c6df9631a1695e105e6911d4b57fbcc43b218b5"
+      },
+      "combined51-initial": {
+        "command": [
+          "/home/otto/dev/ro-bots/.venv/bin/python",
+          "-B",
+          "-m",
+          "pytest",
+          "-q",
+          "-o",
+          "addopts=",
+          "-p",
+          "no:cacheprovider",
+          "--confcutdir=/home/otto/.hermes/cache/scratch/npc-owned-recovery",
+          "--rootdir=/home/otto",
+          "--basetemp=/home/otto/.hermes/cache/scratch/npc-owned-recovery/deployment-observer-repair1/combined51-initial-tmp",
+          "--junitxml=/home/otto/.hermes/cache/scratch/npc-owned-recovery/deployment-observer-repair1/combined51-initial.xml",
+          "-p",
+          "test_deployment_observer",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_recovery.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_live_recovery.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/accepted-strict-policy-history/test_independent.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_maintenance.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-maintenance-review/test_boundaries.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_deployment_observer.py"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 75.61071032501059,
+        "log": "/home/otto/.hermes/cache/scratch/npc-owned-recovery/deployment-observer-repair1/combined51-initial.log",
+        "sha256": "6c9113ab36884239ef9c2ebd2fd73e1c2c17d642ffe4456d3692b4b4ae2aacdf"
+      },
+      "format-refactor": {
+        "command": [
+          "/home/otto/dev/ro-bots/.venv/bin/black",
+          "--config",
+          "pyproject.toml",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/live_recovery.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_deployment_observer.py"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 0.7048794309957884,
+        "log": "/home/otto/.hermes/cache/scratch/npc-owned-recovery/deployment-observer-repair1/format-refactor.log",
+        "sha256": "1b21b317351977b6c3be2874dfe958932cfc493c245a095524fd1c020c2816de"
+      },
+      "ruff-refactor": {
+        "command": [
+          "/home/otto/dev/ro-bots/.venv/bin/ruff",
+          "check",
+          "--config",
+          "pyproject.toml",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/recovery.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/live_recovery.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_maintenance.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_deployment_observer.py"
+        ],
+        "exit": 1,
+        "elapsed_seconds": 0.012305215990636498,
+        "log": "/home/otto/.hermes/cache/scratch/npc-owned-recovery/deployment-observer-repair1/ruff-refactor.log",
+        "sha256": "f80d87883b69a952fc6417bc35125e8918fde984efd220cc3a60b947fd8be710"
+      },
+      "xenon-refactor": {
+        "command": [
+          "/home/otto/dev/ro-bots/.venv/bin/xenon",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/recovery.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/live_recovery.py",
+          "src",
+          "--max-absolute",
+          "B",
+          "--max-modules",
+          "B",
+          "--max-average",
+          "A"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 0.42187707097036764,
+        "log": "/home/otto/.hermes/cache/scratch/npc-owned-recovery/deployment-observer-repair1/xenon-refactor.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "refactor-six": {
+        "command": [
+          "/home/otto/dev/ro-bots/.venv/bin/python",
+          "-B",
+          "-m",
+          "pytest",
+          "-q",
+          "-o",
+          "addopts=",
+          "-p",
+          "no:cacheprovider",
+          "--confcutdir=/home/otto/.hermes/cache/scratch/npc-owned-recovery",
+          "--rootdir=/home/otto",
+          "--basetemp=/home/otto/.hermes/cache/scratch/npc-owned-recovery/deployment-observer-repair1/refactor-six-tmp",
+          "--junitxml=/home/otto/.hermes/cache/scratch/npc-owned-recovery/deployment-observer-repair1/refactor-six.xml",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_deployment_observer.py"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 1.1438110599992797,
+        "log": "/home/otto/.hermes/cache/scratch/npc-owned-recovery/deployment-observer-repair1/refactor-six.log",
+        "sha256": "9e51cb12ac1f38a206055a88854fe0a21a2e3dcfb31c8b17162effc3b0ca58dd"
+      },
+      "format-final-prep": {
+        "command": [
+          "/home/otto/dev/ro-bots/.venv/bin/black",
+          "--config",
+          "pyproject.toml",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/live_recovery.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_deployment_observer.py"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 0.3264569029561244,
+        "log": "/home/otto/.hermes/cache/scratch/npc-owned-recovery/deployment-observer-repair1/format-final-prep.log",
+        "sha256": "7a55b4457b0193aa92cd83153593aed78e11dbf649419e33eba5040089c4c198"
+      },
+      "ruff-final-prep": {
+        "command": [
+          "/home/otto/dev/ro-bots/.venv/bin/ruff",
+          "check",
+          "--config",
+          "pyproject.toml",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/recovery.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/live_recovery.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_maintenance.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_deployment_observer.py"
+        ],
+        "exit": 1,
+        "elapsed_seconds": 0.009493055986240506,
+        "log": "/home/otto/.hermes/cache/scratch/npc-owned-recovery/deployment-observer-repair1/ruff-final-prep.log",
+        "sha256": "a1ba473d8f64f1d4749541c4b5bc16e9a47d51a04ee1e1fc9b014fc749a2274e"
+      },
+      "mypy-final-prep": {
+        "command": [
+          "/home/otto/dev/ro-bots/.venv/bin/mypy",
+          "--strict",
+          "--no-incremental",
+          "--cache-dir=/home/otto/.hermes/cache/scratch/npc-owned-recovery/deployment-observer-repair1/fresh-mypy-prep",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/recovery.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/live_recovery.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_maintenance.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_deployment_observer.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_live_recovery.py"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 1.2444351710146293,
+        "log": "/home/otto/.hermes/cache/scratch/npc-owned-recovery/deployment-observer-repair1/mypy-final-prep.log",
+        "sha256": "e317872697c2cbfdefa321527a6efe73290dff3a390b0fa8723b87092eccba6a"
+      },
+      "format-last": {
+        "command": [
+          "/home/otto/dev/ro-bots/.venv/bin/black",
+          "--config",
+          "pyproject.toml",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/live_recovery.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_deployment_observer.py"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 0.3797349050291814,
+        "log": "/home/otto/.hermes/cache/scratch/npc-owned-recovery/deployment-observer-repair1/format-last.log",
+        "sha256": "7a55b4457b0193aa92cd83153593aed78e11dbf649419e33eba5040089c4c198"
+      },
+      "ruff-last": {
+        "command": [
+          "/home/otto/dev/ro-bots/.venv/bin/ruff",
+          "check",
+          "--config",
+          "pyproject.toml",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/recovery.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/live_recovery.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_maintenance.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_deployment_observer.py"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 0.010403283988125622,
+        "log": "/home/otto/.hermes/cache/scratch/npc-owned-recovery/deployment-observer-repair1/ruff-last.log",
+        "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
+      },
+      "grammar-whitespace-red": {
+        "command": [
+          "/home/otto/dev/ro-bots/.venv/bin/python",
+          "-B",
+          "-m",
+          "pytest",
+          "-q",
+          "-o",
+          "addopts=",
+          "-p",
+          "no:cacheprovider",
+          "--confcutdir=/home/otto/.hermes/cache/scratch/npc-owned-recovery",
+          "--rootdir=/home/otto",
+          "--basetemp=/home/otto/.hermes/cache/scratch/npc-owned-recovery/deployment-observer-repair1/grammar-whitespace-red-tmp",
+          "--junitxml=/home/otto/.hermes/cache/scratch/npc-owned-recovery/deployment-observer-repair1/grammar-whitespace-red.xml",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_deployment_observer.py::test_native_configuration_grammar_and_import_order"
+        ],
+        "exit": 1,
+        "elapsed_seconds": 0.3696820489712991,
+        "log": "/home/otto/.hermes/cache/scratch/npc-owned-recovery/deployment-observer-repair1/grammar-whitespace-red.log",
+        "sha256": "521b13682170492f6ec489dd698c471f9177c39624e76e385bb1e7104f3adf8a"
+      },
+      "grammar-whitespace-green": {
+        "command": [
+          "/home/otto/dev/ro-bots/.venv/bin/python",
+          "-B",
+          "-m",
+          "pytest",
+          "-q",
+          "-o",
+          "addopts=",
+          "-p",
+          "no:cacheprovider",
+          "--confcutdir=/home/otto/.hermes/cache/scratch/npc-owned-recovery",
+          "--rootdir=/home/otto",
+          "--basetemp=/home/otto/.hermes/cache/scratch/npc-owned-recovery/deployment-observer-repair1/grammar-whitespace-green-tmp",
+          "--junitxml=/home/otto/.hermes/cache/scratch/npc-owned-recovery/deployment-observer-repair1/grammar-whitespace-green.xml",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_deployment_observer.py::test_native_configuration_grammar_and_import_order"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 0.38981075602350757,
+        "log": "/home/otto/.hermes/cache/scratch/npc-owned-recovery/deployment-observer-repair1/grammar-whitespace-green.log",
+        "sha256": "09229b326b028651d725fa47cd1bae9fd8e0145ff8779bdb84ae2762c00ab737"
+      },
+      "format-complete": {
+        "command": [
+          "/home/otto/dev/ro-bots/.venv/bin/black",
+          "--config",
+          "pyproject.toml",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/live_recovery.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_deployment_observer.py"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 0.5132835490512662,
+        "log": "/home/otto/.hermes/cache/scratch/npc-owned-recovery/deployment-observer-repair1/format-complete.log",
+        "sha256": "079597f80cc2a49df172f22e37b704dbe6ac4e56ed699ff0ba9bba8fda90190b"
+      },
+      "black-final": {
+        "command": [
+          "/home/otto/dev/ro-bots/.venv/bin/black",
+          "--check",
+          "--config",
+          "pyproject.toml",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/recovery.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/live_recovery.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_maintenance.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_deployment_observer.py"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 0.148088057001587,
+        "log": "/home/otto/.hermes/cache/scratch/npc-owned-recovery/deployment-observer-repair1/black-final.log",
+        "sha256": "26a5fd9505f2b5608a20c4fed4b4c4795e0783d03b72ade02a6af34dae8ad086"
+      },
+      "ruff-final": {
+        "command": [
+          "/home/otto/dev/ro-bots/.venv/bin/ruff",
+          "check",
+          "--config",
+          "pyproject.toml",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/recovery.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/live_recovery.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_maintenance.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_deployment_observer.py"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 0.011732671002391726,
+        "log": "/home/otto/.hermes/cache/scratch/npc-owned-recovery/deployment-observer-repair1/ruff-final.log",
+        "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
+      },
+      "mypy-final": {
+        "command": [
+          "/home/otto/dev/ro-bots/.venv/bin/mypy",
+          "--strict",
+          "--no-incremental",
+          "--cache-dir=/home/otto/.hermes/cache/scratch/npc-owned-recovery/deployment-observer-repair1/fresh-mypy-final",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/recovery.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/live_recovery.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_maintenance.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_deployment_observer.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_live_recovery.py"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 1.279389574949164,
+        "log": "/home/otto/.hermes/cache/scratch/npc-owned-recovery/deployment-observer-repair1/mypy-final.log",
+        "sha256": "e317872697c2cbfdefa321527a6efe73290dff3a390b0fa8723b87092eccba6a"
+      },
+      "xenon-final": {
+        "command": [
+          "/home/otto/dev/ro-bots/.venv/bin/xenon",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/recovery.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/live_recovery.py",
+          "src",
+          "--max-absolute",
+          "B",
+          "--max-modules",
+          "B",
+          "--max-average",
+          "A"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 0.4036509120487608,
+        "log": "/home/otto/.hermes/cache/scratch/npc-owned-recovery/deployment-observer-repair1/xenon-final.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "duplicates-final": {
+        "command": [
+          "/home/otto/dev/ro-bots/.venv/bin/pylint",
+          "--disable=all",
+          "--enable=duplicate-code",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/recovery.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/live_recovery.py",
+          "src",
+          "/home/otto/.hermes/cache/scratch/passive-skill-context-executor-repair1/native_launcher.py"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 3.606549626972992,
+        "log": "/home/otto/.hermes/cache/scratch/npc-owned-recovery/deployment-observer-repair1/duplicates-final.log",
+        "sha256": "8cbfc8cd0b04a4858b0b78b74c6df9631a1695e105e6911d4b57fbcc43b218b5"
+      },
+      "combined51-final": {
+        "command": [
+          "/home/otto/dev/ro-bots/.venv/bin/python",
+          "-B",
+          "-m",
+          "pytest",
+          "-q",
+          "-o",
+          "addopts=",
+          "-p",
+          "no:cacheprovider",
+          "--confcutdir=/home/otto/.hermes/cache/scratch/npc-owned-recovery",
+          "--rootdir=/home/otto",
+          "--basetemp=/home/otto/.hermes/cache/scratch/npc-owned-recovery/deployment-observer-repair1/combined51-final-tmp",
+          "--junitxml=/home/otto/.hermes/cache/scratch/npc-owned-recovery/deployment-observer-repair1/combined51-final.xml",
+          "-p",
+          "test_deployment_observer",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_recovery.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_live_recovery.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/accepted-strict-policy-history/test_independent.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_maintenance.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-maintenance-review/test_boundaries.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_deployment_observer.py"
+        ],
+        "exit": 1,
+        "elapsed_seconds": 75.16739732801216,
+        "log": "/home/otto/.hermes/cache/scratch/npc-owned-recovery/deployment-observer-repair1/combined51-final.log",
+        "sha256": "98dbb1c8a7effa7c9e86e312e4addc7915831595a6a2babb4c28afa08009f81f"
+      },
+      "missing-approval-final": {
+        "command": [
+          "/home/otto/dev/ro-bots/.venv/bin/python",
+          "-B",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/live_recovery.py"
+        ],
+        "exit": 2,
+        "elapsed_seconds": 0.059641373984050006,
+        "log": "/home/otto/.hermes/cache/scratch/npc-owned-recovery/deployment-observer-repair1/missing-approval-final.log",
+        "sha256": "f47f58551d37edf5d4f0b51581b80009a5667f63b7abb8df28e8422bb3dd9cee"
+      },
+      "grammar-oracle-correction": {
+        "command": [
+          "/home/otto/dev/ro-bots/.venv/bin/python",
+          "-B",
+          "-m",
+          "pytest",
+          "-q",
+          "-o",
+          "addopts=",
+          "-p",
+          "no:cacheprovider",
+          "--confcutdir=/home/otto/.hermes/cache/scratch/npc-owned-recovery",
+          "--rootdir=/home/otto",
+          "--basetemp=/home/otto/.hermes/cache/scratch/npc-owned-recovery/deployment-observer-repair1/grammar-oracle-correction-tmp",
+          "--junitxml=/home/otto/.hermes/cache/scratch/npc-owned-recovery/deployment-observer-repair1/grammar-oracle-correction.xml",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_deployment_observer.py::test_native_configuration_grammar_and_import_order"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 0.2988346409983933,
+        "log": "/home/otto/.hermes/cache/scratch/npc-owned-recovery/deployment-observer-repair1/grammar-oracle-correction.log",
+        "sha256": "c91dad03511eb111dba9f317cdb7962c64ec389c7d259de488e167c78aac1b31"
+      },
+      "black-qualified": {
+        "command": [
+          "/home/otto/dev/ro-bots/.venv/bin/black",
+          "--check",
+          "--config",
+          "pyproject.toml",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/recovery.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/live_recovery.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_maintenance.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_deployment_observer.py"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 0.29714246199000627,
+        "log": "/home/otto/.hermes/cache/scratch/npc-owned-recovery/deployment-observer-repair1/black-qualified.log",
+        "sha256": "26a5fd9505f2b5608a20c4fed4b4c4795e0783d03b72ade02a6af34dae8ad086"
+      },
+      "ruff-qualified": {
+        "command": [
+          "/home/otto/dev/ro-bots/.venv/bin/ruff",
+          "check",
+          "--config",
+          "pyproject.toml",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/recovery.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/live_recovery.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_maintenance.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_deployment_observer.py"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 0.009936115995515138,
+        "log": "/home/otto/.hermes/cache/scratch/npc-owned-recovery/deployment-observer-repair1/ruff-qualified.log",
+        "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
+      },
+      "mypy-qualified": {
+        "command": [
+          "/home/otto/dev/ro-bots/.venv/bin/mypy",
+          "--strict",
+          "--no-incremental",
+          "--cache-dir=/home/otto/.hermes/cache/scratch/npc-owned-recovery/deployment-observer-repair1/fresh-mypy-qualified",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/recovery.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/live_recovery.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_maintenance.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_deployment_observer.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_live_recovery.py"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 1.4633433959679678,
+        "log": "/home/otto/.hermes/cache/scratch/npc-owned-recovery/deployment-observer-repair1/mypy-qualified.log",
+        "sha256": "e317872697c2cbfdefa321527a6efe73290dff3a390b0fa8723b87092eccba6a"
+      },
+      "xenon-qualified": {
+        "command": [
+          "/home/otto/dev/ro-bots/.venv/bin/xenon",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/recovery.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/live_recovery.py",
+          "src",
+          "--max-absolute",
+          "B",
+          "--max-modules",
+          "B",
+          "--max-average",
+          "A"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 0.3928225369891152,
+        "log": "/home/otto/.hermes/cache/scratch/npc-owned-recovery/deployment-observer-repair1/xenon-qualified.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "duplicates-qualified": {
+        "command": [
+          "/home/otto/dev/ro-bots/.venv/bin/pylint",
+          "--disable=all",
+          "--enable=duplicate-code",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/recovery.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/live_recovery.py",
+          "src",
+          "/home/otto/.hermes/cache/scratch/passive-skill-context-executor-repair1/native_launcher.py"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 3.384932963992469,
+        "log": "/home/otto/.hermes/cache/scratch/npc-owned-recovery/deployment-observer-repair1/duplicates-qualified.log",
+        "sha256": "8cbfc8cd0b04a4858b0b78b74c6df9631a1695e105e6911d4b57fbcc43b218b5"
+      },
+      "combined51-qualified": {
+        "command": [
+          "/home/otto/dev/ro-bots/.venv/bin/python",
+          "-B",
+          "-m",
+          "pytest",
+          "-q",
+          "-o",
+          "addopts=",
+          "-p",
+          "no:cacheprovider",
+          "--confcutdir=/home/otto/.hermes/cache/scratch/npc-owned-recovery",
+          "--rootdir=/home/otto",
+          "--basetemp=/home/otto/.hermes/cache/scratch/npc-owned-recovery/deployment-observer-repair1/combined51-qualified-tmp",
+          "--junitxml=/home/otto/.hermes/cache/scratch/npc-owned-recovery/deployment-observer-repair1/combined51-qualified.xml",
+          "-p",
+          "test_deployment_observer",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_recovery.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_live_recovery.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/accepted-strict-policy-history/test_independent.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_maintenance.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-maintenance-review/test_boundaries.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_deployment_observer.py"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 75.34313641197514,
+        "log": "/home/otto/.hermes/cache/scratch/npc-owned-recovery/deployment-observer-repair1/combined51-qualified.log",
+        "sha256": "bf89e6baab96b2ac2856730f25d3ca37fae1b24424ea625f87548ae61235b862"
+      }
+    },
+    "chronology_limit": "Per-run output/JUnit and tool patch chronology retained. Intermediate adapter snapshots were not archived; no intermediate source digests are fabricated."
+  },
+  "regression": {
+    "receipt": {
+      "command": [
+        "/home/otto/dev/ro-bots/.venv/bin/python",
+        "-B",
+        "-m",
+        "pytest",
+        "-q",
+        "-o",
+        "addopts=",
+        "-p",
+        "no:cacheprovider",
+        "--confcutdir=/home/otto/.hermes/cache/scratch/npc-owned-recovery",
+        "--rootdir=/home/otto",
+        "--basetemp=/home/otto/.hermes/cache/scratch/npc-owned-recovery/deployment-observer-repair1/combined51-qualified-tmp",
+        "--junitxml=/home/otto/.hermes/cache/scratch/npc-owned-recovery/deployment-observer-repair1/combined51-qualified.xml",
+        "-p",
+        "test_deployment_observer",
+        "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_recovery.py",
+        "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_live_recovery.py",
+        "/home/otto/.hermes/cache/scratch/npc-owned-recovery/accepted-strict-policy-history/test_independent.py",
+        "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_maintenance.py",
+        "/home/otto/.hermes/cache/scratch/npc-owned-maintenance-review/test_boundaries.py",
+        "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_deployment_observer.py"
+      ],
+      "exit": 0,
+      "elapsed_seconds": 75.34313641197514,
+      "log": "/home/otto/.hermes/cache/scratch/npc-owned-recovery/deployment-observer-repair1/combined51-qualified.log",
+      "sha256": "bf89e6baab96b2ac2856730f25d3ca37fae1b24424ea625f87548ae61235b862"
+    },
+    "xml": "/home/otto/.hermes/cache/scratch/npc-owned-recovery/deployment-observer-repair1/combined51-qualified.xml",
+    "physical_cases": 51,
+    "unique_raw_ids": 51,
+    "current_review_ids_exact": 45,
+    "new_cases": 6,
+    "failures": 0,
+    "errors": 0,
+    "skips": 0,
+    "raw_ids": [
+      ".hermes.cache.scratch.npc-owned-recovery.test_recovery::test_absent_approval_denied_before_any_effect",
+      ".hermes.cache.scratch.npc-owned-recovery.test_recovery::test_fresh_world_ownership_guard_rejects_before_lifecycle[foreign_volume]",
+      ".hermes.cache.scratch.npc-owned-recovery.test_recovery::test_fresh_world_ownership_guard_rejects_before_lifecycle[foreign_player]",
+      ".hermes.cache.scratch.npc-owned-recovery.test_recovery::test_fresh_world_ownership_guard_rejects_before_lifecycle[unknown_player]",
+      ".hermes.cache.scratch.npc-owned-recovery.test_recovery::test_expected_owned_orphan_admitted_as_one_not_fabricated_offline",
+      ".hermes.cache.scratch.npc-owned-recovery.test_recovery::test_driver_owns_exact_command_order_and_reads_actual_offline_transition",
+      ".hermes.cache.scratch.npc-owned-recovery.test_recovery::test_failed_command_stops_sequence_without_release_or_retry[timeout]",
+      ".hermes.cache.scratch.npc-owned-recovery.test_recovery::test_failed_command_stops_sequence_without_release_or_retry[nonzero]",
+      ".hermes.cache.scratch.npc-owned-recovery.test_recovery::test_unsafe_fresh_identity_refuses_without_lifecycle[changed_role]",
+      ".hermes.cache.scratch.npc-owned-recovery.test_recovery::test_unsafe_fresh_identity_refuses_without_lifecycle[database_target]",
+      ".hermes.cache.scratch.npc-owned-recovery.test_recovery::test_unsafe_fresh_identity_refuses_without_lifecycle[foreign_online]",
+      ".hermes.cache.scratch.npc-owned-recovery.test_recovery::test_already_offline_noop_requires_all_guards_and_records_no_commands",
+      ".hermes.cache.scratch.npc-owned-recovery.test_recovery::test_failed_readback_retains_partial_state_without_starting",
+      ".hermes.cache.scratch.npc-owned-recovery.test_recovery::test_listener_without_parser_and_actual_peer_readiness_does_not_advance",
+      ".hermes.cache.scratch.npc-owned-recovery.test_recovery::test_failed_release_retains_owner_without_automatic_retry",
+      ".hermes.cache.scratch.npc-owned-recovery.test_live_recovery::test_default_cli_executes_concrete_callbacks_and_unchanged_helpers",
+      ".hermes.cache.scratch.npc-owned-recovery.test_live_recovery::test_concrete_default_assembly_exists",
+      ".hermes.cache.scratch.npc-owned-recovery.test_live_recovery::test_source_runtime_parser_is_present",
+      ".hermes.cache.scratch.npc-owned-recovery.test_live_recovery::test_cli_approval_refusal_precedes_private_and_engine[missing]",
+      ".hermes.cache.scratch.npc-owned-recovery.test_live_recovery::test_cli_approval_refusal_precedes_private_and_engine[expired]",
+      ".hermes.cache.scratch.npc-owned-recovery.test_live_recovery::test_real_observer_refuses_changed_or_unknown_authority[storage]",
+      ".hermes.cache.scratch.npc-owned-recovery.test_live_recovery::test_real_observer_refuses_changed_or_unknown_authority[foreign_identity]",
+      ".hermes.cache.scratch.npc-owned-recovery.test_live_recovery::test_real_observer_refuses_changed_or_unknown_authority[unknown_players]",
+      ".hermes.cache.scratch.npc-owned-recovery.test_live_recovery::test_delayed_role_peer_and_parser_facts_are_reobserved",
+      ".hermes.cache.scratch.npc-owned-recovery.test_live_recovery::test_sixty_second_timeout_halts_and_retains_actual_lock[timeout]",
+      ".hermes.cache.scratch.npc-owned-recovery.test_live_recovery::test_sixty_second_timeout_halts_and_retains_actual_lock[readiness]",
+      ".hermes.cache.scratch.npc-owned-recovery.test_live_recovery::test_exact_nonlocal_origin_has_safe_custody_and_no_retry",
+      ".hermes.cache.scratch.npc-owned-recovery.accepted-strict-policy-history.test_independent::test_parent_actual_service_labels_through_real_cli",
+      ".hermes.cache.scratch.npc-owned-recovery.accepted-strict-policy-history.test_independent::test_fresh_primitive_boundary_denials[unreadable]",
+      ".hermes.cache.scratch.npc-owned-recovery.accepted-strict-policy-history.test_independent::test_fresh_primitive_boundary_denials[enabled_bootstrap]",
+      ".hermes.cache.scratch.npc-owned-recovery.accepted-strict-policy-history.test_independent::test_fresh_primitive_boundary_denials[nonzero]",
+      ".hermes.cache.scratch.npc-owned-recovery.accepted-strict-policy-history.test_independent::test_fresh_primitive_boundary_denials[expiry]",
+      ".hermes.cache.scratch.npc-owned-recovery.accepted-strict-policy-history.test_independent::test_fresh_primitive_boundary_denials[stale_sql]",
+      ".hermes.cache.scratch.npc-owned-recovery.test_maintenance::test_maintenance_default_cli_preserves_unknown_counts_and_runs_helper_chain",
+      ".hermes.cache.scratch.npc-owned-recovery.test_maintenance::test_normal_stop_start_accepts_only_owned_dynamic_endpoints",
+      ".hermes.cache.scratch.npc-owned-recovery.test_maintenance::test_foreign_or_human_identity_blocks_before_lifecycle",
+      ".hermes.cache.scratch.npc-owned-recovery.test_maintenance::test_strict_policy_and_unmeasured_worker_socket_authority_still_deny",
+      ".hermes.cache.scratch.npc-owned-recovery.test_maintenance::test_fresh_sql_foreign_drift_aborts_before_next_lifecycle_command",
+      ".hermes.cache.scratch.npc-owned-recovery.test_maintenance::test_wrong_network_image_volume_or_database_lifetime_denies",
+      ".hermes.cache.scratch.npc-owned-recovery.test_maintenance::test_real_timeout_and_nonzero_stop_sequence_with_physical_custody",
+      ".hermes.cache.scratch.npc-owned-recovery.test_maintenance::test_both_owned_flags_may_be_one_but_post_char_flags_must_be_zero",
+      ".hermes.cache.scratch.npc-owned-maintenance-review.test_boundaries::test_complete_sql_identity_rechecked_at_every_six_command_boundary",
+      ".hermes.cache.scratch.npc-owned-maintenance-review.test_boundaries::test_real_cli_unknown_is_not_false_zero_and_strict_exclusions_survive",
+      ".hermes.cache.scratch.npc-owned-maintenance-review.test_boundaries::test_missing_stopped_metadata_is_allowed_but_wrong_populated_identity_denies",
+      ".hermes.cache.scratch.npc-owned-maintenance-review.test_boundaries::test_database_lifetime_and_command_failures_stop_without_retry_or_next_start",
+      ".hermes.cache.scratch.npc-owned-recovery.test_deployment_observer::test_native_configuration_grammar_and_import_order",
+      ".hermes.cache.scratch.npc-owned-recovery.test_deployment_observer::test_configuration_imports_fail_closed",
+      ".hermes.cache.scratch.npc-owned-recovery.test_deployment_observer::test_podman_owned_bridge_metadata_and_stopped_transition",
+      ".hermes.cache.scratch.npc-owned-recovery.test_deployment_observer::test_podman_network_foreign_wrong_and_unknown_metadata_denies",
+      ".hermes.cache.scratch.npc-owned-recovery.test_deployment_observer::test_actual_map_port_reaches_default_assembly_and_listener",
+      ".hermes.cache.scratch.npc-owned-recovery.test_deployment_observer::test_wrong_configured_or_observed_ports_deny"
+    ],
+    "historical_assertions_and_source_files_unchanged": true,
+    "raw_identity_normalization": false,
+    "historical_41_identity_provenance": [
+      {
+        "historical_raw_id": ".hermes.cache.scratch.npc-owned-recovery-independent-review.test_independent::test_fresh_primitive_boundary_denials[enabled_bootstrap]",
+        "fresh_raw_id": ".hermes.cache.scratch.npc-owned-recovery.accepted-strict-policy-history.test_independent::test_fresh_primitive_boundary_denials[enabled_bootstrap]",
+        "basis": "Exact unchanged archived test source sha256 76de34efd4208ebef3e9d2fcbc05300c7f4034c095acff444c46671cb6df7479; selector relocation only. Raw XML is not rewritten."
+      },
+      {
+        "historical_raw_id": ".hermes.cache.scratch.npc-owned-recovery-independent-review.test_independent::test_fresh_primitive_boundary_denials[expiry]",
+        "fresh_raw_id": ".hermes.cache.scratch.npc-owned-recovery.accepted-strict-policy-history.test_independent::test_fresh_primitive_boundary_denials[expiry]",
+        "basis": "Exact unchanged archived test source sha256 76de34efd4208ebef3e9d2fcbc05300c7f4034c095acff444c46671cb6df7479; selector relocation only. Raw XML is not rewritten."
+      },
+      {
+        "historical_raw_id": ".hermes.cache.scratch.npc-owned-recovery-independent-review.test_independent::test_fresh_primitive_boundary_denials[nonzero]",
+        "fresh_raw_id": ".hermes.cache.scratch.npc-owned-recovery.accepted-strict-policy-history.test_independent::test_fresh_primitive_boundary_denials[nonzero]",
+        "basis": "Exact unchanged archived test source sha256 76de34efd4208ebef3e9d2fcbc05300c7f4034c095acff444c46671cb6df7479; selector relocation only. Raw XML is not rewritten."
+      },
+      {
+        "historical_raw_id": ".hermes.cache.scratch.npc-owned-recovery-independent-review.test_independent::test_fresh_primitive_boundary_denials[stale_sql]",
+        "fresh_raw_id": ".hermes.cache.scratch.npc-owned-recovery.accepted-strict-policy-history.test_independent::test_fresh_primitive_boundary_denials[stale_sql]",
+        "basis": "Exact unchanged archived test source sha256 76de34efd4208ebef3e9d2fcbc05300c7f4034c095acff444c46671cb6df7479; selector relocation only. Raw XML is not rewritten."
+      },
+      {
+        "historical_raw_id": ".hermes.cache.scratch.npc-owned-recovery-independent-review.test_independent::test_fresh_primitive_boundary_denials[unreadable]",
+        "fresh_raw_id": ".hermes.cache.scratch.npc-owned-recovery.accepted-strict-policy-history.test_independent::test_fresh_primitive_boundary_denials[unreadable]",
+        "basis": "Exact unchanged archived test source sha256 76de34efd4208ebef3e9d2fcbc05300c7f4034c095acff444c46671cb6df7479; selector relocation only. Raw XML is not rewritten."
+      },
+      {
+        "historical_raw_id": ".hermes.cache.scratch.npc-owned-recovery-independent-review.test_independent::test_parent_actual_service_labels_through_real_cli",
+        "fresh_raw_id": ".hermes.cache.scratch.npc-owned-recovery.accepted-strict-policy-history.test_independent::test_parent_actual_service_labels_through_real_cli",
+        "basis": "Exact unchanged archived test source sha256 76de34efd4208ebef3e9d2fcbc05300c7f4034c095acff444c46671cb6df7479; selector relocation only. Raw XML is not rewritten."
+      }
+    ],
+    "fixture_oracle_revision": {
+      "method": "Explicit -p test_deployment_observer autouse fixture changes only historical FakeInputs file/subprocess transport data; no old test file or assertion is edited.",
+      "changes": [
+        "Replace obsolete synthetic TCP listener 16122 with literal 15121.",
+        "Replace obsolete map ready-log port literal 16122 with 15121.",
+        "Supply missing native role-port config and configured/observed publication fixtures at literal 16900/16121/15121."
+      ],
+      "provenance": "Root-cause preflight native_port_observation plus exact owned published Ports, and pinned native *_port receivers. New negative cases preserve denial for the old/wrong 16122 value."
+    }
+  },
+  "quality": {
+    "scope": "Unchanged project Black/Ruff; strict fresh mypy of interacting five files; Xenon adapter+driver+src at B/B/A; combined duplicate-code scan adapter+driver+src+restored launcher. No production or root quality settings were changed.",
+    "current_receipts": {
+      "black-qualified": {
+        "command": [
+          "/home/otto/dev/ro-bots/.venv/bin/black",
+          "--check",
+          "--config",
+          "pyproject.toml",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/recovery.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/live_recovery.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_maintenance.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_deployment_observer.py"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 0.29714246199000627,
+        "log": "/home/otto/.hermes/cache/scratch/npc-owned-recovery/deployment-observer-repair1/black-qualified.log",
+        "sha256": "26a5fd9505f2b5608a20c4fed4b4c4795e0783d03b72ade02a6af34dae8ad086"
+      },
+      "ruff-qualified": {
+        "command": [
+          "/home/otto/dev/ro-bots/.venv/bin/ruff",
+          "check",
+          "--config",
+          "pyproject.toml",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/recovery.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/live_recovery.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_maintenance.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_deployment_observer.py"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 0.009936115995515138,
+        "log": "/home/otto/.hermes/cache/scratch/npc-owned-recovery/deployment-observer-repair1/ruff-qualified.log",
+        "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
+      },
+      "mypy-qualified": {
+        "command": [
+          "/home/otto/dev/ro-bots/.venv/bin/mypy",
+          "--strict",
+          "--no-incremental",
+          "--cache-dir=/home/otto/.hermes/cache/scratch/npc-owned-recovery/deployment-observer-repair1/fresh-mypy-qualified",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/recovery.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/live_recovery.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_maintenance.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_deployment_observer.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_live_recovery.py"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 1.4633433959679678,
+        "log": "/home/otto/.hermes/cache/scratch/npc-owned-recovery/deployment-observer-repair1/mypy-qualified.log",
+        "sha256": "e317872697c2cbfdefa321527a6efe73290dff3a390b0fa8723b87092eccba6a"
+      },
+      "xenon-qualified": {
+        "command": [
+          "/home/otto/dev/ro-bots/.venv/bin/xenon",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/recovery.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/live_recovery.py",
+          "src",
+          "--max-absolute",
+          "B",
+          "--max-modules",
+          "B",
+          "--max-average",
+          "A"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 0.3928225369891152,
+        "log": "/home/otto/.hermes/cache/scratch/npc-owned-recovery/deployment-observer-repair1/xenon-qualified.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "duplicates-qualified": {
+        "command": [
+          "/home/otto/dev/ro-bots/.venv/bin/pylint",
+          "--disable=all",
+          "--enable=duplicate-code",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/recovery.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/live_recovery.py",
+          "src",
+          "/home/otto/.hermes/cache/scratch/passive-skill-context-executor-repair1/native_launcher.py"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 3.384932963992469,
+        "log": "/home/otto/.hermes/cache/scratch/npc-owned-recovery/deployment-observer-repair1/duplicates-qualified.log",
+        "sha256": "8cbfc8cd0b04a4858b0b78b74c6df9631a1695e105e6911d4b57fbcc43b218b5"
+      }
+    },
+    "preserved_failed_quality": "Initial Ruff and Xenon receipts are retained. GREEN-only extraction of configuration/import and role-network responsibilities resolved complexity without changing thresholds.",
+    "full_root_rerun": false
+  },
+  "oracle_correction": {
+    "failed_receipt": "combined51-final",
+    "classification": "New characterization expected missing-bound import denial, but canonical-path denial occurs earlier because login/char retain // in the import filename. Only that NEW assertion classification changed. No candidate behavior or historical assertion changed.",
+    "passing_followup": "grammar-oracle-correction"
+  },
+  "integrity": {
+    "accepted_freeze_inputs": 139,
+    "unchanged_inputs": 138,
+    "expected_owned_drift": [
+      {
+        "path": "/home/otto/.hermes/cache/scratch/npc-owned-recovery/live_recovery.py",
+        "accepted_sha256": "d103c4a3cbc8a3e7dd746ef078ec61ff6b42c48e44ddf54f6ee4d7ca79992c0f",
+        "current_sha256": "e44b5d4b4c71787c3611cfaa09d51c5f46d94c21188f1a18de49a358ea92f122"
+      }
+    ],
+    "restored_helpers": [
+      {
+        "target": "/home/otto/.hermes/cache/scratch/passive-skill-context-executor-repair1/native_launcher.py",
+        "backup": "/home/otto/dev/ro-bots/run/public-source/owned-maintenance-helpers/native_launcher.py",
+        "sha256": "1ccce03fc6d57107690300aeb1f3f6bfb568bc01f781d2ca64e912cf7a92f1aa",
+        "both_exact": true
+      },
+      {
+        "target": "/home/otto/.hermes/cache/scratch/native-observer-helper-repair2/playing-mvp-engine-preflight.py",
+        "backup": "/home/otto/dev/ro-bots/run/public-source/owned-maintenance-helpers/playing-mvp-engine-preflight.py",
+        "sha256": "5fdcf1681fe28e08325622873ba00418381ebe44e085eac3273becbfd26cfe1e",
+        "both_exact": true
+      },
+      {
+        "target": "/home/otto/.hermes/cache/scratch/native-observer-helper-repair2/playing-mvp-live-preflight.py",
+        "backup": "/home/otto/dev/ro-bots/run/public-source/owned-maintenance-helpers/playing-mvp-live-preflight.py",
+        "sha256": "0259eef01307a8287383a1c65ecca5b4a6f1e8afdd7a69eaf6b1f96703454af6",
+        "both_exact": true
+      },
+      {
+        "target": "/home/otto/.hermes/cache/scratch/native-observer-helper-repair2/playing-mvp-readonly-baseline.py",
+        "backup": "/home/otto/dev/ro-bots/run/public-source/owned-maintenance-helpers/playing-mvp-readonly-baseline.py",
+        "sha256": "12f21a99f8e0c7e0878faf75a3e3ebcdceccb3803594e9ed18a59ae90ab39cd8",
+        "both_exact": true
+      }
+    ],
+    "public_backup_manifest_exact": true,
+    "completed_source_hashes": {
+      "/home/otto/.hermes/cache/scratch/npc-owned-recovery/live_recovery.py": "e44b5d4b4c71787c3611cfaa09d51c5f46d94c21188f1a18de49a358ea92f122",
+      "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_deployment_observer.py": "4592bb937672f182136b217fefd4180d9284ecc03da8a6f6573e5971b1d2432d"
+    },
+    "qualified_source_freeze": "/home/otto/.hermes/cache/scratch/npc-owned-recovery/deployment-observer-repair1/qualified-source-freeze.json",
+    "parser_authority_hashes": {
+      "/home/otto/dev/ro-bots/run/public-source/callback-qualified-e985006171d2/src/map/battle.cpp": "26b32fe653933cede710edf9e48d3fa8a85dc88f0936b93632d00a03ad572578",
+      "/home/otto/dev/ro-bots/run/public-source/callback-qualified-e985006171d2/src/login/login.cpp": "b4b6248b8d504bf8772ab5ab583ed81980855b4295717c06eac34ca36b08baef",
+      "/home/otto/dev/ro-bots/run/public-source/callback-qualified-e985006171d2/src/char/char.cpp": "141dd411c11ec9663d49e1274203ba28bdf3761cce0f98782a8cfd37ee34cdff",
+      "/home/otto/dev/ro-bots/run/public-source/callback-qualified-e985006171d2/src/map/map.cpp": "9629e6b751ca3fd9d160e48c0beb80bf7bbe0c359fa7ecdb46698b074e6c1113",
+      "/home/otto/dev/ro-bots/run/public-source/callback-qualified-e985006171d2/src/common/strlib.cpp": "e0c198ad92d701a9d12dbf5507a449a94dee953629f3e0b0764b15a61ba7be66"
+    },
+    "unchanged_policy_ASTs": [
+      "transport",
+      "current_logs",
+      "logs",
+      "native_facts",
+      "player_counts",
+      "player_event",
+      "classify_socket",
+      "socket_facts",
+      "owned_socket_inodes",
+      "query",
+      "database_role",
+      "run",
+      "main",
+      "private_inputs",
+      "lock"
+    ]
+  },
+  "remaining_blockers": [
+    "PID-owned /proc native FD readlinks remain PermissionError errno 13; clients/peers/health stay unknown, with no namespace or permission workaround.",
+    "Database lifetime SQL error markers still make the guarded query refuse with role_fault. No database-error waiver.",
+    "Complete char/map current-lifetime timestamped logs still refuse ValueError. No timestamped-log filtering or readiness waiver."
+  ],
+  "effects": {
+    "actual_Docker": 0,
+    "actual_SQL": 0,
+    "actual_native_or_provider": 0,
+    "actual_private_configuration_reads": 0,
+    "configuration_or_service_changes": 0,
+    "Git_mutations": 0,
+    "dependency_installs_or_changes": 0,
+    "writes": "Owned candidate/test/new report and new task archive/receipts; synthetic transport fixtures only."
+  },
+  "native_activation": "REVOKED_UNCHANGED",
+  "actual_recovery": "NOT_EXECUTED",
+  "current_execution_approval": "NOT_ISSUED",
+  "next": "Parent combines independent read-only diagnostics and obtains one completed-snapshot review before any operation.",
+  "artifacts": {
+    "/home/otto/.hermes/cache/scratch/npc-owned-recovery/deployment-observer-repair1/configuration-red.log": "df64e0bf80cac516c8977ff0c4279fca6a52f3bc25340551c895f27076d75537",
+    "/home/otto/.hermes/cache/scratch/npc-owned-recovery/deployment-observer-repair1/configuration-green.log": "e596cce97643441f2f2c7ef01ee068b6705ce1e028a07a32ba3bd3b3d35d7353",
+    "/home/otto/.hermes/cache/scratch/npc-owned-recovery/deployment-observer-repair1/import-denial-probe.log": "1c467a9bcc15f4f3ad711a9f487678375ec5333b8dc052b47ab1c0f188789578",
+    "/home/otto/.hermes/cache/scratch/npc-owned-recovery/deployment-observer-repair1/podman-red.log": "03f60d653f46602039778d0e81d697382fec070a8d89408799ceae2db4c97bcb",
+    "/home/otto/.hermes/cache/scratch/npc-owned-recovery/deployment-observer-repair1/configuration-closure-green.log": "449f48faab28952069f2e297454c2a3b0f42069bcbc27c7b2b56439fc80297ed",
+    "/home/otto/.hermes/cache/scratch/npc-owned-recovery/deployment-observer-repair1/podman-green.log": "c91dad03511eb111dba9f317cdb7962c64ec389c7d259de488e167c78aac1b31",
+    "/home/otto/.hermes/cache/scratch/npc-owned-recovery/deployment-observer-repair1/podman-denials.log": "fa8e3e1f0a4b084326a7027307e5cc3a94f799f9733ea598c3b878fa3c70f37c",
+    "/home/otto/.hermes/cache/scratch/npc-owned-recovery/deployment-observer-repair1/map-port-red.log": "ed058e7f4f216d14c90ab69a9056a7e8973f7974a9991440545400b1be771b87",
+    "/home/otto/.hermes/cache/scratch/npc-owned-recovery/deployment-observer-repair1/map-port-green.log": "6edbdf6855c1e52b6d4717078920b961e1ebf9a67b233ef94fd73219a3da75b8",
+    "/home/otto/.hermes/cache/scratch/npc-owned-recovery/deployment-observer-repair1/port-validation-red.log": "494b657da4c7e0a3a0bb6c43d41c825e7f30cfe557226e1597d7dd22f3540544",
+    "/home/otto/.hermes/cache/scratch/npc-owned-recovery/deployment-observer-repair1/publication-red.log": "5a8ad30b6525e9058068fa19ab6000c48843c7abec322955ff6bd7342f015f25",
+    "/home/otto/.hermes/cache/scratch/npc-owned-recovery/deployment-observer-repair1/ports-validation-green.log": "3459dd0fd3d0918a7a46de3c450cbd0bf495e128eeaf38ff04b2267ff461d462",
+    "/home/otto/.hermes/cache/scratch/npc-owned-recovery/deployment-observer-repair1/new-six-green.log": "01a500f809b9d9a3ea7f89f8c0701d3ed699d0c6f851f3ac4717a8596e4f46b5",
+    "/home/otto/.hermes/cache/scratch/npc-owned-recovery/deployment-observer-repair1/format.log": "dbf1fff6d71be8a6019abfe9d66183e170ace8f97d3f36ec85437798d12cb6be",
+    "/home/otto/.hermes/cache/scratch/npc-owned-recovery/deployment-observer-repair1/black-initial.log": "26a5fd9505f2b5608a20c4fed4b4c4795e0783d03b72ade02a6af34dae8ad086",
+    "/home/otto/.hermes/cache/scratch/npc-owned-recovery/deployment-observer-repair1/ruff-initial.log": "cb391c68ed057b55ff54cadb72a907b1b2dd1ad5d1b7ca933505a10820baf046",
+    "/home/otto/.hermes/cache/scratch/npc-owned-recovery/deployment-observer-repair1/mypy-initial.log": "e317872697c2cbfdefa321527a6efe73290dff3a390b0fa8723b87092eccba6a",
+    "/home/otto/.hermes/cache/scratch/npc-owned-recovery/deployment-observer-repair1/xenon-initial.log": "417b3e854d9457d653b9f95ea97d2b51ce7125af6134f6ff34ff867fbdb01e65",
+    "/home/otto/.hermes/cache/scratch/npc-owned-recovery/deployment-observer-repair1/duplicates-initial.log": "8cbfc8cd0b04a4858b0b78b74c6df9631a1695e105e6911d4b57fbcc43b218b5",
+    "/home/otto/.hermes/cache/scratch/npc-owned-recovery/deployment-observer-repair1/combined51-initial.log": "6c9113ab36884239ef9c2ebd2fd73e1c2c17d642ffe4456d3692b4b4ae2aacdf",
+    "/home/otto/.hermes/cache/scratch/npc-owned-recovery/deployment-observer-repair1/format-refactor.log": "1b21b317351977b6c3be2874dfe958932cfc493c245a095524fd1c020c2816de",
+    "/home/otto/.hermes/cache/scratch/npc-owned-recovery/deployment-observer-repair1/ruff-refactor.log": "f80d87883b69a952fc6417bc35125e8918fde984efd220cc3a60b947fd8be710",
+    "/home/otto/.hermes/cache/scratch/npc-owned-recovery/deployment-observer-repair1/xenon-refactor.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/npc-owned-recovery/deployment-observer-repair1/refactor-six.log": "9e51cb12ac1f38a206055a88854fe0a21a2e3dcfb31c8b17162effc3b0ca58dd",
+    "/home/otto/.hermes/cache/scratch/npc-owned-recovery/deployment-observer-repair1/format-final-prep.log": "7a55b4457b0193aa92cd83153593aed78e11dbf649419e33eba5040089c4c198",
+    "/home/otto/.hermes/cache/scratch/npc-owned-recovery/deployment-observer-repair1/ruff-final-prep.log": "a1ba473d8f64f1d4749541c4b5bc16e9a47d51a04ee1e1fc9b014fc749a2274e",
+    "/home/otto/.hermes/cache/scratch/npc-owned-recovery/deployment-observer-repair1/mypy-final-prep.log": "e317872697c2cbfdefa321527a6efe73290dff3a390b0fa8723b87092eccba6a",
+    "/home/otto/.hermes/cache/scratch/npc-owned-recovery/deployment-observer-repair1/format-last.log": "7a55b4457b0193aa92cd83153593aed78e11dbf649419e33eba5040089c4c198",
+    "/home/otto/.hermes/cache/scratch/npc-owned-recovery/deployment-observer-repair1/ruff-last.log": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+    "/home/otto/.hermes/cache/scratch/npc-owned-recovery/deployment-observer-repair1/grammar-whitespace-red.log": "521b13682170492f6ec489dd698c471f9177c39624e76e385bb1e7104f3adf8a",
+    "/home/otto/.hermes/cache/scratch/npc-owned-recovery/deployment-observer-repair1/grammar-whitespace-green.log": "09229b326b028651d725fa47cd1bae9fd8e0145ff8779bdb84ae2762c00ab737",
+    "/home/otto/.hermes/cache/scratch/npc-owned-recovery/deployment-observer-repair1/format-complete.log": "079597f80cc2a49df172f22e37b704dbe6ac4e56ed699ff0ba9bba8fda90190b",
+    "/home/otto/.hermes/cache/scratch/npc-owned-recovery/deployment-observer-repair1/black-final.log": "26a5fd9505f2b5608a20c4fed4b4c4795e0783d03b72ade02a6af34dae8ad086",
+    "/home/otto/.hermes/cache/scratch/npc-owned-recovery/deployment-observer-repair1/ruff-final.log": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+    "/home/otto/.hermes/cache/scratch/npc-owned-recovery/deployment-observer-repair1/mypy-final.log": "e317872697c2cbfdefa321527a6efe73290dff3a390b0fa8723b87092eccba6a",
+    "/home/otto/.hermes/cache/scratch/npc-owned-recovery/deployment-observer-repair1/xenon-final.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/npc-owned-recovery/deployment-observer-repair1/duplicates-final.log": "8cbfc8cd0b04a4858b0b78b74c6df9631a1695e105e6911d4b57fbcc43b218b5",
+    "/home/otto/.hermes/cache/scratch/npc-owned-recovery/deployment-observer-repair1/combined51-final.log": "98dbb1c8a7effa7c9e86e312e4addc7915831595a6a2babb4c28afa08009f81f",
+    "/home/otto/.hermes/cache/scratch/npc-owned-recovery/deployment-observer-repair1/missing-approval-final.log": "f47f58551d37edf5d4f0b51581b80009a5667f63b7abb8df28e8422bb3dd9cee",
+    "/home/otto/.hermes/cache/scratch/npc-owned-recovery/deployment-observer-repair1/grammar-oracle-correction.log": "c91dad03511eb111dba9f317cdb7962c64ec389c7d259de488e167c78aac1b31",
+    "/home/otto/.hermes/cache/scratch/npc-owned-recovery/deployment-observer-repair1/black-qualified.log": "26a5fd9505f2b5608a20c4fed4b4c4795e0783d03b72ade02a6af34dae8ad086",
+    "/home/otto/.hermes/cache/scratch/npc-owned-recovery/deployment-observer-repair1/ruff-qualified.log": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+    "/home/otto/.hermes/cache/scratch/npc-owned-recovery/deployment-observer-repair1/mypy-qualified.log": "e317872697c2cbfdefa321527a6efe73290dff3a390b0fa8723b87092eccba6a",
+    "/home/otto/.hermes/cache/scratch/npc-owned-recovery/deployment-observer-repair1/xenon-qualified.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/npc-owned-recovery/deployment-observer-repair1/duplicates-qualified.log": "8cbfc8cd0b04a4858b0b78b74c6df9631a1695e105e6911d4b57fbcc43b218b5",
+    "/home/otto/.hermes/cache/scratch/npc-owned-recovery/deployment-observer-repair1/combined51-qualified.log": "bf89e6baab96b2ac2856730f25d3ca37fae1b24424ea625f87548ae61235b862",
+    "/home/otto/.hermes/cache/scratch/npc-owned-recovery/deployment-observer-repair1/combined51-final.xml": "5cba0598f9884e0c47c590b28c866cb7b9347e682fc549f11cea272abf98440f",
+    "/home/otto/.hermes/cache/scratch/npc-owned-recovery/deployment-observer-repair1/port-validation-red.xml": "e217b69510d874ea38c7ff570a5eff3a985a294e3255dd0d802999f11e2ec41c",
+    "/home/otto/.hermes/cache/scratch/npc-owned-recovery/deployment-observer-repair1/combined51-initial.xml": "6f274e1f786080dadce86f5e963a966c05ae01a170e98ba15defd20431c5e948",
+    "/home/otto/.hermes/cache/scratch/npc-owned-recovery/deployment-observer-repair1/configuration-red.xml": "f6b5b686cb27247750591600ea750611c8001086fb6997412c078579b82d2fb3",
+    "/home/otto/.hermes/cache/scratch/npc-owned-recovery/deployment-observer-repair1/new-six-green.xml": "d31ad2439a468698473a854c041cc960576118ff156713d94413b75ca035e1b8",
+    "/home/otto/.hermes/cache/scratch/npc-owned-recovery/deployment-observer-repair1/grammar-whitespace-green.xml": "4217fb06d3d8dec9a3731b1e8be87e4768fae4aeb082bd4008053807de173a79",
+    "/home/otto/.hermes/cache/scratch/npc-owned-recovery/deployment-observer-repair1/import-denial-probe.xml": "46c5d18922651b4684a0165bdd130b6e6c54916be2ebabc173977b591d97d7c0",
+    "/home/otto/.hermes/cache/scratch/npc-owned-recovery/deployment-observer-repair1/grammar-oracle-correction.xml": "bc2c3a81a64675d33871860ad852266d1ad3a45b7b450136b6e564de32759e6b",
+    "/home/otto/.hermes/cache/scratch/npc-owned-recovery/deployment-observer-repair1/ports-validation-green.xml": "78bed792527e1437ba70491dff05b20de7621f31b5bcdce2a043d4963a350703",
+    "/home/otto/.hermes/cache/scratch/npc-owned-recovery/deployment-observer-repair1/configuration-closure-green.xml": "02732cbf38a18ac34a628bdd6c3af73a1ea62aa84edbf44c28ac3f63018f009d",
+    "/home/otto/.hermes/cache/scratch/npc-owned-recovery/deployment-observer-repair1/map-port-red.xml": "d34142a8c28c52edc7da853fafa1dd930f88d11399dc40d9f83b10fb26db18ce",
+    "/home/otto/.hermes/cache/scratch/npc-owned-recovery/deployment-observer-repair1/podman-denials.xml": "2990840340469dece0efa997354f5eb5363ddab4eeda9f8719cb5f51d6fab756",
+    "/home/otto/.hermes/cache/scratch/npc-owned-recovery/deployment-observer-repair1/configuration-green.xml": "15a88551640179e3fb57490d80853a73fbe5aac97ec1f34459cac9bc777961c4",
+    "/home/otto/.hermes/cache/scratch/npc-owned-recovery/deployment-observer-repair1/combined51-qualified.xml": "234ad49bda9a376b090bf466cf1024bf78bbdc74c6eb55e4c622b719e70d8464",
+    "/home/otto/.hermes/cache/scratch/npc-owned-recovery/deployment-observer-repair1/refactor-six.xml": "8c59464c531e43db40240404b497758c812611841c0eb75c35bd5cb307e4d928",
+    "/home/otto/.hermes/cache/scratch/npc-owned-recovery/deployment-observer-repair1/grammar-whitespace-red.xml": "77e4348ad9643104779e3d20cb790ee64634a9e4a355a88b2a78c31a144d6f7f",
+    "/home/otto/.hermes/cache/scratch/npc-owned-recovery/deployment-observer-repair1/map-port-green.xml": "9b92d88799fddf1b0ac84bfb7fbcc2656efb142c9d3a22031a1df9bed7d72463",
+    "/home/otto/.hermes/cache/scratch/npc-owned-recovery/deployment-observer-repair1/publication-red.xml": "88fcd719baf8fc3322651ca747ca7512f65ee0fa765110839aa0f1d355e2a9c9",
+    "/home/otto/.hermes/cache/scratch/npc-owned-recovery/deployment-observer-repair1/podman-red.xml": "73960b010eb394ecddafeca2d33d9046bcd9e9d816c3657f97356632de084ea9",
+    "/home/otto/.hermes/cache/scratch/npc-owned-recovery/deployment-observer-repair1/podman-green.xml": "99db14e546cbcda5978e38b4fd846fea0676b704d4c98b86e6ce032c41a81e2c",
+    "/home/otto/.hermes/cache/scratch/npc-owned-recovery/deployment-observer-repair1/accepted-live_recovery.py": "d103c4a3cbc8a3e7dd746ef078ec61ff6b42c48e44ddf54f6ee4d7ca79992c0f",
+    "/home/otto/.hermes/cache/scratch/npc-owned-recovery/deployment-observer-repair1/adapter.diff": "c3957716f2ad0fe058f8f48ac5fbd3905189957cf708a6f82ae4bb201736e85f",
+    "/home/otto/.hermes/cache/scratch/npc-owned-recovery/deployment-observer-repair1/qualified-source-freeze.json": "5e05e27cbffdcd91b0f2b57dafe6495c39dc149b82f37f3641805960e6d1871b",
+    "/home/otto/.hermes/cache/scratch/npc-owned-recovery/deployment-observer-repair1/combined51-qualified-parsed.json": "86fbf532f07e62607f3d399a2317a2072581452d15f616c8a2216ff838f2bed7"
+  }
+}

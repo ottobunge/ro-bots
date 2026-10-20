@@ -1,0 +1,368 @@
+{
+  "passed": false,
+  "verdict": "rejected",
+  "review_type": "final_independent_read_only_second_cycle_core_review",
+  "repair_cycle": 2,
+  "completed_at": "2026-10-05T13:29:59.863427+02:00",
+  "repository": "/home/otto/dev/ro-bots",
+  "head": "15e0fef5334a7d9d7bb0ae6b8953e367e828bfb2",
+  "summary": "All three named interruption/cleanup defects are independently resolved at the exact unchanged repair hashes, and join-before-close probes pass. Final integration approval is rejected fail-closed because concurrent unowned WorldState edits prevented a stable reviewed/tested dependency snapshot within the bounded review.",
+  "security_concerns": [],
+  "logic_errors": [
+    {
+      "id": "CORE-SECOND-CYCLE-004",
+      "severity": "blocking_verification_gap",
+      "file": "src/robots/app/world_state.py",
+      "title": "Concurrent dependency drift prevents final lifecycle/integration approval",
+      "description": "Final hash verification repeatedly detected concurrent WorldState changes. An intermediate source snapshot removed roster access and produced 66 AttributeError failures in core host construction and inspector paths; a later reread source restored roster access and the next 170-case suite plus independent probes passed, but WorldState changed again before final hash verification. The transient roster defect is not claimed to remain in latest source; latest source lifecycle/lock behavior is not certified.",
+      "reproduction": "Run the exact recorded guarded scoped suite while fingerprinting WorldState before and after, then compare against the current dependency. Final bounded execution passed, but its captured dependency hash differs from current.",
+      "observed": {
+        "last_scoped_tests": {
+          "tests": 170,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "last_scoped_passed": 170,
+        "intermediate_failed": 66,
+        "intermediate_passed": 104,
+        "intermediate_failure_messages": {
+          "AttributeError: 'WorldState' object has no attribute 'roster'": 66
+        },
+        "last_run_dependency_hash": "e701d6c6df85584554746bf435db80bd9c18897547010b214461dae269cd3a51",
+        "current_observed_dependency_hash": "01dcd22cd81d3ff24373fed08d4e0ca1007e1a5be73341d43825da2a36e57f03",
+        "stable_review_test_snapshot": false
+      },
+      "origin": "Concurrent unowned population/aggregate-lock implementation, not a reproduced failure of the three interruption repairs.",
+      "escalation_frontier": "Stop parallel writes to the shared lifecycle dependency and let parent/user decide on a frozen integration snapshot plus one explicit read-only revalidation. Do not launch a third core repair agent or automatic fix loop; preserve the three resolved issue IDs and their exact hashes."
+    }
+  ],
+  "issue_resolutions": [
+    {
+      "id": "CORE-REREVIEW-001",
+      "status": "resolved",
+      "file": "src/robots/adapters/memory_journal.py",
+      "lines": [
+        137,
+        156
+      ],
+      "finding": "The write/flush/fsync section catches BaseException, sets _failed, and bare-raises the original. Memory only publishes after append returns. Validation and serialization precede the uncertain-write try. Hardlink/privacy integrity checks remain in the poison section.",
+      "regressions": "Nine boundary cases across write/flush/fsync and KeyboardInterrupt/SystemExit/RuntimeError, plus four clean prewrite failures, all pass.",
+      "independent_reproduction": "Create a real private store and Memory; wrap os.fsync to call real fsync then raise a custom direct BaseException. Verify exact exception and traceback leaf, zero acknowledged local notes, 113 unacknowledged disk bytes, blocked load/append, unchanged bytes, and retained flock until explicit close. Explicit reopen sees one row; it is not a confirmed local acknowledgement.",
+      "observed": {
+        "status": "pass",
+        "injected_exception": "custom BaseException after real fsync",
+        "origin_identity_preserved": true,
+        "traceback_leaf_preserved": true,
+        "visible_notes": 0,
+        "uncertain_bytes": 113,
+        "read_and_append_blocked": true,
+        "bytes_unchanged_on_retry": true,
+        "lifetime_lock_retained": true
+      }
+    },
+    {
+      "id": "CORE-REREVIEW-002",
+      "status": "resolved",
+      "file": "src/robots/society/memory.py",
+      "lines": [
+        105,
+        112
+      ],
+      "related_file": "src/robots/adapters/memory_journal.py",
+      "related_lines": [
+        163,
+        174
+      ],
+      "finding": "Failed restore covers BaseException, attempts store.close, suppresses secondary cleanup failures, and bare-raises the exact restore origin. Owned store.close uses finally to release its explicit file and directory descriptors; repeated cleanup does not close reused descriptor numbers.",
+      "regressions": "Nine combinations of interrupted/invalid restore and successful/OSError/SystemExit wrapper close pass, including actual EBADF and fresh writer-lock acquisition.",
+      "independent_reproduction": "Construct a real store with an acquired flock, inject custom direct BaseException from load and SystemExit before the text wrapper close performs release. Memory construction must still raise the exact restore origin with the restore leaf; both raw fds must be EBADF and a fresh writer must acquire flock. Restore the wrapper close, close the old store again, and verify the reopened writer fds stay valid.",
+      "observed": {
+        "status": "pass",
+        "injected_exception": "custom BaseException from restore plus SystemExit before wrapper release",
+        "origin_identity_preserved": true,
+        "traceback_leaf_preserved": true,
+        "file_and_directory_fds_closed": true,
+        "fresh_flock_acquired": true,
+        "reused_fds_survived_old_store_close": true,
+        "wrapper_cleanup_fault_not_exposed_as_primary": true
+      },
+      "cleanup_limit": "Secondary wrapper-close failure is intentionally suppressed in favor of restore origin. In the independent before-wrapper-release probe, raw descriptors/lock are released by finally even though wrapper closure was not completed on the initial failed attempt; subsequent fixture cleanup completes wrapper close. No claim that an arbitrary ExperienceStore which refuses its own resource release is repaired."
+    },
+    {
+      "id": "CORE-REREVIEW-003",
+      "status": "resolved",
+      "file": "src/robots/app/agent_runtime.py",
+      "lines": [
+        281,
+        325
+      ],
+      "finding": "_client_cleanup_pending bypasses the offline early return. Offline retries do not repeat session persistence. Before-release or unknown-state close errors retain pending state; a failed close never emits a completed disconnected event. Successful release clears pending. Normal close return is the client completion contract; explicit connected=False after a raised close is treated as already released without emitting the completion event.",
+      "regressions": "Three two-agent, real-journal cases across KeyboardInterrupt/SystemExit/OSError fail before release twice, then release once; exact origins, other-agent cleanup, single session notes, reacquired writer locks and absence of postclose writes all pass.",
+      "independent_reproduction": "Connect two fake-client agents with real journals and disabled worker threading. Remove the first client connected attribute, raise custom direct BaseException before release, and call host.stop twice. Verify exact origin/leaf, offline but pending state, no completed disconnect event, second-client release and fresh journal writers. Restore real release and stop twice plus step: release occurs once, completion event once, and session history remains [1,1].",
+      "observed": {
+        "status": "pass",
+        "injected_exception": "custom BaseException before release with no connected attribute",
+        "offline_retries": 2,
+        "successful_release_calls": 1,
+        "origin_identity_preserved": true,
+        "traceback_leaf_preserved": true,
+        "no_false_disconnected_event": true,
+        "other_agent_cleaned": true,
+        "journals_reacquirable_after_each_stop": true,
+        "session_note_counts": [
+          1,
+          1
+        ],
+        "successful_disconnect_event_count": 1,
+        "no_postclose_append_or_duplicate_release": true
+      }
+    }
+  ],
+  "scoped_checks": [
+    {
+      "name": "join-before-close and failed-join ownership retention",
+      "status": "pass",
+      "source": "src/robots/app/agent_runtime.py:118-126,281-312,699-729,749-757",
+      "evidence": "Original controlled-thread tests pass: signal every worker before waiting; timeout-free joins; retain worker/inspector references for raised, returned-alive and self-join failures; prevent any journal close while a retained producer lives; permit final real journal writes; aggregate ordinary and BaseException failures only after safe cleanup.",
+      "independent_reproduction": "Real event-blocked worker and inspector write final records. Inject custom BaseException from worker.join during stop. Confirm exact origin, retained live worker reference and exclusive journal lock, then release worker and retry; both final writes replay and producers are dead before journal lock release.",
+      "observed": {
+        "status": "pass",
+        "custom_BaseException_join_origin_preserved": true,
+        "live_worker_reference_retained": true,
+        "writer_lock_retained_while_worker_live": true,
+        "worker_and_inspector_final_writes_replayed": true,
+        "both_producers_joined_before_release": true
+      },
+      "limit": "Joins have no timeout and can block indefinitely if producers never finish. A client receive reader is not the ScheduledAgent memory producer; client.close owns that separate resource contract."
+    },
+    {
+      "name": "WorldState lifecycle impact only",
+      "status": "blocked_by_concurrent_hash_drift",
+      "evidence": "A reread completed-looking source released aggregate state lock before private-memory summary operations and retained the host-bound regeneration guard; the next suite and independent probes passed. Final hash guard detected another change, so current dependency lifecycle invariants are unapproved. No unrelated unfinished population acceptance defect is asserted."
+    },
+    {
+      "name": "historical memory/journal/host/feed offline regressions",
+      "status": "pass",
+      "evidence": "145 historical cases and 25 interruption-cleanup cases independently rerun; in-process ASGI tests and bounded SSE generator tests do not start live services. Serialized append/local publication, close locking, summary construction, real descriptor/flock and namespace boundaries continue passing."
+    }
+  ],
+  "verification": {
+    "scoped_test_files": [
+      "tests/test_core_interruption_cleanup.py",
+      "tests/test_memory_storage.py",
+      "tests/test_memory_concurrency.py",
+      "tests/test_memory_journal_failures.py",
+      "tests/test_memory_journal_boundary.py",
+      "tests/test_host_memory.py",
+      "tests/test_host_storage_failure.py",
+      "tests/test_agent_host.py",
+      "tests/test_world_state.py",
+      "tests/test_worldfeed_retention.py",
+      "tests/test_worldfeed_server.py"
+    ],
+    "first_offline_run": {
+      "exit_code": 0,
+      "passed": 170,
+      "seconds": 4.27,
+      "junit": "/home/otto/.hermes/cache/scratch/core_second_cycle_pytest.xml"
+    },
+    "network_guarded_repeat": {
+      "command": "timeout -k 5 150 nix develop -c bash -c 'export PYTHONPATH=/home/otto/.hermes/cache/scratch:${PYTHONPATH:-}; export PYTHONDONTWRITEBYTECODE=1; uv run pytest -p core_interruption_offline_gate -p core_second_cycle_network_guard -o addopts= -p no:cacheprovider -q -o faulthandler_timeout=15 --basetemp=/home/otto/.hermes/cache/scratch/core_second_cycle_guarded_pytest --junitxml=/home/otto/.hermes/cache/scratch/core_second_cycle_guarded_pytest.xml tests/test_core_interruption_cleanup.py tests/test_memory_storage.py tests/test_memory_concurrency.py tests/test_memory_journal_failures.py tests/test_memory_journal_boundary.py tests/test_host_memory.py tests/test_host_storage_failure.py tests/test_agent_host.py tests/test_world_state.py tests/test_worldfeed_retention.py tests/test_worldfeed_server.py'",
+      "exit_code": 0,
+      "passed": 170,
+      "seconds": 4.16,
+      "junit": "/home/otto/.hermes/cache/scratch/core_second_cycle_guarded_pytest.xml",
+      "reconciled_counts": {
+        "tests": 170,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "new_regressions": 25
+      },
+      "offline_autodetection_gate_inspected_before_use": true,
+      "network_audit": {
+        "test_exitstatus": 0,
+        "forbidden_network_attempts": []
+      },
+      "audit_scope": "Python test-process socket.connect/socket.bind/socket.getaddrinfo; inherited fresh-process memory tests are the two reviewed standalone journal replay snippets, not a recursively enforced OS network sandbox."
+    },
+    "independent_probes": {
+      "command": "timeout -k 5 45 nix develop -c bash -c 'export PYTHONDONTWRITEBYTECODE=1; uv run python /home/otto/.hermes/cache/scratch/core_second_cycle_independent.py'",
+      "exit_code": 0,
+      "probe_groups": 4,
+      "script": "/home/otto/.hermes/cache/scratch/core_second_cycle_independent.py",
+      "results": "/home/otto/.hermes/cache/scratch/core_second_cycle_independent_results.json",
+      "all_assertions_passed": true,
+      "network_audit": "socket connect/bind/name-resolution calls fail immediately"
+    },
+    "warnings": [
+      "Existing Starlette/httpx TestClient deprecation warning",
+      "Nix dirty-tree warning; checkout includes concurrent unowned changes"
+    ],
+    "implementation_report_claims": "Read original blocker report and exact repair report; repair claims are context only, not the approval oracle. All four repair hashes exactly match reviewed current files.",
+    "repository_wide_gates": "Not rerun or certified here. Parent full task/static/dependency results are not used as review approval.",
+    "last_bounded_repeat": {
+      "exit_code": 0,
+      "passed": 170,
+      "seconds": 4.07,
+      "reconciled_counts": {
+        "tests": 170,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "independent_probes_repeated": true,
+      "junit": "/home/otto/.hermes/cache/scratch/core_second_cycle_stable_pytest.xml",
+      "dependency_hash_before_execution": {
+        "src/robots/app/world_state.py": "e701d6c6df85584554746bf435db80bd9c18897547010b214461dae269cd3a51"
+      },
+      "dependency_hash_at_final_check": "01dcd22cd81d3ff24373fed08d4e0ca1007e1a5be73341d43825da2a36e57f03",
+      "world_state_hash_stable_at_final_check": false,
+      "network_audit": {
+        "test_exitstatus": 0,
+        "forbidden_network_attempts": []
+      },
+      "command": "timeout -k 5 150 nix develop -c bash -c 'export PYTHONPATH=/home/otto/.hermes/cache/scratch:${PYTHONPATH:-}; export PYTHONDONTWRITEBYTECODE=1; uv run pytest -p core_interruption_offline_gate -p core_second_cycle_network_guard -o addopts= -p no:cacheprovider -q --tb=no -o faulthandler_timeout=15 --basetemp=/home/otto/.hermes/cache/scratch/core_second_cycle_stable_pytest --junitxml=/home/otto/.hermes/cache/scratch/core_second_cycle_stable_pytest.xml tests/test_core_interruption_cleanup.py tests/test_memory_storage.py tests/test_memory_concurrency.py tests/test_memory_journal_failures.py tests/test_memory_journal_boundary.py tests/test_host_memory.py tests/test_host_storage_failure.py tests/test_agent_host.py tests/test_world_state.py tests/test_worldfeed_retention.py tests/test_worldfeed_server.py'; then repeat independently recorded probe command"
+    },
+    "intermediate_concurrent_drift_run": {
+      "exit_code": 1,
+      "passed": 104,
+      "failed": 66,
+      "reconciled_counts": {
+        "tests": 170,
+        "failures": 66,
+        "errors": 0,
+        "skipped": 0
+      },
+      "failure_messages": {
+        "AttributeError: 'WorldState' object has no attribute 'roster'": 66
+      },
+      "world_state_observed_sha256": "3c18daf89dae85a8ebafbc40f3f757c9e4f7db4dca0caf0b4db281b3984f5b9a",
+      "junit": "/home/otto/.hermes/cache/scratch/core_second_cycle_final_pytest.xml",
+      "evidence_limit": "Temporary _roster migration had not yet exposed roster property. A later source inspection restored that property; failure not represented as persisting in current source."
+    },
+    "final_hash_recheck": "All three repaired production files, reviewed tests, and input reports match original reviewed hashes; WorldState has continued changing, so fail-closed final integrated approval is withheld."
+  },
+  "source_hash_algorithm": "sha256",
+  "source_hashes": {
+    "src/robots/society/memory.py": "29dc3abf394daa6107ee72215f7d514220d6262d0e22351911d2bc24246a3ff2",
+    "src/robots/adapters/memory_journal.py": "043f109ba8e637b4b26a7a4cd601e64bffa3512815ea0cfbca8c2737c3fb3a00",
+    "src/robots/app/agent_runtime.py": "c05942f8f02059af78f43273a8d59c67eda8c77ed2e6263cb27e9f5a7cdfdef8",
+    "src/robots/app/world_state.py": "01dcd22cd81d3ff24373fed08d4e0ca1007e1a5be73341d43825da2a36e57f03"
+  },
+  "test_hashes": {
+    "tests/test_core_interruption_cleanup.py": "e985a3f00adebc4161378b6fbe8a7e4e91b6f282e725faee0eef54440f50b3bf",
+    "tests/test_memory_storage.py": "1b5ea2b86b922adaef75c560680eb309a3674873abab2cfd7e1fdfba0e4a069b",
+    "tests/test_memory_concurrency.py": "b3023d86a987dbb701cd4767814473fb5330cda50055f70a062ba67d2b1239d3",
+    "tests/test_memory_journal_failures.py": "13e7cc87bfb390dbf4f8fd24e82f3932c1333dc0db35ee350f5c9f9e3160957e",
+    "tests/test_memory_journal_boundary.py": "d5754f1a9e5eacfeabba031118d980fae8ada3df5426983e509ebcd0d10ff56a",
+    "tests/test_host_memory.py": "db28d20ea1d0afa27bc49c5475144f5bd2197cf81c0c147baa91a5bab3bf6d5d",
+    "tests/test_host_storage_failure.py": "0f473837dbcaf1461e4b9d7d73090639361d2e0f9d08a1a2489bb9c06e5cb42f",
+    "tests/test_agent_host.py": "effeba83435fb43c76a1578d17e190b93219991dbab491786df56ef02bb808f7",
+    "tests/test_world_state.py": "1b026aa85e1ed5a68cc00bbae2b0c0f61cdbececbd94bb03d5f4085614382727",
+    "tests/test_worldfeed_retention.py": "dec045816b3c457c3cac25b0715dc63f3f03794e401fc48c4c38c8afa08d5c88",
+    "tests/test_worldfeed_server.py": "8c2a151e5739e59e7a390e1497fe5c2497be7ae45f8e8bff74d68c9b59960898"
+  },
+  "input_report_hashes": {
+    "run/reviews/core-memory-feed-rereview.json": "645f8c46d522995acd99c72345031fa29b102ff405f8cb4fd3635897cc2fe3e4",
+    "run/reviews/core-interruption-cleanup-fix.json": "f8c2d5b7e512060ae9cffbcdb110e34cda3be746d4b7370411c7a1ce9658417c"
+  },
+  "repair_hashes_match": {
+    "src/robots/society/memory.py": true,
+    "src/robots/adapters/memory_journal.py": true,
+    "src/robots/app/agent_runtime.py": true,
+    "tests/test_core_interruption_cleanup.py": true
+  },
+  "working_diff_evidence": {
+    "src/robots/society/memory.py": {
+      "kind": "tracked_working_diff",
+      "sha256": "dddc1fe09c134eef5d813a295af3a612821bb1b3df1ffd28d481149a7c77ba81",
+      "added_lines": 60,
+      "whitespace_diagnostics": false
+    },
+    "src/robots/adapters/memory_journal.py": {
+      "kind": "untracked_full_file_diff",
+      "sha256": "11cab8e3a3de102dca25ef98bca7bf7a64a403df60e8fdac93ab5f6b1185c1aa",
+      "added_lines": 174,
+      "whitespace_diagnostics": false
+    },
+    "src/robots/app/agent_runtime.py": {
+      "kind": "untracked_full_file_diff",
+      "sha256": "596915648d9a2fd97c75a5ace86661098c44cbf0eb3b48365010de103f6bfec5",
+      "added_lines": 757,
+      "whitespace_diagnostics": false
+    },
+    "tests/test_core_interruption_cleanup.py": {
+      "kind": "untracked_full_file_diff",
+      "sha256": "57a5585688b386a74d323441513c9ad587d50f67f6643630290b8e291c1520e5",
+      "added_lines": 275,
+      "whitespace_diagnostics": false
+    }
+  },
+  "static_security_scan": {
+    "scope": "Added lines of three owned production files plus new interruption test; untracked files treated as full diffs against /dev/null. No source/staging mutations.",
+    "matches": {
+      "shell_injection": [],
+      "eval_exec": [],
+      "unsafe_deserialization": [],
+      "literal_secret_assignment": []
+    },
+    "whitespace_diagnostics": false,
+    "manual_review": "No blocking security concern found within the named lifecycle/journal boundary; no repository-wide security certification."
+  },
+  "scratch_evidence_hashes": {
+    "core_interruption_offline_gate.py": "cab670f33a5f4daa05aa89677c2ffa61507a4fc501b938d97a14a44381e0bb0c",
+    "core_second_cycle_independent.py": "3527169e1ae754cc78a93cbcf153404214f8f151891fb384f3efb3699692952a",
+    "core_second_cycle_independent_results.json": "906bdbdfa9e5344b543d8963f201b3f18deb17dfbc481eafb73c2b2a0a5ea6a4",
+    "core_second_cycle_network_guard.py": "f979432498defd4c3366adaa9bf44f6ab3be6822479b53509e706ecaca5f5f16",
+    "core_second_cycle_network_guard_results.json": "3b0af7277dad986ad0f4b16479d200155f66aa76d5a5766ab807a4bf4598c90b",
+    "core_second_cycle_guarded_pytest.xml": "3acf1f49f8a1ebe28c89211614a1a2011d8e45aa4aecf80a02ccc329b7d646cc",
+    "core_second_cycle_pytest.xml": "93ddf7e4461db770dca469bbd39d539c2e796cb73de680fb4f4006aec968a519",
+    "core_second_cycle_stable_pytest.xml": "60a6c248221ea39a969b3ed2f9a30961197c81f662d8fce6b7dfc52bbc39ae2f",
+    "core_second_cycle_stable_before.json": "591e1ee3f517dbf7ecb35df9a3f37beb5d09feeea1cf62ba48925ef26667df59",
+    "core_second_cycle_final_pytest.xml": "24542cb53fee1257eb2a0fea3aabe80f2835fc3ea03fe72fe9164072b4ef5abe"
+  },
+  "escalation": {
+    "remaining_blocker_ids": [
+      "CORE-SECOND-CYCLE-004"
+    ],
+    "original_issue_ids_resolved": [
+      "CORE-REREVIEW-001",
+      "CORE-REREVIEW-002",
+      "CORE-REREVIEW-003"
+    ],
+    "frontier": "Stop parallel writes to the shared lifecycle dependency and let parent/user decide on a frozen integration snapshot plus one explicit read-only revalidation. Do not launch a third core repair agent or automatic fix loop; preserve the three resolved issue IDs and their exact hashes.",
+    "auto_fix_loop_permitted": false,
+    "repair_cycle_limit_reached": true
+  },
+  "scope_limits": [
+    "No physical power-loss or arbitrary signal-at-every-instruction certification, and no exactly-once retry guarantee: uncertain rows may replay after explicit reopening.",
+    "Only named successful-session disconnect/stop cleanup and MemoryLog restore boundaries are approved; failed-connect/other constructor cleanup paths are outside this bounded repair review.",
+    "For arbitrary clients, successful close return and an explicit connected=False signal are contracts, not introspection of every internal socket/thread. Before-release and unknown-state errors remain pending.",
+    "No provider inference/discovery, shared services, SQL, login/game/world calls, live HTTP listener, credentials, source/test edits, staging, commits or pushes.",
+    "WorldState population changes are considered only for preserving bound memory/lifecycle invariants, not accepted as completed population requirements.",
+    "Concurrent unowned checkout changes are not approved. Raw journal growth, summary-cache persistence, gameplay, dashboard integration and restart-durable feed IDs are not certified."
+  ],
+  "files_created_or_modified_by_reviewer": [
+    "run/reviews/core-second-cycle-review.json"
+  ],
+  "scratch_artifacts_created": [
+    "/home/otto/.hermes/cache/scratch/core_second_cycle_independent.py",
+    "/home/otto/.hermes/cache/scratch/core_second_cycle_independent_results.json",
+    "/home/otto/.hermes/cache/scratch/core_second_cycle_network_guard.py",
+    "/home/otto/.hermes/cache/scratch/core_second_cycle_network_guard_results.json",
+    "/home/otto/.hermes/cache/scratch/core_second_cycle_pytest.xml",
+    "/home/otto/.hermes/cache/scratch/core_second_cycle_guarded_pytest.xml",
+    "pytest fixture roots under /home/otto/.hermes/cache/scratch/core_second_cycle*_pytest",
+    "/home/otto/.hermes/cache/scratch/core_second_cycle_final_pytest.xml",
+    "/home/otto/.hermes/cache/scratch/core_second_cycle_stable_pytest.xml",
+    "/home/otto/.hermes/cache/scratch/core_second_cycle_stable_before.json"
+  ],
+  "issues_encountered": [
+    "Evidence collection completed successfully; an initial in-memory metadata JSON parse selected the wrong stdout line, was corrected by selecting the JSON object line, and did not affect tests or files.",
+    "Concurrent unowned WorldState edits repeatedly invalidated source fingerprints: one run produced 66 transient roster AttributeErrors, a later run passed all 170 tests and independent probes, then final hash verification caught another change. No source changes made by reviewer; bounded review stops and escalates instead of waiting/repairing indefinitely."
+  ],
+  "named_three_blockers_resolved": true,
+  "source_hash_evidence_limit": "Three owned production hashes are reviewed and match repair report. WorldState hash is latest observed only; dependency changed after last successful suite and is NOT approved at that latest hash."
+}

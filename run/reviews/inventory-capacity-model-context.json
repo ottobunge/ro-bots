@@ -1,0 +1,452 @@
+{
+  "status": "OWNED_CONTEXT_CANDIDATE_GREEN_SCOPED_PENDING_PARENT_COMBINED_REVIEW",
+  "scope": "Read-only received inventory capacity and bound offline server-SELF slot context through actual CLEF request and LLM character investigation",
+  "owned_source_hashes": {
+    "src/robots/domain/decisions.py": "bf6f1d06088a75160be0c5226c44e4379910a525c73eed35d85876108bdc7889",
+    "src/robots/app/planning_context.py": "c999fd8cbb07764200b64e10a3e0f169f002bd8a2e1b5adae9ce8185f4764995",
+    "src/robots/domain/inventory_context.py": "080214b088b52401ddedb6441f32a13ed7c0e19a1b02c7f162e0ebff7cf95d9b",
+    "tests/test_inventory_capacity_model_context.py": "7a6d3e8abbe49102bc37b4b12f9007bf026a6165418429272e9106a251dfdd93"
+  },
+  "owned_existing_original_bytes": {
+    "src/robots/domain/decisions.py": {
+      "path": ".work/inventory-capacity-model-context/original-bytes/src/robots/domain/decisions.py",
+      "sha256": "c19d0cf931b3337809cf2a97fc90062493e54444520dba1ac778f6c723fa34cb"
+    },
+    "src/robots/app/planning_context.py": {
+      "path": ".work/inventory-capacity-model-context/original-bytes/src/robots/app/planning_context.py",
+      "sha256": "f97454f686faa98378d83b8067d1bf0263e6eb873e630e4fdbb45e074e1d880c"
+    }
+  },
+  "changes": [
+    "One shared pure detached projector; two existing consumers each gain an import and one inventory_capacity field",
+    "Receipt-derived weight/max_weight/slots; legacy numeric fields without receipts yield null plus explicit UNKNOWN",
+    "Native independent monotonic receive records, completeness/nonnegative flags, owner/session/history provenance remain distinct from Unix offline source metadata",
+    "No default slot allowance, purchase permission, spend/freshness eligibility or new model action; endpoints omitted from model projection"
+  ],
+  "schema_boundary": "Publisher-owned typed receipts are trusted internal inputs, not a hostile-same-user authenticity boundary. Native source_binding is producer-defined; offline source_id is publisher-limited to 128 ASCII characters with canonical provenance. No new DTO validation or freshness/admission policy.",
+  "tdd_lineage": [
+    {
+      "slice": "Actual parent consumers omission",
+      "original_parent_report": "run/reviews/inventory-capacity-model-context-parent-red.json",
+      "original_parent_red": {
+        "path": ".work/inventory-capacity-model-context/red.xml",
+        "sha256": "0fdbe55466255f12525df45614f5d2a7b0e5161c0403274af48101a15f3191a3",
+        "physical_cases": 2,
+        "unique_cases": 2,
+        "failures": 2,
+        "errors": 0,
+        "skips": 0
+      },
+      "reproduced_red": {
+        "path": ".work/inventory-capacity-model-context/initial-red.xml",
+        "sha256": "beb124ed1ce864896b2ddcc7b51eabb678e90fbcab5a65047554fbd4349f5b55",
+        "physical_cases": 2,
+        "unique_cases": 2,
+        "failures": 2,
+        "errors": 0,
+        "skips": 0
+      },
+      "green": {
+        "path": ".work/inventory-capacity-model-context/initial-green.xml",
+        "sha256": "97391d8f9b992ea0ae753e2aa88c69106296fd4757d4b37d72db7e7c9820a7d1",
+        "physical_cases": 2,
+        "unique_cases": 2,
+        "failures": 0,
+        "errors": 0,
+        "skips": 0
+      },
+      "failure": "inventory_capacity key absent from both actual consumers"
+    },
+    {
+      "slice": "Received vs offline provenance in both actual consumers",
+      "red": {
+        "path": ".work/inventory-capacity-model-context/provenance-red.xml",
+        "sha256": "bb9ceff9982bb0cacfb86df7a9177ffa817cd8a98b2071858822e76683694981",
+        "physical_cases": 2,
+        "unique_cases": 2,
+        "failures": 2,
+        "errors": 0,
+        "skips": 0
+      },
+      "green": {
+        "path": ".work/inventory-capacity-model-context/provenance-green.xml",
+        "sha256": "c4267f758f805dccd4da88fdbadbda34b41e5f84e46907f487d8581b94452707",
+        "physical_cases": 4,
+        "unique_cases": 4,
+        "failures": 0,
+        "errors": 0,
+        "skips": 0
+      },
+      "failure": "native_capacity key absent"
+    },
+    {
+      "slice": "Raw numeric state cannot replace receipts",
+      "red": {
+        "path": ".work/inventory-capacity-model-context/raw-values-red.xml",
+        "sha256": "204b78e121f00a9fd343f862c9864e37c9d48a6f3f072f5fff546679f72aca76",
+        "physical_cases": 4,
+        "unique_cases": 4,
+        "failures": 4,
+        "errors": 0,
+        "skips": 0
+      },
+      "green": {
+        "path": ".work/inventory-capacity-model-context/raw-values-green.xml",
+        "sha256": "f3c8d681b795b876cf22b9989a9cb18d3aec9fc15ad1d95bbcc10d185ba0dbbb",
+        "physical_cases": 8,
+        "unique_cases": 8,
+        "failures": 0,
+        "errors": 0,
+        "skips": 0
+      },
+      "failure": "forged legacy values projected instead of receipt values or UNKNOWN"
+    }
+  ],
+  "already_green_controls": {
+    "receipt": {
+      "path": ".work/inventory-capacity-model-context/controls-first.xml",
+      "sha256": "c311424b64031b8b92cf85f120f965480458fb9e0942b85834e8502c87871c3f",
+      "physical_cases": 28,
+      "unique_cases": 28,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0
+    },
+    "owned_control_cases": 20,
+    "meaning": "Added after the reached slices; immediately green characterizations, NOT additional behavioral REDs. Fourteen historical numeric/partial/unknown cases, three actual reader/capture owner transitions and three source/response-budget cases."
+  },
+  "selected_current": {
+    "receipt": {
+      "path": ".work/inventory-capacity-model-context/selected-current.xml",
+      "sha256": "128943f12bc19c7f9e81e4aa33b8c09b0d774b4cf214e2aa013f6bdfaca5f231",
+      "physical_cases": 715,
+      "unique_cases": 715,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0
+    },
+    "owned_cases": 26,
+    "parent_red_cases_now_green": 2,
+    "test_ids_path": ".work/inventory-capacity-model-context/selected-current-test-ids.json",
+    "test_ids_sha256": "a6b2f2fb5fad11609a85921eb45bfcf2a7a9aefd2e057ac34e1ccbd8262a0023",
+    "parent_raw_ids_preserved": true,
+    "source_binding": "All owned and 261 protected inputs stable; named sibling native_purchase.py changed during this run and is explicitly excluded. This is not a frozen combined sibling candidate verdict."
+  },
+  "quality": {
+    "scope": [
+      "src/robots/domain/decisions.py",
+      "src/robots/app/planning_context.py",
+      "src/robots/domain/inventory_context.py",
+      "tests/test_inventory_capacity_model_context.py"
+    ],
+    "commands": {
+      "black": [
+        ".venv/bin/black",
+        "--check",
+        "src/robots/domain/decisions.py",
+        "src/robots/app/planning_context.py",
+        "src/robots/domain/inventory_context.py",
+        "tests/test_inventory_capacity_model_context.py"
+      ],
+      "ruff": [
+        ".venv/bin/ruff",
+        "check",
+        "src/robots/domain/decisions.py",
+        "src/robots/app/planning_context.py",
+        "src/robots/domain/inventory_context.py",
+        "tests/test_inventory_capacity_model_context.py"
+      ],
+      "mypy": [
+        ".venv/bin/mypy",
+        "--strict",
+        "--cache-dir",
+        ".work/inventory-capacity-model-context/mypy-final-cache",
+        "src/robots/domain/decisions.py",
+        "src/robots/app/planning_context.py",
+        "src/robots/domain/inventory_context.py",
+        "tests/test_inventory_capacity_model_context.py"
+      ],
+      "xenon": [
+        ".venv/bin/xenon",
+        "src/robots/domain/decisions.py",
+        "src/robots/app/planning_context.py",
+        "src/robots/domain/inventory_context.py",
+        "--max-absolute",
+        "B",
+        "--max-modules",
+        "B",
+        "--max-average",
+        "A"
+      ]
+    },
+    "final_exits": {
+      "black": 0,
+      "ruff": 0,
+      "mypy": 0,
+      "xenon": 0
+    },
+    "first_exits": {
+      "black": 1,
+      "ruff": 1,
+      "mypy": 1,
+      "xenon": 0
+    },
+    "bounded_repair_rounds": 1,
+    "repair": "Owned-only formatting and two typed test-helper Any-return diagnostics; production AST preserved through formatter. A RET504 test-helper follow-up stayed within that quality repair; all historical logs retained. No behavior repair or gate waiver."
+  },
+  "freeze": {
+    "manifest_path": ".work/inventory-capacity-model-context/frozen-source-hashes.json",
+    "manifest_sha256": "2827da473764c551abbcdbf27decdbffb748101509b4b148cac4e4ce10934fb7",
+    "owned_snapshot_directory": ".work/inventory-capacity-model-context/frozen-snapshot",
+    "protected_public_scope": "Existing src/tests/protocol inputs excluding owned files and declared siblings",
+    "protected_count": 261,
+    "protected_changed_since_initial": [],
+    "sibling_exclusions": [
+      "src/robots/domain/actions.py",
+      "src/robots/domain/shop.py",
+      "src/robots/adapters/native_shop_context.py",
+      "src/robots/adapters/native_gameplay.py",
+      "src/robots/app/playing_runtime.py",
+      "src/robots/adapters/native_purchase.py",
+      "tests/test_native_shop_purchase.py"
+    ],
+    "sibling_observations": {
+      "src/robots/domain/actions.py": {
+        "initial_sha256": "e5da48ac9eb3f794d8fbe36e63e688b7c869d688d9c149699872e99a3612ea63",
+        "after_selected_current_sha256": "fcd1635a6f41509149ca307f464b3464e80a7cc133580d58af4e507991d91139",
+        "drift_since_initial": true,
+        "changed_during_selected_current": false
+      },
+      "src/robots/domain/shop.py": {
+        "initial_sha256": "c90a392f3cbb972360e66b3587c9012350cc84cbba30794c04af9081ae91c4ea",
+        "after_selected_current_sha256": "0b6ef3a6301d4e6e49c789ccbefd2dfab802aa9f040c8f18588968493e0f053e",
+        "drift_since_initial": true,
+        "changed_during_selected_current": false
+      },
+      "src/robots/adapters/native_shop_context.py": {
+        "initial_sha256": "85cf1a54fd02ef8f05879c1526d281f14294af50948e7e61f7bf25bc778e7cfa",
+        "after_selected_current_sha256": "85cf1a54fd02ef8f05879c1526d281f14294af50948e7e61f7bf25bc778e7cfa",
+        "drift_since_initial": false,
+        "changed_during_selected_current": false
+      },
+      "src/robots/adapters/native_gameplay.py": {
+        "initial_sha256": "c7e9f16750bf117ba3a4843264e215d2e653c0376c70acd7ac45e00a6b2100f9",
+        "after_selected_current_sha256": "35c26fe3aca9eb62803d5aba496e43b31fda299c88b9fb81ff3adb2bed4b9448",
+        "drift_since_initial": true,
+        "changed_during_selected_current": false
+      },
+      "src/robots/app/playing_runtime.py": {
+        "initial_sha256": "db687411642963a739549e330ff3163e94df1eb7d68e2b20387dba6949db8183",
+        "after_selected_current_sha256": "7edcee22dce01ae262ea2c245dff283262b439e12a14136716822fac7e230716",
+        "drift_since_initial": true,
+        "changed_during_selected_current": false
+      },
+      "src/robots/adapters/native_purchase.py": {
+        "initial_sha256": null,
+        "after_selected_current_sha256": "bb304f7e198b77dd310f0bfa7e85f1a95cac416ac6b037000a07c34d69aa54ef",
+        "drift_since_initial": true,
+        "changed_during_selected_current": true
+      },
+      "tests/test_native_shop_purchase.py": {
+        "initial_sha256": null,
+        "after_selected_current_sha256": "04ba558565d6e8c93473fb2fc15b2c9d58ce4f45122d4481f2614e40fed70194",
+        "drift_since_initial": true,
+        "changed_during_selected_current": false
+      }
+    },
+    "selected_input_before": ".work/inventory-capacity-model-context/selected-current-inputs-before.json",
+    "selected_input_after": ".work/inventory-capacity-model-context/selected-current-inputs-after.json"
+  },
+  "adopted_publisher_anchor": {
+    "path": "run/reviews/server-self-slot-context-parent-adopted.json",
+    "sha256": "c6884faa5f058c76891a923aa55be29b5970f2af97591b0f983127dee3b309dd",
+    "scope": "Previously adopted read-only publication, not current combined gates or model/native activation"
+  },
+  "limitations": [
+    "Parent independent completed combined review and fresh full-root check/audit remain pending; no root gates run by this writer",
+    "Sibling sources explicitly excluded and their drift recorded, including native_purchase.py during selected-current tests; no claim of unchanged whole checkout or qualified sibling candidate",
+    "Tests use actual constructors/readers/capture and synthetic frames/helper metadata with primitive boundaries; no live server receipts, native/model sessions, SQL/Docker operations or private config reads",
+    "Offline slot read is historical, not atomic online state, current inventory space, purchase legality or purchase authorization",
+    "Unavailable whole character snapshots and existing response-budget omissions retain their preexisting contracts; no serializer rewrite or new context budgets",
+    "No staging, commit, push, approvals or host/native activation"
+  ],
+  "effects": {
+    "native_sessions": 0,
+    "model_calls": 0,
+    "purchase_authorized": false,
+    "native_activation": false
+  },
+  "artifacts": {
+    ".work/inventory-capacity-model-context/baseline.json": {
+      "sha256": "9553c2a87799feedceb73d966bde715662122ea442cb07036f6231451cb8173a"
+    },
+    ".work/inventory-capacity-model-context/controls-first.log": {
+      "sha256": "66cf5d92b91282dadbf9ad9fd20b0cde436d85089f6ec1c64b5836d3952445cc"
+    },
+    ".work/inventory-capacity-model-context/controls-first.xml": {
+      "sha256": "c311424b64031b8b92cf85f120f965480458fb9e0942b85834e8502c87871c3f"
+    },
+    ".work/inventory-capacity-model-context/decisions-owned.diff": {
+      "sha256": "9cae60eb730a5d15d6a435edd1bbb44053bc658fa6f39d39d35de95d2dd3e21b"
+    },
+    ".work/inventory-capacity-model-context/format-0.log": {
+      "sha256": "0f643c3bc536689663916a3dde24fef2f1a8be72b193ca8807168a224163a66c"
+    },
+    ".work/inventory-capacity-model-context/format-1.log": {
+      "sha256": "33199c8f194ae8a59619e5e6f7d5cb780fc779b9104e4c02d5677bdd19cabac3"
+    },
+    ".work/inventory-capacity-model-context/format-ast.json": {
+      "sha256": "bdda5fd519a7b317aead3ae2b8d2a245670c03edf2725220bfe19f5a6ba9e735"
+    },
+    ".work/inventory-capacity-model-context/frozen-snapshot/src/robots/app/planning_context.py": {
+      "sha256": "c999fd8cbb07764200b64e10a3e0f169f002bd8a2e1b5adae9ce8185f4764995"
+    },
+    ".work/inventory-capacity-model-context/frozen-snapshot/src/robots/domain/decisions.py": {
+      "sha256": "bf6f1d06088a75160be0c5226c44e4379910a525c73eed35d85876108bdc7889"
+    },
+    ".work/inventory-capacity-model-context/frozen-snapshot/src/robots/domain/inventory_context.py": {
+      "sha256": "080214b088b52401ddedb6441f32a13ed7c0e19a1b02c7f162e0ebff7cf95d9b"
+    },
+    ".work/inventory-capacity-model-context/frozen-snapshot/tests/test_inventory_capacity_model_context.py": {
+      "sha256": "7a6d3e8abbe49102bc37b4b12f9007bf026a6165418429272e9106a251dfdd93"
+    },
+    ".work/inventory-capacity-model-context/frozen-source-hashes.json": {
+      "sha256": "2827da473764c551abbcdbf27decdbffb748101509b4b148cac4e4ce10934fb7"
+    },
+    ".work/inventory-capacity-model-context/initial-green.log": {
+      "sha256": "aad379e7b2a64858e712e62619e117bec18395755c8c673c8e0ff100744c7455"
+    },
+    ".work/inventory-capacity-model-context/initial-green.xml": {
+      "sha256": "97391d8f9b992ea0ae753e2aa88c69106296fd4757d4b37d72db7e7c9820a7d1"
+    },
+    ".work/inventory-capacity-model-context/initial-red.log": {
+      "sha256": "15d98aa801f2b5a1ab917a6cf8c69386440471cb3546a69fb2a7ceec6b018acb"
+    },
+    ".work/inventory-capacity-model-context/initial-red.xml": {
+      "sha256": "beb124ed1ce864896b2ddcc7b51eabb678e90fbcab5a65047554fbd4349f5b55"
+    },
+    ".work/inventory-capacity-model-context/inventory-capacity-model-context-parent-red.json": {
+      "sha256": "cbaacf786469ca60b1a5fa4b2aa70f156385858bf57e770e2e1cefb99bb50262"
+    },
+    ".work/inventory-capacity-model-context/original-bytes/src/robots/app/planning_context.py": {
+      "sha256": "f97454f686faa98378d83b8067d1bf0263e6eb873e630e4fdbb45e074e1d880c"
+    },
+    ".work/inventory-capacity-model-context/original-bytes/src/robots/domain/decisions.py": {
+      "sha256": "c19d0cf931b3337809cf2a97fc90062493e54444520dba1ac778f6c723fa34cb"
+    },
+    ".work/inventory-capacity-model-context/planning_context-owned.diff": {
+      "sha256": "64645dfc475d247690dea2a1f377adfc1c9eb61f79af45b9497e950997665bdf"
+    },
+    ".work/inventory-capacity-model-context/pre-quality-repair-bytes/src/robots/app/planning_context.py": {
+      "sha256": "c999fd8cbb07764200b64e10a3e0f169f002bd8a2e1b5adae9ce8185f4764995"
+    },
+    ".work/inventory-capacity-model-context/pre-quality-repair-bytes/src/robots/domain/decisions.py": {
+      "sha256": "bf6f1d06088a75160be0c5226c44e4379910a525c73eed35d85876108bdc7889"
+    },
+    ".work/inventory-capacity-model-context/pre-quality-repair-bytes/src/robots/domain/inventory_context.py": {
+      "sha256": "7ddbd59421b6822efa7156b713767828d886d6a5e30efcc2b83d289a89bd0fb3"
+    },
+    ".work/inventory-capacity-model-context/pre-quality-repair-bytes/tests/test_inventory_capacity_model_context.py": {
+      "sha256": "13dad24837da75a42570b979711478e6e26df708b5376549b1cb91774a93cab5"
+    },
+    ".work/inventory-capacity-model-context/pre-quality-repair.json": {
+      "sha256": "9091f178bd4fa4851de2741f81b725571f34c98f4798da79faa3e795df839a68"
+    },
+    ".work/inventory-capacity-model-context/provenance-green.log": {
+      "sha256": "364ee67226095f20328ed9d08b9d81815746d90891434ba3cb3a67fbce00f5c9"
+    },
+    ".work/inventory-capacity-model-context/provenance-green.xml": {
+      "sha256": "c4267f758f805dccd4da88fdbadbda34b41e5f84e46907f487d8581b94452707"
+    },
+    ".work/inventory-capacity-model-context/provenance-red.log": {
+      "sha256": "89889e3c715d5cdfae1ce29d9cabf35922977bf31cbbd853f6be090de5a3ad66"
+    },
+    ".work/inventory-capacity-model-context/provenance-red.xml": {
+      "sha256": "bb9ceff9982bb0cacfb86df7a9177ffa817cd8a98b2071858822e76683694981"
+    },
+    ".work/inventory-capacity-model-context/quality-final-black.log": {
+      "sha256": "26a5fd9505f2b5608a20c4fed4b4c4795e0783d03b72ade02a6af34dae8ad086"
+    },
+    ".work/inventory-capacity-model-context/quality-final-mypy.log": {
+      "sha256": "71144743c83babea384888a735db0c4daba3d4d7b7942b6839984bd5c21b52bb"
+    },
+    ".work/inventory-capacity-model-context/quality-final-ruff.log": {
+      "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
+    },
+    ".work/inventory-capacity-model-context/quality-final-xenon.log": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    ".work/inventory-capacity-model-context/quality-final.json": {
+      "sha256": "35cb763dbe0d7df4ce0d14968c960cc11d5da3f2d4f3f15bfeeea47aa8c0375f"
+    },
+    ".work/inventory-capacity-model-context/quality-first-black.log": {
+      "sha256": "7eb9c304c82f7c624c089e4e02afd56b8ff786a602551eb55f8fb87f21019f2c"
+    },
+    ".work/inventory-capacity-model-context/quality-first-mypy.log": {
+      "sha256": "c06c3ce4e79b751cf052d0abb0a7dcb8a3d406c3bb0ac8311f1c9d6d443ca222"
+    },
+    ".work/inventory-capacity-model-context/quality-first-ruff.log": {
+      "sha256": "fecc247890b5bb1ffa68fcde98f45b5bc2e6b5e68b16a722b5521e28bb17e635"
+    },
+    ".work/inventory-capacity-model-context/quality-first-xenon.log": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    ".work/inventory-capacity-model-context/quality-first.json": {
+      "sha256": "7b7d01da52034d8a154789dd40b3f983e696bdc767d94d0931a3f28dce1be9b0"
+    },
+    ".work/inventory-capacity-model-context/raw-values-green.log": {
+      "sha256": "1da86f31fc86a3d17f9384a446f9a48244186e9d2603f2ca69b7c6c681a19768"
+    },
+    ".work/inventory-capacity-model-context/raw-values-green.xml": {
+      "sha256": "f3c8d681b795b876cf22b9989a9cb18d3aec9fc15ad1d95bbcc10d185ba0dbbb"
+    },
+    ".work/inventory-capacity-model-context/raw-values-red.log": {
+      "sha256": "1bf23c645c6d2c6d2bfed1231e2b79fdf6bc38322d0e48fe8fa007bd2d51b0ac"
+    },
+    ".work/inventory-capacity-model-context/raw-values-red.xml": {
+      "sha256": "204b78e121f00a9fd343f862c9864e37c9d48a6f3f072f5fff546679f72aca76"
+    },
+    ".work/inventory-capacity-model-context/red.xml": {
+      "sha256": "0fdbe55466255f12525df45614f5d2a7b0e5161c0403274af48101a15f3191a3"
+    },
+    ".work/inventory-capacity-model-context/selected-current-inputs-after.json": {
+      "sha256": "4a0ed85914c31c0399ac154553afc14b3ef67d7a82c6d0e09757c66470b8dd63"
+    },
+    ".work/inventory-capacity-model-context/selected-current-inputs-before.json": {
+      "sha256": "4463e8911875ae03c54ec5f59937e2ea2e1ab5b0935e0107feaddc8e6e7406db"
+    },
+    ".work/inventory-capacity-model-context/selected-current-test-ids.json": {
+      "sha256": "a6b2f2fb5fad11609a85921eb45bfcf2a7a9aefd2e057ac34e1ccbd8262a0023"
+    },
+    ".work/inventory-capacity-model-context/selected-current-verification.json": {
+      "sha256": "dc867bd7f32e3feafdb96d36686376693243cb2e7f5a76c4b07e0ffebba16c14"
+    },
+    ".work/inventory-capacity-model-context/selected-current.log": {
+      "sha256": "089844afe998b3c49c2f60782b0853be7a58642df8c814b906dec25d9fb3dba8"
+    },
+    ".work/inventory-capacity-model-context/selected-current.xml": {
+      "sha256": "128943f12bc19c7f9e81e4aa33b8c09b0d774b4cf214e2aa013f6bdfaca5f231"
+    },
+    ".work/inventory-capacity-model-context/selected-final.log": {
+      "sha256": "35e8265307a22beb86da3ed572bed1d19a5d40f60e3cf100c65fde4261f2ec83"
+    },
+    ".work/inventory-capacity-model-context/selected-final.xml": {
+      "sha256": "eae9a609274bf78df2e456d709596c64bc946883a4f2e29efb401524fe518f4d"
+    },
+    ".work/inventory-capacity-model-context/verification-summary.json": {
+      "sha256": "f77efce6fabf8c6a471c397c9987528a610aba7fc17823ae2819eff9abdc0f20"
+    },
+    ".work/inventory-capacity-model-context/frozen-snapshot/receipts/selected-current.xml": {
+      "sha256": "128943f12bc19c7f9e81e4aa33b8c09b0d774b4cf214e2aa013f6bdfaca5f231"
+    },
+    ".work/inventory-capacity-model-context/frozen-snapshot/receipts/selected-current.log": {
+      "sha256": "089844afe998b3c49c2f60782b0853be7a58642df8c814b906dec25d9fb3dba8"
+    },
+    ".work/inventory-capacity-model-context/frozen-snapshot/receipts/selected-current-test-ids.json": {
+      "sha256": "a6b2f2fb5fad11609a85921eb45bfcf2a7a9aefd2e057ac34e1ccbd8262a0023"
+    },
+    ".work/inventory-capacity-model-context/frozen-snapshot/receipts/quality-final.json": {
+      "sha256": "35cb763dbe0d7df4ce0d14968c960cc11d5da3f2d4f3f15bfeeea47aa8c0375f"
+    }
+  }
+}

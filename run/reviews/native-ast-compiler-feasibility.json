@@ -1,0 +1,1322 @@
+{
+  "scope": "new standalone offline compiler/profile feasibility experiment; three selected sender functions only",
+  "offline": true,
+  "current_generator_approved": false,
+  "native_admission": false,
+  "semantic_admission": false,
+  "verdict": "PARTIAL",
+  "source_revision": "e985006171d2eb320ee512a653f4c83aea3d81b6",
+  "source_root": "/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source",
+  "frontends": [
+    {
+      "wrapper_path": "/nix/store/j1938gsbvbhkyz4kbmvjk56r479mkw3s-gcc-wrapper-16.2.0/bin/g++",
+      "wrapper_sha256": "c1a58806b7b7c5f038a81f94c27796764fc8cd9f8059aef62c5e83a761a56935",
+      "resolved_path": "/nix/store/j1938gsbvbhkyz4kbmvjk56r479mkw3s-gcc-wrapper-16.2.0/bin/g++",
+      "version_exit": 0,
+      "version": "g++ (GCC) 16.2.0"
+    },
+    {
+      "wrapper_path": "/nix/store/2msw5nclhpsm80z65dqmjiv8kkras989-clang-wrapper-21.1.8/bin/clang++",
+      "wrapper_sha256": "821d1e767571f989b002f078bb5408a9cbf9ddaa159a33ae65947ed4fa80280d",
+      "resolved_path": "/nix/store/2msw5nclhpsm80z65dqmjiv8kkras989-clang-wrapper-21.1.8/bin/clang++",
+      "version_exit": 0,
+      "version": "clang version 21.1.8"
+    }
+  ],
+  "compiler_steps": [
+    {
+      "name": "gcc-preprocess",
+      "command": [
+        "/nix/store/j1938gsbvbhkyz4kbmvjk56r479mkw3s-gcc-wrapper-16.2.0/bin/g++",
+        "-std=c++17",
+        "-DHAS_TLS",
+        "-fno-strict-aliasing",
+        "-DHAVE_GETADDRINFO",
+        "-DHAVE_SETRLIMIT",
+        "-DHAVE_STRNLEN",
+        "-DPACKETVER=20180704",
+        "-DPRERE",
+        "-DHAVE_MONOTONIC_CLOCK",
+        "-DHAS_TLS",
+        "-fno-strict-aliasing",
+        "-DHAVE_GETADDRINFO",
+        "-DHAVE_SETRLIMIT",
+        "-DHAVE_STRNLEN",
+        "-DPACKETVER=20180704",
+        "-DPRERE",
+        "-DHAVE_MONOTONIC_CLOCK",
+        "-I/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source/src",
+        "-I/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source/src/map",
+        "-I/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source/src/common",
+        "-I/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source/3rdparty/rapidyaml/src",
+        "-I/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source/3rdparty/rapidyaml/ext/c4core/src",
+        "-I/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source/3rdparty/libconfig",
+        "-I/nix/store/1w8g6rvhljfk44hx50qz4sc47sm1f28v-mariadb-connector-c-3.3.5-dev/include/mysql",
+        "-E",
+        "-MD",
+        "-MF",
+        "/home/otto/dev/ro-bots/spikes/007-native-packet-ast/compiler/closure.d",
+        "/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source/src/map/clif.cpp",
+        "-o",
+        "/home/otto/dev/ro-bots/spikes/007-native-packet-ast/compiler/clif.ii"
+      ],
+      "exit": 0
+    },
+    {
+      "name": "profile-macros",
+      "command": [
+        "/nix/store/j1938gsbvbhkyz4kbmvjk56r479mkw3s-gcc-wrapper-16.2.0/bin/g++",
+        "-std=c++17",
+        "-DHAS_TLS",
+        "-fno-strict-aliasing",
+        "-DHAVE_GETADDRINFO",
+        "-DHAVE_SETRLIMIT",
+        "-DHAVE_STRNLEN",
+        "-DPACKETVER=20180704",
+        "-DPRERE",
+        "-DHAVE_MONOTONIC_CLOCK",
+        "-DHAS_TLS",
+        "-fno-strict-aliasing",
+        "-DHAVE_GETADDRINFO",
+        "-DHAVE_SETRLIMIT",
+        "-DHAVE_STRNLEN",
+        "-DPACKETVER=20180704",
+        "-DPRERE",
+        "-DHAVE_MONOTONIC_CLOCK",
+        "-I/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source/src",
+        "-I/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source/src/map",
+        "-I/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source/src/common",
+        "-I/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source/3rdparty/rapidyaml/src",
+        "-I/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source/3rdparty/rapidyaml/ext/c4core/src",
+        "-I/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source/3rdparty/libconfig",
+        "-I/nix/store/1w8g6rvhljfk44hx50qz4sc47sm1f28v-mariadb-connector-c-3.3.5-dev/include/mysql",
+        "-E",
+        "-dM",
+        "/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source/src/map/clif.cpp"
+      ],
+      "exit": 0
+    },
+    {
+      "name": "clang-gcc-full-tu",
+      "command": [
+        "/nix/store/2msw5nclhpsm80z65dqmjiv8kkras989-clang-wrapper-21.1.8/bin/clang++",
+        "-std=c++17",
+        "-fsyntax-only",
+        "-x",
+        "c++-cpp-output",
+        "/home/otto/dev/ro-bots/spikes/007-native-packet-ast/compiler/clif.ii",
+        "-Xclang",
+        "-ast-dump=json",
+        "-Xclang",
+        "-ast-dump-filter=clif_emotion"
+      ],
+      "exit": 1
+    },
+    {
+      "name": "clang-original-emotion",
+      "command": [
+        "/nix/store/2msw5nclhpsm80z65dqmjiv8kkras989-clang-wrapper-21.1.8/bin/clang++",
+        "-std=c++17",
+        "-DHAS_TLS",
+        "-fno-strict-aliasing",
+        "-DHAVE_GETADDRINFO",
+        "-DHAVE_SETRLIMIT",
+        "-DHAVE_STRNLEN",
+        "-DPACKETVER=20180704",
+        "-DPRERE",
+        "-DHAVE_MONOTONIC_CLOCK",
+        "-DHAS_TLS",
+        "-fno-strict-aliasing",
+        "-DHAVE_GETADDRINFO",
+        "-DHAVE_SETRLIMIT",
+        "-DHAVE_STRNLEN",
+        "-DPACKETVER=20180704",
+        "-DPRERE",
+        "-DHAVE_MONOTONIC_CLOCK",
+        "-I/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source/src",
+        "-I/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source/src/map",
+        "-I/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source/src/common",
+        "-I/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source/3rdparty/rapidyaml/src",
+        "-I/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source/3rdparty/rapidyaml/ext/c4core/src",
+        "-I/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source/3rdparty/libconfig",
+        "-I/nix/store/1w8g6rvhljfk44hx50qz4sc47sm1f28v-mariadb-connector-c-3.3.5-dev/include/mysql",
+        "-fsyntax-only",
+        "-MD",
+        "-MF",
+        "/home/otto/dev/ro-bots/spikes/007-native-packet-ast/compiler/clang-closure.d",
+        "/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source/src/map/clif.cpp",
+        "-Xclang",
+        "-ast-dump=json",
+        "-Xclang",
+        "-ast-dump-filter=clif_emotion"
+      ],
+      "exit": 0
+    },
+    {
+      "name": "gcc-full-syntax",
+      "command": [
+        "/nix/store/j1938gsbvbhkyz4kbmvjk56r479mkw3s-gcc-wrapper-16.2.0/bin/g++",
+        "-std=c++17",
+        "-fsyntax-only",
+        "/home/otto/dev/ro-bots/spikes/007-native-packet-ast/compiler/clif.ii"
+      ],
+      "exit": 0
+    },
+    {
+      "name": "clang-original-name",
+      "command": [
+        "/nix/store/2msw5nclhpsm80z65dqmjiv8kkras989-clang-wrapper-21.1.8/bin/clang++",
+        "-std=c++17",
+        "-DHAS_TLS",
+        "-fno-strict-aliasing",
+        "-DHAVE_GETADDRINFO",
+        "-DHAVE_SETRLIMIT",
+        "-DHAVE_STRNLEN",
+        "-DPACKETVER=20180704",
+        "-DPRERE",
+        "-DHAVE_MONOTONIC_CLOCK",
+        "-DHAS_TLS",
+        "-fno-strict-aliasing",
+        "-DHAVE_GETADDRINFO",
+        "-DHAVE_SETRLIMIT",
+        "-DHAVE_STRNLEN",
+        "-DPACKETVER=20180704",
+        "-DPRERE",
+        "-DHAVE_MONOTONIC_CLOCK",
+        "-I/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source/src",
+        "-I/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source/src/map",
+        "-I/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source/src/common",
+        "-I/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source/3rdparty/rapidyaml/src",
+        "-I/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source/3rdparty/rapidyaml/ext/c4core/src",
+        "-I/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source/3rdparty/libconfig",
+        "-I/nix/store/1w8g6rvhljfk44hx50qz4sc47sm1f28v-mariadb-connector-c-3.3.5-dev/include/mysql",
+        "-fsyntax-only",
+        "/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source/src/map/clif.cpp",
+        "-Xclang",
+        "-ast-dump=json",
+        "-Xclang",
+        "-ast-dump-filter=clif_name"
+      ],
+      "exit": 0
+    },
+    {
+      "name": "clang-original-sitting",
+      "command": [
+        "/nix/store/2msw5nclhpsm80z65dqmjiv8kkras989-clang-wrapper-21.1.8/bin/clang++",
+        "-std=c++17",
+        "-DHAS_TLS",
+        "-fno-strict-aliasing",
+        "-DHAVE_GETADDRINFO",
+        "-DHAVE_SETRLIMIT",
+        "-DHAVE_STRNLEN",
+        "-DPACKETVER=20180704",
+        "-DPRERE",
+        "-DHAVE_MONOTONIC_CLOCK",
+        "-DHAS_TLS",
+        "-fno-strict-aliasing",
+        "-DHAVE_GETADDRINFO",
+        "-DHAVE_SETRLIMIT",
+        "-DHAVE_STRNLEN",
+        "-DPACKETVER=20180704",
+        "-DPRERE",
+        "-DHAVE_MONOTONIC_CLOCK",
+        "-I/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source/src",
+        "-I/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source/src/map",
+        "-I/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source/src/common",
+        "-I/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source/3rdparty/rapidyaml/src",
+        "-I/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source/3rdparty/rapidyaml/ext/c4core/src",
+        "-I/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source/3rdparty/libconfig",
+        "-I/nix/store/1w8g6rvhljfk44hx50qz4sc47sm1f28v-mariadb-connector-c-3.3.5-dev/include/mysql",
+        "-fsyntax-only",
+        "/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source/src/map/clif.cpp",
+        "-Xclang",
+        "-ast-dump=json",
+        "-Xclang",
+        "-ast-dump-filter=clif_sitting"
+      ],
+      "exit": 0
+    },
+    {
+      "name": "clang-macros",
+      "command": [
+        "/nix/store/2msw5nclhpsm80z65dqmjiv8kkras989-clang-wrapper-21.1.8/bin/clang++",
+        "-std=c++17",
+        "-DHAS_TLS",
+        "-fno-strict-aliasing",
+        "-DHAVE_GETADDRINFO",
+        "-DHAVE_SETRLIMIT",
+        "-DHAVE_STRNLEN",
+        "-DPACKETVER=20180704",
+        "-DPRERE",
+        "-DHAVE_MONOTONIC_CLOCK",
+        "-DHAS_TLS",
+        "-fno-strict-aliasing",
+        "-DHAVE_GETADDRINFO",
+        "-DHAVE_SETRLIMIT",
+        "-DHAVE_STRNLEN",
+        "-DPACKETVER=20180704",
+        "-DPRERE",
+        "-DHAVE_MONOTONIC_CLOCK",
+        "-I/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source/src",
+        "-I/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source/src/map",
+        "-I/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source/src/common",
+        "-I/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source/3rdparty/rapidyaml/src",
+        "-I/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source/3rdparty/rapidyaml/ext/c4core/src",
+        "-I/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source/3rdparty/libconfig",
+        "-I/nix/store/1w8g6rvhljfk44hx50qz4sc47sm1f28v-mariadb-connector-c-3.3.5-dev/include/mysql",
+        "-E",
+        "-dM",
+        "/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source/src/map/clif.cpp"
+      ],
+      "exit": 0
+    },
+    {
+      "name": "clang-driver",
+      "command": [
+        "/nix/store/2msw5nclhpsm80z65dqmjiv8kkras989-clang-wrapper-21.1.8/bin/clang++",
+        "-std=c++17",
+        "-DHAS_TLS",
+        "-fno-strict-aliasing",
+        "-DHAVE_GETADDRINFO",
+        "-DHAVE_SETRLIMIT",
+        "-DHAVE_STRNLEN",
+        "-DPACKETVER=20180704",
+        "-DPRERE",
+        "-DHAVE_MONOTONIC_CLOCK",
+        "-DHAS_TLS",
+        "-fno-strict-aliasing",
+        "-DHAVE_GETADDRINFO",
+        "-DHAVE_SETRLIMIT",
+        "-DHAVE_STRNLEN",
+        "-DPACKETVER=20180704",
+        "-DPRERE",
+        "-DHAVE_MONOTONIC_CLOCK",
+        "-I/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source/src",
+        "-I/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source/src/map",
+        "-I/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source/src/common",
+        "-I/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source/3rdparty/rapidyaml/src",
+        "-I/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source/3rdparty/rapidyaml/ext/c4core/src",
+        "-I/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source/3rdparty/libconfig",
+        "-I/nix/store/1w8g6rvhljfk44hx50qz4sc47sm1f28v-mariadb-connector-c-3.3.5-dev/include/mysql",
+        "-###",
+        "-fsyntax-only",
+        "/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source/src/map/clif.cpp"
+      ],
+      "exit": 0
+    },
+    {
+      "name": "gcc-anchor-build",
+      "command": [
+        "/nix/store/j1938gsbvbhkyz4kbmvjk56r479mkw3s-gcc-wrapper-16.2.0/bin/g++",
+        "-std=c++17",
+        "-DHAS_TLS",
+        "-fno-strict-aliasing",
+        "-DHAVE_GETADDRINFO",
+        "-DHAVE_SETRLIMIT",
+        "-DHAVE_STRNLEN",
+        "-DPACKETVER=20180704",
+        "-DPRERE",
+        "-DHAVE_MONOTONIC_CLOCK",
+        "-DHAS_TLS",
+        "-fno-strict-aliasing",
+        "-DHAVE_GETADDRINFO",
+        "-DHAVE_SETRLIMIT",
+        "-DHAVE_STRNLEN",
+        "-DPACKETVER=20180704",
+        "-DPRERE",
+        "-DHAVE_MONOTONIC_CLOCK",
+        "-I/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source/src",
+        "-I/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source/src/map",
+        "-I/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source/src/common",
+        "-I/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source/3rdparty/rapidyaml/src",
+        "-I/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source/3rdparty/rapidyaml/ext/c4core/src",
+        "-I/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source/3rdparty/libconfig",
+        "-I/nix/store/1w8g6rvhljfk44hx50qz4sc47sm1f28v-mariadb-connector-c-3.3.5-dev/include/mysql",
+        "/home/otto/dev/ro-bots/spikes/007-native-packet-ast/compiler/anchors.cpp",
+        "-o",
+        "/home/otto/dev/ro-bots/spikes/007-native-packet-ast/compiler/anchors"
+      ],
+      "exit": 1,
+      "run": "NOT_RUN: build failed exact-profile guard"
+    },
+    {
+      "name": "tests-final",
+      "command": [
+        "python3",
+        "/home/otto/dev/ro-bots/spikes/007-native-packet-ast/compiler/test_sender_ast.py"
+      ],
+      "exit": 0
+    }
+  ],
+  "frontend_parse_original_full_tu": {
+    "gcc": true,
+    "clang": true
+  },
+  "gcc_preprocessed_clang_parse": false,
+  "exact_installed_profile_verified": false,
+  "observed_macros": {
+    "profile-macros": {
+      "PACKETVER": "20180704",
+      "PACKETVER_MAIN_NUM": "PACKETVER",
+      "PRERE": "1",
+      "PACKETVER_RE": null,
+      "PACKETVER_ZERO": null,
+      "PACKETVER_RE_NUM": null,
+      "PACKETVER_ZERO_NUM": null,
+      "RENEWAL": null,
+      "PACKET_OBFUSCATION": "",
+      "PACKET_OBFUSCATION_WARN": "",
+      "PACKETVER_SUPPORTS_PINCODE": "PACKETVER >= 20110309"
+    },
+    "clang-macros": {
+      "PACKETVER": "20180704",
+      "PACKETVER_MAIN_NUM": "PACKETVER",
+      "PRERE": "1",
+      "PACKETVER_RE": null,
+      "PACKETVER_ZERO": null,
+      "PACKETVER_RE_NUM": null,
+      "PACKETVER_ZERO_NUM": null,
+      "RENEWAL": null,
+      "PACKET_OBFUSCATION": "",
+      "PACKET_OBFUSCATION_WARN": "",
+      "PACKETVER_SUPPORTS_PINCODE": "PACKETVER >= 20110309"
+    }
+  },
+  "selected_senders": [
+    {
+      "function": {
+        "id": "0x55555c966290",
+        "name": "clif_emotion",
+        "mangledName": "_Z12clif_emotionRK10block_list12emotion_type",
+        "loc": {
+          "offset": 289338,
+          "file": "/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source/src/map/clif.cpp",
+          "line": 9412,
+          "col": 6,
+          "tokLen": 12
+        },
+        "range": {
+          "begin": {
+            "offset": 289333,
+            "col": 1,
+            "tokLen": 4
+          },
+          "end": {
+            "offset": 289561,
+            "line": 9420,
+            "col": 1,
+            "tokLen": 1
+          }
+        },
+        "type": {
+          "qualType": "void (const block_list &, emotion_type)"
+        }
+      },
+      "declarations": [
+        {
+          "id": "0x55555c966180",
+          "kind": "ParmVarDecl",
+          "name": "bl",
+          "type": {
+            "qualType": "const block_list &"
+          },
+          "loc": {
+            "offset": 289370,
+            "line": 9412,
+            "col": 38,
+            "tokLen": 2
+          },
+          "range": {
+            "begin": {
+              "offset": 289352,
+              "col": 20,
+              "tokLen": 5
+            },
+            "end": {
+              "offset": 289370,
+              "col": 38,
+              "tokLen": 2
+            }
+          }
+        },
+        {
+          "id": "0x55555c9661f8",
+          "kind": "ParmVarDecl",
+          "name": "type",
+          "type": {
+            "qualType": "emotion_type"
+          },
+          "loc": {
+            "offset": 289387,
+            "col": 55,
+            "tokLen": 4
+          },
+          "range": {
+            "begin": {
+              "offset": 289374,
+              "col": 42,
+              "tokLen": 12
+            },
+            "end": {
+              "offset": 289387,
+              "col": 55,
+              "tokLen": 4
+            }
+          }
+        },
+        {
+          "id": "0x55555c966390",
+          "kind": "VarDecl",
+          "name": "p",
+          "type": {
+            "qualType": "PACKET_ZC_EMOTION"
+          },
+          "loc": {
+            "offset": 289414,
+            "col": 20,
+            "tokLen": 1
+          },
+          "range": {
+            "begin": {
+              "offset": 289396,
+              "col": 2,
+              "tokLen": 17
+            },
+            "end": {
+              "offset": 289416,
+              "col": 22,
+              "tokLen": 1
+            }
+          }
+        }
+      ],
+      "send_call_count": 1,
+      "sizeof_node_count": 1,
+      "ast_path": "/home/otto/dev/ro-bots/spikes/007-native-packet-ast/compiler/clang-original-emotion.stdout",
+      "ast_sha256": "240d837e8eda003076d8e868365433b8e92a1acfbcd84a1488b3a8182d89720e",
+      "semantic_admission": false
+    },
+    {
+      "function": {
+        "id": "0x55555c95d508",
+        "name": "clif_name",
+        "mangledName": "_Z9clif_namePK10block_listS1_11send_target",
+        "loc": {
+          "offset": 304469,
+          "file": "/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source/src/map/clif.cpp",
+          "line": 9928,
+          "col": 6,
+          "tokLen": 9
+        },
+        "range": {
+          "begin": {
+            "offset": 304464,
+            "col": 1,
+            "tokLen": 4
+          },
+          "end": {
+            "offset": 309497,
+            "line": 10094,
+            "col": 1,
+            "tokLen": 1
+          }
+        },
+        "type": {
+          "qualType": "void (const block_list *, const block_list *, send_target)"
+        }
+      },
+      "declarations": [
+        {
+          "id": "0x55555c95d370",
+          "kind": "ParmVarDecl",
+          "name": "src",
+          "type": {
+            "qualType": "const block_list *"
+          },
+          "loc": {
+            "offset": 304498,
+            "line": 9928,
+            "col": 35,
+            "tokLen": 3
+          },
+          "range": {
+            "begin": {
+              "offset": 304480,
+              "col": 17,
+              "tokLen": 5
+            },
+            "end": {
+              "offset": 304498,
+              "col": 35,
+              "tokLen": 3
+            }
+          }
+        },
+        {
+          "id": "0x55555c95d3f0",
+          "kind": "ParmVarDecl",
+          "name": "bl",
+          "type": {
+            "qualType": "const block_list *"
+          },
+          "loc": {
+            "offset": 304521,
+            "col": 58,
+            "tokLen": 2
+          },
+          "range": {
+            "begin": {
+              "offset": 304503,
+              "col": 40,
+              "tokLen": 5
+            },
+            "end": {
+              "offset": 304521,
+              "col": 58,
+              "tokLen": 2
+            }
+          }
+        },
+        {
+          "id": "0x55555c95d468",
+          "kind": "ParmVarDecl",
+          "name": "target",
+          "type": {
+            "qualType": "send_target"
+          },
+          "loc": {
+            "offset": 304537,
+            "col": 74,
+            "tokLen": 6
+          },
+          "range": {
+            "begin": {
+              "offset": 304525,
+              "col": 62,
+              "tokLen": 11
+            },
+            "end": {
+              "offset": 304537,
+              "col": 74,
+              "tokLen": 6
+            }
+          }
+        },
+        {
+          "id": "0x55555c95d880",
+          "kind": "VarDecl",
+          "name": "packet",
+          "type": {
+            "qualType": "PACKET_ZC_ACK_REQNAMEALL"
+          },
+          "loc": {
+            "offset": 304654,
+            "col": 29,
+            "tokLen": 6
+          },
+          "range": {
+            "begin": {
+              "offset": 304629,
+              "col": 4,
+              "tokLen": 24
+            },
+            "end": {
+              "offset": 304667,
+              "col": 42,
+              "tokLen": 1
+            }
+          }
+        },
+        {
+          "id": "0x55555c95dd38",
+          "kind": "VarDecl",
+          "name": "sd",
+          "type": {
+            "qualType": "map_session_data *"
+          },
+          "loc": {
+            "offset": 304765,
+            "col": 22,
+            "tokLen": 2
+          },
+          "range": {
+            "begin": {
+              "offset": 304747,
+              "col": 4,
+              "tokLen": 16
+            },
+            "end": {
+              "offset": 304790,
+              "col": 47,
+              "tokLen": 2
+            }
+          }
+        },
+        {
+          "id": "0x55555c95eac8",
+          "kind": "VarDecl",
+          "name": "p",
+          "type": {
+            "qualType": "party_data *"
+          },
+          "loc": {
+            "offset": 305167,
+            "col": 16,
+            "tokLen": 1
+          },
+          "range": {
+            "begin": {
+              "offset": 305155,
+              "col": 4,
+              "tokLen": 10
+            },
+            "end": {
+              "offset": 305171,
+              "col": 20,
+              "tokLen": 7
+            }
+          }
+        },
+        {
+          "id": "0x55555c95f400",
+          "kind": "VarDecl",
+          "name": "position",
+          "type": {
+            "desugaredQualType": "int",
+            "qualType": "int32",
+            "typeAliasDeclId": "0x555555e92020"
+          },
+          "loc": {
+            "offset": 305493,
+            "col": 11,
+            "tokLen": 8
+          },
+          "range": {
+            "begin": {
+              "offset": 305487,
+              "col": 5,
+              "tokLen": 5
+            },
+            "end": {
+              "offset": 305493,
+              "col": 11,
+              "tokLen": 8
+            }
+          }
+        },
+        {
+          "id": "0x55555c960750",
+          "kind": "VarDecl",
+          "name": "packet",
+          "type": {
+            "qualType": "PACKET_ZC_ACK_REQNAMEALL_NPC"
+          },
+          "loc": {
+            "offset": 306226,
+            "col": 33,
+            "tokLen": 6
+          },
+          "range": {
+            "begin": {
+              "offset": 306197,
+              "col": 4,
+              "tokLen": 28
+            },
+            "end": {
+              "offset": 306239,
+              "col": 46,
+              "tokLen": 1
+            }
+          }
+        },
+        {
+          "id": "0x55555c9621b0",
+          "kind": "VarDecl",
+          "name": "ud",
+          "type": {
+            "qualType": "const unit_data *"
+          },
+          "loc": {
+            "offset": 307083,
+            "col": 21,
+            "tokLen": 2
+          },
+          "range": {
+            "begin": {
+              "offset": 307066,
+              "col": 4,
+              "tokLen": 5
+            },
+            "end": {
+              "offset": 307101,
+              "col": 39,
+              "tokLen": 1
+            }
+          }
+        },
+        {
+          "id": "0x55555c962b58",
+          "kind": "VarDecl",
+          "name": "md",
+          "type": {
+            "qualType": "const mob_data *"
+          },
+          "loc": {
+            "offset": 307329,
+            "col": 20,
+            "tokLen": 2
+          },
+          "range": {
+            "begin": {
+              "offset": 307313,
+              "col": 4,
+              "tokLen": 5
+            },
+            "end": {
+              "offset": 307365,
+              "col": 56,
+              "tokLen": 1
+            }
+          }
+        },
+        {
+          "id": "0x55555c962e08",
+          "kind": "VarDecl",
+          "name": "packet",
+          "type": {
+            "qualType": "PACKET_ZC_ACK_REQNAMEALL"
+          },
+          "loc": {
+            "offset": 307457,
+            "col": 30,
+            "tokLen": 6
+          },
+          "range": {
+            "begin": {
+              "offset": 307432,
+              "col": 5,
+              "tokLen": 24
+            },
+            "end": {
+              "offset": 307470,
+              "col": 43,
+              "tokLen": 1
+            }
+          }
+        },
+        {
+          "id": "0x55555c963e28",
+          "kind": "VarDecl",
+          "name": "packet",
+          "type": {
+            "qualType": "PACKET_ZC_ACK_REQNAMEALL"
+          },
+          "loc": {
+            "offset": 307906,
+            "col": 30,
+            "tokLen": 6
+          },
+          "range": {
+            "begin": {
+              "offset": 307881,
+              "col": 5,
+              "tokLen": 24
+            },
+            "end": {
+              "offset": 307919,
+              "col": 43,
+              "tokLen": 1
+            }
+          }
+        },
+        {
+          "id": "0x55555c964470",
+          "kind": "VarDecl",
+          "name": "mobhp",
+          "type": {
+            "qualType": "char[50]"
+          },
+          "loc": {
+            "offset": 308062,
+            "col": 10,
+            "tokLen": 5
+          },
+          "range": {
+            "begin": {
+              "offset": 308057,
+              "col": 5,
+              "tokLen": 4
+            },
+            "end": {
+              "offset": 308070,
+              "col": 18,
+              "tokLen": 1
+            }
+          }
+        },
+        {
+          "id": "0x55555c9644f0",
+          "kind": "VarDecl",
+          "name": "str_p",
+          "type": {
+            "qualType": "char *"
+          },
+          "loc": {
+            "offset": 308074,
+            "col": 22,
+            "tokLen": 5
+          },
+          "range": {
+            "begin": {
+              "offset": 308057,
+              "col": 5,
+              "tokLen": 4
+            },
+            "end": {
+              "offset": 308082,
+              "col": 30,
+              "tokLen": 5
+            }
+          }
+        },
+        {
+          "id": "0x55555c9657f8",
+          "kind": "VarDecl",
+          "name": "packet",
+          "type": {
+            "qualType": "PACKET_ZC_ACK_REQNAMEALL_NPC"
+          },
+          "loc": {
+            "offset": 308813,
+            "col": 34,
+            "tokLen": 6
+          },
+          "range": {
+            "begin": {
+              "offset": 308784,
+              "col": 5,
+              "tokLen": 28
+            },
+            "end": {
+              "offset": 308826,
+              "col": 47,
+              "tokLen": 1
+            }
+          }
+        },
+        {
+          "id": "0x55555c965dc8",
+          "kind": "VarDecl",
+          "name": "ud",
+          "type": {
+            "qualType": "const unit_data *"
+          },
+          "loc": {
+            "offset": 309084,
+            "col": 22,
+            "tokLen": 2
+          },
+          "range": {
+            "begin": {
+              "offset": 309067,
+              "col": 5,
+              "tokLen": 5
+            },
+            "end": {
+              "offset": 309102,
+              "col": 40,
+              "tokLen": 1
+            }
+          }
+        }
+      ],
+      "send_call_count": 6,
+      "sizeof_node_count": 6,
+      "ast_path": "/home/otto/dev/ro-bots/spikes/007-native-packet-ast/compiler/clang-original-name.stdout",
+      "ast_sha256": "dee27d759dd6e0de6eb084d7ce05a35694d987565183d3d3e025981a8dfa5315",
+      "semantic_admission": false
+    },
+    {
+      "function": {
+        "id": "0x55555c798a48",
+        "name": "clif_sitting",
+        "mangledName": "_Z12clif_sittingRK10block_list",
+        "loc": {
+          "offset": 161974,
+          "file": "/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source/src/map/clif.cpp",
+          "line": 5329,
+          "col": 6,
+          "tokLen": 12
+        },
+        "range": {
+          "begin": {
+            "offset": 161969,
+            "col": 1,
+            "tokLen": 4
+          },
+          "end": {
+            "offset": 162261,
+            "line": 5342,
+            "col": 1,
+            "tokLen": 1
+          }
+        },
+        "type": {
+          "qualType": "void (const block_list &)"
+        }
+      },
+      "declarations": [
+        {
+          "id": "0x55555c7989b8",
+          "kind": "ParmVarDecl",
+          "name": "bl",
+          "type": {
+            "qualType": "const block_list &"
+          },
+          "loc": {
+            "offset": 162006,
+            "line": 5329,
+            "col": 38,
+            "tokLen": 2
+          },
+          "range": {
+            "begin": {
+              "offset": 161988,
+              "col": 20,
+              "tokLen": 5
+            },
+            "end": {
+              "offset": 162006,
+              "col": 38,
+              "tokLen": 2
+            }
+          }
+        },
+        {
+          "id": "0x55555c798b08",
+          "kind": "VarDecl",
+          "name": "p",
+          "type": {
+            "qualType": "PACKET_ZC_NOTIFY_ACT"
+          },
+          "loc": {
+            "offset": 162033,
+            "col": 23,
+            "tokLen": 1
+          },
+          "range": {
+            "begin": {
+              "offset": 162012,
+              "col": 2,
+              "tokLen": 20
+            },
+            "end": {
+              "offset": 162035,
+              "col": 25,
+              "tokLen": 1
+            }
+          }
+        }
+      ],
+      "send_call_count": 2,
+      "sizeof_node_count": 2,
+      "ast_path": "/home/otto/dev/ro-bots/spikes/007-native-packet-ast/compiler/clang-original-sitting.stdout",
+      "ast_sha256": "17b2ff9c314fd8c55b0d3355f0576a6baebdd9c0f57938a1333dadd8b31c8f2c",
+      "semantic_admission": false
+    }
+  ],
+  "selected_count": 3,
+  "tests": {
+    "physical_file": "/home/otto/dev/ro-bots/spikes/007-native-packet-ast/compiler/test_sender_ast.py",
+    "count": 3,
+    "final_exit": 0,
+    "final_log": "/home/otto/dev/ro-bots/spikes/007-native-packet-ast/compiler/test-green-4.log",
+    "vertical_cycles": 4,
+    "red_logs": [
+      "/home/otto/dev/ro-bots/spikes/007-native-packet-ast/compiler/test-red-1.log",
+      "/home/otto/dev/ro-bots/spikes/007-native-packet-ast/compiler/test-red-2.log",
+      "/home/otto/dev/ro-bots/spikes/007-native-packet-ast/compiler/test-red-3.log",
+      "/home/otto/dev/ro-bots/spikes/007-native-packet-ast/compiler/test-red-4.log"
+    ]
+  },
+  "blocking_frontier": {
+    "command": [
+      "/nix/store/j1938gsbvbhkyz4kbmvjk56r479mkw3s-gcc-wrapper-16.2.0/bin/g++",
+      "-std=c++17",
+      "-DHAS_TLS",
+      "-fno-strict-aliasing",
+      "-DHAVE_GETADDRINFO",
+      "-DHAVE_SETRLIMIT",
+      "-DHAVE_STRNLEN",
+      "-DPACKETVER=20180704",
+      "-DPRERE",
+      "-DHAVE_MONOTONIC_CLOCK",
+      "-DHAS_TLS",
+      "-fno-strict-aliasing",
+      "-DHAVE_GETADDRINFO",
+      "-DHAVE_SETRLIMIT",
+      "-DHAVE_STRNLEN",
+      "-DPACKETVER=20180704",
+      "-DPRERE",
+      "-DHAVE_MONOTONIC_CLOCK",
+      "-I/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source/src",
+      "-I/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source/src/map",
+      "-I/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source/src/common",
+      "-I/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source/3rdparty/rapidyaml/src",
+      "-I/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source/3rdparty/rapidyaml/ext/c4core/src",
+      "-I/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source/3rdparty/libconfig",
+      "-I/nix/store/1w8g6rvhljfk44hx50qz4sc47sm1f28v-mariadb-connector-c-3.3.5-dev/include/mysql",
+      "/home/otto/dev/ro-bots/spikes/007-native-packet-ast/compiler/anchors.cpp",
+      "-o",
+      "/home/otto/dev/ro-bots/spikes/007-native-packet-ast/compiler/anchors"
+    ],
+    "artifact": "/home/otto/dev/ro-bots/spikes/007-native-packet-ast/compiler/gcc-anchor-build.stderr",
+    "header": "src/custom/defines_post.hpp",
+    "authority": "/nix/store/plsvbs632sakjv9cl1pbzvjnnqs8y06n-rathena-playable-20180704-e985006171d2/share/rathena-playable/apply-runtime-root.py",
+    "authority_lines": [
+      32,
+      33
+    ],
+    "authority_sha256": "8c428de7d442fca02aef9971f5c9456148aba4d374745e7df6bd953190de5e37",
+    "installed_profile_evidence": "/nix/store/plsvbs632sakjv9cl1pbzvjnnqs8y06n-rathena-playable-20180704-e985006171d2/share/rathena-playable/profiles.json",
+    "installed_profile_sha256": "ee2af351afee975ad4145d0e38412dfac0779cd123435f318f8c876349bc0148",
+    "reason": "Original pinned immutable source defines PACKET_OBFUSCATION and PACKET_OBFUSCATION_WARN; installed package disables them by build-time custom-header append, absent in original source closure. No source or forced-header workaround applied. Anchor compilation failed its exact-profile guard; no executable or size evidence."
+  },
+  "gcc_to_clang_failure": {
+    "artifact": "/home/otto/dev/ro-bots/spikes/007-native-packet-ast/compiler/clang-gcc-full-tu.stderr",
+    "first_header": "/nix/store/5q6bdxkp7lc70gn9mnf4yiybrx8ry5xq-gcc-16.2.0/include/c++/16.2.0/x86_64-unknown-linux-gnu/bits/c++config.h",
+    "line": 895,
+    "reason": "GCC-preprocessed 0.0bf16 and GCC-only type builtins unsupported by Clang 21.1.8"
+  },
+  "verification": {
+    "production_count": 185,
+    "production_drift": [],
+    "old_reviews_toolchain_existing_bindings_drift": [],
+    "macros": {
+      "profile-macros": {
+        "PACKETVER": "20180704",
+        "PACKETVER_MAIN_NUM": "PACKETVER",
+        "PRERE": "1",
+        "PACKETVER_RE": null,
+        "PACKETVER_ZERO": null,
+        "PACKETVER_RE_NUM": null,
+        "PACKETVER_ZERO_NUM": null,
+        "RENEWAL": null,
+        "PACKET_OBFUSCATION": "",
+        "PACKET_OBFUSCATION_WARN": "",
+        "PACKETVER_SUPPORTS_PINCODE": "PACKETVER >= 20110309"
+      },
+      "clang-macros": {
+        "PACKETVER": "20180704",
+        "PACKETVER_MAIN_NUM": "PACKETVER",
+        "PRERE": "1",
+        "PACKETVER_RE": null,
+        "PACKETVER_ZERO": null,
+        "PACKETVER_RE_NUM": null,
+        "PACKETVER_ZERO_NUM": null,
+        "RENEWAL": null,
+        "PACKET_OBFUSCATION": "",
+        "PACKET_OBFUSCATION_WARN": "",
+        "PACKETVER_SUPPORTS_PINCODE": "PACKETVER >= 20110309"
+      }
+    },
+    "dependency_count": {
+      "closure.d": 468,
+      "clang-closure.d": 484
+    },
+    "elapsed_seconds": 338.7539381980896
+  },
+  "production_freeze": {
+    "path": "/home/otto/.hermes/cache/scratch/native-ast-spike-production-freeze.json",
+    "sha256": "3d2ca173f65c385962b5d688023b09c482ad29079925746e13db11344bf0923e",
+    "count": 185,
+    "unchanged": true,
+    "root_pin_sha256": "c9c0bac69415b99a29ef3fe149b6f04ef54d291989bdf7218cf819ed52edf2a0"
+  },
+  "artifacts": {
+    "spikes/007-native-packet-ast/compiler/README.md": {
+      "sha256": "259423314d7005a102c4269b8435374e5d2463cbd5257b321fe616970df2328c",
+      "bytes": 4365
+    },
+    "spikes/007-native-packet-ast/compiler/anchors.cpp": {
+      "sha256": "08d8972b060dc2be83ca4de816a92935802a4b5aa496f84dddd42feafd234753",
+      "bytes": 393
+    },
+    "spikes/007-native-packet-ast/compiler/before.json": {
+      "sha256": "14e34e2632a1ef24e9bd7ff04de5b325100545d1b7ab227b33ddd96d7567387a",
+      "bytes": 17504
+    },
+    "spikes/007-native-packet-ast/compiler/clang-closure.d": {
+      "sha256": "8a239f96a67d685a3ac344a3cee99f3bb0510d3895d8fd3d8e78b67ad6f8f517",
+      "bytes": 45134
+    },
+    "spikes/007-native-packet-ast/compiler/clang-driver.stderr": {
+      "sha256": "c141b9c484d1c5f66ee1b547841dccc4a487efe03881b8821f30fb1595ae85c7",
+      "bytes": 6047
+    },
+    "spikes/007-native-packet-ast/compiler/clang-driver.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "spikes/007-native-packet-ast/compiler/clang-gcc-full-tu.stderr": {
+      "sha256": "41e724fec3ef82783ca997576c41a30be1edf350fcc75406e6f10b7e350462fb",
+      "bytes": 13995
+    },
+    "spikes/007-native-packet-ast/compiler/clang-gcc-full-tu.stdout": {
+      "sha256": "e0f4c3c533038889f1342d01a080a80e06c66f3ef3bc046c585a8ca11a059f00",
+      "bytes": 34720
+    },
+    "spikes/007-native-packet-ast/compiler/clang-macros.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "spikes/007-native-packet-ast/compiler/clang-macros.stdout": {
+      "sha256": "54a776188d46fdbf1e0884ab6e285ace3a3bb1f9045d73947c20e7de25768c97",
+      "bytes": 232368
+    },
+    "spikes/007-native-packet-ast/compiler/clang-original-emotion.stderr": {
+      "sha256": "66c3e64521c88db426e35fc0ef7f02d31051555cad2a033007eeb8f28ee9efe5",
+      "bytes": 5506
+    },
+    "spikes/007-native-packet-ast/compiler/clang-original-emotion.stdout": {
+      "sha256": "240d837e8eda003076d8e868365433b8e92a1acfbcd84a1488b3a8182d89720e",
+      "bytes": 39980
+    },
+    "spikes/007-native-packet-ast/compiler/clang-original-name.stderr": {
+      "sha256": "66c3e64521c88db426e35fc0ef7f02d31051555cad2a033007eeb8f28ee9efe5",
+      "bytes": 5506
+    },
+    "spikes/007-native-packet-ast/compiler/clang-original-name.stdout": {
+      "sha256": "dee27d759dd6e0de6eb084d7ce05a35694d987565183d3d3e025981a8dfa5315",
+      "bytes": 1667229
+    },
+    "spikes/007-native-packet-ast/compiler/clang-original-sitting.stderr": {
+      "sha256": "66c3e64521c88db426e35fc0ef7f02d31051555cad2a033007eeb8f28ee9efe5",
+      "bytes": 5506
+    },
+    "spikes/007-native-packet-ast/compiler/clang-original-sitting.stdout": {
+      "sha256": "17b2ff9c314fd8c55b0d3355f0576a6baebdd9c0f57938a1333dadd8b31c8f2c",
+      "bytes": 66351
+    },
+    "spikes/007-native-packet-ast/compiler/clif.ii": {
+      "sha256": "f74d3c6f4d04b7cf2cf0e52e9778ae30feb215973439bc28b2dfb50bfbfdeace",
+      "bytes": 4861934
+    },
+    "spikes/007-native-packet-ast/compiler/clif_emotion.json": {
+      "sha256": "47c85dbfb2417d7666ee082ae809eb9930623d0da405d163c5249ed2dcd370b3",
+      "bytes": 15950
+    },
+    "spikes/007-native-packet-ast/compiler/clif_name.json": {
+      "sha256": "9df3e27ede04dfc7237038efa75cd9b27193ef7f164e0cfadbbe97f406ef1bb1",
+      "bytes": 112753
+    },
+    "spikes/007-native-packet-ast/compiler/clif_sitting.json": {
+      "sha256": "001872c5f83f032ecc06c68762d58b6165ffe7cffef7bb438f4c05054b91165d",
+      "bytes": 28305
+    },
+    "spikes/007-native-packet-ast/compiler/closure.d": {
+      "sha256": "389ec19c763b09f6f74239398cafa2d3eccf873399b051b7578f2f27a5662038",
+      "bytes": 43683
+    },
+    "spikes/007-native-packet-ast/compiler/commands.json": {
+      "sha256": "99ce544333f547a695d74ff17039816c9dbfd23f0b81acb2500d705c269603a2",
+      "bytes": 13007
+    },
+    "spikes/007-native-packet-ast/compiler/dependency-closure.json": {
+      "sha256": "1674618f625e19ba573067de151c4b13e9c4bcbf4ec673f0e580654a92cafa6d",
+      "bytes": 156230
+    },
+    "spikes/007-native-packet-ast/compiler/gcc-anchor-build.stderr": {
+      "sha256": "3db46d4aab2706906c09556c962e5816b2a965b9e5b6ca08cd1166a95e6afd14",
+      "bytes": 160
+    },
+    "spikes/007-native-packet-ast/compiler/gcc-anchor-build.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "spikes/007-native-packet-ast/compiler/gcc-anchor-run.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "spikes/007-native-packet-ast/compiler/gcc-anchor-run.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "spikes/007-native-packet-ast/compiler/gcc-full-syntax.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "spikes/007-native-packet-ast/compiler/gcc-full-syntax.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "spikes/007-native-packet-ast/compiler/gcc-preprocess.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "spikes/007-native-packet-ast/compiler/gcc-preprocess.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "spikes/007-native-packet-ast/compiler/profile-macros.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "spikes/007-native-packet-ast/compiler/profile-macros.stdout": {
+      "sha256": "3c4737b994b3ef71b71119b90c593614ea43d4e19d4d39b694ca5a281364514b",
+      "bytes": 232033
+    },
+    "spikes/007-native-packet-ast/compiler/sender_ast.py": {
+      "sha256": "bd3ac6109e3d1ef241fed9efb0771b7de3a2b67fc7295393a829644975d90946",
+      "bytes": 2991
+    },
+    "spikes/007-native-packet-ast/compiler/test-green-1.log": {
+      "sha256": "7736d71002a53937d2389943fc06802041d1905f7ac3600e8dddd8242664e150",
+      "bytes": 98
+    },
+    "spikes/007-native-packet-ast/compiler/test-green-2.log": {
+      "sha256": "e3c6a31db53df139339310f60723326d4eaf8667d9d7beb35749f1b265c63e7e",
+      "bytes": 100
+    },
+    "spikes/007-native-packet-ast/compiler/test-green-3.log": {
+      "sha256": "164bb1f4546c7802c6109093c60cb27c8c4caebc335e8d708fc376f9fe05c023",
+      "bytes": 101
+    },
+    "spikes/007-native-packet-ast/compiler/test-green-4.log": {
+      "sha256": "a09a08599ec0a07702c41a3b5dd46383e1a394e649547dc9d81e4037fa3d1518",
+      "bytes": 101
+    },
+    "spikes/007-native-packet-ast/compiler/test-red-1.log": {
+      "sha256": "19c7e773818b01272f387870797784c548971d6071d1d02d88f67f6f6fce0bfc",
+      "bytes": 832
+    },
+    "spikes/007-native-packet-ast/compiler/test-red-2.log": {
+      "sha256": "4c3934a1a0ed89e4c5aabe4722099ab63b5e5c08e17707ebe99584474be32557",
+      "bytes": 944
+    },
+    "spikes/007-native-packet-ast/compiler/test-red-3.log": {
+      "sha256": "e79e5f263c637dce49ed67d5b5f95d7f190eb274924ac07ad42dff323ce5ee1f",
+      "bytes": 619
+    },
+    "spikes/007-native-packet-ast/compiler/test-red-4.log": {
+      "sha256": "f0c75cea63e0cf53034d615fcadb0aca9480f9b3c627d830766620ef8fcdf078",
+      "bytes": 680
+    },
+    "spikes/007-native-packet-ast/compiler/test_sender_ast.py": {
+      "sha256": "b252714c2167b07ca0298b7de83dd3e6666341368070a2a0a2a5819e4727a604",
+      "bytes": 1791
+    },
+    "spikes/007-native-packet-ast/compiler/verification.json": {
+      "sha256": "198673e6d3cbaa052489c045a2cd228b1b52e45d3827ff0abd15fa87c569a067",
+      "bytes": 1042
+    }
+  },
+  "not_claimed": [
+    "No exact installed no-obfuscation sender admission",
+    "No fixed/variable catalogue resolutions",
+    "No all-send-site coverage",
+    "No alias/escape/mutation order or CFG proof",
+    "No compiler-executed layout measurements due exact-profile failure",
+    "No runtime migration or native acceptance"
+  ]
+}

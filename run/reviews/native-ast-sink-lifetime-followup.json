@@ -1,0 +1,290 @@
+{
+  "schema": "native-ast-sink-lifetime-followup-v1",
+  "verdict": "BOUNDED_FACTUAL_U4_U5_PROGRESS_CONDITIONAL_INVARIANTS_NOT_ADOPTED",
+  "self_report_only": true,
+  "independent_parent_review_required": true,
+  "sink_adopted": false,
+  "sender_admission": false,
+  "runtime_integration": false,
+  "binary_equivalence": "unknown",
+  "all_six_milestones_open": true,
+  "scope": {
+    "authority": {
+      "path": "/home/otto/dev/ro-bots/run/reviews/native-ast-sink-followup-scope.json",
+      "sha256": "bc525285a7ebe344d269604279bc6ad77d2d14a018bee5af3f8e85907ea8ed26"
+    },
+    "owned_new_report": "/home/otto/dev/ro-bots/run/reviews/native-ast-sink-lifetime-followup.json",
+    "scratch": "/home/otto/.hermes/cache/scratch/native-sink-lifetime-orsg_lxu",
+    "route": "clif_emotion AREA and optional synchronous recursive SELF only",
+    "excluded": "U7 non-AREA routes; general alias/CFG proof; runtime recipient count or world truth; U2/U3/U6 implementation closure owned by other stream"
+  },
+  "provenance": {
+    "source_root": "/home/otto/.hermes/cache/scratch/native-profile-replay-s2jdj4rn/public-source",
+    "baseline_source_closure_sha256": "f045b33b434efc83a7e216f295bf899114a4a1a2daa159898fb738d8b553d6d6",
+    "old_sink_audit": {
+      "path": "/home/otto/dev/ro-bots/run/reviews/native-ast-real-sink-audit.json",
+      "sha256": "6269acb7714e59533c8da9cc8bd0edd679c6e64eb5b4ac0cd6a8bf07095c6a38"
+    },
+    "varargs_standards_report": {
+      "path": "/home/otto/dev/ro-bots/run/reviews/native-ast-varargs-contract.json",
+      "sha256": "e3d539fa3d9692c3c94f15d817ae3bbde1b89921ddf2365ce2268fc805041be8"
+    },
+    "qualification_report": {
+      "path": "/home/otto/dev/ro-bots/run/reviews/native-ast-callback-qualification-experiment.json",
+      "sha256": "173d097cd2ce811e4b6ef68ee6f577a109a4a367a42d294249cbc65dde399076"
+    },
+    "qualification_trial_source_closure_sha256": "1f2d601dc86d572af78bae036f444fbbd469539457569e4f951438b30e74236a",
+    "tracer_review": {
+      "path": "/home/otto/dev/ro-bots/run/reviews/native-ast-real-sender-quality-refactor-independent-review.json",
+      "sha256": "36274d795343691d9a37f99ea467eb289ea457a22e99c3ede0fad5b283a73b87"
+    },
+    "tracer_quality_does_not_grant_semantic_admission": true,
+    "original_caller_AST_IDs_not_joined_to_trial": true,
+    "physically_compared_common_helpers": {
+      "path": "/home/otto/.hermes/cache/scratch/native-sink-lifetime-orsg_lxu/common-variant-comparison.json",
+      "sha256": "ebc3c0b4bdab92e60938d19c3fb61956da590ba02c894acc9a8f05bbc3a4be90"
+    },
+    "variant_note": "Only compared map.cpp/map.hpp/status.cpp/npc.cpp/battle.cpp bytes; no new trial patch/build/run. Whole-file identity does not prove behavior or binary equivalence."
+  },
+  "profile": {
+    "package_authority": [
+      {
+        "path": "/nix/store/plsvbs632sakjv9cl1pbzvjnnqs8y06n-rathena-playable-20180704-e985006171d2/share/rathena-playable/profiles.json",
+        "sha256": "ee2af351afee975ad4145d0e38412dfac0779cd123435f318f8c876349bc0148"
+      },
+      {
+        "path": "/nix/store/plsvbs632sakjv9cl1pbzvjnnqs8y06n-rathena-playable-20180704-e985006171d2/share/rathena-playable/map-cppflags.txt",
+        "sha256": "7986f2fdeb11e55ee707ac27eb4701a64b90361ce1636bb728025fb92a99291d"
+      },
+      {
+        "path": "/nix/store/plsvbs632sakjv9cl1pbzvjnnqs8y06n-rathena-playable-20180704-e985006171d2/share/rathena-playable/map-compile-recipe.txt",
+        "sha256": "8488711230e38fb3a48a9d19dca18b50b3a93780fd9287775768723af9358878"
+      }
+    ],
+    "actual": "MAIN PACKETVER 20180704; PRERE; PIN enabled; no RE/ZERO/renewal/obfuscation",
+    "active_macro_evidence_reused": {
+      "PACKETVER": "#define PACKETVER 20180704",
+      "PACKETVER_MAIN_NUM": "#define PACKETVER_MAIN_NUM PACKETVER",
+      "PACKETVER_RE_NUM": "ABSENT",
+      "PACKETVER_ZERO_NUM": "ABSENT",
+      "PACKETVER_RE": "ABSENT",
+      "PACKETVER_ZERO": "ABSENT",
+      "PRERE": "#define PRERE 1",
+      "RENEWAL": "ABSENT",
+      "RENEWAL_ASPD": "ABSENT",
+      "PACKET_OBFUSCATION": "ABSENT",
+      "PACKET_OBFUSCATION_WARN": "ABSENT",
+      "NULLPO_CHECK": "ABSENT",
+      "DEBUG": "ABSENT",
+      "SEND_SHORTLIST": "#define SEND_SHORTLIST ",
+      "AREA_SIZE": "#define AREA_SIZE battle_config.area_size",
+      "WFIFOHEAD": "#define WFIFOHEAD(fd,size) do{ if( ( fd ) && session[( fd )]->wdata_size + ( size ) > session[( fd )]->max_wdata ){ _realloc_writefifo( ( fd ), ( size ), ALC_MARK ); } }while( false )",
+      "WFIFOP": "#define WFIFOP(fd,pos) (session[fd]->wdata + session[fd]->wdata_size + (pos))",
+      "WBUFW": "#define WBUFW(p,pos) (*(uint16*)WBUFP((p),(pos)))",
+      "RBUFW": "#define RBUFW(p,pos) (*(uint16*)RBUFP((p),(pos)))",
+      "nullpo_ret": "#define nullpo_ret(t) (void)(t)",
+      "BL_CAST": "#define BL_CAST(type_,bl) ( ((bl) == nullptr || (bl)->type != (type_)) ? nullptr : static_cast< typename std::conditional< std::is_const<std::remove_pointer_t<decltype(bl)>>::value, const T##type_*, T##type_* >::type >(bl) )",
+      "RECREATE2": "#define RECREATE2(result,type,number,file,line,func) (result) = (type*)aRealloc2( ( result ), sizeof( type ) * ( number ), ( file ), ( line ), ( func ) )",
+      "aRealloc2": "#define aRealloc2(p,n,file,line,func) _mrealloc(p,n,file,line,func)"
+    },
+    "recipe_check": "All seven commands exactly preserve map role cppflags and old approved include closure; no -U or forced headers; Clang 21.1.8 unchanged full TUs, syntax/filtered AST only; old replay GCC16.2/Clang21.1.8 four-role oracles are layout authority, not new executions."
+  },
+  "U_status": {
+    "U1": {
+      "status": "unresolved adoption blocker; standards mismatch already assessed",
+      "finding": "Original const void* -> unsigned char* and const block_list* -> block_list* va_arg retrievals assessed UNDEFINED if reached after active-session predicate by existing C++17/C11 standards report. No mismatched execution. A successful AST/syntax result does not repair original semantics. All callback statements below are source facts, not a defined original-path execution guarantee."
+    },
+    "U4": {
+      "status": "conditional invariant",
+      "bounded_factual_closure": [
+        "Immediate enumeration and callback ordering; lock constructor/destructor/lock/unlock and map_freeblock_lock/unlock bodies audited in source and active AST.",
+        "map_foreachinallarea:913-920 va_start, immediate map_foreachinareaV(...,false), va_end, return; per retained recipient va_copy -> func -> va_end before next callback.",
+        "Collection traverses by then bx then linked next and appends only matching BL_PC with clamped coordinates/capacity; wall_check=false short-circuits path_search_long and BL_PC excludes block_mob loop. No sorting, async callback or callback storage in enumerator.",
+        "Negative map/absent block array returns before lock; callback zero return is summed and does not stop enumeration. After normal callback completion bl_list_count resets to entry blockcount before local FreeBlockLock destructor runs.",
+        "FreeBlockLock defaults true, increments global block_free_lock once; destructor calls unlock once when locked. Outermost decrement-to-zero destroys block_free entries, nulls each, then sets block_free_count=0; nested unlock does not flush."
+      ],
+      "hazards": [
+        "FreeBlockLock is a counter, not a mutex. No claim of thread/signal exclusion. Collection occurs before acquiring this lock; it protects only cooperating map_freeblock users, not arbitrary direct frees.",
+        "Actual source map_freeblock:296-301 immediately map_destroyblock even while locked when block_free_count >= block_free_max (1048576). This is a concrete source exception to an unconditional deferred-free guarantee, not a runtime counterexample.",
+        "Global bl_list stores recipient block pointers and leaves stale array slots above reset count. Normal nested enumeration appends a suffix and restores count; lifetime/membership correctness requires balanced nesting, live objects and no unrelated mutation. prev check reads object memory and is not a freed-object validity test.",
+        "On a propagating callback exception, source has no catch/scope guard for va_end(ap_copy), wrapper va_end(ap), or bl_list_count restoration; RAII destructor is noexcept and can unlock during unwinding. Aborts/exit/nonlocal jumps do not give normal-return guarantees. No such path executed.",
+        "Outermost unlock scans live block_free_count while lock==0 and invokes type destructors plus allocator. Destructor/global-hook reentrancy and alias effects remain unaudited. Deferred-free queue stores block pointers, never the automatic packet address in reviewed bodies."
+      ],
+      "remaining_blockers": [
+        "map_destroyblock(block_list*) -> implicit/explicit concrete destructors and aFree allocator closure; initial active dispatch audited, full destructor graph not closed.",
+        "No proof selected recipients/source remain alive under all callback/FIFO/DB helpers or deferred-free pressure; source bl and session objects must be caller-guaranteed valid and remain alive, not identified by numeric IDs.",
+        "No established event-loop/signal/multithread exclusion authority; it remains an explicit assumption. U2 allocator and U3 indirect socket-send/global-alias invariants required."
+      ]
+    },
+    "U5": {
+      "status": "conditional invariant; transitive frontier unresolved",
+      "bounded_factual_closure": [
+        "npc_is_hidden_dynamicnpc:1012-1015 reads owner_char_id/target char_id only; no helper invocation/raw buf/len exposure.",
+        "clif_ally_only is mutable static state: initialized false:273, set true:2086, reset false:2120. Cannot infer always false. Predicate short-circuits through update_enemy_position, ally_only, intravision, getSCE(SC_INTRAVISION), then battle_check_target(src,sd,BCT_ENEMY).",
+        "getSCE:1199-1222 mutates lastStatus cache; const overload const_casts and calls mutable overload. util::umap_find uses find/end and returns entry address, not insert/operator[]. Caller must supply valid cache/container/entries; this is not a pure predicate or const-lifetime proof.",
+        "battle_check_target active body and immediate helper source reviewed. Target is BL_PC by enumerator contract: target BL_MOB/BL_SKILL/MER/HOM/ELEM branches and battle_get_exception_ai under target BL_MOB excluded here; source remains any valid caller block type.",
+        "unit_bl2ud/status_get_sc are type-based field-address lookups with const_cast overloads; battle_get_master follows master pointers/ID lookups; pc_has_permission is permissions.test; PC invisibility is option read; status party/guild/bg helpers read fields or lookup masters; guild_isallied uses guild_search -> util::umap_find. getMapFlag reads flags[] in non-DEBUG branch, not live guarded indexing.",
+        "Reviewed predicate bodies contain no direct script invocation/freeblock/socket dispatch/async task creation and receive no raw packet pointer/len. This is bounded immediate-body evidence, not a negative proof across opaque DB/virtual helper/library/destructor boundaries."
+      ],
+      "remaining_blockers": [
+        "battle_get_master arbitrary source/master graph: live typed masters/group and termination required; src!=prev checks only a fixed point, not arbitrary multi-object cycles. No cycle or dangling state observed.",
+        "map_id2bl/map_id2sd -> DBMap::get function pointer via idb_get; actual database target/closure unresolved.",
+        "Source BL_SKILL can reach skill_db.find virtual/database implementation and shared_ptr/group lookups; no claim every transitively invoked callee is noninterfering.",
+        "Standard container/hash/shared_ptr/bitset operations and cache coherence require valid objects; no concurrent invalidation or global aliasing proof. Actual recipient outcome remains unknown and out of scope."
+      ]
+    },
+    "U2": {
+      "status": "unresolved cross-stream prerequisite",
+      "required": "allocator behavior, readable disjoint packet/FIFO storage, reallocation capacity and unrelated-storage noninterference including aFree during deferred flush"
+    },
+    "U3": {
+      "status": "unresolved cross-stream prerequisite",
+      "required": "WFIFOSET conditional flush_fifo -> session[fd]->func_send target/non-server-session invariant and no recipient/global-list invalidation or caller-packet alias effects"
+    },
+    "U6": {
+      "status": "unresolved cross-stream prerequisite",
+      "required": "FIFO/logging/diagnostic fatal-path noninterference, memcpy valid disjoint ranges, no hidden hooks; no successful queueing/receipt inferred"
+    },
+    "U7": {
+      "status": "excluded",
+      "required": "No generic all-sinks/all-routes review"
+    }
+  },
+  "manual_callgraph": [
+    {
+      "edge": "clif_emotion(const block_list&,emotion_type) -> clif_send(const void*,int32,const block_list*,send_target)",
+      "source": "clif.cpp:9412-9420",
+      "role": "automatic PACKET_ZC_EMOTION p; &p and sizeof(p); unchanged seven bytes by existing measured layout"
+    },
+    {
+      "edge": "clif_send AREA -> optional clif_send SELF",
+      "source": "clif.cpp:519-520",
+      "condition": "BL_PC source and bl->prev==nullptr; completes before area collection; SELF clif_session_isValid/session_isActive -> FIFO copy path, U2/U3/U6"
+    },
+    {
+      "edge": "clif_send AREA -> map_foreachinallarea -> map_foreachinareaV -> clif_send_sub",
+      "source": "clif.cpp:524-525; map.cpp:913-920,837-911",
+      "role": "buf/len forwarded unchanged via va_list and per-callback va_copy; no callback/raw packet storage in these bodies"
+    },
+    {
+      "edge": "map_foreachinareaV -> map_getmapdata, swap, i16min/max, conditional ShowWarning, FreeBlockLock ctor/dtor",
+      "source": "map.cpp:837-911",
+      "role": "map/global recipient collection and lock; path_search_long not reached when wall_check=false"
+    },
+    {
+      "edge": "FreeBlockLock::FreeBlockLock -> lock -> map_freeblock_lock; ~FreeBlockLock -> unlock -> map_freeblock_unlock -> map_destroyblock",
+      "source": "map.cpp:310-366,231-288",
+      "role": "outermost deferred block destruction; no buf/len parameters"
+    },
+    {
+      "edge": "clif_send_sub -> session_isActive -> session_isValid",
+      "source": "clif.cpp:412; socket.cpp:1628-1636",
+      "role": "fd bounds/non-null session and !eof only; no lifetime pin or receipt oracle"
+    },
+    {
+      "edge": "clif_send_sub -> conditional npc_is_hidden_dynamicnpc; getSCE(SC_INTRAVISION); battle_check_target",
+      "source": "clif.cpp:446-454",
+      "role": "recipient suppressions only; do not reframe len or mutate packet directly"
+    },
+    {
+      "edge": "battle_check_target -> unit_bl2ud; battle_get_master; pc_has_permission; map_getmapdata; status_get_sc/getSCE/empty/hasSCE; getMapFlag/mapdata_flag_*; bg_team_get_id; status_get_party_id/status_get_guild_id; guild_isallied",
+      "source": "battle.cpp:7869-8209",
+      "role": "conditional on world/source state; source BL_SKILL additionally skill_db.find; actual target BL_PC narrows branches, not all source types"
+    },
+    {
+      "edge": "clif_send_sub or SELF -> WFIFOHEAD/_realloc_writefifo -> memcpy -> WFIFOSET",
+      "source": "clif.cpp:456-468 and SELF case in old sink audit",
+      "role": "cross-stream U2/U3/U6; immediate-body packet forwarding facts only"
+    }
+  ],
+  "timing_and_storage": {
+    "normal_order": "Create/initialize automatic p -> clif_send AREA -> optional SELF completes -> collection -> lock -> callbacks sequentially return -> restore bl_list_count -> FreeBlockLock destructor/unlock/deferred destruction completes -> foreach wrapper va_end returns -> clif_send returns -> emotion p lifetime ends at function return.",
+    "packet_nonescape": "No direct raw buf/len retention/capture found in audited caller/send AREA/sub/foreach/lock/NPC/cache bodies. Enumerator stores recipient block pointers in global bl_list; free queue stores block pointers; neither stores p here. va_list contains forwarded arguments only for synchronous wrapper/callback lifetime. This is not a full transitive nonescape theorem while U1/U2/U3/U6 and U4/U5 opaque frontiers remain.",
+    "packet_block_distinction": "Deferred flush may end NPC/bl storage lifetime, not the caller automatic p by direct lock code. p remains live through ordinary synchronous return, conditional on no escaped alias/reentrant effect from unaudited callees. Caller/source/member/session storage validity is a stated prerequisite, not proven by ID thresholds/prev/session predicates.",
+    "length": "Original buf and len are not rebound along the selected direct path; negative recipient predicates skip, not alter seven-byte framing. Existing size/layout authority is id192,size7,offsets0/2/6 only; not sender semantic admission.",
+    "weakest_claim": "Synchronous control-flow and automatic-storage ordering are established in reviewed source/active AST. Defined end-to-end nonescape, recipient survival, successful queueing and receipt are not established."
+  },
+  "next_frontiers": [
+    {
+      "U": "U4",
+      "callee": "void map_destroyblock(block_list*) -> npc_data::~npc_data() and other concrete destructors; aFree",
+      "source": "src/map/map.cpp:231-288, specifically :271; npc_data definition src/map/npc.hpp:158 onward",
+      "blocked": "Type/member destructor effects and allocator/global alias closure not proven. This audit does not invent script/hook behavior or a live counterexample."
+    },
+    {
+      "U": "U5",
+      "callee": "DBData* (*DBMap::get)(DBMap* self, DBKey key)",
+      "source": "src/common/db.hpp:406,622; src/map/map.cpp:2456-2458,2337-2340",
+      "blocked": "Resolve actual configured function-pointer target and readonly/nonreentrant lifetime behavior for master lookups."
+    },
+    {
+      "U": "U5",
+      "callee": "virtual TypesafeYamlDatabase::find(keytype), source skill_db.find branch",
+      "source": "src/common/database.hpp:107-119; src/map/battle.cpp:8048",
+      "blocked": "Prove actual source-type narrowing or inspect exact skill database override/member dispatch closure; no speculative stand-in."
+    },
+    {
+      "U": "cross-stream",
+      "callee": "WFIFOSET -> flush_fifo -> SendFunc and allocator/logging closure",
+      "source": "src/common/socket.cpp:875-876,457-460; old audit U2/U3/U6",
+      "blocked": "Independent memory/FIFO followup; this report does not close it by assumption."
+    }
+  ],
+  "evidence": {
+    "source_excerpts": {
+      "path": "/home/otto/.hermes/cache/scratch/native-sink-lifetime-orsg_lxu/source-evidence.json",
+      "sha256": "543b5d9a427f45fbd7918bfb64f2a6f21cc1015f7d497e96050cf7bbb0c20124"
+    },
+    "source_range_count": 35,
+    "active_symbols": {
+      "path": "/home/otto/.hermes/cache/scratch/native-sink-lifetime-orsg_lxu/active-symbols.json",
+      "sha256": "7f02fc115875365f53444b7a44a0a949eca9d19b49e57043d16da412118594ff"
+    },
+    "active_definition_count": 15,
+    "commands": {
+      "path": "/home/otto/.hermes/cache/scratch/native-sink-lifetime-orsg_lxu/compiler-commands.json",
+      "sha256": "4d35311a2fdc9b40e37a309f572154c8587e7c7949c06f161bd7c4e5130b3d76"
+    },
+    "compiler_command_count": 7,
+    "compiler_success_count": 7,
+    "runtime_executions": 0,
+    "semantic_harness_executions": 0,
+    "old_dependencies": {
+      "path": "/home/otto/.hermes/cache/scratch/native-sink-lifetime-orsg_lxu/old-20-dependencies.json",
+      "sha256": "5e0df1bb8c3a145a210e5e056ca7f8be1a1ac0c346f60123b206136ebbeb745e"
+    }
+  },
+  "freeze": {
+    "manifest": {
+      "path": "/home/otto/.hermes/cache/scratch/native-quality-refactor-final-freeze.json",
+      "sha256": "66ffd7a2481de3a2421827dc0043111585c56e93fc4c6f71df33d6ccb9381d5a"
+    },
+    "initial_tool_verified_count": 198,
+    "initial_tool_mismatches": [],
+    "after": {
+      "path": "/home/otto/.hermes/cache/scratch/native-sink-lifetime-orsg_lxu/freeze-after.json",
+      "sha256": "38703215d98c45b8c0314b9c4efdc5fd1f81cbda1c631d1a1b8cbe640e213126"
+    },
+    "after_count": 198,
+    "after_mismatches": []
+  },
+  "effects": {
+    "repository_source_tests_docs_pins_CLI_Git_changes": false,
+    "network_installs_providers_servers_package_SQL_model_world_changes": false,
+    "historical_reports_overwritten": false,
+    "only_new_report_and_private_scratch": true,
+    "LLM_inference_runtime_effects": false,
+    "queueing_or_receipt_proven": false,
+    "old_production_generator": "REJECTED/exhausted; untouched"
+  },
+  "issues": [
+    "Some broad source searches hit their output limit; narrowed exact definition reads used; no conclusion from truncated search absence.",
+    "Existing report macro/profile evidence reused with physically rehashed dependencies; new AST remains frontend source authority, not actual installed binary equivalence.",
+    "Self-report requires parent independent review before any stronger classification; no sink adoption authorized.",
+    "Six-minute cap exceeded during artifact assembly/provenance assertion recovery; evidence exploration stopped at the named frontiers. Initial tracer review filename failed expected-hash assertion before publication; exact matching existing quality-review file identified by SHA256. No further semantic exploration performed."
+  ],
+  "elapsed_seconds": 412.223,
+  "budget_seconds": 360,
+  "stopped_at_explicit_frontiers": true,
+  "time_cap_exceeded": true
+}

@@ -1,0 +1,154 @@
+{
+  "schema_version": 1,
+  "defect": "WI-001",
+  "review_type": "Independent bounded first-fix defect re-review",
+  "scope": "Logical malformed-output error-boundary verification only; not inventory-wide, frozen-snapshot, combined-core, reset, ownership, or gameplay approval.",
+  "passed": false,
+  "logical_defect_closed": true,
+  "scoped_defect_verification_passed": true,
+  "inventory_approval": "withheld",
+  "combined_snapshot_approval": "withheld",
+  "snapshot_certification": "absent",
+  "security_concerns": [],
+  "logic_errors": [],
+  "approval_blockers": [
+    "Authorized combined verification has not occurred. Broad approval remains withheld until explicitly authorized combined verification succeeds.",
+    "No source fingerprints or before/after dependency comparison were collected; ongoing immutability and a frozen reviewed snapshot are not certified."
+  ],
+  "review_inputs": {
+    "original_report": "run/reviews/world-inventory-review.json read for WI-001 definition, not reused as current execution evidence",
+    "implementer_report": "run/reviews/world-inventory-first-fix.json read as self-report, not an approval oracle",
+    "actual_source": "src/robots/adapters/world_inventory.py:1-212 read in full",
+    "actual_tests": "tests/test_world_inventory.py:1-344 read in full",
+    "taskfile": "Taskfile.yml:1-148 read; world:inventory is a fixed module command with no mutation authorization",
+    "scoped_git_diff": {
+      "command": "git diff -- src/robots/adapters/world_inventory.py tests/test_world_inventory.py",
+      "exit_code": 0,
+      "output": "",
+      "interpretation": "An empty diff supplies no historical fix-delta proof or snapshot certification. Verdict rests on actual source and independently executed behavior, not a claimed sole-change comparison."
+    }
+  },
+  "source_findings": {
+    "boundary": "run_engine:164-176 translates only OSError, subprocess.TimeoutExpired, and UnicodeError raised around subprocess.run to InventoryError('engine inventory read failed') from None",
+    "cli": "main:202-206 catches InventoryError only and returns 2 with the fixed sanitized stderr before success output",
+    "strict_decoding": "text=True remains enabled; no encoding override or errors=ignore/replace option",
+    "execution_options": {
+      "capture_output": true,
+      "text": true,
+      "check": false,
+      "shell": false,
+      "timeout": 10
+    },
+    "allowlist": "Complete command tuple checked before execution; three exact list queries, selected-format exact test-volume inspection, and selected-format inspection with full lowercase 64-hex container ID",
+    "bandit_suppressions": "Existing B404 on subprocess import and B603 on guarded subprocess argument remain narrow and justified in this scoped review; no blanket arbitrary-error catch was introduced"
+  },
+  "independent_scoped_regressions": {
+    "targeted_command": "nix develop --offline -c uv run --offline --no-sync pytest tests/test_world_inventory.py::test_real_engine_decoding_failure_is_sanitized_through_cli --no-cov -o addopts=\"\" -vv --tb=short",
+    "targeted_exit_code": 0,
+    "targeted_output": "2 passed in 0.19s",
+    "inventory_command": "nix develop --offline -c uv run --offline --no-sync pytest tests/test_world_inventory.py --no-cov -o addopts=\"\" -q --tb=short",
+    "inventory_exit_code": 0,
+    "inventory_output": "33 passed in 0.17s",
+    "prior_safety_command": "nix develop --offline -c uv run --offline --no-sync pytest tests/test_taskfile_safety_labels.py tests/test_world_isolation_guard.py tests/test_world_seed_safety.py --no-cov -o addopts=\"\" -q --tb=short",
+    "prior_safety_exit_code": 0,
+    "prior_safety_output": "90 passed in 0.17s",
+    "count_note": "The targeted 2 cases are included in the 33 inventory cases, not additional unique regression cases. Inventory and prior safety were run separately; no full suite was invoked.",
+    "test_review": "New stdout/stderr regressions retain real subprocess.run before monkeypatching, emit real invalid bytes through isolated local Python children, verify actual UnicodeDecodeError and exact CLI output, and check sanitized adapter message and suppressed cause/context."
+  },
+  "independent_owned_source_gates": {
+    "command": "nix develop --offline -c bash -c 'uv run --offline --no-sync black --check src/robots/adapters/world_inventory.py tests/test_world_inventory.py && uv run --offline --no-sync ruff check src/robots/adapters/world_inventory.py tests/test_world_inventory.py && uv run --offline --no-sync mypy src/robots/adapters/world_inventory.py tests/test_world_inventory.py && uv run --offline --no-sync xenon src/robots/adapters/world_inventory.py --max-absolute B --max-modules B --max-average A && uv run --offline --no-sync bandit -q -c pyproject.toml src/robots/adapters/world_inventory.py && uv run --offline --no-sync vulture src/robots/adapters/world_inventory.py && uv run --offline --no-sync pylint --disable=all --enable=duplicate-code src/robots/adapters/world_inventory.py'",
+    "exit_code": 0,
+    "passed": ["Black", "Ruff", "mypy", "Xenon", "Bandit", "Vulture", "Pylint duplicate-code"],
+    "output_summary": "2 files would be left unchanged; All checks passed; Success: no issues found in 2 source files; Pylint 10.00/10",
+    "scope_note": "Only the adapter and its inventory regression file were targeted, never whole-repository gates."
+  },
+  "independent_fixture_probe": {
+    "execution": "Inline Python via nix develop --offline -c uv run --offline --no-sync python -; terminal exit 0",
+    "harness": "Saved real subprocess.run before replacing the execution seam; retained original run_engine. Restored both in finally. Every stub asserted allowed commands and unchanged exact subprocess options before local child dispatch.",
+    "invalid_byte_fixture": {
+      "command_shape": "(sys.executable, '-I', '-c', local stdlib os.write script)",
+      "invalid_payload_python_literal": "b'independent-marker\\xc3('",
+      "other_stream_payload": "other-stream-marker",
+      "mechanism": "os.write to fd 1 or fd 2; delegate original capture/text/check/shell/timeout options to saved real subprocess.run. Only actual UnicodeDecodeError satisfies the decoding assertions."
+    },
+    "adapter_decoding_checks": {
+      "passed_cases": 10,
+      "streams": ["stdout", "stderr"],
+      "command_forms": ["project-labelled container list", "exact-volume user container list", "exact-volume list", "selected-format full-ID container inspect", "selected-format exact-volume inspect"],
+      "observed_exception": "InventoryError",
+      "exact_message": "engine inventory read failed",
+      "cause": null,
+      "suppress_context": true,
+      "original_context_type": "UnicodeDecodeError"
+    },
+    "vertical_cli_decoding_checks": {
+      "passed_cases": 12,
+      "streams": ["stdout", "stderr"],
+      "failed_read_ordinals": [1, 2, 3, 4, 5, 6],
+      "scope": "Three list queries in each of two absent-world observations; prior successful reads return empty fixture inventories. An observed run_engine wrapper verifies InventoryError translation and re-raises to actual main.",
+      "each_case": {
+        "return": 2,
+        "stdout": "",
+        "stderr": "test-world inventory unavailable; no mutation authorized\n",
+        "translated_errors": ["UnicodeDecodeError"],
+        "no_reads_after_failure": true,
+        "partial_success": false,
+        "raw_fixture_or_other_stream_content_visible": false
+      }
+    },
+    "ordinary_error_checks": {
+      "passed_cases": 3,
+      "modes": ["FileNotFoundError", "TimeoutExpired", "nonzero return code with partial stdout and private stderr"],
+      "each_case": {
+        "return": 2,
+        "stdout": "",
+        "stderr": "test-world inventory unavailable; no mutation authorized\n"
+      }
+    },
+    "arbitrary_programming_exception_checks": {
+      "passed_cases": 4,
+      "types": ["RuntimeError", "ValueError", "TypeError", "AttributeError"],
+      "observation": "Original exception object propagates through actual run_engine and main; stdout and stderr stay empty. No broad swallowing or misleading sanitized success/failure conversion."
+    },
+    "allowlist_checks": {
+      "accepted_forms": 5,
+      "accepted_result": "Exact options and captured stdout retained",
+      "denied_distinct_tuples": 47,
+      "denied_variants": ["appended --help", "shell command substitution", "single tuple-element removals", "volume rm", "uppercase full ID", "short ID", "production volume substitution"],
+      "denial_message": "inventory command is not allowed",
+      "denied_execution_calls": 0
+    },
+    "ordinary_success_check": {
+      "return": 0,
+      "stderr": "",
+      "parsed_stdout": {
+        "world": "test",
+        "volume_exists": false,
+        "containers": [],
+        "volume_users": [],
+        "inventory_stable": true,
+        "mutation_authorized": false
+      },
+      "fixture_only": true
+    },
+    "executed_summary": {
+      "passed": true,
+      "check_count": 32,
+      "local_fixture_children": 22,
+      "actual_engine_calls": 0,
+      "network_calls": 0
+    }
+  },
+  "consent_and_scope_limits": [
+    "The previously timed-out unconsented all-suite/source-fingerprint/combined-report outcome was neither retried nor approximated. Its unanswered authorization clarification remains a blocker for broad approval.",
+    "No full pytest, task check, task test, source hash/fingerprint collection, combined verification report, Docker invocation, provider calls, SQL, credentials, native engine, live gameplay, reset, seeding, staging, commit, or push.",
+    "No independent red execution against pre-fix production source; original failure report and implementer red evidence remain historical context only. Current decoding behavior was independently verified using different invalid bytes and additional command/failure positions.",
+    "No certification of continuous source immutability, exclusive locks, atomic inventory snapshots, trusted world/account ownership, reset/seeding authority, present live resources, or native gameplay.",
+    "Logical WI-001 closure is not inventory approval. Empty concern lists apply only to this bounded defect review; passed remains false for any interpretation as broad approval."
+  ],
+  "files_created_or_modified": ["run/reviews/world-inventory-wi001-rereview.json"],
+  "implementation_tests_taskfile_modified": false,
+  "external_mutations": false,
+  "issues_encountered": ["Nix reported the existing dirty working tree; scoped commands completed successfully. Scoped git diff was empty and was not treated as historical delta evidence."],
+  "summary": "WI-001 logically closed by independent strict stdout/stderr subprocess decoding probes and adapter-through-CLI evidence: exit 2, exact fixed stderr, empty stdout, no partial success. Ordinary error handling, exact read-only allowlist behavior and programming-exception propagation pass bounded checks. Broad inventory and combined-snapshot approval remain withheld pending authorized combined verification; snapshot certification is absent."
+}

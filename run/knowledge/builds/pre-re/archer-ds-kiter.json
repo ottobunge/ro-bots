@@ -1,0 +1,214 @@
+{
+ "class": "Archer",
+ "playstyle": "evasive/lethal (Double Strafe kiter)",
+ "playstyle_axis": "evasive/lethal",
+ "summary": "Never-melee archer: DEX for ranged ATK and HIT, AGI for kiting; Vulture's Eye outranges every early mob (mobs melee at range<4, you shoot at 10-15).",
+ "stat_progression": [
+  {
+   "phase": "job change ~40",
+   "base_level": 40,
+   "stat_point_budget": 305,
+   "points_spent": 280,
+   "points_left": 25,
+   "allocation": {
+    "dex": 50,
+    "agi": 30,
+    "int": 1,
+    "str": 1,
+    "vit": 1,
+    "luk": 1
+   },
+   "leftover_into": "DEX (25 pts left at 305)"
+  },
+  {
+   "phase": "job 50",
+   "base_level": 50,
+   "stat_point_budget": 420,
+   "points_spent": 398,
+   "points_left": 22,
+   "allocation": {
+    "dex": 60,
+    "agi": 40,
+    "int": 1,
+    "str": 1,
+    "vit": 1,
+    "luk": 1
+   },
+   "leftover_into": "DEX (22 pts left at 420)"
+  }
+ ],
+ "skill_order": [
+  {
+   "skill": "Double Strafe",
+   "levels": "1-5 ->10",
+   "at": "job 1-15",
+   "prereqs": [],
+   "why": "2 bolts, 100-190% each per corpus table; 12 SP; 1 arrow"
+  },
+  {
+   "skill": "Owl's Eye",
+   "levels": "3 ->10",
+   "at": "job 6 / job 34-40",
+   "prereqs": [],
+   "why": "+1 DEX/lv; Vulture prereq"
+  },
+  {
+   "skill": "Vulture's Eye",
+   "levels": 10,
+   "at": "job 9-18",
+   "prereqs": [
+    "Owl's Eye 3"
+   ],
+   "why": "+1 bow range & +1 HIT per lv (range 5 base -> 15)"
+  },
+  {
+   "skill": "Improve Concentration",
+   "levels": 5,
+   "at": "job 19-23",
+   "prereqs": [
+    "Vulture's Eye 1"
+   ],
+   "why": "+AGI/DEX (2+lv, flat in pre-re per rAthena SC_CONCENTRATE)"
+  },
+  {
+   "skill": "Arrow Shower",
+   "levels": 5,
+   "at": "job 24-28",
+   "prereqs": [
+    "Double Strafe 5"
+   ],
+   "why": "AoE pushback for mob control"
+  }
+ ],
+ "skill_point_budget": {
+  "job40_points": 40,
+  "job50_points": 50,
+  "job50_add": [
+   "Owl's Eye ->10",
+   "Improve Concentration ->10 (SP 25-70)",
+   "Double Strafe ->10"
+  ]
+ },
+ "equipment_order": [
+  {
+   "order": 1,
+   "id": 1201,
+   "name": "Knife [3]",
+   "price_z": 50,
+   "why": "novice only; sell after change"
+  },
+  {
+   "order": 2,
+   "id": 1701,
+   "name": "Bow [3]",
+   "price_z": 1000,
+   "why": "ATK 15 bow; DEX-scaled status ATK does the real work"
+  },
+  {
+   "order": 3,
+   "id": 1750,
+   "name": "Arrow",
+   "price_z": 1,
+   "why": "ATK 25 per arrow, weight 0.1; buy hundreds"
+  },
+  {
+   "order": 4,
+   "id": 2303,
+   "name": "Jacket",
+   "price_z": 200,
+   "why": "DEF"
+  },
+  {
+   "order": 5,
+   "id": 2401,
+   "name": "Sandals",
+   "price_z": 400,
+   "why": "shoes"
+  },
+  {
+   "order": 6,
+   "id": 1704,
+   "name": "Composite Bow [3]",
+   "price_z": 2500,
+   "why": "ATK 29"
+  },
+  {
+   "order": 7,
+   "id": 2501,
+   "name": "Hood",
+   "price_z": 1000,
+   "why": "garment"
+  }
+ ],
+ "grinding": [
+  {
+   "map": "prt_fild08",
+   "phase": "Lv 10-30 (outrange everything)",
+   "mobs": [
+    {
+     "id": 1002,
+     "name": "Poring",
+     "level": 1,
+     "hp": 60,
+     "exp": "27/20",
+     "notes": "DEX50 status ATK ~75: one-shot with normal arrows"
+    },
+    {
+     "id": 1063,
+     "name": "Lunatic",
+     "level": 3,
+     "hp": 55,
+     "exp": "36/27"
+    },
+    {
+     "id": 1052,
+     "name": "Rocker",
+     "level": 15,
+     "hp": 185,
+     "exp": "99/74"
+    }
+   ]
+  },
+  {
+   "map": "payon fields (classic iRO spawns - confirm on server)",
+   "phase": "Lv 30-50",
+   "mobs": [
+    {
+     "id": 1010,
+     "name": "Willow",
+     "level": 8,
+     "hp": 91,
+     "exp": "45/36",
+     "notes": "Trunk drops = Archer job quest + Arrow Crafting fodder"
+    },
+    {
+     "id": 1013,
+     "name": "Wolf",
+     "level": 45,
+     "hp": 1219,
+     "exp": "342/386",
+     "notes": "hit-req 269: DEX60+BLv50+HIT gear reaches ~285+"
+    }
+   ]
+  }
+ ],
+ "do_not_waste": [
+  "Arrow Repel (quest, self-knockback niche)",
+  "INT (archer has no SP skills besides DS/ICC)",
+  "VIT early (kiting is the defense)"
+ ],
+ "renewal_differences": "Pre-re bow damage uses DEX+(DEX/10)^2 status ATK; renewal adds the 0.5%/point weapon-ATK layer and changes ICC to a percentage boost (corpus table) while pre-re is flat +2+lv (rAthena SC_CONCENTRATE). Bow range and DS numbers are era-stable.",
+ "sources": [
+  "iro-wiki corpus page 'Stats' (stat per-point effects, raise-cost floor((X-1)/10)+2, 48 pts at BLv1, level-up points floor(X/5)+3)",
+  "iro-wiki corpus page 'Total stat point requirement' (cumulative cost table)",
+  "rathena/src/map/status.cpp status_base_atk (pre-re status ATK: STR+(STR/10)^2+DEX/5+LUK/5 melee; DEX+(DEX/10)^2+STR/5 ranged; MATK min INT+(INT/7)^2 max INT+(INT/5)^2)",
+  "rathena/db/pre-re/skill_tree.yml (authoritative server skill prerequisites)",
+  "rathena/db/pre-re/skill_db.yml (SP costs, cast times)",
+  "iro-wiki corpus '<Class> Job Change Guide' + rathena/npc/pre-re/jobs/1-1/<class>.txt (job change)",
+  "iro-wiki corpus pages 'Archer', 'Double Strafe', \"Owl's Eye\", \"Vulture's Eye\", 'Improve Concentration', 'Arrow Shower', 'Archer Job Change Guide'",
+  "iro-db monsters 1002/1063/1052/1010/1013; items 1701/1750/1704",
+  "corpus 'Archer' Job Bonuses: j40 INT+6 DEX+5 AGI+2 STR+3; j50 INT+9 DEX+7 AGI+4 STR+3 VIT+1 LUK+2",
+  "rathena/db/pre-re/skill_tree.yml (AC_DOUBLE: no prereq server-side; AC_SHOWER needs AC_DOUBLE 5; AC_CONCENTRATION needs AC_VULTURE 1)",
+  "project context: corpus Attack Range note (bows base range 5 cells)"
+ ]
+}

@@ -1,0 +1,540 @@
+{
+  "passed": true,
+  "security_concerns": [],
+  "logic_errors": [],
+  "review_kind": "Fresh independent read-only final resource-bound review at completed frozen snapshot",
+  "reviewed_at_utc": "2026-10-05T17:20:35.071478+00:00",
+  "repository": "/home/otto/dev/ro-bots",
+  "git_HEAD": "15e0fef5334a7d9d7bb0ae6b8953e367e828bfb2",
+  "authorization": {
+    "path": "run/reviews/combined-verification-explicit-authorization.json",
+    "user_response": "you have my permission",
+    "historical_blocked_calls_remain_unexecuted": true
+  },
+  "summary": "PASS for supported offline resource/admission scope: Python factory and HTTP regeneration bound worst-case population at 4096 and friend size at 16 before generation, preserve valid legacy outputs and POP-001 lifecycle refusal, and match compiled Rust admission within supported friend-size domain. No whole validation-domain or gameplay equivalence is claimed.",
+  "defect_disposition": {
+    "RWF-POP-BOUND-001": {
+      "closed": true,
+      "scope": "4096 maximum worst-case members and 16 maximum friends/group at Rust command/mock admission and Python pure factory/HTTP command admission, for Python-supported friend-size ranges (minimum >= 2).",
+      "not_closed_for": [
+        "total-agent configurator",
+        "real character generation",
+        "native host population lifecycle/reconciliation",
+        "gameplay",
+        "full-domain Rust/Python validation equivalence"
+      ]
+    },
+    "POP-001": {
+      "preserved": true,
+      "scope": "host-bound refusal and final lock-serialized binding guard/aggregate commit; deterministic existing race suite passed at this exact snapshot. This review does not implement lifecycle reconciliation."
+    }
+  },
+  "findings": [
+    {
+      "invariant": "factory preflight ordering",
+      "source": [
+        "src/robots/society/society.py:219-223",
+        "src/robots/society/population_limits.py:7-58"
+      ],
+      "verified": "Pure validator returns solo count before roster containers, RNG use, personas, groups, social graph and reputation candidate construction. Worst-case formula is (n_groups - solos) * group_size_max + solos. Group-local graph at maximum is bounded by 4096 * 15 directed edges, not all-roster quadratic generation."
+    },
+    {
+      "invariant": "direct legacy/count/type semantics",
+      "verified": "n_groups includes solos; None means one solo for nonempty requests and zero for empty. Direct empty allowed. Integer/non-bool validation and friend size 2 <= min <= max <= 16 are unconditional, including empty/all-solo requests."
+    },
+    {
+      "invariant": "HTTP command/resource ordering",
+      "source": [
+        "src/robots/app/world_state.py:285-322",
+        "src/robots/adapters/worldfeed_server.py:111-124"
+      ],
+      "verified": "API groups are friend groups independently from solos; nonempty population required. Pure preflight precedes random.Random(seed), factory and candidate MemoryLogs. Only errors from validation are translated; independent factory/candidate exceptions preserve exact identity."
+    },
+    {
+      "invariant": "refusal atomicity and POP-001",
+      "source": [
+        "src/robots/app/world_state.py:200-208",
+        "src/robots/app/world_state.py:323-340"
+      ],
+      "verified": "Binding validation/install/ownership and final regeneration guard/complete aggregate commit share _state_lock. Bound rejection precedes preflight/RNG. Refused requests and raced binding preserve roster/reputation/runtime/defaults/private memory/feed objects and sequence; successful regeneration remains permitted only when unbound."
+    },
+    {
+      "invariant": "Rust resource admission and translation",
+      "source": [
+        "dashboard/crates/world-feed/src/lib.rs:302-348",
+        "dashboard/crates/world-feed/src/live.rs:290-348",
+        "dashboard/crates/world-feed/src/mock/mod.rs:210-228"
+      ],
+      "verified": "Checked count addition/membership arithmetic and 4096/16 constants. command_payload validates before JSON payload; post_command before network; public mock generation validates before RNG/roster/channel allocation. Compiled Rust output bodies were fed directly into Python admission/HTTP fixtures."
+    },
+    {
+      "invariant": "valid output preservation",
+      "verified": "90 comparisons against independently loaded git-HEAD legacy generation matched complete persona/group/schedule.windows/graph/reputation projections and post-generation RNG state. Explicit configuration determinism and counts are tested; five actual Rust-translated HTTP cases matched direct Python generation including 4096 friends and 4096 solos."
+    }
+  ],
+  "known_out_of_scope_contract_difference": {
+    "description": "Rust permits friend minimum 1; Python requires >= 2 even for all-solo requests. This existing minimum-domain mismatch does not bypass resource ceilings; Python rejects those translated bodies safely. Therefore exact global validation parity is NOT approved.",
+    "rust_source": "dashboard/crates/world-feed/src/lib.rs:311-314",
+    "python_source": "src/robots/society/population_limits.py:46-52",
+    "matrix_differing_cases": 71,
+    "examples": [
+      [
+        0,
+        1,
+        1,
+        1
+      ],
+      [
+        0,
+        1,
+        1,
+        16
+      ],
+      [
+        0,
+        15,
+        1,
+        1
+      ],
+      [
+        0,
+        15,
+        1,
+        16
+      ],
+      [
+        0,
+        16,
+        1,
+        1
+      ]
+    ],
+    "severity_in_approved_scope": "nonblocking: supported resource/admission domain only, fail-closed upstream behavior"
+  },
+  "evidence": {
+    "python_tests": {
+      "command": "nix develop -c uv run --offline pytest -q -o addopts=\"\" -o faulthandler_timeout=30 tests/test_population_resource_limits.py tests/test_population_config.py tests/test_population_binding_race.py tests/test_society.py tests/test_world_state.py tests/test_worldfeed_server.py tests/test_worldfeed_retention.py tests/test_agent_host.py tests/test_host_memory.py tests/test_host_chat_commands.py tests/test_host_storage_failure.py",
+      "per_file_counts": {
+        "tests/test_population_resource_limits.py": 51,
+        "tests/test_population_config.py": 11,
+        "tests/test_population_binding_race.py": 9,
+        "tests/test_society.py": 22,
+        "tests/test_world_state.py": 26,
+        "tests/test_worldfeed_server.py": 19,
+        "tests/test_worldfeed_retention.py": 5,
+        "tests/test_agent_host.py": 17,
+        "tests/test_host_memory.py": 16,
+        "tests/test_host_chat_commands.py": 38,
+        "tests/test_host_storage_failure.py": 15
+      },
+      "passed": 229,
+      "new_resource_cases": 51,
+      "existing_cases": 178,
+      "result": {
+        "output": "warning: Git tree '/home/otto/dev/ro-bots' is dirty\nro-bots dev shell \u2014 try: task --list\n........................................................................ [ 31%]\n........................................................................ [ 62%]\n........................................................................ [ 94%]\n.............                                                            [100%]\n=============================== warnings summary ===============================\n.venv/lib/python3.14/site-packages/fastapi/testclient.py:1\n  /home/otto/dev/ro-bots/.venv/lib/python3.14/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.\n    from starlette.testclient import TestClient as TestClient  # noqa\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n229 passed, 1 warning in 4.81s",
+        "exit_code": 0,
+        "error": null
+      }
+    },
+    "rust_resource_tests": {
+      "command": "nix develop -c cargo test --offline --locked --manifest-path dashboard/Cargo.toml -p world-feed --test population_bounds",
+      "passed": 3,
+      "result": {
+        "output": "warning: Git tree '/home/otto/dev/ro-bots' is dirty\nro-bots dev shell \u2014 try: task --list\n   Compiling world-feed v0.1.0 (/home/otto/dev/ro-bots/dashboard/crates/world-feed)\n    Finished `test` profile [unoptimized + debuginfo] target(s) in 7.22s\n     Running tests/population_bounds.rs (dashboard/target/debug/deps/population_bounds-c50821058843a8a2)\n\nrunning 3 tests\ntest json_u32_extrema_reject_without_panic ... ok\ntest public_mock_generator_rejects_invalid_shape ... ok\ntest oversized_rosters_reject_before_network ... ok\n\ntest result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s",
+        "exit_code": 0,
+        "error": null
+      },
+      "loopback_fixture": "Existing Rust test owns 127.0.0.1:0 listener and aborts/awaits it after asserting zero requests; no shared service touched."
+    },
+    "static_gates": {
+      "command": "nix develop -c bash -c 'set -e; uv run --offline black --check src/robots/society/population_limits.py src/robots/society/society.py src/robots/app/world_state.py tests/test_population_resource_limits.py; uv run --offline ruff check src/robots/society/population_limits.py src/robots/society/society.py src/robots/app/world_state.py tests/test_population_resource_limits.py; uv run --offline mypy; uv run --offline xenon src --max-absolute B --max-modules B --max-average A; uv run --offline bandit -q -c pyproject.toml -r src'",
+      "gates": [
+        "scoped Black check",
+        "scoped Ruff",
+        "full configured mypy: 88 source files",
+        "full configured Xenon B/B/A",
+        "full configured Bandit"
+      ],
+      "result": {
+        "output": "warning: Git tree '/home/otto/dev/ro-bots' is dirty\nro-bots dev shell \u2014 try: task --list\nAll done! \u2728 \ud83c\udf70 \u2728\n4 files would be left unchanged.\nAll checks passed!\nSuccess: no issues found in 88 source files",
+        "exit_code": 0,
+        "error": null
+      },
+      "security_pattern_scan": {
+        "hardcoded_secret": [],
+        "shell_true": [],
+        "dangerous_eval_exec": [],
+        "unsafe_pickle": [],
+        "sql_interpolation": []
+      },
+      "AST_parse_passed": [
+        "src/robots/society/population_limits.py",
+        "src/robots/society/society.py",
+        "src/robots/app/world_state.py"
+      ]
+    },
+    "independent_edge_probes": {
+      "result": {
+        "matrix_cases": 1512,
+        "resource_admission_matches": 1441,
+        "supported_python_admissions_stopped_before_rng": 138,
+        "known_minimum_one_domain_differences": 71,
+        "minimum_one_difference_examples": [
+          [
+            0,
+            1,
+            1,
+            1
+          ],
+          [
+            0,
+            1,
+            1,
+            16
+          ],
+          [
+            0,
+            15,
+            1,
+            1
+          ],
+          [
+            0,
+            15,
+            1,
+            16
+          ],
+          [
+            0,
+            16,
+            1,
+            1
+          ]
+        ],
+        "direct_type_spy_probes": 24,
+        "http_rejection_spy_probes": 25,
+        "legacy_git_HEAD_projection_and_rng_comparisons": 90,
+        "actual_rust_payload_to_python_HTTP_generation_cases": 5,
+        "actual_maximum_membership_cases": [
+          4096,
+          4096
+        ],
+        "host_bound_HTTP_refusals_before_preflight": 2,
+        "all_assertions_passed": true,
+        "rust_probe_output_sha256": "b2dd56061ef6ea0a2f500d832736bf6d1572fcaa04bfff84bcefba8b83392326"
+      },
+      "execution_result": {
+        "output": "warning: Git tree '/home/otto/dev/ro-bots' is dirty\nro-bots dev shell \u2014 try: task --list\n/home/otto/dev/ro-bots/.venv/lib/python3.14/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.\n  from starlette.testclient import TestClient as TestClient  # noqa\n{\"matrix_cases\": 1512, \"resource_admission_matches\": 1441, \"supported_python_admissions_stopped_before_rng\": 138, \"known_minimum_one_domain_differences\": 71, \"minimum_one_difference_examples\": [[0, 1, 1, 1], [0, 1, 1, 16], [0, 15, 1, 1], [0, 15, 1, 16], [0, 16, 1, 1]], \"direct_type_spy_probes\": 24, \"http_rejection_spy_probes\": 25, \"legacy_git_HEAD_projection_and_rng_comparisons\": 90, \"actual_rust_payload_to_python_HTTP_generation_cases\": 5, \"actual_maximum_membership_cases\": [4096, 4096], \"host_bound_HTTP_refusals_before_preflight\": 2, \"all_assertions_passed\": true, \"rust_probe_output_sha256\": \"b2dd56061ef6ea0a2f500d832736bf6d1572fcaa04bfff84bcefba8b83392326\"}",
+        "exit_code": 0,
+        "error": null
+      },
+      "python_source_sha256": "1db26e3b9ae15f4b448f461419233f738360310ee025449e07b6824ff293df36",
+      "python_source": "import json, random, subprocess, types, sys, hashlib, itertools\nfrom dataclasses import asdict\nfrom pathlib import Path\nfrom unittest.mock import patch\nfrom fastapi.testclient import TestClient\nfrom robots.society.population_limits import validate_population, MAX_ROSTER_AGENTS, MAX_FRIENDS_PER_GROUP\nfrom robots.society.society import SocietyRoster\nfrom robots.app.world_state import WorldState, CommandError\nfrom robots.adapters.worldfeed_server import create_app\nfrom robots.society.memory import MemoryLog, StubSummarizer, ExperienceNote\nassert (MAX_ROSTER_AGENTS, MAX_FRIENDS_PER_GROUP)==(4096,16)\nclass Admitted(Exception): pass\nadmitted=Admitted('stopped before RNG setup and candidate allocation')\ndef stop(*a, **k): raise admitted\ndef forbidden(*a, **k): raise AssertionError('forbidden generation/allocation reached')\nshapes=list(itertools.product([0,1,2,255,256,257,2047,2048,2049,4095,4096,4097,1000000,2**32-1], [0,1,15,16,17,4095,4096,4097,2**32-1], [(0,0),(1,1),(1,16),(2,2),(2,6),(2,16),(7,7),(16,16),(16,17),(17,17),(3,2),(2,2**32-1)]))\nrows=[(g,s,lo,hi) for g,s,(lo,hi) in shapes]\np=subprocess.run([sys.argv[1]],input=''.join(f'{g} {s} {lo} {hi}\\n' for g,s,lo,hi in rows),capture_output=True,text=True,check=True,timeout=20)\nlines=p.stdout.splitlines(); assert len(lines)==len(rows)\nstate=WorldState(SocietyRoster.build(random.Random(42),n_groups=3))\ninitial=dict(vars(state)); feed=state.events\nmatched=accepted=0; differences=[]; payloads=[]\nwith patch('robots.app.world_state.random.Random',side_effect=stop), patch.object(SocietyRoster,'build',side_effect=forbidden), patch('robots.app.world_state.MemoryLog',side_effect=forbidden):\n for row,line in zip(rows,lines,strict=True):\n  g,s,lo,hi=row\n  rust_ok=line.startswith('OK\\t')\n  body=json.loads(line.split('\\t',1)[1]) if rust_ok else {'type':'regenerate_roster','seed':17,'groups':g,'solos':s,'friends_min':lo,'friends_max':hi}\n  if rust_ok:\n   assert body=={'type':'regenerate_roster','seed':17,'groups':g,'solos':s,'friends_min':lo,'friends_max':hi}\n   payloads.append(body)\n  python_ok=False\n  try: state.apply_command(body)\n  except Admitted as exc: assert exc is admitted; python_ok=True\n  except CommandError: pass\n  assert all(vars(state)[k] is v for k,v in initial.items()) and state.events==feed\n  if lo==1 and rust_ok and not python_ok: differences.append(row)\n  else: assert rust_ok==python_ok, (row,line,python_ok); matched+=1\n  expected=(lo>=2 and lo<=hi<=16 and g+s>0 and g*hi+s<=4096)\n  assert python_ok==expected, (row,python_ok,expected)\n  accepted+=python_ok\n# Check Python-only types on each direct field with allocation/RNG spies.\ntype_probes=0\nwith patch('robots.society.society.SocialGraph',side_effect=forbidden), patch('robots.society.society.FriendGroup',side_effect=forbidden), patch('robots.society.society.SocietyPersona',side_effect=forbidden):\n for field,bad in itertools.product(['n_groups','solos','group_size_min','group_size_max'],[True,False,1.0,'2',[],{}]):\n  args={'n_groups':1,'solos':0,'group_size_min':2,'group_size_max':6}; args[field]=bad\n  rng=random.Random(42); before=rng.getstate()\n  with patch.object(rng,'randint',side_effect=forbidden),patch.object(rng,'choice',side_effect=forbidden),patch.object(rng,'random',side_effect=forbidden):\n   try: SocietyRoster.build(rng,**args)\n   except TypeError: pass\n   else: raise AssertionError(args)\n  assert rng.getstate()==before; type_probes+=1\n# Actual HTTP malformed/resource shapes: no candidate calls, unchanged exact identities.\nhttp_rejections=0\nwith TestClient(create_app(state)) as client, patch('robots.app.world_state.random.Random',side_effect=forbidden), patch.object(SocietyRoster,'build',side_effect=forbidden), patch('robots.app.world_state.MemoryLog',side_effect=forbidden):\n for field,bad in itertools.product(['groups','solos','friends_min','friends_max'],[True,False,1.0,'2',None]):\n  body={'type':'regenerate_roster','seed':17,'groups':1,'solos':0,'friends_min':2,'friends_max':6}; body[field]=bad\n  assert client.post('/commands',json=body).status_code==400\n  assert all(vars(state)[k] is v for k,v in initial.items()); http_rejections+=1\n for body in [{'groups':10**200,'solos':0},{'groups':0,'solos':10**200},{'groups':0,'solos':1,'friends_max':17},{'groups':0,'solos':0},{'groups':256,'solos':1,'friends_max':16}]:\n  assert client.post('/commands',json={'type':'regenerate_roster','seed':17,**body}).status_code==400\n  assert all(vars(state)[k] is v for k,v in initial.items()); http_rejections+=1\n# Independent prechange git-HEAD body oracle for all supported legacy inputs.\nold_source=subprocess.run(['git','show','HEAD:src/robots/society/society.py'],capture_output=True,text=True,check=True).stdout\nold=types.ModuleType('population_review_old_society'); sys.modules[old.__name__]=old\nexec(compile(old_source,'git-HEAD-society.py','exec'),old.__dict__)\ndef projection(roster):\n return {'personas':{k:asdict(v) for k,v in roster.personas.items()},'groups':[(g.group_id,g.member_ids,g.attitude.value,g.schedule.windows) for g in roster.groups], 'edges':roster.graph._edges,'reputation':(roster.reputation._by_agent,roster.reputation._by_group)}\nlegacy_checks=0\nfor seed,n,maxsize in itertools.product([0,1,17,42,2**64-1],[0,1,2,3,6,70],[2,6,16]):\n a,b=random.Random(seed),random.Random(seed)\n before_roster=old.SocietyRoster.build(a,n_groups=n,group_size_max=maxsize)\n after_roster=SocietyRoster.build(b,n_groups=n,group_size_max=maxsize)\n assert projection(before_roster)==projection(after_roster) and a.getstate()==b.getstate()\n assert sum(len(g.member_ids)==1 for g in after_roster.groups)==(1 if n else 0)\n legacy_checks+=1\n# Actual supported Rust-translated request bodies into Python HTTP: no transport server.\nreal_cases=0\nfor g,s,minsize,maxsize in [(0,3,2,16),(2,3,4,4),(1,0,7,7),(256,0,16,16),(0,4096,2,16)]:\n row=rows.index((g,s,minsize,maxsize)) if (g,s,minsize,maxsize) in rows else None\n raw=subprocess.run([sys.argv[1]],input=f'{g} {s} {minsize} {maxsize}\\n',capture_output=True,text=True,check=True).stdout.strip()\n assert raw.startswith('OK\\t'); body=json.loads(raw.split('\\t',1)[1])\n direct=SocietyRoster.build(random.Random(17),n_groups=g+s,solos=s,group_size_min=minsize,group_size_max=maxsize)\n with TestClient(create_app(state)) as client:\n  response=client.post('/commands',json=body); assert response.status_code==200,response.text\n assert projection(direct)==projection(state.roster)\n assert len(state.roster.personas)<=4096\n assert sum(len(x.member_ids)==1 for x in state.roster.groups)==s\n assert sum(len(x.member_ids)>1 for x in state.roster.groups)==g\n assert response.json()['summary']==f'roster regenerated (seed 17, {g} groups + {s} solos)'\n real_cases+=1\n# Bound host refusal remains earlier than preflight/RNG and keeps private memory/feed.\npid=next(iter(state.roster.personas)); log=MemoryLog(StubSummarizer()); log.append(ExperienceNote(ts=1,kind='session',text='independent private memory')); state.bind_memory(pid,log)\nlocked=dict(vars(state)); bound_feed=state.events\nwith TestClient(create_app(state)) as client,patch('robots.app.world_state.validate_population',side_effect=forbidden),patch('robots.app.world_state.random.Random',side_effect=forbidden),patch.object(SocietyRoster,'build',side_effect=forbidden),patch('robots.app.world_state.MemoryLog',side_effect=forbidden):\n for body in [{'type':'regenerate_roster','seed':17,'groups':1},{'type':'regenerate_roster','seed':17,'groups':10**200}]:\n  response=client.post('/commands',json=body); assert response.status_code==400 and 'reconciliation' in response.json()['detail']\n  assert all(vars(state)[k] is v for k,v in locked.items()) and state.events==bound_feed\nassert state._memories[pid] is log and log.notes()[0].text=='independent private memory'\nprint(json.dumps({'matrix_cases':len(rows),'resource_admission_matches':matched,'supported_python_admissions_stopped_before_rng':accepted,'known_minimum_one_domain_differences':len(differences),'minimum_one_difference_examples':differences[:5],'direct_type_spy_probes':type_probes,'http_rejection_spy_probes':http_rejections,'legacy_git_HEAD_projection_and_rng_comparisons':legacy_checks,'actual_rust_payload_to_python_HTTP_generation_cases':real_cases,'actual_maximum_membership_cases':[4096,4096],'host_bound_HTTP_refusals_before_preflight':2,'all_assertions_passed':True,'rust_probe_output_sha256':hashlib.sha256(p.stdout.encode()).hexdigest()}))\n",
+      "rust_source_sha256": "a9252549123727490e1ed0c6c2b0fda58cbfb8e1cd9623fd0b28971c9608cfe8",
+      "rust_source": "use std::io::{self, BufRead};\nuse world_feed::{live::command_payload, Command};\nfn main() {\n    for line in io::stdin().lock().lines() {\n        let line=line.unwrap();\n        let v: Vec<u32>=line.split_whitespace().map(|s| s.parse().unwrap()).collect();\n        let c=Command::RegenerateRoster{seed:17, friend_groups:v[0], solos:v[1], friends_per_group_min:v[2], friends_per_group_max:v[3]};\n        match command_payload(&c) { Ok(p)=>println!(\"OK\\t{}\",p), Err(_)=>println!(\"ERR\") }\n    }\n}\n",
+      "compile_command": "nix develop -c rustc --edition=2021 /home/otto/.hermes/cache/scratch/python-population-resource-review/policy_probe.rs -L dependency=dashboard/target/debug/deps --extern world_feed=/home/otto/dev/ro-bots/dashboard/target/debug/deps/libworld_feed-3561a380d0dbd4b8.rlib -o /home/otto/.hermes/cache/scratch/python-population-resource-review/policy_probe",
+      "compile_result": {
+        "output": "warning: Git tree '/home/otto/dev/ro-bots' is dirty\nro-bots dev shell \u2014 try: task --list",
+        "exit_code": 0,
+        "error": null
+      },
+      "compiled_against": "/home/otto/dev/ro-bots/dashboard/target/debug/deps/libworld_feed-3561a380d0dbd4b8.rlib",
+      "execution": "nix develop -c uv run --offline python -c <python_source> <temporary compiled rust probe>"
+    },
+    "independent_exception_probes": {
+      "result": {
+        "nonvalidation_origin_checks": 12,
+        "direct_and_HTTP_exact_exception_identity_preserved": true,
+        "factory_and_candidate_memory_failures_preserve_state": true
+      },
+      "execution_result": {
+        "output": "warning: Git tree '/home/otto/dev/ro-bots' is dirty\nro-bots dev shell \u2014 try: task --list\n/home/otto/dev/ro-bots/.venv/lib/python3.14/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.\n  from starlette.testclient import TestClient as TestClient  # noqa\n{\"nonvalidation_origin_checks\": 12, \"direct_and_HTTP_exact_exception_identity_preserved\": true, \"factory_and_candidate_memory_failures_preserve_state\": true}",
+        "exit_code": 0,
+        "error": null
+      },
+      "source_sha256": "50834d17d871e89526104e992cc051f3fc100dbe99761027a31cd072f5cb21c3",
+      "source": "import json, random\nfrom unittest.mock import patch\nfrom fastapi.testclient import TestClient\nfrom robots.app.world_state import WorldState\nfrom robots.society.society import SocietyRoster\nfrom robots.adapters.worldfeed_server import create_app\nfrom robots.society.memory import MemoryLog\nchecks=0\nfor boundary in ['direct','http']:\n for origin in ['factory','candidate_memory']:\n  for cls in [TypeError,ValueError,RuntimeError]:\n   state=WorldState(SocietyRoster.build(random.Random(42),n_groups=3)); before=dict(vars(state)); events=state.events\n   failure=cls('independent nonvalidation error')\n   target='robots.app.world_state.SocietyRoster.build' if origin=='factory' else 'robots.app.world_state.MemoryLog'\n   with patch(target,side_effect=failure):\n    try:\n     if boundary=='http':\n      with TestClient(create_app(state)) as client: client.post('/commands',json={'type':'regenerate_roster','seed':17,'groups':1})\n     else: state.apply_command({'type':'regenerate_roster','seed':17,'groups':1})\n    except cls as caught: assert caught is failure\n    else: raise AssertionError('nonvalidation error was swallowed')\n   assert all(vars(state)[k] is v for k,v in before.items()) and state.events==events\n   checks+=1\nprint(json.dumps({'nonvalidation_origin_checks':checks,'direct_and_HTTP_exact_exception_identity_preserved':True,'factory_and_candidate_memory_failures_preserve_state':True}))"
+    },
+    "parent_full_gates": "Context only; parent reported full 776 Python + 65 subtests / 93.97%, 43 Rust tests/all six gates and 7 spike tests. Those reports were not used as correctness oracles or claimed as this reviewer execution."
+  },
+  "hashes": {
+    "algorithm": "SHA-256",
+    "primary_file_count": 119,
+    "before": {
+      "Taskfile.yml": "63616950e21c15c455c2b6f90be4d588b77f31a62181fd7a93253d164a64a7fd",
+      "dashboard/Cargo.lock": "0a57a881e01220685815d98b009bd720e96daf734cda6c410479736184642122",
+      "dashboard/Cargo.toml": "30cf07e68a3651772eedda7d2cd66315c458ec507b049f412443b2afbe8fca9a",
+      "dashboard/Taskfile.yml": "9af0557d4cc01edf0aa10edd2cb1d46faca34d8f5af112ff1cdeb0f881f47eb9",
+      "dashboard/crates/dashboard-app/Cargo.toml": "53e6b5cc6556e84c63399fc3857ef7dc79318e08812e87640eded29c1fb4266c",
+      "dashboard/crates/dashboard-app/src/liveview.rs": "50bd17e42e1f49ca6abdea9cd23e3393b16a7b8feff7b0a95173cfe061b53afa",
+      "dashboard/crates/dashboard-app/src/main.rs": "0253992f028484ae45c29e708089b955f80f7b5dd69815779a1d0c6b5c47fa8d",
+      "dashboard/crates/dashboard-app/src/render.rs": "e02427c8942c101daa5165860b32a2eb4ac901eb3b959ca6ba2bf60aef6eff22",
+      "dashboard/crates/dashboard-app/src/tests.rs": "c6a91e2f974a72863b9b31936e2e0e76930b88991c2c125b166bc7882f2f2273",
+      "dashboard/crates/world-feed/Cargo.toml": "cd13d5f40d6e9759c810574832bf81e8ea817715c44cd60c38c0ef8cb211408a",
+      "dashboard/crates/world-feed/src/lib.rs": "a1008cb5200844e64ccb59edfb8baf2f324e647a43e597a9619a6c09d255bdee",
+      "dashboard/crates/world-feed/src/live.rs": "7ea29f93a8c9534fc4757221dfafde81f7d6c128343a58d11c16b8cef2f0f9b8",
+      "dashboard/crates/world-feed/src/mock/mod.rs": "4eb174704d457f198ea6b249fb72eec21b79bd15e69407e3d0fdb8252d60cec8",
+      "dashboard/crates/world-feed/src/mock/tests.rs": "d88e1b8406134d107694a14a9cbddd025336227eede02403bded001445bc95fb",
+      "dashboard/crates/world-feed/src/wire.rs": "cf54289322d96a182ee10061e35489ebeec1b871b0fe44c3cd6aeb014c328f3d",
+      "dashboard/crates/world-feed/tests/http_live.rs": "92d70a8236fa8f21facee66e2bab293ecf76259153d63625f8480216a2fe33e3",
+      "dashboard/crates/world-feed/tests/population_bounds.rs": "e3941bfe69850ca0d76ef4b3a3e4a54528b1f787f63b0457e220a2e0773f5f03",
+      "dashboard/crates/world-feed/tests/python_wire.rs": "2b8f0f4fab4fa2bb2ada39db13a383c8a814e344734f25c7f2f561e56b1af38f",
+      "dashboard/crates/world-feed/tests/sse.rs": "fbec32331829685b5de258a85eac287a0d2b5eeba95b30cadb98e00daaef6f8b",
+      "docker-compose.worlds.yml": "4712fa181bf2c93495cf3360fe1189ada55c5371c66646514fa87f5c7374cce3",
+      "flake.nix": "cc218c50ff3b05761d59b9b951f5da2daca3435d2c5cff975b909fe7df8c1ee3",
+      "pyproject.toml": "e8ae0849a413bc3d705f081f609b92dae702bbd3e491b2c3aeb5d8665c458fba",
+      "scripts/e2e.sh": "bd225e3019082ec35a7596d3d5735712b26888e315cf0b8e580f25f8cad746f6",
+      "scripts/e2e_runner.py": "c7f46a26f95aa07f901eb72da831681780602b132068583a9a8972c7bb2ec386",
+      "scripts/seed_test_agents.py": "a38da7cbf328a74f7d660bfc9b3955ef71cdf7acdc4b9dec573111f0ba89aed2",
+      "scripts/world.sh": "0fb763180e1bb81bb5a7cfd43adee89e577a955e96159de5d35827948b1861f7",
+      "spikes/003-clientless-limbs/client.py": "d3026f448857c7ec804469cf584ca1f3089c6ad8188224d2b2cb9389e707eb05",
+      "spikes/003-clientless-limbs/packetdb.py": "d106ae277a6c7f75cf597c9051651a27e0ba6fa3663575608e0033048b18f9d4",
+      "spikes/003-clientless-limbs/test_limbs.py": "cc1f4b66e489375fd89b0f3c2232cc165358a61167b4669ba12952be2466613b",
+      "spikes/003-clientless-limbs/test_packetdb.py": "afdb0770e12525f85169ce24af2eaa23cf8015debc1c2a5cb2914c8f1400e7c3",
+      "src/robots/__init__.py": "14a8271c90ed669cc0645c2901ba6a3d93345643b7697e87b965b9008f02b6a6",
+      "src/robots/__main__.py": "d0a31b9a5ee296d1eee592877c7d187fbc7755b794c9e6f7f59a09f9e44fba6b",
+      "src/robots/adapters/__init__.py": "0682851ebbbbcccfb31e82a108d69a92193252f3eda2498f893dc078f3a68b1d",
+      "src/robots/adapters/chat/__init__.py": "aa6f50ce023dc5ead3fd8453f7878331a13e483c1a0db49a43de1e961f69cf89",
+      "src/robots/adapters/chat/_http.py": "7d5993992e40c2e24eed8a4b89ab2be7254da31c86e4ec673955e080a9373c74",
+      "src/robots/adapters/chat/chat_local.py": "7f85405f9169eb6638a29059288cbf684ba6e14789bdb4ddc2c7ca0ca6ffcbf5",
+      "src/robots/adapters/chat/chat_remote.py": "a54cfdfafa0e0bba733425664748342a3347fc053c4b244b3875b33b3c4c357e",
+      "src/robots/adapters/chat/stub.py": "780d993734e9e498dbc0ad8e89ff97143aba3e5a281f3eefd8880412f02e6666",
+      "src/robots/adapters/decision/__init__.py": "64fd99933eb2af166086f3daac17b6223088bc58fcffdecb27d8918440d7b25a",
+      "src/robots/adapters/decision/_http.py": "8a2b6fa356cd01d0bdd62ff19c39dc184eed59f3c8e310372903d32ee72dd196",
+      "src/robots/adapters/decision/clef_local.py": "7390bf0b6a1cc3287aa1fa7b031a1e84f87b062241d247832ca6b270033b9f1f",
+      "src/robots/adapters/decision/clef_remote.py": "8091a7ed76c153e5d209f948a876b4d3d4a69af54f52194d15d59e3a3068f745",
+      "src/robots/adapters/decision/stub.py": "628b86444332373edcdc2ab0d2d357781408f2f5e71f4a3b31f3fec9bb6476f7",
+      "src/robots/adapters/mechanics_stub.py": "38fcfc3d632cbdbf107015d6dc030a08920ebe5722e64a426854539ec19eef18",
+      "src/robots/adapters/mechanics_yaml.py": "c5991bd78af95b213b4fb9a2ca87b065f5b76e826edb84eac593498a80f64b58",
+      "src/robots/adapters/memory_journal.py": "043f109ba8e637b4b26a7a4cd601e64bffa3512815ea0cfbca8c2737c3fb3a00",
+      "src/robots/adapters/world_inventory.py": "591340a547ac066af5f5cd491b5bb4d810083323423ad98275945c32ba153b7e",
+      "src/robots/adapters/worldfeed_server.py": "456b110a37b32af9229af49be9587c7316ff47b24fe52f729a51cb42172f5b49",
+      "src/robots/app/__init__.py": "f8051791757f4a44517787195b9b470bd1215251bd457436c52f3c7de9005c03",
+      "src/robots/app/agent_runtime.py": "615fcda30c1bdacaa89e065e9c012230fb818361815d652026c789e575901c6c",
+      "src/robots/app/brain.py": "e67e13169fb19c1fea9e27e6fd2857a11989328210d899c0b8c8ee1e8c932ed2",
+      "src/robots/app/builds.py": "564926dbbbecf631b3e02f542698f9ae5c00e1ad54bec1d05323c1a17edafa28",
+      "src/robots/app/context_selector.py": "167992303f362464634089122c92d4fdc3974628af72d4e6ea231fa28165680a",
+      "src/robots/app/escalation.py": "8d69da5e9a9ec14037991638df087ca6530a05b264fd25a7fb9b44c73451cfa9",
+      "src/robots/app/host_commands.py": "023af553c24b7ec2fc5d6d5e21d361f1d541b6d499f06d18a0039df7f3a1407b",
+      "src/robots/app/roster_edit.py": "202030a31b34b9e0c9d79f7d0827f4c00229f4e71c22c47dc74cbda57abd1e13",
+      "src/robots/app/runner.py": "6eabce7e5b55cf6344dc7d138085d06b4de75059f5b86b04219df037c90f4ea5",
+      "src/robots/app/scripts.py": "83df6dbd7e124d7316a851b11fb1915aa4d20261d2fb91636a6278ade68e2c34",
+      "src/robots/app/timers.py": "aacecb6ee62b27d202ee8920f7d99739155aa1e72ffeab6011971dfb4521bf3e",
+      "src/robots/app/world_state.py": "61f4daebc1383fd9ee8b9bda27111ed5b1b94c7ccf43099c0d892b7799ce9d0d",
+      "src/robots/domain/__init__.py": "53858cc66817d25bdcf50a47319d581b35e9c415f72881d58c8af83c2a61187a",
+      "src/robots/domain/actions.py": "f0b93b6ac48e6954755c8af5691acacd3546e222de5350f0b9fda8dd09c91b4e",
+      "src/robots/domain/build.py": "0ead8793772d3a7aacdb33c8e0087f700e54c8bdcd1a49c4cfc913dd5b3ddd18",
+      "src/robots/domain/build_templates.py": "7ac6e75780328ab42f0357bc42709419a8c8c939f3c1d45330dc1bf5560c6b1a",
+      "src/robots/domain/decisions.py": "fac0950f779b4221fd4f44bdbbb945ba3d6ff79c508ace621d713e8564fa3803",
+      "src/robots/domain/events.py": "665a13fb1d9d4137a429399914e63ba95802159ed3092b06347285580bed8789",
+      "src/robots/domain/farm.py": "3773b241cbd3c4ab6a467e122f33f2a624897f739ce01fc0e1ba49b17aaf3d8a",
+      "src/robots/domain/model.py": "697646631c2eae15dc01e6cc0219502b1c7a8ed6d830089060e5ee37c700bbbe",
+      "src/robots/ports/__init__.py": "2ceae33cec0ec1ecf299d7d8ef4d3200eca9cc7d3632f28004148668d2f9219c",
+      "src/robots/ports/mechanics.py": "1db9f8a72c11d5c9b6006723e7ceed1d1950e46bac4a602274ff436961d73aae",
+      "src/robots/society/__init__.py": "703247c76c6bb3c10c3a4ecc92bf9bc5500b445c218a9c38ba3e2aa6801c5370",
+      "src/robots/society/guild.py": "c0c97eb94feb6221eea35b22f96fb271ebdac523b63101e503bad61771486b79",
+      "src/robots/society/human.py": "47247be1aee1fb64a8bd0953498a9382fb904c76f623b27f8c77977c678607d6",
+      "src/robots/society/memory.py": "29dc3abf394daa6107ee72215f7d514220d6262d0e22351911d2bc24246a3ff2",
+      "src/robots/society/models.py": "fd92140ccf5ce8ecc63a3036670cf8802ff77df8ef52d377f564c6d560161f65",
+      "src/robots/society/population_limits.py": "e73bc0f8d7e6fa3bf360db70e1ee6019b51370042a4f0a3683b78c757e2b29ca",
+      "src/robots/society/society.py": "fa7a1c6629b9836de6fca90770e50539fd83bffe98abc51cf68534b92af3db53",
+      "tests/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "tests/conftest.py": "42dbe1ae3a43a6c34ef2f9abb829b62d1f0a914d64d1a576d9b528142982d307",
+      "tests/test_agent_host.py": "effeba83435fb43c76a1578d17e190b93219991dbab491786df56ef02bb808f7",
+      "tests/test_brain.py": "14b41aa10bd612c54e538a7d9b998a848c5d89db061e57947a1eaa057f716fa4",
+      "tests/test_build_catalog_integration.py": "bb672f83aaeb2fb0cd613cf719ec3b5da30eeb58e878122a3878142c0a09b9bd",
+      "tests/test_build_templates.py": "c89e79c07fae40e6066f2d399413171b6f514ec005da251c6f5c9441bae198dc",
+      "tests/test_builds.py": "87f460fc7c1d77276bbbf236a8812b2a7f35a06c047bc4ee5af12f90f113b4a4",
+      "tests/test_classic_build_validity.py": "3df8840b54f29c52b8e0900d907ea21413580ec1037d93e0a63dfedf15ab1f16",
+      "tests/test_client_protocol.py": "3e781d2f50501b2d1bf0c3caccf507f3c6fcde533ad62ea1448b0f857143a5a2",
+      "tests/test_context_selector.py": "216a06ea7c6853f3ea970f1cfdacb859b89c00c49d9a029cef1f44260b7c7a4a",
+      "tests/test_core_interruption_cleanup.py": "e985a3f00adebc4161378b6fbe8a7e4e91b6f282e725faee0eef54440f50b3bf",
+      "tests/test_decisions.py": "c299c55ead5ec287ae7423bc32ecd1de50a432b40d5624266e8b2fc797a94f44",
+      "tests/test_escalation.py": "29feec8900dac66a231f32ab0ec10d520ec156d143840f548287fe7a62398c7a",
+      "tests/test_guild_human.py": "a2c2db4b13ddc3fe2c1d82110823766d1789c1261bd91eb9333e8116e969d15c",
+      "tests/test_host_chat_commands.py": "c92969013f656ad8e7fa103bb8662a9acfe6ab7be12dc896b86db26f1785e58c",
+      "tests/test_host_memory.py": "db28d20ea1d0afa27bc49c5475144f5bd2197cf81c0c147baa91a5bab3bf6d5d",
+      "tests/test_host_storage_failure.py": "0f473837dbcaf1461e4b9d7d73090639361d2e0f9d08a1a2489bb9c06e5cb42f",
+      "tests/test_limb_evidence.py": "9669537ee7ed63e7be4850936e96d28fc0a75bb17c77bac753c45ec8be941569",
+      "tests/test_mechanics_review_regressions.py": "4b0d8f690017d2cef2f929148cfdf1be05075aeee2747205a31f5360804c243a",
+      "tests/test_mechanics_yaml.py": "adb969d15359545222e58e28b2d099c17a46ce12e68ef4dcbac75b57ed03fce7",
+      "tests/test_memory.py": "31843258250515e32ff790226a757edfaf50964fc2f404c0169ffda6c7b7b3dd",
+      "tests/test_memory_concurrency.py": "b3023d86a987dbb701cd4767814473fb5330cda50055f70a062ba67d2b1239d3",
+      "tests/test_memory_journal_boundary.py": "d5754f1a9e5eacfeabba031118d980fae8ada3df5426983e509ebcd0d10ff56a",
+      "tests/test_memory_journal_failures.py": "13e7cc87bfb390dbf4f8fd24e82f3932c1333dc0db35ee350f5c9f9e3160957e",
+      "tests/test_memory_storage.py": "1b5ea2b86b922adaef75c560680eb309a3674873abab2cfd7e1fdfba0e4a069b",
+      "tests/test_packet_conditions.py": "abe40cc3af9d56de1f98088ae372e0e1f54cfe5a2d89ea6828f75f6e4d1969d1",
+      "tests/test_population_binding_race.py": "57129ac7a653e38161b120a8fdb329b6261b6f97739cd3603f37e6c36c11b7e0",
+      "tests/test_population_config.py": "cecd227079d277bde7bdceab0b33c2eb1c9f3c13aecfaa85329d1d905766268d",
+      "tests/test_population_resource_limits.py": "852cdebc54c7fc9825802dcd3544d5dbe382ae4badcaa108371bbeebab6c3965",
+      "tests/test_ports.py": "55cab28eb76c9ddf8feeaecdce8bf241530f2385da61020f55c49d67490766f4",
+      "tests/test_protocol_rereview_repairs.py": "587c6aee7058cb18c5537fd41b46cba5e847254817590cfa74c088f198843110",
+      "tests/test_society.py": "9e8f1971dda1a4e81d3d1df8eeb8cb9256b0080e7f6f67c9268c6834b4df4b7b",
+      "tests/test_taskfile_safety_labels.py": "6cb17b9f5d326c0ccf0260c2d92a3b389ae8794e8530ca98e66dd0d45af347e0",
+      "tests/test_temporary_handshake_cleanup.py": "4c4daa3740b5c3f12441d1c3042a655b4208473904528509b816f38ffd269d79",
+      "tests/test_timers_runner.py": "66fc937ef1f528190e5d44814758283fdd9bfeb5d9c862960ec534f0b7e25406",
+      "tests/test_world_inventory.py": "365b68de29259379c207991e84f1cccac50c6cd2016948503352364ff2bdb3d0",
+      "tests/test_world_isolation_guard.py": "510168243ce69138b4bce39a9f7700eefc2554f4ea9092a592386453682de8b3",
+      "tests/test_world_seed_safety.py": "eede21817970e7db28b4e23a2ca368c6db8233026f9153ed29a9876f36658350",
+      "tests/test_world_state.py": "1b026aa85e1ed5a68cc00bbae2b0c0f61cdbececbd94bb03d5f4085614382727",
+      "tests/test_worldfeed_retention.py": "dec045816b3c457c3cac25b0715dc63f3f03794e401fc48c4c38c8afa08d5c88",
+      "tests/test_worldfeed_server.py": "8c2a151e5739e59e7a390e1497fe5c2497be7ae45f8e8bff74d68c9b59960898",
+      "uv.lock": "2d7b4c187078488d7625e4fd4fa982745cab8d6a65b2ff3e382ffa286f1df245"
+    },
+    "after": {
+      "Taskfile.yml": "63616950e21c15c455c2b6f90be4d588b77f31a62181fd7a93253d164a64a7fd",
+      "dashboard/Cargo.lock": "0a57a881e01220685815d98b009bd720e96daf734cda6c410479736184642122",
+      "dashboard/Cargo.toml": "30cf07e68a3651772eedda7d2cd66315c458ec507b049f412443b2afbe8fca9a",
+      "dashboard/Taskfile.yml": "9af0557d4cc01edf0aa10edd2cb1d46faca34d8f5af112ff1cdeb0f881f47eb9",
+      "dashboard/crates/dashboard-app/Cargo.toml": "53e6b5cc6556e84c63399fc3857ef7dc79318e08812e87640eded29c1fb4266c",
+      "dashboard/crates/dashboard-app/src/liveview.rs": "50bd17e42e1f49ca6abdea9cd23e3393b16a7b8feff7b0a95173cfe061b53afa",
+      "dashboard/crates/dashboard-app/src/main.rs": "0253992f028484ae45c29e708089b955f80f7b5dd69815779a1d0c6b5c47fa8d",
+      "dashboard/crates/dashboard-app/src/render.rs": "e02427c8942c101daa5165860b32a2eb4ac901eb3b959ca6ba2bf60aef6eff22",
+      "dashboard/crates/dashboard-app/src/tests.rs": "c6a91e2f974a72863b9b31936e2e0e76930b88991c2c125b166bc7882f2f2273",
+      "dashboard/crates/world-feed/Cargo.toml": "cd13d5f40d6e9759c810574832bf81e8ea817715c44cd60c38c0ef8cb211408a",
+      "dashboard/crates/world-feed/src/lib.rs": "a1008cb5200844e64ccb59edfb8baf2f324e647a43e597a9619a6c09d255bdee",
+      "dashboard/crates/world-feed/src/live.rs": "7ea29f93a8c9534fc4757221dfafde81f7d6c128343a58d11c16b8cef2f0f9b8",
+      "dashboard/crates/world-feed/src/mock/mod.rs": "4eb174704d457f198ea6b249fb72eec21b79bd15e69407e3d0fdb8252d60cec8",
+      "dashboard/crates/world-feed/src/mock/tests.rs": "d88e1b8406134d107694a14a9cbddd025336227eede02403bded001445bc95fb",
+      "dashboard/crates/world-feed/src/wire.rs": "cf54289322d96a182ee10061e35489ebeec1b871b0fe44c3cd6aeb014c328f3d",
+      "dashboard/crates/world-feed/tests/http_live.rs": "92d70a8236fa8f21facee66e2bab293ecf76259153d63625f8480216a2fe33e3",
+      "dashboard/crates/world-feed/tests/population_bounds.rs": "e3941bfe69850ca0d76ef4b3a3e4a54528b1f787f63b0457e220a2e0773f5f03",
+      "dashboard/crates/world-feed/tests/python_wire.rs": "2b8f0f4fab4fa2bb2ada39db13a383c8a814e344734f25c7f2f561e56b1af38f",
+      "dashboard/crates/world-feed/tests/sse.rs": "fbec32331829685b5de258a85eac287a0d2b5eeba95b30cadb98e00daaef6f8b",
+      "docker-compose.worlds.yml": "4712fa181bf2c93495cf3360fe1189ada55c5371c66646514fa87f5c7374cce3",
+      "flake.nix": "cc218c50ff3b05761d59b9b951f5da2daca3435d2c5cff975b909fe7df8c1ee3",
+      "pyproject.toml": "e8ae0849a413bc3d705f081f609b92dae702bbd3e491b2c3aeb5d8665c458fba",
+      "scripts/e2e.sh": "bd225e3019082ec35a7596d3d5735712b26888e315cf0b8e580f25f8cad746f6",
+      "scripts/e2e_runner.py": "c7f46a26f95aa07f901eb72da831681780602b132068583a9a8972c7bb2ec386",
+      "scripts/seed_test_agents.py": "a38da7cbf328a74f7d660bfc9b3955ef71cdf7acdc4b9dec573111f0ba89aed2",
+      "scripts/world.sh": "0fb763180e1bb81bb5a7cfd43adee89e577a955e96159de5d35827948b1861f7",
+      "spikes/003-clientless-limbs/client.py": "d3026f448857c7ec804469cf584ca1f3089c6ad8188224d2b2cb9389e707eb05",
+      "spikes/003-clientless-limbs/packetdb.py": "d106ae277a6c7f75cf597c9051651a27e0ba6fa3663575608e0033048b18f9d4",
+      "spikes/003-clientless-limbs/test_limbs.py": "cc1f4b66e489375fd89b0f3c2232cc165358a61167b4669ba12952be2466613b",
+      "spikes/003-clientless-limbs/test_packetdb.py": "afdb0770e12525f85169ce24af2eaa23cf8015debc1c2a5cb2914c8f1400e7c3",
+      "src/robots/__init__.py": "14a8271c90ed669cc0645c2901ba6a3d93345643b7697e87b965b9008f02b6a6",
+      "src/robots/__main__.py": "d0a31b9a5ee296d1eee592877c7d187fbc7755b794c9e6f7f59a09f9e44fba6b",
+      "src/robots/adapters/__init__.py": "0682851ebbbbcccfb31e82a108d69a92193252f3eda2498f893dc078f3a68b1d",
+      "src/robots/adapters/chat/__init__.py": "aa6f50ce023dc5ead3fd8453f7878331a13e483c1a0db49a43de1e961f69cf89",
+      "src/robots/adapters/chat/_http.py": "7d5993992e40c2e24eed8a4b89ab2be7254da31c86e4ec673955e080a9373c74",
+      "src/robots/adapters/chat/chat_local.py": "7f85405f9169eb6638a29059288cbf684ba6e14789bdb4ddc2c7ca0ca6ffcbf5",
+      "src/robots/adapters/chat/chat_remote.py": "a54cfdfafa0e0bba733425664748342a3347fc053c4b244b3875b33b3c4c357e",
+      "src/robots/adapters/chat/stub.py": "780d993734e9e498dbc0ad8e89ff97143aba3e5a281f3eefd8880412f02e6666",
+      "src/robots/adapters/decision/__init__.py": "64fd99933eb2af166086f3daac17b6223088bc58fcffdecb27d8918440d7b25a",
+      "src/robots/adapters/decision/_http.py": "8a2b6fa356cd01d0bdd62ff19c39dc184eed59f3c8e310372903d32ee72dd196",
+      "src/robots/adapters/decision/clef_local.py": "7390bf0b6a1cc3287aa1fa7b031a1e84f87b062241d247832ca6b270033b9f1f",
+      "src/robots/adapters/decision/clef_remote.py": "8091a7ed76c153e5d209f948a876b4d3d4a69af54f52194d15d59e3a3068f745",
+      "src/robots/adapters/decision/stub.py": "628b86444332373edcdc2ab0d2d357781408f2f5e71f4a3b31f3fec9bb6476f7",
+      "src/robots/adapters/mechanics_stub.py": "38fcfc3d632cbdbf107015d6dc030a08920ebe5722e64a426854539ec19eef18",
+      "src/robots/adapters/mechanics_yaml.py": "c5991bd78af95b213b4fb9a2ca87b065f5b76e826edb84eac593498a80f64b58",
+      "src/robots/adapters/memory_journal.py": "043f109ba8e637b4b26a7a4cd601e64bffa3512815ea0cfbca8c2737c3fb3a00",
+      "src/robots/adapters/world_inventory.py": "591340a547ac066af5f5cd491b5bb4d810083323423ad98275945c32ba153b7e",
+      "src/robots/adapters/worldfeed_server.py": "456b110a37b32af9229af49be9587c7316ff47b24fe52f729a51cb42172f5b49",
+      "src/robots/app/__init__.py": "f8051791757f4a44517787195b9b470bd1215251bd457436c52f3c7de9005c03",
+      "src/robots/app/agent_runtime.py": "615fcda30c1bdacaa89e065e9c012230fb818361815d652026c789e575901c6c",
+      "src/robots/app/brain.py": "e67e13169fb19c1fea9e27e6fd2857a11989328210d899c0b8c8ee1e8c932ed2",
+      "src/robots/app/builds.py": "564926dbbbecf631b3e02f542698f9ae5c00e1ad54bec1d05323c1a17edafa28",
+      "src/robots/app/context_selector.py": "167992303f362464634089122c92d4fdc3974628af72d4e6ea231fa28165680a",
+      "src/robots/app/escalation.py": "8d69da5e9a9ec14037991638df087ca6530a05b264fd25a7fb9b44c73451cfa9",
+      "src/robots/app/host_commands.py": "023af553c24b7ec2fc5d6d5e21d361f1d541b6d499f06d18a0039df7f3a1407b",
+      "src/robots/app/roster_edit.py": "202030a31b34b9e0c9d79f7d0827f4c00229f4e71c22c47dc74cbda57abd1e13",
+      "src/robots/app/runner.py": "6eabce7e5b55cf6344dc7d138085d06b4de75059f5b86b04219df037c90f4ea5",
+      "src/robots/app/scripts.py": "83df6dbd7e124d7316a851b11fb1915aa4d20261d2fb91636a6278ade68e2c34",
+      "src/robots/app/timers.py": "aacecb6ee62b27d202ee8920f7d99739155aa1e72ffeab6011971dfb4521bf3e",
+      "src/robots/app/world_state.py": "61f4daebc1383fd9ee8b9bda27111ed5b1b94c7ccf43099c0d892b7799ce9d0d",
+      "src/robots/domain/__init__.py": "53858cc66817d25bdcf50a47319d581b35e9c415f72881d58c8af83c2a61187a",
+      "src/robots/domain/actions.py": "f0b93b6ac48e6954755c8af5691acacd3546e222de5350f0b9fda8dd09c91b4e",
+      "src/robots/domain/build.py": "0ead8793772d3a7aacdb33c8e0087f700e54c8bdcd1a49c4cfc913dd5b3ddd18",
+      "src/robots/domain/build_templates.py": "7ac6e75780328ab42f0357bc42709419a8c8c939f3c1d45330dc1bf5560c6b1a",
+      "src/robots/domain/decisions.py": "fac0950f779b4221fd4f44bdbbb945ba3d6ff79c508ace621d713e8564fa3803",
+      "src/robots/domain/events.py": "665a13fb1d9d4137a429399914e63ba95802159ed3092b06347285580bed8789",
+      "src/robots/domain/farm.py": "3773b241cbd3c4ab6a467e122f33f2a624897f739ce01fc0e1ba49b17aaf3d8a",
+      "src/robots/domain/model.py": "697646631c2eae15dc01e6cc0219502b1c7a8ed6d830089060e5ee37c700bbbe",
+      "src/robots/ports/__init__.py": "2ceae33cec0ec1ecf299d7d8ef4d3200eca9cc7d3632f28004148668d2f9219c",
+      "src/robots/ports/mechanics.py": "1db9f8a72c11d5c9b6006723e7ceed1d1950e46bac4a602274ff436961d73aae",
+      "src/robots/society/__init__.py": "703247c76c6bb3c10c3a4ecc92bf9bc5500b445c218a9c38ba3e2aa6801c5370",
+      "src/robots/society/guild.py": "c0c97eb94feb6221eea35b22f96fb271ebdac523b63101e503bad61771486b79",
+      "src/robots/society/human.py": "47247be1aee1fb64a8bd0953498a9382fb904c76f623b27f8c77977c678607d6",
+      "src/robots/society/memory.py": "29dc3abf394daa6107ee72215f7d514220d6262d0e22351911d2bc24246a3ff2",
+      "src/robots/society/models.py": "fd92140ccf5ce8ecc63a3036670cf8802ff77df8ef52d377f564c6d560161f65",
+      "src/robots/society/population_limits.py": "e73bc0f8d7e6fa3bf360db70e1ee6019b51370042a4f0a3683b78c757e2b29ca",
+      "src/robots/society/society.py": "fa7a1c6629b9836de6fca90770e50539fd83bffe98abc51cf68534b92af3db53",
+      "tests/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "tests/conftest.py": "42dbe1ae3a43a6c34ef2f9abb829b62d1f0a914d64d1a576d9b528142982d307",
+      "tests/test_agent_host.py": "effeba83435fb43c76a1578d17e190b93219991dbab491786df56ef02bb808f7",
+      "tests/test_brain.py": "14b41aa10bd612c54e538a7d9b998a848c5d89db061e57947a1eaa057f716fa4",
+      "tests/test_build_catalog_integration.py": "bb672f83aaeb2fb0cd613cf719ec3b5da30eeb58e878122a3878142c0a09b9bd",
+      "tests/test_build_templates.py": "c89e79c07fae40e6066f2d399413171b6f514ec005da251c6f5c9441bae198dc",
+      "tests/test_builds.py": "87f460fc7c1d77276bbbf236a8812b2a7f35a06c047bc4ee5af12f90f113b4a4",
+      "tests/test_classic_build_validity.py": "3df8840b54f29c52b8e0900d907ea21413580ec1037d93e0a63dfedf15ab1f16",
+      "tests/test_client_protocol.py": "3e781d2f50501b2d1bf0c3caccf507f3c6fcde533ad62ea1448b0f857143a5a2",
+      "tests/test_context_selector.py": "216a06ea7c6853f3ea970f1cfdacb859b89c00c49d9a029cef1f44260b7c7a4a",
+      "tests/test_core_interruption_cleanup.py": "e985a3f00adebc4161378b6fbe8a7e4e91b6f282e725faee0eef54440f50b3bf",
+      "tests/test_decisions.py": "c299c55ead5ec287ae7423bc32ecd1de50a432b40d5624266e8b2fc797a94f44",
+      "tests/test_escalation.py": "29feec8900dac66a231f32ab0ec10d520ec156d143840f548287fe7a62398c7a",
+      "tests/test_guild_human.py": "a2c2db4b13ddc3fe2c1d82110823766d1789c1261bd91eb9333e8116e969d15c",
+      "tests/test_host_chat_commands.py": "c92969013f656ad8e7fa103bb8662a9acfe6ab7be12dc896b86db26f1785e58c",
+      "tests/test_host_memory.py": "db28d20ea1d0afa27bc49c5475144f5bd2197cf81c0c147baa91a5bab3bf6d5d",
+      "tests/test_host_storage_failure.py": "0f473837dbcaf1461e4b9d7d73090639361d2e0f9d08a1a2489bb9c06e5cb42f",
+      "tests/test_limb_evidence.py": "9669537ee7ed63e7be4850936e96d28fc0a75bb17c77bac753c45ec8be941569",
+      "tests/test_mechanics_review_regressions.py": "4b0d8f690017d2cef2f929148cfdf1be05075aeee2747205a31f5360804c243a",
+      "tests/test_mechanics_yaml.py": "adb969d15359545222e58e28b2d099c17a46ce12e68ef4dcbac75b57ed03fce7",
+      "tests/test_memory.py": "31843258250515e32ff790226a757edfaf50964fc2f404c0169ffda6c7b7b3dd",
+      "tests/test_memory_concurrency.py": "b3023d86a987dbb701cd4767814473fb5330cda50055f70a062ba67d2b1239d3",
+      "tests/test_memory_journal_boundary.py": "d5754f1a9e5eacfeabba031118d980fae8ada3df5426983e509ebcd0d10ff56a",
+      "tests/test_memory_journal_failures.py": "13e7cc87bfb390dbf4f8fd24e82f3932c1333dc0db35ee350f5c9f9e3160957e",
+      "tests/test_memory_storage.py": "1b5ea2b86b922adaef75c560680eb309a3674873abab2cfd7e1fdfba0e4a069b",
+      "tests/test_packet_conditions.py": "abe40cc3af9d56de1f98088ae372e0e1f54cfe5a2d89ea6828f75f6e4d1969d1",
+      "tests/test_population_binding_race.py": "57129ac7a653e38161b120a8fdb329b6261b6f97739cd3603f37e6c36c11b7e0",
+      "tests/test_population_config.py": "cecd227079d277bde7bdceab0b33c2eb1c9f3c13aecfaa85329d1d905766268d",
+      "tests/test_population_resource_limits.py": "852cdebc54c7fc9825802dcd3544d5dbe382ae4badcaa108371bbeebab6c3965",
+      "tests/test_ports.py": "55cab28eb76c9ddf8feeaecdce8bf241530f2385da61020f55c49d67490766f4",
+      "tests/test_protocol_rereview_repairs.py": "587c6aee7058cb18c5537fd41b46cba5e847254817590cfa74c088f198843110",
+      "tests/test_society.py": "9e8f1971dda1a4e81d3d1df8eeb8cb9256b0080e7f6f67c9268c6834b4df4b7b",
+      "tests/test_taskfile_safety_labels.py": "6cb17b9f5d326c0ccf0260c2d92a3b389ae8794e8530ca98e66dd0d45af347e0",
+      "tests/test_temporary_handshake_cleanup.py": "4c4daa3740b5c3f12441d1c3042a655b4208473904528509b816f38ffd269d79",
+      "tests/test_timers_runner.py": "66fc937ef1f528190e5d44814758283fdd9bfeb5d9c862960ec534f0b7e25406",
+      "tests/test_world_inventory.py": "365b68de29259379c207991e84f1cccac50c6cd2016948503352364ff2bdb3d0",
+      "tests/test_world_isolation_guard.py": "510168243ce69138b4bce39a9f7700eefc2554f4ea9092a592386453682de8b3",
+      "tests/test_world_seed_safety.py": "eede21817970e7db28b4e23a2ca368c6db8233026f9153ed29a9876f36658350",
+      "tests/test_world_state.py": "1b026aa85e1ed5a68cc00bbae2b0c0f61cdbececbd94bb03d5f4085614382727",
+      "tests/test_worldfeed_retention.py": "dec045816b3c457c3cac25b0715dc63f3f03794e401fc48c4c38c8afa08d5c88",
+      "tests/test_worldfeed_server.py": "8c2a151e5739e59e7a390e1497fe5c2497be7ae45f8e8bff74d68c9b59960898",
+      "uv.lock": "2d7b4c187078488d7625e4fd4fa982745cab8d6a65b2ff3e382ffa286f1df245"
+    },
+    "stable": true,
+    "matches_authorized_frozen_checkpoint": true,
+    "changed_files": [],
+    "manifest_reference": "run/reviews/authorized-combined-snapshot-before.json",
+    "docs_and_other_agents_reports_excluded_from_freeze": true
+  },
+  "exclusions": [
+    "No total-agent count configurator or exact total-budget allocation feature is accepted.",
+    "No real account/character creation, native/game/provider/network-to-external-services/SQL/engine operations, staging, commit or push.",
+    "No real population generation or active host account/memory reconciliation; POP-001 remains a refusal guard.",
+    "No autonomous gameplay, live character switching, native restart, party/guild/WoE or live UI/browser acceptance.",
+    "No claim that multiple HTTP serializer getters form an atomic whole-world snapshot; individual aggregate reads exclude half-commits only.",
+    "No exact global Rust/Python validation-domain parity: minimum-one and integer/seed representability differences remain outside supported scope.",
+    "No source repairs, stashing, dependency updates, formatter rewrites or whole-repository approval.",
+    "No newly repeated dependency audit or full coverage measurement; scoped offline verification only."
+  ],
+  "warnings": [
+    "Existing StarletteDeprecationWarning for httpx TestClient; tests passed.",
+    "Dirty Git tree is pre-existing multi-slice work; 119 frozen primary-file contents unchanged.",
+    "Rust minimum-one requests safely rejected by Python are explicitly outside full-parity approval."
+  ],
+  "files_created_or_modified": [
+    "run/reviews/python-population-resource-review.json"
+  ],
+  "temporary_artifacts": {
+    "location": "/home/otto/.hermes/cache/scratch/python-population-resource-review",
+    "files": [
+      "policy_probe.rs",
+      "policy_probe"
+    ],
+    "cleanup": "removed before final report"
+  },
+  "suggestions": [
+    "If future work demands global Rust/Python validation equivalence, explicitly align the minimum-one domain without weakening Python singleton-via-solos policy."
+  ]
+}

@@ -1,0 +1,400 @@
+{
+  "schema": "offline-native-shop-purchase/v1",
+  "status": "OFFLINE_COMPONENT_COMPLETE_SCOPED_GATES_GREEN_PARENT_REVIEW_PENDING",
+  "profile": {
+    "revision": "e985006171d2eb320ee512a653f4c83aea3d81b6",
+    "packetver": 20180704,
+    "client_family": "MAIN",
+    "ruleset": "pre-re",
+    "native_source_root": "/home/otto/dev/ro-bots/run/public-source/callback-qualified-e985006171d2"
+  },
+  "implementation": {
+    "item_id": 1201,
+    "quantity": 1,
+    "request_bytes": 8,
+    "wire_hex": "c80008000100b104",
+    "dispatch": "PlayingClient.perform_native -> owner consumed NativePurchase -> unchanged native_shop.encode_purchase -> existing _send_npc -> actual BotClient._send primitive",
+    "qualification": "Explicitly trusted operator-injected immutable QualifiedShopItem; copy bound to owner/wire/planning-session/socket/reader/selection/controller and current attributable C6 offer. Source availability alone is not authority.",
+    "admission": "Fresh original offer/deadline, current selected SELF/NPC/map/life/standing/arrival/transport, explicit maximum_zeny, signed B1 balance, B0 weight/max-weight and post-mutation weight freshness, complete detached indexed stock and matching bound SELF allowance; actual loaded weight required.",
+    "outcomes": [
+      "issued",
+      "rejected",
+      "incomplete",
+      "acquired"
+    ],
+    "acquisition": "Newer presend-cursor-attributable successful 0A37: item1201/type4/count1, vacant index within bound allowance, exact current complete indexed stock delta plus CA0; CA closes the exchange. B1/B0 are separate receipts, not acquisition proofs.",
+    "uncertainty": "No retries. Failed primitive send preserves exact BaseException origin and consumed unresolved intent; received frames cannot promote failed sends. CA0/debit without add, foreign/ambiguous add, unexpected debit, unknown CA, lost context/timeout never acquire.",
+    "correlation_limit": "Bounded owner-local exchange only: C8/CA/0A37 have no NPC/nonce origin guarantee. No zero-loss, refund, atomic price-cap or successful live acquisition theorem.",
+    "planner_advertised": false,
+    "new_host_phase_or_provider_behavior": false,
+    "new_BotState_field": false
+  },
+  "source_snapshot": {
+    "freeze": ".work/native-shop-purchase/freeze-v2.json",
+    "sha256": "d1e6545f44cd2800f10c140c9317e0424695074c38052e958bd3bc3ea59c07f3",
+    "owned": {
+      "src/robots/domain/actions.py": "fcd1635a6f41509149ca307f464b3464e80a7cc133580d58af4e507991d91139",
+      "src/robots/domain/shop.py": "0b6ef3a6301d4e6e49c789ccbefd2dfab802aa9f040c8f18588968493e0f053e",
+      "src/robots/adapters/native_shop_context.py": "85cf1a54fd02ef8f05879c1526d281f14294af50948e7e61f7bf25bc778e7cfa",
+      "src/robots/adapters/native_gameplay.py": "3140239a1e24c15c08c071690a24af1bdaa00be8838e3743f339131dcac8758d",
+      "src/robots/app/playing_runtime.py": "45e9fbaaafd6bb45413ab6f3228cbaeae887c9e81cb794b0752eac7c3d655c56",
+      "src/robots/adapters/native_purchase.py": "7f4be3c11a678d92adcd9b16982926b4c9877fb2a6b52ada05cfd07aa749c2ee",
+      "tests/test_native_shop_purchase.py": "5ac891ca8af11a2cf2eab9b613bc3198c903e8b1503e36b611b2a8e749cfa27c"
+    },
+    "protected_count": 270,
+    "native_sources_count": 11,
+    "unexpected_protected_drift": [],
+    "native_source_drift": [],
+    "excluded_sibling_drift": {
+      "src/robots/domain/decisions.py": {
+        "before": "bf6f1d06088a75160be0c5226c44e4379910a525c73eed35d85876108bdc7889",
+        "current": "bf6f1d06088a75160be0c5226c44e4379910a525c73eed35d85876108bdc7889",
+        "changed": false
+      },
+      "src/robots/app/planning_context.py": {
+        "before": "c999fd8cbb07764200b64e10a3e0f169f002bd8a2e1b5adae9ce8185f4764995",
+        "current": "c999fd8cbb07764200b64e10a3e0f169f002bd8a2e1b5adae9ce8185f4764995",
+        "changed": false
+      },
+      "src/robots/domain/inventory_context.py": {
+        "before": "048ad73c91a68162371635bbeb50098b1339e9ff72b5ddb60e6030c127f1bbd1",
+        "current": "080214b088b52401ddedb6441f32a13ed7c0e19a1b02c7f162e0ebff7cf95d9b",
+        "changed": true
+      },
+      "tests/test_inventory_capacity_model_context.py": {
+        "before": null,
+        "current": "7a6d3e8abbe49102bc37b4b12f9007bf026a6165418429272e9106a251dfdd93",
+        "changed": true
+      }
+    },
+    "parent_original_matches": {
+      "src/robots/domain/actions.py": true,
+      "src/robots/domain/shop.py": true,
+      "src/robots/adapters/native_shop_context.py": true,
+      "src/robots/adapters/native_gameplay.py": true,
+      "src/robots/app/playing_runtime.py": true
+    }
+  },
+  "verification": {
+    "physical_receipts": {
+      "path": ".work/native-shop-purchase/physical-receipts.json",
+      "sha256": "1df37b5b7ab78845bdd5e4c2aea418a3ab2c7ba5f6e8cac0b9b7ab6d954eb4ab"
+    },
+    "first_red": ".work/native-shop-purchase/red-01.xml",
+    "first_red_assertion": "missing owner purchase mint after actual BotClient/PlayingClient construction, inherited framing/dispatch/ring, received C6/B1/B0 and valid synthetic bound SELF allowance",
+    "behavioral_red_runs": [
+      ".work/native-shop-purchase/red-01.xml",
+      ".work/native-shop-purchase/red-02.xml",
+      ".work/native-shop-purchase/red-03.xml",
+      ".work/native-shop-purchase/red-04.xml",
+      ".work/native-shop-purchase/red-05.xml",
+      ".work/native-shop-purchase/red-09.xml",
+      ".work/native-shop-purchase/red-10.xml",
+      ".work/native-shop-purchase/red-11.xml",
+      ".work/native-shop-purchase/red-11b.xml",
+      ".work/native-shop-purchase/red-13.xml",
+      ".work/native-shop-purchase/red-14.xml"
+    ],
+    "unique_behavioral_failed_ids": [
+      [
+        "tests.test_native_shop_purchase",
+        "test_actual_quantity_one_acquired_and_replay_refused"
+      ],
+      [
+        "tests.test_native_shop_purchase",
+        "test_common_health_loss_cannot_revive_pending_purchase"
+      ],
+      [
+        "tests.test_native_shop_purchase",
+        "test_debit_and_ca0_without_acquisition_is_terminal_incomplete"
+      ],
+      [
+        "tests.test_native_shop_purchase",
+        "test_failed_send_keeps_origin_unresolved_and_cannot_promote_receipts[origin0]"
+      ],
+      [
+        "tests.test_native_shop_purchase",
+        "test_failed_send_keeps_origin_unresolved_and_cannot_promote_receipts[origin1]"
+      ],
+      [
+        "tests.test_native_shop_purchase",
+        "test_failed_send_keeps_origin_unresolved_and_cannot_promote_receipts[origin2]"
+      ],
+      [
+        "tests.test_native_shop_purchase",
+        "test_foreign_failed_add_cannot_be_followed_by_purchase_success"
+      ],
+      [
+        "tests.test_native_shop_purchase",
+        "test_malformed_or_disallowed_acquisition_never_acquires[outside_allowance]"
+      ],
+      [
+        "tests.test_native_shop_purchase",
+        "test_malformed_or_disallowed_acquisition_never_acquires[type]"
+      ],
+      [
+        "tests.test_native_shop_purchase",
+        "test_purchase_consumes_controller_request_and_terminal_offer"
+      ],
+      [
+        "tests.test_native_shop_purchase",
+        "test_receipts_during_successful_send_count"
+      ],
+      [
+        "tests.test_native_shop_purchase",
+        "test_server_rejection_is_terminal_not_acquisition"
+      ],
+      [
+        "tests.test_native_shop_purchase",
+        "test_unexpected_debit_cannot_report_acquired"
+      ]
+    ],
+    "tests_first_notes": "Vertical reached RED/GREEN for mint/send/acquisition/replay, during-send receipt cursor, failed-send disposition, server rejection, CA0/debit without acquisition and subsequent concrete defects. UNKNOWN/foreign-owner/expiry were already green conservative guards when added: preserved as characterizations, not fabricated RED.",
+    "current_selected": {
+      "path": ".work/native-shop-purchase/selected-final.xml",
+      "sha256": "087182a824f1fa39558488f82c1cfa9d98feb86b6f46fa6728c4392594dd9948",
+      "test_count": 1633,
+      "errors": 0,
+      "skipped": 0,
+      "command": ".work/native-shop-purchase/selected-command.json"
+    },
+    "current_feature": {
+      "path": ".work/native-shop-purchase/green-14.xml",
+      "sha256": "34e1c8f7aaf0e36b50cf3765946dc5812f128fcbfaafabf00dcbe566dd6a6431",
+      "test_count": 42
+    },
+    "owned_quality": {
+      "black": {
+        "command": [
+          ".venv/bin/python",
+          "-m",
+          "black",
+          "--check",
+          "--workers",
+          "1",
+          "src/robots/domain/actions.py",
+          "src/robots/domain/shop.py",
+          "src/robots/adapters/native_shop_context.py",
+          "src/robots/adapters/native_gameplay.py",
+          "src/robots/adapters/native_purchase.py",
+          "src/robots/app/playing_runtime.py",
+          "tests/test_native_shop_purchase.py"
+        ],
+        "exit_code": 0,
+        "log": ".work/native-shop-purchase/quality-final-black.log"
+      },
+      "ruff": {
+        "command": [
+          ".venv/bin/python",
+          "-m",
+          "ruff",
+          "check",
+          "src/robots/domain/actions.py",
+          "src/robots/domain/shop.py",
+          "src/robots/adapters/native_shop_context.py",
+          "src/robots/adapters/native_gameplay.py",
+          "src/robots/adapters/native_purchase.py",
+          "src/robots/app/playing_runtime.py",
+          "tests/test_native_shop_purchase.py"
+        ],
+        "exit_code": 0,
+        "log": ".work/native-shop-purchase/quality-final-ruff.log"
+      },
+      "mypy": {
+        "command": [
+          ".venv/bin/python",
+          "-m",
+          "mypy",
+          "--strict",
+          "--no-incremental",
+          "src/robots/domain/actions.py",
+          "src/robots/domain/shop.py",
+          "src/robots/adapters/native_shop_context.py",
+          "src/robots/adapters/native_gameplay.py",
+          "src/robots/adapters/native_purchase.py",
+          "src/robots/app/playing_runtime.py",
+          "tests/test_native_shop_purchase.py"
+        ],
+        "exit_code": 0,
+        "log": ".work/native-shop-purchase/quality-final-mypy.log"
+      },
+      "xenon": {
+        "command": [
+          ".venv/bin/python",
+          "-m",
+          "xenon",
+          "--max-absolute",
+          "B",
+          "--max-modules",
+          "B",
+          "--max-average",
+          "A",
+          "src/robots/domain/actions.py",
+          "src/robots/domain/shop.py",
+          "src/robots/adapters/native_shop_context.py",
+          "src/robots/adapters/native_gameplay.py",
+          "src/robots/adapters/native_purchase.py",
+          "src/robots/app/playing_runtime.py"
+        ],
+        "exit_code": 0,
+        "log": ".work/native-shop-purchase/quality-final-xenon.log"
+      }
+    },
+    "repair": {
+      "count": 1,
+      "scope": "Reached 0A37 item-type and bound-allowance index defects only",
+      "red": ".work/native-shop-purchase/red-14.xml",
+      "green": ".work/native-shop-purchase/green-14.xml",
+      "pre_repair_bytes": ".work/native-shop-purchase/pre-repair-bytes"
+    },
+    "original_bytes": ".work/native-shop-purchase/original-bytes",
+    "pre_quality_refactor_bytes": ".work/native-shop-purchase/pre-quality-refactor",
+    "root_gates_run": false,
+    "independent_review_done": false
+  },
+  "scope": {
+    "changed_existing": [
+      "src/robots/domain/actions.py",
+      "src/robots/domain/shop.py",
+      "src/robots/adapters/native_gameplay.py",
+      "src/robots/app/playing_runtime.py"
+    ],
+    "new_sources": [
+      "src/robots/adapters/native_purchase.py",
+      "tests/test_native_shop_purchase.py"
+    ],
+    "unchanged_owned": [
+      "src/robots/adapters/native_shop_context.py"
+    ],
+    "protected": [
+      "src/robots/domain/model.py",
+      "src/robots/adapters/native_shop.py",
+      "spikes/003-clientless-limbs/client.py",
+      "spikes/003-clientless-limbs/packetdb.py"
+    ],
+    "native_sessions_opened": 0,
+    "live_purchases": 0,
+    "inference_calls": 0,
+    "sql_docker_server_admin_private_bodies": false,
+    "issuance_or_lifecycle_operations": false,
+    "stage_commit_push": false,
+    "guards_reactivated": false
+  },
+  "issues": [
+    "Shared dirty tree retained; initial freeze sibling-path classification corrected in freeze-v2, historical freeze retained.",
+    "Initial Black/Ruff and Xenon receipts failed; owned formatting/test-import/assertion cleanup and meaningful resource/receipt responsibility splits fixed them, without gate waivers. Strict mypy was green throughout.",
+    "Full root/combined gates intentionally deferred to parent after both writers complete."
+  ],
+  "unresolved_live_qualification": {
+    "actual_loaded_Knife1201_weight": "UNKNOWN",
+    "policy": "UNCHANGED UNKNOWN => NO SEND; synthetic weight400 is not actual loaded item authority",
+    "ordinary_stable_shop_price_discount_canonical_identity": "No live qualification obtained; trusted typed synthetic facts only in tests. C8 has no maximum-price field and native view-ID substitution must be qualified.",
+    "selected_SELF_metadata": "Existing operator publication reused, synthetic matching helper proof in tests only; no new live SQL receipt or native permission.",
+    "native_authority": "UNCHANGED REVOKED; this artifact issues no action/session/approval or purchase permission"
+  },
+  "artifacts": {
+    ".work/native-shop-purchase/red-04.log": "7b629d6e0055920e1910bf73f6600f9447139dd95726fe8c8f2d72bfd595e702",
+    ".work/native-shop-purchase/red-10.log": "f438c917e6a6855220924621152cd527b01fe6f4892cedfa05701af82d87d4ec",
+    ".work/native-shop-purchase/guards-12.xml": "d86baccf28ecb815652055aea9a570a3c41fc2231f7c5924d43f1ddd842bf810",
+    ".work/native-shop-purchase/red-03.xml": "0ea092859e381560dcb3532c972654f2cdbc8ac29d243e0425b59b1f1ed35c87",
+    ".work/native-shop-purchase/red-13.log": "3b35fa91680b0e6565969f1918817491131f9d330935c83acebd9fd0a4992779",
+    ".work/native-shop-purchase/red-09.xml": "5a098f9497b3681f6b3f565f11a5d8378f699287dcc3a27c4d0bf1acfbab1c52",
+    ".work/native-shop-purchase/green-refactor.xml": "798ccfeccd92d3c918e623d9408ffdbdeafb7e7963d5f62e6224435a3a667a96",
+    ".work/native-shop-purchase/green-04.log": "fd14cdc4324f99c94e1c223a45b4157339986c37c6aa682625e9d58908d92420",
+    ".work/native-shop-purchase/characterization-06.log": "fc4efa05ec8ff7ed11c8f5fb2578bb82b5de5a8d34ed02c3e116981f5db95c2e",
+    ".work/native-shop-purchase/green-11.log": "499a67bff3d5411b5c5391eb0ed53e818c7522e93ed0c36c92c79e1ae33f8786",
+    ".work/native-shop-purchase/guards-12.log": "b8eeafa2e9cf0c977b5cacf6ff51d6b4a27b6351655bfad981a3207efb4f572f",
+    ".work/native-shop-purchase/red-13.xml": "f2392fae885cf4bc44210b70a2da19dbac8f9fe20ef733de5f6fe247b100fcae",
+    ".work/native-shop-purchase/red-02.log": "a7ce2c273f722add63f93d10da7a61070d6fad64ab238a536a5326e545d83787",
+    ".work/native-shop-purchase/baseline.json": "51b8f10e0bd9af99b6bd642c5f8462f30722d18cd091dcae2d7e083f8678d13c",
+    ".work/native-shop-purchase/red-14.xml": "fdeca1fedfcbb780974f8a9dedc65786943cc80a07e3ada68635e641c95e9d04",
+    ".work/native-shop-purchase/red-01.log": "972096df21811f8fe66a6d62c90ed127c4b2020e02ac7a0a34a40f21a1dfe268",
+    ".work/native-shop-purchase/green-10.log": "9c393bc91fcca292295254583034447f195d9e4cde87ddf9674cf4a8350b8d7d",
+    ".work/native-shop-purchase/green-13.log": "0a13bf4692b3b9f1bcf4ff36e383a620e7795f7c2916878ee2a766c9cd66f498",
+    ".work/native-shop-purchase/quality-initial-xenon.log": "7d23105533619833804c7711d3b81d09079a3e43ad64bff3286a7d5b2a25eb53",
+    ".work/native-shop-purchase/freeze-v2.json": "d1e6545f44cd2800f10c140c9317e0424695074c38052e958bd3bc3ea59c07f3",
+    ".work/native-shop-purchase/green-09.xml": "937abffaa898fb868a7a72a80df29e6a255b45bc3de4013a774ca6e7cda49dae",
+    ".work/native-shop-purchase/quality.py": "c97b16b23f60bd15b34f1ffac2890a23ac31d822125504d2fa0335f2b9ffc40f",
+    ".work/native-shop-purchase/quality-final.json": "a87792d07e82163bbf7c19dd68dc58dceb8171af9094037d018c04cece5b29fe",
+    ".work/native-shop-purchase/quality-refactor-xenon.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    ".work/native-shop-purchase/green-refactor.log": "6bf655092c9135d2c9e016f2161ea9140ce9149f30d3ae642e1d10c55c50a892",
+    ".work/native-shop-purchase/red-11b.log": "ddb115934d9a2d06e41ecfa60c0cd1074701280fecc277650e9bafe9a6765d50",
+    ".work/native-shop-purchase/selected-final.xml": "087182a824f1fa39558488f82c1cfa9d98feb86b6f46fa6728c4392594dd9948",
+    ".work/native-shop-purchase/quality-final-xenon.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    ".work/native-shop-purchase/red-05.xml": "99daebed5eee5b4f2d9638f817110f7010e9e143d61cacd0a0f24bbf2bfa4854",
+    ".work/native-shop-purchase/green-01.log": "4237eb8d30ab4e25d028ca343d50bfba364b7f76a907b73390b9601a16e46fe1",
+    ".work/native-shop-purchase/red-11.xml": "881989e2b7a4535963a74ba20a8332b9b6cb3b992a6864d58414b36bf45ef9bb",
+    ".work/native-shop-purchase/red-01.xml": "cb783fbdaa5dd3a5287545f2c5699327169dddb08c3c077896e6b34d51898979",
+    ".work/native-shop-purchase/quality-initial-mypy.log": "050c52a2b0c61e8b681ef5c485e0bc03340b8d55148e0acef27d744c8be42033",
+    ".work/native-shop-purchase/red-02.xml": "e6dbaddb14284ad7fde76149524ac2fc013c5e76bca943e3761b5ee5f0b1254a",
+    ".work/native-shop-purchase/green-05.xml": "634bc5b2b7116bf923c60948150ef1cdd71cb7cfa1aef5188e3143e5c03fb03b",
+    ".work/native-shop-purchase/green-02.xml": "4c86982248fb5a1ba68f2b1f83826bc365a639c63e1d79eff90a06199d503e02",
+    ".work/native-shop-purchase/red-04.xml": "7be273fa2307c2a5fe41760a657eb96a3436de0603fff1e8aa5aaf4eb3cf1d9c",
+    ".work/native-shop-purchase/green-11.xml": "3d2f79a7e82ab5ff28ecf3f0614299568776b91fe89103f138ce6af739d5fca1",
+    ".work/native-shop-purchase/quality-final-ruff.log": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+    ".work/native-shop-purchase/quality-initial.json": "4ca0e4afb3812775384070ca5cd7c143bc633d0da3d8208a25d2a4555512c66f",
+    ".work/native-shop-purchase/quality-refactor-mypy.log": "050c52a2b0c61e8b681ef5c485e0bc03340b8d55148e0acef27d744c8be42033",
+    ".work/native-shop-purchase/green-10.xml": "e793ef44a02484c0e274c5a06818ae8208d513aa7d7476d8e4dddd1cd5f5151e",
+    ".work/native-shop-purchase/green-13.xml": "528885d7d357cd0bbdbb05694336a81aad0eecf1ea6288e9916f4bdcafcbf76e",
+    ".work/native-shop-purchase/red-10.xml": "6a1756a611dff875eee46cc3a2e33c90b03c07d2db04122fc10f45aeb5c39d3e",
+    ".work/native-shop-purchase/physical-receipts.json": "1df37b5b7ab78845bdd5e4c2aea418a3ab2c7ba5f6e8cac0b9b7ab6d954eb4ab",
+    ".work/native-shop-purchase/green-02.log": "7a20eee6295224dc03c515c61effeca0082f5cf97cc770f7af5dcd2d4e9fd718",
+    ".work/native-shop-purchase/green-03.log": "d750c6b5c659a924d0d725e172c3aa31d18a3378e9696a5ccd110b8e346a1587",
+    ".work/native-shop-purchase/red-09.log": "ece78ffdc7f4fd9f3eaabaf1c8afdf5ead7df6ebfb7a43e9d75f650801d5e890",
+    ".work/native-shop-purchase/red-11b.xml": "da3e6fbb9384d3de0d57de974e917d0bb8d97dd3359bc3a7f4abfdb063fab14c",
+    ".work/native-shop-purchase/quality-final-mypy.log": "050c52a2b0c61e8b681ef5c485e0bc03340b8d55148e0acef27d744c8be42033",
+    ".work/native-shop-purchase/red-14.log": "5a2cf5d6145924bf990cf789fce5a1be355e3e4759f4d7a49a7ea0876cb6ea42",
+    ".work/native-shop-purchase/characterization-06.xml": "dcd85ec35e6d5172e0e666698a7d1f6f866ab0df7c281129f95db36828a8f36d",
+    ".work/native-shop-purchase/red-11.log": "3bf1f483835d0df2c7a47d0ef5d511cb5922b05898f980146f537847623e3078",
+    ".work/native-shop-purchase/characterization-08.xml": "635d8269dc75bf430749641abb5373638117bb6bc27d1e5770a9394c2993b38e",
+    ".work/native-shop-purchase/green-03.xml": "dddc888ef25236cdf74f87d85ee47ce5cfbd8c14d31a8a982558debf42fcd4ec",
+    ".work/native-shop-purchase/regressions.py": "4876e1ac8c5b7af5d18c21086a3dd6ad0ddab36fcecd23234c5a4e47d12ca24b",
+    ".work/native-shop-purchase/quality-initial-ruff.log": "cf334884364c353dcf4f38b5a089cafeabdd19128173d836ebf0e2c764c94640",
+    ".work/native-shop-purchase/format.log": "114b5e222d61f7cb3ed84551204b83a94b9e16c879bb4b7fe6709e11dcd0b3c0",
+    ".work/native-shop-purchase/red-05.log": "cc123d5ffdb55845e27912ff6f54e4b96e84403ee932c95230c6c6945443fae2",
+    ".work/native-shop-purchase/selected-final.log": "6813f877644d0bb418cf003c0a2ec4afd25f0b783a2a628d0b70283d78077c31",
+    ".work/native-shop-purchase/characterization-08.log": "036bb9390fb408c39eb19a61d865bc4044aa29eeea8139e62a988a5a83930a4d",
+    ".work/native-shop-purchase/green-09.log": "6ca361ff38728a893cdaf9d5406930ba290e0b0489ec9b70feceb63caea54a4d",
+    ".work/native-shop-purchase/freeze.json": "d3f63d65280f567634a3856a79878fec465bbd08b4e1f1914b1ea192c5c36538",
+    ".work/native-shop-purchase/quality-refactor.json": "99d0f5c1b673b08ac204a6fef905ca3394af97eecfee0cf854188ac9358f6dd0",
+    ".work/native-shop-purchase/selected-command.json": "68d9fd3a12e5f2ca0b6cbfc752d68cebc71ae23d4ebaeb6f1ac8cde7dc36465d",
+    ".work/native-shop-purchase/green-14.log": "d1ea235f70e79d216e29eedecdcd5556d960b69645b0ed52cc237d8506e1a454",
+    ".work/native-shop-purchase/green-05.log": "fa4a9a82967353cefdeab95317b1b7614e623061babc255833d883911886d20a",
+    ".work/native-shop-purchase/quality-refactor-black.log": "0b479fee9c3c70313b9c5c7a6339ecd413b78bbea93f1ad5050f49bdd3a655af",
+    ".work/native-shop-purchase/green-04.xml": "2bb29415dc3cbd9962e6a904707eba130f6a460c4610513644e521d382970c9f",
+    ".work/native-shop-purchase/quality-final-black.log": "0b479fee9c3c70313b9c5c7a6339ecd413b78bbea93f1ad5050f49bdd3a655af",
+    ".work/native-shop-purchase/characterization-07.log": "7d42ef5504b9f8dea803cd978f146b4a7a910815a154ed9e4e59883957d8862e",
+    ".work/native-shop-purchase/green-01.xml": "1fccf311fe8534dbbd7933c26609e120b152206348cb9237fe4bee602e6dedfb",
+    ".work/native-shop-purchase/red-03.log": "8791b1ea5e611bcba51db71c1c7bb18382855dbf07476f4eee9fb537654e6428",
+    ".work/native-shop-purchase/quality-refactor-ruff.log": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+    ".work/native-shop-purchase/quality-initial-black.log": "23e300bf47f9805b24fed9222c62797bd6f5744b417885ec73d660e92e567003",
+    ".work/native-shop-purchase/green-14.xml": "34e1c8f7aaf0e36b50cf3765946dc5812f128fcbfaafabf00dcbe566dd6a6431",
+    ".work/native-shop-purchase/characterization-07.xml": "a034a25815544d981e8b89bb4ab0c5bceaf2c08511a6571aa926eb94a78727e9",
+    ".work/native-shop-purchase/pre-repair-bytes/tests/test_native_shop_purchase.py": "5ac891ca8af11a2cf2eab9b613bc3198c903e8b1503e36b611b2a8e749cfa27c",
+    ".work/native-shop-purchase/pre-repair-bytes/src/robots/adapters/native_shop_context.py": "85cf1a54fd02ef8f05879c1526d281f14294af50948e7e61f7bf25bc778e7cfa",
+    ".work/native-shop-purchase/pre-repair-bytes/src/robots/adapters/native_gameplay.py": "3140239a1e24c15c08c071690a24af1bdaa00be8838e3743f339131dcac8758d",
+    ".work/native-shop-purchase/pre-repair-bytes/src/robots/adapters/native_purchase.py": "6a26b440603a365d7a669a8b4d3343d31bcaabbd003b904dc7b1b55cb8350977",
+    ".work/native-shop-purchase/pre-repair-bytes/src/robots/domain/shop.py": "0b6ef3a6301d4e6e49c789ccbefd2dfab802aa9f040c8f18588968493e0f053e",
+    ".work/native-shop-purchase/pre-repair-bytes/src/robots/domain/actions.py": "fcd1635a6f41509149ca307f464b3464e80a7cc133580d58af4e507991d91139",
+    ".work/native-shop-purchase/pre-repair-bytes/src/robots/app/playing_runtime.py": "45e9fbaaafd6bb45413ab6f3228cbaeae887c9e81cb794b0752eac7c3d655c56",
+    ".work/native-shop-purchase/frozen-bytes/tests/test_native_shop_purchase.py": "5ac891ca8af11a2cf2eab9b613bc3198c903e8b1503e36b611b2a8e749cfa27c",
+    ".work/native-shop-purchase/frozen-bytes/src/robots/adapters/native_shop_context.py": "85cf1a54fd02ef8f05879c1526d281f14294af50948e7e61f7bf25bc778e7cfa",
+    ".work/native-shop-purchase/frozen-bytes/src/robots/adapters/native_gameplay.py": "3140239a1e24c15c08c071690a24af1bdaa00be8838e3743f339131dcac8758d",
+    ".work/native-shop-purchase/frozen-bytes/src/robots/adapters/native_purchase.py": "7f4be3c11a678d92adcd9b16982926b4c9877fb2a6b52ada05cfd07aa749c2ee",
+    ".work/native-shop-purchase/frozen-bytes/src/robots/domain/shop.py": "0b6ef3a6301d4e6e49c789ccbefd2dfab802aa9f040c8f18588968493e0f053e",
+    ".work/native-shop-purchase/frozen-bytes/src/robots/domain/actions.py": "fcd1635a6f41509149ca307f464b3464e80a7cc133580d58af4e507991d91139",
+    ".work/native-shop-purchase/frozen-bytes/src/robots/app/playing_runtime.py": "45e9fbaaafd6bb45413ab6f3228cbaeae887c9e81cb794b0752eac7c3d655c56",
+    ".work/native-shop-purchase/original-bytes/src/robots/adapters/native_shop_context.py": "85cf1a54fd02ef8f05879c1526d281f14294af50948e7e61f7bf25bc778e7cfa",
+    ".work/native-shop-purchase/original-bytes/src/robots/adapters/native_gameplay.py": "c7e9f16750bf117ba3a4843264e215d2e653c0376c70acd7ac45e00a6b2100f9",
+    ".work/native-shop-purchase/original-bytes/src/robots/domain/shop.py": "c90a392f3cbb972360e66b3587c9012350cc84cbba30794c04af9081ae91c4ea",
+    ".work/native-shop-purchase/original-bytes/src/robots/domain/actions.py": "e5da48ac9eb3f794d8fbe36e63e688b7c869d688d9c149699872e99a3612ea63",
+    ".work/native-shop-purchase/original-bytes/src/robots/app/playing_runtime.py": "db687411642963a739549e330ff3163e94df1eb7d68e2b20387dba6949db8183",
+    ".work/native-shop-purchase/pre-quality-refactor/tests/test_native_shop_purchase.py": "dc1bd1bbcb45a33643d1ca55190d7e3084e003f4d5cd1f97538759d3d52683f6",
+    ".work/native-shop-purchase/pre-quality-refactor/src/robots/adapters/native_shop_context.py": "85cf1a54fd02ef8f05879c1526d281f14294af50948e7e61f7bf25bc778e7cfa",
+    ".work/native-shop-purchase/pre-quality-refactor/src/robots/adapters/native_gameplay.py": "35c26fe3aca9eb62803d5aba496e43b31fda299c88b9fb81ff3adb2bed4b9448",
+    ".work/native-shop-purchase/pre-quality-refactor/src/robots/adapters/native_purchase.py": "3323747966325997bc51b8be14c82bb3e218228caba912e5792b120eca64c84c",
+    ".work/native-shop-purchase/pre-quality-refactor/src/robots/domain/shop.py": "0b6ef3a6301d4e6e49c789ccbefd2dfab802aa9f040c8f18588968493e0f053e",
+    ".work/native-shop-purchase/pre-quality-refactor/src/robots/domain/actions.py": "fcd1635a6f41509149ca307f464b3464e80a7cc133580d58af4e507991d91139",
+    ".work/native-shop-purchase/pre-quality-refactor/src/robots/app/playing_runtime.py": "cc69a71e2f3f93ccd97a383798d5d0f7588e2927eb44fca9b3d4f1694c9c4003"
+  }
+}

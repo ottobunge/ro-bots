@@ -1,0 +1,13 @@
+{
+  "status": "GRIND_WINDOW13_ATTACKS_ON_WIRE_RANGE_AWARE_APPROACH_FRONTIER",
+  "completed_at": "2026-10-15T22:54:07.220284+00:00",
+  "raw_receipt": "run/reviews/playing-grind-operator-live-window13.json",
+  "breakthrough": {
+    "emission_fix_live": "fixture_0: 1854 attacks authored, 1854 dispatched, 0x437 on the wire 1853 times at 3 observed mobs (Poring/Lunatic/Pupa); dialogue clear + plan precedence fix live (script_routes: farm 1854 vs npc-guidance 120)",
+    "mobs_dense_and_visible": "attackable_actors_max 3; mobs moving around the client (0x9FD x2390, dense-entry frames); fixture_1 saw Poring/Drops/Lunatic before its backend-failure tick skips"
+  },
+  "root_cause_named": "ZC_ATTACK_FAILURE_FOR_DISTANCE (0x0139) x62603 - the server rejects every attack as out of range. The real game client auto-walks into melee range before attacking; the clientless bot stood at 14+ tiles spamming attacks. rAthena pre-re does not server-side chase for out-of-range CZ_REQUEST_ACT.",
+  "fix": "range-aware attack: when the plan target is farther than melee range (~1-2 tiles; distance is already in the script state), emit MoveTo(the target current cell) and attack only within range (the tracked 0x139 failure is the range feedback). Production change in src/robots/app/scripts.py (+ playing_runtime support if needed), TDD, full gates.",
+  "next": "window 14: approach -> in-range attack -> damage -> death -> XP -> loot (the complete first-kill chain).",
+  "native_authority": "UNCHANGED_REVOKED"
+}

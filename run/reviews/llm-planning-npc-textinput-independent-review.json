@@ -1,0 +1,561 @@
+{
+  "schema": "npc-textinput-independent-review/v1",
+  "passed": true,
+  "security_concerns": [],
+  "logic_errors": [],
+  "quality_blockers": [],
+  "suggestions": [],
+  "summary": "Approved only the promoted pure, already-framed MAIN/pre-re20180704 NPC string-input codec; no integration or native acceptance.",
+  "scope": {
+    "repo": "/home/otto/dev/ro-bots",
+    "reviewed_files": [
+      "src/robots/adapters/native_textinput.py",
+      "tests/test_native_textinput.py"
+    ],
+    "public_source_pin": "e985006171d2eb320ee512a653f4c83aea3d81b6",
+    "profile": "MAIN/pre-re20180704",
+    "offline": true,
+    "repairs": false,
+    "git_operations": false,
+    "compiler_execution": false,
+    "native_effects": false,
+    "caller_integration": false,
+    "full_goals": "OPEN"
+  },
+  "freeze": {
+    "freeze_path": "/home/otto/.hermes/cache/scratch/npc-textinput-independent-freeze.json",
+    "freeze_sha256": "42118bc96919a264afb2af7827d1d18fdf4fb3ef0d191ae41d80acca447cb294",
+    "inputs": 377,
+    "drift": [],
+    "gate_path": "/home/otto/dev/ro-bots/run/reviews/llm-planning-npc-textinput-combined-parent-gate.json",
+    "gate_sha256": "f38e5622b1b38c1f86ffc7a9b254024ffa490458fa68d97dabb3c4cedc78c56d",
+    "artifact_drift": [],
+    "source_hashes": {
+      "src/robots/adapters/native_textinput.py": "b947b2cec8e2b0919ffdcac4508a0c6f4b9713237a40004910ac6d859bf56f06",
+      "tests/test_native_textinput.py": "e26550920c9a12166e8f8861d7559c8730a48b91788e124c5ab030dc91bd3a43"
+    },
+    "root_cases": 5087,
+    "root_unique_ids": 5087,
+    "root_component_cases": 70,
+    "final_drift": [],
+    "parent_must_recheck_before_approval": true
+  },
+  "contracts": {
+    "prompt": "Exact plain bytes, exactly six bytes; packed 01D4 distinguished from equally sized numeric 0142 and unknowns; zero rejected conservatively, not universal script-OID claim.",
+    "id": "Plain int 1..FFFFFFFF preserved bit-for-bit; signed outgoing int32 interpretation can be negative, not valid-NPC authorization.",
+    "name": "Exact plain str encoded strict UTF-8, 1..23 bytes; preserves case, spaces and composed/decomposed forms without normalization, coercion or truncation; empty/NUL/surrogate/overflow rejected. This is selected-name policy, not arbitrary NPC input support or universal charset/name legality.",
+    "response": "01D5, packed eight-byte prefix, declared size=8+N, no wire terminal NUL. Active PACKETVER>=20151001 increments N to N+1; actual safestrncpy sets destination[--n]=0 and loops over at most N source bytes. N<=23 below CHATBOX_SIZE71, so no source read beyond payload and exact destination bytes followed by NUL. Source review plus independent Python emulation only, not actual C++ execution.",
+    "types": "Ordinary subclasses/overridden comparison, encode and length hooks rejected before execution; hostile object.__setattr__ mutation of frozen records is outside this ordinary API contract.",
+    "boundaries": "No actor lookup, hidden world flags, context/name selection, stream collector registration, continuity/epoch binding, ownership, permissions, gameplay, spending or rewards."
+  },
+  "source_authority": {
+    "audit_path": "run/reviews/llm-planning-npc-preparation-frontier.json",
+    "sha256": "023070b9c2469c0d7a335087c156e8402b59ec6f7f2f2d869c9226d55c6ac8ea",
+    "verified_source_bindings": 10,
+    "source_binding_or_excerpt_errors": [],
+    "references": [
+      {
+        "path": "/home/otto/dev/ro-bots/run/public-source/callback-qualified-e985006171d2/src/map/packets.hpp",
+        "sha256": "b4959224a48e1febb811d7c1474f2c1b703d324ae4db7e3a1053a85b80da57bc",
+        "excerpts": [
+          {
+            "lines": [
+              769,
+              779
+            ],
+            "text": "struct PACKET_ZC_OPEN_EDITDLG {\n\tint16 packetType;\n\tuint32 npcId;\n} __attribute__((packed));\nDEFINE_PACKET_HEADER(ZC_OPEN_EDITDLG, 0x142)\n\nstruct PACKET_ZC_OPEN_EDITDLGSTR {\n\tint16 packetType;\n\tuint32 npcId;\n} __attribute__((packed));\nDEFINE_PACKET_HEADER(ZC_OPEN_EDITDLGSTR, 0x1d4)"
+          },
+          {
+            "lines": [
+              1844,
+              1850
+            ],
+            "text": "struct PACKET_CZ_INPUT_EDITDLGSTR{\n\tint16 packetType;\n\tuint16 packetSize;\n\tint32 GID;\n\tchar value[];\n} __attribute__((packed));\nDEFINE_PACKET_HEADER(CZ_INPUT_EDITDLGSTR, 0x1d5);"
+          }
+        ]
+      },
+      {
+        "path": "/home/otto/dev/ro-bots/run/public-source/callback-qualified-e985006171d2/src/map/clif.cpp",
+        "sha256": "ace16f15be3b60f730522d620b73a68a9f2cc384016aadce9c985888aea9a1ac",
+        "excerpts": [
+          {
+            "lines": [
+              13384,
+              13394
+            ],
+            "text": "\tconst PACKET_CZ_INPUT_EDITDLGSTR* p = reinterpret_cast<PACKET_CZ_INPUT_EDITDLGSTR*>( RFIFOP( fd, 0 ) );\n\tsize_t message_len = p->packetSize - sizeof( *p );\n\n\tif( message_len <= 0 )\n\t\treturn; // invalid input\n\n#if PACKETVER >= 20151001\n\tmessage_len++;\n#endif\n\n\tsafestrncpy( sd->npc_str, p->value, std::min<size_t>( message_len, CHATBOX_SIZE ) );"
+          },
+          {
+            "lines": [
+              13412,
+              13413
+            ],
+            "text": "\tif (!sd->npc_id) //Avoid parsing anything when the script was done with. [Skotlex]\n\t\treturn;"
+          }
+        ]
+      },
+      {
+        "path": "/home/otto/dev/ro-bots/run/public-source/callback-qualified-e985006171d2/src/map/clif_packetdb.hpp",
+        "sha256": "51c8a9ebd591e0dd4f444f829253a14d449615425405cb8a95f28a6dea460e66",
+        "excerpts": [
+          {
+            "lines": [
+              222,
+              225
+            ],
+            "text": "\tparseable_packet( HEADER_CZ_SELECTAUTOSPELL, sizeof( PACKET_CZ_SELECTAUTOSPELL ), clif_parse_AutoSpell, 0 );\n\tpacket(0x01cf,28);\n\tpacket(0x01d0,8);\n\tparseable_packet( HEADER_CZ_INPUT_EDITDLGSTR, -1, clif_parse_NpcStringInput, 0 );"
+          }
+        ]
+      },
+      {
+        "path": "/home/otto/dev/ro-bots/run/public-source/callback-qualified-e985006171d2/src/map/npc.cpp",
+        "sha256": "90d582661668e5cb8567de5a7b92d067e5d0db479963b00bab340af9fe477534",
+        "excerpts": [
+          {
+            "lines": [
+              2292,
+              2294
+            ],
+            "text": "bool npc_scriptcont(map_session_data* sd, int32 id, bool closing){\n\tblock_list *target = map_id2bl(id);\n\tnpc_data* nd = BL_CAST( BL_NPC, target );"
+          },
+          {
+            "lines": [
+              2303,
+              2316
+            ],
+            "text": "\tif( id != sd->npc_id ){\n\t\tTBL_NPC* nd_sd = (TBL_NPC*)map_id2bl(sd->npc_id);\n\n\t\tShowDebug(\"npc_scriptcont: %s (sd->npc_id=%d) is not %s (id=%d).\\n\",\n\t\t\tnd_sd?(char*)nd_sd->name:\"'Unknown NPC'\", (int32)sd->npc_id,\n\t\t\tnd?(char*)nd->name:\"'Unknown NPC'\", (int32)id);\n\t\treturn true;\n\t}\n\n\tif(id != fake_nd->id) { // Not item script\n\t\tif ((npc_checknear(sd, target)) == nullptr) {\n\t\t\tShowWarning(\"npc_scriptcont: failed npc_checknear test.\\n\");\n\t\t\treturn true;\n\t\t}"
+          }
+        ]
+      },
+      {
+        "path": "/home/otto/dev/ro-bots/rathena/src/common/strlib.cpp",
+        "sha256": "e0c198ad92d701a9d12dbf5507a449a94dee953629f3e0b0764b15a61ba7be66",
+        "excerpts": [
+          {
+            "lines": [
+              249,
+              259
+            ],
+            "text": "/// strncpy that always nul-terminates the string\nchar* safestrncpy(char* dst, const char* src, size_t n)\n{\n\tif( n > 0 )\n\t{\n\t\tchar* d = dst;\n\t\tconst char* s = src;\n\t\td[--n] = '\\0';/* nul-terminate string */\n\t\tfor( ; n > 0; --n )\n\t\t{\n\t\t\tif( (*d++ = *s++) == '\\0' )"
+          }
+        ]
+      },
+      {
+        "path": "/home/otto/dev/ro-bots/rathena/src/common/mmo.hpp",
+        "sha256": "883ec2048b726d51f897218989ca66c476bcdbc969d683025fe09a0bf280fa6d",
+        "excerpts": [
+          {
+            "lines": [
+              152,
+              154
+            ],
+            "text": "//For character names, title names, guilds, maps, etc.\n//Includes null-terminator as it is the length of the array.\n#define NAME_LENGTH (23 + 1)"
+          },
+          {
+            "lines": [
+              592,
+              595
+            ],
+            "text": "\tuint8 body_direction;\n\n\tchar name[NAME_LENGTH];\n\tuint32 base_level,job_level;"
+          }
+        ]
+      },
+      {
+        "path": "/home/otto/dev/ro-bots/rathena/src/map/map.hpp",
+        "sha256": "1cb428d1145ec9c4045b2ae58c163be24bf1bd374fc8eea07eaf0c266621fe2b",
+        "excerpts": [
+          {
+            "lines": [
+              281,
+              281
+            ],
+            "text": "#define CHATBOX_SIZE (70 + 1)"
+          }
+        ]
+      },
+      {
+        "path": "/home/otto/dev/ro-bots/src/robots/adapters/native_gameplay.py",
+        "sha256": "c7e9f16750bf117ba3a4843264e215d2e653c0376c70acd7ac45e00a6b2100f9",
+        "excerpts": [
+          {
+            "lines": [
+              48,
+              59
+            ],
+            "text": "def party_chat(text: str, *, speaker_name: str) -> bytes:\n    \"\"\"20180704 non-NUL exact selected name : message (clif_process_message).\"\"\"\n    error = \"Invalid UTF8 party chat\"\n    if type(text) is not str or type(speaker_name) is not str:\n        raise ValueError(error)\n    message, name = text.encode(\"utf-8\"), speaker_name.encode(\"utf-8\")\n    if (\n        b\"\\0\" in message\n        or b\"\\0\" in name\n        or not 1 <= len(name) <= 23\n        or not 1 <= len(message) <= 254\n    ):"
+          }
+        ]
+      },
+      {
+        "path": "/home/otto/dev/ro-bots/rathena/npc/pre-re/jobs/novice/novice.txt",
+        "sha256": "7455223bc331bc3f8649e16d0af496d4360cb7a849c26ac922508a99b722ed21",
+        "excerpts": [
+          {
+            "lines": [
+              81,
+              91
+            ],
+            "text": "new_1-2,100,29,4\tscript\tReceptionist#nv1\t86,{\n\tmes \"[Training Grounds Receptionist]\";\n\tmes \"Hello, you look to be new here.\";\n\tmes \"What is your name?\";\n\tnext;\n\tinput .@charname$;\n\tif (.@charname$!=strcharinfo(0)) {\n\t\tmes \"[Training Grounds Receptionist]\";\n\t\tmes \"Sorry, but I don't think I heard\";\n\t\tmes \"you correctly\";\n\t\tclose;"
+          }
+        ]
+      },
+      {
+        "path": "/home/otto/dev/ro-bots/pyproject.toml",
+        "sha256": "e8ae0849a413bc3d705f081f609b92dae702bbd3e491b2c3aeb5d8665c458fba",
+        "excerpts": [
+          {
+            "lines": [
+              35,
+              42
+            ],
+            "text": "[tool.black]\nline-length = 100\ntarget-version = [\"py314\"]\n\n[tool.ruff]\nline-length = 100\ntarget-version = \"py314\"\nsrc = [\"src\", \"tests\"]"
+          },
+          {
+            "lines": [
+              75,
+              82
+            ],
+            "text": "[tool.mypy]\npython_version = \"3.14\"\nstrict = true\nwarn_unreachable = true\nmypy_path = \"src\"\nexplicit_package_bases = true\nfiles = [\"src\", \"tests\"]\n"
+          }
+        ]
+      }
+    ]
+  },
+  "fresh_tests": {
+    "scope": {
+      "path": "/home/otto/.hermes/cache/scratch/npc-textinput-independent-review/scope.xml",
+      "sha256": "3eb364672a9ebe70c81b83ff2ace13eeb680a5866e32b3862aa2484b450934f3",
+      "physical_cases": 70,
+      "unique_cases": 70,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "test_ids": [
+        "tests.test_native_textinput::test_decode_preserves_unsigned_bits[1]",
+        "tests.test_native_textinput::test_decode_preserves_unsigned_bits[2147483647]",
+        "tests.test_native_textinput::test_decode_preserves_unsigned_bits[2147483648]",
+        "tests.test_native_textinput::test_decode_preserves_unsigned_bits[4294967295]",
+        "tests.test_native_textinput::test_decode_rejects_non_string_frames[]",
+        "tests.test_native_textinput::test_decode_rejects_non_string_frames[abc]",
+        "tests.test_native_textinput::test_decode_rejects_non_string_frames[abcde]",
+        "tests.test_native_textinput::test_decode_rejects_non_string_frames[abcdefg]",
+        "tests.test_native_textinput::test_decode_rejects_non_string_frames[B\\x01\\x01\\x00\\x00\\x00]",
+        "tests.test_native_textinput::test_decode_rejects_non_string_frames[\\x99\\x99\\x01\\x00\\x00\\x00]",
+        "tests.test_native_textinput::test_encode_exact_selected_name[Otto-1]",
+        "tests.test_native_textinput::test_encode_exact_selected_name[Otto-2147483647]",
+        "tests.test_native_textinput::test_encode_exact_selected_name[Otto-2147483648]",
+        "tests.test_native_textinput::test_encode_exact_selected_name[Otto-4294967295]",
+        "tests.test_native_textinput::test_encode_exact_selected_name[MiXeD Name -1]",
+        "tests.test_native_textinput::test_encode_exact_selected_name[MiXeD Name -2147483647]",
+        "tests.test_native_textinput::test_encode_exact_selected_name[MiXeD Name -2147483648]",
+        "tests.test_native_textinput::test_encode_exact_selected_name[MiXeD Name -4294967295]",
+        "tests.test_native_textinput::test_encode_exact_selected_name[e\\u0301-1]",
+        "tests.test_native_textinput::test_encode_exact_selected_name[e\\u0301-2147483647]",
+        "tests.test_native_textinput::test_encode_exact_selected_name[e\\u0301-2147483648]",
+        "tests.test_native_textinput::test_encode_exact_selected_name[e\\u0301-4294967295]",
+        "tests.test_native_textinput::test_encode_exact_selected_name[\\xe9-1]",
+        "tests.test_native_textinput::test_encode_exact_selected_name[\\xe9-2147483647]",
+        "tests.test_native_textinput::test_encode_exact_selected_name[\\xe9-2147483648]",
+        "tests.test_native_textinput::test_encode_exact_selected_name[\\xe9-4294967295]",
+        "tests.test_native_textinput::test_encode_exact_selected_name[AAAAAAAAAAAAAAAAAAAAAAA-1]",
+        "tests.test_native_textinput::test_encode_exact_selected_name[AAAAAAAAAAAAAAAAAAAAAAA-2147483647]",
+        "tests.test_native_textinput::test_encode_exact_selected_name[AAAAAAAAAAAAAAAAAAAAAAA-2147483648]",
+        "tests.test_native_textinput::test_encode_exact_selected_name[AAAAAAAAAAAAAAAAAAAAAAA-4294967295]",
+        "tests.test_native_textinput::test_encode_exact_selected_name[\\u754c\\u754c\\u754c\\u754c\\u754c\\u754c\\u754cab-1]",
+        "tests.test_native_textinput::test_encode_exact_selected_name[\\u754c\\u754c\\u754c\\u754c\\u754c\\u754c\\u754cab-2147483647]",
+        "tests.test_native_textinput::test_encode_exact_selected_name[\\u754c\\u754c\\u754c\\u754c\\u754c\\u754c\\u754cab-2147483648]",
+        "tests.test_native_textinput::test_encode_exact_selected_name[\\u754c\\u754c\\u754c\\u754c\\u754c\\u754c\\u754cab-4294967295]",
+        "tests.test_native_textinput::test_encode_exact_selected_name[\\U0001f600\\U0001f600\\U0001f600\\U0001f600\\U0001f600abc-1]",
+        "tests.test_native_textinput::test_encode_exact_selected_name[\\U0001f600\\U0001f600\\U0001f600\\U0001f600\\U0001f600abc-2147483647]",
+        "tests.test_native_textinput::test_encode_exact_selected_name[\\U0001f600\\U0001f600\\U0001f600\\U0001f600\\U0001f600abc-2147483648]",
+        "tests.test_native_textinput::test_encode_exact_selected_name[\\U0001f600\\U0001f600\\U0001f600\\U0001f600\\U0001f600abc-4294967295]",
+        "tests.test_native_textinput::test_rejects_invalid_names[]",
+        "tests.test_native_textinput::test_rejects_invalid_names[AAAAAAAAAAAAAAAAAAAAAAAA]",
+        "tests.test_native_textinput::test_rejects_invalid_names[\\u754c\\u754c\\u754c\\u754c\\u754c\\u754c\\u754c\\u754c]",
+        "tests.test_native_textinput::test_rejects_invalid_names[\\U0001f600\\U0001f600\\U0001f600\\U0001f600\\U0001f600\\U0001f600]",
+        "tests.test_native_textinput::test_rejects_invalid_names[bad\\x00tail]",
+        "tests.test_native_textinput::test_rejects_invalid_names[high-surrogate]",
+        "tests.test_native_textinput::test_rejects_invalid_names[low-surrogate]",
+        "tests.test_native_textinput::test_rejects_non_string_names[True]",
+        "tests.test_native_textinput::test_rejects_non_string_names[Otto]",
+        "tests.test_native_textinput::test_rejects_non_string_names[name2]",
+        "tests.test_native_textinput::test_rejects_non_string_names[1]",
+        "tests.test_native_textinput::test_rejects_non_string_names[None]",
+        "tests.test_native_textinput::test_rejects_outside_id_domain[0]",
+        "tests.test_native_textinput::test_rejects_outside_id_domain[-1]",
+        "tests.test_native_textinput::test_rejects_outside_id_domain[4294967296]",
+        "tests.test_native_textinput::test_rejects_outside_id_domain[1267650600228229401496703205376]",
+        "tests.test_native_textinput::test_rejects_non_plain_integer_ids[True]",
+        "tests.test_native_textinput::test_rejects_non_plain_integer_ids[False]",
+        "tests.test_native_textinput::test_rejects_non_plain_integer_ids[1.0]",
+        "tests.test_native_textinput::test_rejects_non_plain_integer_ids[1]",
+        "tests.test_native_textinput::test_rejects_non_plain_integer_ids[None]",
+        "tests.test_native_textinput::test_rejects_non_bytes_frames[True]",
+        "tests.test_native_textinput::test_rejects_non_bytes_frames[None]",
+        "tests.test_native_textinput::test_rejects_non_bytes_frames[abcdef]",
+        "tests.test_native_textinput::test_rejects_non_bytes_frames[raw3]",
+        "tests.test_native_textinput::test_rejects_non_bytes_frames[raw4]",
+        "tests.test_native_textinput::test_rejects_zero_wire_id",
+        "tests.test_native_textinput::test_rejects_non_prompt_argument[True]",
+        "tests.test_native_textinput::test_rejects_non_prompt_argument[None]",
+        "tests.test_native_textinput::test_rejects_non_prompt_argument[1]",
+        "tests.test_native_textinput::test_rejects_non_prompt_argument[prompt3]",
+        "tests.test_native_textinput::test_prompt_is_frozen"
+      ]
+    },
+    "probes": {
+      "path": "/home/otto/.hermes/cache/scratch/npc-textinput-independent-review/probes.xml",
+      "sha256": "6c1c176790149fd35ff646de7c3364b627fa7cea5408f752738e34d978a895ce",
+      "physical_cases": 5,
+      "unique_cases": 5,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "test_ids": [
+        ".hermes.cache.scratch.npc-textinput-independent-review.test_independent_codec::test_review_constructor_wire_id_boundaries",
+        ".hermes.cache.scratch.npc-textinput-independent-review.test_independent_codec::test_review_exact_unicode_byte_boundary_no_normalization",
+        ".hermes.cache.scratch.npc-textinput-independent-review.test_independent_codec::test_review_active_handler_exact_reads_and_destination_termination",
+        ".hermes.cache.scratch.npc-textinput-independent-review.test_independent_codec::test_review_plain_types_reject_overrides_before_dispatch",
+        ".hermes.cache.scratch.npc-textinput-independent-review.test_independent_codec::test_review_exact_numeric_and_unknown_prompt_distinction"
+      ]
+    },
+    "distinct_physical_union": 75,
+    "scope_ids_missing_from_root": [],
+    "fresh_probes_are_post_implementation_review_not_TDD": true
+  },
+  "quality": {
+    "qualified_invocation": "nix develop --offline --no-write-lock-file path:./spikes/007-native-packet-ast/toolchain -c env PYTHONOPTIMIZE=0 PYTHONDONTWRITEBYTECODE=1 .venv/bin/python -B /home/otto/.hermes/cache/scratch/npc-textinput-independent-review/run_review.py",
+    "environment": {
+      "PYTHONOPTIMIZE": "0",
+      "PYTHONDONTWRITEBYTECODE": "1",
+      "PYTHONPATH": "/home/otto/dev/ro-bots/src:/home/otto/dev/ro-bots",
+      "PYTEST_DISABLE_PLUGIN_AUTOLOAD": "1"
+    },
+    "commands": {
+      "scope": {
+        "command": [
+          "/home/otto/dev/ro-bots/.venv/bin/python",
+          "-B",
+          "-m",
+          "pytest",
+          "-q",
+          "-o",
+          "addopts=",
+          "-p",
+          "no:cacheprovider",
+          "--junitxml=/home/otto/.hermes/cache/scratch/npc-textinput-independent-review/scope.xml",
+          "tests/test_native_textinput.py"
+        ],
+        "exit_code": 0,
+        "log": "/home/otto/.hermes/cache/scratch/npc-textinput-independent-review/scope.log"
+      },
+      "probes": {
+        "command": [
+          "/home/otto/dev/ro-bots/.venv/bin/python",
+          "-B",
+          "-m",
+          "pytest",
+          "-q",
+          "-o",
+          "addopts=",
+          "-p",
+          "no:cacheprovider",
+          "--junitxml=/home/otto/.hermes/cache/scratch/npc-textinput-independent-review/probes.xml",
+          "/home/otto/.hermes/cache/scratch/npc-textinput-independent-review/test_independent_codec.py"
+        ],
+        "exit_code": 0,
+        "log": "/home/otto/.hermes/cache/scratch/npc-textinput-independent-review/probes.log"
+      },
+      "black": {
+        "command": [
+          "/home/otto/dev/ro-bots/.venv/bin/python",
+          "-B",
+          "-m",
+          "black",
+          "--check",
+          "--workers",
+          "1",
+          "src/robots/adapters/native_textinput.py",
+          "tests/test_native_textinput.py"
+        ],
+        "exit_code": 0,
+        "log": "/home/otto/.hermes/cache/scratch/npc-textinput-independent-review/black.log"
+      },
+      "ruff": {
+        "command": [
+          "/home/otto/dev/ro-bots/.venv/bin/python",
+          "-B",
+          "-m",
+          "ruff",
+          "check",
+          "--no-cache",
+          "src/robots/adapters/native_textinput.py",
+          "tests/test_native_textinput.py"
+        ],
+        "exit_code": 0,
+        "log": "/home/otto/.hermes/cache/scratch/npc-textinput-independent-review/ruff.log"
+      },
+      "mypy": {
+        "command": [
+          "/home/otto/dev/ro-bots/.venv/bin/python",
+          "-B",
+          "-m",
+          "mypy",
+          "--strict",
+          "--cache-dir=/home/otto/.hermes/cache/scratch/npc-textinput-independent-review/mypy-cache"
+        ],
+        "exit_code": 0,
+        "log": "/home/otto/.hermes/cache/scratch/npc-textinput-independent-review/mypy.log"
+      }
+    },
+    "mypy_scope": "Whole configured src/tests strict; 241 source files; fresh cache; no ignores or dummy stubs"
+  },
+  "matching_full_gate": {
+    "path": "/home/otto/dev/ro-bots/run/reviews/llm-planning-npc-textinput-combined-parent-gate.json",
+    "sha256": "f38e5622b1b38c1f86ffc7a9b254024ffa490458fa68d97dabb3c4cedc78c56d",
+    "check_exit": 0,
+    "audit_exit": 0,
+    "physical_unique_cases": 5087,
+    "subtests_passed": 65,
+    "failures": 0,
+    "errors": 0,
+    "skips": 0,
+    "coverage_percent": 95.39,
+    "warnings": 1,
+    "independently_verified_hashes_and_xml": true,
+    "rerun_by_reviewer": false,
+    "artifacts": {
+      "/home/otto/.hermes/cache/scratch/npc-textinput-combined-tests.xml": "986dc6d731eb9956b41e9e510dbd3cdc7803484bcea1f0161afee5fc45dc4da2",
+      "/home/otto/.hermes/cache/scratch/npc-textinput-combined-check.log": "cdb058ad72c4aae8683676ef43f55a2d95ef88dc640f0a956b2f2fb1bf451dad",
+      "/home/otto/.hermes/cache/scratch/npc-textinput-combined-audit.log": "12efd8d5b788d7b9815c963992e71d963bd5e1f644f07efbd7df75b3abc6f46e"
+    }
+  },
+  "stage_evidence": {
+    "candidate_report_sha256": "3603e6b083aa2ac6b4201a6e7028076de0d566341f33d2a48479b7ebc4dbf06c",
+    "historical_stage_artifacts": {
+      "native_textinput.py": {
+        "path": "/home/otto/.hermes/cache/scratch/npc-textinput-candidate/native_textinput.py",
+        "sha256": "b947b2cec8e2b0919ffdcac4508a0c6f4b9713237a40004910ac6d859bf56f06"
+      },
+      "test_native_textinput.py": {
+        "path": "/home/otto/.hermes/cache/scratch/npc-textinput-candidate/test_native_textinput.py",
+        "sha256": "2bd41c53e542b18bc69c6c6e9f4c7e7b5321397ea3d0b196f6e96ba484de6cef"
+      }
+    },
+    "artifact_digest_errors": [],
+    "xml_receipts": [
+      {
+        "path": "/home/otto/.hermes/cache/scratch/npc-textinput-candidate/final-green.xml",
+        "sha256": "425deee9cc994337064bc762965d5a9fc385502335cc3ac102b0537824fe968b",
+        "physical_cases": 70,
+        "unique_cases": 70,
+        "failures": 0,
+        "errors": 0,
+        "skips": 0
+      },
+      {
+        "path": "/home/otto/.hermes/cache/scratch/npc-textinput-candidate/input1-green.xml",
+        "sha256": "627d6530d304259ebbde669184e6556c216288fac09849eb354946e60f8375a7",
+        "physical_cases": 10,
+        "unique_cases": 10,
+        "failures": 0,
+        "errors": 0,
+        "skips": 0
+      },
+      {
+        "path": "/home/otto/.hermes/cache/scratch/npc-textinput-candidate/input1-red.xml",
+        "sha256": "bdacf6749fc3958a62834884cb38fe21471cb6b1851a4b6442dce506ce25a3f6",
+        "physical_cases": 4,
+        "unique_cases": 4,
+        "failures": 4,
+        "errors": 0,
+        "skips": 0
+      },
+      {
+        "path": "/home/otto/.hermes/cache/scratch/npc-textinput-candidate/input1-setup-missing-module.xml",
+        "sha256": "b9ed5f67cd7ef34fa0841585e8166aacae77f7f160219ec049c436556900f60a",
+        "physical_cases": 1,
+        "unique_cases": 1,
+        "failures": 0,
+        "errors": 1,
+        "skips": 0
+      },
+      {
+        "path": "/home/otto/.hermes/cache/scratch/npc-textinput-candidate/input2-green.xml",
+        "sha256": "e16e7595ee390b777f52ac8c29a3daaec6d3cfb9b85c7d0b84bc64f9243d3435",
+        "physical_cases": 38,
+        "unique_cases": 38,
+        "failures": 0,
+        "errors": 0,
+        "skips": 0
+      },
+      {
+        "path": "/home/otto/.hermes/cache/scratch/npc-textinput-candidate/input2-red.xml",
+        "sha256": "9090656c9bd3a28b74724726dce244b0fbeb8c857246af06ba3dd30b02e96c54",
+        "physical_cases": 28,
+        "unique_cases": 28,
+        "failures": 28,
+        "errors": 0,
+        "skips": 0
+      },
+      {
+        "path": "/home/otto/.hermes/cache/scratch/npc-textinput-candidate/input3-green.xml",
+        "sha256": "b9a9807d79463f119b878f854ebb16c411c21e5b7c637de749d52c4f66af4a8b",
+        "physical_cases": 70,
+        "unique_cases": 70,
+        "failures": 0,
+        "errors": 0,
+        "skips": 0
+      },
+      {
+        "path": "/home/otto/.hermes/cache/scratch/npc-textinput-candidate/input3-red.xml",
+        "sha256": "aca98d5761248a1ec67456f952299d79f4aa45987dc984ab46580ebba787d12a",
+        "physical_cases": 70,
+        "unique_cases": 70,
+        "failures": 26,
+        "errors": 0,
+        "skips": 0
+      }
+    ],
+    "selected_final_xml": {
+      "path": "/home/otto/.hermes/cache/scratch/npc-textinput-candidate/final-green.xml",
+      "sha256": "425deee9cc994337064bc762965d5a9fc385502335cc3ac102b0537824fe968b"
+    },
+    "coverage": {
+      "path": "/home/otto/.hermes/cache/scratch/npc-textinput-candidate/coverage.xml",
+      "sha256": "645cd315fbf80ffff725013e148aa52538d13587cfd2b70ea1dfb1f7ef228256",
+      "statements": 39,
+      "branches": 16,
+      "line_rate": "1",
+      "branch_rate": "1",
+      "scope": "Historical staged codec only; 39 statements and 16 branches at 100%, not whole Root coverage"
+    },
+    "promoted_source_identical_to_stage": true,
+    "promoted_test_AST_equal_after_import_normalization": true,
+    "TDD_assessment": {
+      "input1": "missing module collection error recorded separately; real RED source-shaped decoder refusal before implementation; then GREEN",
+      "input2": "test written before minimal encoder refusal; 28 real RED failures before functional encoder; then GREEN",
+      "input3": "26 failures and 44 already-passing cases before rejection implementation; frozen and some builtin denials already green, not claimed new RED",
+      "post_green_refactor": "Black/import ordering/pytest match hygiene/explicit surrogate parametrizations only; preserved failed Ruff receipts. No working-code rollback."
+    }
+  },
+  "limitations": [
+    "Pure decoder consumes already-framed bytes; framing/ReaderRPC recognition remains unimplemented.",
+    "Future controller must bind actual received string prompt, continuously valid NPC identity, exact selected name and explicit intent.",
+    "No older PACKETVER/RE/unknown profiles, Windows locale or native server execution established.",
+    "All full milestones remain OPEN; offline component approval does not authorize activation."
+  ],
+  "artifacts": {
+    "/home/otto/.hermes/cache/scratch/npc-textinput-independent-review/preflight.json": "c47eed1edff05ed4af5fe28b2961a2b4401f1b0d03b7454b7b8e3e464dde167a",
+    "/home/otto/.hermes/cache/scratch/npc-textinput-independent-review/commands.json": "6d872a2aeb24b2aa624703d249b92f7ec7c14509af3124cf29a5b2ee8cfc3d33",
+    "/home/otto/.hermes/cache/scratch/npc-textinput-independent-review/scope.xml": "3eb364672a9ebe70c81b83ff2ace13eeb680a5866e32b3862aa2484b450934f3",
+    "/home/otto/.hermes/cache/scratch/npc-textinput-independent-review/scope.log": "a890766959dbc179a81ff8334e404f6fd46d8ff98bc8a6e4e1722312432a4a7b",
+    "/home/otto/.hermes/cache/scratch/npc-textinput-independent-review/probes.xml": "6c1c176790149fd35ff646de7c3364b627fa7cea5408f752738e34d978a895ce",
+    "/home/otto/.hermes/cache/scratch/npc-textinput-independent-review/probes.log": "6b9ffd6b9a3baa1f0f65b43fd8e9939ac47909d796917593222ef0ccd5a23556",
+    "/home/otto/.hermes/cache/scratch/npc-textinput-independent-review/black.log": "b9cf511501d306d2bd8355ccb165c8ddc0a6fdd62d7c72c4a7b1795cf8934c8c",
+    "/home/otto/.hermes/cache/scratch/npc-textinput-independent-review/ruff.log": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+    "/home/otto/.hermes/cache/scratch/npc-textinput-independent-review/mypy.log": "5121fc685080825cb99f883cfb985d5afef7655417c3f0f72394d1125fc671f1",
+    "/home/otto/.hermes/cache/scratch/npc-textinput-independent-review/test_independent_codec.py": "66370f0d65dc576863426322df20ee6c19b78d39a2bdf725dea111f4ca91a208",
+    "/home/otto/.hermes/cache/scratch/npc-textinput-independent-review/run_review.py": "9542f28f9aab984404eef014b16aa8837507a4a1f4bf3d2b7596bb4c9bca52b9"
+  }
+}

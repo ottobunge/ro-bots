@@ -1,0 +1,477 @@
+{
+  "schema": "reviewed-static-protocol/v1",
+  "profile": {
+    "role": "map",
+    "packetver": 20180704,
+    "client_family": "MAIN",
+    "ruleset": "pre-re",
+    "obfuscation": "ABSENT"
+  },
+  "provenance": {
+    "revision": "e985006171d2eb320ee512a653f4c83aea3d81b6",
+    "package": "/nix/store/0w1nfsmj8gaipcidhgx2nkg4axqxcbbr-rathena-playable-callback-qualified-20180704-e985006171d2-callback-qualified",
+    "package_nar_hash": "sha256-hIVo2RvlabG8Jw362W7PxdXkQx2CDYihvHKwhZjP0Es=",
+    "variant": "callback-qualified",
+    "profiles_sha256": "ee2af351afee975ad4145d0e38412dfac0779cd123435f318f8c876349bc0148",
+    "configured_source_sha256": "1fd585266bbcf2268b2cec9e901100fad68b904a8b2a8c049c5869c56af43e12",
+    "qualified_clif_sha256": "ace16f15be3b60f730522d620b73a68a9f2cc384016aadce9c985888aea9a1ac",
+    "map_cppflags_sha256": "7986f2fdeb11e55ee707ac27eb4701a64b90361ce1636bb728025fb92a99291d",
+    "map_compile_recipe_sha256": "8488711230e38fb3a48a9d19dca18b50b3a93780fd9287775768723af9358878"
+  },
+  "packets": [
+    {
+      "id": 180,
+      "name": "ZC_SAY_DIALOG",
+      "cpp_record": "PACKET_ZC_SAY_DIALOG",
+      "cpp_header": "HEADER_ZC_SAY_DIALOG",
+      "direction": "S->C",
+      "framing": "variable",
+      "length": -1,
+      "prefix_size": 8,
+      "alignment": 1,
+      "byte_order": "little-endian",
+      "length_offset": 2,
+      "fields": [
+        {
+          "name": "PacketType",
+          "cpp_type": "int16",
+          "wire_type": "uint16",
+          "offset": 0,
+          "width": 2
+        },
+        {
+          "name": "PacketLength",
+          "cpp_type": "int16",
+          "wire_type": "uint16",
+          "offset": 2,
+          "width": 2
+        },
+        {
+          "name": "NpcID",
+          "cpp_type": "uint32",
+          "wire_type": "uint32",
+          "offset": 4,
+          "width": 4
+        },
+        {
+          "name": "message",
+          "cpp_type": "char[]",
+          "wire_type": "NUL-terminated UTF8 bytes",
+          "offset": 8,
+          "width": null
+        }
+      ],
+      "source": {
+        "declaration": "src/map/packets_struct.hpp",
+        "declaration_sha256": "5ab5ef13d2a1cdc60d84dcaf2e3be0b6e316b9630e61c3ac7ba0f930d4d31287",
+        "clif_lines": [
+          2470,
+          2481
+        ],
+        "clif_body_sha256": "8de0b2ff04b90238aa285b311c13afe6b9ad617a1773de5ffecebd2aee9fc06f"
+      }
+    },
+    {
+      "id": 181,
+      "name": "ZC_WAIT_DIALOG",
+      "cpp_record": "PACKET_ZC_WAIT_DIALOG",
+      "cpp_header": "HEADER_ZC_WAIT_DIALOG",
+      "direction": "S->C",
+      "framing": "fixed",
+      "length": 6,
+      "prefix_size": 6,
+      "alignment": 1,
+      "byte_order": "little-endian",
+      "length_offset": null,
+      "fields": [
+        {
+          "name": "PacketType",
+          "cpp_type": "int16",
+          "wire_type": "uint16",
+          "offset": 0,
+          "width": 2
+        },
+        {
+          "name": "NpcID",
+          "cpp_type": "uint32",
+          "wire_type": "uint32",
+          "offset": 2,
+          "width": 4
+        }
+      ],
+      "source": {
+        "declaration": "src/map/packets_struct.hpp",
+        "declaration_sha256": "5ab5ef13d2a1cdc60d84dcaf2e3be0b6e316b9630e61c3ac7ba0f930d4d31287",
+        "clif_lines": [
+          2494,
+          2501
+        ],
+        "clif_body_sha256": "ac3dd37960b8b43fafc729efeff3252f66fe526e83b52844ca17203365c06ffe"
+      }
+    },
+    {
+      "id": 183,
+      "name": "ZC_MENU_LIST",
+      "cpp_record": "PACKET_ZC_MENU_LIST",
+      "cpp_header": "HEADER_ZC_MENU_LIST",
+      "direction": "S->C",
+      "framing": "variable",
+      "length": -1,
+      "prefix_size": 8,
+      "alignment": 1,
+      "byte_order": "little-endian",
+      "length_offset": 2,
+      "fields": [
+        {
+          "name": "packetType",
+          "cpp_type": "int16",
+          "wire_type": "uint16",
+          "offset": 0,
+          "width": 2
+        },
+        {
+          "name": "packetLength",
+          "cpp_type": "int16",
+          "wire_type": "uint16",
+          "offset": 2,
+          "width": 2
+        },
+        {
+          "name": "npcId",
+          "cpp_type": "uint32",
+          "wire_type": "uint32",
+          "offset": 4,
+          "width": 4
+        },
+        {
+          "name": "menu",
+          "cpp_type": "char[]",
+          "wire_type": "NUL-terminated UTF8 bytes",
+          "offset": 8,
+          "width": null
+        }
+      ],
+      "source": {
+        "declaration": "src/map/packets.hpp",
+        "declaration_sha256": "b4959224a48e1febb811d7c1474f2c1b703d324ae4db7e3a1053a85b80da57bc",
+        "clif_lines": [
+          2630,
+          2650
+        ],
+        "clif_body_sha256": "9cd1d8de7a3ed7e17271ba50051c73b9998eaaf6e783bfc83f08dbf86730473d"
+      }
+    },
+    {
+      "id": 182,
+      "name": "ZC_CLOSE_DIALOG",
+      "cpp_record": "PACKET_ZC_CLOSE_DIALOG",
+      "cpp_header": "HEADER_ZC_CLOSE_DIALOG",
+      "direction": "S->C",
+      "framing": "fixed",
+      "length": 6,
+      "prefix_size": 6,
+      "alignment": 1,
+      "byte_order": "little-endian",
+      "length_offset": null,
+      "fields": [
+        {
+          "name": "packetType",
+          "cpp_type": "int16",
+          "wire_type": "uint16",
+          "offset": 0,
+          "width": 2
+        },
+        {
+          "name": "npcId",
+          "cpp_type": "uint32",
+          "wire_type": "uint32",
+          "offset": 2,
+          "width": 4
+        }
+      ],
+      "source": {
+        "declaration": "src/map/packets.hpp",
+        "declaration_sha256": "b4959224a48e1febb811d7c1474f2c1b703d324ae4db7e3a1053a85b80da57bc",
+        "clif_lines": [
+          2519,
+          2526
+        ],
+        "clif_body_sha256": "e581f66103167f3af9625c98e53ea9febd79873db7f2d6eb45f6ec06229fb103"
+      }
+    },
+    {
+      "id": 196,
+      "name": "ZC_SELECT_DEALTYPE",
+      "cpp_record": "PACKET_ZC_SELECT_DEALTYPE",
+      "cpp_header": "HEADER_ZC_SELECT_DEALTYPE",
+      "direction": "S->C",
+      "framing": "fixed",
+      "length": 6,
+      "prefix_size": 6,
+      "alignment": 1,
+      "byte_order": "little-endian",
+      "length_offset": null,
+      "fields": [
+        {
+          "name": "packetType",
+          "cpp_type": "int16",
+          "wire_type": "uint16",
+          "offset": 0,
+          "width": 2
+        },
+        {
+          "name": "npcId",
+          "cpp_type": "uint32",
+          "wire_type": "uint32",
+          "offset": 2,
+          "width": 4
+        }
+      ],
+      "source": {
+        "declaration": "src/map/packets.hpp",
+        "declaration_sha256": "b4959224a48e1febb811d7c1474f2c1b703d324ae4db7e3a1053a85b80da57bc",
+        "clif_lines": [
+          2224,
+          2231
+        ],
+        "clif_body_sha256": "c786cd54cd68314c69765557c78b0e1dffae465876398d51ccf0d7955ce05ca0"
+      }
+    },
+    {
+      "id": 322,
+      "name": "ZC_OPEN_EDITDLG",
+      "cpp_record": "PACKET_ZC_OPEN_EDITDLG",
+      "cpp_header": "HEADER_ZC_OPEN_EDITDLG",
+      "direction": "S->C",
+      "framing": "fixed",
+      "length": 6,
+      "prefix_size": 6,
+      "alignment": 1,
+      "byte_order": "little-endian",
+      "length_offset": null,
+      "fields": [
+        {
+          "name": "packetType",
+          "cpp_type": "int16",
+          "wire_type": "uint16",
+          "offset": 0,
+          "width": 2
+        },
+        {
+          "name": "npcId",
+          "cpp_type": "uint32",
+          "wire_type": "uint32",
+          "offset": 2,
+          "width": 4
+        }
+      ],
+      "source": {
+        "declaration": "src/map/packets.hpp",
+        "declaration_sha256": "b4959224a48e1febb811d7c1474f2c1b703d324ae4db7e3a1053a85b80da57bc",
+        "clif_lines": [
+          2664,
+          2678
+        ],
+        "clif_body_sha256": "4bdedadcde843b96b661ecf146c3e8690811e856872e78bb09990ccd49179de4"
+      }
+    },
+    {
+      "id": 468,
+      "name": "ZC_OPEN_EDITDLGSTR",
+      "cpp_record": "PACKET_ZC_OPEN_EDITDLGSTR",
+      "cpp_header": "HEADER_ZC_OPEN_EDITDLGSTR",
+      "direction": "S->C",
+      "framing": "fixed",
+      "length": 6,
+      "prefix_size": 6,
+      "alignment": 1,
+      "byte_order": "little-endian",
+      "length_offset": null,
+      "fields": [
+        {
+          "name": "packetType",
+          "cpp_type": "int16",
+          "wire_type": "uint16",
+          "offset": 0,
+          "width": 2
+        },
+        {
+          "name": "npcId",
+          "cpp_type": "uint32",
+          "wire_type": "uint32",
+          "offset": 2,
+          "width": 4
+        }
+      ],
+      "source": {
+        "declaration": "src/map/packets.hpp",
+        "declaration_sha256": "b4959224a48e1febb811d7c1474f2c1b703d324ae4db7e3a1053a85b80da57bc",
+        "clif_lines": [
+          2692,
+          2706
+        ],
+        "clif_body_sha256": "f636d24a09f1142b4efd4d8f2930be42c9eaebd45b421e728ba13a1f0e149cdc"
+      }
+    },
+    {
+      "id": 144,
+      "name": "CZ_CONTACTNPC",
+      "cpp_record": "PACKET_CZ_CONTACTNPC",
+      "cpp_header": "HEADER_CZ_CONTACTNPC",
+      "direction": "C->S",
+      "framing": "fixed",
+      "length": 7,
+      "prefix_size": 7,
+      "alignment": 1,
+      "byte_order": "little-endian",
+      "length_offset": null,
+      "fields": [
+        {
+          "name": "PacketType",
+          "cpp_type": "int16",
+          "wire_type": "uint16",
+          "offset": 0,
+          "width": 2
+        },
+        {
+          "name": "AID",
+          "cpp_type": "uint32",
+          "wire_type": "uint32",
+          "offset": 2,
+          "width": 4
+        },
+        {
+          "name": "type",
+          "cpp_type": "uint8",
+          "wire_type": "uint8",
+          "offset": 6,
+          "width": 1
+        }
+      ],
+      "source": {
+        "declaration": "src/map/packets_struct.hpp",
+        "declaration_sha256": "5ab5ef13d2a1cdc60d84dcaf2e3be0b6e316b9630e61c3ac7ba0f930d4d31287",
+        "clif_lines": [
+          12196,
+          12252
+        ],
+        "clif_body_sha256": "db9b8fb600793b0362447a99d015908983ae22aab7c8d61f806c1a9a13417602"
+      }
+    },
+    {
+      "id": 326,
+      "name": "CZ_CLOSE_DIALOG",
+      "cpp_record": "PACKET_CZ_CLOSE_DIALOG",
+      "cpp_header": "HEADER_CZ_CLOSE_DIALOG",
+      "direction": "C->S",
+      "framing": "fixed",
+      "length": 6,
+      "prefix_size": 6,
+      "alignment": 1,
+      "byte_order": "little-endian",
+      "length_offset": null,
+      "fields": [
+        {
+          "name": "packetType",
+          "cpp_type": "int16",
+          "wire_type": "uint16",
+          "offset": 0,
+          "width": 2
+        },
+        {
+          "name": "GID",
+          "cpp_type": "uint32",
+          "wire_type": "uint32",
+          "offset": 2,
+          "width": 4
+        }
+      ],
+      "source": {
+        "declaration": "src/map/packets.hpp",
+        "declaration_sha256": "b4959224a48e1febb811d7c1474f2c1b703d324ae4db7e3a1053a85b80da57bc",
+        "clif_lines": [
+          13404,
+          13422
+        ],
+        "clif_body_sha256": "26a27e4a608a985396166259fc81207cbaec36af0549ff295fbe1a155b367d1e"
+      }
+    },
+    {
+      "id": 184,
+      "name": "CZ_CHOOSE_MENU",
+      "direction": "C->S",
+      "framing": "fixed",
+      "length": 7,
+      "byte_order": "little-endian",
+      "fields": [
+        {
+          "name": "packetType",
+          "offset": 0,
+          "width": 2,
+          "wire_type": "uint16"
+        },
+        {
+          "name": "npcId",
+          "offset": 2,
+          "width": 4,
+          "wire_type": "uint32"
+        },
+        {
+          "name": "choice",
+          "offset": 6,
+          "width": 1,
+          "wire_type": "uint8"
+        }
+      ],
+      "source": {
+        "registration": "src/map/clif_packetdb.hpp",
+        "registration_line": 62,
+        "registration_text": "\tparseable_packet(0x00b8,7,clif_parse_NpcSelectMenu,2,6);",
+        "registration_sha256": "51c8a9ebd591e0dd4f444f829253a14d449615425405cb8a95f28a6dea460e66",
+        "clif_lines": [
+          13312,
+          13343
+        ]
+      }
+    },
+    {
+      "id": 185,
+      "name": "CZ_REQ_NEXT_SCRIPT",
+      "direction": "C->S",
+      "framing": "fixed",
+      "length": 6,
+      "byte_order": "little-endian",
+      "fields": [
+        {
+          "name": "packetType",
+          "offset": 0,
+          "width": 2,
+          "wire_type": "uint16"
+        },
+        {
+          "name": "npcId",
+          "offset": 2,
+          "width": 4,
+          "wire_type": "uint32"
+        }
+      ],
+      "source": {
+        "registration": "src/map/clif_packetdb.hpp",
+        "registration_line": 63,
+        "registration_text": "\tparseable_packet(0x00b9,6,clif_parse_NpcNextClicked,2);",
+        "registration_sha256": "51c8a9ebd591e0dd4f444f829253a14d449615425405cb8a95f28a6dea460e66",
+        "clif_lines": [
+          13346,
+          13355
+        ]
+      }
+    }
+  ],
+  "authority": "Targeted unchanged full header oracle with immutable installed source/profile binding; no generic all-path sender claim",
+  "runtime_registration": "Only six previously absent S->C IDs added; old 890 entries unchanged",
+  "limitations": [
+    "ZC_CLOSE_DIALOG is a close button, never quest/reward/equipment proof",
+    "unsupported shop is blocked without purchases; numeric/text input is explicitly aborted with CZ_CLOSE_DIALOG (npc_scriptcont default END branch)",
+    "No equipment actuator, inventory reward or native gameplay acceptance"
+  ]
+}

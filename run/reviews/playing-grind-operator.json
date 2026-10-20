@@ -1,0 +1,89 @@
+{
+  "acceptance_chain_proven": [
+    "GrindScript emits Attack(target_id) on a visible attackable actor from build_native_state",
+    "PlayingClient dispatches real attack sender bytes (CZ_REQUEST_ACT2 0x0437) when _attack_ready",
+    "_attack_ready gating: pending movement denies attack until the arrival receipt lands",
+    "ObservedDamage/ObservedDeath/ObservedXP(delta 10)/floor item/ObservedPickup/inventory receipt chain",
+    "operator override social->grind + tick 0.25 recorded phase=startup_before_producer",
+    "same-goal 'grind' review: no guard intervention; bad-review SOCIAL fall-through overridden and recorded",
+    "transport failure => counters uncertain/None (never fabricated zeros); healthy zeros stay observed",
+    "spike packetdb 0x007F=6 ZC_NOTIFY_TIME loaded through the agent_runtime import shim"
+  ],
+  "date": "2026-10-14",
+  "evidence_dir": ".work/playing-grind-operator/evidence",
+  "live_executed": false,
+  "missing_framing_note": "Spike NAMES entries with NO PACKET_DB framing size (would fail exactly like 0x007F did if the server sends them; note for the next reader slice, no production edit made): 0x02E1, 0x099D, 0x09A1, 0x0B0B, 0x0B1B, 0x0B72",
+  "namespace": [
+    ".work/playing-grind-operator/**",
+    "run/reviews/playing-grind-operator.json"
+  ],
+  "offline_built": true,
+  "offline_run_scope": {
+    "after_sql_readback": "hook present, not_executed_offline (live preflight requirement)",
+    "fake_sockets_only": true,
+    "inference_calls": 0,
+    "native_sessions_opened": 0,
+    "sql_effects": 0
+  },
+  "operator": "playing-grind-operator",
+  "prohibited_verified": "no live network/native/SQL/inference/containers; no production src edits; no git actions",
+  "quality_gates": {
+    "root_gate": {
+      "command": "env -u PYTEST_ADDOPTS -u PYTEST_DISABLE_PLUGIN_AUTOLOAD -u PYTEST_PLUGINS PYTHONOPTIMIZE=0 nix develop -c task check",
+      "exit_code": 0,
+      "log": {
+        "path": ".work/playing-grind-operator/evidence/root-task-check.log",
+        "sha256": "81e24cdf3e2ccead77e318b68636d920a84dbe5ad72916172a283fbdee8d326f"
+      },
+      "note": "production src/tests unchanged by this task; all edits under .work/ and run/reviews/",
+      "summary": "5887 passed, 65 subtests passed, coverage 95.71% (>=85%)",
+      "workdir": "/home/otto/dev/ro-bots"
+    },
+    "scoped_black": 0,
+    "scoped_mypy_strict_module": 0,
+    "scoped_pytest_exit": 0,
+    "scoped_ruff": 0,
+    "scoped_xenon_module_B": 0
+  },
+  "ready_to_run": ".work/playing-grind-operator/READY-TO-RUN.md",
+  "source_digests": {
+    "READY-TO-RUN.md": "292830ff0e08143eaa92f240edbc619f15a5e5a48d142cbd2aad3dc22c0e1841",
+    "grind_operator.py": "e31180ef70be8242fd51120db481f30bc8ce7893cc2536fda81e501da9ae9c34",
+    "test_grind_operator_contracts.py": "0fc0e234e76c00f793b2f8bcc7944d93cb8a59ec5a0c424c287d3ae9e595c3cf"
+  },
+  "spike_packet_coverage": {
+    "missing_framing": [
+      "0x02E1",
+      "0x099D",
+      "0x09A1",
+      "0x0B0B",
+      "0x0B1B",
+      "0x0B72"
+    ],
+    "packetdb_path": "/home/otto/dev/ro-bots/spikes/003-clientless-limbs/packetdb.py",
+    "reader_source": "/home/otto/dev/ro-bots/spikes/003-clientless-limbs/client.py",
+    "shim_loaded": true,
+    "zc_notify_time": {
+      "name": "ZC_NOTIFY_TIME",
+      "packet_id": "0x007F",
+      "size": 6
+    }
+  },
+  "status": "COMPLETE",
+  "task": "rebuild bounded operator-controlled grind harness (offline, fake sockets)",
+  "tdd": {
+    "green": {
+      "errors": 0,
+      "failures": 0,
+      "path": ".work/playing-grind-operator/evidence/GREEN-contract.xml",
+      "sha256": "94b2564d7fbfae664a02f666d2a958b0fd15a7561fa230010adcd55af8362fe2",
+      "skipped": 0,
+      "tests": 17
+    },
+    "red": {
+      "path": ".work/playing-grind-operator/evidence/RED-contract.xml",
+      "result": "collection ImportError: ModuleNotFoundError grind_operator (RED preceded any implementation byte; contracts enumerated in the test module)",
+      "sha256": "19ba379d6d156f8483db852d63029a9e109172ea0c8969ca23c84df8b5f0b329"
+    }
+  }
+}

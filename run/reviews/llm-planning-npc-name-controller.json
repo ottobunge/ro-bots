@@ -1,0 +1,444 @@
+{
+  "status": "OFFLINE_SELECTED_NAME_CONTROLLER_COMPLETE_PENDING_PARENT_ROOT_AND_INDEPENDENT_REVIEW",
+  "scope": "Explicit selected-character-name input through actual PlayingClient with offline Wire only",
+  "modified_source": {
+    "src/robots/domain/actions.py": "ac001be1edfc2b4c55a3893a4348128c64717a4481514cefac6d229a25e1771c",
+    "src/robots/adapters/native_npc_dialogue.py": "916a6314aeca88d2d518cf734381a47319e697238de75473eba8d9b98b6aa908",
+    "src/robots/app/playing_runtime.py": "68f50e97d7dc2e91afac4e7f89dec8ced27d778c92c064d5fb4b44655bbb95e0"
+  },
+  "new_test": {
+    "path": "tests/test_native_npc_name_input.py",
+    "sha256": "8bbdc51d01f380696b5c7c1826685b891d01101ae07c8b1eab6ae06f90c14027",
+    "physical_unique_cases": 52
+  },
+  "baseline": {
+    "path": "/home/otto/.hermes/cache/scratch/npc-name-controller/baseline.json",
+    "sha256": "b832c579c706e0749726d0b96462937ea1b2618a7b8cbca2825a5a8e26ff00f4",
+    "input_entries": 380,
+    "owned_changed": [
+      "src/robots/adapters/native_npc_dialogue.py",
+      "src/robots/domain/actions.py",
+      "src/robots/app/playing_runtime.py"
+    ],
+    "protected_unchanged_entries": 377,
+    "protected_drift": []
+  },
+  "codec_approval": {
+    "path": "run/reviews/llm-planning-npc-textinput-approved.json",
+    "sha256": "406deefcb6a9fb8f4470f22640547529c5dcc9d0cae612e98b97e05cde47aa7d",
+    "review_sha256": "d3e315cd5d0afd9c9ab49c6866fb5809defad3ce56e61a40a267b80b1c6d7c46",
+    "codec_unchanged_sha256": "b947b2cec8e2b0919ffdcac4508a0c6f4b9713237a40004910ac6d859bf56f06"
+  },
+  "behavior": [
+    "01D4 uses approved strict decoder and exposes string_input; 0142 remains unsupported_input with existing close policy",
+    "NpcSubmitName(npc_id,epoch,prompt_sequence) has no text payload; PlayingClient supplies exact current wire.char_name",
+    "Plain bound identifiers, current stage, fresh finite request clock, shared 32-request cap and deadlines enforced",
+    "Approved exact UTF-8 1..23-byte/no-wire-NUL encoder reused; invalid names denied without sends or prompt consumption",
+    "One send consumes stage into waiting; stale/duplicate/foreign/newer-prompt actions denied",
+    "Existing per-frame actor/map/epoch/life/standing/arrival/transport/continuity guards reused unchanged",
+    "Deliberate string UI close supported; invalid name actions cannot poison absent/closed conversations",
+    "Send failure preserves existing failed state/origin and prevents resend; successful send requires server continuation for stage progress",
+    "No autoanswer, model/planner intent, source-NPC guess, reward, gear or quest-success inference"
+  ],
+  "tdd": {
+    "collection_scaffolding": "NpcSubmitName dataclass/union and no-op dispatch added solely to reach substantive send assertion; send-red.xml preserves unsupported-action first probe; send-assertion-red.xml is the reached byte-equality assertion failure before sender implementation",
+    "vertical_cycles": [
+      {
+        "behavior": "received string stage",
+        "red": "parent-received-stage-red.xml",
+        "green": "stage-green.xml"
+      },
+      {
+        "behavior": "explicit exact selected-name send",
+        "red": "send-assertion-red.xml",
+        "green": "send-green.xml"
+      },
+      {
+        "behavior": "epoch/sequence prompt binding",
+        "red": "binding-red.xml",
+        "green": "binding-green.xml"
+      },
+      {
+        "behavior": "invalid selected-name policy becomes conservative denial",
+        "red": "name-policy-red.xml",
+        "green": "name-policy-green.xml"
+      },
+      {
+        "behavior": "finite fresh request clock/deadline",
+        "red": "request-clock-red.xml",
+        "green": "request-clock-green.xml"
+      },
+      {
+        "behavior": "deliberate string close",
+        "red": "close-string-red.xml",
+        "green": "close-string-green.xml"
+      },
+      {
+        "behavior": "invalid intent does not poison absent/closed UI",
+        "red": "invalid-action-state-red.xml",
+        "green": "invalid-action-state-green.xml"
+      }
+    ],
+    "already_green_characterization": "Existing lifecycle/guard/request-cap/server-stage/send-failure invariants and codec positive controls were exercised without claiming new behavioral RED or changing their implementation",
+    "quality_history": "Initial Black/Ruff/mypy failures and Xenon C _encode_action retained. Owned formatting/typing cleanup and narrow name-vs-legacy dispatch extraction resolved all; no threshold waiver."
+  },
+  "final_tests": {
+    "path": "/home/otto/.hermes/cache/scratch/npc-name-controller/combined-final.xml",
+    "sha256": "bb2980826c0549fef1f9fa28ccf6f8db01841f2ae5e77a3087ae52d9be807617",
+    "physical_cases": 786,
+    "unique_ids": 786,
+    "failures": 0,
+    "errors": 0,
+    "skips": 0,
+    "selected_receipts": [
+      "combined-final.xml"
+    ],
+    "new_name_cases": 52,
+    "original_parent_tracer": {
+      "red_ids": [
+        ".hermes.cache.scratch.npc-name-controller.test_received_string_stage::test_actual_client_exposes_matching_received_string_stage"
+      ],
+      "final_ids": [
+        "::test_actual_client_exposes_matching_received_string_stage"
+      ],
+      "same_named_function_same_explicit_scratch_selector": true,
+      "classname_note": "Original isolated receipt has scratch-root classname; combined repository-root invocation emits an empty classname for this external test. Raw IDs preserved separately, not silently normalized."
+    },
+    "first_run_unique_cases": 782,
+    "omitted_first_run_ids": [],
+    "new_since_first_run": 4,
+    "command": "nix develop --offline --no-write-lock-file path:./spikes/007-native-packet-ast/toolchain -c env PYTHONOPTIMIZE=0 PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=/home/otto/dev/ro-bots/src:/home/otto/dev/ro-bots PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 COVERAGE_FILE=/home/otto/.hermes/cache/scratch/npc-name-controller/coverage-data .venv/bin/python -B -m pytest -q -o addopts= -p no:cacheprovider -p pytest_cov --cov=robots.adapters.native_npc_dialogue --cov=robots.app.playing_runtime --cov=robots.domain.actions --cov-report=term-missing --cov-report=json:/home/otto/.hermes/cache/scratch/npc-name-controller/coverage-final.json --cov-fail-under=85 --junitxml=/home/otto/.hermes/cache/scratch/npc-name-controller/combined-final.xml --basetemp=/home/otto/.hermes/cache/scratch/npc-name-controller/pytest-final tests/test_native_npc_name_input.py tests/test_native_textinput.py tests/test_native_npc_guidance.py tests/test_native_npc_dialogue.py tests/test_native_npc_close_framing.py tests/test_playing_runtime.py tests/test_native_npc_cancel_recovery.py tests/test_native_npc_completion_quality.py tests/test_native_npc_page_budget.py tests/test_native_npc_memory_journal.py tests/test_native_npc_cutin_framing.py /home/otto/.hermes/cache/scratch/npc-name-controller/test_received_string_stage.py",
+    "workdir": "/home/otto/dev/ro-bots"
+  },
+  "historical_receipts": {
+    "binding-green.xml": {
+      "path": "/home/otto/.hermes/cache/scratch/npc-name-controller/binding-green.xml",
+      "sha256": "18df38b59cb98841d175a3403336ec350d595074dc72b5ffbd83259e211033fd",
+      "physical_cases": 12,
+      "unique_ids": 12,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0
+    },
+    "binding-red.xml": {
+      "path": "/home/otto/.hermes/cache/scratch/npc-name-controller/binding-red.xml",
+      "sha256": "e817109f08a14b8ce88db880737b675274676d0164aea0ef6fdf4bad9fcd9083",
+      "physical_cases": 10,
+      "unique_ids": 10,
+      "failures": 7,
+      "errors": 0,
+      "skips": 0
+    },
+    "close-string-green.xml": {
+      "path": "/home/otto/.hermes/cache/scratch/npc-name-controller/close-string-green.xml",
+      "sha256": "568b8919ad84bb33a6bc6a715b2b58cfedbe49d827106610cb1549f6c2d9b060",
+      "physical_cases": 30,
+      "unique_ids": 30,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0
+    },
+    "close-string-red.xml": {
+      "path": "/home/otto/.hermes/cache/scratch/npc-name-controller/close-string-red.xml",
+      "sha256": "90e2ce9dd009406f979643c7c922e7c57d735aeefae6fe1f83d56f49c54bd2b8",
+      "physical_cases": 2,
+      "unique_ids": 2,
+      "failures": 1,
+      "errors": 0,
+      "skips": 0
+    },
+    "combined-final.xml": {
+      "path": "/home/otto/.hermes/cache/scratch/npc-name-controller/combined-final.xml",
+      "sha256": "bb2980826c0549fef1f9fa28ccf6f8db01841f2ae5e77a3087ae52d9be807617",
+      "physical_cases": 786,
+      "unique_ids": 786,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0
+    },
+    "combined-first.xml": {
+      "path": "/home/otto/.hermes/cache/scratch/npc-name-controller/combined-first.xml",
+      "sha256": "a03ec7832823dc805751fcfcbc922c22407c87cfac69b5ad314c8ab5e50bc0a0",
+      "physical_cases": 782,
+      "unique_ids": 782,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0
+    },
+    "invalid-action-state-green.xml": {
+      "path": "/home/otto/.hermes/cache/scratch/npc-name-controller/invalid-action-state-green.xml",
+      "sha256": "e9a04377ef40e0a945fa3c74b5fe344de5120fe76418b3b59efe6b821cb0288e",
+      "physical_cases": 52,
+      "unique_ids": 52,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0
+    },
+    "invalid-action-state-red.xml": {
+      "path": "/home/otto/.hermes/cache/scratch/npc-name-controller/invalid-action-state-red.xml",
+      "sha256": "a971deb46cce4db0ec3e4dbf50597ee62b0c2fc2dff678c52249d45d33fc8cfb",
+      "physical_cases": 2,
+      "unique_ids": 2,
+      "failures": 2,
+      "errors": 0,
+      "skips": 0
+    },
+    "name-policy-green.xml": {
+      "path": "/home/otto/.hermes/cache/scratch/npc-name-controller/name-policy-green.xml",
+      "sha256": "4caf9e4b6a8d855f4723b570bff853b7e3d173b924fd2760954458e55853671f",
+      "physical_cases": 22,
+      "unique_ids": 22,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0
+    },
+    "name-policy-red.xml": {
+      "path": "/home/otto/.hermes/cache/scratch/npc-name-controller/name-policy-red.xml",
+      "sha256": "374a592ab0490853a9bd0339e25e744dbf21069691b46caafccf4e3b2ad76642",
+      "physical_cases": 10,
+      "unique_ids": 10,
+      "failures": 6,
+      "errors": 0,
+      "skips": 0
+    },
+    "parent-received-stage-red.xml": {
+      "path": "/home/otto/.hermes/cache/scratch/npc-name-controller/parent-received-stage-red.xml",
+      "sha256": "822744b20c74a656ff9b0de1f7acb51dec0415eb9416df41421ab522fc0a7615",
+      "physical_cases": 1,
+      "unique_ids": 1,
+      "failures": 1,
+      "errors": 0,
+      "skips": 0
+    },
+    "request-clock-green.xml": {
+      "path": "/home/otto/.hermes/cache/scratch/npc-name-controller/request-clock-green.xml",
+      "sha256": "bac53a794e85a5bfdc3f70df39beb0cbed83df2d4f86a26b63625afc2f18265e",
+      "physical_cases": 28,
+      "unique_ids": 28,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0
+    },
+    "request-clock-red.xml": {
+      "path": "/home/otto/.hermes/cache/scratch/npc-name-controller/request-clock-red.xml",
+      "sha256": "da9b6dfc80daa01e1fc75a908bacde379e2efb09cd1c4f3368f0df718457a78c",
+      "physical_cases": 6,
+      "unique_ids": 6,
+      "failures": 6,
+      "errors": 0,
+      "skips": 0
+    },
+    "safeguards-characterization.xml": {
+      "path": "/home/otto/.hermes/cache/scratch/npc-name-controller/safeguards-characterization.xml",
+      "sha256": "74a2e6e3287c7397069660375e0b8ea5cc49fa17ccf30f0b3fe83a7b5cf002d5",
+      "physical_cases": 46,
+      "unique_ids": 46,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0
+    },
+    "send-assertion-red.xml": {
+      "path": "/home/otto/.hermes/cache/scratch/npc-name-controller/send-assertion-red.xml",
+      "sha256": "3aa67054bad3a6dc141b72a6ea37b88a5cac88b42866be43855afce7c64be9ae",
+      "physical_cases": 1,
+      "unique_ids": 1,
+      "failures": 1,
+      "errors": 0,
+      "skips": 0
+    },
+    "send-green.xml": {
+      "path": "/home/otto/.hermes/cache/scratch/npc-name-controller/send-green.xml",
+      "sha256": "d33724760e0a1c6a40f3391c60b05a18bd4b3e67a82ff173b128f5698cbecfa0",
+      "physical_cases": 1,
+      "unique_ids": 1,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0
+    },
+    "send-red.xml": {
+      "path": "/home/otto/.hermes/cache/scratch/npc-name-controller/send-red.xml",
+      "sha256": "ebd074226f8b69f9727ef9b5770def2e075d10924569075ab4ac6ddf5807e774",
+      "physical_cases": 1,
+      "unique_ids": 1,
+      "failures": 1,
+      "errors": 0,
+      "skips": 0
+    },
+    "stage-green.xml": {
+      "path": "/home/otto/.hermes/cache/scratch/npc-name-controller/stage-green.xml",
+      "sha256": "0d91fd47ed9d96637372f354076d7b6f2968187216c69e08e5844bbac8e83669",
+      "physical_cases": 1,
+      "unique_ids": 1,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0
+    }
+  },
+  "quality": {
+    "wrapper_command": "nix develop --offline --no-write-lock-file path:./spikes/007-native-packet-ast/toolchain -c env PYTHONOPTIMIZE=0 PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=/home/otto/dev/ro-bots/src:/home/otto/dev/ro-bots .venv/bin/python -B /home/otto/.hermes/cache/scratch/npc-name-controller/quality.py",
+    "results": [
+      {
+        "command": [
+          "/home/otto/dev/ro-bots/.venv/bin/python",
+          "-B",
+          "-m",
+          "black",
+          "--check",
+          "--workers",
+          "1",
+          "src/robots/domain/actions.py",
+          "src/robots/adapters/native_npc_dialogue.py",
+          "src/robots/app/playing_runtime.py",
+          "tests/test_native_npc_name_input.py"
+        ],
+        "returncode": 0,
+        "log": "/home/otto/.hermes/cache/scratch/npc-name-controller/quality-final-black.txt"
+      },
+      {
+        "command": [
+          "/home/otto/dev/ro-bots/.venv/bin/python",
+          "-B",
+          "-m",
+          "ruff",
+          "check",
+          "--no-cache",
+          "src/robots/domain/actions.py",
+          "src/robots/adapters/native_npc_dialogue.py",
+          "src/robots/app/playing_runtime.py",
+          "tests/test_native_npc_name_input.py"
+        ],
+        "returncode": 0,
+        "log": "/home/otto/.hermes/cache/scratch/npc-name-controller/quality-final-ruff.txt"
+      },
+      {
+        "command": [
+          "/home/otto/dev/ro-bots/.venv/bin/python",
+          "-B",
+          "-m",
+          "mypy",
+          "--cache-dir",
+          "/home/otto/.hermes/cache/scratch/npc-name-controller/mypy",
+          "--strict"
+        ],
+        "returncode": 0,
+        "log": "/home/otto/.hermes/cache/scratch/npc-name-controller/quality-final-mypy.txt"
+      },
+      {
+        "command": [
+          "/home/otto/dev/ro-bots/.venv/bin/python",
+          "-B",
+          "-m",
+          "xenon",
+          "src",
+          "--max-absolute",
+          "B",
+          "--max-modules",
+          "B",
+          "--max-average",
+          "A"
+        ],
+        "returncode": 0,
+        "log": "/home/otto/.hermes/cache/scratch/npc-name-controller/quality-final-xenon.txt"
+      },
+      {
+        "command": [
+          "/home/otto/dev/ro-bots/.venv/bin/python",
+          "-B",
+          "-m",
+          "pylint",
+          "--disable=all",
+          "--enable=duplicate-code",
+          "--ignore-paths=tests",
+          "src"
+        ],
+        "returncode": 0,
+        "log": "/home/otto/.hermes/cache/scratch/npc-name-controller/quality-final-pylint.txt"
+      }
+    ],
+    "mypy_checked_project_files": 242,
+    "scope": "Black/Ruff owned source/new test; strict configured project mypy; whole-src unchanged Xenon B/B/A and duplicate-code gates"
+  },
+  "coverage": {
+    "scope": "Owned production modules only, not full-root coverage",
+    "totals": {
+      "covered_lines": 714,
+      "num_statements": 830,
+      "percent_covered": 86.02409638554217,
+      "percent_covered_display": "86",
+      "missing_lines": 116,
+      "excluded_lines": 0,
+      "percent_statements_covered": 86.02409638554217,
+      "percent_statements_covered_display": "86"
+    },
+    "files": {
+      "src/robots/adapters/native_npc_dialogue.py": {
+        "covered_lines": 165,
+        "num_statements": 173,
+        "percent_covered": 95.3757225433526,
+        "percent_covered_display": "95",
+        "missing_lines": 8,
+        "excluded_lines": 0,
+        "percent_statements_covered": 95.3757225433526,
+        "percent_statements_covered_display": "95"
+      },
+      "src/robots/app/playing_runtime.py": {
+        "covered_lines": 515,
+        "num_statements": 623,
+        "percent_covered": 82.6645264847512,
+        "percent_covered_display": "83",
+        "missing_lines": 108,
+        "excluded_lines": 0,
+        "percent_statements_covered": 82.6645264847512,
+        "percent_statements_covered_display": "83"
+      },
+      "src/robots/domain/actions.py": {
+        "covered_lines": 34,
+        "num_statements": 34,
+        "percent_covered": 100.0,
+        "percent_covered_display": "100",
+        "missing_lines": 0,
+        "excluded_lines": 0,
+        "percent_statements_covered": 100.0,
+        "percent_statements_covered_display": "100"
+      }
+    },
+    "command": "nix develop --offline --no-write-lock-file path:./spikes/007-native-packet-ast/toolchain -c env PYTHONOPTIMIZE=0 PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=/home/otto/dev/ro-bots/src:/home/otto/dev/ro-bots PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 COVERAGE_FILE=/home/otto/.hermes/cache/scratch/npc-name-controller/coverage-data .venv/bin/python -B -m pytest -q -o addopts= -p no:cacheprovider -p pytest_cov --cov=robots.adapters.native_npc_dialogue --cov=robots.app.playing_runtime --cov=robots.domain.actions --cov-report=term-missing --cov-report=json:/home/otto/.hermes/cache/scratch/npc-name-controller/coverage-final.json --cov-fail-under=85 --junitxml=/home/otto/.hermes/cache/scratch/npc-name-controller/combined-final.xml --basetemp=/home/otto/.hermes/cache/scratch/npc-name-controller/pytest-final tests/test_native_npc_name_input.py tests/test_native_textinput.py tests/test_native_npc_guidance.py tests/test_native_npc_dialogue.py tests/test_native_npc_close_framing.py tests/test_playing_runtime.py tests/test_native_npc_cancel_recovery.py tests/test_native_npc_completion_quality.py tests/test_native_npc_page_budget.py tests/test_native_npc_memory_journal.py tests/test_native_npc_cutin_framing.py /home/otto/.hermes/cache/scratch/npc-name-controller/test_received_string_stage.py",
+    "threshold_unchanged": 85
+  },
+  "artifacts": {
+    "/home/otto/.hermes/cache/scratch/npc-name-controller/baseline.json": "b832c579c706e0749726d0b96462937ea1b2618a7b8cbca2825a5a8e26ff00f4",
+    "/home/otto/.hermes/cache/scratch/npc-name-controller/completed-source-freeze.json": "4f7ce95ecb29ac8799d503e5077ddda1b767cf7effef52dfd5cc8ff9e7df3a5d",
+    "/home/otto/.hermes/cache/scratch/npc-name-controller/physical-test-ids-final.json": "873905a66cc082b83c49c9cb39ae5809a7b51578c59ea6b247ba93502de98d36",
+    "/home/otto/.hermes/cache/scratch/npc-name-controller/quality-first.json": "c45436fc426db0f548c4b224b8deb2e4277bd05f9ed48c56685626fc5718fd71",
+    "/home/otto/.hermes/cache/scratch/npc-name-controller/quality-final.json": "141b87d07e9ec2ca22bd768faacacaaf9dafc246900b81d80f9741bbe98a737c",
+    "/home/otto/.hermes/cache/scratch/npc-name-controller/coverage-final.json": "1f292ad78a74a53ee64e49369007b98241a7e9515610d4ff334be3c51730b2bc",
+    "/home/otto/.hermes/cache/scratch/npc-name-controller/test_received_string_stage.py": "43bc62841cb9105302eaec2848a8de516ab54b4fad237c16d161cad7944c754e",
+    "/home/otto/.hermes/cache/scratch/npc-name-controller/quality.py": "91bf6bf4650677e12801f90f91f7db7717a25811521d7aec983debb686a2c62d",
+    "/home/otto/.hermes/cache/scratch/npc-name-controller/build_report.py": "bf34b38951e99fa77044e6761b868b0e7035d3d872901fc56b0ba66ae8f27c0f",
+    "/home/otto/dev/ro-bots/run/reviews/llm-planning-npc-name-controller-scope.json": "9e57570f450f3f0d5de43e0817c44c6afade2824521379b2955628043f42d525",
+    "/home/otto/dev/ro-bots/run/reviews/llm-planning-npc-textinput-approved.json": "406deefcb6a9fb8f4470f22640547529c5dcc9d0cae612e98b97e05cde47aa7d",
+    "/home/otto/dev/ro-bots/run/reviews/llm-planning-npc-textinput-independent-review.json": "d3e315cd5d0afd9c9ab49c6866fb5809defad3ce56e61a40a267b80b1c6d7c46",
+    "/home/otto/.hermes/cache/scratch/npc-name-controller/quality-final-black.txt": "26a5fd9505f2b5608a20c4fed4b4c4795e0783d03b72ade02a6af34dae8ad086",
+    "/home/otto/.hermes/cache/scratch/npc-name-controller/quality-final-mypy.txt": "bb3cfd828c840f1864eea0c7351876ca6bab51b41cbbf5cda24969c16d123afe",
+    "/home/otto/.hermes/cache/scratch/npc-name-controller/quality-final-pylint.txt": "8cbfc8cd0b04a4858b0b78b74c6df9631a1695e105e6911d4b57fbcc43b218b5",
+    "/home/otto/.hermes/cache/scratch/npc-name-controller/quality-final-ruff.txt": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+    "/home/otto/.hermes/cache/scratch/npc-name-controller/quality-final-xenon.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/npc-name-controller/quality-first-black.txt": "82f3ab51f61c714f9b6595325e8e8d82af10b9e3223e618e6449f3db0ecd8084",
+    "/home/otto/.hermes/cache/scratch/npc-name-controller/quality-first-mypy.txt": "e66dd9667dc1250dd07ebb270e96e8ad77e56766d777da591752fbbedaee188c",
+    "/home/otto/.hermes/cache/scratch/npc-name-controller/quality-first-pylint.txt": "8cbfc8cd0b04a4858b0b78b74c6df9631a1695e105e6911d4b57fbcc43b218b5",
+    "/home/otto/.hermes/cache/scratch/npc-name-controller/quality-first-ruff.txt": "aaf172a8825f156fe6afa8218574b928b25b062986ffdac3f99d843d3e0677ae",
+    "/home/otto/.hermes/cache/scratch/npc-name-controller/quality-first-xenon.txt": "c87c27304e8917089d452e8c4412a26400de3edbafeeaad8153326304642259b"
+  },
+  "effects": {
+    "offline_wire_only": true,
+    "native_world_model_network_sql_docker_services": false,
+    "commits_or_staging": false,
+    "protocol_codec_compiler_package_changes": false
+  },
+  "remaining": [
+    "Parent full-root quality/coverage gate on stable handoff",
+    "Independent completed-snapshot review",
+    "Separately authorized native server input and actual ordinary-player progress"
+  ],
+  "full_goals": "OPEN"
+}

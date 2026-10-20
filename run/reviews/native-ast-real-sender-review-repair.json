@@ -1,0 +1,3661 @@
+{
+  "scope_result": "L1_L2_L3_REPAIRED_SELF_VERIFIED_PENDING_INDEPENDENT_REVIEW",
+  "repair_cycle": 1,
+  "independent_approval": false,
+  "candidate_only": true,
+  "sink_contract_status": "UNREVIEWED",
+  "sender_semantic_admission": false,
+  "runtime_admission": false,
+  "sink_contract_adopted": false,
+  "native_milestones_admitted": 0,
+  "old_generator_status": "REJECTED_AFTER_TWO_CYCLES_UNCHANGED",
+  "authority_scope": "/home/otto/dev/ro-bots/run/reviews/native-ast-tracer-callback-renewed-scope.json",
+  "before_code_hashes": {
+    "/home/otto/dev/ro-bots/spikes/007-native-packet-ast/sender-proof/README.md": "0f3dd0a698c1d8a81ec912a267d8458ef7ba1d3a508557908e510473df14f603",
+    "/home/otto/dev/ro-bots/spikes/007-native-packet-ast/sender-proof/cli.py": "22c7c1d3a9df43afa2ab607554e3b4c1d2be80bd60da9243df8985ad5225dc95",
+    "/home/otto/dev/ro-bots/spikes/007-native-packet-ast/sender-proof/test_trace.py": "d8a07bfe418f7f488c0a3003c91b02d8aaffbd491e69b6b2e5df3cbf8d1d1e12",
+    "/home/otto/dev/ro-bots/spikes/007-native-packet-ast/sender-proof/trace_sender.py": "d39a4cbd23ccc5a57adb7332176b75b2f724c6a383de3278c3ee3fd26a61d5fb",
+    "/home/otto/dev/ro-bots/spikes/007-native-packet-ast/sender-proof/run_proof.py": "cf16d4b3995d311d7a5f87351e7aafce3d901482df606b840f86e9a733dbb73a"
+  },
+  "after_code_hashes": {
+    "/home/otto/dev/ro-bots/spikes/007-native-packet-ast/sender-proof/README.md": "76d840a4e311e92328cf2534e54101258d8cca35e31e7b6da7498fef2a08fd97",
+    "/home/otto/dev/ro-bots/spikes/007-native-packet-ast/sender-proof/cli.py": "22c7c1d3a9df43afa2ab607554e3b4c1d2be80bd60da9243df8985ad5225dc95",
+    "/home/otto/dev/ro-bots/spikes/007-native-packet-ast/sender-proof/test_trace.py": "fd35b82d76eab8563fcab2226b08c6441b146928cded8aca2004d2b00ff012dc",
+    "/home/otto/dev/ro-bots/spikes/007-native-packet-ast/sender-proof/trace_sender.py": "08ed802622f322f047e699b451d58eea947be9c7039f74ef797436653969282d",
+    "/home/otto/dev/ro-bots/spikes/007-native-packet-ast/sender-proof/run_proof.py": "cf16d4b3995d311d7a5f87351e7aafce3d901482df606b840f86e9a733dbb73a"
+  },
+  "original_test_methods_unchanged": true,
+  "physical_unittest_methods": 10,
+  "physical_unittest_passed": 10,
+  "test_method_delta": 6,
+  "test_names": [
+    "test_trace.ProofTests.test_real_declaration_send_sizeof_identity",
+    "test_trace.ProofTests.test_real_header_and_gcc_layout_join",
+    "test_trace.ProofTests.test_unknown_helper_escape_denied_structurally",
+    "test_trace.ProofTests.test_wrong_authorities_rejected_before_candidate",
+    "test_trace.ReviewedOmissionTests.test_L1_helper_in_third_or_fourth_send_argument",
+    "test_trace.ReviewedOmissionTests.test_L1_plain_actual_pointer_and_AREA_guard",
+    "test_trace.ReviewedOmissionTests.test_L2_const_and_constexpr_integral_header_guards",
+    "test_trace.ReviewedOmissionTests.test_L2_mutable_header_is_not_an_immutable_constant",
+    "test_trace.ReviewedOmissionTests.test_L3_enum_to_integral_and_const_void_address_guard",
+    "test_trace.ReviewedOmissionTests.test_L3_float_parameter_cast_is_not_integral_plain_read"
+  ],
+  "separate_vertical_red_green": {
+    "L1": {
+      "red": {
+        "path": "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/L1-red.log",
+        "sha256": "7e2cb6409a0a65cc4786fdaf76e6d26a0c3b60b567c90fcaa1cf2594890d1eed"
+      },
+      "green": {
+        "path": "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/L1-green.log",
+        "sha256": "976abad79b9861521dabb75315279f16e77d56178b2435ad93c91094de5af32e"
+      }
+    },
+    "L2": {
+      "red": {
+        "path": "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/L2-red.log",
+        "sha256": "e56e55629ded31362a7323888a011c83ce0a402f3a51a35ff675ce99811fd735"
+      },
+      "green": {
+        "path": "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/L2-green.log",
+        "sha256": "9800c80c2aa8ccea834537fdf0df096e9b0fef60da2b013a0491fec23c050201"
+      }
+    },
+    "L3": {
+      "red": {
+        "path": "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/L3-red.log",
+        "sha256": "67d57d97df2369f7024239bcc5e0a822aacaa1999f5c2b7eb9273e32a57957b4"
+      },
+      "green": {
+        "path": "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/L3-green.log",
+        "sha256": "76904a9399c77658a6a14d54d3bf912e23b5df10006682b4026025c4e55acd1a"
+      }
+    }
+  },
+  "fresh_review_root_reproducers": [
+    {
+      "command": [
+        "clang++",
+        "-std=c++17",
+        "-fsyntax-only",
+        "-Xclang",
+        "-ast-dump=json",
+        "/home/otto/.hermes/cache/scratch/sender-independent-bpg0sgon/send_arg_mutates_header.cpp"
+      ],
+      "exit": 0,
+      "stdout": "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/fresh-send_arg_mutates_header.stdout",
+      "stderr": "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/fresh-send_arg_mutates_header.stderr",
+      "source": "/home/otto/.hermes/cache/scratch/sender-independent-bpg0sgon/send_arg_mutates_header.cpp",
+      "source_sha256": "f45b2b5fef04e4de4d9d0cd320d3246a74d7fbd8da2bf0a215a6732b66692a1e",
+      "result": {
+        "identity_proven": true,
+        "decision": "UNRESOLVED",
+        "reasons": [
+          "unsupported cast kind/type in final send argument"
+        ],
+        "sink_contract_status": "UNREVIEWED",
+        "sender_semantic_admission": false,
+        "runtime_admission": false,
+        "object_id": "0x5555556aa1c8",
+        "send_object_id": "0x5555556aa1c8",
+        "sizeof_object_id": "0x5555556aa1c8",
+        "object_type": "P",
+        "function_id": "0x5555556aa110",
+        "send_id": "0x5555556cb6e8",
+        "sizeof_id": "0x5555556cb510",
+        "sink_decl_id": "0x5555556a9c80",
+        "record_id": "0x5555556a9668",
+        "header_field_id": "0x5555556a9830",
+        "header_field_name": "h",
+        "header_constant_id": "0x5555556a9918",
+        "header_assignment_id": "0x5555556aa3a0",
+        "header_value": 1,
+        "record_location": {
+          "offset": 7,
+          "file": "/home/otto/.hermes/cache/scratch/sender-independent-bpg0sgon/send_arg_mutates_header.cpp",
+          "line": 1,
+          "col": 8,
+          "tokLen": 1
+        },
+        "constant_location": {
+          "offset": 37,
+          "col": 38,
+          "tokLen": 1
+        }
+      }
+    },
+    {
+      "command": [
+        "clang++",
+        "-std=c++17",
+        "-fsyntax-only",
+        "-Xclang",
+        "-ast-dump=json",
+        "/home/otto/.hermes/cache/scratch/sender-independent-bpg0sgon/mutable_header.cpp"
+      ],
+      "exit": 0,
+      "stdout": "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/fresh-mutable_header.stdout",
+      "stderr": "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/fresh-mutable_header.stderr",
+      "source": "/home/otto/.hermes/cache/scratch/sender-independent-bpg0sgon/mutable_header.cpp",
+      "source_sha256": "23173f8fdb89ebe8b43d0d994474cd403ff49b1cc34d14deab1bd546fbe6393b",
+      "result": {
+        "identity_proven": true,
+        "decision": "UNRESOLVED",
+        "reasons": [
+          "header declaration is not immutable integral const/constexpr"
+        ],
+        "sink_contract_status": "UNREVIEWED",
+        "sender_semantic_admission": false,
+        "runtime_admission": false,
+        "object_id": "0x5555556a9b38",
+        "send_object_id": "0x5555556a9b38",
+        "sizeof_object_id": "0x5555556a9b38",
+        "object_type": "P",
+        "function_id": "0x5555556a9a80",
+        "send_id": "0x5555556cb300",
+        "sizeof_id": "0x5555556a9f00",
+        "sink_decl_id": "0x5555556a9700"
+      }
+    },
+    {
+      "command": [
+        "clang++",
+        "-std=c++17",
+        "-fsyntax-only",
+        "-Xclang",
+        "-ast-dump=json",
+        "/home/otto/.hermes/cache/scratch/sender-independent-bpg0sgon/nonintegral_cast_param.cpp"
+      ],
+      "exit": 0,
+      "stdout": "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/fresh-nonintegral_cast_param.stdout",
+      "stderr": "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/fresh-nonintegral_cast_param.stderr",
+      "source": "/home/otto/.hermes/cache/scratch/sender-independent-bpg0sgon/nonintegral_cast_param.cpp",
+      "source_sha256": "be4480a6fd687a522e74992f00ccc6afd975e06023ffcd0af21546a9143249bb",
+      "result": {
+        "identity_proven": true,
+        "decision": "UNRESOLVED",
+        "reasons": [
+          "unsupported scalar cast kind/type"
+        ],
+        "sink_contract_status": "UNREVIEWED",
+        "sender_semantic_admission": false,
+        "runtime_admission": false,
+        "object_id": "0x5555556a9990",
+        "send_object_id": "0x5555556a9990",
+        "sizeof_object_id": "0x5555556a9990",
+        "object_type": "P",
+        "function_id": "0x5555556a98a0",
+        "send_id": "0x5555556a9f78",
+        "sizeof_id": "0x5555556a9ef0",
+        "sink_decl_id": "0x5555556a9700",
+        "record_id": "0x5555556a9178",
+        "header_field_id": "0x5555556a9340",
+        "header_field_name": "h",
+        "header_constant_id": "0x5555556a9428",
+        "header_assignment_id": "0x5555556a9b68",
+        "header_value": 1,
+        "record_location": {
+          "offset": 7,
+          "file": "/home/otto/.hermes/cache/scratch/sender-independent-bpg0sgon/nonintegral_cast_param.cpp",
+          "line": 1,
+          "col": 8,
+          "tokLen": 1
+        },
+        "constant_location": {
+          "offset": 37,
+          "col": 38,
+          "tokLen": 1
+        }
+      }
+    }
+  ],
+  "owned_compiled_negative_count": 27,
+  "owned_compiled_negatives": [
+    {
+      "command": [
+        "clang++",
+        "-std=c++17",
+        "-fsyntax-only",
+        "-Xclang",
+        "-ast-dump=json",
+        "/home/otto/.hermes/cache/scratch/sender-proof-work/negative-00.cpp"
+      ],
+      "exit": 0,
+      "stdout": "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/owned-00.stdout",
+      "stderr": "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/owned-00.stderr",
+      "source": "/home/otto/.hermes/cache/scratch/sender-proof-work/negative-00.cpp",
+      "source_sha256": "a98ca2449d833feff00b9af375b375dacbb3ef2a845b6cfa8baff2bd57d952eb",
+      "result": {
+        "identity_proven": true,
+        "decision": "UNRESOLVED",
+        "reasons": [
+          "unsupported statement CallExpr"
+        ],
+        "sink_contract_status": "UNREVIEWED",
+        "sender_semantic_admission": false,
+        "runtime_admission": false,
+        "object_id": "0x5555556a9f28",
+        "send_object_id": "0x5555556a9f28",
+        "sizeof_object_id": "0x5555556a9f28",
+        "object_type": "P",
+        "function_id": "0x5555556a9e70",
+        "send_id": "0x5555556cb388",
+        "sizeof_id": "0x5555556cb2f8",
+        "sink_decl_id": "0x5555556a98d0",
+        "record_id": "0x5555556a9348",
+        "header_field_id": "0x5555556a9510",
+        "header_field_name": "h",
+        "header_constant_id": "0x5555556a95f8",
+        "header_assignment_id": "0x5555556aa100",
+        "header_value": 1,
+        "record_location": {
+          "offset": 7,
+          "file": "/home/otto/.hermes/cache/scratch/sender-proof-work/negative-00.cpp",
+          "line": 1,
+          "col": 8,
+          "tokLen": 1
+        },
+        "constant_location": {
+          "offset": 42,
+          "col": 43,
+          "tokLen": 1
+        }
+      }
+    },
+    {
+      "command": [
+        "clang++",
+        "-std=c++17",
+        "-fsyntax-only",
+        "-Xclang",
+        "-ast-dump=json",
+        "/home/otto/.hermes/cache/scratch/sender-proof-work/negative-01.cpp"
+      ],
+      "exit": 0,
+      "stdout": "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/owned-01.stdout",
+      "stderr": "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/owned-01.stderr",
+      "source": "/home/otto/.hermes/cache/scratch/sender-proof-work/negative-01.cpp",
+      "source_sha256": "f26b66ae3412795699e5dc30191462cc3416e6d24b00d585eee8391cfc9ba02e",
+      "result": {
+        "identity_proven": true,
+        "decision": "UNRESOLVED",
+        "reasons": [
+          "unsupported statement CallExpr"
+        ],
+        "sink_contract_status": "UNREVIEWED",
+        "sender_semantic_admission": false,
+        "runtime_admission": false,
+        "object_id": "0x5555556a9f28",
+        "send_object_id": "0x5555556a9f28",
+        "sizeof_object_id": "0x5555556a9f28",
+        "object_type": "P",
+        "function_id": "0x5555556a9e70",
+        "send_id": "0x5555556cb368",
+        "sizeof_id": "0x5555556cb2d8",
+        "sink_decl_id": "0x5555556a98d0",
+        "record_id": "0x5555556a9348",
+        "header_field_id": "0x5555556a9510",
+        "header_field_name": "h",
+        "header_constant_id": "0x5555556a95f8",
+        "header_assignment_id": "0x5555556aa100",
+        "header_value": 1,
+        "record_location": {
+          "offset": 7,
+          "file": "/home/otto/.hermes/cache/scratch/sender-proof-work/negative-01.cpp",
+          "line": 1,
+          "col": 8,
+          "tokLen": 1
+        },
+        "constant_location": {
+          "offset": 42,
+          "col": 43,
+          "tokLen": 1
+        }
+      }
+    },
+    {
+      "command": [
+        "clang++",
+        "-std=c++17",
+        "-fsyntax-only",
+        "-Xclang",
+        "-ast-dump=json",
+        "/home/otto/.hermes/cache/scratch/sender-proof-work/negative-02.cpp"
+      ],
+      "exit": 0,
+      "stdout": "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/owned-02.stdout",
+      "stderr": "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/owned-02.stderr",
+      "source": "/home/otto/.hermes/cache/scratch/sender-proof-work/negative-02.cpp",
+      "source_sha256": "e8a21064dfae71af7005eea4738a7f5fd14df6ed1b82ef58f5d45f153e2e2b9b",
+      "result": {
+        "identity_proven": true,
+        "decision": "UNRESOLVED",
+        "reasons": [
+          "unsupported statement DeclStmt"
+        ],
+        "sink_contract_status": "UNREVIEWED",
+        "sender_semantic_admission": false,
+        "runtime_admission": false,
+        "object_id": "0x5555556a9df8",
+        "send_object_id": "0x5555556a9df8",
+        "sizeof_object_id": "0x5555556a9df8",
+        "object_type": "P",
+        "function_id": "0x5555556a9d40",
+        "send_id": "0x5555556cb2c8",
+        "sizeof_id": "0x5555556cb238",
+        "sink_decl_id": "0x5555556a97a0",
+        "record_id": "0x5555556a9218",
+        "header_field_id": "0x5555556a93e0",
+        "header_field_name": "h",
+        "header_constant_id": "0x5555556a94c8",
+        "header_assignment_id": "0x5555556a9fd0",
+        "header_value": 1,
+        "record_location": {
+          "offset": 7,
+          "file": "/home/otto/.hermes/cache/scratch/sender-proof-work/negative-02.cpp",
+          "line": 1,
+          "col": 8,
+          "tokLen": 1
+        },
+        "constant_location": {
+          "offset": 42,
+          "col": 43,
+          "tokLen": 1
+        }
+      }
+    },
+    {
+      "command": [
+        "clang++",
+        "-std=c++17",
+        "-fsyntax-only",
+        "-Xclang",
+        "-ast-dump=json",
+        "/home/otto/.hermes/cache/scratch/sender-proof-work/negative-03.cpp"
+      ],
+      "exit": 0,
+      "stdout": "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/owned-03.stdout",
+      "stderr": "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/owned-03.stderr",
+      "source": "/home/otto/.hermes/cache/scratch/sender-proof-work/negative-03.cpp",
+      "source_sha256": "5eedc5da0558d492c89b98ee4825b196241608631925c252fa55f67b315cd31e",
+      "result": {
+        "identity_proven": true,
+        "decision": "UNRESOLVED",
+        "reasons": [
+          "unsupported statement DeclStmt"
+        ],
+        "sink_contract_status": "UNREVIEWED",
+        "sender_semantic_admission": false,
+        "runtime_admission": false,
+        "object_id": "0x5555556a9df8",
+        "send_object_id": "0x5555556a9df8",
+        "sizeof_object_id": "0x5555556a9df8",
+        "object_type": "P",
+        "function_id": "0x5555556a9d40",
+        "send_id": "0x5555556cb2d8",
+        "sizeof_id": "0x5555556cb250",
+        "sink_decl_id": "0x5555556a97a0",
+        "record_id": "0x5555556a9218",
+        "header_field_id": "0x5555556a93e0",
+        "header_field_name": "h",
+        "header_constant_id": "0x5555556a94c8",
+        "header_assignment_id": "0x5555556a9fd0",
+        "header_value": 1,
+        "record_location": {
+          "offset": 7,
+          "file": "/home/otto/.hermes/cache/scratch/sender-proof-work/negative-03.cpp",
+          "line": 1,
+          "col": 8,
+          "tokLen": 1
+        },
+        "constant_location": {
+          "offset": 42,
+          "col": 43,
+          "tokLen": 1
+        }
+      }
+    },
+    {
+      "command": [
+        "clang++",
+        "-std=c++17",
+        "-fsyntax-only",
+        "-Xclang",
+        "-ast-dump=json",
+        "/home/otto/.hermes/cache/scratch/sender-proof-work/negative-04.cpp"
+      ],
+      "exit": 0,
+      "stdout": "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/owned-04.stdout",
+      "stderr": "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/owned-04.stderr",
+      "source": "/home/otto/.hermes/cache/scratch/sender-proof-work/negative-04.cpp",
+      "source_sha256": "179c5364ebcf66e4c772c98923d57bb0097175fc9eed2936adfeefb4cb974720",
+      "result": {
+        "identity_proven": true,
+        "decision": "UNRESOLVED",
+        "reasons": [
+          "header assignment count not one"
+        ],
+        "sink_contract_status": "UNREVIEWED",
+        "sender_semantic_admission": false,
+        "runtime_admission": false,
+        "object_id": "0x5555556a9f28",
+        "send_object_id": "0x5555556a9f28",
+        "sizeof_object_id": "0x5555556a9f28",
+        "object_type": "P",
+        "function_id": "0x5555556a9e70",
+        "send_id": "0x5555556cb2d8",
+        "sizeof_id": "0x5555556cb248",
+        "sink_decl_id": "0x5555556a98d0"
+      }
+    },
+    {
+      "command": [
+        "clang++",
+        "-std=c++17",
+        "-fsyntax-only",
+        "-Xclang",
+        "-ast-dump=json",
+        "/home/otto/.hermes/cache/scratch/sender-proof-work/negative-05.cpp"
+      ],
+      "exit": 0,
+      "stdout": "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/owned-05.stdout",
+      "stderr": "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/owned-05.stderr",
+      "source": "/home/otto/.hermes/cache/scratch/sender-proof-work/negative-05.cpp",
+      "source_sha256": "1cfa4bf7ac36f5ace8c06b75976747289ff76e73cb2dc89fa9fa1e6dc8fcecea",
+      "result": {
+        "identity_proven": true,
+        "decision": "UNRESOLVED",
+        "reasons": [
+          "header assignment count not one"
+        ],
+        "sink_contract_status": "UNREVIEWED",
+        "sender_semantic_admission": false,
+        "runtime_admission": false,
+        "object_id": "0x5555556a9f28",
+        "send_object_id": "0x5555556a9f28",
+        "sizeof_object_id": "0x5555556a9f28",
+        "object_type": "P",
+        "function_id": "0x5555556a9e70",
+        "send_id": "0x5555556cb2f8",
+        "sizeof_id": "0x5555556cb268",
+        "sink_decl_id": "0x5555556a98d0"
+      }
+    },
+    {
+      "command": [
+        "clang++",
+        "-std=c++17",
+        "-fsyntax-only",
+        "-Xclang",
+        "-ast-dump=json",
+        "/home/otto/.hermes/cache/scratch/sender-proof-work/negative-06.cpp"
+      ],
+      "exit": 0,
+      "stdout": "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/owned-06.stdout",
+      "stderr": "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/owned-06.stderr",
+      "source": "/home/otto/.hermes/cache/scratch/sender-proof-work/negative-06.cpp",
+      "source_sha256": "60dc8032fc09f1b7565ba6c8c9c0f5b5bbd99fde51fb66ead0f954af690a5bd5",
+      "result": {
+        "identity_proven": true,
+        "decision": "UNRESOLVED",
+        "reasons": [
+          "unsupported statement ExprWithCleanups"
+        ],
+        "sink_contract_status": "UNREVIEWED",
+        "sender_semantic_admission": false,
+        "runtime_admission": false,
+        "object_id": "0x5555556a9f28",
+        "send_object_id": "0x5555556a9f28",
+        "sizeof_object_id": "0x5555556a9f28",
+        "object_type": "P",
+        "function_id": "0x5555556a9e70",
+        "send_id": "0x5555556cccb8",
+        "sizeof_id": "0x5555556ccc28",
+        "sink_decl_id": "0x5555556a98d0",
+        "record_id": "0x5555556a9348",
+        "header_field_id": "0x5555556a9510",
+        "header_field_name": "h",
+        "header_constant_id": "0x5555556a95f8",
+        "header_assignment_id": "0x5555556aa100",
+        "header_value": 1,
+        "record_location": {
+          "offset": 7,
+          "file": "/home/otto/.hermes/cache/scratch/sender-proof-work/negative-06.cpp",
+          "line": 1,
+          "col": 8,
+          "tokLen": 1
+        },
+        "constant_location": {
+          "offset": 42,
+          "col": 43,
+          "tokLen": 1
+        }
+      }
+    },
+    {
+      "command": [
+        "clang++",
+        "-std=c++17",
+        "-fsyntax-only",
+        "-Xclang",
+        "-ast-dump=json",
+        "/home/otto/.hermes/cache/scratch/sender-proof-work/negative-07.cpp"
+      ],
+      "exit": 0,
+      "stdout": "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/owned-07.stdout",
+      "stderr": "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/owned-07.stderr",
+      "source": "/home/otto/.hermes/cache/scratch/sender-proof-work/negative-07.cpp",
+      "source_sha256": "3426721a10d400e9b6e41c704963d857e11dd040e9cc9948ad64666d22d6a4df",
+      "result": {
+        "identity_proven": true,
+        "decision": "UNRESOLVED",
+        "reasons": [
+          "unsupported statement ExprWithCleanups"
+        ],
+        "sink_contract_status": "UNREVIEWED",
+        "sender_semantic_admission": false,
+        "runtime_admission": false,
+        "object_id": "0x5555556a9f28",
+        "send_object_id": "0x5555556a9f28",
+        "sizeof_object_id": "0x5555556a9f28",
+        "object_type": "P",
+        "function_id": "0x5555556a9e70",
+        "send_id": "0x5555556cccb8",
+        "sizeof_id": "0x5555556ccc28",
+        "sink_decl_id": "0x5555556a98d0",
+        "record_id": "0x5555556a9348",
+        "header_field_id": "0x5555556a9510",
+        "header_field_name": "h",
+        "header_constant_id": "0x5555556a95f8",
+        "header_assignment_id": "0x5555556aa100",
+        "header_value": 1,
+        "record_location": {
+          "offset": 7,
+          "file": "/home/otto/.hermes/cache/scratch/sender-proof-work/negative-07.cpp",
+          "line": 1,
+          "col": 8,
+          "tokLen": 1
+        },
+        "constant_location": {
+          "offset": 42,
+          "col": 43,
+          "tokLen": 1
+        }
+      }
+    },
+    {
+      "command": [
+        "clang++",
+        "-std=c++17",
+        "-fsyntax-only",
+        "-Xclang",
+        "-ast-dump=json",
+        "/home/otto/.hermes/cache/scratch/sender-proof-work/negative-08.cpp"
+      ],
+      "exit": 0,
+      "stdout": "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/owned-08.stdout",
+      "stderr": "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/owned-08.stderr",
+      "source": "/home/otto/.hermes/cache/scratch/sender-proof-work/negative-08.cpp",
+      "source_sha256": "2175ae6b72e01635d23df7ce500cd74a1b7d16a9a8bbea641c60a332df1bacc3",
+      "result": {
+        "identity_proven": true,
+        "decision": "UNRESOLVED",
+        "reasons": [
+          "unsupported statement UnaryOperator"
+        ],
+        "sink_contract_status": "UNREVIEWED",
+        "sender_semantic_admission": false,
+        "runtime_admission": false,
+        "object_id": "0x5555556a9f28",
+        "send_object_id": "0x5555556a9f28",
+        "sizeof_object_id": "0x5555556a9f28",
+        "object_type": "P",
+        "function_id": "0x5555556a9e70",
+        "send_id": "0x5555556cb298",
+        "sizeof_id": "0x5555556cb208",
+        "sink_decl_id": "0x5555556a98d0",
+        "record_id": "0x5555556a9348",
+        "header_field_id": "0x5555556a9510",
+        "header_field_name": "h",
+        "header_constant_id": "0x5555556a95f8",
+        "header_assignment_id": "0x5555556aa100",
+        "header_value": 1,
+        "record_location": {
+          "offset": 7,
+          "file": "/home/otto/.hermes/cache/scratch/sender-proof-work/negative-08.cpp",
+          "line": 1,
+          "col": 8,
+          "tokLen": 1
+        },
+        "constant_location": {
+          "offset": 42,
+          "col": 43,
+          "tokLen": 1
+        }
+      }
+    },
+    {
+      "command": [
+        "clang++",
+        "-std=c++17",
+        "-fsyntax-only",
+        "-Xclang",
+        "-ast-dump=json",
+        "/home/otto/.hermes/cache/scratch/sender-proof-work/negative-09.cpp"
+      ],
+      "exit": 0,
+      "stdout": "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/owned-09.stdout",
+      "stderr": "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/owned-09.stderr",
+      "source": "/home/otto/.hermes/cache/scratch/sender-proof-work/negative-09.cpp",
+      "source_sha256": "b114b041120124be8f6e342a20479eff332bc45573a766492d68738ce8caf618",
+      "result": {
+        "identity_proven": true,
+        "decision": "UNRESOLVED",
+        "reasons": [
+          "unsupported statement UnaryOperator"
+        ],
+        "sink_contract_status": "UNREVIEWED",
+        "sender_semantic_admission": false,
+        "runtime_admission": false,
+        "object_id": "0x5555556a9f28",
+        "send_object_id": "0x5555556a9f28",
+        "sizeof_object_id": "0x5555556a9f28",
+        "object_type": "P",
+        "function_id": "0x5555556a9e70",
+        "send_id": "0x5555556cb2b8",
+        "sizeof_id": "0x5555556cb228",
+        "sink_decl_id": "0x5555556a98d0",
+        "record_id": "0x5555556a9348",
+        "header_field_id": "0x5555556a9510",
+        "header_field_name": "h",
+        "header_constant_id": "0x5555556a95f8",
+        "header_assignment_id": "0x5555556aa100",
+        "header_value": 1,
+        "record_location": {
+          "offset": 7,
+          "file": "/home/otto/.hermes/cache/scratch/sender-proof-work/negative-09.cpp",
+          "line": 1,
+          "col": 8,
+          "tokLen": 1
+        },
+        "constant_location": {
+          "offset": 42,
+          "col": 43,
+          "tokLen": 1
+        }
+      }
+    },
+    {
+      "command": [
+        "clang++",
+        "-std=c++17",
+        "-fsyntax-only",
+        "-Xclang",
+        "-ast-dump=json",
+        "/home/otto/.hermes/cache/scratch/sender-proof-work/negative-10.cpp"
+      ],
+      "exit": 0,
+      "stdout": "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/owned-10.stdout",
+      "stderr": "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/owned-10.stderr",
+      "source": "/home/otto/.hermes/cache/scratch/sender-proof-work/negative-10.cpp",
+      "source_sha256": "e6f1206dd236d3209c63fa6084e3fd31161924319fe3cbd15276f31098aad982",
+      "result": {
+        "identity_proven": true,
+        "decision": "UNRESOLVED",
+        "reasons": [
+          "unsupported statement UnaryOperator"
+        ],
+        "sink_contract_status": "UNREVIEWED",
+        "sender_semantic_admission": false,
+        "runtime_admission": false,
+        "object_id": "0x5555556a9f28",
+        "send_object_id": "0x5555556a9f28",
+        "sizeof_object_id": "0x5555556a9f28",
+        "object_type": "P",
+        "function_id": "0x5555556a9e70",
+        "send_id": "0x5555556cb298",
+        "sizeof_id": "0x5555556cb208",
+        "sink_decl_id": "0x5555556a98d0",
+        "record_id": "0x5555556a9348",
+        "header_field_id": "0x5555556a9510",
+        "header_field_name": "h",
+        "header_constant_id": "0x5555556a95f8",
+        "header_assignment_id": "0x5555556aa100",
+        "header_value": 1,
+        "record_location": {
+          "offset": 7,
+          "file": "/home/otto/.hermes/cache/scratch/sender-proof-work/negative-10.cpp",
+          "line": 1,
+          "col": 8,
+          "tokLen": 1
+        },
+        "constant_location": {
+          "offset": 42,
+          "col": 43,
+          "tokLen": 1
+        }
+      }
+    },
+    {
+      "command": [
+        "clang++",
+        "-std=c++17",
+        "-fsyntax-only",
+        "-Xclang",
+        "-ast-dump=json",
+        "/home/otto/.hermes/cache/scratch/sender-proof-work/negative-11.cpp"
+      ],
+      "exit": 0,
+      "stdout": "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/owned-11.stdout",
+      "stderr": "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/owned-11.stderr",
+      "source": "/home/otto/.hermes/cache/scratch/sender-proof-work/negative-11.cpp",
+      "source_sha256": "cce93bb6ddd833f0c1e969ea0e304a171f06562aa5805bf40dbdacadf8a4f706",
+      "result": {
+        "identity_proven": true,
+        "decision": "UNRESOLVED",
+        "reasons": [
+          "unsupported statement CompoundAssignOperator"
+        ],
+        "sink_contract_status": "UNREVIEWED",
+        "sender_semantic_admission": false,
+        "runtime_admission": false,
+        "object_id": "0x5555556a9f28",
+        "send_object_id": "0x5555556a9f28",
+        "sizeof_object_id": "0x5555556a9f28",
+        "object_type": "P",
+        "function_id": "0x5555556a9e70",
+        "send_id": "0x5555556cb2c8",
+        "sizeof_id": "0x5555556cb240",
+        "sink_decl_id": "0x5555556a98d0",
+        "record_id": "0x5555556a9348",
+        "header_field_id": "0x5555556a9510",
+        "header_field_name": "h",
+        "header_constant_id": "0x5555556a95f8",
+        "header_assignment_id": "0x5555556aa100",
+        "header_value": 1,
+        "record_location": {
+          "offset": 7,
+          "file": "/home/otto/.hermes/cache/scratch/sender-proof-work/negative-11.cpp",
+          "line": 1,
+          "col": 8,
+          "tokLen": 1
+        },
+        "constant_location": {
+          "offset": 42,
+          "col": 43,
+          "tokLen": 1
+        }
+      }
+    },
+    {
+      "command": [
+        "clang++",
+        "-std=c++17",
+        "-fsyntax-only",
+        "-Xclang",
+        "-ast-dump=json",
+        "/home/otto/.hermes/cache/scratch/sender-proof-work/negative-12.cpp"
+      ],
+      "exit": 0,
+      "stdout": "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/owned-12.stdout",
+      "stderr": "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/owned-12.stderr",
+      "source": "/home/otto/.hermes/cache/scratch/sender-proof-work/negative-12.cpp",
+      "source_sha256": "083639a9dfbb62169629c7c547e69528bd1261ae189c9b64c50ca68b0b0dc0da",
+      "result": {
+        "identity_proven": true,
+        "decision": "UNRESOLVED",
+        "reasons": [
+          "header assignment count not one"
+        ],
+        "sink_contract_status": "UNREVIEWED",
+        "sender_semantic_admission": false,
+        "runtime_admission": false,
+        "object_id": "0x5555556a9df8",
+        "send_object_id": "0x5555556a9df8",
+        "sizeof_object_id": "0x5555556a9df8",
+        "object_type": "P",
+        "function_id": "0x5555556a9d40",
+        "send_id": "0x5555556cb248",
+        "sizeof_id": "0x5555556cb1b8",
+        "sink_decl_id": "0x5555556a97a0"
+      }
+    },
+    {
+      "command": [
+        "clang++",
+        "-std=c++17",
+        "-fsyntax-only",
+        "-Xclang",
+        "-ast-dump=json",
+        "/home/otto/.hermes/cache/scratch/sender-proof-work/negative-13.cpp"
+      ],
+      "exit": 0,
+      "stdout": "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/owned-13.stdout",
+      "stderr": "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/owned-13.stderr",
+      "source": "/home/otto/.hermes/cache/scratch/sender-proof-work/negative-13.cpp",
+      "source_sha256": "b7892795568c3b039c17699070431d2ce7bf765978a668b85fbdfbd72fddcce3",
+      "result": {
+        "identity_proven": true,
+        "decision": "UNRESOLVED",
+        "reasons": [
+          "unsupported statement CompoundStmt"
+        ],
+        "sink_contract_status": "UNREVIEWED",
+        "sender_semantic_admission": false,
+        "runtime_admission": false,
+        "object_id": "0x5555556a9df8",
+        "send_object_id": "0x5555556a9df8",
+        "sizeof_object_id": "0x5555556a9df8",
+        "object_type": "P",
+        "function_id": "0x5555556a9d40",
+        "send_id": "0x5555556cb368",
+        "sizeof_id": "0x5555556cb2d8",
+        "sink_decl_id": "0x5555556a97a0",
+        "record_id": "0x5555556a9218",
+        "header_field_id": "0x5555556a93e0",
+        "header_field_name": "h",
+        "header_constant_id": "0x5555556a94c8",
+        "header_assignment_id": "0x5555556a9fd0",
+        "header_value": 1,
+        "record_location": {
+          "offset": 7,
+          "file": "/home/otto/.hermes/cache/scratch/sender-proof-work/negative-13.cpp",
+          "line": 1,
+          "col": 8,
+          "tokLen": 1
+        },
+        "constant_location": {
+          "offset": 42,
+          "col": 43,
+          "tokLen": 1
+        }
+      }
+    },
+    {
+      "command": [
+        "clang++",
+        "-std=c++17",
+        "-fsyntax-only",
+        "-Xclang",
+        "-ast-dump=json",
+        "/home/otto/.hermes/cache/scratch/sender-proof-work/negative-14.cpp"
+      ],
+      "exit": 0,
+      "stdout": "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/owned-14.stdout",
+      "stderr": "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/owned-14.stderr",
+      "source": "/home/otto/.hermes/cache/scratch/sender-proof-work/negative-14.cpp",
+      "source_sha256": "37071098deeaff8333531b22502b3669814d8be80bc615325db8ec90f96efc6f",
+      "result": {
+        "identity_proven": true,
+        "decision": "UNRESOLVED",
+        "reasons": [
+          "header assignment count not one"
+        ],
+        "sink_contract_status": "UNREVIEWED",
+        "sender_semantic_admission": false,
+        "runtime_admission": false,
+        "object_id": "0x5555556a9df8",
+        "send_object_id": "0x5555556a9df8",
+        "sizeof_object_id": "0x5555556a9df8",
+        "object_type": "P",
+        "function_id": "0x5555556a9d40",
+        "send_id": "0x5555556cbba8",
+        "sizeof_id": "0x5555556cbb18",
+        "sink_decl_id": "0x5555556a97a0"
+      }
+    },
+    {
+      "command": [
+        "clang++",
+        "-std=c++17",
+        "-fsyntax-only",
+        "-Xclang",
+        "-ast-dump=json",
+        "/home/otto/.hermes/cache/scratch/sender-proof-work/negative-15.cpp"
+      ],
+      "exit": 0,
+      "stdout": "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/owned-15.stdout",
+      "stderr": "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/owned-15.stderr",
+      "source": "/home/otto/.hermes/cache/scratch/sender-proof-work/negative-15.cpp",
+      "source_sha256": "1108a77d7316a67dc82ad042be7ef112a0c7af4064294b9448407d72297d86c6",
+      "result": {
+        "identity_proven": false,
+        "decision": "UNRESOLVED",
+        "reasons": [
+          "send count not one"
+        ],
+        "sink_contract_status": "UNREVIEWED",
+        "sender_semantic_admission": false,
+        "runtime_admission": false
+      }
+    },
+    {
+      "command": [
+        "clang++",
+        "-std=c++17",
+        "-fsyntax-only",
+        "-Xclang",
+        "-ast-dump=json",
+        "/home/otto/.hermes/cache/scratch/sender-proof-work/negative-16.cpp"
+      ],
+      "exit": 0,
+      "stdout": "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/owned-16.stdout",
+      "stderr": "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/owned-16.stderr",
+      "source": "/home/otto/.hermes/cache/scratch/sender-proof-work/negative-16.cpp",
+      "source_sha256": "d2437d53ff891d39e574f4b3826e5fbd83b97e5c46582de6aa0c7788e083c813",
+      "result": {
+        "identity_proven": true,
+        "decision": "UNRESOLVED",
+        "reasons": [
+          "unsupported statement UnaryExprOrTypeTraitExpr"
+        ],
+        "sink_contract_status": "UNREVIEWED",
+        "sender_semantic_admission": false,
+        "runtime_admission": false,
+        "object_id": "0x5555556a9df8",
+        "send_object_id": "0x5555556a9df8",
+        "sizeof_object_id": "0x5555556a9df8",
+        "object_type": "P",
+        "function_id": "0x5555556a9d40",
+        "send_id": "0x5555556cb2f8",
+        "sizeof_id": "0x5555556cb268",
+        "sink_decl_id": "0x5555556a97a0",
+        "record_id": "0x5555556a9218",
+        "header_field_id": "0x5555556a93e0",
+        "header_field_name": "h",
+        "header_constant_id": "0x5555556a94c8",
+        "header_assignment_id": "0x5555556a9fd0",
+        "header_value": 1,
+        "record_location": {
+          "offset": 7,
+          "file": "/home/otto/.hermes/cache/scratch/sender-proof-work/negative-16.cpp",
+          "line": 1,
+          "col": 8,
+          "tokLen": 1
+        },
+        "constant_location": {
+          "offset": 42,
+          "col": 43,
+          "tokLen": 1
+        }
+      }
+    },
+    {
+      "command": [
+        "clang++",
+        "-std=c++17",
+        "-fsyntax-only",
+        "-Xclang",
+        "-ast-dump=json",
+        "/home/otto/.hermes/cache/scratch/sender-proof-work/negative-17.cpp"
+      ],
+      "exit": 0,
+      "stdout": "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/owned-17.stdout",
+      "stderr": "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/owned-17.stderr",
+      "source": "/home/otto/.hermes/cache/scratch/sender-proof-work/negative-17.cpp",
+      "source_sha256": "b0140b4cc49ba674dc76db3e2c196da857563955a64db0a6370891ab007a724b",
+      "result": {
+        "identity_proven": true,
+        "decision": "UNRESOLVED",
+        "reasons": [
+          "unsupported scalar cast kind/type"
+        ],
+        "sink_contract_status": "UNREVIEWED",
+        "sender_semantic_admission": false,
+        "runtime_admission": false,
+        "object_id": "0x5555556a9df8",
+        "send_object_id": "0x5555556a9df8",
+        "sizeof_object_id": "0x5555556a9df8",
+        "object_type": "P",
+        "function_id": "0x5555556a9d40",
+        "send_id": "0x5555556cb318",
+        "sizeof_id": "0x5555556cb288",
+        "sink_decl_id": "0x5555556a97a0",
+        "record_id": "0x5555556a9218",
+        "header_field_id": "0x5555556a93e0",
+        "header_field_name": "h",
+        "header_constant_id": "0x5555556a94c8",
+        "header_assignment_id": "0x5555556a9fd0",
+        "header_value": 1,
+        "record_location": {
+          "offset": 7,
+          "file": "/home/otto/.hermes/cache/scratch/sender-proof-work/negative-17.cpp",
+          "line": 1,
+          "col": 8,
+          "tokLen": 1
+        },
+        "constant_location": {
+          "offset": 42,
+          "col": 43,
+          "tokLen": 1
+        }
+      }
+    },
+    {
+      "command": [
+        "clang++",
+        "-std=c++17",
+        "-fsyntax-only",
+        "-Xclang",
+        "-ast-dump=json",
+        "/home/otto/.hermes/cache/scratch/sender-proof-work/negative-18.cpp"
+      ],
+      "exit": 0,
+      "stdout": "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/owned-18.stdout",
+      "stderr": "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/owned-18.stderr",
+      "source": "/home/otto/.hermes/cache/scratch/sender-proof-work/negative-18.cpp",
+      "source_sha256": "c4082d23a99df4cb7b8cdba95d0100e521945e7364827116d2772d0cac308c42",
+      "result": {
+        "identity_proven": true,
+        "decision": "UNRESOLVED",
+        "reasons": [
+          "unknown mutation or unevaluated expression in scalar payload"
+        ],
+        "sink_contract_status": "UNREVIEWED",
+        "sender_semantic_admission": false,
+        "runtime_admission": false,
+        "object_id": "0x5555556a9df8",
+        "send_object_id": "0x5555556a9df8",
+        "sizeof_object_id": "0x5555556a9df8",
+        "object_type": "P",
+        "function_id": "0x5555556a9d40",
+        "send_id": "0x5555556cb1e8",
+        "sizeof_id": "0x5555556cb158",
+        "sink_decl_id": "0x5555556a97a0",
+        "record_id": "0x5555556a9218",
+        "header_field_id": "0x5555556a93e0",
+        "header_field_name": "h",
+        "header_constant_id": "0x5555556a94c8",
+        "header_assignment_id": "0x5555556a9fd0",
+        "header_value": 1,
+        "record_location": {
+          "offset": 7,
+          "file": "/home/otto/.hermes/cache/scratch/sender-proof-work/negative-18.cpp",
+          "line": 1,
+          "col": 8,
+          "tokLen": 1
+        },
+        "constant_location": {
+          "offset": 42,
+          "col": 43,
+          "tokLen": 1
+        }
+      }
+    },
+    {
+      "command": [
+        "clang++",
+        "-std=c++17",
+        "-fsyntax-only",
+        "-Xclang",
+        "-ast-dump=json",
+        "/home/otto/.hermes/cache/scratch/sender-proof-work/negative-19.cpp"
+      ],
+      "exit": 0,
+      "stdout": "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/owned-19.stdout",
+      "stderr": "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/owned-19.stderr",
+      "source": "/home/otto/.hermes/cache/scratch/sender-proof-work/negative-19.cpp",
+      "source_sha256": "3b2cee2cceb3f6f370aa6401c2d13a1cad49df3e0e7b261c1eaa9e18875e9cdb",
+      "result": {
+        "identity_proven": true,
+        "decision": "UNRESOLVED",
+        "reasons": [
+          "packet alias/self payload expression unsupported"
+        ],
+        "sink_contract_status": "UNREVIEWED",
+        "sender_semantic_admission": false,
+        "runtime_admission": false,
+        "object_id": "0x5555556a9f28",
+        "send_object_id": "0x5555556a9f28",
+        "sizeof_object_id": "0x5555556a9f28",
+        "object_type": "P",
+        "function_id": "0x5555556a9e70",
+        "send_id": "0x5555556cb318",
+        "sizeof_id": "0x5555556cb290",
+        "sink_decl_id": "0x5555556a98d0",
+        "record_id": "0x5555556a9348",
+        "header_field_id": "0x5555556a9510",
+        "header_field_name": "h",
+        "header_constant_id": "0x5555556a95f8",
+        "header_assignment_id": "0x5555556aa100",
+        "header_value": 1,
+        "record_location": {
+          "offset": 7,
+          "file": "/home/otto/.hermes/cache/scratch/sender-proof-work/negative-19.cpp",
+          "line": 1,
+          "col": 8,
+          "tokLen": 1
+        },
+        "constant_location": {
+          "offset": 42,
+          "col": 43,
+          "tokLen": 1
+        }
+      }
+    },
+    {
+      "command": [
+        "clang++",
+        "-std=c++17",
+        "-fsyntax-only",
+        "-Xclang",
+        "-ast-dump=json",
+        "/home/otto/.hermes/cache/scratch/sender-proof-work/negative-20.cpp"
+      ],
+      "exit": 0,
+      "stdout": "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/owned-20.stdout",
+      "stderr": "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/owned-20.stderr",
+      "source": "/home/otto/.hermes/cache/scratch/sender-proof-work/negative-20.cpp",
+      "source_sha256": "a96db49d29a5783793df5d244ac9a185e9951bda7b20530f9049046fff45ed42",
+      "result": {
+        "identity_proven": true,
+        "decision": "UNRESOLVED",
+        "reasons": [
+          "header assignment count not one"
+        ],
+        "sink_contract_status": "UNREVIEWED",
+        "sender_semantic_admission": false,
+        "runtime_admission": false,
+        "object_id": "0x5555556a9df8",
+        "send_object_id": "0x5555556a9df8",
+        "sizeof_object_id": "0x5555556a9df8",
+        "object_type": "P",
+        "function_id": "0x5555556a9d40",
+        "send_id": "0x5555556cb248",
+        "sizeof_id": "0x5555556cb1b8",
+        "sink_decl_id": "0x5555556a97a0"
+      }
+    },
+    {
+      "command": [
+        "clang++",
+        "-std=c++17",
+        "-fsyntax-only",
+        "-Xclang",
+        "-ast-dump=json",
+        "/home/otto/.hermes/cache/scratch/sender-proof-work/negative-21.cpp"
+      ],
+      "exit": 0,
+      "stdout": "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/owned-21.stdout",
+      "stderr": "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/owned-21.stderr",
+      "source": "/home/otto/.hermes/cache/scratch/sender-proof-work/negative-21.cpp",
+      "source_sha256": "6c0372a0ed3934df08785a66f813955fc8ef3c6f926fd320d5b968e755b466e5",
+      "result": {
+        "identity_proven": true,
+        "decision": "UNRESOLVED",
+        "reasons": [
+          "header assignment count not one"
+        ],
+        "sink_contract_status": "UNREVIEWED",
+        "sender_semantic_admission": false,
+        "runtime_admission": false,
+        "object_id": "0x5555556a9df8",
+        "send_object_id": "0x5555556a9df8",
+        "sizeof_object_id": "0x5555556a9df8",
+        "object_type": "P",
+        "function_id": "0x5555556a9d40",
+        "send_id": "0x5555556cb378",
+        "sizeof_id": "0x5555556cb2f0",
+        "sink_decl_id": "0x5555556a97a0"
+      }
+    },
+    {
+      "command": [
+        "clang++",
+        "-std=c++17",
+        "-fsyntax-only",
+        "-Xclang",
+        "-ast-dump=json",
+        "/home/otto/.hermes/cache/scratch/sender-proof-work/negative-22.cpp"
+      ],
+      "exit": 0,
+      "stdout": "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/owned-22.stdout",
+      "stderr": "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/owned-22.stderr",
+      "source": "/home/otto/.hermes/cache/scratch/sender-proof-work/negative-22.cpp",
+      "source_sha256": "9b384a22e4608c97fedd09d1237e5260c3057777bcc4b8ac84746df94991518e",
+      "result": {
+        "identity_proven": true,
+        "decision": "UNRESOLVED",
+        "reasons": [
+          "header assignment count not one"
+        ],
+        "sink_contract_status": "UNREVIEWED",
+        "sender_semantic_admission": false,
+        "runtime_admission": false,
+        "object_id": "0x5555556a9df8",
+        "send_object_id": "0x5555556a9df8",
+        "sizeof_object_id": "0x5555556a9df8",
+        "object_type": "P",
+        "function_id": "0x5555556a9d40",
+        "send_id": "0x5555556cb3f8",
+        "sizeof_id": "0x5555556cb370",
+        "sink_decl_id": "0x5555556a97a0"
+      }
+    },
+    {
+      "command": [
+        "clang++",
+        "-std=c++17",
+        "-fsyntax-only",
+        "-Xclang",
+        "-ast-dump=json",
+        "/home/otto/.hermes/cache/scratch/sender-proof-work/negative-23.cpp"
+      ],
+      "exit": 0,
+      "stdout": "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/owned-23.stdout",
+      "stderr": "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/owned-23.stderr",
+      "source": "/home/otto/.hermes/cache/scratch/sender-proof-work/negative-23.cpp",
+      "source_sha256": "08b057a1490e4e71cb6ea025c74ca963ab2752270aae5fa2df8df5424a2ac102",
+      "result": {
+        "identity_proven": true,
+        "decision": "UNRESOLVED",
+        "reasons": [
+          "header assignment count not one"
+        ],
+        "sink_contract_status": "UNREVIEWED",
+        "sender_semantic_admission": false,
+        "runtime_admission": false,
+        "object_id": "0x5555556a9df8",
+        "send_object_id": "0x5555556a9df8",
+        "sizeof_object_id": "0x5555556a9df8",
+        "object_type": "P",
+        "function_id": "0x5555556a9d40",
+        "send_id": "0x5555556cb268",
+        "sizeof_id": "0x5555556cb1e0",
+        "sink_decl_id": "0x5555556a97a0"
+      }
+    },
+    {
+      "command": [
+        "clang++",
+        "-std=c++17",
+        "-fsyntax-only",
+        "-Xclang",
+        "-ast-dump=json",
+        "/home/otto/.hermes/cache/scratch/sender-proof-work/negative-24.cpp"
+      ],
+      "exit": 0,
+      "stdout": "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/owned-24.stdout",
+      "stderr": "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/owned-24.stderr",
+      "source": "/home/otto/.hermes/cache/scratch/sender-proof-work/negative-24.cpp",
+      "source_sha256": "e6fd18bde2519f92d31b2a911b046f5c0f55b61f1080b83da6a2eab55e4a5a44",
+      "result": {
+        "identity_proven": true,
+        "decision": "UNRESOLVED",
+        "reasons": [
+          "unsupported statement CXXTryStmt"
+        ],
+        "sink_contract_status": "UNREVIEWED",
+        "sender_semantic_admission": false,
+        "runtime_admission": false,
+        "object_id": "0x5555556a9df8",
+        "send_object_id": "0x5555556a9df8",
+        "sizeof_object_id": "0x5555556a9df8",
+        "object_type": "P",
+        "function_id": "0x5555556a9d40",
+        "send_id": "0x5555556cb2b8",
+        "sizeof_id": "0x5555556cb230",
+        "sink_decl_id": "0x5555556a97a0",
+        "record_id": "0x5555556a9218",
+        "header_field_id": "0x5555556a93e0",
+        "header_field_name": "h",
+        "header_constant_id": "0x5555556a94c8",
+        "header_assignment_id": "0x5555556a9fd0",
+        "header_value": 1,
+        "record_location": {
+          "offset": 7,
+          "file": "/home/otto/.hermes/cache/scratch/sender-proof-work/negative-24.cpp",
+          "line": 1,
+          "col": 8,
+          "tokLen": 1
+        },
+        "constant_location": {
+          "offset": 42,
+          "col": 43,
+          "tokLen": 1
+        }
+      }
+    },
+    {
+      "command": [
+        "clang++",
+        "-std=c++17",
+        "-fsyntax-only",
+        "-Xclang",
+        "-ast-dump=json",
+        "/home/otto/.hermes/cache/scratch/sender-proof-work/negative-25.cpp"
+      ],
+      "exit": 0,
+      "stdout": "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/owned-25.stdout",
+      "stderr": "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/owned-25.stderr",
+      "source": "/home/otto/.hermes/cache/scratch/sender-proof-work/negative-25.cpp",
+      "source_sha256": "bda3730e7aaaef3116c7d5a6b699b64203138ba8e1882191e24fac3299ac8397",
+      "result": {
+        "identity_proven": true,
+        "decision": "UNRESOLVED",
+        "reasons": [
+          "fresh zero aggregate initialization unsupported"
+        ],
+        "sink_contract_status": "UNREVIEWED",
+        "sender_semantic_admission": false,
+        "runtime_admission": false,
+        "object_id": "0x5555556a9f28",
+        "send_object_id": "0x5555556a9f28",
+        "sizeof_object_id": "0x5555556a9f28",
+        "object_type": "P",
+        "function_id": "0x5555556a9e70",
+        "send_id": "0x5555556caf08",
+        "sizeof_id": "0x5555556cae78",
+        "sink_decl_id": "0x5555556a98d0",
+        "record_id": "0x5555556a9348",
+        "header_field_id": "0x5555556a9510",
+        "header_field_name": "h",
+        "header_constant_id": "0x5555556a95f8",
+        "header_assignment_id": "0x5555556cad98",
+        "header_value": 1,
+        "record_location": {
+          "offset": 7,
+          "file": "/home/otto/.hermes/cache/scratch/sender-proof-work/negative-25.cpp",
+          "line": 1,
+          "col": 8,
+          "tokLen": 1
+        },
+        "constant_location": {
+          "offset": 42,
+          "col": 43,
+          "tokLen": 1
+        }
+      }
+    },
+    {
+      "command": [
+        "clang++",
+        "-std=c++17",
+        "-fsyntax-only",
+        "-Xclang",
+        "-ast-dump=json",
+        "/home/otto/.hermes/cache/scratch/sender-proof-work/negative-26.cpp"
+      ],
+      "exit": 0,
+      "stdout": "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/owned-26.stdout",
+      "stderr": "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/owned-26.stderr",
+      "source": "/home/otto/.hermes/cache/scratch/sender-proof-work/negative-26.cpp",
+      "source_sha256": "e89fe2686000f2390c22f15a2cc45d0a2cc7aa35645fb06c067b5de8a68c7f83",
+      "result": {
+        "identity_proven": true,
+        "decision": "UNRESOLVED",
+        "reasons": [
+          "fresh zero aggregate initialization unsupported"
+        ],
+        "sink_contract_status": "UNREVIEWED",
+        "sender_semantic_admission": false,
+        "runtime_admission": false,
+        "object_id": "0x5555556a9f28",
+        "send_object_id": "0x5555556a9f28",
+        "sizeof_object_id": "0x5555556a9f28",
+        "object_type": "P",
+        "function_id": "0x5555556a9e70",
+        "send_id": "0x5555556cb278",
+        "sizeof_id": "0x5555556cb1f0",
+        "sink_decl_id": "0x5555556a98d0",
+        "record_id": "0x5555556a9348",
+        "header_field_id": "0x5555556a9510",
+        "header_field_name": "h",
+        "header_constant_id": "0x5555556a95f8",
+        "header_assignment_id": "0x5555556aa148",
+        "header_value": 1,
+        "record_location": {
+          "offset": 7,
+          "file": "/home/otto/.hermes/cache/scratch/sender-proof-work/negative-26.cpp",
+          "line": 1,
+          "col": 8,
+          "tokLen": 1
+        },
+        "constant_location": {
+          "offset": 42,
+          "col": 43,
+          "tokLen": 1
+        }
+      }
+    }
+  ],
+  "retained_physical_case_count": 30,
+  "retained_without_numeric_join": [
+    {
+      "command": [
+        "clang++",
+        "-std=c++17",
+        "-fsyntax-only",
+        "-Xclang",
+        "-ast-dump=json",
+        "/home/otto/.hermes/cache/scratch/nmg-final/prefix_increment.cpp"
+      ],
+      "exit": 0,
+      "stdout": "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/retained-27.stdout",
+      "stderr": "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/retained-27.stderr",
+      "source": "/home/otto/.hermes/cache/scratch/nmg-final/prefix_increment.cpp",
+      "source_sha256": "daf6651c5cdeb13fee53cb0baa414b619cf6f96a4faf0c29ef4e22e9cf122651",
+      "results": [
+        {
+          "identity_proven": false,
+          "decision": "UNRESOLVED",
+          "reasons": [
+            "send count not one"
+          ],
+          "sink_contract_status": "UNREVIEWED",
+          "sender_semantic_admission": false,
+          "runtime_admission": false
+        },
+        {
+          "identity_proven": true,
+          "decision": "UNRESOLVED",
+          "reasons": [
+            "GCC layout evidence absent"
+          ],
+          "sink_contract_status": "UNREVIEWED",
+          "sender_semantic_admission": false,
+          "runtime_admission": false,
+          "object_id": "0x5555557bb3b8",
+          "send_object_id": "0x5555557bb3b8",
+          "sizeof_object_id": "0x5555557bb3b8",
+          "object_type": "PACKET_ZC_ONE",
+          "function_id": "0x5555557bb300",
+          "send_id": "0x5555557bb928",
+          "sizeof_id": "0x5555557bb828",
+          "sink_decl_id": "0x5555557ba290",
+          "record_id": "0x5555557b82d8",
+          "header_field_id": "0x5555557b8500",
+          "header_field_name": "PacketType",
+          "header_constant_id": "0x5555557b99d0",
+          "header_assignment_id": "0x5555557bb5a8",
+          "header_value": 1,
+          "record_location": {
+            "offset": 44,
+            "file": "/home/otto/.hermes/cache/scratch/nmg-final/prefix_increment.cpp",
+            "line": 3,
+            "col": 8,
+            "tokLen": 13
+          },
+          "constant_location": {
+            "offset": 174,
+            "line": 5,
+            "col": 15,
+            "tokLen": 13
+          }
+        },
+        {
+          "identity_proven": false,
+          "decision": "UNRESOLVED",
+          "reasons": [
+            "send count not one"
+          ],
+          "sink_contract_status": "UNREVIEWED",
+          "sender_semantic_admission": false,
+          "runtime_admission": false
+        }
+      ],
+      "numeric_join": false
+    },
+    {
+      "command": [
+        "clang++",
+        "-std=c++17",
+        "-fsyntax-only",
+        "-Xclang",
+        "-ast-dump=json",
+        "/home/otto/.hermes/cache/scratch/nmg-final/prefix_decrement.cpp"
+      ],
+      "exit": 0,
+      "stdout": "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/retained-28.stdout",
+      "stderr": "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/retained-28.stderr",
+      "source": "/home/otto/.hermes/cache/scratch/nmg-final/prefix_decrement.cpp",
+      "source_sha256": "2032962d0ba45571c49c7b77b1f56443d6ef2e0cc19039e328419c3151ba7587",
+      "results": [
+        {
+          "identity_proven": false,
+          "decision": "UNRESOLVED",
+          "reasons": [
+            "send count not one"
+          ],
+          "sink_contract_status": "UNREVIEWED",
+          "sender_semantic_admission": false,
+          "runtime_admission": false
+        },
+        {
+          "identity_proven": true,
+          "decision": "UNRESOLVED",
+          "reasons": [
+            "GCC layout evidence absent"
+          ],
+          "sink_contract_status": "UNREVIEWED",
+          "sender_semantic_admission": false,
+          "runtime_admission": false,
+          "object_id": "0x5555557bb3b8",
+          "send_object_id": "0x5555557bb3b8",
+          "sizeof_object_id": "0x5555557bb3b8",
+          "object_type": "PACKET_ZC_ONE",
+          "function_id": "0x5555557bb300",
+          "send_id": "0x5555557bb928",
+          "sizeof_id": "0x5555557bb828",
+          "sink_decl_id": "0x5555557ba290",
+          "record_id": "0x5555557b82d8",
+          "header_field_id": "0x5555557b8500",
+          "header_field_name": "PacketType",
+          "header_constant_id": "0x5555557b99d0",
+          "header_assignment_id": "0x5555557bb5a8",
+          "header_value": 1,
+          "record_location": {
+            "offset": 44,
+            "file": "/home/otto/.hermes/cache/scratch/nmg-final/prefix_decrement.cpp",
+            "line": 3,
+            "col": 8,
+            "tokLen": 13
+          },
+          "constant_location": {
+            "offset": 174,
+            "line": 5,
+            "col": 15,
+            "tokLen": 13
+          }
+        },
+        {
+          "identity_proven": false,
+          "decision": "UNRESOLVED",
+          "reasons": [
+            "send count not one"
+          ],
+          "sink_contract_status": "UNREVIEWED",
+          "sender_semantic_admission": false,
+          "runtime_admission": false
+        }
+      ],
+      "numeric_join": false
+    },
+    {
+      "command": [
+        "clang++",
+        "-std=c++17",
+        "-fsyntax-only",
+        "-Xclang",
+        "-ast-dump=json",
+        "/home/otto/.hermes/cache/scratch/nmg-final/lambda_parameter.cpp"
+      ],
+      "exit": 0,
+      "stdout": "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/retained-29.stdout",
+      "stderr": "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/retained-29.stderr",
+      "source": "/home/otto/.hermes/cache/scratch/nmg-final/lambda_parameter.cpp",
+      "source_sha256": "f69c5af16eb96ccd7be287d3f4e03c0c52a2e278b70c24e64a2daee48c3da899",
+      "results": [
+        {
+          "identity_proven": false,
+          "decision": "UNRESOLVED",
+          "reasons": [
+            "send count not one"
+          ],
+          "sink_contract_status": "UNREVIEWED",
+          "sender_semantic_admission": false,
+          "runtime_admission": false
+        },
+        {
+          "identity_proven": false,
+          "decision": "UNRESOLVED",
+          "reasons": [
+            "send count not one"
+          ],
+          "sink_contract_status": "UNREVIEWED",
+          "sender_semantic_admission": false,
+          "runtime_admission": false
+        },
+        {
+          "identity_proven": false,
+          "decision": "UNRESOLVED",
+          "reasons": [
+            "send count not one"
+          ],
+          "sink_contract_status": "UNREVIEWED",
+          "sender_semantic_admission": false,
+          "runtime_admission": false
+        }
+      ],
+      "numeric_join": false
+    },
+    {
+      "command": [
+        "clang++",
+        "-std=c++17",
+        "-fsyntax-only",
+        "-Xclang",
+        "-ast-dump=json",
+        "/home/otto/.hermes/cache/scratch/nmg-final/prefix_parentheses.cpp"
+      ],
+      "exit": 0,
+      "stdout": "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/retained-30.stdout",
+      "stderr": "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/retained-30.stderr",
+      "source": "/home/otto/.hermes/cache/scratch/nmg-final/prefix_parentheses.cpp",
+      "source_sha256": "866c61e5eb64a76ed0bd763c19c5d513cdb5d4f5b3f5d4291b0fcfb4f6ed8b8a",
+      "results": [
+        {
+          "identity_proven": false,
+          "decision": "UNRESOLVED",
+          "reasons": [
+            "send count not one"
+          ],
+          "sink_contract_status": "UNREVIEWED",
+          "sender_semantic_admission": false,
+          "runtime_admission": false
+        },
+        {
+          "identity_proven": true,
+          "decision": "UNRESOLVED",
+          "reasons": [
+            "GCC layout evidence absent"
+          ],
+          "sink_contract_status": "UNREVIEWED",
+          "sender_semantic_admission": false,
+          "runtime_admission": false,
+          "object_id": "0x5555557bb368",
+          "send_object_id": "0x5555557bb368",
+          "sizeof_object_id": "0x5555557bb368",
+          "object_type": "PACKET_ZC_ONE",
+          "function_id": "0x5555557bb2b0",
+          "send_id": "0x5555557bb918",
+          "sizeof_id": "0x5555557bb818",
+          "sink_decl_id": "0x5555557ba240",
+          "record_id": "0x5555557b8288",
+          "header_field_id": "0x5555557b84b0",
+          "header_field_name": "PacketType",
+          "header_constant_id": "0x5555557b9980",
+          "header_assignment_id": "0x5555557bb558",
+          "header_value": 1,
+          "record_location": {
+            "offset": 44,
+            "file": "/home/otto/.hermes/cache/scratch/nmg-final/prefix_parentheses.cpp",
+            "line": 3,
+            "col": 8,
+            "tokLen": 13
+          },
+          "constant_location": {
+            "offset": 174,
+            "line": 5,
+            "col": 15,
+            "tokLen": 13
+          }
+        },
+        {
+          "identity_proven": false,
+          "decision": "UNRESOLVED",
+          "reasons": [
+            "send count not one"
+          ],
+          "sink_contract_status": "UNREVIEWED",
+          "sender_semantic_admission": false,
+          "runtime_admission": false
+        }
+      ],
+      "numeric_join": false
+    },
+    {
+      "command": [
+        "clang++",
+        "-std=c++17",
+        "-fsyntax-only",
+        "-Xclang",
+        "-ast-dump=json",
+        "/home/otto/.hermes/cache/scratch/nmg-final/prefix_comments.cpp"
+      ],
+      "exit": 0,
+      "stdout": "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/retained-31.stdout",
+      "stderr": "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/retained-31.stderr",
+      "source": "/home/otto/.hermes/cache/scratch/nmg-final/prefix_comments.cpp",
+      "source_sha256": "5badebbb948ab3230f9675583b4fb8a9586bd4058ecb45bc8b3259758cdf9c9f",
+      "results": [
+        {
+          "identity_proven": false,
+          "decision": "UNRESOLVED",
+          "reasons": [
+            "send count not one"
+          ],
+          "sink_contract_status": "UNREVIEWED",
+          "sender_semantic_admission": false,
+          "runtime_admission": false
+        },
+        {
+          "identity_proven": true,
+          "decision": "UNRESOLVED",
+          "reasons": [
+            "GCC layout evidence absent"
+          ],
+          "sink_contract_status": "UNREVIEWED",
+          "sender_semantic_admission": false,
+          "runtime_admission": false,
+          "object_id": "0x5555557bb3c8",
+          "send_object_id": "0x5555557bb3c8",
+          "sizeof_object_id": "0x5555557bb3c8",
+          "object_type": "PACKET_ZC_ONE",
+          "function_id": "0x5555557bb310",
+          "send_id": "0x5555557bb958",
+          "sizeof_id": "0x5555557bb858",
+          "sink_decl_id": "0x5555557ba2a0",
+          "record_id": "0x5555557b82e8",
+          "header_field_id": "0x5555557b8510",
+          "header_field_name": "PacketType",
+          "header_constant_id": "0x5555557b99e0",
+          "header_assignment_id": "0x5555557bb5b8",
+          "header_value": 1,
+          "record_location": {
+            "offset": 44,
+            "file": "/home/otto/.hermes/cache/scratch/nmg-final/prefix_comments.cpp",
+            "line": 3,
+            "col": 8,
+            "tokLen": 13
+          },
+          "constant_location": {
+            "offset": 174,
+            "line": 5,
+            "col": 15,
+            "tokLen": 13
+          }
+        },
+        {
+          "identity_proven": false,
+          "decision": "UNRESOLVED",
+          "reasons": [
+            "send count not one"
+          ],
+          "sink_contract_status": "UNREVIEWED",
+          "sender_semantic_admission": false,
+          "runtime_admission": false
+        }
+      ],
+      "numeric_join": false
+    },
+    {
+      "command": [
+        "clang++",
+        "-std=c++17",
+        "-fsyntax-only",
+        "-Xclang",
+        "-ast-dump=json",
+        "/home/otto/.hermes/cache/scratch/nmg-final/prefix_indirect.cpp"
+      ],
+      "exit": 0,
+      "stdout": "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/retained-32.stdout",
+      "stderr": "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/retained-32.stderr",
+      "source": "/home/otto/.hermes/cache/scratch/nmg-final/prefix_indirect.cpp",
+      "source_sha256": "796d55aa70d1dfec6af7b44790c727ea4e5d37a8688da44dda01c17e997b0ec6",
+      "results": [
+        {
+          "identity_proven": false,
+          "decision": "UNRESOLVED",
+          "reasons": [
+            "send count not one"
+          ],
+          "sink_contract_status": "UNREVIEWED",
+          "sender_semantic_admission": false,
+          "runtime_admission": false
+        },
+        {
+          "identity_proven": true,
+          "decision": "UNRESOLVED",
+          "reasons": [
+            "GCC layout evidence absent"
+          ],
+          "sink_contract_status": "UNREVIEWED",
+          "sender_semantic_admission": false,
+          "runtime_admission": false,
+          "object_id": "0x5555557bb3b8",
+          "send_object_id": "0x5555557bb3b8",
+          "sizeof_object_id": "0x5555557bb3b8",
+          "object_type": "PACKET_ZC_ONE",
+          "function_id": "0x5555557bb300",
+          "send_id": "0x5555557bba68",
+          "sizeof_id": "0x5555557bb968",
+          "sink_decl_id": "0x5555557ba290",
+          "record_id": "0x5555557b82d8",
+          "header_field_id": "0x5555557b8500",
+          "header_field_name": "PacketType",
+          "header_constant_id": "0x5555557b99d0",
+          "header_assignment_id": "0x5555557bb5a8",
+          "header_value": 1,
+          "record_location": {
+            "offset": 44,
+            "file": "/home/otto/.hermes/cache/scratch/nmg-final/prefix_indirect.cpp",
+            "line": 3,
+            "col": 8,
+            "tokLen": 13
+          },
+          "constant_location": {
+            "offset": 174,
+            "line": 5,
+            "col": 15,
+            "tokLen": 13
+          }
+        },
+        {
+          "identity_proven": false,
+          "decision": "UNRESOLVED",
+          "reasons": [
+            "send count not one"
+          ],
+          "sink_contract_status": "UNREVIEWED",
+          "sender_semantic_admission": false,
+          "runtime_admission": false
+        }
+      ],
+      "numeric_join": false
+    },
+    {
+      "command": [
+        "clang++",
+        "-std=c++17",
+        "-fsyntax-only",
+        "-Xclang",
+        "-ast-dump=json",
+        "/home/otto/.hermes/cache/scratch/nmg-final/lambda_reference.cpp"
+      ],
+      "exit": 0,
+      "stdout": "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/retained-33.stdout",
+      "stderr": "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/retained-33.stderr",
+      "source": "/home/otto/.hermes/cache/scratch/nmg-final/lambda_reference.cpp",
+      "source_sha256": "b79af6b87a230696514a869ad1805d094ea9682fd1d115c7d9f45d210428dad7",
+      "results": [
+        {
+          "identity_proven": false,
+          "decision": "UNRESOLVED",
+          "reasons": [
+            "send count not one"
+          ],
+          "sink_contract_status": "UNREVIEWED",
+          "sender_semantic_admission": false,
+          "runtime_admission": false
+        },
+        {
+          "identity_proven": false,
+          "decision": "UNRESOLVED",
+          "reasons": [
+            "send count not one"
+          ],
+          "sink_contract_status": "UNREVIEWED",
+          "sender_semantic_admission": false,
+          "runtime_admission": false
+        },
+        {
+          "identity_proven": false,
+          "decision": "UNRESOLVED",
+          "reasons": [
+            "send count not one"
+          ],
+          "sink_contract_status": "UNREVIEWED",
+          "sender_semantic_admission": false,
+          "runtime_admission": false
+        }
+      ],
+      "numeric_join": false
+    },
+    {
+      "command": [
+        "clang++",
+        "-std=c++17",
+        "-fsyntax-only",
+        "-Xclang",
+        "-ast-dump=json",
+        "/home/otto/.hermes/cache/scratch/nmg-final/lambda_capture.cpp"
+      ],
+      "exit": 0,
+      "stdout": "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/retained-34.stdout",
+      "stderr": "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/retained-34.stderr",
+      "source": "/home/otto/.hermes/cache/scratch/nmg-final/lambda_capture.cpp",
+      "source_sha256": "ff789c9d82545c79b725e68dd384c528ea9e426e3d31929b98e16690f4817102",
+      "results": [
+        {
+          "identity_proven": false,
+          "decision": "UNRESOLVED",
+          "reasons": [
+            "send count not one"
+          ],
+          "sink_contract_status": "UNREVIEWED",
+          "sender_semantic_admission": false,
+          "runtime_admission": false
+        },
+        {
+          "identity_proven": false,
+          "decision": "UNRESOLVED",
+          "reasons": [
+            "send count not one"
+          ],
+          "sink_contract_status": "UNREVIEWED",
+          "sender_semantic_admission": false,
+          "runtime_admission": false
+        },
+        {
+          "identity_proven": false,
+          "decision": "UNRESOLVED",
+          "reasons": [
+            "send count not one"
+          ],
+          "sink_contract_status": "UNREVIEWED",
+          "sender_semantic_admission": false,
+          "runtime_admission": false
+        }
+      ],
+      "numeric_join": false
+    },
+    {
+      "command": [
+        "clang++",
+        "-std=c++17",
+        "-fsyntax-only",
+        "-Xclang",
+        "-ast-dump=json",
+        "/home/otto/.hermes/cache/scratch/nmg-final/lambda_empty_return.cpp"
+      ],
+      "exit": 0,
+      "stdout": "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/retained-35.stdout",
+      "stderr": "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/retained-35.stderr",
+      "source": "/home/otto/.hermes/cache/scratch/nmg-final/lambda_empty_return.cpp",
+      "source_sha256": "d81e2bad7dd3ae4f96aac03ffc323600223f70c8705578419a96c9dcc2f24c54",
+      "results": [
+        {
+          "identity_proven": false,
+          "decision": "UNRESOLVED",
+          "reasons": [
+            "send count not one"
+          ],
+          "sink_contract_status": "UNREVIEWED",
+          "sender_semantic_admission": false,
+          "runtime_admission": false
+        },
+        {
+          "identity_proven": false,
+          "decision": "UNRESOLVED",
+          "reasons": [
+            "send count not one"
+          ],
+          "sink_contract_status": "UNREVIEWED",
+          "sender_semantic_admission": false,
+          "runtime_admission": false
+        },
+        {
+          "identity_proven": false,
+          "decision": "UNRESOLVED",
+          "reasons": [
+            "send count not one"
+          ],
+          "sink_contract_status": "UNREVIEWED",
+          "sender_semantic_admission": false,
+          "runtime_admission": false
+        }
+      ],
+      "numeric_join": false
+    },
+    {
+      "command": [
+        "clang++",
+        "-std=c++17",
+        "-fsyntax-only",
+        "-Xclang",
+        "-ast-dump=json",
+        "/home/otto/.hermes/cache/scratch/nmg-final/lambda_comment.cpp"
+      ],
+      "exit": 0,
+      "stdout": "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/retained-36.stdout",
+      "stderr": "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/retained-36.stderr",
+      "source": "/home/otto/.hermes/cache/scratch/nmg-final/lambda_comment.cpp",
+      "source_sha256": "7353cffa4a83299589d00201dc59ea8b470a42174c0014b3069e6b39165a1ede",
+      "results": [
+        {
+          "identity_proven": false,
+          "decision": "UNRESOLVED",
+          "reasons": [
+            "send count not one"
+          ],
+          "sink_contract_status": "UNREVIEWED",
+          "sender_semantic_admission": false,
+          "runtime_admission": false
+        },
+        {
+          "identity_proven": false,
+          "decision": "UNRESOLVED",
+          "reasons": [
+            "send count not one"
+          ],
+          "sink_contract_status": "UNREVIEWED",
+          "sender_semantic_admission": false,
+          "runtime_admission": false
+        },
+        {
+          "identity_proven": false,
+          "decision": "UNRESOLVED",
+          "reasons": [
+            "send count not one"
+          ],
+          "sink_contract_status": "UNREVIEWED",
+          "sender_semantic_admission": false,
+          "runtime_admission": false
+        }
+      ],
+      "numeric_join": false
+    },
+    {
+      "command": [
+        "clang++",
+        "-std=c++17",
+        "-fsyntax-only",
+        "-Xclang",
+        "-ast-dump=json",
+        "/home/otto/.hermes/cache/scratch/nmg-final/lambda_unary_plus.cpp"
+      ],
+      "exit": 0,
+      "stdout": "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/retained-37.stdout",
+      "stderr": "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/retained-37.stderr",
+      "source": "/home/otto/.hermes/cache/scratch/nmg-final/lambda_unary_plus.cpp",
+      "source_sha256": "e982a1145785f2e9d081425469c41ccfa5e63cf470e44c5438160e53e3734012",
+      "results": [
+        {
+          "identity_proven": false,
+          "decision": "UNRESOLVED",
+          "reasons": [
+            "send count not one"
+          ],
+          "sink_contract_status": "UNREVIEWED",
+          "sender_semantic_admission": false,
+          "runtime_admission": false
+        },
+        {
+          "identity_proven": false,
+          "decision": "UNRESOLVED",
+          "reasons": [
+            "send count not one"
+          ],
+          "sink_contract_status": "UNREVIEWED",
+          "sender_semantic_admission": false,
+          "runtime_admission": false
+        },
+        {
+          "identity_proven": false,
+          "decision": "UNRESOLVED",
+          "reasons": [
+            "send count not one"
+          ],
+          "sink_contract_status": "UNREVIEWED",
+          "sender_semantic_admission": false,
+          "runtime_admission": false
+        }
+      ],
+      "numeric_join": false
+    },
+    {
+      "command": [
+        "clang++",
+        "-std=c++17",
+        "-fsyntax-only",
+        "-Xclang",
+        "-ast-dump=json",
+        "/home/otto/.hermes/cache/scratch/nmg-final/lambda_logical_context.cpp"
+      ],
+      "exit": 0,
+      "stdout": "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/retained-38.stdout",
+      "stderr": "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/retained-38.stderr",
+      "source": "/home/otto/.hermes/cache/scratch/nmg-final/lambda_logical_context.cpp",
+      "source_sha256": "d8f146062eb12c8a2bcc627068347767db26d8b05c56013504f614d8ac89a16d",
+      "results": [
+        {
+          "identity_proven": false,
+          "decision": "UNRESOLVED",
+          "reasons": [
+            "send count not one"
+          ],
+          "sink_contract_status": "UNREVIEWED",
+          "sender_semantic_admission": false,
+          "runtime_admission": false
+        },
+        {
+          "identity_proven": false,
+          "decision": "UNRESOLVED",
+          "reasons": [
+            "send count not one"
+          ],
+          "sink_contract_status": "UNREVIEWED",
+          "sender_semantic_admission": false,
+          "runtime_admission": false
+        },
+        {
+          "identity_proven": false,
+          "decision": "UNRESOLVED",
+          "reasons": [
+            "send count not one"
+          ],
+          "sink_contract_status": "UNREVIEWED",
+          "sender_semantic_admission": false,
+          "runtime_admission": false
+        }
+      ],
+      "numeric_join": false
+    },
+    {
+      "command": [
+        "clang++",
+        "-std=c++17",
+        "-fsyntax-only",
+        "-Xclang",
+        "-ast-dump=json",
+        "/home/otto/.hermes/cache/scratch/nmg-final/helper_ref_mutation.cpp"
+      ],
+      "exit": 0,
+      "stdout": "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/retained-39.stdout",
+      "stderr": "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/retained-39.stderr",
+      "source": "/home/otto/.hermes/cache/scratch/nmg-final/helper_ref_mutation.cpp",
+      "source_sha256": "16f020225eb51174d0e417dbb03c2b1f6f529e50fd6767874742dd9c37ebd5dc",
+      "results": [
+        {
+          "identity_proven": false,
+          "decision": "UNRESOLVED",
+          "reasons": [
+            "send count not one"
+          ],
+          "sink_contract_status": "UNREVIEWED",
+          "sender_semantic_admission": false,
+          "runtime_admission": false
+        },
+        {
+          "identity_proven": true,
+          "decision": "UNRESOLVED",
+          "reasons": [
+            "GCC layout evidence absent"
+          ],
+          "sink_contract_status": "UNREVIEWED",
+          "sender_semantic_admission": false,
+          "runtime_admission": false,
+          "object_id": "0x5555557bb2d8",
+          "send_object_id": "0x5555557bb2d8",
+          "sizeof_object_id": "0x5555557bb2d8",
+          "object_type": "PACKET_ZC_ONE",
+          "function_id": "0x5555557bb220",
+          "send_id": "0x5555557bb908",
+          "sizeof_id": "0x5555557bb808",
+          "sink_decl_id": "0x5555557ba1b0",
+          "record_id": "0x5555557b81f8",
+          "header_field_id": "0x5555557b8420",
+          "header_field_name": "PacketType",
+          "header_constant_id": "0x5555557b98f0",
+          "header_assignment_id": "0x5555557bb4c8",
+          "header_value": 1,
+          "record_location": {
+            "offset": 44,
+            "file": "/home/otto/.hermes/cache/scratch/nmg-final/helper_ref_mutation.cpp",
+            "line": 3,
+            "col": 8,
+            "tokLen": 13
+          },
+          "constant_location": {
+            "offset": 174,
+            "line": 5,
+            "col": 15,
+            "tokLen": 13
+          }
+        },
+        {
+          "identity_proven": false,
+          "decision": "UNRESOLVED",
+          "reasons": [
+            "send count not one"
+          ],
+          "sink_contract_status": "UNREVIEWED",
+          "sender_semantic_admission": false,
+          "runtime_admission": false
+        }
+      ],
+      "numeric_join": false
+    },
+    {
+      "command": [
+        "clang++",
+        "-std=c++17",
+        "-fsyntax-only",
+        "-Xclang",
+        "-ast-dump=json",
+        "/home/otto/.hermes/cache/scratch/nmg-final/alias_reference_mutation.cpp"
+      ],
+      "exit": 0,
+      "stdout": "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/retained-40.stdout",
+      "stderr": "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/retained-40.stderr",
+      "source": "/home/otto/.hermes/cache/scratch/nmg-final/alias_reference_mutation.cpp",
+      "source_sha256": "136f238e9e7ecfca40f4d695d6ffece6fd92d693047ae366ce1ab1499d24a568",
+      "results": [
+        {
+          "identity_proven": false,
+          "decision": "UNRESOLVED",
+          "reasons": [
+            "send count not one"
+          ],
+          "sink_contract_status": "UNREVIEWED",
+          "sender_semantic_admission": false,
+          "runtime_admission": false
+        },
+        {
+          "identity_proven": true,
+          "decision": "UNRESOLVED",
+          "reasons": [
+            "GCC layout evidence absent"
+          ],
+          "sink_contract_status": "UNREVIEWED",
+          "sender_semantic_admission": false,
+          "runtime_admission": false,
+          "object_id": "0x5555557bb4e8",
+          "send_object_id": "0x5555557bb4e8",
+          "sizeof_object_id": "0x5555557bb4e8",
+          "object_type": "PACKET_ZC_ONE",
+          "function_id": "0x5555557bb430",
+          "send_id": "0x5555557bbda8",
+          "sizeof_id": "0x5555557bbca8",
+          "sink_decl_id": "0x5555557ba3c0",
+          "record_id": "0x5555557b8408",
+          "header_field_id": "0x5555557b8630",
+          "header_field_name": "PacketType",
+          "header_constant_id": "0x5555557b9b00",
+          "header_assignment_id": "0x5555557bb6d8",
+          "header_value": 1,
+          "record_location": {
+            "offset": 44,
+            "file": "/home/otto/.hermes/cache/scratch/nmg-final/alias_reference_mutation.cpp",
+            "line": 3,
+            "col": 8,
+            "tokLen": 13
+          },
+          "constant_location": {
+            "offset": 174,
+            "line": 5,
+            "col": 15,
+            "tokLen": 13
+          }
+        },
+        {
+          "identity_proven": false,
+          "decision": "UNRESOLVED",
+          "reasons": [
+            "send count not one"
+          ],
+          "sink_contract_status": "UNREVIEWED",
+          "sender_semantic_admission": false,
+          "runtime_admission": false
+        }
+      ],
+      "numeric_join": false
+    },
+    {
+      "command": [
+        "clang++",
+        "-std=c++17",
+        "-fsyntax-only",
+        "-Xclang",
+        "-ast-dump=json",
+        "/home/otto/.hermes/cache/scratch/nmg-final/alias_pointer_mutation.cpp"
+      ],
+      "exit": 0,
+      "stdout": "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/retained-41.stdout",
+      "stderr": "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/retained-41.stderr",
+      "source": "/home/otto/.hermes/cache/scratch/nmg-final/alias_pointer_mutation.cpp",
+      "source_sha256": "929111763d43c77b47ca7b8708609d89d29fb0f9522d8ff176d7d91a2c5b8e4f",
+      "results": [
+        {
+          "identity_proven": false,
+          "decision": "UNRESOLVED",
+          "reasons": [
+            "send count not one"
+          ],
+          "sink_contract_status": "UNREVIEWED",
+          "sender_semantic_admission": false,
+          "runtime_admission": false
+        },
+        {
+          "identity_proven": true,
+          "decision": "UNRESOLVED",
+          "reasons": [
+            "GCC layout evidence absent"
+          ],
+          "sink_contract_status": "UNREVIEWED",
+          "sender_semantic_admission": false,
+          "runtime_admission": false,
+          "object_id": "0x5555557bb388",
+          "send_object_id": "0x5555557bb388",
+          "sizeof_object_id": "0x5555557bb388",
+          "object_type": "PACKET_ZC_ONE",
+          "function_id": "0x5555557bb2d0",
+          "send_id": "0x5555557bbb68",
+          "sizeof_id": "0x5555557bba68",
+          "sink_decl_id": "0x5555557ba260",
+          "record_id": "0x5555557b82a8",
+          "header_field_id": "0x5555557b84d0",
+          "header_field_name": "PacketType",
+          "header_constant_id": "0x5555557b99a0",
+          "header_assignment_id": "0x5555557bb578",
+          "header_value": 1,
+          "record_location": {
+            "offset": 44,
+            "file": "/home/otto/.hermes/cache/scratch/nmg-final/alias_pointer_mutation.cpp",
+            "line": 3,
+            "col": 8,
+            "tokLen": 13
+          },
+          "constant_location": {
+            "offset": 174,
+            "line": 5,
+            "col": 15,
+            "tokLen": 13
+          }
+        },
+        {
+          "identity_proven": false,
+          "decision": "UNRESOLVED",
+          "reasons": [
+            "send count not one"
+          ],
+          "sink_contract_status": "UNREVIEWED",
+          "sender_semantic_admission": false,
+          "runtime_admission": false
+        }
+      ],
+      "numeric_join": false
+    },
+    {
+      "command": [
+        "clang++",
+        "-std=c++17",
+        "-fsyntax-only",
+        "-Xclang",
+        "-ast-dump=json",
+        "/home/otto/.hermes/cache/scratch/nmg-final/parenthesized_header_assignment.cpp"
+      ],
+      "exit": 0,
+      "stdout": "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/retained-42.stdout",
+      "stderr": "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/retained-42.stderr",
+      "source": "/home/otto/.hermes/cache/scratch/nmg-final/parenthesized_header_assignment.cpp",
+      "source_sha256": "b417065aa3ea27c35a912a71787d86ce1226e43e63fa8e61aeda378e4bc2443d",
+      "results": [
+        {
+          "identity_proven": false,
+          "decision": "UNRESOLVED",
+          "reasons": [
+            "send count not one"
+          ],
+          "sink_contract_status": "UNREVIEWED",
+          "sender_semantic_admission": false,
+          "runtime_admission": false
+        },
+        {
+          "identity_proven": true,
+          "decision": "UNRESOLVED",
+          "reasons": [
+            "header assignment count not one"
+          ],
+          "sink_contract_status": "UNREVIEWED",
+          "sender_semantic_admission": false,
+          "runtime_admission": false,
+          "object_id": "0x5555557bb638",
+          "send_object_id": "0x5555557bb638",
+          "sizeof_object_id": "0x5555557bb638",
+          "object_type": "PACKET_ZC_ONE",
+          "function_id": "0x5555557bb580",
+          "send_id": "0x5555557bbc08",
+          "sizeof_id": "0x5555557bbb08",
+          "sink_decl_id": "0x5555557ba510"
+        },
+        {
+          "identity_proven": false,
+          "decision": "UNRESOLVED",
+          "reasons": [
+            "send count not one"
+          ],
+          "sink_contract_status": "UNREVIEWED",
+          "sender_semantic_admission": false,
+          "runtime_admission": false
+        }
+      ],
+      "numeric_join": false
+    },
+    {
+      "command": [
+        "clang++",
+        "-std=c++17",
+        "-fsyntax-only",
+        "-Xclang",
+        "-ast-dump=json",
+        "/home/otto/.hermes/cache/scratch/nmg-final/parenthesized_postfix.cpp"
+      ],
+      "exit": 0,
+      "stdout": "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/retained-43.stdout",
+      "stderr": "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/retained-43.stderr",
+      "source": "/home/otto/.hermes/cache/scratch/nmg-final/parenthesized_postfix.cpp",
+      "source_sha256": "c5c928e10556730603e2fa4f3ee606dab6c454502146a524cf2db373ec4ef938",
+      "results": [
+        {
+          "identity_proven": false,
+          "decision": "UNRESOLVED",
+          "reasons": [
+            "send count not one"
+          ],
+          "sink_contract_status": "UNREVIEWED",
+          "sender_semantic_admission": false,
+          "runtime_admission": false
+        },
+        {
+          "identity_proven": true,
+          "decision": "UNRESOLVED",
+          "reasons": [
+            "GCC layout evidence absent"
+          ],
+          "sink_contract_status": "UNREVIEWED",
+          "sender_semantic_admission": false,
+          "runtime_admission": false,
+          "object_id": "0x5555557bb368",
+          "send_object_id": "0x5555557bb368",
+          "sizeof_object_id": "0x5555557bb368",
+          "object_type": "PACKET_ZC_ONE",
+          "function_id": "0x5555557bb2b0",
+          "send_id": "0x5555557bb8f8",
+          "sizeof_id": "0x5555557bb7f8",
+          "sink_decl_id": "0x5555557ba240",
+          "record_id": "0x5555557b8288",
+          "header_field_id": "0x5555557b84b0",
+          "header_field_name": "PacketType",
+          "header_constant_id": "0x5555557b9980",
+          "header_assignment_id": "0x5555557bb558",
+          "header_value": 1,
+          "record_location": {
+            "offset": 44,
+            "file": "/home/otto/.hermes/cache/scratch/nmg-final/parenthesized_postfix.cpp",
+            "line": 3,
+            "col": 8,
+            "tokLen": 13
+          },
+          "constant_location": {
+            "offset": 174,
+            "line": 5,
+            "col": 15,
+            "tokLen": 13
+          }
+        },
+        {
+          "identity_proven": false,
+          "decision": "UNRESOLVED",
+          "reasons": [
+            "send count not one"
+          ],
+          "sink_contract_status": "UNREVIEWED",
+          "sender_semantic_admission": false,
+          "runtime_admission": false
+        }
+      ],
+      "numeric_join": false
+    },
+    {
+      "command": [
+        "clang++",
+        "-std=c++17",
+        "-fsyntax-only",
+        "-Xclang",
+        "-ast-dump=json",
+        "/home/otto/.hermes/cache/scratch/nmg-final/parenthesized_object_assignment.cpp"
+      ],
+      "exit": 0,
+      "stdout": "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/retained-44.stdout",
+      "stderr": "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/retained-44.stderr",
+      "source": "/home/otto/.hermes/cache/scratch/nmg-final/parenthesized_object_assignment.cpp",
+      "source_sha256": "05251373fa6fd3ed9a40f822bf6eef7c7701257049728292a71d09b9fb2a3899",
+      "results": [
+        {
+          "identity_proven": false,
+          "decision": "UNRESOLVED",
+          "reasons": [
+            "send count not one"
+          ],
+          "sink_contract_status": "UNREVIEWED",
+          "sender_semantic_admission": false,
+          "runtime_admission": false
+        },
+        {
+          "identity_proven": true,
+          "decision": "UNRESOLVED",
+          "reasons": [
+            "GCC layout evidence absent"
+          ],
+          "sink_contract_status": "UNREVIEWED",
+          "sender_semantic_admission": false,
+          "runtime_admission": false,
+          "object_id": "0x5555557bb638",
+          "send_object_id": "0x5555557bb638",
+          "sizeof_object_id": "0x5555557bb638",
+          "object_type": "PACKET_ZC_ONE",
+          "function_id": "0x5555557bb580",
+          "send_id": "0x5555557bca98",
+          "sizeof_id": "0x5555557bc998",
+          "sink_decl_id": "0x5555557ba510",
+          "record_id": "0x5555557b8558",
+          "header_field_id": "0x5555557b8780",
+          "header_field_name": "PacketType",
+          "header_constant_id": "0x5555557b9c50",
+          "header_assignment_id": "0x5555557bb828",
+          "header_value": 1,
+          "record_location": {
+            "offset": 44,
+            "file": "/home/otto/.hermes/cache/scratch/nmg-final/parenthesized_object_assignment.cpp",
+            "line": 3,
+            "col": 8,
+            "tokLen": 13
+          },
+          "constant_location": {
+            "offset": 174,
+            "line": 5,
+            "col": 15,
+            "tokLen": 13
+          }
+        },
+        {
+          "identity_proven": false,
+          "decision": "UNRESOLVED",
+          "reasons": [
+            "send count not one"
+          ],
+          "sink_contract_status": "UNREVIEWED",
+          "sender_semantic_admission": false,
+          "runtime_admission": false
+        }
+      ],
+      "numeric_join": false
+    },
+    {
+      "command": [
+        "clang++",
+        "-std=c++17",
+        "-fsyntax-only",
+        "-Xclang",
+        "-ast-dump=json",
+        "/home/otto/.hermes/cache/scratch/nmg-final/header_after_send.cpp"
+      ],
+      "exit": 0,
+      "stdout": "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/retained-45.stdout",
+      "stderr": "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/retained-45.stderr",
+      "source": "/home/otto/.hermes/cache/scratch/nmg-final/header_after_send.cpp",
+      "source_sha256": "14a74ae6d296fcec1bc96a1eb2870b24943e546ea205d7a660c9986952f36797",
+      "results": [
+        {
+          "identity_proven": false,
+          "decision": "UNRESOLVED",
+          "reasons": [
+            "send count not one"
+          ],
+          "sink_contract_status": "UNREVIEWED",
+          "sender_semantic_admission": false,
+          "runtime_admission": false
+        },
+        {
+          "identity_proven": true,
+          "decision": "UNRESOLVED",
+          "reasons": [
+            "GCC layout evidence absent"
+          ],
+          "sink_contract_status": "UNREVIEWED",
+          "sender_semantic_admission": false,
+          "runtime_admission": false,
+          "object_id": "0x5555557bb358",
+          "send_object_id": "0x5555557bb358",
+          "sizeof_object_id": "0x5555557bb358",
+          "object_type": "PACKET_ZC_ONE",
+          "function_id": "0x5555557bb2a0",
+          "send_id": "0x5555557bb768",
+          "sizeof_id": "0x5555557bb668",
+          "sink_decl_id": "0x5555557ba230",
+          "record_id": "0x5555557b8278",
+          "header_field_id": "0x5555557b84a0",
+          "header_field_name": "PacketType",
+          "header_constant_id": "0x5555557b9970",
+          "header_assignment_id": "0x5555557bb8b8",
+          "header_value": 1,
+          "record_location": {
+            "offset": 44,
+            "file": "/home/otto/.hermes/cache/scratch/nmg-final/header_after_send.cpp",
+            "line": 3,
+            "col": 8,
+            "tokLen": 13
+          },
+          "constant_location": {
+            "offset": 174,
+            "line": 5,
+            "col": 15,
+            "tokLen": 13
+          }
+        },
+        {
+          "identity_proven": false,
+          "decision": "UNRESOLVED",
+          "reasons": [
+            "send count not one"
+          ],
+          "sink_contract_status": "UNREVIEWED",
+          "sender_semantic_admission": false,
+          "runtime_admission": false
+        }
+      ],
+      "numeric_join": false
+    },
+    {
+      "command": [
+        "clang++",
+        "-std=c++17",
+        "-fsyntax-only",
+        "-Xclang",
+        "-ast-dump=json",
+        "/home/otto/.hermes/cache/scratch/nmg-final/array_shadow.cpp"
+      ],
+      "exit": 0,
+      "stdout": "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/retained-46.stdout",
+      "stderr": "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/retained-46.stderr",
+      "source": "/home/otto/.hermes/cache/scratch/nmg-final/array_shadow.cpp",
+      "source_sha256": "c449e9ba9da403321e054f904c94d0fc083743188282e57ae3e1f6ec9bbfd1a0",
+      "results": [
+        {
+          "identity_proven": false,
+          "decision": "UNRESOLVED",
+          "reasons": [
+            "send count not one"
+          ],
+          "sink_contract_status": "UNREVIEWED",
+          "sender_semantic_admission": false,
+          "runtime_admission": false
+        },
+        {
+          "identity_proven": true,
+          "decision": "UNRESOLVED",
+          "reasons": [
+            "record declaration unavailable"
+          ],
+          "sink_contract_status": "UNREVIEWED",
+          "sender_semantic_admission": false,
+          "runtime_admission": false,
+          "object_id": "0x5555557bb638",
+          "send_object_id": "0x5555557bb638",
+          "sizeof_object_id": "0x5555557bb638",
+          "object_type": "char[4]",
+          "function_id": "0x5555557bb240",
+          "send_id": "0x5555557bba78",
+          "sizeof_id": "0x5555557bb980",
+          "sink_decl_id": "0x5555557ba1d0"
+        },
+        {
+          "identity_proven": false,
+          "decision": "UNRESOLVED",
+          "reasons": [
+            "send count not one"
+          ],
+          "sink_contract_status": "UNREVIEWED",
+          "sender_semantic_admission": false,
+          "runtime_admission": false
+        }
+      ],
+      "numeric_join": false
+    },
+    {
+      "command": [
+        "clang++",
+        "-std=c++17",
+        "-fsyntax-only",
+        "-Xclang",
+        "-ast-dump=json",
+        "/home/otto/.hermes/cache/scratch/nmg-final/array_no_binding_send.cpp"
+      ],
+      "exit": 0,
+      "stdout": "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/retained-47.stdout",
+      "stderr": "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/retained-47.stderr",
+      "source": "/home/otto/.hermes/cache/scratch/nmg-final/array_no_binding_send.cpp",
+      "source_sha256": "8ea69ddbcdc7aa976eff46b6898535ba5e5f073418b434d9b40d17fd865dcbcd",
+      "results": [
+        {
+          "identity_proven": false,
+          "decision": "UNRESOLVED",
+          "reasons": [
+            "send count not one"
+          ],
+          "sink_contract_status": "UNREVIEWED",
+          "sender_semantic_admission": false,
+          "runtime_admission": false
+        },
+        {
+          "identity_proven": false,
+          "decision": "UNRESOLVED",
+          "reasons": [
+            "not address-object / sizeof-object"
+          ],
+          "sink_contract_status": "UNREVIEWED",
+          "sender_semantic_admission": false,
+          "runtime_admission": false
+        },
+        {
+          "identity_proven": false,
+          "decision": "UNRESOLVED",
+          "reasons": [
+            "send count not one"
+          ],
+          "sink_contract_status": "UNREVIEWED",
+          "sender_semantic_admission": false,
+          "runtime_admission": false
+        }
+      ],
+      "numeric_join": false
+    },
+    {
+      "command": [
+        "clang++",
+        "-std=c++17",
+        "-fsyntax-only",
+        "-Xclang",
+        "-ast-dump=json",
+        "/home/otto/.hermes/cache/scratch/nmg-final/comments_strings_positive.cpp"
+      ],
+      "exit": 0,
+      "stdout": "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/retained-48.stdout",
+      "stderr": "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/retained-48.stderr",
+      "source": "/home/otto/.hermes/cache/scratch/nmg-final/comments_strings_positive.cpp",
+      "source_sha256": "f16699a933872fcc264c69b14500849f4db2dfb8ebe3e48ea7f3d4d4e91f5b23",
+      "results": [
+        {
+          "identity_proven": false,
+          "decision": "UNRESOLVED",
+          "reasons": [
+            "send count not one"
+          ],
+          "sink_contract_status": "UNREVIEWED",
+          "sender_semantic_admission": false,
+          "runtime_admission": false
+        },
+        {
+          "identity_proven": true,
+          "decision": "UNRESOLVED",
+          "reasons": [
+            "GCC layout evidence absent"
+          ],
+          "sink_contract_status": "UNREVIEWED",
+          "sender_semantic_admission": false,
+          "runtime_admission": false,
+          "object_id": "0x5555557bb5b8",
+          "send_object_id": "0x5555557bb5b8",
+          "sizeof_object_id": "0x5555557bb5b8",
+          "object_type": "PACKET_ZC_ONE",
+          "function_id": "0x5555557bb500",
+          "send_id": "0x5555557bbc08",
+          "sizeof_id": "0x5555557bbb08",
+          "sink_decl_id": "0x5555557ba490",
+          "record_id": "0x5555557b84d8",
+          "header_field_id": "0x5555557b8700",
+          "header_field_name": "PacketType",
+          "header_constant_id": "0x5555557b9bd0",
+          "header_assignment_id": "0x5555557bb7a8",
+          "header_value": 1,
+          "record_location": {
+            "offset": 44,
+            "file": "/home/otto/.hermes/cache/scratch/nmg-final/comments_strings_positive.cpp",
+            "line": 3,
+            "col": 8,
+            "tokLen": 13
+          },
+          "constant_location": {
+            "offset": 174,
+            "line": 5,
+            "col": 15,
+            "tokLen": 13
+          }
+        },
+        {
+          "identity_proven": false,
+          "decision": "UNRESOLVED",
+          "reasons": [
+            "send count not one"
+          ],
+          "sink_contract_status": "UNREVIEWED",
+          "sender_semantic_admission": false,
+          "runtime_admission": false
+        }
+      ],
+      "numeric_join": false
+    },
+    {
+      "command": [
+        "clang++",
+        "-std=c++17",
+        "-fsyntax-only",
+        "-Xclang",
+        "-ast-dump=json",
+        "/home/otto/.hermes/cache/scratch/nmg-final/ordinary_branch_positive.cpp"
+      ],
+      "exit": 0,
+      "stdout": "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/retained-49.stdout",
+      "stderr": "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/retained-49.stderr",
+      "source": "/home/otto/.hermes/cache/scratch/nmg-final/ordinary_branch_positive.cpp",
+      "source_sha256": "59ba43fb3e06a75d083499e3c438f9378278d0b9ae183f05334313ec351f46e0",
+      "results": [
+        {
+          "identity_proven": false,
+          "decision": "UNRESOLVED",
+          "reasons": [
+            "send count not one"
+          ],
+          "sink_contract_status": "UNREVIEWED",
+          "sender_semantic_admission": false,
+          "runtime_admission": false
+        },
+        {
+          "identity_proven": false,
+          "decision": "UNRESOLVED",
+          "reasons": [
+            "send count not one"
+          ],
+          "sink_contract_status": "UNREVIEWED",
+          "sender_semantic_admission": false,
+          "runtime_admission": false
+        },
+        {
+          "identity_proven": false,
+          "decision": "UNRESOLVED",
+          "reasons": [
+            "send count not one"
+          ],
+          "sink_contract_status": "UNREVIEWED",
+          "sender_semantic_admission": false,
+          "runtime_admission": false
+        }
+      ],
+      "numeric_join": false
+    },
+    {
+      "command": [
+        "clang++",
+        "-std=c++17",
+        "-fsyntax-only",
+        "-Xclang",
+        "-ast-dump=json",
+        "/home/otto/.hermes/cache/scratch/nmg-final/owned/complete-header.cpp"
+      ],
+      "exit": 1,
+      "stdout": "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/retained-50.stdout",
+      "stderr": "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/retained-50.stderr",
+      "source": "/home/otto/.hermes/cache/scratch/nmg-final/owned/complete-header.cpp",
+      "source_sha256": "5899a609249a73db8345b2a6fb65cf1f25d51296e33f4fb2e27abaeab64f75bb",
+      "results": [],
+      "numeric_join": false
+    },
+    {
+      "command": [
+        "clang++",
+        "-std=c++17",
+        "-fsyntax-only",
+        "-Xclang",
+        "-ast-dump=json",
+        "/home/otto/.hermes/cache/scratch/nmg-final/owned/cycle2-PacketTypedecrement.cpp"
+      ],
+      "exit": 0,
+      "stdout": "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/retained-51.stdout",
+      "stderr": "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/retained-51.stderr",
+      "source": "/home/otto/.hermes/cache/scratch/nmg-final/owned/cycle2-PacketTypedecrement.cpp",
+      "source_sha256": "2a8b1f6c3274e6b1f86f665e114a87164e289438b7f8da5e385f8992bdab1a21",
+      "results": [
+        {
+          "identity_proven": true,
+          "decision": "UNRESOLVED",
+          "reasons": [
+            "GCC layout evidence absent"
+          ],
+          "sink_contract_status": "UNREVIEWED",
+          "sender_semantic_admission": false,
+          "runtime_admission": false,
+          "object_id": "0x5555557ba5e0",
+          "send_object_id": "0x5555557ba5e0",
+          "sizeof_object_id": "0x5555557ba5e0",
+          "object_type": "PACKET_ZC_ONE",
+          "function_id": "0x5555557ba4f0",
+          "send_id": "0x5555557bb878",
+          "sizeof_id": "0x5555557bb7b0",
+          "sink_decl_id": "0x5555557ba0b0",
+          "record_id": "0x5555557b8468",
+          "header_field_id": "0x5555557b8690",
+          "header_field_name": "PacketType",
+          "header_constant_id": "0x5555557b9b60",
+          "header_assignment_id": "0x5555557bb630",
+          "header_value": 1,
+          "record_location": {
+            "offset": 44,
+            "file": "/home/otto/.hermes/cache/scratch/nmg-final/owned/cycle2-PacketTypedecrement.cpp",
+            "line": 3,
+            "col": 8,
+            "tokLen": 13
+          },
+          "constant_location": {
+            "offset": 174,
+            "line": 5,
+            "col": 15,
+            "tokLen": 13
+          }
+        },
+        {
+          "identity_proven": false,
+          "decision": "UNRESOLVED",
+          "reasons": [
+            "send count not one"
+          ],
+          "sink_contract_status": "UNREVIEWED",
+          "sender_semantic_admission": false,
+          "runtime_admission": false
+        }
+      ],
+      "numeric_join": false
+    },
+    {
+      "command": [
+        "clang++",
+        "-std=c++17",
+        "-fsyntax-only",
+        "-Xclang",
+        "-ast-dump=json",
+        "/home/otto/.hermes/cache/scratch/nmg-final/owned/cycle2-PacketTypeincrement.cpp"
+      ],
+      "exit": 0,
+      "stdout": "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/retained-52.stdout",
+      "stderr": "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/retained-52.stderr",
+      "source": "/home/otto/.hermes/cache/scratch/nmg-final/owned/cycle2-PacketTypeincrement.cpp",
+      "source_sha256": "a9a248e9e72be582ef54c88479ed6e21cb5a58246a12224606f7d537c3aaa7f4",
+      "results": [
+        {
+          "identity_proven": true,
+          "decision": "UNRESOLVED",
+          "reasons": [
+            "GCC layout evidence absent"
+          ],
+          "sink_contract_status": "UNREVIEWED",
+          "sender_semantic_admission": false,
+          "runtime_admission": false,
+          "object_id": "0x5555557ba5e0",
+          "send_object_id": "0x5555557ba5e0",
+          "sizeof_object_id": "0x5555557ba5e0",
+          "object_type": "PACKET_ZC_ONE",
+          "function_id": "0x5555557ba4f0",
+          "send_id": "0x5555557bb8b8",
+          "sizeof_id": "0x5555557bb7f0",
+          "sink_decl_id": "0x5555557ba0b0",
+          "record_id": "0x5555557b8468",
+          "header_field_id": "0x5555557b8690",
+          "header_field_name": "PacketType",
+          "header_constant_id": "0x5555557b9b60",
+          "header_assignment_id": "0x5555557bb630",
+          "header_value": 1,
+          "record_location": {
+            "offset": 44,
+            "file": "/home/otto/.hermes/cache/scratch/nmg-final/owned/cycle2-PacketTypeincrement.cpp",
+            "line": 3,
+            "col": 8,
+            "tokLen": 13
+          },
+          "constant_location": {
+            "offset": 174,
+            "line": 5,
+            "col": 15,
+            "tokLen": 13
+          }
+        },
+        {
+          "identity_proven": false,
+          "decision": "UNRESOLVED",
+          "reasons": [
+            "send count not one"
+          ],
+          "sink_contract_status": "UNREVIEWED",
+          "sender_semantic_admission": false,
+          "runtime_admission": false
+        }
+      ],
+      "numeric_join": false
+    },
+    {
+      "command": [
+        "clang++",
+        "-std=c++17",
+        "-fsyntax-only",
+        "-Xclang",
+        "-ast-dump=json",
+        "/home/otto/.hermes/cache/scratch/nmg-final/owned/cycle2-lambda.cpp"
+      ],
+      "exit": 0,
+      "stdout": "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/retained-53.stdout",
+      "stderr": "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/retained-53.stderr",
+      "source": "/home/otto/.hermes/cache/scratch/nmg-final/owned/cycle2-lambda.cpp",
+      "source_sha256": "8b8f3856a338b16c9de417912d428213a8df61484e00a3f5ba4ee702f62998e5",
+      "results": [
+        {
+          "identity_proven": false,
+          "decision": "UNRESOLVED",
+          "reasons": [
+            "send count not one"
+          ],
+          "sink_contract_status": "UNREVIEWED",
+          "sender_semantic_admission": false,
+          "runtime_admission": false
+        },
+        {
+          "identity_proven": false,
+          "decision": "UNRESOLVED",
+          "reasons": [
+            "send count not one"
+          ],
+          "sink_contract_status": "UNREVIEWED",
+          "sender_semantic_admission": false,
+          "runtime_admission": false
+        }
+      ],
+      "numeric_join": false
+    },
+    {
+      "command": [
+        "clang++",
+        "-std=c++17",
+        "-fsyntax-only",
+        "-Xclang",
+        "-ast-dump=json",
+        "/home/otto/.hermes/cache/scratch/nmg-final/owned/cycle2-packetTypedecrement.cpp"
+      ],
+      "exit": 0,
+      "stdout": "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/retained-54.stdout",
+      "stderr": "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/retained-54.stderr",
+      "source": "/home/otto/.hermes/cache/scratch/nmg-final/owned/cycle2-packetTypedecrement.cpp",
+      "source_sha256": "8517f6b23285ffb7aa46b283d48f17270b41ee70eb08372b599a682cbb901770",
+      "results": [
+        {
+          "identity_proven": true,
+          "decision": "UNRESOLVED",
+          "reasons": [
+            "GCC layout evidence absent"
+          ],
+          "sink_contract_status": "UNREVIEWED",
+          "sender_semantic_admission": false,
+          "runtime_admission": false,
+          "object_id": "0x5555557ba5e0",
+          "send_object_id": "0x5555557ba5e0",
+          "sizeof_object_id": "0x5555557ba5e0",
+          "object_type": "PACKET_ZC_ONE",
+          "function_id": "0x5555557ba4f0",
+          "send_id": "0x5555557bb878",
+          "sizeof_id": "0x5555557bb7b0",
+          "sink_decl_id": "0x5555557ba0b0",
+          "record_id": "0x5555557b8468",
+          "header_field_id": "0x5555557b8690",
+          "header_field_name": "packetType",
+          "header_constant_id": "0x5555557b9b60",
+          "header_assignment_id": "0x5555557bb630",
+          "header_value": 1,
+          "record_location": {
+            "offset": 44,
+            "file": "/home/otto/.hermes/cache/scratch/nmg-final/owned/cycle2-packetTypedecrement.cpp",
+            "line": 3,
+            "col": 8,
+            "tokLen": 13
+          },
+          "constant_location": {
+            "offset": 174,
+            "line": 5,
+            "col": 15,
+            "tokLen": 13
+          }
+        },
+        {
+          "identity_proven": false,
+          "decision": "UNRESOLVED",
+          "reasons": [
+            "send count not one"
+          ],
+          "sink_contract_status": "UNREVIEWED",
+          "sender_semantic_admission": false,
+          "runtime_admission": false
+        }
+      ],
+      "numeric_join": false
+    },
+    {
+      "command": [
+        "clang++",
+        "-std=c++17",
+        "-fsyntax-only",
+        "-Xclang",
+        "-ast-dump=json",
+        "/home/otto/.hermes/cache/scratch/nmg-final/owned/cycle2-packetTypeincrement.cpp"
+      ],
+      "exit": 0,
+      "stdout": "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/retained-55.stdout",
+      "stderr": "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/retained-55.stderr",
+      "source": "/home/otto/.hermes/cache/scratch/nmg-final/owned/cycle2-packetTypeincrement.cpp",
+      "source_sha256": "27c2b8e1bfc050eb8787af6e0d327ec954c59562a921ba3f18ea9d659f6aa721",
+      "results": [
+        {
+          "identity_proven": true,
+          "decision": "UNRESOLVED",
+          "reasons": [
+            "GCC layout evidence absent"
+          ],
+          "sink_contract_status": "UNREVIEWED",
+          "sender_semantic_admission": false,
+          "runtime_admission": false,
+          "object_id": "0x5555557ba5e0",
+          "send_object_id": "0x5555557ba5e0",
+          "sizeof_object_id": "0x5555557ba5e0",
+          "object_type": "PACKET_ZC_ONE",
+          "function_id": "0x5555557ba4f0",
+          "send_id": "0x5555557bb8b8",
+          "sizeof_id": "0x5555557bb7f0",
+          "sink_decl_id": "0x5555557ba0b0",
+          "record_id": "0x5555557b8468",
+          "header_field_id": "0x5555557b8690",
+          "header_field_name": "packetType",
+          "header_constant_id": "0x5555557b9b60",
+          "header_assignment_id": "0x5555557bb630",
+          "header_value": 1,
+          "record_location": {
+            "offset": 44,
+            "file": "/home/otto/.hermes/cache/scratch/nmg-final/owned/cycle2-packetTypeincrement.cpp",
+            "line": 3,
+            "col": 8,
+            "tokLen": 13
+          },
+          "constant_location": {
+            "offset": 174,
+            "line": 5,
+            "col": 15,
+            "tokLen": 13
+          }
+        },
+        {
+          "identity_proven": false,
+          "decision": "UNRESOLVED",
+          "reasons": [
+            "send count not one"
+          ],
+          "sink_contract_status": "UNREVIEWED",
+          "sender_semantic_admission": false,
+          "runtime_admission": false
+        }
+      ],
+      "numeric_join": false
+    },
+    {
+      "command": [
+        "clang++",
+        "-std=c++17",
+        "-fsyntax-only",
+        "-Xclang",
+        "-ast-dump=json",
+        "/home/otto/.hermes/cache/scratch/native-manifest-rereview1/counterexample.cpp"
+      ],
+      "exit": 0,
+      "stdout": "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/retained-56.stdout",
+      "stderr": "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/retained-56.stderr",
+      "source": "/home/otto/.hermes/cache/scratch/native-manifest-rereview1/counterexample.cpp",
+      "source_sha256": "c15af63a3cfb8f0e56dc6bbdf1ec3333d56cb7efd65af3d1247cca5c487b3bfa",
+      "results": [
+        {
+          "identity_proven": true,
+          "decision": "UNRESOLVED",
+          "reasons": [
+            "GCC layout evidence absent"
+          ],
+          "sink_contract_status": "UNREVIEWED",
+          "sender_semantic_admission": false,
+          "runtime_admission": false,
+          "object_id": "0x5555557ba9c0",
+          "send_object_id": "0x5555557ba9c0",
+          "sizeof_object_id": "0x5555557ba9c0",
+          "object_type": "PACKET_ZC_ONE",
+          "function_id": "0x5555557ba8d0",
+          "send_id": "0x5555557bbc38",
+          "sizeof_id": "0x5555557bbb40",
+          "sink_decl_id": "0x5555557ba440",
+          "record_id": "0x5555557b8478",
+          "header_field_id": "0x5555557b86a0",
+          "header_field_name": "PacketType",
+          "header_constant_id": "0x5555557b9b68",
+          "header_assignment_id": "0x5555557bb9c8",
+          "header_value": 1,
+          "record_location": {
+            "offset": 44,
+            "file": "/home/otto/.hermes/cache/scratch/native-manifest-rereview1/counterexample.cpp",
+            "line": 3,
+            "col": 8,
+            "tokLen": 13
+          },
+          "constant_location": {
+            "offset": 179,
+            "line": 5,
+            "col": 20,
+            "tokLen": 13
+          }
+        },
+        {
+          "identity_proven": true,
+          "decision": "UNRESOLVED",
+          "reasons": [
+            "GCC layout evidence absent"
+          ],
+          "sink_contract_status": "UNREVIEWED",
+          "sender_semantic_admission": false,
+          "runtime_admission": false,
+          "object_id": "0x5555557bbdd0",
+          "send_object_id": "0x5555557bbdd0",
+          "sizeof_object_id": "0x5555557bbdd0",
+          "object_type": "PACKET_ZC_ONE",
+          "function_id": "0x5555557bbd18",
+          "send_id": "0x5555557bc100",
+          "sizeof_id": "0x5555557bc068",
+          "sink_decl_id": "0x5555557ba440",
+          "record_id": "0x5555557b8478",
+          "header_field_id": "0x5555557b86a0",
+          "header_field_name": "PacketType",
+          "header_constant_id": "0x5555557b9b68",
+          "header_assignment_id": "0x5555557bbf20",
+          "header_value": 1,
+          "record_location": {
+            "offset": 44,
+            "file": "/home/otto/.hermes/cache/scratch/native-manifest-rereview1/counterexample.cpp",
+            "line": 3,
+            "col": 8,
+            "tokLen": 13
+          },
+          "constant_location": {
+            "offset": 179,
+            "line": 5,
+            "col": 20,
+            "tokLen": 13
+          }
+        },
+        {
+          "identity_proven": false,
+          "decision": "UNRESOLVED",
+          "reasons": [
+            "send count not one"
+          ],
+          "sink_contract_status": "UNREVIEWED",
+          "sender_semantic_admission": false,
+          "runtime_admission": false
+        },
+        {
+          "identity_proven": false,
+          "decision": "UNRESOLVED",
+          "reasons": [
+            "send count not one"
+          ],
+          "sink_contract_status": "UNREVIEWED",
+          "sender_semantic_admission": false,
+          "runtime_admission": false
+        }
+      ],
+      "numeric_join": false
+    }
+  ],
+  "cli_cases": [
+    {
+      "command": [
+        "/nix/store/lb41b0anx1f98y9y5s9mdv97gjgsq740-python3-3.14.7/bin/python3",
+        "/home/otto/dev/ro-bots/spikes/007-native-packet-ast/sender-proof/cli.py",
+        "clif_emotion"
+      ],
+      "exit": 0,
+      "stdout": "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/cli-positive.stdout",
+      "stderr": "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/cli-positive.stderr",
+      "result": {
+        "identity_proven": true,
+        "decision": "IDENTITY_LAYOUT_CANDIDATE",
+        "reasons": [],
+        "sink_contract_status": "UNREVIEWED",
+        "sender_semantic_admission": false,
+        "runtime_admission": false,
+        "object_id": "0x55555c95d100",
+        "send_object_id": "0x55555c95d100",
+        "sizeof_object_id": "0x55555c95d100",
+        "object_type": "PACKET_ZC_EMOTION",
+        "function_id": "0x55555c95d000",
+        "send_id": "0x55555c95d880",
+        "sizeof_id": "0x55555c95d7d0",
+        "sink_decl_id": "0x55555c566910",
+        "record_id": "0x55555877cce8",
+        "header_field_id": "0x55555877cf08",
+        "header_field_name": "packetType",
+        "header_constant_id": "0x55555877d068",
+        "header_assignment_id": "0x55555c95d2f0",
+        "header_value": 192,
+        "record_location": {
+          "offset": 46129,
+          "line": 1973,
+          "col": 8,
+          "tokLen": 17,
+          "includedFrom": {
+            "file": "/home/otto/.hermes/cache/scratch/native-profile-replay-s2jdj4rn/public-source/src/map/clif.hpp"
+          }
+        },
+        "constant_location": {
+          "spellingLoc": {
+            "offset": 3026,
+            "file": "<scratch space>",
+            "line": 116,
+            "col": 1,
+            "tokLen": 17
+          },
+          "expansionLoc": {
+            "offset": 46220,
+            "file": "/home/otto/.hermes/cache/scratch/native-profile-replay-s2jdj4rn/public-source/src/map/packets.hpp",
+            "line": 1978,
+            "col": 1,
+            "tokLen": 20,
+            "includedFrom": {
+              "file": "/home/otto/.hermes/cache/scratch/native-profile-replay-s2jdj4rn/public-source/src/map/clif.hpp"
+            }
+          }
+        },
+        "measured_size": 7,
+        "measured_offsets": [
+          0,
+          2,
+          6
+        ],
+        "sender": "clif_emotion",
+        "source_closure_sha256": "f045b33b434efc83a7e216f295bf899114a4a1a2daa159898fb738d8b553d6d6",
+        "authority_sha256": "602c856e8e368fe767ff6b54704416818dc7939a5c6606f0fb6af6b49c2e71ac",
+        "ast_artifact_sha256": "07238418270d5717f43aa169a51bd5f40c3e58598479831b25aa0d80af30f450",
+        "gcc_layout_artifact_sha256": "d79dfefd4be7efe0d6fbf3fd8cf7bfb135853dfe8935b39d758e7d99b3140ebf"
+      }
+    },
+    {
+      "command": [
+        "/nix/store/lb41b0anx1f98y9y5s9mdv97gjgsq740-python3-3.14.7/bin/python3",
+        "/home/otto/dev/ro-bots/spikes/007-native-packet-ast/sender-proof/cli.py",
+        "clif_emotion",
+        "--profile",
+        "20211103"
+      ],
+      "exit": 2,
+      "stdout": "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/cli-wrong-profile.stdout",
+      "stderr": "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/cli-wrong-profile.stderr",
+      "result": {
+        "decision": "DENIED",
+        "reasons": [
+          "unsupported profile; denied before candidate"
+        ],
+        "runtime_admission": false,
+        "sender_semantic_admission": false
+      }
+    }
+  ],
+  "freeze_verification": {
+    "production189": {
+      "count": 189,
+      "unchanged": true
+    },
+    "legacy7": {
+      "count": 7,
+      "unchanged": true
+    }
+  },
+  "old_158_artifacts_unchanged": true,
+  "prior_failed_reports_unchanged": {
+    "/home/otto/dev/ro-bots/run/reviews/native-ast-real-sender-proof.json": true,
+    "/home/otto/dev/ro-bots/run/reviews/native-ast-real-sink-audit.json": true,
+    "/home/otto/dev/ro-bots/run/reviews/native-ast-real-sender-scope.json": true,
+    "/home/otto/dev/ro-bots/run/reviews/native-ast-profile-replay-independent-review.json": true
+  },
+  "original_report_sha256": "8041ea9f408868e30891f204f88b8307f58909eaf719983ce433513a26335a41",
+  "compiler_versions": {
+    "command": [
+      "sh",
+      "-c",
+      "clang++ --version; g++ --version; python3 --version"
+    ],
+    "exit": 0,
+    "stdout": "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/versions.stdout",
+    "stderr": "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/versions.stderr"
+  },
+  "elapsed_seconds": 278.8210680484772,
+  "limitations": [
+    "Self-verification is not independent approval; parent replay and fresh independent review still required",
+    "No full AST rebuilding, server/runtime/sink adoption, callback edits, root gates, dependency or pin changes",
+    "Numeric dictionaries are trusted internal test-oracle metadata, not arbitrary caller measurement input",
+    "Exact pinned real selected AST lacks enum declarations: emotion_type/send_target only recognized as known enum type names for clif_emotion; CLI pins remain unchanged",
+    "Fresh reviewer probes use valid 8-byte fixture unit metadata, not native runtime results"
+  ],
+  "artifacts": {
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/fresh-mutable_header.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/retained-47.stdout": "076f2ffcdf7ce1593d1436a3e38198baa0cc109b7d963c8c26aaea9d8b9530de",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/tmp4s11htv8.stdout": "11d1cc7898173440f844a005ff245f9755ea88243ca1fce3357b1e3b8bc10dd9",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/L1-red.log": "7e2cb6409a0a65cc4786fdaf76e6d26a0c3b60b567c90fcaa1cf2594890d1eed",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/tmpiti3jpak.stdout": "b3a3529825c4d965074092cfe41e2d233b47b0df2e744257b3ecf4297cbcb6d9",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/owned-03.stdout": "5224090e903ad258606102a0dda4b62b7624bdb4fc40da24e7872f7008c98af8",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/tmpnb0pp0jd.cpp": "cf6ac874981bcbfba0aba7c2055946b3296c31527ffd0cd60791274a95b1a76f",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/tmpiti3jpak.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/L1-green.log": "976abad79b9861521dabb75315279f16e77d56178b2435ad93c91094de5af32e",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/tmpe5fw4wil.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/owned-21.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/tmpm2n4hbje.cpp": "7768d048413e6bc119fcccdde19fc933497d5b88b508ab618e13ecc5e3c109f8",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/tmp47_t8b5f.cpp": "a098659fe5cb5c065269f8d37a8d28939329811a936506211038704cae1ba406",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/retained-39.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/owned-19.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/tmp_40pa7h4.cpp": "51e2a448e3608ea9e23c18f8a4666b66f6d26b8fcc87a1e90d0000006a86a260",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/retained-51.stdout": "a8b6c5573b02db30df65c341114ea681dc6a1b702b7316444b43c514acb542f8",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/tmptl85ozo6.stdout": "d6a9590884275113d7545f03e87265159c3a2fe245127a77cad985f51f54e25b",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/owned-12.stdout": "eb5694861260f8c180b678cdcac91d8058fbc9b14e9917ee29808a2912e8ec1a",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/tmplbps16wm.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/owned-17.stdout": "92792f900df2a725dd792b9545196673b7057ba3f950924937b3fecebdf701ad",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/tmpzlj0u7wa.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/retained-41.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/owned-20.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/tmpzlj0u7wa.cpp": "51e2a448e3608ea9e23c18f8a4666b66f6d26b8fcc87a1e90d0000006a86a260",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/tmptydkcqud.cpp": "51e2a448e3608ea9e23c18f8a4666b66f6d26b8fcc87a1e90d0000006a86a260",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/retained-28.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/fresh-nonintegral_cast_param.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/tmptle8mj_y.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/retained-56.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/L3-red.log": "67d57d97df2369f7024239bcc5e0a822aacaa1999f5c2b7eb9273e32a57957b4",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/tmpi24ecgn2.cpp": "cf6ac874981bcbfba0aba7c2055946b3296c31527ffd0cd60791274a95b1a76f",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/retained-33.stdout": "1e17a8039b071adf10a59fd445f3413e9d42ecb0c116bfcca86047195dd1fd86",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/tmp7br2q4gj.stdout": "16146a469f0900b220f05f3804408cbd912aba6c190738e926cf416a4724d110",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/tmpe5fw4wil.cpp": "4eb5039a11c4690eabb67af6a7eb9ef3717a49778c40ff5163f773ec8fae86f8",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/retained-31.stdout": "37d3da403cef3daa5959af59a3892fa3eba4dc6cfd7d148d17ef312f9c44df28",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/cli-wrong-profile.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/retained-44.stdout": "17ce667379d3d0e1407454d91a8009ad830dbcbf78267797cea2206eb3f06b28",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/owned-11.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/owned-24.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/owned-05.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/retained-29.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/tmpiti3jpak.cpp": "a098659fe5cb5c065269f8d37a8d28939329811a936506211038704cae1ba406",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/retained-27.stdout": "2ea91df7762b43869353135330d052050e3258e7e07b7fdbd7816a8fa29b205f",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/owned-04.stdout": "faa84487c68cefb70434fa39838002527547784abac615919b87277daf3b0d0a",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/tmpvfuesd9i.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/owned-09.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/retained-40.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/retained-30.stdout": "b93fc0236b074fcdb20988d88444bbaa9e105f76b1002b6d6d111631c999fb25",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/owned-18.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/tmpb66sfjm7.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/owned-11.stdout": "2c71541375e35b32e3b37bc56a0c786bdcd2a9c734ebd1e7abab2be3e991f0c4",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/cli-positive.stdout": "597dea97de3efe9f536596c9a30a1f438c8987ba86bb5f476660e56bedfe45f8",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/tmpm2n4hbje.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/tmpvfuesd9i.stdout": "20cd8afbf7ef6bdb2828ce1be3352059659df857f010844e26b31329455c3ec8",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/cli-positive.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/owned-13.stdout": "1f2ee95af4d46852fef0b01708fa861fa9a0759d1d8a22869bb05a0b0c6eace4",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/retained-45.stdout": "7ee7598167928d9a9bcb1891c1e457db8f8872a8dfe851e5ab956feea5770249",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/tmp3tlh_0lf.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/tmp272k0_jb.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/tmpibsqry2t.cpp": "8b48fc6ea50102519091475db12978d8736da0c01bcb94acac8c9bfe1bd5bf7b",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/owned-23.stdout": "ad5948e8673a409e021e1a9a2e826a1be09b31a9ce23911af65b45488aa1973d",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/fresh-send_arg_mutates_header.stdout": "08e40ecc26bf3fc0d484564a30e5edb4d5cd95bc6e73faeaea988babe4d40bfa",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/retained-32.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/owned-13.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/owned-00.stdout": "d998db4a184a3ddf88373509301131a7eb44c5f8febdc6097e15713c6ff00655",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/owned-12.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/tmplkcn4mc7.cpp": "608fce4d4a4b184895649b675611341fb9362adbda0004b059a17a81384761e4",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/tmpt14qeq5g.stdout": "0102900258ccc13904fa52c608e48ad8e7ad88e2035df4e6e20c7bce8644ccec",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/tmp7br2q4gj.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/tmpj2g1xif3.stdout": "2d13614afefb6ec770838f63fb228e0bc8fb6281a1b81db99968cea889c1c5db",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/tmpsp5l1l6v.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/retained-54.stdout": "991200c7e59be3e4b31837716fdc807908de164c742f5013f58a704b56ac432f",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/tmpkr929s0m.stdout": "a1d5bba2d03d1547f4329b15bf5d75b22f27112db819c86337e88509cebb93ae",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/retained-42.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/retained-46.stdout": "67e3a392948e02576cb73432af075a1102d18e57f1a8eb81eb12e4a05d5cd1ad",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/tmpuvc3n540.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/owned-25.stdout": "110b04a3e7dac70e64569ba7badd36feb0db48e2da4f276fc7dc2c3855d93efa",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/retained-41.stdout": "4abe4bbdbe2062fffd12e8b4702dc743be26cde0bd12a531aaf0521f0d43b500",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/tmp47_t8b5f.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/tmp8u_8neh9.stdout": "4ef963f3ec0fc1ab5755445253175a816d44ffc725949f08075808529b706252",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/retained-53.stdout": "1e3605ff31262691037a8469df7f1de35cdba0b07799542b958b4196192b9bc0",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/L2-red.log": "e56e55629ded31362a7323888a011c83ce0a402f3a51a35ff675ce99811fd735",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/owned-17.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/tmpvfuesd9i.cpp": "51e2a448e3608ea9e23c18f8a4666b66f6d26b8fcc87a1e90d0000006a86a260",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/owned-15.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/owned-19.stdout": "518210e47678bd541764b2c8ff5f500541a8226f4232fa5b9fe2055f12642081",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/tmpj2g1xif3.cpp": "608fce4d4a4b184895649b675611341fb9362adbda0004b059a17a81384761e4",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/retained-27.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/tmpze5x8xk1.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/tmpe5fw4wil.stdout": "5594d1fcb1260282458370916ace381d9fdcb2efc6aa3fbc2fc0e68a79dc8a37",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/retained-30.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/owned-24.stdout": "172be5d7e9b52106676c93e766c5d42208a88ddf5527e5cb1c720943b45e4d3e",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/tmpze5x8xk1.cpp": "7b50ec581f8020d7d282731a5c3b718bbc95c59cf8debc6bee9c4e3485eb1e72",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/tmpuvc3n540.stdout": "9af145aeee5a156c7790ff587ceed4403092e8b6bf8f27368808f237b199ef0e",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/tmph3ywleiy.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/tmpnb0pp0jd.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/tmpb66sfjm7.cpp": "7b50ec581f8020d7d282731a5c3b718bbc95c59cf8debc6bee9c4e3485eb1e72",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/tmplbps16wm.cpp": "a098659fe5cb5c065269f8d37a8d28939329811a936506211038704cae1ba406",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/retained-48.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/tmp3tlh_0lf.stdout": "7d088ea3be76b4bda48eae806855233aab996cef700fcb8f7866457c5e8eabe6",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/retained-39.stdout": "317e885aa944d459ece334b8e7af97ad7100892b9f842ee99ca5d8054d63e643",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/tmpze5x8xk1.stdout": "f21d78637eb90df169ea29a71b88e01790a38924e94bbdc48e3ce8cfe5eee19a",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/owned-21.stdout": "560883e53ce17fc4a20af9462a8f73b10d275d56f07f686016cba7605235f309",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/owned-22.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/tmptl85ozo6.cpp": "7768d048413e6bc119fcccdde19fc933497d5b88b508ab618e13ecc5e3c109f8",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/retained-55.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/owned-22.stdout": "04a09ab834b643994178903fd2a08d454ee1a3be61361af52f8980b6b07073a7",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/tmpi24ecgn2.stdout": "acf7be803b40ff848adc90d35b95029de3fdeca6dd460620fb8e295ae5a1594b",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/owned-16.stderr": "19991c06ded245ffd2890814f087f877228bcf8371831a0c5736bda6cdcba6b6",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/retained-35.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/retained-37.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/retained-52.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/retained-35.stdout": "3b9014d1f064a7c31e2d426ef944f7154ed0f426df84f827d6619c7457d4aa49",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/tmpkr929s0m.cpp": "51e2a448e3608ea9e23c18f8a4666b66f6d26b8fcc87a1e90d0000006a86a260",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/retained-49.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/owned-10.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/retained-33.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/tmps5rpayzo.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/owned-14.stdout": "045ce9e4b31297e435fdd361b859b687d38c1df3bbb5a06850553e2be8d7a3fd",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/tmpi24ecgn2.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/retained-50.stderr": "eab729b6ae4c8be869def726dcd33bc9c302f0f2e0117cd6d87721745d1259aa",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/retained-29.stdout": "02ab057a255067f7d7994a9154707fdd29536be2f27751b8de1acccd82fce46c",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/owned-07.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/tmpliou9qvv.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/tmph3ywleiy.stdout": "2f3efa499ed949ccf81fd158ed86176a42ebce8375d5b0fb367d06b1b6ba461a",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/tmpsp5l1l6v.stdout": "778feaef54fe3e0145ea0f667637d364736373128699d5d65b2d3bd7ace59fcf",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/retained-46.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/tmp4s11htv8.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/retained-49.stdout": "1ee9ebc7c4a703499e3d6a0bdc9c26c125198b24807234a5d010b8657d3781a8",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/retained-36.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/tmprnulkycd.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/retained-51.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/retained-47.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/tmp_40pa7h4.stdout": "83497bf216d5a91f08a24584583f634cc982821e92b857fcecf6807313f9fce7",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/owned-16.stdout": "c8a34fcb0d53c55e72a96a459b0378c3e1e147d326fb911ed663822b57d60d48",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/tmp7br2q4gj.cpp": "4eb5039a11c4690eabb67af6a7eb9ef3717a49778c40ff5163f773ec8fae86f8",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/retained-50.stdout": "3adb6cde3af6dd4e81633a5c7fc832f7d5e2d94e20045cddcc8c077826e6d4a7",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/tmprnulkycd.cpp": "7768d048413e6bc119fcccdde19fc933497d5b88b508ab618e13ecc5e3c109f8",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/versions.stdout": "fa03d7bd0fb0b11e4bd44a7c15f0a8acc93be9d1f99753c34484a17d29e77477",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/retained-38.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/tmplkcn4mc7.stdout": "835e3a06650c0d330b321ea239ab057862c7d99c10287584d1b048b899361200",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/owned-05.stdout": "d0cb2690b53c089f1847125cbf616206b9e85042d3eb1372eda114734597c2de",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/tmpzlj0u7wa.stdout": "1c9a4454140ed411d8eb1110d08e23b65d84cd68537ed04f7fdcd24e12a7ad89",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/tmpibsqry2t.stdout": "9b14301a2cad06a3e1b64c1a9de683e40cdb7b368f3985d46c8dfd8f43ec18ea",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/tmp8u_8neh9.cpp": "7b50ec581f8020d7d282731a5c3b718bbc95c59cf8debc6bee9c4e3485eb1e72",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/tmprnulkycd.stdout": "9b726f206e03678b5302d0082f92a220fc4eb45ba54345d3921df1617818038d",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/owned-25.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/owned-06.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/fresh-mutable_header.stdout": "34fc35c14d1a7957db3a056b3f44a8c07b47b21cbd8b99249637aa634b3e83d1",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/retained-56.stdout": "978c24d3756f17e704a6af96e96db10c7960050e60e5ca3495462bdea1af6c9f",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/tmpsp5l1l6v.cpp": "608fce4d4a4b184895649b675611341fb9362adbda0004b059a17a81384761e4",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/tmpnb0pp0jd.stdout": "7deeaf52eac1ccd8bb014dd6f9d82592d4a6ff4dd39e9e87a86bacb77a4877d8",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/tmpt14qeq5g.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/tmp3tlh_0lf.cpp": "7768d048413e6bc119fcccdde19fc933497d5b88b508ab618e13ecc5e3c109f8",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/retained-53.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/retained-45.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/tmplkcn4mc7.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/retained-44.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/tmptle8mj_y.cpp": "cf6ac874981bcbfba0aba7c2055946b3296c31527ffd0cd60791274a95b1a76f",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/tmp2hyu1nb_.cpp": "4eb5039a11c4690eabb67af6a7eb9ef3717a49778c40ff5163f773ec8fae86f8",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/retained-34.stdout": "4832ec2f1ce91915e7af97fd2432b3ae9478f0648ccf90b89fb2f7e75720b6ab",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/tmpc7b8g2fg.stdout": "954ffa11af54d9be4fb483b77029c9a05400eb75fb560c5e13eb8fe0cde21466",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/L3-green.log": "76904a9399c77658a6a14d54d3bf912e23b5df10006682b4026025c4e55acd1a",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/owned-02.stdout": "3a10007abba48932e8b8308115560e9aff16512c1c14558d225b6f15fa8737cc",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/retained-38.stdout": "ab05e3ffbbcb5ac7db7e257e465339d5fb2e08700aa029b43277a64c97d33b15",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/tmph3ywleiy.cpp": "4eb5039a11c4690eabb67af6a7eb9ef3717a49778c40ff5163f773ec8fae86f8",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/retained-34.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/retained-52.stdout": "fc4e8225bb606b75330cc22bb81c568d15b31210b72db2a9a19b12aa9031eea3",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/retained-43.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/tmpliou9qvv.stdout": "b11c562b9355f432555661076825e8559fb6312140a2e058bbdbb5ce55ac18f6",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/tmpc7b8g2fg.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/retained-55.stdout": "a91cb3845bd5e08990f7b88b8a181730b94325c9885385fdc3998615f882ca14",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/retained-43.stdout": "709c27e24d98e8cde6bdb1b8987dc66203f63b8cb126fbc2f18ec783980ce93c",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/owned-07.stdout": "bb2dd79ee37a13b761540db6dfe94fb113be74232bc600a02c4a6a60b4608136",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/tmp_40pa7h4.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/L2-green.log": "9800c80c2aa8ccea834537fdf0df096e9b0fef60da2b013a0491fec23c050201",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/owned-15.stdout": "b43b09c89eff5d811c9f78e57a4a8c61b8a6e62f957004f6d489a844c263907d",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/tmpkr929s0m.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/owned-08.stdout": "1b8ae7295c74dff08d27d6399fdffdb4c485cad2088d1c79399d207b5593c149",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/retained-31.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/owned-20.stdout": "279e1eb79dba8467f921eb0abfa7f944c93e530c0b3af55d5a4942f7e671b681",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/tmps5rpayzo.cpp": "7b50ec581f8020d7d282731a5c3b718bbc95c59cf8debc6bee9c4e3485eb1e72",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/tmpb66sfjm7.stdout": "b0e9e330905fa7ac083250a8b1f77dc2d4db05025240183c99aaccf6556611c4",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/retained-36.stdout": "d5833887a210b6bf96d418bf61f25c9151ba82542493d2590ae7aab044a2a476",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/tmp8u_8neh9.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/owned-01.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/tmpm2n4hbje.stdout": "84f3b03d39084bd6b235793030a09cd71088eddf15e9859ecbd1f50685b97663",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/before.json": "5e4d2726aea0c5ffd28ddf3685aa8edbc56f4dba9f3b534eaaa4613da1b6b125",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/tmptydkcqud.stdout": "115408b8213f5143c640c8966c7f813015a237c77e6ad7376697c4a7ef8d3c23",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/owned-09.stdout": "6232a93f119e55cb6a304500b45b5df179e3196dc24aaa955f3847ac110de752",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/tmp272k0_jb.stdout": "7c0915bd1bdce2dba819c04fd58671a2962ac7e8f423469b66eecc53d59bb450",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/tmp272k0_jb.cpp": "4eb5039a11c4690eabb67af6a7eb9ef3717a49778c40ff5163f773ec8fae86f8",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/cli-wrong-profile.stdout": "82f0413cd3d48f4fa86301b4d82ed00c780c5491e9d0ed97168aae0b4c357781",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/verify.py": "c6143a17377893787a4663c258ff064c8e3139b40673ab61b2b28b438497c71c",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/retained-40.stdout": "5f020ce3df1de6b9c1eeea601f434e2914259dc046646389fe70073cc07d65f9",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/tmpibsqry2t.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/versions.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/owned-03.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/retained-37.stdout": "1814e5b58db794f175cb28dfebcc1fa6ae4634ca9f316010366e97e1a764d548",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/owned-01.stdout": "b7a6a9503d72b461ba18bc77dfcb95eaba041f601c238ddb81e2afe5476d63b6",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/tmpc7b8g2fg.cpp": "a098659fe5cb5c065269f8d37a8d28939329811a936506211038704cae1ba406",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/tmp4s11htv8.cpp": "608fce4d4a4b184895649b675611341fb9362adbda0004b059a17a81384761e4",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/owned-08.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/owned-10.stdout": "9227756663ff8207ddb5e7b1bcb27d763b2fccbb41ae2e6555384b6f1ac1c32c",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/owned-26.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/tmptle8mj_y.stdout": "2ccb3d643e796b81860ac703a007692918c9bde44027d91a8da05b910c1cb809",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/fresh-nonintegral_cast_param.stdout": "cee992133d3d009fa73ff6a202ae78e799f1506e3a506bb4ec92e3fc3bba82e2",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/tmptl85ozo6.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/owned-06.stdout": "677be999078cdd914040f5b12b313ce6033a4d8965a3133eb1a6e6d2911a37ea",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/retained-54.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/tmp2hyu1nb_.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/owned-14.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/tmpuvc3n540.cpp": "a098659fe5cb5c065269f8d37a8d28939329811a936506211038704cae1ba406",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/tmpj2g1xif3.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/owned-23.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/retained-48.stdout": "749b2dfaac514d6ff4fde5cf346f59a767aeff9c76d9698fd4db85e6e5b3d588",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/tmplbps16wm.stdout": "fd42a3943a350d134e581a3a882c28dc005e000a4002cb868960607a27d9ca2b",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/owned-02.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/tmpliou9qvv.cpp": "8b48fc6ea50102519091475db12978d8736da0c01bcb94acac8c9bfe1bd5bf7b",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/final-unittest.log": "4047acdd7b2045d0d470d8e82d63f7e6772cff7a68287cfe0d3ab7b77cab320f",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/fresh-send_arg_mutates_header.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/tmps5rpayzo.stdout": "abcc8bf412cf358bac9239fab3b51c91bb3488d91e8f4960e78fe13d3a75c767",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/tmp2hyu1nb_.stdout": "2248179aa8797f45dc9443403440451a876250aabc91c6498841fb9c792699f7",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/owned-00.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/retained-32.stdout": "dcdc3317ca8ed762ac95057ef35823f78ff62189635a52b82a6c9581cc33d60f",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/tmptydkcqud.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/tmpt14qeq5g.cpp": "8b48fc6ea50102519091475db12978d8736da0c01bcb94acac8c9bfe1bd5bf7b",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/owned-04.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/owned-26.stdout": "28e586d332e9d1b5dedb53200d69dbcd629b1a9e33607178ae19dab8d0be7468",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/owned-18.stdout": "03c6038842fc71259cf96d6d2171e54b2112ac4740b97e5214aafa941bf686ef",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/retained-28.stdout": "cb4f3d4a7229a3f0b060d18b428827e5b22871c94da021e26be685231dec74a2",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/tmp47_t8b5f.stdout": "61dafa4a1830b77f5b35d42723e362536fe62536b9e64a5d4ad5915aac0d71f2",
+    "/home/otto/.hermes/cache/scratch/sender-repair-pqgbrg8z/retained-42.stdout": "82365a2451d8d6fd604d05ee8fb62c7c58f6e08f21ab2bb38d6c6f4a4ca5739a"
+  }
+}

@@ -1,0 +1,93 @@
+{
+  "verdict": "CHANGES_REQUIRED_STATIC_GATE",
+  "scope": "Integrated preparation CLI, private saved-input loader and read-only Task/Compose configuration; ADR-019 ordinary per-world volumes only.",
+  "findings": [
+    {
+      "severity": "blocking-quality-gate",
+      "file": "tests/test_world_input_loading.py",
+      "definition_line": 13,
+      "error_lines": [51, 58, 67],
+      "description": "Strict scoped mypy fails with three no-untyped-call errors calling untyped metadata().",
+      "minimal_correction": "Import Path and annotate metadata(tmp_path: Path, world: str = ... ) -> tuple[Path, dict[str, str]]. Retain configured strict gates. No implementation autofix performed."
+    }
+  ],
+  "gates": {
+    "pytest": {"returncode": 0, "seconds": 22.044},
+    "black": {"returncode": 0},
+    "ruff": {"returncode": 0},
+    "mypy": {"returncode": 1},
+    "bandit": {"returncode": 0},
+    "vulture_85": {"returncode": 0},
+    "xenon_B_B_A": {"returncode": 0}
+  },
+  "junit": {
+    "cases": 223,
+    "unique_cases": 223,
+    "passed": 223,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "independent_cases": 20,
+    "path": "/home/otto/.hermes/cache/scratch/wc-6usojp2g/junit-final.xml",
+    "count_policy": "Final single invocation only; earlier runs not added."
+  },
+  "cli_coverage_percent": 96.42857142857143,
+  "snapshot_unchanged": true,
+  "parent_seven_match": true,
+  "fingerprints": {
+    "Taskfile.yml": "bf60a77c96fb4cfb4c5475c73a6e7da5a7eef90fc9f63c06a9812cfcbbb1d31d",
+    "scripts/world.sh": "ceb8243c48015d385926ec8213932f77a23221a6a5ce4739a5b5f69ce90a1e5d",
+    "src/robots/adapters/world_prepare_cli.py": "9cb0819e7eaa7cae9418e45af53c591d844a4d2499a760fdcba7284ab128b07a",
+    "src/robots/adapters/world_compose.py": "e31c363509b634fdca7ef7a310387974f4e11abd8ddf088a724631e4852514da",
+    "tests/test_world_prepare_cli.py": "bb859d85805b815c86e56d4cd75c7a3a72edcfba666ad7311b3ee9095cb89e26",
+    "tests/test_world_prepare_task.py": "a96f3f2c8d6936ec4f0f166e95e7679c75863898637cbc3a7648ea1007d52050",
+    "tests/test_world_input_loading.py": "f1b3e393494f38f1904f999e68c27dfd571d784586e1030c8b449b18fee0f543"
+  },
+  "additional_frozen_dependencies": {
+    "count": 11,
+    "before_and_after_matched": true,
+    "previously_accepted_dependencies_matched": true,
+    "full_fingerprints_path": "/home/otto/.hermes/cache/scratch/wc-6usojp2g/result-final.json"
+  },
+  "actual_routes": {
+    "task_world_prepare": true,
+    "task_world_config": true,
+    "docker_compose_config": true,
+    "default_stage_files_including_metadata": 694,
+    "files_mode": "0600",
+    "directories_mode": "0700",
+    "project": "ro-bots-test",
+    "volume": "ro-bots-world-test",
+    "network": "ro-bots-test_default",
+    "saved_fields_override_inherited_environment": true,
+    "private_raw_config_logged": false,
+    "safe_output": "Project, volume/network names and named-volume mounts only."
+  },
+  "independent_probes": [
+    "Actual Task stage containing spaces remains correctly quoted",
+    "Private Compose render uses saved DB name/user, schema/secret paths and native port values despite conflicting inherited environment",
+    "Existing stage refused and sentinel preserved",
+    "Mismatched saved world identities refused before injected up/down/wipe runner",
+    "Plans for up/down/wipe/status never dispatch",
+    "Missing/extra/bool/list schemas, duplicate keys, invalid UTF-8, oversized metadata, public mode and symlink rejected",
+    "Missing image reference reports required input honestly",
+    "Explicit wrapper destination overrides inherited stage and native port overrides persist"
+  ],
+  "private_credentials": "[REDACTED]",
+  "harness_issue": "First scratch symlink assertion incorrectly expected ValueError only; actual safe denial was OSError ELOOP. Corrected scratch harness; final invocation passed all 223 distinct cases. Initial failure remained a harness issue, not a product finding.",
+  "environment": "Existing Nix-store Task/uv and existing project venv, offline/no-sync; short private process-only TMPDIR; inherited PYTEST_DISABLE_PLUGIN_AUTOLOAD and PYTEST_ADDOPTS removed only from child environment.",
+  "private_io_note": "Frozen previously accepted private reader already checks the 8192-byte regular-file size limit and bounds its read. No helper change or new architecture requirement introduced.",
+  "engine_mutations": false,
+  "sql_executed": false,
+  "native_startup": false,
+  "provider_calls": false,
+  "limits": [
+    "Synthetic image references were explicitly config-only; this does not prove runnable images.",
+    "No world-volume import/initialization, runtime UID handling or MariaDB private bind readability proved.",
+    "No container lifecycle, SQL/account effects or gameplay exercised.",
+    "No full repository gate or dependency audit; strict scoped mypy remains blocking."
+  ],
+  "created": ["run/reviews/world-preparation-cli-independent-review.json", "fresh private scratch artifacts under /home/otto/.hermes/cache/scratch/wc-6usojp2g"],
+  "implementation_files_modified": [],
+  "staging_or_push": false
+}

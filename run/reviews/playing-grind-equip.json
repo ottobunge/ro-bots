@@ -1,0 +1,55 @@
+{
+  "lane": "playing-grind-equip",
+  "status": "COMPLETE",
+  "completed_at": "2026-10-17T22:53:45+02:00",
+  "scope": {
+    "owned_namespace": [".work/playing-grind-equip/**", "run/reviews/playing-grind-equip.json"],
+    "production_files_touched": [
+      "src/robots/adapters/native_gameplay.py",
+      "src/robots/app/playing_runtime.py",
+      "src/robots/app/scripts.py"
+    ],
+    "test_files_added": ["tests/test_native_gameplay_equip.py"],
+    "docs_updated": [".work/playing-grind-operator/READY-TO-RUN.md (Window 27 section appended)"]
+  },
+  "task_1_equip_capability": {
+    "request": {
+      "packet": "CZ_REQ_WEAR_EQUIP_V5",
+      "id": "0x0998",
+      "layout": "<int16 type><uint16 index><uint32 position> = 8 bytes",
+      "citations": [
+        "run/public-source/callback-qualified-e985006171d2/src/map/packets.hpp:1503-1509 (PACKETVER >= 20120925 branch; MAIN 20180704 qualifies)",
+        "run/public-source/callback-qualified-e985006171d2/src/map/clif_packetdb.hpp:58 (parseable_packet registration)",
+        "protocol/main-20180704-pre-re-equipment.json requests['0x0998'].size = 8 (compiler-measured)",
+        "index semantics: client-side inventory index — clif.cpp:122-127 client_index/server_index, clif.cpp:3084-3099 inventory lists fill client_index(i)"
+      ],
+      "encoder": "native_gameplay.equip(index, *, position=EQP_HAND_R) delegating bytes to native_equipment.encode_equip_request; EQP_HAND_R=0x0002 per src/common/mmo.hpp:340"
+    },
+    "ack": {
+      "packet": "ZC_ACK_WEAR_EQUIP_V5",
+      "id": "0x0999",
+      "layout": "<int16 type><uint16 index><uint32 wearLocation><uint16 wItemSpriteNumber><uint8 result> = 11 bytes",
+      "success_semantics": "raw_result 0 = success, 2 = fail, 1 = low-level fail (clif.hpp:523-532 MAIN>=20121205 enum sent verbatim, clif.cpp:4313-4326; the clif.cpp:4308-4312 doc-comment 0=fail/1=success values describe the pre-20121205 branch only)",
+      "tracker_ingest": "0x0999 added to the size table (11) + NativeGameplayTracker._equip_ack; success marks view.worn; failures/unknown raw preserved in view.equip_acks and change nothing; epoch reset clears worn to unknown (pre-worn-at-login stays unknown: inventory-list wear bitmasks not decoded)",
+      "note": "native_equipment.py already held the 0x0998/0x0999 codecs and the correct v5 result enum; its protocol JSON frontier said 'ACK framing adoption and stream regressions remain required; existing audit found 0999/099A absent' — this lane adopts exactly that"
+    }
+  },
+  "task_2_progression_rule": {
+    "rule": "scripts.novice_weapon_index(indexed_inventory, worn, *, job) — pure function; Novice + known stock containing wanted dagger (1201 Knife, 1202 Knife_, 1204 Cutter) not already worn",
+    "deviation_from_brief": "Brief said 'Knife 1201/1204'; the pinned Poring drop is AegisName 'Knife_' = item 1202 (rathena db/pre-re/mob_db.yml Id:1002 Drops '- Item: Knife_ Rate: 100' → item_db_equip.yml:2297 'Id: 1202 AegisName: Knife_'). 1202 is included; without it window 27 could never equip the actual drop. All three entries carry Novice-wearable Jobs/Right_Hand/EquipLevelMin 1 in item_db_equip.yml.",
+    "emission_seam": "PlayingClient.perform_native -> _equip_progression (playing_runtime.py). The GameAction union lives in domain/actions.py and BotState in domain/model.py — both outside this lane's permitted files — so the smallest honest seam is the dispatch seam; the rule itself stays a tested pure function in scripts.py. Bounded 3 sends/index/epoch (_EQUIP_ATTEMPT_CAP) because dead (clif.cpp:12117-12121), npc-blocked (clif.cpp:12127-12130) and already-worn (pc.cpp:12056-12063, refused not unequipped) paths answer no ack; new epoch re-arms."
+  },
+  "task_3_damage_observation": "Documented in READY-TO-RUN Window 27: 0x8C8 ObservedDamage decode (damage int32 @22, damage2 @30, type raw[29], bot-dealt = source_id == own aid); baseline ~1 dmg/hit (window 26: 1886 attacks); expected Knife vs Poring (Hp 50, physical DEF 0 — no Defense field, MDEF 5 magic-only, Size Medium; weapon Atk 17 + status Atk ~5): ~10-17/hit (order-of-magnitude gate, not exact number); Poring ~3-5 hits instead of ~50.",
+  "task_4_ready_to_run": ".work/playing-grind-operator/READY-TO-RUN.md '## Window 27' appended: acceptance = rx 0x0999 raw_result 0 + view.worn non-empty + post-ack mean bot-dealt per-hit visibly above ~1; honest no-drop path (Rate 100 = 1%) recorded as world condition.",
+  "tdd": {
+    "red": "tests/test_native_gameplay_equip.py fails at collection against unchanged source (ImportError: cannot import name 'EQP_HAND_R') — proven before implementation",
+    "green": "11/11 passed; scoped suites tests/test_native_gameplay.py + test_native_equipment.py + test_playing_runtime.py + test_rest_recovery_script.py all green"
+  },
+  "gates": {
+    "root": "cd /home/otto/dev/ro-bots && nix develop -c task check -> exit 0: 5958 passed, 65 subtests passed (= 5947 baseline + 11 new), coverage 95.81% (>= 85% required)",
+    "format": "uv run black --check src tests -> clean (one reformat of the new test file applied first; prior lanes failed gates on format)",
+    "lint": "uv run ruff check src tests -> All checks passed",
+    "types": "uv run mypy --strict on native_gameplay.py, playing_runtime.py, scripts.py -> Success"
+  },
+  "prohibitions_respected": "No live execution, no spike edits, no Git actions (shared dirty tree preserved untouched), edits confined to the three named production files + new test file + owned namespace + the explicitly-named READY-TO-RUN.md"
+}

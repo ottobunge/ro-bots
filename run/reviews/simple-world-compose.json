@@ -1,0 +1,285 @@
+{
+  "actual_compose_config": [
+    {
+      "mounts": {
+        "agent": [
+          {
+            "source": "world-data",
+            "target": "/world",
+            "type": "volume"
+          }
+        ],
+        "dashboard": [],
+        "mariadb": [
+          {
+            "source": "world-data",
+            "target": "/var/lib/ro-bots",
+            "type": "volume"
+          }
+        ],
+        "rathena-char": [
+          {
+            "source": "world-data",
+            "target": "/world",
+            "type": "volume"
+          }
+        ],
+        "rathena-login": [
+          {
+            "source": "world-data",
+            "target": "/world",
+            "type": "volume"
+          }
+        ],
+        "rathena-map": [
+          {
+            "source": "world-data",
+            "target": "/world",
+            "type": "volume"
+          }
+        ],
+        "worldfeed": [
+          {
+            "source": "world-data",
+            "target": "/world",
+            "type": "volume"
+          }
+        ]
+      },
+      "networks": {
+        "default": "ro-bots-debug_default"
+      },
+      "project": "ro-bots-debug",
+      "returncode": 0,
+      "volumes": {
+        "world-data": "ro-bots-world-debug"
+      },
+      "world": "debug"
+    },
+    {
+      "mounts": {
+        "agent": [
+          {
+            "source": "world-data",
+            "target": "/world",
+            "type": "volume"
+          }
+        ],
+        "dashboard": [],
+        "mariadb": [
+          {
+            "source": "world-data",
+            "target": "/var/lib/ro-bots",
+            "type": "volume"
+          }
+        ],
+        "rathena-char": [
+          {
+            "source": "world-data",
+            "target": "/world",
+            "type": "volume"
+          }
+        ],
+        "rathena-login": [
+          {
+            "source": "world-data",
+            "target": "/world",
+            "type": "volume"
+          }
+        ],
+        "rathena-map": [
+          {
+            "source": "world-data",
+            "target": "/world",
+            "type": "volume"
+          }
+        ],
+        "worldfeed": [
+          {
+            "source": "world-data",
+            "target": "/world",
+            "type": "volume"
+          }
+        ]
+      },
+      "networks": {
+        "default": "ro-bots-test_default"
+      },
+      "project": "ro-bots-test",
+      "returncode": 0,
+      "volumes": {
+        "world-data": "ro-bots-world-test"
+      },
+      "world": "test"
+    },
+    {
+      "mounts": {
+        "agent": [
+          {
+            "source": "world-data",
+            "target": "/world",
+            "type": "volume"
+          }
+        ],
+        "dashboard": [],
+        "mariadb": [
+          {
+            "source": "world-data",
+            "target": "/var/lib/ro-bots",
+            "type": "volume"
+          }
+        ],
+        "rathena-char": [
+          {
+            "source": "world-data",
+            "target": "/world",
+            "type": "volume"
+          }
+        ],
+        "rathena-login": [
+          {
+            "source": "world-data",
+            "target": "/world",
+            "type": "volume"
+          }
+        ],
+        "rathena-map": [
+          {
+            "source": "world-data",
+            "target": "/world",
+            "type": "volume"
+          }
+        ],
+        "worldfeed": [
+          {
+            "source": "world-data",
+            "target": "/world",
+            "type": "volume"
+          }
+        ]
+      },
+      "networks": {
+        "default": "ro-bots-prod-blue_default"
+      },
+      "project": "ro-bots-prod-blue",
+      "returncode": 0,
+      "volumes": {
+        "world-data": "ro-bots-world-prod-blue"
+      },
+      "world": "prod-blue"
+    },
+    {
+      "mounts": {
+        "agent": [
+          {
+            "source": "world-data",
+            "target": "/world",
+            "type": "volume"
+          }
+        ],
+        "dashboard": [],
+        "mariadb": [
+          {
+            "source": "world-data",
+            "target": "/var/lib/ro-bots",
+            "type": "volume"
+          }
+        ],
+        "rathena-char": [
+          {
+            "source": "world-data",
+            "target": "/world",
+            "type": "volume"
+          }
+        ],
+        "rathena-login": [
+          {
+            "source": "world-data",
+            "target": "/world",
+            "type": "volume"
+          }
+        ],
+        "rathena-map": [
+          {
+            "source": "world-data",
+            "target": "/world",
+            "type": "volume"
+          }
+        ],
+        "worldfeed": [
+          {
+            "source": "world-data",
+            "target": "/world",
+            "type": "volume"
+          }
+        ]
+      },
+      "networks": {
+        "default": "ro-bots-prod-green_default"
+      },
+      "project": "ro-bots-prod-green",
+      "returncode": 0,
+      "volumes": {
+        "world-data": "ro-bots-world-prod-green"
+      },
+      "world": "prod-green"
+    }
+  ],
+  "compose_version": "5.5.1",
+  "coverage_percent": 95.08196721311475,
+  "engine_mutations": false,
+  "gates": {
+    "bandit": {
+      "returncode": 0
+    },
+    "black": {
+      "returncode": 0
+    },
+    "mypy": {
+      "returncode": 0
+    },
+    "pytest": {
+      "returncode": 0
+    },
+    "ruff": {
+      "returncode": 0
+    },
+    "xenon": {
+      "returncode": 0
+    }
+  },
+  "legacy_regression": {
+    "failed": 1,
+    "failure": "tests/test_world_seed_safety.py::test_compose_network_name_matches_planned_container_route",
+    "old_expectation": "name: ro-bots-${WORLD_KIND:-debug}-world-local",
+    "passed": 114,
+    "reason": "ADR-019 uses the ordinary project-default network; old oracle unchanged"
+  },
+  "mariadb_primary_source": {
+    "image_hash_claim": false,
+    "observed": "effective datadir from argv; mkdir/chown datadir; fresh-db init directory import",
+    "sha256": "149a6972d8c07d9542835cb63fb8c8b4723fe40ecb19e974efc8e559e7d58c61",
+    "url": "https://raw.githubusercontent.com/MariaDB/mariadb-docker/master/11.4/docker-entrypoint.sh"
+  },
+  "playable_world_verified": false,
+  "remaining": [
+    "prepare runtime on host and copy into selected volume",
+    "prepare/validate schema and explicit private accounts",
+    "supply playable rAthena and real agent/WorldFeed/dashboard images",
+    "separately authorized startup and actual gameplay verification"
+  ],
+  "scope": "Compose config and mocked lifecycle command routing only",
+  "source_sha256": {
+    "docker-compose.worlds.yml": "b3bd52ebd9ef891e7b0e5d2f27a992ab897506c6713320a5f5476155c29bb0df",
+    "src/robots/adapters/world_compose.py": "e144168fef33ad54fa61ccd7f713219901bde514b039d60a460913d9746ccd2a",
+    "tests/test_world_compose.py": "964996888c264148b4d804842b1746b42895497df6eb674e2196ccd46860a0f2",
+    "wiki/guides/simple-world-compose.md": "94e5e1e8a87ee36207ed8b141bb1b372bc8e1508ed8fc1277632186a660a6d03"
+  },
+  "sql_execution": false,
+  "tests": {
+    "errors": 0,
+    "failures": 0,
+    "skipped": 0,
+    "tests": 49
+  }
+}

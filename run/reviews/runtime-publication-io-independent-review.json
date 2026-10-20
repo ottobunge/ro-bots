@@ -1,0 +1,183 @@
+{
+  "passed": false,
+  "security_concerns": [
+    {
+      "id": "IO-STR-SUBCLASS-COMPONENT-BYPASS",
+      "severity": "medium",
+      "location": "src/robots/adapters/runtime_publication_io.py:48-57, especially isinstance(name, str) and name.encode(\"ascii\")",
+      "summary": "An accepted str subclass can override encode(), causing native pathname bytes to differ from the validated literal component and escape the retained destination parent.",
+      "reproduction": "A RedirectedComponent(str) containing the literal string \"final\" overrides encode() to return b\"../escaped\". On the real Linux libc renameat2 call, the stage directory moves to the owned fixture root/escaped, not destination/final; the winning directory inode matches the original stage.",
+      "evidence": "test_component_subclass.py::test_accepted_str_subclass_must_not_escape_literal_component; 1 failed in 0.37s, actual private-filesystem operation, not a synthetic native return.",
+      "threat_scope": "Requires an in-process Python caller supplying a non-builtin str subtype. No plain built-in-str bypass, remote exploit, hostile namespace requirement bypass, or privilege escalation is claimed. The public annotation is str and the implementation explicitly accepts str subtypes; the exact-component guarantee nevertheless is not met for all accepted inputs.",
+      "recommendation": "In a separate authorized fix/review cycle, reject string subclasses with an exact-type check, or bind validation and both source inspection/native use to non-overridable exact bytes. Add the independently failing regression; do not automatically fix in this review."
+    }
+  ],
+  "logic_errors": [],
+  "suggestions": [],
+  "summary": "Actual no-clobber/race behavior and plain-string validation pass, but an accepted str subtype can alter native pathname bytes and violate the literal-component/retained-parent contract; scoped approval withheld.",
+  "scope": "Read-only independent review of frozen standalone fd-relative Linux directory move only; no integration or publication/world authority.",
+  "review_started_utc": "2026-10-05T22:10:21.627008+00:00",
+  "reviewed_files": [
+    "src/robots/adapters/runtime_publication_io.py",
+    "tests/test_runtime_publication_io.py",
+    "run/reviews/runtime-publication-io.json"
+  ],
+  "read_complete": {
+    "implementation_lines": 105,
+    "test_lines": 436,
+    "implementation_report_lines": 449
+  },
+  "source_hashes": {
+    "src/robots/adapters/runtime_publication_io.py": "88cfa063bbc56519b946f27af7b2bcbe5696ac55587dab22850f10113043df48",
+    "tests/test_runtime_publication_io.py": "9988c0ffc6a8e5584f2dc8ad021ce9b4d0113b8c4aaafa44df1d708d223495e7",
+    "tests/conftest.py": "42dbe1ae3a43a6c34ef2f9abb829b62d1f0a914d64d1a576d9b528142982d307",
+    "src/robots/__init__.py": "14a8271c90ed669cc0645c2901ba6a3d93345643b7697e87b965b9008f02b6a6",
+    "src/robots/adapters/__init__.py": "0682851ebbbbcccfb31e82a108d69a92193252f3eda2498f893dc078f3a68b1d",
+    "pyproject.toml": "e8ae0849a413bc3d705f081f609b92dae702bbd3e491b2c3aeb5d8665c458fba",
+    "uv.lock": "2d7b4c187078488d7625e4fd4fa982745cab8d6a65b2ff3e382ffa286f1df245",
+    "flake.nix": "185e4a4babf62a40484c347f59653bd11b79ce847316a3a90349c8545d38a359",
+    "flake.lock": "c9c0bac69415b99a29ef3fe149b6f04ef54d291989bdf7218cf819ed52edf2a0",
+    "run/reviews/runtime-publication-io.json": "77469265d4094da4dfc40289118c118893a3f62624d7cf7848cb688d9f907096"
+  },
+  "freeze": {
+    "count": 61,
+    "changed_existing": [],
+    "before": "/home/otto/.hermes/cache/scratch/publication-io-independent-92vkk6r4/before.json",
+    "after": "/home/otto/.hermes/cache/scratch/publication-io-independent-92vkk6r4/after.json",
+    "scope": "All Python files under src except concurrent sibling runtime_tree_sync.py; scoped tests, tests/conftest.py, tests/__init__.py, flake.nix, flake.lock, pyproject.toml, uv.lock, Taskfile.yml and completed primitive report. No imports or dependency on runtime_tree_sync.py."
+  },
+  "owned_fixture": {
+    "started": "2026-10-05T22:10:21.627008+00:00",
+    "repo": "/home/otto/dev/ro-bots",
+    "fixture_handle": "/home/otto/.hermes/cache/scratch/publication-io-independent-92vkk6r4",
+    "mode": "0o700",
+    "uid": 1000
+  },
+  "verification": {
+    "environment": "Existing pinned nix develop --offline; UV_OFFLINE=1; uv run --offline --frozen --no-sync; PYTHONDONTWRITEBYTECODE=1; pytest cache disabled; coverage/JUnit/probes written only to owned scratch.",
+    "commands": [
+      "nix develop --offline -c sh -c: uv run --offline --frozen --no-sync pytest -p no:cacheprovider tests/test_runtime_publication_io.py --cov=robots.adapters.runtime_publication_io --cov-report=term-missing --cov-report=json:<owned scratch>/coverage.json --junitxml=<owned scratch>/scoped.xml",
+      "nix develop --offline -c sh -c: uv run --offline --frozen --no-sync pytest -p no:cacheprovider -c pyproject.toml <owned scratch>/test_independent.py --junitxml=<owned scratch>/independent.xml",
+      "nix develop --offline -c sh -c: uv run --offline --frozen --no-sync pytest -p no:cacheprovider -c pyproject.toml <owned scratch>/test_component_subclass.py --junitxml=<owned scratch>/subclass.xml"
+    ],
+    "pytest": {
+      "scoped": {
+        "errors": 0,
+        "failures": 0,
+        "skipped": 0,
+        "tests": 55,
+        "time": 0.207
+      },
+      "independent": {
+        "errors": 0,
+        "failures": 0,
+        "skipped": 0,
+        "tests": 59,
+        "time": 0.534
+      },
+      "subclass": {
+        "errors": 0,
+        "failures": 1,
+        "skipped": 0,
+        "tests": 1,
+        "time": 0.376
+      }
+    },
+    "tests_total": 115,
+    "tests_passed": 114,
+    "tests_failed": 1,
+    "all_tests_passed": false,
+    "scope_coverage": {
+      "covered_lines": 50,
+      "num_statements": 50,
+      "percent_covered": 100.0,
+      "percent_covered_display": "100",
+      "missing_lines": 0,
+      "excluded_lines": 0,
+      "percent_statements_covered": 100.0,
+      "percent_statements_covered_display": "100"
+    },
+    "static": {
+      "black_check": "2 files would be left unchanged; exit 0",
+      "ruff_check": "All checks passed; --no-cache; exit 0",
+      "bandit_source": {
+        "exit_code": 0,
+        "results": []
+      },
+      "manual_review": "No hardcoded credentials, shell execution, eval/exec, pickle, SQL, exfiltration, debug/name/payload prints, or copying/deleting fallback. Component subtype issue above independently reproduced despite automated scans being clean."
+    },
+    "typed_binding": "Real loader observed exactly CDLL(None, use_errno=True); source-only nofollow stat observed with borrowed source fd and no target stat. Five declared argument types c_int, c_char_p, c_int, c_char_p, c_uint and c_int return type verified through the same native wrapper for each injected return. No architecture-specific syscall number.",
+    "flag_header": "Independent gcc -dM -E -x c - probe in pinned devShell with _GNU_SOURCE and <stdio.h> returned exactly #define RENAME_NOREPLACE (1 << 0); exit 0.",
+    "actual_filesystem_successes": [
+      "Existing empty mode0700 directory, sentinel directory, regular file and symlink: actual EEXIST, source and target device/inode/mode/uid/entry/byte snapshots unchanged.",
+      "Source symlink and regular file: ENOTDIR without following or moving source leaf.",
+      "Exact built-in-string components preserved including spaces, all-space name, backslash, colon, ... and 255 ASCII bytes. Empty/dot/dotdot/slash/absolute/256-byte/nonASCII/control/NUL/DEL and non-string types refused before native call.",
+      "Borrowed descriptor checks reject bool, negative, signed c_int overflow boundary, huge integer, float, int subtype, closed descriptor and regular-file descriptor on both sides; valid borrowed descriptors remain open.",
+      "Both parent paths renamed and same-UID private replacement parents created: operation reaches only retained original parents; foreign snapshots unchanged.",
+      "5 independent joined-thread reached-native-barrier competitor creation cycles: EEXIST, target and source preserved; each has real native positive control.",
+      "5 independent two-actual-process barrier cycles: exactly one success and one EEXIST, target inode/tree equals winner, loser stage unchanged, winner source absent, parents remain open.",
+      "Actual nofallback spies prohibit os.rename/replace/link/unlink/rmdir and shutil move/copy/copy2/copytree/rmtree around moves and collisions; no fallback reached.",
+      "Deleted empty source parent still has a directory fd but missing leaf refuses ENOENT; no path ownership inferred.",
+      "Origin KeyboardInterrupt exact object and raising frame preserved; no owned-fd cleanup exists in primitive to mask it.",
+      "Missing-source OSError errno retained, generated filename omitted, name absent from printed full traceback, context suppressed. Original exception remains in __context__; no private-object eradication claim."
+    ],
+    "actual_scope_limit_demonstrations": [
+      "Private owned fixture source substituted with symlink after the nofollow stat, before real native rename: symlink actually moved. This is the explicitly documented source-kind/inode binding window; controlled source namespace is mandatory, not a new finding against that prerequisite.",
+      "Source directory mode0755 moved unchanged, confirming primitive validates directory kind, not source private mode/ownership/provenance.",
+      "Accepted str subtype redirected validated final to ../escaped via overridden encode(); actual moved inode verified, regression expectation failed, approval withheld."
+    ],
+    "synthetic_faults": {
+      "native_return_codes": [
+        "EINVAL",
+        "ENOSYS",
+        "EOPNOTSUPP",
+        "EXDEV",
+        "EIO"
+      ],
+      "missing_symbol": "ENOSYS, no import failure/fallback",
+      "non_linux": "ENOSYS before loading library",
+      "calibration": "Same _renameat2 wrapper; exact literal byte args, fds and flag1; exact argtypes/restype; ctypes private errno state set/read; every branch preserves source/target; two joined threads verified distinct EXDEV/EIO TLS outcomes. All injections are process-local and restore patches, not global libc symbol replacement.",
+      "not_claimed": "No actual unsupported filesystem, cross-mount move, kernel ENOSYS, or real EIO execution."
+    },
+    "probe_sha256": {
+      "test_independent.py": "5f0588b73b501819a396938e6b3e228fcfb61587f9d3d0bc6572bc03b244aa29",
+      "test_component_subclass.py": "35c46173aa711d88c8fe02f34373f9e7983cd09de23b5c8e6eb5c18b18884887"
+    },
+    "artifact_directory": "/home/otto/.hermes/cache/scratch/publication-io-independent-92vkk6r4"
+  },
+  "source_authorities": [
+    {
+      "url": "https://man7.org/linux/man-pages/man2/rename.2.html",
+      "retrieval": "Independent read-only manual retrieval",
+      "basis": "libc five-argument signature; fd-relative path semantics; RENAME_NOREPLACE refusing existing target; EXDEV and EINVAL support errors; no source inode binding claim."
+    },
+    {
+      "url": "https://man7.org/linux/man-pages/man2/fsync.2.html",
+      "retrieval": "Independent read-only manual retrieval",
+      "basis": "Rename acknowledgement alone is not directory durability; directory persistence requires separately authorized synchronization."
+    }
+  ],
+  "limitations": [
+    "Ordinary built-in str success evidence does not negate the subtype bypass; no automatic fixes applied.",
+    "Actual local owned scratch filesystem evidence only; not universal kernel/filesystem/crossmount acceptance.",
+    "No caller-config or source-private permission checks, resource ownership, source provenance, completion markers, manager receipt, fsync durability, rollback, admission or launch proof.",
+    "Source namespace must remain controlled across nofollow source kind check and rename; parent fds anchor retained directories but do not confer requested-path/URI/world ownership.",
+    "The original publication contract, IO-003 universal predicate and EARLYCONSTRUCTION remain unapproved; this primitive is neither integration nor closure evidence.",
+    "No full suite/full audit, engine/server/DB/SQL/schema/account/gameplay/provider/gateway/shared-service/private-user-file effects; no dependency, pin, gate, whitelist, staging, commit or push changes.",
+    "Concurrent sibling and parent overview/document changes are out of scope; prior full gate counts were not rerun or endorsed.",
+    "Return means native move acknowledgement only, not durable publication or authority."
+  ],
+  "production_or_test_edits": [],
+  "created_repository_files": [
+    "run/reviews/runtime-publication-io-independent-review.json"
+  ],
+  "issues_encountered": [
+    "One reproducible blocking component-subtype validation finding; no toolchain or infrastructure failures."
+  ],
+  "primitive_scoped_approved": false,
+  "runtime_publication_contract_approved": false,
+  "manager_receipt_admission_implemented": false,
+  "world_effects_enabled": false,
+  "integration_performed": false,
+  "startup_guard_modified": false
+}

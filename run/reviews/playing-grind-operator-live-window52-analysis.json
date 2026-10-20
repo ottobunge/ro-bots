@@ -1,0 +1,11 @@
+{
+  "record": "GRIND_WINDOW52_DECIDE_ECONOMICS_STILL_STARVE_BOTH_AGENTS",
+  "date": "2026-10-19 (~20:1x)",
+  "finding": "Both stalled again (5/0 decisions, own_pos 0, honest floor not_met). The clean backend serves 12-19s cold decides (probe-verified, under the 30s timeout) with LCP cache hits at ~0.5s once warm \u2014 yet only 5 decision CALLS happened in 1800s (the 6s pacer implies ~300). The decision-call GENERATION is gated somewhere upstream of the server: either the synchronous tick blocked on cold-timeout chains, or the decide dispatch path itself throttles.",
+  "the_economics": "The decide prompt is ~2200 tokens; cold prefill at the iGPU's real throughput costs 12-19s. The 30s httpx timeout survives ONE cold decide but not the chains. The historical fast windows ran on warm caches (the same agent, the same prompt shape, LCP f_keep=1.0).",
+  "next_session_plan": [
+    "Instrument ONE decide round-trip inside a live agent tick (log the call start/end + the exception class) to see where the other ~295 calls went.",
+    "Raise the decide timeout to 90s AND drop the pacer to ~45s so each decide lands inside its budget (the agents act slowly but they act); alternatively pre-warm the cache at connect with one synthetic decide per agent.",
+    "Then the loop closes: kills -> picklog -> loot -> sell -> equip."
+  ]
+}

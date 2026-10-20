@@ -11,6 +11,7 @@ from dataclasses import dataclass
 from typing import Any, Union
 
 from robots.domain.model import ActorRef, ChatLine, PartyInvite
+from robots.domain.npc import NpcDialogue
 
 
 @dataclass(frozen=True, slots=True)
@@ -79,7 +80,13 @@ class PlanExpired:
 
 # Union written explicitly (not `|`) so pattern matching sees a plain union
 # type; ruff's UP007 is deliberately ignored for this alias.
+@dataclass(frozen=True, slots=True)
+class NpcDialogueReceived:
+    dialogue: NpcDialogue
+
+
 WorldEvent = Union[  # noqa: UP007
+    NpcDialogueReceived,
     MonsterSpotted,
     DamageTaken,
     ChatHeard,
@@ -138,7 +145,13 @@ def _summary_plan_expired(event: PlanExpired) -> str:
     return f"farming session #{event.plan_id} ended"
 
 
+def _summary_npc(event: NpcDialogueReceived) -> str:
+    dialog = event.dialogue
+    return f"received NPC#{dialog.npc_id} {dialog.stage} sequence {dialog.sequence}"
+
+
 _SUMMARY_BY_KIND: dict[type[Any], Callable[[Any], str]] = {
+    NpcDialogueReceived: _summary_npc,
     MonsterSpotted: _summary_monster,
     DamageTaken: _summary_damage,
     ChatHeard: _summary_chat,

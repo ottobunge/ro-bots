@@ -1,0 +1,98 @@
+{
+  "black": {
+    "command": [
+      ".venv/bin/black",
+      "--check",
+      "src/robots/app/brain.py",
+      "src/robots/app/agent_runtime.py",
+      "src/robots/app/playing_runtime.py",
+      "tests/test_native_rest_interrupt.py",
+      "tests/test_rest_recovery_script.py"
+    ],
+    "returncode": 0,
+    "log": "run/reviews/rest-interrupt-private/black-final.log"
+  },
+  "ruff": {
+    "command": [
+      ".venv/bin/ruff",
+      "check",
+      "src/robots/app/brain.py",
+      "src/robots/app/agent_runtime.py",
+      "src/robots/app/playing_runtime.py",
+      "tests/test_native_rest_interrupt.py",
+      "tests/test_rest_recovery_script.py"
+    ],
+    "returncode": 0,
+    "log": "run/reviews/rest-interrupt-private/ruff-final.log"
+  },
+  "mypy": {
+    "command": [
+      ".venv/bin/mypy",
+      "src/robots/app/brain.py",
+      "src/robots/app/agent_runtime.py",
+      "src/robots/app/playing_runtime.py",
+      "tests/test_native_rest_interrupt.py",
+      "tests/test_rest_recovery_script.py"
+    ],
+    "returncode": 0,
+    "log": "run/reviews/rest-interrupt-private/mypy-final.log"
+  },
+  "xenon": {
+    "command": [
+      ".venv/bin/xenon",
+      "src",
+      "--max-absolute",
+      "B",
+      "--max-modules",
+      "B",
+      "--max-average",
+      "A"
+    ],
+    "returncode": 0,
+    "log": "run/reviews/rest-interrupt-private/xenon-final.log"
+  },
+  "pylint": {
+    "command": [
+      ".venv/bin/pylint",
+      "--disable=all",
+      "--enable=duplicate-code",
+      "--ignore-paths=tests",
+      "src"
+    ],
+    "returncode": 0,
+    "log": "run/reviews/rest-interrupt-private/pylint-final.log"
+  },
+  "scoped-tests": {
+    "command": [
+      ".venv/bin/pytest",
+      "-oaddopts=",
+      "-pno:cacheprovider",
+      "tests/test_native_rest_interrupt.py",
+      "tests/test_rest_recovery_script.py",
+      "tests/test_native_pose_recovery.py",
+      "tests/test_native_playing_keepalive.py",
+      "tests/test_brain.py",
+      "tests/test_agent_host.py",
+      "tests/test_empty_farm_plan.py",
+      "tests/test_host_native_vitals.py",
+      "tests/test_host_native_transport.py",
+      "tests/test_playing_startup_cleanup.py",
+      "-q",
+      "--junitxml=/home/otto/dev/ro-bots/run/reviews/rest-interrupt-private/scoped-final.xml"
+    ],
+    "returncode": 0,
+    "log": "run/reviews/rest-interrupt-private/scoped-tests-final.log"
+  },
+  "playing-regressions": {
+    "command": [
+      ".venv/bin/pytest",
+      "-oaddopts=",
+      "-pno:cacheprovider",
+      "tests/test_playing_runtime.py",
+      "-q",
+      "--junitxml=/home/otto/dev/ro-bots/run/reviews/rest-interrupt-private/playing-regressions.xml"
+    ],
+    "returncode": 1,
+    "log": "run/reviews/rest-interrupt-private/playing-regressions-final.log"
+  }
+}

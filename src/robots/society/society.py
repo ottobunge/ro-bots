@@ -11,6 +11,7 @@ from robots.society.models import (
     ScheduleFactory,
     SocietyPersona,
 )
+from robots.society.population_limits import validate_population
 
 if TYPE_CHECKING:
     from robots.society.models import Schedule
@@ -118,6 +119,14 @@ class ReputationStore:
     def group_score(self, group_id: str, human_name: str) -> float:
         return self._by_group.get(group_id, {}).get(human_name, 0.0)
 
+    def agent_humans(self, agent_id: str) -> set[str]:
+        """Humans this agent holds a score for."""
+        return set(self._by_agent.get(agent_id, {}))
+
+    def group_humans(self, group_id: str) -> set[str]:
+        """Humans this group holds a (propagated) score for."""
+        return set(self._by_group.get(group_id, {}))
+
     def apply_event(self, event: ReputationEvent) -> None:
         """Move the reporting agent's score for the human, clamped to [-1, 1]."""
         row = self._by_agent.setdefault(event.agent_id, {})
@@ -198,14 +207,21 @@ class SocietyRoster:
         return [by_id[pid] for pid in sorted(online_ids) if pid in by_id]
 
     @staticmethod
-    def build(rng: random.Random, n_groups: int = 6, group_size_max: int = 6) -> SocietyRoster:
-        """Seed a society: mixed group sizes (always at least one solo), graph, reps."""
+    def build(
+        rng: random.Random,
+        n_groups: int = 6,
+        group_size_max: int = 6,
+        *,
+        group_size_min: int = 2,
+        solos: int | None = None,
+    ) -> SocietyRoster:
+        """Seed groups; legacy callers retain one solo, explicit callers choose its count."""
+        solo_count = validate_population(n_groups, group_size_min, group_size_max, solos)
         groups: list[FriendGroup] = []
         personas: dict[str, SocietyPersona] = {}
         persona_seq = 0
         for g in range(n_groups):
-            # Last group is always a solo outsider; sizes 1-6 otherwise.
-            size = 1 if g == n_groups - 1 else rng.randint(2, group_size_max)
+            size = 1 if g >= n_groups - solo_count else rng.randint(group_size_min, group_size_max)
             attitude = _SOLO_ATTITUDE if size == 1 else rng.choice(_ATTITUDES)
             schedule: Schedule = ScheduleFactory.make_group_schedule(
                 rng, overlap_hint=rng.randint(1, 3)
@@ -225,6 +241,8 @@ class SocietyRoster:
                 )
                 persona_seq += 1
             group_label = f"{rng.choice(_GROUP_ADJECTIVES)} {rng.choice(_GROUP_NOUNS)}"
+            if solos is not None:
+                group_label = f"{group_label}-{g:03d}"
             groups.append(
                 FriendGroup(
                     group_id=group_label if size > 1 else f"solo-{member_ids[0]}",

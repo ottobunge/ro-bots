@@ -1,0 +1,112 @@
+{
+  "schema_version": 1,
+  "verdict": "SOURCE_ONLY: scheduled-host perception is not ready for real cognition",
+  "scope": {
+    "repository": "/home/otto/dev/ro-bots",
+    "actions": ["read public source", "offline pinned Nix Python AST/enum/hash inspection", "write this new audit artifact"],
+    "excluded": ["source/test edits", "engine execution", "AgentHost activation", "SQL", "live network", "providers/inference", "private fixture/journal reads", "git commands"],
+    "native_telemetry_verified": false,
+    "full_six_milestones": "remain open; no acceptance labels changed",
+    "transport_and_arrival": "separate parent-owned acceptance; not reverified here",
+    "private_connection_material": "[REDACTED]"
+  },
+  "authority": {
+    "native_source": "/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source",
+    "revision_from_delegation": "e985006171d2eb320ee512a653f4c83aea3d81b6",
+    "profile": "MAIN PACKETVER 20180704 / pre-renewal, supplied pinned build authority; no new build performed",
+    "host_client_binding": "src/robots/app/agent_runtime.py:82-91 imports spikes/003-clientless-limbs/client.py as client.BotClient; no separate spikeclient.py found in src",
+    "important_context_correction": "Current inspected BotClient has neither self.params nor self.inventory. AST inspection confirms both absent. Packet length registration is not a parser or retained telemetry. Prior params assumptions must not be carried forward."
+  },
+  "public_file_sha256": {
+    "src/robots/app/agent_runtime.py": "70b38a71ee9108353b45edd4aeda0116aaa5daf0cb88a95b329d50f04a507288",
+    "src/robots/domain/model.py": "697646631c2eae15dc01e6cc0219502b1c7a8ed6d830089060e5ee37c700bbbe",
+    "spikes/003-clientless-limbs/client.py": "430804559e0ec989c29b7b1c2dfe58aefbba695739820ba33709db84ce61941b",
+    "spikes/003-clientless-limbs/packetdb.py": "1c2be6705938f5ab575cc822b690dba583f8a7719b9469f794fcbb661c032cf3",
+    "native/src/map/map.hpp": "1cb428d1145ec9c4045b2ae58c163be24bf1bd374fc8eea07eaf0c266621fe2b",
+    "native/src/map/clif.cpp": "0b1db098158c240b090c6edb8417978ba495957c8a2df4cd9a0ab4cb39884ac5",
+    "native/src/map/pc.cpp": "d12704c1ef7f8321c255175b6f61aa396209b931e2b1687fbbd16963d1def652",
+    "native/src/map/packets_struct.hpp": "5ab5ef13d2a1cdc60d84dcaf2e3be0b6e316b9630e61c3ac7ba0f930d4d31287",
+    "native/src/common/packets.hpp": "c92279bf163e9546b649397638c19e57c3eb515b49e841c13f88a5fb97bba693",
+    "native/src/common/mmo.hpp": "883ec2048b726d51f897218989ca66c476bcdbc969d683025fe09a0bf280fa6d"
+  },
+  "field_availability": [
+    {
+      "fields": "hp/max_hp/sp/max_sp",
+      "host": "constant 1/1/1/1 at agent_runtime.py:619-622, fabricating full health",
+      "client": "No retained parameters and no status dispatch branch; 0x00B0/0x00B1 are already framed as length 8 at packetdb.py:97",
+      "native": "map.hpp:498-505 enum derives HP=5, MAXHP=6, SP=7, MAXSP=8. clif.cpp:3548-3569 sends 0x00B0 varID uint16 at offset 2, count int32 at offset 4, to SELF. clif.cpp:3677-3694 maps all four battle_status fields. packets_struct.hpp:354-366 defines packed layouts.",
+      "caveat": "Wire HP is client presentation, not definitive alive/dead evidence: clif.cpp:3683-3690 substitutes 1 or Novice max_hp/2 on death. Dead state requires separate evidence."
+    },
+    {
+      "fields": "base_level/job",
+      "host": "persona.level_band[0] and hardcoded Novice at agent_runtime.py:617-618",
+      "client": "Character list retains only char ID/name/slot at client.py:257-265; actor parser retains appearance job but not character level",
+      "native": "common/packets.hpp:31-90 CHARACTER_INFO includes hp/maxhp/sp/maxsp, actual job and level; map.hpp:500-501 gives BASELEVEL=11 and CLASS=19. clif.cpp:3649-3654 sends base/job level through 0x00B0. Actor job is vd->look[LOOK_BASE], clif.cpp:1130,1392; appearance is not an unconditional actual-class oracle.",
+      "caveat": "SP_CLASS enum existence does not prove a 0x00B0 actual-job update route. Preserve selected CHARACTER_INFO job independently; derive class-change refresh separately. True wire level may be 1 while nominal persona declares level 10; reporting the real level does not legalize that persona build."
+    },
+    {
+      "fields": "nearby.kind",
+      "host": "Every one of first eight insertion-order actors is player at agent_runtime.py:605-609",
+      "client": "Entry parser keeps wire actor ID, separate char_id, appearance job, name and coordinates, but discards raw[4] objecttype at client.py:728-763",
+      "native": "clif.cpp:345-383 clif_bl_type maps PC-looking=0, generic NPC=1, monster=5, event NPC=6, mob-sprite NPC=12; also items=2, skills=3, chat=4, pet=7, hom=8, mercenary=9, elemental=10, special AI=13/14. clif_set_unit_idle:1102, clif_spawn_unit:1266 and clif_set_unit_walking:1377 populate this byte.",
+      "caveat": "Decode typed wire descriptor, not monster job-number heuristics. Descriptor is not perfect biological/server BL identity: disguised PCs and player-sprite mobs/pets/NPCs intentionally differ. Do not invent unsupported ActorKind values or silently turn every other type into player. Eight is a host presentation cap, not total actor isolation."
+    },
+    {
+      "fields": "nearby.distance/map/x/y",
+      "host": "All actor distances constant 1.0; map falls back to prontera; x/y taken from client",
+      "client": "Login/map-entry position exists. Actor idle/spawn coords are decoded; walking x/y are destination while from stores origin at client.py:740-754. _dispatch:692-694 updates own x/y on warp but not map_name; no own movement-ack position update branch in current _dispatch.",
+      "native": "Entry byte positions and packed MoveData are documented at client.py:696-719 against pinned layouts. Current host ignores them.",
+      "caveat": "Use same-map scoped, fresh observed positions for geometry, not walking destinations as completed/current coordinates. Invalidate stale actors on transitions; pin distance metric explicitly. Parent arrival harness acceptance does not prove scheduled-host own-position freshness."
+    },
+    {
+      "fields": "inventory",
+      "host": "Always {} at agent_runtime.py:629",
+      "client": "No retained inventory and no inventory dispatch branch",
+      "native": "packets_struct.hpp:137-161 selects normal list 0x0991 and equip list 0x0A0D for MAIN 20180704. Headers have type/length, no later invType byte (1187-1203). NORMALITEM_INFO:418-448 contains int16 slot index, uint16 item ID for MAIN (not RE), uint8 type and int16 count; EQUIPITEM_INFO:457-504 has slot/item IDs and no stack-count field. clif.cpp:3087-3129 emits these lists.",
+      "caveat": "Current BotState.inventory is dict[str,int], model.py:71, NOT Mapping[int,int]. Fix requires an explicit identifier projection contract, slot-to-ID bookkeeping, stack aggregation, equipment count semantics and future deltas; empty is currently unknown, not native proof of empty inventory. Do not query global DB knowledge to fill perceptions."
+    },
+    {
+      "fields": "pending_invites/in_party",
+      "host": "pending_invites always (); in_party reads bool(client.party_id)",
+      "client": "Incoming invitation already retains inviter and party ID at client.py:652-657; roster/member evidence exists but is not translated into InviteReceived by _drain_events",
+      "caveat": "Retained invitation is available but omitted. Reading a field is not proof all join/leave paths keep it fresh."
+    },
+    {
+      "fields": "recent_chat/ChatHeard",
+      "host": "Recent chat forces public channel, numeric sender and at=0.0 at agent_runtime.py:610-614; _drain_events resolves actor name but suppresses only client.gid at 645",
+      "client": "0x008D retains sender actor ID; 0x008E has no sender and assigns self.gid; broadcasts assign 0, client.py:608-625",
+      "native": "pc.cpp:1444-1445 sets PC block-list ID to account ID. clif_GlobalMessage clif.cpp:6752-6774 uses bl.id in 0x008D; clif_displaymessage:6662-6702 emits senderless 0x008E and can carry system text, not just self chat. Normal public chat uses peer 0x008D and speaker 0x008E, clif.cpp:11525-11535.",
+      "caveat": "For aid=11,char_id=21, an incoming 0x008D sender 11 is self but currently becomes ChatHeard. Normal 0x008E self echo is already suppressed by legacy tagging; do not claim a native self-reply loop observed. Ignoring own actor ID is a safety hardening prerequisite for cognition; system-message provenance remains lossy."
+    }
+  ],
+  "recommended_minimal_slice": {
+    "choice": "HP/SP retained status telemetry first, with self-chat identity suppression a separate pre-cognition safety gate",
+    "reason": "Smallest source-backed telemetry route: one already-framed eight-byte packet, four enum-derived keys, no DB, actor taxonomy, item catalogue, inference or movement actions. Current full-health fiction directly corrupts health reasoning. No existing params adapter can simply be wired: parser/retention is missing.",
+    "contract": [
+      "Retain 0x00B0 parameter values with explicit received-state; parse unsigned uint16 varID and signed int32 count using pinned packed layout.",
+      "Map received IDs 5/6/7/8 to host hp/max_hp/sp/max_sp; do not use 0x00B1 as the authoritative HP path merely because its layout matches.",
+      "Unknown/incomplete values must not fall back to 1/full health or persona stats. Gate cognition until complete required telemetry, or introduce explicit unknown representation; domain currently requires ints.",
+      "Do not mark wire-presented HP as death truth, and do not broaden this patch to combat, inventory, class mechanics or distance."
+    ],
+    "proposed_RED_test_not_created_or_run": {
+      "setup": "Offline real BotClient dispatch with sockets absent; scheduled-state adapter seam using that client, never AgentHost constructor/provider autodetection",
+      "frames": "Source-shaped 0x00B0 frames for (varID,value)=(5,37),(6,100),(7,0),(8,23), then (5,12). These are synthetic contract inputs, NOT recorded native telemetry.",
+      "assertions": [
+        "Retained values and host tuple become (37,100,0,23), later (12,100,0,23); zero SP survives and no cross-field overwrite occurs.",
+        "Current source is expected RED: no parameter retention and host tuple is always (1,1,1,1). This expectation was derived statically, not presented as executed pytest evidence.",
+        "Incomplete required quartet blocks cognition rather than inventing defaults; no socket, provider, SQL or memory allocation is invoked.",
+        "A subsequent native parent-owned idle-only verification must confirm actual frames and state projection before native telemetry acceptance; no proof fabricated here."
+      ]
+    },
+    "separate_self_chat_RED_contract": "With aid=11/gid=21, source-shaped 0x008D sender=11 produces no ChatHeard; a peer sender distinct from both survives with account-keyed name resolution. Existing 0x008E legacy self tagging remains suppressed. Cursor advances exactly once for suppressed and delivered lines. Prefer explicit provenance later; filtering only character IDs is insufficient.",
+    "pre_cognition_blocks": ["self-chat account identity safety", "incomplete/fictional health", "all-player actors and fixed distance", "missing non-chat world events", "unknown inventory/class/level mislabeled as facts"],
+    "authorization": "No implementation or live action authorized/performed by this reviewer"
+  },
+  "verification": {
+    "executed": "nix develop --offline -c python3: public-file SHA256, AST attribute check and parsed enum extraction; exit 0",
+    "derived_enum": {"SP_HP":5,"SP_MAXHP":6,"SP_SP":7,"SP_MAXSP":8,"SP_BASELEVEL":11,"SP_CLASS":19,"SP_JOBLEVEL":55},
+    "tests_run": false,
+    "native_execution": false,
+    "limitations": ["Static audit only; no new wire evidence", "Build profile/revision supplied by delegation, not independently rebuilt", "Public source hashes describe this read snapshot; not a global repository freeze", "Inherited constructor budget/private-journal/legacy cleanup boundaries unchanged; no total actor-isolation claim"]
+  }
+}

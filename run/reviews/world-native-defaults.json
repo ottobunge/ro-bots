@@ -1,0 +1,72 @@
+{
+  "scope": "Offline host preparation only; no native, SQL, engine, provider or staging actions",
+  "revision": "e985006171d2eb320ee512a653f4c83aea3d81b6",
+  "source": "/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source",
+  "red": {
+    "command": "env -u PYTEST_DISABLE_PLUGIN_AUTOLOAD -u PYTEST_ADDOPTS TMPDIR=/home/otto/.hermes/cache/scratch/wn UV_OFFLINE=1 nix develop --offline -c uv run --offline --no-sync pytest tests/test_world_native_defaults.py -x -o pythonpath=src --tb=short",
+    "returncode": 1,
+    "tests_failed": 1,
+    "failure": "native SQL defaults missing",
+    "test_written_before_production_changes": true
+  },
+  "green": {
+    "command": "env -u PYTEST_DISABLE_PLUGIN_AUTOLOAD -u PYTEST_ADDOPTS TMPDIR=/home/otto/.hermes/cache/scratch/wn UV_OFFLINE=1 nix develop --offline -c uv run --offline --no-sync pytest tests/test_world_native_defaults.py tests/test_world_prepare.py tests/test_world_prepare_cleanup.py tests/test_world_prepare_cli.py tests/test_world_volume_import.py -o pythonpath=src --tb=short --cov=robots.adapters.world_prepare --cov-report=term-missing --cov-fail-under=85",
+    "returncode": 0,
+    "tests_passed": 162,
+    "new_regression_tests": 3,
+    "coverage_percent": 100,
+    "covered_statements": 131,
+    "final_frozen_run_seconds": 14.02
+  },
+  "gates": {
+    "black_check": "passed on both owned Python files",
+    "ruff": "passed on both owned Python files",
+    "mypy_strict": "passed on both owned Python files",
+    "bandit": "passed on world_prepare.py using pyproject.toml",
+    "vulture": "passed on world_prepare.py and existing whitelist, confidence 85",
+    "xenon": "passed on world_prepare.py, absolute B/modules B/average A",
+    "intermediate_issues_fixed": ["unused test import", "untyped fixture helper return"]
+  },
+  "configuration": {
+    "pinned_default_roots": ["conf/inter_athena.conf", "conf/login_athena.conf", "conf/char_athena.conf", "conf/map_athena.conf"],
+    "method": "Fresh config_asset closure after validation and public attestation; preserve remaining source imports in order, remove exact imports duplicated by private renderer, omit source-proven optional import templates; discard replaced scalar defaults before private values are appended",
+    "required_char_sql_table_keys_checked": 40,
+    "schema_tables_checked": 70,
+    "clan_table": "clan",
+    "clan_alliance_table": "clan_alliance",
+    "unsafe_public_scalar_values": "[REDACTED]; replaced rather than retained before overrides",
+    "char_limit_observation": "src/char/char.cpp:2745 explicitly initializes char_per_account=0 as unlimited. Characters per Account:0 is not evidence of a zero-slot failure; do not invent a nine-slot override.",
+    "connection_limit": "Pinned max_connect_user=-1 retained",
+    "safety_controls": "Private logging, GRF and subnet files unchanged; SQL logs disabled, external GRF paths absent, LAN overrides absent",
+    "endpoints": "char-login=rathena-login; map-char=rathena-char; advertisements=127.0.0.1; tested native ports=16900/16121/15121",
+    "permissions": "Every prepared file 0600 and directory 0700 checked",
+    "public_assets": 679,
+    "role_closure_files": 8,
+    "new_private_role_paths": 7,
+    "runtime_files": 686,
+    "npc_files": 527,
+    "count_note": "Actual current helper counts, not the delegated earlier 676/683 snapshot. The eighth role-closure path is existing conf/maps_athena.conf; no new dependency path is introduced beyond the seven private configs. Public helper/report schema unchanged."
+  },
+  "hashes": {
+    "flake.lock": "c9c0bac69415b99a29ef3fe149b6f04ef54d291989bdf7218cf819ed52edf2a0",
+    "flake.nix": "185e4a4babf62a40484c347f59653bd11b79ce847316a3a90349c8545d38a359",
+    "pyproject.toml": "e8ae0849a413bc3d705f081f609b92dae702bbd3e491b2c3aeb5d8665c458fba",
+    "uv.lock": "2d7b4c187078488d7625e4fd4fa982745cab8d6a65b2ff3e382ffa286f1df245",
+    "src/robots/adapters/world_prepare.py": "6742f7b89728cb309853f689ca17f37db6d130a5415f02ee1ea9faceb1031d6a",
+    "tests/test_world_native_defaults.py": "5d5bc931f5c29a1c138ec3e23032bba3c1f1c342e68283d544bc2d3b32371254",
+    "src/robots/adapters/rathena_runtime.py": "0a52cbbae5ec459022c1348e33c65105c8cf0776a6bf68bca05e1066d8c74293",
+    "src/robots/adapters/rathena_runtime_assets.py": "8cf599ddd633c82879d5a6fc0ed2d98f13399e4094262b6bcafb25c9841650fc",
+    "src/robots/adapters/world_bootstrap_sql.py": "cfa64780b9356b04a2e8eb2699fb0e6703f4b3f6ae9b815fb454a03f9b8b2ce5",
+    "src/robots/adapters/rathena_bootstrap_assets.py": "257f09e9c318dc060b21e76326a4510fce2d9fc06d048047e0949e098ab3c3c7"
+  },
+  "freeze": {
+    "all_listed_hashes_identical_before_after_final_test_run": true,
+    "flake_and_dependency_hashes_identical_to_initial_snapshot": true
+  },
+  "residuals": [
+    "Parent must exercise actual native roles using separately authorized world; offline assertions are not native parser or readiness acceptance.",
+    "Nonfatal missing db/import/mob_avail.yml and npc/barters.yml remain outside this change.",
+    "Full repository gates, network dependency audit and gameplay were not performed; only requested scoped gates and regressions.",
+    "No existing target adopted or changed; existing tests and accepted diagnostic/runtime-assets helpers untouched."
+  ]
+}

@@ -1,5 +1,17 @@
 """Society layer (ADR-004 episodic memory, ADR-005 groups & reputation)."""
 
+from robots.society.guild import (
+    Guild,
+    GuildRegistry,
+    WoeCalendar,
+    WoeEvent,
+    WoeParticipation,
+)
+from robots.society.human import (
+    ContributionScorer,
+    HumanContribution,
+    HumanTracker,
+)
 from robots.society.memory import (
     VIEW_BUDGET_CHARS,
     ExperienceNote,
@@ -37,8 +49,13 @@ __all__ = [
     "PROPAGATION_THRESHOLD",
     "VIEW_BUDGET_CHARS",
     "Attitude",
+    "ContributionScorer",
     "ExperienceNote",
     "FriendGroup",
+    "Guild",
+    "GuildRegistry",
+    "HumanContribution",
+    "HumanTracker",
     "Memory",
     "MemoryLog",
     "NoteKind",
@@ -55,6 +72,9 @@ __all__ = [
     "SocietyRoster",
     "StubSummarizer",
     "Summarizer",
+    "WoeCalendar",
+    "WoeEvent",
+    "WoeParticipation",
     "fit_budget",
     "render_view",
     "zoom",

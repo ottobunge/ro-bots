@@ -1,0 +1,61 @@
+# Minimal first-world stack: ordinary project bridge and one named data volume.
+# The empty volume must first be populated by ro-bots-world-init. No host SQL bind.
+name: ${WORLD_PROJECT:?derived world project required}
+
+x-rathena: &rathena
+  image: ${RATHENA_IMAGE:?verified runnable image required}
+  user: "10000:10000"
+  working_dir: /world/runtime
+  volumes:
+    - world-data:/world
+  depends_on:
+    mariadb:
+      condition: service_healthy
+
+services:
+  mariadb:
+    image: ${MARIADB_IMAGE:?verified cached database image required}
+    command: ["--datadir=/var/lib/ro-bots/db", "--character-set-server=utf8mb4", "--collation-server=utf8mb4_general_ci"]
+    environment:
+      MARIADB_ROOT_PASSWORD_FILE: /var/lib/ro-bots/secrets/db-root
+      MARIADB_DATABASE: ${WORLD_DB_NAME:-ragnarok}
+      MARIADB_USER: ${WORLD_DB_USER:?prepared database identity required}
+      MARIADB_PASSWORD_FILE: /var/lib/ro-bots/secrets/db-user
+    volumes:
+      - type: volume
+        source: world-data
+        target: /var/lib/ro-bots
+      - type: volume
+        source: world-data
+        target: /var/lib/mysql
+      - type: volume
+        source: world-data
+        target: /docker-entrypoint-initdb.d
+        read_only: true
+    ports: []
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--defaults-extra-file=/var/lib/ro-bots/db/.my-healthcheck.cnf", "--connect", "--innodb_initialized"]
+      interval: 3s
+      timeout: 5s
+      retries: 30
+      start_period: 10s
+
+  rathena-login:
+    <<: *rathena
+    entrypoint: ["/libexec/rathena/login-server"]
+    command: ["--runtime-root", "/world/runtime"]
+    ports: ["127.0.0.1:${WORLD_LOGIN_PORT:-6900}:${WORLD_LOGIN_PORT:-6900}"]
+  rathena-char:
+    <<: *rathena
+    entrypoint: ["/libexec/rathena/char-server"]
+    command: ["--runtime-root", "/world/runtime"]
+    ports: ["127.0.0.1:${WORLD_CHAR_PORT:-6121}:${WORLD_CHAR_PORT:-6121}"]
+  rathena-map:
+    <<: *rathena
+    entrypoint: ["/libexec/rathena/map-server"]
+    command: ["--runtime-root", "/world/runtime"]
+    ports: ["127.0.0.1:${WORLD_MAP_PORT:-5121}:${WORLD_MAP_PORT:-5121}"]
+
+volumes:
+  world-data:
+    name: ${WORLD_VOLUME:?derived world volume required}

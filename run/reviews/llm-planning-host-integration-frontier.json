@@ -1,0 +1,187 @@
+{
+  "status": "READ_ONLY_HOST_INTEGRATION_FRONTIER_WITH_OFFLINE_CURRENT_CONTRACT_PROBE",
+  "scope": "Next actual host-connected opt-in IDLE/REST segment only. No production implementation, live activation, provider repair or additional inference.",
+  "evidence": {
+    "command": "TMPDIR=/home/otto/.hermes/cache/scratch/llm-planning-host-integration-frontier PYTHONPATH=/home/otto/dev/ro-bots/src:/home/otto/dev/ro-bots PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 nix develop --offline path:./spikes/007-native-packet-ast/toolchain -c .venv/bin/python -B -m pytest -q -o addopts= -p no:cacheprovider /home/otto/.hermes/cache/scratch/llm-planning-host-integration-frontier/test_pending_current_contract.py --junitxml=/home/otto/.hermes/cache/scratch/llm-planning-host-integration-frontier/pending-current-contract.xml",
+    "exit_code": 1,
+    "classification": "REACHED_CURRENT_CONTRACT_RED",
+    "native_or_model_effects": false,
+    "initial_execution_blocker": "Relative git-flake resolution excluded untracked toolchain; retry uses explicit path: flake without Git writes.",
+    "cases": 1,
+    "failures": 1,
+    "errors": 0,
+    "skips": 0,
+    "path": "/home/otto/.hermes/cache/scratch/llm-planning-host-integration-frontier/pending-current-contract.xml",
+    "sha256": "b5ad15570b09254198d748d9ef74ef9a8f4e747385718e6e3f2e07efde11fdc7",
+    "identities": [
+      {
+        "classname": ".hermes.cache.scratch.llm-planning-host-integration-frontier.test_pending_current_contract",
+        "name": "test_pending_probe_real_scheduled_tick_has_no_mechanical_fallback",
+        "time": "0.001"
+      }
+    ],
+    "observed": "Real ScheduledAgent.tick -> _advance_script -> _script_actions -> PlayingClient mechanical floor loot produced pickup bytes 620341010000. Keepalive [20.0] assertion passed before pending gate assertion failed.",
+    "protocol_status": "planner_pending is a proposed fixture hypothesis, not a currently supported public field. Only current ungated path is proven; future six acceptance cases remain unimplemented."
+  },
+  "prior_evidence": {
+    "legacy_failures": "run/reviews/llm-planner-existing-brain-compatibility.json: three reached failures retained, not rerun or repaired",
+    "real_model": "run/reviews/llm-planner-format-real-model-acceptance.json: two actual responses, public_rule skill:1 then REST prontera; original reporting exit 1 after admission; offline exact payload replay admitted. Original counters/latency unknown. Synthetic context, not host/native acceptance. One format correction and actual rerun consumed.",
+    "ledger": "All six milestones and eleven criteria remain OPEN."
+  },
+  "inspected_boundaries": [
+    {
+      "location": "src/robots/app/agent_runtime.py:366-409,559-612,655-661,973-999",
+      "finding": "Synchronous brain.start/handle_event run before or inside host loop. AgentHost._build_agent always constructs EventDrivenBrain. Empty non-recovery outcomes call client.mechanical_actions. Recovery alone currently bypasses fallback."
+    },
+    {
+      "location": "src/robots/app/playing_runtime.py:504-559,562-605",
+      "finding": "Mechanical fallback can loot, patrol or explore NPCs. Keepalive occurs in drain_native_events, not getters; preserving event drain while a planner waits is essential."
+    },
+    {
+      "location": "src/robots/app/brain.py:327-345,362-375,474-519; src/robots/app/scripts.py:77-112,138-155",
+      "finding": "Legacy CLEF authors goals/FarmPlan. Script selection can insert NPC preparation or GrindScript automatically; IdleTownScript moves. None is safe passive pending/IDLE implementation."
+    },
+    {
+      "location": "src/robots/app/plan_lifecycle.py:1-9,59-140",
+      "finding": "Caller-serialized, not threadsafe. Pending timeout does not cancel worker. Token/version/identity checks and fresh capability admission remain on host owner thread."
+    },
+    {
+      "location": "src/robots/app/planning_context.py:162-170,291-404; src/robots/society/memory.py:MemoryLog,389-408",
+      "finding": "InvestigationReader invokes provider() per read and retains PublicSkillKnowledge and MemoryLog; memory_read/search call MemoryLog.notes(). MemoryLog.notes() at lines 202-203 returns tuple(self._notes) WITHOUT acquiring RLock; append/close/summary paths do lock. Its serialized context can protect capture, but raw journal lifetime remains facade-owned. Neither live provider/native trackers nor composite reader is declared threadsafe. Frozen ObservationSnapshot is not deep immutability of nested state. Use bounded owner-safe note capture, not raw journal access or worker memory writes."
+    }
+  ],
+  "minimal_change_set": [
+    {
+      "files": [
+        "src/robots/playing.py",
+        "src/robots/app/agent_runtime.py"
+      ],
+      "change": "Add explicit --llm-planning opt-in (default false) and planner configuration; construct LocalPlanningModel/LLMPlanner without network, inference or worker startup. Add optional per-persona planner brain factory/seam to AgentHost._build_agent, otherwise preserve exact EventDrivenBrain default. Bind one persona/character/world/ruleset to one client-instance session generation plus received epoch; no shared reader, lifecycle or observed mob DB. Construction tests must use real playing.build_host and AgentHost._build_agent."
+    },
+    {
+      "files": [
+        "src/robots/app/planning_runtime.py (new)",
+        "src/robots/app/agent_runtime.py"
+      ],
+      "change": "Host-owned per-agent singleflight worker + one bounded completion slot. start only captures bounded context and schedules; handle_event queues bounded/coalesced replan reasons; tick polls without wait. Worker only executes existing LLMPlanner.propose and returns typed proposal or sanitized failure. All lifecycle mutations, fresh identity/capabilities, admission and script install on one ScheduledAgent owner thread. Startup-to-loop handoff serialized; disconnect joins loop before touching lifecycle. Keep physical worker ownership after logical timeout/epoch invalidation, prohibit new worker while old alive, discard late completion, retain handle until confirmed join. Finite provider request/tool limits and deadlines; an uncancellable blocked worker keeps cleanup unresolved and reconnect denied, not silently detached."
+    },
+    {
+      "files": [
+        "src/robots/app/planning_job_context.py (new)"
+      ],
+      "change": "Explicit bounded immutable per-agent read-only job context captured on host thread: deep-owned received BotState fields, capabilities, public cards and allowed private note text with stable original note IDs/provenance. Reuse InvestigationReader semantics via immutable provider/read-only note snapshot or narrowly typed read-only notes protocol; never pass live PlayingClient/build_state callback or durable store to worker. Bound total rows/text/UTF-8 before copying; omitted notes/topics return UNKNOWN or explicit truncation, never renumber note IDs. memory_search/read use only captured owner notes; no render_view summaries, writes, migration or other-agent/global memory. Host admission independently refreshes capabilities; frozen job capabilities are advisory, not fresh authority. Capture MemoryLog.notes() within its existing serialized context on owner thread; notes() alone is not a locked snapshot. This uses no raw journal reads and does not make the composite live reader threadsafe."
+    },
+    {
+      "files": [
+        "src/robots/app/brain.py",
+        "src/robots/domain/decisions.py",
+        "src/robots/app/planning_brain.py (new)"
+      ],
+      "change": "Extract/reuse existing safe recovery/avoidance and premade chat without invoking legacy _run_review/_setup_farm_plan/_review_goal or automatic NPC preparation. Opt-in brain exposes explicit execution gate pending/invalid/active/safety_interrupt. Bounded CLEF event request contains admitted LLM plan identity/version/objective/phases/progress plus received snapshot and event; choices only continue, safe rest/received escape, stop, request_replan. CLEF may not author/change objective or phases; no FarmPlan model backdoor. Freeform PlanningChatPort remains separately OPEN; disable synchronous freeform generation on opt-in path, keep premade chat only."
+    },
+    {
+      "files": [
+        "src/robots/app/scripts.py",
+        "src/robots/app/agent_runtime.py"
+      ],
+      "change": "Add explicit PassiveIdleScript (zero actions) and PlannedRestScript (Rest/persistent native recovery ownership), typed single-phase mapping for PhaseKind.IDLE/REST only on current received map. Unsupported phases rejected before installation. Bypass mechanical_actions for the entire opt-in segment, including empty active idle/rest actions, pending/invalid/cooldown/exhausted and safety interrupt. Also gate event/start results so legacy attack/loot/NPC cannot leak. Retain native drain, keepalive, received health/pose/motion checks and authorized rest/avoidance interrupts; on recovery release return to admitted execution or safe pending, never GrindScript. Expiry/success/no progress request bounded replan, not objective mutation."
+    }
+  ],
+  "acceptance_cases": [
+    {
+      "test": "tests/test_llm_planning_host_construction.py::test_opt_in_builds_real_host_without_effects_and_default_stays_legacy",
+      "exercise": "Real playing.parse_args/build_host -> AgentHost._build_agent; existing tmp public db/map-cache fixtures and manifest. Replace model completion/native wire effects only. Assert zero provider/native calls on construction, per-agent independent planning owners, unchanged no-flag EventDrivenBrain."
+    },
+    {
+      "test": "tests/test_llm_planning_host_tick.py::test_blocked_provider_keeps_real_scheduled_agent_draining_and_keepalive",
+      "exercise": "Real AgentHost schedule/connect, ScheduledAgent and PlayingClient with KeepaliveWire/received packet fixtures; actual owned worker uses event-blocked PlanningModel.complete effect boundary. Confirm connect returns while blocked, repeated events/timers and ticks return, received event cursor advances and 20/40/60/80s keepalives continue. No provider HTTP, no full-host simulator."
+    },
+    {
+      "test": "tests/test_llm_planning_host_tick.py::test_pending_invalid_and_empty_idle_never_activate_fallback",
+      "exercise": "Same real tick with observed loot, patrol-capable MapCache and received novice preparation/NPC fixture variants; pending, timedout, invalid, cooldown/exhausted and admitted passive idle. Assert zero attack/pickup/patrol/TalkToNpc bytes across repeated ticks, zero legacy fallback calls; drain/keepalive still progress; safe low-health rest/received avoidance only."
+    },
+    {
+      "test": "tests/test_llm_planning_host_admission.py::test_owner_epoch_stale_completion_and_fresh_capability_denial",
+      "exercise": "Two actual ScheduledAgent owners and real LLMPlanner/InvestigationReader/PlanLifecycle; deterministic in-process model boundary emits strict investigate+submit calls. Assert exact persona/character/world/ruleset/client-generation/epoch binding, no cross-owner note data, stale token/base-version/old-client response rejection, fresh fact/map loss before host-thread admission denial and before execution suspension. Frozen job capabilities cannot override current host facts."
+    },
+    {
+      "test": "tests/test_llm_planning_host_execution.py::test_typed_idle_rest_clef_execution_and_bounded_replans",
+      "exercise": "Actual host ticks and CLEF DecisionModel boundary capture bounded active-plan+received-event request; strict IDLE then REST fixtures use production tool loop and lifecycle, not legacy chat counter. Assert PassiveIdleScript stationary, persistent sit/recovery with matching pose/health, no attack/patrol undo; CLEF safety adapt/escalate cannot replace plan objective; expiry/no-progress repeated events coalesce under lifecycle cooldown/attempts; mechanical script steps add zero model calls. Unsupported phase denied."
+    },
+    {
+      "test": "tests/test_llm_planning_host_cleanup.py::test_timeout_and_baseexception_retain_worker_and_client_cleanup_ownership",
+      "exercise": "Actual AgentHost.stop/ScheduledAgent startup/disconnect with real worker, provider wait event and bounded joins. Logical deadline/epoch change cannot spawn second worker or drop handle. After event release join confirms termination before clearing ownership/reconnect. Inject exact KeyboardInterrupt/SystemExit at startup/worker/cleanup boundaries; preserve origin/deepest frame and current client/journal cleanup contracts. Reuse existing startup/pending-producer/storage-failure regressions unchanged; unresolved join is reported, never success."
+    }
+  ],
+  "runnable_offline_acceptance": {
+    "new_tests_command": "TMPDIR=/home/otto/.hermes/cache/scratch/llm-planning-host-integration-frontier PYTHONPATH=src:. PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 nix develop --offline path:./spikes/007-native-packet-ast/toolchain -c .venv/bin/python -B -m pytest -vv -o addopts= -p no:cacheprovider tests/test_llm_planning_host_{construction,tick,admission,execution,cleanup}.py",
+    "status": "Proposed production test files do not exist yet; command becomes runnable when next owner adds one vertical RED->GREEN slice at a time. Only scratch current-contract probe executed in this task.",
+    "reuse": [
+      "tests/test_playing_runtime.py:Wire, packet helpers and test_cli_constructs_existing_host_with_real_providers",
+      "tests/test_native_playing_keepalive.py:KeepaliveWire",
+      "tests/test_native_rest_interrupt.py",
+      "tests/test_native_pose_recovery.py",
+      "tests/test_playing_startup_cleanup.py",
+      "tests/test_pending_start_shutdown_contract.py",
+      "tests/test_host_storage_failure.py",
+      "tests/test_llm_planner.py",
+      "tests/test_plan_lifecycle.py"
+    ],
+    "followup_gate": "After finite six cases pass and independent frozen review: unchanged nix develop -c task check and task audit. Not executed here; native acceptance separately authorized."
+  },
+  "dependencies_and_limits": {
+    "unchanged_core": [
+      "src/robots/app/llm_planner.py",
+      "src/robots/adapters/planning_llm.py",
+      "src/robots/app/plan_lifecycle.py",
+      "src/robots/domain/planning.py",
+      "src/robots/app/planning_context.py"
+    ],
+    "extension_boundary": "Later farming/progression slice must translate public species/item phase IDs into actually perceived species-matched runtime actor/floor IDs with received epoch and fresh mechanics checks; never use species as actor ID or synthesize hidden map populations. No farming/progression implementation in first segment.",
+    "remaining_policy": "Approve bounded raw-note capture policy (max rows/UTF-8 and truncated UNKNOWN semantics), opt-in planning wait/provider timeouts and shutdown join bound. Existing component budgets unchanged; failure at bound must retain unresolved ownership and block reconnect. No native enablement in this brief."
+  },
+  "source_freeze": {
+    "baseline_path": "/home/otto/.hermes/cache/scratch/llm-planner-format-independent-freeze.json",
+    "baseline_sha256": "b6c4f83f39da6e8428957e5bc31b1b13bf98810dba6c474ee4c749341e5a4854",
+    "expected_inputs": 308,
+    "before_count": 308,
+    "after_count": 308,
+    "before_baseline_match": true,
+    "after_baseline_match": true,
+    "before_after_match": true
+  },
+  "source_hashes": {
+    "src/robots/playing.py": "90ea6f0efaf39c0de45ba26c0631f638cacc9de386eccddad023f57f7f08886d",
+    "src/robots/app/agent_runtime.py": "597bec8b2735ee8e4a3846d8428cc3a1eb4872fa386b478a6607d800106fac26",
+    "src/robots/app/brain.py": "f5351e49015174c610e50963d8c55f6d334fb2b6800fa8467e176ad63c3ab424",
+    "src/robots/app/scripts.py": "a84b24ebe9f8aa7100c66c608098e40537dc6d851f6abf2c8a5e6f954e5f0c55",
+    "src/robots/app/playing_runtime.py": "8f6b5861c662705368a4f4fc347d2c990db0f47a140a4ba07aa5772ad41030fd",
+    "src/robots/app/plan_lifecycle.py": "5cc4ded4107193e85ce023c9488423f1409fe35c8cb1a7209f934da48cab4f1b",
+    "src/robots/app/planning_context.py": "f97454f686faa98378d83b8067d1bf0263e6eb873e630e4fdbb45e074e1d880c",
+    "src/robots/app/llm_planner.py": "43043a8f264991a2139c9d1e3335a881db0cbb8219405db48c3ad8ed8a0a618e",
+    "src/robots/domain/decisions.py": "c19d0cf931b3337809cf2a97fc90062493e54444520dba1ac778f6c723fa34cb",
+    "src/robots/domain/planning.py": "2722eb5cea7627c071b13a3e7966d7bfb6d3307ac81335314d63d0c0a51f9ffb",
+    "src/robots/ports/planning.py": "04dae988220f7acfc6e9e2d6ac9650c4e58b90b2c95c32a991b96fdd2eb64d04",
+    "src/robots/society/memory.py": "ce7abeecd931212e8bc46e875ab0cab111965d71954e5be4aaed5fdb526d4d15",
+    "src/robots/adapters/memory_journal.py": "043f109ba8e637b4b26a7a4cd601e64bffa3512815ea0cfbca8c2737c3fb3a00"
+  },
+  "effects": {
+    "production_or_doc_or_git_edits": false,
+    "HTTP_or_model_inference": false,
+    "native_or_SQL_or_Docker": false,
+    "private_journals_or_config_or_services": false,
+    "writes": [
+      "run/reviews/llm-planning-host-integration-frontier.json",
+      "/home/otto/.hermes/cache/scratch/llm-planning-host-integration-frontier"
+    ]
+  },
+  "issues": [
+    "Two preliminary inspection commands failed after useful reads: app/ prefix corrected to src/robots/app; pinned toolchain is a directory, not a script. Neither is behavioral RED or acceptance evidence.",
+    "Initial scratch execution was blocked by untracked git-flake visibility, not test collection or behavioral RED; explicit path: retry preserved no-Git-effects scope."
+  ],
+  "artifact_hashes": {
+    "/home/otto/.hermes/cache/scratch/llm-planning-host-integration-frontier/freeze-before.json": "c04f33d4b84224f0d82eb2a970b63abd73e18213ca0abb82bae0ddace1a0a4c4",
+    "/home/otto/.hermes/cache/scratch/llm-planning-host-integration-frontier/pending-current-contract.xml": "b5ad15570b09254198d748d9ef74ef9a8f4e747385718e6e3f2e07efde11fdc7",
+    "/home/otto/.hermes/cache/scratch/llm-planning-host-integration-frontier/test_pending_current_contract.py": "9f9cefda84239272f28f6f54d4a4458289642c6781ff9858a7dcd5a3e169d8e8"
+  }
+}

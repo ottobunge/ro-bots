@@ -1,0 +1,2380 @@
+{
+  "schema_version": 1,
+  "partition": "economy-inventory",
+  "recovery_status": "new finite partial audit from cached evidence; interrupted original batch not marked successful",
+  "public_server_pin": "e985006171d2eb320ee512a653f4c83aea3d81b6",
+  "active_profile": "MAIN20180704/pre-renewal, obfuscation absent",
+  "scope_file": "run/reviews/ro-gameplay-coverage-research-scope.json",
+  "coverage_frontier": "Groups 12-20; finite feature matrix, not exhaustive across servers, imports or online variants. Feature tiers are local client support, never source existence.",
+  "readiness_context": {
+    "provided_root_gate": "4177 tests +65 subtests,95.37%,check/audit0",
+    "gate_rerun": false,
+    "codec_approval": "run/reviews/playing-mvp-native-equipment-codec-approved.json",
+    "codec_archived_checks": [
+      20,
+      8
+    ],
+    "native_wear_autoequip_accepted": false,
+    "archived_fixture_inventories": "Both complete and empty; zero equipment rows; does not prove positive item/economic action."
+  },
+  "research_constraints": {
+    "network_collection": false,
+    "old_scripts_run": false,
+    "source_changes": false,
+    "native_SQL_service_model_compiler_test_install_git_actions": false,
+    "private_configuration_read": false
+  },
+  "feature_count": 30,
+  "tier_counts": {
+    "native_primitive_verified": 1,
+    "offline_pipeline": 2,
+    "missing": 16,
+    "codec_only": 7,
+    "offline_model": 1,
+    "unknown": 3
+  },
+  "features": [
+    {
+      "feature_id": "inventory.current_epoch",
+      "group": 12,
+      "feature": "Complete current-epoch inventory, including empty inventory",
+      "ruleset_applicability": {
+        "active": "MAIN20180704/pre-renewal",
+        "pre_renewal": "Applicable subject to pinned item/map/class/session restrictions; actual loaded public configuration not established by this audit.",
+        "renewal": "Separate ruleset; do not transfer item, price, formula, capacity or packet assumptions from Renewal guides."
+      },
+      "agent_observations": "Client identity, epoch, contiguous sequence, auth/load barrier and WEIGHT completion, not absence of item packets.",
+      "legal_actions": "Observe only; refuse economic actions until complete healthy current inventory.",
+      "prerequisites": "Identity-matched client and no retained-frame gap.",
+      "native_positive_receipt": {
+        "required": "Fresh same-client/epoch completion barrier and exact stock snapshot.",
+        "observed_in_this_recovery": true,
+        "status": "Archived passive native receipts read, not rerun; no carried/equipped rows."
+      },
+      "negative_tests": {
+        "feature_specific": [
+          "Missing barrier; deletion between list and WEIGHT; reconnect equal sequence; nonempty historical rows after invalidation."
+        ],
+        "shared_required": [
+          "Reject old epoch, reused inventory index or changed instance after selection.",
+          "Duplicate/replayed ACK must not apply stock/currency twice; wrong index/actor/intent cannot complete pending action.",
+          "Concurrent sale/use/transfer, stale shop or other-player mutation must revalidate before commit.",
+          "Frame gap, unhealthy reader, receipt eviction or bounded byte/event/slot budget overflow denies current-state claims.",
+          "Insufficient zeny/reserve, weight/slots, quantity or request budget fails closed; timeout becomes uncertain, never blind resend."
+        ],
+        "execution_status": "specified only; no tests run"
+      },
+      "current_support_tier": "native_primitive_verified",
+      "implementation_refs": [
+        {
+          "path": "src/robots/adapters/native_gameplay.py",
+          "start_line": 208,
+          "end_line": 232,
+          "role": "implementation"
+        },
+        {
+          "path": "src/robots/adapters/native_gameplay.py",
+          "start_line": 343,
+          "end_line": 418,
+          "role": "implementation"
+        },
+        {
+          "path": "run/reviews/playing-mvp-passive-equipment-inventory.json",
+          "start_line": 134,
+          "end_line": 144,
+          "role": "archived fixture 0 empty receipt"
+        },
+        {
+          "path": "run/reviews/playing-mvp-passive-equipment-inventory.json",
+          "start_line": 275,
+          "end_line": 285,
+          "role": "archived fixture 1 empty receipt"
+        }
+      ],
+      "source_refs": [
+        {
+          "citation_id": 1,
+          "path": "rathena/src/map/clif.cpp",
+          "start_line": 10782,
+          "end_line": 10794,
+          "claim_scope": "server load inventory/status ordering",
+          "public_server_pin": "e985006171d2eb320ee512a653f4c83aea3d81b6"
+        }
+      ],
+      "dependency_priority": "P0",
+      "unknowns": [
+        "Archived receipts prove two complete empty inventories only; not nonempty instance ownership or any economic action."
+      ]
+    },
+    {
+      "feature_id": "inventory.instance_index",
+      "group": 12,
+      "feature": "Instance identity, stack counts and index namespaces",
+      "ruleset_applicability": {
+        "active": "MAIN20180704/pre-renewal",
+        "pre_renewal": "Applicable subject to pinned item/map/class/session restrictions; actual loaded public configuration not established by this audit.",
+        "renewal": "Separate ruleset; do not transfer item, price, formula, capacity or packet assumptions from Renewal guides."
+      },
+      "agent_observations": "Per-instance index, item ID, count, identified/damaged/cards/refine/options/expiry/binding; distinguish item ID from instance and inventory/cart/storage index.",
+      "legal_actions": "Select a current owned instance, not an aggregate item-ID count.",
+      "prerequisites": "Complete inventory plus coherent mutation updates and current instance identity.",
+      "native_positive_receipt": {
+        "required": "Before/after exact instance rows with counts; preserve distinct same-ID equipment and incompatible stacks.",
+        "observed_in_this_recovery": false,
+        "status": "required acceptance design, not an executed transaction"
+      },
+      "negative_tests": {
+        "feature_specific": [
+          "Index replacement; duplicate row; split/merge stack; same ID different cards/options/binding; amount zero/negative."
+        ],
+        "shared_required": [
+          "Reject old epoch, reused inventory index or changed instance after selection.",
+          "Duplicate/replayed ACK must not apply stock/currency twice; wrong index/actor/intent cannot complete pending action.",
+          "Concurrent sale/use/transfer, stale shop or other-player mutation must revalidate before commit.",
+          "Frame gap, unhealthy reader, receipt eviction or bounded byte/event/slot budget overflow denies current-state claims.",
+          "Insufficient zeny/reserve, weight/slots, quantity or request budget fails closed; timeout becomes uncertain, never blind resend."
+        ],
+        "execution_status": "specified only; no tests run"
+      },
+      "current_support_tier": "offline_pipeline",
+      "implementation_refs": [
+        {
+          "path": "src/robots/adapters/native_gameplay.py",
+          "start_line": 281,
+          "end_line": 299,
+          "role": "implementation"
+        },
+        {
+          "path": "src/robots/adapters/native_gameplay.py",
+          "start_line": 312,
+          "end_line": 326,
+          "role": "implementation"
+        },
+        {
+          "path": "src/robots/app/playing_runtime.py",
+          "start_line": 243,
+          "end_line": 258,
+          "role": "implementation"
+        },
+        {
+          "path": "src/robots/adapters/native_equipment.py",
+          "start_line": 99,
+          "end_line": 172,
+          "role": "implementation"
+        }
+      ],
+      "source_refs": [
+        {
+          "citation_id": 2,
+          "path": "rathena/src/map/pc.cpp",
+          "start_line": 6586,
+          "end_line": 6657,
+          "claim_scope": "stack identity and bound/unique/card matching",
+          "public_server_pin": "e985006171d2eb320ee512a653f4c83aea3d81b6"
+        },
+        {
+          "citation_id": 1,
+          "path": "rathena/src/map/clif.cpp",
+          "start_line": 13621,
+          "end_line": 13668,
+          "claim_scope": "inventory index minus 2 versus storage minus 1",
+          "public_server_pin": "e985006171d2eb320ee512a653f4c83aea3d81b6"
+        }
+      ],
+      "dependency_priority": "P0",
+      "unknowns": [
+        "Gameplay tracker stores index -> item/count and projects aggregates; standalone equipment metadata decoder is not a session-owned instance tracker."
+      ]
+    },
+    {
+      "feature_id": "inventory.pickup",
+      "group": 12,
+      "feature": "Acquire ordinary observed ground loot",
+      "ruleset_applicability": {
+        "active": "MAIN20180704/pre-renewal",
+        "pre_renewal": "Applicable subject to pinned item/map/class/session restrictions; actual loaded public configuration not established by this audit.",
+        "renewal": "Separate ruleset; do not transfer item, price, formula, capacity or packet assumptions from Renewal guides."
+      },
+      "agent_observations": "Received floor-item ID/location/quantity, own position/life and successful add-item receipt.",
+      "legal_actions": "Pickup visible reachable permitted loot; approach only observed target.",
+      "prerequisites": "Loot priority/range, remaining capacity, healthy epoch.",
+      "native_positive_receipt": {
+        "required": "Fresh success add-item receipt with positive amount and coherent stock increase; floor disappearance alone is insufficient.",
+        "observed_in_this_recovery": false,
+        "status": "required acceptance design, not an executed transaction"
+      },
+      "negative_tests": {
+        "feature_specific": [
+          "Other player takes loot; priority timer; out of range; full/overweight; index reused; ACK replay."
+        ],
+        "shared_required": [
+          "Reject old epoch, reused inventory index or changed instance after selection.",
+          "Duplicate/replayed ACK must not apply stock/currency twice; wrong index/actor/intent cannot complete pending action.",
+          "Concurrent sale/use/transfer, stale shop or other-player mutation must revalidate before commit.",
+          "Frame gap, unhealthy reader, receipt eviction or bounded byte/event/slot budget overflow denies current-state claims.",
+          "Insufficient zeny/reserve, weight/slots, quantity or request budget fails closed; timeout becomes uncertain, never blind resend."
+        ],
+        "execution_status": "specified only; no tests run"
+      },
+      "current_support_tier": "offline_pipeline",
+      "implementation_refs": [
+        {
+          "path": "src/robots/adapters/native_gameplay.py",
+          "start_line": 40,
+          "end_line": 41,
+          "role": "implementation"
+        },
+        {
+          "path": "src/robots/adapters/native_gameplay.py",
+          "start_line": 302,
+          "end_line": 326,
+          "role": "implementation"
+        },
+        {
+          "path": "src/robots/app/playing_runtime.py",
+          "start_line": 378,
+          "end_line": 391,
+          "role": "implementation"
+        }
+      ],
+      "source_refs": [
+        {
+          "citation_id": 2,
+          "path": "rathena/src/map/pc.cpp",
+          "start_line": 6189,
+          "end_line": 6268,
+          "claim_scope": "loot distance, priority and inventory insertion",
+          "public_server_pin": "e985006171d2eb320ee512a653f4c83aea3d81b6"
+        }
+      ],
+      "dependency_priority": "P0",
+      "unknowns": [
+        "Pickup path exists, but this recovery did not examine a successful native acquisition report; do not upgrade from send intent."
+      ]
+    },
+    {
+      "feature_id": "inventory.drop",
+      "group": 12,
+      "feature": "Drop/dispose only authorized expendable items",
+      "ruleset_applicability": {
+        "active": "MAIN20180704/pre-renewal",
+        "pre_renewal": "Applicable subject to pinned item/map/class/session restrictions; actual loaded public configuration not established by this audit.",
+        "renewal": "Separate ruleset; do not transfer item, price, formula, capacity or packet assumptions from Renewal guides."
+      },
+      "agent_observations": "Current instance/count, binding, map restriction, worn/switch state.",
+      "legal_actions": "Drop positive owned quantity only under explicit discard policy.",
+      "prerequisites": "Non-trading/non-vending; legal map/item; quantity budget.",
+      "native_positive_receipt": {
+        "required": "Drop result and exact inventory decrement; floor object receipt when relevant.",
+        "observed_in_this_recovery": false,
+        "status": "required acceptance design, not an executed transaction"
+      },
+      "negative_tests": {
+        "feature_specific": [
+          "No-drop map; bound/non-droppable; trade/vending; excess quantity; equipped-switch item."
+        ],
+        "shared_required": [
+          "Reject old epoch, reused inventory index or changed instance after selection.",
+          "Duplicate/replayed ACK must not apply stock/currency twice; wrong index/actor/intent cannot complete pending action.",
+          "Concurrent sale/use/transfer, stale shop or other-player mutation must revalidate before commit.",
+          "Frame gap, unhealthy reader, receipt eviction or bounded byte/event/slot budget overflow denies current-state claims.",
+          "Insufficient zeny/reserve, weight/slots, quantity or request budget fails closed; timeout becomes uncertain, never blind resend."
+        ],
+        "execution_status": "specified only; no tests run"
+      },
+      "current_support_tier": "missing",
+      "implementation_refs": [
+        {
+          "path": "src/robots/app/playing_runtime.py",
+          "start_line": 296,
+          "end_line": 376,
+          "role": "audited native action dispatch: economic action not exposed"
+        }
+      ],
+      "source_refs": [
+        {
+          "citation_id": 2,
+          "path": "rathena/src/map/pc.cpp",
+          "start_line": 6137,
+          "end_line": 6181,
+          "claim_scope": "drop legality and deletion",
+          "public_server_pin": "e985006171d2eb320ee512a653f4c83aea3d81b6"
+        }
+      ],
+      "dependency_priority": "P1",
+      "unknowns": [
+        "No native positive/negative transaction proof recovered; server existence is not client support."
+      ]
+    },
+    {
+      "feature_id": "inventory.identify",
+      "group": 13,
+      "feature": "Identify an owned unidentified item",
+      "ruleset_applicability": {
+        "active": "MAIN20180704/pre-renewal",
+        "pre_renewal": "Applicable subject to pinned item/map/class/session restrictions; actual loaded public configuration not established by this audit.",
+        "renewal": "Separate ruleset; do not transfer item, price, formula, capacity or packet assumptions from Renewal guides."
+      },
+      "agent_observations": "Identify flag and current menu/skill session; identify resource if required by selected route.",
+      "legal_actions": "Select owned unidentified target in legitimate identify context.",
+      "prerequisites": "Valid identify route/menu and current index.",
+      "native_positive_receipt": {
+        "required": "Successful identification response and same-instance identified flag change; resource delta for selected route.",
+        "observed_in_this_recovery": false,
+        "status": "required acceptance design, not an executed transaction"
+      },
+      "negative_tests": {
+        "feature_specific": [
+          "Already identified; absent index; wrong menu; target transferred before selection."
+        ],
+        "shared_required": [
+          "Reject old epoch, reused inventory index or changed instance after selection.",
+          "Duplicate/replayed ACK must not apply stock/currency twice; wrong index/actor/intent cannot complete pending action.",
+          "Concurrent sale/use/transfer, stale shop or other-player mutation must revalidate before commit.",
+          "Frame gap, unhealthy reader, receipt eviction or bounded byte/event/slot budget overflow denies current-state claims.",
+          "Insufficient zeny/reserve, weight/slots, quantity or request budget fails closed; timeout becomes uncertain, never blind resend."
+        ],
+        "execution_status": "specified only; no tests run"
+      },
+      "current_support_tier": "codec_only",
+      "implementation_refs": [
+        {
+          "path": "src/robots/adapters/native_equipment.py",
+          "start_line": 99,
+          "end_line": 121,
+          "role": "implementation"
+        },
+        {
+          "path": "src/robots/app/playing_runtime.py",
+          "start_line": 296,
+          "end_line": 376,
+          "role": "audited native action dispatch: economic action not exposed"
+        }
+      ],
+      "source_refs": [
+        {
+          "citation_id": 1,
+          "path": "rathena/src/map/clif.cpp",
+          "start_line": 13429,
+          "end_line": 13450,
+          "claim_scope": "requires identify menu and unidentified target",
+          "public_server_pin": "e985006171d2eb320ee512a653f4c83aea3d81b6"
+        },
+        {
+          "citation_id": 9,
+          "path": "rathena/src/map/skill.cpp",
+          "start_line": 10568,
+          "end_line": 10588,
+          "claim_scope": "identify mutation and result",
+          "public_server_pin": "e985006171d2eb320ee512a653f4c83aea3d81b6"
+        }
+      ],
+      "dependency_priority": "P1",
+      "unknowns": [
+        "Metadata flag decode only; no identify action/receipt pipeline found in audited playing surface."
+      ]
+    },
+    {
+      "feature_id": "inventory.consume",
+      "group": 13,
+      "feature": "Consume healing/usable items with real effect",
+      "ruleset_applicability": {
+        "active": "MAIN20180704/pre-renewal",
+        "pre_renewal": "Applicable subject to pinned item/map/class/session restrictions; actual loaded public configuration not established by this audit.",
+        "renewal": "Separate ruleset; do not transfer item, price, formula, capacity or packet assumptions from Renewal guides."
+      },
+      "agent_observations": "Owned positive stack, life/status, use restrictions, cooldown, HP/SP and target/delayed-use mode.",
+      "legal_actions": "Use only allowed consumable in current context; resolve targeted/delayed use explicitly.",
+      "prerequisites": "Pinned usable item script; no forbidden trading/storage/NPC/map/status state.",
+      "native_positive_receipt": {
+        "required": "Fresh successful use response plus stock decrement when consumed and actual HP/SP/status/skill/warp effect; delayed consumption needs final target resolution.",
+        "observed_in_this_recovery": false,
+        "status": "required acceptance design, not an executed transaction"
+      },
+      "negative_tests": {
+        "feature_specific": [
+          "Dead/busy; storage open; use cooldown; no-consumption map; wrong type; target cancellation; same stack race."
+        ],
+        "shared_required": [
+          "Reject old epoch, reused inventory index or changed instance after selection.",
+          "Duplicate/replayed ACK must not apply stock/currency twice; wrong index/actor/intent cannot complete pending action.",
+          "Concurrent sale/use/transfer, stale shop or other-player mutation must revalidate before commit.",
+          "Frame gap, unhealthy reader, receipt eviction or bounded byte/event/slot budget overflow denies current-state claims.",
+          "Insufficient zeny/reserve, weight/slots, quantity or request budget fails closed; timeout becomes uncertain, never blind resend."
+        ],
+        "execution_status": "specified only; no tests run"
+      },
+      "current_support_tier": "missing",
+      "implementation_refs": [
+        {
+          "path": "src/robots/app/playing_runtime.py",
+          "start_line": 296,
+          "end_line": 376,
+          "role": "audited native action dispatch: economic action not exposed"
+        }
+      ],
+      "source_refs": [
+        {
+          "citation_id": 1,
+          "path": "rathena/src/map/clif.cpp",
+          "start_line": 12080,
+          "end_line": 12107,
+          "claim_scope": "request legality and negative response",
+          "public_server_pin": "e985006171d2eb320ee512a653f4c83aea3d81b6"
+        },
+        {
+          "citation_id": 2,
+          "path": "rathena/src/map/pc.cpp",
+          "start_line": 6276,
+          "end_line": 6442,
+          "claim_scope": "consumable/map/status/cooldown restrictions",
+          "public_server_pin": "e985006171d2eb320ee512a653f4c83aea3d81b6"
+        },
+        {
+          "citation_id": 2,
+          "path": "rathena/src/map/pc.cpp",
+          "start_line": 6450,
+          "end_line": 6576,
+          "claim_scope": "consumption and script execution",
+          "public_server_pin": "e985006171d2eb320ee512a653f4c83aea3d81b6"
+        },
+        {
+          "citation_id": 1,
+          "path": "rathena/src/map/clif.cpp",
+          "start_line": 4468,
+          "end_line": 4497,
+          "claim_scope": "ACK includes index, actor, amount and result",
+          "public_server_pin": "e985006171d2eb320ee512a653f4c83aea3d81b6"
+        }
+      ],
+      "dependency_priority": "P0",
+      "unknowns": [
+        "No native positive/negative transaction proof recovered; server existence is not client support."
+      ]
+    },
+    {
+      "feature_id": "inventory.ammunition",
+      "group": 13,
+      "feature": "Ammunition compatibility, wear and depletion",
+      "ruleset_applicability": {
+        "active": "MAIN20180704/pre-renewal",
+        "pre_renewal": "Applicable subject to pinned item/map/class/session restrictions; actual loaded public configuration not established by this audit.",
+        "renewal": "Separate ruleset; do not transfer item, price, formula, capacity or packet assumptions from Renewal guides."
+      },
+      "agent_observations": "Ammo subtype/count, equipped weapon, skill consumption requirements and current ammo wear.",
+      "legal_actions": "Equip compatible ammo and reserve enough for bounded combat/skill use.",
+      "prerequisites": "Weapon/ammo rules and configuration; current owned ammo.",
+      "native_positive_receipt": {
+        "required": "Correlated equip success with ammo worn mask, then actual consumption deltas for supported attacks/skills.",
+        "observed_in_this_recovery": false,
+        "status": "required acceptance design, not an executed transaction"
+      },
+      "negative_tests": {
+        "feature_specific": [
+          "Wrong weapon; empty ammo; stale stack; switch attempt with ammo; insufficient per-skill quantity."
+        ],
+        "shared_required": [
+          "Reject old epoch, reused inventory index or changed instance after selection.",
+          "Duplicate/replayed ACK must not apply stock/currency twice; wrong index/actor/intent cannot complete pending action.",
+          "Concurrent sale/use/transfer, stale shop or other-player mutation must revalidate before commit.",
+          "Frame gap, unhealthy reader, receipt eviction or bounded byte/event/slot budget overflow denies current-state claims.",
+          "Insufficient zeny/reserve, weight/slots, quantity or request budget fails closed; timeout becomes uncertain, never blind resend."
+        ],
+        "execution_status": "specified only; no tests run"
+      },
+      "current_support_tier": "codec_only",
+      "implementation_refs": [
+        {
+          "path": "src/robots/adapters/native_equipment.py",
+          "start_line": 49,
+          "end_line": 77,
+          "role": "implementation"
+        },
+        {
+          "path": "src/robots/app/playing_runtime.py",
+          "start_line": 296,
+          "end_line": 376,
+          "role": "audited native action dispatch: economic action not exposed"
+        }
+      ],
+      "source_refs": [
+        {
+          "citation_id": 2,
+          "path": "rathena/src/map/pc.cpp",
+          "start_line": 1850,
+          "end_line": 1969,
+          "claim_scope": "ammo/weapon compatibility",
+          "public_server_pin": "e985006171d2eb320ee512a653f4c83aea3d81b6"
+        },
+        {
+          "citation_id": 2,
+          "path": "rathena/src/map/pc.cpp",
+          "start_line": 12015,
+          "end_line": 12287,
+          "claim_scope": "ammo and requested-position constraints",
+          "public_server_pin": "e985006171d2eb320ee512a653f4c83aea3d81b6"
+        }
+      ],
+      "dependency_priority": "P1",
+      "unknowns": [
+        "Only generic equip bytes exist; skill-specific ammunition recipes/consumption cross-reference combat/class report."
+      ]
+    },
+    {
+      "feature_id": "economy.weight_capacity",
+      "group": 13,
+      "feature": "Weight, slots and safe capacity budget",
+      "ruleset_applicability": {
+        "active": "MAIN20180704/pre-renewal",
+        "pre_renewal": "Applicable subject to pinned item/map/class/session restrictions; actual loaded public configuration not established by this audit.",
+        "renewal": "Separate ruleset; do not transfer item, price, formula, capacity or packet assumptions from Renewal guides."
+      },
+      "agent_observations": "Received WEIGHT/MAXWEIGHT, actual slots/stack room and per-item weights.",
+      "legal_actions": "Plan pickup/buy/withdraw/receive below applicable limits.",
+      "prerequisites": "Coherent inventory and current received weight, not static guide capacity.",
+      "native_positive_receipt": {
+        "required": "Actual capacity/status receipts reconcile accepted additions; rejected addition leaves stock unchanged.",
+        "observed_in_this_recovery": false,
+        "status": "required acceptance design, not an executed transaction"
+      },
+      "negative_tests": {
+        "feature_specific": [
+          "Boundary weight; slot full despite low weight; oversized quantity; overflow; stale weight."
+        ],
+        "shared_required": [
+          "Reject old epoch, reused inventory index or changed instance after selection.",
+          "Duplicate/replayed ACK must not apply stock/currency twice; wrong index/actor/intent cannot complete pending action.",
+          "Concurrent sale/use/transfer, stale shop or other-player mutation must revalidate before commit.",
+          "Frame gap, unhealthy reader, receipt eviction or bounded byte/event/slot budget overflow denies current-state claims.",
+          "Insufficient zeny/reserve, weight/slots, quantity or request budget fails closed; timeout becomes uncertain, never blind resend."
+        ],
+        "execution_status": "specified only; no tests run"
+      },
+      "current_support_tier": "missing",
+      "implementation_refs": [
+        {
+          "path": "src/robots/adapters/native_gameplay.py",
+          "start_line": 405,
+          "end_line": 418,
+          "role": "WEIGHT is completeness barrier, not stored capacity ledger"
+        },
+        {
+          "path": "src/robots/app/playing_runtime.py",
+          "start_line": 296,
+          "end_line": 376,
+          "role": "audited native action dispatch: economic action not exposed"
+        }
+      ],
+      "source_refs": [
+        {
+          "citation_id": 7,
+          "path": "rathena/src/map/npc.cpp",
+          "start_line": 2796,
+          "end_line": 2948,
+          "claim_scope": "weight, slot and purchase checks",
+          "public_server_pin": "e985006171d2eb320ee512a653f4c83aea3d81b6"
+        },
+        {
+          "citation_id": 2,
+          "path": "rathena/src/map/pc.cpp",
+          "start_line": 6586,
+          "end_line": 6657,
+          "claim_scope": "cart weight/stack limits",
+          "public_server_pin": "e985006171d2eb320ee512a653f4c83aea3d81b6"
+        }
+      ],
+      "dependency_priority": "P0",
+      "unknowns": [
+        "No native positive/negative transaction proof recovered; server existence is not client support."
+      ]
+    },
+    {
+      "feature_id": "economy.zeny_budget",
+      "group": 13,
+      "feature": "Zeny, reserves and receipt-based accounting",
+      "ruleset_applicability": {
+        "active": "MAIN20180704/pre-renewal",
+        "pre_renewal": "Applicable subject to pinned item/map/class/session restrictions; actual loaded public configuration not established by this audit.",
+        "renewal": "Separate ruleset; do not transfer item, price, formula, capacity or packet assumptions from Renewal guides."
+      },
+      "agent_observations": "Current received zeny, quoted unit prices, fees, pending spend and minimum reserve.",
+      "legal_actions": "Authorize spend only against observed balance and explicit budget; distinguish NPC quote from player-market price.",
+      "prerequisites": "Same-epoch currency observer and reconciliation.",
+      "native_positive_receipt": {
+        "required": "Fresh zeny before/after matches actual transaction cost/proceeds including cap/fees; ACK without balance is insufficient.",
+        "observed_in_this_recovery": false,
+        "status": "required acceptance design, not an executed transaction"
+      },
+      "negative_tests": {
+        "feature_specific": [
+          "Insufficient funds; concurrent spend; negative/overflow quantity*price; zeny cap; replay; reserve violated."
+        ],
+        "shared_required": [
+          "Reject old epoch, reused inventory index or changed instance after selection.",
+          "Duplicate/replayed ACK must not apply stock/currency twice; wrong index/actor/intent cannot complete pending action.",
+          "Concurrent sale/use/transfer, stale shop or other-player mutation must revalidate before commit.",
+          "Frame gap, unhealthy reader, receipt eviction or bounded byte/event/slot budget overflow denies current-state claims.",
+          "Insufficient zeny/reserve, weight/slots, quantity or request budget fails closed; timeout becomes uncertain, never blind resend."
+        ],
+        "execution_status": "specified only; no tests run"
+      },
+      "current_support_tier": "missing",
+      "implementation_refs": [
+        {
+          "path": "src/robots/adapters/native_gameplay.py",
+          "start_line": 405,
+          "end_line": 418,
+          "role": "only XP/completeness handling here"
+        },
+        {
+          "path": "src/robots/app/playing_runtime.py",
+          "start_line": 296,
+          "end_line": 376,
+          "role": "audited native action dispatch: economic action not exposed"
+        }
+      ],
+      "source_refs": [
+        {
+          "citation_id": 2,
+          "path": "rathena/src/map/pc.cpp",
+          "start_line": 5795,
+          "end_line": 5820,
+          "claim_scope": "payment bounds and status update",
+          "public_server_pin": "e985006171d2eb320ee512a653f4c83aea3d81b6"
+        },
+        {
+          "citation_id": 2,
+          "path": "rathena/src/map/pc.cpp",
+          "start_line": 5829,
+          "end_line": 5856,
+          "claim_scope": "credit capped at MAX_ZENY",
+          "public_server_pin": "e985006171d2eb320ee512a653f4c83aea3d81b6"
+        }
+      ],
+      "dependency_priority": "P0",
+      "unknowns": [
+        "Current balance, fees and any market prices are unknown; no guessed profitability."
+      ]
+    },
+    {
+      "feature_id": "inventory.equipment_metadata",
+      "group": 14,
+      "feature": "Equipment wire metadata is not wear/eligibility",
+      "ruleset_applicability": {
+        "active": "MAIN20180704/pre-renewal",
+        "pre_renewal": "Applicable subject to pinned item/map/class/session restrictions; actual loaded public configuration not established by this audit.",
+        "renewal": "Separate ruleset; do not transfer item, price, formula, capacity or packet assumptions from Renewal guides."
+      },
+      "agent_observations": "Allowed locations and wear state separately; identify/damage, refine, four cards and five option slots including option_count=0.",
+      "legal_actions": "Decode complete pinned frames only; do not infer ownership, effects or equip eligibility.",
+      "prerequisites": "MAIN20180704 codec framing and current-state integration for future use.",
+      "native_positive_receipt": {
+        "required": "Nonempty native equipment row tied to current inventory and epoch; passive empty inventory does not exercise item metadata.",
+        "observed_in_this_recovery": false,
+        "status": "required acceptance design, not an executed transaction"
+      },
+      "negative_tests": {
+        "feature_specific": [
+          "Malformed lengths; signed index; duplicate index; unknown spare flags; all five options when count is zero."
+        ],
+        "shared_required": [
+          "Reject old epoch, reused inventory index or changed instance after selection.",
+          "Duplicate/replayed ACK must not apply stock/currency twice; wrong index/actor/intent cannot complete pending action.",
+          "Concurrent sale/use/transfer, stale shop or other-player mutation must revalidate before commit.",
+          "Frame gap, unhealthy reader, receipt eviction or bounded byte/event/slot budget overflow denies current-state claims.",
+          "Insufficient zeny/reserve, weight/slots, quantity or request budget fails closed; timeout becomes uncertain, never blind resend."
+        ],
+        "execution_status": "specified only; no tests run"
+      },
+      "current_support_tier": "codec_only",
+      "implementation_refs": [
+        {
+          "path": "src/robots/adapters/native_equipment.py",
+          "start_line": 1,
+          "end_line": 13,
+          "role": "implementation"
+        },
+        {
+          "path": "src/robots/adapters/native_equipment.py",
+          "start_line": 99,
+          "end_line": 172,
+          "role": "implementation"
+        },
+        {
+          "path": "run/reviews/playing-mvp-native-equipment-codec-approved.json",
+          "start_line": 1,
+          "end_line": 14,
+          "role": "approved bounded offline review only"
+        }
+      ],
+      "source_refs": [
+        {
+          "citation_id": 2,
+          "path": "rathena/src/map/pc.cpp",
+          "start_line": 12015,
+          "end_line": 12287,
+          "claim_scope": "server checks still needed",
+          "public_server_pin": "e985006171d2eb320ee512a653f4c83aea3d81b6"
+        }
+      ],
+      "dependency_priority": "P0",
+      "unknowns": [
+        "20+8 archived codec checks are approved; no native wear/autoequip acceptance."
+      ]
+    },
+    {
+      "feature_id": "inventory.equip_legality",
+      "group": 14,
+      "feature": "Class/level/sex/map/slot and both-hand equip legality",
+      "ruleset_applicability": {
+        "active": "MAIN20180704/pre-renewal",
+        "pre_renewal": "Applicable subject to pinned item/map/class/session restrictions; actual loaded public configuration not established by this audit.",
+        "renewal": "Separate ruleset; do not transfer item, price, formula, capacity or packet assumptions from Renewal guides."
+      },
+      "agent_observations": "Owned identified intact instance, item permission catalog, current class/level/sex/status, competing worn slots.",
+      "legal_actions": "Request only permitted position; resolve two-hand/dual-wield/slot conflicts; never equip from item ID or allowedLocation alone.",
+      "prerequisites": "Complete owned instances and server-equivalent legality, restrictions, current wear plus fresh intent.",
+      "native_positive_receipt": {
+        "required": "Fresh positive equip ACK bound to own index/epoch/intent, then actual same-instance worn state and relevant status/look change.",
+        "observed_in_this_recovery": false,
+        "status": "required acceptance design, not an executed transaction"
+      },
+      "negative_tests": {
+        "feature_specific": [
+          "Wrong job/class/sex/level; broken/unidentified item; restricted map; two-hand conflict; already worn; stale index; spoofed ACK."
+        ],
+        "shared_required": [
+          "Reject old epoch, reused inventory index or changed instance after selection.",
+          "Duplicate/replayed ACK must not apply stock/currency twice; wrong index/actor/intent cannot complete pending action.",
+          "Concurrent sale/use/transfer, stale shop or other-player mutation must revalidate before commit.",
+          "Frame gap, unhealthy reader, receipt eviction or bounded byte/event/slot budget overflow denies current-state claims.",
+          "Insufficient zeny/reserve, weight/slots, quantity or request budget fails closed; timeout becomes uncertain, never blind resend."
+        ],
+        "execution_status": "specified only; no tests run"
+      },
+      "current_support_tier": "offline_model",
+      "implementation_refs": [
+        {
+          "path": "src/robots/adapters/mechanics_yaml.py",
+          "start_line": 1,
+          "end_line": 5,
+          "role": "implementation"
+        },
+        {
+          "path": "src/robots/adapters/mechanics_yaml.py",
+          "start_line": 284,
+          "end_line": 352,
+          "role": "implementation"
+        },
+        {
+          "path": "src/robots/adapters/native_equipment.py",
+          "start_line": 49,
+          "end_line": 77,
+          "role": "implementation"
+        },
+        {
+          "path": "src/robots/app/playing_runtime.py",
+          "start_line": 296,
+          "end_line": 376,
+          "role": "audited native action dispatch: economic action not exposed"
+        }
+      ],
+      "source_refs": [
+        {
+          "citation_id": 2,
+          "path": "rathena/src/map/pc.cpp",
+          "start_line": 1850,
+          "end_line": 1969,
+          "claim_scope": "server permissions and class/level/sex/condition checks",
+          "public_server_pin": "e985006171d2eb320ee512a653f4c83aea3d81b6"
+        },
+        {
+          "citation_id": 2,
+          "path": "rathena/src/map/pc.cpp",
+          "start_line": 12015,
+          "end_line": 12287,
+          "claim_scope": "actual equip state transition",
+          "public_server_pin": "e985006171d2eb320ee512a653f4c83aea3d81b6"
+        }
+      ],
+      "dependency_priority": "P0",
+      "unknowns": [
+        "Static catalog intentionally omits custom imports, scripts/combos; not a complete legality validator. Wear/autoequip not accepted."
+      ]
+    },
+    {
+      "feature_id": "inventory.unequip",
+      "group": 14,
+      "feature": "Unequip and reconcile displaced equipment",
+      "ruleset_applicability": {
+        "active": "MAIN20180704/pre-renewal",
+        "pre_renewal": "Applicable subject to pinned item/map/class/session restrictions; actual loaded public configuration not established by this audit.",
+        "renewal": "Separate ruleset; do not transfer item, price, formula, capacity or packet assumptions from Renewal guides."
+      },
+      "agent_observations": "Actual current worn masks, locked status and pending equip/unequip intents.",
+      "legal_actions": "Unequip current owned worn instance only; track automatically displaced slots separately.",
+      "prerequisites": "Same-session wear observer and no forbid-unequip status.",
+      "native_positive_receipt": {
+        "required": "Own-index fresh success unequip ACK plus wear mask cleared and related status; no effects inferred from ACK alone.",
+        "observed_in_this_recovery": false,
+        "status": "required acceptance design, not an executed transaction"
+      },
+      "negative_tests": {
+        "feature_specific": [
+          "Not worn; forbidden status; unknown result; ACK for another index; delayed old equip ACK."
+        ],
+        "shared_required": [
+          "Reject old epoch, reused inventory index or changed instance after selection.",
+          "Duplicate/replayed ACK must not apply stock/currency twice; wrong index/actor/intent cannot complete pending action.",
+          "Concurrent sale/use/transfer, stale shop or other-player mutation must revalidate before commit.",
+          "Frame gap, unhealthy reader, receipt eviction or bounded byte/event/slot budget overflow denies current-state claims.",
+          "Insufficient zeny/reserve, weight/slots, quantity or request budget fails closed; timeout becomes uncertain, never blind resend."
+        ],
+        "execution_status": "specified only; no tests run"
+      },
+      "current_support_tier": "codec_only",
+      "implementation_refs": [
+        {
+          "path": "src/robots/adapters/native_equipment.py",
+          "start_line": 32,
+          "end_line": 77,
+          "role": "implementation"
+        },
+        {
+          "path": "src/robots/app/playing_runtime.py",
+          "start_line": 296,
+          "end_line": 376,
+          "role": "audited native action dispatch: economic action not exposed"
+        }
+      ],
+      "source_refs": [
+        {
+          "citation_id": 2,
+          "path": "rathena/src/map/pc.cpp",
+          "start_line": 12398,
+          "end_line": 16169,
+          "claim_scope": "unequip state checks and mutations",
+          "public_server_pin": "e985006171d2eb320ee512a653f4c83aea3d81b6"
+        }
+      ],
+      "dependency_priority": "P0",
+      "unknowns": [
+        "No native positive/negative transaction proof recovered; server existence is not client support."
+      ]
+    },
+    {
+      "feature_id": "inventory.cards",
+      "group": 15,
+      "feature": "Card compounding transaction",
+      "ruleset_applicability": {
+        "active": "MAIN20180704/pre-renewal",
+        "pre_renewal": "Applicable subject to pinned item/map/class/session restrictions; actual loaded public configuration not established by this audit.",
+        "renewal": "Separate ruleset; do not transfer item, price, formula, capacity or packet assumptions from Renewal guides."
+      },
+      "agent_observations": "Owned card and unequipped identified target, matching card location, free real slot, reserved special card data.",
+      "legal_actions": "Insert one compatible card in explicit chosen target with irreversible-change consent.",
+      "prerequisites": "Current instance metadata, target slots and no special reserved card layout.",
+      "native_positive_receipt": {
+        "required": "Successful insertion result, card consumed and exact target card array updated; preserve target identity.",
+        "observed_in_this_recovery": false,
+        "status": "required acceptance design, not an executed transaction"
+      },
+      "negative_tests": {
+        "feature_specific": [
+          "Equipped target; full slots; wrong type/location; unidentified; reserved card data; missing card."
+        ],
+        "shared_required": [
+          "Reject old epoch, reused inventory index or changed instance after selection.",
+          "Duplicate/replayed ACK must not apply stock/currency twice; wrong index/actor/intent cannot complete pending action.",
+          "Concurrent sale/use/transfer, stale shop or other-player mutation must revalidate before commit.",
+          "Frame gap, unhealthy reader, receipt eviction or bounded byte/event/slot budget overflow denies current-state claims.",
+          "Insufficient zeny/reserve, weight/slots, quantity or request budget fails closed; timeout becomes uncertain, never blind resend."
+        ],
+        "execution_status": "specified only; no tests run"
+      },
+      "current_support_tier": "codec_only",
+      "implementation_refs": [
+        {
+          "path": "src/robots/adapters/native_equipment.py",
+          "start_line": 99,
+          "end_line": 172,
+          "role": "implementation"
+        },
+        {
+          "path": "src/robots/app/playing_runtime.py",
+          "start_line": 296,
+          "end_line": 376,
+          "role": "audited native action dispatch: economic action not exposed"
+        }
+      ],
+      "source_refs": [
+        {
+          "citation_id": 2,
+          "path": "rathena/src/map/pc.cpp",
+          "start_line": 5596,
+          "end_line": 5657,
+          "claim_scope": "card legality, consumption and target update",
+          "public_server_pin": "e985006171d2eb320ee512a653f4c83aea3d81b6"
+        }
+      ],
+      "dependency_priority": "P1",
+      "unknowns": [
+        "Card array observable offline; no card insertion actuator or native mutation proof."
+      ]
+    },
+    {
+      "feature_id": "inventory.refine",
+      "group": 15,
+      "feature": "Refinement costs, success and destructive failure",
+      "ruleset_applicability": {
+        "active": "MAIN20180704/pre-renewal",
+        "pre_renewal": "Applicable subject to pinned item/map/class/session restrictions; actual loaded public configuration not established by this audit.",
+        "renewal": "Separate ruleset; do not transfer item, price, formula, capacity or packet assumptions from Renewal guides."
+      },
+      "agent_observations": "Current refine level/refineable state, selected service, materials, zeny and success/failure rules.",
+      "legal_actions": "At most authorized attempts on explicitly owned target; distinguish skill refine from NPC refinement.",
+      "prerequisites": "Specific pinned service/recipe and cost/chance policy; irreversible-risk consent.",
+      "native_positive_receipt": {
+        "required": "Resolved refine success/failure plus material/zeny deltas and increased refine or actual loss/downgrade; failed rolls are not retries.",
+        "observed_in_this_recovery": false,
+        "status": "required acceptance design, not an executed transaction"
+      },
+      "negative_tests": {
+        "feature_specific": [
+          "Unrefineable/max refine; missing material; budget exhausted; target replacement; fail roll; double response."
+        ],
+        "shared_required": [
+          "Reject old epoch, reused inventory index or changed instance after selection.",
+          "Duplicate/replayed ACK must not apply stock/currency twice; wrong index/actor/intent cannot complete pending action.",
+          "Concurrent sale/use/transfer, stale shop or other-player mutation must revalidate before commit.",
+          "Frame gap, unhealthy reader, receipt eviction or bounded byte/event/slot budget overflow denies current-state claims.",
+          "Insufficient zeny/reserve, weight/slots, quantity or request budget fails closed; timeout becomes uncertain, never blind resend."
+        ],
+        "execution_status": "specified only; no tests run"
+      },
+      "current_support_tier": "codec_only",
+      "implementation_refs": [
+        {
+          "path": "src/robots/adapters/native_equipment.py",
+          "start_line": 99,
+          "end_line": 172,
+          "role": "implementation"
+        },
+        {
+          "path": "src/robots/app/playing_runtime.py",
+          "start_line": 296,
+          "end_line": 376,
+          "role": "audited native action dispatch: economic action not exposed"
+        }
+      ],
+      "source_refs": [
+        {
+          "citation_id": 9,
+          "path": "rathena/src/map/skill.cpp",
+          "start_line": 10593,
+          "end_line": 10701,
+          "claim_scope": "skill weapon-refine route, not universal NPC rules",
+          "public_server_pin": "e985006171d2eb320ee512a653f4c83aea3d81b6"
+        },
+        {
+          "citation_id": 10,
+          "path": "rathena/doc/script_commands.txt",
+          "start_line": 2954,
+          "end_line": 3010,
+          "claim_scope": "script refinement rate/cost interfaces",
+          "public_server_pin": "e985006171d2eb320ee512a653f4c83aea3d81b6"
+        }
+      ],
+      "dependency_priority": "P1",
+      "unknowns": [
+        "Native NPC refinement script, active refine DB/config and chance/cost not verified; no universal safe-level or fee asserted."
+      ]
+    },
+    {
+      "feature_id": "inventory.repair",
+      "group": 15,
+      "feature": "Repair a broken owned/authorized target",
+      "ruleset_applicability": {
+        "active": "MAIN20180704/pre-renewal",
+        "pre_renewal": "Applicable subject to pinned item/map/class/session restrictions; actual loaded public configuration not established by this audit.",
+        "renewal": "Repair2 requires MAIN >=20200916 or RE >=20200724; active MAIN20180704 takes Repair1. Renewal material arrays differ."
+      },
+      "agent_observations": "Broken flag, repair menu, target player/index, range, item weapon/armor level and repair material.",
+      "legal_actions": "Repair only valid target through legitimate skill/service.",
+      "prerequisites": "Repair skill/menu, correct material, current target and range.",
+      "native_positive_receipt": {
+        "required": "Successful repair result, broken flag cleared on target and exact material consumed on repairer.",
+        "observed_in_this_recovery": false,
+        "status": "required acceptance design, not an executed transaction"
+      },
+      "negative_tests": {
+        "feature_specific": [
+          "Wrong menu; trading; intact item; missing material; out of range; other-player target disconnected."
+        ],
+        "shared_required": [
+          "Reject old epoch, reused inventory index or changed instance after selection.",
+          "Duplicate/replayed ACK must not apply stock/currency twice; wrong index/actor/intent cannot complete pending action.",
+          "Concurrent sale/use/transfer, stale shop or other-player mutation must revalidate before commit.",
+          "Frame gap, unhealthy reader, receipt eviction or bounded byte/event/slot budget overflow denies current-state claims.",
+          "Insufficient zeny/reserve, weight/slots, quantity or request budget fails closed; timeout becomes uncertain, never blind resend."
+        ],
+        "execution_status": "specified only; no tests run"
+      },
+      "current_support_tier": "codec_only",
+      "implementation_refs": [
+        {
+          "path": "src/robots/adapters/native_equipment.py",
+          "start_line": 115,
+          "end_line": 121,
+          "role": "implementation"
+        },
+        {
+          "path": "src/robots/app/playing_runtime.py",
+          "start_line": 296,
+          "end_line": 376,
+          "role": "audited native action dispatch: economic action not exposed"
+        }
+      ],
+      "source_refs": [
+        {
+          "citation_id": 1,
+          "path": "rathena/src/map/clif.cpp",
+          "start_line": 13267,
+          "end_line": 13289,
+          "claim_scope": "version branch and trading guard",
+          "public_server_pin": "e985006171d2eb320ee512a653f4c83aea3d81b6"
+        },
+        {
+          "citation_id": 9,
+          "path": "rathena/src/map/skill.cpp",
+          "start_line": 10500,
+          "end_line": 10563,
+          "claim_scope": "target/material/range checks and repair",
+          "public_server_pin": "e985006171d2eb320ee512a653f4c83aea3d81b6"
+        }
+      ],
+      "dependency_priority": "P1",
+      "unknowns": [
+        "No native positive/negative transaction proof recovered; server existence is not client support."
+      ]
+    },
+    {
+      "feature_id": "inventory.enchant_options",
+      "group": 15,
+      "feature": "Enchant/random-option transformations",
+      "ruleset_applicability": {
+        "active": "MAIN20180704/pre-renewal",
+        "pre_renewal": "Applicable subject to pinned item/map/class/session restrictions; actual loaded public configuration not established by this audit.",
+        "renewal": "Modern enchant/grade interfaces have separate client/version gates; do not apply modern UI to MAIN20180704."
+      },
+      "agent_observations": "All five raw option records even beyond declared option_count; target/service/material/fee and selected transformation.",
+      "legal_actions": "Only an actually loaded legal NPC service for this ruleset; do not infer service availability from encoded fields.",
+      "prerequisites": "Pinned service script/DB and destructive-change policy.",
+      "native_positive_receipt": {
+        "required": "Service-resolved outcome with target option/card data and material/zeny/target-loss deltas reconciled.",
+        "observed_in_this_recovery": false,
+        "status": "required acceptance design, not an executed transaction"
+      },
+      "negative_tests": {
+        "feature_specific": [
+          "Unsupported client UI; reset/reroll failure; zero count with nonzero spare option records; stale target; missing fee."
+        ],
+        "shared_required": [
+          "Reject old epoch, reused inventory index or changed instance after selection.",
+          "Duplicate/replayed ACK must not apply stock/currency twice; wrong index/actor/intent cannot complete pending action.",
+          "Concurrent sale/use/transfer, stale shop or other-player mutation must revalidate before commit.",
+          "Frame gap, unhealthy reader, receipt eviction or bounded byte/event/slot budget overflow denies current-state claims.",
+          "Insufficient zeny/reserve, weight/slots, quantity or request budget fails closed; timeout becomes uncertain, never blind resend."
+        ],
+        "execution_status": "specified only; no tests run"
+      },
+      "current_support_tier": "unknown",
+      "implementation_refs": [
+        {
+          "path": "src/robots/adapters/native_equipment.py",
+          "start_line": 151,
+          "end_line": 172,
+          "role": "implementation"
+        },
+        {
+          "path": "src/robots/app/playing_runtime.py",
+          "start_line": 296,
+          "end_line": 376,
+          "role": "audited native action dispatch: economic action not exposed"
+        }
+      ],
+      "source_refs": [
+        {
+          "citation_id": 10,
+          "path": "rathena/doc/script_commands.txt",
+          "start_line": 11285,
+          "end_line": 11320,
+          "claim_scope": "script random-option access, not player action availability",
+          "public_server_pin": "e985006171d2eb320ee512a653f4c83aea3d81b6"
+        },
+        {
+          "citation_id": 10,
+          "path": "rathena/doc/script_commands.txt",
+          "start_line": 8669,
+          "end_line": 8695,
+          "claim_scope": "version-specific enchant UI documentation",
+          "public_server_pin": "e985006171d2eb320ee512a653f4c83aea3d81b6"
+        }
+      ],
+      "dependency_priority": "P1",
+      "unknowns": [
+        "No active pre-re enchant service established; option representation does not prove NPC availability or bonuses."
+      ]
+    },
+    {
+      "feature_id": "economy.npc_shop_quote",
+      "group": 16,
+      "feature": "Open shop and observe legal price/list context",
+      "ruleset_applicability": {
+        "active": "MAIN20180704/pre-renewal",
+        "pre_renewal": "Applicable subject to pinned item/map/class/session restrictions; actual loaded public configuration not established by this audit.",
+        "renewal": "Separate ruleset; do not transfer item, price, formula, capacity or packet assumptions from Renewal guides."
+      },
+      "agent_observations": "Observed NPC/map/distance, shop mode, current list/item quote and stock where supplied.",
+      "legal_actions": "Choose buy/sell only within valid NPC-shop context.",
+      "prerequisites": "NPC observation/dialogue + shop codec/framing and fresh session context.",
+      "native_positive_receipt": {
+        "required": "Fresh shop list for matching NPC and mode; opening dialogue alone is not purchase success.",
+        "observed_in_this_recovery": false,
+        "status": "required acceptance design, not an executed transaction"
+      },
+      "negative_tests": {
+        "feature_specific": [
+          "Wrong NPC; too far; trade busy; stale list/mode; NPC despawn; closed shop."
+        ],
+        "shared_required": [
+          "Reject old epoch, reused inventory index or changed instance after selection.",
+          "Duplicate/replayed ACK must not apply stock/currency twice; wrong index/actor/intent cannot complete pending action.",
+          "Concurrent sale/use/transfer, stale shop or other-player mutation must revalidate before commit.",
+          "Frame gap, unhealthy reader, receipt eviction or bounded byte/event/slot budget overflow denies current-state claims.",
+          "Insufficient zeny/reserve, weight/slots, quantity or request budget fails closed; timeout becomes uncertain, never blind resend."
+        ],
+        "execution_status": "specified only; no tests run"
+      },
+      "current_support_tier": "missing",
+      "implementation_refs": [
+        {
+          "path": "src/robots/app/playing_runtime.py",
+          "start_line": 316,
+          "end_line": 351,
+          "role": "dialogue exists but buy/sell selection not exposed"
+        },
+        {
+          "path": "src/robots/app/playing_runtime.py",
+          "start_line": 296,
+          "end_line": 376,
+          "role": "audited native action dispatch: economic action not exposed"
+        }
+      ],
+      "source_refs": [
+        {
+          "citation_id": 1,
+          "path": "rathena/src/map/clif.cpp",
+          "start_line": 12260,
+          "end_line": 12271,
+          "claim_scope": "buy/sell selector",
+          "public_server_pin": "e985006171d2eb320ee512a653f4c83aea3d81b6"
+        },
+        {
+          "citation_id": 7,
+          "path": "rathena/src/map/npc.cpp",
+          "start_line": 2796,
+          "end_line": 2948,
+          "claim_scope": "nearby shop and listed item checks",
+          "public_server_pin": "e985006171d2eb320ee512a653f4c83aea3d81b6"
+        }
+      ],
+      "dependency_priority": "P0",
+      "unknowns": [
+        "No native positive/negative transaction proof recovered; server existence is not client support.",
+        "Guide caches 11-13 fail original retrieval digest checks; excluded from load-bearing citations. Use matching pinned server source only."
+      ]
+    },
+    {
+      "feature_id": "economy.npc_buy",
+      "group": 16,
+      "feature": "Purchase NPC stock without imaginary profit",
+      "ruleset_applicability": {
+        "active": "MAIN20180704/pre-renewal",
+        "pre_renewal": "Applicable subject to pinned item/map/class/session restrictions; actual loaded public configuration not established by this audit.",
+        "renewal": "Separate ruleset; do not transfer item, price, formula, capacity or packet assumptions from Renewal guides."
+      },
+      "agent_observations": "Fresh offered item/price/stock, quantity, balance/reserve and weight/slots.",
+      "legal_actions": "Buy bounded positive quantity actually offered by matching shop.",
+      "prerequisites": "Quote/session, funds and capacity; active discount semantics only when known.",
+      "native_positive_receipt": {
+        "required": "Positive purchase result AND actual inventory additions AND zeny debit; finite-stock shop receipt where observable.",
+        "observed_in_this_recovery": false,
+        "status": "required acceptance design, not an executed transaction"
+      },
+      "negative_tests": {
+        "feature_specific": [
+          "No funds; overweight/full slots; unlisted item; expired shop context; competing finite stock; replay."
+        ],
+        "shared_required": [
+          "Reject old epoch, reused inventory index or changed instance after selection.",
+          "Duplicate/replayed ACK must not apply stock/currency twice; wrong index/actor/intent cannot complete pending action.",
+          "Concurrent sale/use/transfer, stale shop or other-player mutation must revalidate before commit.",
+          "Frame gap, unhealthy reader, receipt eviction or bounded byte/event/slot budget overflow denies current-state claims.",
+          "Insufficient zeny/reserve, weight/slots, quantity or request budget fails closed; timeout becomes uncertain, never blind resend."
+        ],
+        "execution_status": "specified only; no tests run"
+      },
+      "current_support_tier": "missing",
+      "implementation_refs": [
+        {
+          "path": "src/robots/app/playing_runtime.py",
+          "start_line": 296,
+          "end_line": 376,
+          "role": "audited native action dispatch: economic action not exposed"
+        }
+      ],
+      "source_refs": [
+        {
+          "citation_id": 1,
+          "path": "rathena/src/map/clif.cpp",
+          "start_line": 12299,
+          "end_line": 12326,
+          "claim_scope": "purchase result and shop context cleared",
+          "public_server_pin": "e985006171d2eb320ee512a653f4c83aea3d81b6"
+        },
+        {
+          "citation_id": 7,
+          "path": "rathena/src/map/npc.cpp",
+          "start_line": 2796,
+          "end_line": 2948,
+          "claim_scope": "checks, payment and stock insertion",
+          "public_server_pin": "e985006171d2eb320ee512a653f4c83aea3d81b6"
+        }
+      ],
+      "dependency_priority": "P0",
+      "unknowns": [
+        "No native positive/negative transaction proof recovered; server existence is not client support."
+      ]
+    },
+    {
+      "feature_id": "economy.npc_sell",
+      "group": 16,
+      "feature": "Sell selected expendable stock to NPC",
+      "ruleset_applicability": {
+        "active": "MAIN20180704/pre-renewal",
+        "pre_renewal": "Applicable subject to pinned item/map/class/session restrictions; actual loaded public configuration not established by this audit.",
+        "renewal": "Separate ruleset; do not transfer item, price, formula, capacity or packet assumptions from Renewal guides."
+      },
+      "agent_observations": "Exact owned sale instances/quantities, restrictions, observed sell quote, protected gear/materials.",
+      "legal_actions": "Sell only explicit expendable positive quantities; reserve needed equipment, ammo and recipe inputs.",
+      "prerequisites": "Valid sell-mode shop and current inventory; actual server price/modifier.",
+      "native_positive_receipt": {
+        "required": "Positive sell result plus exact inventory decrement and actual zeny credit; caps/custom-script behavior reconciled.",
+        "observed_in_this_recovery": false,
+        "status": "required acceptance design, not an executed transaction"
+      },
+      "negative_tests": {
+        "feature_specific": [
+          "Bound/restricted/rental item; wrong index/quantity; selling protected item; inventory changed; zeny cap; replay."
+        ],
+        "shared_required": [
+          "Reject old epoch, reused inventory index or changed instance after selection.",
+          "Duplicate/replayed ACK must not apply stock/currency twice; wrong index/actor/intent cannot complete pending action.",
+          "Concurrent sale/use/transfer, stale shop or other-player mutation must revalidate before commit.",
+          "Frame gap, unhealthy reader, receipt eviction or bounded byte/event/slot budget overflow denies current-state claims.",
+          "Insufficient zeny/reserve, weight/slots, quantity or request budget fails closed; timeout becomes uncertain, never blind resend."
+        ],
+        "execution_status": "specified only; no tests run"
+      },
+      "current_support_tier": "missing",
+      "implementation_refs": [
+        {
+          "path": "src/robots/app/playing_runtime.py",
+          "start_line": 296,
+          "end_line": 376,
+          "role": "audited native action dispatch: economic action not exposed"
+        }
+      ],
+      "source_refs": [
+        {
+          "citation_id": 1,
+          "path": "rathena/src/map/clif.cpp",
+          "start_line": 12347,
+          "end_line": 12361,
+          "claim_scope": "sale response and context cleared",
+          "public_server_pin": "e985006171d2eb320ee512a653f4c83aea3d81b6"
+        },
+        {
+          "citation_id": 7,
+          "path": "rathena/src/map/npc.cpp",
+          "start_line": 3031,
+          "end_line": 3138,
+          "claim_scope": "restrictions, custom shops, removal and payment",
+          "public_server_pin": "e985006171d2eb320ee512a653f4c83aea3d81b6"
+        }
+      ],
+      "dependency_priority": "P0",
+      "unknowns": [
+        "No native positive/negative transaction proof recovered; server existence is not client support."
+      ]
+    },
+    {
+      "feature_id": "economy.merchant_modifiers",
+      "group": 16,
+      "feature": "Discount/Overcharge only with learned applicable skills",
+      "ruleset_applicability": {
+        "active": "MAIN20180704/pre-renewal",
+        "pre_renewal": "Applicable subject to pinned item/map/class/session restrictions; actual loaded public configuration not established by this audit.",
+        "renewal": "Renewal Merchant guide is separate advice; no modern job-change/free-skill acquisition assumed here."
+      },
+      "agent_observations": "Observed skill levels, actual NPC quotes and transaction balance deltas.",
+      "legal_actions": "Use modified NPC quote, never estimate player vending prices from skills or item_db Buy.",
+      "prerequisites": "Relevant learned merchant skill and selected NPC semantics.",
+      "native_positive_receipt": {
+        "required": "Quoted/actual spend or proceeds reconcile on a real merchant transaction.",
+        "observed_in_this_recovery": false,
+        "status": "required acceptance design, not an executed transaction"
+      },
+      "negative_tests": {
+        "feature_specific": [
+          "Wrong class; unlearned skill; custom absolute-price shop; assume NPC modifier on player shop."
+        ],
+        "shared_required": [
+          "Reject old epoch, reused inventory index or changed instance after selection.",
+          "Duplicate/replayed ACK must not apply stock/currency twice; wrong index/actor/intent cannot complete pending action.",
+          "Concurrent sale/use/transfer, stale shop or other-player mutation must revalidate before commit.",
+          "Frame gap, unhealthy reader, receipt eviction or bounded byte/event/slot budget overflow denies current-state claims.",
+          "Insufficient zeny/reserve, weight/slots, quantity or request budget fails closed; timeout becomes uncertain, never blind resend."
+        ],
+        "execution_status": "specified only; no tests run"
+      },
+      "current_support_tier": "unknown",
+      "implementation_refs": [
+        {
+          "path": "src/robots/adapters/mechanics_yaml.py",
+          "start_line": 1,
+          "end_line": 5,
+          "role": "implementation"
+        },
+        {
+          "path": "src/robots/app/playing_runtime.py",
+          "start_line": 296,
+          "end_line": 376,
+          "role": "audited native action dispatch: economic action not exposed"
+        }
+      ],
+      "source_refs": [
+        {
+          "citation_id": 7,
+          "path": "rathena/src/map/npc.cpp",
+          "start_line": 2796,
+          "end_line": 2948,
+          "claim_scope": "shop discount branch",
+          "public_server_pin": "e985006171d2eb320ee512a653f4c83aea3d81b6"
+        },
+        {
+          "citation_id": 7,
+          "path": "rathena/src/map/npc.cpp",
+          "start_line": 3031,
+          "end_line": 3138,
+          "claim_scope": "modified sell value",
+          "public_server_pin": "e985006171d2eb320ee512a653f4c83aea3d81b6"
+        }
+      ],
+      "dependency_priority": "P1",
+      "unknowns": [
+        "Cross-reference class-specials-rulesets report for learning/prerequisites; actual fixture merchant eligibility not established.",
+        "Guide caches 11-13 fail original retrieval digest checks; excluded from load-bearing citations. Use matching pinned server source only."
+      ]
+    },
+    {
+      "feature_id": "inventory.storage_open",
+      "group": 17,
+      "feature": "Open/close storage in valid namespace",
+      "ruleset_applicability": {
+        "active": "MAIN20180704/pre-renewal",
+        "pre_renewal": "Applicable subject to pinned item/map/class/session restrictions; actual loaded public configuration not established by this audit.",
+        "renewal": "Separate ruleset; do not transfer item, price, formula, capacity or packet assumptions from Renewal guides."
+      },
+      "agent_observations": "NPC storage access state, capacity/list, personal/guild/premium namespace and charge if any.",
+      "legal_actions": "Open only authorized available storage; close session before incompatible actions.",
+      "prerequisites": "Actual loaded access NPC/script, authorization and any observed fee.",
+      "native_positive_receipt": {
+        "required": "Fresh storage list/capacity tied to session; close response; fees reconciled if charged.",
+        "observed_in_this_recovery": false,
+        "status": "required acceptance design, not an executed transaction"
+      },
+      "negative_tests": {
+        "feature_specific": [
+          "Unauthenticated storage; wrong namespace; no access; missing fee; disconnect while open."
+        ],
+        "shared_required": [
+          "Reject old epoch, reused inventory index or changed instance after selection.",
+          "Duplicate/replayed ACK must not apply stock/currency twice; wrong index/actor/intent cannot complete pending action.",
+          "Concurrent sale/use/transfer, stale shop or other-player mutation must revalidate before commit.",
+          "Frame gap, unhealthy reader, receipt eviction or bounded byte/event/slot budget overflow denies current-state claims.",
+          "Insufficient zeny/reserve, weight/slots, quantity or request budget fails closed; timeout becomes uncertain, never blind resend."
+        ],
+        "execution_status": "specified only; no tests run"
+      },
+      "current_support_tier": "missing",
+      "implementation_refs": [
+        {
+          "path": "src/robots/app/playing_runtime.py",
+          "start_line": 296,
+          "end_line": 376,
+          "role": "audited native action dispatch: economic action not exposed"
+        }
+      ],
+      "source_refs": [
+        {
+          "citation_id": 1,
+          "path": "rathena/src/map/clif.cpp",
+          "start_line": 13621,
+          "end_line": 13668,
+          "claim_scope": "storage_flag namespaces and differing indices",
+          "public_server_pin": "e985006171d2eb320ee512a653f4c83aea3d81b6"
+        },
+        {
+          "citation_id": 3,
+          "path": "rathena/src/map/storage.cpp",
+          "start_line": 189,
+          "end_line": 206,
+          "claim_scope": "put permission",
+          "public_server_pin": "e985006171d2eb320ee512a653f4c83aea3d81b6"
+        },
+        {
+          "citation_id": 3,
+          "path": "rathena/src/map/storage.cpp",
+          "start_line": 215,
+          "end_line": 231,
+          "claim_scope": "get permission",
+          "public_server_pin": "e985006171d2eb320ee512a653f4c83aea3d81b6"
+        }
+      ],
+      "dependency_priority": "P1",
+      "unknowns": [
+        "Active access script/fee and personal capacity are unknown; guild authorization belongs in social/guild report."
+      ]
+    },
+    {
+      "feature_id": "inventory.storage_deposit",
+      "group": 17,
+      "feature": "Deposit preserves instance/count across both containers",
+      "ruleset_applicability": {
+        "active": "MAIN20180704/pre-renewal",
+        "pre_renewal": "Applicable subject to pinned item/map/class/session restrictions; actual loaded public configuration not established by this audit.",
+        "renewal": "Separate ruleset; do not transfer item, price, formula, capacity or packet assumptions from Renewal guides."
+      },
+      "agent_observations": "Current inventory and storage snapshots, permissions, count, stack room, bound/trade flags.",
+      "legal_actions": "Deposit legal owned positive quantity to currently open correct storage.",
+      "prerequisites": "Current source index and storage list; no trading or equip-switch conflict.",
+      "native_positive_receipt": {
+        "required": "Storage addition + inventory removal with same instance metadata/quantity; completion must reconcile both sides, not zero-amount failure packets.",
+        "observed_in_this_recovery": false,
+        "status": "required acceptance design, not an executed transaction"
+      },
+      "negative_tests": {
+        "feature_specific": [
+          "No put access; storage full; forbidden bound item; excess quantity; zero-amount removal; stale namespace."
+        ],
+        "shared_required": [
+          "Reject old epoch, reused inventory index or changed instance after selection.",
+          "Duplicate/replayed ACK must not apply stock/currency twice; wrong index/actor/intent cannot complete pending action.",
+          "Concurrent sale/use/transfer, stale shop or other-player mutation must revalidate before commit.",
+          "Frame gap, unhealthy reader, receipt eviction or bounded byte/event/slot budget overflow denies current-state claims.",
+          "Insufficient zeny/reserve, weight/slots, quantity or request budget fails closed; timeout becomes uncertain, never blind resend."
+        ],
+        "execution_status": "specified only; no tests run"
+      },
+      "current_support_tier": "missing",
+      "implementation_refs": [
+        {
+          "path": "src/robots/app/playing_runtime.py",
+          "start_line": 296,
+          "end_line": 376,
+          "role": "audited native action dispatch: economic action not exposed"
+        }
+      ],
+      "source_refs": [
+        {
+          "citation_id": 3,
+          "path": "rathena/src/map/storage.cpp",
+          "start_line": 189,
+          "end_line": 206,
+          "claim_scope": "index/count/permission checks",
+          "public_server_pin": "e985006171d2eb320ee512a653f4c83aea3d81b6"
+        },
+        {
+          "citation_id": 3,
+          "path": "rathena/src/map/storage.cpp",
+          "start_line": 241,
+          "end_line": 296,
+          "claim_scope": "stack room and binding/store restrictions",
+          "public_server_pin": "e985006171d2eb320ee512a653f4c83aea3d81b6"
+        },
+        {
+          "citation_id": 3,
+          "path": "rathena/src/map/storage.cpp",
+          "start_line": 334,
+          "end_line": 358,
+          "claim_scope": "remove inventory only after storage addition",
+          "public_server_pin": "e985006171d2eb320ee512a653f4c83aea3d81b6"
+        }
+      ],
+      "dependency_priority": "P1",
+      "unknowns": [
+        "No native positive/negative transaction proof recovered; server existence is not client support."
+      ]
+    },
+    {
+      "feature_id": "inventory.storage_withdraw",
+      "group": 17,
+      "feature": "Withdraw only received storage stock",
+      "ruleset_applicability": {
+        "active": "MAIN20180704/pre-renewal",
+        "pre_renewal": "Applicable subject to pinned item/map/class/session restrictions; actual loaded public configuration not established by this audit.",
+        "renewal": "Separate ruleset; do not transfer item, price, formula, capacity or packet assumptions from Renewal guides."
+      },
+      "agent_observations": "Storage index namespace, current row/count, get access, inventory weight/slots.",
+      "legal_actions": "Withdraw allowed positive stock into inventory.",
+      "prerequisites": "Open correct storage and current capacity budget.",
+      "native_positive_receipt": {
+        "required": "Successful inventory addition + exact storage decrement preserving metadata; failure zero-amount messages do not count.",
+        "observed_in_this_recovery": false,
+        "status": "required acceptance design, not an executed transaction"
+      },
+      "negative_tests": {
+        "feature_specific": [
+          "No get access; empty/excess source; overweight/full inventory; old storage index after reorder."
+        ],
+        "shared_required": [
+          "Reject old epoch, reused inventory index or changed instance after selection.",
+          "Duplicate/replayed ACK must not apply stock/currency twice; wrong index/actor/intent cannot complete pending action.",
+          "Concurrent sale/use/transfer, stale shop or other-player mutation must revalidate before commit.",
+          "Frame gap, unhealthy reader, receipt eviction or bounded byte/event/slot budget overflow denies current-state claims.",
+          "Insufficient zeny/reserve, weight/slots, quantity or request budget fails closed; timeout becomes uncertain, never blind resend."
+        ],
+        "execution_status": "specified only; no tests run"
+      },
+      "current_support_tier": "missing",
+      "implementation_refs": [
+        {
+          "path": "src/robots/app/playing_runtime.py",
+          "start_line": 296,
+          "end_line": 376,
+          "role": "audited native action dispatch: economic action not exposed"
+        }
+      ],
+      "source_refs": [
+        {
+          "citation_id": 3,
+          "path": "rathena/src/map/storage.cpp",
+          "start_line": 215,
+          "end_line": 231,
+          "claim_scope": "get permission and count checks",
+          "public_server_pin": "e985006171d2eb320ee512a653f4c83aea3d81b6"
+        },
+        {
+          "citation_id": 3,
+          "path": "rathena/src/map/storage.cpp",
+          "start_line": 367,
+          "end_line": 384,
+          "claim_scope": "delete storage only on inventory add success",
+          "public_server_pin": "e985006171d2eb320ee512a653f4c83aea3d81b6"
+        }
+      ],
+      "dependency_priority": "P1",
+      "unknowns": [
+        "No native positive/negative transaction proof recovered; server existence is not client support."
+      ]
+    },
+    {
+      "feature_id": "economy.player_trade",
+      "group": 18,
+      "feature": "Two-party offer, lock, commit, cancel with atomic receipts",
+      "ruleset_applicability": {
+        "active": "MAIN20180704/pre-renewal",
+        "pre_renewal": "Applicable subject to pinned item/map/class/session restrictions; actual loaded public configuration not established by this audit.",
+        "renewal": "Separate ruleset; do not transfer item, price, formula, capacity or packet assumptions from Renewal guides."
+      },
+      "agent_observations": "Actual partner identity/range, both item/zeny offers, lock states, capacity and item restrictions.",
+      "legal_actions": "Offer owned permitted quantities; inspect final offer; both lock and commit; cancel on mismatch.",
+      "prerequisites": "Explicit partner authorization and current offers/inventories; two healthy sessions for acceptance.",
+      "native_positive_receipt": {
+        "required": "Fresh committed trade result on both sides AND exact inventory/zeny deltas conserving exchanged assets; offer ACK/OK lock is not completion.",
+        "observed_in_this_recovery": false,
+        "status": "required acceptance design, not an executed transaction"
+      },
+      "negative_tests": {
+        "feature_specific": [
+          "Partner disappears/declines; one side never locks; offer changes; full receiver; insufficient stock/zeny; duplicate commit."
+        ],
+        "shared_required": [
+          "Reject old epoch, reused inventory index or changed instance after selection.",
+          "Duplicate/replayed ACK must not apply stock/currency twice; wrong index/actor/intent cannot complete pending action.",
+          "Concurrent sale/use/transfer, stale shop or other-player mutation must revalidate before commit.",
+          "Frame gap, unhealthy reader, receipt eviction or bounded byte/event/slot budget overflow denies current-state claims.",
+          "Insufficient zeny/reserve, weight/slots, quantity or request budget fails closed; timeout becomes uncertain, never blind resend."
+        ],
+        "execution_status": "specified only; no tests run"
+      },
+      "current_support_tier": "missing",
+      "implementation_refs": [
+        {
+          "path": "src/robots/app/playing_runtime.py",
+          "start_line": 296,
+          "end_line": 376,
+          "role": "audited native action dispatch: economic action not exposed"
+        }
+      ],
+      "source_refs": [
+        {
+          "citation_id": 4,
+          "path": "rathena/src/map/trade.cpp",
+          "start_line": 586,
+          "end_line": 686,
+          "claim_scope": "both-lock validation, anti-exploit checks and exchange",
+          "public_server_pin": "e985006171d2eb320ee512a653f4c83aea3d81b6"
+        }
+      ],
+      "dependency_priority": "P1",
+      "unknowns": [
+        "No accepted native two-party transaction or trade receipt observer found in audited action surface."
+      ]
+    },
+    {
+      "feature_id": "inventory.cart",
+      "group": 18,
+      "feature": "Cart transfers and independent capacity/indices",
+      "ruleset_applicability": {
+        "active": "MAIN20180704/pre-renewal",
+        "pre_renewal": "Applicable subject to pinned item/map/class/session restrictions; actual loaded public configuration not established by this audit.",
+        "renewal": "Separate ruleset; do not transfer item, price, formula, capacity or packet assumptions from Renewal guides."
+      },
+      "agent_observations": "Current cart state/rows/weight/max/slots and source-container instance/count.",
+      "legal_actions": "Move legal quantities inventory<->cart; only with legitimately acquired cart and allowed map/state.",
+      "prerequisites": "Cart skill/status and current two-container snapshots.",
+      "native_positive_receipt": {
+        "required": "Actual cart addition/removal and matching inventory inverse delta; weight and metadata reconcile.",
+        "observed_in_this_recovery": false,
+        "status": "required acceptance design, not an executed transaction"
+      },
+      "negative_tests": {
+        "feature_specific": [
+          "No cart; overweight/full cart; map forbids cart; bound restriction; vending active; source changed."
+        ],
+        "shared_required": [
+          "Reject old epoch, reused inventory index or changed instance after selection.",
+          "Duplicate/replayed ACK must not apply stock/currency twice; wrong index/actor/intent cannot complete pending action.",
+          "Concurrent sale/use/transfer, stale shop or other-player mutation must revalidate before commit.",
+          "Frame gap, unhealthy reader, receipt eviction or bounded byte/event/slot budget overflow denies current-state claims.",
+          "Insufficient zeny/reserve, weight/slots, quantity or request budget fails closed; timeout becomes uncertain, never blind resend."
+        ],
+        "execution_status": "specified only; no tests run"
+      },
+      "current_support_tier": "missing",
+      "implementation_refs": [
+        {
+          "path": "src/robots/app/playing_runtime.py",
+          "start_line": 296,
+          "end_line": 376,
+          "role": "audited native action dispatch: economic action not exposed"
+        }
+      ],
+      "source_refs": [
+        {
+          "citation_id": 2,
+          "path": "rathena/src/map/pc.cpp",
+          "start_line": 6586,
+          "end_line": 6657,
+          "claim_scope": "cart stack identity, restriction and weight checks",
+          "public_server_pin": "e985006171d2eb320ee512a653f4c83aea3d81b6"
+        },
+        {
+          "citation_id": 1,
+          "path": "rathena/src/map/clif.cpp",
+          "start_line": 13673,
+          "end_line": 13716,
+          "claim_scope": "cart/storage transfers require cart and non-vending state",
+          "public_server_pin": "e985006171d2eb320ee512a653f4c83aea3d81b6"
+        }
+      ],
+      "dependency_priority": "P1",
+      "unknowns": [
+        "Class-specials report owns Pushcart acquisition; no guide-derived hard capacity substituted for active receipts."
+      ]
+    },
+    {
+      "feature_id": "economy.vending_buy",
+      "group": 19,
+      "feature": "Buy from a current player vending shop",
+      "ruleset_applicability": {
+        "active": "MAIN20180704/pre-renewal",
+        "pre_renewal": "Applicable subject to pinned item/map/class/session restrictions; actual loaded public configuration not established by this audit.",
+        "renewal": "Separate ruleset; do not transfer item, price, formula, capacity or packet assumptions from Renewal guides."
+      },
+      "agent_observations": "Observed seller/shop UID, offered cart index/price/stock, distance, own funds/capacity.",
+      "legal_actions": "Buy bounded listed quantities from current shop; do not infer fair market price.",
+      "prerequisites": "Same-shop identity and quote, spend cap and usable capacity.",
+      "native_positive_receipt": {
+        "required": "Purchase result plus buyer stock/zeny and seller cart/zeny/stock changes; partial or capped results reconciled.",
+        "observed_in_this_recovery": false,
+        "status": "required acceptance design, not an executed transaction"
+      },
+      "negative_tests": {
+        "feature_specific": [
+          "Shop UID changed; seller gone; stock sold out race; duplicate list entry; out of range; funds/capacity failure."
+        ],
+        "shared_required": [
+          "Reject old epoch, reused inventory index or changed instance after selection.",
+          "Duplicate/replayed ACK must not apply stock/currency twice; wrong index/actor/intent cannot complete pending action.",
+          "Concurrent sale/use/transfer, stale shop or other-player mutation must revalidate before commit.",
+          "Frame gap, unhealthy reader, receipt eviction or bounded byte/event/slot budget overflow denies current-state claims.",
+          "Insufficient zeny/reserve, weight/slots, quantity or request budget fails closed; timeout becomes uncertain, never blind resend."
+        ],
+        "execution_status": "specified only; no tests run"
+      },
+      "current_support_tier": "missing",
+      "implementation_refs": [
+        {
+          "path": "src/robots/app/playing_runtime.py",
+          "start_line": 296,
+          "end_line": 376,
+          "role": "audited native action dispatch: economic action not exposed"
+        }
+      ],
+      "source_refs": [
+        {
+          "citation_id": 5,
+          "path": "rathena/src/map/vending.cpp",
+          "start_line": 123,
+          "end_line": 286,
+          "claim_scope": "shop identity, stock and duplicate-purchase protections",
+          "public_server_pin": "e985006171d2eb320ee512a653f4c83aea3d81b6"
+        }
+      ],
+      "dependency_priority": "P1",
+      "unknowns": [
+        "Market price discovery and profitability unknown; no third-party bot adoption."
+      ]
+    },
+    {
+      "feature_id": "economy.vending_sell",
+      "group": 19,
+      "feature": "Open bounded vending shop and observe sales",
+      "ruleset_applicability": {
+        "active": "MAIN20180704/pre-renewal",
+        "pre_renewal": "Applicable subject to pinned item/map/class/session restrictions; actual loaded public configuration not established by this audit.",
+        "renewal": "Separate ruleset; do not transfer item, price, formula, capacity or packet assumptions from Renewal guides."
+      },
+      "agent_observations": "Learned Vending, active cart, eligible cart stock, prices chosen by explicit policy, shop identity and sale receipts.",
+      "legal_actions": "Open/close own authorized shop; list only eligible stock at explicitly approved prices.",
+      "prerequisites": "Merchant skill/cart and legal map; no incompatible trading state.",
+      "native_positive_receipt": {
+        "required": "Positive open result followed by real buyer sale with cart depletion and zeny proceeds; opening/send counters are not sales.",
+        "observed_in_this_recovery": false,
+        "status": "required acceptance design, not an executed transaction"
+      },
+      "negative_tests": {
+        "feature_specific": [
+          "No skill/cart; dead/trading; illegal count/item; duplicate stock; price overflow; close/reopen UID race."
+        ],
+        "shared_required": [
+          "Reject old epoch, reused inventory index or changed instance after selection.",
+          "Duplicate/replayed ACK must not apply stock/currency twice; wrong index/actor/intent cannot complete pending action.",
+          "Concurrent sale/use/transfer, stale shop or other-player mutation must revalidate before commit.",
+          "Frame gap, unhealthy reader, receipt eviction or bounded byte/event/slot budget overflow denies current-state claims.",
+          "Insufficient zeny/reserve, weight/slots, quantity or request budget fails closed; timeout becomes uncertain, never blind resend."
+        ],
+        "execution_status": "specified only; no tests run"
+      },
+      "current_support_tier": "missing",
+      "implementation_refs": [
+        {
+          "path": "src/robots/app/playing_runtime.py",
+          "start_line": 296,
+          "end_line": 376,
+          "role": "audited native action dispatch: economic action not exposed"
+        }
+      ],
+      "source_refs": [
+        {
+          "citation_id": 5,
+          "path": "rathena/src/map/vending.cpp",
+          "start_line": 298,
+          "end_line": 418,
+          "claim_scope": "skill/cart and offered-list constraints",
+          "public_server_pin": "e985006171d2eb320ee512a653f4c83aea3d81b6"
+        },
+        {
+          "citation_id": 5,
+          "path": "rathena/src/map/vending.cpp",
+          "start_line": 123,
+          "end_line": 286,
+          "claim_scope": "actual purchase mutation",
+          "public_server_pin": "e985006171d2eb320ee512a653f4c83aea3d81b6"
+        }
+      ],
+      "dependency_priority": "P1",
+      "unknowns": [
+        "Class learning is cross-referenced; no live merchant sales acceptance or market price policy established."
+      ]
+    },
+    {
+      "feature_id": "economy.buying_store",
+      "group": 19,
+      "feature": "Buying-store creation and seller transaction",
+      "ruleset_applicability": {
+        "active": "MAIN20180704/pre-renewal",
+        "pre_renewal": "Applicable subject to pinned item/map/class/session restrictions; actual loaded public configuration not established by this audit.",
+        "renewal": "Renewal Merchant skill/academy guidance is not proof of pre-re acquisition; source supports feature gate, not active server enablement."
+      },
+      "agent_observations": "Feature availability, learned/unlocked opening route, requested eligible item list, store UID, reserve, live zeny limit and capacity.",
+      "legal_actions": "Open only enabled legal purchase store; sell only currently owned matching eligible items to current store.",
+      "prerequisites": "Version/config support, skill/access, budget and exact matching store.",
+      "native_positive_receipt": {
+        "required": "Create success with budget/list, then real seller trade with both inventory/zeny deltas and reduced request quantity/limit.",
+        "observed_in_this_recovery": false,
+        "status": "required acceptance design, not an executed transaction"
+      },
+      "negative_tests": {
+        "feature_specific": [
+          "Feature disabled; no slots; stale buyer ID; depleted zeny; duplicate entries; restricted item; no-buying-store map/cell."
+        ],
+        "shared_required": [
+          "Reject old epoch, reused inventory index or changed instance after selection.",
+          "Duplicate/replayed ACK must not apply stock/currency twice; wrong index/actor/intent cannot complete pending action.",
+          "Concurrent sale/use/transfer, stale shop or other-player mutation must revalidate before commit.",
+          "Frame gap, unhealthy reader, receipt eviction or bounded byte/event/slot budget overflow denies current-state claims.",
+          "Insufficient zeny/reserve, weight/slots, quantity or request budget fails closed; timeout becomes uncertain, never blind resend."
+        ],
+        "execution_status": "specified only; no tests run"
+      },
+      "current_support_tier": "missing",
+      "implementation_refs": [
+        {
+          "path": "src/robots/app/playing_runtime.py",
+          "start_line": 296,
+          "end_line": 376,
+          "role": "audited native action dispatch: economic action not exposed"
+        }
+      ],
+      "source_refs": [
+        {
+          "citation_id": 6,
+          "path": "rathena/src/map/buyingstore.cpp",
+          "start_line": 116,
+          "end_line": 255,
+          "claim_scope": "feature/access/zeny/map gates",
+          "public_server_pin": "e985006171d2eb320ee512a653f4c83aea3d81b6"
+        },
+        {
+          "citation_id": 6,
+          "path": "rathena/src/map/buyingstore.cpp",
+          "start_line": 325,
+          "end_line": 506,
+          "claim_scope": "current shop identity and live budget checks",
+          "public_server_pin": "e985006171d2eb320ee512a653f4c83aea3d81b6"
+        }
+      ],
+      "dependency_priority": "P1",
+      "unknowns": [
+        "Active feature configuration and acquisition route unknown."
+      ]
+    },
+    {
+      "feature_id": "economy.craft_skill",
+      "group": 20,
+      "feature": "Recipe-based forging/mixing with consumed-failure accounting",
+      "ruleset_applicability": {
+        "active": "MAIN20180704/pre-renewal",
+        "pre_renewal": "Applicable subject to pinned item/map/class/session restrictions; actual loaded public configuration not established by this audit.",
+        "renewal": "Separate ruleset; do not transfer item, price, formula, capacity or packet assumptions from Renewal guides."
+      },
+      "agent_observations": "Actually legal recipe/menu, required skill/tools/material quantities, current inputs, output metadata and success/failure result.",
+      "legal_actions": "One authorized bounded craft attempt or explicitly bounded quantity; consume-failure ends attempt.",
+      "prerequisites": "Pinned active recipe DB and applicable class/skill route; budget and capacity.",
+      "native_positive_receipt": {
+        "required": "Resolved craft outcome plus every material decrement and actual output count/identity if successful; failure may consume resources and must not invent output.",
+        "observed_in_this_recovery": false,
+        "status": "required acceptance design, not an executed transaction"
+      },
+      "negative_tests": {
+        "feature_specific": [
+          "Unknown recipe; wrong class/skill; absent tools/materials; changed input; output capacity; RNG fail; duplicate result."
+        ],
+        "shared_required": [
+          "Reject old epoch, reused inventory index or changed instance after selection.",
+          "Duplicate/replayed ACK must not apply stock/currency twice; wrong index/actor/intent cannot complete pending action.",
+          "Concurrent sale/use/transfer, stale shop or other-player mutation must revalidate before commit.",
+          "Frame gap, unhealthy reader, receipt eviction or bounded byte/event/slot budget overflow denies current-state claims.",
+          "Insufficient zeny/reserve, weight/slots, quantity or request budget fails closed; timeout becomes uncertain, never blind resend."
+        ],
+        "execution_status": "specified only; no tests run"
+      },
+      "current_support_tier": "missing",
+      "implementation_refs": [
+        {
+          "path": "src/robots/app/playing_runtime.py",
+          "start_line": 296,
+          "end_line": 376,
+          "role": "audited native action dispatch: economic action not exposed"
+        }
+      ],
+      "source_refs": [
+        {
+          "citation_id": 9,
+          "path": "rathena/src/map/skill.cpp",
+          "start_line": 12844,
+          "end_line": 13515,
+          "claim_scope": "recipe selection, resources and probabilistic production",
+          "public_server_pin": "e985006171d2eb320ee512a653f4c83aea3d81b6"
+        }
+      ],
+      "dependency_priority": "P1",
+      "unknowns": [
+        "Actual active recipe files/formula and class-specific legal route not recovered. Cross-reference class-specials-rulesets report; do not copy all class mechanics."
+      ]
+    },
+    {
+      "feature_id": "economy.craft_npc",
+      "group": 20,
+      "feature": "NPC material exchange/crafting service",
+      "ruleset_applicability": {
+        "active": "MAIN20180704/pre-renewal",
+        "pre_renewal": "Applicable subject to pinned item/map/class/session restrictions; actual loaded public configuration not established by this audit.",
+        "renewal": "Separate ruleset; do not transfer item, price, formula, capacity or packet assumptions from Renewal guides."
+      },
+      "agent_observations": "Observed NPC instructions/choices, exact requirements, output, fee and target restrictions.",
+      "legal_actions": "Follow finite legitimate dialogue only for an actually verified service; refuse unseen recipe assumptions.",
+      "prerequisites": "Specific loaded public NPC script plus material/zeny observer and dialogue session.",
+      "native_positive_receipt": {
+        "required": "Terminal service response AND input/zeny loss AND actual output/target-state change; dialogue closure alone insufficient.",
+        "observed_in_this_recovery": false,
+        "status": "required acceptance design, not an executed transaction"
+      },
+      "negative_tests": {
+        "feature_specific": [
+          "Wrong choice; insufficient inputs/fee; timeout after payment; repeated selection; unavailable NPC; wrong recipe variant."
+        ],
+        "shared_required": [
+          "Reject old epoch, reused inventory index or changed instance after selection.",
+          "Duplicate/replayed ACK must not apply stock/currency twice; wrong index/actor/intent cannot complete pending action.",
+          "Concurrent sale/use/transfer, stale shop or other-player mutation must revalidate before commit.",
+          "Frame gap, unhealthy reader, receipt eviction or bounded byte/event/slot budget overflow denies current-state claims.",
+          "Insufficient zeny/reserve, weight/slots, quantity or request budget fails closed; timeout becomes uncertain, never blind resend."
+        ],
+        "execution_status": "specified only; no tests run"
+      },
+      "current_support_tier": "unknown",
+      "implementation_refs": [
+        {
+          "path": "src/robots/app/playing_runtime.py",
+          "start_line": 316,
+          "end_line": 358,
+          "role": "generic dialogue only"
+        },
+        {
+          "path": "src/robots/app/playing_runtime.py",
+          "start_line": 296,
+          "end_line": 376,
+          "role": "audited native action dispatch: economic action not exposed"
+        }
+      ],
+      "source_refs": [
+        {
+          "citation_id": 10,
+          "path": "rathena/doc/script_commands.txt",
+          "start_line": 4990,
+          "end_line": 5050,
+          "claim_scope": "script item creation documentation, not loaded player service",
+          "public_server_pin": "e985006171d2eb320ee512a653f4c83aea3d81b6"
+        }
+      ],
+      "dependency_priority": "P1",
+      "unknowns": [
+        "Specific loaded NPC craft script absent from cached evidence; generic getitem commands do not establish a playable service."
+      ]
+    }
+  ],
+  "ordinary_player_economic_loop": {
+    "status": "proposed acceptance scenario; not implemented or executed; blocked at economic receipt gaps",
+    "ordinary_player": "Existing ordinary owned character; no GM creation, SQL seed, admin commands or assumption of Merchant skills.",
+    "limits": {
+      "cycles": 1,
+      "wall_clock_seconds": 180,
+      "max_earned_loot_pickups": 5,
+      "max_shop_sale_requests": 1,
+      "max_shop_buy_requests": 1,
+      "max_use_requests": 1,
+      "max_equip_requests": 1,
+      "max_storage_deposit_requests": 1,
+      "max_storage_withdraw_requests": 1,
+      "max_trade_commits_per_party": 1,
+      "max_craft_attempts": 1,
+      "economic_timeout_resends": 0
+    },
+    "budget": "Require observed initial zeny Z0, explicit operator spend cap B, retained reserve R, quotes, fees and received capacity. Commit only while pending+new spend <= B and actual balance-new cost >= R; all variables unknown until observed. No numeric market prices or expected profit invented.",
+    "steps": [
+      {
+        "step": 1,
+        "action": "Observe healthy current-epoch complete inventory, life/position, zeny and weight/capacity; obtain explicit spend/reserve/discard policy.",
+        "features": [
+          "inventory.current_epoch",
+          "inventory.instance_index",
+          "economy.zeny_budget",
+          "economy.weight_capacity"
+        ],
+        "completion": "Exact received initial ledger or STOP_BLOCKED; the archived fixtures start empty, not stocked."
+      },
+      {
+        "step": 2,
+        "action": "Earn at most five actual accessible loot pickups via legal combat/navigation covered by combat-progression report, or use already owned expendable stock; never grant stock.",
+        "features": [
+          "inventory.pickup"
+        ],
+        "completion": "Actual current stock acquired; no loot before deadline => STOP_NO_STOCK, not success."
+      },
+      {
+        "step": 3,
+        "action": "Visit observed valid ordinary NPC shop; sell one approved expendable batch, preserving gear/ammo/material reserve.",
+        "features": [
+          "economy.npc_shop_quote",
+          "economy.npc_sell"
+        ],
+        "completion": "Sale result, stock loss and zeny credit reconcile; unknown quote/action support => STOP_BLOCKED."
+      },
+      {
+        "step": 4,
+        "action": "Buy one offered usable healing item within actual funds, reserve and capacity; use once only when legitimate effect needed.",
+        "features": [
+          "economy.npc_buy",
+          "inventory.consume"
+        ],
+        "completion": "Purchase ACK+actual debit/addition, then use ACK+consumption/effect; no injured/eligible state => record conditional use not exercised."
+      },
+      {
+        "step": 5,
+        "action": "If legally owned suitable equipment exists, request at most one equip after full class/sex/level/map/slot validation. Do not buy hypothetical equipment or autoequip from allowedLocation.",
+        "features": [
+          "inventory.equip_legality",
+          "inventory.equipment_metadata"
+        ],
+        "completion": "Fresh own-epoch/index equip ACK AND worn-state receipt; absent equipment/legality observer => NOT_EXERCISED or STOP_BLOCKED."
+      },
+      {
+        "step": 6,
+        "action": "If an actual authorized storage service is available, deposit then withdraw one expendable legal item, each once.",
+        "features": [
+          "inventory.storage_open",
+          "inventory.storage_deposit",
+          "inventory.storage_withdraw"
+        ],
+        "completion": "Both-container inverse deltas and fees reconcile; unavailable service => NOT_EXERCISED."
+      },
+      {
+        "step": 7,
+        "action": "Optional authorized ordinary partner trade: inspect final offer, both lock, commit once each; no partner => skip without waiting indefinitely.",
+        "features": [
+          "economy.player_trade"
+        ],
+        "completion": "Both completion results and actual conserved inventory/zeny changes; unconfirmed commit => STOP_UNCERTAIN."
+      },
+      {
+        "step": 8,
+        "action": "Optional one actually legal recipe/service attempt only if existing class/skill and observed materials permit it; otherwise skip.",
+        "features": [
+          "economy.craft_skill",
+          "economy.craft_npc"
+        ],
+        "completion": "Craft result plus materials/currency/output deltas; consumed failure is recorded failure, never fictional production or retry."
+      },
+      {
+        "step": 9,
+        "action": "Close sessions; observe final same-epoch exact stock/wear/zeny/capacity and reconcile each completed receipt. End, do not start another cycle.",
+        "features": [
+          "inventory.current_epoch",
+          "economy.zeny_budget"
+        ],
+        "completion": "COMPLETE_CORE only for received sale+purchase and required usage effects; optional storage/trade/equip/craft get independent exercised/pass/fail/not_exercised verdicts."
+      }
+    ],
+    "stop_conditions": [
+      "Deadline/action limit reached.",
+      "Missing/current-state gap or stale epoch/index.",
+      "Reserve/weight/slots/quantity limit violated.",
+      "Negative ACK or changed quote: record failure and terminate that action.",
+      "Unknown outcome after request: stop uncertain, resnapshot with explicit authorization, never resend economic mutation blindly."
+    ],
+    "cross_refs": [
+      "combat-progression: lawful earning/navigation and ammo-use details",
+      "npc-world-quests: actual service discovery and dialogue",
+      "class-specials-rulesets: recipe/class skill acquisition and exceptions",
+      "social-guild-woe: partner authorization and guild-storage access"
+    ],
+    "not_claimed": "No executed loop, profitability, sustained population, merchant shop activity, class completion or native equipment acceptance."
+  },
+  "top_five_gaps": [
+    "P0: Current owned item instances and all mutation deltas are not exposed coherently; counts/standalone metadata cannot authorize transactions.",
+    "P0: Received zeny, weight/slots, quotes and reserve accounting are missing from the audited economic decision surface.",
+    "P0: NPC shop buy/sell and use-item actions lack correlated positive ACK + actual stock/zeny/effect acceptance.",
+    "P0: Equip codec approval is representational only; complete legality, framing/intent correlation and actual worn state remain unaccepted.",
+    "P1: Storage/trade/cart/market/crafting lack multi-container or two-party reconciled transaction receipts; concrete service/recipe applicability remains partly unknown."
+  ],
+  "source_manifest": [
+    {
+      "id": 1,
+      "url": "https://raw.githubusercontent.com/rathena/rathena/e985006171d2eb320ee512a653f4c83aea3d81b6/src/map/clif.cpp",
+      "title": "src/map/clif.cpp",
+      "accessed": "2026-10-08",
+      "quotes": [
+        {
+          "text": "// Copyright (c) rAthena Dev Teams - Licensed under GNU GPL",
+          "added": "2026-10-08"
+        }
+      ],
+      "cached_file": "/home/otto/.hermes/cache/scratch/ro-gameplay-audit/economy-inventory/source-1.txt",
+      "sha256": "0b1db098158c240b090c6edb8417978ba495957c8a2df4cd9a0ab4cb39884ac5",
+      "original_retrieval_sha256": "0b1db098158c240b090c6edb8417978ba495957c8a2df4cd9a0ab4cb39884ac5",
+      "retrieval_digest_matches": true,
+      "quarantined": false,
+      "local_matches_cached_pin": true,
+      "evidence_quality": "Existing ledger quotes are often copyright/header-only; substantive row evidence is exact cited source range, not those placeholder quotes. Guide caches 11-13 have digest mismatch and are not cited."
+    },
+    {
+      "id": 2,
+      "url": "https://raw.githubusercontent.com/rathena/rathena/e985006171d2eb320ee512a653f4c83aea3d81b6/src/map/pc.cpp",
+      "title": "src/map/pc.cpp",
+      "accessed": "2026-10-08",
+      "quotes": [
+        {
+          "text": "// Copyright (c) rAthena Dev Teams - Licensed under GNU GPL",
+          "added": "2026-10-08"
+        }
+      ],
+      "cached_file": "/home/otto/.hermes/cache/scratch/ro-gameplay-audit/economy-inventory/source-2.txt",
+      "sha256": "d12704c1ef7f8321c255175b6f61aa396209b931e2b1687fbbd16963d1def652",
+      "original_retrieval_sha256": "d12704c1ef7f8321c255175b6f61aa396209b931e2b1687fbbd16963d1def652",
+      "retrieval_digest_matches": true,
+      "quarantined": false,
+      "local_matches_cached_pin": true,
+      "evidence_quality": "Existing ledger quotes are often copyright/header-only; substantive row evidence is exact cited source range, not those placeholder quotes. Guide caches 11-13 have digest mismatch and are not cited."
+    },
+    {
+      "id": 3,
+      "url": "https://raw.githubusercontent.com/rathena/rathena/e985006171d2eb320ee512a653f4c83aea3d81b6/src/map/storage.cpp",
+      "title": "src/map/storage.cpp",
+      "accessed": "2026-10-08",
+      "quotes": [
+        {
+          "text": "// Copyright (c) rAthena Dev Teams - Licensed under GNU GPL",
+          "added": "2026-10-08"
+        }
+      ],
+      "cached_file": "/home/otto/.hermes/cache/scratch/ro-gameplay-audit/economy-inventory/source-3.txt",
+      "sha256": "b66a2a85f062966b1cc9aab2a54401f45c0c53b11a712ffe88e6caa1fb4605f8",
+      "original_retrieval_sha256": "b66a2a85f062966b1cc9aab2a54401f45c0c53b11a712ffe88e6caa1fb4605f8",
+      "retrieval_digest_matches": true,
+      "quarantined": false,
+      "local_matches_cached_pin": true,
+      "evidence_quality": "Existing ledger quotes are often copyright/header-only; substantive row evidence is exact cited source range, not those placeholder quotes. Guide caches 11-13 have digest mismatch and are not cited."
+    },
+    {
+      "id": 4,
+      "url": "https://raw.githubusercontent.com/rathena/rathena/e985006171d2eb320ee512a653f4c83aea3d81b6/src/map/trade.cpp",
+      "title": "src/map/trade.cpp",
+      "accessed": "2026-10-08",
+      "quotes": [
+        {
+          "text": "// Copyright (c) rAthena Dev Teams - Licensed under GNU GPL",
+          "added": "2026-10-08"
+        }
+      ],
+      "cached_file": "/home/otto/.hermes/cache/scratch/ro-gameplay-audit/economy-inventory/source-4.txt",
+      "sha256": "a989bf38399d7b14bb0c822e6825385e00ec812d2c438695b1387c12f976f30e",
+      "original_retrieval_sha256": "a989bf38399d7b14bb0c822e6825385e00ec812d2c438695b1387c12f976f30e",
+      "retrieval_digest_matches": true,
+      "quarantined": false,
+      "local_matches_cached_pin": true,
+      "evidence_quality": "Existing ledger quotes are often copyright/header-only; substantive row evidence is exact cited source range, not those placeholder quotes. Guide caches 11-13 have digest mismatch and are not cited."
+    },
+    {
+      "id": 5,
+      "url": "https://raw.githubusercontent.com/rathena/rathena/e985006171d2eb320ee512a653f4c83aea3d81b6/src/map/vending.cpp",
+      "title": "src/map/vending.cpp",
+      "accessed": "2026-10-08",
+      "quotes": [
+        {
+          "text": "// Copyright (c) rAthena Dev Teams - Licensed under GNU GPL",
+          "added": "2026-10-08"
+        }
+      ],
+      "cached_file": "/home/otto/.hermes/cache/scratch/ro-gameplay-audit/economy-inventory/source-5.txt",
+      "sha256": "605f67a293ee137ff97bbaf04a168c0287a9c615fb20644433e644921d180193",
+      "original_retrieval_sha256": "605f67a293ee137ff97bbaf04a168c0287a9c615fb20644433e644921d180193",
+      "retrieval_digest_matches": true,
+      "quarantined": false,
+      "local_matches_cached_pin": true,
+      "evidence_quality": "Existing ledger quotes are often copyright/header-only; substantive row evidence is exact cited source range, not those placeholder quotes. Guide caches 11-13 have digest mismatch and are not cited."
+    },
+    {
+      "id": 6,
+      "url": "https://raw.githubusercontent.com/rathena/rathena/e985006171d2eb320ee512a653f4c83aea3d81b6/src/map/buyingstore.cpp",
+      "title": "src/map/buyingstore.cpp",
+      "accessed": "2026-10-08",
+      "quotes": [
+        {
+          "text": "// Copyright (c) rAthena Dev Teams - Licensed under GNU GPL",
+          "added": "2026-10-08"
+        }
+      ],
+      "cached_file": "/home/otto/.hermes/cache/scratch/ro-gameplay-audit/economy-inventory/source-6.txt",
+      "sha256": "0daa9c410b03fc3561fbc1570b103deb83cabc9d9cfbf49db0eb132c622c1913",
+      "original_retrieval_sha256": "0daa9c410b03fc3561fbc1570b103deb83cabc9d9cfbf49db0eb132c622c1913",
+      "retrieval_digest_matches": true,
+      "quarantined": false,
+      "local_matches_cached_pin": true,
+      "evidence_quality": "Existing ledger quotes are often copyright/header-only; substantive row evidence is exact cited source range, not those placeholder quotes. Guide caches 11-13 have digest mismatch and are not cited."
+    },
+    {
+      "id": 7,
+      "url": "https://raw.githubusercontent.com/rathena/rathena/e985006171d2eb320ee512a653f4c83aea3d81b6/src/map/npc.cpp",
+      "title": "src/map/npc.cpp",
+      "accessed": "2026-10-08",
+      "quotes": [
+        {
+          "text": "// Copyright (c) rAthena Dev Teams - Licensed under GNU GPL",
+          "added": "2026-10-08"
+        }
+      ],
+      "cached_file": "/home/otto/.hermes/cache/scratch/ro-gameplay-audit/economy-inventory/source-7.txt",
+      "sha256": "90d582661668e5cb8567de5a7b92d067e5d0db479963b00bab340af9fe477534",
+      "original_retrieval_sha256": "90d582661668e5cb8567de5a7b92d067e5d0db479963b00bab340af9fe477534",
+      "retrieval_digest_matches": true,
+      "quarantined": false,
+      "local_matches_cached_pin": true,
+      "evidence_quality": "Existing ledger quotes are often copyright/header-only; substantive row evidence is exact cited source range, not those placeholder quotes. Guide caches 11-13 have digest mismatch and are not cited."
+    },
+    {
+      "id": 8,
+      "url": "https://raw.githubusercontent.com/rathena/rathena/e985006171d2eb320ee512a653f4c83aea3d81b6/db/pre-re/item_db_usable.yml",
+      "title": "db/pre-re/item_db_usable.yml",
+      "accessed": "2026-10-08",
+      "quotes": [
+        {
+          "text": "# This file is a part of rAthena.",
+          "added": "2026-10-08"
+        }
+      ],
+      "cached_file": "/home/otto/.hermes/cache/scratch/ro-gameplay-audit/economy-inventory/source-8.txt",
+      "sha256": "ba3b8f1fe394a6826ca2d93e34f5eac481fdfc9c250c6a12b59b2a0f1f641b5f",
+      "original_retrieval_sha256": "ba3b8f1fe394a6826ca2d93e34f5eac481fdfc9c250c6a12b59b2a0f1f641b5f",
+      "retrieval_digest_matches": true,
+      "quarantined": false,
+      "local_matches_cached_pin": true,
+      "evidence_quality": "Existing ledger quotes are often copyright/header-only; substantive row evidence is exact cited source range, not those placeholder quotes. Guide caches 11-13 have digest mismatch and are not cited."
+    },
+    {
+      "id": 9,
+      "url": "https://raw.githubusercontent.com/rathena/rathena/e985006171d2eb320ee512a653f4c83aea3d81b6/src/map/skill.cpp",
+      "title": "src/map/skill.cpp",
+      "accessed": "2026-10-08",
+      "quotes": [
+        {
+          "text": "// Copyright (c) rAthena Dev Teams - Licensed under GNU GPL",
+          "added": "2026-10-08"
+        }
+      ],
+      "cached_file": "/home/otto/.hermes/cache/scratch/ro-gameplay-audit/economy-inventory/source-9.txt",
+      "sha256": "aad3c2f3968e0ddf38b89aff953d77a4cae66a0aa54b539a47723dd5f25b6c04",
+      "original_retrieval_sha256": "aad3c2f3968e0ddf38b89aff953d77a4cae66a0aa54b539a47723dd5f25b6c04",
+      "retrieval_digest_matches": true,
+      "quarantined": false,
+      "local_matches_cached_pin": true,
+      "evidence_quality": "Existing ledger quotes are often copyright/header-only; substantive row evidence is exact cited source range, not those placeholder quotes. Guide caches 11-13 have digest mismatch and are not cited."
+    },
+    {
+      "id": 10,
+      "url": "https://raw.githubusercontent.com/rathena/rathena/e985006171d2eb320ee512a653f4c83aea3d81b6/doc/script_commands.txt",
+      "title": "doc/script_commands.txt",
+      "accessed": "2026-10-08",
+      "quotes": [
+        {
+          "text": "//===== rAthena Documentation================================",
+          "added": "2026-10-08"
+        }
+      ],
+      "cached_file": "/home/otto/.hermes/cache/scratch/ro-gameplay-audit/economy-inventory/source-10.txt",
+      "sha256": "7d8d446f93e5575041319560cfea0a88ec523334a97156cf72138cf4126b266e",
+      "original_retrieval_sha256": "7d8d446f93e5575041319560cfea0a88ec523334a97156cf72138cf4126b266e",
+      "retrieval_digest_matches": true,
+      "quarantined": false,
+      "local_matches_cached_pin": true,
+      "evidence_quality": "Existing ledger quotes are often copyright/header-only; substantive row evidence is exact cited source range, not those placeholder quotes. Guide caches 11-13 have digest mismatch and are not cited."
+    },
+    {
+      "id": 11,
+      "url": "https://github.com/rathena/rathena/wiki/General_Shop_creation",
+      "title": "General_Shop_creation",
+      "accessed": "2026-10-08",
+      "quotes": [
+        {
+          "text": "The prices are a bit odd:",
+          "added": "2026-10-08"
+        }
+      ],
+      "cached_file": "/home/otto/.hermes/cache/scratch/ro-gameplay-audit/economy-inventory/source-11.txt",
+      "sha256": "48030273bd3aa5ca2143217269b8ce1895dc950ed3f159e4dec8754a074a5a2d",
+      "original_retrieval_sha256": "0c276d18d7e3c7eda604e488a2ec28ae52c07c51dde5feda91217a8cf98d6aff",
+      "retrieval_digest_matches": false,
+      "quarantined": true,
+      "local_matches_cached_pin": null,
+      "evidence_quality": "Existing ledger quotes are often copyright/header-only; substantive row evidence is exact cited source range, not those placeholder quotes. Guide caches 11-13 have digest mismatch and are not cited."
+    },
+    {
+      "id": 12,
+      "url": "https://irowiki.org/classic/Merchant",
+      "title": "Merchant",
+      "accessed": "2026-10-08",
+      "quotes": [
+        {
+          "text": "Merchant - iRO Wiki Classic",
+          "added": "2026-10-08"
+        }
+      ],
+      "cached_file": "/home/otto/.hermes/cache/scratch/ro-gameplay-audit/economy-inventory/source-12.txt",
+      "sha256": "c8fff55edd6e44ed7051d9b48c9f257070f390282a100e5168162b6b38da0c76",
+      "original_retrieval_sha256": "aa88f589faf87ee54fead89a225d637386ea3c823fd01803211ca89591059280",
+      "retrieval_digest_matches": false,
+      "quarantined": true,
+      "local_matches_cached_pin": null,
+      "evidence_quality": "Existing ledger quotes are often copyright/header-only; substantive row evidence is exact cited source range, not those placeholder quotes. Guide caches 11-13 have digest mismatch and are not cited."
+    },
+    {
+      "id": 13,
+      "url": "https://irowiki.org/wiki/Merchant",
+      "title": "Merchant",
+      "accessed": "2026-10-08",
+      "quotes": [
+        {
+          "text": "Merchant - iRO Wiki",
+          "added": "2026-10-08"
+        }
+      ],
+      "cached_file": "/home/otto/.hermes/cache/scratch/ro-gameplay-audit/economy-inventory/source-13.txt",
+      "sha256": "c4c2d79934cc7f392d666dcc982daf6cf6e346a696d90dafed43988a28c93c38",
+      "original_retrieval_sha256": "e5aefcfbf900e6b9db6e3527d38deea7d6faaab177cf1cf0aa7ff4b2b12d1efe",
+      "retrieval_digest_matches": false,
+      "quarantined": true,
+      "local_matches_cached_pin": null,
+      "evidence_quality": "Existing ledger quotes are often copyright/header-only; substantive row evidence is exact cited source range, not those placeholder quotes. Guide caches 11-13 have digest mismatch and are not cited."
+    }
+  ],
+  "unknowns": [
+    "Loaded custom imports, active fees/prices, market population/prices and class-specific recipes/services not established.",
+    "Fresh source readiness/native acceptance were not rerun.",
+    "No finite matrix can assert coverage of every official/private server variant."
+  ]
+}

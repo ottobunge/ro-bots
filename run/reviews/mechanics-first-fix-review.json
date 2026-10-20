@@ -1,0 +1,1383 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-10-05T12:17:43.259490+00:00",
+  "started_at": "2026-10-05T12:09:03.552344+00:00",
+  "passed": true,
+  "review_mode": "Fresh independent read-only first-cycle re-review; no implementation or test edits, no parent/fixer self-approval.",
+  "acceptance_scope": "The four original reviewed base-YAML defects and preservation of existing metadata/inheritance/unpriced-consumer behavior only.",
+  "review_authority": [
+    "run/reviews/mechanics-yaml-review.json",
+    "run/reviews/mechanics-first-fix.json"
+  ],
+  "security_concerns": [],
+  "logic_errors": [],
+  "resolved_review_ids": [
+    "null-jobs",
+    "null-classes",
+    "native-skill-level-limit",
+    "duplicate-id-filter-bypass"
+  ],
+  "defect_verification": [
+    {
+      "id": "null-jobs",
+      "passed": true,
+      "implementation": "mechanics_yaml.py:293-299",
+      "finding": "Omitted Jobs remains ((All,true),); explicit null and empty maps project to (); explicit false flags are preserved; malformed values fail closed. Actual Renewal 410447/410448 remain retained with empty jobs."
+    },
+    {
+      "id": "null-classes",
+      "passed": true,
+      "implementation": "mechanics_yaml.py:293-299",
+      "finding": "Omitted Classes remains ((All,true),); explicit null and empty maps project to (); explicit false flags are preserved; malformed values fail closed."
+    },
+    {
+      "id": "native-skill-level-limit",
+      "passed": true,
+      "implementation": "mechanics_yaml.py:19-20,224-228,395,409,423-425",
+      "finding": "Skill DB requires 1..13; source tree maxima and prerequisite levels require 0..13 before ordinary skill DB caps. 14,20,65535,negative,bool,float,string,null reject; valid 13 caps to DB 10/9, DB 13 retained; zero removal preserved."
+    },
+    {
+      "id": "duplicate-id-filter-bypass",
+      "passed": true,
+      "implementation": "mechanics_yaml.py:319-329,555-562",
+      "finding": "All row Id/AegisName identities validate before PetEgg/PetArmor/duplicate Trade exclusions, in both source orders and between only-excluded rows. Malformed excluded identities also reject. Real 400276 remains quarantined, never resolved by choosing a Trade value."
+    }
+  ],
+  "native_authority": {
+    "permissions": [
+      "rathena/src/common/database.cpp:15-16",
+      "rathena/src/map/itemdb.cpp:330-374",
+      "rathena/src/map/itemdb.cpp:376-420"
+    ],
+    "native_level_bound": [
+      "rathena/src/map/skill.hpp:43",
+      "rathena/src/map/skill.cpp:14822-14831",
+      "rathena/src/map/pc.cpp:13502-13517",
+      "rathena/src/map/pc.cpp:13582-13602"
+    ],
+    "direct_parent_inheritance": [
+      "rathena/src/map/pc.cpp:13632-13699"
+    ],
+    "interpretation": "Local pinned primary C++ sources establish present-null versus omitted behavior, bound-before-cap order, direct own-parent inheritance, listed-parent precedence, Exclude propagation and zero removal. No native compilation or comprehensive parser equivalence certified."
+  },
+  "rathena_revision_expected": "e985006171d2eb320ee512a653f4c83aea3d81b6",
+  "rathena_revision_actual": "e985006171d2eb320ee512a653f4c83aea3d81b6",
+  "rathena_source_clean": true,
+  "source_hashes_sha256_before": {
+    "Taskfile.yml": "745c9992a2ab0c5f184e14060330984dc00ce0844014137f0e6f41f34a44d37c",
+    "flake.lock": "c9c0bac69415b99a29ef3fe149b6f04ef54d291989bdf7218cf819ed52edf2a0",
+    "flake.nix": "cc218c50ff3b05761d59b9b951f5da2daca3435d2c5cff975b909fe7df8c1ee3",
+    "pyproject.toml": "e8ae0849a413bc3d705f081f609b92dae702bbd3e491b2c3aeb5d8665c458fba",
+    "rathena/db/pre-re/item_db_equip.yml": "2536c42cc9414f4935e7304f5969228740a5f0308b1acdb2581e5891d25450f7",
+    "rathena/db/pre-re/skill_db.yml": "f9846f5fe3074451c87930a451df80390e8fbadf692b9e67e388b67c07340541",
+    "rathena/db/pre-re/skill_tree.yml": "fafe80390ac7c4ad79b4fb258614684250ccc9b72155d9218ea4ee7c063c7f54",
+    "rathena/db/re/item_db_equip.yml": "0ded923764d64ad81ad6fae14880f6c0946d91a91ab931d18cce7d4dbcf75f5f",
+    "rathena/db/re/skill_db.yml": "e7d6748fc042f2c569083865774f91934ce2fcf8ec3bf201ff18e942e5bc0fdb",
+    "rathena/db/re/skill_tree.yml": "9f093dad42651580b9c349dabed68e2cf13e46dbec3d4ada79d326661d863f09",
+    "rathena/src/common/database.cpp": "03d394aa9ed809557fb4ce50419776e34214220504ef1229ec864a4b10be0011",
+    "rathena/src/map/itemdb.cpp": "3b51a2bbcb44c5ffbdb5dc04683dd4f567c2da92f56a4bc0008aa9a93de5efe5",
+    "rathena/src/map/pc.cpp": "d12704c1ef7f8321c255175b6f61aa396209b931e2b1687fbbd16963d1def652",
+    "rathena/src/map/skill.cpp": "aad3c2f3968e0ddf38b89aff953d77a4cae66a0aa54b539a47723dd5f25b6c04",
+    "rathena/src/map/skill.hpp": "ea112b585e8b33228f064bcd22ebc55d7e55274fff29280d7276e435e2b00513",
+    "run/reviews/mechanics-first-fix.json": "6eed0f3437593b88116c98c4307e54ef0009c00742fa199e1f7fe893514dfc8e",
+    "run/reviews/mechanics-yaml-review.json": "ed4b63810396d949be57f95f63bc5e1fafeec114b8cfb01e4f5a5059e1fa01e8",
+    "src/robots/__init__.py": "14a8271c90ed669cc0645c2901ba6a3d93345643b7697e87b965b9008f02b6a6",
+    "src/robots/adapters/mechanics_yaml.py": "c5991bd78af95b213b4fb9a2ca87b065f5b76e826edb84eac593498a80f64b58",
+    "src/robots/app/__init__.py": "f8051791757f4a44517787195b9b470bd1215251bd457436c52f3c7de9005c03",
+    "src/robots/app/builds.py": "564926dbbbecf631b3e02f542698f9ae5c00e1ad54bec1d05323c1a17edafa28",
+    "src/robots/domain/__init__.py": "53858cc66817d25bdcf50a47319d581b35e9c415f72881d58c8af83c2a61187a",
+    "src/robots/domain/build.py": "0ead8793772d3a7aacdb33c8e0087f700e54c8bdcd1a49c4cfc913dd5b3ddd18",
+    "src/robots/ports/mechanics.py": "1db9f8a72c11d5c9b6006723e7ceed1d1950e46bac4a602274ff436961d73aae",
+    "tests/test_build_catalog_integration.py": "bb672f83aaeb2fb0cd613cf719ec3b5da30eeb58e878122a3878142c0a09b9bd",
+    "tests/test_builds.py": "87f460fc7c1d77276bbbf236a8812b2a7f35a06c047bc4ee5af12f90f113b4a4",
+    "tests/test_mechanics_review_regressions.py": "4b0d8f690017d2cef2f929148cfdf1be05075aeee2747205a31f5360804c243a",
+    "tests/test_mechanics_yaml.py": "adb969d15359545222e58e28b2d099c17a46ce12e68ef4dcbac75b57ed03fce7",
+    "uv.lock": "2d7b4c187078488d7625e4fd4fa982745cab8d6a65b2ff3e382ffa286f1df245"
+  },
+  "source_hashes_sha256_after": {
+    "Taskfile.yml": "745c9992a2ab0c5f184e14060330984dc00ce0844014137f0e6f41f34a44d37c",
+    "flake.lock": "c9c0bac69415b99a29ef3fe149b6f04ef54d291989bdf7218cf819ed52edf2a0",
+    "flake.nix": "cc218c50ff3b05761d59b9b951f5da2daca3435d2c5cff975b909fe7df8c1ee3",
+    "pyproject.toml": "e8ae0849a413bc3d705f081f609b92dae702bbd3e491b2c3aeb5d8665c458fba",
+    "rathena/db/pre-re/item_db_equip.yml": "2536c42cc9414f4935e7304f5969228740a5f0308b1acdb2581e5891d25450f7",
+    "rathena/db/pre-re/skill_db.yml": "f9846f5fe3074451c87930a451df80390e8fbadf692b9e67e388b67c07340541",
+    "rathena/db/pre-re/skill_tree.yml": "fafe80390ac7c4ad79b4fb258614684250ccc9b72155d9218ea4ee7c063c7f54",
+    "rathena/db/re/item_db_equip.yml": "0ded923764d64ad81ad6fae14880f6c0946d91a91ab931d18cce7d4dbcf75f5f",
+    "rathena/db/re/skill_db.yml": "e7d6748fc042f2c569083865774f91934ce2fcf8ec3bf201ff18e942e5bc0fdb",
+    "rathena/db/re/skill_tree.yml": "9f093dad42651580b9c349dabed68e2cf13e46dbec3d4ada79d326661d863f09",
+    "rathena/src/common/database.cpp": "03d394aa9ed809557fb4ce50419776e34214220504ef1229ec864a4b10be0011",
+    "rathena/src/map/itemdb.cpp": "3b51a2bbcb44c5ffbdb5dc04683dd4f567c2da92f56a4bc0008aa9a93de5efe5",
+    "rathena/src/map/pc.cpp": "d12704c1ef7f8321c255175b6f61aa396209b931e2b1687fbbd16963d1def652",
+    "rathena/src/map/skill.cpp": "aad3c2f3968e0ddf38b89aff953d77a4cae66a0aa54b539a47723dd5f25b6c04",
+    "rathena/src/map/skill.hpp": "ea112b585e8b33228f064bcd22ebc55d7e55274fff29280d7276e435e2b00513",
+    "run/reviews/mechanics-first-fix.json": "6eed0f3437593b88116c98c4307e54ef0009c00742fa199e1f7fe893514dfc8e",
+    "run/reviews/mechanics-yaml-review.json": "ed4b63810396d949be57f95f63bc5e1fafeec114b8cfb01e4f5a5059e1fa01e8",
+    "src/robots/__init__.py": "14a8271c90ed669cc0645c2901ba6a3d93345643b7697e87b965b9008f02b6a6",
+    "src/robots/adapters/mechanics_yaml.py": "c5991bd78af95b213b4fb9a2ca87b065f5b76e826edb84eac593498a80f64b58",
+    "src/robots/app/__init__.py": "f8051791757f4a44517787195b9b470bd1215251bd457436c52f3c7de9005c03",
+    "src/robots/app/builds.py": "564926dbbbecf631b3e02f542698f9ae5c00e1ad54bec1d05323c1a17edafa28",
+    "src/robots/domain/__init__.py": "53858cc66817d25bdcf50a47319d581b35e9c415f72881d58c8af83c2a61187a",
+    "src/robots/domain/build.py": "0ead8793772d3a7aacdb33c8e0087f700e54c8bdcd1a49c4cfc913dd5b3ddd18",
+    "src/robots/ports/mechanics.py": "1db9f8a72c11d5c9b6006723e7ceed1d1950e46bac4a602274ff436961d73aae",
+    "tests/test_build_catalog_integration.py": "bb672f83aaeb2fb0cd613cf719ec3b5da30eeb58e878122a3878142c0a09b9bd",
+    "tests/test_builds.py": "87f460fc7c1d77276bbbf236a8812b2a7f35a06c047bc4ee5af12f90f113b4a4",
+    "tests/test_mechanics_review_regressions.py": "4b0d8f690017d2cef2f929148cfdf1be05075aeee2747205a31f5360804c243a",
+    "tests/test_mechanics_yaml.py": "adb969d15359545222e58e28b2d099c17a46ce12e68ef4dcbac75b57ed03fce7",
+    "uv.lock": "2d7b4c187078488d7625e4fd4fa982745cab8d6a65b2ff3e382ffa286f1df245"
+  },
+  "source_hashes_unchanged_during_review": true,
+  "fingerprinted_file_count": 29,
+  "fix_report_21_source_hashes_match": true,
+  "fix_report_matching_source_count": 21,
+  "fixture_correction_independent_verification": {
+    "verified": true,
+    "only_change": "SM_MAGNUM tree MaxLevel 20 -> 13",
+    "method": "Replace the unique current MaxLevel 13 literal with 20 in memory; SHA-256 matches the original test file hash from the fix report. This independently proves all other test bytes, including assertions, were preserved.",
+    "reconstructed_before_sha256": "78bcf41aa78f201db735730e622eee0ed7835e4a683cd32f762828037765802b"
+  },
+  "test_results": {
+    "scoped": {
+      "tests": 73,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 73,
+      "elapsed_seconds": 58.613,
+      "existing_mechanics": 33,
+      "new_regressions": 25,
+      "real_unpriced_consumers": 2,
+      "old_build_tests": 13
+    },
+    "independent_probes": {
+      "executed": 108,
+      "passed": 108
+    },
+    "full_task_check": "Not rerun or certified by this independent scoped reviewer; parent/fixer full-suite results are not independent evidence."
+  },
+  "catalogs": {
+    "pre-re": {
+      "counts": {
+        "equipment_rows": 2017,
+        "player_equipment": 1923,
+        "skill_rows": 1228,
+        "class_trees": 77
+      },
+      "checked_item_digests": 1923,
+      "checked_class_trees": 77,
+      "checked_class_skill_digests": 2121,
+      "projection_sha256": "f734cf3f2e37bba8b295bc85221810932d035143c93cd519825f1270264e1d50",
+      "projection_matches_fix_after": true,
+      "changes_from_hash_verified_before": [],
+      "skill_projections_unchanged": true,
+      "ambiguous_names": 299,
+      "excluded_items": [],
+      "actual_null_jobs_rows": {
+        "410447": null,
+        "410448": null
+      },
+      "all_projected_prices_unknown": true,
+      "source_hashes": {
+        "/home/otto/dev/ro-bots/rathena/db/pre-re/item_db_equip.yml": "2536c42cc9414f4935e7304f5969228740a5f0308b1acdb2581e5891d25450f7",
+        "/home/otto/dev/ro-bots/rathena/db/pre-re/skill_db.yml": "f9846f5fe3074451c87930a451df80390e8fbadf692b9e67e388b67c07340541",
+        "/home/otto/dev/ro-bots/rathena/db/pre-re/skill_tree.yml": "fafe80390ac7c4ad79b4fb258614684250ccc9b72155d9218ea4ee7c063c7f54"
+      }
+    },
+    "re": {
+      "counts": {
+        "equipment_rows": 12982,
+        "player_equipment": 12787,
+        "skill_rows": 1635,
+        "class_trees": 175
+      },
+      "checked_item_digests": 12787,
+      "checked_class_trees": 175,
+      "checked_class_skill_digests": 8122,
+      "projection_sha256": "6270a130c4b9b539f457fbbbe75e358aaa8022e9ea9a6dd3ab8c4396047f0cd5",
+      "projection_matches_fix_after": true,
+      "changes_from_hash_verified_before": [
+        {
+          "item_id": 410447,
+          "fields": [
+            "digest_text",
+            "jobs"
+          ]
+        },
+        {
+          "item_id": 410448,
+          "fields": [
+            "digest_text",
+            "jobs"
+          ]
+        }
+      ],
+      "skill_projections_unchanged": true,
+      "ambiguous_names": 794,
+      "excluded_items": [
+        [
+          400276,
+          "duplicate Trade field"
+        ]
+      ],
+      "actual_null_jobs_rows": {
+        "410447": {
+          "item_id": 410447,
+          "name": "Costume Telescope (Blue)",
+          "slot": "costume_headgear",
+          "stat_effects": [
+            [
+              "atk",
+              0
+            ],
+            [
+              "def",
+              0
+            ],
+            [
+              "matk",
+              0
+            ]
+          ],
+          "required_level": 0,
+          "price_tier": null,
+          "digest_text": "Costume Telescope (Blue) [C_Handiness_Telescope, 410447, re]: base metadata (('atk', 0), ('def', 0), ('matk', 0)); base level 0..unlimited; locations ('Costume_Head_Mid',); jobs (); classes (('All', True),); gender Both; market price unknown; effects unknown: combo effects not loaded; raw restriction masks; compatibility not evaluated; no character damage/defense calculation",
+          "aegis_name": "C_Handiness_Telescope",
+          "ruleset": "re",
+          "locations": [
+            "Costume_Head_Mid"
+          ],
+          "jobs": [],
+          "classes": [
+            [
+              "All",
+              true
+            ]
+          ],
+          "gender": "Both",
+          "maximum_level": null,
+          "card_slots": 0,
+          "unknown_effects": [
+            "combo effects not loaded"
+          ]
+        },
+        "410448": {
+          "item_id": 410448,
+          "name": "Costume Cosmic Blink Eyes",
+          "slot": "costume_headgear",
+          "stat_effects": [
+            [
+              "atk",
+              0
+            ],
+            [
+              "def",
+              0
+            ],
+            [
+              "matk",
+              0
+            ]
+          ],
+          "required_level": 0,
+          "price_tier": null,
+          "digest_text": "Costume Cosmic Blink Eyes [C_Blink_Eyes_Cosmic, 410448, re]: base metadata (('atk', 0), ('def', 0), ('matk', 0)); base level 0..unlimited; locations ('Costume_Head_Mid',); jobs (); classes (('All', True),); gender Both; market price unknown; effects unknown: combo effects not loaded; raw restriction masks; compatibility not evaluated; no character damage/defense calculation",
+          "aegis_name": "C_Blink_Eyes_Cosmic",
+          "ruleset": "re",
+          "locations": [
+            "Costume_Head_Mid"
+          ],
+          "jobs": [],
+          "classes": [
+            [
+              "All",
+              true
+            ]
+          ],
+          "gender": "Both",
+          "maximum_level": null,
+          "card_slots": 0,
+          "unknown_effects": [
+            "combo effects not loaded"
+          ]
+        }
+      },
+      "all_projected_prices_unknown": true,
+      "source_hashes": {
+        "/home/otto/dev/ro-bots/rathena/db/re/item_db_equip.yml": "0ded923764d64ad81ad6fae14880f6c0946d91a91ab931d18cce7d4dbcf75f5f",
+        "/home/otto/dev/ro-bots/rathena/db/re/skill_db.yml": "e7d6748fc042f2c569083865774f91934ce2fcf8ec3bf201ff18e942e5bc0fdb",
+        "/home/otto/dev/ro-bots/rathena/db/re/skill_tree.yml": "9f093dad42651580b9c349dabed68e2cf13e46dbec3d4ada79d326661d863f09"
+      }
+    }
+  },
+  "evidence": {
+    "scoped_test_execution": {
+      "command": [
+        "uv",
+        "run",
+        "--offline",
+        "--no-sync",
+        "pytest",
+        "-v",
+        "-p",
+        "no:cacheprovider",
+        "-o",
+        "faulthandler_timeout=60",
+        "--basetemp",
+        "/home/otto/.hermes/cache/scratch/mechanics-first-independent/pytest-temp",
+        "--junitxml",
+        "/home/otto/.hermes/cache/scratch/mechanics-first-independent/scoped-tests.xml",
+        "tests/test_mechanics_yaml.py",
+        "tests/test_mechanics_review_regressions.py",
+        "tests/test_build_catalog_integration.py",
+        "tests/test_builds.py"
+      ],
+      "exit_code": 0,
+      "stdout": "============================= test session starts ==============================\nplatform linux -- Python 3.14.7, pytest-9.1.1, pluggy-1.6.0\nrootdir: /home/otto/dev/ro-bots\nconfigfile: pyproject.toml\nplugins: cov-7.1.0, anyio-4.15.1, platformdirs-4.12.3\ncollected 73 items\n\ntests/test_mechanics_yaml.py .................................           [ 45%]\ntests/test_mechanics_review_regressions.py .........................     [ 79%]\ntests/test_build_catalog_integration.py ..                               [ 82%]\ntests/test_builds.py .............                                       [100%]\n\n- generated xml file: /home/otto/.hermes/cache/scratch/mechanics-first-independent/scoped-tests.xml -\n============================= 73 passed in 58.61s ==============================\n",
+      "stderr": ""
+    },
+    "independent_probe_execution": {
+      "command": "nix develop --offline -c env PYTHONDONTWRITEBYTECODE=1 UV_OFFLINE=1 uv run --offline --no-sync python /home/otto/.hermes/cache/scratch/mechanics-first-independent/probe.py",
+      "exit_code": 0,
+      "probes": [
+        {
+          "name": "original-null-jobs",
+          "passed": true,
+          "result": {
+            "jobs": [],
+            "retained": true
+          }
+        },
+        {
+          "name": "original-null-classes",
+          "passed": true,
+          "result": {
+            "classes": [],
+            "retained": true
+          }
+        },
+        {
+          "name": "original-native-skill-level-limit",
+          "passed": true,
+          "result": {
+            "rejected": "Invalid or unsupported tree MaxLevel"
+          }
+        },
+        {
+          "name": "original-duplicate-id-filter-bypass",
+          "passed": true,
+          "result": {
+            "rejected": "Invalid or unsupported duplicate item Id or AegisName"
+          }
+        },
+        {
+          "name": "permission-pre-re-Jobs-None",
+          "passed": true,
+          "result": {
+            "declaration": null,
+            "projected": [],
+            "omitted": [
+              [
+                "All",
+                true
+              ]
+            ]
+          }
+        },
+        {
+          "name": "permission-pre-re-Jobs-{}",
+          "passed": true,
+          "result": {
+            "declaration": {},
+            "projected": [],
+            "omitted": [
+              [
+                "All",
+                true
+              ]
+            ]
+          }
+        },
+        {
+          "name": "permission-pre-re-Jobs-{'All': False}",
+          "passed": true,
+          "result": {
+            "declaration": {
+              "All": false
+            },
+            "projected": [
+              [
+                "All",
+                false
+              ]
+            ],
+            "omitted": [
+              [
+                "All",
+                true
+              ]
+            ]
+          }
+        },
+        {
+          "name": "permission-pre-re-Jobs-{'All': True}",
+          "passed": true,
+          "result": {
+            "declaration": {
+              "All": true
+            },
+            "projected": [
+              [
+                "All",
+                true
+              ]
+            ],
+            "omitted": [
+              [
+                "All",
+                true
+              ]
+            ]
+          }
+        },
+        {
+          "name": "permission-pre-re-Jobs-{'All': True, 'Swordman': False}",
+          "passed": true,
+          "result": {
+            "declaration": {
+              "All": true,
+              "Swordman": false
+            },
+            "projected": [
+              [
+                "All",
+                true
+              ],
+              [
+                "Swordman",
+                false
+              ]
+            ],
+            "omitted": [
+              [
+                "All",
+                true
+              ]
+            ]
+          }
+        },
+        {
+          "name": "permission-pre-re-Classes-None",
+          "passed": true,
+          "result": {
+            "declaration": null,
+            "projected": [],
+            "omitted": [
+              [
+                "All",
+                true
+              ]
+            ]
+          }
+        },
+        {
+          "name": "permission-pre-re-Classes-{}",
+          "passed": true,
+          "result": {
+            "declaration": {},
+            "projected": [],
+            "omitted": [
+              [
+                "All",
+                true
+              ]
+            ]
+          }
+        },
+        {
+          "name": "permission-pre-re-Classes-{'All': False}",
+          "passed": true,
+          "result": {
+            "declaration": {
+              "All": false
+            },
+            "projected": [
+              [
+                "All",
+                false
+              ]
+            ],
+            "omitted": [
+              [
+                "All",
+                true
+              ]
+            ]
+          }
+        },
+        {
+          "name": "permission-pre-re-Classes-{'All': True}",
+          "passed": true,
+          "result": {
+            "declaration": {
+              "All": true
+            },
+            "projected": [
+              [
+                "All",
+                true
+              ]
+            ],
+            "omitted": [
+              [
+                "All",
+                true
+              ]
+            ]
+          }
+        },
+        {
+          "name": "permission-pre-re-Classes-{'All': True, 'Normal': False}",
+          "passed": true,
+          "result": {
+            "declaration": {
+              "All": true,
+              "Normal": false
+            },
+            "projected": [
+              [
+                "All",
+                true
+              ],
+              [
+                "Normal",
+                false
+              ]
+            ],
+            "omitted": [
+              [
+                "All",
+                true
+              ]
+            ]
+          }
+        },
+        {
+          "name": "permission-re-Jobs-None",
+          "passed": true,
+          "result": {
+            "declaration": null,
+            "projected": [],
+            "omitted": [
+              [
+                "All",
+                true
+              ]
+            ]
+          }
+        },
+        {
+          "name": "permission-re-Jobs-{}",
+          "passed": true,
+          "result": {
+            "declaration": {},
+            "projected": [],
+            "omitted": [
+              [
+                "All",
+                true
+              ]
+            ]
+          }
+        },
+        {
+          "name": "permission-re-Jobs-{'All': False}",
+          "passed": true,
+          "result": {
+            "declaration": {
+              "All": false
+            },
+            "projected": [
+              [
+                "All",
+                false
+              ]
+            ],
+            "omitted": [
+              [
+                "All",
+                true
+              ]
+            ]
+          }
+        },
+        {
+          "name": "permission-re-Jobs-{'All': True}",
+          "passed": true,
+          "result": {
+            "declaration": {
+              "All": true
+            },
+            "projected": [
+              [
+                "All",
+                true
+              ]
+            ],
+            "omitted": [
+              [
+                "All",
+                true
+              ]
+            ]
+          }
+        },
+        {
+          "name": "permission-re-Jobs-{'All': True, 'Swordman': False}",
+          "passed": true,
+          "result": {
+            "declaration": {
+              "All": true,
+              "Swordman": false
+            },
+            "projected": [
+              [
+                "All",
+                true
+              ],
+              [
+                "Swordman",
+                false
+              ]
+            ],
+            "omitted": [
+              [
+                "All",
+                true
+              ]
+            ]
+          }
+        },
+        {
+          "name": "permission-re-Classes-None",
+          "passed": true,
+          "result": {
+            "declaration": null,
+            "projected": [],
+            "omitted": [
+              [
+                "All",
+                true
+              ]
+            ]
+          }
+        },
+        {
+          "name": "permission-re-Classes-{}",
+          "passed": true,
+          "result": {
+            "declaration": {},
+            "projected": [],
+            "omitted": [
+              [
+                "All",
+                true
+              ]
+            ]
+          }
+        },
+        {
+          "name": "permission-re-Classes-{'All': False}",
+          "passed": true,
+          "result": {
+            "declaration": {
+              "All": false
+            },
+            "projected": [
+              [
+                "All",
+                false
+              ]
+            ],
+            "omitted": [
+              [
+                "All",
+                true
+              ]
+            ]
+          }
+        },
+        {
+          "name": "permission-re-Classes-{'All': True}",
+          "passed": true,
+          "result": {
+            "declaration": {
+              "All": true
+            },
+            "projected": [
+              [
+                "All",
+                true
+              ]
+            ],
+            "omitted": [
+              [
+                "All",
+                true
+              ]
+            ]
+          }
+        },
+        {
+          "name": "permission-re-Classes-{'All': True, 'Normal': False}",
+          "passed": true,
+          "result": {
+            "declaration": {
+              "All": true,
+              "Normal": false
+            },
+            "projected": [
+              [
+                "All",
+                true
+              ],
+              [
+                "Normal",
+                false
+              ]
+            ],
+            "omitted": [
+              [
+                "All",
+                true
+              ]
+            ]
+          }
+        },
+        {
+          "name": "invalid-permission-Jobs-False",
+          "passed": true,
+          "result": "Invalid or unsupported Jobs"
+        },
+        {
+          "name": "invalid-permission-Jobs-True",
+          "passed": true,
+          "result": "Invalid or unsupported Jobs"
+        },
+        {
+          "name": "invalid-permission-Jobs-0",
+          "passed": true,
+          "result": "Invalid or unsupported Jobs"
+        },
+        {
+          "name": "invalid-permission-Jobs-1",
+          "passed": true,
+          "result": "Invalid or unsupported Jobs"
+        },
+        {
+          "name": "invalid-permission-Jobs-All",
+          "passed": true,
+          "result": "Invalid or unsupported Jobs"
+        },
+        {
+          "name": "invalid-permission-Jobs-[]",
+          "passed": true,
+          "result": "Invalid or unsupported Jobs"
+        },
+        {
+          "name": "invalid-permission-Jobs-{'All': 1}",
+          "passed": true,
+          "result": "Invalid or unsupported Jobs"
+        },
+        {
+          "name": "invalid-permission-Jobs-{'All': None}",
+          "passed": true,
+          "result": "Invalid or unsupported Jobs"
+        },
+        {
+          "name": "invalid-permission-Jobs-{'Unknown': True}",
+          "passed": true,
+          "result": "Invalid or unsupported Jobs keys: ['Unknown']"
+        },
+        {
+          "name": "invalid-permission-Classes-False",
+          "passed": true,
+          "result": "Invalid or unsupported Classes"
+        },
+        {
+          "name": "invalid-permission-Classes-True",
+          "passed": true,
+          "result": "Invalid or unsupported Classes"
+        },
+        {
+          "name": "invalid-permission-Classes-0",
+          "passed": true,
+          "result": "Invalid or unsupported Classes"
+        },
+        {
+          "name": "invalid-permission-Classes-1",
+          "passed": true,
+          "result": "Invalid or unsupported Classes"
+        },
+        {
+          "name": "invalid-permission-Classes-All",
+          "passed": true,
+          "result": "Invalid or unsupported Classes"
+        },
+        {
+          "name": "invalid-permission-Classes-[]",
+          "passed": true,
+          "result": "Invalid or unsupported Classes"
+        },
+        {
+          "name": "invalid-permission-Classes-{'All': 1}",
+          "passed": true,
+          "result": "Invalid or unsupported Classes"
+        },
+        {
+          "name": "invalid-permission-Classes-{'All': None}",
+          "passed": true,
+          "result": "Invalid or unsupported Classes"
+        },
+        {
+          "name": "invalid-permission-Classes-{'Unknown': True}",
+          "passed": true,
+          "result": "Invalid or unsupported Classes keys: ['Unknown']"
+        },
+        {
+          "name": "invalid-level-db-14",
+          "passed": true,
+          "result": "Invalid or unsupported skill MaxLevel"
+        },
+        {
+          "name": "invalid-level-db-20",
+          "passed": true,
+          "result": "Invalid or unsupported skill MaxLevel"
+        },
+        {
+          "name": "invalid-level-db-65535",
+          "passed": true,
+          "result": "Invalid or unsupported skill MaxLevel"
+        },
+        {
+          "name": "invalid-level-db--1",
+          "passed": true,
+          "result": "Invalid or unsupported skill MaxLevel"
+        },
+        {
+          "name": "invalid-level-db-True",
+          "passed": true,
+          "result": "Invalid or unsupported skill MaxLevel"
+        },
+        {
+          "name": "invalid-level-db-13.0",
+          "passed": true,
+          "result": "Invalid or unsupported skill MaxLevel"
+        },
+        {
+          "name": "invalid-level-db-'13'",
+          "passed": true,
+          "result": "Invalid or unsupported skill MaxLevel"
+        },
+        {
+          "name": "invalid-level-db-None",
+          "passed": true,
+          "result": "Invalid or unsupported skill MaxLevel"
+        },
+        {
+          "name": "invalid-level-tree-14",
+          "passed": true,
+          "result": "Invalid or unsupported tree MaxLevel"
+        },
+        {
+          "name": "invalid-level-tree-20",
+          "passed": true,
+          "result": "Invalid or unsupported tree MaxLevel"
+        },
+        {
+          "name": "invalid-level-tree-65535",
+          "passed": true,
+          "result": "Invalid or unsupported tree MaxLevel"
+        },
+        {
+          "name": "invalid-level-tree--1",
+          "passed": true,
+          "result": "Invalid or unsupported tree MaxLevel"
+        },
+        {
+          "name": "invalid-level-tree-True",
+          "passed": true,
+          "result": "Invalid or unsupported tree MaxLevel"
+        },
+        {
+          "name": "invalid-level-tree-13.0",
+          "passed": true,
+          "result": "Invalid or unsupported tree MaxLevel"
+        },
+        {
+          "name": "invalid-level-tree-'13'",
+          "passed": true,
+          "result": "Invalid or unsupported tree MaxLevel"
+        },
+        {
+          "name": "invalid-level-tree-None",
+          "passed": true,
+          "result": "Invalid or unsupported tree MaxLevel"
+        },
+        {
+          "name": "invalid-level-requires-14",
+          "passed": true,
+          "result": "Invalid or unsupported prerequisite Level"
+        },
+        {
+          "name": "invalid-level-requires-20",
+          "passed": true,
+          "result": "Invalid or unsupported prerequisite Level"
+        },
+        {
+          "name": "invalid-level-requires-65535",
+          "passed": true,
+          "result": "Invalid or unsupported prerequisite Level"
+        },
+        {
+          "name": "invalid-level-requires--1",
+          "passed": true,
+          "result": "Invalid or unsupported prerequisite Level"
+        },
+        {
+          "name": "invalid-level-requires-True",
+          "passed": true,
+          "result": "Invalid or unsupported prerequisite Level"
+        },
+        {
+          "name": "invalid-level-requires-13.0",
+          "passed": true,
+          "result": "Invalid or unsupported prerequisite Level"
+        },
+        {
+          "name": "invalid-level-requires-'13'",
+          "passed": true,
+          "result": "Invalid or unsupported prerequisite Level"
+        },
+        {
+          "name": "invalid-level-requires-None",
+          "passed": true,
+          "result": "Invalid or unsupported prerequisite Level"
+        },
+        {
+          "name": "legal-native-boundary13",
+          "passed": true,
+          "result": {
+            "tree13_capped": 10,
+            "requirement13_capped": [
+              [
+                "A",
+                9
+              ]
+            ],
+            "db13_retained": 13
+          }
+        },
+        {
+          "name": "db-zero-rejected",
+          "passed": true,
+          "result": "Invalid or unsupported skill MaxLevel"
+        },
+        {
+          "name": "collision-Id-PetEgg-False-False",
+          "passed": true,
+          "result": "Invalid or unsupported duplicate item Id or AegisName"
+        },
+        {
+          "name": "collision-Id-PetEgg-False-True",
+          "passed": true,
+          "result": "Invalid or unsupported duplicate item Id or AegisName"
+        },
+        {
+          "name": "collision-Id-PetEgg-True-False",
+          "passed": true,
+          "result": "Invalid or unsupported duplicate item Id or AegisName"
+        },
+        {
+          "name": "collision-Id-PetEgg-True-True",
+          "passed": true,
+          "result": "Invalid or unsupported duplicate item Id or AegisName"
+        },
+        {
+          "name": "collision-Id-PetArmor-False-False",
+          "passed": true,
+          "result": "Invalid or unsupported duplicate item Id or AegisName"
+        },
+        {
+          "name": "collision-Id-PetArmor-False-True",
+          "passed": true,
+          "result": "Invalid or unsupported duplicate item Id or AegisName"
+        },
+        {
+          "name": "collision-Id-PetArmor-True-False",
+          "passed": true,
+          "result": "Invalid or unsupported duplicate item Id or AegisName"
+        },
+        {
+          "name": "collision-Id-PetArmor-True-True",
+          "passed": true,
+          "result": "Invalid or unsupported duplicate item Id or AegisName"
+        },
+        {
+          "name": "collision-Id-Trade-False-False",
+          "passed": true,
+          "result": "Invalid or unsupported duplicate item Id or AegisName"
+        },
+        {
+          "name": "collision-Id-Trade-False-True",
+          "passed": true,
+          "result": "Invalid or unsupported duplicate item Id or AegisName"
+        },
+        {
+          "name": "collision-Id-Trade-True-False",
+          "passed": true,
+          "result": "Invalid or unsupported duplicate item Id or AegisName"
+        },
+        {
+          "name": "collision-Id-Trade-True-True",
+          "passed": true,
+          "result": "Invalid or unsupported duplicate item Id or AegisName"
+        },
+        {
+          "name": "collision-AegisName-PetEgg-False-False",
+          "passed": true,
+          "result": "Invalid or unsupported duplicate item Id or AegisName"
+        },
+        {
+          "name": "collision-AegisName-PetEgg-False-True",
+          "passed": true,
+          "result": "Invalid or unsupported duplicate item Id or AegisName"
+        },
+        {
+          "name": "collision-AegisName-PetEgg-True-False",
+          "passed": true,
+          "result": "Invalid or unsupported duplicate item Id or AegisName"
+        },
+        {
+          "name": "collision-AegisName-PetEgg-True-True",
+          "passed": true,
+          "result": "Invalid or unsupported duplicate item Id or AegisName"
+        },
+        {
+          "name": "collision-AegisName-PetArmor-False-False",
+          "passed": true,
+          "result": "Invalid or unsupported duplicate item Id or AegisName"
+        },
+        {
+          "name": "collision-AegisName-PetArmor-False-True",
+          "passed": true,
+          "result": "Invalid or unsupported duplicate item Id or AegisName"
+        },
+        {
+          "name": "collision-AegisName-PetArmor-True-False",
+          "passed": true,
+          "result": "Invalid or unsupported duplicate item Id or AegisName"
+        },
+        {
+          "name": "collision-AegisName-PetArmor-True-True",
+          "passed": true,
+          "result": "Invalid or unsupported duplicate item Id or AegisName"
+        },
+        {
+          "name": "collision-AegisName-Trade-False-False",
+          "passed": true,
+          "result": "Invalid or unsupported duplicate item Id or AegisName"
+        },
+        {
+          "name": "collision-AegisName-Trade-False-True",
+          "passed": true,
+          "result": "Invalid or unsupported duplicate item Id or AegisName"
+        },
+        {
+          "name": "collision-AegisName-Trade-True-False",
+          "passed": true,
+          "result": "Invalid or unsupported duplicate item Id or AegisName"
+        },
+        {
+          "name": "collision-AegisName-Trade-True-True",
+          "passed": true,
+          "result": "Invalid or unsupported duplicate item Id or AegisName"
+        },
+        {
+          "name": "excluded-invalid-identity-PetEgg-Id-None",
+          "passed": true,
+          "result": "Invalid or unsupported Id"
+        },
+        {
+          "name": "excluded-invalid-identity-PetEgg-Id-True",
+          "passed": true,
+          "result": "Invalid or unsupported Id"
+        },
+        {
+          "name": "excluded-invalid-identity-PetEgg-Id-''",
+          "passed": true,
+          "result": "Invalid or unsupported Id"
+        },
+        {
+          "name": "excluded-invalid-identity-PetEgg-AegisName-None",
+          "passed": true,
+          "result": "Invalid or unsupported AegisName"
+        },
+        {
+          "name": "excluded-invalid-identity-PetEgg-AegisName-True",
+          "passed": true,
+          "result": "Invalid or unsupported AegisName"
+        },
+        {
+          "name": "excluded-invalid-identity-PetEgg-AegisName-''",
+          "passed": true,
+          "result": "Invalid or unsupported AegisName"
+        },
+        {
+          "name": "excluded-invalid-identity-Trade-Id-None",
+          "passed": true,
+          "result": "Invalid or unsupported Id"
+        },
+        {
+          "name": "excluded-invalid-identity-Trade-Id-True",
+          "passed": true,
+          "result": "Invalid or unsupported Id"
+        },
+        {
+          "name": "excluded-invalid-identity-Trade-Id-''",
+          "passed": true,
+          "result": "Invalid or unsupported Id"
+        },
+        {
+          "name": "excluded-invalid-identity-Trade-AegisName-None",
+          "passed": true,
+          "result": "Invalid or unsupported AegisName"
+        },
+        {
+          "name": "excluded-invalid-identity-Trade-AegisName-True",
+          "passed": true,
+          "result": "Invalid or unsupported AegisName"
+        },
+        {
+          "name": "excluded-invalid-identity-Trade-AegisName-''",
+          "passed": true,
+          "result": "Invalid or unsupported AegisName"
+        },
+        {
+          "name": "direct-parent-multiple-precedence-own-override-exclude-zero",
+          "passed": true,
+          "result": {
+            "Swordman": {
+              "A": 9,
+              "B": 2,
+              "C": 3,
+              "D": 4
+            },
+            "Knight": {
+              "B": 7,
+              "E": 10
+            },
+            "Crusader": {
+              "B": 6,
+              "D": 4
+            },
+            "Paladin": {}
+          }
+        },
+        {
+          "name": "scripts-opaque-npc-prices-unknown",
+          "passed": true,
+          "result": {
+            "marker_absent": true,
+            "price_tier": null,
+            "unknown_effects": [
+              "Script",
+              "EquipScript",
+              "UnEquipScript",
+              "combo effects not loaded"
+            ]
+          }
+        },
+        {
+          "name": "pinned-complete-raw-projection-pre-re",
+          "passed": true,
+          "result": {
+            "counts": {
+              "equipment_rows": 2017,
+              "player_equipment": 1923,
+              "skill_rows": 1228,
+              "class_trees": 77
+            },
+            "checked_item_digests": 1923,
+            "checked_class_trees": 77,
+            "checked_class_skill_digests": 2121,
+            "projection_sha256": "f734cf3f2e37bba8b295bc85221810932d035143c93cd519825f1270264e1d50",
+            "projection_matches_fix_after": true,
+            "changes_from_hash_verified_before": [],
+            "skill_projections_unchanged": true,
+            "ambiguous_names": 299,
+            "excluded_items": [],
+            "all_projected_prices_unknown": true
+          }
+        },
+        {
+          "name": "pinned-complete-raw-projection-re",
+          "passed": true,
+          "result": {
+            "counts": {
+              "equipment_rows": 12982,
+              "player_equipment": 12787,
+              "skill_rows": 1635,
+              "class_trees": 175
+            },
+            "checked_item_digests": 12787,
+            "checked_class_trees": 175,
+            "checked_class_skill_digests": 8122,
+            "projection_sha256": "6270a130c4b9b539f457fbbbe75e358aaa8022e9ea9a6dd3ab8c4396047f0cd5",
+            "projection_matches_fix_after": true,
+            "changes_from_hash_verified_before": [
+              {
+                "item_id": 410447,
+                "fields": [
+                  "digest_text",
+                  "jobs"
+                ]
+              },
+              {
+                "item_id": 410448,
+                "fields": [
+                  "digest_text",
+                  "jobs"
+                ]
+              }
+            ],
+            "skill_projections_unchanged": true,
+            "ambiguous_names": 794,
+            "excluded_items": [
+              [
+                400276,
+                "duplicate Trade field"
+              ]
+            ],
+            "all_projected_prices_unknown": true
+          }
+        }
+      ]
+    },
+    "static_checks": [
+      {
+        "command": [
+          "uv",
+          "run",
+          "--offline",
+          "--no-sync",
+          "ruff",
+          "check",
+          "--no-cache",
+          "src/robots/adapters/mechanics_yaml.py",
+          "src/robots/domain/build.py",
+          "src/robots/app/builds.py",
+          "tests/test_mechanics_yaml.py",
+          "tests/test_mechanics_review_regressions.py",
+          "tests/test_build_catalog_integration.py"
+        ],
+        "exit_code": 0,
+        "stdout": "All checks passed!\n",
+        "stderr": ""
+      },
+      {
+        "command": [
+          "uv",
+          "run",
+          "--offline",
+          "--no-sync",
+          "black",
+          "--check",
+          "src/robots/adapters/mechanics_yaml.py",
+          "src/robots/domain/build.py",
+          "src/robots/app/builds.py",
+          "tests/test_mechanics_yaml.py",
+          "tests/test_mechanics_review_regressions.py",
+          "tests/test_build_catalog_integration.py"
+        ],
+        "exit_code": 0,
+        "stdout": "",
+        "stderr": "All done! \u2728 \ud83c\udf70 \u2728\n6 files would be left unchanged.\n"
+      },
+      {
+        "command": [
+          "uv",
+          "run",
+          "--offline",
+          "--no-sync",
+          "mypy",
+          "--cache-dir",
+          "/home/otto/.hermes/cache/scratch/mechanics-first-independent/mypy-cache",
+          "src/robots/adapters/mechanics_yaml.py",
+          "src/robots/domain/build.py",
+          "src/robots/app/builds.py",
+          "tests/test_mechanics_yaml.py",
+          "tests/test_mechanics_review_regressions.py",
+          "tests/test_build_catalog_integration.py"
+        ],
+        "exit_code": 0,
+        "stdout": "Success: no issues found in 6 source files\n",
+        "stderr": ""
+      },
+      {
+        "command": [
+          "uv",
+          "run",
+          "--offline",
+          "--no-sync",
+          "bandit",
+          "-q",
+          "-c",
+          "pyproject.toml",
+          "src/robots/adapters/mechanics_yaml.py"
+        ],
+        "exit_code": 0,
+        "stdout": "",
+        "stderr": ""
+      }
+    ],
+    "production_adapter_security_review": {
+      "dangerous_ast_calls": [],
+      "manual_review": "SafeLoader with duplicate projected-key rejection and explicit opaque Trade quarantine; no script execution, credential literals, SQL, network, subprocess, shell execution, pickle, eval or exec in production adapter."
+    },
+    "scratch_artifacts": [
+      "/home/otto/.hermes/cache/scratch/mechanics-first-independent/probe.py",
+      "/home/otto/.hermes/cache/scratch/mechanics-first-independent/state.json",
+      "/home/otto/.hermes/cache/scratch/mechanics-first-independent/probes.json",
+      "/home/otto/.hermes/cache/scratch/mechanics-first-independent/tests.json",
+      "/home/otto/.hermes/cache/scratch/mechanics-first-independent/scoped-tests.xml",
+      "/home/otto/.hermes/cache/scratch/mechanics-first-independent/generate_report.py"
+    ],
+    "before_projection_method": "Independent regeneration matches fix-after complete projection hashes; hash-verified archived before projections compare every item field and every class skill digest. Pre-re unchanged; Renewal changes exactly jobs/digest_text of 410447/410448; all skill projections and identities unchanged."
+  },
+  "preserved_semantics": [
+    "Direct parents contribute their own Tree only; listed later parent wins; own entries override; Exclude is retained locally but not propagated; MaxLevel zero removes inherited skill; Requires Level zero removes prior prerequisite.",
+    "Independent combined probe covers multi-parent precedence, non-transitivity, own override, exclusion and zero removals. Complete real catalog projections also match independent raw source expectations.",
+    "Declared BaseLevel/JobLevel remain metadata, not computed learn levels or job-db caps.",
+    "All retained projected market price_tier values remain None; NPC Buy/Sell do not provide market prices; actual consumers refuse unknown-price affordability.",
+    "Scripts/EquipScript/UnEquipScript and combo effects remain opaque unknowns and are never evaluated; scratch sentinel remains absent.",
+    "Raw Jobs/Classes flags, gender and exact locations remain declarations, not class/equipment compatibility claims; ambiguous display-name lookup remains fail closed.",
+    "Explicit pre-re/re source separation, selected base files only, no Footer/custom import merging or live effects."
+  ],
+  "suggestions": [
+    "Existing nonblocking limits remain: standalone unknown Job constants are not comprehensively native-validated; same-directory leaf symlinks are not universally rejected; native defaultGender normalization is not modeled. Keep current no-compatibility/no-complete-equivalence labels."
+  ],
+  "limits": [
+    "Approval is only for the four exact original review IDs and stated metadata/consumer preservation, not formulas, class compatibility, executable build legality, complete native parser equivalence or production readiness.",
+    "No full build validation, native compilation, full task check, Rust gates or other reviewers scopes certified.",
+    "No combat/casting/resource formulas, card/refine effects, job-db acquisition caps, script interpretation, custom imports or server configuration merged.",
+    "No live game/server/SQL/provider/shared-service operations, network/dependency downloads, credentials, staging, commits or pushes.",
+    "Offline Nix develop and existing pinned environment only; all probe fixtures, caches and evidence are under the configured scratch root; no large synthetic fixtures.",
+    "Before/after fingerprints prove equality at the observed boundaries, not an exclusive filesystem lock or absence of unobserved transient writes.",
+    "Full original and fix reports were parsed locally and reviewed via filtered summaries, including historical RED/GREEN and transient mypy failure; historical results are context, not this reviewers independent test execution."
+  ],
+  "live_integration": false,
+  "production_or_tests_edited": false,
+  "repository_files_created": [
+    "run/reviews/mechanics-first-fix-review.json"
+  ],
+  "summary": "Independent scoped approval: all four reviewed defects resolved; 73 scoped tests, 108 independent probes and scoped static checks pass; both pinned catalog projections verified with only the intended two Renewal Jobs corrections; 29 fingerprints stable."
+}

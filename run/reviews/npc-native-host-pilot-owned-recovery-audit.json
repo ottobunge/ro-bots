@@ -1,0 +1,613 @@
+{
+  "schema": "npc-native-owned-recovery-audit/v1",
+  "status": "READ_ONLY_AUDIT_COMPLETE_NORMAL_LIFECYCLE_RECOVERY_PROPOSED_NOT_AUTHORIZED_OR_EXECUTED",
+  "created_at": "2026-10-11T08:44:10.528429+00:00",
+  "decision": {
+    "supported_path": "One separately scoped, guarded, graceful stop/start of the exact owned map, char, login containers; keep MariaDB running and preserve ro-bots-world-test. Character-server normal finalize AND next initialize issue the existing all-character offline initialization, removing stale SQL online state independently of the missing map auth node. Restart login additionally clears the in-memory account/auth caches.",
+    "server_patch_required_for_this_one_off_recovery": false,
+    "waiting_is_guaranteed_recovery": false,
+    "map_only_cycle_guarantees_immediate_SQL_clear": false,
+    "qualification": "Source-backed expectation, not a performed recovery or current flag-cleared receipt. SQL failure, incomplete initialization, unknown players or changed runtime inputs deny success. Native startup defect and recurrence prevention remain separate.",
+    "authorization_blocker": "Current fixed pilot explicitly excludes service changes and its activation remains revoked. Parent must separately scope and authorize controlled owned-world recovery after fresh locked admission; this report supplies no lifecycle permission."
+  },
+  "constraints": {
+    "native_sessions": 0,
+    "inference_calls": 0,
+    "SQL_queries": 0,
+    "SQL_writes_by_auditor": 0,
+    "service_lifecycle_changes": 0,
+    "private_actual_credential_reads": 0,
+    "Git_operations": 0,
+    "dependencies_changed": 0,
+    "candidate_probe_read_or_modified": false,
+    "existing_source_files_modified": [],
+    "all_goals": "OPEN",
+    "native_activation": "REVOKED_FAILED_STARTUP_AWAITING_OFFLINE_CONFIRMATION"
+  },
+  "scope_bindings": {
+    "diagnosis": {
+      "path": "/home/otto/dev/ro-bots/run/reviews/npc-native-host-pilot-attempt1-diagnosis.json",
+      "sha256": "08313f84779c26a4890b62805efbc3e854690c011e95d9f71d5ec99f33fb3d4e"
+    },
+    "investigation_scope": {
+      "path": "/home/otto/dev/ro-bots/run/reviews/npc-native-host-pilot-attempt1-investigation-scope.json",
+      "sha256": "152927927490a6a2ea29ce97daf76242a6a91b131edb042009b11251f5b91def"
+    },
+    "original_failure_preserved": "Attempt 1 ended after 2.432619965984486 seconds before any model or NPC action; original failed cleanup remains failed.",
+    "explicit_exclusion": "/home/otto/.hermes/cache/scratch/npc-native-host-pilot/probe.py"
+  },
+  "source_authority": {
+    "revision": "e985006171d2eb320ee512a653f4c83aea3d81b6",
+    "variant": "callback-qualified",
+    "qualified_source_root": "/home/otto/dev/ro-bots/run/public-source/callback-qualified-e985006171d2",
+    "configured_variant_root": "/home/otto/.hermes/cache/scratch/callback-package-hut2_cuz/configured-variant",
+    "installed_package": "/nix/store/0w1nfsmj8gaipcidhgx2nkg4axqxcbbr-rathena-playable-callback-qualified-20180704-e985006171d2-callback-qualified",
+    "installed_configured_manifest_sha256": "1fd585266bbcf2268b2cec9e901100fad68b904a8b2a8c049c5869c56af43e12",
+    "qualified_closure_sha256": "08a7056eab5f58d83e8f00af4f3371d56551c3033b9c377d5fd3860c3744d138",
+    "profile": {
+      "common": {
+        "packetver": 20180704,
+        "main": 20180704,
+        "renewal": false,
+        "re": false,
+        "zero": false,
+        "obfuscation": false,
+        "pincode": true
+      },
+      "login": {
+        "packetver": 20180704,
+        "main": 20180704,
+        "renewal": false,
+        "re": false,
+        "zero": false,
+        "obfuscation": false,
+        "pincode": true
+      },
+      "char": {
+        "packetver": 20180704,
+        "main": 20180704,
+        "renewal": false,
+        "re": false,
+        "zero": false,
+        "obfuscation": false,
+        "pincode": true
+      },
+      "map": {
+        "packetver": 20180704,
+        "main": 20180704,
+        "renewal": false,
+        "re": false,
+        "zero": false,
+        "obfuscation": false,
+        "pincode": true
+      }
+    },
+    "profile_manifest_sha256": "ee2af351afee975ad4145d0e38412dfac0779cd123435f318f8c876349bc0148",
+    "role_flags_sha256": {
+      "common": "954039d16213ba5f52a2e849365c60052a2c656a0d3cf67fa69cf6e9fc4130e3",
+      "login": "b13d56727d6a04815135309833ff4d3df85f3461140867329c1910c84511b0b0",
+      "char": "965fb44700559b0480a2fc7f40be29045a3436f1e6fff3c795cf935409a0085e",
+      "map": "7986f2fdeb11e55ee707ac27eb4701a64b90361ce1636bb728025fb92a99291d"
+    },
+    "official_char_source_binding": {
+      "exit": 0,
+      "sha256": "141dd411c11ec9663d49e1274203ba28bdf3761cce0f98782a8cfd37ee34cdff",
+      "matches_qualified": true
+    },
+    "targeted_source_checks": {
+      "protected_freeze_entries": 30,
+      "protected_freeze_mismatches": [],
+      "audited_qualified_source_files": 10,
+      "manifest_mismatches": [],
+      "ELF_matches": 3,
+      "candidate_probe_inspected": false,
+      "candidate_probe_frozen": false
+    },
+    "source_refs": [
+      {
+        "ref": "src/map/map.cpp:2231-2238; src/map/chrif.cpp:136-165,743-769",
+        "finding": "Inactive map_quit deletes the non-logout auth node and returns; the auth timeout only visits remaining nodes, so a 60-second wait is not a guaranteed cure."
+      },
+      {
+        "ref": "src/map/clif.cpp:25684-25705",
+        "finding": "Pinned inactive EOF branch uses the Player AID/CID logged-off template, distinguishing the source route without claiming an interserver packet trace."
+      },
+      {
+        "ref": "src/map/map.cpp:2324-2330,5009-5040,5316-5325; src/map/chrif.cpp:1457-1475",
+        "finding": "Active map_quit constructs the normal quit save. Map shutdown kicks actual users and finalize attempts map-specific offline reset plus FIFO flush while char remains alive. An orphan absent from map memory is not proven cleared by this alone."
+      },
+      {
+        "ref": "src/char/char_mapif.cpp:903-906; src/char/char.cpp:222-255",
+        "finding": "Map-specific reset kicks character-cache entries; known map entries are kicked, not unconditionally SQL-cleared. Character all-offline SQL reset instead updates every row of configured char table and every guild connect_member counter."
+      },
+      {
+        "ref": "src/char/char.cpp:1249-1261,3151-3177,3180-3187,3211-3214",
+        "finding": "Character initialize calls inter_init_sql then char_mmo_sql_init -> char_set_all_offline_sql. Normal finalize also calls all-offline SQL and clears char, online and auth caches before SQL free."
+      },
+      {
+        "ref": "src/common/core.cpp:115-126,149-151,379-403,473-476; src/common/core.hpp:95-101",
+        "finding": "SIGTERM transitions Core to STOPPING and invokes role shutdown; main loop exits into role finalize. Exact configured Core bytes match the installed source manifest; normal SQL reset is not excluded by the compiled MAIN/pre-re profile."
+      },
+      {
+        "ref": "src/login/login.cpp:804-851; src/login/loginchrif.cpp:866-881,902-915; src/char/char_logif.cpp:870-891",
+        "finding": "Login finalize clears in-memory online/auth maps. Normal char disconnection marks its login cache users offline. Restarting the same login process additionally discards lingering login cache state; no nonexistent login.online column is assumed."
+      }
+    ],
+    "file_hashes": {
+      "src/char/char.cpp": {
+        "qualified_sha256": "141dd411c11ec9663d49e1274203ba28bdf3761cce0f98782a8cfd37ee34cdff",
+        "configured_sha256": "141dd411c11ec9663d49e1274203ba28bdf3761cce0f98782a8cfd37ee34cdff",
+        "installed_manifest_sha256": "141dd411c11ec9663d49e1274203ba28bdf3761cce0f98782a8cfd37ee34cdff"
+      },
+      "src/map/map.cpp": {
+        "qualified_sha256": "9629e6b751ca3fd9d160e48c0beb80bf7bbe0c359fa7ecdb46698b074e6c1113",
+        "configured_sha256": "9629e6b751ca3fd9d160e48c0beb80bf7bbe0c359fa7ecdb46698b074e6c1113",
+        "installed_manifest_sha256": "9629e6b751ca3fd9d160e48c0beb80bf7bbe0c359fa7ecdb46698b074e6c1113"
+      },
+      "src/map/chrif.cpp": {
+        "qualified_sha256": "0bd37260959702dcad627052069cdb18712230f15fa6aabaf893b5dc88334f19",
+        "configured_sha256": "0bd37260959702dcad627052069cdb18712230f15fa6aabaf893b5dc88334f19",
+        "installed_manifest_sha256": "0bd37260959702dcad627052069cdb18712230f15fa6aabaf893b5dc88334f19"
+      },
+      "src/login/login.cpp": {
+        "qualified_sha256": "b4b6248b8d504bf8772ab5ab583ed81980855b4295717c06eac34ca36b08baef",
+        "configured_sha256": "b4b6248b8d504bf8772ab5ab583ed81980855b4295717c06eac34ca36b08baef",
+        "installed_manifest_sha256": "b4b6248b8d504bf8772ab5ab583ed81980855b4295717c06eac34ca36b08baef"
+      },
+      "src/login/loginchrif.cpp": {
+        "qualified_sha256": "8455bbd84fcbce829608d631ac204599d22d44ec31a9d87be9b23845acb1ef99",
+        "configured_sha256": "8455bbd84fcbce829608d631ac204599d22d44ec31a9d87be9b23845acb1ef99",
+        "installed_manifest_sha256": "8455bbd84fcbce829608d631ac204599d22d44ec31a9d87be9b23845acb1ef99"
+      },
+      "src/char/char_logif.cpp": {
+        "qualified_sha256": "04725ee1160d7124c6094e0f760639dfc4675e7303712eeac748e622fba6829b",
+        "configured_sha256": "04725ee1160d7124c6094e0f760639dfc4675e7303712eeac748e622fba6829b",
+        "installed_manifest_sha256": "04725ee1160d7124c6094e0f760639dfc4675e7303712eeac748e622fba6829b"
+      },
+      "src/char/char_mapif.cpp": {
+        "qualified_sha256": "3000a98802978df0d6bed0b668d329cac8c49d87a52131b4d148b76dc6fd5d6d",
+        "configured_sha256": "3000a98802978df0d6bed0b668d329cac8c49d87a52131b4d148b76dc6fd5d6d",
+        "installed_manifest_sha256": "3000a98802978df0d6bed0b668d329cac8c49d87a52131b4d148b76dc6fd5d6d"
+      },
+      "src/common/core.cpp": {
+        "qualified_sha256": "765d822dedc1c2fe5a92f22393690b80bf3e47253c5df4589d08386440e5700c",
+        "configured_sha256": "765d822dedc1c2fe5a92f22393690b80bf3e47253c5df4589d08386440e5700c",
+        "installed_manifest_sha256": "765d822dedc1c2fe5a92f22393690b80bf3e47253c5df4589d08386440e5700c"
+      },
+      "src/common/core.hpp": {
+        "qualified_sha256": "c3283a1acde109cdf697c343671018a3d6bdcd7ffb3db72919c5016f83831348",
+        "configured_sha256": "c3283a1acde109cdf697c343671018a3d6bdcd7ffb3db72919c5016f83831348",
+        "installed_manifest_sha256": "c3283a1acde109cdf697c343671018a3d6bdcd7ffb3db72919c5016f83831348"
+      },
+      "src/map/clif.cpp": {
+        "qualified_sha256": "ace16f15be3b60f730522d620b73a68a9f2cc384016aadce9c985888aea9a1ac",
+        "configured_sha256": "ace16f15be3b60f730522d620b73a68a9f2cc384016aadce9c985888aea9a1ac",
+        "installed_manifest_sha256": "ace16f15be3b60f730522d620b73a68a9f2cc384016aadce9c985888aea9a1ac"
+      }
+    },
+    "running_public_ELFs": [
+      {
+        "role": "login",
+        "container_id": "d8f4183c03d4c6fdd618b20be8574069e29b884543fdd6ba5be716067811aa5b",
+        "sha256": "6232857ed0134c01a2c92d75c3c5f2e0a89eab408ee59592981e3f3e80b79c41",
+        "matches_qualified_image_receipt": true,
+        "copied_public_path": "/libexec/rathena/login-server"
+      },
+      {
+        "role": "char",
+        "container_id": "a9c42644d6db7bbfe40b50657da05afd89237b29628625be1c35a7b0c294a3d9",
+        "sha256": "2179821de34dac0eec9bb024ce835d25b1b259ccc6c595e6febf27f484a6354e",
+        "matches_qualified_image_receipt": true,
+        "copied_public_path": "/libexec/rathena/char-server"
+      },
+      {
+        "role": "map",
+        "container_id": "ced219e3f4a12a4e12d5c4599a2b9a4b44191324671c44993848c5bed74b077c",
+        "sha256": "3b8819ca182e8defeb65407eeb982bdcee65a368791ecab529020f3bd261b54a",
+        "matches_qualified_image_receipt": true,
+        "copied_public_path": "/libexec/rathena/map-server"
+      }
+    ],
+    "proof_scope": "Targeted lifecycle source audit, not an all-path compiler proof or a rebuilt image. Existing qualified image/profile/build receipts are retained and actual deployed public ELF bytes now match those receipts."
+  },
+  "fresh_runtime": {
+    "metadata": {
+      "observed_at": "2026-10-11T08:38:26.118562+00:00",
+      "owned_or_volume_users": [
+        {
+          "id": "71715cf83bb3f5104c600dbeb2cdd3b0be162a9c3a85cfbb228fcebb10326f50",
+          "name": "/ro-bots-test-mariadb-1",
+          "image": "sha256:ab3dff582d246358b6f6a1f6212f29ac64609fad883eb3dcfb0a89f6f7d0700e",
+          "running": true,
+          "status": "running",
+          "restart_count": 0,
+          "started_at": "2026-10-08T15:08:26.958040263Z",
+          "pid": 38200,
+          "labels": {
+            "com.docker.compose.container-number": "1",
+            "com.docker.compose.project": "ro-bots-test",
+            "com.docker.compose.service": "mariadb"
+          },
+          "volume_mounts": [
+            {
+              "Type": "volume",
+              "Name": "ro-bots-world-test",
+              "Source": "/home/otto/.local/share/containers/storage/volumes/ro-bots-world-test/_data",
+              "Destination": "/var/lib/ro-bots",
+              "RW": true
+            },
+            {
+              "Type": "volume",
+              "Name": "ro-bots-world-test",
+              "Source": "/home/otto/.local/share/containers/storage/volumes/ro-bots-world-test/_data",
+              "Destination": "/docker-entrypoint-initdb.d",
+              "RW": false
+            },
+            {
+              "Type": "volume",
+              "Name": "ro-bots-world-test",
+              "Source": "/home/otto/.local/share/containers/storage/volumes/ro-bots-world-test/_data",
+              "Destination": "/var/lib/mysql",
+              "RW": true
+            }
+          ],
+          "stop_signal": "15",
+          "stop_timeout": 10,
+          "path": "docker-entrypoint.sh"
+        },
+        {
+          "id": "a9c42644d6db7bbfe40b50657da05afd89237b29628625be1c35a7b0c294a3d9",
+          "name": "/ro-bots-test-rathena-char-1",
+          "image": "sha256:d6aa8e108909e6c0ab6f18bedf1cd8c34dc11d2194f7ca65322d46a331a6a469",
+          "running": true,
+          "status": "running",
+          "restart_count": 0,
+          "started_at": "2026-10-08T15:08:31.32507112Z",
+          "pid": 38610,
+          "labels": {
+            "com.docker.compose.container-number": "1",
+            "com.docker.compose.project": "ro-bots-test",
+            "com.docker.compose.service": "rathena-char"
+          },
+          "volume_mounts": [
+            {
+              "Type": "volume",
+              "Name": "ro-bots-world-test",
+              "Source": "/home/otto/.local/share/containers/storage/volumes/ro-bots-world-test/_data",
+              "Destination": "/world",
+              "RW": true
+            }
+          ],
+          "stop_signal": "15",
+          "stop_timeout": 10,
+          "path": "/libexec/rathena/char-server"
+        },
+        {
+          "id": "d8f4183c03d4c6fdd618b20be8574069e29b884543fdd6ba5be716067811aa5b",
+          "name": "/ro-bots-test-rathena-login-1",
+          "image": "sha256:d6aa8e108909e6c0ab6f18bedf1cd8c34dc11d2194f7ca65322d46a331a6a469",
+          "running": true,
+          "status": "running",
+          "restart_count": 0,
+          "started_at": "2026-10-08T15:08:31.178482699Z",
+          "pid": 38491,
+          "labels": {
+            "com.docker.compose.container-number": "1",
+            "com.docker.compose.project": "ro-bots-test",
+            "com.docker.compose.service": "rathena-login"
+          },
+          "volume_mounts": [
+            {
+              "Type": "volume",
+              "Name": "ro-bots-world-test",
+              "Source": "/home/otto/.local/share/containers/storage/volumes/ro-bots-world-test/_data",
+              "Destination": "/world",
+              "RW": true
+            }
+          ],
+          "stop_signal": "15",
+          "stop_timeout": 10,
+          "path": "/libexec/rathena/login-server"
+        },
+        {
+          "id": "ced219e3f4a12a4e12d5c4599a2b9a4b44191324671c44993848c5bed74b077c",
+          "name": "/ro-bots-test-rathena-map-1",
+          "image": "sha256:d6aa8e108909e6c0ab6f18bedf1cd8c34dc11d2194f7ca65322d46a331a6a469",
+          "running": true,
+          "status": "running",
+          "restart_count": 0,
+          "started_at": "2026-10-08T15:08:31.458528082Z",
+          "pid": 38720,
+          "labels": {
+            "com.docker.compose.container-number": "1",
+            "com.docker.compose.project": "ro-bots-test",
+            "com.docker.compose.service": "rathena-map"
+          },
+          "volume_mounts": [
+            {
+              "Type": "volume",
+              "Name": "ro-bots-world-test",
+              "Source": "/home/otto/.local/share/containers/storage/volumes/ro-bots-world-test/_data",
+              "Destination": "/world",
+              "RW": true
+            }
+          ],
+          "stop_signal": "15",
+          "stop_timeout": 10,
+          "path": "/libexec/rathena/map-server"
+        }
+      ],
+      "volume": {
+        "Name": "ro-bots-world-test",
+        "Driver": "local",
+        "Scope": "local",
+        "Labels": {
+          "com.docker.compose.project": "ro-bots-test",
+          "com.docker.compose.volume": "world-data"
+        }
+      },
+      "qualified_roles_match": [
+        {
+          "role": "login",
+          "matched": true
+        },
+        {
+          "role": "char",
+          "matched": true
+        },
+        {
+          "role": "map",
+          "matched": true
+        }
+      ],
+      "all_container_count": 11,
+      "foreign_volume_user_ids": []
+    },
+    "socket_observed_at": "2026-10-11T08:40:07.400335+00:00",
+    "socket_snapshot": [
+      {
+        "role": "rathena-char",
+        "pid": 38610,
+        "exec_basename": "char-server",
+        "established_connections": [
+          {
+            "local_port": 37602,
+            "remote_port": 16900,
+            "peer_is_owned_world_container": true
+          },
+          {
+            "local_port": 50426,
+            "remote_port": 3306,
+            "peer_is_owned_world_container": true
+          },
+          {
+            "local_port": 16121,
+            "remote_port": 42474,
+            "peer_is_owned_world_container": true
+          }
+        ],
+        "non_owned_peer_count": 0
+      },
+      {
+        "role": "rathena-login",
+        "pid": 38491,
+        "exec_basename": "login-server",
+        "established_connections": [
+          {
+            "local_port": 16900,
+            "remote_port": 37602,
+            "peer_is_owned_world_container": true
+          },
+          {
+            "local_port": 33320,
+            "remote_port": 3306,
+            "peer_is_owned_world_container": true
+          },
+          {
+            "local_port": 33334,
+            "remote_port": 3306,
+            "peer_is_owned_world_container": true
+          },
+          {
+            "local_port": 33350,
+            "remote_port": 3306,
+            "peer_is_owned_world_container": true
+          }
+        ],
+        "non_owned_peer_count": 0
+      },
+      {
+        "role": "rathena-map",
+        "pid": 38720,
+        "exec_basename": "map-server",
+        "established_connections": [
+          {
+            "local_port": 44280,
+            "remote_port": 3306,
+            "peer_is_owned_world_container": true
+          },
+          {
+            "local_port": 44282,
+            "remote_port": 3306,
+            "peer_is_owned_world_container": true
+          },
+          {
+            "local_port": 42474,
+            "remote_port": 16121,
+            "peer_is_owned_world_container": true
+          }
+        ],
+        "non_owned_peer_count": 0
+      }
+    ],
+    "local_native_pilot_process_count": 0,
+    "final_exact_container_identity_readback": [
+      {
+        "id": "71715cf83bb3f5104c600dbeb2cdd3b0be162a9c3a85cfbb228fcebb10326f50",
+        "image": "sha256:ab3dff582d246358b6f6a1f6212f29ac64609fad883eb3dcfb0a89f6f7d0700e",
+        "running": true,
+        "started_at": "2026-10-08T15:08:26.958040263Z",
+        "restart_count": 0
+      },
+      {
+        "id": "a9c42644d6db7bbfe40b50657da05afd89237b29628625be1c35a7b0c294a3d9",
+        "image": "sha256:d6aa8e108909e6c0ab6f18bedf1cd8c34dc11d2194f7ca65322d46a331a6a469",
+        "running": true,
+        "started_at": "2026-10-08T15:08:31.32507112Z",
+        "restart_count": 0
+      },
+      {
+        "id": "d8f4183c03d4c6fdd618b20be8574069e29b884543fdd6ba5be716067811aa5b",
+        "image": "sha256:d6aa8e108909e6c0ab6f18bedf1cd8c34dc11d2194f7ca65322d46a331a6a469",
+        "running": true,
+        "started_at": "2026-10-08T15:08:31.178482699Z",
+        "restart_count": 0
+      },
+      {
+        "id": "ced219e3f4a12a4e12d5c4599a2b9a4b44191324671c44993848c5bed74b077c",
+        "image": "sha256:d6aa8e108909e6c0ab6f18bedf1cd8c34dc11d2194f7ca65322d46a331a6a469",
+        "running": true,
+        "started_at": "2026-10-08T15:08:31.458528082Z",
+        "restart_count": 0
+      }
+    ],
+    "interpretation": "All four exact owned services still running, zero restarts; exactly four world-volume users, no foreign volume users. Snapshot established connections are only owned world SQL/interserver connections, no non-owned client peer. Logs are historical evidence, not authoritative current SQL or universal human exclusion.",
+    "attempt_window": [
+      {
+        "role": "login",
+        "events": []
+      },
+      {
+        "role": "char",
+        "events": []
+      },
+      {
+        "role": "map",
+        "events": [
+          {
+            "timestamp": "2026-10-11T10:12:35.415495000+02:00",
+            "fixture_index": 0,
+            "authenticated": true,
+            "inactive_logout": false,
+            "allowed_template_words": [
+              "logged",
+              "in"
+            ]
+          },
+          {
+            "timestamp": "2026-10-11T10:12:35.416247000+02:00",
+            "fixture_index": 0,
+            "authenticated": false,
+            "inactive_logout": false,
+            "allowed_template_words": [
+              "logged",
+              "off"
+            ]
+          }
+        ]
+      }
+    ],
+    "attempt_correlation_interpretation": "Fresh re-read matches fixture 0 logged-in at 2026-10-11 10:12:35.415495 CEST and Player logged-off template at 10:12:35.416247 CEST; branch classification comes from pinned source and original qualified diagnosis, not an invented literal inactive token in the logs."
+  },
+  "SQL_freshness": {
+    "new_SQL_readback_performed": false,
+    "historical_attribution_path": "/home/otto/dev/ro-bots/run/reviews/npc-native-host-pilot-attempt1-online-attribution.json",
+    "historical_values_only": {
+      "total_characters": 2,
+      "fixture_0": {
+        "account_id": 2000000,
+        "character_id": 150000,
+        "online": 1
+      },
+      "fixture_1": {
+        "account_id": 2000001,
+        "character_id": 150001,
+        "online": 0
+      },
+      "foreign_online": 0
+    },
+    "current_online_flag": "UNKNOWN_TO_THIS_AUDIT; do not reuse historical values as current admission or claim cleared"
+  },
+  "separately_authorized_admission_required": [
+    "Acquire and retain the fresh exclusive fixture/world lock; prohibit local/native clients, inference, cron/scheduler entrants and concurrent world writers throughout recovery and readback.",
+    "Fresh unchanged approved SELECT-only ownership helper must privately bind exact world database, container IDs/images, approved source/helper hashes, configuration/manifest and mutable input fingerprints; auditor must not read actual credential values. Do not alter or replace the approved helper merely to bypass allOffline.",
+    "Recovery-specific guard accepts the expected orphan explicitly: fixture 0 (account 2000000, char 150000) online=1, fixture 1 (account 2000001, char 150001) online=0, both exact nonhuman owned identity pairs/names/accounts validated against the unchanged approved private fixture manifest. Total char rows exactly those two, zero other char rows, zero foreign online identities, and no human/user/production/debug account or service data in the configured database affected by the all-row char and guild-counter reset. Numbers alone never establish ownership.",
+    "Fresh exact runtime/mount/label check: login, char, map IDs and image above; unchanged MariaDB ID/image; ro-bots-test project labels, service roles, one named ro-bots-world-test volume, exact mounts including MariaDB /var/lib/mysql. Entire engine inventory must have no foreign volume users or unknown sharing.",
+    "Fresh process/socket and reviewed server-player evidence must exclude actual connected/in-memory users independently of SQL online=1: no native pilot/other client process, no client socket on login/char/map listeners, no unknown active server player or autotrade/offline-vending actor. Unknown or persistent player evidence DENIES before the first stop. Current socket snapshot alone is not a universal proof.",
+    "Parent privately freezes current runtime configuration, public assets/bootstrap source and fixture-input fingerprints through recovery; copied public assets and bootstrap stay untouched. Only ordinary server lifecycle log/cache/state effects are admitted.",
+    "Database-wide initialization is justified solely by that fresh exact isolated owned-two-character world guard; never apply it to shared or human worlds. Preserve MyISAM state; no universal transaction/rollback or save-completion guarantee."
+  ],
+  "proposal_only_commands": {
+    "not_execution_authorization": true,
+    "engine": "Use the same working terminal Docker context; observed server version 5.8.7. Do not switch to the execute_code subprocess engine. Current client stop help supports --signal and -t/--timeout.",
+    "timeout_policy": "A default or positive docker stop grace ends in forced kill. Propose -t -1 for SIGTERM-only graceful container wait, bounded externally to 60 seconds by timeout on the CLI only. If CLI times out/nonzero or container remains stopping/running, halt the sequence and inspect read-only; do not retry signals, force-kill, or start any role. Infinite container grace semantics are documented by the engine vendor; no recovery command was exercised.",
+    "stop_order": [
+      "map",
+      "char",
+      "login"
+    ],
+    "stop_commands": [
+      "timeout --signal=TERM 60s docker stop --signal=TERM -t -1 ced219e3f4a12a4e12d5c4599a2b9a4b44191324671c44993848c5bed74b077c",
+      "timeout --signal=TERM 60s docker stop --signal=TERM -t -1 a9c42644d6db7bbfe40b50657da05afd89237b29628625be1c35a7b0c294a3d9",
+      "timeout --signal=TERM 60s docker stop --signal=TERM -t -1 d8f4183c03d4c6fdd618b20be8574069e29b884543fdd6ba5be716067811aa5b"
+    ],
+    "start_order": [
+      "login",
+      "char",
+      "map"
+    ],
+    "start_commands": [
+      "timeout --signal=TERM 60s docker start d8f4183c03d4c6fdd618b20be8574069e29b884543fdd6ba5be716067811aa5b",
+      "timeout --signal=TERM 60s docker start a9c42644d6db7bbfe40b50657da05afd89237b29628625be1c35a7b0c294a3d9",
+      "timeout --signal=TERM 60s docker start ced219e3f4a12a4e12d5c4599a2b9a4b44191324671c44993848c5bed74b077c"
+    ],
+    "ordering_gates": "Run sequentially, never batch all role stops. Read back stopped state, PID=0, successful normal finish logs and no SQL errors before advancing each stop. Keep char/login/DB up for map stop, login/DB up for char stop. At each start require exact ID/image and bounded delayed readiness; char must connect to current login before map starts, map must connect to current char. Ready listeners alone are insufficient. 60-second readiness failure stops further effects.",
+    "never_target_database_container": "71715cf83bb3f5104c600dbeb2cdd3b0be162a9c3a85cfbb228fcebb10326f50",
+    "never_target_volume": "ro-bots-world-test",
+    "do_not_execute": [
+      "scripts/world.sh up/down/wipe or any blocked lifecycle script",
+      "compose down/up/recreate",
+      "database/container/volume rm/reset/destroy/import/reseed",
+      "ad-hoc UPDATE online=0",
+      "forged admin/interserver packets",
+      "relaxed native allOffline guard",
+      "fixture 1 reconnect to break the blocking condition",
+      "new server build/patch/dependency changes"
+    ]
+  },
+  "required_actual_recovery_readback": [
+    "Exact approved SELECT after character restart and again after all role links ready: same two owned character/account pairs both online=0, all/foreign online counts zero; record real SQL results, not source expectation.",
+    "Read back exact unchanged MariaDB ID/image/running/start time, volume/mount/users, role IDs/images, actual role PIDs/ELFs, current peer links and readiness with delayed stable observation; require no clients or unknown users.",
+    "Compare privately frozen mutable inputs, public asset/bootstrap fingerprints and fixture data against pre-recovery baseline; deny unexplained drift. Lifecycle writes are real SQL effects, not a transactional rollback.",
+    "Any unexpected user/identity, SQL error, startup failure, timeout, changed role/storage/input, unconfirmed graceful stop or online!=0 stops recovery and keeps native retry forbidden; no fallback SQL/packet/client trick.",
+    "A successful future recovery would only resolve offline preflight. It must not turn original attempt 1 into PASS, restore activation, close gameplay goals, or waive the separate startup/scenario eligibility issues."
+  ],
+  "issues_encountered": [
+    "Direct /proc/<native-pid>/exe byte read was denied by host permissions. Read-only docker cp of exact public /libexec/rathena role ELFs succeeded and their hashes match qualified-image.json. No process/service permission workaround was used.",
+    "First public-ELF package lookup used bin rather than installed libexec/rathena; corrected from the qualified image receipt.",
+    "Initial generic log regex missed ANSI/formatted templates; bounded corrected timestamp+fixture correlation was saved and branch attribution remains pinned-source-qualified."
+  ],
+  "verification": {
+    "protected_freeze_entries": 30,
+    "protected_freeze_mismatches": [],
+    "audited_qualified_source_files": 10,
+    "manifest_mismatches": [],
+    "ELF_matches": 3,
+    "candidate_probe_inspected": false,
+    "candidate_probe_frozen": false
+  },
+  "artifacts": {
+    "/home/otto/.hermes/cache/scratch/npc-native-owned-recovery-audit/attempt-window-correlation.json": "86f2d098695e2cfb92e95bb0ffddb60cf46ab9830ba71d17fbe954265ef8d81d",
+    "/home/otto/.hermes/cache/scratch/npc-native-owned-recovery-audit/audit-source-freeze.json": "8a2676d87d97d9d05e50df1d9d0a97ccc9b27f6991466fae1b20968d2005529d",
+    "/home/otto/.hermes/cache/scratch/npc-native-owned-recovery-audit/char-server.public-elf": "2179821de34dac0eec9bb024ce835d25b1b259ccc6c595e6febf27f484a6354e",
+    "/home/otto/.hermes/cache/scratch/npc-native-owned-recovery-audit/final-runtime-identity-readback.json": "f32734de079daf956462287f43fd7d98bc3717af4b4f52e52adea3401879f457",
+    "/home/otto/.hermes/cache/scratch/npc-native-owned-recovery-audit/login-server.public-elf": "6232857ed0134c01a2c92d75c3c5f2e0a89eab408ee59592981e3f3e80b79c41",
+    "/home/otto/.hermes/cache/scratch/npc-native-owned-recovery-audit/map-server.public-elf": "3b8819ca182e8defeb65407eeb982bdcee65a368791ecab529020f3bd261b54a",
+    "/home/otto/.hermes/cache/scratch/npc-native-owned-recovery-audit/package-binding.json": "d22bedb90e7e116778ff6829a54993231ba62f419bffdf94171689e361decbc4",
+    "/home/otto/.hermes/cache/scratch/npc-native-owned-recovery-audit/runtime-elf-binding.json": "7d30188f5b52a06f8d7e438d521f4688518992708ddc72a13e803fbfbe1d0e32",
+    "/home/otto/.hermes/cache/scratch/npc-native-owned-recovery-audit/runtime-log-socket-summary.json": "7e45a7ffff5ac65936a270625044e3fc664f6e15e4f77ce8b63608de5345e69c",
+    "/home/otto/.hermes/cache/scratch/npc-native-owned-recovery-audit/runtime-metadata.json": "40b59a3c15579107f2c324c5839cf5b748dac67eb985cdfda683336361c9decc",
+    "/home/otto/.hermes/cache/scratch/npc-native-owned-recovery-audit/source-excerpts.json": "dac6e808b52c214a34d7b84c4004c08f6cf28dabcf69fa2a43e719b866729d64"
+  },
+  "all_goals": "OPEN"
+}

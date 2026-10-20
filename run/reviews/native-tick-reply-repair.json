@@ -1,0 +1,219 @@
+{
+  "schema": 1,
+  "scope": "offline source-backed clock registration only",
+  "source_approved_scoped": true,
+  "native_verified": false,
+  "full_goal_accepted": false,
+  "tdd": {
+    "red": {
+      "tests": 1,
+      "failed": 1,
+      "error": "ValueError: unknown packet 0x007f at 0, preceding=[], tail=7f0078563412",
+      "junit_sha256": "91ab2c85a1887b33c01344ee8ddbda89db8dbcdf4e35dfdef7c03e83351b909e"
+    },
+    "green": {
+      "tests": 1,
+      "passed": 1,
+      "junit_sha256": "8a275bfbf0982799ca351f80b5aee2e967479fe5d59cbe0959ac3c4347118a10"
+    }
+  },
+  "compiler_oracle": {
+    "source": "/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source/src/map/packets.hpp:2007-2011",
+    "flags": [
+      "-DPACKETVER=20180704",
+      "-DPRERE"
+    ],
+    "unaltered_struct_and_header_excerpt": true,
+    "executed_output": "127 6 0 2 4",
+    "fields": [
+      "header_id",
+      "sizeof",
+      "packetType_offset",
+      "time_offset",
+      "time_size"
+    ],
+    "emitter": "clif.cpp:11187-11195 clif_send(&p,sizeof(p),&sd,SELF)",
+    "request": "clif.cpp:11203-11208 clif_parse_TickSend -> clif_notify_time"
+  },
+  "regressions": {
+    "physical_testcases": 274,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "subtests_passed": 65,
+    "owned_testcases": 14,
+    "junit_path": "/home/otto/.hermes/cache/scratch/tick-regressions.xml",
+    "junit_sha256": "12a5e6d8f9b6b4aacfcd93719f99745601267ec9d0f943049ee608d9b05994fc",
+    "files": [
+      "test_native_tick_reply",
+      "test_client_protocol",
+      "test_client_native_session",
+      "test_client_native_progression",
+      "test_movement_arrival_evidence",
+      "test_playing_packet_framing",
+      "test_packet_conditions",
+      "test_native_gameplay",
+      "test_native_session_progression"
+    ]
+  },
+  "statics": {
+    "black_src": {
+      "command": [
+        "uv",
+        "run",
+        "--offline",
+        "black",
+        "--check",
+        "src"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "All done! \u2728 \ud83c\udf70 \u2728\n71 files would be left unchanged.\n"
+    },
+    "ruff_src": {
+      "command": [
+        "uv",
+        "run",
+        "--offline",
+        "ruff",
+        "check",
+        "src"
+      ],
+      "exit_code": 0,
+      "stdout": "All checks passed!\n",
+      "stderr": ""
+    },
+    "mypy_src": {
+      "command": [
+        "uv",
+        "run",
+        "--offline",
+        "mypy",
+        "src"
+      ],
+      "exit_code": 0,
+      "stdout": "Success: no issues found in 71 source files\n",
+      "stderr": ""
+    },
+    "vulture_src": {
+      "command": [
+        "uv",
+        "run",
+        "--offline",
+        "vulture",
+        "src",
+        "vulture_whitelist.py"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    "xenon_src": {
+      "command": [
+        "uv",
+        "run",
+        "--offline",
+        "xenon",
+        "src",
+        "--max-absolute",
+        "B",
+        "--max-modules",
+        "B",
+        "--max-average",
+        "A"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    "duplicate_src": {
+      "command": [
+        "uv",
+        "run",
+        "--offline",
+        "pylint",
+        "--disable=all",
+        "--enable=duplicate-code",
+        "--ignore-paths=tests",
+        "src"
+      ],
+      "exit_code": 0,
+      "stdout": "\n--------------------------------------------------------------------\nYour code has been rated at 10.00/10 (previous run: 10.00/10, +0.00)\n\n",
+      "stderr": ""
+    },
+    "bandit_src": {
+      "command": [
+        "uv",
+        "run",
+        "--offline",
+        "bandit",
+        "-q",
+        "-c",
+        "pyproject.toml",
+        "-r",
+        "src"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "[tester]\tWARNING\tnosec encountered (B105), but no failed test on file src/robots/adapters/rathena_runtime.py:129\n[tester]\tWARNING\tnosec encountered (B105), but no failed test on file src/robots/adapters/rathena_runtime.py:130\n[tester]\tWARNING\tnosec encountered (B105), but no failed test on file src/robots/adapters/rathena_runtime.py:131\n[tester]\tWARNING\tnosec encountered (B105), but no failed test on file src/robots/adapters/rathena_runtime.py:133\n[tester]\tWARNING\tnosec encountered (B105), but no failed test on file src/robots/adapters/rathena_runtime.py:131\n[tester]\tWARNING\tnosec encountered (B105), but no failed test on file src/robots/adapters/rathena_runtime.py:132\n[tester]\tWARNING\tnosec encountered (B105), but no failed test on file src/robots/adapters/rathena_runtime.py:133\n"
+    },
+    "legacy_mypy": {
+      "command": [
+        "uv",
+        "run",
+        "--offline",
+        "mypy",
+        "spikes/003-clientless-limbs/client.py",
+        "spikes/003-clientless-limbs/packetdb.py"
+      ],
+      "exit_code": 1,
+      "stdout": "spikes/003-clientless-limbs/packetdb.py:483: error: Incompatible types in assignment (expression has type \"int | str | None\", variable has type \"int\")  [assignment]\nspikes/003-clientless-limbs/packetdb.py:484: error: Subclass of \"int\" and \"str\" cannot exist: have distinct disjoint bases  [unreachable]\nspikes/003-clientless-limbs/client.py:107: error: Missing type arguments for generic type \"dict\"  [type-arg]\nspikes/003-clientless-limbs/client.py:115: error: Missing type arguments for generic type \"dict\"  [type-arg]\nspikes/003-clientless-limbs/client.py:185: error: Function is missing a type annotation  [no-untyped-def]\nspikes/003-clientless-limbs/client.py:201: error: Function is missing a type annotation  [no-untyped-def]\nspikes/003-clientless-limbs/client.py:210: error: Call to untyped function \"_release_handshake_socket\" in typed context  [no-untyped-call]\nspikes/003-clientless-limbs/client.py:217: error: Call to untyped function \"_release_handshake_socket\" in typed context  [no-untyped-call]\nspikes/003-clientless-limbs/client.py:544: error: Call to untyped function \"_release_handshake_socket\" in typed context  [no-untyped-call]\nspikes/003-clientless-limbs/client.py:879: error: Missing type arguments for generic type \"dict\"  [type-arg]\nspikes/003-clientless-limbs/client.py:899: error: Missing type arguments for generic type \"dict\"  [type-arg]\nspikes/003-clientless-limbs/client.py:919: error: Function is missing a return type annotation  [no-untyped-def]\nspikes/003-clientless-limbs/client.py:919: error: Function is missing a type annotation for one or more parameters  [no-untyped-def]\nspikes/003-clientless-limbs/client.py:947: error: Missing type arguments for generic type \"dict\"  [type-arg]\nspikes/003-clientless-limbs/client.py:965: error: Missing type arguments for generic type \"dict\"  [type-arg]\nFound 15 errors in 2 files (checked 2 source files)\n",
+      "stderr": ""
+    }
+  },
+  "new_test_black_ruff_mypy": {
+    "exit_codes": [
+      0,
+      0,
+      0
+    ]
+  },
+  "critical_closure": {
+    "before": {
+      "spikes/003-clientless-limbs/client.py": "2f57a0adc0b43a20235835290499ca0043966c5def208642598afb0dc49807fd",
+      "src/robots/adapters/native_session_progression.py": "c7ec4880115c14960642487b34e9ad05ea3ab1718ed0cd54748d361ae84dd55f",
+      "src/robots/adapters/native_actor_presentation.py": "81140e814a682ea44742880dd9a3a7a19e165eb2098debfa657d24615fe5b730",
+      "src/robots/adapters/native_vitals.py": "663cc93d1fbe0cb20fb6ae4331e2ad5cf63d9e940a246bb8b332b408f6a7e9ff",
+      "src/robots/adapters/native_navigation.py": "d4d758fc7d827d42aab374ebc0c938b5a066d73638e95d82eca3d7aca2730c0a",
+      "src/robots/adapters/native_gameplay.py": "c7e9f16750bf117ba3a4843264e215d2e653c0376c70acd7ac45e00a6b2100f9",
+      "src/robots/adapters/native_progression.py": "ad74be96c5d843cfeabd21ef0bdc0086bd0d9d76546ab3a1954a0f276cbff3fe"
+    },
+    "after": {
+      "spikes/003-clientless-limbs/client.py": "2f57a0adc0b43a20235835290499ca0043966c5def208642598afb0dc49807fd",
+      "src/robots/adapters/native_session_progression.py": "c7ec4880115c14960642487b34e9ad05ea3ab1718ed0cd54748d361ae84dd55f",
+      "src/robots/adapters/native_actor_presentation.py": "81140e814a682ea44742880dd9a3a7a19e165eb2098debfa657d24615fe5b730",
+      "src/robots/adapters/native_vitals.py": "663cc93d1fbe0cb20fb6ae4331e2ad5cf63d9e940a246bb8b332b408f6a7e9ff",
+      "src/robots/adapters/native_navigation.py": "d4d758fc7d827d42aab374ebc0c938b5a066d73638e95d82eca3d7aca2730c0a",
+      "src/robots/adapters/native_gameplay.py": "c7e9f16750bf117ba3a4843264e215d2e653c0376c70acd7ac45e00a6b2100f9",
+      "src/robots/adapters/native_progression.py": "ad74be96c5d843cfeabd21ef0bdc0086bd0d9d76546ab3a1954a0f276cbff3fe"
+    },
+    "drift": []
+  },
+  "packetdb_helpers_ast_unchanged": true,
+  "owned_sha256": {
+    "spikes/003-clientless-limbs/packetdb.py": "acd9f587243f2b918dfbba1897bbe4209bb62dd123befe2d17ee3754ac4f8999",
+    "tests/test_native_tick_reply.py": "ba22fb9aaae74d219852ddfbb2562eda588246184c4e81a2250cd22fce517f0e"
+  },
+  "limitations": [
+    "No native connection, model, SQL or engine effects; parent owns live probe.",
+    "Existing legacy mypy debt retained: client 13 + packetdb 2 errors.",
+    "Seven src gates passed; whole-source dependencies not independently frozen against concurrent parent/delegate edits.",
+    "Earlier controlled-grind error text is unavailable; do not identify it as 0x007F.",
+    "Parent original full-suite gate is outdated; full combined gate not run by this scoped delegate."
+  ],
+  "protocol_semantics": [
+    "Unknown 0xFAFA remains fail-closed with ValueError origin and preceding context.",
+    "Clock frames sequenced once; ignored by gameplay metadata, not HP/life/class/position authority.",
+    "Client and 0x0360 keepalive encoder unchanged."
+  ]
+}

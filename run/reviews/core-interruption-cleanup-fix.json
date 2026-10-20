@@ -1,0 +1,176 @@
+{
+  "report_type": "second_bounded_independent_review_fix_cycle",
+  "completed_at": "2026-10-05T12:46:41.094848+02:00",
+  "repository": "/home/otto/dev/ro-bots",
+  "authority": "run/reviews/core-memory-feed-rereview.json",
+  "implementation_completed": true,
+  "scope_approved": false,
+  "fresh_independent_review": "Required; parent coordinates. This is implementation evidence, not reviewer approval.",
+  "owned_source_and_test_files": [
+    "src/robots/society/memory.py",
+    "src/robots/adapters/memory_journal.py",
+    "src/robots/app/agent_runtime.py",
+    "tests/test_core_interruption_cleanup.py"
+  ],
+  "source_hash_algorithm": "sha256",
+  "source_hashes": {
+    "src/robots/society/memory.py": "29dc3abf394daa6107ee72215f7d514220d6262d0e22351911d2bc24246a3ff2",
+    "src/robots/adapters/memory_journal.py": "043f109ba8e637b4b26a7a4cd601e64bffa3512815ea0cfbca8c2737c3fb3a00",
+    "src/robots/app/agent_runtime.py": "c05942f8f02059af78f43273a8d59c67eda8c77ed2e6263cb27e9f5a7cdfdef8",
+    "tests/test_core_interruption_cleanup.py": "e985a3f00adebc4161378b6fbe8a7e4e91b6f282e725faee0eef54440f50b3bf"
+  },
+  "fixes": [
+    {
+      "id": "CORE-REREVIEW-001",
+      "change": "The uncertain-write critical section poisons on every escaping BaseException, then uses bare raise. Payload validation and JSON serialization remain prewrite and do not poison a healthy writer. Existing journal-owner/privacy/link integrity failures still poison, preserving the historical hardlink boundary.",
+      "regressions": "Nine write/flush/fsync cases across KeyboardInterrupt, SystemExit and RuntimeError assert exact origin identity and traceback leaf, uncertain real bytes, no visible acknowledgement, blocked reads/appends, lifetime lock retention, and explicit reopening. Four additional prewrite cases prove clean validation/serialization failures permit a valid subsequent append."
+    },
+    {
+      "id": "CORE-REREVIEW-002",
+      "change": "Failed MemoryLog restore catches BaseException, attempts store.close under suppress(BaseException), and bare-raises the original restore cause rather than a secondary cleanup fault.",
+      "regressions": "Nine real-journal cases combine KeyboardInterrupt/SystemExit/ValueError restore failures with successful/OSError/SystemExit wrapper close. Verify original exception identity and traceback leaf, closed wrapper, raw file and directory descriptor closure, fresh flock acquisition, and repeated old-store close not closing reused descriptors."
+    },
+    {
+      "id": "CORE-REREVIEW-003",
+      "change": "ScheduledAgent tracks pending client cleanup independently of online/session state. Offline retries attempt client release but never append the session note again. A failed close does not emit the disconnected completion event. Unknown release state remains retryable; explicit connected=False confirms an after-release failure and preserves existing cleanup idempotence. The producer join path remains before notes/client release, and live producer retention plus host journal guards are unchanged.",
+      "regressions": "Three real-journal/two-fake-client cases across KeyboardInterrupt/SystemExit/OSError fail before release twice, preserve exact origin and traceback leaf, continue cleanup of the second agent and journals, reacquire writer locks, verify one session note per persona, then restore release and succeed once. Repeated stop/step causes no duplicate release/event/note or post-close journal append."
+    }
+  ],
+  "vertical_tdd": [
+    {
+      "issue": "CORE-REREVIEW-001",
+      "red": {
+        "failed": 9,
+        "passed": 0,
+        "log": "run/reviews/core-interruption-001-red.log",
+        "expected_failure": "Poison guard did not raise after uncertain append."
+      },
+      "green": {
+        "passed": 9,
+        "log": "run/reviews/core-interruption-001-green.log"
+      }
+    },
+    {
+      "issue": "CORE-REREVIEW-002",
+      "red": {
+        "failed": 8,
+        "passed": 1,
+        "log": "run/reviews/core-interruption-002-red.log",
+        "expected_failure": "Interrupted restore left wrapper/descriptors open; cleanup fault replaced ValueError."
+      },
+      "green": {
+        "passed": 18,
+        "log": "run/reviews/core-interruption-002-green.log",
+        "includes_previous_cases": true
+      }
+    },
+    {
+      "issue": "CORE-REREVIEW-003",
+      "red": {
+        "failed": 3,
+        "passed": 0,
+        "log": "run/reviews/core-interruption-003-red.log",
+        "expected_failure": "Disconnected completion event emitted while first client remained connected."
+      },
+      "green": {
+        "passed": 21,
+        "log": "run/reviews/core-interruption-003-green.log",
+        "includes_previous_cases": true
+      }
+    }
+  ],
+  "verification": {
+    "final_scoped": {
+      "exit_code": 0,
+      "passed": 170,
+      "existing_scoped_passed": 145,
+      "new_regressions_passed": 25,
+      "failed": 0,
+      "seconds": 4.44,
+      "warnings": [
+        "Existing Starlette/httpx TestClient deprecation warning"
+      ],
+      "log": "run/reviews/core-interruption-scoped.log",
+      "junit": "run/reviews/core-interruption-scoped.xml",
+      "offline_guard": "Temporary pytest plugin forces AgentHost._autodetect_chat to StaticChatGenerator; PYTHONPATH is set inside nix develop."
+    },
+    "owned_static": {
+      "exit_code": 0,
+      "checks": [
+        "black --check",
+        "ruff check",
+        "strict mypy",
+        "bandit",
+        "xenon B/B/A"
+      ],
+      "log": "run/reviews/core-interruption-owned-static.log"
+    },
+    "scoped_diff_and_security": {
+      "exit_code": 0,
+      "whitespace_check": "All four owned tracked/untracked files pass; untracked files checked as new-file diffs against /dev/null.",
+      "added_line_scan": "No shell injection, eval/exec or unsafe pickle deserialization matches in owned added lines; Bandit also passes for owned production files.",
+      "report_source_hashes_verified_against_current_files": true,
+      "full_junit_count_reconciliation": "617 XML test entries = 536 passed tests + 16 failed tests + 65 passed subtests; zero errors/skips."
+    },
+    "full_check": {
+      "exit_code": 201,
+      "log": "run/reviews/core-interruption-full-check.log",
+      "result": "Blocked by concurrently changing unowned files during lint; tests were not reached.",
+      "blockers": [
+        "Ruff PT018 in tests/test_mechanics_yaml.py and tests/test_protocol_rereview_repairs.py; PLC0415 in tests/test_protocol_rereview_repairs.py",
+        "mypy in src/robots/app/builds.py and tests/test_protocol_rereview_repairs.py",
+        "xenon rank C in mechanics_yaml.py _item/_trees/__init__"
+      ],
+      "not_scope_failures": true
+    },
+    "full_test": {
+      "exit_code": 201,
+      "passed": 536,
+      "failed": 16,
+      "subtests_passed": 65,
+      "seconds": 25.44,
+      "coverage_percent": 92.4,
+      "coverage_gate_passed": true,
+      "failing_targets": [
+        "tests.test_protocol_rereview_repairs::test_every_failed_attempt_preserves_lock_across_limbs[0-char-OSError]",
+        "tests.test_protocol_rereview_repairs::test_every_failed_attempt_preserves_lock_across_limbs[0-char-ValueError]",
+        "tests.test_protocol_rereview_repairs::test_every_failed_attempt_preserves_lock_across_limbs[0-char-ConnectionError]",
+        "tests.test_protocol_rereview_repairs::test_every_failed_attempt_preserves_lock_across_limbs[0-char-RuntimeError]",
+        "tests.test_protocol_rereview_repairs::test_every_failed_attempt_preserves_lock_across_limbs[0-map-OSError]",
+        "tests.test_protocol_rereview_repairs::test_every_failed_attempt_preserves_lock_across_limbs[0-map-ValueError]",
+        "tests.test_protocol_rereview_repairs::test_every_failed_attempt_preserves_lock_across_limbs[0-map-ConnectionError]",
+        "tests.test_protocol_rereview_repairs::test_every_failed_attempt_preserves_lock_across_limbs[0-map-RuntimeError]",
+        "tests.test_protocol_rereview_repairs::test_every_failed_attempt_preserves_lock_across_limbs[1-char-OSError]",
+        "tests.test_protocol_rereview_repairs::test_every_failed_attempt_preserves_lock_across_limbs[1-char-ValueError]",
+        "tests.test_protocol_rereview_repairs::test_every_failed_attempt_preserves_lock_across_limbs[1-char-ConnectionError]",
+        "tests.test_protocol_rereview_repairs::test_every_failed_attempt_preserves_lock_across_limbs[1-char-RuntimeError]",
+        "tests.test_protocol_rereview_repairs::test_every_failed_attempt_preserves_lock_across_limbs[1-map-OSError]",
+        "tests.test_protocol_rereview_repairs::test_every_failed_attempt_preserves_lock_across_limbs[1-map-ValueError]",
+        "tests.test_protocol_rereview_repairs::test_every_failed_attempt_preserves_lock_across_limbs[1-map-ConnectionError]",
+        "tests.test_protocol_rereview_repairs::test_every_failed_attempt_preserves_lock_across_limbs[1-map-RuntimeError]"
+      ],
+      "log": "run/reviews/core-interruption-full-test.log",
+      "junit": "run/reviews/core-interruption-full-test.xml",
+      "offline_guard": "Temporary pytest plugin forces StaticChatGenerator; no ambient service discovery.",
+      "result": "All 16 failures are the unowned concurrent protocol re-review repair test matrix; no change made to those files."
+    }
+  },
+  "issues_encountered": [
+    "Initial flush fault injection also interrupted the prewrite seek; test fixture was corrected to inject only after actual write, then all nine cases reproduced the intended missing poison guard before production changes.",
+    "Initial move of journal identity validation outside the poison section weakened existing hardlink behavior (one of 145 old tests); retained that integrity check in the poison section while keeping payload serialization separate. Final 145 old tests all pass.",
+    "Owned complexity/statement/type diagnostics resolved only in owned implementation/new tests; no quality settings, noqa or ignores added.",
+    "Nix develop overwrites outer PYTHONPATH. Temporary pytest-plugin launch first failed import before running tests; diagnosed live environment and moved the path export inside nix develop, then verified final scoped and full execution.",
+    "Repository-wide gates encounter ongoing unowned mechanics/build/protocol repairs; not modified or certified by this bounded fix context."
+  ],
+  "residual_frontier": [
+    "Fresh independent review is still required; no approval, acceptance label or commit is claimed.",
+    "Injected interruption boundaries use real filesystem journals but do not certify arbitrary signal delivery at every Python instruction, power-loss survival or exactly-once replay. An unacknowledged uncertain row can exist and be observed after explicit reopening.",
+    "Restore attempts close and preserves the origin if cleanup raises; a storage implementation that itself refuses resource release before throwing can still retain resources. Tests establish that the owned JsonlExperienceStore releases explicit descriptors even when wrapper close fails.",
+    "For arbitrary clients, a normal close return is the completion contract; failed close with unknown state is retained for retry. Only explicit connected=False is treated as confirmed release after an exception.",
+    "No expansion to failed-connect/other constructor cleanup paths; fixes are limited to the three named review findings.",
+    "Unbounded joins intentionally retain storage ownership while producers remain alive; permanent producer blockage can delay shutdown.",
+    "No services, game connections, provider inference/API calls, SQL, credentials, staging, commits, pushes, dashboard acceptance or live gameplay verification."
+  ],
+  "report_artifact": "run/reviews/core-interruption-cleanup-fix.json",
+  "temporary_offline_gate": "/home/otto/.hermes/cache/scratch/core_interruption_offline_gate.py"
+}

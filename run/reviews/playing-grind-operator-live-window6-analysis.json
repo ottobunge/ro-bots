@@ -1,0 +1,13 @@
+{
+  "status": "GRIND_WINDOW6_COMMITTED_TRAVEL_LIVE_TARGET_PROJECTION_FRONTIER",
+  "completed_at": "2026-10-15T01:10:47.798245+00:00",
+  "raw_receipt": "run/reviews/playing-grind-operator-live-window6.json",
+  "breakthrough": {
+    "travel_engaged_live": "2725 MoveTo dispatched; committed cells [170,375]/[190,375]/...; the agent WALKED [193,361] -> [192,375] (arrival zone of the committed cell); travel state committed 14 samples; farm-idle engagement fix works live",
+    "plan": "farm Poring on prt_fild08 (CLEF chose the dominant species)",
+    "mobs_visible": "attackable actors visible in 41/55 samples (2 simultaneous in 18)"
+  },
+  "remaining_gap": "zero attacks dispatched despite target species present. FarmScript attacks m.name in plan.target_mobs from state.nearby_monsters (a BotState projection needing mob-db species/name resolution); the diagnostic samples the raw tracker (attackable_count) NOT the BotState projection, so the blocker is one of: (a) nearby_monsters empty (species/name resolution fails on live 0x9FE job field), (b) name mismatch vs plan.target_mobs, (c) build_native_state raises mid-run (window-2 finding) so the brain never sees the state. Unobservable in this receipt: window-6 operator dropped the framediag frame_timeline (operator fork drift).",
+  "next": "consolidated operator slice: one module carrying travel+replan+framediag instrumentation; add a safe BotState projection sample (nearby_monsters count + species ids + plan target list, try/except with the raised classification) to name (a)/(b)/(c); then the final fix and first-contact window",
+  "native_authority": "UNCHANGED_REVOKED"
+}

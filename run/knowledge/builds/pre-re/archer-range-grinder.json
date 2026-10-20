@@ -1,0 +1,176 @@
+{
+ "class": "Archer",
+ "playstyle": "grinder (range farmer, Arrow Crafting self-supply)",
+ "playstyle_axis": "grinder",
+ "summary": "Sustained-farm variant: max range/HIT/ICC, normal-attack kiting with cheap arrows, Arrow Crafting quest converts Trunks/Jellopy into free ammo.",
+ "stat_progression": [
+  {
+   "phase": "job change ~40",
+   "base_level": 40,
+   "stat_point_budget": 305,
+   "points_spent": 270,
+   "points_left": 35,
+   "allocation": {
+    "dex": 40,
+    "agi": 40,
+    "int": 1,
+    "str": 1,
+    "vit": 1,
+    "luk": 1
+   },
+   "leftover_into": "DEX/AGI (273 spent at 305)"
+  },
+  {
+   "phase": "job 50",
+   "base_level": 50,
+   "stat_point_budget": 420,
+   "points_spent": 388,
+   "points_left": 32,
+   "allocation": {
+    "dex": 50,
+    "agi": 50,
+    "int": 1,
+    "str": 1,
+    "vit": 1,
+    "luk": 1
+   },
+   "leftover_into": "both"
+  }
+ ],
+ "skill_order": [
+  {
+   "skill": "Owl's Eye",
+   "levels": 10,
+   "at": "job 1-10",
+   "prereqs": [],
+   "why": "+10 DEX"
+  },
+  {
+   "skill": "Vulture's Eye",
+   "levels": 10,
+   "at": "job 11-20",
+   "prereqs": [
+    "Owl's Eye 3"
+   ],
+   "why": "range/HIT for safe auto-attack kiting"
+  },
+  {
+   "skill": "Improve Concentration",
+   "levels": 10,
+   "at": "job 21-30",
+   "prereqs": [
+    "Vulture's Eye 1"
+   ],
+   "why": "+12 AGI/DEX at lv10 (flat, pre-re); the sustained-farm buff"
+  },
+  {
+   "skill": "Double Strafe",
+   "levels": 5,
+   "at": "job 31-35",
+   "prereqs": [],
+   "why": "finisher only"
+  },
+  {
+   "skill": "Arrow Shower",
+   "levels": 5,
+   "at": "job 36-40",
+   "prereqs": [
+    "Double Strafe 5"
+   ],
+   "why": "loot-mob pull"
+  }
+ ],
+ "skill_point_budget": {
+  "job40_points": 40,
+  "job50_points": 50,
+  "job50_add": [
+   "Double Strafe ->10",
+   "Arrow Crafting quest skill (free arrows from Trunk/Jellopy/etc.)"
+  ]
+ },
+ "equipment_order": [
+  {
+   "order": 1,
+   "id": 1701,
+   "name": "Bow [3]",
+   "price_z": 1000,
+   "why": "starter bow"
+  },
+  {
+   "order": 2,
+   "id": 1750,
+   "name": "Arrow",
+   "price_z": 1,
+   "why": "bulk buy"
+  },
+  {
+   "order": 3,
+   "id": 2303,
+   "name": "Jacket",
+   "price_z": 200,
+   "why": "DEF"
+  },
+  {
+   "order": 4,
+   "id": 2401,
+   "name": "Sandals",
+   "price_z": 400,
+   "why": "shoes"
+  },
+  {
+   "order": 5,
+   "id": 1704,
+   "name": "Composite Bow [3]",
+   "price_z": 2500,
+   "why": "ATK 29"
+  }
+ ],
+ "grinding": [
+  {
+   "map": "prontera-maze / payon (classic iRO spawns - confirm on server)",
+   "phase": "Lv 12-40",
+   "mobs": [
+    {
+     "id": 1010,
+     "name": "Willow",
+     "level": 8,
+     "hp": 91,
+     "exp": "45/36",
+     "notes": "Trunk 30z-sell + job-quest + arrow-craft material"
+    },
+    {
+     "id": 1050,
+     "name": "Thief Bug",
+     "level": 10,
+     "hp": 89,
+     "exp": "72/54"
+    },
+    {
+     "id": 1014,
+     "name": "Spore",
+     "level": 18,
+     "hp": 280,
+     "exp": "117/87",
+     "notes": "Mushroom Spore 90% (sell/arrow-craft)"
+    }
+   ]
+  }
+ ],
+ "do_not_waste": [
+  "Arrow Shower beyond 5",
+  "Double Strafe before ICC is maxed (auto-attack uptime is the build)",
+  "LUK"
+ ],
+ "renewal_differences": "Arrow Crafting outcomes and Trunk drops are era-stable; renewal ICC percent-vs-flat change applies here more than anywhere (the +12 flat AGI/DEX at lv10 pre-re is a bigger low-level swing than the renewal %).",
+ "sources": [
+  "iro-wiki corpus page 'Stats' (stat per-point effects, raise-cost floor((X-1)/10)+2, 48 pts at BLv1, level-up points floor(X/5)+3)",
+  "iro-wiki corpus page 'Total stat point requirement' (cumulative cost table)",
+  "rathena/src/map/status.cpp status_base_atk (pre-re status ATK: STR+(STR/10)^2+DEX/5+LUK/5 melee; DEX+(DEX/10)^2+STR/5 ranged; MATK min INT+(INT/7)^2 max INT+(INT/5)^2)",
+  "rathena/db/pre-re/skill_tree.yml (authoritative server skill prerequisites)",
+  "rathena/db/pre-re/skill_db.yml (SP costs, cast times)",
+  "iro-wiki corpus '<Class> Job Change Guide' + rathena/npc/pre-re/jobs/1-1/<class>.txt (job change)",
+  "iro-wiki corpus pages 'Arrow Crafting', 'Archer Skill Quest', 'Improve Concentration', \"Vulture's Eye\"",
+  "iro-db monsters 1010/1050/1014; items 1701/1750",
+  "rathena/db/pre-re/skill_tree.yml (AC_MAKINGARROW quest: no tree prereq)"
+ ]
+}

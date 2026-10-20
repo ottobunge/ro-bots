@@ -1,0 +1,551 @@
+{
+  "schema": "native-ast-varargs-contract-read-only-v1",
+  "verdict": "RESOLVED_NARROW_STANDARD_TEXT_TYPE_MISMATCH_NOT_ADOPTED",
+  "candidate_adopted": false,
+  "sink_contract_adopted": false,
+  "sender_admission": false,
+  "runtime_integration": false,
+  "production_changes": false,
+  "world_effects": false,
+  "all_six_milestones_open": true,
+  "scope": "Only audited U1: actual clif_send AREA -> map_foreachinallarea -> map_foreachinareaV -> clif_send_sub; no generic server UB or all-route claim",
+  "authority": {
+    "scope_path": "/home/otto/dev/ro-bots/run/reviews/native-ast-real-sender-scope.json",
+    "scope_sha256": "f53d5fbba3ecf5ca49af484f2721a2538a2f6884b6611f7ed08eaa2b2d7dc5c0",
+    "audit_path": "/home/otto/dev/ro-bots/run/reviews/native-ast-real-sink-audit.json",
+    "audit_sha256": "6269acb7714e59533c8da9cc8bd0edd679c6e64eb5b4ac0cd6a8bf07095c6a38",
+    "source_closure_sha256": "f045b33b434efc83a7e216f295bf899114a4a1a2daa159898fb738d8b553d6d6",
+    "upstream_commit": "e985006171d2eb320ee512a653f4c83aea3d81b6",
+    "source_root": "/home/otto/.hermes/cache/scratch/native-profile-replay-s2jdj4rn/public-source",
+    "profile": [
+      "MAIN PACKETVER=20180704, PRERE=1; no RE/ZERO/RENEWAL or packet obfuscation/warn",
+      "NULLPO_CHECK and DEBUG absent: nullpo_ret expands to (void)(t), not a runtime null guard",
+      "AREA_SIZE expands to battle_config.area_size, not a compiler-fixed radius",
+      "SEND_SHORTLIST active; FIFO macros explicitly expanded in AST",
+      "RECREATE2 resolves through aRealloc2 to _mrealloc in compiled common/socket.cpp AST"
+    ]
+  },
+  "source_evidence": [
+    {
+      "path": "/home/otto/.hermes/cache/scratch/native-profile-replay-s2jdj4rn/public-source/src/map/clif.cpp",
+      "sha256": "0b1db098158c240b090c6edb8417978ba495957c8a2df4cd9a0ab4cb39884ac5"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/native-profile-replay-s2jdj4rn/public-source/src/map/map.cpp",
+      "sha256": "9629e6b751ca3fd9d160e48c0beb80bf7bbe0c359fa7ecdb46698b074e6c1113"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/native-profile-replay-s2jdj4rn/public-source/src/map/map.hpp",
+      "sha256": "1cb428d1145ec9c4045b2ae58c163be24bf1bd374fc8eea07eaf0c266621fe2b"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/native-profile-replay-s2jdj4rn/public-source/src/map/clif.hpp",
+      "sha256": "3a9c9531ba63ded135885d69c378ebc818cfbdcf8d4e4ccbcd9bb75d8a42019c"
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/native-profile-replay-s2jdj4rn/public-source/src/common/cbasetypes.hpp",
+      "sha256": "5ae18835ab3374a4ed613c613d2f65be8ea1fdd35c2194b84ce3f6d23f58a007"
+    }
+  ],
+  "active_ast_evidence": {
+    "path": "/home/otto/.hermes/cache/scratch/varargs-contract-035h2wdh/active-ast-evidence.json",
+    "sha256": "1a5cac4f485e04b8411e377970675773aad2ac6dad65467bbce75cd883220372",
+    "actual_arguments": [
+      {
+        "type": {
+          "qualType": "const void *"
+        },
+        "kind": "ImplicitCastExpr",
+        "castKind": "LValueToRValue",
+        "expression_node": {
+          "id": "0x55555c58eda0",
+          "kind": "ImplicitCastExpr",
+          "range": {
+            "begin": {
+              "offset": 14245,
+              "col": 11,
+              "tokLen": 3
+            },
+            "end": {
+              "offset": 14245,
+              "col": 11,
+              "tokLen": 3
+            }
+          },
+          "type": {
+            "qualType": "const void *"
+          },
+          "valueCategory": "prvalue",
+          "castKind": "LValueToRValue",
+          "inner": [
+            {
+              "id": "0x55555c58eb30",
+              "kind": "DeclRefExpr",
+              "range": {
+                "begin": {
+                  "offset": 14245,
+                  "col": 11,
+                  "tokLen": 3
+                },
+                "end": {
+                  "offset": 14245,
+                  "col": 11,
+                  "tokLen": 3
+                }
+              },
+              "type": {
+                "qualType": "const void *"
+              },
+              "valueCategory": "lvalue",
+              "referencedDecl": {
+                "id": "0x55555c5663f8",
+                "kind": "ParmVarDecl",
+                "name": "buf",
+                "type": {
+                  "qualType": "const void *"
+                }
+              }
+            }
+          ]
+        }
+      },
+      {
+        "type": {
+          "desugaredQualType": "int",
+          "qualType": "int32",
+          "typeAliasDeclId": "0x555555e97600"
+        },
+        "kind": "ImplicitCastExpr",
+        "castKind": "LValueToRValue",
+        "expression_node": {
+          "id": "0x55555c58edb8",
+          "kind": "ImplicitCastExpr",
+          "range": {
+            "begin": {
+              "offset": 14250,
+              "col": 16,
+              "tokLen": 3
+            },
+            "end": {
+              "offset": 14250,
+              "col": 16,
+              "tokLen": 3
+            }
+          },
+          "type": {
+            "desugaredQualType": "int",
+            "qualType": "int32",
+            "typeAliasDeclId": "0x555555e97600"
+          },
+          "valueCategory": "prvalue",
+          "castKind": "LValueToRValue",
+          "inner": [
+            {
+              "id": "0x55555c58eb50",
+              "kind": "DeclRefExpr",
+              "range": {
+                "begin": {
+                  "offset": 14250,
+                  "col": 16,
+                  "tokLen": 3
+                },
+                "end": {
+                  "offset": 14250,
+                  "col": 16,
+                  "tokLen": 3
+                }
+              },
+              "type": {
+                "desugaredQualType": "int",
+                "qualType": "int32",
+                "typeAliasDeclId": "0x555555e97600"
+              },
+              "valueCategory": "lvalue",
+              "referencedDecl": {
+                "id": "0x55555c566470",
+                "kind": "ParmVarDecl",
+                "name": "len",
+                "type": {
+                  "desugaredQualType": "int",
+                  "qualType": "int32",
+                  "typeAliasDeclId": "0x555555e97600"
+                }
+              }
+            }
+          ]
+        }
+      },
+      {
+        "type": {
+          "qualType": "const block_list *"
+        },
+        "kind": "ImplicitCastExpr",
+        "castKind": "LValueToRValue",
+        "expression_node": {
+          "id": "0x55555c58edd0",
+          "kind": "ImplicitCastExpr",
+          "range": {
+            "begin": {
+              "offset": 14255,
+              "col": 21,
+              "tokLen": 2
+            },
+            "end": {
+              "offset": 14255,
+              "col": 21,
+              "tokLen": 2
+            }
+          },
+          "type": {
+            "qualType": "const block_list *"
+          },
+          "valueCategory": "prvalue",
+          "castKind": "LValueToRValue",
+          "inner": [
+            {
+              "id": "0x55555c58eb70",
+              "kind": "DeclRefExpr",
+              "range": {
+                "begin": {
+                  "offset": 14255,
+                  "col": 21,
+                  "tokLen": 2
+                },
+                "end": {
+                  "offset": 14255,
+                  "col": 21,
+                  "tokLen": 2
+                }
+              },
+              "type": {
+                "qualType": "const block_list *"
+              },
+              "valueCategory": "lvalue",
+              "referencedDecl": {
+                "id": "0x55555c5664f0",
+                "kind": "ParmVarDecl",
+                "name": "bl",
+                "type": {
+                  "qualType": "const block_list *"
+                }
+              }
+            }
+          ]
+        }
+      },
+      {
+        "type": {
+          "qualType": "int"
+        },
+        "kind": "ImplicitCastExpr",
+        "castKind": "IntegralCast",
+        "expression_node": {
+          "id": "0x55555c58ee00",
+          "kind": "ImplicitCastExpr",
+          "range": {
+            "begin": {
+              "offset": 14259,
+              "col": 25,
+              "tokLen": 4
+            },
+            "end": {
+              "offset": 14259,
+              "col": 25,
+              "tokLen": 4
+            }
+          },
+          "type": {
+            "qualType": "int"
+          },
+          "valueCategory": "prvalue",
+          "castKind": "IntegralCast",
+          "inner": [
+            {
+              "id": "0x55555c58ede8",
+              "kind": "ImplicitCastExpr",
+              "range": {
+                "begin": {
+                  "offset": 14259,
+                  "col": 25,
+                  "tokLen": 4
+                },
+                "end": {
+                  "offset": 14259,
+                  "col": 25,
+                  "tokLen": 4
+                }
+              },
+              "type": {
+                "desugaredQualType": "send_target",
+                "qualType": "enum send_target"
+              },
+              "valueCategory": "prvalue",
+              "castKind": "LValueToRValue",
+              "inner": [
+                {
+                  "id": "0x55555c58eb90",
+                  "kind": "DeclRefExpr",
+                  "range": {
+                    "begin": {
+                      "offset": 14259,
+                      "col": 25,
+                      "tokLen": 4
+                    },
+                    "end": {
+                      "offset": 14259,
+                      "col": 25,
+                      "tokLen": 4
+                    }
+                  },
+                  "type": {
+                    "desugaredQualType": "send_target",
+                    "qualType": "enum send_target"
+                  },
+                  "valueCategory": "lvalue",
+                  "referencedDecl": {
+                    "id": "0x55555c566578",
+                    "kind": "ParmVarDecl",
+                    "name": "type",
+                    "type": {
+                      "desugaredQualType": "send_target",
+                      "qualType": "enum send_target"
+                    }
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      }
+    ],
+    "audit_source_and_four_relevant_ast_hashes_verified": true
+  },
+  "forwarding": {
+    "verified": true,
+    "source_positions": [
+      "map.hpp:1152",
+      "map.cpp:913-920",
+      "map.cpp:903-905"
+    ],
+    "chain": "va_start(ap,type); typed call map_foreachinareaV(...,ap,false); per eligible callback va_copy(ap_copy,ap); func(bl_list[i],ap_copy); va_end(ap_copy); final va_end(ap).",
+    "retains_original_promoted_argument_types": true,
+    "macro_cast_absence": "Active AST shows direct const pointer LValueToRValue at ellipsis; actual va_arg builtin retains unsigned char*/block_list* requested types. No unseen macro repair is assumed.",
+    "citation_ids": [
+      1,
+      2
+    ]
+  },
+  "standards": [
+    {
+      "id": 1,
+      "edition": "C++17 working draft WG21 N4659 (2017-03-21), not latest draft",
+      "url": "https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2017/n4659.pdf",
+      "pdf_path": "/home/otto/.hermes/cache/scratch/varargs-contract-035h2wdh/n4659.pdf",
+      "pdf_sha256": "642b26867e3803d66696b240b7913042c4ccc37b9b0478b330de247d1daec9d1",
+      "text_path": "/home/otto/.hermes/cache/scratch/varargs-contract-035h2wdh/n4659.txt",
+      "text_sha256": "8018000133270205a779cca3386c17b119c8b017d9ae8ceb5648fc5d0f2b9646",
+      "clauses": [
+        "2 [intro.refs]/1.3-1.4 and /2 (C11 plus Cor.1:2012 reference)",
+        "21.10 [support.runtime]/1",
+        "21.10.1 [cstdarg.syn]/1 (C stdarg incorporation)",
+        "8.2.2 [expr.call]/9 (ellipsis conversions)",
+        "7.6 [conv.prom]/1,4 (fixed-underlying enum promotion)",
+        "6.9.3 [basic.type.qualifier] (cv distinctions)"
+      ],
+      "short_quote": "same as the C standard library header"
+    },
+    {
+      "id": 2,
+      "edition": "C11 committee draft WG14 N1570 (2011-04-12); public C11 clause evidence, not a claim to possess final ISO text or its corrigendum",
+      "url": "https://www.open-std.org/jtc1/sc22/wg14/www/docs/n1570.pdf",
+      "pdf_path": "/home/otto/.hermes/cache/scratch/varargs-contract-035h2wdh/n1570.pdf",
+      "pdf_sha256": "208969fec021e4f4ce87a1873765298c73e7bbb5209b1c5868967c7adfc8492e",
+      "text_path": "/home/otto/.hermes/cache/scratch/varargs-contract-035h2wdh/n1570.txt",
+      "text_sha256": "9b796c903859c219204869e1c285ebb59419690b2a790dafe5e27c4b030625f9",
+      "clauses": [
+        "7.16.1.1/2 (va_arg incompatible-type UB and two exceptions)",
+        "7.16.1.2/2 (va_copy preserves argument-list state)",
+        "6.7.6.1/2 (pointer compatibility)",
+        "6.7.3/10 (qualified-type compatibility)",
+        "6.2.5/26,28-29 and footnote 48 (qualification and representation, not a new va_arg exception)",
+        "6.5.2.2/6 (distinct broader no-prototype exception; not the applicable va_arg clause)"
+      ],
+      "short_quote": "one type is pointer to void and the other is a pointer to a character type."
+    }
+  ],
+  "citation_ledger_path": "/home/otto/.hermes/cache/scratch/varargs-contract-035h2wdh/citation-ledger.json",
+  "citation_verification": {
+    "returncode": 0,
+    "stdout": "info: stats: 4 prose sentence(s), 3 with declared provenance (75%) \u2014 3 cited, 0 marked [unverified] (a sentence may be both); 2 distinct source(s) cited, 2 in ledger (2 with evidence quotes)\ncitations OK\n"
+  },
+  "pairs": [
+    {
+      "slot": "buf",
+      "actual": "const void *",
+      "retrieved": "unsigned char *",
+      "position": "src/map/clif.cpp:525 -> :416",
+      "classification": "UNDEFINED",
+      "basis": "N4659 [expr.call]/9 preserves pointed-to const through ellipsis. N1570 7.16.1.1/2 requires compatible promoted types except listed cases. const void is not unqualified void; literal pointer-to-void/character exception does not cover this actual const void*. Compatibility also fails. This is a standard-text analysis, not a machine-checked formal proof.",
+      "citation_ids": [
+        1,
+        2
+      ],
+      "qualification_caveat": "Do not import the broader qualified-or-unqualified character/void pointer exception from C 6.5.2.2/6 (calls without prototypes); this call has a prototype and is judged by va_arg 7.16.1.1. Same representation is not compatible type and not permission to remove pointed-to const."
+    },
+    {
+      "slot": "len",
+      "actual": "int32 = int",
+      "retrieved": "int32 = int",
+      "position": "src/map/clif.cpp:525 -> :417",
+      "classification": "LANGUAGE_DEFINED",
+      "basis": "Identical actual and retrieved type in active profile; ordinary lvalue-to-rvalue conversion only. This classifies just this retrieval, not the surrounding execution.",
+      "citation_ids": [
+        1,
+        2
+      ]
+    },
+    {
+      "slot": "bl",
+      "actual": "const block_list *",
+      "retrieved": "block_list *",
+      "position": "src/map/clif.cpp:525 -> :418",
+      "classification": "UNDEFINED",
+      "basis": "Pointed-to const is part of the pointer type and remains present after ellipsis conversion. The types are not compatible; neither signed/unsigned nor void/character exception applies. Assignment or ordinary qualification conversion is not va_arg matching; no qualification conversion is introduced by this ellipsis. No dereference or actual const object is needed to trigger the incompatible retrieval rule.",
+      "citation_ids": [
+        1,
+        2
+      ]
+    },
+    {
+      "slot": "type",
+      "actual": "send_target : uint8_t, promoted to int",
+      "retrieved": "int32 = int",
+      "position": "src/map/clif.hpp:207; clif.cpp:525 -> :419",
+      "classification": "LANGUAGE_DEFINED",
+      "basis": "N4659 [conv.prom]/4 permits promotion of fixed-underlying unscoped enumeration to promoted underlying type; uint8_t is unsigned char here and promotes to int. Active AST has IntegralCast to int; GCC static assertions independently confirm int32=int and uint8_t=unsigned char. Profile-specific typedef identities are not a universal int32=int assertion.",
+      "citation_ids": [
+        1,
+        2
+      ]
+    }
+  ],
+  "interpretation_limits": [
+    "Standards-based textual interpretation, not a formal language-semantics proof. N1570 is the public C11 draft supporting the applicable va_arg wording.",
+    "Conditional UB: if the AREA path actually reaches callback retrieval after session_isActive. Empty recipient sets/early returns do not execute these va_arg operations.",
+    "The source-pointer mismatch is independently sufficient even if someone disputes the const-void exception reading.",
+    "No fno-strict-aliasing flag is treated as varargs validity evidence."
+  ],
+  "gcc_observation": {
+    "compiler": "GCC 16.2.0, actual version stdout captured",
+    "mode": "C++17 compile-to-assembly only; no mismatched call executed; no server rebuilt or run",
+    "command": {
+      "argv": [
+        "nix",
+        "develop",
+        "--offline",
+        "--no-write-lock-file",
+        "path:./spikes/007-native-packet-ast/toolchain",
+        "-c",
+        "sh",
+        "-c",
+        "g++ --version; g++ -std=c++17 -O2 -Wall -Wextra -Wpedantic -S /home/otto/.hermes/cache/scratch/varargs-contract-035h2wdh/abi.cpp -o /home/otto/.hermes/cache/scratch/varargs-contract-035h2wdh/abi.s"
+      ],
+      "returncode": 0
+    },
+    "stdout_path": "/home/otto/.hermes/cache/scratch/varargs-contract-035h2wdh/compiler.stdout",
+    "stderr_path": "/home/otto/.hermes/cache/scratch/varargs-contract-035h2wdh/compiler.stderr",
+    "assembly_path": "/home/otto/.hermes/cache/scratch/varargs-contract-035h2wdh/abi.s",
+    "assembly_sha256": "22c6ae814816f6b205619bc21e5f2f1eb868f7175a79f1bd281c338ad3b39e32",
+    "source_path": "/home/otto/.hermes/cache/scratch/varargs-contract-035h2wdh/abi.cpp",
+    "source_sha256": "cdba8e1dafda36a7f61379a62a7b6b6fbb1990e1a4f8fc9649146ca715e74692",
+    "probe_scope": "Isolated bridge-shape fixture uses actual cbasetypes.hpp and exact source-extracted send_target enum; block_list only forward-declared. It is not a full-server proof or substitute API responder.",
+    "result": "Compilation exit 0, no diagnostics. bridge moves pointer registers without a representation conversion and zero-extends enum byte to int argument register. Both retrieval snippets compile to pointer-register return.",
+    "classification": "IMPLEMENTATION_SPECIFIC_OBSERVATION_ONLY",
+    "does_not_prove_language_definedness": true,
+    "packet_copy_or_queue_observed": false
+  },
+  "smallest_theoretical_correction": {
+    "not_applied": true,
+    "callback_buf": "clif.cpp:416 retrieve const void* exactly; then use static_cast<const unsigned char*> for the existing read-only byte view and declare buf const unsigned char*.",
+    "callback_bl": "clif.cpp:418 retrieve const block_list* exactly; declare src_bl const block_list*.",
+    "integer_slots": "No correction required in this active profile.",
+    "restriction": "Fresh scope plus re-audit/build would be required for any actual patch; none authorized/applied."
+  },
+  "other_six_unresolved_groups_preserved": [
+    {
+      "id": "U2",
+      "blocking": true,
+      "callee": "_realloc_writefifo -> _mrealloc",
+      "locations": [
+        "socket.cpp:773-797",
+        "malloc.hpp:46,98"
+      ],
+      "issue": "Active AST resolves _mrealloc, not assumed libc realloc. Implementation allocation failure/abort and storage validity not audited. Source FIFO disjointness requires manual contract; equality guard after realloc is insufficient for arbitrary aliases."
+    },
+    {
+      "id": "U3",
+      "blocking": true,
+      "callee": "WFIFOSET -> flush_fifo -> session[fd]->func_send",
+      "locations": [
+        "socket.cpp:875-876",
+        "socket.cpp:457-460"
+      ],
+      "issue": "Indirect SendFunc target not proven. Could narrow to independently established non-server player session flag, but this audit has not proven that flag invariant. No raw buf explicitly forwarded to indirect call; global alias/reentrancy behavior unresolved."
+    },
+    {
+      "id": "U4",
+      "blocking": true,
+      "callee": "map_foreachinareaV -> FreeBlockLock destructor -> map_freeblock_unlock",
+      "locations": [
+        "map.cpp:899",
+        "map.cpp:336-364",
+        "map.hpp:1099"
+      ],
+      "issue": "Direct callback immediate and va_copy source audited; deferred free/unlock/global-list reentrancy and compiled helper closure not completely audited. Raw buffer is not passed into lock helpers."
+    },
+    {
+      "id": "U5",
+      "blocking": false,
+      "callee": "battle_check_target; status_change::getSCE; npc_is_hidden_dynamicnpc",
+      "locations": [
+        "battle.cpp:7869",
+        "status.cpp:1199-1222",
+        "npc.cpp:1012-1015"
+      ],
+      "issue": "Exact recipient/world-condition result not proven; battle helper transitive effects not audited. NPC predicate source reads ownership; getSCE cache mutation documented. None receives raw buf or len, but no global noninterference proof claimed."
+    },
+    {
+      "id": "U6",
+      "blocking": true,
+      "callee": "memcpy and diagnostic ShowError/ShowWarning/ShowFatalError/ShowDebug, set_eof, exit, send_shortlist_add_fd",
+      "locations": [
+        "socket.cpp:822-889",
+        "clif.cpp:456-468",
+        "socket.cpp:1692-1716"
+      ],
+      "issue": "C-library memcpy semantics assumed only for valid disjoint ranges; allocator/diagnostic transitive closure not compiled/audited here. Shortlist source stores fd only. Fatal paths and errors do not supply receipt."
+    },
+    {
+      "id": "U7",
+      "blocking": false,
+      "callee": "non-AREA recipient routes: mapit_alloc/next/free; map_id2bl; party_search; util::umap_find and member iterators",
+      "locations": [
+        "clif.cpp:493-739"
+      ],
+      "issue": "All raw buf/len expression uses inventoried in expanded sink, but recipient-helper/global alias/loop closure outside AREA and recursive SELF is not approved. No generic all-routes sink adoption."
+    }
+  ],
+  "remaining_scope": "U2-U7 intact, allocator/flush/reentrancy/recipient helpers/non-AREA semantics not resolved. CLI ID1927 sink unreviewed. Layout7-emotion evidence is not native behavior proof.",
+  "freeze": {
+    "critical_file_count": 189,
+    "all_critical_hashes_unchanged": true,
+    "audit_report_unchanged": true
+  },
+  "issues": [
+    "Initial Python HTTPS lacked CA trust; curl securely retrieved the exact official PDFs.",
+    "pdftotext absent from PATH; used an already-cached Nix-store executable, no install/fetch dependencies.",
+    "Initial AST traversal encountered placeholder nodes without kind; corrected read-only traversal.",
+    "Web extractor backend could not extract; local official PDF bytes were actually retrieved and converted."
+  ],
+  "scratch": "/home/otto/.hermes/cache/scratch/varargs-contract-035h2wdh"
+}

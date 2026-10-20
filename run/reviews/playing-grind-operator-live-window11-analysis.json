@@ -1,0 +1,13 @@
+{
+  "status": "GRIND_WINDOW11_SPAWNS_LIVE_BUT_DISPERSED_DENSIFICATION_FRONTIER",
+  "completed_at": "2026-10-15T21:14:36.930004+00:00",
+  "raw_receipt": "run/reviews/playing-grind-operator-live-window11.json",
+  "results": {
+    "fixture_0": "935 walks/935 matched acks roaming committed cells; 12 actor frames; zero attackable in range",
+    "fixture_1": "26 actor frames; zero attackable",
+    "both": "transport healthy, dialogue clear held, paced evaluation"
+  },
+  "analysis": "The spawn import IS live (pre-re conf loaded via scripts_main.conf line 37), but the declarations are whole-map: ~130 mobs over ~90k walkable tiles with small random-walk radii - a stationary agent sight box sees one only by luck (window 4 sightings were the lucky exception). Two consecutive 600s windows with zero contact is the expected outcome of this density.",
+  "fix": "uaRO-inspired starter-field densification (world-content publication): prt_fild08 declarations from whole-map to clustered near the warp-in cell the agents roam (e.g. prt_fild08,170,375,180,180 monster Poring 1002,140 + Lunatic/Pupa/Drops proportionally) - a guarded publication of npc/pre-re/mobs/fields/prontera.txt (new third target), then window 12.",
+  "native_authority": "UNCHANGED_REVOKED"
+}

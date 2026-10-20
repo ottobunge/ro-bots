@@ -1,0 +1,214 @@
+{
+  "passed": false,
+  "review_type": "independent_read_only_scoped_rereview",
+  "review_date": "2026-10-05",
+  "repository": "/home/otto/dev/ro-bots",
+  "summary": "Normal I/O-failure handling and WorldFeed retention invariants pass, but three independently reproduced interruption/cleanup defects block scoped approval.",
+  "security_concerns": [],
+  "logic_errors": [
+    {
+      "id": "CORE-REREVIEW-001",
+      "severity": "high",
+      "file": "src/robots/adapters/memory_journal.py",
+      "lines": [145, 155],
+      "title": "An interrupted uncertain append leaves the writer healthy and permits blind continuation",
+      "description": "The write/flush/fsync critical section poisons the writer only for OSError. KeyboardInterrupt after write and flush, while fsync is being attempted, escapes without setting _failed. Memory correctly withholds the failed note from local history, but the same writer then accepts another note without explicit inspection/reopen. This bypasses the fail-closed uncertain-append boundary and causes disk history and visible local history to diverge.",
+      "reproduction": "Using a real JsonlExperienceStore and Memory in a scratch directory, inject KeyboardInterrupt at os.fsync during remember(), catch the interruption as a caller may, restore real fsync, and call remember() again on the same instance.",
+      "observed": {
+        "writer_poisoned": false,
+        "visible_notes_after_interrupt": 0,
+        "uncertain_disk_bytes": 111,
+        "continuation_succeeded_without_inspection": true,
+        "visible_notes_after_continuation": 1,
+        "disk_notes_after_continuation": 2
+      },
+      "recommendation": "Once a write can have begun, poison on every escaping BaseException and re-raise the original failure. Keep validation failures before any write separate. Add an interruption-after-write regression proving subsequent reads/appends remain blocked and failed notes are not acknowledged.",
+      "test_gap": "Existing short-write and fsync regressions inject OSError only; they do not exercise asynchronous interruption of the uncertain-write section."
+    },
+    {
+      "id": "CORE-REREVIEW-002",
+      "severity": "medium",
+      "file": "src/robots/society/memory.py",
+      "lines": [105, 110],
+      "title": "Interrupted restore leaks explicitly owned journal descriptors and its writer lock",
+      "description": "MemoryLog construction closes storage after Exception, but not after KeyboardInterrupt/SystemExit. The journal intentionally uses closefd=False and owns raw descriptors explicitly, so wrapper destruction is not a substitute for store.close(). If restore is interrupted and the caller continues, construction fails while the acquired writer lock and raw descriptors remain live.",
+      "reproduction": "Create a real store, inject KeyboardInterrupt from its load() while constructing Memory, catch the interruption, then attempt a fresh writer on the same root/persona before explicit manual cleanup.",
+      "observed": {
+        "fresh_writer_rejected_with_BlockingIOError": true,
+        "original_raw_fd_still_open": true
+      },
+      "recommendation": "Cover BaseException at the ownership-transfer/restore boundary, close the acquired store on every failed construction, and preserve the originating exception even if cleanup also fails. Add a restore-interruption regression checking both descriptor closure and fresh lock acquisition.",
+      "test_gap": "Existing restore-cleanup regressions cover ordinary invalid history and RuntimeError/ValueError, not interruption."
+    },
+    {
+      "id": "CORE-REREVIEW-003",
+      "severity": "medium",
+      "file": "src/robots/app/agent_runtime.py",
+      "lines": [280, 310],
+      "related_lines": [684, 702],
+      "title": "Client-close failure before release is stranded by the offline early-return guard",
+      "description": "disconnect() sets online=False before client cleanup and reports a client.close() error, but subsequent disconnect()/stop() immediately return for that offline agent. If close failed before releasing the connection, restoring a working close implementation and retrying host.stop() still never closes it. A disconnected feed event is also emitted even though closure failed. Other agents and journals are attempted, but the failed client cleanup is not retryable.",
+      "reproduction": "Build a two-agent offline host using FakeGameClient and real journals, connect both with worker threading disabled, make the first client's close raise before updating its connected state, call host.stop(), restore real close, and call host.stop() again.",
+      "observed": {
+        "first_client_connected_after_failed_stop": true,
+        "first_agent_online": false,
+        "second_client_connected_after_failed_stop": false,
+        "first_client_connected_after_retry": true
+      },
+      "recommendation": "Track pending client cleanup independently from online/session state and retry it on later stop calls without writing a duplicate session note. Continue aggregating failures across agents. Do not assert completed disconnection merely because an attempted close raised.",
+      "test_gap": "test_cleanup_errors_preserve_session_failure_without_skipping_other_agents calls the real close before injecting its error. It proves aggregation for an already-released client, not cleanup behavior when close fails before release."
+    }
+  ],
+  "scoped_checks": [
+    {
+      "name": "normal durable acknowledgement and uncertain OSError writes",
+      "status": "pass_with_interruption_exception_above",
+      "evidence": "MemoryLog holds one RLock across store append and local publication. Real-file short writes and fsync failures withhold local notes, poison future reads/writes, preserve uncertain bytes on blocked retry, and retain the writer lock until explicit close. Fresh-process replay is exercised.",
+      "limits": "An uncertain row may exist on disk and can be seen after explicit reopening; exactly-once retry or guaranteed physical power-loss survival is not established."
+    },
+    {
+      "name": "namespace fsync, descriptor ownership, hardlinks, and private roots",
+      "status": "pass_for_exercised_syscall_boundaries",
+      "evidence": "Source uses fd-relative no-follow ancestor traversal, final-root/file owner/private validation, single-link validation at open and immediately before append, nonblocking lifetime flock, explicit closefd=False raw-fd ownership, parent-directory fsync during traversal, journal-directory fsync before construction returns, and inode fsync before append returns. Boundary tests invoke real mkdir/fsync/open/flock/hardlink operations and verify fd closure plus lock reacquisition after injected ordinary constructor/close failures.",
+      "limits": "Checks do not prevent a malicious same-UID process racing a hardlink after validation or mutating an already-open namespace. Restore interruption is separately blocking above."
+    },
+    {
+      "name": "memory threading and summary construction",
+      "status": "pass_for_reviewed_operations",
+      "evidence": "Controlled real threads prove appends cannot overtake acknowledgement, close cannot overtake an in-flight append, and concurrent complete views cannot build the same summary twice. render_view and zoom hold the shared reentrant lock across construction.",
+      "limits": "No claim of a globally atomic WorldState roster/runtime snapshot or bounded total raw-note/summary-cache storage is made."
+    },
+    {
+      "name": "producer join-before-journal-close and multiple ordinary shutdown failures",
+      "status": "pass_except_unreleased_client_retry_above",
+      "evidence": "Host signals all agent workers before joining, keeps producer references on failed/early/self joins, joins WorldFeed before releasing storage, attempts remaining agents and journals after ordinary failures, and aggregates original failures. Event-controlled worker/inspector tests perform final real journal writes and verify all locks can be reacquired after completed shutdown.",
+      "limits": "Joins deliberately have no timeout; permanently blocked producers can prevent shutdown while retaining storage ownership. Inspector behavior is modeled with controlled threads, not a running HTTP service."
+    },
+    {
+      "name": "WorldFeed sequence allocation, retention identity, reconnect, and bounded retained event count",
+      "status": "pass",
+      "evidence": "Sequence allocation, append, trimming, and snapshot acquisition share one RLock. Stream filtering compares lifetime sequence identity rather than retained-array position and resumes strictly after a valid Last-Event-ID. The scoped regressions and additional inline probes cover rollover, concurrent producer IDs, and reconnecting at the newest delivered ID before the next event arrives.",
+      "additional_probe": {
+        "last_delivered_id_not_replayed": true,
+        "next_delivered_identity": 1,
+        "concurrent_producers": 8,
+        "produced_events": 4000,
+        "unique_allocated_ids": 4000,
+        "retained_events": 1000,
+        "retained_sequence_first": 3002,
+        "retained_sequence_last": 4001
+      },
+      "limits": "Retention bounds the event count, not arbitrary payload bytes or all memory in the process. Per-stream snapshots are bounded by the retained count. IDs are not durable across process restart; evicted history is unrecoverable."
+    }
+  ],
+  "verification": {
+    "scoped_test_files": [
+      "tests/test_memory_storage.py",
+      "tests/test_memory_concurrency.py",
+      "tests/test_memory_journal_failures.py",
+      "tests/test_memory_journal_boundary.py",
+      "tests/test_host_memory.py",
+      "tests/test_host_storage_failure.py",
+      "tests/test_worldfeed_retention.py",
+      "tests/test_worldfeed_server.py",
+      "tests/test_world_state.py",
+      "tests/test_agent_host.py"
+    ],
+    "initial_scoped_command": "nix develop -c uv run pytest <the ten scoped test files> -q -o faulthandler_timeout=15",
+    "initial_scoped_exit_code": 0,
+    "offline_repeat": {
+      "command": "nix develop -c uv run python -c <pytest.main for the ten scoped files with addopts cleared and AgentHost._autodetect_chat patched in-process to StaticChatGenerator>",
+      "exit_code": 0,
+      "passed": 145,
+      "failed": 0,
+      "seconds": 4.17,
+      "warnings": [
+        "Existing Starlette/httpx TestClient deprecation warning",
+        "PytestAssertRewriteWarning for anyio caused by imports before embedded pytest.main"
+      ]
+    },
+    "independent_failure_probes": {
+      "execution": "nix develop -c uv run python -c <inline temporary-directory probes>",
+      "exit_code": 0,
+      "result": "All three reported defects reproduced against real opened journals and offline fake clients; fixtures were explicitly cleaned afterward."
+    },
+    "independent_feed_probes": {
+      "execution": "nix develop -c uv run python -c <inline bounded async reconnect and eight-thread producer probes>",
+      "exit_code": 0,
+      "result": "All explicit feed assertions passed."
+    },
+    "scoped_git_diff_check": {
+      "command": "git diff --check -- <five reviewed source files>",
+      "exit_code": 0,
+      "limits": "Ordinary git diff does not include untracked files; those were separately treated as full new-file diffs against /dev/null and read in full."
+    },
+    "reviewed_implementation_reports": [
+      "run/reviews/memory-journal-boundary.json",
+      "run/reviews/host-storage-failure.json"
+    ],
+    "report_claim_handling": "Implementation reports were context only. Their passing claims were checked against actual source, tests, real scoped execution, and independent negative probes rather than accepted as an oracle.",
+    "repository_wide_gates": "Not run or certified during this bounded review; concurrent unowned changes remain outside this verdict."
+  },
+  "source_hash_algorithm": "sha256",
+  "source_hashes": {
+    "src/robots/society/memory.py": "6b7f8bd46d8a484808df33be3464ec2967f13304dbeb0fdf03bb3a9fd7318562",
+    "src/robots/adapters/memory_journal.py": "1ae7b8a37f4073599da8bc12a839488f7b41bdd70439008f353962a07e0f50e1",
+    "src/robots/app/agent_runtime.py": "2142d1c1c57a5c115c306ef4306eac27829ffa7c99b03d5df7eedce1782d388f",
+    "src/robots/app/world_state.py": "424ef2bef6728fb8f9f3350710cb7fa25a0f7e4c74ece01a2b33e3feaabfd642",
+    "src/robots/adapters/worldfeed_server.py": "0123fe3964030713452cf174157d998d2f94cd63aa5e5884bcdfccf01ad96344"
+  },
+  "working_diff_evidence": {
+    "src/robots/society/memory.py": {
+      "kind": "tracked_working_diff",
+      "added_lines": 58,
+      "removed_lines": 4,
+      "sha256": "49066d8b0791f0af7573405fc9a0c45b6fd184955adba837387717be07568cd5"
+    },
+    "src/robots/adapters/memory_journal.py": {
+      "kind": "new_untracked_file_diff_against_dev_null",
+      "added_lines": 173,
+      "removed_lines": 0,
+      "sha256": "1ad20c258a4321d2797cc4526859f2c2145003ab0b31f4010c1172a72dbd76a8"
+    },
+    "src/robots/app/agent_runtime.py": {
+      "kind": "new_untracked_file_diff_against_dev_null",
+      "added_lines": 742,
+      "removed_lines": 0,
+      "sha256": "f0ebfaac3238a69984d711ffa578f8f46a0d6303c8415a6432b6a2ae933d64f7"
+    },
+    "src/robots/app/world_state.py": {
+      "kind": "new_untracked_file_diff_against_dev_null",
+      "added_lines": 361,
+      "removed_lines": 0,
+      "sha256": "db1589924c91f3c00cdfcbfd3bda0bc793dacbdd9325c8ba810876373bf0cdd0"
+    },
+    "src/robots/adapters/worldfeed_server.py": {
+      "kind": "new_untracked_file_diff_against_dev_null",
+      "added_lines": 229,
+      "removed_lines": 0,
+      "sha256": "d647e6b5b789b1111ca014499714f912774524d2595ba43f88542e9cd71dc180"
+    }
+  },
+  "static_security_scan": {
+    "scope": "Added lines of each reviewed working/new-file diff",
+    "shell_injection_matches": [],
+    "eval_exec_matches": [],
+    "unsafe_deserialization_matches": [],
+    "embedded_secret_assignment_matches": [],
+    "manual_security_review": "No blocking security issue identified in the explicitly reviewed private-journal and feed-retention boundary. This is not repository-wide security certification."
+  },
+  "suggestions": [
+    "Add before-release cleanup-failure tests rather than injecting every close error after successful release.",
+    "Add interruption regressions at ownership-transfer and uncertain-write boundaries; normal Exception-only tests do not establish cleanup for BaseException.",
+    "State event-count retention separately from byte/memory bounds and durable raw-history growth."
+  ],
+  "scope_limits": [
+    "No source or test files edited; no staging or commits; only this report artifact is owned by the reviewer.",
+    "No services started, provider inference called, game connections made, or SQL calls made. The initial pre-existing scoped tests can invoke the host's localhost chat reachability check; the repeat explicitly disabled autodetection. No connectivity result is accepted as provider evidence.",
+    "No physical power-loss simulation, exactly-once certification, summary-cache persistence certification, or full-dashboard/gameplay acceptance.",
+    "Operator commands reaching real agents, protocol correctness, character/build execution, live world-seeding/isolation, and mock/Rust integration remain excluded and incomplete."
+  ],
+  "files_created_or_modified_by_reviewer": [
+    "run/reviews/core-memory-feed-rereview.json"
+  ]
+}

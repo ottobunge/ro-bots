@@ -1,0 +1,44 @@
+{
+  "status": "COMPOSITE_DECLARED_STATIC_GATES_ONLY",
+  "gates": {
+    "qualified-black-new": {
+      "command": "nix develop --offline --no-write-lock-file path:./spikes/007-native-packet-ast/toolchain -c env PYTHONOPTIMIZE=0 PYTHONDONTWRITEBYTECODE=1 .venv/bin/python -B -m black --check /home/otto/dev/ro-bots/.work/native-item-guide-combined/maintenance-content-candidate/item_guide_publication.py /home/otto/dev/ro-bots/.work/native-item-guide-combined/maintenance-content-candidate/item_guide_files.py",
+      "exit_code": 0,
+      "log": "/home/otto/dev/ro-bots/.work/native-item-guide-combined/parent-gates/qualified-black-new.log",
+      "sha256": "231cba852a38e7dffc5c7df4b216e36e35f0d9606ef83aaf71864938a12868af"
+    },
+    "qualified-ruff-new": {
+      "command": "nix develop --offline --no-write-lock-file path:./spikes/007-native-packet-ast/toolchain -c env PYTHONOPTIMIZE=0 PYTHONDONTWRITEBYTECODE=1 .venv/bin/python -B -m ruff check /home/otto/dev/ro-bots/.work/native-item-guide-combined/maintenance-content-candidate/item_guide_publication.py /home/otto/dev/ro-bots/.work/native-item-guide-combined/maintenance-content-candidate/item_guide_files.py",
+      "exit_code": 0,
+      "log": "/home/otto/dev/ro-bots/.work/native-item-guide-combined/parent-gates/qualified-ruff-new.log",
+      "sha256": "f0d0b1081d9d3ebb26c4c93543053ecdc0a58998f22c071dc4ddb26021b57645"
+    },
+    "qualified-mypy-new": {
+      "command": "nix develop --offline --no-write-lock-file path:./spikes/007-native-packet-ast/toolchain -c env PYTHONOPTIMIZE=0 PYTHONDONTWRITEBYTECODE=1 env MYPYPATH=/home/otto/dev/ro-bots/.work/native-item-guide-combined/maintenance-content-candidate .venv/bin/python -B -m mypy --strict --no-incremental --follow-imports=silent --cache-dir=/home/otto/dev/ro-bots/.work/native-item-guide-combined/mypy-cache /home/otto/dev/ro-bots/.work/native-item-guide-combined/maintenance-content-candidate/item_guide_publication.py /home/otto/dev/ro-bots/.work/native-item-guide-combined/maintenance-content-candidate/item_guide_files.py",
+      "exit_code": 0,
+      "log": "/home/otto/dev/ro-bots/.work/native-item-guide-combined/parent-gates/qualified-mypy-new.log",
+      "sha256": "115d386b567d3686b1ff3e97429e2d4813021a66d446edef11aae44bbe144b00"
+    },
+    "qualified-xenon-new": {
+      "command": "nix develop --offline --no-write-lock-file path:./spikes/007-native-packet-ast/toolchain -c env PYTHONOPTIMIZE=0 PYTHONDONTWRITEBYTECODE=1 .venv/bin/python -B -m xenon --max-absolute B --max-modules B --max-average A /home/otto/dev/ro-bots/.work/native-item-guide-combined/maintenance-content-candidate/item_guide_publication.py /home/otto/dev/ro-bots/.work/native-item-guide-combined/maintenance-content-candidate/item_guide_files.py",
+      "exit_code": 0,
+      "log": "/home/otto/dev/ro-bots/.work/native-item-guide-combined/parent-gates/qualified-xenon-new.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "qualified-ruff-core-caller": {
+      "command": "nix develop --offline --no-write-lock-file path:./spikes/007-native-packet-ast/toolchain -c env PYTHONOPTIMIZE=0 PYTHONDONTWRITEBYTECODE=1 .venv/bin/python -B -m ruff check /home/otto/dev/ro-bots/.work/native-item-guide-combined/maintenance-content-candidate/recovery.py /home/otto/dev/ro-bots/.work/native-item-guide-combined/maintenance-content-candidate/live_recovery.py",
+      "exit_code": 0,
+      "log": "/home/otto/dev/ro-bots/.work/native-item-guide-combined/parent-gates/qualified-ruff-core-caller.log",
+      "sha256": "f0d0b1081d9d3ebb26c4c93543053ecdc0a58998f22c071dc4ddb26021b57645"
+    },
+    "qualified-mypy-core-caller": {
+      "command": "nix develop --offline --no-write-lock-file path:./spikes/007-native-packet-ast/toolchain -c env PYTHONOPTIMIZE=0 PYTHONDONTWRITEBYTECODE=1 env MYPYPATH=/home/otto/dev/ro-bots/.work/native-item-guide-combined/maintenance-content-candidate .venv/bin/python -B -m mypy --strict --no-incremental --follow-imports=silent --cache-dir=/home/otto/dev/ro-bots/.work/native-item-guide-combined/mypy-core-cache /home/otto/dev/ro-bots/.work/native-item-guide-combined/maintenance-content-candidate/recovery.py /home/otto/dev/ro-bots/.work/native-item-guide-combined/maintenance-content-candidate/live_recovery.py",
+      "exit_code": 0,
+      "log": "/home/otto/dev/ro-bots/.work/native-item-guide-combined/parent-gates/qualified-mypy-core-caller.log",
+      "sha256": "115d386b567d3686b1ff3e97429e2d4813021a66d446edef11aae44bbe144b00"
+    }
+  },
+  "all_declared_gates_pass": true,
+  "scope": "Two new publisher modules and core/caller pair at exact composite source snapshot. Broader inherited51 Ruff/31 mypy diagnostics remain separate; no full-root gate or waiver.",
+  "native_effects": false
+}

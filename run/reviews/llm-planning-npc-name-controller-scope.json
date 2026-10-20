@@ -1,0 +1,27 @@
+{
+  "status": "ACTUAL_CLIENT_STRING_STAGE_BEHAVIORAL_RED_REACHED",
+  "baseline": {
+    "path": "/home/otto/.hermes/cache/scratch/npc-name-controller/baseline.json",
+    "sha256": "b832c579c706e0749726d0b96462937ea1b2618a7b8cbca2825a5a8e26ff00f4",
+    "inputs": 380
+  },
+  "owned_source": [
+    "src/robots/domain/actions.py",
+    "src/robots/adapters/native_npc_dialogue.py",
+    "src/robots/app/playing_runtime.py"
+  ],
+  "owned_new_test": "tests/test_native_npc_name_input.py",
+  "owned_new_report": "run/reviews/llm-planning-npc-name-controller.json",
+  "required": [
+    "Received01D4 -> explicit string_input stage without autoanswer;0142 stays unsupported",
+    "Explicit NpcSubmitName action bound to NPC ID/session epoch/received prompt sequence; no arbitrary user text field",
+    "Wire bytes use validated exact wire.char_name, once per current prompt",
+    "Fresh actor/map/epoch/life/standing/arrival/transport and continuity safeguards preserved",
+    "Duplicate/stale/foreign/numeric/oversized/invalid-name/expired stages send nothing; send failure keeps conservative failure",
+    "Next server frame is needed for progress; send alone does not prove NPC acceptance or quest reward"
+  ],
+  "protected": "All other baseline files unchanged, including codec, brain/planning execution and protocol manifests",
+  "tdd": "Vertical RED/GREEN per new behavior, retained original tracer, no posthoc chronology",
+  "effects": "Offline Wire only; no native/world/provider/SQL/model/credential operations",
+  "full_goals": "OPEN"
+}

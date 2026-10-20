@@ -1,0 +1,193 @@
+{
+  "schema": "offline-one-item-purchase-next-frontier/v1",
+  "status": "SOURCE_RESEARCH_COMPLETE_FINITE_C8_TRACER_PROPOSED_NO_IMPLEMENTATION",
+  "evidence_kind": "Local pinned public-source analysis and exact byte/hash snapshots, not execution of a purchase tracer or native receipt",
+  "profile": {
+    "revision": "e985006171d2eb320ee512a653f4c83aea3d81b6",
+    "packetver": 20180704,
+    "client_family": "MAIN",
+    "ruleset": "pre-re",
+    "source_root": "/home/otto/dev/ro-bots/run/public-source/callback-qualified-e985006171d2",
+    "changed": false
+  },
+  "scope": {
+    "allowed_outputs": [
+      ".work/one-item-purchase-next-frontier/**",
+      "run/reviews/one-item-purchase-next-frontier.json"
+    ],
+    "source_edits": false,
+    "private_bodies_read": false,
+    "native_client_launch": false,
+    "native_or_model_traffic": false,
+    "purchase": false,
+    "docker_sql_admin_restart_reload": false,
+    "helper_or_binding_issuance": false,
+    "active_live_permission": false
+  },
+  "weight_decision": {
+    "protocol_requires_client_loaded_weight": false,
+    "server_checks_own_loaded_weight_before_ordinary_debit": true,
+    "existing_conservative_fit_policy_changed": false,
+    "unknown_loaded_weight_under_existing_policy": "DENY_C8",
+    "offline_integration_needs_new_live_observer": false,
+    "any_live_request_allowed_by_this_report": false,
+    "alternative": "A bounded attempt without client weight prediction would require explicit separately reviewed policy accepting rejection and possible debit-without-acquisition; not adopted here",
+    "disk_knife1201_weight_raw": 400,
+    "disk_value_authority": "Previously parent-verified public disk closure only",
+    "actual_loaded_knife1201_weight": "UNKNOWN",
+    "selected_self_inventory_slots": {
+      "value": 100,
+      "authority": "Parent task context: separately obtained selected SELF metadata; no private body or current publication read in this lane"
+    },
+    "received_B1_B0_capacity": "Parent task context: adopted; current writer-owned publication excluded from freeze"
+  },
+  "source_sequence": [
+    "C6 effective discountPrice",
+    "current price/quantity/item checks",
+    "current server Zeny/loaded weight/actual slot checks",
+    "B1 debit",
+    "0A37 successful inventory add",
+    "B0 updated weight",
+    "CA result"
+  ],
+  "abort_and_partial_effects": [
+    {
+      "case": "normal validation/money/weight/space rejection",
+      "effect": "Return before debit/add; CA failure follows and npc_shopid is cleared",
+      "source": [
+        "npc.cpp:2796-2893",
+        "clif.cpp:12299-12325"
+      ]
+    },
+    {
+      "case": "pc_additem failure after debit",
+      "effect": "Return is ignored; no refund and no guaranteed failed-add ACK in this caller; CA0 may follow without acquisition",
+      "source": [
+        "npc.cpp:2895,2922-2928,2947",
+        "pc.cpp:5999-6046"
+      ]
+    },
+    {
+      "case": "normal successful quantity-one add",
+      "effect": "Inventory mutation/0A37 precedes B0 and CA; no mandatory post-CA acquisition ACK",
+      "source": [
+        "pc.cpp:6032-6070",
+        "clif.cpp:12321-12325"
+      ]
+    },
+    {
+      "case": "script-master or market shop",
+      "effect": "Outside ordinary scope: script delegates arbitrary effects; market stock handling can occur after debit",
+      "source": [
+        "npc.cpp:2859-2884,2901-2909"
+      ]
+    },
+    {
+      "case": "send exception or lost terminal receipts",
+      "effect": "Transport effects may be indeterminate; retain unresolved intent and prohibit automatic retry, not proof of zero effects",
+      "classification": "Proposed conservative consumer policy"
+    }
+  ],
+  "bounds": {
+    "request": {
+      "entries": 1,
+      "quantity": 1,
+      "item_id": 1201,
+      "bytes": 8,
+      "wire_hex": "c80008000100b104",
+      "automatic_retries": 0
+    },
+    "money": "Authorize and reserve current C6 discountPrice P only; debit==P is conditional on qualified stable ordinary shop price/discount. C8 has no price cap; fresh offer alone cannot guarantee loss<=P if price changes.",
+    "weight_prediction": "UNKNOWN until qualified loaded value; server authority is distinct from client prediction and does not justify silent policy weakening",
+    "progress": "One pending owner intent + presend cursor + matching postcursor0A37/count/index/current inventory + CA0; B1/B0 retained independently; no nonce-origin or zero-loss claim",
+    "arbitrary_loaded_override_safety": "Not established: YAML weight is uint32 while npc accumulator is int32; no universal overflow-safe theorem claimed",
+    "canonical_item_identity": "Qualify selected ordinary shop row resolves to actual1201: npc.cpp:2827-2845 permits view-ID substitution; matching C6/0A37 client ID alone is insufficient"
+  },
+  "minimum_missing_integration": [
+    "Unadvertised concrete owner-local one-item C8 action and mint",
+    "Fresh existing readiness/offer/Zeny/capacity/indexed stock/SELF-slot/loaded-weight admission",
+    "Consume once and dispatch existing C8 codec through existing primitive",
+    "One pending exchange correlated to actual CA/0A37/indexed stock with failures and timeout explicit"
+  ],
+  "finite_tracer": {
+    "executed": false,
+    "native": false,
+    "test_count_claimed": null,
+    "shape": "One parametrized actual-constructor/framer/dispatch/ring/owner-action/progress tracer; only primitive send and monotonic clock replaced",
+    "cases": [
+      "known synthetic weight success and consumed replay refusal",
+      "responses received during successful primitive send",
+      "send raises: original exception/no promotion/no retry",
+      "CA2 without add: terminal rejection",
+      "B1 debit plus CA0 without0A37: no acquisition PASS",
+      "loaded weight UNKNOWN despite disk400: no send",
+      "foreign owner with equal DTO: no send",
+      "original offer deadline reached: no send/no renewal"
+    ],
+    "first_red": "Absent owner-minted concrete purchase action/dispatch; do not reopen adopted capacity producer work",
+    "all_synthetic_inputs_labelled": true,
+    "planner_advertisement": false
+  },
+  "suggested_next_writer_files": {
+    "owned_after_assignment": [
+      "src/robots/domain/actions.py",
+      "src/robots/domain/shop.py",
+      "src/robots/adapters/native_shop_context.py",
+      "src/robots/adapters/native_gameplay.py",
+      "tests/test_native_shop_purchase.py"
+    ],
+    "requires_completed_publication_writer_handoff": [
+      "src/robots/app/playing_runtime.py"
+    ],
+    "reuse_unchanged": [
+      "src/robots/adapters/native_shop.py",
+      "spikes/003-clientless-limbs/client.py",
+      "spikes/003-clientless-limbs/packetdb.py"
+    ],
+    "excluded": [
+      "src/robots/domain/model.py"
+    ]
+  },
+  "minimal_official_loaded_weight_source": {
+    "preferred_raw_value": "Existing qualified received diagnostic exposing getiteminfo(1201, ITEMINFO_WEIGHT)",
+    "sources": [
+      "script.cpp:14761-14785",
+      "script.hpp:2236-2244",
+      "itemdb.hpp:3815"
+    ],
+    "already_available_diagnostic": "UNKNOWN",
+    "alternative_official_display": "@iteminfo exact itemID1201 reads current item_db.find and prints weight/10. with one decimal",
+    "alternative_source": "atcommand.cpp:8628-8666",
+    "command_privilege_and_permission": "UNKNOWN; no command executed or permission granted",
+    "forbidden_substitutes": [
+      "disk400 default",
+      "guessed weight",
+      "SQL item mirror",
+      "restart/reload",
+      "new diagnostic NPC mutation",
+      "debugger/process-memory read"
+    ]
+  },
+  "remaining_frontier": "Offline owner-local C8 integration and received acquisition correlation can proceed with synthetic known-weight metadata and UNKNOWN denial. Before live dispatch under unchanged policy obtain qualified loaded weight and bind completed selected-SELF publication plus ordinary stable shop/budget scope. No active native permission.",
+  "source_locations": "See exact original-line excerpts and byte snapshots; all native source references resolve under the configured source root",
+  "issues": [
+    "Shared dirty tree preserved; historical one-item report describes older missing producers and unknown SELF allowance, not current parent-adopted status",
+    "Active model.py/playing_runtime.py publication was intentionally neither read nor frozen",
+    "No existing available ordinary diagnostic for live loaded weight established"
+  ],
+  "verification": {
+    "captured_sources": 24,
+    "captured_excerpts": 36,
+    "prior_native_hashes_compared": 7,
+    "prior_native_hash_mismatches": [],
+    "during_capture_source_changes": [],
+    "source_snapshot_bytes_verified": true,
+    "report_schema_checks": true
+  },
+  "artifacts": {
+    ".work/one-item-purchase-next-frontier/proposal.md": "5b04be9f5bf2e2f760c868db6ca4fbbebabc5389d580fe6457e887685828f638",
+    ".work/one-item-purchase-next-frontier/capture_evidence.py": "6e9d550db786b5fa731dfaf71804e5579ea92ec0dd72021316221afe94d8a7a7",
+    ".work/one-item-purchase-next-frontier/source-manifest.json": "5100378e5585e9bba7e4385fa0bf9f7ac7bb190a5809fcf2a6069d60668b8d16",
+    ".work/one-item-purchase-next-frontier/source-excerpts.json": "242243bfc2698aef10e9f2fcb0ec5f650094222a80df7ee4c3c780254345b9c1"
+  }
+}

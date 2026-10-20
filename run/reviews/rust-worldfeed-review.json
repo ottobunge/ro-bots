@@ -1,0 +1,178 @@
+{
+  "schema_version": 1,
+  "review": "Independent read-only Rust WorldFeed HTTP/SSE and backend-selection review",
+  "passed": false,
+  "verdict": "FAIL CLOSED: transport gates pass, but independently reproduced HTML injection, unsafe roster-size validation and erased replay-gap provenance prevent approval.",
+  "repository": "/home/otto/dev/ro-bots",
+  "base_commit": "15e0fef5334a7d9d7bb0ae6b8953e367e828bfb2",
+  "final_snapshot_at": "2026-10-05T13:29:16+02:00",
+  "production_changes_by_reviewer": false,
+  "staged_committed_or_pushed": false,
+  "evidence_level": "Compiled Rust gates, offline current-Python serialization comparison, isolated actual Python FastAPI-to-Rust loopback, and independent Rust HTTP probes. NOT real game, AgentHost execution, Docker, browser/UI acceptance or durable replay proof.",
+  "scope": ["dashboard/**", "flake.nix", "flake.lock", "read-only Python wire contract in worldfeed_server.py/world_state.py"],
+  "source_hashes_sha256_at_successful_review_run": {
+    "dashboard/.dockerignore": "c97ecfda4d205190b973232dcfdb0c29748521c2534dd866bcc782f30b086738",
+    "dashboard/.gitignore": "44c92e3a70ad3307b7056871c2bdb096d8bfa9373f5bf06a79bb6324a20ff2fb",
+    "dashboard/Cargo.lock": "0a57a881e01220685815d98b009bd720e96daf734cda6c410479736184642122",
+    "dashboard/Cargo.toml": "30cf07e68a3651772eedda7d2cd66315c458ec507b049f412443b2afbe8fca9a",
+    "dashboard/Dockerfile": "a1ae10afdf9487e0c8a54c2a734427ef5e0805fefee8adaf5e57d9c8cb358ce9",
+    "dashboard/README.md": "ac14e84903e1ec75b63f6c6c47e470d839427ac6c9e7714c3dd09cac2c094b24",
+    "dashboard/Taskfile.yml": "9af0557d4cc01edf0aa10edd2cb1d46faca34d8f5af112ff1cdeb0f881f47eb9",
+    "dashboard/crates/dashboard-app/Cargo.toml": "53e6b5cc6556e84c63399fc3857ef7dc79318e08812e87640eded29c1fb4266c",
+    "dashboard/crates/dashboard-app/assets/style.css": "ca28ec48b1810f5788c2119c301dd2a3ec6a56854a45a928a987b5b6403a5f81",
+    "dashboard/crates/dashboard-app/src/liveview.rs": "50bd17e42e1f49ca6abdea9cd23e3393b16a7b8feff7b0a95173cfe061b53afa",
+    "dashboard/crates/dashboard-app/src/main.rs": "0253992f028484ae45c29e708089b955f80f7b5dd69815779a1d0c6b5c47fa8d",
+    "dashboard/crates/dashboard-app/src/render.rs": "002a4a9309fa2f34a6e645ffcea7de803b0f746daa01ea92999ad16472980425",
+    "dashboard/crates/dashboard-app/src/tests.rs": "91c93e1a71266191dee0bf56c1115f1c9cd293006166157859d95ce4c65315cb",
+    "dashboard/crates/world-feed/Cargo.toml": "cd13d5f40d6e9759c810574832bf81e8ea817715c44cd60c38c0ef8cb211408a",
+    "dashboard/crates/world-feed/src/lib.rs": "0648de4d72d8b3da3b28c47e00b373459d636df699472fab5a0c53720ebe2225",
+    "dashboard/crates/world-feed/src/live.rs": "017e7cbbeaba9e6c533d85cbc5343c67e3b48a01a71b16b01a1c4f18a90db2f4",
+    "dashboard/crates/world-feed/src/mock/mod.rs": "242248ecea195ec955aad17aaf218ecf14be8a41ff9b78ee0f4604397bf1b809",
+    "dashboard/crates/world-feed/src/mock/tests.rs": "d8e452bca873d8054f1e51a62c11624af0d8f54258f385594697299e8f9942ad",
+    "dashboard/crates/world-feed/src/wire.rs": "cf54289322d96a182ee10061e35489ebeec1b871b0fe44c3cd6aeb014c328f3d",
+    "dashboard/crates/world-feed/tests/http_live.rs": "83272daefe894a67e6f21077f7d731a574323cb36dd3785321a665f061f01292",
+    "dashboard/crates/world-feed/tests/python_wire.rs": "2b8f0f4fab4fa2bb2ada39db13a383c8a814e344734f25c7f2f561e56b1af38f",
+    "dashboard/crates/world-feed/tests/sse.rs": "fbec32331829685b5de258a85eac287a0d2b5eeba95b30cadb98e00daaef6f8b",
+    "dashboard/docker-compose.yml": "97141af7065041266133a3a5bbb799c47eefd29bf69a06bd072f69f08dc45cc5",
+    "dashboard/fixtures/agent.json": "b60635dc6a38bf46cd64f36fd59758300d11782aea4f3d14d1a270245d240aa9",
+    "dashboard/fixtures/event.json": "9043117c155c684d583d6c730406765d62d715319a67c6dea52480bc66128dfb",
+    "dashboard/fixtures/events.sse": "ca66c237fd4fdacdc6b47fa05d475aa94ed7e21a1f717008e00df0d3f047bd87",
+    "dashboard/fixtures/generate.py": "46f741f767ce3684db36880876db48d8e6ea5ce2afad8af6ca69a8a651ac15ed",
+    "dashboard/fixtures/provenance.json": "e72f6926747649a1b7b1255971ed9434b8a69d779fd33e4667b5a126d7a9d7ff",
+    "dashboard/fixtures/roster.json": "c1f52cf0973b114226b354c305ad199ca5d660550e9ba063e43c5f157cbb8afc",
+    "dashboard/fixtures/smoke.py": "cd635349b7bba502a85740bd87b150f87df802075fd6275cbae253c19fd9ad9b",
+    "flake.lock": "c9c0bac69415b99a29ef3fe149b6f04ef54d291989bdf7218cf819ed52edf2a0",
+    "flake.nix": "cc218c50ff3b05761d59b9b951f5da2daca3435d2c5cff975b909fe7df8c1ee3",
+    "src/robots/adapters/worldfeed_server.py": "0123fe3964030713452cf174157d998d2f94cd63aa5e5884bcdfccf01ad96344",
+    "src/robots/app/world_state.py": "59084c45e40f3ea8f15f983ef6377b71c3db729de7ea02f0a0f48b3e3e24d5bf"
+  },
+  "snapshot_drift": {
+    "all_review_sources_unchanged_during_successful_loopback_run": true,
+    "world_state_hash_at_final_read": "01dcd22cd81d3ff24373fed08d4e0ca1007e1a5be73341d43825da2a36e57f03",
+    "worldfeed_server_hash_at_final_read": "0123fe3964030713452cf174157d998d2f94cd63aa5e5884bcdfccf01ad96344",
+    "rust_live_lib_render_hashes_at_final_read_match_reviewed_snapshot": true,
+    "meaning": "Parent's independent POP-001 lifecycle repair changed WorldState after the successful pinned loopback run. This report does not approve that new WorldState version, lifecycle synchronization, or host-bound safety under concurrency. The wire serializer itself remained hash-identical. Supplementary Python tests lack an atomic source hash capture and are not approval evidence for either WorldState lifecycle version."
+  },
+  "security_concerns": [
+    {
+      "id": "RWF-HTML-001",
+      "severity": "high",
+      "location": "dashboard/crates/dashboard-app/src/render.rs:335,352-359",
+      "finding": "Editable upstream persona name is escaped in body text but inserted raw into the HTML title by shell(&detail.name,...). An accepted name containing a closing title plus script creates active script markup in the compiled live inspector response.",
+      "baseline": "Raw title interpolation already existed in HEAD; the live adapter newly feeds Python-origin names into this unsafe sink. This is not claimed as a newly written escaping regression.",
+      "repro": "On a fresh isolated WorldState, apply edit_persona for an existing persona with name </title><script>window.__review_xss=1</script><title>; serve create_app(state) on 127.0.0.1:0; launch compiled dashboard with WORLDFEED_URL pointing only to this reviewer-owned port; GET /agent/{persona_id}. Response contains the exact unescaped closing-title/script sequence. No browser execution was attempted.",
+      "observed": "unescaped_title_script_present=true",
+      "suggested_resolution": "Escape the title HTML context, and audit upstream strings in attitude, guild-goal, inline-JS persona ID and chat innerHTML sinks. Only the title exploit was exercised in this review."
+    },
+    {
+      "id": "RWF-POP-BOUND-001",
+      "severity": "high",
+      "location": "dashboard/crates/world-feed/src/lib.rs:299-321; dashboard/crates/world-feed/src/live.rs:335-345; reviewed Python world_state.py:240-277",
+      "finding": "Live roster commands have no group, solo, per-group or total-agent upper bound. One million friend groups passes command_payload validation and is serialized for POST. In the reviewed Python version it reaches an unbounded SocietyRoster.build range(n_groups), so the adapter's response/body/cache caps do not bound upstream CPU/memory work. A three-second HTTP timeout cannot cancel already-running synchronous generation.",
+      "baseline": "Missing bounds are inherited from mock command validation; forwarding to the Python process is the new live exposure. Latest parent lifecycle repair was not re-reviewed for this property.",
+      "repro": "Offline only: command_payload(&Command::RegenerateRoster {seed:1,friend_groups:1_000_000,solos:0,friends_per_group_min:2,friends_per_group_max:2}) returns Ok. Do NOT send this to any WorldState server. Inspect the exact reviewed WorldState path and SocietyRoster.build's range(n_groups).",
+      "observed": "MILLION_GROUPS_SERIALIZED=true; intentionally not posted or allocated",
+      "suggested_resolution": "Define a bounded maximum population, use checked/widened total calculations, and reject oversized commands before any network request; maintain corresponding upstream safeguards."
+    }
+  ],
+  "logic_errors": [
+    {
+      "id": "RWF-OVERFLOW-001",
+      "severity": "medium",
+      "location": "dashboard/crates/world-feed/src/lib.rs:316",
+      "finding": "friend_groups + solos uses unchecked u32 addition before the empty-population test. Legal JSON u32 extrema panic in the debug-built command path rather than fail closed with CommandError; release wrapping also makes validation depend on build profile.",
+      "baseline": "Unchecked addition exists in HEAD; newly reachable through the live command serialization path.",
+      "repro": "Wrap command_payload(&Command::RegenerateRoster {seed:1,friend_groups:u32::MAX,solos:1,friends_per_group_min:2,friends_per_group_max:2}) in std::panic::catch_unwind in a Rust debug probe compiled against the gate's exact world_feed rlib.",
+      "observed": "attempt to add with overflow at crates/world-feed/src/lib.rs:316:20; OVERFLOW_PANIC=true",
+      "execution_limit": "Debug panic was exercised; release behavior was inferred from the unchecked expression, not run."
+    },
+    {
+      "id": "RWF-GAP-001",
+      "severity": "medium",
+      "location": "dashboard/crates/world-feed/src/live.rs:240-255",
+      "finding": "Every successful SSE connection clears events_error, including unrecoverable replay-gap/restart warnings. A subsequent empty/comment-only reconnect erases evidence of missing IDs without any reconciliation or deliberate adapter restart. During that connection the current health logic can classify transport available despite the prior unrecoverable gap.",
+      "repro": "Isolated Rust axum upstream: first SSE response sends IDs 0 then 3; second response contains only ': connected\n\n'. Call refresh, consume_events_once twice and inspect health after each. The missing 1/2 warning disappears after the second successful connection.",
+      "observed": "First events_error='upstream replay gap; evicted events cannot be recovered'; second events_error=null, last_event_id=3. Both finite-response samples have events_status=disconnected. The connected available classification is a source-derived inference, not a browser or active-stream observation.",
+      "suggested_resolution": "Separate persistent feed-integrity warnings from transient transport errors, clearing unrecoverable integrity warnings only through explicit reset/reconciliation."
+    }
+  ],
+  "tests": {
+    "rust_quality_gates": {
+      "command": "nix develop -c task -t dashboard/Taskfile.yml dashboard:check",
+      "exit_code": 0,
+      "gates": ["rustfmt", "clippy all targets/features deny warnings", "cargo test", "cargo audit deny warnings", "cargo machete", "cargo doc --no-deps"],
+      "test_groups": [11,20,3,1,2],
+      "total_rust_tests": 37,
+      "doc_tests": 0,
+      "note": "Most tests are mock/schema tests. Passing all gates is not a security review pass."
+    },
+    "dashboard_build": {"command":"nix develop -c cargo build --manifest-path dashboard/Cargo.toml -p dashboard-app", "exit_code":0},
+    "current_python_serializer_comparison": {"roster.json":true,"agent.json":true,"event.json":true,"events.sse":true,"method":"Regenerated deterministically in memory using the actual Python adapter, fixed clock and seed, and compared byte-for-byte. No fixture files were rewritten.","world_state_sha256":"59084c45e40f3ea8f15f983ef6377b71c3db729de7ea02f0a0f48b3e3e24d5bf"},
+    "actual_python_loopback": {
+      "exit_code":0,
+      "python_bind":"127.0.0.1:33749",
+      "dashboard_bind":"127.0.0.1:36451",
+      "initial_health":{"mode":"live","status":"available","last_event_id":1,"events_status":"connected"},
+      "default_backend_environment_variable_unset":true,
+      "persona_edit_status":200,
+      "ack_execution":"not verified; WorldState only",
+      "ack_kind":"source",
+      "schedule_bearing_edit_status":422,
+      "force_action_status":422,
+      "rejected_force_and_schedule_did_not_append_events":true,
+      "generation":{"request":{"seed":17,"friend_groups":2,"solos":3,"friends_per_group_min":3,"friends_per_group_max":3},"status":200,"observed_group_sizes":[1,1,1,3,3]},
+      "friends_min_1_status":422,
+      "host_bound_generation_status":422,
+      "host_binding_test_limit":"Bound a private in-memory MemoryLog only; no AgentHost or game client ran, and no concurrent lifecycle-safety claim follows.",
+      "unknown_agent_status":404,
+      "after_owned_upstream_shutdown":"stale health; cached roster HTTP 200 with x-worldfeed-status=stale",
+      "default_live_with_dead_owned_url":{"health":"unavailable","roster_status":503,"last_event_id":null,"html_live_label":true},
+      "explicit_mock":{"health_mode":"mock","html_mock_label":true,"roster_nonempty":true},
+      "all_reviewer_processes_terminated_by_finally":true
+    },
+    "independent_rust_probe": {
+      "compile_exit_code":0,
+      "run_exit_code":0,
+      "method":"Nix rustc links the successful gate's exact local world_feed, tokio, axum, futures_util and serde_json rlibs; every HTTP listener binds 127.0.0.1:0.",
+      "observations":{"http_body_over_2_mib":"HTTP body exceeds 2 MiB","roster_4097_agents":"roster exceeds 4096 agents","wrong_sse_content_type":"expected text/event-stream","broadcast_600_events_without_reader":"Err(Lagged(88))","overflow_panic":true,"million_groups_serialized":true,"gap_warning_erased_after_reconnect":true}
+    },
+    "supplementary_python_tests": {
+      "command":"nix develop -c uv run --frozen pytest tests/test_worldfeed_server.py tests/test_worldfeed_retention.py tests/test_population_config.py -q",
+      "exit_code":0,
+      "source_snapshot":"Not atomically hash-pinned; concurrent parent WorldState repair means this is supplemental test evidence only, not lifecycle approval.",
+      "warning":"StarletteDeprecationWarning: httpx TestClient deprecation"
+    }
+  },
+  "verified_contract_properties": [
+    "Absent backend environment selects live; unknown mode fails configuration; only explicit mock branch creates synthetic ticker. Dead upstream remains live/unavailable and does not supply fake agents/events.",
+    "Python wire DTOs preserve memory strings, character names, level-band, goal/script/plan and separate reputation scores; missing numeric fields are nullable and absent textual fields marked not supplied; source summaries are not reclassified as observed game actions.",
+    "Existing Rust tests exercise arbitrary LF/CRLF chunk boundaries, partial-frame withholding, 128 KiB frame bound, Last-Event-ID resume and duplicate suppression.",
+    "Snapshot/command deadlines are present, redirects/proxies disabled, HTTP bodies and roster bounded; independent probes additionally exercised body, roster and broadcast bounds.",
+    "Detail network operations are async; code inspection shows ten-second default TTL and 128-entry oldest-cache eviction. Exhaustive cache-eviction/TTL execution was not completed.",
+    "Supported edit commands flatten correctly; generation renames groups/solos/bounds correctly against the pinned Python contract; singleton friend-size and host-bound generation failures remain failures.",
+    "Unsupported force actions and schedule-bearing edits reject before upstream mutation. Successful supported POST acknowledgements are Python source events labeled WorldState-only, not AgentHost application or game execution."
+  ],
+  "accepted_explicit_exclusions": [
+    "Numeric upstream IDs are process-lifetime, not epochs: lower IDs after restart are suppressed and an intentional adapter restart is required; no automatic epoch recovery promised.",
+    "Evicted upstream history is unrecoverable; downstream bounded broadcast has no durable replay and skips lagged receivers.",
+    "Static roster/inspector reload requirement; LiveView auto-polls cached roster/health.",
+    "No real game, host-worker, Docker, provider, credentials, shared-service or SQL acceptance."
+  ],
+  "limitations_and_issues_encountered": [
+    "Initial reviewer harness shutdown waited on an infinite SSE request. Successful rerun used a reviewer-only bounded uvicorn graceful shutdown; expected CancelledError logged, all owned processes terminated.",
+    "An expanded cache/streaming-body/malformed-SSE follow-up was blocked by the execution tool's no-consent timeout. It was not retried or routed through another tool; no claimed execution for those added checks. Scratch probe was restored to its previously executed version.",
+    "WorldState changed after successful pinned run; no approval across that drift. The new POP-001 repair and protocol L3-TEMP review are separate workstreams, not resolved here.",
+    "No browser was opened. HTML-injection markup was observed in an HTTP response, not a browser-executed exploit or rendered UI acceptance.",
+    "No adversarial million-agent generation was posted; resource risk is supported by offline serialization plus the exact reviewed unbounded upstream implementation."
+  ],
+  "suggestions": [
+    "Preserve safe, bounded upstream 400 details rather than returning only generic HTTP status, so friend-size/host-bound rejections are actionable without pretending success.",
+    "README and implementation report population-imperfection statements lag the reviewed Python count/bound fixes; describe current pinned behavior and keep lifecycle safety separate."
+  ],
+  "reproduction": {
+    "gate":"cd /home/otto/dev/ro-bots && nix develop -c task -t dashboard/Taskfile.yml dashboard:check",
+    "successful_harness_invocation":"nix develop -c uv run --frozen python /home/otto/.hermes/cache/scratch/rust-worldfeed-review/review.py",
+    "scratch_warning":"Scratch evidence may be pruned after inactivity. Findings above include durable minimal reproduction instructions and observed outputs. Re-running the harness against a different Python hash does not reproduce the pinned lifecycle version.",
+    "scratch_artifacts":["/home/otto/.hermes/cache/scratch/rust-worldfeed-review/review.py","/home/otto/.hermes/cache/scratch/rust-worldfeed-review/probe.rs","/home/otto/.hermes/cache/scratch/rust-worldfeed-review/probe","/home/otto/.hermes/cache/scratch/rust-worldfeed-review/evidence.json","/home/otto/.hermes/cache/scratch/rust-worldfeed-review/gates.log","/home/otto/.hermes/cache/scratch/rust-worldfeed-review/probe_compile.log","/home/otto/.hermes/cache/scratch/rust-worldfeed-review/probe.log","/home/otto/.hermes/cache/scratch/rust-worldfeed-review/xss-agent.html","/home/otto/.hermes/cache/scratch/rust-worldfeed-review/python-contract-tests.log"]
+  }
+}

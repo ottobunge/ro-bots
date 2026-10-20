@@ -1,0 +1,119 @@
+{
+  "passed": true,
+  "security_concerns": [],
+  "logic_errors": [],
+  "suggestions": [],
+  "summary": "The first exact-built-in-str guard closes IO-STR-SUBCLASS-COMPONENT-BYPASS on both pathname sides before subclass methods, descriptor/source inspection or native use; fresh real-filesystem no-clobber and descriptor-retention checks pass.",
+  "scope": "Independent read-only fix-scoped review of standalone fd-relative Linux directory-move component validation. No code changes, integration, publication authority, source-construction binding or world acceptance.",
+  "review_started_utc": "2026-10-05T22:43:19.162489+00:00",
+  "verification_completed_utc": "2026-10-05T22:45:42.429813+00:00",
+  "reviewed_files": [
+    "src/robots/adapters/runtime_publication_io.py",
+    "tests/test_runtime_publication_io.py",
+    "tests/test_runtime_publication_io_subclasses.py",
+    "run/reviews/runtime-publication-io-independent-review.json"
+  ],
+  "finding_closure": {
+    "id": "IO-STR-SUBCLASS-COMPONENT-BYPASS",
+    "closed_in_reviewed_snapshot": true,
+    "original_failed_verdict_preserved": true,
+    "fix_location": "src/robots/adapters/runtime_publication_io.py:48-57; exact-type guard at line 50, component validation before fstat/stat/native at lines 87-104",
+    "reason": "type(name) is not str is the first short-circuit condition. Every subtype, including benign subclasses, is rejected without invoking its encode, len, iterator, equality/hash or str conversion. All accepted names therefore use non-overridable built-in-string validation and ASCII encoding; no normalization or retyping was introduced.",
+    "real_destination_regression": "Fresh actual owned source/stage plus sibling outside sentinel: Redirect('final') with encode returning ../escaped raises ValueError, encode remains uncalled, entire fixture inode/mode/uid/tree/byte snapshot unchanged and escaped absent.",
+    "real_source_regression": "Fresh actual owned source/stage plus sibling outside directory: Redirect('stage') with encode returning ../outside raises ValueError, encode remains uncalled, literal source and outside directory inodes and contents unchanged, no destination entry created.",
+    "prior_guard_calibration": "A new scratch-only module derived from the reviewed implementation by inversing ONLY the guard to not isinstance(name, str) demonstrates both actual libc escape paths. Destination calibration moves stage to the owned root/escaped with the same inode; source calibration validates literal source/stage but moves the owned sibling outside to destination/final, preserving literal stage. This is a derived prior-guard calibration, not a recovered historical module or replay of an old harness. Every traversal stays within newly owned fixtures.",
+    "threat_scope": "In-process str-subclass argument bypass only. No built-in-str bypass, remote exploit, privilege escalation or unsupported arbitrary object-memory mutation claim."
+  },
+  "source_hashes": {
+    "src/robots/adapters/runtime_publication_io.py": "4a7c1c8e794d92c28d9b59ccc69854fb4461e1731ae6ee2ec81db3a00ae6bd8c",
+    "tests/test_runtime_publication_io.py": "9988c0ffc6a8e5584f2dc8ad021ce9b4d0113b8c4aaafa44df1d708d223495e7",
+    "tests/test_runtime_publication_io_subclasses.py": "66d40b75c36f0a6d2864cdec9cd72e884ba01f3c0cda025a0bdf4958e4a3f323",
+    "tests/conftest.py": "42dbe1ae3a43a6c34ef2f9abb829b62d1f0a914d64d1a576d9b528142982d307",
+    "tests/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "src/robots/__init__.py": "14a8271c90ed669cc0645c2901ba6a3d93345643b7697e87b965b9008f02b6a6",
+    "src/robots/adapters/__init__.py": "0682851ebbbbcccfb31e82a108d69a92193252f3eda2498f893dc078f3a68b1d",
+    "pyproject.toml": "e8ae0849a413bc3d705f081f609b92dae702bbd3e491b2c3aeb5d8665c458fba",
+    "Taskfile.yml": "63616950e21c15c455c2b6f90be4d588b77f31a62181fd7a93253d164a64a7fd",
+    "uv.lock": "2d7b4c187078488d7625e4fd4fa982745cab8d6a65b2ff3e382ffa286f1df245",
+    "flake.nix": "185e4a4babf62a40484c347f59653bd11b79ce847316a3a90349c8545d38a359",
+    "flake.lock": "c9c0bac69415b99a29ef3fe149b6f04ef54d291989bdf7218cf819ed52edf2a0",
+    "run/reviews/runtime-publication-io-independent-review.json": "660ab403969b2c4552338f8eb6b9dc1bd2db33df69f214f886ec2f32e66a09a3",
+    "run/reviews/runtime-publication-io.json": "77469265d4094da4dfc40289118c118893a3f62624d7cf7848cb688d9f907096"
+  },
+  "freeze": {
+    "count": 14,
+    "changed_existing": [],
+    "before": "/home/otto/.hermes/cache/scratch/publication-io-first-fix-1hhbprtm/before.json",
+    "after": "/home/otto/.hermes/cache/scratch/publication-io-first-fix-1hhbprtm/after.json",
+    "scope": "Exact reviewed source, both repository test modules, test/import scaffolding, pyproject, Taskfile, flake and uv locks, and both original reports; all before/after hashes match. Unrelated parent reports/docs are not dependencies."
+  },
+  "verification": {
+    "environment": "Existing pinned nix develop --offline, UV_OFFLINE=1, uv run --offline --frozen --no-sync, PYTHONDONTWRITEBYTECODE=1; pytest cache disabled; temporary fixtures, coverage, JUnit, Black/mypy caches and independent harness only in new owned scratch.",
+    "commands": [
+      "nix develop --offline -c sh -c: uv run --offline --frozen --no-sync pytest -p no:cacheprovider tests/test_runtime_publication_io.py tests/test_runtime_publication_io_subclasses.py --basetemp=<owned scratch>/scoped-temp --cov=robots.adapters.runtime_publication_io --cov-report=term-missing --cov-report=json:<owned scratch>/coverage.json --junitxml=<owned scratch>/scoped.xml",
+      "nix develop --offline -c sh -c: uv run --offline --frozen --no-sync pytest -p no:cacheprovider -c pyproject.toml <owned scratch>/test_first_fix_independent.py --basetemp=<owned scratch>/independent-final-temp --junitxml=<owned scratch>/independent-final.xml",
+      "nix develop --offline -c sh -c: uv run --offline --frozen --no-sync ruff check --no-cache src/robots/adapters/runtime_publication_io.py tests/test_runtime_publication_io.py tests/test_runtime_publication_io_subclasses.py",
+      "nix develop --offline -c sh -c: uv run --offline --frozen --no-sync black --check src/robots/adapters/runtime_publication_io.py tests/test_runtime_publication_io.py tests/test_runtime_publication_io_subclasses.py",
+      "nix develop --offline -c sh -c: uv run --offline --frozen --no-sync mypy --strict src/robots/adapters/runtime_publication_io.py"
+    ],
+    "pytest": {
+      "scoped": {"tests": 58, "failures": 0, "errors": 0, "skipped": 0, "time": 0.173},
+      "independent": {"tests": 53, "failures": 0, "errors": 0, "skipped": 0, "time": 0.508}
+    },
+    "final_selected_total": 111,
+    "count_basis": "JUnit-parsed selected final batches: 58 current repository cases plus 53 final independent probes. Independent probes include 51 reviewed-fix cases and 2 prior-guard native calibration cases. An initial 51-probe iteration is retained in independent.xml but is not added to these counts. No historical/full-gate totals are included.",
+    "independent_groups": {
+      "test_derived_prior_guard_real_native_calibration": 2,
+      "test_real_escape_subclass_rejected_with_outside_inodes_preserved": 2,
+      "test_subclasses_rejected_before_overridable_methods_or_inspection": 16,
+      "test_exact_builtin_bytes_reach_actual_native_unchanged": 7,
+      "test_builtin_invalid_boundaries_before_stat_native": 18,
+      "test_actual_collision_no_clobber": 4,
+      "test_retained_readonly_parent_fds_survive_path_replacement": 1,
+      "test_fresh_two_process_no_clobber_race": 3
+    },
+    "scope_coverage": {"covered_lines": 50, "num_statements": 50, "percent_covered": 100.0, "missing_lines": 0},
+    "static": {
+      "ruff": "All checks passed; --no-cache; exit 0",
+      "black": "3 files would be left unchanged; exit 0",
+      "mypy": "Success: no issues found in 1 source file; --strict; exit 0",
+      "manual": "Read complete 107-line primitive and both test modules. No normalization, supplied-name printing, hardcoded secrets, shell/SQL/eval/pickle use, exfiltration or replacing/copy/delete fallback. Exact-str guard and docstring preserve the narrow contract."
+    },
+    "actual_filesystem_evidence": [
+      "Both source and destination subtype bypasses independently demonstrated via real libc on the scratch derived prior guard, and independently rejected by the current module with source/outside inode snapshots unchanged.",
+      "Both sides independently reject encode, len, iteration, equality, hash and str-conversion overrides, an all-overrides subclass, and a benign subclass before any patched stat/fstat/native/library inspection. Overrides raise if invoked; all call lists remain empty.",
+      "Seven exact built-in component positives preserve source and destination bytes at the actual native boundary and moved inode/tree: single character, all-space, leading/trailing spaces, ..., backslash, colon and 255-byte components. Source and destination spellings are independently exact, not stripped or normalized.",
+      "Eighteen independent invalid-boundary cases across both sides reject empty/dot/dotdot/256-byte/slash/NUL/control/DEL/nonASCII before stat/fstat/native with unchanged fixtures.",
+      "Actual empty-directory, sentinel-directory, file and symlink destination collisions return EEXIST with unchanged whole-fixture inode/mode/uid/tree/byte snapshots.",
+      "Fresh replacement parent paths cannot redirect retained read-only directory fds; original directory inode is moved into retained destination, replacement parent snapshots are unchanged, borrowed fds remain open and caller-owned.",
+      "Three fresh joined two-process races each produce exactly one real success and one EEXIST; target inode/tree equals the winning stage, loser stage is unchanged, winning source is absent and parent fds remain open.",
+      "All 58 repository cases rerun successfully, including reached-native thread competitor, two-process race, exact borrowed-fd behavior, source nofollow check, sanitized errno/filename, origin KeyboardInterrupt identity, platform/symbol/error branches and nofallback spies."
+    ],
+    "synthetic_vs_native": "Escape calibrations, successful moves, collisions and races use actual local Linux libc/filesystem behavior. Repository missing-platform, missing-symbol and native error-return checks are process-local synthetic injections through the same typed five-argument wrapper, not proof of real cross-mount/unsupported-filesystem/EIO operation. Existing literal typed arguments, flag1 and errno handling are unchanged.",
+    "probe_sha256": {
+      "test_first_fix_independent.py": "dfb1b8dbd150986fc67856ed542b5ab1c7ff52abf5f2bcf29e6afc73e7cc9747",
+      "calibration_isinstance.py": "5deb7c5819b25bb83c1b14a54005a7297d1d54fde3c85f659f420b8a9fe1d01c",
+      "scoped.xml": "91b1bac9ba9270e9135e8f9a1ab9bf277067ae50795ee37c863c65f7364b2da5",
+      "independent-final.xml": "f58eb2a99983e412debe848ec5974802cd6f670e543d8f1ec21bb9986d9a9ffe",
+      "coverage.json": "05f77dd20a0e021450621ba79a45c3b5fd1f19e6b0f6a750a6dd1c630f348127"
+    },
+    "artifact_directory": "/home/otto/.hermes/cache/scratch/publication-io-first-fix-1hhbprtm"
+  },
+  "limitations": [
+    "Scoped finding closure only; passing native move acknowledgement does not grant publication, durability, receipt, recovery, integration, world admission or launch authority.",
+    "Controlled source namespace remains mandatory across nofollow stat and rename. This fix does not create atomic source-kind/inode binding, construction identity, provenance, private-mode validation or requested-path ownership.",
+    "Evidence is actual newly owned local scratch filesystem behavior, not universal kernel/filesystem/cross-mount acceptance.",
+    "No SQL, database, engine, service, socket, network, inference, gateway, gameplay, private user file or old reviewer fixture effects. Only new owned scratch contexts were mutated.",
+    "No code/test/fixture/original-report changes, installs, pin/gate/whitelist modifications, whole-checkout path imports, staging, commits or pushes. Parent owns broader configured gates; no full suite/audit run or historical gate endorsement in this review.",
+    "The original failed independent report stays failed and unchanged; the old 88cfa063bbc56519b946f27af7b2bcbe5696ac55587dab22850f10113043df48 hash is not the reviewed fixed source hash."
+  ],
+  "production_or_test_edits": [],
+  "created_repository_files": ["run/reviews/runtime-publication-io-first-fix-review.json"],
+  "issues_encountered": [],
+  "primitive_scoped_approved": true,
+  "runtime_publication_contract_approved": false,
+  "manager_receipt_admission_implemented": false,
+  "world_effects_enabled": false,
+  "integration_performed": false,
+  "startup_guard_modified": false
+}

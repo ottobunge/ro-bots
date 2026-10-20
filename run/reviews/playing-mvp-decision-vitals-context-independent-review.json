@@ -1,0 +1,130 @@
+{
+  "passed": true,
+  "security_concerns": [],
+  "logic_errors": [],
+  "quality_blockers": [],
+  "scope": "Independent read-only offline review of four exact BotState vitals projected into build_decision_request state.bot.",
+  "source_inverse": {
+    "byte_exact_original_recovered": true,
+    "original_sha256": "9b32f1fad0ef0ff98c670092757742a68808846b845cbf1c469ff8bf8d2227f2",
+    "production_delta": "Exactly hp, max_hp, sp, max_sp dictionary entries; each AST expression directly reads its matching BotState attribute."
+  },
+  "fresh_probes": {
+    "cases": 3,
+    "strict_envelope_comparisons": 30,
+    "zero_tuples": [
+      [
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        73,
+        0,
+        19
+      ]
+    ],
+    "equal_ratio_capacity_pairs": [
+      [
+        13,
+        26,
+        7,
+        14
+      ],
+      [
+        1300,
+        2600,
+        700,
+        1400
+      ]
+    ],
+    "hp_and_sp_ratios": 0.5,
+    "entire_request_equals_original_after_removing_only_four_fields": true,
+    "all_goals_inventory_known_unknown_memory_none_empty_and_45_lines": true,
+    "chat_invites_state_and_memory_input_preserved": true,
+    "manufactured_stats_skills_equipment_bonuses_or_encounter_history": false
+  },
+  "focused_execution": {
+    "exit_code": 0,
+    "command": "nix develop --offline path:./spikes/007-native-packet-ast/toolchain -c sh -c 'PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=\"$PWD/src:$PWD\" .venv/bin/python -m pytest -o addopts=\"\" -p no:cacheprovider tests/test_decision_vitals_context.py tests/test_decisions.py /home/otto/.hermes/cache/scratch/test_decision_vitals_independent.py --junitxml=/home/otto/.hermes/cache/scratch/decision-vitals-independent.xml'",
+    "fresh_tests_passed": 17
+  },
+  "physical_xml_counts": {
+    "decision-vitals-red.xml": {
+      "testcases": 1,
+      "failures": 1,
+      "errors": 0,
+      "skipped": 0
+    },
+    "decision-vitals-green.xml": {
+      "testcases": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "decision-vitals-scoped-final.xml": {
+      "testcases": 122,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "decision-vitals-independent.xml": {
+      "testcases": 17,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "by_file": {
+        "tests.test_decision_vitals_context": 3,
+        "tests.test_decisions": 11,
+        "": 3
+      }
+    }
+  },
+  "parent_red_reached_missing_all_four": true,
+  "freeze_proof": {
+    "before_matches": true,
+    "after_matches": true,
+    "unchanged": true,
+    "expected": {
+      "src/robots/domain/decisions.py": "fdbe5e0b4ea0e11a78746961873e168512613e5b6a252835aecb8700078dab3f",
+      "tests/test_decision_vitals_context.py": "4208f1a7099a6ff006ee29a75d943a6285ae5d39f4a32ef86cb12ada1e6007aa",
+      "src/robots/domain/model.py": "ad311ac53e1d3a24bf7fe34cb96461b342d8f3ff12a2397d7d43725221538dbf",
+      "tests/test_decisions.py": "2f88e4c7779988c571c715f2d86baed6be3cdc008cd0f00e9e3eec67a2459655",
+      "run/reviews/playing-mvp-decision-vitals-context-fix.json": "e2b8f107969ef80ff92e3579d709176507cbf4babb1acb56dac09cb135791cbe"
+    },
+    "before": {
+      "src/robots/domain/decisions.py": "fdbe5e0b4ea0e11a78746961873e168512613e5b6a252835aecb8700078dab3f",
+      "tests/test_decision_vitals_context.py": "4208f1a7099a6ff006ee29a75d943a6285ae5d39f4a32ef86cb12ada1e6007aa",
+      "src/robots/domain/model.py": "ad311ac53e1d3a24bf7fe34cb96461b342d8f3ff12a2397d7d43725221538dbf",
+      "tests/test_decisions.py": "2f88e4c7779988c571c715f2d86baed6be3cdc008cd0f00e9e3eec67a2459655",
+      "run/reviews/playing-mvp-decision-vitals-context-fix.json": "e2b8f107969ef80ff92e3579d709176507cbf4babb1acb56dac09cb135791cbe"
+    },
+    "after": {
+      "src/robots/domain/decisions.py": "fdbe5e0b4ea0e11a78746961873e168512613e5b6a252835aecb8700078dab3f",
+      "tests/test_decision_vitals_context.py": "4208f1a7099a6ff006ee29a75d943a6285ae5d39f4a32ef86cb12ada1e6007aa",
+      "src/robots/domain/model.py": "ad311ac53e1d3a24bf7fe34cb96461b342d8f3ff12a2397d7d43725221538dbf",
+      "tests/test_decisions.py": "2f88e4c7779988c571c715f2d86baed6be3cdc008cd0f00e9e3eec67a2459655",
+      "run/reviews/playing-mvp-decision-vitals-context-fix.json": "e2b8f107969ef80ff92e3579d709176507cbf4babb1acb56dac09cb135791cbe"
+    }
+  },
+  "artifact_sha256": {
+    "/home/otto/.hermes/cache/scratch/decision-vitals-red.xml": "cee2fb92fb1c6a38e5889d3f0bcaac833368ad12453516dab076599bf6d37012",
+    "/home/otto/.hermes/cache/scratch/decision-vitals-green.xml": "1889c043ca1562cdd1f29b7e89708927d6feb43f2be6b5e202128bdad1ee7685",
+    "/home/otto/.hermes/cache/scratch/decision-vitals-scoped-final.xml": "30b49945152f564078c8a70671ff0f03d6fc67524c99258faa1cfee0b2c4eb71",
+    "/home/otto/.hermes/cache/scratch/decision-vitals-independent.xml": "2e29bfb645c07ec308637a6d66e180037a1ceb6c99ec4c2771e26e7225284390",
+    "/home/otto/.hermes/cache/scratch/decision-vitals-original.py": "9b32f1fad0ef0ff98c670092757742a68808846b845cbf1c469ff8bf8d2227f2",
+    "/home/otto/.hermes/cache/scratch/test_decision_vitals_independent.py": "4403bd2d3cac08e96bcabcd941b0b14906871ffef494612aa84c00f2351bbf39",
+    "/home/otto/.hermes/cache/scratch/decision-vitals-review-freeze.json": "50e1b048b4f8be5e605349b44b51c79f989e18e7af50a10cdaf6da100efae042",
+    "/home/otto/.hermes/cache/scratch/decision-vitals-independent-before.json": "678fab1305384d2be5dc6fb212f3ad4174dfb39504156652c70bace925059342",
+    "/home/otto/.hermes/cache/scratch/decision-vitals-independent-after.json": "678fab1305384d2be5dc6fb212f3ad4174dfb39504156652c70bace925059342"
+  },
+  "limits": [
+    "Parent RED/GREEN and 122 scoped test counts verified from physical XML; only 17 focused tests rerun independently.",
+    "Parent Black/Ruff/strict-mypy results were not independently rerun. Initial PT018 style failure is reported by parent, not independently reproduced.",
+    "No playing_runtime dependency reads or whole-tree gates during concurrent chat repair.",
+    "No provider network calls, model inference, native/world/SQL/services/Git mutations, dependency installs, or source/test repairs.",
+    "Offline builder projection approval only; no new telemetry authentication/readiness or native inference delivery acceptance. Existing source authority is supplied parent context, not a newly performed native verification."
+  ]
+}

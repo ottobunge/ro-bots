@@ -1,0 +1,206 @@
+{
+  "scope": "Independent offline review of exactly seven PIN exception-message lint-only edits; scoped readiness gate for separately authorized test-world live testing, not live acceptance or new execution authorization",
+  "verdict": "PASS",
+  "finalscopepassed": true,
+  "accepted_quality_delta": true,
+  "securityconcerns": [],
+  "logic_errors": [],
+  "delta_proof": {
+    "method": "Collapse exactly six client and one harness message assignments plus following same-exception raises in memory; restored full-file SHA256 matches preserved original review. No original file repair, source writes, git, ignores or rule changes.",
+    "original_review_preserved": true,
+    "reverse_hash_matches": {
+      "spikes/003-clientless-limbs/client.py": {
+        "match_count": 1,
+        "original_sha256": "d3cce70dc9109f14b76a7f05d84bdf66d2511b88ed45c4622ea92e25eb026fc0"
+      },
+      "spikes/003-clientless-limbs/test_limbs.py": {
+        "match_count": 1,
+        "original_sha256": "fab29db2807b13ed6f53cded49c36af4899cf18f13bc007dff52f217add52bb2"
+      }
+    },
+    "changed_current_line_spans": {
+      "spikes/003-clientless-limbs/client.py": [
+        [
+          65,
+          66
+        ],
+        [
+          241,
+          242
+        ],
+        [
+          308,
+          309
+        ],
+        [
+          271,
+          272
+        ],
+        [
+          293,
+          294
+        ],
+        [
+          277,
+          278
+        ]
+      ],
+      "spikes/003-clientless-limbs/test_limbs.py": [
+        [
+          61,
+          62
+        ]
+      ]
+    },
+    "unchanged_original_dependencies": [
+      "spikes/003-clientless-limbs/packetdb.py",
+      "tests/test_client_pincode.py",
+      "tests/test_protocol_rereview_repairs.py",
+      "tests/test_temporary_handshake_cleanup.py"
+    ]
+  },
+  "source_fingerprints": {
+    "spikes/003-clientless-limbs/client.py": "430804559e0ec989c29b7b1c2dfe58aefbba695739820ba33709db84ce61941b",
+    "spikes/003-clientless-limbs/test_limbs.py": "abeec5517eb562144e321aa0d9268d39083d44cc3b5aae57f05652ab0a834979",
+    "spikes/003-clientless-limbs/packetdb.py": "1c2be6705938f5ab575cc822b690dba583f8a7719b9469f794fcbb661c032cf3",
+    "tests/test_client_pincode.py": "b1748f4dd88eda1902119087aa7f87522d396d668d9fdbe9c7c1be9025f16071",
+    "tests/test_protocol_rereview_repairs.py": "7c4e051d767b819243b3479c1d0942356ff6c2460c32b95d9e67922d71382b8e",
+    "tests/test_temporary_handshake_cleanup.py": "6eb4f7d7099a21728add193bd72f233ebdd21ca2aa2056d855984cb4ab943a47",
+    "tests/test_client_protocol.py": "3e781d2f50501b2d1bf0c3caccf507f3c6fcde533ad62ea1448b0f857143a5a2",
+    "tests/test_limb_evidence.py": "9669537ee7ed63e7be4850936e96d28fc0a75bb17c77bac753c45ec8be941569",
+    "tests/test_packet_conditions.py": "abe40cc3af9d56de1f98088ae372e0e1f54cfe5a2d89ea6828f75f6e4d1969d1",
+    "pyproject.toml": "e8ae0849a413bc3d705f081f609b92dae702bbd3e491b2c3aeb5d8665c458fba",
+    "flake.nix": "185e4a4babf62a40484c347f59653bd11b79ce847316a3a90349c8545d38a359",
+    "flake.lock": "c9c0bac69415b99a29ef3fe149b6f04ef54d291989bdf7218cf819ed52edf2a0",
+    "uv.lock": "2d7b4c187078488d7625e4fd4fa982745cab8d6a65b2ff3e382ffa286f1df245",
+    "src/robots/adapters/world_test_fixture.py": "b5e5eebc3ae1d74ce52fb71be7345e3a95c161c3f78534c28db5b27df8126514",
+    "src/robots/adapters/world_bootstrap_sql.py": "cfa64780b9356b04a2e8eb2699fb0e6703f4b3f6ae9b815fb454a03f9b8b2ce5",
+    "tests/test_world_test_fixture.py": "5a287deb27652c2c447bcedbd1e5f57ca9315485b95adc3eb43b88cfe48f14b1",
+    "tests/test_world_bootstrap_sql.py": "ef8eb762e2b2eb5bdcf42fdc40e1278d4cbdbf8a8823973423c67ba9b500b112"
+  },
+  "frozen_sources_unchanged_during_review": true,
+  "execution": {
+    "toolchain": "Pinned nix develop --offline; uv run --offline --no-sync; no dependency installation",
+    "junit": "/home/otto/.hermes/cache/scratch/pd-8um59sn9/junit.xml",
+    "junit_sha256": "818fba7f63c221751b5f83a8651f98976ea69533c69144b5900d9b26b3161c19",
+    "unique_test_cases": 254,
+    "junit_declared_total": 319,
+    "additional_subtests": 65,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "test_groups": {
+      "tests.test_client_pincode": 41,
+      "tests.test_client_protocol": 42,
+      "tests.test_protocol_rereview_repairs": 31,
+      "tests.test_temporary_handshake_cleanup": 21,
+      "tests.test_limb_evidence": 24,
+      "tests.test_packet_conditions.ConditionTests": 6,
+      "tests.test_packet_conditions.DirectiveTests": 4,
+      "tests.test_packet_conditions.NativeCreationTests": 3,
+      "tests.test_world_test_fixture": 46,
+      "tests.test_world_bootstrap_sql": 36
+    },
+    "quality_exit_codes": {
+      "pytest": 0,
+      "black": 0,
+      "ruff_scoped": 0,
+      "mypy_scoped": 0,
+      "ruff_current": 1,
+      "ruff_baseline": 1,
+      "mypy_spikes": 1
+    },
+    "black_files": 9,
+    "strict_mypy_scoped_files": 7
+  },
+  "quality_findings": {
+    "seven_new_EM101_removed": true,
+    "diagnostics_on_changed_assignment_raise_lines": [],
+    "introduced_ruff_diagnostic_identities": [],
+    "introduced_mypy_diagnostics": [],
+    "ruff_scope": "client.py, test_limbs.py and unchanged packetdb.py, same configured rules on current and in-memory restored baseline",
+    "ruff_restored_baseline_count": 126,
+    "ruff_current_count": 119,
+    "ruff_removed_diagnostics": [
+      [
+        "client.py",
+        "EM101",
+        65,
+        30
+      ],
+      [
+        "client.py",
+        "EM101",
+        240,
+        36
+      ],
+      [
+        "client.py",
+        "EM101",
+        269,
+        44
+      ],
+      [
+        "client.py",
+        "EM101",
+        274,
+        48
+      ],
+      [
+        "client.py",
+        "EM101",
+        289,
+        44
+      ],
+      [
+        "client.py",
+        "EM101",
+        303,
+        36
+      ],
+      [
+        "test_limbs.py",
+        "EM101",
+        61,
+        34
+      ]
+    ],
+    "existing_complexity_diagnostic_change": "Existing client.connect PLR0915 remains; statement count rises from103 to108 due to five added assignments in that function. Same existing rule/location, not a new diagnostic identity or clean legacy claim.",
+    "legacy_mypy_current_errors": 62,
+    "legacy_mypy_restored_baseline_errors": 62,
+    "legacy_waiver": false,
+    "whole_legacy_spike_clean": false,
+    "prior_report_86_ruff_62_mypy": "Preserved. Its Ruff total is not directly comparable to this explicit three-file scope; no blanket baseline attribution or waiver."
+  },
+  "protocol_validation": {
+    "account_matched_explicit_success_before_character_selection": "41 unchanged PIN cases pass with integrated protocol/cleanup replays; full-file reverse hash proves no policy/state/deadline/cleanup/exception literal edits",
+    "exact_four_ASCII_digits_nondefault_input_one_attempt": "Existing unchanged PIN validation, native inverse shuffle success and no-resend cases pass",
+    "prior_405_native_permutation_vectors": "Original independent source-backed evidence retained; encryption source byte-equivalence proven by reverse hash, no new 405-vector execution claimed"
+  },
+  "live_testing_disposition": {
+    "scoped_code_review_gate": "PASS",
+    "authorization_record_reference": "two-bot-fixture-live-authorization.json; parent owns validation and execution",
+    "conditions": [
+      "Parent obtains fresh stopped-world and ownership/exclusion checks before provisioning",
+      "Parent allocates exact fresh fixture account/character IDs and executes INSERT-only six-row provisioning with exact readback under existing authorization",
+      "No existing/human-account mutation, production/debug reset, paid provider calls or PIN policy bypass",
+      "Parent generates private fixture credentials separately; reviewer generated none",
+      "Actual native login and four-limb observations and cleanup remain unverified live acceptance"
+    ]
+  },
+  "limits": [
+    "Read-only offline supported-transport verification only; no engine, database, native live network or provider calls",
+    "Original review limits, including post-selection PIN revocation and unknown callback release contracts, remain unchanged",
+    "PASS applies only to this exact frozen delta and offline protocol subset, not whole-project quality or completed gameplay"
+  ],
+  "issues_encountered": [
+    "Initial offline command could not locate reviewer state because nix rewrote TMPDIR; rerun used explicit scratch path and private subprocess TMPDIR, all gates executed successfully"
+  ],
+  "live_actions": false,
+  "sql_executed": false,
+  "accounts_created": false,
+  "credentials_generated": false,
+  "sources_modified": false,
+  "private_values": "[REDACTED]",
+  "evidence_directory": "/home/otto/.hermes/cache/scratch/pd-8um59sn9"
+}

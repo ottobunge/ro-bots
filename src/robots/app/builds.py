@@ -11,7 +11,8 @@
 
 from typing import TYPE_CHECKING, Any, final
 
-from robots.domain.build import Build, BuildProgress, ItemDigest
+from robots.domain.build import Build, BuildProgress, ItemDigest, SkillDigest
+from robots.domain.build_templates import BuildTemplate, skill_name, validate_classic_stats
 from robots.society.memory import ExperienceNote
 
 if TYPE_CHECKING:
@@ -37,12 +38,35 @@ _AMBITION = ("minimal", "balanced", "min-maxed")
 _CLASS_LINE: dict[tuple[str, str], tuple[str, ...]] = {
     ("Swordsman", "str"): ("Novice", "Swordsman", "Knight"),
     ("Swordsman", "vit"): ("Novice", "Swordsman", "Crusader"),
-    ("Swordsman", "agi"): ("Novice", "Swordsman", "Assassin"),
+    ("Swordsman", "agi"): ("Novice", "Swordsman", "Knight"),
     ("Mage", "int"): ("Novice", "Mage", "Wizard"),
     ("Mage", "dex"): ("Novice", "Mage", "Sage"),
     ("Acolyte", "int"): ("Novice", "Acolyte", "Priest"),
     ("Acolyte", "vit"): ("Novice", "Acolyte", "Monk"),
 }
+
+
+_FIRST_CLASS: dict[str, str] = {
+    "Knight": "Swordsman",
+    "Crusader": "Swordsman",
+    "Priest": "Acolyte",
+    "Monk": "Acolyte",
+    "Wizard": "Mage",
+    "Sage": "Mage",
+    "Hunter": "Archer",
+    "Bard": "Archer",
+    "Dancer": "Archer",
+    "Assassin": "Thief",
+    "Rogue": "Thief",
+    "Blacksmith": "Merchant",
+    "Alchemist": "Merchant",
+}
+
+
+def _class_path(cls: str, emphasis: str) -> tuple[str, ...]:
+    if cls in _FIRST_CLASS:
+        return ("Novice", _FIRST_CLASS[cls], cls)
+    return _CLASS_LINE.get((cls, emphasis), ("Novice", cls))
 
 
 def _persona_summary(persona: SocietyPersona) -> str:
@@ -125,7 +149,7 @@ class BuildAuthor:
             build_id=build_id,
             persona_id=persona.persona_id,
             char_name=char_name,
-            class_path=_CLASS_LINE.get((cls, emphasis), ("Novice", cls)),
+            class_path=_class_path(cls, emphasis),
             stat_plan={  # primary gets the bulk, the rest a token spread
                 emphasis: 90,
                 **{s: 30 for s in STAT_EMPHASIS[persona.playstyle.value] if s != emphasis},
@@ -142,11 +166,16 @@ class BuildAuthor:
 
         Falls back to any item in the slot when none is reachable in time
         (still within the tier); a slot with no items is left out entirely.
+        Unknown market tiers are excluded, not treated as free or affordable.
         """
         slots = sorted({i.slot for i in self._all_items(mechanics)})
         goals: dict[str, str] = {}
         for slot in slots:
-            candidates = [i for i in mechanics.items_for_slot(slot) if i.price_tier <= tier]
+            candidates = [
+                i
+                for i in mechanics.items_for_slot(slot)
+                if i.price_tier is not None and i.price_tier <= tier
+            ]
             reachable = [i for i in candidates if i.required_level <= max_level]
             chosen = max(reachable or candidates, key=lambda i: i.required_level, default=None)
             if chosen is not None:
@@ -161,6 +190,161 @@ class BuildAuthor:
             for slot in ("weapon", "armor", "garment", "shoes", "shield", "headgear")
             for item in mechanics.items_for_slot(slot)
         )
+
+
+def author_build_from_template(
+    persona: SocietyPersona,
+    char_name: str,
+    templates: tuple[BuildTemplate, ...],
+    model: DecisionModel,
+    build_id: str = "b1",
+) -> Build:
+    """Author a Build by letting the model pick one curated template (Clef decides).
+
+    ``templates`` are the candidates for the persona's playstyle (typically a
+    slice of :data:`robots.domain.build_templates.PLAYSTYLE_TEMPLATES`).  One
+    pass, two questions:
+
+    - ``pick_template`` (choice): one of the template ids, or ``"custom"`` —
+      which falls back to :meth:`BuildAuthor.author_build`'s generated path.
+    - ``follow_closely`` (score, 0-2): 0 = improvise freely, 1 = tweak stats,
+      2 = follow exactly.  Mapped conservatively: 2 keeps the template
+      verbatim; 1 keeps skills and equips but shifts stats toward the
+      playstyle's emphasis spread (primary -10, secondaries +5); 0 keeps only
+      the class path and skill goals, stat plan regenerates from the
+      playstyle emphasis and equip goals are dropped.
+
+    The existing :class:`BuildAuthor` authoring path is untouched.
+    """
+    author = BuildAuthor(model)
+    summaries = {
+        t.template_id: f"{t.name}: {' > '.join(t.class_path)}; {t.notes}" for t in templates
+    }
+    request: dict[str, Any] = {
+        "model": "clef",
+        "state": {
+            "persona": _persona_summary(persona),
+            "candidate_templates": "; ".join(f"{tid} ({txt})" for tid, txt in summaries.items()),
+        },
+        "questions": {
+            "pick_template": {
+                "type": "choice",
+                "instructions": "Which curated build do I take as mine? ('custom' = roll my own)",
+                "criteria": {**summaries, "custom": "Improvise my own build."},
+            },
+            "follow_closely": {
+                "type": "score",
+                "instructions": "How closely do I follow the template?",
+                "criteria": ["Improvise freely", "Tweak the stats", "Follow exactly"],
+            },
+        },
+    }
+    answers = model.decide(request)["answers"]
+
+    choice = str(answers.get("pick_template", {}).get("choice", "custom"))
+    chosen = next((t for t in templates if t.template_id == choice), None)
+    if chosen is None:  # 'custom' or an unknown id: fall back to the generated path
+        allowed = _template_class_options(persona.playstyle.value)
+        return author.author_build(persona, char_name, allowed, _NullMechanics(), build_id)
+
+    score = float(answers.get("follow_closely", {}).get("score", 2.0))
+    follow = min(2, max(0, round(score)))
+    stat_plan, equip_goals = _template_adaptation(chosen, persona, follow)
+
+    return Build(
+        build_id=build_id,
+        persona_id=persona.persona_id,
+        char_name=char_name,
+        class_path=chosen.class_path,
+        stat_plan=stat_plan,
+        skill_goals=tuple(skill_name(g) for g in chosen.skill_goals),
+        skill_levels={skill_name(g): int(g.rsplit(" ", 1)[1]) for g in chosen.skill_goals},
+        ruleset=chosen.ruleset,
+        validation_issues=_template_validation_issues(chosen),
+        equip_goals=equip_goals,
+        milestone_levels=chosen.milestones,
+    )
+
+
+def _template_validation_issues(chosen: BuildTemplate) -> tuple[str, ...]:
+    issues = [
+        "Equipment variants, card composites and full job restrictions remain unvalidated.",
+        "Stats validate only the pinned level-99 endpoint, not milestone allocations.",
+        "Class paths do not validate quest, job-level or rebirth execution requirements.",
+    ]
+    if chosen.template_id not in {"mage-aoe-wizard", "support-battlesmith"}:
+        issues.append("Skill ancestor closure and per-job point budgets remain unvalidated.")
+    if chosen.template_id == "support-battlesmith":
+        issues.append(
+            "Cart Revolution requires quest acquisition; it is not an ordinary skill point."
+        )
+    if chosen.template_id == "mage-sage-bolter":
+        issues.append("Linked Sage guide is Renewal, not validated Classic source evidence.")
+    if chosen.template_id == "healer-fs-priest":
+        issues.append("Linked Priest guide is High-Priest focused; Classic guidance is uncertain.")
+    return tuple(issues)
+
+
+def _template_adaptation(
+    chosen: BuildTemplate, persona: SocietyPersona, follow: int
+) -> tuple[dict[str, int], dict[str, str]]:
+    """``follow_closely`` score -> (stat_plan, equip_goals) for the chosen template.
+
+    2 keeps the template verbatim; 1 keeps skills and equips but shifts stats
+    toward the playstyle emphasis (primary -10, secondaries +5); 0 keeps only
+    class path and skills, stat plan regenerates from the playstyle emphasis
+    and equip goals are dropped.
+    """
+    if chosen.ruleset != "classic":
+        msg = "template ruleset is not classic"
+        raise ValueError(msg)
+    stat_plan = dict(chosen.stat_plan)
+    equip_goals = dict(chosen.equip_goals)
+    emphasis = STAT_EMPHASIS.get(persona.playstyle.value, ())
+    if follow == 1 and emphasis:
+        _tweak_classic_stats(stat_plan, emphasis)
+    elif follow == 0:
+        stat_plan = {s.upper(): 90 if i == 0 else 30 for i, s in enumerate(emphasis or ("str",))}
+        equip_goals = {}
+    validate_classic_stats(stat_plan)
+    return stat_plan, equip_goals
+
+
+def _tweak_classic_stats(stat_plan: dict[str, int], emphasis: tuple[str, ...]) -> None:
+    primary = emphasis[0].upper()
+    if primary not in stat_plan:
+        return
+    stat_plan[primary] = max(1, stat_plan[primary] - 10)
+    for stat in emphasis[1:]:
+        key = stat.upper()
+        if key in stat_plan:
+            stat_plan[key] = min(99, stat_plan[key] + 5)
+
+
+def _template_class_options(playstyle: str) -> dict[str, str]:
+    """Allowed classes for the fallback path, derived from the playstyle."""
+    lines = {
+        "tank": {"Crusader": "VIT shield tank line."},
+        "healer": {"Priest": "Heal and buff line."},
+        "mage": {"Wizard": "AoE magic damage line."},
+        "hunter": {"Hunter": "Bow and falcon line."},
+        "support": {"Bard": "Song and party buff line."},
+        "melee": {"Assassin": "AGI katar line."},
+    }
+    return lines.get(playstyle, {"Swordsman": "Front-line fighter."})
+
+
+class _NullMechanics:
+    """Minimal MechanicsPort stand-in: no catalog, skills come from the class."""
+
+    def skills_for_class(self, cls: str) -> tuple[SkillDigest, ...]:  # noqa: ARG002
+        return ()
+
+    def items_for_slot(self, slot: str) -> tuple[ItemDigest, ...]:  # noqa: ARG002
+        return ()
+
+    def item_by_name(self, name: str) -> ItemDigest | None:  # noqa: ARG002
+        return None
 
 
 def decide_item_action(

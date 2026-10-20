@@ -1,0 +1,831 @@
+{
+  "passed": true,
+  "security_concerns": [],
+  "logic_errors": [],
+  "quality_blockers": [],
+  "scope": "Independent offline MAIN20180704/pre-re pure equipment representation review only",
+  "fresh_counts": {
+    "existing": {
+      "tests": 20,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "fresh": {
+      "tests": 8,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    }
+  },
+  "checks": {
+    "existing_tests": {
+      "returncode": 0,
+      "stdout": "....................                                                     [100%]\n20 passed in 0.04s\n",
+      "stderr": "",
+      "command": [
+        "/home/otto/dev/ro-bots/.venv/bin/python",
+        "-m",
+        "pytest",
+        "-p",
+        "no:cacheprovider",
+        "tests/test_native_equipment.py",
+        "--junitxml=/home/otto/.hermes/cache/scratch/equipment-independent-review/existing.xml",
+        "--basetemp=/home/otto/.hermes/cache/scratch/equipment-independent-review/pytest-tmp"
+      ]
+    },
+    "g++_compile": {
+      "returncode": 0,
+      "stdout": "",
+      "stderr": "",
+      "command": [
+        "/nix/store/j1938gsbvbhkyz4kbmvjk56r479mkw3s-gcc-wrapper-16.2.0/bin/g++",
+        "-std=c++17",
+        "-DHAS_TLS",
+        "-fno-strict-aliasing",
+        "-DHAVE_GETADDRINFO",
+        "-DHAVE_SETRLIMIT",
+        "-DHAVE_STRNLEN",
+        "-DPACKETVER=20180704",
+        "-DPRERE",
+        "-DHAVE_MONOTONIC_CLOCK",
+        "-DHAS_TLS",
+        "-fno-strict-aliasing",
+        "-DHAVE_GETADDRINFO",
+        "-DHAVE_SETRLIMIT",
+        "-DHAVE_STRNLEN",
+        "-DPACKETVER=20180704",
+        "-DPRERE",
+        "-DHAVE_MONOTONIC_CLOCK",
+        "-I/home/otto/.hermes/cache/scratch/callback-package-hut2_cuz/configured-variant/src",
+        "-I/home/otto/.hermes/cache/scratch/callback-package-hut2_cuz/configured-variant/src/common",
+        "-I/home/otto/.hermes/cache/scratch/callback-package-hut2_cuz/configured-variant/3rdparty/libconfig",
+        "-I/home/otto/.hermes/cache/scratch/callback-package-hut2_cuz/configured-variant/3rdparty/rapidyaml/src",
+        "-I/home/otto/.hermes/cache/scratch/callback-package-hut2_cuz/configured-variant/3rdparty/rapidyaml/ext/c4core/src",
+        "-I/nix/store/1w8g6rvhljfk44hx50qz4sc47sm1f28v-mariadb-connector-c-3.3.5-dev/include",
+        "-I/nix/store/1w8g6rvhljfk44hx50qz4sc47sm1f28v-mariadb-connector-c-3.3.5-dev/include/mysql",
+        "/home/otto/.hermes/cache/scratch/equipment-independent-review/independent.cpp",
+        "-o",
+        "/home/otto/.hermes/cache/scratch/equipment-independent-review/g++"
+      ]
+    },
+    "g++_oracle": {
+      "returncode": 0,
+      "stdout": "profile 20180704 20180704 2 5 100 2573 2456 2457 2458 0\nresults 0 1 2\nrecord EQUIPITEM_INFO 57 1\nfield EQUIPITEM_INFO index 0 2\nfield EQUIPITEM_INFO ITID 2 2\nfield EQUIPITEM_INFO type 4 1\nfield EQUIPITEM_INFO location 5 4\nfield EQUIPITEM_INFO WearState 9 4\nfield EQUIPITEM_INFO RefiningLevel 13 1\nfield EQUIPITEM_INFO slot 14 8\nfield EQUIPITEM_INFO HireExpireDate 22 4\nfield EQUIPITEM_INFO bindOnEquipType 26 2\nfield EQUIPITEM_INFO wItemSpriteNumber 28 2\nfield EQUIPITEM_INFO option_count 30 1\nfield EQUIPITEM_INFO option_data 31 25\nfield EQUIPITEM_INFO Flag 56 1\nrecord ItemOptions 5 1\nfield ItemOptions index 0 2\nfield ItemOptions value 2 2\nfield ItemOptions param 4 1\nrecord EQUIPSLOTINFO 8 1\nfield EQUIPSLOTINFO card 0 8\nrecord packet_itemlist_equip 34204 1\nfield packet_itemlist_equip PacketType 0 2\nfield packet_itemlist_equip PacketLength 2 2\nfield packet_itemlist_equip list 4 34200\nrecord PACKET_CZ_REQ_WEAR_EQUIP 8 1\nfield PACKET_CZ_REQ_WEAR_EQUIP packetType 0 2\nfield PACKET_CZ_REQ_WEAR_EQUIP index 2 2\nfield PACKET_CZ_REQ_WEAR_EQUIP position 4 4\nrecord PACKET_ZC_REQ_WEAR_EQUIP_ACK 11 1\nfield PACKET_ZC_REQ_WEAR_EQUIP_ACK PacketType 0 2\nfield PACKET_ZC_REQ_WEAR_EQUIP_ACK index 2 2\nfield PACKET_ZC_REQ_WEAR_EQUIP_ACK wearLocation 4 4\nfield PACKET_ZC_REQ_WEAR_EQUIP_ACK wItemSpriteNumber 8 2\nfield PACKET_ZC_REQ_WEAR_EQUIP_ACK result 10 1\nrecord PACKET_ZC_REQ_TAKEOFF_EQUIP_ACK 9 1\nfield PACKET_ZC_REQ_TAKEOFF_EQUIP_ACK packetType 0 2\nfield PACKET_ZC_REQ_TAKEOFF_EQUIP_ACK index 2 2\nfield PACKET_ZC_REQ_TAKEOFF_EQUIP_ACK wearLocation 4 4\nfield PACKET_ZC_REQ_TAKEOFF_EQUIP_ACK flag 8 1\nflag IsIdentified 1\nflag IsDamaged 2\nflag PlaceETCTab 4\nflag SpareBits 248\n",
+      "stderr": "",
+      "command": [
+        "/home/otto/.hermes/cache/scratch/equipment-independent-review/g++"
+      ]
+    },
+    "clang++_compile": {
+      "returncode": 0,
+      "stdout": "",
+      "stderr": "",
+      "command": [
+        "/nix/store/2msw5nclhpsm80z65dqmjiv8kkras989-clang-wrapper-21.1.8/bin/clang++",
+        "-std=c++17",
+        "-DHAS_TLS",
+        "-fno-strict-aliasing",
+        "-DHAVE_GETADDRINFO",
+        "-DHAVE_SETRLIMIT",
+        "-DHAVE_STRNLEN",
+        "-DPACKETVER=20180704",
+        "-DPRERE",
+        "-DHAVE_MONOTONIC_CLOCK",
+        "-DHAS_TLS",
+        "-fno-strict-aliasing",
+        "-DHAVE_GETADDRINFO",
+        "-DHAVE_SETRLIMIT",
+        "-DHAVE_STRNLEN",
+        "-DPACKETVER=20180704",
+        "-DPRERE",
+        "-DHAVE_MONOTONIC_CLOCK",
+        "-I/home/otto/.hermes/cache/scratch/callback-package-hut2_cuz/configured-variant/src",
+        "-I/home/otto/.hermes/cache/scratch/callback-package-hut2_cuz/configured-variant/src/common",
+        "-I/home/otto/.hermes/cache/scratch/callback-package-hut2_cuz/configured-variant/3rdparty/libconfig",
+        "-I/home/otto/.hermes/cache/scratch/callback-package-hut2_cuz/configured-variant/3rdparty/rapidyaml/src",
+        "-I/home/otto/.hermes/cache/scratch/callback-package-hut2_cuz/configured-variant/3rdparty/rapidyaml/ext/c4core/src",
+        "-I/nix/store/1w8g6rvhljfk44hx50qz4sc47sm1f28v-mariadb-connector-c-3.3.5-dev/include",
+        "-I/nix/store/1w8g6rvhljfk44hx50qz4sc47sm1f28v-mariadb-connector-c-3.3.5-dev/include/mysql",
+        "/home/otto/.hermes/cache/scratch/equipment-independent-review/independent.cpp",
+        "-o",
+        "/home/otto/.hermes/cache/scratch/equipment-independent-review/clang++"
+      ]
+    },
+    "clang++_oracle": {
+      "returncode": 0,
+      "stdout": "profile 20180704 20180704 2 5 100 2573 2456 2457 2458 0\nresults 0 1 2\nrecord EQUIPITEM_INFO 57 1\nfield EQUIPITEM_INFO index 0 2\nfield EQUIPITEM_INFO ITID 2 2\nfield EQUIPITEM_INFO type 4 1\nfield EQUIPITEM_INFO location 5 4\nfield EQUIPITEM_INFO WearState 9 4\nfield EQUIPITEM_INFO RefiningLevel 13 1\nfield EQUIPITEM_INFO slot 14 8\nfield EQUIPITEM_INFO HireExpireDate 22 4\nfield EQUIPITEM_INFO bindOnEquipType 26 2\nfield EQUIPITEM_INFO wItemSpriteNumber 28 2\nfield EQUIPITEM_INFO option_count 30 1\nfield EQUIPITEM_INFO option_data 31 25\nfield EQUIPITEM_INFO Flag 56 1\nrecord ItemOptions 5 1\nfield ItemOptions index 0 2\nfield ItemOptions value 2 2\nfield ItemOptions param 4 1\nrecord EQUIPSLOTINFO 8 1\nfield EQUIPSLOTINFO card 0 8\nrecord packet_itemlist_equip 34204 1\nfield packet_itemlist_equip PacketType 0 2\nfield packet_itemlist_equip PacketLength 2 2\nfield packet_itemlist_equip list 4 34200\nrecord PACKET_CZ_REQ_WEAR_EQUIP 8 1\nfield PACKET_CZ_REQ_WEAR_EQUIP packetType 0 2\nfield PACKET_CZ_REQ_WEAR_EQUIP index 2 2\nfield PACKET_CZ_REQ_WEAR_EQUIP position 4 4\nrecord PACKET_ZC_REQ_WEAR_EQUIP_ACK 11 1\nfield PACKET_ZC_REQ_WEAR_EQUIP_ACK PacketType 0 2\nfield PACKET_ZC_REQ_WEAR_EQUIP_ACK index 2 2\nfield PACKET_ZC_REQ_WEAR_EQUIP_ACK wearLocation 4 4\nfield PACKET_ZC_REQ_WEAR_EQUIP_ACK wItemSpriteNumber 8 2\nfield PACKET_ZC_REQ_WEAR_EQUIP_ACK result 10 1\nrecord PACKET_ZC_REQ_TAKEOFF_EQUIP_ACK 9 1\nfield PACKET_ZC_REQ_TAKEOFF_EQUIP_ACK packetType 0 2\nfield PACKET_ZC_REQ_TAKEOFF_EQUIP_ACK index 2 2\nfield PACKET_ZC_REQ_TAKEOFF_EQUIP_ACK wearLocation 4 4\nfield PACKET_ZC_REQ_TAKEOFF_EQUIP_ACK flag 8 1\nflag IsIdentified 1\nflag IsDamaged 2\nflag PlaceETCTab 4\nflag SpareBits 248\n",
+      "stderr": "",
+      "command": [
+        "/home/otto/.hermes/cache/scratch/equipment-independent-review/clang++"
+      ]
+    },
+    "fresh_tests": {
+      "returncode": 0,
+      "stdout": "============================= test session starts ==============================\nplatform linux -- Python 3.14.7, pytest-9.1.1, pluggy-1.6.0\nrootdir: /home/otto\nplugins: cov-7.1.0, anyio-4.15.1, platformdirs-4.12.3\ncollected 8 items\n\n../../.hermes/cache/scratch/equipment-independent-review/test_fresh.py . [ 12%]\n.......                                                                  [100%]\n\n- generated xml file: /home/otto/.hermes/cache/scratch/equipment-independent-review/fresh.xml -\n============================== 8 passed in 0.19s ===============================\n",
+      "stderr": "",
+      "command": [
+        "/home/otto/dev/ro-bots/.venv/bin/python",
+        "-m",
+        "pytest",
+        "-p",
+        "no:cacheprovider",
+        "/home/otto/.hermes/cache/scratch/equipment-independent-review/test_fresh.py",
+        "--junitxml=/home/otto/.hermes/cache/scratch/equipment-independent-review/fresh.xml",
+        "--basetemp=/home/otto/.hermes/cache/scratch/equipment-independent-review/fresh-tmp"
+      ]
+    },
+    "bare_import": {
+      "returncode": 0,
+      "stdout": "BARE_STDLIB_IMPORT_PASS\n",
+      "stderr": "",
+      "command": [
+        "python3",
+        "-I",
+        "-c",
+        "import sys; sys.path.insert(0,'/home/otto/dev/ro-bots/src'); from robots.adapters.native_equipment import decode_equipment_list; assert decode_equipment_list(bytes.fromhex('0d0a0400')) == (); print('BARE_STDLIB_IMPORT_PASS')"
+      ]
+    },
+    "ruff": {
+      "returncode": 0,
+      "stdout": "All checks passed!\n",
+      "stderr": "",
+      "command": [
+        "/home/otto/dev/ro-bots/.venv/bin/python",
+        "-m",
+        "ruff",
+        "check",
+        "src/robots/adapters/native_equipment.py",
+        "tests/test_native_equipment.py"
+      ]
+    },
+    "black": {
+      "returncode": 0,
+      "stdout": "",
+      "stderr": "All done! \u2728 \ud83c\udf70 \u2728\n2 files would be left unchanged.\n",
+      "command": [
+        "/home/otto/dev/ro-bots/.venv/bin/python",
+        "-m",
+        "black",
+        "--workers",
+        "1",
+        "--check",
+        "src/robots/adapters/native_equipment.py",
+        "tests/test_native_equipment.py"
+      ]
+    },
+    "strict_isolated_module": {
+      "returncode": 0,
+      "stdout": "Success: no issues found in 1 source file\n",
+      "stderr": "",
+      "command": [
+        "/home/otto/dev/ro-bots/.venv/bin/python",
+        "-m",
+        "mypy",
+        "--config-file",
+        "/home/otto/.hermes/cache/scratch/equipment-independent-review/strict.ini",
+        "--cache-dir",
+        "/home/otto/.hermes/cache/scratch/equipment-independent-review/mypy-cache",
+        "/home/otto/.hermes/cache/scratch/equipment-independent-review/native_equipment.py"
+      ]
+    },
+    "author_scoped_mypy": {
+      "returncode": 0,
+      "stdout": "Success: no issues found in 2 source files\n",
+      "stderr": "",
+      "command": [
+        "/home/otto/dev/ro-bots/.venv/bin/python",
+        "-m",
+        "mypy",
+        "--config-file",
+        "/home/otto/.hermes/cache/scratch/native-equipment-proof/mypy.ini",
+        "--cache-dir",
+        "/home/otto/.hermes/cache/scratch/equipment-independent-review/mypy-author-cache",
+        "src/robots/adapters/native_equipment.py",
+        "tests/test_native_equipment.py"
+      ]
+    }
+  },
+  "freeze_proof": {
+    "file": "/home/otto/.hermes/cache/scratch/equipment-codec-review-freeze.json",
+    "sha256": "da548f0a9ac6bf90d77ff57c9d294086cbed782f9d61fb4a9916f71a960599af",
+    "before": {
+      "/home/otto/dev/ro-bots/src/robots/adapters/native_equipment.py": "b00c9efa6f47258b4889c478c4587fe261c5b3678474e072666e3614b3701eac",
+      "/home/otto/dev/ro-bots/tests/test_native_equipment.py": "08f1863fe0031c7a0d693213d794f8ac89ec06bd7be424ad9802558a12c6c959",
+      "/home/otto/dev/ro-bots/protocol/main-20180704-pre-re-equipment.json": "c3e34b0a01ed9af39848426f80b035585549aaa3573a3ef9bd76b7d67f0a356a",
+      "/home/otto/dev/ro-bots/run/reviews/playing-mvp-native-equipment-codec.json": "a0265f581ef656ab114b31f79857504c0f36a6301bab22fcf69c2949305cd08e",
+      "/home/otto/dev/ro-bots/tests/test_native_protocol_manifest.py": "e13eff6c7ae84daa17259304017366510d76a7d7683d6b9ff2b541087ae253cf"
+    },
+    "after": {
+      "/home/otto/dev/ro-bots/src/robots/adapters/native_equipment.py": "b00c9efa6f47258b4889c478c4587fe261c5b3678474e072666e3614b3701eac",
+      "/home/otto/dev/ro-bots/tests/test_native_equipment.py": "08f1863fe0031c7a0d693213d794f8ac89ec06bd7be424ad9802558a12c6c959",
+      "/home/otto/dev/ro-bots/protocol/main-20180704-pre-re-equipment.json": "c3e34b0a01ed9af39848426f80b035585549aaa3573a3ef9bd76b7d67f0a356a",
+      "/home/otto/dev/ro-bots/run/reviews/playing-mvp-native-equipment-codec.json": "a0265f581ef656ab114b31f79857504c0f36a6301bab22fcf69c2949305cd08e",
+      "/home/otto/dev/ro-bots/tests/test_native_protocol_manifest.py": "e13eff6c7ae84daa17259304017366510d76a7d7683d6b9ff2b541087ae253cf"
+    },
+    "all_five_unchanged": true
+  },
+  "receipts_verified": {
+    "count": 36,
+    "all_matched": true,
+    "receipts": [
+      {
+        "path": "/home/otto/dev/ro-bots/src/robots/adapters/native_equipment.py",
+        "bytes": 6023,
+        "sha256": "b00c9efa6f47258b4889c478c4587fe261c5b3678474e072666e3614b3701eac"
+      },
+      {
+        "path": "/home/otto/dev/ro-bots/tests/test_native_equipment.py",
+        "bytes": 8975,
+        "sha256": "08f1863fe0031c7a0d693213d794f8ac89ec06bd7be424ad9802558a12c6c959"
+      },
+      {
+        "path": "/home/otto/dev/ro-bots/protocol/main-20180704-pre-re-equipment.json",
+        "bytes": 13712,
+        "sha256": "c3e34b0a01ed9af39848426f80b035585549aaa3573a3ef9bd76b7d67f0a356a"
+      },
+      {
+        "path": "/home/otto/.hermes/cache/scratch/native-equipment-proof/ack-green.py",
+        "bytes": 1388,
+        "sha256": "61483ac66a51b4425b873c1feccc10ba606a6c46bc9e4e3e2614548f26d77615"
+      },
+      {
+        "path": "/home/otto/.hermes/cache/scratch/native-equipment-proof/ack-green.xml",
+        "bytes": 495,
+        "sha256": "56b6f084cb086ad732946bc394da522b78701042c3407cc198acac5aa35a1b6a"
+      },
+      {
+        "path": "/home/otto/.hermes/cache/scratch/native-equipment-proof/ack-red.py",
+        "bytes": 1298,
+        "sha256": "f2a3cc8cf8aadc577135d8a3b8e49a1891661197b013daa76de952f3ccb70e30"
+      },
+      {
+        "path": "/home/otto/.hermes/cache/scratch/native-equipment-proof/ack-red.xml",
+        "bytes": 1276,
+        "sha256": "c46b4814253c8214a6f4bcc384b17992bd2be055a9712813fcfaa45b7d0794a3"
+      },
+      {
+        "path": "/home/otto/.hermes/cache/scratch/native-equipment-proof/ack-test.py",
+        "bytes": 1283,
+        "sha256": "4b92729143339a88b5e9c4e0e3636a00f1e4064dfcf3d0e74d30fc4696eb53a2"
+      },
+      {
+        "path": "/home/otto/.hermes/cache/scratch/native-equipment-proof/boundaries-red.py",
+        "bytes": 3395,
+        "sha256": "67ed27ac84f503ebae7cf2b710e0933f63954e6005853f98bd4870c49f513af3"
+      },
+      {
+        "path": "/home/otto/.hermes/cache/scratch/native-equipment-proof/boundaries-red.xml",
+        "bytes": 18522,
+        "sha256": "66489af5b7ca5d17e47673e8bc7f47ce0a10a86638c7ba82ffb8b19609a358cf"
+      },
+      {
+        "path": "/home/otto/.hermes/cache/scratch/native-equipment-proof/boundaries-test.py",
+        "bytes": 6402,
+        "sha256": "6d8fa58cd79106475330494a2b25049ba4084a9e871c849f516b3c773a25b121"
+      },
+      {
+        "path": "/home/otto/.hermes/cache/scratch/native-equipment-proof/checks.json",
+        "bytes": 1395,
+        "sha256": "37f2e18d9edad515b89a8813dcab83f9a42c8517d22693da58e0f24048dd24ae"
+      },
+      {
+        "path": "/home/otto/.hermes/cache/scratch/native-equipment-proof/clang++",
+        "bytes": 28920,
+        "sha256": "228f4608b4d10866da370147051a9360809ea6ddc4e4166505bd04e03881344a"
+      },
+      {
+        "path": "/home/otto/.hermes/cache/scratch/native-equipment-proof/clang++.command.json",
+        "bytes": 1242,
+        "sha256": "ee2d0df3cc7590ea10ad2a70d791c0418a1419ab6b3669af1b971e056e9499b6"
+      },
+      {
+        "path": "/home/otto/.hermes/cache/scratch/native-equipment-proof/clang++.compile.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "/home/otto/.hermes/cache/scratch/native-equipment-proof/clang++.compile.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "/home/otto/.hermes/cache/scratch/native-equipment-proof/clang++.oracle.stdout",
+        "bytes": 1671,
+        "sha256": "8e662f760c9c8ff313d876275321c6fef70fc44649843c8f39197dbd1dd4375c"
+      },
+      {
+        "path": "/home/otto/.hermes/cache/scratch/native-equipment-proof/equipment.cpp",
+        "bytes": 6795,
+        "sha256": "7aaa9fb6f7766747cc86e1618ee132ea8c51f901c7ca6804dd536cd434920b55"
+      },
+      {
+        "path": "/home/otto/.hermes/cache/scratch/native-equipment-proof/final-green.xml",
+        "bytes": 4179,
+        "sha256": "66eb072980c171f69d1d1a45181bac8759ebeb0502d2a58264f9ad0b8c84c9d7"
+      },
+      {
+        "path": "/home/otto/.hermes/cache/scratch/native-equipment-proof/g++",
+        "bytes": 27432,
+        "sha256": "cc8574d66e5be33f0dd3fc5c8f1c2d80bbaf60ec9b52efe3e795fc7ecbc6eeab"
+      },
+      {
+        "path": "/home/otto/.hermes/cache/scratch/native-equipment-proof/g++.command.json",
+        "bytes": 1232,
+        "sha256": "14dc0530cf7c187f5d2a7cdc816cdf17c26d0b2bbe035dc7eae4f915aef0435d"
+      },
+      {
+        "path": "/home/otto/.hermes/cache/scratch/native-equipment-proof/g++.compile.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "/home/otto/.hermes/cache/scratch/native-equipment-proof/g++.compile.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "/home/otto/.hermes/cache/scratch/native-equipment-proof/g++.oracle.stdout",
+        "bytes": 1671,
+        "sha256": "8e662f760c9c8ff313d876275321c6fef70fc44649843c8f39197dbd1dd4375c"
+      },
+      {
+        "path": "/home/otto/.hermes/cache/scratch/native-equipment-proof/metadata-green.py",
+        "bytes": 2677,
+        "sha256": "c4c4de8471e764d6c849f910c896b41638d7aefc6cb482f89834b22b178d1361"
+      },
+      {
+        "path": "/home/otto/.hermes/cache/scratch/native-equipment-proof/metadata-green.xml",
+        "bytes": 641,
+        "sha256": "5a22d6fb862e2a30214b4d11251fd0d187dc52fc7901cc1c714f057f2aec0d01"
+      },
+      {
+        "path": "/home/otto/.hermes/cache/scratch/native-equipment-proof/metadata-red.xml",
+        "bytes": 1663,
+        "sha256": "4994f811d8ea7343106ca4bed11fdb267728938bcc853c38adfa199217a52f74"
+      },
+      {
+        "path": "/home/otto/.hermes/cache/scratch/native-equipment-proof/metadata-test.py",
+        "bytes": 2331,
+        "sha256": "07ff8b91f9cee89286b553587111a6b7749e404cefcb0fd21edf45e0c2cb8fe9"
+      },
+      {
+        "path": "/home/otto/.hermes/cache/scratch/native-equipment-proof/mypy.ini",
+        "bytes": 241,
+        "sha256": "b84c8a9e0bc2dcfe9277b651b7e0042f853dc09e1e20baf184bae113e34ec076"
+      },
+      {
+        "path": "/home/otto/.hermes/cache/scratch/native-equipment-proof/profile.xml",
+        "bytes": 370,
+        "sha256": "639ead7cd9c973df57c8d39e98461aa05f1da0b5f96412619a5ccfc9a9735388"
+      },
+      {
+        "path": "/home/otto/.hermes/cache/scratch/native-equipment-proof/run_checks.py",
+        "bytes": 956,
+        "sha256": "492244fe1b0e6e43ad488735d5f9d76df592a31f86ffda7077e6baf06bb1df00"
+      },
+      {
+        "path": "/home/otto/.hermes/cache/scratch/native-equipment-proof/run_oracle.py",
+        "bytes": 1474,
+        "sha256": "c18852ff3d0ced722c8c0068ebe9fc1bca62d4deb45b4f0d9a306bb5b5fca27b"
+      },
+      {
+        "path": "/home/otto/.hermes/cache/scratch/native-equipment-proof/wear-green.py",
+        "bytes": 816,
+        "sha256": "bc86584e809d78458e55b8d7a738b313b572e6b96fd0bb951f82050c33b40a71"
+      },
+      {
+        "path": "/home/otto/.hermes/cache/scratch/native-equipment-proof/wear-green.xml",
+        "bytes": 369,
+        "sha256": "212230d059991cec56a26c65fdaae991db4c66e2654d4e70f4d9d7e8376b70fe"
+      },
+      {
+        "path": "/home/otto/.hermes/cache/scratch/native-equipment-proof/wear-red.xml",
+        "bytes": 706,
+        "sha256": "c80f32fa864fd4c177875dce2c2e29d5da9d5bb274f6441803b450eac718dbdc"
+      },
+      {
+        "path": "/home/otto/.hermes/cache/scratch/native-equipment-proof/wear-test.py",
+        "bytes": 820,
+        "sha256": "1b1e76f8d8ddcde85e5b76cc292d1975c06b506236fc3657c4e87e33b1d074b4"
+      }
+    ]
+  },
+  "measured_layout": {
+    "records": {
+      "EQUIPITEM_INFO": {
+        "size": 57,
+        "alignment": 1,
+        "fields": {
+          "index": {
+            "offset": 0,
+            "width": 2
+          },
+          "ITID": {
+            "offset": 2,
+            "width": 2
+          },
+          "type": {
+            "offset": 4,
+            "width": 1
+          },
+          "location": {
+            "offset": 5,
+            "width": 4
+          },
+          "WearState": {
+            "offset": 9,
+            "width": 4
+          },
+          "RefiningLevel": {
+            "offset": 13,
+            "width": 1
+          },
+          "slot": {
+            "offset": 14,
+            "width": 8
+          },
+          "HireExpireDate": {
+            "offset": 22,
+            "width": 4
+          },
+          "bindOnEquipType": {
+            "offset": 26,
+            "width": 2
+          },
+          "wItemSpriteNumber": {
+            "offset": 28,
+            "width": 2
+          },
+          "option_count": {
+            "offset": 30,
+            "width": 1
+          },
+          "option_data": {
+            "offset": 31,
+            "width": 25
+          },
+          "Flag": {
+            "offset": 56,
+            "width": 1
+          }
+        }
+      },
+      "ItemOptions": {
+        "size": 5,
+        "alignment": 1,
+        "fields": {
+          "index": {
+            "offset": 0,
+            "width": 2
+          },
+          "value": {
+            "offset": 2,
+            "width": 2
+          },
+          "param": {
+            "offset": 4,
+            "width": 1
+          }
+        }
+      },
+      "EQUIPSLOTINFO": {
+        "size": 8,
+        "alignment": 1,
+        "fields": {
+          "card": {
+            "offset": 0,
+            "width": 8
+          }
+        }
+      },
+      "packet_itemlist_equip": {
+        "size": 34204,
+        "alignment": 1,
+        "fields": {
+          "PacketType": {
+            "offset": 0,
+            "width": 2
+          },
+          "PacketLength": {
+            "offset": 2,
+            "width": 2
+          },
+          "list": {
+            "offset": 4,
+            "width": 34200
+          }
+        }
+      },
+      "PACKET_CZ_REQ_WEAR_EQUIP": {
+        "size": 8,
+        "alignment": 1,
+        "fields": {
+          "packetType": {
+            "offset": 0,
+            "width": 2
+          },
+          "index": {
+            "offset": 2,
+            "width": 2
+          },
+          "position": {
+            "offset": 4,
+            "width": 4
+          }
+        }
+      },
+      "PACKET_ZC_REQ_WEAR_EQUIP_ACK": {
+        "size": 11,
+        "alignment": 1,
+        "fields": {
+          "PacketType": {
+            "offset": 0,
+            "width": 2
+          },
+          "index": {
+            "offset": 2,
+            "width": 2
+          },
+          "wearLocation": {
+            "offset": 4,
+            "width": 4
+          },
+          "wItemSpriteNumber": {
+            "offset": 8,
+            "width": 2
+          },
+          "result": {
+            "offset": 10,
+            "width": 1
+          }
+        }
+      },
+      "PACKET_ZC_REQ_TAKEOFF_EQUIP_ACK": {
+        "size": 9,
+        "alignment": 1,
+        "fields": {
+          "packetType": {
+            "offset": 0,
+            "width": 2
+          },
+          "index": {
+            "offset": 2,
+            "width": 2
+          },
+          "wearLocation": {
+            "offset": 4,
+            "width": 4
+          },
+          "flag": {
+            "offset": 8,
+            "width": 1
+          }
+        }
+      }
+    },
+    "flags_byte_masks": {
+      "IsIdentified": 1,
+      "IsDamaged": 2,
+      "PlaceETCTab": 4,
+      "SpareBits": 248
+    },
+    "item_id_width": 2,
+    "max_item_options": 5,
+    "max_inventory_configured": 100,
+    "packet_headers": {
+      "inventory_equipment": 2573,
+      "equip_request": 2456,
+      "equip_ack": 2457,
+      "unequip_ack": 2458
+    },
+    "equip_results": {
+      "success": 0,
+      "level_failure": 1,
+      "failure": 2
+    }
+  },
+  "signedness_compile_assertions": {
+    "EQUIPITEM_INFO": {
+      "index": "int16",
+      "ITID": "uint16",
+      "type": "uint8",
+      "location": "uint32",
+      "WearState": "uint32",
+      "RefiningLevel": "uint8",
+      "HireExpireDate": "int32",
+      "bindOnEquipType": "uint16",
+      "wItemSpriteNumber": "uint16",
+      "option_count": "uint8"
+    },
+    "ItemOptions": {
+      "index": "int16",
+      "value": "int16",
+      "param": "uint8"
+    },
+    "packet_itemlist_equip": {
+      "PacketType": "int16",
+      "PacketLength": "int16"
+    },
+    "PACKET_CZ_REQ_WEAR_EQUIP": {
+      "packetType": "int16",
+      "index": "uint16",
+      "position": "uint32"
+    },
+    "PACKET_ZC_REQ_WEAR_EQUIP_ACK": {
+      "PacketType": "int16",
+      "index": "uint16",
+      "wearLocation": "uint32",
+      "wItemSpriteNumber": "uint16",
+      "result": "uint8"
+    },
+    "PACKET_ZC_REQ_TAKEOFF_EQUIP_ACK": {
+      "packetType": "uint16",
+      "index": "uint16",
+      "wearLocation": "uint32",
+      "flag": "uint8"
+    }
+  },
+  "compiler_profile_binding": "Immutable source/profile/sender test executed before each GCC and Clang invocation; flags exactly match trusted installed map CPPFLAGS; full unchanged configured headers, no overrides or forced headers. All original output bytes matched; supplemental exact C++ type assertions passed.",
+  "mypy_scope": "Author strict config skips unrelated project imports, but follows pytest/_pytest normally; this is scoped, not whole-project approval. Fresh isolated byte-identical stdlib-only module uses strict/warn_unreachable and follow_imports=normal; separate author module+test check retained.",
+  "semantics": {
+    "allowed_locations": "pc_equippoint permitted slots, not class/sex/level eligibility",
+    "wear_state": "actual received it->equip, including zero",
+    "inventory_index": "client_index(server_index)=server_index+2, not itemID or actorID",
+    "empty_list": "empty one-frame equipment list only; not whole inventory completion",
+    "options": "retain all 5 signed index/value and uint8 param slots plus received option_count",
+    "unknown_item_effects": "not evaluated or mapped to zero bonuses",
+    "expiry": "raw signed stamp only",
+    "max_inventory": "compiler observes 100; not imposed as current legal capacity by this pure representation codec",
+    "ack": "raw result preserved with optional known enum; no session/epoch/request correlation or state application"
+  },
+  "limitations": [
+    "No live packets sent, connections, SQL, model, network or service effects; no source repairs or shared packet-table reads/writes.",
+    "Known inherited 0999/099A stream registration gap is a parent integration blocker, not a pure decoder defect; not independently re-read while parallel writer active.",
+    "Empty one-frame equipment list is not whole inventory completion; parent reported actual empty complete fixtures separately, not proven here.",
+    "Ownership, legal class/level/gender/slot, current session and equipment state are not encoder guarantees. Future actor must correlate epoch/index/intent plus actual WearState and ACK; server early returns can emit no ACK.",
+    "Raw card/refine/sprite/expiry/options and spare bits do not establish mechanical effects. All five signed option slots survive zero count as native sender requires.",
+    "MAX_INVENTORY=100 and 600-row static list allocation do not authorize an inferred dynamic capacity; codec validates positive signed16 frame length instead.",
+    "Dataclass constructors can be forged and are not hostile-RPC validation endpoints; public frame decoders strictly deny bytes subclasses, bytearray, memoryview and strings.",
+    "No actual gear acquisition/received gear/native equip acceptance. Current MVP cannot equip before an NPC supplies an actual item.",
+    "No generic all-path C++ proof, whole moving-source gate or full Renewal parity. Parent owns final combined gates.",
+    "Author initial scratch MAX_ITEM_OPTIONS compile error and finite budget overrun remain recorded; successful later compilation does not erase them."
+  ],
+  "artifacts": [
+    {
+      "path": "/home/otto/.hermes/cache/scratch/equipment-independent-review/author_scoped_mypy.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/equipment-independent-review/author_scoped_mypy.stdout",
+      "sha256": "f9b031e5c45aa702cd4fef028d465551cb20a2c4698e0913c7b00766b20ac4d8",
+      "bytes": 43
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/equipment-independent-review/bare_import.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/equipment-independent-review/bare_import.stdout",
+      "sha256": "99d0c7268b8a85a15d124893bee8ce6b4bb611ea8c07659ab6ae93daf24d2fb5",
+      "bytes": 24
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/equipment-independent-review/black.stderr",
+      "sha256": "b9cf511501d306d2bd8355ccb165c8ddc0a6fdd62d7c72c4a7b1795cf8934c8c",
+      "bytes": 56
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/equipment-independent-review/black.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/equipment-independent-review/clang++",
+      "sha256": "0f8d0ec0b070fde2f94437c113ee13f008711ae548fb4a46a6eac14077add843",
+      "bytes": 28920
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/equipment-independent-review/clang++_compile.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/equipment-independent-review/clang++_compile.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/equipment-independent-review/clang++_oracle.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/equipment-independent-review/clang++_oracle.stdout",
+      "sha256": "8e662f760c9c8ff313d876275321c6fef70fc44649843c8f39197dbd1dd4375c",
+      "bytes": 1671
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/equipment-independent-review/existing.xml",
+      "sha256": "aec938eb7362ed8b9a20d299a0fff97e1274d514862ccec7c8380d8082536fb4",
+      "bytes": 4179
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/equipment-independent-review/existing_tests.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/equipment-independent-review/existing_tests.stdout",
+      "sha256": "fc4bdbc306a5cd8229bd86fe73dad4927cb19b1f79f8884e3c7fff5dcb539bcc",
+      "bytes": 99
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/equipment-independent-review/fresh.xml",
+      "sha256": "86907388d562b4192f70c66975ca9a62b039cf8b54fc8655ef6b81e40188a9e1",
+      "bytes": 1486
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/equipment-independent-review/fresh_tests.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/equipment-independent-review/fresh_tests.stdout",
+      "sha256": "2dfa9b66a526b0f334ac09e913b6fbdf633543c4992466a66e73244b32cf23d9",
+      "bytes": 572
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/equipment-independent-review/g++",
+      "sha256": "3786694eeb76fc3db7adb625cf9405709c9b87c119cb36305eeceb91453a38fb",
+      "bytes": 27432
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/equipment-independent-review/g++_compile.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/equipment-independent-review/g++_compile.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/equipment-independent-review/g++_oracle.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/equipment-independent-review/g++_oracle.stdout",
+      "sha256": "8e662f760c9c8ff313d876275321c6fef70fc44649843c8f39197dbd1dd4375c",
+      "bytes": 1671
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/equipment-independent-review/independent.cpp",
+      "sha256": "f173a58903415089cb979ac5abfd6fbe56bd94779825d7994ab976d622af2322",
+      "bytes": 9309
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/equipment-independent-review/native_equipment.py",
+      "sha256": "b00c9efa6f47258b4889c478c4587fe261c5b3678474e072666e3614b3701eac",
+      "bytes": 6023
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/equipment-independent-review/ruff.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/equipment-independent-review/ruff.stdout",
+      "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+      "bytes": 19
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/equipment-independent-review/run_review.py",
+      "sha256": "97f8055683805c2fa5288385eae9ea413a3c5d1589870cd47c9cf4bb12c7340d",
+      "bytes": 8774
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/equipment-independent-review/strict.ini",
+      "sha256": "c3698a9f07c0f81f8980d380d169ae6f8cc13901b1de744288e7a70bf39fe13b",
+      "bytes": 91
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/equipment-independent-review/strict_isolated_module.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/equipment-independent-review/strict_isolated_module.stdout",
+      "sha256": "5d4b6d285b77932e3d08212c3b4974d0a803f98ec60408ac6ccf6a063fa6c19e",
+      "bytes": 42
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/equipment-independent-review/test_fresh.py",
+      "sha256": "491d0f432d05ea9867c0797e6fe1209fd114e456cff20dc78ee77c65bd329837",
+      "bytes": 3531
+    }
+  ]
+}

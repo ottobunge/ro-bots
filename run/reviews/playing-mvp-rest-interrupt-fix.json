@@ -1,0 +1,251 @@
+{
+  "status": "implemented_focused_gates_pass_unowned_contradictory_regression_blocks_root_acceptance",
+  "evidence_kind": "offline synthetic native-wire replay; not native gameplay",
+  "live_connections": false,
+  "inference": false,
+  "production_changes": {
+    "brain.py": {
+      "original_sha256": "57b31b54546bad5704fda62ac9572510457bc4a2eb46faea9deb87e6beb6be75",
+      "final_sha256": "1412ae23dfed96a058ba4adea596f00e85a0f6ba55f296b5745a104ee7bbef53",
+      "changed_or_added_functions": [
+        "__init__",
+        "is_recovering",
+        "recovery_health_ready",
+        "required_recovery_hp_ratio",
+        "start",
+        "sync_context",
+        "handle_event",
+        "_run_review",
+        "step_script",
+        "_step_recovery",
+        "_react_monster",
+        "_react_damage",
+        "_flee"
+      ],
+      "removed_functions": []
+    },
+    "scripts.py": {
+      "original_sha256": "3bfa0bb0eb6786fc7f0fda6b88805cee6de867d2cdf97952fc8d4620861491a4",
+      "final_sha256": "3bfa0bb0eb6786fc7f0fda6b88805cee6de867d2cdf97952fc8d4620861491a4",
+      "changed_or_added_functions": [],
+      "removed_functions": []
+    },
+    "agent_runtime.py": {
+      "original_sha256": "e60d518da5a11dd872f30b8987a03edf5b4a773188264ac21740afe67b64500d",
+      "final_sha256": "597bec8b2735ee8e4a3846d8428cc3a1eb4872fa386b478a6607d800106fac26",
+      "changed_or_added_functions": [
+        "tick",
+        "_advance_script",
+        "_script_actions"
+      ],
+      "removed_functions": []
+    },
+    "playing_runtime.py": {
+      "original_sha256": "e305b545b2724e68cd1b20ab7c4659e621784759dfa83c4614fe80ea07b759f4",
+      "final_sha256": "29f7a642a72218de2b6ef9bd7a29957f7e42902b1ee60494af08155eedb0f200",
+      "changed_or_added_functions": [
+        "__init__",
+        "connect",
+        "close",
+        "_health",
+        "perform_native",
+        "_social",
+        "_rest",
+        "recovery_ready",
+        "_attack_ready",
+        "_require_standing",
+        "_reset_epoch",
+        "_receive_pose"
+      ],
+      "removed_functions": []
+    }
+  },
+  "owned_file_sha256": {
+    "src/robots/app/brain.py": "1412ae23dfed96a058ba4adea596f00e85a0f6ba55f296b5745a104ee7bbef53",
+    "src/robots/app/agent_runtime.py": "597bec8b2735ee8e4a3846d8428cc3a1eb4872fa386b478a6607d800106fac26",
+    "src/robots/app/playing_runtime.py": "29f7a642a72218de2b6ef9bd7a29957f7e42902b1ee60494af08155eedb0f200",
+    "tests/test_native_rest_interrupt.py": "7f31b62d61346e48dee4fe5c8bab7765d5a994d5ccc028c0811d51262f1a88b5",
+    "tests/test_rest_recovery_script.py": "3f77c640733429750c7ac953a94bb01e299873c2ad2ac8dbf10b977d4c8ea219"
+  },
+  "_review_goal_exact_source_preserved": true,
+  "_review_goal_sha256": "578628742639b7875746a0bd382dd3a1065b26bafb84ac40bee2f535bd803be5",
+  "policy": {
+    "recovery_hp_ratio_default": 0.75,
+    "kind": "configurable engineering policy, not game formula",
+    "validation": "plain finite number, 0 < ratio <= 1",
+    "native_rest_send_min_interval_s": 1.0,
+    "standing_requests": "received SELF 08C8 type3, target0, newer than pending/rest barrier; maximum 3 paced requests",
+    "escape": "explicit FLEE only; suspended combat retained until received target position and native pending barrier",
+    "unknown_or_unrouteable_escape": "fails closed holding; no fabricated arrival or automatic flee conversion"
+  },
+  "gates": {
+    "black": {
+      "command": [
+        ".venv/bin/black",
+        "--check",
+        "src/robots/app/brain.py",
+        "src/robots/app/agent_runtime.py",
+        "src/robots/app/playing_runtime.py",
+        "tests/test_native_rest_interrupt.py",
+        "tests/test_rest_recovery_script.py"
+      ],
+      "returncode": 0,
+      "log": "run/reviews/rest-interrupt-private/black-final.log"
+    },
+    "ruff": {
+      "command": [
+        ".venv/bin/ruff",
+        "check",
+        "src/robots/app/brain.py",
+        "src/robots/app/agent_runtime.py",
+        "src/robots/app/playing_runtime.py",
+        "tests/test_native_rest_interrupt.py",
+        "tests/test_rest_recovery_script.py"
+      ],
+      "returncode": 0,
+      "log": "run/reviews/rest-interrupt-private/ruff-final.log"
+    },
+    "mypy": {
+      "command": [
+        ".venv/bin/mypy",
+        "src/robots/app/brain.py",
+        "src/robots/app/agent_runtime.py",
+        "src/robots/app/playing_runtime.py",
+        "tests/test_native_rest_interrupt.py",
+        "tests/test_rest_recovery_script.py"
+      ],
+      "returncode": 0,
+      "log": "run/reviews/rest-interrupt-private/mypy-final.log"
+    },
+    "xenon": {
+      "command": [
+        ".venv/bin/xenon",
+        "src",
+        "--max-absolute",
+        "B",
+        "--max-modules",
+        "B",
+        "--max-average",
+        "A"
+      ],
+      "returncode": 0,
+      "log": "run/reviews/rest-interrupt-private/xenon-final.log"
+    },
+    "pylint": {
+      "command": [
+        ".venv/bin/pylint",
+        "--disable=all",
+        "--enable=duplicate-code",
+        "--ignore-paths=tests",
+        "src"
+      ],
+      "returncode": 0,
+      "log": "run/reviews/rest-interrupt-private/pylint-final.log"
+    },
+    "scoped-tests": {
+      "command": [
+        ".venv/bin/pytest",
+        "-oaddopts=",
+        "-pno:cacheprovider",
+        "tests/test_native_rest_interrupt.py",
+        "tests/test_rest_recovery_script.py",
+        "tests/test_native_pose_recovery.py",
+        "tests/test_native_playing_keepalive.py",
+        "tests/test_brain.py",
+        "tests/test_agent_host.py",
+        "tests/test_empty_farm_plan.py",
+        "tests/test_host_native_vitals.py",
+        "tests/test_host_native_transport.py",
+        "tests/test_playing_startup_cleanup.py",
+        "-q",
+        "--junitxml=/home/otto/dev/ro-bots/run/reviews/rest-interrupt-private/scoped-final.xml"
+      ],
+      "returncode": 0,
+      "log": "run/reviews/rest-interrupt-private/scoped-tests-final.log"
+    },
+    "playing-regressions": {
+      "command": [
+        ".venv/bin/pytest",
+        "-oaddopts=",
+        "-pno:cacheprovider",
+        "tests/test_playing_runtime.py",
+        "-q",
+        "--junitxml=/home/otto/dev/ro-bots/run/reviews/rest-interrupt-private/playing-regressions.xml"
+      ],
+      "returncode": 1,
+      "log": "run/reviews/rest-interrupt-private/playing-regressions-final.log"
+    }
+  },
+  "xml_counts": {
+    "scoped-final.xml": {
+      "tests": 184,
+      "failures": [],
+      "passed": 184,
+      "new_recovery_tests": 36
+    },
+    "playing-regressions.xml": {
+      "tests": 91,
+      "failures": [
+        "tests.test_playing_runtime::test_life_authority_never_from_positive_hp[resurrection]"
+      ],
+      "passed": 90,
+      "new_recovery_tests": 0
+    }
+  },
+  "vertical_red_logs": [
+    "01-red.log",
+    "02-red.log",
+    "03-red.log",
+    "04-red.log",
+    "05-red.log",
+    "06-red.log",
+    "07-red.log",
+    "08-red.log"
+  ],
+  "private_evidence_directory": "run/reviews/rest-interrupt-private",
+  "blockers": [
+    {
+      "test": "tests/test_playing_runtime.py::test_life_authority_never_from_positive_hp[resurrection]",
+      "reason": "Unowned old regression expects Attack immediately after resurrection without fresh received standing; its Wire has no stand method. Native Attack now correctly requests standing. No unowned test edited.",
+      "scope_request": "Parent may authorize updating this exact test/fake stand seam to the new received-standing constraint."
+    }
+  ],
+  "root_gate": "not run during parallel work; parent owns combined root gate and independent fresh review",
+  "acceptance": "No extension of prior approval to these new hashes. No survival/native success claim. REST under pursuit can still die to source-forced standing.",
+  "time_budget": "Controller reports elapsed 1705s against requested 8m target; overrun retained.",
+  "evidence_sha256": {
+    "run/reviews/rest-interrupt-private/02-green.log": "3c82e1d3305214e6527e81a3191d87bd710aba47bc834df9a486aeefacb40faf",
+    "run/reviews/rest-interrupt-private/brain.py.original": "57b31b54546bad5704fda62ac9572510457bc4a2eb46faea9deb87e6beb6be75",
+    "run/reviews/rest-interrupt-private/xenon-final.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "run/reviews/rest-interrupt-private/07-red.log": "7e45de5c7e58a4168a6076d77ec86c473f4eca9b4b5ff7308b89f56b59dcac58",
+    "run/reviews/rest-interrupt-private/static-initial.log": "22e29ec13aa34f2bb9d6c34cde07e92db631f0acad27b1082bf0945abf88aca9",
+    "run/reviews/rest-interrupt-private/scoped-tests-final.log": "6f248e7d9860381ef1015a1ada51128c9a7f1e18078dbb188c96ca9c866e30e3",
+    "run/reviews/rest-interrupt-private/ast-diff.json": "18acec4100ce63a32aedf1b6d276148af1a2bf4c8ea8cc6f82571f3b277f9756",
+    "run/reviews/rest-interrupt-private/04-red.log": "bff4a080b8a92d8f7fd5e54a5b63699a896eff625c3c00afa8b3504e90e19449",
+    "run/reviews/rest-interrupt-private/scoped-final.xml": "7186c0c3d12f8a65377e9400de6b4d0f4e0e8a38d7284f61c7aa1bd58424d6ff",
+    "run/reviews/rest-interrupt-private/03-green.log": "2132f781fd09c4d032290bbe2ac096ba7335a9eb5ac19ffde8bd10a3ae2045f5",
+    "run/reviews/rest-interrupt-private/02-red.log": "3179c004c70ccf9878bfb1fb22302578c3b1b95ccd74e1e5b7a9107146a999ea",
+    "run/reviews/rest-interrupt-private/black-final.log": "25369eabb8c122f861d58ddb255f81f4b9ee797f42f3882975bef953218258ed",
+    "run/reviews/rest-interrupt-private/agent_runtime.py.original": "e60d518da5a11dd872f30b8987a03edf5b4a773188264ac21740afe67b64500d",
+    "run/reviews/rest-interrupt-private/gates-final-attempt.log": "c71a8d64edffba3f45b0ecf24c69d9707804d2609c2f734143355ac474973445",
+    "run/reviews/rest-interrupt-private/scripts.py.original": "3bfa0bb0eb6786fc7f0fda6b88805cee6de867d2cdf97952fc8d4620861491a4",
+    "run/reviews/rest-interrupt-private/mypy-final.log": "e317872697c2cbfdefa321527a6efe73290dff3a390b0fa8723b87092eccba6a",
+    "run/reviews/rest-interrupt-private/playing-regressions-final.log": "a12a471954bf734dde4a301fdce7f4d6d0c17f7517c159d7f3432a4fc23177cf",
+    "run/reviews/rest-interrupt-private/ruff-final.log": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+    "run/reviews/rest-interrupt-private/03-red.log": "9415c6260043904e6c93919b3e23db3e29169fe78c697af7221f597b268db14f",
+    "run/reviews/rest-interrupt-private/05-green-regressions.log": "35a5e761c96986b609128c65e5650b4f3a2db639505bd394fc4232e6f3fb0e90",
+    "run/reviews/rest-interrupt-private/scoped.xml": "2bc7e9e51204cc8bb6b2d59369840b243d5dfd74f2510306edde0fd01698e5eb",
+    "run/reviews/rest-interrupt-private/01-red.log": "a5ffba5501b14e14518956c4be5c9d57463015a1649ee21de385be63697a450e",
+    "run/reviews/rest-interrupt-private/08-red.log": "91ca9bda86c0c24f4ece0fc5bdb5e0515e52aab38c4ab85a0dae455c7491d694",
+    "run/reviews/rest-interrupt-private/playing-regressions.xml": "88d39207e57414e6588ea110187a4583fb97acac82782cea48ad1b5f979d3592",
+    "run/reviews/rest-interrupt-private/playing_runtime.py.original": "e305b545b2724e68cd1b20ab7c4659e621784759dfa83c4614fe80ea07b759f4",
+    "run/reviews/rest-interrupt-private/gates.py": "97853bc4dd95e0719c2d80d7fa44d299d6f55c8f6d167a798274a27f38727aaf",
+    "run/reviews/rest-interrupt-private/04-green.log": "f374d45aa1a832cf5c888b78fa022f02ac39cdea4b2c0a2fd154f44805163a71",
+    "run/reviews/rest-interrupt-private/06-red.log": "966a11c0fae9f9d62126739d86aba773460562a82dca14622699cb78d43875e6",
+    "run/reviews/rest-interrupt-private/05-red.log": "0e48b133e517e10cb539fe0c0c4e71bcfd66baca6049bdfdb599dc1e22551ac7",
+    "run/reviews/rest-interrupt-private/gate-results.json": "0f712d408f387e4a653440cd825db9a014f416506273772d3bd1b04d11222340",
+    "run/reviews/rest-interrupt-private/01-green.log": "93c97c10af4fc8b54296201243c032c5e8295479ca6b4adc06019033d6f9e282",
+    "run/reviews/rest-interrupt-private/production.diff": "11a95ae561a499f70757fb3ead6b58006419ab27eb9a645320d419f9c205c047",
+    "run/reviews/rest-interrupt-private/pylint-final.log": "8cbfc8cd0b04a4858b0b78b74c6df9631a1695e105e6911d4b57fbcc43b218b5"
+  }
+}

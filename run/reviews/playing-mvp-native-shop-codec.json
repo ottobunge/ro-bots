@@ -1,0 +1,129 @@
+{
+  "schema": "pure-native-shop-codec-review/v1",
+  "status": "completed-offline-candidate-awaiting-independent-parent-review",
+  "files_created": [
+    "src/robots/adapters/native_shop.py",
+    "tests/test_native_shop.py",
+    "protocol/main-20180704-pre-re-shop.json",
+    "run/reviews/playing-mvp-native-shop-codec.json"
+  ],
+  "runtime_effects": false,
+  "table_edits": false,
+  "no_purchases_or_grants": true,
+  "api": [
+    "ShopOfferRow",
+    "ShopOffer",
+    "PurchaseEntry",
+    "DealTypeMarker",
+    "PurchaseResult",
+    "ReceivedCurrency",
+    "decode_shop_offer",
+    "decode_deal_type",
+    "decode_purchase_result",
+    "decode_currency",
+    "encode_buy_selection",
+    "encode_purchase"
+  ],
+  "outcome": {
+    "tests_total": 75,
+    "physical_test_counts": {
+      "tests.test_native_shop": 51,
+      "tests.test_native_protocol_manifest": 24
+    },
+    "failures": 0,
+    "coverage_percent": 100.0,
+    "covered_source_statements": 66,
+    "all_256_result_bytes_preserved": true,
+    "all_256_item_types_preserved": true,
+    "stream": "actual inherited parse_stream C4/C6/CA/B1 alone, with NPCclose/selfstatus neighbors, every two-chunk split and byte-at-a-time",
+    "table_count": 897,
+    "quality": "Black, Ruff, strict mypy, Bandit with project config, Xenon project limits, Vulture85, Pylint duplicate-code passed on owned files"
+  },
+  "currency_correction": {
+    "source_header": "0x00B1",
+    "parameter": 20,
+    "wire_bytes": 8,
+    "signed_balance": true,
+    "b0_is_not_emitted_for_zeny": true,
+    "authority": "configured clif.cpp:3734-3736 invokes clif_longpar_change; sender3559-3570, enum SP_ZENY executed by both compilers",
+    "unreceived": "ReceivedCurrency(balance=None); unrelated B0/B1 status returns None",
+    "freshness_permission_or_budget_eligibility": false
+  },
+  "source_proof": {
+    "authority": "run/reviews/playing-mvp-configured-source-recovery.json",
+    "configured_source_files": 3216,
+    "auxiliary_files": 1,
+    "exact_package_hash_match_before_and_after_each_compiler": true,
+    "fresh_compilers": [
+      "g++",
+      "clang++"
+    ],
+    "full_headers": true,
+    "flags": "exact existing CPPFLAGS after bind_source before compiler; no -U/forced includes",
+    "oracles": "protocol/main-20180704-pre-re-shop.json",
+    "request_c8_header": "source registration constant, not falsely measured HEADER symbol"
+  },
+  "tdd": {
+    "cycles": [
+      "offer",
+      "offer-validation",
+      "requests",
+      "results",
+      "currency",
+      "currency-header"
+    ],
+    "physical_red_xml": [
+      "/home/otto/.hermes/cache/scratch/native-shop-proof/red-currency-header.xml",
+      "/home/otto/.hermes/cache/scratch/native-shop-proof/red-currency.xml",
+      "/home/otto/.hermes/cache/scratch/native-shop-proof/red-offer-validation.xml",
+      "/home/otto/.hermes/cache/scratch/native-shop-proof/red-offer.xml",
+      "/home/otto/.hermes/cache/scratch/native-shop-proof/red-requests.xml",
+      "/home/otto/.hermes/cache/scratch/native-shop-proof/red-results.xml"
+    ],
+    "physical_green_xml": [
+      "/home/otto/.hermes/cache/scratch/native-shop-proof/green-currency.xml",
+      "/home/otto/.hermes/cache/scratch/native-shop-proof/green-offer-validation.xml",
+      "/home/otto/.hermes/cache/scratch/native-shop-proof/green-offer.xml",
+      "/home/otto/.hermes/cache/scratch/native-shop-proof/green-requests.xml",
+      "/home/otto/.hermes/cache/scratch/native-shop-proof/green-results.xml",
+      "/home/otto/.hermes/cache/scratch/native-shop-proof/green-stream.xml"
+    ]
+  },
+  "artifact_paths": {
+    "verified_xml": "/home/otto/.hermes/cache/scratch/native-shop-proof/completed.xml",
+    "test_log": "/home/otto/.hermes/cache/scratch/native-shop-proof/completed.log",
+    "coverage_xml": "/home/otto/.hermes/cache/scratch/native-shop-proof/coverage-final.xml",
+    "quality_log": "/home/otto/.hermes/cache/scratch/native-shop-proof/quality-final.log",
+    "oracle_directory": "/home/otto/.hermes/cache/scratch/native-shop-proof/completed-tmp",
+    "registry": "/home/otto/.hermes/cache/scratch/native-shop-proof/artifact-registry.json"
+  },
+  "freeze": {
+    "approved_report": "run/reviews/playing-mvp-npc-cancel-repair1-combined-parent-gate.json",
+    "approved_count": 251,
+    "initial_actual_python_overlap": 204,
+    "initial_overlap_matched": true,
+    "final_full_freeze_checked": true,
+    "final_disjoint_writer_changes": [
+      "src/robots/adapters/native_npc_dialogue.py"
+    ],
+    "expected_disjoint_owner": "NPC page-budget delegate; not this codec writer",
+    "initial_other47_actual_hashes_not_captured": true,
+    "no_claim_all_repo_files_unchanged": true
+  },
+  "owned_hashes": {
+    "src/robots/adapters/native_shop.py": "85c24a75df5dd070446d4f45347af8fc6422638b3359503797709fcac8d2c1c9",
+    "tests/test_native_shop.py": "8e609b67f0a12da8d885947d0043e47cbbd4c6a6ea9a85aeea321cdae1678d55",
+    "protocol/main-20180704-pre-re-shop.json": "1aec7ab527e3dfcee394f050871ae601419d1bb54f784fd0722f000a7beb0289"
+  },
+  "issues": [
+    "Initial scratch oracle tried printing undefined RE/ZERO *_NUM names in C++ (not preprocessor expressions); first failure retained. Removed only unsupported print operands, no profile/include/flag/source adjustment.",
+    "One execute_code sandbox import lacked pytest; retried manifest generation using stdlib and all test/compiler execution via existing project venv.",
+    "Initial scoped lint violations fixed without suppressions; final quality passes."
+  ],
+  "remaining": [
+    "Independent completed-snapshot review and unchanged whole root quality gate belong to parent.",
+    "No shop session/actor/epoch/budget/weight/ownership/result correlation/current acquisition/worn-state integration.",
+    "Actual received offer, currency and ordinary Knife purchase remain unverified; public price is not substituted.",
+    "Not native gameplay, readiness, all-path C++ proof, full milestone or deployment approval."
+  ]
+}

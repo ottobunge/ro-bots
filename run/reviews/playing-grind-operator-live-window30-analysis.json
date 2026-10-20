@@ -1,0 +1,16 @@
+{
+  "status": "GRIND_WINDOW30_OPERATIONAL_ENTRY_CHURN_ENVIRONMENTAL",
+  "completed_at": "2026-10-18T06:20:00+00:00",
+  "result": "both agents logged in (keepalives flow, map loads + own-position ingests grow one per ~60s) but the entry churn loops: map_loads 24+ over 1800s with ZERO actor/vitals frames, build_state raising NativeTelemetryUnavailableError every review. Same shape in the three prior runs (started at receipt-1792283854, before ANY world restart, with no code change - so environmental, not slice regressions).",
+  "world_state": "rathena containers sequentially restarted (login->char->map), ports verified accepting, publications intact (feabfbd0). The churn persisted across the restart.",
+  "what_is_PROVEN_receipt_bound": [
+    "windows 26+28: complete kill-to-loot chain (427-dmg Pupa kill, Chrysalis pickup, XP) x2 independent",
+    "equip mechanism production-live (0x0998/0x0999)",
+    "shop exchange machinery (C5/C7/C9/CB + zeny)",
+    "merchant driver geography (dealer reached, talk-once)",
+    "return legs (production, gate 6014+65)"
+  ],
+  "next_diagnostic": "server-side login visibility: the map-server entry path needs console/log output during a probe login (the world log dir is empty; rAthena console is silent) - name why the entry session gets no vitals/actors. Then the economy+equip window closes on the recovered world.",
+  "receipt": "run/reviews/playing-grind-operator-live-window30.json",
+  "native_authority": "UNCHANGED_REVOKED"
+}

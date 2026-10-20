@@ -1,0 +1,345 @@
+{
+  "schema_version": 1,
+  "review": "Independent read-only Rust first-cycle exact-fix re-review",
+  "completed_at": "2026-10-05T14:16:25.491482+02:00",
+  "repository": "/home/otto/dev/ro-bots",
+  "base_commit": "15e0fef5334a7d9d7bb0ae6b8953e367e828bfb2",
+  "authority": [
+    "run/reviews/rust-worldfeed-review.json",
+    "run/reviews/rust-worldfeed-first-fix.json"
+  ],
+  "passed": false,
+  "verdict": "PARTIAL: three exact findings approved within Rust scope; RWF-POP upstream blocker retained",
+  "scoped_rust_fix_verification_passed": true,
+  "overall_experiment_approved": false,
+  "overall_population_approved": false,
+  "python_lifecycle_approved": false,
+  "scope": {
+    "source_ownership": "dashboard/** read-only; only requested report written in repository",
+    "semantic_review": [
+      "HTML title/body/attitude/guild-goal/name-attribute/inline-JS persona ID/dynamic chat contexts",
+      "Checked bounded roster command admission before reqwest and mock builder allocation; debug/release extrema",
+      "Adapter-lifetime replay gap/restart retention separate from transient SSE errors",
+      "Live default, explicit mock, no fallback and unchanged supported/unsupported payload frontiers"
+    ],
+    "reviewed_sources": [
+      "dashboard/crates/dashboard-app/src/render.rs",
+      "dashboard/crates/dashboard-app/src/main.rs",
+      "dashboard/crates/dashboard-app/src/liveview.rs",
+      "dashboard/crates/dashboard-app/src/tests.rs",
+      "dashboard/crates/world-feed/src/lib.rs",
+      "dashboard/crates/world-feed/src/live.rs",
+      "dashboard/crates/world-feed/src/mock/mod.rs",
+      "dashboard/crates/world-feed/tests/population_bounds.rs",
+      "dashboard/crates/world-feed/tests/http_live.rs",
+      "dashboard/Cargo.toml",
+      "dashboard/Taskfile.yml"
+    ],
+    "test_scope": "All 43 existing Rust tests/quality gates plus targeted exact-fix probes only",
+    "excluded": [
+      "Denied expanded cache/streaming-body/malformed-SSE follow-up script/outcome: not run and not rerouted",
+      "No new Python tests, Python edits or lifecycle acceptance",
+      "No huge generation request/allocation; million-groups validation only",
+      "No real game, shared-service/provider/SQL/Docker/credential actions",
+      "No source modifications, staging, commits or pushes"
+    ]
+  },
+  "finding_dispositions": {
+    "RWF-HTML-001": {
+      "status": "APPROVED_SCOPED",
+      "locations": [
+        "dashboard/crates/dashboard-app/src/render.rs:17-18,133,177,263-270,359-363"
+      ],
+      "verification": [
+        "Actual inspector HTTP router regression passes with editable closing-title/script name.",
+        "Independent renderer probes cover five adversarial names/IDs: title/body/double-quoted name value, attitude, guild goal, mixed-case script close, backslash/quotes, entity-like text and Unicode U+2028/U+2029. JSON literal roundtrips exact persona ID; it contains no raw less-than or line-separator characters.",
+        "Static initial chat escapes sender/text; dynamic chat uses textContent, not innerHTML. All five direct-render cases pass in debug and optimized release."
+      ],
+      "limits": "No browser JavaScript execution, live Python integration rerun, Dioxus browser audit or whole-dashboard XSS guarantee claimed. HTML esc lacks apostrophe escaping by design; inspected interpolated attributes are double-quoted, while inline JS uses JSON quoting."
+    },
+    "RWF-POP-BOUND-001": {
+      "status": "PARTIAL",
+      "rust_stage_1": "VERIFIED_SCOPED",
+      "bounds": {
+        "total_agents": 4096,
+        "friend_groups": 4096,
+        "solos": 4096,
+        "max_friends_per_group": 16,
+        "mock_min": 1,
+        "upstream_live_min": 2
+      },
+      "locations": [
+        "dashboard/crates/world-feed/src/lib.rs:311-347",
+        "dashboard/crates/world-feed/src/mock/mod.rs:210-228,435-449,790-811",
+        "dashboard/crates/world-feed/src/live.rs:290-301,338-348"
+      ],
+      "verification": [
+        "Command validation uses checked groups+solos and checked groups*friends_max+solos before serialization/reqwest send.",
+        "Public with_shape and private build_roster return Result and validate before RNG, roster allocations, generation loops and broadcast channel; invalid regeneration leaves existing roster unchanged. Source order inspected and existing regressions passed.",
+        "Loopback request counter remains zero for rejected oversized/u32-extreme commands. Million groups was validation-only; never constructed or posted.",
+        "5929 independently computed policy cases passed without panic in each of debug and optimized release. Only small valid mock populations constructed: seven friends plus three solos gives ten agents; explicit singleton mock group gives one. Boundary populations are serialized/validated only, not allocated."
+      ],
+      "policy_note": "16 is a resource ceiling, not an RO party-size rule. Rust min1/mock and existing upstream live min2 distinction is deliberate; this review does not change upstream semantics.",
+      "remaining": "Matching Python WorldState/SocietyRoster resource bounds at all upstream generation entrypoints are still missing and must be implemented and independently reviewed. Direct upstream callers bypass Rust. No overall population or end-to-end resource acceptance."
+    },
+    "RWF-OVERFLOW-001": {
+      "status": "APPROVED_SCOPED",
+      "locations": [
+        "dashboard/crates/world-feed/src/lib.rs:321-347"
+      ],
+      "verification": [
+        "Legal JSON u32 extrema return Invalid under catch_unwind in existing population tests, run in debug and optimized release.",
+        "Independent cross-product includes zero/boundary/million/u32::MAX counts and zero/min1/seven/16/17/u32::MAX sizes, checked against a widened u64 oracle. All 5929 cases reject/accept correctly in both profiles; no panic observed.",
+        "Standalone optimized probes use opt-level=3, overflow-checks=off, debug-assertions=off and workspace thin LTO against release world_feed rlib."
+      ],
+      "limits": "Approval covers roster command arithmetic only, not every arithmetic expression or Python generation."
+    },
+    "RWF-GAP-001": {
+      "status": "APPROVED_SCOPED",
+      "locations": [
+        "dashboard/crates/world-feed/src/live.rs:39-43,244-261,366-406"
+      ],
+      "verification": [
+        "Independent exact SSE sequence: IDs0,3; HTTP503; successful comment-only; successful empty; replayedID0; comment-only; empty; newerID4. Gap retained at all eight steps; restart retained from old-ID step; transient503 clears only on successful reconnect. Cursor never resets automatically and ends4.",
+        "Fresh adapter alone has no warnings/no cursor; prior adapter retains both facts. These assertions pass in debug and optimized release.",
+        "Existing held-open comment-only regression confirms events_status connected still classifies health stale after integrity loss; it also exercises gap/restart retention across successful reconnects.",
+        "Source inspection confirms no assignment clearing replay_gap/possible_restart except construction of fresh Cache::default."
+      ],
+      "limits": "No reconciliation, durable/epoch replay or Python lifecycle acceptance. Denied expanded cache/streaming-body/malformed-SSE follow-up was not retried or rerouted."
+    }
+  },
+  "security_concerns": [
+    {
+      "id": "RWF-POP-BOUND-001",
+      "severity": "high",
+      "status": "PARTIAL",
+      "finding": "Rust admission/mock-generation boundaries are verified, but the authoritative original review and implementation report retain missing upstream Python generation resource bounds. End-to-end population safety remains blocked.",
+      "source": "run/reviews/rust-worldfeed-review.json and run/reviews/rust-worldfeed-first-fix.json; retained prerequisite, not new Python review"
+    }
+  ],
+  "new_rust_security_concerns": [],
+  "logic_errors": [],
+  "suggestions": [],
+  "verification": {
+    "rust_quality_gates": {
+      "command": [
+        "nix",
+        "develop",
+        "-c",
+        "task",
+        "-t",
+        "dashboard/Taskfile.yml",
+        "dashboard:check"
+      ],
+      "exit_code": 0,
+      "test_groups": [
+        13,
+        20,
+        4,
+        3,
+        1,
+        2,
+        0
+      ],
+      "total_tests": 43,
+      "log_path": "/home/otto/.hermes/cache/scratch/rwf-independent-first-fix/rust_quality_gates.log",
+      "log_sha256": "79d19a2b18d3fc894970b18c073fe05102403724ed7ac4810e924939af138225",
+      "actual_output": "cargo-machete didn't find any unused dependencies in this directory. Good job!\n\nrunning 13 tests\ntest tests::backend_default_is_live_and_mock_requires_explicit_selection ... ok\ntest tests::upstream_strings_are_safe_in_remaining_render_contexts ... ok\ntest tests::agent_page_unknown_id_is_404 ... ok\ntest tests::liveview_ws_route_is_wired ... ok\ntest tests::commands_endpoint_rejects_unknown_persona ... ok\ntest tests::inspector_http_escapes_editable_title ... ok\ntest tests::roster_page_lists_groups_and_agents ... ok\ntest tests::configurator_and_feed_pages_render ... ok\ntest tests::agent_page_renders_memory_and_reputation ... ok\ntest tests::commands_endpoint_applies_force_action ... ok\ntest tests::unavailable_live_router_is_labeled_and_never_returns_fake_agents ... ok\ntest tests::commands_endpoint_regenerates_roster ... ok\ntest tests::roster_api_returns_snapshot_json ... ok\n\ntest result: ok. 13 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n\nrunning 20 tests\ntest mock::tests::agent_status_roundtrip ... ok\ntest mock::tests::command_validation_rejects_bad_shapes ... ok\ntest mock::tests::day_hour_progresses_over_a_week ... ok\ntest mock::tests::chat_line_roundtrip ... ok\ntest mock::tests::agent_detail_has_memory_reputation_characters ... ok\ntest mock::tests::command_json_shape_is_tagged_snake_case ... ok\ntest mock::tests::command_roundtrip_all_variants ... ok\ntest mock::tests::command_ack_is_operator_forced ... ok\ntest mock::tests::schedule_window_contains_start_excludes_end ... ok\ntest mock::tests::edit_persona_updates_fields ... ok\ntest mock::tests::roster_shape_follows_request ... ok\ntest mock::tests::force_disconnect_reconnect_overrides_schedule ... ok\ntest mock::tests::schedule_window_wraps_midnight ... ok\ntest mock::tests::regenerate_roster_changes_seed_and_shape ... ok\ntest mock::tests::world_event_roundtrip_preserves_kind_and_flags ... ok\ntest mock::tests::same_seed_same_roster ... ok\ntest mock::tests::different_seed_different_roster ... ok\ntest mock::tests::unknown_persona_is_rejected ... ok\ntest mock::tests::tick_flips_online_status_on_schedule ... ok\ntest mock::tests::ticks_are_deterministic ... ok\n\ntest result: ok. 20 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n\nrunning 4 tests\ntest http_error_and_timeout_never_become_mock ... ok\ntest feed_integrity_survives_transport_reconnects ... ok\ntest timeout_is_bounded_without_mock_fallback ... ok\ntest loopback_snapshots_reconnect_cursor_errors_and_commands ... ok\n\ntest result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.12s\n\n\nrunning 3 tests\ntest json_u32_extrema_reject_without_panic ... ok\ntest public_mock_generator_rejects_invalid_shape ... ok\ntest oversized_rosters_reject_before_network ... ok\n\ntest result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n\nrunning 1 test\ntest python_snapshots_preserve_supplied_data_without_inventing_builds ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n\nrunning 2 tests\ntest sse_does_not_dispatch_partial_event_or_unbounded_frame ... ok\ntest sse_accepts_every_chunk_boundary_and_crlf ... ok\n\ntest result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\ntask: [dashboard:doc] cargo doc --no-deps\ntask: [dashboard:fmt] cargo fmt --all -- --check\ntask: [dashboard:audit] cargo audit -D warnings\ntask: [dashboard:clippy] cargo clippy --all-targets --all-features -- -D warnings\ntask: [dashboard:test] cargo test\ntask: [dashboard:machete] cargo machete\nAnalyzing dependencies of crates in this directory...\n    Fetching advisory database from `https://github.com/RustSec/advisory-db.git`\n    Blocking waiting for file lock on package cache\nDone!\n    Blocking waiting for file lock on package cache\n    Blocking waiting for file lock on package cache\n    Blocking waiting for file lock on package cache\n    Blocking waiting for file lock on package cache\n    Blocking waiting for file lock on package cache\n    Blocking waiting for file lock on package cache\n    Blocking waiting for file lock on package cache\n    Blocking waiting for file lock on package cache\n    Blocking waiting for file lock on build directory\n    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.36s\n   Generated /home/otto/dev/ro-bots/dashboard/target/doc/dashboard/index.html and 1 other file\n    Blocking waiting for file lock on build directory\n    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.39s\n     Running unittests src/main.rs (target/debug/deps/dashboard-f62f8adff113ec43)\n     Running unittests src/lib.rs (target/debug/deps/world_feed-a64f8a0c98cb5566)\n    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.35s\n     Running tests/http_live.rs (target/debug/deps/http_live-1b4506fcffc6cb30)\n     Running tests/population_bounds.rs (target/debug/deps/population_bounds-9d785c1e8290a6d7)\n     Running tests/python_wire.rs (target/debug/deps/python_wire-142d734878303f84)\n     Running tests/sse.rs (target/debug/deps/sse-eeb18ce9c959186e)\n   Doc-tests world_feed\n      Loaded 1290 security advisories (from /home/otto/.cargo/advisory-db)\n    Updating crates.io index\n    Scanning Cargo.lock for vulnerabilities (232 crate dependencies)\n"
+    },
+    "optimized_release_population": {
+      "command": [
+        "nix",
+        "develop",
+        "-c",
+        "cargo",
+        "test",
+        "--manifest-path",
+        "dashboard/Cargo.toml",
+        "--release",
+        "-p",
+        "world-feed",
+        "--test",
+        "population_bounds"
+      ],
+      "exit_code": 0,
+      "test_groups": [
+        3
+      ],
+      "total_tests": 3,
+      "log_path": "/home/otto/.hermes/cache/scratch/rwf-independent-first-fix/optimized_release_population.log",
+      "log_sha256": "5afced90948759ed69b827a089d12d9cee20b633ec018ffdb433cb1854bdf16a",
+      "actual_output": "\nrunning 3 tests\ntest json_u32_extrema_reject_without_panic ... ok\ntest public_mock_generator_rejects_invalid_shape ... ok\ntest oversized_rosters_reject_before_network ... ok\n\ntest result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n    Finished `release` profile [optimized] target(s) in 0.16s\n     Running tests/population_bounds.rs (dashboard/target/release/deps/population_bounds-a5649bec1d2251fa)\n"
+    },
+    "git_diff_check": {
+      "command": [
+        "nix",
+        "develop",
+        "-c",
+        "git",
+        "diff",
+        "--check",
+        "--",
+        "dashboard"
+      ],
+      "exit_code": 0,
+      "test_groups": [],
+      "total_tests": 0,
+      "log_path": "/home/otto/.hermes/cache/scratch/rwf-independent-first-fix/dashboard_diff_check.log",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "actual_output": ""
+    },
+    "independent_exact_fix_probes": {
+      "debug": {
+        "compile_exit_code": 0,
+        "run_exit_code": 0,
+        "log_path": "/home/otto/.hermes/cache/scratch/rwf-independent-first-fix/debug-probes.log",
+        "log_sha256": "91cf9d9d1f5277a2289843b99afa4336dd20aa4f8a24813fd6ab44e04f177b9b",
+        "actual_output": "\nrunning 4 tests\nLIVE_PAYLOAD_MAPPING_UNCHANGED=true; SCHEDULE_AND_ALL_FORCE_ACTIONS_UNSUPPORTED=true\ntest supported_and_unsupported_payload_frontiers_unchanged ... ok\nHTML_CONTEXT_ROUNDTRIP=5; DYNAMIC_CHAT_TEXTCONTENT=true\ntest html_context_roundtrip_and_chat_text_sink ... ok\nPOPULATION_POLICY_CASES=5929; NO_PANIC=true; MOCK_SINGLETON_AND_SEVEN_FRIENDS=true\ntest independently_computed_population_policy ... ok\nRECONNECT_STEPS=8; GAP_AND_RESTART_RETAINED=true; ONLY_NEW_ADAPTER_CLEARS=true\ntest retained_integrity_each_reconnect_and_explicit_new_adapter_reset ... ok\n\ntest result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s\n\n",
+        "linked_rlibs_sha256": {
+          "/home/otto/dev/ro-bots/dashboard/target/debug/deps/libworld_feed-45e969223a851a26.rlib": "ff1a84e627eb916fd589797efbd172aadc8e287d03d5484fc65bc3ccd2cac8d8",
+          "/home/otto/dev/ro-bots/dashboard/target/debug/deps/libserde_json-bf636edf79277ad0.rlib": "165875aabf6d3a5b528cf5f69473b908ef408137365d9c794aeffc2596f38981",
+          "/home/otto/dev/ro-bots/dashboard/target/debug/deps/libtokio-7a1b0e893f93a29d.rlib": "c1767f4a3a7526c00c6d7d28f3a392ad3e47a7c844660e4967429e5d56f15c4f",
+          "/home/otto/dev/ro-bots/dashboard/target/debug/deps/libaxum-dd073f2e75752997.rlib": "f1fde9d3cdd81055027066c9fc35d05c6f69c9b5ae31b26cd43f637adc626ace"
+        }
+      },
+      "release": {
+        "compile_exit_code": 0,
+        "run_exit_code": 0,
+        "log_path": "/home/otto/.hermes/cache/scratch/rwf-independent-first-fix/release-probes.log",
+        "log_sha256": "e499fa1dd1f422c0839317e5feb489d1df198be1207c348cda1e9902bcb93348",
+        "actual_output": "\nrunning 4 tests\nLIVE_PAYLOAD_MAPPING_UNCHANGED=true; SCHEDULE_AND_ALL_FORCE_ACTIONS_UNSUPPORTED=true\ntest supported_and_unsupported_payload_frontiers_unchanged ... ok\nHTML_CONTEXT_ROUNDTRIP=5; DYNAMIC_CHAT_TEXTCONTENT=true\nPOPULATION_POLICY_CASES=5929; NO_PANIC=true; MOCK_SINGLETON_AND_SEVEN_FRIENDS=true\ntest independently_computed_population_policy ... ok\ntest html_context_roundtrip_and_chat_text_sink ... ok\nRECONNECT_STEPS=8; GAP_AND_RESTART_RETAINED=true; ONLY_NEW_ADAPTER_CLEARS=true\ntest retained_integrity_each_reconnect_and_explicit_new_adapter_reset ... ok\n\ntest result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n",
+        "linked_rlibs_sha256": {
+          "/home/otto/dev/ro-bots/dashboard/target/release/deps/libworld_feed-48c628c3bfdacf4d.rlib": "bebce51c8be84f56dd5e83844c8d2ea1bbc3fc441d97d518389535cd6f67b4f0",
+          "/home/otto/dev/ro-bots/dashboard/target/release/deps/libserde_json-82621ff0a53a6e5b.rlib": "911bf30e6b2190d782c21bd900ef1c2d46bea5828f6038d29727cb4998aa8c0d",
+          "/home/otto/dev/ro-bots/dashboard/target/release/deps/libtokio-562b5fed9b067695.rlib": "e7949f87347ce3b1923da1b3f09f1e93a009eb2e7d46b5c37e04f527ba565526",
+          "/home/otto/dev/ro-bots/dashboard/target/release/deps/libaxum-d96b3f9d8f263ec2.rlib": "539e8e7f0c721779ba1e68b1b201335bca7c4f88afb3ffc32114daad3787fb46"
+        }
+      },
+      "at": "2026-10-05T14:13:16.967261+02:00"
+    },
+    "test_count_accounting": {
+      "repository_rust_tests": 43,
+      "repository_release_population_reruns": 3,
+      "independent_probe_tests_debug": 4,
+      "independent_probe_tests_release": 4,
+      "note": "Reruns and supplemental probes are separate evidence, not additional repository test count."
+    },
+    "static_added_line_scan": {
+      "tracked_dashboard_added_lines_scanned": 1171,
+      "matches": {
+        "hardcoded_secret": [],
+        "shell_injection": [],
+        "unsafe_deserialization": [],
+        "eval_exec": []
+      },
+      "manual_review": "No secrets/backdoors/shell/SQL injection, eval/exec or unsafe deserialization found in the exact reviewed changes. Test attack strings are deliberate fixtures."
+    }
+  },
+  "source_hashes_sha256_before": {
+    "dashboard/Taskfile.yml": "9af0557d4cc01edf0aa10edd2cb1d46faca34d8f5af112ff1cdeb0f881f47eb9",
+    "dashboard/README.md": "05dcc390d2593170004d6d872408d64bcd48d46f096093eb8bb1bb6098fd84be",
+    "dashboard/Cargo.toml": "30cf07e68a3651772eedda7d2cd66315c458ec507b049f412443b2afbe8fca9a",
+    "dashboard/Cargo.lock": "0a57a881e01220685815d98b009bd720e96daf734cda6c410479736184642122",
+    "dashboard/.dockerignore": "c97ecfda4d205190b973232dcfdb0c29748521c2534dd866bcc782f30b086738",
+    "dashboard/.gitignore": "44c92e3a70ad3307b7056871c2bdb096d8bfa9373f5bf06a79bb6324a20ff2fb",
+    "dashboard/docker-compose.yml": "97141af7065041266133a3a5bbb799c47eefd29bf69a06bd072f69f08dc45cc5",
+    "dashboard/Dockerfile": "a1ae10afdf9487e0c8a54c2a734427ef5e0805fefee8adaf5e57d9c8cb358ce9",
+    "dashboard/fixtures/event.json": "9043117c155c684d583d6c730406765d62d715319a67c6dea52480bc66128dfb",
+    "dashboard/fixtures/agent.json": "b60635dc6a38bf46cd64f36fd59758300d11782aea4f3d14d1a270245d240aa9",
+    "dashboard/fixtures/smoke.py": "cd635349b7bba502a85740bd87b150f87df802075fd6275cbae253c19fd9ad9b",
+    "dashboard/fixtures/provenance.json": "e72f6926747649a1b7b1255971ed9434b8a69d779fd33e4667b5a126d7a9d7ff",
+    "dashboard/fixtures/generate.py": "46f741f767ce3684db36880876db48d8e6ea5ce2afad8af6ca69a8a651ac15ed",
+    "dashboard/fixtures/events.sse": "ca66c237fd4fdacdc6b47fa05d475aa94ed7e21a1f717008e00df0d3f047bd87",
+    "dashboard/fixtures/roster.json": "c1f52cf0973b114226b354c305ad199ca5d660550e9ba063e43c5f157cbb8afc",
+    "dashboard/crates/dashboard-app/Cargo.toml": "53e6b5cc6556e84c63399fc3857ef7dc79318e08812e87640eded29c1fb4266c",
+    "dashboard/crates/world-feed/Cargo.toml": "cd13d5f40d6e9759c810574832bf81e8ea817715c44cd60c38c0ef8cb211408a",
+    "dashboard/crates/world-feed/src/wire.rs": "cf54289322d96a182ee10061e35489ebeec1b871b0fe44c3cd6aeb014c328f3d",
+    "dashboard/crates/world-feed/src/lib.rs": "a1008cb5200844e64ccb59edfb8baf2f324e647a43e597a9619a6c09d255bdee",
+    "dashboard/crates/world-feed/src/live.rs": "7ea29f93a8c9534fc4757221dfafde81f7d6c128343a58d11c16b8cef2f0f9b8",
+    "dashboard/crates/world-feed/tests/python_wire.rs": "2b8f0f4fab4fa2bb2ada39db13a383c8a814e344734f25c7f2f561e56b1af38f",
+    "dashboard/crates/world-feed/tests/http_live.rs": "92d70a8236fa8f21facee66e2bab293ecf76259153d63625f8480216a2fe33e3",
+    "dashboard/crates/world-feed/tests/sse.rs": "fbec32331829685b5de258a85eac287a0d2b5eeba95b30cadb98e00daaef6f8b",
+    "dashboard/crates/world-feed/tests/population_bounds.rs": "e3941bfe69850ca0d76ef4b3a3e4a54528b1f787f63b0457e220a2e0773f5f03",
+    "dashboard/crates/world-feed/src/mock/tests.rs": "d88e1b8406134d107694a14a9cbddd025336227eede02403bded001445bc95fb",
+    "dashboard/crates/world-feed/src/mock/mod.rs": "4eb174704d457f198ea6b249fb72eec21b79bd15e69407e3d0fdb8252d60cec8",
+    "dashboard/crates/dashboard-app/assets/style.css": "ca28ec48b1810f5788c2119c301dd2a3ec6a56854a45a928a987b5b6403a5f81",
+    "dashboard/crates/dashboard-app/src/main.rs": "0253992f028484ae45c29e708089b955f80f7b5dd69815779a1d0c6b5c47fa8d",
+    "dashboard/crates/dashboard-app/src/liveview.rs": "50bd17e42e1f49ca6abdea9cd23e3393b16a7b8feff7b0a95173cfe061b53afa",
+    "dashboard/crates/dashboard-app/src/render.rs": "e02427c8942c101daa5165860b32a2eb4ac901eb3b959ca6ba2bf60aef6eff22",
+    "dashboard/crates/dashboard-app/src/tests.rs": "c6a91e2f974a72863b9b31936e2e0e76930b88991c2c125b166bc7882f2f2273"
+  },
+  "source_hashes_sha256_after": {
+    "dashboard/Taskfile.yml": "9af0557d4cc01edf0aa10edd2cb1d46faca34d8f5af112ff1cdeb0f881f47eb9",
+    "dashboard/README.md": "05dcc390d2593170004d6d872408d64bcd48d46f096093eb8bb1bb6098fd84be",
+    "dashboard/Cargo.toml": "30cf07e68a3651772eedda7d2cd66315c458ec507b049f412443b2afbe8fca9a",
+    "dashboard/Cargo.lock": "0a57a881e01220685815d98b009bd720e96daf734cda6c410479736184642122",
+    "dashboard/.dockerignore": "c97ecfda4d205190b973232dcfdb0c29748521c2534dd866bcc782f30b086738",
+    "dashboard/.gitignore": "44c92e3a70ad3307b7056871c2bdb096d8bfa9373f5bf06a79bb6324a20ff2fb",
+    "dashboard/docker-compose.yml": "97141af7065041266133a3a5bbb799c47eefd29bf69a06bd072f69f08dc45cc5",
+    "dashboard/Dockerfile": "a1ae10afdf9487e0c8a54c2a734427ef5e0805fefee8adaf5e57d9c8cb358ce9",
+    "dashboard/fixtures/event.json": "9043117c155c684d583d6c730406765d62d715319a67c6dea52480bc66128dfb",
+    "dashboard/fixtures/agent.json": "b60635dc6a38bf46cd64f36fd59758300d11782aea4f3d14d1a270245d240aa9",
+    "dashboard/fixtures/smoke.py": "cd635349b7bba502a85740bd87b150f87df802075fd6275cbae253c19fd9ad9b",
+    "dashboard/fixtures/provenance.json": "e72f6926747649a1b7b1255971ed9434b8a69d779fd33e4667b5a126d7a9d7ff",
+    "dashboard/fixtures/generate.py": "46f741f767ce3684db36880876db48d8e6ea5ce2afad8af6ca69a8a651ac15ed",
+    "dashboard/fixtures/events.sse": "ca66c237fd4fdacdc6b47fa05d475aa94ed7e21a1f717008e00df0d3f047bd87",
+    "dashboard/fixtures/roster.json": "c1f52cf0973b114226b354c305ad199ca5d660550e9ba063e43c5f157cbb8afc",
+    "dashboard/crates/dashboard-app/Cargo.toml": "53e6b5cc6556e84c63399fc3857ef7dc79318e08812e87640eded29c1fb4266c",
+    "dashboard/crates/world-feed/Cargo.toml": "cd13d5f40d6e9759c810574832bf81e8ea817715c44cd60c38c0ef8cb211408a",
+    "dashboard/crates/world-feed/src/wire.rs": "cf54289322d96a182ee10061e35489ebeec1b871b0fe44c3cd6aeb014c328f3d",
+    "dashboard/crates/world-feed/src/lib.rs": "a1008cb5200844e64ccb59edfb8baf2f324e647a43e597a9619a6c09d255bdee",
+    "dashboard/crates/world-feed/src/live.rs": "7ea29f93a8c9534fc4757221dfafde81f7d6c128343a58d11c16b8cef2f0f9b8",
+    "dashboard/crates/world-feed/tests/python_wire.rs": "2b8f0f4fab4fa2bb2ada39db13a383c8a814e344734f25c7f2f561e56b1af38f",
+    "dashboard/crates/world-feed/tests/http_live.rs": "92d70a8236fa8f21facee66e2bab293ecf76259153d63625f8480216a2fe33e3",
+    "dashboard/crates/world-feed/tests/sse.rs": "fbec32331829685b5de258a85eac287a0d2b5eeba95b30cadb98e00daaef6f8b",
+    "dashboard/crates/world-feed/tests/population_bounds.rs": "e3941bfe69850ca0d76ef4b3a3e4a54528b1f787f63b0457e220a2e0773f5f03",
+    "dashboard/crates/world-feed/src/mock/tests.rs": "d88e1b8406134d107694a14a9cbddd025336227eede02403bded001445bc95fb",
+    "dashboard/crates/world-feed/src/mock/mod.rs": "4eb174704d457f198ea6b249fb72eec21b79bd15e69407e3d0fdb8252d60cec8",
+    "dashboard/crates/dashboard-app/assets/style.css": "ca28ec48b1810f5788c2119c301dd2a3ec6a56854a45a928a987b5b6403a5f81",
+    "dashboard/crates/dashboard-app/src/main.rs": "0253992f028484ae45c29e708089b955f80f7b5dd69815779a1d0c6b5c47fa8d",
+    "dashboard/crates/dashboard-app/src/liveview.rs": "50bd17e42e1f49ca6abdea9cd23e3393b16a7b8feff7b0a95173cfe061b53afa",
+    "dashboard/crates/dashboard-app/src/render.rs": "e02427c8942c101daa5165860b32a2eb4ac901eb3b959ca6ba2bf60aef6eff22",
+    "dashboard/crates/dashboard-app/src/tests.rs": "c6a91e2f974a72863b9b31936e2e0e76930b88991c2c125b166bc7882f2f2273"
+  },
+  "snapshot": {
+    "hashed_files": 31,
+    "before_after_stable": true,
+    "drift": [],
+    "matches_implementation_report": true,
+    "implementation_mismatches": [],
+    "git_index_paths_at_review": [],
+    "note": "Git index has no staged paths; staged refers to corrective review stage, not git staging. Existing working-tree changes left untouched."
+  },
+  "preserved_behavior": [
+    "Default backend is live; mock requires explicit selection; unavailable live does not return synthetic agents. Existing router/backend/no-fallback tests pass.",
+    "Supported regeneration and schedule-free edit payload mapping unchanged; all five force actions and schedule-bearing edits fail Invalid before live POST.",
+    "Mock force/edit/regeneration, determinism and roster-shape tests remain green.",
+    "Command acknowledgement remains explicitly not verified; WorldState only. No executor/game/host application claimed."
+  ],
+  "issues_encountered": [
+    "Initial supplementary standalone release link failed because thin-LTO rlibs were linked without workspace lto=thin. Probe-only rustc command corrected to match dashboard/Cargo.toml; all four optimized probes then compiled and passed. No production changes.",
+    "Expected dirty-working-tree warnings and brief cargo package/build locks; all required commands completed successfully."
+  ],
+  "files_created_in_repository": [
+    "run/reviews/rust-first-fix-review.json"
+  ],
+  "production_changes_by_reviewer": [],
+  "staged_committed_or_pushed": false,
+  "scratch_artifacts": [
+    "/home/otto/.hermes/cache/scratch/rwf-independent-first-fix/before-hashes.json",
+    "/home/otto/.hermes/cache/scratch/rwf-independent-first-fix/build_review.py",
+    "/home/otto/.hermes/cache/scratch/rwf-independent-first-fix/dashboard_diff_check.log",
+    "/home/otto/.hermes/cache/scratch/rwf-independent-first-fix/debug-compile.log",
+    "/home/otto/.hermes/cache/scratch/rwf-independent-first-fix/debug-probes.log",
+    "/home/otto/.hermes/cache/scratch/rwf-independent-first-fix/exact_fix_probes.rs",
+    "/home/otto/.hermes/cache/scratch/rwf-independent-first-fix/gate-results.json",
+    "/home/otto/.hermes/cache/scratch/rwf-independent-first-fix/optimized_release_population.log",
+    "/home/otto/.hermes/cache/scratch/rwf-independent-first-fix/probe-results.json",
+    "/home/otto/.hermes/cache/scratch/rwf-independent-first-fix/release-compile.log",
+    "/home/otto/.hermes/cache/scratch/rwf-independent-first-fix/release-probes.log",
+    "/home/otto/.hermes/cache/scratch/rwf-independent-first-fix/run_exact_probes.py",
+    "/home/otto/.hermes/cache/scratch/rwf-independent-first-fix/run_gates.py",
+    "/home/otto/.hermes/cache/scratch/rwf-independent-first-fix/rust_quality_gates.log"
+  ],
+  "summary": "All 43 Rust tests and six gates pass; exact HTML, overflow and persistent SSE warnings independently approved within scope on stable 31-file snapshot. Rust population stage1 verified, but RWF-POP remains PARTIAL until upstream Python resource bounds are implemented and reviewed."
+}

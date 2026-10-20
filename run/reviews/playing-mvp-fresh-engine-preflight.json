@@ -1,0 +1,50 @@
+{
+  "containers": [
+    {
+      "id": "71715cf83bb3f5104c600dbeb2cdd3b0be162a9c3a85cfbb228fcebb10326f50",
+      "service": "mariadb",
+      "running": true,
+      "health": "healthy",
+      "image": "sha256:ab3dff582d246358b6f6a1f6212f29ac64609fad883eb3dcfb0a89f6f7d0700e",
+      "volume_mounts": [
+        "/var/lib/ro-bots",
+        "/docker-entrypoint-initdb.d",
+        "/var/lib/mysql"
+      ]
+    },
+    {
+      "id": "a9c42644d6db7bbfe40b50657da05afd89237b29628625be1c35a7b0c294a3d9",
+      "service": "rathena-char",
+      "running": true,
+      "health": null,
+      "image": "sha256:d6aa8e108909e6c0ab6f18bedf1cd8c34dc11d2194f7ca65322d46a331a6a469",
+      "volume_mounts": [
+        "/world"
+      ]
+    },
+    {
+      "id": "ced219e3f4a12a4e12d5c4599a2b9a4b44191324671c44993848c5bed74b077c",
+      "service": "rathena-map",
+      "running": true,
+      "health": null,
+      "image": "sha256:d6aa8e108909e6c0ab6f18bedf1cd8c34dc11d2194f7ca65322d46a331a6a469",
+      "volume_mounts": [
+        "/world"
+      ]
+    },
+    {
+      "id": "d8f4183c03d4c6fdd618b20be8574069e29b884543fdd6ba5be716067811aa5b",
+      "service": "rathena-login",
+      "running": true,
+      "health": null,
+      "image": "sha256:d6aa8e108909e6c0ab6f18bedf1cd8c34dc11d2194f7ca65322d46a331a6a469",
+      "volume_mounts": [
+        "/world"
+      ]
+    }
+  ],
+  "volume": "ro-bots-world-test",
+  "exact_four_volume_users": true,
+  "mutations": false,
+  "no_native_connections_attempted": true
+}

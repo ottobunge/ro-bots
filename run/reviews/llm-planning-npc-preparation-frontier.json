@@ -1,0 +1,520 @@
+{
+  "schema": "llm-planning-npc-preparation-frontier/v1",
+  "status": "SOURCE_BACKED_FRONTIER_ONLY; ALL_FULL_MILESTONES_OPEN; NO_IMPLEMENTATION_OR_LIVE_ACCEPTANCE",
+  "scope": {
+    "repo": "/home/otto/dev/ro-bots",
+    "parent_verified_revision": "e985006171d2eb320ee512a653f4c83aea3d81b6",
+    "profile": "MAIN/pre-re20180704",
+    "mutable_sibling_files_not_read": [
+      "planning_brain.py",
+      "execution_decisions.py",
+      "tests_llm_planning_clef_execution.py"
+    ],
+    "no_git_SQL_network_services_containers_private_configs_providers_compilation_or_native_effects": true
+  },
+  "authority": [
+    {
+      "path": "/home/otto/dev/ro-bots/rathena/npc/pre-re/jobs/novice/novice.txt",
+      "sha256": "7455223bc331bc3f8649e16d0af496d4360cb7a849c26ac922508a99b722ed21",
+      "lines": [
+        81,
+        119
+      ],
+      "excerpt": "new_1-2,100,29,4\tscript\tReceptionist#nv1\t86,{\n\tmes \"[Training Grounds Receptionist]\";\n\tmes \"Hello, you look to be new here.\";\n\tmes \"What is your name?\";\n\tnext;\n\tinput .@charname$;\n\tif (.@charname$!=strcharinfo(0)) {\n\t\tmes \"[Training Grounds Receptionist]\";\n\t\tmes \"Sorry, but I don't think I heard\";\n\t\tmes \"you correctly\";\n\t\tclose;\n\t}\n\tmes \"[Training Grounds Receptionist]\";\n\tmes \"Welcome!\";\n\tmes \"You are at the entrance\";\n\tmes \"of the ^3355FFTraining Grounds^000000.\";\n\tnext;\n\tmes \"[Training Grounds Receptionist]\";\n\tmes \"If you're new\";\n\tmes \"to the Ragnarok world,\";\n\tmes \"please choose the\";\n\tmes \"^3355FFTraining Grounds Introduction^000000\";\n\tmes \"menu for more information.\";\n\tnext;\n\twhile (1) {\n\t\tswitch(select(\"Apply for training.:Direct access to Ragnarok Online.:^3355FFTraining Grounds Introduction.^000000:I need a moment to think.\")) {\n\t\tcase 1:\n\t\t\tmes \"[Training Grounds Receptionist]\";\n\t\t\tmes \"Thank you for applying for Novice training. For detailed information of each training course, please inquire the Guides for assistance.\";\n\t\t\tnext;\n\t\t\tmes \"[Training Grounds Receptionist]\";\n\t\t\tmes \"When you have questions about the training course process, please feel free to ask any of the Tutors.\";\n\t\t\tnext;\n\t\t\tmes \"[Training Grounds Receptionist]\";\n\t\t\tmes \"You will now be transferred\";\n\t\t\tmes \"to the Training Grounds.\";\n\t\t\tclose2;\n\t\t\twarp \"new_1-2\",100,70;\n\t\t\tend;"
+    },
+    {
+      "path": "/home/otto/dev/ro-bots/rathena/npc/pre-re/jobs/novice/novice.txt",
+      "sha256": "7455223bc331bc3f8649e16d0af496d4360cb7a849c26ac922508a99b722ed21",
+      "lines": [
+        266,
+        284
+      ],
+      "excerpt": "\telse if (nov_1st_cos == 1) {\n\t\tmes \"[Shion]\";\n\t\tmes \"Huh...?\";\n\t\tmes \"Why are you\";\n\t\tmes \"still here?\";\n\t\tmes \"^666666*Sigh...*^000000\";\n\t\tnext;\n\t\tmes \"[Shion]\";\n\t\tmes \"Hey, when you enter the Training Grounds, you'll learn all sorts of things that will help you play the game. You'll even have the chance to get zeny and other rewards.\";\n\t\tnext;\n\t\tmes \"[Shion]\";\n\t\tmes \"You can even gain\";\n\t\tmes \"experience like this!\";\n\t\tset nov_1st_cos,3;\n\t\tgetexp 9,0;\n\t\tnext;\n\t\tmes \"[Shion]\";\n\t\tmes \"Everything you'll learn here in the Training Grounds will benefit your gameplay. So just think positive, okay?\";\n\t\tclose;"
+    },
+    {
+      "path": "/home/otto/dev/ro-bots/rathena/npc/pre-re/jobs/novice/novice.txt",
+      "sha256": "7455223bc331bc3f8649e16d0af496d4360cb7a849c26ac922508a99b722ed21",
+      "lines": [
+        1262,
+        1289
+      ],
+      "excerpt": "new_1-2,118,108,3\tscript\tKafra Employee#nv1\t117,{\n\tmes \"[Kafra Employee]\";\n\tmes \"Welcome to\";\n\tmes \"Kafra Corporation.\";\n\tmes \"The Kafra services are\";\n\tmes \"always on your side.\";\n\tif (NEW_MES_FLAG0) {\n\t\tset NEW_MES_FLAG0,0;\n\t\tset NEW_MES_FLAG1,0;\n\t\tset NEW_MES_FLAG2,0;\n\t\tset NEW_MES_FLAG3,0;\n\t\tset NEW_MES_FLAG4,0;\n\t\tset NEW_MES_FLAG5,0;\n\t\tset NEW_LVUP0,0;\n\t\tset NEW_LVUP1,0;\n\t\tset NEW_JOBLVUP,0;\n\t}\n\tnext;\n\tmes \"[Kafra Employee]\";\n\tmes \"I've been dispatched from Kafra Corporation Headquarters to assist new players such as yourself.\";\n\tnext;\n\tmes \"[Kafra Employee]\";\n\tmes \"Please, take heed!\";\n\tmes \"If you move to a town\";\n\tmes \"^4d4dffyou will be unable to return to the Training Grounds ever again^000000.\";\n\tnext;\n\tif ( select(\"Teleport Service\",\"About Kafra services\") == 1 ) {\n\t\tif (nov_get_item02 < 10 && nov_get_item03 < 10 && nov_get_item04 < 10) {"
+    },
+    {
+      "path": "/home/otto/dev/ro-bots/rathena/npc/pre-re/jobs/novice/novice.txt",
+      "sha256": "7455223bc331bc3f8649e16d0af496d4360cb7a849c26ac922508a99b722ed21",
+      "lines": [
+        1312,
+        1318
+      ],
+      "excerpt": "\t\t\tswitch(select(\"Prontera:Morocc:Payon:Alberta:Geffen\")) {\n\t\t\tcase 1:\n\t\t\t\tset .@dest$,\"Prontera\";\n\t\t\t\tset .@mapn$,\"prontera\";\n\t\t\t\tset .@saveX,117; set .@saveY,72;\n\t\t\t\tset .@warpX,150; set .@warpY,50;\n\t\t\t\tbreak;"
+    },
+    {
+      "path": "/home/otto/dev/ro-bots/rathena/npc/pre-re/jobs/novice/novice.txt",
+      "sha256": "7455223bc331bc3f8649e16d0af496d4360cb7a849c26ac922508a99b722ed21",
+      "lines": [
+        1344,
+        1372
+      ],
+      "excerpt": "\t\t\tmes \"[Kafra Employee]\";\n\t\t\tmes \"You have decided\";\n\t\t\tmes \"to go to \"+.@dest$+\".\";\n\t\t\tmes \"May God be with you.\";\n\t\t\tclose2;\n\t\t\tif (nov_get_item05 < 11) {\n\t\t\t\tset nov_get_item05,11;\n\t\t\t\tgetitem 569,100; //Novice_Potion\n\t\t\t\tgetitem 1243,1; //Novice_Knife\n\t\t\t\tgetitem 2414,1; //Novice_Boots\n\t\t\t\tgetitem 2510,1; //Novice_Hood\n\t\t\t\tgetitem 2352,1; //Novice_Plate\n\t\t\t\tgetitem 2112,1; //Novice_Guard\n\t\t\t\tgetitem 601,10; //Wing_Of_Fly\n\t\t\t\tgetitem 602,2; //Wing_Of_Butterfly\n\t\t\t\tgetitem 7059,5; //Cargo_Free_Ticket\n\t\t\t\tgetitem 7060,5; //Warp_Free_Ticket\n\t\t\t}\n\t\t\tset nov_1st_cos,0;\n\t\t\tset nov_2nd_cos,0;\n\t\t\tset nov_3_swordman,0;\n\t\t\tset nov_3_archer,0;\n\t\t\tset nov_3_thief,0;\n\t\t\tset nov_3_magician,0;\n\t\t\tset nov_3_acolyte,0;\n\t\t\tset nov_3_merchant,0;\n\t\t\tsavepoint .@mapn$,.@saveX,.@saveY,1,1;\n\t\t\twarp .@mapn$,.@warpX,.@warpY;\n\t\t\tend;"
+    },
+    {
+      "path": "/home/otto/dev/ro-bots/rathena/npc/pre-re/scripts_main.conf",
+      "sha256": "cf5a2547073b5134983334653936aa91dfb1479e5f8af47c41275d0046e0491e",
+      "lines": [
+        28,
+        41
+      ],
+      "excerpt": "// ------------------- Common Script Files ----------------------\nimport: npc/scripts_athena.conf\nimport: npc/scripts_guild.conf\nimport: npc/scripts_jobs.conf\nimport: npc/scripts_mapflags.conf\nimport: npc/scripts_monsters.conf\nimport: npc/scripts_warps.conf\n\n// ----------------- Pre-Renewal Script Files -------------------\nimport: npc/pre-re/scripts_athena.conf\nimport: npc/pre-re/scripts_jobs.conf\nimport: npc/pre-re/scripts_mapflags.conf\nimport: npc/pre-re/scripts_monsters.conf\nimport: npc/pre-re/scripts_warps.conf"
+    },
+    {
+      "path": "/home/otto/dev/ro-bots/rathena/npc/pre-re/scripts_jobs.conf",
+      "sha256": "8ab291ecd1937b833f4315070a89f4766042e2e1e3a073f82723e5bd57313ed0",
+      "lines": [
+        17,
+        18
+      ],
+      "excerpt": "// - Novice\nnpc: npc/pre-re/jobs/novice/novice.txt"
+    },
+    {
+      "path": "/home/otto/dev/ro-bots/rathena/npc/re/scripts_jobs.conf",
+      "sha256": "4cdd597239428f2f847430afc9df18132b9d5f48f9e4a6382caa37f983278860",
+      "lines": [
+        35,
+        38
+      ],
+      "excerpt": "// - Novice\nnpc: npc/re/jobs/novice/academy.txt\n// npc: npc/re/jobs/novice/novice.txt\nnpc: npc/re/jobs/novice/supernovice_ex.txt"
+    },
+    {
+      "path": "/home/otto/dev/ro-bots/run/public-source/callback-qualified-e985006171d2/src/map/map.cpp",
+      "sha256": "9629e6b751ca3fd9d160e48c0beb80bf7bbe0c359fa7ecdb46698b074e6c1113",
+      "lines": [
+        4260,
+        4267
+      ],
+      "excerpt": "\tif (clear)\n\t\tnpc_addsrcfile(\"clear\", false); // this will clear the current script list\n\n#ifdef RENEWAL\n\tmap_reloadnpc_sub(\"npc/re/scripts_main.conf\");\n#else\n\tmap_reloadnpc_sub(\"npc/pre-re/scripts_main.conf\");\n#endif"
+    },
+    {
+      "path": "/home/otto/dev/ro-bots/run/public-source/callback-qualified-e985006171d2/src/map/packets.hpp",
+      "sha256": "b4959224a48e1febb811d7c1474f2c1b703d324ae4db7e3a1053a85b80da57bc",
+      "lines": [
+        769,
+        779
+      ],
+      "excerpt": "struct PACKET_ZC_OPEN_EDITDLG {\n\tint16 packetType;\n\tuint32 npcId;\n} __attribute__((packed));\nDEFINE_PACKET_HEADER(ZC_OPEN_EDITDLG, 0x142)\n\nstruct PACKET_ZC_OPEN_EDITDLGSTR {\n\tint16 packetType;\n\tuint32 npcId;\n} __attribute__((packed));\nDEFINE_PACKET_HEADER(ZC_OPEN_EDITDLGSTR, 0x1d4)"
+    },
+    {
+      "path": "/home/otto/dev/ro-bots/run/public-source/callback-qualified-e985006171d2/src/map/packets.hpp",
+      "sha256": "b4959224a48e1febb811d7c1474f2c1b703d324ae4db7e3a1053a85b80da57bc",
+      "lines": [
+        1844,
+        1850
+      ],
+      "excerpt": "struct PACKET_CZ_INPUT_EDITDLGSTR{\n\tint16 packetType;\n\tuint16 packetSize;\n\tint32 GID;\n\tchar value[];\n} __attribute__((packed));\nDEFINE_PACKET_HEADER(CZ_INPUT_EDITDLGSTR, 0x1d5);"
+    },
+    {
+      "path": "/home/otto/dev/ro-bots/run/public-source/callback-qualified-e985006171d2/src/map/clif.cpp",
+      "sha256": "ace16f15be3b60f730522d620b73a68a9f2cc384016aadce9c985888aea9a1ac",
+      "lines": [
+        13377,
+        13401
+      ],
+      "excerpt": "/// NPC text input dialog value.\n/// 01d5 <packet len>.W <npc id>.L <string>.?B (CZ_INPUT_EDITDLGSTR)\nvoid clif_parse_NpcStringInput(int32 fd, map_session_data* sd){\n\tif( sd == nullptr ){\n\t\treturn;\n\t}\n\n\tconst PACKET_CZ_INPUT_EDITDLGSTR* p = reinterpret_cast<PACKET_CZ_INPUT_EDITDLGSTR*>( RFIFOP( fd, 0 ) );\n\tsize_t message_len = p->packetSize - sizeof( *p );\n\n\tif( message_len <= 0 )\n\t\treturn; // invalid input\n\n#if PACKETVER >= 20151001\n\tmessage_len++;\n#endif\n\n\tsafestrncpy( sd->npc_str, p->value, std::min<size_t>( message_len, CHATBOX_SIZE ) );\n\n\tif( battle_config.idletime_option&IDLE_NPC_INPUT ){\n\t\tsd->idletime = last_tick;\n\t}\n\n\tnpc_scriptcont( sd, p->GID, false );\n}"
+    },
+    {
+      "path": "/home/otto/dev/ro-bots/run/public-source/callback-qualified-e985006171d2/src/map/clif_packetdb.hpp",
+      "sha256": "51c8a9ebd591e0dd4f444f829253a14d449615425405cb8a95f28a6dea460e66",
+      "lines": [
+        222,
+        225
+      ],
+      "excerpt": "\tparseable_packet( HEADER_CZ_SELECTAUTOSPELL, sizeof( PACKET_CZ_SELECTAUTOSPELL ), clif_parse_AutoSpell, 0 );\n\tpacket(0x01cf,28);\n\tpacket(0x01d0,8);\n\tparseable_packet( HEADER_CZ_INPUT_EDITDLGSTR, -1, clif_parse_NpcStringInput, 0 );"
+    },
+    {
+      "path": "/home/otto/dev/ro-bots/rathena/src/map/script.cpp",
+      "sha256": "e5554910bef9448542ebd19b7e6e9db529c8e75d6077b0770c8a9ce05c7034c0",
+      "lines": [
+        6167,
+        6181
+      ],
+      "excerpt": "\t\tsd->state.menu_or_input = 1;\n\t\tst->state = RERUNLINE;\n\t\tif( is_string_variable(name) )\n\t\t\tclif_scriptinputstr( *sd, st->oid );\n\t\telse\n\t\t\tclif_scriptinput( *sd, st->oid );\n\t}\n\telse\n\t{\t// take received text/value and store it in the designated variable\n\t\tsd->state.menu_or_input = 0;\n\t\tif( is_string_variable(name) )\n\t\t{\n\t\t\tint32 len = (int32)strlen(sd->npc_str);\n\t\t\tset_reg_str(st, sd, uid, name, sd->npc_str, script_getref(st,2));\n\t\t\tscript_pushint(st, (len > max ? 1 : len < min ? -1 : 0));"
+    },
+    {
+      "path": "/home/otto/dev/ro-bots/rathena/npc/merchants/novice_exchange.txt",
+      "sha256": "4e8c9ac39e6af5e215b31bc99e39fa7b1031b6b7f1a5def78229f666234120e8",
+      "lines": [
+        20,
+        52
+      ],
+      "excerpt": "prontera,123,102,5\tscript\tMerchant#pron\t85,{\n\tif (MaxWeight - Weight < 6301 || checkweight(1201,1) == 0) {\n\t\tmes \"[Merchant]\";\n\t\tmes \"Haha!\";\n\t\tmes \"What are you, superhuman?\";\n\t\tmes \"You're carrying so much stuff!\";\n\t\tmes \"You better put some of that\";\n\t\tmes \"into Kafra Storage~\";\n\t\tclose;\n\t}\n\tmes \"[Merchant]\";\n\tmes \"Good day!\";\n\tmes \"Have you collected any\";\n\tmes \"items like Shells or Fluff?\";\n\tmes \"What about Jellopies? Oh yeah,\";\n\tmes \"I need those for something.\";\n\tnext;\n\tmes \"[Merchant]\";\n\tmes \"Of course, I won't ask you\";\n\tmes \"to give me that stuff for free. What about if I trade a Red Potion for 5 Shells, 10 Fluff,\";\n\tmes \"or 10 Jellopies?\";\n\tnext;\n\tswitch(select(\"Sure!:I think it's a rip-off!:No, thanks.\")) {\n\tcase 1:\n\t\tmes \"[Merchant]\";\n\t\tmes \"So which item do\";\n\t\tmes \"you want to bring me?\";\n\t\tmes \"Shells, Fluffs, or Jellopies?\";\n\t\tnext;\n\t\tswitch(select(\"Shells:Jellopies:Fluff:Cancel\")) {\n\t\tcase 1: callfunc \"F_PotExchange\",935,5;\n\t\tcase 2: callfunc \"F_PotExchange\",909,10;\n\t\tcase 3: callfunc \"F_PotExchange\",914,10;"
+    },
+    {
+      "path": "/home/otto/dev/ro-bots/rathena/npc/merchants/novice_exchange.txt",
+      "sha256": "4e8c9ac39e6af5e215b31bc99e39fa7b1031b6b7f1a5def78229f666234120e8",
+      "lines": [
+        340,
+        374
+      ],
+      "excerpt": "\t\t\tnext;\n\t\t\twhile(1) {\n\t\t\t\tinput .@input,0,101;\n\t\t\t\tif (.@input == 0) {\n\t\t\t\t\tmes \"[Merchant]\";\n\t\t\t\t\tmes \"What...?\";\n\t\t\t\t\tmes \"Why the hell do you\";\n\t\t\t\t\tmes \"even bother to talk to me?\";\n\t\t\t\t\tmes \"Pretty indecisive, aren't you?\";\n\t\t\t\t\tclose;\n\t\t\t\t}\n\t\t\t\telse if (.@input > 100) {\n\t\t\t\t\tmes \"[Merchant]\";\n\t\t\t\t\tmes \"I can't give you more\";\n\t\t\t\t\tmes \"than 100 Red Potions\";\n\t\t\t\t\tmes \"at once. Let's try\";\n\t\t\t\t\tmes \"this again.\";\n\t\t\t\t\tnext;\n\t\t\t\t}\n\t\t\t\telse {\n\t\t\t\t\tbreak;\n\t\t\t\t}\n\t\t\t}\n\t\t\t.@put_out_item = .@input * .@req_amount;\n\t\t\tif (countitem(.@item_req) < .@put_out_item) {\n\t\t\t\tmes \"[Merchant]\";\n\t\t\t\tmes \"Uh oh, the number you entered doesn't seem right. You better check the number of Red Potions that you can trade for again.\";\n\t\t\t\tclose;\n\t\t\t}\n\t\t\tmes \"[Merchant]\";\n\t\t\tmes \"There you go!\";\n\t\t\tmes \"Check how many Red Potions\";\n\t\t\tmes \"I've given you, it should be good. Thanks, that was a good deal~\";\n\t\t\tdelitem .@item_req,.@put_out_item; //Shell\n\t\t\tgetitem 501,.@input; //Red_Potion"
+    },
+    {
+      "path": "/home/otto/dev/ro-bots/rathena/db/pre-re/item_db_equip.yml",
+      "sha256": "2536c42cc9414f4935e7304f5969228740a5f0308b1acdb2581e5891d25450f7",
+      "lines": [
+        3665,
+        3680
+      ],
+      "excerpt": "  - Id: 1243\n    AegisName: Novice_Knife\n    Name: Novice Main-Gauche\n    Type: Weapon\n    SubType: Dagger\n    Buy: 1\n    Weight: 1\n    Attack: 45\n    Range: 1\n    Jobs:\n      Novice: true\n      SuperNovice: true\n    Locations:\n      Right_Hand: true\n    WeaponLevel: 1\n    EquipLevelMin: 1"
+    },
+    {
+      "path": "/home/otto/dev/ro-bots/rathena/db/pre-re/item_db_equip.yml",
+      "sha256": "2536c42cc9414f4935e7304f5969228740a5f0308b1acdb2581e5891d25450f7",
+      "lines": [
+        14610,
+        14623
+      ],
+      "excerpt": "  - Id: 2112\n    AegisName: Novice_Guard\n    Name: Novice Guard\n    Type: Armor\n    Buy: 1\n    Weight: 1\n    Defense: 3\n    Jobs:\n      Novice: true\n      SuperNovice: true\n    Locations:\n      Left_Hand: true\n    ArmorLevel: 1\n    View: 1"
+    },
+    {
+      "path": "/home/otto/dev/ro-bots/rathena/db/pre-re/item_db_equip.yml",
+      "sha256": "2536c42cc9414f4935e7304f5969228740a5f0308b1acdb2581e5891d25450f7",
+      "lines": [
+        17684,
+        17696
+      ],
+      "excerpt": "  - Id: 2352\n    AegisName: Novice_Plate\n    Name: Tattered Novice Ninja Suit\n    Type: Armor\n    Buy: 1\n    Weight: 1\n    Defense: 4\n    Jobs:\n      Novice: true\n      SuperNovice: true\n    Locations:\n      Armor: true\n    ArmorLevel: 1"
+    },
+    {
+      "path": "/home/otto/dev/ro-bots/rathena/db/pre-re/item_db_equip.yml",
+      "sha256": "2536c42cc9414f4935e7304f5969228740a5f0308b1acdb2581e5891d25450f7",
+      "lines": [
+        18960,
+        18972
+      ],
+      "excerpt": "  - Id: 2414\n    AegisName: Novice_Boots\n    Name: Novice Slippers\n    Type: Armor\n    Buy: 1\n    Weight: 1\n    Defense: 2\n    Jobs:\n      Novice: true\n      SuperNovice: true\n    Locations:\n      Shoes: true\n    ArmorLevel: 1"
+    },
+    {
+      "path": "/home/otto/dev/ro-bots/rathena/db/pre-re/item_db_equip.yml",
+      "sha256": "2536c42cc9414f4935e7304f5969228740a5f0308b1acdb2581e5891d25450f7",
+      "lines": [
+        19923,
+        19937
+      ],
+      "excerpt": "  - Id: 2510\n    AegisName: Novice_Hood\n    Name: Somber Novice Hood\n    Type: Armor\n    Buy: 1\n    Weight: 1\n    Defense: 2\n    Jobs:\n      Novice: true\n      SuperNovice: true\n    Locations:\n      Garment: true\n    ArmorLevel: 1\n    Script: |\n      bonus2 bSubEle,Ele_Neutral,20;"
+    },
+    {
+      "path": "/home/otto/dev/ro-bots/protocol/main-20180704-pre-re-equipment.json",
+      "sha256": "c3e34b0a01ed9af39848426f80b035585549aaa3573a3ef9bd76b7d67f0a356a"
+    },
+    {
+      "path": "/home/otto/dev/ro-bots/run/reviews/native-callback-qualified-package-approved.json",
+      "sha256": "51f4a281f64049d0e6c80147cfa55bf810b0d4ab1e23794162a4e97a03123f55"
+    },
+    {
+      "path": "/home/otto/dev/ro-bots/run/reviews/native-callback-qualified-package-build-receipt.json",
+      "sha256": "df71394d3c36065d50ec00cc549511c982ec9c35bd6e545c99031cf4f7754b6d"
+    },
+    {
+      "path": "/home/otto/dev/ro-bots/nix/playable-callback-qualified/flake.nix",
+      "sha256": "7af46d26a268d880439b60df3f8b49624f7f99e09b288df00fee60e64405697e"
+    },
+    {
+      "path": "/home/otto/dev/ro-bots/run/public-source/callback-qualified-e985006171d2/profiles.json",
+      "sha256": "ee2af351afee975ad4145d0e38412dfac0779cd123435f318f8c876349bc0148"
+    },
+    {
+      "path": "/home/otto/dev/ro-bots/run/public-source/callback-qualified-e985006171d2/configured-source.json",
+      "sha256": "1fd585266bbcf2268b2cec9e901100fad68b904a8b2a8c049c5869c56af43e12"
+    }
+  ],
+  "npc_import_closure": {
+    "qualified_cpp_branch": "public configured src/map/map.cpp4263-4266 chooses npc/pre-re/scripts_main.conf; profiles.map.renewal=false",
+    "public_chain": [
+      "npc/pre-re/scripts_main.conf38 imports npc/pre-re/scripts_jobs.conf",
+      "npc/pre-re/scripts_jobs.conf18 enables npc/pre-re/jobs/novice/novice.txt"
+    ],
+    "renewal": "npc/re/scripts_jobs.conf36 academy.txt enabled,37 novice.txt commented; do not substitute Renewal route",
+    "package": "/nix/store/0w1nfsmj8gaipcidhgx2nkg4axqxcbbr-rathena-playable-callback-qualified-20180704-e985006171d2-callback-qualified",
+    "public_share": "/nix/store/0w1nfsmj8gaipcidhgx2nkg4axqxcbbr-rathena-playable-callback-qualified-20180704-e985006171d2-callback-qualified/share/rathena-playable-callback-qualified",
+    "packaged_NPC_assets_present": false,
+    "recipe": "nix/playable-callback-qualified/flake.nix41-49 installs executable/public source-profile metadata, not npc assets",
+    "deployed_runtime_NPC_enablement": "UNKNOWN; no container/private runtime access. Need separately qualified runtime-root NPC asset/import receipt. Configured C++ closure does not establish NPC asset closure."
+  },
+  "selected_route": {
+    "name": "Fresh ordinary Training Grounds -> Shion guidance -> Receptionist admission -> early Kafra starter gift -> Prontera combat/loot",
+    "public_advisory_not_live_actor_locations": [
+      {
+        "name": "Shion#nv1",
+        "map": "new_1-1",
+        "xy": [
+          53,
+          114
+        ]
+      },
+      {
+        "name": "Receptionist#nv1",
+        "map": "new_1-2",
+        "xy": [
+          100,
+          29
+        ]
+      },
+      {
+        "name": "Kafra Employee#nv1",
+        "map": "new_1-2",
+        "xy": [
+          118,
+          108
+        ]
+      }
+    ],
+    "steps": [
+      "Shion received next/menu guidance; initial else branch choose received Where should I go? option. Subsequent nov_1st_cos==1 source branch266-284 sets3 and getexp9,0, one-time stage-gated advisory XP; not combat XP receipt.",
+      "Receptionist81-119 next then input .@charname$86 exact equality strcharinfo(0)87; mismatch closes. Received Apply for training option1 -> close2 -> server warp new_1-2,100,70. Currently blocked by unsupported string input.",
+      "Kafra1262-1372 received Teleport Service option1; only all nov_get_item02/03/04<10 branch; received Prontera option1. close2 then if nov_get_item05<11 set11 and getitem gifts; reset course flags, savepoint prontera117,72 and server warp prontera150,50. Completed-course else has different gifts; no assumption."
+    ],
+    "expected_source_rewards": [
+      {
+        "item_id": 569,
+        "quantity": 100
+      },
+      {
+        "item_id": 1243,
+        "quantity": 1
+      },
+      {
+        "item_id": 2414,
+        "quantity": 1
+      },
+      {
+        "item_id": 2510,
+        "quantity": 1
+      },
+      {
+        "item_id": 2352,
+        "quantity": 1
+      },
+      {
+        "item_id": 2112,
+        "quantity": 1
+      },
+      {
+        "item_id": 601,
+        "quantity": 10
+      },
+      {
+        "item_id": 602,
+        "quantity": 2
+      },
+      {
+        "item_id": 7059,
+        "quantity": 5
+      },
+      {
+        "item_id": 7060,
+        "quantity": 5
+      }
+    ],
+    "constraints": {
+      "fixture": "Separately authorized NEW ordinary initial-spawn Novice fixture required, not SQL/GM reset or warp of existing Prontera character. Current fixture/quest state UNKNOWN.",
+      "class_levels": "No explicit Class/BaseLevel/JobLevel predicate in Receptionist or selected early Kafra branch; received Novice/base/job and equipment legality are player policy, not invented script checks.",
+      "quest_stage": "all nov_get_item02/03/04<10 and nov_get_item05<11. Flag05 one-time guard not reset by selected exit; only actual received branch/rewards may establish effects, never hidden quest-state lookup.",
+      "capacity": "No explicit checkweight in selected gift branch. Flag11 is set before getitem, so flag/prose do not prove success. Need successful received additions, current weight/capacity and complete inventory.",
+      "existing_town_fixture": "No legal Prontera-to-training return established. Kafra1284-1286 says cannot return; Shion local Butterfly Wing handling is not a town return service.",
+      "primitives": "received next; exact one-based menus; exact selected-name free text; close/close2; received server-directed warp. No numeric input required for selected gifts."
+    }
+  },
+  "starter_equipment": [
+    {
+      "item_id": 1243,
+      "name": "Novice Main-Gauche",
+      "slot": "Right_Hand",
+      "requirements": "public Novice/SuperNovice restriction, EquipLevelMin1; Attack45; Weight1 raw DB units; Buy1 is not a received offer"
+    },
+    {
+      "item_id": 2112,
+      "name": "Novice Guard",
+      "slot": "Left_Hand",
+      "requirements": "Novice/SuperNovice"
+    },
+    {
+      "item_id": 2352,
+      "name": "Tattered Novice Ninja Suit",
+      "slot": "Armor",
+      "requirements": "Novice/SuperNovice"
+    },
+    {
+      "item_id": 2414,
+      "name": "Novice Slippers",
+      "slot": "Shoes",
+      "requirements": "Novice/SuperNovice"
+    },
+    {
+      "item_id": 2510,
+      "name": "Somber Novice Hood",
+      "slot": "Garment",
+      "requirements": "Novice/SuperNovice"
+    }
+  ],
+  "next_XP_targetloot_economy": "Only after actual received exit, owned/legal/worn weapon, healthy standing/life/position/perception may grind observed mobs and pick received floor loot. No hidden map populations. Merchant#pron prontera123,102 public exchange gives501 RedPotion for935 Shellx5/909 Jellopyx10/914 Fluffx10; NOT free gear. Weight checks plus numeric input342 and actual deletion/addition373-374 required, currently unsupported. Unknown Zeny forbids spending; source Buy does not establish shop stock. Received zero stat budget stayszero; effective Basic>=3 is pose gate only, not quest/skill ownership.",
+  "native_truth": {
+    "current_position": "UNKNOWN/unverified in this read-only source audit",
+    "NPC_population_actor_IDs": "UNKNOWN/unverified in this read-only source audit",
+    "same_character_quest_flags": "UNKNOWN/unverified in this read-only source audit",
+    "zeny_weight_capacity": "UNKNOWN/unverified in this read-only source audit",
+    "current_rewards": "UNKNOWN/unverified in this read-only source audit",
+    "owned_or_worn_gear": "UNKNOWN/unverified in this read-only source audit",
+    "server_cancel255_closure": "UNKNOWN/unverified in this read-only source audit",
+    "current_XP_targetloot_economy": "UNKNOWN/unverified in this read-only source audit"
+  },
+  "received_component_seams": [
+    {
+      "path": "src/robots/app/scripts.py",
+      "lines": [
+        116,
+        159
+      ],
+      "finding": "Guidance script uses nearby NPC and close_requested->DONE. Preparation condition is received Novice/known empty inventory/no instruction. instructions_received is not acquisition/preparation completion."
+    },
+    {
+      "path": "src/robots/app/playing_runtime.py",
+      "lines": [
+        234,
+        333
+      ],
+      "finding": "Per-frame actor context before NPC consumption; BotState publishes NPC/known inventory; guards type6/12,epoch,map,life,range. Public name/coordinates cannot supply transient actorID."
+    },
+    {
+      "path": "src/robots/app/playing_runtime.py",
+      "lines": [
+        349,
+        411
+      ],
+      "finding": "Only TalkToNpc/NpcNext/NpcSelect/NpcClose dispatch; active/cancel_uncertain blocks Attack/Loot/MoveTo/recontact. No text/purchase/equip actuator here."
+    },
+    {
+      "path": "src/robots/adapters/native_npc_dialogue.py",
+      "lines": [
+        11,
+        20
+      ],
+      "finding": "32page cap;0142 and01D4 unsupported_input;C4 unsupported_shop. Requests only next/menu/close; unsupported-input close is not training admission."
+    },
+    {
+      "path": "src/robots/adapters/native_gameplay.py",
+      "lines": [
+        241,
+        326
+      ],
+      "finding": "Already consumes0991/0A0D inventory lists,0A37 item additions: result raw24==0,index/positive signed amount/item. Current counts require complete auth->LoadEnd->WEIGHT receipt and invalidation on unsupported mutation. Not worn-state tracker."
+    },
+    {
+      "path": "src/robots/adapters/native_equipment.py",
+      "lines": [
+        49,
+        77
+      ],
+      "finding": "0998 request8;0999 ACK11,result0 success;0A0D57-byte row allowed_locations!=wear_state. Offline immutable codec, no ownership/eligibility/request correlation/actuator."
+    },
+    {
+      "path": "src/robots/adapters/native_shop.py",
+      "lines": [
+        58,
+        131
+      ],
+      "finding": "C4marker6,C5selection7,C6prefix4+11/row,C8prefix4+4/entry,CAresult3,B1param20Zeny8; offline representations only. CA success!=inventory acquisition, Buy!=received offer."
+    }
+  ],
+  "known_unsupported_primitives": {
+    "string_input": "Qualified public packets.hpp775-779 ZC01D4 packed6(header16,npcId32);1844-1850 CZ01D5 variable8-byte prefix(header16,packetSize16,GID32)+value. clif.cpp2692-2705 sender and13377-13401 handler; packetdb225 registers -1. Input regions identical between qualified and raw source although full qualified clif differs. Active >=20151001 handler increments message_len before safestrncpy. Encoding/terminator bounds require tests, no forged input or new compiler claim.",
+    "numeric_input": "0142 unsupported; later potion exchange input not implemented, no menu substitution.",
+    "shop_equip": "Offline codecs lack integrated state/actuation.",
+    "closure": "cancel255 select/menu may terminate, prompt may continue. Send/silence/local abandonment not server closure."
+  },
+  "required_acknowledgements": {
+    "dialogue": "Same actual client/character,epoch,map,continuous fresh NPC identity and later stage sequence after each request. Close_requested/instructions flag not success; cancel uncertainty stays blocked.",
+    "warp": "Actual0091 same-server map receipt and normal007D LoadEnd path; fresh position/perception/arrival; no invented warp from prose.",
+    "inventory": "Later successful same-session0A37 actual item/index/positive amount, current complete inventory and deletion/gap/epoch invalidation; failure/missing receipt never ownership.",
+    "equip": "Current owned identified/undamaged legal index plus current class/level/sex/slot/hand restrictions; one0998 request -> later exact same-client/epoch/index/intent0999 success0 -> reconciled current matching wear_state. Unknown/failure/wrong index/mask/send alone cannot mark worn.",
+    "progression_economy": "Actual received XP/progression and loot/current inventory; spend only fresh received offer/Zeny/capacity plus result and actual changes."
+  },
+  "minimal_next_contract": {
+    "first_blocking_slice": "Offline string-input representation source audit/TDD, not activation",
+    "proposed_two_files": [
+      "src/robots/adapters/native_textinput.py (NEW)",
+      "tests/test_native_textinput.py (NEW)"
+    ],
+    "contract": [
+      "Distinguish01D4 string and0142 numeric; exact6 prompt and01D5 variable prefix; bounded exact selected-name UTF8/no truncation and malformed ID/length/encoding denial.",
+      "No transport or automatic supplied text; codec preserves received npcID without conferring ownership/identity. Reuse qualified authority, no packet-map regeneration or build.",
+      "This two-file slice does not clear actual host binding, typed phase, inventory/equip or native acceptance."
+    ],
+    "future_typed_phase": "NPC_PREPARE proposed, not present. Immutable core supports onlyTRAVEL/GRIND/FARM/REST/IDLE; goal prose is not executable NPC phase.",
+    "minimum_binding_fields": [
+      "supported typed phase and bounded route/purpose/expected items advisory",
+      "actual client instance+selected character+transport epoch",
+      "received map+observed actorID+continuous presentation generation/perceived identity",
+      "dialogue/open/current stage seq+primitive+received one-based choice or explicit exact-name intent",
+      "finite deadline/pages/actions and single outstanding request",
+      "current inventory known/index/item/count/weight and class/base/job legality",
+      "request epoch/index/intent/baseline seq+expected ACK/current wear evidence",
+      "completion by actual acquisition+worn/progression receipts; explicit uncertain cancel/timeout/replan"
+    ],
+    "remaining_caller_exact": "Future domain planning schema/capability+actions integration and actual host script ownership -> PlayingClient._npc_action/_npc_mechanical; NativeNpcDialogue input stage; inventory/equipment request/ACK/wear tracker+actuator. Active sibling planning writer not read/dependency. Existing guidance nearest-NPC caller is not route executor."
+  },
+  "four_finite_vertical_TDD_cases": [
+    {
+      "id": "NPC-1",
+      "contract": "Actual host ownership across UI",
+      "red_target": "Real scheduled host/brain/script->PlayingClient with only effect boundary spies: received pages/menu -> legal next/menu continuation ->01D4 unsupported denial, no text/combat/move/recontact. Future exact-name input extension must await fresh continuation; codec-only test cannot prove admission."
+    },
+    {
+      "id": "NPC-2",
+      "contract": "Fresh/unknown preconditions negatives",
+      "red_target": "Positive same-client/epoch/map,current type6/12/range/Novice; deny stale/vanish+sameID/wrong epoch,map,unknown quest/ownership/zeny/capacity/class. Public coordinates,name,Basic>=3 cannot supply facts; zero stat budget unchanged."
+    },
+    {
+      "id": "NPC-3",
+      "contract": "Reward and wear positive only after ACK",
+      "red_target": "Kafra close/prose/set11/send never ownership; source-shaped later0A37success+current known inventory permits actual acquired1243. Equip0998->matching later0999success+current reconciled wear permits worn. Wrong index/epoch/failure/unknown/mask-only/gaps deny."
+    },
+    {
+      "id": "NPC-4",
+      "contract": "Bounded replan/cancel closure",
+      "red_target": "Many real host ticks preserve32pages,120s absolute,5s stage, existing request guard. Legitimate prompt255 continuation requires continuous identity; vanish/sameID replay denied. Silence remains uncertain blocking actions; no per-tick reopen/reward. Replan event bounded, later standing/arrival before combat."
+    }
+  ],
+  "verification": {
+    "protected_inspected_before": {
+      "src/robots/app/scripts.py": "a84b24ebe9f8aa7100c66c608098e40537dc6d851f6abf2c8a5e6f954e5f0c55",
+      "src/robots/app/playing_runtime.py": "f5490bfd2fefe5ff200ce3110b50978ea0798836ee8a05c099d3d650237f04fa",
+      "src/robots/adapters/native_npc_dialogue.py": "c949544fa45f2c7927190c90b11c793071fd46347183d72c338570db330fbd11",
+      "src/robots/adapters/native_shop.py": "85c24a75df5dd070446d4f45347af8fc6422638b3359503797709fcac8d2c1c9",
+      "src/robots/adapters/native_equipment.py": "b00c9efa6f47258b4889c478c4587fe261c5b3678474e072666e3614b3701eac",
+      "src/robots/domain/planning.py": "2722eb5cea7627c071b13a3e7966d7bfb6d3307ac81335314d63d0c0a51f9ffb"
+    },
+    "protected_inspected_after": {
+      "src/robots/app/scripts.py": "a84b24ebe9f8aa7100c66c608098e40537dc6d851f6abf2c8a5e6f954e5f0c55",
+      "src/robots/app/playing_runtime.py": "f5490bfd2fefe5ff200ce3110b50978ea0798836ee8a05c099d3d650237f04fa",
+      "src/robots/adapters/native_npc_dialogue.py": "c949544fa45f2c7927190c90b11c793071fd46347183d72c338570db330fbd11",
+      "src/robots/adapters/native_shop.py": "85c24a75df5dd070446d4f45347af8fc6422638b3359503797709fcac8d2c1c9",
+      "src/robots/adapters/native_equipment.py": "b00c9efa6f47258b4889c478c4587fe261c5b3678474e072666e3614b3701eac",
+      "src/robots/domain/planning.py": "2722eb5cea7627c071b13a3e7966d7bfb6d3307ac81335314d63d0c0a51f9ffb"
+    },
+    "protected_inspected_unchanged": true,
+    "scope": "Only six named protected files, NOT full344-source freeze. native_gameplay read-only additional seam.",
+    "native_gameplay_sha256": "c7e9f16750bf117ba3a4843264e215d2e653c0376c70acd7ac45e00a6b2100f9",
+    "tests_executed": false,
+    "implementation": false,
+    "native_acceptance": false,
+    "all_full_milestones": "OPEN",
+    "vertical_case_count": 4,
+    "report_creation_issue": "First in-memory report construction had SyntaxError; no file written. Reconstructed and JSON readback verified."
+  },
+  "issues": [
+    "No NPC asset closure in qualified executable package; actual deployed NPC enablement UNKNOWN.",
+    "String input blocks Receptionist; old Prontera fixture has no proven legal return.",
+    "NPC typed phase/host route execution and inventory/equip acknowledgement binding absent.",
+    "No live rewards,worn-state,cancel closure,XP/loot/economy acceptance."
+  ]
+}

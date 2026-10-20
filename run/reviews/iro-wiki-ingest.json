@@ -1,0 +1,455 @@
+{
+  "task": "Ingest iRO Wiki MediaWiki API into local JSONL + FTS5 corpus",
+  "generated_at": "2026-10-15T19:45:46+00:00",
+  "endpoint": {
+    "api": "https://irowiki.org/w/api.php",
+    "note": "wiki.irowiki.org no longer resolves (NXDOMAIN; Cloudflare error 1016 when forced to the irowiki.org edge IP). The wiki is served at https://irowiki.org with article path /wiki/$1 (confirmed via siteinfo and WikiApiary). probed first per task instructions: https://wiki.irowiki.org/api.php and /w/api.php both failed DNS.",
+    "sitename": "iRO Wiki",
+    "server": "https://irowiki.org",
+    "articlepath": "/wiki/$1",
+    "site_statistics": {
+      "pages": 10628,
+      "articles": 2501,
+      "edits": 87314,
+      "images": 4143,
+      "users": 4881,
+      "activeusers": 10,
+      "admins": 10,
+      "jobs": 0
+    }
+  },
+  "license": {
+    "text": "GNU Free Documentation License 1.3 or later",
+    "url": "https://www.gnu.org/copyleft/fdl.html",
+    "note": "actual wiki rightsinfo is GFDL 1.3+, not CC BY-NC-SA as assumed in the task brief; recorded from the API."
+  },
+  "politeness": {
+    "mode": "sequential",
+    "delay_seconds": 0.6,
+    "batch_titles": 50,
+    "maxlag": 5,
+    "requests": 131,
+    "retries": 0,
+    "rate_limit_hits": 0,
+    "maxlag_waits": 0
+  },
+  "structure_note": {
+    "assumed_vs_actual": "Category:Monsters does not exist on this wiki and there are no monster articles (no Poring/Knife/prt_fild08 pages); item/monster/map raw data lives on db.irowiki.org (separate non-MediaWiki site, out of scope for a MediaWiki-API ingest). This wiki is the guide wiki: skills, quests, dungeons. Category:Maps holds only uploaded files (24 files, 0 pages).",
+    "assumed_titles_probe": {
+      "Prt fild08": "missing",
+      "Knife": "missing",
+      "Poring": "missing"
+    },
+    "fallback_probes": {
+      "monsters_template_prefix_Mon": [],
+      "infobox_templates": [],
+      "maps_fallback_templates": []
+    },
+    "monster_fallback_pages_ingested": [],
+    "map_fallback_extra_pages": []
+  },
+  "category_tree_summary": {
+    "items": {
+      "roots": [
+        "Category:Items"
+      ],
+      "root_probes": {
+        "Category:Items": {
+          "exists": true,
+          "categoryinfo": {
+            "size": 42,
+            "pages": 38,
+            "files": 0,
+            "subcats": 4,
+            "hidden": false
+          }
+        }
+      },
+      "categories_in_tree": 6,
+      "subcategories": {
+        "Category:Cards": 0,
+        "Category:Consumable Items": 0,
+        "Category:Item Mixing": 1,
+        "Category:Item Mixing Locations": 0,
+        "Category:Items": 4,
+        "Category:Weapons": 0
+      }
+    },
+    "monsters": {
+      "roots": [
+        "Category:Monsters"
+      ],
+      "root_probes": {
+        "Category:Monsters": {
+          "exists": false,
+          "categoryinfo": null
+        }
+      },
+      "categories_in_tree": 0,
+      "subcategories": {}
+    },
+    "maps": {
+      "roots": [
+        "Category:Maps",
+        "Category:Dungeons"
+      ],
+      "root_probes": {
+        "Category:Maps": {
+          "exists": true,
+          "categoryinfo": {
+            "size": 24,
+            "pages": 0,
+            "files": 24,
+            "subcats": 0,
+            "hidden": false
+          }
+        },
+        "Category:Dungeons": {
+          "exists": true,
+          "categoryinfo": {
+            "size": 44,
+            "pages": 44,
+            "files": 0,
+            "subcats": 0,
+            "hidden": false
+          }
+        }
+      },
+      "categories_in_tree": 2,
+      "subcategories": {
+        "Category:Dungeons": 0,
+        "Category:Maps": 0
+      }
+    },
+    "skills": {
+      "roots": [
+        "Category:Skills"
+      ],
+      "root_probes": {
+        "Category:Skills": {
+          "exists": true,
+          "categoryinfo": {
+            "size": 57,
+            "pages": 6,
+            "files": 0,
+            "subcats": 51,
+            "hidden": false
+          }
+        }
+      },
+      "categories_in_tree": 52,
+      "subcategories": {
+        "Category:Active Skills": 0,
+        "Category:Ammunition Skills": 0,
+        "Category:AoE Skills": 0,
+        "Category:Axe Skills": 0,
+        "Category:Bare Handed Skills": 0,
+        "Category:Book Skills": 0,
+        "Category:Bow Skills": 0,
+        "Category:Coin Skills": 0,
+        "Category:Dagger Skills": 0,
+        "Category:Ensemble Skills": 0,
+        "Category:Es Skills": 0,
+        "Category:Forced Element Skills": 0,
+        "Category:Gatling Gun Skills": 0,
+        "Category:Grenade Launcher Skills": 0,
+        "Category:HP Consuming Skills": 0,
+        "Category:Huuma Shuriken Skills": 0,
+        "Category:Instrument Skills": 0,
+        "Category:Item Consuming Skills": 0,
+        "Category:Item Dependant Skills": 0,
+        "Category:Ka Skills": 0,
+        "Category:Katar Skills": 0,
+        "Category:Knock Back Skills": 0,
+        "Category:Knuckle Skills": 0,
+        "Category:Mace Skills": 0,
+        "Category:Magic Skills": 0,
+        "Category:Melee Skills": 0,
+        "Category:Monster Exclusive Skills": 0,
+        "Category:Offensive Skills": 1,
+        "Category:One Handed Sword Skills": 0,
+        "Category:Passive Skills": 0,
+        "Category:Performance Skills": 0,
+        "Category:Pistol Skills": 0,
+        "Category:Quest Skills": 0,
+        "Category:Ranged Skills": 0,
+        "Category:Rifle Skills": 0,
+        "Category:Shield Skills": 0,
+        "Category:Shotgun Skills": 0,
+        "Category:Shuriken Skills": 0,
+        "Category:Skills": 51,
+        "Category:Soul Link Skills": 0,
+        "Category:Spear Skills": 0,
+        "Category:Spirit Link Skills": 0,
+        "Category:Spirit Sphere Skills": 0,
+        "Category:Status Inflicting Skills": 0,
+        "Category:Supportive Skills": 2,
+        "Category:Two Handed Sword Skills": 0,
+        "Category:Two-Handed Axe Skills": 0,
+        "Category:Two-Handed Spear Skills": 0,
+        "Category:Two-Handed Sword Skills": 0,
+        "Category:Unimplemented Skills": 0,
+        "Category:Whip Skills": 0,
+        "Category:Zeny Consuming Skills": 0
+      }
+    }
+  },
+  "counts": {
+    "items": 65,
+    "monsters": 0,
+    "maps": 8,
+    "skills": 1320,
+    "all_pages": 1133
+  },
+  "counts_note": "sections overlap only if a page sits in two section trees; all_pages = main-namespace pages in NO section (full corpus = sum of sections + all_pages, unique pages = pages table count).",
+  "artifacts": {
+    "dir": "/home/otto/dev/ro-bots/run/knowledge/iro-wiki",
+    "files": {
+      "items.jsonl": {
+        "sha256": "a787da6d50639703719114abf7290be258cc9f8f94365d0450291c8911c7f192",
+        "bytes": 1262173,
+        "pages": 65
+      },
+      "monsters.jsonl": {
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0,
+        "pages": 0
+      },
+      "maps.jsonl": {
+        "sha256": "6af18dc68b51df55c5a8e006eb36a8d16329b5b618d9cb34a649d00e30b59d0a",
+        "bytes": 24278,
+        "pages": 8
+      },
+      "skills.jsonl": {
+        "sha256": "b7ca6c53fd5476a6e84f010756ee0c22d08c18e0116fd2a5a65e72060615f711",
+        "bytes": 3220824,
+        "pages": 1320
+      },
+      "all_pages.jsonl": {
+        "sha256": "455c87535720c412d85709be291e0837423c9d996aaddcdfae83b2b9f1b8e906",
+        "bytes": 10539812,
+        "pages": 1133
+      },
+      "iro-wiki.db": {
+        "sha256": "af6cac8633c2446dca42336f188d80607b93ef53cd21afb6e743e1a392f29637",
+        "bytes": 37773312
+      },
+      "category_tree.json": {
+        "sha256": "4aff0cdc66cff21fa9e46baa0e4ef2d575650f3de63efec47c51f47b9bb2313f",
+        "bytes": 15282
+      },
+      "ingest_iro_wiki.py": {
+        "sha256": "e1483788c141292d4b85e4e2ebdf3c64a76ab77168c567011a4f63f3dcb19c72",
+        "bytes": 22274
+      },
+      "query_iro_wiki.py": {
+        "sha256": "c22e493dd29b09a0b8aeee51bab877262596c4b947b68420ae9b5ccf53c5bc1b",
+        "bytes": 2156
+      }
+    },
+    "receipt_fix": "receipt initially written to run/run/reviews (bad relative path); moved to run/reviews/iro-wiki-ingest.json and amended; no other content changed."
+  },
+  "spot_checks": [
+    {
+      "section": "skills",
+      "title": "Bash",
+      "source_url": "https://irowiki.org/wiki/Bash",
+      "expectation": "skill mechanics (type/levels/SP/element) present in wikitext",
+      "keyword_check": {
+        "checked": [
+          "\\bType\\b",
+          "\\bLevel",
+          "\\bSP\\b",
+          "\\bElement"
+        ],
+        "present": [
+          "\\bType\\b",
+          "\\bLevel",
+          "\\bSP\\b"
+        ]
+      },
+      "cli": {
+        "cmd": "query_iro_wiki.py Bash --section skills --limit 2",
+        "argv": [
+          "/home/otto/dev/ro-bots/.venv/bin/python",
+          "/home/otto/dev/ro-bots/run/knowledge/iro-wiki/query_iro_wiki.py",
+          "Bash",
+          "--section",
+          "skills",
+          "--limit",
+          "2"
+        ],
+        "exit_code": 0,
+        "output": "1. [skills] Bowling Bash  (rank -7.30)\n    … area=5x5\n|knock=5\n}}\n'''Bowling [Bash]''' (Alt: ''Bowling [Bash]'') is a 2<sup>nd … \n2. [skills] Vanishing Point  (rank -7.28)\n    … x [[[Bash]|[Bash]_SkillLevel]])]%\n***New Damage: [(80 x SkillLevel) + (50 x [[[Bash]|[Bash]_SkillLevel …"
+      }
+    },
+    {
+      "section": "items",
+      "title": "ASPD Potion",
+      "source_url": "https://irowiki.org/wiki/ASPD_Potion",
+      "expectation": "item facts present in wikitext (note: Knife itself does not exist on this wiki)",
+      "keyword_check": {
+        "checked": [
+          "\\bID\\b",
+          "\\bWeight",
+          "\\bEffect",
+          "\\bSlot",
+          "\\bItem\\b"
+        ],
+        "present": [
+          "\\bID\\b",
+          "\\bEffect",
+          "\\bItem\\b"
+        ]
+      },
+      "cli": {
+        "cmd": "query_iro_wiki.py ASPD --section items --limit 2",
+        "argv": [
+          "/home/otto/dev/ro-bots/.venv/bin/python",
+          "/home/otto/dev/ro-bots/run/knowledge/iro-wiki/query_iro_wiki.py",
+          "ASPD",
+          "--section",
+          "items",
+          "--limit",
+          "2"
+        ],
+        "exit_code": 0,
+        "output": "1. [items] Gun  (rank -3.73)\n    … Demi-Human by 20%<br>Max [ASPD] for 3 sec by chance<br>Character … \n2. [items] ASPD Potion  (rank -3.70)\n   Reduces the attack delay multiplier, effectively increasing [[[ASPD]]].\n\n{| class=\"wikitablec\"\n ! Level !! [ASPD] Bonus !! Potion …"
+      }
+    },
+    {
+      "section": "maps",
+      "title": "Amatsu Dungeon",
+      "source_url": "https://irowiki.org/wiki/Amatsu_Dungeon",
+      "expectation": "map/dungeon info; spawn/monster mention if present on this wiki",
+      "keyword_check": {
+        "checked": [
+          "[Ss]pawn",
+          "\\bMonster",
+          "\\bLevel",
+          "\\bDungeon"
+        ],
+        "present": [
+          "\\bMonster",
+          "\\bLevel",
+          "\\bDungeon"
+        ]
+      },
+      "cli": {
+        "cmd": "query_iro_wiki.py Amatsu --section maps --limit 2",
+        "argv": [
+          "/home/otto/dev/ro-bots/.venv/bin/python",
+          "/home/otto/dev/ro-bots/run/knowledge/iro-wiki/query_iro_wiki.py",
+          "Amatsu",
+          "--section",
+          "maps",
+          "--limit",
+          "2"
+        ],
+        "exit_code": 0,
+        "output": "1. [maps] Amatsu Dungeon  (rank -7.90)\n   ==[Amatsu] Dungeon==\n\nIn the land of [[[Amatsu]]], deep in the heart of Himezi Castle …"
+      }
+    }
+  ],
+  "spot_check_negative": {
+    "note": "task-specified spot-check targets Poring/Knife/prt_fild08 do not exist on this wiki (see assumed_titles_probe); Knife CLI search recorded as negative evidence.",
+    "cli": {
+      "cmd": "query_iro_wiki.py Knife --limit 3",
+      "argv": [
+        "/home/otto/dev/ro-bots/.venv/bin/python",
+        "/home/otto/dev/ro-bots/run/knowledge/iro-wiki/query_iro_wiki.py",
+        "Knife",
+        "--limit",
+        "3"
+      ],
+      "exit_code": 0,
+      "output": "1. [skills] Venom Knife  (rank -6.37)\n   {{Skill Info\n|class=Assassin\n|type=Offensive\n|levels=1\n|quest=Assassin Skill Quest#Venom [Knife] … \n2. [all_pages] Dropped Knife Quest  (rank -6.30)\n    … You can either:\n*Return the [Knife]\n**Receive {{Item List|id=505 |item=Blue Potion … \n3. [skills] Dancing Knife  (rank -6.20)\n    … Melee\n|s_icon=Dancing [Knife]\n}}\n\n'''Dancing [Knife]''' (Alt: ''Dancing [Knife]'') is a 4<sup …"
+    }
+  },
+  "cli_examples": [
+    {
+      "cmd": "query_iro_wiki.py prontera --limit 3",
+      "argv": [
+        "/home/otto/dev/ro-bots/.venv/bin/python",
+        "/home/otto/dev/ro-bots/run/knowledge/iro-wiki/query_iro_wiki.py",
+        "prontera",
+        "--limit",
+        "3"
+      ],
+      "exit_code": 0,
+      "output": "1. [skills] Prontera Recall  (rank -3.83)\n    … 28356 [Prontera] Badge}} equipped.\n==Effect==\nTeleports the caster to [[[Prontera]]] {{Navi|[prontera]|159|192 … \n2. [all_pages] Prontera  (rank -3.82)\n   {{Update}}\n{{Articles Needing DB Links}}\n== About [Prontera] ==\n\n[[Image: [Prontera].jpg|center]]\n\n[Prontera] is known … \n3. [all_pages] Novice Skill Quest(Classic)  (rank -3.78)\n    … Talk to the [[[Prontera]]] Chivalry Member at the [[[Prontera]]] Chivalry, the building in the …"
+    },
+    {
+      "cmd": "query_iro_wiki.py \"Eden Group\" --section skills --limit 3",
+      "argv": [
+        "/home/otto/dev/ro-bots/.venv/bin/python",
+        "/home/otto/dev/ro-bots/run/knowledge/iro-wiki/query_iro_wiki.py",
+        "\"Eden Group\"",
+        "--section",
+        "skills",
+        "--limit",
+        "3"
+      ],
+      "exit_code": 0,
+      "output": "1. [skills] Steal  (rank -4.02)\n    … Overcharge]], [[Vending|Vend]], or for some [[[Eden Group] Leveling Quests|Eden Quests]].\n\n==External==\n===Bestowed … \n2. [skills] Cooldown  (rank -3.82)\n    … Prontera {{Navi|prontera|163|178}} or [Eden Group] Headquarters {{Navi|moc_para01|16|30 … \n3. [skills] Skills  (rank -0.19)\n    … Animal Companion/Madogear active.).\n*''Mesmerist'' in [[[Eden Group]]] {{navi|moc_para01|18|30}} will …"
+    },
+    {
+      "cmd": "query_iro_wiki.py spawn OR monster --section maps --limit 3",
+      "argv": [
+        "/home/otto/dev/ro-bots/.venv/bin/python",
+        "/home/otto/dev/ro-bots/run/knowledge/iro-wiki/query_iro_wiki.py",
+        "spawn OR monster",
+        "--section",
+        "maps",
+        "--limit",
+        "3"
+      ],
+      "exit_code": 0,
+      "output": "1. [maps] Undersea Tunnel  (rank -1.95)\n    … The green fish like [monster] called Deviace is considered as the Mini Boss of … \n2. [maps] Amatsu Dungeon  (rank -1.92)\n    … [monster]|id=1404 Miyabi Doll}} LV85\n*{{[monster]|id=1403 Firelock Soldier}} LV88\n*{{[monster]|id … \n3. [maps] Mt. Mjolnir Dead Pit  (rank -1.92)\n    … Players should expect to see {{[monster] |id=1111 Drainliar}}, {{[monster] |id=1121 Giearth}}, {{[monster] …"
+    }
+  ],
+  "duration_seconds": 155.2,
+  "maps_section_verification": {
+    "category_dungeons_members_via_api": 44,
+    "in_corpus": 8,
+    "excluded_redirects": [
+      "Abyss Lake",
+      "Ant Hell",
+      "Beach Dungeon",
+      "Bifrost Tower",
+      "Brasilis Dungeon",
+      "Clock Tower",
+      "Dewata Dungeon",
+      "Geffen Dungeon",
+      "Geffenia",
+      "Hvergelmir's Fountain",
+      "Ice Cave",
+      "Juperos Ruins",
+      "Kamidal Tunnel",
+      "Kiel Robot Factory",
+      "Kunlun Dungeon",
+      "Louyang Dungeon",
+      "Malangdo Dungeon",
+      "Mine Dungeon",
+      "Moscovia Dungeon",
+      "Nameless Island Abbey",
+      "Nogg Road",
+      "Odin Temple",
+      "Orc Dungeon",
+      "Payon Cave",
+      "Prontera Culvert",
+      "Pyramid",
+      "Rachel Sanctuary",
+      "Scaraba Hall",
+      "Somatology Laboratory",
+      "Sphinx",
+      "Sunken Ship",
+      "Template:Infobox Dungeon",
+      "Thanatos Tower",
+      "Thor Volcano",
+      "Toy Factory",
+      "Turtle Island Dungeon"
+    ],
+    "explanation": "categoryinfo counts redirect members; the ingest enumerates non-redirect main-namespace pages only (apfilterredir=nonredirects), so dungeon titles that are redirects are excluded. All non-redirect members are present in maps.jsonl."
+  }
+}

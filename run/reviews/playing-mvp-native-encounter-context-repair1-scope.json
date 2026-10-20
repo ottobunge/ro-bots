@@ -1,0 +1,22 @@
+{
+  "review_sha256": "d72517c03f53ed37f7041bc7b5c0f367794da8e4f1a2ddd56a7dc8bfa560c2de",
+  "finding": "EC-HISTORY-OVERSIZE-CURSOR",
+  "repair_cycle": 1,
+  "maximum_automatic_cycles_for_this_component": 2,
+  "requirements": [
+    "Consume a same-epoch newer valid receipt sequence even when its serialized fact is dropped for the 2048-byte budget",
+    "Retain prior records unchanged when dropping an oversized new fact",
+    "Reject subsequent older/equal sequence facts without mutation",
+    "Preserve foreign epochs, budgets, decoder/builder semantics and provenance limits",
+    "TDD reproduces exact builder-produced Unicode-provenance overflow before cursor repair"
+  ],
+  "owned_files": [
+    "src/robots/adapters/native_encounter_context.py",
+    "tests/test_native_encounter_context.py",
+    "run/reviews/playing-mvp-native-encounter-context-repair1.json"
+  ],
+  "no_active_runtime_wiring": true,
+  "native_effects": false,
+  "other_feature_budgets_unchanged": true,
+  "all_milestones_open": true
+}

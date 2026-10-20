@@ -1,0 +1,195 @@
+{
+ "class": "Merchant",
+ "playstyle": "merchant-economy (discount/overcharge/vending trader)",
+ "playstyle_axis": "merchant-economy",
+ "summary": "The economy specialist: every NPC purchase -24%, every sale +24%, 8000-weight pushcart, then Vending for player shops. Fights with a basic weapon + Mammonite burst only when profitable.",
+ "stat_progression": [
+  {
+   "phase": "job change ~40",
+   "base_level": 40,
+   "stat_point_budget": 305,
+   "points_spent": 268,
+   "points_left": 37,
+   "allocation": {
+    "str": 40,
+    "vit": 30,
+    "dex": 20,
+    "agi": 1,
+    "int": 1,
+    "luk": 1
+   },
+   "leftover_into": "STR/VIT (37 pts left at 305)"
+  },
+  {
+   "phase": "job 50",
+   "base_level": 50,
+   "stat_point_budget": 420,
+   "points_spent": 376,
+   "points_left": 44,
+   "allocation": {
+    "str": 50,
+    "vit": 40,
+    "dex": 20,
+    "agi": 1,
+    "int": 1,
+    "luk": 1
+   },
+   "leftover_into": "STR/VIT"
+  }
+ ],
+ "skill_order": [
+  {
+   "skill": "Enlarge Weight Limit",
+   "levels": 3,
+   "at": "job 1-3",
+   "prereqs": [],
+   "why": "Discount prereq (+600 weight)"
+  },
+  {
+   "skill": "Discount",
+   "levels": 10,
+   "at": "job 4-13",
+   "prereqs": [
+    "Enlarge Weight Limit 3"
+   ],
+   "why": "-24% NPC prices at 10: Knife 50->38z, Red Potions cheaper"
+  },
+  {
+   "skill": "Overcharge",
+   "levels": 10,
+   "at": "job 14-23",
+   "prereqs": [
+    "Discount 3"
+   ],
+   "why": "+24% NPC sell price at 10: Sticky Mucus 35->43z; the passive zeny printer"
+  },
+  {
+   "skill": "Enlarge Weight Limit",
+   "levels": "->5",
+   "at": "job 24-25",
+   "prereqs": [],
+   "why": "Pushcart prereq (+1000 weight)"
+  },
+  {
+   "skill": "Pushcart",
+   "levels": 10,
+   "at": "job 26-35",
+   "prereqs": [
+    "Enlarge Weight Limit 5"
+   ],
+   "why": "8000-weight cart; Vending prereq at 3; move-speed penalty"
+  },
+  {
+   "skill": "Mammonite",
+   "levels": 5,
+   "at": "job 36-40",
+   "prereqs": [],
+   "why": "350% ATK for 500z+5SP: burst option"
+  }
+ ],
+ "skill_point_budget": {
+  "job40_points": 40,
+  "job50_points": 50,
+  "job50_add": [
+   "Vending 10 (Pushcart 3 done): player shops",
+   "Mammonite ->10",
+   "Change Cart (quest)"
+  ]
+ },
+ "equipment_order": [
+  {
+   "order": 1,
+   "id": 1201,
+   "name": "Knife [3]",
+   "price_z": 50,
+   "why": "starter (38z with Discount 10)"
+  },
+  {
+   "order": 2,
+   "id": 1301,
+   "name": "Axe [3]",
+   "price_z": 500,
+   "why": "ATK 38, merchant 1H axe ASPD -15"
+  },
+  {
+   "order": 3,
+   "id": 2303,
+   "name": "Jacket",
+   "price_z": 200,
+   "why": "DEF"
+  },
+  {
+   "order": 4,
+   "id": 2401,
+   "name": "Sandals",
+   "price_z": 400,
+   "why": "shoes"
+  },
+  {
+   "order": 5,
+   "id": 2101,
+   "name": "Guard",
+   "price_z": 500,
+   "why": "shield"
+  },
+  {
+   "order": 6,
+   "id": 1351,
+   "name": "Battle Axe [3]",
+   "price_z": 5400,
+   "why": "ATK 80, req job? (item req lv3) - biggest NPC ATK merchant weapon"
+  }
+ ],
+ "grinding": [
+  {
+   "map": "prt_fild08 (loot route)",
+   "phase": "all levels",
+   "mobs": [
+    {
+     "id": 1002,
+     "name": "Poring",
+     "level": 1,
+     "hp": 60,
+     "exp": "27/20",
+     "notes": "Jellopy 70% -> 3z (3.7z overcharged, floors to 3)"
+    },
+    {
+     "id": 1063,
+     "name": "Lunatic",
+     "level": 3,
+     "hp": 55,
+     "exp": "36/27",
+     "notes": "Feather 10% -> 10z (12z overcharged)"
+    },
+    {
+     "id": 1052,
+     "name": "Rocker",
+     "level": 15,
+     "hp": 185,
+     "exp": "99/74",
+     "notes": "Grasshopper's Leg 90% - cart-freight sell runs"
+    }
+   ]
+  }
+ ],
+ "do_not_waste": [
+  "Item Appraisal (1 pt at most; only un-IDs vendor junk)",
+  "Vending before holding surplus stock (no customers early)",
+  "Open Buying Store (renewal-era skill; exists server-side (ALL_BUYING_STORE needs Vending 1) but useless solo)",
+  "Crazy Uproar (quest, STR+4/30s, 8 SP - fun, not required)"
+ ],
+ "renewal_differences": "Discount/Overcharge/Pushcart/Vending numbers are era-stable. Renewal-era additions on the wiki page (Open Buying Store, Cart Decoration, offline vending) exist in this 2018 PACKETVER build but were not part of the classic pre-re kit - treat them as optional extras, not core.",
+ "sources": [
+  "iro-wiki corpus page 'Stats' (stat per-point effects, raise-cost floor((X-1)/10)+2, 48 pts at BLv1, level-up points floor(X/5)+3)",
+  "iro-wiki corpus page 'Total stat point requirement' (cumulative cost table)",
+  "rathena/src/map/status.cpp status_base_atk (pre-re status ATK: STR+(STR/10)^2+DEX/5+LUK/5 melee; DEX+(DEX/10)^2+STR/5 ranged; MATK min INT+(INT/7)^2 max INT+(INT/5)^2)",
+  "rathena/db/pre-re/skill_tree.yml (authoritative server skill prerequisites)",
+  "rathena/db/pre-re/skill_db.yml (SP costs, cast times)",
+  "iro-wiki corpus '<Class> Job Change Guide' + rathena/npc/pre-re/jobs/1-1/<class>.txt (job change)",
+  "iro-wiki corpus pages 'Merchant', 'Discount', 'Overcharge', 'Pushcart', 'Vending', 'Enlarge Weight Limit', 'Mammonite', 'Merchant Job Change Guide'",
+  "iro-db items 1201/1301/1351/2303/2401/2101, 909/938/949 (sell prices incl. max-rate parentheticals)",
+  "corpus 'Merchant' Job Bonuses: j40 STR+3 AGI+4 VIT+3 INT+4 DEX+3; j50 STR+5 AGI+5 VIT+4 INT+6 DEX+5 LUK+2",
+  "rathena/db/pre-re/skill_tree.yml (MC_DISCOUNT needs MC_INCCARRY 3; MC_OVERCHARGE needs MC_DISCOUNT 3; MC_PUSHCART needs MC_INCCARRY 5; MC_VENDING needs MC_PUSHCART 3; MC_IDENTIFY no prereq server-side vs corpus 'Pushcart 3' - server tree wins)",
+  "project receipts run/reviews/knife-purchase-mechanics.json ( prt_in weapon dealer purchase loop)"
+ ]
+}

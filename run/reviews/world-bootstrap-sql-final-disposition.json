@@ -1,0 +1,22 @@
+{
+  "accepted_scope": "Offline pure-renderer contract on actual frozen source; not database, engine, init-hook, filesystem-permission, or world acceptance",
+  "scoped_accepted": true,
+  "distinct_review_cases": 108,
+  "frozen_inputs_matched": 3,
+  "hashes": {
+    "src/robots/adapters/world_bootstrap_sql.py": "cfa64780b9356b04a2e8eb2699fb0e6703f4b3f6ae9b815fb454a03f9b8b2ce5",
+    "tests/test_world_bootstrap_sql.py": "ef8eb762e2b2eb5bdcf42fdc40e1278d4cbdbf8a8823973423c67ba9b500b112",
+    "src/robots/adapters/rathena_bootstrap_assets.py": "257f09e9c318dc060b21e76326a4510fce2d9fc06d048047e0949e098ab3c3c7"
+  },
+  "review": "run/reviews/world-bootstrap-sql-independent-review.json",
+  "limitations": [
+    "Actual MariaDB parsing, executed row readback, fresh-database init-hook ordering and execution remain pending; no database acceptance is inferred from regex/byte checks.",
+    "Mount integration, container UID ownership and private SQL file permissions remain pending. The pure renderer returns bytes and cannot establish correct file modes.",
+    "Hex literals encode plaintext sensitive credentials; they neither encrypt nor redact them.",
+    "Not a migration, reset, existing-world repair, launch authority, or world-initialization result.",
+    "Compose/native integration and combined project gates are outside this independent review."
+  ],
+  "sql_executed": false,
+  "world_initialized": false,
+  "credentials": "[REDACTED]"
+}

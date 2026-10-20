@@ -1,0 +1,510 @@
+{
+  "passed": true,
+  "verdict": "approved_scoped_core_invariants",
+  "review_type": "explicitly_authorized_single_read_only_frozen_core_integration_revalidation",
+  "completed_at": "2026-10-05T13:51:55.827652+02:00",
+  "repository": "/home/otto/dev/ro-bots",
+  "head": "15e0fef5334a7d9d7bb0ae6b8953e367e828bfb2",
+  "summary": "CORE-SECOND-CYCLE-004 verification gap closed: frozen WorldState and unchanged original repairs pass 170 guarded offline tests, four independent interruption/join real-journal groups, and four independent state/feed/private-memory lock/lifecycle groups. Approval is scoped to core invariants only.",
+  "security_concerns": [],
+  "logic_errors": [],
+  "suggestions": [],
+  "fail_closed_acceptance_conditions": {
+    "exact_170_assertions": true,
+    "all_three_executions_successful": true,
+    "stable_before_after_and_final": true,
+    "original_source_and_test_hashes_unchanged": true,
+    "expected_frozen_worldstate": true,
+    "guarded_test_network_audit_clean": true,
+    "independent_real_journal_probes_complete": true,
+    "independent_lock_probes_complete": true,
+    "static_security_scan_clean": true
+  },
+  "issue_resolutions": [
+    {
+      "id": "CORE-REREVIEW-001",
+      "status": "resolved",
+      "file": "src/robots/adapters/memory_journal.py",
+      "lines": [
+        137,
+        156
+      ],
+      "finding": "The write/flush/fsync section catches BaseException, sets _failed, and bare-raises the original. Memory only publishes after append returns. Validation and serialization precede the uncertain-write try. Hardlink/privacy integrity checks remain in the poison section.",
+      "regressions": "Nine boundary cases across write/flush/fsync and KeyboardInterrupt/SystemExit/RuntimeError, plus four clean prewrite failures, all pass.",
+      "independent_reproduction": "Create a real private store and Memory; wrap os.fsync to call real fsync then raise a custom direct BaseException. Verify exact exception and traceback leaf, zero acknowledged local notes, 113 unacknowledged disk bytes, blocked load/append, unchanged bytes, and retained flock until explicit close. Explicit reopen sees one row; it is not a confirmed local acknowledgement.",
+      "observed": {
+        "status": "pass",
+        "injected_exception": "custom BaseException after real fsync",
+        "origin_identity_preserved": true,
+        "traceback_leaf_preserved": true,
+        "visible_notes": 0,
+        "uncertain_bytes": 113,
+        "read_and_append_blocked": true,
+        "bytes_unchanged_on_retry": true,
+        "lifetime_lock_retained": true
+      },
+      "current_revalidation": "Same guarded 170 cases and independent real-journal assertions rerun at the frozen unchanged hashes."
+    },
+    {
+      "id": "CORE-REREVIEW-002",
+      "status": "resolved",
+      "file": "src/robots/society/memory.py",
+      "lines": [
+        105,
+        112
+      ],
+      "related_file": "src/robots/adapters/memory_journal.py",
+      "related_lines": [
+        163,
+        174
+      ],
+      "finding": "Failed restore covers BaseException, attempts store.close, suppresses secondary cleanup failures, and bare-raises the exact restore origin. Owned store.close uses finally to release its explicit file and directory descriptors; repeated cleanup does not close reused descriptor numbers.",
+      "regressions": "Nine combinations of interrupted/invalid restore and successful/OSError/SystemExit wrapper close pass, including actual EBADF and fresh writer-lock acquisition.",
+      "independent_reproduction": "Construct a real store with an acquired flock, inject custom direct BaseException from load and SystemExit before the text wrapper close performs release. Memory construction must still raise the exact restore origin with the restore leaf; both raw fds must be EBADF and a fresh writer must acquire flock. Restore the wrapper close, close the old store again, and verify the reopened writer fds stay valid.",
+      "observed": {
+        "status": "pass",
+        "injected_exception": "custom BaseException from restore plus SystemExit before wrapper release",
+        "origin_identity_preserved": true,
+        "traceback_leaf_preserved": true,
+        "file_and_directory_fds_closed": true,
+        "fresh_flock_acquired": true,
+        "reused_fds_survived_old_store_close": true,
+        "wrapper_cleanup_fault_not_exposed_as_primary": true
+      },
+      "cleanup_limit": "Secondary wrapper-close failure is intentionally suppressed in favor of restore origin. In the independent before-wrapper-release probe, raw descriptors/lock are released by finally even though wrapper closure was not completed on the initial failed attempt; subsequent fixture cleanup completes wrapper close. No claim that an arbitrary ExperienceStore which refuses its own resource release is repaired.",
+      "current_revalidation": "Same guarded 170 cases and independent real-journal assertions rerun at the frozen unchanged hashes."
+    },
+    {
+      "id": "CORE-REREVIEW-003",
+      "status": "resolved",
+      "file": "src/robots/app/agent_runtime.py",
+      "lines": [
+        281,
+        325
+      ],
+      "finding": "_client_cleanup_pending bypasses the offline early return. Offline retries do not repeat session persistence. Before-release or unknown-state close errors retain pending state; a failed close never emits a completed disconnected event. Successful release clears pending. Normal close return is the client completion contract; explicit connected=False after a raised close is treated as already released without emitting the completion event.",
+      "regressions": "Three two-agent, real-journal cases across KeyboardInterrupt/SystemExit/OSError fail before release twice, then release once; exact origins, other-agent cleanup, single session notes, reacquired writer locks and absence of postclose writes all pass.",
+      "independent_reproduction": "Connect two fake-client agents with real journals and disabled worker threading. Remove the first client connected attribute, raise custom direct BaseException before release, and call host.stop twice. Verify exact origin/leaf, offline but pending state, no completed disconnect event, second-client release and fresh journal writers. Restore real release and stop twice plus step: release occurs once, completion event once, and session history remains [1,1].",
+      "observed": {
+        "status": "pass",
+        "injected_exception": "custom BaseException before release with no connected attribute",
+        "offline_retries": 2,
+        "successful_release_calls": 1,
+        "origin_identity_preserved": true,
+        "traceback_leaf_preserved": true,
+        "no_false_disconnected_event": true,
+        "other_agent_cleaned": true,
+        "journals_reacquirable_after_each_stop": true,
+        "session_note_counts": [
+          1,
+          1
+        ],
+        "successful_disconnect_event_count": 1,
+        "no_postclose_append_or_duplicate_release": true
+      },
+      "current_revalidation": "Same guarded 170 cases and independent real-journal assertions rerun at the frozen unchanged hashes."
+    }
+  ],
+  "verification_gap_resolution": {
+    "id": "CORE-SECOND-CYCLE-004",
+    "status": "resolved",
+    "previous_report": "run/reviews/core-second-cycle-review.json",
+    "previous_report_sha256": "8dc44ada659f3f5c8bf2ec91a5b8dbf9e98604970023d39cc16fba3682e5f65c",
+    "snapshot_stable": true,
+    "current_roster_accessor_present": true,
+    "historical_transient_66_AttributeErrors": "Historical dependency-drift evidence only; not reproduced now and not claimed as current defects.",
+    "no_third_core_repair": true
+  },
+  "worldstate_lifecycle_impact": [
+    {
+      "invariant": "state/feed lock ownership",
+      "source": "src/robots/app/world_state.py:108-115,209-226",
+      "finding": "Feed and aggregate share one reentrant lock; sequence allocation/insertion and bounded feed reads remain serialized. Existing retention/concurrent-ID tests pass; no independent feed/state lock inversion."
+    },
+    {
+      "invariant": "bound private-memory render and append lock order",
+      "source": "src/robots/app/world_state.py:151-165,369-379",
+      "finding": "Resolve MemoryLog identity under aggregate lock, then release aggregate before rendering or durable append. Three deterministic independent interleavings hold private memory while its owner binds and appends a feed event; reader, publisher and forced-note writer all complete. No provider or force-action gameplay execution is implied."
+    },
+    {
+      "invariant": "runtime publication",
+      "source": "src/robots/app/world_state.py:238-260",
+      "finding": "Render outside aggregate lock, then revalidate log identity before publishing and merge against latest runtime fields. Independent paused-render/rebind probe rejects old memory view and preserves a concurrent plan alongside the delayed goal."
+    },
+    {
+      "invariant": "bound ownership preservation",
+      "source": "src/robots/app/world_state.py:199-207,284-335",
+      "finding": "Binding and final regeneration admission share aggregate lock. Completed bound hosts reject regeneration before changing roster/reputation/runtime/memories/defaults/feed. Supplementary real-journal probes assert exact aggregate preservation. Candidate-construction races/population correctness are not certified by this core review."
+    },
+    {
+      "invariant": "shutdown ordering",
+      "source": "src/robots/app/agent_runtime.py:281-325,699-729,749-757",
+      "finding": "Runtime disconnect publication uses the released-aggregate rendering path. Real worker/inspector final writes, interrupted join ownership retention and retry all pass; journals remain exclusively owned while a producer lives and are reacquirable after joins. Host lifecycle lock is distinct; no aggregate lock is held over worker/inspector joins."
+    }
+  ],
+  "verification": {
+    "outer_command": "timeout -k 5 230 nix develop -c uv run python /home/otto/.hermes/cache/scratch/core_frozen_run.py",
+    "scoped_test_files": [
+      "tests/test_core_interruption_cleanup.py",
+      "tests/test_memory_storage.py",
+      "tests/test_memory_concurrency.py",
+      "tests/test_memory_journal_failures.py",
+      "tests/test_memory_journal_boundary.py",
+      "tests/test_host_memory.py",
+      "tests/test_host_storage_failure.py",
+      "tests/test_agent_host.py",
+      "tests/test_world_state.py",
+      "tests/test_worldfeed_retention.py",
+      "tests/test_worldfeed_server.py"
+    ],
+    "execution": {
+      "guarded_170": {
+        "command": [
+          "uv",
+          "run",
+          "pytest",
+          "-p",
+          "core_interruption_offline_gate",
+          "-p",
+          "core_frozen_network_guard",
+          "-o",
+          "addopts=",
+          "-p",
+          "no:cacheprovider",
+          "-q",
+          "-o",
+          "faulthandler_timeout=15",
+          "--basetemp=/home/otto/.hermes/cache/scratch/core_frozen_pytest",
+          "--junitxml=/home/otto/.hermes/cache/scratch/core_frozen_pytest.xml",
+          "tests/test_core_interruption_cleanup.py",
+          "tests/test_memory_storage.py",
+          "tests/test_memory_concurrency.py",
+          "tests/test_memory_journal_failures.py",
+          "tests/test_memory_journal_boundary.py",
+          "tests/test_host_memory.py",
+          "tests/test_host_storage_failure.py",
+          "tests/test_agent_host.py",
+          "tests/test_world_state.py",
+          "tests/test_worldfeed_retention.py",
+          "tests/test_worldfeed_server.py"
+        ],
+        "exit_code": 0,
+        "seconds": 5.731,
+        "log": "/home/otto/.hermes/cache/scratch/core_frozen_guarded_170.log"
+      },
+      "independent_probes": {
+        "command": [
+          "uv",
+          "run",
+          "python",
+          "/home/otto/.hermes/cache/scratch/core_frozen_independent.py"
+        ],
+        "exit_code": 0,
+        "seconds": 0.789,
+        "log": "/home/otto/.hermes/cache/scratch/core_frozen_independent_probes.log"
+      },
+      "lock_lifecycle_probes": {
+        "command": [
+          "uv",
+          "run",
+          "python",
+          "/home/otto/.hermes/cache/scratch/core_frozen_lock_probe.py"
+        ],
+        "exit_code": 0,
+        "seconds": 0.736,
+        "log": "/home/otto/.hermes/cache/scratch/core_frozen_lock_lifecycle_probes.log"
+      }
+    },
+    "junit": "/home/otto/.hermes/cache/scratch/core_frozen_pytest.xml",
+    "reconciled_counts": {
+      "tests": 170,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "pytest_reported_duration_seconds": 4.51,
+    "independent_probe_groups": 4,
+    "independent_observed": {
+      "CORE-REREVIEW-001": {
+        "status": "pass",
+        "injected_exception": "custom BaseException after real fsync",
+        "origin_identity_preserved": true,
+        "traceback_leaf_preserved": true,
+        "visible_notes": 0,
+        "uncertain_bytes": 113,
+        "read_and_append_blocked": true,
+        "bytes_unchanged_on_retry": true,
+        "lifetime_lock_retained": true
+      },
+      "CORE-REREVIEW-002": {
+        "status": "pass",
+        "injected_exception": "custom BaseException from restore plus SystemExit before wrapper release",
+        "origin_identity_preserved": true,
+        "traceback_leaf_preserved": true,
+        "file_and_directory_fds_closed": true,
+        "fresh_flock_acquired": true,
+        "reused_fds_survived_old_store_close": true,
+        "wrapper_cleanup_fault_not_exposed_as_primary": true
+      },
+      "CORE-REREVIEW-003": {
+        "status": "pass",
+        "injected_exception": "custom BaseException before release with no connected attribute",
+        "offline_retries": 2,
+        "successful_release_calls": 1,
+        "origin_identity_preserved": true,
+        "traceback_leaf_preserved": true,
+        "no_false_disconnected_event": true,
+        "other_agent_cleaned": true,
+        "journals_reacquirable_after_each_stop": true,
+        "session_note_counts": [
+          1,
+          1
+        ],
+        "successful_disconnect_event_count": 1,
+        "no_postclose_append_or_duplicate_release": true
+      },
+      "join-before-close": {
+        "status": "pass",
+        "custom_BaseException_join_origin_preserved": true,
+        "live_worker_reference_retained": true,
+        "writer_lock_retained_while_worker_live": true,
+        "worker_and_inspector_final_writes_replayed": true,
+        "both_producers_joined_before_release": true
+      }
+    },
+    "supplementary_lock_probe_groups": 4,
+    "supplementary_observed": {
+      "memory_lines": {
+        "status": "pass",
+        "private_owner_callback_progress": true,
+        "aggregate_released_before_private_memory": true,
+        "bound_memory_identity_preserved": true,
+        "regeneration_refusal_preserved_aggregate": true,
+        "runtime_offline_after_stop": true,
+        "journal_lock_reacquired": true,
+        "single_session_note": true
+      },
+      "set_agent_state": {
+        "status": "pass",
+        "private_owner_callback_progress": true,
+        "aggregate_released_before_private_memory": true,
+        "bound_memory_identity_preserved": true,
+        "regeneration_refusal_preserved_aggregate": true,
+        "runtime_offline_after_stop": true,
+        "journal_lock_reacquired": true,
+        "single_session_note": true
+      },
+      "force_action": {
+        "status": "pass",
+        "private_owner_callback_progress": true,
+        "aggregate_released_before_private_memory": true,
+        "bound_memory_identity_preserved": true,
+        "regeneration_refusal_preserved_aggregate": true,
+        "runtime_offline_after_stop": true,
+        "journal_lock_reacquired": true,
+        "single_session_note": true
+      },
+      "runtime_revalidates_memory_identity": {
+        "status": "pass",
+        "stale_render_not_published": true,
+        "independent_concurrent_fields_preserved": true
+      }
+    },
+    "network_audit": {
+      "test_exitstatus": 0,
+      "forbidden_network_attempts": []
+    },
+    "offline_gate_and_prior_probe_scripts_inspected_before_use": true,
+    "probe_script_reuse": "Copied reviewed prior script changing only result output path; new lock probes are scratch-only and use fake clients/real private journals.",
+    "network_guard_scope": "Python audit socket.connect/socket.bind/socket.getaddrinfo denied in test/probe processes. Fresh subprocess writer/reader snippets in test_memory_storage.py were read and only perform real private-journal replay. This is not a recursively enforced OS network sandbox; no live listener/provider/game/SQL was called.",
+    "all_assertions_passed": true,
+    "repository_wide_gates": "Not run or certified: only the explicitly authorized frozen integration slice.",
+    "warnings": [
+      "Existing Starlette/httpx TestClient deprecation warning",
+      "Nix dirty-tree warning from concurrent unowned checkout work"
+    ]
+  },
+  "source_hash_algorithm": "sha256",
+  "source_hashes": {
+    "src/robots/society/memory.py": "29dc3abf394daa6107ee72215f7d514220d6262d0e22351911d2bc24246a3ff2",
+    "src/robots/adapters/memory_journal.py": "043f109ba8e637b4b26a7a4cd601e64bffa3512815ea0cfbca8c2737c3fb3a00",
+    "src/robots/app/agent_runtime.py": "c05942f8f02059af78f43273a8d59c67eda8c77ed2e6263cb27e9f5a7cdfdef8",
+    "src/robots/app/world_state.py": "01dcd22cd81d3ff24373fed08d4e0ca1007e1a5be73341d43825da2a36e57f03"
+  },
+  "test_hashes": {
+    "tests/test_core_interruption_cleanup.py": "e985a3f00adebc4161378b6fbe8a7e4e91b6f282e725faee0eef54440f50b3bf",
+    "tests/test_memory_storage.py": "1b5ea2b86b922adaef75c560680eb309a3674873abab2cfd7e1fdfba0e4a069b",
+    "tests/test_memory_concurrency.py": "b3023d86a987dbb701cd4767814473fb5330cda50055f70a062ba67d2b1239d3",
+    "tests/test_memory_journal_failures.py": "13e7cc87bfb390dbf4f8fd24e82f3932c1333dc0db35ee350f5c9f9e3160957e",
+    "tests/test_memory_journal_boundary.py": "d5754f1a9e5eacfeabba031118d980fae8ada3df5426983e509ebcd0d10ff56a",
+    "tests/test_host_memory.py": "db28d20ea1d0afa27bc49c5475144f5bd2197cf81c0c147baa91a5bab3bf6d5d",
+    "tests/test_host_storage_failure.py": "0f473837dbcaf1461e4b9d7d73090639361d2e0f9d08a1a2489bb9c06e5cb42f",
+    "tests/test_agent_host.py": "effeba83435fb43c76a1578d17e190b93219991dbab491786df56ef02bb808f7",
+    "tests/test_world_state.py": "1b026aa85e1ed5a68cc00bbae2b0c0f61cdbececbd94bb03d5f4085614382727",
+    "tests/test_worldfeed_retention.py": "dec045816b3c457c3cac25b0715dc63f3f03794e401fc48c4c38c8afa08d5c88",
+    "tests/test_worldfeed_server.py": "8c2a151e5739e59e7a390e1497fe5c2497be7ae45f8e8bff74d68c9b59960898"
+  },
+  "dependencyhashes": {
+    "before": {
+      "src/robots/society/memory.py": "29dc3abf394daa6107ee72215f7d514220d6262d0e22351911d2bc24246a3ff2",
+      "src/robots/adapters/memory_journal.py": "043f109ba8e637b4b26a7a4cd601e64bffa3512815ea0cfbca8c2737c3fb3a00",
+      "src/robots/app/agent_runtime.py": "c05942f8f02059af78f43273a8d59c67eda8c77ed2e6263cb27e9f5a7cdfdef8",
+      "src/robots/app/world_state.py": "01dcd22cd81d3ff24373fed08d4e0ca1007e1a5be73341d43825da2a36e57f03",
+      "tests/test_core_interruption_cleanup.py": "e985a3f00adebc4161378b6fbe8a7e4e91b6f282e725faee0eef54440f50b3bf",
+      "tests/test_memory_storage.py": "1b5ea2b86b922adaef75c560680eb309a3674873abab2cfd7e1fdfba0e4a069b",
+      "tests/test_memory_concurrency.py": "b3023d86a987dbb701cd4767814473fb5330cda50055f70a062ba67d2b1239d3",
+      "tests/test_memory_journal_failures.py": "13e7cc87bfb390dbf4f8fd24e82f3932c1333dc0db35ee350f5c9f9e3160957e",
+      "tests/test_memory_journal_boundary.py": "d5754f1a9e5eacfeabba031118d980fae8ada3df5426983e509ebcd0d10ff56a",
+      "tests/test_host_memory.py": "db28d20ea1d0afa27bc49c5475144f5bd2197cf81c0c147baa91a5bab3bf6d5d",
+      "tests/test_host_storage_failure.py": "0f473837dbcaf1461e4b9d7d73090639361d2e0f9d08a1a2489bb9c06e5cb42f",
+      "tests/test_agent_host.py": "effeba83435fb43c76a1578d17e190b93219991dbab491786df56ef02bb808f7",
+      "tests/test_world_state.py": "1b026aa85e1ed5a68cc00bbae2b0c0f61cdbececbd94bb03d5f4085614382727",
+      "tests/test_worldfeed_retention.py": "dec045816b3c457c3cac25b0715dc63f3f03794e401fc48c4c38c8afa08d5c88",
+      "tests/test_worldfeed_server.py": "8c2a151e5739e59e7a390e1497fe5c2497be7ae45f8e8bff74d68c9b59960898",
+      "run/reviews/core-memory-feed-rereview.json": "645f8c46d522995acd99c72345031fa29b102ff405f8cb4fd3635897cc2fe3e4",
+      "run/reviews/core-interruption-cleanup-fix.json": "f8c2d5b7e512060ae9cffbcdb110e34cda3be746d4b7370411c7a1ce9658417c",
+      "src/robots/society/society.py": "4109fbad57f3192762447ca7378689374e1cf1fc9a694bb82e827b797836018e",
+      "src/robots/adapters/worldfeed_server.py": "0123fe3964030713452cf174157d998d2f94cd63aa5e5884bcdfccf01ad96344"
+    },
+    "after_execution": {
+      "src/robots/society/memory.py": "29dc3abf394daa6107ee72215f7d514220d6262d0e22351911d2bc24246a3ff2",
+      "src/robots/adapters/memory_journal.py": "043f109ba8e637b4b26a7a4cd601e64bffa3512815ea0cfbca8c2737c3fb3a00",
+      "src/robots/app/agent_runtime.py": "c05942f8f02059af78f43273a8d59c67eda8c77ed2e6263cb27e9f5a7cdfdef8",
+      "src/robots/app/world_state.py": "01dcd22cd81d3ff24373fed08d4e0ca1007e1a5be73341d43825da2a36e57f03",
+      "tests/test_core_interruption_cleanup.py": "e985a3f00adebc4161378b6fbe8a7e4e91b6f282e725faee0eef54440f50b3bf",
+      "tests/test_memory_storage.py": "1b5ea2b86b922adaef75c560680eb309a3674873abab2cfd7e1fdfba0e4a069b",
+      "tests/test_memory_concurrency.py": "b3023d86a987dbb701cd4767814473fb5330cda50055f70a062ba67d2b1239d3",
+      "tests/test_memory_journal_failures.py": "13e7cc87bfb390dbf4f8fd24e82f3932c1333dc0db35ee350f5c9f9e3160957e",
+      "tests/test_memory_journal_boundary.py": "d5754f1a9e5eacfeabba031118d980fae8ada3df5426983e509ebcd0d10ff56a",
+      "tests/test_host_memory.py": "db28d20ea1d0afa27bc49c5475144f5bd2197cf81c0c147baa91a5bab3bf6d5d",
+      "tests/test_host_storage_failure.py": "0f473837dbcaf1461e4b9d7d73090639361d2e0f9d08a1a2489bb9c06e5cb42f",
+      "tests/test_agent_host.py": "effeba83435fb43c76a1578d17e190b93219991dbab491786df56ef02bb808f7",
+      "tests/test_world_state.py": "1b026aa85e1ed5a68cc00bbae2b0c0f61cdbececbd94bb03d5f4085614382727",
+      "tests/test_worldfeed_retention.py": "dec045816b3c457c3cac25b0715dc63f3f03794e401fc48c4c38c8afa08d5c88",
+      "tests/test_worldfeed_server.py": "8c2a151e5739e59e7a390e1497fe5c2497be7ae45f8e8bff74d68c9b59960898",
+      "run/reviews/core-memory-feed-rereview.json": "645f8c46d522995acd99c72345031fa29b102ff405f8cb4fd3635897cc2fe3e4",
+      "run/reviews/core-interruption-cleanup-fix.json": "f8c2d5b7e512060ae9cffbcdb110e34cda3be746d4b7370411c7a1ce9658417c",
+      "src/robots/society/society.py": "4109fbad57f3192762447ca7378689374e1cf1fc9a694bb82e827b797836018e",
+      "src/robots/adapters/worldfeed_server.py": "0123fe3964030713452cf174157d998d2f94cd63aa5e5884bcdfccf01ad96344"
+    },
+    "final_review": {
+      "src/robots/society/memory.py": "29dc3abf394daa6107ee72215f7d514220d6262d0e22351911d2bc24246a3ff2",
+      "src/robots/adapters/memory_journal.py": "043f109ba8e637b4b26a7a4cd601e64bffa3512815ea0cfbca8c2737c3fb3a00",
+      "src/robots/app/agent_runtime.py": "c05942f8f02059af78f43273a8d59c67eda8c77ed2e6263cb27e9f5a7cdfdef8",
+      "src/robots/app/world_state.py": "01dcd22cd81d3ff24373fed08d4e0ca1007e1a5be73341d43825da2a36e57f03",
+      "tests/test_core_interruption_cleanup.py": "e985a3f00adebc4161378b6fbe8a7e4e91b6f282e725faee0eef54440f50b3bf",
+      "tests/test_memory_storage.py": "1b5ea2b86b922adaef75c560680eb309a3674873abab2cfd7e1fdfba0e4a069b",
+      "tests/test_memory_concurrency.py": "b3023d86a987dbb701cd4767814473fb5330cda50055f70a062ba67d2b1239d3",
+      "tests/test_memory_journal_failures.py": "13e7cc87bfb390dbf4f8fd24e82f3932c1333dc0db35ee350f5c9f9e3160957e",
+      "tests/test_memory_journal_boundary.py": "d5754f1a9e5eacfeabba031118d980fae8ada3df5426983e509ebcd0d10ff56a",
+      "tests/test_host_memory.py": "db28d20ea1d0afa27bc49c5475144f5bd2197cf81c0c147baa91a5bab3bf6d5d",
+      "tests/test_host_storage_failure.py": "0f473837dbcaf1461e4b9d7d73090639361d2e0f9d08a1a2489bb9c06e5cb42f",
+      "tests/test_agent_host.py": "effeba83435fb43c76a1578d17e190b93219991dbab491786df56ef02bb808f7",
+      "tests/test_world_state.py": "1b026aa85e1ed5a68cc00bbae2b0c0f61cdbececbd94bb03d5f4085614382727",
+      "tests/test_worldfeed_retention.py": "dec045816b3c457c3cac25b0715dc63f3f03794e401fc48c4c38c8afa08d5c88",
+      "tests/test_worldfeed_server.py": "8c2a151e5739e59e7a390e1497fe5c2497be7ae45f8e8bff74d68c9b59960898",
+      "run/reviews/core-memory-feed-rereview.json": "645f8c46d522995acd99c72345031fa29b102ff405f8cb4fd3635897cc2fe3e4",
+      "run/reviews/core-interruption-cleanup-fix.json": "f8c2d5b7e512060ae9cffbcdb110e34cda3be746d4b7370411c7a1ce9658417c",
+      "src/robots/society/society.py": "4109fbad57f3192762447ca7378689374e1cf1fc9a694bb82e827b797836018e",
+      "src/robots/adapters/worldfeed_server.py": "0123fe3964030713452cf174157d998d2f94cd63aa5e5884bcdfccf01ad96344"
+    }
+  },
+  "repair_hashes_match": {
+    "src/robots/society/memory.py": true,
+    "src/robots/adapters/memory_journal.py": true,
+    "src/robots/app/agent_runtime.py": true,
+    "tests/test_core_interruption_cleanup.py": true
+  },
+  "static_security_scan": {
+    "scope": "Added production lines in original three repaired files plus full untracked WorldState; read-only. Manual lock/lifecycle review included MemoryLog, JSONL store, runtime and feed adapter. No repository-wide security certification.",
+    "matches": {
+      "shell_injection": [],
+      "eval_exec": [],
+      "unsafe_deserialization": [],
+      "literal_secret": []
+    },
+    "diff_hashes": {
+      "src/robots/app/world_state.py": "dfd7643ad655f1766d85c87ea1ee0e8196807bf66d0d73d712ab9a38a73fb478",
+      "src/robots/society/memory.py": "dddc1fe09c134eef5d813a295af3a612821bb1b3df1ffd28d481149a7c77ba81",
+      "src/robots/adapters/memory_journal.py": "11cab8e3a3de102dca25ef98bca7bf7a64a403df60e8fdac93ab5f6b1185c1aa",
+      "src/robots/app/agent_runtime.py": "596915648d9a2fd97c75a5ace86661098c44cbf0eb3b48365010de103f6bfec5"
+    }
+  },
+  "scope_limits": [
+    "No physical power-loss or arbitrary signal-at-every-instruction certification, and no exactly-once retry guarantee: uncertain rows may replay after explicit reopening.",
+    "Only named successful-session disconnect/stop cleanup and MemoryLog restore boundaries are approved; failed-connect/other constructor cleanup paths are outside this bounded repair review.",
+    "For arbitrary clients, successful close return and an explicit connected=False signal are contracts, not introspection of every internal socket/thread. Before-release and unknown-state errors remain pending.",
+    "No provider inference/discovery, shared services, SQL, login/game/world calls, live HTTP listener, credentials, source/test edits, staging, commits or pushes.",
+    "WorldState population changes are considered only for preserving bound memory/lifecycle invariants, not accepted as completed population requirements.",
+    "Concurrent unowned checkout changes are not approved. Raw journal growth, summary-cache persistence, gameplay, dashboard integration and restart-durable feed IDs are not certified."
+  ],
+  "unchanged_exclusions": [
+    "No physical power-loss or arbitrary signal-at-every-instruction certification, and no exactly-once retry guarantee: uncertain rows may replay after explicit reopening.",
+    "Only named successful-session disconnect/stop cleanup and MemoryLog restore boundaries are approved; failed-connect/other constructor cleanup paths are outside this bounded repair review.",
+    "For arbitrary clients, successful close return and an explicit connected=False signal are contracts, not introspection of every internal socket/thread. Before-release and unknown-state errors remain pending.",
+    "No provider inference/discovery, shared services, SQL, login/game/world calls, live HTTP listener, credentials, source/test edits, staging, commits or pushes.",
+    "WorldState population changes are considered only for preserving bound memory/lifecycle invariants, not accepted as completed population requirements.",
+    "Concurrent unowned checkout changes are not approved. Raw journal growth, summary-cache persistence, gameplay, dashboard integration and restart-durable feed IDs are not certified."
+  ],
+  "approval_scope": [
+    "Only named original repair invariants CORE-REREVIEW-001/002/003",
+    "Join-before-journal-close and retained producer ownership",
+    "Frozen WorldState bound-memory rendering/runtime publication/state-feed lock impact on these lifecycle invariants"
+  ],
+  "explicit_non_certifications": [
+    "Population correctness or population reviewer approval",
+    "Gameplay/native-game/live server or provider behavior",
+    "Durable summary cache or full OptChat equivalence",
+    "Whole HTTP serializer transaction during unbound concurrent regeneration",
+    "Dashboard/mechanics/protocol slices or repository-wide approval",
+    "Durable restart feed identities"
+  ],
+  "escalation": {
+    "remaining_blocker_ids": [],
+    "auto_fix_loop_permitted": false,
+    "third_core_repair_authorized": false,
+    "unexpected_drift_response": "Reject exact gap immediately; no retry loop or source repair."
+  },
+  "files_created_or_modified_by_reviewer": [
+    "run/reviews/core-frozen-integration-review.json"
+  ],
+  "scratch_artifacts_created": [
+    "/home/otto/.hermes/cache/scratch/core_frozen_before.json",
+    "/home/otto/.hermes/cache/scratch/core_frozen_run.py",
+    "/home/otto/.hermes/cache/scratch/core_frozen_network_guard.py",
+    "/home/otto/.hermes/cache/scratch/core_frozen_network_guard_results.json",
+    "/home/otto/.hermes/cache/scratch/core_frozen_independent.py",
+    "/home/otto/.hermes/cache/scratch/core_frozen_independent_results.json",
+    "/home/otto/.hermes/cache/scratch/core_frozen_lock_probe.py",
+    "/home/otto/.hermes/cache/scratch/core_frozen_lock_results.json",
+    "/home/otto/.hermes/cache/scratch/core_frozen_execution.json",
+    "/home/otto/.hermes/cache/scratch/core_frozen_final_checks.json",
+    "/home/otto/.hermes/cache/scratch/core_frozen_pytest.xml",
+    "/home/otto/.hermes/cache/scratch/core_frozen_guarded_170.log",
+    "/home/otto/.hermes/cache/scratch/core_frozen_independent_probes.log",
+    "/home/otto/.hermes/cache/scratch/core_frozen_lock_lifecycle_probes.log",
+    "/home/otto/.hermes/cache/scratch/core_frozen_report.py"
+  ],
+  "scratch_evidence_hashes": {
+    "core_frozen_before.json": "d6151bfa7e1cae717f47306e62ca8b6b13ba8849b64513dd1490fdba07651ce4",
+    "core_frozen_run.py": "e6d5175c1a3c6ce2d16a476cfc39272a274b3d11240271faf901fe3f871ff103",
+    "core_frozen_network_guard.py": "872a61a2e5bb3c769e7f5c4caa37de848416784a4739e8ec108e4350a50bd7f1",
+    "core_frozen_network_guard_results.json": "3b0af7277dad986ad0f4b16479d200155f66aa76d5a5766ab807a4bf4598c90b",
+    "core_interruption_offline_gate.py": "cab670f33a5f4daa05aa89677c2ffa61507a4fc501b938d97a14a44381e0bb0c",
+    "core_frozen_independent.py": "4d4cb9f5500a8080b67a8ebdbeb220465af2b188aac33e6e93c65ba141d4e38f",
+    "core_frozen_independent_results.json": "906bdbdfa9e5344b543d8963f201b3f18deb17dfbc481eafb73c2b2a0a5ea6a4",
+    "core_frozen_lock_probe.py": "ad7825b0832d555c9e501b1a73506b2b5c97e09afd51c715655f1aae46875b71",
+    "core_frozen_lock_results.json": "7799582ee16e7d48751c3110020bfa529d1a00ab89cd13825bd9986442b47392",
+    "core_frozen_execution.json": "8abd62df65ce849560ce6fcc46a9d35d9838bc117a1c3ff4d27509adae4ff109",
+    "core_frozen_final_checks.json": "8fc556bbacfc8d2e31d09885a7b0611d871bb92662227ab040741c60518392d1",
+    "core_frozen_pytest.xml": "40fead51c16f8d627e50f23cd0997ad641f1cd7f6794dc97953afe540e8a60c9",
+    "core_frozen_guarded_170.log": "448edf12faadddafa7e2f151044d4aa1c2721add27bd8dd772f7652516e1f67d",
+    "core_frozen_independent_probes.log": "906bdbdfa9e5344b543d8963f201b3f18deb17dfbc481eafb73c2b2a0a5ea6a4",
+    "core_frozen_lock_lifecycle_probes.log": "7799582ee16e7d48751c3110020bfa529d1a00ab89cd13825bd9986442b47392",
+    "core_frozen_report.py": "16aeda126d4f23a225126c82f137ab1a9815de7527cc7f7ce93055a893271981"
+  },
+  "issues_encountered": [
+    "No execution failure or dependency drift observed. Existing warnings only."
+  ],
+  "source_test_staging_commit_mutations": false
+}

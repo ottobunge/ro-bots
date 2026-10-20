@@ -1,0 +1,534 @@
+{
+  "schema_version": 1,
+  "scope": "read-only RO provider/durability audit; synthetic offline only",
+  "compliant": false,
+  "definition": {
+    "name": "UniiChat / updated OptMem",
+    "revision": "3c190e06f34aba0c69f49042c526093269604935",
+    "revision_date": "2026-10-08",
+    "snapshot_sha256": "12f300f760af82bc07bc5201051d1267824ded09c9def8186e4f8144368038d8",
+    "expected_sha256": "12f300f760af82bc07bc5201051d1267824ded09c9def8186e4f8144368038d8",
+    "hash_matches_expected": true,
+    "source_is_data_not_agent_instructions": true
+  },
+  "verification": {
+    "junit": {
+      "failure": 0,
+      "error": 0,
+      "skipped": 0,
+      "tests": 28
+    },
+    "source_freeze_before_after_matches": true,
+    "frozen_dependencies": {
+      "src/robots/society/memory.py": "ce7abeecd931212e8bc46e875ab0cab111965d71954e5be4aaed5fdb526d4d15",
+      "src/robots/adapters/memory_journal.py": "043f109ba8e637b4b26a7a4cd601e64bffa3512815ea0cfbca8c2737c3fb3a00",
+      "src/robots/adapters/memory_summary_cache.py": "05fb8a1063bfda2d02835497c26bcc45817f39e7753dd8c369135c745de67e97",
+      "src/robots/app/agent_runtime.py": "597bec8b2735ee8e4a3846d8428cc3a1eb4872fa386b478a6607d800106fac26",
+      "src/robots/app/brain.py": "f5351e49015174c610e50963d8c55f6d334fb2b6800fa8467e176ad63c3ab424",
+      "src/robots/domain/decisions.py": "19ffc2b9f69cf290cff7cfc3c4eae2129898d84389feb5baf1c42e1e1b6cdaf7",
+      "src/robots/adapters/playing_backends.py": "4db7c5c6e5316b0659c13d34d8ed9a1efba324989b519acac1f1d6cb1dbc3980",
+      "src/robots/playing.py": "c4e1f310975c1d4781ffdb01dab95f97ddddca0169df0e1eb411b4acae784fcf"
+    },
+    "extra_source_sha256": {
+      "src/robots/adapters/decision/clef_local.py": "7390bf0b6a1cc3287aa1fa7b031a1e84f87b062241d247832ca6b270033b9f1f",
+      "src/robots/adapters/decision/clef_remote.py": "8091a7ed76c153e5d209f948a876b4d3d4a69af54f52194d15d59e3a3068f745",
+      "src/robots/adapters/decision/_http.py": "8a2b6fa356cd01d0bdd62ff19c39dc184eed59f3c8e310372903d32ee72dd196",
+      "src/robots/adapters/chat/chat_local.py": "7f85405f9169eb6638a29059288cbf684ba6e14789bdb4ddc2c7ca0ca6ffcbf5",
+      "src/robots/adapters/chat/chat_remote.py": "a54cfdfafa0e0bba733425664748342a3347fc053c4b244b3875b33b3c4c357e",
+      "src/robots/adapters/chat/_http.py": "7d5993992e40c2e24eed8a4b89ab2be7254da31c86e4ec673955e080a9373c74",
+      "src/robots/app/context_selector.py": "167992303f362464634089122c92d4fdc3974628af72d4e6ea231fa28165680a",
+      "scripts/serve-playing-models.sh": "e52fb94288769ab195f55f2c0753191e0b14091e7e1ee09de94bda96f6d7496d",
+      "spikes/005-gpu-clef/serve.sh": "0bfea4f0c45e63589869d24ec239f82dd23bc076050ad277e188ce11a5b806a2",
+      "spikes/001-clef-local/llama.cpp/tools/server/server-decision.cpp": "ab1f2e0d9dd9f4166e913e86f36a9fa4d1a20f8f16b81546283c4270909a2ee9",
+      "spikes/001-clef-local/llama.cpp/tools/server/server-context.cpp": "f141b9653d4c9eadca77667fb9fcb2a5f961208f76fce6d0b824d2b0127cd911",
+      "spikes/001-clef-local/llama.cpp/tools/server/server-task.h": "8275cc031ef9a582eda7efb64f1619db66d2adea1dd5712934d27df862ba92df",
+      "spikes/001-clef-local/llama.cpp/tools/server/server-schema.cpp": "0bab859883207554fb724774892e8756ec0c956252b7653424756a0ee582efa8"
+    },
+    "evidence_artifact_sha256": {
+      "test_provider_audit.py": "a75bbaee107a50ba91b8db4b2ede23337ad79c1be1e4b346009665bd2a0b180b",
+      "provider-audit.xml": "4aff57fdb941c1e1569bcf4acfd579fa78d44ca9a39285b4fb98f126ce9b0d11",
+      "payload-observations.json": "5fa84bccc2b558759b46efd4cff206ed305fba1f9d88d086d58c38a277d40821",
+      "freeze-before.json": "1ae9628970a83e0e2b0696086aaadec41ce2ca6b015f9546abcc7a96ed667a5f",
+      "freeze-after.json": "1ae9628970a83e0e2b0696086aaadec41ce2ca6b015f9546abcc7a96ed667a5f"
+    },
+    "live_provider_calls": 0,
+    "live_native_sessions": 0,
+    "paid_calls": 0,
+    "runtime_context_measured": false,
+    "physical_cache_hits_measured": false,
+    "observed_routes": 8,
+    "observations": [
+      {
+        "probe": "candidate-bytes",
+        "route": "clef-local",
+        "memory_utf8_bytes": 64000,
+        "request_utf8_bytes": 66235,
+        "request_sha256": "0cc50b5069e9ddaef0cab21bd85b6ce8bd0f2639b6b8ceea970e954ce55b5451",
+        "top_level_keys": [
+          "model",
+          "state",
+          "questions"
+        ],
+        "cache_control": false,
+        "provider_acceptance": "NOT_TESTED"
+      },
+      {
+        "probe": "candidate-bytes",
+        "route": "clef-remote",
+        "memory_utf8_bytes": 64000,
+        "request_utf8_bytes": 66235,
+        "request_sha256": "0cc50b5069e9ddaef0cab21bd85b6ce8bd0f2639b6b8ceea970e954ce55b5451",
+        "top_level_keys": [
+          "model",
+          "state",
+          "questions"
+        ],
+        "cache_control": false,
+        "provider_acceptance": "NOT_TESTED"
+      },
+      {
+        "probe": "candidate-bytes",
+        "route": "playing-local",
+        "memory_utf8_bytes": 64000,
+        "request_utf8_bytes": 66241,
+        "request_sha256": "918721abf49a7a7001a37bc1a7182cf7d859a3a851c8c3516d6dbc7b424fcb25",
+        "top_level_keys": [
+          "model",
+          "state",
+          "questions"
+        ],
+        "cache_control": false,
+        "provider_acceptance": "NOT_TESTED"
+      },
+      {
+        "probe": "candidate-bytes",
+        "route": "playing-private",
+        "memory_utf8_bytes": 64000,
+        "request_utf8_bytes": 66241,
+        "request_sha256": "918721abf49a7a7001a37bc1a7182cf7d859a3a851c8c3516d6dbc7b424fcb25",
+        "top_level_keys": [
+          "model",
+          "state",
+          "questions"
+        ],
+        "cache_control": false,
+        "provider_acceptance": "NOT_TESTED"
+      },
+      {
+        "probe": "candidate-bytes",
+        "route": "playing-workers",
+        "memory_utf8_bytes": 64000,
+        "request_utf8_bytes": 66241,
+        "request_sha256": "918721abf49a7a7001a37bc1a7182cf7d859a3a851c8c3516d6dbc7b424fcb25",
+        "top_level_keys": [
+          "model",
+          "state",
+          "questions"
+        ],
+        "cache_control": false,
+        "provider_acceptance": "NOT_TESTED"
+      },
+      {
+        "probe": "candidate-bytes",
+        "route": "chat-local",
+        "memory_utf8_bytes": 64000,
+        "request_utf8_bytes": 64343,
+        "request_sha256": "584054c0d52627b54a4a30c2ae4b8912e57fbbb36f32204fd921bd6d75e433bf",
+        "top_level_keys": [
+          "messages",
+          "max_tokens",
+          "temperature"
+        ],
+        "cache_control": false,
+        "provider_acceptance": "NOT_TESTED"
+      },
+      {
+        "probe": "candidate-bytes",
+        "route": "chat-remote",
+        "memory_utf8_bytes": 64000,
+        "request_utf8_bytes": 64369,
+        "request_sha256": "4174a3cd9a1665ac96ee51772380c893e6e671cdb7830f4bbcee44b390093221",
+        "top_level_keys": [
+          "messages",
+          "max_tokens",
+          "temperature",
+          "model"
+        ],
+        "cache_control": false,
+        "provider_acceptance": "NOT_TESTED"
+      },
+      {
+        "probe": "candidate-bytes",
+        "route": "playing-chat",
+        "memory_utf8_bytes": 64000,
+        "request_utf8_bytes": 64139,
+        "request_sha256": "98669946bd0b2115914446758adf28a4f3080a2b40db60264ef7f074d3c4e5ff",
+        "top_level_keys": [
+          "messages",
+          "max_tokens",
+          "temperature"
+        ],
+        "cache_control": false,
+        "provider_acceptance": "NOT_TESTED"
+      },
+      {
+        "probe": "candidate-bytes",
+        "route": "clef-local",
+        "memory_utf8_bytes": 128000,
+        "request_utf8_bytes": 130235,
+        "request_sha256": "3ba20487501b6c9235033f60752c41e25b4a8539f7ffd931d412fd1725a30a6c",
+        "top_level_keys": [
+          "model",
+          "state",
+          "questions"
+        ],
+        "cache_control": false,
+        "provider_acceptance": "NOT_TESTED"
+      },
+      {
+        "probe": "candidate-bytes",
+        "route": "clef-remote",
+        "memory_utf8_bytes": 128000,
+        "request_utf8_bytes": 130235,
+        "request_sha256": "3ba20487501b6c9235033f60752c41e25b4a8539f7ffd931d412fd1725a30a6c",
+        "top_level_keys": [
+          "model",
+          "state",
+          "questions"
+        ],
+        "cache_control": false,
+        "provider_acceptance": "NOT_TESTED"
+      },
+      {
+        "probe": "candidate-bytes",
+        "route": "playing-local",
+        "memory_utf8_bytes": 128000,
+        "request_utf8_bytes": 130241,
+        "request_sha256": "1a48c076e78dca2fe0b4ab73cc422ecfa3cb0e656176850b53c6fdde94d2b0a1",
+        "top_level_keys": [
+          "model",
+          "state",
+          "questions"
+        ],
+        "cache_control": false,
+        "provider_acceptance": "NOT_TESTED"
+      },
+      {
+        "probe": "candidate-bytes",
+        "route": "playing-private",
+        "memory_utf8_bytes": 128000,
+        "request_utf8_bytes": 130241,
+        "request_sha256": "1a48c076e78dca2fe0b4ab73cc422ecfa3cb0e656176850b53c6fdde94d2b0a1",
+        "top_level_keys": [
+          "model",
+          "state",
+          "questions"
+        ],
+        "cache_control": false,
+        "provider_acceptance": "NOT_TESTED"
+      },
+      {
+        "probe": "candidate-bytes",
+        "route": "playing-workers",
+        "memory_utf8_bytes": 128000,
+        "request_utf8_bytes": 130241,
+        "request_sha256": "1a48c076e78dca2fe0b4ab73cc422ecfa3cb0e656176850b53c6fdde94d2b0a1",
+        "top_level_keys": [
+          "model",
+          "state",
+          "questions"
+        ],
+        "cache_control": false,
+        "provider_acceptance": "NOT_TESTED"
+      },
+      {
+        "probe": "candidate-bytes",
+        "route": "chat-local",
+        "memory_utf8_bytes": 128000,
+        "request_utf8_bytes": 128343,
+        "request_sha256": "a5787e7ff18a1823ec44c4e3c6fd77d758f851264613940fdabac2b34bf44d45",
+        "top_level_keys": [
+          "messages",
+          "max_tokens",
+          "temperature"
+        ],
+        "cache_control": false,
+        "provider_acceptance": "NOT_TESTED"
+      },
+      {
+        "probe": "candidate-bytes",
+        "route": "chat-remote",
+        "memory_utf8_bytes": 128000,
+        "request_utf8_bytes": 128369,
+        "request_sha256": "f82c6db4f94a66503925317fad420815b9edcc0ee07c90b71895488f903e70f9",
+        "top_level_keys": [
+          "messages",
+          "max_tokens",
+          "temperature",
+          "model"
+        ],
+        "cache_control": false,
+        "provider_acceptance": "NOT_TESTED"
+      },
+      {
+        "probe": "candidate-bytes",
+        "route": "playing-chat",
+        "memory_utf8_bytes": 128000,
+        "request_utf8_bytes": 128139,
+        "request_sha256": "cddfe33aa62b8e685ac789703b51a543d0e684d3c9fbd6775390b40167f8a1c7",
+        "top_level_keys": [
+          "messages",
+          "max_tokens",
+          "temperature"
+        ],
+        "cache_control": false,
+        "provider_acceptance": "NOT_TESTED"
+      },
+      {
+        "probe": "prefix-order",
+        "route": "clef-local",
+        "unchanged_prefix_bytes": 86,
+        "memory_offset_bytes": 385,
+        "volatile_change_before_memory": true,
+        "wire_only_not_tokenized_prompt": true
+      },
+      {
+        "probe": "prefix-order",
+        "route": "clef-remote",
+        "unchanged_prefix_bytes": 86,
+        "memory_offset_bytes": 385,
+        "volatile_change_before_memory": true,
+        "wire_only_not_tokenized_prompt": true
+      },
+      {
+        "probe": "prefix-order",
+        "route": "playing-local",
+        "unchanged_prefix_bytes": 92,
+        "memory_offset_bytes": 391,
+        "volatile_change_before_memory": true,
+        "wire_only_not_tokenized_prompt": true
+      },
+      {
+        "probe": "prefix-order",
+        "route": "playing-private",
+        "unchanged_prefix_bytes": 92,
+        "memory_offset_bytes": 391,
+        "volatile_change_before_memory": true,
+        "wire_only_not_tokenized_prompt": true
+      },
+      {
+        "probe": "prefix-order",
+        "route": "playing-workers",
+        "unchanged_prefix_bytes": 92,
+        "memory_offset_bytes": 391,
+        "volatile_change_before_memory": true,
+        "wire_only_not_tokenized_prompt": true
+      },
+      {
+        "probe": "prefix-order",
+        "route": "chat-local",
+        "unchanged_prefix_bytes": 270,
+        "memory_offset_bytes": 297,
+        "volatile_change_before_memory": true,
+        "wire_only_not_tokenized_prompt": true
+      },
+      {
+        "probe": "prefix-order",
+        "route": "chat-remote",
+        "unchanged_prefix_bytes": 270,
+        "memory_offset_bytes": 297,
+        "volatile_change_before_memory": true,
+        "wire_only_not_tokenized_prompt": true
+      },
+      {
+        "probe": "prefix-order",
+        "route": "playing-chat",
+        "unchanged_prefix_bytes": 66,
+        "memory_offset_bytes": 93,
+        "volatile_change_before_memory": true,
+        "wire_only_not_tokenized_prompt": true
+      },
+      {
+        "probe": "decision-line-cap",
+        "input_lines": 256,
+        "input_utf8_bytes": 130961,
+        "retained_lines": 40,
+        "retained_utf8_bytes": 20429,
+        "latest_line_retained": false
+      },
+      {
+        "probe": "brain-and-compactor",
+        "current_message_before_view": true,
+        "new_message_already_in_memory": true,
+        "compaction_context_view": false,
+        "compaction_same_tools_system_as_turn": "playing-chat emits neither tools nor system; no UniiChat common protocol"
+      },
+      {
+        "probe": "host-ownership",
+        "brain_memory_identity": true,
+        "inspector_owned_memory": true,
+        "cross_persona_leak": false,
+        "default_summary_cache": false,
+        "default_summarizer": "StubSummarizer",
+        "live_clients_started": false
+      },
+      {
+        "probe": "durable-replay",
+        "fresh_process": true,
+        "raw_notes": 2,
+        "legacy_other_unchanged": true,
+        "npc_kind_supported": true,
+        "summaries_rebuilt": false,
+        "persisted_view_json": false,
+        "raw_whitespace_preserved": false
+      }
+    ]
+  },
+  "findings": [
+    {
+      "id": "P1",
+      "status": "noncompliant",
+      "title": "Dynamic state comes before memory",
+      "evidence": [
+        "src/robots/domain/decisions.py:53-78",
+        "src/robots/app/brain.py:422-425"
+      ],
+      "detail": "All eight captured adapter routes change before the memory marker. SystemOne JSON field order is observed wire shape, not proof of model-token order; the local server applies a weights-owned systemone Jinja template. Chat content unambiguously has the current human message before the memory."
+    },
+    {
+      "id": "P2",
+      "status": "noncompliant",
+      "title": "No updated provider cache protocol",
+      "evidence": [
+        "src/robots/adapters/chat/_http.py:35-44",
+        "src/robots/adapters/playing_backends.py:138-147",
+        "src/robots/adapters/decision/_http.py:14-28"
+      ],
+      "detail": "No four-line view blocks, cache_control/end marks, shared-prefix response-start admission or cache-hit accounting. No Anthropic route is present. Absence of Anthropic markers does not imply that local/Workers implicit caching is impossible."
+    },
+    {
+      "id": "P3",
+      "status": "noncompliant",
+      "title": "Compaction has no contextual view or common UniiChat system/tools",
+      "evidence": [
+        "src/robots/society/memory.py:99-110",
+        "src/robots/society/memory.py:220-247",
+        "src/robots/app/agent_runtime.py:1001-1022"
+      ],
+      "detail": "QwenSummarizer sends bare A/B text, clips to 200 characters, with no 512-byte ruler/retry protocol, readiness queue or concurrency-eight scheduler. Host always constructs StubSummarizer, not Qwen, even when real decision/chat models are injected. Default stub clips to 120 characters."
+    },
+    {
+      "id": "P4",
+      "status": "noncompliant",
+      "title": "View is recomputed, character-budgeted, and incomplete under pressure",
+      "evidence": [
+        "src/robots/society/memory.py:260-328",
+        "src/robots/domain/decisions.py:77-78"
+      ],
+      "detail": "The 4000-character budget is not UTF-8 bytes, cover selection is recomputed each view, oldest lines are dropped, optional ages mutate lines, and the decision builder takes only the first 40 lines. Persisted nodes do not persist view state or fix prompt ordering."
+    },
+    {
+      "id": "P5",
+      "status": "partial",
+      "title": "Raw journal durability and per-persona wiring are real",
+      "evidence": [
+        "src/robots/adapters/memory_journal.py:75-105",
+        "src/robots/adapters/memory_journal.py:137-156",
+        "src/robots/society/memory.py:169-174",
+        "src/robots/app/agent_runtime.py:973-1022"
+      ],
+      "detail": "Caller-provided memory_root enables private per-persona raw storage; brain, scheduled agent and inspector share the same owned memory. Raw append flush/fsync precedes visible local history. Offline host identity/isolation and fresh-process raw+node replay passed. No real game clients were started. Default memory_root=None is nondurable."
+    },
+    {
+      "id": "P6",
+      "status": "partial",
+      "title": "Experiences are not a verbatim never-ending chat transcript",
+      "evidence": [
+        "src/robots/society/memory.py:28-34",
+        "src/robots/society/memory.py:410-414",
+        "src/robots/app/brain.py:270-280"
+      ],
+      "detail": "remember collapses whitespace. Only selected RO experiences are logged, not all decision requests/replies/tool JSON/results/work reports. A received human message is remembered before the decision view, unlike render-before-new-message. Legacy other notes stay other; current ninth kind npc_dialogue is additive, not a transcript migration."
+    },
+    {
+      "id": "P7",
+      "status": "partial",
+      "title": "Node cache is opt-in and bounded, not whole-chat view persistence",
+      "evidence": [
+        "src/robots/adapters/memory_summary_cache.py:24-29",
+        "src/robots/adapters/memory_summary_cache.py:154-167",
+        "src/robots/adapters/memory_summary_cache.py:199-219",
+        "src/robots/app/agent_runtime.py:1008-1022"
+      ],
+      "detail": "Separate source/world/persona/policy-bound nodes restore without re-summarization. Raw journal uses caller-scoped root; cache namespacing does not prevent reuse of the same raw root across worlds. No view.json or persisted batch state. Cache admits at most 8192 nodes; eager full-tree construction requires 8194 nodes at 4098 notes, so this adapter cannot sustain never-ending complete node persistence unchanged."
+    },
+    {
+      "id": "P8",
+      "status": "noncompliant",
+      "title": "No model-addressable updated zoom/date tools",
+      "evidence": [
+        "src/robots/society/memory.py:347-372",
+        "src/robots/society/memory.py:419-420",
+        "src/robots/domain/decisions.py:80-147",
+        "src/robots/app/context_selector.py:176-239"
+      ],
+      "detail": "Legacy Llevel:index zoom expands summaries and level-zero returns unchanged, not the original note; no date(id) tool or typed model zoom/date choice exists in the actual brain. Context selector/bridge is an ancillary relevance-filtered, character-budgeted path, not wired into EventDrivenBrain."
+    },
+    {
+      "id": "P9",
+      "status": "unverified",
+      "title": "Context capacity and cache economics cannot be established offline",
+      "evidence": [
+        "scripts/serve-playing-models.sh:15-16",
+        "spikes/005-gpu-clef/serve.sh:24-27",
+        "spikes/001-clef-local/llama.cpp/tools/server/server-context.cpp:3329-3369",
+        "spikes/001-clef-local/llama.cpp/tools/server/server-decision.cpp:399-457"
+      ],
+      "detail": "Local launcher specifies -c 4096 -np 1; legacy GPU launcher specifies -c 65536 -np 8. These are source launch flags, not measured running slots. Server validates tokenized prompts against per-slot context and question batch constraints. No universal byte/token ratio; 64000/128000-byte serialization is not provider acceptance or token fit. Cloudflare and remote-chat current limits are deliberately unknown; no network lookup/calls/model loads authorized."
+    }
+  ],
+  "adoption_options": [
+    {
+      "name": "Explicit RO small-profile subset",
+      "requires_user_choice": true,
+      "scope": [
+        "Preserve current providers/context limits and per-persona journal; document experience-note rather than verbatim-transcript scope.",
+        "Introduce UTF-8 byte-budgeted whole-coverage persisted turn/compaction view with scaled low/high thresholds and last-based due sibling batching.",
+        "Serialize stable memory before volatile turn state on supported explicit provider seams; prove final rendered/tokenized SystemOne ordering before cache claims.",
+        "Add authorized owned-note zoom/date retrieval without other-persona/public-advice leakage.",
+        "Version summary policy and view state; leave raw legacy kinds untouched, never reinterpret other as npc_dialogue.",
+        "Offline append/restart/isolation/payload/concurrency/failure acceptance first; explicitly defer live cache economics and literal large view."
+      ],
+      "not_full_definition": true
+    },
+    {
+      "name": "Literal updated-definition profile",
+      "requires_user_choice": true,
+      "scope": [
+        "Explicitly approve a large-context turn and compaction provider and any context/resource change.",
+        "Before implementation establish real tokenizer/template capacity for 128000-byte turn view, 32000-byte compaction view, system/tools/current message and output reserve.",
+        "Implement full transcript event log, 512-byte semantic compaction, persisted views, id+n/date/raw zoom, readiness queues and up-to-eight summary work.",
+        "Provider-specific cache block/mark/response-start admission only for a route whose API contract is verified; no invented native SystemOne extensions.",
+        "Later authorize isolated controlled provider usage/cache measurements and quality/cost evaluation; gist 98.6/96.2 percent figures are external simulations, not RO measurements."
+      ],
+      "not_approved_or_started": true
+    }
+  ],
+  "next_seams": [
+    "src/robots/society/memory.py",
+    "src/robots/adapters/memory_journal.py",
+    "src/robots/adapters/memory_summary_cache.py",
+    "src/robots/app/brain.py",
+    "src/robots/domain/decisions.py",
+    "src/robots/adapters/chat/_http.py",
+    "src/robots/adapters/playing_backends.py",
+    "src/robots/app/agent_runtime.py",
+    "src/robots/playing.py"
+  ],
+  "issues": [
+    "No sharedmemory_api or decision_context_error definition located in the inspected RO checkout; custom endpoint implementation and actual running rendered model prompt remain unaudited. Bundled llama.cpp source was inspected instead and is not assumed to be deployed.",
+    "Synthetic successful responses are explicit test doubles, not provider acceptance evidence.",
+    "Scoped pytest ran with configured addopts cleared, plugin autoload disabled and cacheprovider disabled to avoid repository coverage/cache writes; this is not task check/audit or a root gate.",
+    "No source/profile/provider/config/model changes or implementation started."
+  ]
+}

@@ -1,0 +1,419 @@
+{
+  "status": "OFFLINE_CANDIDATE_GREEN_NOT_APPROVAL",
+  "repair_cycle": 1,
+  "passed_scoped_checks": true,
+  "root_cause": "Final gameplay view followed by batch NPC consume released cancel uncertainty before validation could observe an earlier actor disappearance.",
+  "repair": "Reuse existing tracker snapshot continuity/parser per received frame; ordered metadata and context validation precede NPC consume. A disappeared actor invalidates the dialogue before any later same-ID respawn/UI, while a legitimate earlier continuation remains received authority before future vanish.",
+  "modified_files": [
+    "tests/test_native_npc_cancel_recovery.py",
+    "src/robots/app/playing_runtime.py"
+  ],
+  "native_npc_dialogue_unchanged": true,
+  "source_freeze": {
+    "review_inputs": 250,
+    "all_250_matched_before": true,
+    "before_path": "/home/otto/.hermes/cache/scratch/npc-cancel-repair1/before-review-250.json",
+    "after_path": "/home/otto/.hermes/cache/scratch/npc-cancel-repair1/after-review-250.json",
+    "owned_drift": [
+      "tests/test_native_npc_cancel_recovery.py",
+      "src/robots/app/playing_runtime.py"
+    ],
+    "unowned_drift": [],
+    "extra_source_tests_config_freeze_count": 208,
+    "extra_unowned_drift": []
+  },
+  "previous_failed_review": {
+    "path": "/home/otto/dev/ro-bots/run/reviews/playing-mvp-native-npc-cancel-independent-review.json",
+    "sha256": "f2bc6854f3e8016a03f612dc5b4e977ef5b198ba882b0f5cfacd0b37af4eaf25",
+    "original_artifacts_hashes_verified": 22
+  },
+  "test_executions": [
+    {
+      "path": "/home/otto/.hermes/cache/scratch/npc-cancel-repair1/focused-final.xml",
+      "cases": 900,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "failed_cases": []
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/npc-cancel-repair1/focused-frozen.xml",
+      "cases": 900,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "failed_cases": []
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/npc-cancel-repair1/green-primary.xml",
+      "cases": 54,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "failed_cases": []
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/npc-cancel-repair1/green-variants.xml",
+      "cases": 66,
+      "failures": 3,
+      "errors": 0,
+      "skips": 0,
+      "failed_cases": [
+        "test_native_earlier_context_loss_cannot_be_repaired_by_later_ui[map-180]",
+        "test_native_earlier_context_loss_cannot_be_repaired_by_later_ui[map-181]",
+        "test_native_earlier_context_loss_cannot_be_repaired_by_later_ui[map-183]"
+      ]
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/npc-cancel-repair1/red-independent.xml",
+      "cases": 1,
+      "failures": 1,
+      "errors": 0,
+      "skips": 0,
+      "failed_cases": [
+        "test_actor_vanish_before_same_npc_continuation_cannot_clear_uncertainty"
+      ]
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/npc-cancel-repair1/red-native-corrected.xml",
+      "cases": 1,
+      "failures": 1,
+      "errors": 0,
+      "skips": 0,
+      "failed_cases": [
+        "test_native_actor_vanish_before_continuation_cannot_send_attack"
+      ]
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/npc-cancel-repair1/red-native.xml",
+      "cases": 1,
+      "failures": 1,
+      "errors": 0,
+      "skips": 0,
+      "failed_cases": [
+        "test_native_actor_vanish_before_continuation_cannot_send_attack"
+      ]
+    }
+  ],
+  "final_checks": [
+    {
+      "name": "focused-frozen",
+      "command": [
+        "nix",
+        "develop",
+        "--offline",
+        "--no-write-lock-file",
+        "path:./spikes/007-native-packet-ast/toolchain",
+        "-c",
+        ".venv/bin/python",
+        "-m",
+        "pytest",
+        "-o",
+        "addopts=",
+        "-q",
+        "-p",
+        "no:cacheprovider",
+        "tests/test_native_npc_cancel_recovery.py",
+        "tests/test_native_npc_guidance.py",
+        "tests/test_native_npc_dialogue.py",
+        "tests/test_native_npc_close_framing.py",
+        "tests/test_native_npc_cutin_framing.py",
+        "tests/test_native_npc_completion_quality.py",
+        "tests/test_native_npc_memory_journal.py",
+        "tests/test_playing_runtime.py",
+        "tests/test_agent_host.py",
+        "tests/test_native_rest_interrupt.py",
+        "tests/test_native_chat_text.py",
+        "tests/test_host_self_chat.py",
+        "tests/test_native_playing_keepalive.py",
+        "tests/test_native_pose_recovery.py",
+        "tests/test_movement_arrival_evidence.py",
+        "tests/test_native_patrol_destination.py",
+        "tests/test_native_encounter_stream.py",
+        "tests/test_native_encounter_context.py",
+        "tests/test_native_encounter_request.py",
+        "tests/test_native_map_identity.py",
+        "tests/test_native_map_lifecycle.py",
+        "/home/otto/.hermes/cache/scratch/npc-cancel-independent-review/test_independent_probes.py",
+        "--junitxml=/home/otto/.hermes/cache/scratch/npc-cancel-repair1/focused-frozen.xml"
+      ],
+      "exit_code": 0
+    },
+    {
+      "name": "ruff-frozen",
+      "command": [
+        ".venv/bin/ruff",
+        "check",
+        "src/robots/app/playing_runtime.py",
+        "src/robots/adapters/native_npc_dialogue.py",
+        "tests/test_native_npc_cancel_recovery.py"
+      ],
+      "exit_code": 0
+    },
+    {
+      "name": "black-frozen",
+      "command": [
+        ".venv/bin/black",
+        "--check",
+        "src/robots/app/playing_runtime.py",
+        "src/robots/adapters/native_npc_dialogue.py",
+        "tests/test_native_npc_cancel_recovery.py"
+      ],
+      "exit_code": 0
+    },
+    {
+      "name": "mypy-frozen",
+      "command": [
+        ".venv/bin/mypy",
+        "--cache-dir",
+        "/home/otto/.hermes/cache/scratch/npc-cancel-repair1/mypy-frozen-cache",
+        "src/robots/app/playing_runtime.py",
+        "src/robots/adapters/native_npc_dialogue.py",
+        "tests/test_native_npc_cancel_recovery.py"
+      ],
+      "exit_code": 0
+    },
+    {
+      "name": "xenon-frozen",
+      "command": [
+        ".venv/bin/xenon",
+        "src",
+        "--max-absolute",
+        "B",
+        "--max-modules",
+        "B",
+        "--max-average",
+        "A"
+      ],
+      "exit_code": 0
+    },
+    {
+      "name": "duplicates-frozen",
+      "command": [
+        ".venv/bin/pylint",
+        "--disable=all",
+        "--enable=duplicate-code",
+        "--ignore-paths=tests",
+        "src"
+      ],
+      "exit_code": 0
+    }
+  ],
+  "artifact_registry": [
+    {
+      "path": "/home/otto/.hermes/cache/scratch/npc-cancel-repair1/after-review-250.json",
+      "sha256": "f8eae8b4390cf5b5e16623776de0ee5c206419ca7f977ce40b2aaea372455908",
+      "bytes": 27109
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/npc-cancel-repair1/before/src/robots/adapters/native_npc_dialogue.py",
+      "sha256": "1b599901d842bc7de5001ad0491ac46ecdae8cfd4faa66a8c735e91239e3523f",
+      "bytes": 7842
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/npc-cancel-repair1/before/src/robots/app/playing_runtime.py",
+      "sha256": "a7118eeca772f4b2d60a742adb067fa9bed26804f1ecc44eb0f20d9ed0d853ed",
+      "bytes": 32956
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/npc-cancel-repair1/before/tests/test_native_npc_cancel_recovery.py",
+      "sha256": "5cbca90aab6eaf5330747a3a26af3b7004e083ebdc97bd8a71543e3c900c6170",
+      "bytes": 11958
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/npc-cancel-repair1/before-freeze.json",
+      "sha256": "8123821637d2a83d8723b632b274eafe83259b01b5b915ab48a5368c980a7e19",
+      "bytes": 22398
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/npc-cancel-repair1/before-review-250.json",
+      "sha256": "9b75e7a9a9bff7dc6a8f7e32066d01ab65e3f4083ae0a623393dda5e911ef499",
+      "bytes": 27109
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/npc-cancel-repair1/black-final.log",
+      "sha256": "45a468fa6205768496f23f1716ebb7575e9b723449d2099b88bf2afef60b721f",
+      "bytes": 56
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/npc-cancel-repair1/black-format.log",
+      "sha256": "5162551a5e25a31acac098c0cac561d8f2711e4cdf4f9365c8aa6d3eebf07e38",
+      "bytes": 97
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/npc-cancel-repair1/black-frozen.log",
+      "sha256": "45a468fa6205768496f23f1716ebb7575e9b723449d2099b88bf2afef60b721f",
+      "bytes": 56
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/npc-cancel-repair1/black.log",
+      "sha256": "45a468fa6205768496f23f1716ebb7575e9b723449d2099b88bf2afef60b721f",
+      "bytes": 56
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/npc-cancel-repair1/checks-execution.json",
+      "sha256": "28ed274f9ed7da9325a2d502780817e72cc94deac902b359eaf9f9a6a6c4256b",
+      "bytes": 1907
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/npc-cancel-repair1/duplicates-frozen.log",
+      "sha256": "8cbfc8cd0b04a4858b0b78b74c6df9631a1695e105e6911d4b57fbcc43b218b5",
+      "bytes": 140
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/npc-cancel-repair1/duplicates.log",
+      "sha256": "8cbfc8cd0b04a4858b0b78b74c6df9631a1695e105e6911d4b57fbcc43b218b5",
+      "bytes": 140
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/npc-cancel-repair1/final-execution.json",
+      "sha256": "d3ee7e9bd4a485662bc4957cd08420d7b82799ff8fa17a1f96702e27f1505b97",
+      "bytes": 2372
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/npc-cancel-repair1/focused-final.log",
+      "sha256": "84c8f3554c741d734cbe42843a7c93b8cc47a785ae0b2883524499aeb82a11b4",
+      "bytes": 1060
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/npc-cancel-repair1/focused-final.xml",
+      "sha256": "c21bc5db74aa2aadb5ce9c877143e711b16091fe941bd12425495056b2967233",
+      "bytes": 127842
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/npc-cancel-repair1/focused-frozen.log",
+      "sha256": "497d38de37cc5717a0b949cabc07d081abe257d77e7bf2f6f1ccd574f46572f3",
+      "bytes": 1060
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/npc-cancel-repair1/focused-frozen.xml",
+      "sha256": "8cd003e090062b43bab06c845bbf4dbeb499a8c7f0eec6fcf4cfa133ee434f82",
+      "bytes": 127842
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/npc-cancel-repair1/format.log",
+      "sha256": "0b470882a93e1c42cb2345ba461fea7212aafa3bf5ba6d8a645e3c47f53ddace",
+      "bytes": 565
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/npc-cancel-repair1/frozen-execution.json",
+      "sha256": "dc5da138b29e8031af39c28c6cdbd41a548cbd9284fab207c56f5cb0e7b24f21",
+      "bytes": 2807
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/npc-cancel-repair1/green-primary.log",
+      "sha256": "f4d4906055ea9d87134e44ab962de291243af54e4f4bf75cd794d2093a258cf4",
+      "bytes": 7364
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/npc-cancel-repair1/green-primary.xml",
+      "sha256": "97a348f6128767130569b6a2658518f7455cbaf8934c0eb372f2357448478c17",
+      "bytes": 7207
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/npc-cancel-repair1/green-variants.xml",
+      "sha256": "c2984bd832de60cdae9aecf5c5f467553e0fc8c5b90fdf8fce46091fd21b0b36",
+      "bytes": 16900
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/npc-cancel-repair1/mypy-final.log",
+      "sha256": "8228fcc5ce46d42d01caf3cd941f4e9c5f2bcc372bb5b147a2f0572d2dd675a8",
+      "bytes": 43
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/npc-cancel-repair1/mypy-frozen.log",
+      "sha256": "8228fcc5ce46d42d01caf3cd941f4e9c5f2bcc372bb5b147a2f0572d2dd675a8",
+      "bytes": 43
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/npc-cancel-repair1/mypy.log",
+      "sha256": "0f8f9244878a933da01740a012abbf8731e70a12efb1b8a6325d982b493943ff",
+      "bytes": 202
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/npc-cancel-repair1/native_npc_dialogue.py.diff",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/npc-cancel-repair1/playing_runtime.py.diff",
+      "sha256": "0dc1a1d07e8515b88e84f5f9c3b9bd825a1ee5d6ea0f8dc9a0975f264f913e9f",
+      "bytes": 2157
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/npc-cancel-repair1/red-independent.log",
+      "sha256": "d012e73f010a6036216be719c7cade8a0c264220c06c63289694cdc7567af0c5",
+      "bytes": 2459
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/npc-cancel-repair1/red-independent.xml",
+      "sha256": "179de7bfd47109fa85de8603f6359cbb106bb2b6b16588481531a15ac9da716d",
+      "bytes": 1907
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/npc-cancel-repair1/red-native-corrected.log",
+      "sha256": "e38dd4db273e0e534406675334b3d5f4219c6782ce54843da70c5cde6d9e438e",
+      "bytes": 1770
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/npc-cancel-repair1/red-native-corrected.xml",
+      "sha256": "e22b952d73659f16abb6d62adb8eeacc77443c6961bd5c51feda770e664895a2",
+      "bytes": 1188
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/npc-cancel-repair1/red-native.log",
+      "sha256": "fe1526e128299aa331f2d957db746e708bd9c151e0a547f36f504e96146b6c37",
+      "bytes": 3213
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/npc-cancel-repair1/red-native.xml",
+      "sha256": "2eebde4842ecbab030ca0ba0cc793b79d9d6f806ea32f2bf9cf3eea905783833",
+      "bytes": 2663
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/npc-cancel-repair1/ruff-final.log",
+      "sha256": "d25b67cfb6a814c674cae541edf73162550a791ab4eefd686b698dd948bee67c",
+      "bytes": 935
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/npc-cancel-repair1/ruff-frozen.log",
+      "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+      "bytes": 19
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/npc-cancel-repair1/ruff.log",
+      "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+      "bytes": 19
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/npc-cancel-repair1/test_native_npc_cancel_recovery.py.diff",
+      "sha256": "ee3612cae4f9c0443eef3c091c8ed215b46e57d6bf4756d5a8b005bf14bd19be",
+      "bytes": 7203
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/npc-cancel-repair1/variants.log",
+      "sha256": "d3d711df65c6581866116c13ba3a441f8a4830f7ac55ffadd24f7817a22bd733",
+      "bytes": 6943
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/npc-cancel-repair1/xenon-frozen.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "/home/otto/.hermes/cache/scratch/npc-cancel-repair1/xenon.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    }
+  ],
+  "limits": [
+    "Offline synthetic received wire using actual BotClient dispatcher/snapshot/_send facade and PlayingClient; no native connection, SQL, worlds, live effects, backup or Git operations.",
+    "Independent repair review and parent full root gate remain required; all milestones remain open.",
+    "Strict vertical RED used exact actual_attack_sent assertion before production repair; additional symptom variants added after primary GREEN without additional production changes.",
+    "Initial native harness and later map variants omitted actual map-entry ACK from expected sends; original failing XML/logs are preserved, corrected assertions identify exact ACK bytes. Initial mypy export and Ruff constant-getattr failures also preserved.",
+    "Runs overlap and are not summed as unique cases.",
+    "Target 15 calls and 5-minute execution budget exceeded; no budget resets or threshold waivers.",
+    "Old failed original-author evidence-overwrite limitation remains, not repaired or erased."
+  ],
+  "elapsed_seconds_since_before_freeze": 315.6576611995697
+}

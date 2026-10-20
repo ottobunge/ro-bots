@@ -1,0 +1,504 @@
+{
+  "status": "offline_core_green_pending_independent_review",
+  "decision": "wiki/decisions/adr-021-llm-planning-clef-execution.md",
+  "owned_files": [
+    "src/robots/domain/planning.py",
+    "src/robots/ports/planning.py",
+    "src/robots/app/plan_lifecycle.py",
+    "tests/test_plan_lifecycle.py",
+    "run/reviews/llm-plan-lifecycle-core.json"
+  ],
+  "source_sha256": {
+    "src/robots/domain/planning.py": "f62f0f687a6b58c5b3e66c3e17fd750dc49dfbc57017fee22d97d06b5ca65b57",
+    "src/robots/ports/planning.py": "04dae988220f7acfc6e9e2d6ac9650c4e58b90b2c95c32a991b96fdd2eb64d04",
+    "src/robots/app/plan_lifecycle.py": "5cc4ded4107193e85ce023c9488423f1409fe35c8cb1a7209f934da48cab4f1b",
+    "tests/test_plan_lifecycle.py": "067bf70414346a038a2bc217d5abf4f541570891f24cf20f8f87e6cb5c882db3"
+  },
+  "physical_tests": [
+    {
+      "classname": "tests.test_plan_lifecycle",
+      "name": "test_request_admission_execution_path"
+    },
+    {
+      "classname": "tests.test_plan_lifecycle",
+      "name": "test_foreign_identity_denied[agent-other]"
+    },
+    {
+      "classname": "tests.test_plan_lifecycle",
+      "name": "test_foreign_identity_denied[world-other]"
+    },
+    {
+      "classname": "tests.test_plan_lifecycle",
+      "name": "test_foreign_identity_denied[character-other]"
+    },
+    {
+      "classname": "tests.test_plan_lifecycle",
+      "name": "test_foreign_identity_denied[session_epoch-2]"
+    },
+    {
+      "classname": "tests.test_plan_lifecycle",
+      "name": "test_foreign_identity_denied[ruleset-renewal]"
+    },
+    {
+      "classname": "tests.test_plan_lifecycle",
+      "name": "test_unsupported_phase_or_map_denied[phase0]"
+    },
+    {
+      "classname": "tests.test_plan_lifecycle",
+      "name": "test_unsupported_phase_or_map_denied[phase1]"
+    },
+    {
+      "classname": "tests.test_plan_lifecycle",
+      "name": "test_current_unknown_prerequisite_denied"
+    },
+    {
+      "classname": "tests.test_plan_lifecycle",
+      "name": "test_invalid_timing_denied[duration-True]"
+    },
+    {
+      "classname": "tests.test_plan_lifecycle",
+      "name": "test_invalid_timing_denied[duration-nan]"
+    },
+    {
+      "classname": "tests.test_plan_lifecycle",
+      "name": "test_invalid_timing_denied[review_at-100.0]"
+    },
+    {
+      "classname": "tests.test_plan_lifecycle",
+      "name": "test_invalid_timing_denied[review_at-inf]"
+    },
+    {
+      "classname": "tests.test_plan_lifecycle",
+      "name": "test_stale_token_cannot_replace_active"
+    },
+    {
+      "classname": "tests.test_plan_lifecycle",
+      "name": "test_single_flight_reasons_are_deduplicated_and_bounded"
+    },
+    {
+      "classname": "tests.test_plan_lifecycle",
+      "name": "test_timeout_cooldown_and_retry_exhaustion"
+    },
+    {
+      "classname": "tests.test_plan_lifecycle",
+      "name": "test_invalid_reply_consumes_attempt_and_releases_request"
+    },
+    {
+      "classname": "tests.test_plan_lifecycle",
+      "name": "test_identity_switch_invalidates_old_context_and_reply"
+    },
+    {
+      "classname": "tests.test_plan_lifecycle",
+      "name": "test_reason_and_config_bounds"
+    },
+    {
+      "classname": "tests.test_plan_lifecycle",
+      "name": "test_empty_plan_unsafe_fallback_and_target_bool_denied"
+    },
+    {
+      "classname": "tests.test_plan_lifecycle",
+      "name": "test_execution_reads_revalidate_without_requesting"
+    },
+    {
+      "classname": "tests.test_plan_lifecycle",
+      "name": "test_success_resets_retry_episode_but_keeps_cooldown"
+    },
+    {
+      "classname": "tests.test_plan_lifecycle",
+      "name": "test_observable_conditions_must_be_typed"
+    },
+    {
+      "classname": "tests.test_plan_lifecycle",
+      "name": "test_mutable_phase_sequence_denied"
+    },
+    {
+      "classname": "tests.test_plan_lifecycle",
+      "name": "test_prerequisite_metadata_is_bounded"
+    }
+  ],
+  "test_count": 25,
+  "failures": 0,
+  "errors": 0,
+  "skips": 0,
+  "coverage_percent": 99.43502824858757,
+  "quality": {
+    "format": {
+      "exit_code": 0,
+      "log": "/home/otto/.hermes/cache/scratch/llm-plan-lifecycle-core/format-repaired.log"
+    },
+    "ruff": {
+      "exit_code": 0,
+      "log": "/home/otto/.hermes/cache/scratch/llm-plan-lifecycle-core/ruff-repaired.log"
+    },
+    "mypy": {
+      "exit_code": 0,
+      "log": "/home/otto/.hermes/cache/scratch/llm-plan-lifecycle-core/mypy-repaired.log"
+    },
+    "xenon": {
+      "exit_code": 0,
+      "log": "/home/otto/.hermes/cache/scratch/llm-plan-lifecycle-core/xenon-final.log"
+    },
+    "dup": {
+      "exit_code": 0,
+      "log": "/home/otto/.hermes/cache/scratch/llm-plan-lifecycle-core/dup-final.log"
+    },
+    "vulture": {
+      "exit_code": 0,
+      "log": "/home/otto/.hermes/cache/scratch/llm-plan-lifecycle-core/vulture-final.log"
+    },
+    "bandit": {
+      "exit_code": 0,
+      "log": "/home/otto/.hermes/cache/scratch/llm-plan-lifecycle-core/bandit-final.log"
+    },
+    "black": {
+      "exit_code": 0,
+      "log": "/home/otto/.hermes/cache/scratch/llm-plan-lifecycle-core/black-repaired.log"
+    },
+    "tests": {
+      "exit_code": 0,
+      "log": "/home/otto/.hermes/cache/scratch/llm-plan-lifecycle-core/final-green.log"
+    }
+  },
+  "tdd": [
+    {
+      "label": "01-behavior-red",
+      "exit_code": 1,
+      "xml": "/home/otto/.hermes/cache/scratch/llm-plan-lifecycle-core/01-behavior-red.xml",
+      "log_sha256": "46468debd753fbda468ee57909ee1d68d349074456b21b6a323a8a5125ca2d1c"
+    },
+    {
+      "label": "01-green",
+      "exit_code": 0,
+      "xml": "/home/otto/.hermes/cache/scratch/llm-plan-lifecycle-core/01-green.xml",
+      "log_sha256": "774412243a4dd9109d74cac1e88830db06a136051bbdbb28f78f1755be3ed12a"
+    },
+    {
+      "label": "02-identity-red",
+      "exit_code": 1,
+      "xml": "/home/otto/.hermes/cache/scratch/llm-plan-lifecycle-core/02-identity-red.xml",
+      "log_sha256": "4eb3c23dea718c8722da31558eb1bb39bbadf0a21b754dd57d99a55266a37463"
+    },
+    {
+      "label": "02-green",
+      "exit_code": 0,
+      "xml": "/home/otto/.hermes/cache/scratch/llm-plan-lifecycle-core/02-green.xml",
+      "log_sha256": "f1cfe9ff29bdfed00d7a2418c0b9d3a455d11782b864f5f6daaf16bed4489674"
+    },
+    {
+      "label": "03-capabilities-red",
+      "exit_code": 1,
+      "xml": "/home/otto/.hermes/cache/scratch/llm-plan-lifecycle-core/03-capabilities-red.xml",
+      "log_sha256": "b7c155c0c6159dbc46932dfc1132b0d93a6d00effadc990cb23445f93474cea7"
+    },
+    {
+      "label": "03-green",
+      "exit_code": 0,
+      "xml": "/home/otto/.hermes/cache/scratch/llm-plan-lifecycle-core/03-green.xml",
+      "log_sha256": "5c69aa1af14948d9053b75ad550b19a227589f33f7ffe0e177eebecb05b244b8"
+    },
+    {
+      "label": "04-prerequisite-red",
+      "exit_code": 1,
+      "xml": "/home/otto/.hermes/cache/scratch/llm-plan-lifecycle-core/04-prerequisite-red.xml",
+      "log_sha256": "ff3c188994b04b60ab7e2538ef09dffd9a7d108b08fa5271f25ccb0a8c234559"
+    },
+    {
+      "label": "04-green",
+      "exit_code": 0,
+      "xml": "/home/otto/.hermes/cache/scratch/llm-plan-lifecycle-core/04-green.xml",
+      "log_sha256": "03ceb8be72e65dc7312324ebcc939ab3d9e7151cf446eda0d154e41d0c0443c8"
+    },
+    {
+      "label": "05-timing-red",
+      "exit_code": 1,
+      "xml": "/home/otto/.hermes/cache/scratch/llm-plan-lifecycle-core/05-timing-red.xml",
+      "log_sha256": "111ad2e947850e5b26f6f4c8246f021f1062695192224bb49101c746d436f9d8"
+    },
+    {
+      "label": "05-green",
+      "exit_code": 0,
+      "xml": "/home/otto/.hermes/cache/scratch/llm-plan-lifecycle-core/05-green.xml",
+      "log_sha256": "5070a6b9acedfdef101e604fa84b561e866a8322ac576fc316cba665d3aabcec"
+    },
+    {
+      "label": "06-stale-red",
+      "exit_code": 1,
+      "xml": "/home/otto/.hermes/cache/scratch/llm-plan-lifecycle-core/06-stale-red.xml",
+      "log_sha256": "9f8cfce4d07a0b471b0d84384306985680cfd3b1594ab34801594b4a468752b1"
+    },
+    {
+      "label": "06-green",
+      "exit_code": 0,
+      "xml": "/home/otto/.hermes/cache/scratch/llm-plan-lifecycle-core/06-green.xml",
+      "log_sha256": "e475afed453d8c06cdfe6c9c22af670110e573acc7ca78a4e9bb0b728c813287"
+    },
+    {
+      "label": "07-coalesce-red",
+      "exit_code": 1,
+      "xml": "/home/otto/.hermes/cache/scratch/llm-plan-lifecycle-core/07-coalesce-red.xml",
+      "log_sha256": "4a5c7846ace6a28e1d6b613c435b71ef86206f37ee175534dbead25426e919b1"
+    },
+    {
+      "label": "07-green",
+      "exit_code": 0,
+      "xml": "/home/otto/.hermes/cache/scratch/llm-plan-lifecycle-core/07-green.xml",
+      "log_sha256": "94fc8fe3ff54e5496692cbf9ce5e6c00ea6b39fb22ab4a865914206948925abe"
+    },
+    {
+      "label": "08-budget-red",
+      "exit_code": 1,
+      "xml": "/home/otto/.hermes/cache/scratch/llm-plan-lifecycle-core/08-budget-red.xml",
+      "log_sha256": "bdcea1dd9b551a01ba6e7fb0f116a7d4fba727f503f739a4373292d2b2b94551"
+    },
+    {
+      "label": "08-green",
+      "exit_code": 0,
+      "xml": "/home/otto/.hermes/cache/scratch/llm-plan-lifecycle-core/08-green.xml",
+      "log_sha256": "c48d60ff1bb0503dd66f9ea2cd6e516dd7f5fdbddb99c678b19a7f41b5c40b9e"
+    },
+    {
+      "label": "09-rejection-budget-red",
+      "exit_code": 1,
+      "xml": "/home/otto/.hermes/cache/scratch/llm-plan-lifecycle-core/09-rejection-budget-red.xml",
+      "log_sha256": "d09c0cc780e95f12183a71433c941c60b443f3ddba804064b5a7c05534aaa5cc"
+    },
+    {
+      "label": "09-green",
+      "exit_code": 0,
+      "xml": "/home/otto/.hermes/cache/scratch/llm-plan-lifecycle-core/09-green.xml",
+      "log_sha256": "c9e89d1b02ffee435c44a4130ae09055bf22a17c397f63b25beec8e5644e5a2a"
+    },
+    {
+      "label": "10-switch-red",
+      "exit_code": 1,
+      "xml": "/home/otto/.hermes/cache/scratch/llm-plan-lifecycle-core/10-switch-red.xml",
+      "log_sha256": "8e25c43af58cbcc11c9662b3b08d5cd49cb469be09ce88dcdc86d725c89ae7aa"
+    },
+    {
+      "label": "10-green",
+      "exit_code": 0,
+      "xml": "/home/otto/.hermes/cache/scratch/llm-plan-lifecycle-core/10-green.xml",
+      "log_sha256": "fa416df3e377db6a0e4af9ce072abb3ad7a9895832c922bdc5b0e788fb71dd9c"
+    },
+    {
+      "label": "11-bounds-red",
+      "exit_code": 1,
+      "xml": "/home/otto/.hermes/cache/scratch/llm-plan-lifecycle-core/11-bounds-red.xml",
+      "log_sha256": "afc265ed5352e43a2b1a10560354506e25692350f4e1731d58bb9c8d4a743101"
+    },
+    {
+      "label": "11-green",
+      "exit_code": 0,
+      "xml": "/home/otto/.hermes/cache/scratch/llm-plan-lifecycle-core/11-green.xml",
+      "log_sha256": "60e3c69f05af96043f71d892122431c30c5320200dd90bcf2993f18e3196a5ad"
+    },
+    {
+      "label": "12-schema-red",
+      "exit_code": 1,
+      "xml": "/home/otto/.hermes/cache/scratch/llm-plan-lifecycle-core/12-schema-red.xml",
+      "log_sha256": "d24dbb75233c3fd4b0ef43c2b496e80fb21874968308cad0dcd187a118d97e0f"
+    },
+    {
+      "label": "12-green",
+      "exit_code": 0,
+      "xml": "/home/otto/.hermes/cache/scratch/llm-plan-lifecycle-core/12-green.xml",
+      "log_sha256": "277f598dae6914efc2d2a72f1b0628e89c466705c8bce7d14ca91fec0678a3f4"
+    },
+    {
+      "label": "13-execution-red",
+      "exit_code": 1,
+      "xml": "/home/otto/.hermes/cache/scratch/llm-plan-lifecycle-core/13-execution-red.xml",
+      "log_sha256": "adaeee3a4ff60b979e494a2ec3bb843d65a13dd8f6b35719284ba5a10558a086"
+    },
+    {
+      "label": "13-green",
+      "exit_code": 0,
+      "xml": "/home/otto/.hermes/cache/scratch/llm-plan-lifecycle-core/13-green.xml",
+      "log_sha256": "00f7ccd5a2d2b9bcc0bbf9c20b2a9ad908c3cabf8b098c2f4956e7213c61e49b"
+    },
+    {
+      "label": "14-success-budget-red",
+      "exit_code": 1,
+      "xml": "/home/otto/.hermes/cache/scratch/llm-plan-lifecycle-core/14-success-budget-red.xml",
+      "log_sha256": "3c6c2647b4ac12b016a3a8ea3225ed09cc937390a8fe44a3bf17593a4bb14f00"
+    },
+    {
+      "label": "14-green",
+      "exit_code": 0,
+      "xml": "/home/otto/.hermes/cache/scratch/llm-plan-lifecycle-core/14-green.xml",
+      "log_sha256": "9bb93f763a32594b8f710095342d0d697af1a3f347052ec2211bbd8e58a0ce7f"
+    },
+    {
+      "label": "15-condition-red",
+      "exit_code": 1,
+      "xml": "/home/otto/.hermes/cache/scratch/llm-plan-lifecycle-core/15-condition-red.xml",
+      "log_sha256": "af487b1b7e737d740d5c0c7cafdf215aafea8676d6678f7b4bb711318d792565"
+    },
+    {
+      "label": "15-green",
+      "exit_code": 0,
+      "xml": "/home/otto/.hermes/cache/scratch/llm-plan-lifecycle-core/15-green.xml",
+      "log_sha256": "02c06ddeb69b3ac0a4ac3ead53d0ea09f6dd8ab0bd4d83e2d87cc381734eafa3"
+    },
+    {
+      "label": "16-immutable-red",
+      "exit_code": 1,
+      "xml": "/home/otto/.hermes/cache/scratch/llm-plan-lifecycle-core/16-immutable-red.xml",
+      "log_sha256": "521721e3809134e836b0d89f38636ccc02be78d5b9acf2586ff17f4350aea2cc"
+    },
+    {
+      "label": "16-green",
+      "exit_code": 0,
+      "xml": "/home/otto/.hermes/cache/scratch/llm-plan-lifecycle-core/16-green.xml",
+      "log_sha256": "a7c471961ec3abe3c661fba9fe8f791b751b543cd12336cabb2a4c87cd26a16c"
+    },
+    {
+      "label": "17-facts-bounds-red",
+      "exit_code": 1,
+      "xml": "/home/otto/.hermes/cache/scratch/llm-plan-lifecycle-core/17-facts-bounds-red.xml",
+      "log_sha256": "857c153d22f57e4a9d031295f406cacb4953207abefc8eeb4799ae76f1d48ae8"
+    },
+    {
+      "label": "17-green",
+      "exit_code": 0,
+      "xml": "/home/otto/.hermes/cache/scratch/llm-plan-lifecycle-core/17-green.xml",
+      "log_sha256": "a4bba5348a225cf9878e87b018b717c25d45a76b6eb34ef58ca48e1837315426"
+    }
+  ],
+  "artifact_sha256": {
+    "/home/otto/.hermes/cache/scratch/llm-plan-lifecycle-core/02-green.log": "f1cfe9ff29bdfed00d7a2418c0b9d3a455d11782b864f5f6daaf16bed4489674",
+    "/home/otto/.hermes/cache/scratch/llm-plan-lifecycle-core/09-rejection-budget-red.log": "d09c0cc780e95f12183a71433c941c60b443f3ddba804064b5a7c05534aaa5cc",
+    "/home/otto/.hermes/cache/scratch/llm-plan-lifecycle-core/08-green.log": "c48d60ff1bb0503dd66f9ea2cd6e516dd7f5fdbddb99c678b19a7f41b5c40b9e",
+    "/home/otto/.hermes/cache/scratch/llm-plan-lifecycle-core/final-green.xml": "fa987cef6f838bafe0cac110d99d45b2566e75756ba973d0772b3e3663c26873",
+    "/home/otto/.hermes/cache/scratch/llm-plan-lifecycle-core/final-green.log": "cb413393d53ddcac06b1cabe808419634e5a019e5bc1b96309de931f36bbca81",
+    "/home/otto/.hermes/cache/scratch/llm-plan-lifecycle-core/coverage.json": "38db997a0b1f2424d1435bbb974816fd7a1461c392c0e3ab2c23bec83697f8a7",
+    "/home/otto/.hermes/cache/scratch/llm-plan-lifecycle-core/xenon-final.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/llm-plan-lifecycle-core/02-identity-red.log": "4eb3c23dea718c8722da31558eb1bb39bbadf0a21b754dd57d99a55266a37463",
+    "/home/otto/.hermes/cache/scratch/llm-plan-lifecycle-core/vulture.log": "21432be81bae81cf8e21a4408721960efede3d1500a55ca99a790d5853c849c8",
+    "/home/otto/.hermes/cache/scratch/llm-plan-lifecycle-core/06-stale-red.xml": "4590b6af092109f84228e4181e7293db8778ae2f7d741735420c1f7a3d7db3e8",
+    "/home/otto/.hermes/cache/scratch/llm-plan-lifecycle-core/16-immutable-red.xml": "867d7b3716535974bc32fbcfd5309d3a8e9e539239fc04a64f21418aa615df74",
+    "/home/otto/.hermes/cache/scratch/llm-plan-lifecycle-core/12-schema-red.log": "d24dbb75233c3fd4b0ef43c2b496e80fb21874968308cad0dcd187a118d97e0f",
+    "/home/otto/.hermes/cache/scratch/llm-plan-lifecycle-core/01-behavior-red.xml": "92087015d8d583b3ddef1ab6dad69582655a3f20bc514409dcd20bdec2c3189a",
+    "/home/otto/.hermes/cache/scratch/llm-plan-lifecycle-core/12-green.log": "277f598dae6914efc2d2a72f1b0628e89c466705c8bce7d14ca91fec0678a3f4",
+    "/home/otto/.hermes/cache/scratch/llm-plan-lifecycle-core/03-green.xml": "c1e1b4ae6a7ac91d775d0f62ef155f31930f442473578ace035bda3e2eee7182",
+    "/home/otto/.hermes/cache/scratch/llm-plan-lifecycle-core/16-immutable-red.log": "521721e3809134e836b0d89f38636ccc02be78d5b9acf2586ff17f4350aea2cc",
+    "/home/otto/.hermes/cache/scratch/llm-plan-lifecycle-core/xenon.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/llm-plan-lifecycle-core/quality-initial.log": "fc28c8e9cb4d9d1fbe53f23beeb550e04845804cfa617dea9de71dd67dce276d",
+    "/home/otto/.hermes/cache/scratch/llm-plan-lifecycle-core/03-green.log": "5c69aa1af14948d9053b75ad550b19a227589f33f7ffe0e177eebecb05b244b8",
+    "/home/otto/.hermes/cache/scratch/llm-plan-lifecycle-core/format-repaired.log": "86f4d5882d539e898d0765e4de1048565d16339cc2219793fb5aec84b10faf48",
+    "/home/otto/.hermes/cache/scratch/llm-plan-lifecycle-core/06-stale-red.log": "9f8cfce4d07a0b471b0d84384306985680cfd3b1594ab34801594b4a468752b1",
+    "/home/otto/.hermes/cache/scratch/llm-plan-lifecycle-core/12-green.xml": "513b919df33c7526d5bae83cea856d9601232ce6e069778c35540ef87cd9d33e",
+    "/home/otto/.hermes/cache/scratch/llm-plan-lifecycle-core/09-green.log": "c9e89d1b02ffee435c44a4130ae09055bf22a17c397f63b25beec8e5644e5a2a",
+    "/home/otto/.hermes/cache/scratch/llm-plan-lifecycle-core/05-green.log": "5070a6b9acedfdef101e604fa84b561e866a8322ac576fc316cba665d3aabcec",
+    "/home/otto/.hermes/cache/scratch/llm-plan-lifecycle-core/black-final.log": "a2df53dfca6dcb3a2f58a064553355478aba764635b582854c7e427d2a3609fb",
+    "/home/otto/.hermes/cache/scratch/llm-plan-lifecycle-core/13-execution-red.log": "adaeee3a4ff60b979e494a2ec3bb843d65a13dd8f6b35719284ba5a10558a086",
+    "/home/otto/.hermes/cache/scratch/llm-plan-lifecycle-core/mypy-repaired.log": "82bc1997b7654002d5448b6f3174d655c165e6e0612de7686d661a1137b0fcf5",
+    "/home/otto/.hermes/cache/scratch/llm-plan-lifecycle-core/ruff-repaired.log": "f0d0b1081d9d3ebb26c4c93543053ecdc0a58998f22c071dc4ddb26021b57645",
+    "/home/otto/.hermes/cache/scratch/llm-plan-lifecycle-core/bandit.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/llm-plan-lifecycle-core/07-coalesce-red.log": "4a5c7846ace6a28e1d6b613c435b71ef86206f37ee175534dbead25426e919b1",
+    "/home/otto/.hermes/cache/scratch/llm-plan-lifecycle-core/10-switch-red.log": "8e25c43af58cbcc11c9662b3b08d5cd49cb469be09ce88dcdc86d725c89ae7aa",
+    "/home/otto/.hermes/cache/scratch/llm-plan-lifecycle-core/06-green.xml": "c2ae6b9538320dfde70d17c0d1aabe3214057cee02477ccd5d7b1a58f1a93e8f",
+    "/home/otto/.hermes/cache/scratch/llm-plan-lifecycle-core/17-green.xml": "2fe13ddf732042388cd291dfabfe3b1d645659bea6e2cfe39487c0c538d88dc8",
+    "/home/otto/.hermes/cache/scratch/llm-plan-lifecycle-core/07-green.xml": "ffbc1559590e21a1ea0bc8e1928cc72c2229a87b6965bd009f3d58b78e28ab4e",
+    "/home/otto/.hermes/cache/scratch/llm-plan-lifecycle-core/09-green.xml": "cc63b67c11f10eb9af58b284a35399325ba5a3b6ccc8017f0af6ab61eadc33da",
+    "/home/otto/.hermes/cache/scratch/llm-plan-lifecycle-core/mypy-final.log": "0dfb332c77ffe710fa2d0a918b9caa613a8efbdb28ec840277e8918a49f36035",
+    "/home/otto/.hermes/cache/scratch/llm-plan-lifecycle-core/16-green.log": "a7c471961ec3abe3c661fba9fe8f791b751b543cd12336cabb2a4c87cd26a16c",
+    "/home/otto/.hermes/cache/scratch/llm-plan-lifecycle-core/08-budget-red.log": "bdcea1dd9b551a01ba6e7fb0f116a7d4fba727f503f739a4373292d2b2b94551",
+    "/home/otto/.hermes/cache/scratch/llm-plan-lifecycle-core/02-green.xml": "8f6e618881a6e73766d60ce8ece9960657a07faf9c1815b19ce0452e6c979216",
+    "/home/otto/.hermes/cache/scratch/llm-plan-lifecycle-core/13-green.log": "00f7ccd5a2d2b9bcc0bbf9c20b2a9ad908c3cabf8b098c2f4956e7213c61e49b",
+    "/home/otto/.hermes/cache/scratch/llm-plan-lifecycle-core/12-schema-red.xml": "9398c44611d63ead42d04d24bf36705017bf77b4d28c9d2d72090b78e562bee6",
+    "/home/otto/.hermes/cache/scratch/llm-plan-lifecycle-core/15-green.xml": "799d51af78f39da12c5f7eb065865155bed6fb6d843eb54a4a018bc08372ae5b",
+    "/home/otto/.hermes/cache/scratch/llm-plan-lifecycle-core/08-green.xml": "fefb67245261b5e100624d926557ee276f9e70e9e0c50602d8f01827e4ded1b3",
+    "/home/otto/.hermes/cache/scratch/llm-plan-lifecycle-core/black-repaired.log": "a2df53dfca6dcb3a2f58a064553355478aba764635b582854c7e427d2a3609fb",
+    "/home/otto/.hermes/cache/scratch/llm-plan-lifecycle-core/05-timing-red.log": "111ad2e947850e5b26f6f4c8246f021f1062695192224bb49101c746d436f9d8",
+    "/home/otto/.hermes/cache/scratch/llm-plan-lifecycle-core/dup.log": "9a2ce6b7ef537c443199e07d85790025ba683cc41bd567505d6f7da23d3dd4dd",
+    "/home/otto/.hermes/cache/scratch/llm-plan-lifecycle-core/ruff-final.log": "579fc1370c69a711b1a0a366ea1d9d684fe343db2971acbffb5dd82f6598fc02",
+    "/home/otto/.hermes/cache/scratch/llm-plan-lifecycle-core/06-green.log": "e475afed453d8c06cdfe6c9c22af670110e573acc7ca78a4e9bb0b728c813287",
+    "/home/otto/.hermes/cache/scratch/llm-plan-lifecycle-core/10-switch-red.xml": "95734bbaeae12afa009b97a9d081c2717016cc17a7f0c7e1712951a29b142844",
+    "/home/otto/.hermes/cache/scratch/llm-plan-lifecycle-core/10-green.log": "fa416df3e377db6a0e4af9ce072abb3ad7a9895832c922bdc5b0e788fb71dd9c",
+    "/home/otto/.hermes/cache/scratch/llm-plan-lifecycle-core/10-green.xml": "27f1a2789a6fbc0e4996c58d95e3019e9846635dc3212fd1cca9a706cb136d6b",
+    "/home/otto/.hermes/cache/scratch/llm-plan-lifecycle-core/02-identity-red.xml": "2823cb57ed3d8d79de464ccecb9864b95a9b5afd8ff316730fc296de3dcbee47",
+    "/home/otto/.hermes/cache/scratch/llm-plan-lifecycle-core/15-condition-red.log": "af487b1b7e737d740d5c0c7cafdf215aafea8676d6678f7b4bb711318d792565",
+    "/home/otto/.hermes/cache/scratch/llm-plan-lifecycle-core/01-behavior-red.log": "46468debd753fbda468ee57909ee1d68d349074456b21b6a323a8a5125ca2d1c",
+    "/home/otto/.hermes/cache/scratch/llm-plan-lifecycle-core/17-facts-bounds-red.log": "857c153d22f57e4a9d031295f406cacb4953207abefc8eeb4799ae76f1d48ae8",
+    "/home/otto/.hermes/cache/scratch/llm-plan-lifecycle-core/14-green.xml": "35dd5357cbb7620f7c3bee60abb0a9ebb1931e4db2119ce752f66f10b946e382",
+    "/home/otto/.hermes/cache/scratch/llm-plan-lifecycle-core/11-bounds-red.log": "afc265ed5352e43a2b1a10560354506e25692350f4e1731d58bb9c8d4a743101",
+    "/home/otto/.hermes/cache/scratch/llm-plan-lifecycle-core/04-green.xml": "eac8569bf259de4ffa61c0ca385a28abf117fe6098907ca6aacfbce5154dc7e1",
+    "/home/otto/.hermes/cache/scratch/llm-plan-lifecycle-core/03-capabilities-red.log": "b7c155c0c6159dbc46932dfc1132b0d93a6d00effadc990cb23445f93474cea7",
+    "/home/otto/.hermes/cache/scratch/llm-plan-lifecycle-core/mypy.log": "82bc1997b7654002d5448b6f3174d655c165e6e0612de7686d661a1137b0fcf5",
+    "/home/otto/.hermes/cache/scratch/llm-plan-lifecycle-core/vulture-final.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/llm-plan-lifecycle-core/17-facts-bounds-red.xml": "f3bef596e8a67bb6573e2a07a47d18cd7ad64c4ddb9e65d2186fef5132d8a642",
+    "/home/otto/.hermes/cache/scratch/llm-plan-lifecycle-core/15-condition-red.xml": "c49c8817f8a692e04a8d90beefba10dfd268cd89c37f44b1efe53f026adf6eca",
+    "/home/otto/.hermes/cache/scratch/llm-plan-lifecycle-core/14-green.log": "9bb93f763a32594b8f710095342d0d697af1a3f347052ec2211bbd8e58a0ce7f",
+    "/home/otto/.hermes/cache/scratch/llm-plan-lifecycle-core/13-execution-red.xml": "7402ba3b145efcfb502a7ecfbe115e80efc0648b2e3a3e8faa1b33ddc5f92e1c",
+    "/home/otto/.hermes/cache/scratch/llm-plan-lifecycle-core/07-coalesce-red.xml": "e6214f57d07e3a13761a58e86bcdd34c20e16fd18e0ee5db80a4be82bfe898ae",
+    "/home/otto/.hermes/cache/scratch/llm-plan-lifecycle-core/13-green.xml": "848663b79d5c055d0de1e3c66dc4d38b8cb77d50a12abec7562ea09fc64842b4",
+    "/home/otto/.hermes/cache/scratch/llm-plan-lifecycle-core/ruff.log": "f0d0b1081d9d3ebb26c4c93543053ecdc0a58998f22c071dc4ddb26021b57645",
+    "/home/otto/.hermes/cache/scratch/llm-plan-lifecycle-core/11-bounds-red.xml": "102b67191d0b92180b9024905af8fb709a3d36396e316e87ed995389ba0c351f",
+    "/home/otto/.hermes/cache/scratch/llm-plan-lifecycle-core/04-prerequisite-red.log": "ff3c188994b04b60ab7e2538ef09dffd9a7d108b08fa5271f25ccb0a8c234559",
+    "/home/otto/.hermes/cache/scratch/llm-plan-lifecycle-core/format.log": "257db7c9e2c499a8e0c9c1c8f81b0fd6cc6cd05a479113e89b57828706b9c4f9",
+    "/home/otto/.hermes/cache/scratch/llm-plan-lifecycle-core/17-green.log": "a4bba5348a225cf9878e87b018b717c25d45a76b6eb34ef58ca48e1837315426",
+    "/home/otto/.hermes/cache/scratch/llm-plan-lifecycle-core/format-final.log": "ce7eea406d66182944766d12d6f9da3152ca66d3221c821145960b7ec90a471d",
+    "/home/otto/.hermes/cache/scratch/llm-plan-lifecycle-core/04-prerequisite-red.xml": "10228ae7ac99a8229ec67bb705f282d5a828a4fab88b79996611c8efbb4563db",
+    "/home/otto/.hermes/cache/scratch/llm-plan-lifecycle-core/08-budget-red.xml": "087231c85c51f8d09d41a1e67c514a73591a74fb8cd8d59cdcefe3652df7b78d",
+    "/home/otto/.hermes/cache/scratch/llm-plan-lifecycle-core/05-green.xml": "a6f48f5e3d289a6fb0efb7d4e0caa973091c1567f779499e7f5ab9cd367bd54c",
+    "/home/otto/.hermes/cache/scratch/llm-plan-lifecycle-core/07-green.log": "94fc8fe3ff54e5496692cbf9ce5e6c00ea6b39fb22ab4a865914206948925abe",
+    "/home/otto/.hermes/cache/scratch/llm-plan-lifecycle-core/11-green.xml": "1a7f7aceef93e777d167cba842d46d99a4526535ea3683937fde980f7376cfd8",
+    "/home/otto/.hermes/cache/scratch/llm-plan-lifecycle-core/04-green.log": "03ceb8be72e65dc7312324ebcc939ab3d9e7151cf446eda0d154e41d0c0443c8",
+    "/home/otto/.hermes/cache/scratch/llm-plan-lifecycle-core/14-success-budget-red.xml": "8a3451efb3fa7502e647888fbf696c01241f9c8e4f0df2b4c99e30107ffb5cf7",
+    "/home/otto/.hermes/cache/scratch/llm-plan-lifecycle-core/11-green.log": "60e3c69f05af96043f71d892122431c30c5320200dd90bcf2993f18e3196a5ad",
+    "/home/otto/.hermes/cache/scratch/llm-plan-lifecycle-core/05-timing-red.xml": "d80f6668b6a9fa6c609e5a505e685ea76536e72bec536354e313130ccabebabb",
+    "/home/otto/.hermes/cache/scratch/llm-plan-lifecycle-core/01-green.log": "774412243a4dd9109d74cac1e88830db06a136051bbdbb28f78f1755be3ed12a",
+    "/home/otto/.hermes/cache/scratch/llm-plan-lifecycle-core/01-green.xml": "e0b74a7c2538b6166a252565713e6084a2c496fb867c3c656e44512d78d286a1",
+    "/home/otto/.hermes/cache/scratch/llm-plan-lifecycle-core/bandit-final.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/llm-plan-lifecycle-core/15-green.log": "02c06ddeb69b3ac0a4ac3ead53d0ea09f6dd8ab0bd4d83e2d87cc381734eafa3",
+    "/home/otto/.hermes/cache/scratch/llm-plan-lifecycle-core/dup-final.log": "9a2ce6b7ef537c443199e07d85790025ba683cc41bd567505d6f7da23d3dd4dd",
+    "/home/otto/.hermes/cache/scratch/llm-plan-lifecycle-core/16-green.xml": "480baa6681b9d74a1ebbdd9aa5e3872badf6f5e7860c651b4a8f1ab8bccb2f08",
+    "/home/otto/.hermes/cache/scratch/llm-plan-lifecycle-core/03-capabilities-red.xml": "9dbcc6b37af35106cc920629be5a1b04b137024df4d1ba8a3aa04c29793acaac",
+    "/home/otto/.hermes/cache/scratch/llm-plan-lifecycle-core/09-rejection-budget-red.xml": "7e70bfff48762bedafc348c98e3edcced78e477df3d4571bf4166ca3b6066b7c",
+    "/home/otto/.hermes/cache/scratch/llm-plan-lifecycle-core/14-success-budget-red.log": "3c6c2647b4ac12b016a3a8ea3225ed09cc937390a8fe44a3bf17593a4bb14f00"
+  },
+  "complete": [
+    "immutable literal identity contract",
+    "bounded structured phases/conditions/fallback metadata",
+    "current caller capability and unknown-prerequisite denial",
+    "stale identity/token/version denial",
+    "single serialized owner with at most one pending request",
+    "8 reasons, 256 UTF-8 bytes each",
+    "cooldown, nonblocking timeout and bounded retry episodes",
+    "execution reads do not request planning"
+  ],
+  "limits": [
+    "Single-owner serialized object, not a global per-agent registry or thread safety",
+    "Caller supplies current fresh capability facts and finite monotonic clock",
+    "No state revision equality guard: identity and current relevant prerequisites only",
+    "Optional capability-free execution_plan is metadata access, not native authorization",
+    "Targets/destinations are syntax metadata, not actual path/resource/mechanics eligibility",
+    "Investigation/planner/chat are protocols only; no real LLM/provider/tool-loop adapter",
+    "Fallback is idle/rest metadata, not an emitted GameAction",
+    "No native/HTTP/SQL/Docker/inference calls; no existing brain/live changes",
+    "Whole Xenon/dup/vulture were read-only current-tree checks, not a stable combined root gate"
+  ],
+  "open": [
+    "independent completed-snapshot review",
+    "parent combined full gate after concurrent slice",
+    "actual LLM investigation tools and plan authoring",
+    "CLEF/brain/native action integration",
+    "received-state resource/mechanics validator",
+    "chat/provider adapters",
+    "async request scheduling",
+    "persistence/reconnect/restart",
+    "dashboard/progress/instrumentation",
+    "separately authorized native acceptance"
+  ],
+  "all_six_milestones_and_eleven_criteria": "OPEN",
+  "chronology_notes": [
+    "Initial absent APIs confirmed by read-only discovery before code",
+    "01 RED is real request/token/admission assertion, not missing module import",
+    "Tiny shape-only scaffolds preceded identity-update and execution-read behavioral REDs",
+    "Grouped constraints have actual RED at the first failing assertion; later checks are follow-up verification",
+    "No rollback to manufacture RED; formatter and complexity refactor followed GREEN",
+    "A read_file unchanged-dedup response interrupted one harness call; preserved RED resumed normally",
+    "Initial Ruff/mypy/Xenon/vulture failures preserved and repaired only owned files"
+  ]
+}

@@ -1,0 +1,152 @@
+{
+  "schema": "native-ast-sink-followup-independent-review-v1",
+  "verdict": "PASS_FACTUAL_CONDITIONAL_BOUNDS_ONLY_NOT_ADOPTED",
+  "passed_factual_audit": true,
+  "scope_factual_bounds_passed": true,
+  "approval_scope": "Independent read-only verification of active source provenance, conditional FIFO statements and callback lifetime limitations in the two completed followups. PASS approves their bounded factual classification only; it discharges no implementation, ownership, language-definedness or adoption invariant.",
+  "sink_adopted": false,
+  "full_sink_adopted": false,
+  "semantic_approval": false,
+  "sender_admission": false,
+  "runtime_integration": false,
+  "binary_equivalence_proven": false,
+  "all_six_milestones_open": true,
+  "security_concerns": [],
+  "logic_errors": [],
+  "reviewed_reports": [
+    {
+      "path": "/home/otto/dev/ro-bots/run/reviews/native-ast-sink-memory-fifo-followup.json",
+      "sha256": "2c057201a4a95f443803733aeb76d6fea935567a5d315b6fa1f4e29e25b04398",
+      "factual_bounds_passed": true
+    },
+    {
+      "path": "/home/otto/dev/ro-bots/run/reviews/native-ast-sink-lifetime-followup.json",
+      "sha256": "3e922db577c20c6b29a8c3243f454fa6cbaf87161662055e1585002d935de9ce",
+      "factual_bounds_passed": true
+    }
+  ],
+  "scope_authority": {
+    "path": "/home/otto/dev/ro-bots/run/reviews/native-ast-sink-followup-scope.json",
+    "sha256": "bc525285a7ebe344d269604279bc6ad77d2d14a018bee5af3f8e85907ea8ed26",
+    "route": "clif_emotion AREA and optional synchronous recursive SELF only",
+    "U7": "Every non-AREA route except the specifically selected recursive SELF is excluded; no generic sink coverage."
+  },
+  "source_provenance": {
+    "root": "/home/otto/.hermes/cache/scratch/native-profile-replay-s2jdj4rn/public-source",
+    "configured_source_closure_sha256_recomputed": "f045b33b434efc83a7e216f295bf899114a4a1a2daa159898fb738d8b553d6d6",
+    "recorded_inventory_entries_rehashed": 3206,
+    "recorded_inventory_mismatches": [],
+    "inventory_sha256": "0356704361589aa125a2783992e576a793cf5833ddb9324087b89eb12bb2366b",
+    "profile": "MAIN PACKETVER 20180704; PRERE; PIN supported; no RE/ZERO/renewal/obfuscation. Immutable package profiles and common/map recipes physically rehashed; historical four-role profile measurements read, not newly executed server binaries.",
+    "allocator_role": "Fresh GCC malloc.cpp preprocessing uses the recorded common-role command, including -std=c++17 -ffast-math and trusted common CPP/include flags. malloc.hpp selection and immutable common recipe justify allocator authority; a map-role name alone is not allocator ABI equivalence.",
+    "allocator_macro_result": "All 17 recorded GCC malloc macro comparisons matched. USE_MEMMGR and LOG_MEMMGR present; NO_MEMMGR, DEBUG_MEMMGR, DEBUG, MEMWATCH, DMALLOC, GCOLLECT and MINICORE absent. Lower MALLOC/FREE use libc; active aRealloc2 is the custom _mrealloc, not libc realloc.",
+    "memory_dependency_entries_rehashed": 518,
+    "memory_evidence_artifacts_rehashed": 18,
+    "memory_source_symbol_body_and_excerpt_hashes_verified": 29,
+    "reused_sink_source_body_ranges_verified": 7,
+    "lifetime_source_file_excerpt_hash_and_line_ranges_verified": 35,
+    "lifetime_active_AST_definition_source_body_ranges_verified": 15,
+    "active_AST_selection": "Each retained lifetime definition was independently selected by kind, name, signature and exact CompoundStmt source range inside its own filtered TU artifact; exactly one match per retained definition. No declaration IDs were joined across independent filters.",
+    "primary_report_reference_files_rehashed_before_and_after": 574,
+    "primary_reference_drift": [],
+    "coverage_limit": "Hash checks establish input identity, not body semantics. Neither 518 dependency entries nor 3206 recorded inventory entries were all semantically audited. Lifetime AST evidence consists of discriminating filtered full-TU compilations, not a reviewed global multi-gigabyte AST."
+  },
+  "evidence_consistency": {
+    "U2": {
+      "consistent": true,
+      "source": "malloc.cpp:228-360; malloc.hpp:14-54,95-98; socket.cpp:726-797",
+      "finding": "Custom allocation header/pool implementation, zeroed session creation and grow/shrink ownership facts agree with exact source. _mrealloc retains storage on shrink; otherwise allocates, conditionally copies old_size, frees old storage and returns the result. Invalid _mmalloc requests return null; an _mrealloc growth/equal-size path can free the old allocation after null return. Positive allocation OOM has fatal exit paths. These are source-path facts, not executed failure counterexamples.",
+      "remaining_invariants": "Live unique configured FIFO allocation and coherent initialized pool/header ownership; typed header/checksum lifetime, layout and alignment; positive signed-long-representable bounded requests; valid disjoint readable packet/writable FIFO; no reentrant or asynchronous invalidation. No blanket libc realloc guarantee."
+    },
+    "U3": {
+      "consistent": true,
+      "source": "socket.cpp:526,593,720,726-739,1615,1628-1636; chrif.cpp:1870",
+      "finding": "Independent lexical rescan exactly reproduces the five direct server-flag/func_send assignments and six constructor/declaration lines. Accepted/outbound constructors select send_from_fifo; listener/reserved fd0 select null_send. Accepted player server flag zero follows only conditionally from calloc and unchanged accepted-slot provenance. session_isActive supplies bounds/non-null/eof checks, not authentication, lifetime pinning or receipt.",
+      "remaining_invariants": "Authenticated accepted-slot provenance, stable sd->fd/session/flag/callback and no indirect alias write, close/reuse, signal or helper reentrancy. Direct assignment inventory is not a complete alias/effect proof. fd0 is reserved and invalid for the selected player bound."
+    },
+    "U4": {
+      "consistent": true,
+      "source": "map.cpp:231-366,837-920; map.hpp:1099-1111",
+      "finding": "Fresh active AST confirms actual map_freeblock/lock/unlock definitions. Source ordering is collection before counter lock, synchronous va_copy/callback/va_end, normal count restoration, RAII unlock/deferred flush, wrapper return, clif_send return and eventual automatic packet lifetime end. Counter lock is not a mutex. Capacity exhaustion at block_free_count >= 1048576 calls map_destroyblock immediately even while locked.",
+      "remaining_invariants": "Live cooperating recipients/source/session objects; balanced nesting; no unrelated global-list mutation; no damaging destructor reentrancy/concurrency. Propagating exceptions skip manual count restoration and va_end calls; normal-return reasoning is not universal. Packet automatic-storage lifetime is distinct from bl/recipient/session lifetime. The capacity exception is source evidence, not a demonstrated live bug.",
+      "exact_frontier": "map_destroyblock -> npc_data and other concrete destructors plus allocator. No additional destructor audit launched."
+    },
+    "U5": {
+      "consistent": true,
+      "source": "clif.cpp:446-454; status.cpp:1199-1222; named lifetime report predicate excerpts",
+      "finding": "getSCE mutates lastStatus and the const overload forwards through const_cast; it is not a pure predicate. Immediate predicates do not directly receive raw buf/len, but no transitive noninterference proof follows. BL_PC target narrowing does not narrow every possible source type or eliminate opaque dispatch.",
+      "exact_frontiers": [
+        "map_id2bl/map_id2sd -> DBMap::get function pointer, db.hpp:406,622 and map.cpp:2456-2458,2337-2340",
+        "source BL_SKILL -> skill_db.find virtual/database dispatch, database.hpp:107-119 and battle.cpp:8048"
+      ],
+      "remaining_invariants": "Live coherent caches/containers/masters, terminating master traversal, valid map indexing and no concurrent/reentrant invalidation. Unreviewed callee behavior is unknown, not evidence of an actual bug."
+    },
+    "U6": {
+      "consistent": true,
+      "source": "clif.cpp:456-468,622-628,9412-9420; socket.cpp:773-797,822-890",
+      "finding": "Under the explicit live, distinct, stable FIFO/source and allocator invariants, the fixed length is seven and memcpy copies exactly seven bytes. Independently calculated pre-copy and postcommit client-reserve bounds are both 1064960 on the reviewed 64-bit ABI, given the report's respective queue bounds. WFIFOSET validates after copy; those checks cannot retroactively validate bad earlier access. Queue maximum rejection marks eof without cursor commit, and postcommit reserve can fail fatally. Server flush remains a conditional branch, not silently removed.",
+      "remaining_invariants": "U2-U5 stability and representable sane capacity/metadata arithmetic, plus diagnostic/library noninterference if broader failure-path definedness is requested. No always-copy, always-queue, normal-return or peer-receipt claim is approved."
+    }
+  },
+  "U1_and_variant_separation": {
+    "pristine": "Original variadic pointer qualification mismatch remains assessed UNDEFINED IF REACHED by the existing standards report; no mismatched execution was performed and the pristine sink remains unadoptable under that reviewed language contract.",
+    "qualified_trial_report_sha256": "173d097cd2ce811e4b6ef68ee6f577a109a4a367a42d294249cbc65dde399076",
+    "qualified_trial_source_closure_sha256": "1f2d601dc86d572af78bae036f444fbbd469539457569e4f951438b30e74236a",
+    "common_source_files_physically_compared": 7,
+    "common_source_comparisons_equal": true,
+    "limit": "Only unchanged common-helper bytes permit transfer of conditional source facts. No pristine caller AST IDs or whole-source fingerprint are stitched into the separate four-substitution scratch variant; no deployment or implementation adoption."
+  },
+  "verification": {
+    "historical_memory_compiler_commands_hash_verified": 6,
+    "historical_lifetime_compiler_commands_hash_verified": 7,
+    "historical_recorded_successes": 13,
+    "fresh_reviewer_compiler_commands": 2,
+    "fresh_reviewer_compiler_successes": 2,
+    "fresh_commands": ["gcc-malloc-macros", "freeblock-ast"],
+    "fresh_stdout_bytes_match_historical": true,
+    "fresh_stderr_bytes_match_historical": true,
+    "exact_recipe": "Recorded argv copied unchanged; existing spikes/007-native-packet-ast/toolchain only, nix develop --offline --no-write-lock-file. New private output files preserve historical artifacts. No root-checkout flake evaluation, new -U flags, forced headers, package builds or native execution.",
+    "runtime_executions": 0,
+    "synthetic_semantic_cases": 0
+  },
+  "freeze": {
+    "manifest": "/home/otto/.hermes/cache/scratch/native-quality-refactor-final-freeze.json",
+    "manifest_sha256_before": "66ffd7a2481de3a2421827dc0043111585c56e93fc4c6f71df33d6ccb9381d5a",
+    "manifest_sha256_after": "66ffd7a2481de3a2421827dc0043111585c56e93fc4c6f71df33d6ccb9381d5a",
+    "before_dependency_count": 198,
+    "after_dependency_count": 198,
+    "before_mismatches": [],
+    "after_mismatches": [],
+    "approved_tracer_review_sha256": "36274d795343691d9a37f99ea467eb289ea457a22e99c3ede0fad5b283a73b87",
+    "tracer_status": "Candidate/owned-quality approval only; no semantic sink admission."
+  },
+  "private_evidence": {
+    "root": "/home/otto/.hermes/cache/scratch/sink-independent-7apszzkd",
+    "provenance_check_sha256": "9789c34c159199747466251f9615102e273eaea35ecd886de1193dff998a14b0",
+    "secondary_check_sha256": "6292f7e4e5000de6cce001f605ebff55063119ea2d6b80c37af990d7b5eec7a5",
+    "fresh_commands_sha256": "46d4aee3a6cb9ab3cf5baee6a96cc1cffbf8c00bd0e868f365d2fb01fdbc2ab9",
+    "gcc_malloc_macros_stdout_sha256": "cdfeb941432a2d088668fed6bd967b1e6f9c2772ce4e8a35be025a78c816fb9a",
+    "freeblock_AST_stdout_sha256": "fd539dcfe0e4129ef2e38adf5a7298f3af1eb7884745b5b1ae1db91915c19b77",
+    "final_freeze_and_reference_readback": "/home/otto/.hermes/cache/scratch/sink-independent-7apszzkd/final-check.json"
+  },
+  "warnings": [
+    "Independent reviewer also exceeded the five-minute target during report assembly: last tool-measured elapsed time before final correction was 352.9092646379868 seconds. Evidence exploration had already stopped at the specified frontier. This target overrun is disclosed, not waived; no further source exploration follows.",
+    "Lifetime author exceeded the 360-second cap: published elapsed_seconds is 412.223 and time_cap_exceeded is true; parent context additionally reports assembly around 414 seconds. Procedural time compliance is not approved or waived by this factual PASS.",
+    "Fresh Clang syntax/AST stderr retains the identical historical wrapper unused-linker/include-library warnings; exit is zero. No warning suppression or recipe repair was performed.",
+    "Remaining ownership, alignment/language-definedness, allocator, indirect-callee, destructor and noninterference requirements are genuine unresolved adoption blockers, not implicitly discharged by empty report-consistency finding lists.",
+    "Normal synchronous packet lifetime does not prove recipient/block/session survival, asynchronous exclusion, queue success or receipt."
+  ],
+  "suggestions": [
+    "Keep the source facts classified as conditional and carry the exact unresolved frontiers forward without expanding this review.",
+    "The smallest implementation/adoption decision is whether to explicitly authorize a new U1 correction/package-variant scope or retain rejection of the pristine bridge. Any future qualified caller proof needs its own source and AST pins. Transitive allocator/lifetime formal closure must never be assumed or automatically waived."
+  ],
+  "author_time_cap_compliance_approved": false,
+  "review_frontier": "Stopped after factual consistency and provenance verification; no additional transitive callee audit, callback repair or sink adoption.",
+  "effects": {
+    "only_new_owned_report_and_private_scratch": true,
+    "source_tests_docs_pins_Git_changes": false,
+    "callback_package_world_runtime_SQL_model_changes": false,
+    "historical_reports_or_evidence_overwritten": false,
+    "network_installs_or_arbitrary_third_party_execution": false
+  }
+}

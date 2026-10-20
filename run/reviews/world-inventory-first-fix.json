@@ -1,0 +1,74 @@
+{
+  "schema_version": 1,
+  "defect": "WI-001",
+  "scope": "First bounded malformed-output decoding repair only; not independent approval, full-suite verification, source fingerprinting, or combined core acceptance.",
+  "review_evidence_read": [
+    "run/reviews/world-inventory-review.json:WI-001",
+    "/home/otto/.hermes/cache/scratch/world_inventory_independent_probe.py:176-189"
+  ],
+  "changes": {
+    "src/robots/adapters/world_inventory.py": "Added UnicodeError to the existing exception translation around subprocess.run only; unchanged fixed InventoryError message and raise from None.",
+    "tests/test_world_inventory.py": "Added separately parameterized stdout/stderr vertical regressions using real local Python children. Saved real subprocess.run before replacing only the exact first allowlisted query at the execution seam. Assertions verify unchanged capture_output/text/check/shell/timeout options, actual UnicodeDecodeError, main exit 2, empty stdout, exact fixed stderr, absent raw fixture values/true authorization, and suppressed adapter error context."
+  },
+  "red": {
+    "command": "nix develop --offline -c uv run --offline --no-sync pytest tests/test_world_inventory.py::test_real_engine_decoding_failure_is_sanitized_through_cli --no-cov -o addopts='' -vv --tb=short",
+    "exit_code": 1,
+    "output_summary": "2 failed in 0.21s",
+    "stdout_case": "UnicodeDecodeError: 'utf-8' codec can't decode byte 0xff in position 15: invalid start byte",
+    "stderr_case": "UnicodeDecodeError: 'utf-8' codec can't decode byte 0xff in position 15: invalid start byte",
+    "observed_stack": "main -> inventory_test_world -> _snapshot -> run_engine -> local_fixture -> saved real subprocess.run -> communicate -> _communicate -> _translate_newlines -> data.decode",
+    "failure_reason": "Real strict subprocess decoding escaped the existing InventoryError CLI boundary for each stream, before production modification."
+  },
+  "green": {
+    "command": "nix develop --offline -c uv run --offline --no-sync pytest tests/test_world_inventory.py::test_real_engine_decoding_failure_is_sanitized_through_cli --no-cov -o addopts='' -vv --tb=short",
+    "exit_code": 0,
+    "output_summary": "2 passed in 0.14s",
+    "each_stream_verified": {
+      "main_return": 2,
+      "stdout": "",
+      "stderr": "test-world inventory unavailable; no mutation authorized\n",
+      "adapter_error": "engine inventory read failed",
+      "adapter_cause": null,
+      "adapter_suppress_context": true,
+      "raw_fixture_visible": false,
+      "true_mutation_authorization_visible": false
+    }
+  },
+  "scoped_tests_final": {
+    "command": "nix develop --offline -c uv run --offline --no-sync pytest tests/test_world_inventory.py tests/test_taskfile_safety_labels.py tests/test_world_isolation_guard.py tests/test_world_seed_safety.py --no-cov -o addopts='' -q --tb=short",
+    "exit_code": 0,
+    "output_summary": "123 passed in 0.41s",
+    "separate_count_confirmation": {
+      "command": "nix develop --offline -c bash -c 'uv run --offline --no-sync pytest tests/test_world_inventory.py --no-cov -o addopts=\"\" -q --tb=short && uv run --offline --no-sync pytest tests/test_taskfile_safety_labels.py tests/test_world_isolation_guard.py tests/test_world_seed_safety.py --no-cov -o addopts=\"\" -q --tb=short'",
+      "exit_code": 0,
+      "inventory_output": "33 passed in 0.15s",
+      "prior_safety_output": "90 passed in 0.18s"
+    }
+  },
+  "owned_file_gates": {
+    "command": "nix develop --offline -c bash -c 'uv run --offline --no-sync black --check src/robots/adapters/world_inventory.py tests/test_world_inventory.py && uv run --offline --no-sync ruff check src/robots/adapters/world_inventory.py tests/test_world_inventory.py && uv run --offline --no-sync mypy src/robots/adapters/world_inventory.py tests/test_world_inventory.py && uv run --offline --no-sync xenon src/robots/adapters/world_inventory.py --max-absolute B --max-modules B --max-average A && uv run --offline --no-sync bandit -q -c pyproject.toml src/robots/adapters/world_inventory.py && uv run --offline --no-sync vulture src/robots/adapters/world_inventory.py && uv run --offline --no-sync pylint --disable=all --enable=duplicate-code src/robots/adapters/world_inventory.py'",
+    "exit_code": 0,
+    "output": "2 files would be left unchanged. All checks passed! Success: no issues found in 2 source files. Your code has been rated at 10.00/10.",
+    "passed": ["Black", "Ruff", "strict mypy", "Xenon", "Bandit", "Vulture", "Pylint duplicate-code"],
+    "initial_gate_issue": "Ruff RUF043 required making the anchored pytest match expression a raw string; corrected test expression only, then all gates and scoped tests reran successfully."
+  },
+  "preserved": [
+    "Strict text decoding; no errors=ignore/replace",
+    "Complete production command allowlist and identifier scope",
+    "Read-only command forms, labels projection and mount membership",
+    "Double observations and always-false inventory mutation_authorized",
+    "Ten-second timeout, parser limit and shell=False",
+    "Existing justified B404/B603 suppressions",
+    "Taskfile and global configurations"
+  ],
+  "limits": [
+    "Only isolated local stdlib fixture subprocesses executed; no actual Docker/engine calls, network/provider calls, SQL, game, credentials, or mutations.",
+    "No full pytest/task check/task test, legacy fingerprint probes, source hash collection, or combined verification report.",
+    "No staging, commit, push, independent approval, reset authorization, or gameplay claims."
+  ],
+  "files_modified_or_created": [
+    "src/robots/adapters/world_inventory.py",
+    "tests/test_world_inventory.py",
+    "run/reviews/world-inventory-first-fix.json"
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "record": "GRIND_WINDOW57_APPROACH_PACING_IS_THE_FINAL_GATE_DIAGNOSTIC_TAILS_LANDED",
+  "date": "2026-10-20 (~04:2x)",
+  "diagnostic_tails": "LANDED: the emission capture now records the decide tail (event/goal/plan-targets/actions per decide) and the script tail (routes/preparation) into the receipt \u2014 this window's tails immediately showed the authored plans, the clean script routes, and the preparation conjuncts all green.",
+  "findings": [
+    "fx0: 8 walk requests sent AND executed (own_pos 8 \u2014 movement WORKS), 8 attackable mobs visible, an authored Lunatic plan \u2014 but only 8 walks in 1800s (~4/min crawl) and no Attack ever authored. The approach converges at a crawl: the pending-walk release/re-request pacing is the bottleneck (the bounded re-request interval vs the 45-60s stall kick).",
+    "fx1: zero walks, 3 attackables that likely exclude its plan target (Pupa) \u2014 the species commitment holds by design pending the starvation widening; its 2500 'dispatched' actions produced no wire sends (the dispatched phase is unverified for the real client \u2014 the wire.sent list does not exist there; the packet_counts are the truth).",
+    "The decide->plan authoring chain is CONFIRMED WORKING (the authored plans + the clean script routes + the green preparation conjuncts)."
+  ],
+  "next_session": [
+    "Read _await_pending + the FarmScript approach loop with the real numbers: the pending-walk release interval, the arrival detection, and the re-request pacing; tune so the approach converges in seconds, not minutes.",
+    "fx1: the starvation widening cadence vs the 45s+ decide latency (the widen needs the scripted ticks, which now exist).",
+    "Then the kills resume -> the picklog -> loot -> sell -> equip closure."
+  ]
+}

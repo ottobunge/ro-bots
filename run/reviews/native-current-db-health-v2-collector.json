@@ -1,0 +1,249 @@
+{
+  "schema": "native-current-db-health-v2-collector-report/v1",
+  "generated_at_utc": "2026-10-14T15:41:37.070539+00:00",
+  "collector": {
+    "path": "/home/otto/dev/ro-bots/.work/native-current-db-health-v2/collector_v2.py",
+    "sha256": "013f66b742ce27a15f81bcd6d5a54b07465c3f6eebf10b6d8593d0a66ae0ab20",
+    "bytes": 28068,
+    "tests": "/home/otto/dev/ro-bots/.work/native-current-db-health-v2/tests/test_collector_v2.py",
+    "tests_sha256": "1c77060b0433e22b7145dd6893cc0278621774fd6fb1754f2147bff9b9409116"
+  },
+  "provenance_note": "Original v1 collector bytes (npc-current-db-health/collect.py) were lost to cache pruning; schema knowledge was recovered from the pinned historical receipt bytes, not the lost source. No recovery of the lost collector is claimed.",
+  "tdd": {
+    "red": {
+      "exit": "1",
+      "ran": 15,
+      "errored": 15,
+      "failure_class": "NotImplementedError (named skeleton gaps)",
+      "receipts": {
+        "unittest_output": "/home/otto/dev/ro-bots/.work/native-current-db-health-v2/red/red_unittest.txt",
+        "exit": "/home/otto/dev/ro-bots/.work/native-current-db-health-v2/red/red_exit.txt",
+        "skeleton_stash": "/home/otto/dev/ro-bots/.work/native-current-db-health-v2/red/collector_v2_skeleton_stash.py",
+        "skeleton_stash_sha256": "e69b68eb017b913bc50f25cdd9264afbe43f1bdb002da60777e494fed4c1ad46",
+        "harness_admission_failure_preserved": "/home/otto/dev/ro-bots/.work/native-current-db-health-v2/red/harness_admission_failure_not_behavioral.txt"
+      }
+    },
+    "green": {
+      "attempt1_failed_receipt": "/home/otto/dev/ro-bots/.work/native-current-db-health-v2/green/green_attempt1_failed_unittest.txt",
+      "attempt1_defects": [
+        "synthetic SqlSpy dispatched CHECK statements by substring: 'login'/'char' shadowed 'loginlog'/'char_reg_num'/'charlog' (fixture defect; fixed to exact-table regex dispatch)",
+        "test_07 hashed the mutated copy into expected_source_sha256, defeating its own drift intent (test defect; now hashes original collector bytes)"
+      ],
+      "final_pytest": {
+        "receipt": "/home/otto/dev/ro-bots/.work/native-current-db-health-v2/green/green_pytest.xml",
+        "output": "/home/otto/dev/ro-bots/.work/native-current-db-health-v2/green/green_pytest.txt",
+        "sha256": "391ffe317fcaadaa58035d05e3879d13c77da027ec64cb3149bb5fabb3070b02",
+        "result": "15 passed, exit 0",
+        "command": "nix develop --offline --no-write-lock-file path:./spikes/007-native-packet-ast/toolchain -c env PYTHONOPTIMIZE=0 PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=src:. .venv/bin/python -B -m pytest .work/native-current-db-health-v2/tests -q --override-ini addopts='' --junitxml=.work/native-current-db-health-v2/green/green_pytest.xml (from repo root)"
+      },
+      "final_unittest_receipt": {
+        "output": "/home/otto/dev/ro-bots/.work/native-current-db-health-v2/green/green_unittest_qualified.txt",
+        "result": "15 OK, exit 0",
+        "invocation_error_preserved": "/home/otto/dev/ro-bots/.work/native-current-db-health-v2/green/unittest_receipt_invocation_error_preserved.txt",
+        "note": "also green under bare pinned python3 in green/green_unittest.txt (15 OK)"
+      }
+    },
+    "test_identity_chronology": "All 15 test identities unchanged old->new (CollectorV2Tests::test_01..test_15; identical in pytest JUnit and unittest receipts). RED ran on post-syntax-fix test bytes; two harness defects were fixed after RED (disclosed above); the exact RED-time test-file bytes were not stashed and their digest is unknown, disclosed as a gap."
+  },
+  "quality_gates": {
+    "environment": "3.14.7 (main, Aug  7 2026, 02:26:00) [Clang 22.1.3 ]\nWRAPPER=qualified-toolchain-flake",
+    "environment_stderr_preserved": "",
+    "command_shape": "nix develop --offline --no-write-lock-file path:./spikes/007-native-packet-ast/toolchain -c env PYTHONOPTIMIZE=0 PYTHONDONTWRITEBYTECODE=1 .venv/bin/python -B -m {black|ruff|mypy|xenon} ...",
+    "scope": "collector_v2.py only (new module); no inherited-scratch debt claimed",
+    "results": {
+      "black": "PASS",
+      "ruff": "PASS",
+      "mypy_strict": "PASS",
+      "xenon": "PASS"
+    },
+    "log": "/home/otto/dev/ro-bots/.work/native-current-db-health-v2/green/gates_status_qualified.txt"
+  },
+  "constants_equivalence_vs_successor": {
+    "PINNED_ROLE_IDS == recovery.ROLE_IDS": true,
+    "DB_IMAGE == recovery.DB_IMAGE": true,
+    "NATIVE_IMAGE == recovery.NATIVE_IMAGE": true,
+    "PROJECT == recovery.PROJECT": true,
+    "VOLUME == recovery.VOLUME": true,
+    "DB_ID == recovery.DB_ID": true,
+    "CHECKED_TABLES == live_recovery.CHECKED_TABLES": true,
+    "HISTORICAL_RECEIPT_SHA == live_recovery.TABLE_HEALTH_SHA": true,
+    "HISTORICAL_RECEIPT digest still pinned": true
+  },
+  "schema_coverage": [
+    {
+      "field": "schema",
+      "origin": "fresh_from_this_run",
+      "verified_by": "t01"
+    },
+    {
+      "field": "status",
+      "origin": "fresh_from_this_run",
+      "verified_by": "t01,t02,t03,t04"
+    },
+    {
+      "field": "observed_at_utc",
+      "origin": "fresh_from_this_run",
+      "verified_by": "t08 (predicate freshness)"
+    },
+    {
+      "field": "exact_database",
+      "origin": "fresh_from_this_run",
+      "verified_by": "t01,t12,t13,t14"
+    },
+    {
+      "field": "ownership_and_lock",
+      "origin": "fresh_from_this_run",
+      "verified_by": "t01 (lock events)"
+    },
+    {
+      "field": "server_variables",
+      "origin": "fresh_from_this_run",
+      "verified_by": "t01,t09"
+    },
+    {
+      "field": "historical_faults",
+      "origin": "carried_verbatim_from_pinned",
+      "verified_by": "t01 (key-set equality)"
+    },
+    {
+      "field": "table_classifications",
+      "origin": "fresh_from_this_run",
+      "verified_by": "t01,t02,t03"
+    },
+    {
+      "field": "counts",
+      "origin": "fresh_from_this_run",
+      "verified_by": "t02"
+    },
+    {
+      "field": "bounds",
+      "origin": "fresh_from_this_run",
+      "verified_by": "t01"
+    },
+    {
+      "field": "metadata_before",
+      "origin": "fresh_from_this_run",
+      "verified_by": "t01,t05"
+    },
+    {
+      "field": "metadata_after",
+      "origin": "fresh_from_this_run",
+      "verified_by": "t01,t06,t08 (predicate inventory)"
+    },
+    {
+      "field": "engine_bookkeeping",
+      "origin": "fresh_from_this_run",
+      "verified_by": "t01"
+    },
+    {
+      "field": "startup_events",
+      "origin": "carried_verbatim_from_pinned",
+      "verified_by": "t01 (key-set equality)"
+    },
+    {
+      "field": "startup_recovery_detail",
+      "origin": "carried_verbatim_from_pinned",
+      "verified_by": "t01 (key-set equality)"
+    },
+    {
+      "field": "same_database_lifetime",
+      "origin": "fresh_from_this_run",
+      "verified_by": "t04,t08 (predicate)"
+    },
+    {
+      "field": "operational_health_is_not_table_health",
+      "origin": "carried_verbatim_from_pinned",
+      "verified_by": "t01 (key-set equality)"
+    },
+    {
+      "field": "historical_errors_waived",
+      "origin": "carried_verbatim_from_pinned",
+      "verified_by": "t01 (key-set equality)"
+    },
+    {
+      "field": "native_or_maintenance_admission_decision",
+      "origin": "carried_verbatim_from_pinned",
+      "verified_by": "t01 (key-set equality)"
+    },
+    {
+      "field": "effects",
+      "origin": "fresh_from_this_run",
+      "verified_by": "t01 (zero-effect inventory)"
+    },
+    {
+      "field": "next_repair_scope",
+      "origin": "carried_verbatim_from_pinned",
+      "verified_by": "t01 (key-set equality)"
+    },
+    {
+      "field": "limits",
+      "origin": "carried_verbatim_from_pinned",
+      "verified_by": "t01 (key-set equality)"
+    },
+    {
+      "field": "chronology_note",
+      "origin": "carried_verbatim_from_pinned",
+      "verified_by": "t01 (key-set equality)"
+    },
+    {
+      "field": "primary_sources",
+      "origin": "carried_verbatim_from_pinned",
+      "verified_by": "t01 (key-set equality)"
+    },
+    {
+      "field": "historical_fixture_sql_source",
+      "origin": "carried_verbatim_from_pinned",
+      "verified_by": "t01 (key-set equality)"
+    },
+    {
+      "field": "provenance",
+      "origin": "fresh_from_this_run",
+      "verified_by": "t10,t11"
+    },
+    {
+      "field": "collector_receipts",
+      "origin": "fresh_from_this_run",
+      "verified_by": "t01,t09"
+    },
+    {
+      "field": "initial_scratch_regex_issue",
+      "origin": "carried_verbatim_from_pinned",
+      "verified_by": "t01 (key-set equality)"
+    },
+    {
+      "field": "documentation_snapshot_failures",
+      "origin": "carried_verbatim_from_pinned",
+      "verified_by": "t01 (key-set equality)"
+    },
+    {
+      "field": "final_verification",
+      "origin": "fresh_from_this_run",
+      "verified_by": "t01"
+    }
+  ],
+  "schema_coverage_summary": {
+    "historical_fields": 30,
+    "v2_fields": 30,
+    "key_sets_equal": true,
+    "evidence": "test_01 asserts receipt key-set equality vs run/reviews/native-current-db-health.json"
+  },
+  "limits_respected": {
+    "no_live_docker_sql_check": "true (synthetic callable fixtures only; subprocess transport exists only inside default_live_plan closures, never invoked offline)",
+    "no_world_lock_acquisition": "true (offline context-manager lock spies only)",
+    "no_private_body_reads": "true (private inputs handled as path/digest metadata only; t10 proves nonexistent private paths never opened)",
+    "no_approval_issued": "true",
+    "no_receipt_at_real_path": true,
+    "no_production_edits": "true (only .work/native-current-db-health-v2/** and this report)",
+    "no_git_actions": "true"
+  },
+  "parent_live_run": {
+    "owner": "parent (not executed in this task; no --live invocation made)",
+    "command": "cd /home/otto/dev/ro-bots && nix develop --offline --no-write-lock-file path:./spikes/007-native-packet-ast/toolchain -c env PYTHONOPTIMIZE=0 PYTHONDONTWRITEBYTECODE=1 .venv/bin/python -B .work/native-current-db-health-v2/collector_v2.py --live --out run/reviews/native-current-db-health-v2.json --expect-source-sha $(sha256sum .work/native-current-db-health-v2/collector_v2.py | cut -d' ' -f1)",
+    "notes": [
+      "Uses the successor's canonical lock via live_recovery.Effects.lock and the recovery SHELL docker-exec transport; no new authority class.",
+      "test_08 proves the successor live_recovery.table_health predicate accepts the v2 receipt (fresh) and denies stale (25h).",
+      "Drift denial fires before any effect if collector bytes change; bind the printed sha256 before any approval.",
+      "path-flake note: run from repo root; the toolchain flake.nix/flake.lock are untracked in the dirty git tree and were made evaluable only via the --no-write-lock-file/offline wrapper (no git actions taken)."
+    ]
+  }
+}

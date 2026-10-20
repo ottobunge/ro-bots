@@ -1,0 +1,1166 @@
+{
+  "schema": "maintenance-observation-integration/v1",
+  "status": "PASS_OFFLINE_SCOPED; COMBINED_INDEPENDENT_COMPLETED_SNAPSHOT_REVIEW_PENDING",
+  "passed": true,
+  "summary": "Integrated only the proven installed-rootless-namespace socket read path and LF/CR CLI log framing. All 51 prior raw IDs and six new cases pass. No service/native/SQL/provider/credential effects, admission, recovery or cleared flags.",
+  "owned_files": [
+    "/home/otto/.hermes/cache/scratch/npc-owned-recovery/live_recovery.py",
+    "/home/otto/.hermes/cache/scratch/npc-owned-recovery/rootless_socket_reader.py",
+    "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_observation_integration.py"
+  ],
+  "baseline": {
+    "accepted_adapter_archive": "/home/otto/.hermes/cache/scratch/npc-owned-recovery/observation-integration/accepted-live_recovery.py",
+    "accepted_adapter_sha256": "e44b5d4b4c71787c3611cfaa09d51c5f46d94c21188f1a18de49a358ea92f122",
+    "previous_report": "/home/otto/dev/ro-bots/run/reviews/maintenance-deployment-observer-repair1.json",
+    "previous_report_sha256": "446f8cac7c6831e437275a4c28ec364a3cd6c0536571a86e1ba2d0f3cf748fb5"
+  },
+  "diagnosed_authorities": [
+    {
+      "path": "/home/otto/dev/ro-bots/run/reviews/native-rootless-socket-observation.json",
+      "sha256": "c26d33882fd15bf35a1393e7ff55b0a630c9e47f365fbdd9424a5b42d99028a2",
+      "scope": "Two actual read-only installed-namespace observations; no actor-count/native-health admission."
+    },
+    {
+      "path": "/home/otto/dev/ro-bots/run/reviews/maintenance-log-framing-diagnosis.json",
+      "sha256": "2a6e0a452f043ed8543a7066d81d5a3c1a8aadcc4941fe48c9fb7da684eba762",
+      "scope": "Current-start char 3 and map 81 internal CR fragments; true LF records have timestamp heads. DB 11 and map 3 errors are genuine unresolved faults."
+    }
+  ],
+  "socket_integration": {
+    "source_extract": {
+      "path": "/home/otto/.hermes/cache/scratch/npc-native-socket-observation/read_sockets.py",
+      "sha256": "b6301730a7b8e8ef5f90d4d578e7661f52b102a906fdce99409f7528225bab23",
+      "reused": "Only bounded namespace/map/comm/start-tick/FD/proc TCP checks. Adapter TCP decoder and socket classifier are reused; no second large observer."
+    },
+    "approval_required": {
+      "bindings": {
+        "/home/otto/.hermes/cache/scratch/npc-owned-recovery/live_recovery.py": "90f40bd8209df2357cdbbd8e5eb6afc89a0e237eed3d02b6037ed5175d1eeb71",
+        "/home/otto/.hermes/cache/scratch/npc-owned-recovery/rootless_socket_reader.py": "a8339f4af3359d6ae283879ce1031a4bcc8e589e9822a203e6a3c68acafd49ae"
+      },
+      "runtime_hashes": {
+        "rootless-reader-context": "d7ea3de7e18460a37233f290d7d235a76cc94d12c7b42e8ab6338578c037e6fa"
+      },
+      "context": {
+        "command": [
+          "/nix/store/4xka8scj12km8im5kqdmjw8r0n0r5f00-podman-5.8.7/bin/podman",
+          "unshare",
+          "/home/otto/.hermes/tools/python-3.14.7+20260901-linux-x64/bin/python3.14",
+          "-B",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/rootless_socket_reader.py",
+          "--child"
+        ],
+        "endpoint": "unix:///run/user/1000/podman/podman.sock",
+        "executables": {
+          "/home/otto/.hermes/tools/python-3.14.7+20260901-linux-x64/bin/python3.14": "8dfa9757a52b9c3edf1dedaaa2a7a8c40ea4beb058f20e90bdd47b48f3b1b176",
+          "/nix/store/4xka8scj12km8im5kqdmjw8r0n0r5f00-podman-5.8.7/bin/podman": "172f7b7ff1bbed1d4b69ee9cae012f16cb6be47a1b436c0b6742dddb0f87a99d"
+        },
+        "gid_map": [
+          "0",
+          "100",
+          "1",
+          "1",
+          "100000",
+          "65536"
+        ],
+        "uid_map": [
+          "0",
+          "1000",
+          "1",
+          "1",
+          "100000",
+          "65536"
+        ],
+        "userns": "user:[4026532852]"
+      },
+      "existing_bindings": "Existing driver/private/runtime/engine/network bindings remain mandatory; this report does not create or approve an execution document."
+    },
+    "selection": "Only explicit parent rootless-reader-context selects this path. Old strict/maintenance caller with no such entry preserves its historical host observer, including PermissionError UNKNOWN denial; there is no fallback after reader failure.",
+    "validation": "Selected Docker context endpoint and installed local Podman rootless store/socket; exact four role IDs/images/PIDs/StartedAt/Running before and after, fresh Docker readback equality. Child validates owned namespace and installed UID/GID maps, exact role IDs/images, positive supplied fresh PID, matching actual process comm, per-role namespace/maps, stable proc start tick, bounded FD links/tables. All running roles are read in one child command.",
+    "classification": "Listener port constants 16900/16121/15121/3306; owned peers require reciprocal exact TCP endpoints; unmatched/non-role or nonstable states conservatively contribute client connections. This is socket exclusion, not actors or human identity.",
+    "failure": "Command failure, unparseable/unknown namespace/request/response, wrong role identity or PID/readback drift denies without fallback. client_connections remains UNKNOWN in failed observation metadata; no new successful actor record is appended.",
+    "actor_counts": "Existing uncertainty behavior is preserved; the source-shaped positive snapshot has active_players/autotrade_players None despite observed socket zero. Reader never derives actors from sockets."
+  },
+  "log_integration": {
+    "implemented": "Capture docker logs as bytes to avoid universal-newline conversion; decode strict UTF-8 independently, retain LF records and internal CR, validate timestamps and monotonic per-stream order before stable integer-nanosecond merge. Equal timestamps preserve within-stream order; cross-stream tie order is deterministic, not causal evidence. current_logs applies the inspected StartedAt lifetime using exact integer nanoseconds.",
+    "denial": "Missing/malformed first or later LF timestamp, empty/gapped fragment, missing LF terminator, malformed UTF-8, earlier epoch or reversed per-stream timestamp denies. Never attach fragments by guessing.",
+    "native_policy": "Native facts classify LF records without splitting internal CR. stderr SQL/Error/Fatal markers remain counted and unhealthy. Readiness markers remain native-source predicates; progress alone grants no readiness.",
+    "unchanged": "database_role and native_health ASTs, zero-lifetime-error policy, lifecycle/SQL/final-helper guards and all prior assertions/source bytes."
+  },
+  "vertical_tdd": {
+    "reached_behavioral_red": [
+      "socket-hostfd-red",
+      "framing-red"
+    ],
+    "green": [
+      "socket-qualified-green",
+      "framing-green"
+    ],
+    "method": "Reached host FD versus supported-reader assertion before socket integration; reached exact-byte/CR transport assertion before LF framing correction. Socket GREEN was recorded before framing implementation. Four added denial/provenance cases characterize guard behavior after these vertical slices, not separate manufactured REDs.",
+    "inherited_CR_refusal": {
+      "source_diagnosis": "/home/otto/dev/ro-bots/run/reviews/maintenance-log-framing-diagnosis.json",
+      "diagnostic_repro": {
+        "path": "/home/otto/.hermes/cache/scratch/npc-maintenance-log-diagnosis/repro_test.py",
+        "tests": 4,
+        "returncode": 0,
+        "scope": "diagnostic characterization only, not candidate acceptance"
+      },
+      "note": "Prior diagnosis already reached CR-fragment ISO refusal for 3/81 fragments. No rollback or synthetic historical RED was used."
+    },
+    "harness_issues": "Initial host-identity spy affected real lock ownership; corrected to child-only identity. Initial readlink spy affected executable symlink resolution; corrected to proc-only. Synthetic engine context was corrected to documented selected endpoint; Role field assertion was corrected from name to role. These failed receipts are retained as harness errors, not extra source defects.",
+    "already_green_characterization": "socket-actor-unknown-red receipt is actually PASS and is NOT counted as a reached RED; removing a redundant fixture history setting confirmed existing maintenance UNKNOWN behavior.",
+    "receipts": {
+      "socket-red": {
+        "command": [
+          "/home/otto/dev/ro-bots/.venv/bin/python",
+          "-B",
+          "-m",
+          "pytest",
+          "-q",
+          "-o",
+          "addopts=",
+          "-p",
+          "no:cacheprovider",
+          "--confcutdir=/home/otto/.hermes/cache/scratch/npc-owned-recovery",
+          "--rootdir=/home/otto",
+          "--basetemp=/home/otto/.hermes/cache/scratch/npc-owned-recovery/observation-integration/socket-red-tmp",
+          "--junitxml=/home/otto/.hermes/cache/scratch/npc-owned-recovery/observation-integration/socket-red.xml",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_observation_integration.py::test_rootless_reader_reaches_real_snapshot_without_host_fd"
+        ],
+        "exit": 1,
+        "log": "/home/otto/.hermes/cache/scratch/npc-owned-recovery/observation-integration/socket-red.log",
+        "sha256": "e65f9958cead7e89a17cf82d7c17829a3b5f44810c843caf92ea53f009e834e2"
+      },
+      "socket-reached-red": {
+        "command": [
+          "/home/otto/dev/ro-bots/.venv/bin/python",
+          "-B",
+          "-m",
+          "pytest",
+          "-q",
+          "-o",
+          "addopts=",
+          "-p",
+          "no:cacheprovider",
+          "--confcutdir=/home/otto/.hermes/cache/scratch/npc-owned-recovery",
+          "--rootdir=/home/otto",
+          "--basetemp=/home/otto/.hermes/cache/scratch/npc-owned-recovery/observation-integration/socket-reached-red-tmp",
+          "--junitxml=/home/otto/.hermes/cache/scratch/npc-owned-recovery/observation-integration/socket-reached-red.xml",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_observation_integration.py::test_rootless_reader_reaches_real_snapshot_without_host_fd"
+        ],
+        "exit": 1,
+        "log": "/home/otto/.hermes/cache/scratch/npc-owned-recovery/observation-integration/socket-reached-red.log",
+        "sha256": "2fd9a1cd60fdf1859ee6d39a682be2fac086a1a9de2806e9738b9e9832500d13"
+      },
+      "socket-hostfd-red": {
+        "command": [
+          "/home/otto/dev/ro-bots/.venv/bin/python",
+          "-B",
+          "-m",
+          "pytest",
+          "-q",
+          "-o",
+          "addopts=",
+          "-p",
+          "no:cacheprovider",
+          "--confcutdir=/home/otto/.hermes/cache/scratch/npc-owned-recovery",
+          "--rootdir=/home/otto",
+          "--basetemp=/home/otto/.hermes/cache/scratch/npc-owned-recovery/observation-integration/socket-hostfd-red-tmp",
+          "--junitxml=/home/otto/.hermes/cache/scratch/npc-owned-recovery/observation-integration/socket-hostfd-red.xml",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_observation_integration.py::test_rootless_reader_reaches_real_snapshot_without_host_fd"
+        ],
+        "exit": 1,
+        "log": "/home/otto/.hermes/cache/scratch/npc-owned-recovery/observation-integration/socket-hostfd-red.log",
+        "sha256": "c779d9c90ed22beb57d2d50a5cec4fc5506f436f4ec0d163d5f7d02bf050fdac"
+      },
+      "socket-green": {
+        "command": [
+          "/home/otto/dev/ro-bots/.venv/bin/python",
+          "-B",
+          "-m",
+          "pytest",
+          "-q",
+          "-o",
+          "addopts=",
+          "-p",
+          "no:cacheprovider",
+          "--confcutdir=/home/otto/.hermes/cache/scratch/npc-owned-recovery",
+          "--rootdir=/home/otto",
+          "--basetemp=/home/otto/.hermes/cache/scratch/npc-owned-recovery/observation-integration/socket-green-tmp",
+          "--junitxml=/home/otto/.hermes/cache/scratch/npc-owned-recovery/observation-integration/socket-green.xml",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_observation_integration.py"
+        ],
+        "exit": 1,
+        "log": "/home/otto/.hermes/cache/scratch/npc-owned-recovery/observation-integration/socket-green.log",
+        "sha256": "21de81981764136a6ba213a67d3fa86bdf2ce7ecdb5a66706cc29cbf0b39d12c"
+      },
+      "socket-green2": {
+        "command": [
+          "/home/otto/dev/ro-bots/.venv/bin/python",
+          "-B",
+          "-m",
+          "pytest",
+          "-q",
+          "-o",
+          "addopts=",
+          "-p",
+          "no:cacheprovider",
+          "--confcutdir=/home/otto/.hermes/cache/scratch/npc-owned-recovery",
+          "--rootdir=/home/otto",
+          "--basetemp=/home/otto/.hermes/cache/scratch/npc-owned-recovery/observation-integration/socket-green2-tmp",
+          "--junitxml=/home/otto/.hermes/cache/scratch/npc-owned-recovery/observation-integration/socket-green2.xml",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_observation_integration.py"
+        ],
+        "exit": 1,
+        "log": "/home/otto/.hermes/cache/scratch/npc-owned-recovery/observation-integration/socket-green2.log",
+        "sha256": "3f7fb1a79b78dc4606dbabd8faa67899978260000020acf58abaaa73b3b5b7a9"
+      },
+      "socket-green3": {
+        "command": [
+          "/home/otto/dev/ro-bots/.venv/bin/python",
+          "-B",
+          "-m",
+          "pytest",
+          "-q",
+          "-o",
+          "addopts=",
+          "-p",
+          "no:cacheprovider",
+          "--confcutdir=/home/otto/.hermes/cache/scratch/npc-owned-recovery",
+          "--rootdir=/home/otto",
+          "--basetemp=/home/otto/.hermes/cache/scratch/npc-owned-recovery/observation-integration/socket-green3-tmp",
+          "--junitxml=/home/otto/.hermes/cache/scratch/npc-owned-recovery/observation-integration/socket-green3.xml",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_observation_integration.py"
+        ],
+        "exit": 1,
+        "log": "/home/otto/.hermes/cache/scratch/npc-owned-recovery/observation-integration/socket-green3.log",
+        "sha256": "b35206282a26e01851c889f6bf91219e3a9a8ce94f101d4ef84a5f90ae3f59da"
+      },
+      "framing-red": {
+        "command": [
+          "/home/otto/dev/ro-bots/.venv/bin/python",
+          "-B",
+          "-m",
+          "pytest",
+          "-q",
+          "-o",
+          "addopts=",
+          "-p",
+          "no:cacheprovider",
+          "--confcutdir=/home/otto/.hermes/cache/scratch/npc-owned-recovery",
+          "--rootdir=/home/otto",
+          "--basetemp=/home/otto/.hermes/cache/scratch/npc-owned-recovery/observation-integration/framing-red-tmp",
+          "--junitxml=/home/otto/.hermes/cache/scratch/npc-owned-recovery/observation-integration/framing-red.xml",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_observation_integration.py::test_lf_progress_records_preserve_cr_and_stream_order"
+        ],
+        "exit": 1,
+        "log": "/home/otto/.hermes/cache/scratch/npc-owned-recovery/observation-integration/framing-red.log",
+        "sha256": "3f642347b9c3f2b9180dccb34a99dfa082784d39f188fc909f0a6918478ca484"
+      },
+      "socket-qualified-green": {
+        "command": [
+          "/home/otto/dev/ro-bots/.venv/bin/python",
+          "-B",
+          "-m",
+          "pytest",
+          "-q",
+          "-o",
+          "addopts=",
+          "-p",
+          "no:cacheprovider",
+          "--confcutdir=/home/otto/.hermes/cache/scratch/npc-owned-recovery",
+          "--rootdir=/home/otto",
+          "--basetemp=/home/otto/.hermes/cache/scratch/npc-owned-recovery/observation-integration/socket-qualified-green-tmp",
+          "--junitxml=/home/otto/.hermes/cache/scratch/npc-owned-recovery/observation-integration/socket-qualified-green.xml",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_observation_integration.py::test_rootless_reader_reaches_real_snapshot_without_host_fd"
+        ],
+        "exit": 0,
+        "log": "/home/otto/.hermes/cache/scratch/npc-owned-recovery/observation-integration/socket-qualified-green.log",
+        "sha256": "730410d23add507d10274b5400f29dd16f80db2f65bf9ef1c50a875848f3486b"
+      },
+      "framing-green": {
+        "command": [
+          "/home/otto/dev/ro-bots/.venv/bin/python",
+          "-B",
+          "-m",
+          "pytest",
+          "-q",
+          "-o",
+          "addopts=",
+          "-p",
+          "no:cacheprovider",
+          "--confcutdir=/home/otto/.hermes/cache/scratch/npc-owned-recovery",
+          "--rootdir=/home/otto",
+          "--basetemp=/home/otto/.hermes/cache/scratch/npc-owned-recovery/observation-integration/framing-green-tmp",
+          "--junitxml=/home/otto/.hermes/cache/scratch/npc-owned-recovery/observation-integration/framing-green.xml",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_observation_integration.py::test_lf_progress_records_preserve_cr_and_stream_order"
+        ],
+        "exit": 0,
+        "log": "/home/otto/.hermes/cache/scratch/npc-owned-recovery/observation-integration/framing-green.log",
+        "sha256": "c91dad03511eb111dba9f317cdb7962c64ec389c7d259de488e167c78aac1b31"
+      },
+      "new-six-green": {
+        "command": [
+          "/home/otto/dev/ro-bots/.venv/bin/python",
+          "-B",
+          "-m",
+          "pytest",
+          "-q",
+          "-o",
+          "addopts=",
+          "-p",
+          "no:cacheprovider",
+          "--confcutdir=/home/otto/.hermes/cache/scratch/npc-owned-recovery",
+          "--rootdir=/home/otto",
+          "--basetemp=/home/otto/.hermes/cache/scratch/npc-owned-recovery/observation-integration/new-six-green-tmp",
+          "--junitxml=/home/otto/.hermes/cache/scratch/npc-owned-recovery/observation-integration/new-six-green.xml",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_observation_integration.py"
+        ],
+        "exit": 0,
+        "log": "/home/otto/.hermes/cache/scratch/npc-owned-recovery/observation-integration/new-six-green.log",
+        "sha256": "c1ebd814ed73dbf177c26e77cf5d2777bd945c68d993c0e39f1b85d9c6230825"
+      },
+      "format": {
+        "command": [
+          "/home/otto/dev/ro-bots/.venv/bin/black",
+          "--config",
+          "pyproject.toml",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/live_recovery.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/rootless_socket_reader.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_observation_integration.py"
+        ],
+        "exit": 0,
+        "log": "/home/otto/.hermes/cache/scratch/npc-owned-recovery/observation-integration/format.log",
+        "sha256": "caeb58fb619360828d283602db8cb2863a16c474a5fda00263bf82d370c793dd"
+      },
+      "black-qualified-initial": {
+        "command": [
+          "/home/otto/dev/ro-bots/.venv/bin/black",
+          "--check",
+          "--config",
+          "pyproject.toml",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/recovery.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/live_recovery.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_maintenance.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_deployment_observer.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/rootless_socket_reader.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_observation_integration.py"
+        ],
+        "exit": 0,
+        "log": "/home/otto/.hermes/cache/scratch/npc-owned-recovery/observation-integration/black-qualified-initial.log",
+        "sha256": "7657c5ec367da2c8d4deead1b5f1f8eca9c1b89120ad13df7f855ca4005696b6"
+      },
+      "ruff-qualified-initial": {
+        "command": [
+          "/home/otto/dev/ro-bots/.venv/bin/ruff",
+          "check",
+          "--config",
+          "pyproject.toml",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/recovery.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/live_recovery.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_maintenance.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_deployment_observer.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/rootless_socket_reader.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_observation_integration.py"
+        ],
+        "exit": 1,
+        "log": "/home/otto/.hermes/cache/scratch/npc-owned-recovery/observation-integration/ruff-qualified-initial.log",
+        "sha256": "4402d8f22f670a4d6a44f26b1c70c092ba69a337d405871278e44626bcb1940e"
+      },
+      "mypy-qualified-initial": {
+        "command": [
+          "/home/otto/dev/ro-bots/.venv/bin/mypy",
+          "--strict",
+          "--no-incremental",
+          "--cache-dir=/home/otto/.hermes/cache/scratch/npc-owned-recovery/observation-integration/fresh-mypy",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/recovery.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/live_recovery.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_maintenance.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_deployment_observer.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_live_recovery.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/rootless_socket_reader.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_observation_integration.py"
+        ],
+        "exit": 0,
+        "log": "/home/otto/.hermes/cache/scratch/npc-owned-recovery/observation-integration/mypy-qualified-initial.log",
+        "sha256": "050c52a2b0c61e8b681ef5c485e0bc03340b8d55148e0acef27d744c8be42033"
+      },
+      "xenon-qualified-initial": {
+        "command": [
+          "/home/otto/dev/ro-bots/.venv/bin/xenon",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/recovery.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/live_recovery.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/rootless_socket_reader.py",
+          "src",
+          "--max-absolute",
+          "B",
+          "--max-modules",
+          "B",
+          "--max-average",
+          "A"
+        ],
+        "exit": 1,
+        "log": "/home/otto/.hermes/cache/scratch/npc-owned-recovery/observation-integration/xenon-qualified-initial.log",
+        "sha256": "8fe2aa80c22b8f5558153f00cb7fa066198eb801642385b5743ec98a61f63414"
+      },
+      "duplicates-qualified-initial": {
+        "command": [
+          "/home/otto/dev/ro-bots/.venv/bin/pylint",
+          "--disable=all",
+          "--enable=duplicate-code",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/recovery.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/live_recovery.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/rootless_socket_reader.py",
+          "src",
+          "/home/otto/.hermes/cache/scratch/passive-skill-context-executor-repair1/native_launcher.py"
+        ],
+        "exit": 0,
+        "log": "/home/otto/.hermes/cache/scratch/npc-owned-recovery/observation-integration/duplicates-qualified-initial.log",
+        "sha256": "8cbfc8cd0b04a4858b0b78b74c6df9631a1695e105e6911d4b57fbcc43b218b5"
+      },
+      "combined57-initial": {
+        "command": [
+          "/home/otto/dev/ro-bots/.venv/bin/python",
+          "-B",
+          "-m",
+          "pytest",
+          "-q",
+          "-o",
+          "addopts=",
+          "-p",
+          "no:cacheprovider",
+          "--confcutdir=/home/otto/.hermes/cache/scratch/npc-owned-recovery",
+          "--rootdir=/home/otto",
+          "--basetemp=/home/otto/.hermes/cache/scratch/npc-owned-recovery/observation-integration/combined57-tmp",
+          "--junitxml=/home/otto/.hermes/cache/scratch/npc-owned-recovery/observation-integration/combined57.xml",
+          "-p",
+          "test_deployment_observer",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_recovery.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_live_recovery.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/accepted-strict-policy-history/test_independent.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_maintenance.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-maintenance-review/test_boundaries.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_deployment_observer.py",
+          "-p",
+          "test_observation_integration",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_observation_integration.py"
+        ],
+        "exit": 0,
+        "log": "/home/otto/.hermes/cache/scratch/npc-owned-recovery/observation-integration/combined57-initial.log",
+        "sha256": "e4fa1b1a012dc8870a19c923cd72062f10c362a21c7f266158a6696571be8f0e"
+      },
+      "format-refactor": {
+        "command": [
+          "/home/otto/dev/ro-bots/.venv/bin/black",
+          "--config",
+          "pyproject.toml",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/live_recovery.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/rootless_socket_reader.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_observation_integration.py"
+        ],
+        "exit": 0,
+        "log": "/home/otto/.hermes/cache/scratch/npc-owned-recovery/observation-integration/format-refactor.log",
+        "sha256": "d451d1d48c8cd03f85d1ca5f6e562b2201386e808bca1f491b55a6a455825698"
+      },
+      "ruff-qualified-refactor": {
+        "command": [
+          "/home/otto/dev/ro-bots/.venv/bin/ruff",
+          "check",
+          "--config",
+          "pyproject.toml",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/recovery.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/live_recovery.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_maintenance.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_deployment_observer.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/rootless_socket_reader.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_observation_integration.py"
+        ],
+        "exit": 0,
+        "log": "/home/otto/.hermes/cache/scratch/npc-owned-recovery/observation-integration/ruff-qualified-refactor.log",
+        "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
+      },
+      "xenon-qualified-refactor": {
+        "command": [
+          "/home/otto/dev/ro-bots/.venv/bin/xenon",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/recovery.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/live_recovery.py",
+          "src",
+          "--max-absolute",
+          "B",
+          "--max-modules",
+          "B",
+          "--max-average",
+          "A",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/rootless_socket_reader.py"
+        ],
+        "exit": 2,
+        "log": "/home/otto/.hermes/cache/scratch/npc-owned-recovery/observation-integration/xenon-qualified-refactor.log",
+        "sha256": "de08cc6c48cbbbb51e7562adea9d7ed77a9713254b64b33436265b292c4e567a"
+      },
+      "new-six-refactor": {
+        "command": [
+          "/home/otto/dev/ro-bots/.venv/bin/python",
+          "-B",
+          "-m",
+          "pytest",
+          "-q",
+          "-o",
+          "addopts=",
+          "-p",
+          "no:cacheprovider",
+          "--confcutdir=/home/otto/.hermes/cache/scratch/npc-owned-recovery",
+          "--rootdir=/home/otto",
+          "--basetemp=/home/otto/.hermes/cache/scratch/npc-owned-recovery/observation-integration/new-six-refactor-tmp",
+          "--junitxml=/home/otto/.hermes/cache/scratch/npc-owned-recovery/observation-integration/new-six-refactor.xml",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_observation_integration.py"
+        ],
+        "exit": 0,
+        "log": "/home/otto/.hermes/cache/scratch/npc-owned-recovery/observation-integration/new-six-refactor.log",
+        "sha256": "8d2e95a0b97ca04e438c426d988a65436708f30f25d3dcd5de26ac1a4bdc7ab8"
+      },
+      "format-entry": {
+        "command": [
+          "/home/otto/dev/ro-bots/.venv/bin/black",
+          "--config",
+          "pyproject.toml",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/live_recovery.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/rootless_socket_reader.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_observation_integration.py"
+        ],
+        "exit": 0,
+        "log": "/home/otto/.hermes/cache/scratch/npc-owned-recovery/observation-integration/format-entry.log",
+        "sha256": "eb509511f07d955385d4faa9c86dcc3bc364bd0e324d4a23de291c25f28e544d"
+      },
+      "new-six-entry": {
+        "command": [
+          "/home/otto/dev/ro-bots/.venv/bin/python",
+          "-B",
+          "-m",
+          "pytest",
+          "-q",
+          "-o",
+          "addopts=",
+          "-p",
+          "no:cacheprovider",
+          "--confcutdir=/home/otto/.hermes/cache/scratch/npc-owned-recovery",
+          "--rootdir=/home/otto",
+          "--basetemp=/home/otto/.hermes/cache/scratch/npc-owned-recovery/observation-integration/new-six-entry-tmp",
+          "--junitxml=/home/otto/.hermes/cache/scratch/npc-owned-recovery/observation-integration/new-six-entry.xml",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_observation_integration.py"
+        ],
+        "exit": 0,
+        "log": "/home/otto/.hermes/cache/scratch/npc-owned-recovery/observation-integration/new-six-entry.log",
+        "sha256": "5adbce96ed8d7d4b80556c4f081c7e8c11cb2d3b8f533ea7b5af2f3c4b519e91"
+      },
+      "xenon-refactor-final": {
+        "command": [
+          "/home/otto/dev/ro-bots/.venv/bin/xenon",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/recovery.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/live_recovery.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/rootless_socket_reader.py",
+          "src",
+          "--max-absolute",
+          "B",
+          "--max-modules",
+          "B",
+          "--max-average",
+          "A"
+        ],
+        "exit": 0,
+        "log": "/home/otto/.hermes/cache/scratch/npc-owned-recovery/observation-integration/xenon-refactor-final.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "format-final": {
+        "command": [
+          "/home/otto/dev/ro-bots/.venv/bin/black",
+          "--config",
+          "pyproject.toml",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/live_recovery.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/rootless_socket_reader.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_observation_integration.py"
+        ],
+        "exit": 0,
+        "log": "/home/otto/.hermes/cache/scratch/npc-owned-recovery/observation-integration/format-final.log",
+        "sha256": "eb509511f07d955385d4faa9c86dcc3bc364bd0e324d4a23de291c25f28e544d"
+      },
+      "ruff-qualified-final": {
+        "command": [
+          "/home/otto/dev/ro-bots/.venv/bin/ruff",
+          "check",
+          "--config",
+          "pyproject.toml",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/recovery.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/live_recovery.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_maintenance.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_deployment_observer.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/rootless_socket_reader.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_observation_integration.py"
+        ],
+        "exit": 0,
+        "log": "/home/otto/.hermes/cache/scratch/npc-owned-recovery/observation-integration/ruff-qualified-final.log",
+        "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
+      },
+      "black-qualified-final": {
+        "command": [
+          "/home/otto/dev/ro-bots/.venv/bin/black",
+          "--check",
+          "--config",
+          "pyproject.toml",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/recovery.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/live_recovery.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_maintenance.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_deployment_observer.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/rootless_socket_reader.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_observation_integration.py"
+        ],
+        "exit": 0,
+        "log": "/home/otto/.hermes/cache/scratch/npc-owned-recovery/observation-integration/black-qualified-final.log",
+        "sha256": "7657c5ec367da2c8d4deead1b5f1f8eca9c1b89120ad13df7f855ca4005696b6"
+      },
+      "xenon-qualified-final": {
+        "command": [
+          "/home/otto/dev/ro-bots/.venv/bin/xenon",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/recovery.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/live_recovery.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/rootless_socket_reader.py",
+          "src",
+          "--max-absolute",
+          "B",
+          "--max-modules",
+          "B",
+          "--max-average",
+          "A"
+        ],
+        "exit": 0,
+        "log": "/home/otto/.hermes/cache/scratch/npc-owned-recovery/observation-integration/xenon-qualified-final.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "mypy-qualified-final": {
+        "command": [
+          "/home/otto/dev/ro-bots/.venv/bin/mypy",
+          "--strict",
+          "--no-incremental",
+          "--cache-dir=/home/otto/.hermes/cache/scratch/npc-owned-recovery/observation-integration/fresh-mypy-final",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/recovery.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/live_recovery.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_maintenance.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_deployment_observer.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_live_recovery.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/rootless_socket_reader.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_observation_integration.py"
+        ],
+        "exit": 0,
+        "log": "/home/otto/.hermes/cache/scratch/npc-owned-recovery/observation-integration/mypy-qualified-final.log",
+        "sha256": "050c52a2b0c61e8b681ef5c485e0bc03340b8d55148e0acef27d744c8be42033"
+      },
+      "duplicates-qualified-final": {
+        "command": [
+          "/home/otto/dev/ro-bots/.venv/bin/pylint",
+          "--disable=all",
+          "--enable=duplicate-code",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/recovery.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/live_recovery.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/rootless_socket_reader.py",
+          "src",
+          "/home/otto/.hermes/cache/scratch/passive-skill-context-executor-repair1/native_launcher.py"
+        ],
+        "exit": 0,
+        "log": "/home/otto/.hermes/cache/scratch/npc-owned-recovery/observation-integration/duplicates-qualified-final.log",
+        "sha256": "8cbfc8cd0b04a4858b0b78b74c6df9631a1695e105e6911d4b57fbcc43b218b5"
+      },
+      "combined57-final": {
+        "command": [
+          "/home/otto/dev/ro-bots/.venv/bin/python",
+          "-B",
+          "-m",
+          "pytest",
+          "-q",
+          "-o",
+          "addopts=",
+          "-p",
+          "no:cacheprovider",
+          "--confcutdir=/home/otto/.hermes/cache/scratch/npc-owned-recovery",
+          "--rootdir=/home/otto",
+          "--basetemp=/home/otto/.hermes/cache/scratch/npc-owned-recovery/observation-integration/combined57-final-tmp",
+          "--junitxml=/home/otto/.hermes/cache/scratch/npc-owned-recovery/observation-integration/combined57-final.xml",
+          "-p",
+          "test_deployment_observer",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_recovery.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_live_recovery.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/accepted-strict-policy-history/test_independent.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_maintenance.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-maintenance-review/test_boundaries.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_deployment_observer.py",
+          "-p",
+          "test_observation_integration",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_observation_integration.py"
+        ],
+        "exit": 0,
+        "log": "/home/otto/.hermes/cache/scratch/npc-owned-recovery/observation-integration/combined57-final.log",
+        "sha256": "0b6bbd1442ef98071b7a03bd75eb9b9f0f1e4ad020f27961cf8892802e850328"
+      },
+      "socket-actor-unknown-red": {
+        "command": [
+          "/home/otto/dev/ro-bots/.venv/bin/python",
+          "-B",
+          "-m",
+          "pytest",
+          "-q",
+          "-o",
+          "addopts=",
+          "-p",
+          "no:cacheprovider",
+          "--confcutdir=/home/otto/.hermes/cache/scratch/npc-owned-recovery",
+          "--rootdir=/home/otto",
+          "--basetemp=/home/otto/.hermes/cache/scratch/npc-owned-recovery/observation-integration/socket-actor-unknown-red-tmp",
+          "--junitxml=/home/otto/.hermes/cache/scratch/npc-owned-recovery/observation-integration/socket-actor-unknown-red.xml",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_observation_integration.py::test_rootless_reader_reaches_real_snapshot_without_host_fd"
+        ],
+        "exit": 0,
+        "log": "/home/otto/.hermes/cache/scratch/npc-owned-recovery/observation-integration/socket-actor-unknown-red.log",
+        "sha256": "8a5d3f8c1b452931de963c4bdff9775f7404361fdf3f79b4d740fb5a4f7e6e92"
+      },
+      "ruff-qualified-completed": {
+        "command": [
+          "/home/otto/dev/ro-bots/.venv/bin/ruff",
+          "check",
+          "--config",
+          "pyproject.toml",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/recovery.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/live_recovery.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_maintenance.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_deployment_observer.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/rootless_socket_reader.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_observation_integration.py"
+        ],
+        "exit": 0,
+        "log": "/home/otto/.hermes/cache/scratch/npc-owned-recovery/observation-integration/ruff-qualified-completed.log",
+        "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
+      },
+      "black-qualified-completed": {
+        "command": [
+          "/home/otto/dev/ro-bots/.venv/bin/black",
+          "--check",
+          "--config",
+          "pyproject.toml",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/recovery.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/live_recovery.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_maintenance.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_deployment_observer.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/rootless_socket_reader.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_observation_integration.py"
+        ],
+        "exit": 0,
+        "log": "/home/otto/.hermes/cache/scratch/npc-owned-recovery/observation-integration/black-qualified-completed.log",
+        "sha256": "7657c5ec367da2c8d4deead1b5f1f8eca9c1b89120ad13df7f855ca4005696b6"
+      },
+      "xenon-qualified-completed": {
+        "command": [
+          "/home/otto/dev/ro-bots/.venv/bin/xenon",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/recovery.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/live_recovery.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/rootless_socket_reader.py",
+          "src",
+          "--max-absolute",
+          "B",
+          "--max-modules",
+          "B",
+          "--max-average",
+          "A"
+        ],
+        "exit": 0,
+        "log": "/home/otto/.hermes/cache/scratch/npc-owned-recovery/observation-integration/xenon-qualified-completed.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "mypy-qualified-completed": {
+        "command": [
+          "/home/otto/dev/ro-bots/.venv/bin/mypy",
+          "--strict",
+          "--no-incremental",
+          "--cache-dir=/home/otto/.hermes/cache/scratch/npc-owned-recovery/observation-integration/fresh-mypy-final",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/recovery.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/live_recovery.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_maintenance.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_deployment_observer.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_live_recovery.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/rootless_socket_reader.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_observation_integration.py"
+        ],
+        "exit": 0,
+        "log": "/home/otto/.hermes/cache/scratch/npc-owned-recovery/observation-integration/mypy-qualified-completed.log",
+        "sha256": "050c52a2b0c61e8b681ef5c485e0bc03340b8d55148e0acef27d744c8be42033"
+      },
+      "duplicates-qualified-completed": {
+        "command": [
+          "/home/otto/dev/ro-bots/.venv/bin/pylint",
+          "--disable=all",
+          "--enable=duplicate-code",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/recovery.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/live_recovery.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/rootless_socket_reader.py",
+          "src",
+          "/home/otto/.hermes/cache/scratch/passive-skill-context-executor-repair1/native_launcher.py"
+        ],
+        "exit": 0,
+        "log": "/home/otto/.hermes/cache/scratch/npc-owned-recovery/observation-integration/duplicates-qualified-completed.log",
+        "sha256": "8cbfc8cd0b04a4858b0b78b74c6df9631a1695e105e6911d4b57fbcc43b218b5"
+      },
+      "combined57-completed": {
+        "command": [
+          "/home/otto/dev/ro-bots/.venv/bin/python",
+          "-B",
+          "-m",
+          "pytest",
+          "-q",
+          "-o",
+          "addopts=",
+          "-p",
+          "no:cacheprovider",
+          "--confcutdir=/home/otto/.hermes/cache/scratch/npc-owned-recovery",
+          "--rootdir=/home/otto",
+          "--basetemp=/home/otto/.hermes/cache/scratch/npc-owned-recovery/observation-integration/combined57-completed-tmp",
+          "--junitxml=/home/otto/.hermes/cache/scratch/npc-owned-recovery/observation-integration/combined57-completed.xml",
+          "-p",
+          "test_deployment_observer",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_recovery.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_live_recovery.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/accepted-strict-policy-history/test_independent.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_maintenance.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-maintenance-review/test_boundaries.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_deployment_observer.py",
+          "-p",
+          "test_observation_integration",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_observation_integration.py"
+        ],
+        "exit": 0,
+        "log": "/home/otto/.hermes/cache/scratch/npc-owned-recovery/observation-integration/combined57-completed.log",
+        "sha256": "a7b4ec6952ce735613d42be90ffe0664571b6a3eef781f94b38f913f16ef6960"
+      },
+      "bound-reader-context": {
+        "command": [
+          "/home/otto/dev/ro-bots/.venv/bin/python",
+          "-B",
+          "-c",
+          "import json,live_recovery; print(json.dumps(live_recovery.rootless_context(),sort_keys=True))"
+        ],
+        "exit": 0,
+        "log": "/home/otto/.hermes/cache/scratch/npc-owned-recovery/observation-integration/bound-reader-context.log",
+        "sha256": "d4ea889fc7caf9d3aa60d9e6128e29b63cf473b469a709b50daf2e696a458125"
+      }
+    }
+  },
+  "regression": {
+    "receipt": {
+      "command": [
+        "/home/otto/dev/ro-bots/.venv/bin/python",
+        "-B",
+        "-m",
+        "pytest",
+        "-q",
+        "-o",
+        "addopts=",
+        "-p",
+        "no:cacheprovider",
+        "--confcutdir=/home/otto/.hermes/cache/scratch/npc-owned-recovery",
+        "--rootdir=/home/otto",
+        "--basetemp=/home/otto/.hermes/cache/scratch/npc-owned-recovery/observation-integration/combined57-completed-tmp",
+        "--junitxml=/home/otto/.hermes/cache/scratch/npc-owned-recovery/observation-integration/combined57-completed.xml",
+        "-p",
+        "test_deployment_observer",
+        "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_recovery.py",
+        "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_live_recovery.py",
+        "/home/otto/.hermes/cache/scratch/npc-owned-recovery/accepted-strict-policy-history/test_independent.py",
+        "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_maintenance.py",
+        "/home/otto/.hermes/cache/scratch/npc-owned-maintenance-review/test_boundaries.py",
+        "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_deployment_observer.py",
+        "-p",
+        "test_observation_integration",
+        "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_observation_integration.py"
+      ],
+      "exit": 0,
+      "log": "/home/otto/.hermes/cache/scratch/npc-owned-recovery/observation-integration/combined57-completed.log",
+      "sha256": "a7b4ec6952ce735613d42be90ffe0664571b6a3eef781f94b38f913f16ef6960"
+    },
+    "xml": "/home/otto/.hermes/cache/scratch/npc-owned-recovery/observation-integration/combined57-completed.xml",
+    "physical_cases": 57,
+    "unique_raw_ids": 57,
+    "prior_raw_ids_preserved": 51,
+    "new_cases": 6,
+    "failures": 0,
+    "errors": 0,
+    "skips": 0,
+    "raw_ids": [
+      ".hermes.cache.scratch.npc-owned-recovery.test_recovery::test_absent_approval_denied_before_any_effect",
+      ".hermes.cache.scratch.npc-owned-recovery.test_recovery::test_fresh_world_ownership_guard_rejects_before_lifecycle[foreign_volume]",
+      ".hermes.cache.scratch.npc-owned-recovery.test_recovery::test_fresh_world_ownership_guard_rejects_before_lifecycle[foreign_player]",
+      ".hermes.cache.scratch.npc-owned-recovery.test_recovery::test_fresh_world_ownership_guard_rejects_before_lifecycle[unknown_player]",
+      ".hermes.cache.scratch.npc-owned-recovery.test_recovery::test_expected_owned_orphan_admitted_as_one_not_fabricated_offline",
+      ".hermes.cache.scratch.npc-owned-recovery.test_recovery::test_driver_owns_exact_command_order_and_reads_actual_offline_transition",
+      ".hermes.cache.scratch.npc-owned-recovery.test_recovery::test_failed_command_stops_sequence_without_release_or_retry[timeout]",
+      ".hermes.cache.scratch.npc-owned-recovery.test_recovery::test_failed_command_stops_sequence_without_release_or_retry[nonzero]",
+      ".hermes.cache.scratch.npc-owned-recovery.test_recovery::test_unsafe_fresh_identity_refuses_without_lifecycle[changed_role]",
+      ".hermes.cache.scratch.npc-owned-recovery.test_recovery::test_unsafe_fresh_identity_refuses_without_lifecycle[database_target]",
+      ".hermes.cache.scratch.npc-owned-recovery.test_recovery::test_unsafe_fresh_identity_refuses_without_lifecycle[foreign_online]",
+      ".hermes.cache.scratch.npc-owned-recovery.test_recovery::test_already_offline_noop_requires_all_guards_and_records_no_commands",
+      ".hermes.cache.scratch.npc-owned-recovery.test_recovery::test_failed_readback_retains_partial_state_without_starting",
+      ".hermes.cache.scratch.npc-owned-recovery.test_recovery::test_listener_without_parser_and_actual_peer_readiness_does_not_advance",
+      ".hermes.cache.scratch.npc-owned-recovery.test_recovery::test_failed_release_retains_owner_without_automatic_retry",
+      ".hermes.cache.scratch.npc-owned-recovery.test_live_recovery::test_default_cli_executes_concrete_callbacks_and_unchanged_helpers",
+      ".hermes.cache.scratch.npc-owned-recovery.test_live_recovery::test_concrete_default_assembly_exists",
+      ".hermes.cache.scratch.npc-owned-recovery.test_live_recovery::test_source_runtime_parser_is_present",
+      ".hermes.cache.scratch.npc-owned-recovery.test_live_recovery::test_cli_approval_refusal_precedes_private_and_engine[missing]",
+      ".hermes.cache.scratch.npc-owned-recovery.test_live_recovery::test_cli_approval_refusal_precedes_private_and_engine[expired]",
+      ".hermes.cache.scratch.npc-owned-recovery.test_live_recovery::test_real_observer_refuses_changed_or_unknown_authority[storage]",
+      ".hermes.cache.scratch.npc-owned-recovery.test_live_recovery::test_real_observer_refuses_changed_or_unknown_authority[foreign_identity]",
+      ".hermes.cache.scratch.npc-owned-recovery.test_live_recovery::test_real_observer_refuses_changed_or_unknown_authority[unknown_players]",
+      ".hermes.cache.scratch.npc-owned-recovery.test_live_recovery::test_delayed_role_peer_and_parser_facts_are_reobserved",
+      ".hermes.cache.scratch.npc-owned-recovery.test_live_recovery::test_sixty_second_timeout_halts_and_retains_actual_lock[timeout]",
+      ".hermes.cache.scratch.npc-owned-recovery.test_live_recovery::test_sixty_second_timeout_halts_and_retains_actual_lock[readiness]",
+      ".hermes.cache.scratch.npc-owned-recovery.test_live_recovery::test_exact_nonlocal_origin_has_safe_custody_and_no_retry",
+      ".hermes.cache.scratch.npc-owned-recovery.accepted-strict-policy-history.test_independent::test_parent_actual_service_labels_through_real_cli",
+      ".hermes.cache.scratch.npc-owned-recovery.accepted-strict-policy-history.test_independent::test_fresh_primitive_boundary_denials[unreadable]",
+      ".hermes.cache.scratch.npc-owned-recovery.accepted-strict-policy-history.test_independent::test_fresh_primitive_boundary_denials[enabled_bootstrap]",
+      ".hermes.cache.scratch.npc-owned-recovery.accepted-strict-policy-history.test_independent::test_fresh_primitive_boundary_denials[nonzero]",
+      ".hermes.cache.scratch.npc-owned-recovery.accepted-strict-policy-history.test_independent::test_fresh_primitive_boundary_denials[expiry]",
+      ".hermes.cache.scratch.npc-owned-recovery.accepted-strict-policy-history.test_independent::test_fresh_primitive_boundary_denials[stale_sql]",
+      ".hermes.cache.scratch.npc-owned-recovery.test_maintenance::test_maintenance_default_cli_preserves_unknown_counts_and_runs_helper_chain",
+      ".hermes.cache.scratch.npc-owned-recovery.test_maintenance::test_normal_stop_start_accepts_only_owned_dynamic_endpoints",
+      ".hermes.cache.scratch.npc-owned-recovery.test_maintenance::test_foreign_or_human_identity_blocks_before_lifecycle",
+      ".hermes.cache.scratch.npc-owned-recovery.test_maintenance::test_strict_policy_and_unmeasured_worker_socket_authority_still_deny",
+      ".hermes.cache.scratch.npc-owned-recovery.test_maintenance::test_fresh_sql_foreign_drift_aborts_before_next_lifecycle_command",
+      ".hermes.cache.scratch.npc-owned-recovery.test_maintenance::test_wrong_network_image_volume_or_database_lifetime_denies",
+      ".hermes.cache.scratch.npc-owned-recovery.test_maintenance::test_real_timeout_and_nonzero_stop_sequence_with_physical_custody",
+      ".hermes.cache.scratch.npc-owned-recovery.test_maintenance::test_both_owned_flags_may_be_one_but_post_char_flags_must_be_zero",
+      ".hermes.cache.scratch.npc-owned-maintenance-review.test_boundaries::test_complete_sql_identity_rechecked_at_every_six_command_boundary",
+      ".hermes.cache.scratch.npc-owned-maintenance-review.test_boundaries::test_real_cli_unknown_is_not_false_zero_and_strict_exclusions_survive",
+      ".hermes.cache.scratch.npc-owned-maintenance-review.test_boundaries::test_missing_stopped_metadata_is_allowed_but_wrong_populated_identity_denies",
+      ".hermes.cache.scratch.npc-owned-maintenance-review.test_boundaries::test_database_lifetime_and_command_failures_stop_without_retry_or_next_start",
+      ".hermes.cache.scratch.npc-owned-recovery.test_deployment_observer::test_native_configuration_grammar_and_import_order",
+      ".hermes.cache.scratch.npc-owned-recovery.test_deployment_observer::test_configuration_imports_fail_closed",
+      ".hermes.cache.scratch.npc-owned-recovery.test_deployment_observer::test_podman_owned_bridge_metadata_and_stopped_transition",
+      ".hermes.cache.scratch.npc-owned-recovery.test_deployment_observer::test_podman_network_foreign_wrong_and_unknown_metadata_denies",
+      ".hermes.cache.scratch.npc-owned-recovery.test_deployment_observer::test_actual_map_port_reaches_default_assembly_and_listener",
+      ".hermes.cache.scratch.npc-owned-recovery.test_deployment_observer::test_wrong_configured_or_observed_ports_deny",
+      ".hermes.cache.scratch.npc-owned-recovery.test_observation_integration::test_rootless_reader_reaches_real_snapshot_without_host_fd",
+      ".hermes.cache.scratch.npc-owned-recovery.test_observation_integration::test_lf_progress_records_preserve_cr_and_stream_order",
+      ".hermes.cache.scratch.npc-owned-recovery.test_observation_integration::test_reader_unknown_namespace_denies_without_counts",
+      ".hermes.cache.scratch.npc-owned-recovery.test_observation_integration::test_reader_command_parse_identity_and_pid_drift_deny",
+      ".hermes.cache.scratch.npc-owned-recovery.test_observation_integration::test_missing_malformed_gapped_truncated_lf_timestamp_denies_stderr",
+      ".hermes.cache.scratch.npc-owned-recovery.test_observation_integration::test_integer_timestamp_merge_and_stderr_fatal_remain_unhealthy"
+    ],
+    "missing_prior_ids": [],
+    "new_raw_ids": [
+      ".hermes.cache.scratch.npc-owned-recovery.test_observation_integration::test_integer_timestamp_merge_and_stderr_fatal_remain_unhealthy",
+      ".hermes.cache.scratch.npc-owned-recovery.test_observation_integration::test_lf_progress_records_preserve_cr_and_stream_order",
+      ".hermes.cache.scratch.npc-owned-recovery.test_observation_integration::test_missing_malformed_gapped_truncated_lf_timestamp_denies_stderr",
+      ".hermes.cache.scratch.npc-owned-recovery.test_observation_integration::test_reader_command_parse_identity_and_pid_drift_deny",
+      ".hermes.cache.scratch.npc-owned-recovery.test_observation_integration::test_reader_unknown_namespace_denies_without_counts",
+      ".hermes.cache.scratch.npc-owned-recovery.test_observation_integration::test_rootless_reader_reaches_real_snapshot_without_host_fd"
+    ],
+    "raw_identity_normalization": false
+  },
+  "fixture_only_correction": {
+    "plugin": "-p test_observation_integration",
+    "scope": "Append one LF engine record terminator only to historical FakeInputs.logs primitive fixture data, which incorrectly omitted it. Real truncation stays denied. Existing -p test_deployment_observer literal port/config/publication transport correction remains loaded. No old source or assertion bytes were changed."
+  },
+  "quality": {
+    "scope": "Same pinned existing .venv; unchanged Black/Ruff configuration, strict no-incremental fresh-cache mypy of all seven interacting files; Xenon B/B/A over driver+adapter+reader+src; combined duplicate-code over driver+adapter+reader+src+restored launcher. No rule waivers or root config edits.",
+    "current_receipts": {
+      "black-qualified": {
+        "command": [
+          "/home/otto/dev/ro-bots/.venv/bin/black",
+          "--check",
+          "--config",
+          "pyproject.toml",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/recovery.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/live_recovery.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_maintenance.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_deployment_observer.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/rootless_socket_reader.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_observation_integration.py"
+        ],
+        "exit": 0,
+        "log": "/home/otto/.hermes/cache/scratch/npc-owned-recovery/observation-integration/black-qualified-completed.log",
+        "sha256": "7657c5ec367da2c8d4deead1b5f1f8eca9c1b89120ad13df7f855ca4005696b6"
+      },
+      "ruff-qualified": {
+        "command": [
+          "/home/otto/dev/ro-bots/.venv/bin/ruff",
+          "check",
+          "--config",
+          "pyproject.toml",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/recovery.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/live_recovery.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_maintenance.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_deployment_observer.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/rootless_socket_reader.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_observation_integration.py"
+        ],
+        "exit": 0,
+        "log": "/home/otto/.hermes/cache/scratch/npc-owned-recovery/observation-integration/ruff-qualified-completed.log",
+        "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
+      },
+      "mypy-qualified": {
+        "command": [
+          "/home/otto/dev/ro-bots/.venv/bin/mypy",
+          "--strict",
+          "--no-incremental",
+          "--cache-dir=/home/otto/.hermes/cache/scratch/npc-owned-recovery/observation-integration/fresh-mypy-final",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/recovery.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/live_recovery.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_maintenance.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_deployment_observer.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_live_recovery.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/rootless_socket_reader.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_observation_integration.py"
+        ],
+        "exit": 0,
+        "log": "/home/otto/.hermes/cache/scratch/npc-owned-recovery/observation-integration/mypy-qualified-completed.log",
+        "sha256": "050c52a2b0c61e8b681ef5c485e0bc03340b8d55148e0acef27d744c8be42033"
+      },
+      "xenon-qualified": {
+        "command": [
+          "/home/otto/dev/ro-bots/.venv/bin/xenon",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/recovery.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/live_recovery.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/rootless_socket_reader.py",
+          "src",
+          "--max-absolute",
+          "B",
+          "--max-modules",
+          "B",
+          "--max-average",
+          "A"
+        ],
+        "exit": 0,
+        "log": "/home/otto/.hermes/cache/scratch/npc-owned-recovery/observation-integration/xenon-qualified-completed.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "duplicates-qualified": {
+        "command": [
+          "/home/otto/dev/ro-bots/.venv/bin/pylint",
+          "--disable=all",
+          "--enable=duplicate-code",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/recovery.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/live_recovery.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/rootless_socket_reader.py",
+          "src",
+          "/home/otto/.hermes/cache/scratch/passive-skill-context-executor-repair1/native_launcher.py"
+        ],
+        "exit": 0,
+        "log": "/home/otto/.hermes/cache/scratch/npc-owned-recovery/observation-integration/duplicates-qualified-completed.log",
+        "sha256": "8cbfc8cd0b04a4858b0b78b74c6df9631a1695e105e6911d4b57fbcc43b218b5"
+      }
+    },
+    "initial_findings": "Initial Ruff and Xenon C findings retained; GREEN-only signature/validation extraction and formatting resolved them. One malformed Xenon positional-argument invocation is retained as harness failure.",
+    "full_root_rerun": false
+  },
+  "integrity": {
+    "prior_freeze": "/home/otto/.hermes/cache/scratch/npc-owned-recovery/deployment-observer-repair1/qualified-source-freeze.json",
+    "prior_physical_inputs": 141,
+    "unchanged_prior_inputs_excluding_owned_adapter": 140,
+    "unexpected_drift": [],
+    "prior_tests_and_helpers_unchanged": true,
+    "unchanged_policy_ASTs": [
+      "native_health",
+      "database_role",
+      "query",
+      "run",
+      "main",
+      "player_event",
+      "player_counts",
+      "private_inputs",
+      "lock",
+      "classify_socket",
+      "socket_facts"
+    ],
+    "completed_source_freeze": "/home/otto/.hermes/cache/scratch/npc-owned-recovery/observation-integration/completed-source-freeze.json",
+    "completed_source_hashes": {
+      "/home/otto/.hermes/cache/scratch/npc-owned-recovery/live_recovery.py": "90f40bd8209df2357cdbbd8e5eb6afc89a0e237eed3d02b6037ed5175d1eeb71",
+      "/home/otto/.hermes/cache/scratch/npc-owned-recovery/rootless_socket_reader.py": "a8339f4af3359d6ae283879ce1031a4bcc8e589e9822a203e6a3c68acafd49ae",
+      "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_observation_integration.py": "925c7810d790660c3aca655726cf7eeac3ae5e0d1557e67694b478809c050b4e"
+    }
+  },
+  "remaining_genuine_faults": [
+    "11 database current-start error markers, including Aria/table faults, remain unresolved and denied by unchanged lifetime policy.",
+    "3 map current-start missing/open/YamlDatabase asset errors remain unresolved and denied.",
+    "Actor counts remain UNKNOWN; socket zero is not actors/humans/SQL online proof.",
+    "No stale SQL online flags were cleared. No live maintenance or native reactivation occurred."
+  ],
+  "limits": [
+    "Sequential proc/engine reads are bounded and drift checked, not atomic or exclusive mutation proof.",
+    "CLI LF/timestamp framing cannot independently reveal a wholly omitted LF record without engine sequence metadata; malformed observable gaps still deny. No operation journal/cursor framework was added.",
+    "Fixed installed user-namespace identity intentionally denies after namespace recreation; new independently verified context is needed rather than changing maps."
+  ],
+  "effects": {
+    "actual_docker_podman_calls": 0,
+    "actual_namespace_helper_processes": 0,
+    "namespace_entry_exercised": "Real helper.main under file/subprocess/stdio/identity spies only",
+    "actual_sql_calls": 0,
+    "native_provider_or_credential_calls": 0,
+    "service_changes": 0
+  },
+  "native_activation": "REVOKED_UNCHANGED",
+  "actual_recovery": false,
+  "current_execution_approval": false,
+  "next": "Parent to independently review one frozen combined interacting snapshot and bind an explicit new approval. Database/assets sibling investigations remain separate; this report is not operational permission.",
+  "artifacts": {
+    "/home/otto/.hermes/cache/scratch/npc-owned-recovery/observation-integration/format-refactor.log": "d451d1d48c8cd03f85d1ca5f6e562b2201386e808bca1f491b55a6a455825698",
+    "/home/otto/.hermes/cache/scratch/npc-owned-recovery/observation-integration/socket-green.log": "21de81981764136a6ba213a67d3fa86bdf2ce7ecdb5a66706cc29cbf0b39d12c",
+    "/home/otto/.hermes/cache/scratch/npc-owned-recovery/observation-integration/xenon-refactor-final.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/npc-owned-recovery/observation-integration/socket-actor-unknown-red.xml": "787a2ed5942ebc52484b35cdd2d386de2168318b3497c575bf6e8505987eabfb",
+    "/home/otto/.hermes/cache/scratch/npc-owned-recovery/observation-integration/format-entry.log": "eb509511f07d955385d4faa9c86dcc3bc364bd0e324d4a23de291c25f28e544d",
+    "/home/otto/.hermes/cache/scratch/npc-owned-recovery/observation-integration/duplicates-qualified-initial.log": "8cbfc8cd0b04a4858b0b78b74c6df9631a1695e105e6911d4b57fbcc43b218b5",
+    "/home/otto/.hermes/cache/scratch/npc-owned-recovery/observation-integration/socket-green2.xml": "a3b56c433bcb456f22637a6897a4e70e8f7219c6ca7bca61463505f9b6651826",
+    "/home/otto/.hermes/cache/scratch/npc-owned-recovery/observation-integration/black-qualified-completed.log": "7657c5ec367da2c8d4deead1b5f1f8eca9c1b89120ad13df7f855ca4005696b6",
+    "/home/otto/.hermes/cache/scratch/npc-owned-recovery/observation-integration/socket-green.xml": "cd75af3ce97ce3b01e8c2e1db60a9415301b1e1e5d1f1411d5b0d78adf42638d",
+    "/home/otto/.hermes/cache/scratch/npc-owned-recovery/observation-integration/framing-red.xml": "1a5ad95dd3aed333dbea103a6582b61d66ed0fc9556c4cf5bf1d0b5b5eb01299",
+    "/home/otto/.hermes/cache/scratch/npc-owned-recovery/observation-integration/xenon-qualified-completed.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/npc-owned-recovery/observation-integration/mypy-qualified-initial.log": "050c52a2b0c61e8b681ef5c485e0bc03340b8d55148e0acef27d744c8be42033",
+    "/home/otto/.hermes/cache/scratch/npc-owned-recovery/observation-integration/socket-hostfd-red.log": "c779d9c90ed22beb57d2d50a5cec4fc5506f436f4ec0d163d5f7d02bf050fdac",
+    "/home/otto/.hermes/cache/scratch/npc-owned-recovery/observation-integration/combined57-completed.xml": "ed09007453ca8c66727ee76aad67dadf51e0b0b0891b1b2b72b5332dfda717d8",
+    "/home/otto/.hermes/cache/scratch/npc-owned-recovery/observation-integration/combined57.xml": "152f62756061a7d99674bd68fba2c11892ba4493234504024eaa52ade6a7e7b0",
+    "/home/otto/.hermes/cache/scratch/npc-owned-recovery/observation-integration/new-six-green.xml": "dceb3b37eedf261716c705898534d78c9b4d69ca5536f629b831fe8a36d03e0b",
+    "/home/otto/.hermes/cache/scratch/npc-owned-recovery/observation-integration/combined57-initial.log": "e4fa1b1a012dc8870a19c923cd72062f10c362a21c7f266158a6696571be8f0e",
+    "/home/otto/.hermes/cache/scratch/npc-owned-recovery/observation-integration/framing-green.xml": "6040b5b7b97998e0ac9d5139e90db123a0f41bce15a46b879ea231d8c9b405f6",
+    "/home/otto/.hermes/cache/scratch/npc-owned-recovery/observation-integration/combined57-completed.log": "a7b4ec6952ce735613d42be90ffe0664571b6a3eef781f94b38f913f16ef6960",
+    "/home/otto/.hermes/cache/scratch/npc-owned-recovery/observation-integration/ruff-qualified-refactor.log": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+    "/home/otto/.hermes/cache/scratch/npc-owned-recovery/observation-integration/new-six-refactor.log": "8d2e95a0b97ca04e438c426d988a65436708f30f25d3dcd5de26ac1a4bdc7ab8",
+    "/home/otto/.hermes/cache/scratch/npc-owned-recovery/observation-integration/mypy-qualified-final.log": "050c52a2b0c61e8b681ef5c485e0bc03340b8d55148e0acef27d744c8be42033",
+    "/home/otto/.hermes/cache/scratch/npc-owned-recovery/observation-integration/duplicates-qualified-completed.log": "8cbfc8cd0b04a4858b0b78b74c6df9631a1695e105e6911d4b57fbcc43b218b5",
+    "/home/otto/.hermes/cache/scratch/npc-owned-recovery/observation-integration/completed-source-freeze.json": "2ecd91fb55b86f8b9f6c266c16a0dc3461a6021120de99389ce5bd33fa245f62",
+    "/home/otto/.hermes/cache/scratch/npc-owned-recovery/observation-integration/combined57-final.log": "0b6bbd1442ef98071b7a03bd75eb9b9f0f1e4ad020f27961cf8892802e850328",
+    "/home/otto/.hermes/cache/scratch/npc-owned-recovery/observation-integration/socket-actor-unknown-red.log": "8a5d3f8c1b452931de963c4bdff9775f7404361fdf3f79b4d740fb5a4f7e6e92",
+    "/home/otto/.hermes/cache/scratch/npc-owned-recovery/observation-integration/socket-hostfd-red.xml": "2a2662b4dc94cc173f0f24a581c90576a8aa3ee85fb2245850bff2e702365b83",
+    "/home/otto/.hermes/cache/scratch/npc-owned-recovery/observation-integration/ruff-qualified-final.log": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+    "/home/otto/.hermes/cache/scratch/npc-owned-recovery/observation-integration/mypy-qualified-completed.log": "050c52a2b0c61e8b681ef5c485e0bc03340b8d55148e0acef27d744c8be42033",
+    "/home/otto/.hermes/cache/scratch/npc-owned-recovery/observation-integration/black-qualified-final.log": "7657c5ec367da2c8d4deead1b5f1f8eca9c1b89120ad13df7f855ca4005696b6",
+    "/home/otto/.hermes/cache/scratch/npc-owned-recovery/observation-integration/new-six-entry.log": "5adbce96ed8d7d4b80556c4f081c7e8c11cb2d3b8f533ea7b5af2f3c4b519e91",
+    "/home/otto/.hermes/cache/scratch/npc-owned-recovery/observation-integration/xenon-qualified-final.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/npc-owned-recovery/observation-integration/socket-reached-red.log": "2fd9a1cd60fdf1859ee6d39a682be2fac086a1a9de2806e9738b9e9832500d13",
+    "/home/otto/.hermes/cache/scratch/npc-owned-recovery/observation-integration/duplicates-qualified-final.log": "8cbfc8cd0b04a4858b0b78b74c6df9631a1695e105e6911d4b57fbcc43b218b5",
+    "/home/otto/.hermes/cache/scratch/npc-owned-recovery/observation-integration/accepted-live_recovery.py": "e44b5d4b4c71787c3611cfaa09d51c5f46d94c21188f1a18de49a358ea92f122",
+    "/home/otto/.hermes/cache/scratch/npc-owned-recovery/observation-integration/socket-qualified-green.log": "730410d23add507d10274b5400f29dd16f80db2f65bf9ef1c50a875848f3486b",
+    "/home/otto/.hermes/cache/scratch/npc-owned-recovery/observation-integration/ruff-qualified-initial.log": "4402d8f22f670a4d6a44f26b1c70c092ba69a337d405871278e44626bcb1940e",
+    "/home/otto/.hermes/cache/scratch/npc-owned-recovery/observation-integration/adapter.diff": "c7c8543afd79df50f519240cc6fdf66c504b01dbc8642562aa4d09252cb0cf55",
+    "/home/otto/.hermes/cache/scratch/npc-owned-recovery/observation-integration/socket-green3.log": "b35206282a26e01851c889f6bf91219e3a9a8ce94f101d4ef84a5f90ae3f59da",
+    "/home/otto/.hermes/cache/scratch/npc-owned-recovery/observation-integration/format.log": "caeb58fb619360828d283602db8cb2863a16c474a5fda00263bf82d370c793dd",
+    "/home/otto/.hermes/cache/scratch/npc-owned-recovery/observation-integration/framing-red.log": "3f642347b9c3f2b9180dccb34a99dfa082784d39f188fc909f0a6918478ca484",
+    "/home/otto/.hermes/cache/scratch/npc-owned-recovery/observation-integration/socket-red.xml": "87fe20a1aabca2615bf609ce3f45987704354e24514d9daa176f2505a0f468bf",
+    "/home/otto/.hermes/cache/scratch/npc-owned-recovery/observation-integration/black-qualified-initial.log": "7657c5ec367da2c8d4deead1b5f1f8eca9c1b89120ad13df7f855ca4005696b6",
+    "/home/otto/.hermes/cache/scratch/npc-owned-recovery/observation-integration/xenon-qualified-initial.log": "8fe2aa80c22b8f5558153f00cb7fa066198eb801642385b5743ec98a61f63414",
+    "/home/otto/.hermes/cache/scratch/npc-owned-recovery/observation-integration/new-six-refactor.xml": "b089602fd3ab734209e2643285fdaa47e38954c217dcb04601d7827598daa873",
+    "/home/otto/.hermes/cache/scratch/npc-owned-recovery/observation-integration/format-final.log": "eb509511f07d955385d4faa9c86dcc3bc364bd0e324d4a23de291c25f28e544d",
+    "/home/otto/.hermes/cache/scratch/npc-owned-recovery/observation-integration/ruff-qualified-completed.log": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+    "/home/otto/.hermes/cache/scratch/npc-owned-recovery/observation-integration/socket-red.log": "e65f9958cead7e89a17cf82d7c17829a3b5f44810c843caf92ea53f009e834e2",
+    "/home/otto/.hermes/cache/scratch/npc-owned-recovery/observation-integration/socket-qualified-green.xml": "d0bd81c07c83c038994fe4b265cea3d78cfd5742460d0effda890f8d1a27f023",
+    "/home/otto/.hermes/cache/scratch/npc-owned-recovery/observation-integration/new-six-entry.xml": "d42ccedf15291d07cf54ccab2d03e834cc16cb65ca614bd82aad96cf17426abb",
+    "/home/otto/.hermes/cache/scratch/npc-owned-recovery/observation-integration/socket-green2.log": "3f7fb1a79b78dc4606dbabd8faa67899978260000020acf58abaaa73b3b5b7a9",
+    "/home/otto/.hermes/cache/scratch/npc-owned-recovery/observation-integration/framing-green.log": "c91dad03511eb111dba9f317cdb7962c64ec389c7d259de488e167c78aac1b31",
+    "/home/otto/.hermes/cache/scratch/npc-owned-recovery/observation-integration/socket-green3.xml": "59c1bac5c9f715ca55bc25d9c9645754c3ddc03dd8157dafafad8842a80ed195",
+    "/home/otto/.hermes/cache/scratch/npc-owned-recovery/observation-integration/bound-reader-context.log": "d4ea889fc7caf9d3aa60d9e6128e29b63cf473b469a709b50daf2e696a458125",
+    "/home/otto/.hermes/cache/scratch/npc-owned-recovery/observation-integration/new-six-green.log": "c1ebd814ed73dbf177c26e77cf5d2777bd945c68d993c0e39f1b85d9c6230825",
+    "/home/otto/.hermes/cache/scratch/npc-owned-recovery/observation-integration/xenon-qualified-refactor.log": "de08cc6c48cbbbb51e7562adea9d7ed77a9713254b64b33436265b292c4e567a",
+    "/home/otto/.hermes/cache/scratch/npc-owned-recovery/observation-integration/combined57-final.xml": "ec1d64eccd86c7d4566307363ce018bf186deba43a50d6bf0c2c43738530254d",
+    "/home/otto/.hermes/cache/scratch/npc-owned-recovery/observation-integration/socket-reached-red.xml": "3d452fe610bb04b32d9c24b400bf3dea229b622046253c31097c39e18b6dc28d"
+  }
+}

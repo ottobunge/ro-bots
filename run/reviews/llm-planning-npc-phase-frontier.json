@@ -1,0 +1,195 @@
+{
+  "status": "PREPARATION ONLY; unsupported NPC planning frontier, not implementation/approval/gameplay/rewards",
+  "scope": "One already-open ordinary-player received-guidance dialogue, on the current map, after a separately completed explicit-name controller. One LLM-authored typed NPC phase authorizes exactly one next/choose/close response to one received prompt; then observe receipt and stop. No opening a catalogued NPC, travel, Training Grounds eligibility assumption, quest engine, rewards, build, combat, economy or chat.",
+  "dependency": {
+    "name_controller": "IN PROGRESS per delegation; promised API, not inspected or verified",
+    "promised_api": "NpcSubmitName(npc_id,epoch,prompt_sequence)",
+    "contract": "Exact current selected wire.char_name; no autoanswer; actor/epoch/stage/once safeguards. A received arbitrary string prompt, page wording, NPC alias or public source never authorizes self-name submission. New planning MVP does not enable submit-name; a later explicitly typed submit_selected_name intent may delegate to this API only after separate acceptance. No model-provided answer/name field."
+  },
+  "findings": [
+    {
+      "authority": "wiki/decisions/adr-021-llm-planning-clef-execution.md:27-54,64-90",
+      "finding": "LLM authors objective/plan and any menu option; CLEF continues/holds/replans inside that validated plan, never chooses a new objective or unplanned menu branch. Scripts issue authorized mechanical primitives with no model call."
+    },
+    {
+      "authority": "src/robots/app/planning_context.py:196-238,251-269,306-327,369-404; src/robots/app/planning_job_context.py:93-117",
+      "finding": "NPC context ALREADY available: character advertises read_topic npc; npc read returns asdict(npc_dialogue) and received UI only; quest progress UNKNOWN. Identity binding, detached capture and budgets already exist. Do not add a redundant NPC context reader. Capture is advisory, not fresh admission authority."
+    },
+    {
+      "authority": "src/robots/domain/npc.py:6-15; src/robots/domain/model.py:30-38,81-85; src/robots/domain/events.py:83-100",
+      "finding": "Existing received dialogue identifies npc_id, epoch, map_name, opened_sequence, sequence, stage, pages and indexed options. ActorRef is received nearby identity/kind/distance, not source-catalog existence. NpcDialogueReceived already in WorldEvent."
+    },
+    {
+      "authority": "src/robots/domain/planning.py:20-35,66-89,109-116,160-208; src/robots/app/llm_planner.py:64-117,205-240",
+      "finding": "No NPC phase/intent or NPC observable success/progress. Phase carries only map/destination/species/item. Strict decoder rejects extra phase keys; PhaseKind lacks npc; schema additionally constrains vocabulary to caller capabilities. Generic fresh-fact strings and phase membership cannot carry actor/prompt-specific admission."
+    },
+    {
+      "authority": "src/robots/app/planning_brain.py:83-129,154-196,231-277,279-321; src/robots/app/execution_decisions.py:31-80,118-148",
+      "finding": "Actual opt-in brain admits supported IDLE and eligible REST only, routes execution review only Heartbeat/DamageTaken/ScriptFailed, requires a pose observation, uses phase_index 0, and installs only REST mechanics. execution_request already includes npc advice but explicitly instructs Execute only admitted IDLE/REST. Existing CLEF output is continue/hold/replan, not a menu chooser."
+    }
+  ],
+  "actual_binding": [
+    {
+      "authority": "tests/test_llm_planning_host_construction.py:51-89; tests/test_llm_planning_host_tick.py:241-276",
+      "binding": "playing.build_host(parse_args(... --llm-planning --planning-world ...)) constructs PlannedBrain; tracer replaces only provider/wire boundaries, uses actual agent connect/tick. This is inspected test authority, not an executed host test in this audit."
+    },
+    {
+      "authority": "src/robots/app/planning_brain.py:131-152; src/robots/app/planning_runtime.py:28-36,51-83",
+      "binding": "start/request_replan -> _capabilities + capture_job_context -> runtime.request -> physical planning job -> LlmPlanner.propose."
+    },
+    {
+      "authority": "src/robots/app/llm_planner.py:299-352; src/robots/app/plan_lifecycle.py:85-116",
+      "binding": "propose requires investigation before submit_plan -> decode_plan -> captured reader capability denial -> result -> runtime.poll(current host capabilities) -> lifecycle.admit(token/base_version/identity/timing/shape/support/facts). Current real fresh host re-admission has no typed NPC receipt comparison."
+    },
+    {
+      "authority": "src/robots/app/planning_brain.py:154-196,231-266,279-321; src/robots/app/execution_decisions.py:118-148",
+      "binding": "sync_context -> poll/current execution_plan -> event review -> ExecutionRuntime dispatch/apply -> script step; NPC event is filtered and no NPC executor is installed. Extend these real consumers rather than returning an unused plan object."
+    },
+    {
+      "authority": "tests/test_llm_planning_host_tick.py:150-206,209-238,279-336; tests/test_llm_planning_clef_execution.py:46-97,100-165; tests/test_llm_planning_rest_execution.py:206-241",
+      "binding": "Existing test source covers passive pending/keepalive, fresh host denial, no NPC mechanical fallback, stale CLEF replies, actual REST scripts. They are preservation contracts; not run/re-approved here."
+    }
+  ],
+  "proposed_minimal_contract": {
+    "typed_plan": "Add explicit NPC phase kind and optional typed Phase.npc_intent (default None, appended for constructor compatibility). Exactly one NPC phase admitted for this slice; no destination/species/item. Intent operation enum next/choose/close, binding npc_id + epoch + map_name + opened_sequence + prompt_sequence + expected_stage, and optional exact received option_index for choose only. Positive strict integer IDs/cursors, reject bools, duplicates/unknown keys and contradictory fields. PlanningIdentity remains request-owned; no arbitrary executable text/native commands. Objective/reason and existing bounded duration/review/fallback/safety/replan fields retained.",
+    "admission_data": "Append optional typed NPC admission observation to Capabilities, default None for old callers, constructed from fresh host-owned received state: dialogue binding, current received NPC actor presence/kind/range, alive/transport/frame continuity/map/arrival readiness and session identity. Advisory job copy may inform schema but is never authorization. Domain NPC semantics compare plan receipt exactly to current typed observation at actual lifecycle admission; the host action validator repeats all prerequisites immediately before any dispatch. Generic required_facts npc string alone is insufficient.",
+    "admission_gate": "Advertise NPC only under an explicitly enabled separately approved capability when current same-owner/character/world/ruleset/session/map received dialogue is actionable and the actor is actually visible/reachable. Require bounded monotonic freshness with no received-frame gaps or pending movement, matching open/prompt receipt and expected stage. choose must use an index present in the exact current options; next/close require an allowed received stage. New/unrecognized string input => hold and bounded replan, not answer. Public source knowledge supplies neither actor visibility nor Training Grounds eligibility. Any eligibility-changing, spending, reward or quest objective remains unsupported.",
+    "progress": "Add narrowly named NPC UI advanced / NPC UI closed observable conditions with operation-specific semantics. Completion requires a newer relevant received UI event for the same npc/epoch/map/opened_sequence, not action emission, a global frame increase, unrelated chat or repeat same prompt. NEXT/CHOOSE complete on a genuinely changed received prompt/page/stage; CLOSE on explicit matching received close. Freshness loss/missing actor is stop, never proof of close/success. Terminal receipt recorded once; no further command until another LLM-authored admitted plan.",
+    "limits": "One action per (plan identity/version,npc_id,opened_sequence,prompt_sequence,operation), zero retransmission in this first slice; finite 3-second receipt timeout and max 30-second plan/review window proposed for approval. A matching changed but unexpected stage, missing receipt, review expiry, actor/transport/frame loss, danger or epoch/map/name change stops requests and supplies an evidenced bounded/coalesced replan reason. Existing lifecycle single physical worker, retry/cooldown/timeout ownership must remain; while pending retain safe IDLE and keepalive, no legacy NPC fallback.",
+    "execution_split": "LLM selects received guidance menu option and authors the bound intent. CLEF may only continue/hold/replan and adapt request timing within this one validated phase. Unknown/unplanned menus are LLM replan, not CLEF plan authorship. Deterministic host state machine issues NEXT/CHOOSE/CLOSE using approved controller primitives and waits for received UI. Explicit name submission remains the other owner's pending primitive, not string autoanswer.",
+    "host_interfaces": "Extend PlannedBrain.bind_session with a defaulted NPC read-only observation/eligibility seam, preserving pose_reader. Host supplies current actor/transport/frame/dialogue receipts and existing action dispatch; future AgentHost/session binding must thread this seam, and the PlayingClient seam must be agreed only after its current owner finishes. Exact mutable implementation/line numbers not audited. Extend _capabilities, runtime.poll/lifecycle.admit typed comparison, _execution_current to prompt binding, event routing/dedupe for NpcDialogueReceived without REST pose dependence, and step_script to a narrowly isolated one-command NPC hold. Use actual agent tick/action dispatch; no new model transport or native packet implementation here.",
+    "serialization_and_migration": "Update _phase/decode_plan, generated _schemas/_constrain_plan_schema, Phase.valid/ProposedPlan.denial and operation-specific observable validation together. Add conditional strict npc_intent schema and current option vocabulary from caller data; do not leak unsupported name intent. execution_request asdict must detach/JSON-encode nested typed fields and expose real current phase/progress instead of a misleading generic 0; this one-phase slice keeps index 0 valid. planning_job_context typed JSON budget/deepcopy must retain NPC fields/freshness. Preserve old non-NPC payloads/constructor defaults, exact required top-level key set, fallback enum and REST/IDLE behavior; no existing schema change now. On later approval version the new NPC contract/opt-in and reject unknown versions, or provide an explicit old-plan reader with default npc_intent=None; persistence/dashboard consumers must be located/reviewed separately before activation, not silently migrated. InvestigationReadPort.read/PlanningModel.complete need no new methods."
+  },
+  "future_ownership": {
+    "current_audit": [
+      "run/reviews/llm-planning-npc-phase-frontier.json",
+      "/home/otto/.hermes/cache/scratch/npc-phase-frontier/"
+    ],
+    "future_contract_owner": [
+      "src/robots/domain/planning.py",
+      "src/robots/app/llm_planner.py",
+      "src/robots/app/plan_lifecycle.py"
+    ],
+    "future_execution_owner": [
+      "src/robots/app/planning_brain.py",
+      "src/robots/app/execution_decisions.py",
+      "new src/robots/app/npc_planning_execution.py"
+    ],
+    "conditional_wiring_only": [
+      "src/robots/app/planning_runtime.py only if admission signature needs threading",
+      "src/robots/app/agent_runtime.py only current observation/session seam binding, authority presently test-source only"
+    ],
+    "future_test_owner": [
+      "new tests/test_llm_planning_npc_frontier.py, using actual host tracer only after mutable name-controller snapshot is completed and separately reviewed"
+    ],
+    "not_owned_or_read": [
+      "src/robots/domain/actions.py",
+      "src/robots/adapters/native_npc_dialogue.py",
+      "src/robots/app/playing_runtime.py",
+      "tests/test_native_npc_name_input.py"
+    ],
+    "unchanged_by_default": [
+      "src/robots/app/planning_context.py",
+      "src/robots/app/planning_job_context.py",
+      "src/robots/domain/npc.py",
+      "src/robots/domain/model.py",
+      "src/robots/domain/events.py",
+      "src/robots/ports/planning_model.py",
+      "existing planning tests",
+      "ADR-021"
+    ],
+    "note": "Narrow source sets are candidate future assignments, not present permission or performed edits. No frozen mutable dependency or implied native approval."
+  },
+  "four_future_vertical_tdd_acceptance_tests": [
+    {
+      "name": "test_npc1_received_guidance_plan_crosses_real_decode_admission_host",
+      "given": "After approved name controller, actual opt-in host tracer receives visible NPC and exact indexed guidance menu. Scripted offline model investigates npc then submits one choose intent.",
+      "assert": "Existing reader yields only received UI with quest UNKNOWN; provider schema exposes only actionable NPC/received option; strict JSON decoder produces typed binding and identity; fresh actual runtime/lifecycle admits; actual brain dispatch path installs intent. Serialization/captured context/CLEF payload preserve exact fields and bounded data. Keep legacy REST/IDLE payload controls unchanged. No live model/native request.",
+      "red_first": "Write against current schema/host before implementation; record real failure only then. Current audit probe is not this RED."
+    },
+    {
+      "name": "test_npc2_stale_or_unauthorized_prompt_never_admitted_or_dispatched",
+      "given": "Finite parametrized mutations of world/character/epoch/map/actor loss/prompt_sequence/stage/option index/transport-gap/string-input without explicit name intent, between job capture and admission and again between admission and action.",
+      "assert": "Fresh host authority rejects or safely holds with no action; duplicate/extra/malformed typed fields rejected; public NPC alias/catalog/Training Grounds text cannot grant capability. Delayed plan/CLEF continue cannot act on another current prompt. An arbitrary received string input never emits NpcSubmitName or a fabricated answer; pending name API is not imported until separately approved.",
+      "red_first": "Future failures must be recorded before implementation, not retrospectively relabelled."
+    },
+    {
+      "name": "test_npc3_one_authorized_response_waits_for_received_ui_then_stops",
+      "given": "Finite next/choose/close cases through actual agent tick and dispatch with fake wire/controller boundaries; received event produces one CLEF continue (and hold-then-continue case) for the admitted bound intent.",
+      "assert": "Exactly one matching primitive per intent; CLEF cannot substitute option/objective. Repeated ticks/events do not call models or resend. Emission/duplicate same UI/unrelated frame advance are not progress; matching newer changed UI or explicit close completes once. No further prompt is autoanswered; name controller not automatically invoked. No movement/loot/chat/rewards asserted.",
+      "red_first": "Fail at actual unimplemented host execution path first; no helper-only acceptance."
+    },
+    {
+      "name": "test_npc4_timeout_or_unplanned_ui_escalates_once_with_safe_pending",
+      "given": "Finite no-receipt timeout and unexpected new menu/string-stage scenarios on one admitted interaction; fake clock past 3-second receipt budget; duplicate events while scripted replanner blocked, then fresh validated replacement IDLE.",
+      "assert": "Stop NPC sends, observed evidenced reason, one logical bounded/coalesced replan episode, no overlapping physical worker, ordinary tick keepalive and maintenance stay live, stale CLEF/plan cannot resurrect old prompt, replacement admitted through real host changes behavior to passive IDLE. Existing REST/IDLE schema and semantics remain regression controls; cleanup releases test workers. No reward/gameplay acceptance.",
+      "red_first": "Write failing host-path test before implementation; separately scoped live verification remains future."
+    }
+  ],
+  "probe": {
+    "classification": "unsupported current feature; not a bug or retrospective RED",
+    "method": "actual unchanged pure decoder/schema and lifecycle AST-isolated; no package/provider/native imports; not actual-host execution",
+    "idle_control_admitted": true,
+    "idle_control_version": 1,
+    "unconstrained_phase_kinds": [
+      "travel",
+      "grind",
+      "farm",
+      "rest",
+      "idle"
+    ],
+    "host_idle_schema_phase_kinds": [
+      "idle"
+    ],
+    "phase_schema_additional_properties": false,
+    "rejections": [
+      {
+        "case": "npc-kind",
+        "rejected": true,
+        "exception_type": "ValueError",
+        "message": "'npc' is not a valid PhaseKind"
+      },
+      {
+        "case": "npc-data-in-idle",
+        "rejected": true,
+        "exception_type": "PlanningError",
+        "message": "planning denied"
+      }
+    ],
+    "model_requests": 0,
+    "native_effects": 0
+  },
+  "inspected_input_sha256": {
+    "wiki/decisions/adr-021-llm-planning-clef-execution.md": "718c2faf8f863bfd045c83308fe6f19aabe8652c358f998487883223ac5176c4",
+    "src/robots/domain/planning.py": "2722eb5cea7627c071b13a3e7966d7bfb6d3307ac81335314d63d0c0a51f9ffb",
+    "src/robots/domain/npc.py": "193a17bda93ee478bf633bba07bc68e7fffb98f723f2e463ba88548943be2e8f",
+    "src/robots/domain/model.py": "42d151cc75a20ab654c26a196f2d298cce8553e7e4e1a9c76c3d204e32ebfd7d",
+    "src/robots/domain/events.py": "90c1fcf91a139762e8a7a81ac84fab13e5f136f48a2ff3f217a71a7542305a05",
+    "src/robots/ports/planning_model.py": "aee8330ccb8d92a2c6093923cb0c3a4e0d82828a20bb8ceaca50cd0587dd885d",
+    "src/robots/app/planning_context.py": "f97454f686faa98378d83b8067d1bf0263e6eb873e630e4fdbb45e074e1d880c",
+    "src/robots/app/planning_job_context.py": "ceda3afb9f4fe1fc412d2ee14f509887824472b5355891017c81763d0297bd18",
+    "src/robots/app/llm_planner.py": "43043a8f264991a2139c9d1e3335a881db0cbb8219405db48c3ad8ed8a0a618e",
+    "src/robots/app/plan_lifecycle.py": "5cc4ded4107193e85ce023c9488423f1409fe35c8cb1a7209f934da48cab4f1b",
+    "src/robots/app/planning_runtime.py": "95405567c5162caa68afff72de8df5bee05797aafd8f03dbb59e81597c41ffdf",
+    "src/robots/app/planning_brain.py": "a489a21b49c109b618bffb19f8db77df5705035848f80c1d6dd072347e8b81fc",
+    "src/robots/app/planning_execution.py": "422e8be19ebf3deeae5b2bec515cda1980eaa572d2dc740b592df276e9926dbd",
+    "src/robots/app/execution_decisions.py": "c166ae0940e9506775f9d7b7003516a9f30e6aec4127b2539c6f11fbba1fd66e",
+    "tests/test_llm_planner.py": "a86ec4bbe6faa308979e937ac81d6d0548a36548fd94ff709928afa170530296",
+    "tests/test_llm_planning_host_construction.py": "a06a2b7934616c37f941a1fb3033cd62e97437b648b2eda190d6c0adaeee4dda",
+    "tests/test_llm_planning_host_tick.py": "0773d422ec5654a11ba7e50cc7104cffa1263db1f42b00bc87f22e90ab5ad3e6",
+    "tests/test_llm_planning_clef_execution.py": "dee2354a6ce3f3def9da740968597ede93ed6093a261d583629302474995b500",
+    "tests/test_llm_planning_rest_execution.py": "8eac33d848459c0609932579ceb4ce0720cd81abfb9ccd42ab48dad6c2800440",
+    "tests/test_planning_context.py": "a27635e7ddf846e4a5dc1809e40dd095c140673aa190b3b061d96ab2871077e8",
+    "tests/test_planning_job_context.py": "d34d29913eb0cf3356f6581bfe540755fb0643fb0a02448208a47db733954bb3"
+  },
+  "separation": {
+    "claimed": "Read-only source audit and offline pure schema rejection/control only.",
+    "not_claimed": "No implemented NPC plans, completed name controller, live LLM/CLEF behavior, native session/gameplay/rewards, caller approval, full suite or current quality gate. Prior pure codec 75 cases/fullRoot 5087+65/95.39 context is not reproduced or transferred as permission."
+  },
+  "issues": [
+    "No execution blocker. Source gap is an unsupported planned feature, not a discovered bug. The host/provider/packet boundaries owned by the name-controller writer were deliberately neither read nor imported; future integration requires their completed reviewed snapshot."
+  ],
+  "verification": {
+    "method": "Final offline verification compares every inspected immutable input hash, checks exactly four future tests and verifies the owned JSON artifact. Results are saved separately in scratch/verification.json; no code/tests/docs or mutable-controller files are read by that command."
+  }
+}

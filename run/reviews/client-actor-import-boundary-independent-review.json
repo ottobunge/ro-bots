@@ -1,0 +1,305 @@
+{
+ "passed": true,
+ "security_concerns": [],
+ "logic_errors": [],
+ "quality_concerns": [],
+ "summary": "Approved bounded offline actor retention and lazy adapter export boundary on unchanged public-source snapshot; no native/gameplay/cognition acceptance.",
+ "date": "2026-10-06",
+ "reviewer": "independent frozen-snapshot review",
+ "scope": {
+  "production_changes_by_reviewer": false,
+  "native_engine_server_sql_network_inference_actions": false,
+  "provider_instantiation": false,
+  "private_manifests_or_credentials_read": false,
+  "dummy_values": "[REDACTED]"
+ },
+ "freeze": {
+  "initial_public_files": 159,
+  "expanded_public_dependencies": 2869,
+  "drift": [],
+  "initial": {
+   "path": "/home/otto/.hermes/cache/scratch/aci/before.json",
+   "sha256": "dd73ace25c3a41ec51bb021ba6fe012927368c2d0c88bc83e90bdc3a0ea304b3"
+  },
+  "expanded_before": {
+   "path": "/home/otto/.hermes/cache/scratch/aci/expanded-before.json",
+   "sha256": "86a9c20980e31816ced526b0a519658833d3e75fcb3c898ef9f35f5f4db0da4c"
+  },
+  "expanded_after": {
+   "path": "/home/otto/.hermes/cache/scratch/aci/expanded-after.json",
+   "sha256": "86a9c20980e31816ced526b0a519658833d3e75fcb3c898ef9f35f5f4db0da4c"
+  },
+  "expanded_scope": "all public src/tests Python, explicit project gate/pin configs, clientless spike Python, all public rAthena src .h/.hpp/.cpp and config.log; final combined run after expansion",
+  "important_sha256": {
+   "spikes/003-clientless-limbs/client.py": "6438326c4b77ee9595c24b837616bbf68e7ff95670dbef659e447f8388b3f46d",
+   "spikes/003-clientless-limbs/packetdb.py": "1c2be6705938f5ab575cc822b690dba583f8a7719b9469f794fcbb661c032cf3",
+   "src/robots/__init__.py": "14a8271c90ed669cc0645c2901ba6a3d93345643b7697e87b965b9008f02b6a6",
+   "src/robots/adapters/__init__.py": "9b1e7275a89b55489704b9976dd1cfa684a4f9ea02f70393fb79bebbb885761e",
+   "src/robots/adapters/native_actor_presentation.py": "81140e814a682ea44742880dd9a3a7a19e165eb2098debfa657d24615fe5b730",
+   "src/robots/adapters/native_progression.py": "ad74be96c5d843cfeabd21ef0bdc0086bd0d9d76546ab3a1954a0f276cbff3fe",
+   "src/robots/app/agent_runtime.py": "4c99c3a952c5a96d1446c196b7b3aa737107601d69aa9ddaa7d7b0af6fcb4e60",
+   "tests/test_client_actor_presentation.py": "6858d5e6bda91bf47c17b0faf7aea65f1276caa586baa32a5cdb2bef96094b8e",
+   "tests/test_adapter_import_boundary.py": "26b89f94c4df5f93e20a1c1a745f60fb1d50ade7827b7e5ec5389b1b09edda1c",
+   "tests/test_native_actor_presentation.py": "02e21afbd14ac70837338c1bda2e6e13665296acf9b994e3dbd5c6735986943d",
+   "tests/test_protocol_rereview_repairs.py": "a49988510058798c05455003d4618d7309eb442ac60fbef05aa0ebbc820852c4",
+   "rathena/config.log": "6bb759d7b65d463ecd38ca81f484659ec2dc6e7885b017a964b9c611114e9d78",
+   "rathena/src/common/packets.hpp": "c92279bf163e9546b649397638c19e57c3eb515b49e841c13f88a5fb97bba693",
+   "rathena/src/map/packets_struct.hpp": "5ab5ef13d2a1cdc60d84dcaf2e3be0b6e316b9630e61c3ac7ba0f930d4d31287",
+   "rathena/src/map/clif.cpp": "0b1db098158c240b090c6edb8417978ba495957c8a2df4cd9a0ab4cb39884ac5",
+   "rathena/src/map/clif_shuffle.hpp": "befba011ca4b2d1186c16fba325a7240a4ff5375e252d2fb4cc62d503c66d2a0",
+   "pyproject.toml": "e8ae0849a413bc3d705f081f609b92dae702bbd3e491b2c3aeb5d8665c458fba",
+   "Taskfile.yml": "bf60a77c96fb4cfb4c5475c73a6e7da5a7eef90fc9f63c06a9812cfcbbb1d31d",
+   "flake.nix": "185e4a4babf62a40484c347f59653bd11b79ce847316a3a90349c8545d38a359",
+   "flake.lock": "c9c0bac69415b99a29ef3fe149b6f04ef54d291989bdf7218cf819ed52edf2a0",
+   "uv.lock": "2d7b4c187078488d7625e4fd4fa982745cab8d6a65b2ff3e382ffa286f1df245"
+  }
+ },
+ "authentication": {
+  "historical_client_sha256": "f4432d814522833d52d575d83b681b0f6ad85e98f886708ba4015ecb2c9bb557",
+  "unchanged_BotClient_method_ASTs_verified": 31,
+  "only_changed_method": "_parse_actor_entry",
+  "actor_parser_AST_sha256": "df7847397ebe3883b314edc32a05a2bc7000880818bdf7129ce2656f57ee10d1",
+  "worker_reports_used_as_inputs_not_test_evidence": true
+ },
+ "execution": {
+  "runner": "nix develop --offline --no-write-lock-file /home/otto/.hermes/cache/scratch/aci/f -c uv run --offline --no-sync",
+  "flake": "exact public checkout flake.nix/flake.lock copied to tiny scratch directory; no private checkout archive or getFlake",
+  "commands_and_logs": {
+   "path": "/home/otto/.hermes/cache/scratch/aci/runs.json",
+   "sha256": "898af561a7da2e754c3dc5e3a62ec91d344ee92cc0ad24e1519e8246a2967f23"
+  },
+  "initial_selected": {
+   "path": "/home/otto/.hermes/cache/scratch/aci/selected.xml",
+   "sha256": "6fca57131772b4eaeeefc10c41dbb28a64300b0b0446b043c4fbc1a55b13c3ba",
+   "physical_testcase_count": 1091,
+   "unique_classname_name_identities": 1091,
+   "declared_suite_tests": 1156,
+   "additional_subtests": 65,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0
+  },
+  "final_frozen_combined": {
+   "path": "/home/otto/.hermes/cache/scratch/aci/revalidated.xml",
+   "sha256": "70e045f0943d720fdee2a6b0eb945acd59a36b616ced0c978427f9e83b54d93b",
+   "physical_testcase_count": 1124,
+   "unique_classname_name_identities": 1124,
+   "declared_suite_tests": 1189,
+   "additional_subtests": 65,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "by_module": {
+    "tests.test_adapter_import_boundary": 12,
+    "tests.test_native_actor_presentation": 813,
+    "tests.test_client_actor_presentation": 71,
+    "tests.test_client_pincode": 41,
+    "tests.test_client_protocol": 42,
+    "tests.test_protocol_rereview_repairs": 31,
+    "tests.test_temporary_handshake_cleanup": 21,
+    "tests.test_movement_arrival_evidence": 22,
+    "tests.test_packet_conditions.ConditionTests": 6,
+    "tests.test_packet_conditions.DirectiveTests": 4,
+    "tests.test_packet_conditions.NativeCreationTests": 3,
+    "tests.test_mechanics_review_regressions": 25,
+    "scratch_independent_adversarial": 33
+   }
+  },
+  "adversarial_verified": 33,
+  "final_combined_log": {
+   "path": "/home/otto/.hermes/cache/scratch/aci/revalidated.log",
+   "sha256": "8ff257d07ecb81feb97704cd4844a5764cc4c70319ce0e78df0d8ed4dfd5a9d7"
+  },
+  "adversarial_source": {
+   "path": "/home/otto/.hermes/cache/scratch/aci/test_adversarial.py",
+   "sha256": "4a8acd614c728f58c2d32896ab44c133d53bebf69706cb5fd29430d7829c0f26"
+  },
+  "subtest_identity_limit": "JUnit declares 1189 tests but physically enumerates 1124 unique testcase identities; 65 additional passed subtests verified by suite counters and execution log, not represented as unique testcase nodes. Counts across reruns are not additive."
+ },
+ "static_gates": {
+  "ruff": {
+   "exit_code": 0,
+   "log": {
+    "path": "/home/otto/.hermes/cache/scratch/aci/ruff.log",
+    "sha256": "530927c24dc31c99a2b76961ea9731a4f982698bf214162569c84a02bf4bd3ec"
+   }
+  },
+  "black": {
+   "exit_code": 0,
+   "log": {
+    "path": "/home/otto/.hermes/cache/scratch/aci/black.log",
+    "sha256": "dcdde7eb546b3b1ac49c2c26b2d6cf515eeb2cbdccac9161764ed1e96e978012"
+   }
+  },
+  "mypy": {
+   "exit_code": 0,
+   "log": {
+    "path": "/home/otto/.hermes/cache/scratch/aci/mypy.log",
+    "sha256": "562d60609dce93c9089958a0237302415990f12983c6b54c1f2993bdb26dccb3"
+   }
+  },
+  "bandit": {
+   "exit_code": 0,
+   "log": {
+    "path": "/home/otto/.hermes/cache/scratch/aci/bandit.log",
+    "sha256": "3a9d64857ca614a639b57eacbde849d388c36fd282a40408f2ec1d1902bba515"
+   }
+  },
+  "vulture": {
+   "exit_code": 0,
+   "log": {
+    "path": "/home/otto/.hermes/cache/scratch/aci/vulture.log",
+    "sha256": "755411d100bba5a09c4296fba4a304e8e782b387c7be1ba0fc646708779e3748"
+   }
+  },
+  "xenon": {
+   "exit_code": 0,
+   "log": {
+    "path": "/home/otto/.hermes/cache/scratch/aci/xenon.log",
+    "sha256": "97ead54b155d565d6850fe1ddc28083ff349970791f80b5177a42b2ca4761d33"
+   }
+  },
+  "duplicates": {
+   "exit_code": 0,
+   "log": {
+    "path": "/home/otto/.hermes/cache/scratch/aci/duplicates.log",
+    "sha256": "f59bdaba8b561ccaf04b7c718976a965c61e2829549818bd8b7e0fdd4a9d012a"
+   }
+  }
+ },
+ "legacy_client_debt": {
+  "ruff_baseline": 47,
+  "ruff_current": 47,
+  "new_code_message_diagnostics": [],
+  "mypy_baseline": 13,
+  "mypy_current": 13,
+  "new_mypy_diagnostics": [],
+  "historical_source_authenticated": true,
+  "whole_file_checks_exit_nonzero": true,
+  "debt_not_waived": true,
+  "baseline_ruff": {
+   "path": "/home/otto/.hermes/cache/scratch/aci/baseline-ruff.json",
+   "sha256": "a8b9d8dda6b0437867ce75eb6cf689efc7202515b9cac3bae8bc5ca121dfa3b0"
+  },
+  "baseline_mypy": {
+   "path": "/home/otto/.hermes/cache/scratch/aci/baseline-mypy.log",
+   "sha256": "e17ae4e127e7be465ee2bf6a6af97ffe0b5b7405d6c95ad753e8ad29ad43e2a6"
+  },
+  "current_ruff": {
+   "path": "/home/otto/.hermes/cache/scratch/aci/client_ruff.log",
+   "sha256": "17c4f6b62da1284539eb14e00bd81bed6eed294260caa831a7800c6f7b8a7afa"
+  },
+  "current_mypy": {
+   "path": "/home/otto/.hermes/cache/scratch/aci/client_mypy.log",
+   "sha256": "2d8eba62595b34b5862940f2334078fa9abc0cda4860b415b0e22afa2c19f623"
+  },
+  "retained_legacy_annotation_lines": [
+   746,
+   766
+  ],
+  "introduced_bootstrap_decoder_validation_identity_objecttype_lines": "no new Ruff/Mypy findings"
+ },
+ "coverage": {
+  "artifact": {
+   "path": "/home/otto/.hermes/cache/scratch/aci/revalidated-coverage.json",
+   "sha256": "a51b34d77424c6668ddbad04629c9a17d9aa2d7bb7484dd586ec48ad9ab3fee7"
+  },
+  "actor_helper": {
+   "covered_lines": 30,
+   "num_statements": 30,
+   "percent_covered": 100.0,
+   "percent_covered_display": "100",
+   "missing_lines": 0,
+   "excluded_lines": 0,
+   "percent_statements_covered": 100.0,
+   "percent_statements_covered_display": "100"
+  },
+  "adapter_initializer": {
+   "covered_lines": 13,
+   "num_statements": 13,
+   "percent_covered": 100.0,
+   "percent_covered_display": "100",
+   "missing_lines": 0,
+   "excluded_lines": 4,
+   "percent_statements_covered": 100.0,
+   "percent_statements_covered_display": "100"
+  },
+  "threshold_required": 85,
+  "whole_spike_client_coverage_not_claimed": true,
+  "TYPE_CHECKING_default_exclusions": 4
+ },
+ "standalone": {
+  "exit_code": 0,
+  "cwd": "/home/otto",
+  "python": "bare Nix python3 -I, outside checkout, no uv/project venv",
+  "script": {
+   "path": "/home/otto/.hermes/cache/scratch/repro-standalone-actor-import.py",
+   "sha256": "dadcf0db1c108f56bb4f32b94bf7f0b03cd25717e3bd869c9a64a65926bacb40"
+  },
+  "log": {
+   "path": "/home/otto/.hermes/cache/scratch/aci/standalone.log",
+   "sha256": "f8f8cdb1f9d7341fbcdd6a29815f5c0e561f495c049a7509093d6db69351309b"
+  },
+  "actual_client_import_optional_denial_cases": 2,
+  "constructor_only_not_login_native_success": true
+ },
+ "reviewed_contracts": [
+  "Trusted exact Path(__file__).resolve().parents[2]/src bootstrap with legacy spike path; accepted current-user checkout trust boundary, not same-user hostile isolation.",
+  "Strict exact bytes and complete FD110/FE103/FF104 header+declared length validated before other field reads; explicit typed pid must match raw header; opaque ValueError before actor replacement/event.",
+  "Real packetdb.parse_stream -> _dispatch -> actors exercises replacement/vanish, raw objecttype 0/5/6/12/255, literal AID0, distinct zero-allowed character IDs, collision identities and dispatch_errors poison retention.",
+  "Unknown objecttype is valid framing; unsupported packet IDs remain fail-closed; partial buffers preserved.",
+  "Fixed eight-name import allowlist, original __all__ order/class identities, standard unknown AttributeError, successful per-symbol globals caching and failure propagation/retry; dir has no provider-loading effect.",
+  "TYPE_CHECKING imports maintain static exports; dynamic lifecycle behavior not claimed.",
+  "Compiled pinned MAIN/pre-re20180704 struct regressions exercised; public clif_bl_type noninvertibility inspected. Walking coordinates remain destinations, no kind/distance/attack authority introduced."
+ ],
+ "independent_adversarial_groups": {
+  "strict_bytes_subclass_memoryview_negative_declared_future_header_length_transpose": 15,
+  "swapped_wire_char_identity_crosslayout_replace_and_peer_safe_vanish": 3,
+  "full_width_coordinates_invalid_utf8_maxjob_unknown_type_not_classified": 3,
+  "arbitrary_export_never_calls_loader": 6,
+  "failed_lazy_resolution_preserves_exception_not_cached_and_retries": 4,
+  "actual_client_optional_denial_pure_import_orders": 2
+ },
+ "harness_corrections": [
+  {
+   "failed_run": {
+    "path": "/home/otto/.hermes/cache/scratch/aci/adversarial.xml",
+    "sha256": "3e3498afeb760ccc61464efb1b72f311ab027349b21f9048840128741778fe08",
+    "physical_testcase_count": 33,
+    "unique_classname_name_identities": 33,
+    "declared_suite_tests": 33,
+    "additional_subtests": 0,
+    "failures": 2,
+    "errors": 0,
+    "skipped": 0
+   },
+   "classification": "Reviewer harness assumption failure, not production logic fault",
+   "detail": "Two cases wrongly assumed legacy exported YamlMechanics/StubMechanics import yaml. Actual preserved defining mechanics_stub module is stdlib-only; switched denial to that real module and reran all 33 cases. No production/test-gate edits. Failed XML preserved.",
+   "corrected_run": {
+    "path": "/home/otto/.hermes/cache/scratch/aci/adversarial-final.xml",
+    "sha256": "c76ac40f2e467561b022238b2a2f5865a555aa9f8390beeb4363e86135dc29e8",
+    "physical_testcase_count": 858,
+    "unique_classname_name_identities": 858,
+    "declared_suite_tests": 858,
+    "additional_subtests": 0,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+   }
+  },
+  {
+   "detail": "Initial selected coverage run used default .coverage output in repository; final complete selected+adversarial rerun sets COVERAGE_FILE to scratch explicitly. Do not use initial shared coverage data for parent gate reconciliation."
+  }
+ ],
+ "acceptance": {
+  "offline_contract_review": true,
+  "native_receipt": false,
+  "current_actor_kind": false,
+  "current_position_arrival": false,
+  "native_cognition_combat": false,
+  "progression_inventory": false,
+  "full_goal_acceptance": false,
+  "all_six_milestones": "OPEN",
+  "parent_full_configured_task_check": "not observed or claimed"
+ }
+}

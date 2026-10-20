@@ -1,0 +1,448 @@
+{
+  "schema": "maintenance-shutdown-footer-repair1/v1",
+  "status": "PASS_OFFLINE_AUTHOR_VERIFICATION_PENDING_INDEPENDENT_REVIEW",
+  "scope": "One finish-recognizer repair; no live operations, lifecycle commands, world/engine/SQL/provider/native effects, Git edits, dependencies or approval changes. Existing offline tests retain their authorized effect spies.",
+  "budget": {
+    "defect": "Observed harmless allocator footer rejected after normal Finished marker",
+    "repair_used": 1,
+    "repair_limit": 1,
+    "prior_budgets_reset": false
+  },
+  "authority": {
+    "prior_freeze": {
+      "path": "/home/otto/.hermes/cache/scratch/npc-owned-recovery/reader-execids75-parent-reviewed-freeze.json",
+      "sha256": "3d42403b46a909f7eb8aeac4882c639db5a565fa9cc4aed99386044b5cc6a4f5",
+      "bindings": 156
+    },
+    "prior_independent_review": {
+      "path": "/home/otto/dev/ro-bots/run/reviews/maintenance75-final-independent-review.json",
+      "sha256": "3aa02c2ea78c293304f71e82d40a29b70bdb238514a518574077da13544c6e78"
+    },
+    "archived_adapter": {
+      "path": "/home/otto/.hermes/cache/scratch/npc-owned-recovery/shutdown-footer-repair1-evidence/accepted-live_recovery.py",
+      "sha256": "dbb13389a785b439dbeafa375fd6e70d0ecd2f065765e1eac74ce5f7f295c674"
+    },
+    "current_adapter": {
+      "path": "/home/otto/.hermes/cache/scratch/npc-owned-recovery/live_recovery.py",
+      "sha256": "281007a6024e1dac7e13a9378697be6668a66b3fb951f49ad7c0048162d77142"
+    },
+    "new_test": {
+      "path": "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_shutdown_footer.py",
+      "sha256": "74a4d322c43d690ea041ee5a94c3097852a8eb2c39931440c45e615b2671108f"
+    },
+    "current_freeze": {
+      "path": "/home/otto/.hermes/cache/scratch/npc-owned-recovery/shutdown-footer-repair1-evidence/completed-freeze.json",
+      "sha256": "c832105b45416a66e259c85261ff405e1236ee4983b694f9f70f6b169716a05d",
+      "bindings": 157
+    },
+    "prior_bindings_unchanged_except_adapter": 155
+  },
+  "minimal_change": {
+    "only_changed_AST_expression": "native_facts return NativeFacts argument 2 (finish)",
+    "all_other_AST_equal": true,
+    "semantics": "Preserve original Finished spelling, whitespace and EOF anchoring. Allow zero or one exact [Info]: Memory manager: No memory leaks found. footer on a later LF-delimited line. Never accept arbitrary trailing text, a new startup, errors, warnings, leak reports, duplicate footers or adjacent footer without line break. No stream truncation or multiline marker search.",
+    "error_baselines_and_other_guards": "Unchanged",
+    "diff": "/home/otto/.hermes/cache/scratch/npc-owned-recovery/shutdown-footer-repair1-evidence/tiny.diff"
+  },
+  "pinned_primary_source": {
+    "/home/otto/dev/ro-bots/run/public-source/callback-qualified-e985006171d2/src/map/map.cpp": {
+      "sha256": "9629e6b751ca3fd9d160e48c0beb80bf7bbe0c359fa7ecdb46698b074e6c1113",
+      "line": 5108,
+      "verified_statement": "ShowStatus(\"Finished.\\n\");"
+    },
+    "/home/otto/dev/ro-bots/run/public-source/callback-qualified-e985006171d2/src/char/char.cpp": {
+      "sha256": "141dd411c11ec9663d49e1274203ba28bdf3761cce0f98782a8cfd37ee34cdff",
+      "line": 3177,
+      "verified_statement": "ShowStatus(\"Finished.\\n\");"
+    },
+    "/home/otto/dev/ro-bots/run/public-source/callback-qualified-e985006171d2/src/login/login.cpp": {
+      "sha256": "b4b6248b8d504bf8772ab5ab583ed81980855b4295717c06eac34ca36b08baef",
+      "line": 843,
+      "verified_statement": "ShowStatus(\"Finished.\\n\");"
+    },
+    "/home/otto/dev/ro-bots/run/public-source/callback-qualified-e985006171d2/src/common/malloc.cpp": {
+      "sha256": "2a94fc9cd3cec71584220c6d7b0cca2a2f0ae224460e0935db1d158003e62a9e",
+      "line": 648,
+      "verified_statement": "ShowInfo(\"Memory manager: No memory leaks found.\\n\");"
+    }
+  },
+  "tests_first": {
+    "RED": {
+      "receipt": "/home/otto/.hermes/cache/scratch/npc-owned-recovery/shutdown-footer-repair1-evidence/red2.json",
+      "xml": "/home/otto/.hermes/cache/scratch/npc-owned-recovery/shutdown-footer-repair1-evidence/red2.xml",
+      "physical_cases": 2,
+      "failed": 1,
+      "passed": 1,
+      "failure": "NativeFacts complete=True ready=True finish=False for Finished followed by exact source-shaped no-leaks footer",
+      "adapter_at_RED_sha256": "dbb13389a785b439dbeafa375fd6e70d0ecd2f065765e1eac74ce5f7f295c674"
+    },
+    "GREEN": {
+      "receipt": "/home/otto/.hermes/cache/scratch/npc-owned-recovery/shutdown-footer-repair1-evidence/green2.json",
+      "xml": "/home/otto/.hermes/cache/scratch/npc-owned-recovery/shutdown-footer-repair1-evidence/green2.xml",
+      "physical_cases": 2,
+      "passed": 2
+    },
+    "test_scenarios": "Two unparameterized physical tests; positive and negative loop scenarios are not extra cases. ANSI and CR bytes are decoded strictly without universal-newline conversion. No private log replay performed.",
+    "harness_issue": "One execute_code payload failed to compile before any tool call (unmatched parenthesis); corrected payload applied the sole source repair. No new behavioral repair or budget reset.",
+    "quality_refactor": "Initial Ruff found PT018 in new test only. Split compound assertions; preserved failed receipt, reran both new tests and Black/Ruff/fresh strict mypy. No production change after GREEN."
+  },
+  "verification": {
+    "selected_receipts": {
+      "author71": {
+        "command": [
+          "/home/otto/dev/ro-bots/.venv/bin/python",
+          "-B",
+          "-m",
+          "pytest",
+          "-q",
+          "-o",
+          "addopts=",
+          "-p",
+          "no:cacheprovider",
+          "--confcutdir=/home/otto/.hermes/cache/scratch/npc-owned-recovery",
+          "--rootdir=/home/otto",
+          "-p",
+          "test_deployment_observer",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_recovery.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_live_recovery.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/accepted-strict-policy-history/test_independent.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_maintenance.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-maintenance-review/test_boundaries.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_deployment_observer.py",
+          "-p",
+          "test_observation_integration",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_observation_integration.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_operation_error_baseline.py",
+          "/home/otto/.hermes/cache/scratch/npc-operation-final-review/test_final_boundaries.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_engine_epoch_equivalence.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_reader_health_metadata.py",
+          "--junitxml=/home/otto/.hermes/cache/scratch/npc-owned-recovery/shutdown-footer-repair1-evidence/author71.xml"
+        ],
+        "cwd": "/home/otto/dev/ro-bots",
+        "environment_overrides": {
+          "PYTHONPATH": "/home/otto/.hermes/cache/scratch/npc-owned-recovery:/home/otto/dev/ro-bots/src",
+          "PYTHONOPTIMIZE": "0",
+          "PYTHONDONTWRITEBYTECODE": "1",
+          "TMPDIR": "/home/otto/.hermes/cache/scratch/ee1"
+        },
+        "unset": [
+          "PYTEST_ADDOPTS",
+          "PYTEST_DISABLE_PLUGIN_AUTOLOAD"
+        ],
+        "exit": 0,
+        "log_sha256": "19097c527294248bcb554fd6d9f51c918861f1c047879125efbe1f23aec8600c"
+      },
+      "fresh1": {
+        "command": [
+          "/home/otto/dev/ro-bots/.venv/bin/python",
+          "-B",
+          "-m",
+          "pytest",
+          "-q",
+          "-o",
+          "addopts=",
+          "-p",
+          "no:cacheprovider",
+          "--confcutdir=/home/otto/.hermes/cache/scratch/npc-owned-recovery",
+          "--rootdir=/home/otto",
+          "-p",
+          "test_deployment_observer",
+          "-p",
+          "test_observation_integration",
+          "/home/otto/.hermes/cache/scratch/npc-maintenance71-final-review/test_independent_health_boundary.py",
+          "--junitxml=/home/otto/.hermes/cache/scratch/npc-owned-recovery/shutdown-footer-repair1-evidence/fresh1.xml",
+          "--basetemp=/home/otto/.hermes/cache/scratch/npc-owned-recovery/shutdown-footer-repair1-evidence/pytest-fresh1"
+        ],
+        "cwd": "/home/otto/dev/ro-bots",
+        "environment_overrides": {
+          "PYTHONPATH": "/home/otto/.hermes/cache/scratch/npc-owned-recovery:/home/otto/dev/ro-bots/src",
+          "PYTHONOPTIMIZE": "0",
+          "PYTHONDONTWRITEBYTECODE": "1",
+          "TMPDIR": "/home/otto/.hermes/cache/scratch/ee1"
+        },
+        "unset": [
+          "PYTEST_ADDOPTS",
+          "PYTEST_DISABLE_PLUGIN_AUTOLOAD"
+        ],
+        "exit": 0,
+        "log_sha256": "4a2f3faefe766f99f8755d58158ac85443fea2c36ec28d6b2f45991d72e2e299"
+      },
+      "final3": {
+        "command": [
+          "/home/otto/dev/ro-bots/.venv/bin/python",
+          "-B",
+          "-m",
+          "pytest",
+          "-q",
+          "-o",
+          "addopts=",
+          "-p",
+          "no:cacheprovider",
+          "--confcutdir=/home/otto/.hermes/cache/scratch/npc-owned-recovery",
+          "--rootdir=/home/otto",
+          "-p",
+          "test_deployment_observer",
+          "-p",
+          "test_observation_integration",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_reader_execids.py",
+          "--junitxml=/home/otto/.hermes/cache/scratch/npc-owned-recovery/shutdown-footer-repair1-evidence/final3.xml"
+        ],
+        "cwd": "/home/otto/dev/ro-bots",
+        "environment_overrides": {
+          "PYTHONPATH": "/home/otto/.hermes/cache/scratch/npc-owned-recovery:/home/otto/dev/ro-bots/src",
+          "PYTHONOPTIMIZE": "0",
+          "PYTHONDONTWRITEBYTECODE": "1",
+          "TMPDIR": "/home/otto/.hermes/cache/scratch/ee1"
+        },
+        "unset": [
+          "PYTEST_ADDOPTS",
+          "PYTEST_DISABLE_PLUGIN_AUTOLOAD"
+        ],
+        "exit": 0,
+        "log_sha256": "b7549fe9c570cae346e4e0b16b273587363c08091f1dead8add8c94403a7099a"
+      },
+      "final2": {
+        "command": [
+          "/home/otto/dev/ro-bots/.venv/bin/python",
+          "-B",
+          "-m",
+          "pytest",
+          "-q",
+          "-o",
+          "addopts=",
+          "-p",
+          "no:cacheprovider",
+          "--confcutdir=/home/otto/.hermes/cache/scratch/npc-owned-recovery",
+          "--rootdir=/home/otto",
+          "-p",
+          "test_deployment_observer",
+          "-p",
+          "test_observation_integration",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_shutdown_footer.py",
+          "--junitxml=/home/otto/.hermes/cache/scratch/npc-owned-recovery/shutdown-footer-repair1-evidence/final2.xml"
+        ],
+        "cwd": "/home/otto/dev/ro-bots",
+        "environment_overrides": {
+          "PYTHONPATH": "/home/otto/.hermes/cache/scratch/npc-owned-recovery:/home/otto/dev/ro-bots/src",
+          "PYTHONOPTIMIZE": "0",
+          "PYTHONDONTWRITEBYTECODE": "1",
+          "TMPDIR": "/home/otto/.hermes/cache/scratch/ee1"
+        },
+        "unset": [
+          "PYTEST_ADDOPTS",
+          "PYTEST_DISABLE_PLUGIN_AUTOLOAD"
+        ],
+        "exit": 0,
+        "log_sha256": "149e983c325e1215d8fe411fd58fb9c0fa38bc5dfa119c4a6a92d44ee61e3e10"
+      },
+      "final-black-after-style": {
+        "command": [
+          "/home/otto/dev/ro-bots/.venv/bin/black",
+          "--check",
+          "--config",
+          "pyproject.toml",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/recovery.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/live_recovery.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_maintenance.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_deployment_observer.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/rootless_socket_reader.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_observation_integration.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_operation_error_baseline.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_engine_epoch_equivalence.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_reader_health_metadata.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_reader_execids.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_shutdown_footer.py"
+        ],
+        "cwd": "/home/otto/dev/ro-bots",
+        "environment_overrides": {
+          "PYTHONPATH": "/home/otto/.hermes/cache/scratch/npc-owned-recovery:/home/otto/dev/ro-bots/src",
+          "PYTHONOPTIMIZE": "0",
+          "PYTHONDONTWRITEBYTECODE": "1",
+          "TMPDIR": "/home/otto/.hermes/cache/scratch/ee1"
+        },
+        "unset": [
+          "PYTEST_ADDOPTS",
+          "PYTEST_DISABLE_PLUGIN_AUTOLOAD"
+        ],
+        "exit": 0,
+        "log_sha256": "2086e52d894c8a9e346b7e54cf4e6aa5bfc4894eadf08c9c1fefbf7390e718f1"
+      },
+      "final-ruff-after-style": {
+        "command": [
+          "/home/otto/dev/ro-bots/.venv/bin/ruff",
+          "check",
+          "--config",
+          "pyproject.toml",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/recovery.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/live_recovery.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_maintenance.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_deployment_observer.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/rootless_socket_reader.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_observation_integration.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_operation_error_baseline.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_engine_epoch_equivalence.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_reader_health_metadata.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_reader_execids.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_shutdown_footer.py"
+        ],
+        "cwd": "/home/otto/dev/ro-bots",
+        "environment_overrides": {
+          "PYTHONPATH": "/home/otto/.hermes/cache/scratch/npc-owned-recovery:/home/otto/dev/ro-bots/src",
+          "PYTHONOPTIMIZE": "0",
+          "PYTHONDONTWRITEBYTECODE": "1",
+          "TMPDIR": "/home/otto/.hermes/cache/scratch/ee1"
+        },
+        "unset": [
+          "PYTEST_ADDOPTS",
+          "PYTEST_DISABLE_PLUGIN_AUTOLOAD"
+        ],
+        "exit": 0,
+        "log_sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
+      },
+      "final-mypy-after-style": {
+        "command": [
+          "/home/otto/dev/ro-bots/.venv/bin/mypy",
+          "--strict",
+          "--no-incremental",
+          "--cache-dir=/home/otto/.hermes/cache/scratch/npc-owned-recovery/shutdown-footer-repair1-evidence/final-fresh-mypy",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/recovery.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/live_recovery.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_maintenance.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_deployment_observer.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_live_recovery.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/rootless_socket_reader.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_observation_integration.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_operation_error_baseline.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_engine_epoch_equivalence.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_reader_health_metadata.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_reader_execids.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_shutdown_footer.py"
+        ],
+        "cwd": "/home/otto/dev/ro-bots",
+        "environment_overrides": {
+          "PYTHONPATH": "/home/otto/.hermes/cache/scratch/npc-owned-recovery:/home/otto/dev/ro-bots/src",
+          "PYTHONOPTIMIZE": "0",
+          "PYTHONDONTWRITEBYTECODE": "1",
+          "TMPDIR": "/home/otto/.hermes/cache/scratch/ee1"
+        },
+        "unset": [
+          "PYTEST_ADDOPTS",
+          "PYTEST_DISABLE_PLUGIN_AUTOLOAD"
+        ],
+        "exit": 0,
+        "log_sha256": "8b88f6d12bd312c1b024b66d07a7f7619a68482ac4d64e475759b1823199faa5"
+      },
+      "final-xenon": {
+        "command": [
+          "/home/otto/dev/ro-bots/.venv/bin/xenon",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/recovery.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/live_recovery.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/rootless_socket_reader.py",
+          "src",
+          "--max-absolute",
+          "B",
+          "--max-modules",
+          "B",
+          "--max-average",
+          "A"
+        ],
+        "cwd": "/home/otto/dev/ro-bots",
+        "environment_overrides": {
+          "PYTHONPATH": "/home/otto/.hermes/cache/scratch/npc-owned-recovery:/home/otto/dev/ro-bots/src",
+          "PYTHONOPTIMIZE": "0",
+          "PYTHONDONTWRITEBYTECODE": "1",
+          "TMPDIR": "/home/otto/.hermes/cache/scratch/ee1"
+        },
+        "unset": [
+          "PYTEST_ADDOPTS",
+          "PYTEST_DISABLE_PLUGIN_AUTOLOAD"
+        ],
+        "exit": 0,
+        "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "final-duplicates": {
+        "command": [
+          "/home/otto/dev/ro-bots/.venv/bin/pylint",
+          "--disable=all",
+          "--enable=duplicate-code",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/recovery.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/live_recovery.py",
+          "/home/otto/.hermes/cache/scratch/npc-owned-recovery/rootless_socket_reader.py",
+          "src",
+          "/home/otto/.hermes/cache/scratch/passive-skill-context-executor-repair1/native_launcher.py"
+        ],
+        "cwd": "/home/otto/dev/ro-bots",
+        "environment_overrides": {
+          "PYTHONPATH": "/home/otto/.hermes/cache/scratch/npc-owned-recovery:/home/otto/dev/ro-bots/src",
+          "PYTHONOPTIMIZE": "0",
+          "PYTHONDONTWRITEBYTECODE": "1",
+          "TMPDIR": "/home/otto/.hermes/cache/scratch/ee1"
+        },
+        "unset": [
+          "PYTEST_ADDOPTS",
+          "PYTEST_DISABLE_PLUGIN_AUTOLOAD"
+        ],
+        "exit": 0,
+        "log_sha256": "8cbfc8cd0b04a4858b0b78b74c6df9631a1695e105e6911d4b57fbcc43b218b5"
+      }
+    },
+    "raw_ID_registry": "/home/otto/.hermes/cache/scratch/npc-owned-recovery/shutdown-footer-repair1-evidence/raw-testcase-ids.json",
+    "composition": {
+      "author71": 71,
+      "fresh1": 1,
+      "final3": 3,
+      "final2": 2
+    },
+    "unique_physical": 77,
+    "duplicates": 0,
+    "failures_errors_skips": 0,
+    "all_prior75_raw_IDs_exactly_retained": true,
+    "prior_root_plugins_environment_preserved": true,
+    "quality_scope": "Prior exact Black/Ruff/fresh strict mypy scope plus new test. Prior Xenon B/B/A and combined duplicate scope unchanged.",
+    "full_project_gate_claimed": false
+  },
+  "artifacts": {
+    "/home/otto/.hermes/cache/scratch/npc-owned-recovery/shutdown-footer-repair1-evidence/accepted-live_recovery.py": "dbb13389a785b439dbeafa375fd6e70d0ecd2f065765e1eac74ce5f7f295c674",
+    "/home/otto/.hermes/cache/scratch/npc-owned-recovery/shutdown-footer-repair1-evidence/author71.json": "c09998fb057c6381d6997b80750c5a09c5f6bb2624fefee18183abfeb2d06beb",
+    "/home/otto/.hermes/cache/scratch/npc-owned-recovery/shutdown-footer-repair1-evidence/author71.log": "19097c527294248bcb554fd6d9f51c918861f1c047879125efbe1f23aec8600c",
+    "/home/otto/.hermes/cache/scratch/npc-owned-recovery/shutdown-footer-repair1-evidence/author71.xml": "4f448ba8a5490121fe2f90a10845e98760a7646fea1704b673862cc4907ce159",
+    "/home/otto/.hermes/cache/scratch/npc-owned-recovery/shutdown-footer-repair1-evidence/completed-freeze.json": "c832105b45416a66e259c85261ff405e1236ee4983b694f9f70f6b169716a05d",
+    "/home/otto/.hermes/cache/scratch/npc-owned-recovery/shutdown-footer-repair1-evidence/final-black-after-style.json": "b79cb033b6612c499705a071fe3caf6dbdee71bd210ede7415e1763bcfea3312",
+    "/home/otto/.hermes/cache/scratch/npc-owned-recovery/shutdown-footer-repair1-evidence/final-black-after-style.log": "2086e52d894c8a9e346b7e54cf4e6aa5bfc4894eadf08c9c1fefbf7390e718f1",
+    "/home/otto/.hermes/cache/scratch/npc-owned-recovery/shutdown-footer-repair1-evidence/final-black.json": "b79cb033b6612c499705a071fe3caf6dbdee71bd210ede7415e1763bcfea3312",
+    "/home/otto/.hermes/cache/scratch/npc-owned-recovery/shutdown-footer-repair1-evidence/final-black.log": "2086e52d894c8a9e346b7e54cf4e6aa5bfc4894eadf08c9c1fefbf7390e718f1",
+    "/home/otto/.hermes/cache/scratch/npc-owned-recovery/shutdown-footer-repair1-evidence/final-duplicates.json": "29f5e4edff8c655b23cd4379da58baa7f99d648aad07785b6839f6e1629ec020",
+    "/home/otto/.hermes/cache/scratch/npc-owned-recovery/shutdown-footer-repair1-evidence/final-duplicates.log": "8cbfc8cd0b04a4858b0b78b74c6df9631a1695e105e6911d4b57fbcc43b218b5",
+    "/home/otto/.hermes/cache/scratch/npc-owned-recovery/shutdown-footer-repair1-evidence/final-mypy-after-style.json": "876c43542b7e65ac7df9b618530b257f42ac87396f3f6bdf33b8e91556681868",
+    "/home/otto/.hermes/cache/scratch/npc-owned-recovery/shutdown-footer-repair1-evidence/final-mypy-after-style.log": "8b88f6d12bd312c1b024b66d07a7f7619a68482ac4d64e475759b1823199faa5",
+    "/home/otto/.hermes/cache/scratch/npc-owned-recovery/shutdown-footer-repair1-evidence/final-mypy.json": "13d2555acaf4a32b1c3a1ebee9e52499ed7f9566056b27f61d9da2f3eb19b222",
+    "/home/otto/.hermes/cache/scratch/npc-owned-recovery/shutdown-footer-repair1-evidence/final-mypy.log": "8b88f6d12bd312c1b024b66d07a7f7619a68482ac4d64e475759b1823199faa5",
+    "/home/otto/.hermes/cache/scratch/npc-owned-recovery/shutdown-footer-repair1-evidence/final-ruff-after-style.json": "d52a6368fb3eb97aa567bf778b8d3d52549e5f23b473f23baf12787ee37169ea",
+    "/home/otto/.hermes/cache/scratch/npc-owned-recovery/shutdown-footer-repair1-evidence/final-ruff-after-style.log": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+    "/home/otto/.hermes/cache/scratch/npc-owned-recovery/shutdown-footer-repair1-evidence/final-ruff.json": "22240978475248c82b1868179b74946b8ab9c2f1d07e0dbc415ddd9c4b1d402f",
+    "/home/otto/.hermes/cache/scratch/npc-owned-recovery/shutdown-footer-repair1-evidence/final-ruff.log": "d0c05b88d9ab3b18f30bc78a188fbaef8c04829b8d24d6f5c8cc2ebf0e4bebf1",
+    "/home/otto/.hermes/cache/scratch/npc-owned-recovery/shutdown-footer-repair1-evidence/final-xenon.json": "97d6dc6e84d077c16663d60bcacd80f2be9db98813d507a51beb97fcd40ea468",
+    "/home/otto/.hermes/cache/scratch/npc-owned-recovery/shutdown-footer-repair1-evidence/final-xenon.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/npc-owned-recovery/shutdown-footer-repair1-evidence/final2.json": "a458ff3fd6a14e12063326c93d37e946f97ca74ecf644e70569660baa2c50bdb",
+    "/home/otto/.hermes/cache/scratch/npc-owned-recovery/shutdown-footer-repair1-evidence/final2.log": "149e983c325e1215d8fe411fd58fb9c0fa38bc5dfa119c4a6a92d44ee61e3e10",
+    "/home/otto/.hermes/cache/scratch/npc-owned-recovery/shutdown-footer-repair1-evidence/final2.xml": "07b4bae12c6f0a3d4bc42e710d9bc7a083acf5773bb058b0b6e91bd3fed73240",
+    "/home/otto/.hermes/cache/scratch/npc-owned-recovery/shutdown-footer-repair1-evidence/final3.json": "d5a143dd34ebfdda77f90a5584f90a6dff494cb37de762f6a7869f010beeea78",
+    "/home/otto/.hermes/cache/scratch/npc-owned-recovery/shutdown-footer-repair1-evidence/final3.log": "b7549fe9c570cae346e4e0b16b273587363c08091f1dead8add8c94403a7099a",
+    "/home/otto/.hermes/cache/scratch/npc-owned-recovery/shutdown-footer-repair1-evidence/final3.xml": "fbe0ea106e0d3bef7cb9dd1a94110bca8af904839d84d0a3efa5413293df14e9",
+    "/home/otto/.hermes/cache/scratch/npc-owned-recovery/shutdown-footer-repair1-evidence/fresh1.json": "f5b2b810e23f6ab3b57635c10bd43183f7e462937949fcf551169579dc58b793",
+    "/home/otto/.hermes/cache/scratch/npc-owned-recovery/shutdown-footer-repair1-evidence/fresh1.log": "4a2f3faefe766f99f8755d58158ac85443fea2c36ec28d6b2f45991d72e2e299",
+    "/home/otto/.hermes/cache/scratch/npc-owned-recovery/shutdown-footer-repair1-evidence/fresh1.xml": "347b149cfd5a91fb074206799c9de9321df89caff75367f76a83e1ce16b0a03a",
+    "/home/otto/.hermes/cache/scratch/npc-owned-recovery/shutdown-footer-repair1-evidence/green2.json": "82641b0b70b1afa85867dc59ec8c7e614e36e9844abb3808f1e53d2f02af86b2",
+    "/home/otto/.hermes/cache/scratch/npc-owned-recovery/shutdown-footer-repair1-evidence/green2.log": "cdf8d13a3f141b449c7d92c9b86d6fd681de17445a1d661236b92f93860eafac",
+    "/home/otto/.hermes/cache/scratch/npc-owned-recovery/shutdown-footer-repair1-evidence/green2.xml": "6d26ea4b98438c45b5f0606fb65c4498ec79126526defdd0f4f39a8ca4c4522e",
+    "/home/otto/.hermes/cache/scratch/npc-owned-recovery/shutdown-footer-repair1-evidence/raw-testcase-ids.json": "43ea3fe0c0a473e6827e46b3fb39c35150ed74e545bc98d31ab435ef0be7ef82",
+    "/home/otto/.hermes/cache/scratch/npc-owned-recovery/shutdown-footer-repair1-evidence/red2.json": "196c51b1eeecf240101aa3fb0df189a81ed7cfc64fd53b6ec7584af591b74522",
+    "/home/otto/.hermes/cache/scratch/npc-owned-recovery/shutdown-footer-repair1-evidence/red2.log": "7e95bb0084de76a50332979a210a5ccf9ceee119fbf5f88d8bd86ba7bf29401b",
+    "/home/otto/.hermes/cache/scratch/npc-owned-recovery/shutdown-footer-repair1-evidence/red2.xml": "fc1dca1a9437215b0c675ea71c65c59bc27108bfc5f04828741469eac637be2c",
+    "/home/otto/.hermes/cache/scratch/npc-owned-recovery/shutdown-footer-repair1-evidence/tiny.diff": "9988a445f52b880efa05a22996c5669848aa618501fdbce2233ce3974b9f1752"
+  },
+  "remaining": [
+    "Independent tiny completed-snapshot review by parent.",
+    "Parent-owned guarded partial-world read-only preflight and single restoration remain separate; this report grants no execution approval."
+  ]
+}

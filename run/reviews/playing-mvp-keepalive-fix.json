@@ -1,0 +1,170 @@
+{
+  "status": "offline_verified_pending_independent_review_and_parent_live_rerun",
+  "evidence_boundary": "Synthetic offline wire spies and real PlayingClient/ScheduledAgent code; no native connection, inference, service/container or SQL effects performed.",
+  "server_pin": "e985006171d2eb320ee512a653f4c83aea3d81b6",
+  "source_proof": [
+    {
+      "path": "rathena/src/common/socket.cpp",
+      "lines": "234-235",
+      "finding": "last_tick and default stall_time=60 seconds"
+    },
+    {
+      "path": "rathena/src/common/socket.cpp",
+      "lines": "389-396",
+      "finding": "EOF on recv zero; successful received bytes update rdata_tick=last_tick"
+    },
+    {
+      "path": "rathena/src/common/socket.cpp",
+      "lines": "1016-1026",
+      "finding": "Non-server connection with inbound inactivity >stall_time logs Session timed out and set_eof before parsing"
+    },
+    {
+      "path": "rathena/src/common/socket.cpp",
+      "lines": "1314-1317",
+      "finding": "Configured stall_time replaces default with minimum 3 seconds"
+    },
+    {
+      "path": "rathena/conf/packet_athena.conf",
+      "lines": "21-22",
+      "finding": "Pinned public configuration stall_time:60"
+    },
+    {
+      "path": "spikes/003-clientless-limbs/client.py",
+      "lines": "632-634",
+      "finding": "Existing wire.keepalive encodes final unshuffled six-byte 0x0360 tick request; unchanged"
+    },
+    {
+      "path": "src/robots/app/agent_runtime.py",
+      "lines": "559-582,778-786",
+      "finding": "Every ready host tick drains native events before cognitive event/timer delivery and scripted actions"
+    }
+  ],
+  "interpretation": "Source matches the supplied observed Session #8 timed out and absence of keepalives. Does not imply all native EOFs have this cause.",
+  "implementation": {
+    "interval_seconds": 20.0,
+    "pump": "PlayingClient.drain_native_events after build_native_state readiness; no sends in getters or build_native_state",
+    "clock": "existing injected monotonic constructor seam; finite and non-reversed relative to last baseline/send",
+    "epochs": "per client native epoch and explicit successful connect/close lifecycle boundaries; timer reset at boundary, no global/shared timer",
+    "send": "Delegates encoding to existing wire.keepalive; poison before send, exact origin propagates, no automatic retry after failure; failed close retains poison",
+    "readiness": "Healthy active map socket, exact-True live reader, no rx/dispatch errors, contiguous frames, received position and valid native vitals/progression",
+    "limits": "Serial host cognition can block pacing. No guarantee for >60s blocked ticks; no sleep/thread added. 20s derived for pinned 60s config, not arbitrary server config."
+  },
+  "tdd": [
+    {
+      "stage": "idle RED",
+      "artifact": "/home/otto/.hermes/cache/scratch/keepalive-red.xml",
+      "result": "Expected failure: zero keepalive calls versus 20/40/60/80 seconds"
+    },
+    {
+      "stage": "idle GREEN",
+      "artifact": "/home/otto/.hermes/cache/scratch/keepalive-green-idle.xml"
+    },
+    {
+      "stage": "lifecycle/readiness RED",
+      "artifact": "/home/otto/.hermes/cache/scratch/keepalive-red-lifecycle.xml",
+      "result": "Five expected failures: epoch premature send, three invalid/reversed clocks, unknown reader"
+    },
+    {
+      "stage": "lifecycle/readiness GREEN",
+      "artifact": "/home/otto/.hermes/cache/scratch/keepalive-green-lifecycle.xml"
+    },
+    {
+      "stage": "send RED",
+      "artifact": "/home/otto/.hermes/cache/scratch/keepalive-red-send.xml",
+      "result": "Expected failure: second send retried and re-raised ConnectionError instead of denying poisoned transport"
+    },
+    {
+      "stage": "send GREEN",
+      "artifact": "/home/otto/.hermes/cache/scratch/keepalive-green-send.xml"
+    },
+    {
+      "stage": "close RED",
+      "artifact": "/home/otto/.hermes/cache/scratch/keepalive-red-close.xml",
+      "result": "Expected failure: failed close cleared poison and allowed state projection"
+    },
+    {
+      "stage": "final GREEN",
+      "artifact": "/home/otto/.hermes/cache/scratch/keepalive-green-scoped.xml"
+    }
+  ],
+  "verification": {
+    "hashes": {
+      "src/robots/app/playing_runtime.py": "e305b545b2724e68cd1b20ab7c4659e621784759dfa83c4614fe80ea07b759f4",
+      "tests/test_native_playing_keepalive.py": "b816746b20d70eef071b16c2bdf240d13e2bdc86fb6057366fb03d9a71c8a12c",
+      "rathena/src/common/socket.cpp": "80712b971c4fe325ee0905e54422da4776e010a3f0bb34ce7971c662678d23ba",
+      "rathena/conf/packet_athena.conf": "2ed28c39b774d8b20fcce160faaf1e12a549127fcc10a3a6702851270f2a3484"
+    },
+    "scoped_test_count": 146,
+    "new_test_count": 18,
+    "failures": 0,
+    "errors": 0
+  },
+  "gates": {
+    "scoped_tests": {
+      "command": "nix develop --offline --no-write-lock-file path:./spikes/007-native-packet-ast/toolchain -c /home/otto/dev/ro-bots/.venv/bin/pytest tests/test_native_playing_keepalive.py tests/test_playing_runtime.py tests/test_playing_startup_cleanup.py tests/test_native_pose_recovery.py tests/test_native_tick_reply.py -q --junitxml=/home/otto/.hermes/cache/scratch/keepalive-green-scoped.xml",
+      "output": "........................................................................ [ 49%]\n........................................................................ [ 98%]\n..                                                                       [100%]",
+      "exit_code": 0,
+      "error": null
+    },
+    "black": {
+      "command": "nix develop --offline --no-write-lock-file path:./spikes/007-native-packet-ast/toolchain -c /home/otto/dev/ro-bots/.venv/bin/black --check --workers 1 src/robots/app/playing_runtime.py tests/test_native_playing_keepalive.py",
+      "output": "All done! \u2728 \ud83c\udf70 \u2728\n2 files would be left unchanged.",
+      "exit_code": 0,
+      "error": null
+    },
+    "ruff": {
+      "command": "nix develop --offline --no-write-lock-file path:./spikes/007-native-packet-ast/toolchain -c /home/otto/dev/ro-bots/.venv/bin/ruff check src/robots/app/playing_runtime.py tests/test_native_playing_keepalive.py",
+      "output": "All checks passed!",
+      "exit_code": 0,
+      "error": null
+    },
+    "mypy": {
+      "command": "nix develop --offline --no-write-lock-file path:./spikes/007-native-packet-ast/toolchain -c /home/otto/dev/ro-bots/.venv/bin/mypy --strict src/robots/app/playing_runtime.py tests/test_native_playing_keepalive.py",
+      "output": "Success: no issues found in 2 source files",
+      "exit_code": 0,
+      "error": null
+    },
+    "xenon": {
+      "command": "nix develop --offline --no-write-lock-file path:./spikes/007-native-packet-ast/toolchain -c /home/otto/dev/ro-bots/.venv/bin/xenon src --max-absolute B --max-modules B --max-average A",
+      "output": "",
+      "exit_code": 0,
+      "error": null
+    },
+    "duplicates": {
+      "command": "nix develop --offline --no-write-lock-file path:./spikes/007-native-packet-ast/toolchain -c /home/otto/dev/ro-bots/.venv/bin/pylint --disable=all --enable=duplicate-code --ignore-paths=tests src",
+      "output": "--------------------------------------------------------------------\nYour code has been rated at 10.00/10 (previous run: 10.00/10, +0.00)",
+      "exit_code": 0,
+      "error": null
+    }
+  },
+  "synthetic_coverage": [
+    "91-second idle host ticks",
+    "91-second moving adapter ticks",
+    "rest and arrival stalls",
+    "two epochs and close/reconnect reset",
+    "independent clients",
+    "no premature or repeated sends",
+    "no missed-interval burst",
+    "read-only state/getters",
+    "offline, stopped and unknown reader, frame gaps, preauth, stale progression",
+    "nonfinite/reversed clock",
+    "exact send exception origin and no retry",
+    "failed-close ownership retention"
+  ],
+  "issues_resolved": [
+    "Initial test import was corrected to tests.test_playing_runtime before valid RED.",
+    "Idle fixture initially contained a monster; removed the monster for genuine idle ticks.",
+    "Ruff issues resolved without ignores or gate changes."
+  ],
+  "owned_files": [
+    "src/robots/app/playing_runtime.py",
+    "tests/test_native_playing_keepalive.py",
+    "run/reviews/playing-mvp-keepalive-fix.json"
+  ],
+  "unchanged": "Cognition, goals, agent_runtime, native wire client, packet tables/manifests/tracer/header, world/SQL/credentials, services and containers.",
+  "remaining": [
+    "Parent focused independent review",
+    "Parent fresh preflight and same two-fixture 90-second native rerun",
+    "Parent full configured root quality gate"
+  ]
+}

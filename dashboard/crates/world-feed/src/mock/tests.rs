@@ -254,7 +254,7 @@ fn ticks_are_deterministic() {
 
 #[test]
 fn roster_shape_follows_request() {
-    let feed = MockWorldFeed::with_shape(9, 5, 2, 3, 3);
+    let feed = MockWorldFeed::with_shape(9, 5, 2, 3, 3).unwrap();
     let roster = feed.roster();
     let multi: Vec<_> = roster
         .groups
@@ -288,7 +288,7 @@ fn regenerate_roster_changes_seed_and_shape() {
     })
     .unwrap();
     let roster = feed.roster();
-    assert_eq!(roster.seed, 777);
+    assert_eq!(roster.seed, Some(777));
     assert_eq!(roster.agents.len(), 2 * 2 + 2);
 }
 

@@ -1,0 +1,464 @@
+{
+  "passed": false,
+  "security_concerns": [],
+  "logic_errors": [
+    {
+      "id": "L1",
+      "location": "trace_sender.py:19-24,41-54",
+      "issue": "Final send arguments after its first two are unchecked. Actual compiled mutate(&p) in third argument, with helper body p.h=2, is approved as header 1 IDENTITY_LAYOUT_CANDIDATE. Violates the bounded unknown-helper/no-mutation grammar; no generic CFG or sink semantic approval is demanded.",
+      "reproducer": "/home/otto/.hermes/cache/scratch/sender-independent-bpg0sgon/send_arg_mutates_header.cpp",
+      "evidence": "/home/otto/.hermes/cache/scratch/sender-independent-bpg0sgon/measured_adversarial.json",
+      "expected": "UNRESOLVED",
+      "actual": "IDENTITY_LAYOUT_CANDIDATE"
+    },
+    {
+      "id": "L2",
+      "location": "trace_sender.py:31-35",
+      "issue": "Mutable global short H=1 accepted as an immutable header constant solely from its single IntegerLiteral initializer. Its runtime value is not established.",
+      "reproducer": "/home/otto/.hermes/cache/scratch/sender-independent-bpg0sgon/mutable_header.cpp",
+      "expected": "UNRESOLVED",
+      "actual": "IDENTITY_LAYOUT_CANDIDATE"
+    },
+    {
+      "id": "L3",
+      "location": "trace_sender.py:9-10,46-52",
+      "issue": "No castKind/type validation: static_cast<int>(float_parameter), actual Clang FloatingToIntegral, accepted despite integral/plain-read-only grammar.",
+      "reproducer": "/home/otto/.hermes/cache/scratch/sender-independent-bpg0sgon/nonintegral_cast_param.cpp",
+      "expected": "UNRESOLVED",
+      "actual": "IDENTITY_LAYOUT_CANDIDATE"
+    }
+  ],
+  "suggestions": [
+    "Document trace metadata as trusted internal unit-oracle input or validate exact integer/non-bool types, nonempty offsets and measured record/provenance. Float size, bool id, wrong size and nonsensical offsets are accepted; empty offsets raises IndexError. Current CLI does not accept caller metadata and pins actual GCC output; no current CLI bypass demonstrated.",
+    "README honestly states scratch-preservation dependence. Preserve artifacts before expiry.",
+    "README says acquisition/extraction scripts are included, but artifact list has dumps and command.json, not those scripts. Independent streaming extraction here verified provenance; retain an extractor or narrow documentation."
+  ],
+  "summary": "Reject bounded sender recognizer approval due to compiled helper/mutable-header/cast false positives; validate the exact pinned real clif_emotion identity/layout candidate and approve factual assumption-limited sink audit only, not sink adoption.",
+  "scope": {
+    "authority": "/home/otto/dev/ro-bots/run/reviews/native-ast-real-sender-scope.json",
+    "candidate_only": true,
+    "sender_recognizer_approved": false,
+    "exact_pinned_identity_layout_candidate_verified": true,
+    "factual_sink_audit_approved": true,
+    "approved_exact_facts": [
+      "Same invocation-local VarDecl binds real clif_emotion &p and sizeof(p); FieldDecl and const HEADER_ZC_EMOTION initializer bound; fresh GCC measures id192,size7,offsets0/2/6.",
+      "Source/active AST factual audit of AREA and recursive SELF: original buf/len in direct copies and forwarding, explicit unresolved U1-U7, no general side-effect-free claim."
+    ],
+    "sink_contract_adopted": false,
+    "sender_semantic_admission": false,
+    "runtime_admission": false,
+    "binary_equivalence": false,
+    "old_production_generator_approved": false,
+    "all_six_milestones_open": true,
+    "native_milestones_admitted": 0,
+    "no_repairs_or_runtime_integration": true
+  },
+  "reviewed_inputs": {
+    "/home/otto/dev/ro-bots/run/reviews/native-ast-real-sender-proof.json": "8041ea9f408868e30891f204f88b8307f58909eaf719983ce433513a26335a41",
+    "/home/otto/dev/ro-bots/run/reviews/native-ast-real-sink-audit.json": "6269acb7714e59533c8da9cc8bd0edd679c6e64eb5b4ac0cd6a8bf07095c6a38",
+    "/home/otto/dev/ro-bots/run/reviews/native-ast-real-sender-scope.json": "f53d5fbba3ecf5ca49af484f2721a2538a2f6884b6611f7ed08eaa2b2d7dc5c0",
+    "/home/otto/dev/ro-bots/run/reviews/native-ast-profile-replay-independent-review.json": "90f8f0d5c25de1e74eefdcc22bed664269ff76d0da09e756cc0d1a9eb53f580a"
+  },
+  "authority_result": {
+    "path": "/home/otto/.hermes/cache/scratch/native-profile-replay-s2jdj4rn/output/result.json",
+    "sha256": "602c856e8e368fe767ff6b54704416818dc7939a5c6606f0fb6af6b49c2e71ac",
+    "inventory_path": "/home/otto/.hermes/cache/scratch/native-profile-replay-s2jdj4rn/output/inventory.json",
+    "inventory_sha256": "0356704361589aa125a2783992e576a793cf5833ddb9324087b89eb12bb2366b",
+    "public_source_closure_sha256": "f045b33b434efc83a7e216f295bf899114a4a1a2daa159898fb738d8b553d6d6"
+  },
+  "provenance": {
+    "full_sha256": "0c2a54de995073f63eab151141b68ffb6634b26c8be57aa4e943b195a7c9d5a0",
+    "selected_nodes": 10,
+    "found_nodes": 10,
+    "exact_structural_matches": {
+      "0x55555877cce8": true,
+      "0x55555877d068": true,
+      "0x555558d70bb0": true,
+      "0x555558d74d30": true,
+      "0x555558d80fa0": true,
+      "0x555558da89e0": true,
+      "0x55555c566910": true,
+      "0x55555c7b15c8": true,
+      "0x55555c95d000": true,
+      "0x55555c977998": true
+    }
+  },
+  "integrity": {
+    "sender_artifact_count": 158,
+    "sender_artifacts_match": true,
+    "bad_sender_artifacts": [],
+    "public_source_count": 3206,
+    "public_source_match": true,
+    "root_freeze_count": 189,
+    "root_freeze_match": true,
+    "before_code_hashes": {
+      "/home/otto/dev/ro-bots/spikes/007-native-packet-ast/sender-proof/README.md": "0f3dd0a698c1d8a81ec912a267d8458ef7ba1d3a508557908e510473df14f603",
+      "/home/otto/dev/ro-bots/spikes/007-native-packet-ast/sender-proof/cli.py": "22c7c1d3a9df43afa2ab607554e3b4c1d2be80bd60da9243df8985ad5225dc95",
+      "/home/otto/dev/ro-bots/spikes/007-native-packet-ast/sender-proof/test_trace.py": "d8a07bfe418f7f488c0a3003c91b02d8aaffbd491e69b6b2e5df3cbf8d1d1e12",
+      "/home/otto/dev/ro-bots/spikes/007-native-packet-ast/sender-proof/trace_sender.py": "d39a4cbd23ccc5a57adb7332176b75b2f724c6a383de3278c3ee3fd26a61d5fb",
+      "/home/otto/dev/ro-bots/spikes/007-native-packet-ast/sender-proof/run_proof.py": "cf16d4b3995d311d7a5f87351e7aafce3d901482df606b840f86e9a733dbb73a"
+    },
+    "after_code_hashes": {
+      "/home/otto/dev/ro-bots/spikes/007-native-packet-ast/sender-proof/README.md": "0f3dd0a698c1d8a81ec912a267d8458ef7ba1d3a508557908e510473df14f603",
+      "/home/otto/dev/ro-bots/spikes/007-native-packet-ast/sender-proof/cli.py": "22c7c1d3a9df43afa2ab607554e3b4c1d2be80bd60da9243df8985ad5225dc95",
+      "/home/otto/dev/ro-bots/spikes/007-native-packet-ast/sender-proof/test_trace.py": "d8a07bfe418f7f488c0a3003c91b02d8aaffbd491e69b6b2e5df3cbf8d1d1e12",
+      "/home/otto/dev/ro-bots/spikes/007-native-packet-ast/sender-proof/trace_sender.py": "d39a4cbd23ccc5a57adb7332176b75b2f724c6a383de3278c3ee3fd26a61d5fb",
+      "/home/otto/dev/ro-bots/spikes/007-native-packet-ast/sender-proof/run_proof.py": "cf16d4b3995d311d7a5f87351e7aafce3d901482df606b840f86e9a733dbb73a"
+    },
+    "code_unchanged": true,
+    "authority_sha256": "602c856e8e368fe767ff6b54704416818dc7939a5c6606f0fb6af6b49c2e71ac",
+    "inventory_sha256": "0356704361589aa125a2783992e576a793cf5833ddb9324087b89eb12bb2366b",
+    "sink_compiler_artifacts": {
+      "send-ast": {
+        "stdout": true,
+        "stderr": true
+      },
+      "macros": {
+        "stdout": true,
+        "stderr": true
+      },
+      "cpp": {
+        "stdout": true,
+        "stderr": true
+      },
+      "area-ast": {
+        "stdout": true,
+        "stderr": true
+      },
+      "foreach-ast": {
+        "stdout": true,
+        "stderr": true
+      },
+      "fifo-ast": {
+        "stdout": true,
+        "stderr": true
+      },
+      "realloc-ast": {
+        "stdout": true,
+        "stderr": true
+      },
+      "socket-macros": {
+        "stdout": true,
+        "stderr": true
+      }
+    },
+    "sink_source_dependencies": {
+      "/home/otto/.hermes/cache/scratch/native-profile-replay-s2jdj4rn/public-source/src/map/clif.cpp": true,
+      "/home/otto/.hermes/cache/scratch/native-profile-replay-s2jdj4rn/public-source/src/map/clif.hpp": true,
+      "/home/otto/.hermes/cache/scratch/native-profile-replay-s2jdj4rn/public-source/src/common/socket.hpp": true,
+      "/home/otto/.hermes/cache/scratch/native-profile-replay-s2jdj4rn/public-source/src/common/socket.cpp": true,
+      "/home/otto/.hermes/cache/scratch/native-profile-replay-s2jdj4rn/public-source/src/common/nullpo.hpp": true,
+      "/home/otto/.hermes/cache/scratch/native-profile-replay-s2jdj4rn/public-source/src/common/malloc.hpp": true,
+      "/home/otto/.hermes/cache/scratch/native-profile-replay-s2jdj4rn/public-source/src/common/malloc.cpp": true,
+      "/home/otto/.hermes/cache/scratch/native-profile-replay-s2jdj4rn/public-source/src/map/map.cpp": true,
+      "/home/otto/.hermes/cache/scratch/native-profile-replay-s2jdj4rn/public-source/src/map/map.hpp": true,
+      "/home/otto/.hermes/cache/scratch/native-profile-replay-s2jdj4rn/public-source/src/map/npc.cpp": true,
+      "/home/otto/.hermes/cache/scratch/native-profile-replay-s2jdj4rn/public-source/src/map/npc.hpp": true,
+      "/home/otto/.hermes/cache/scratch/native-profile-replay-s2jdj4rn/public-source/src/map/battle.cpp": true,
+      "/home/otto/.hermes/cache/scratch/native-profile-replay-s2jdj4rn/public-source/src/map/battle.hpp": true,
+      "/home/otto/.hermes/cache/scratch/native-profile-replay-s2jdj4rn/public-source/src/map/status.cpp": true,
+      "/home/otto/.hermes/cache/scratch/native-profile-replay-s2jdj4rn/public-source/src/map/status.hpp": true,
+      "/home/otto/.hermes/cache/scratch/native-profile-replay-s2jdj4rn/public-source/src/map/clif_obfuscation.hpp": true,
+      "/home/otto/.hermes/cache/scratch/native-profile-replay-s2jdj4rn/public-source/src/custom/defines_post.hpp": true,
+      "/home/otto/.hermes/cache/scratch/native-profile-replay-s2jdj4rn/public-source/src/config/packets.hpp": true,
+      "/home/otto/.hermes/cache/scratch/native-profile-replay-s2jdj4rn/public-source/src/map/packets.hpp": true,
+      "/home/otto/.hermes/cache/scratch/native-profile-replay-s2jdj4rn/public-source/src/map/packets_struct.hpp": true
+    },
+    "elapsed_seconds": 173.2627625465393
+  },
+  "sink_factual_crosscheck": {
+    "direct_memcpy_count": 12,
+    "direct_memcpy_all_original_buf_len": true,
+    "buf_len_direct_reassignment_count": 0,
+    "inactive_nullpo": true,
+    "NULLPO_CHECK_absent": true,
+    "DEBUG_absent": true,
+    "unresolved_groups": [
+      "U1",
+      "U2",
+      "U3",
+      "U4",
+      "U5",
+      "U6",
+      "U7"
+    ],
+    "adopted": false,
+    "symbol_source_bodies": {
+      "clif_send": true,
+      "clif_send_sub": true,
+      "map_foreachinareaV": true,
+      "map_foreachinallarea": true,
+      "WFIFOSET": true,
+      "_realloc_writefifo": true,
+      "clif_emotion": true
+    }
+  },
+  "execution": {
+    "owned_unittest_methods": 4,
+    "owned_unittest_passed": 4,
+    "owned_test_names": [
+      "test_real_declaration_send_sizeof_identity",
+      "test_real_header_and_gcc_layout_join",
+      "test_unknown_helper_escape_denied_structurally",
+      "test_wrong_authorities_rejected_before_candidate"
+    ],
+    "fresh_CPP_probe_count": 14,
+    "fresh_CPP_compiler_success_count": 14,
+    "fresh_CPP_names": [
+      "valid_control",
+      "header_reassign",
+      "shadow",
+      "alias",
+      "cast_pointer",
+      "nested_scope",
+      "postsend",
+      "unknown_helper",
+      "send_arg_helper",
+      "mutable_header",
+      "float_cast",
+      "send_arg_mutates_header",
+      "nonintegral_cast_param",
+      "wrong_sizeof_object"
+    ],
+    "unit_metadata_API_cases": 5,
+    "CLI_cases": [
+      {
+        "name": "cli_positive",
+        "exit": 0
+      },
+      {
+        "name": "cli_wrong_profile",
+        "exit": 2
+      },
+      {
+        "name": "cli_name",
+        "exit": 0
+      },
+      {
+        "name": "cli_sitting",
+        "exit": 0
+      },
+      {
+        "name": "cli_bad_layout",
+        "exit": 2,
+        "result": {
+          "decision": "DENIED",
+          "reasons": [
+            "AST or measured layout artifact changed"
+          ],
+          "runtime_admission": false,
+          "sender_semantic_admission": false
+        }
+      },
+      {
+        "name": "cli_bad_ast",
+        "exit": 2,
+        "result": {
+          "decision": "DENIED",
+          "reasons": [
+            "AST or measured layout artifact changed"
+          ],
+          "runtime_admission": false,
+          "sender_semantic_admission": false
+        }
+      },
+      {
+        "name": "cli_bad_authority",
+        "exit": 2,
+        "result": {
+          "decision": "DENIED",
+          "reasons": [
+            "untrusted authority metadata"
+          ],
+          "runtime_admission": false,
+          "sender_semantic_admission": false
+        }
+      }
+    ],
+    "fresh_GCC_real_measurement": {
+      "emotion": {
+        "id": 192,
+        "size": 7,
+        "offsets": [
+          0,
+          2,
+          6
+        ]
+      },
+      "stopmove": {
+        "id": 136,
+        "size": 10,
+        "offsets": [
+          0,
+          2,
+          6,
+          8
+        ]
+      },
+      "actors": {
+        "walking": 110,
+        "idle": 104,
+        "spawn": 103
+      }
+    },
+    "fresh_GCC_adversarial_measurement": {
+      "measurement": {
+        "id": 1,
+        "size": 8,
+        "offsets": [
+          0,
+          4
+        ]
+      },
+      "trace": {
+        "identity_proven": true,
+        "decision": "IDENTITY_LAYOUT_CANDIDATE",
+        "reasons": [],
+        "sink_contract_status": "UNREVIEWED",
+        "sender_semantic_admission": false,
+        "runtime_admission": false,
+        "object_id": "0x62f260579ac8",
+        "send_object_id": "0x62f260579ac8",
+        "sizeof_object_id": "0x62f260579ac8",
+        "object_type": "P",
+        "function_id": "0x62f260579a10",
+        "send_id": "0x62f26059ade8",
+        "sizeof_id": "0x62f26059ac10",
+        "sink_decl_id": "0x62f260579580",
+        "record_id": "0x62f260578f68",
+        "header_field_id": "0x62f260579130",
+        "header_field_name": "h",
+        "header_constant_id": "0x62f260579218",
+        "header_assignment_id": "0x62f260579ca0",
+        "header_value": 1,
+        "record_location": {
+          "offset": 7,
+          "file": "/home/otto/.hermes/cache/scratch/sender-independent-bpg0sgon/send_arg_mutates_header.cpp",
+          "line": 1,
+          "col": 8,
+          "tokLen": 1
+        },
+        "constant_location": {
+          "offset": 37,
+          "col": 38,
+          "tokLen": 1
+        },
+        "measured_size": 8,
+        "measured_offsets": [
+          0,
+          4
+        ]
+      },
+      "compiler_command": [
+        "/nix/store/j1938gsbvbhkyz4kbmvjk56r479mkw3s-gcc-wrapper-16.2.0/bin/g++",
+        "-std=c++17",
+        "/home/otto/.hermes/cache/scratch/sender-independent-bpg0sgon/fixture_layout.cpp",
+        "-o",
+        "/home/otto/.hermes/cache/scratch/sender-independent-bpg0sgon/fixture_layout"
+      ]
+    },
+    "retained_report_case_counts": {
+      "physical": 57,
+      "owned_structural": 27,
+      "retained_without_numeric_join": 30
+    },
+    "full_AST_recompiled": false,
+    "full_AST_stream_hash_and_exact_selected_nodes_verified": true,
+    "server_SQL_model_container_commands": 0
+  },
+  "limitations": [
+    "False positives affect bounded scanner claims, not independently validated exact hash-pinned emotion CLI facts; no CLI trust bypass demonstrated.",
+    "No generic CFG, all-route safety, varargs ABI exception, receipt, gameplay or binary equivalence proof.",
+    "run_proof.py reviewed but not invoked because it overwrites other-owned artifacts/report.",
+    "No acquisition/extraction script in report; independently streamed full2.12GB AST and verified all10 selected nodes exact.",
+    "First report-assembly attempt failed before write; diagnostic preserved. No repair performed."
+  ],
+  "private_scratch": "/home/otto/.hermes/cache/scratch/sender-independent-bpg0sgon",
+  "artifacts": {
+    "/home/otto/.hermes/cache/scratch/sender-independent-bpg0sgon/cast_pointer.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/sender-independent-bpg0sgon/send_arg_helper.cpp": "e1c2bd54657900a532629e7b9cb45ad006e737d671a8835b7174e39826081f78",
+    "/home/otto/.hermes/cache/scratch/sender-independent-bpg0sgon/valid_control.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/sender-independent-bpg0sgon/send_arg_mutates_header.cpp": "f45b2b5fef04e4de4d9d0cd320d3246a74d7fbd8da2bf0a215a6732b66692a1e",
+    "/home/otto/.hermes/cache/scratch/sender-independent-bpg0sgon/start.json": "fa07b2339fd6a0c55bd490a93a447acbb3e5653ff4e21591cf44c457aab1d8dc",
+    "/home/otto/.hermes/cache/scratch/sender-independent-bpg0sgon/cli_name.stdout": "7df4dd8267fa98940a551f316950e738f37dd8892578873aeae7502f0fe6c505",
+    "/home/otto/.hermes/cache/scratch/sender-independent-bpg0sgon/float_cast.cpp": "edfeec9547ed1da66dd17ff44a6465ca88c041c750f1f6a0a63b5fdc502f70c0",
+    "/home/otto/.hermes/cache/scratch/sender-independent-bpg0sgon/cli_bad_ast.stdout": "5f647444c6890d0261cfacef940394ffdc5d145d235b8b32bacd29bfaa3acc60",
+    "/home/otto/.hermes/cache/scratch/sender-independent-bpg0sgon/unknown_helper.cpp": "3b9207a6dcf9b95cfa899a74f49f7e60f111f6d4105cfbcb01672293fbc9ff7e",
+    "/home/otto/.hermes/cache/scratch/sender-independent-bpg0sgon/cli_wrong_profile.stdout": "82f0413cd3d48f4fa86301b4d82ed00c780c5491e9d0ed97168aae0b4c357781",
+    "/home/otto/.hermes/cache/scratch/sender-independent-bpg0sgon/fixture_layout.stdout": "6a8df598dddcb1d006fa589b246e7db5c83229036fcd529cab5ee894739f03e3",
+    "/home/otto/.hermes/cache/scratch/sender-independent-bpg0sgon/cast_pointer.stdout": "1b0d70fc1eece04bfffb62ddc944f39110bb4f63192898e8e969747053e657ec",
+    "/home/otto/.hermes/cache/scratch/sender-independent-bpg0sgon/fixture_layout.cpp": "721a09710d20921dd79ceeb4f0c59d41b44ca748883e50e676b63ff019cecdd2",
+    "/home/otto/.hermes/cache/scratch/sender-independent-bpg0sgon/nonintegral_cast_param.stderr": "780ec31fcb855924bb95a86393fe1b66fd7ccdd31bc0a8d80f6c5f75b239ac53",
+    "/home/otto/.hermes/cache/scratch/sender-independent-bpg0sgon/nonintegral_cast_param.stdout": "4d8699b440d73a1c08e779552b081a2c5b28e40b8930e96a2ecd986fa521301f",
+    "/home/otto/.hermes/cache/scratch/sender-independent-bpg0sgon/wrong_sizeof_object.stdout": "5322f2cc75b2602b99e8b44156b375e9e4f96ce69af9e671755ed045ceb852c6",
+    "/home/otto/.hermes/cache/scratch/sender-independent-bpg0sgon/mutable_header.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/sender-independent-bpg0sgon/alias.cpp": "564567dcb9a7837bd0bb5f06a08041ef79835a3ff76dc32bfef56d7a1f5fdc49",
+    "/home/otto/.hermes/cache/scratch/sender-independent-bpg0sgon/unittest.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/sender-independent-bpg0sgon/verification.json": "a02ee80b35b98e9da88f1992845431dda49ffa8c3612f3edaeceb8f170ee2a8a",
+    "/home/otto/.hermes/cache/scratch/sender-independent-bpg0sgon/unknown_helper.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/sender-independent-bpg0sgon/postsend.stdout": "f322b252e791ea726c2b4681d4ff1b3c310d6aa5006384b0a849bed4eb87b2aa",
+    "/home/otto/.hermes/cache/scratch/sender-independent-bpg0sgon/measured_adversarial.json": "45b83505800093576bcc1d593e07aad00c67b642513defbb942afa49e2a16cb9",
+    "/home/otto/.hermes/cache/scratch/sender-independent-bpg0sgon/fixture_layout.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/sender-independent-bpg0sgon/wrong_sizeof_object.stderr": "780ec31fcb855924bb95a86393fe1b66fd7ccdd31bc0a8d80f6c5f75b239ac53",
+    "/home/otto/.hermes/cache/scratch/sender-independent-bpg0sgon/cast_pointer.cpp": "d359784442f0b6acc49b2ef1d84bced9b50755a25b35411eb700c4d220abfebf",
+    "/home/otto/.hermes/cache/scratch/sender-independent-bpg0sgon/cli_name.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/sender-independent-bpg0sgon/nested_scope.cpp": "0f144a66436311ae0d090c7c8c1c627aac5e03e590c935b5cd92537ddc1f5839",
+    "/home/otto/.hermes/cache/scratch/sender-independent-bpg0sgon/nonintegral_cast_param.cpp": "be4480a6fd687a522e74992f00ccc6afd975e06023ffcd0af21546a9143249bb",
+    "/home/otto/.hermes/cache/scratch/sender-independent-bpg0sgon/send_arg_mutates_header.stderr": "780ec31fcb855924bb95a86393fe1b66fd7ccdd31bc0a8d80f6c5f75b239ac53",
+    "/home/otto/.hermes/cache/scratch/sender-independent-bpg0sgon/send_arg_helper.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/sender-independent-bpg0sgon/cli_sitting.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/sender-independent-bpg0sgon/wrong_sizeof_object.cpp": "7731206669645d1e284709d53019af28965453709523002c444a02ddb06c9551",
+    "/home/otto/.hermes/cache/scratch/sender-independent-bpg0sgon/native-ast-real-sender-proof.json": "7bb5c3832223c346dc552a39ca380d58ec287b2b256d02a2b3426eccaf34524d",
+    "/home/otto/.hermes/cache/scratch/sender-independent-bpg0sgon/send_arg_mutates_header.stdout": "192294aa15fad8fb91a2cac2d2e950a841e6689f582038494ca1e4df8b738cc3",
+    "/home/otto/.hermes/cache/scratch/sender-independent-bpg0sgon/provenance.json": "d68957cfdc39debf8025663b29704b1d35f8b70bc8e9c692ad2d8a9ed9602b5f",
+    "/home/otto/.hermes/cache/scratch/sender-independent-bpg0sgon/unknown_helper.stdout": "16feb28aeb46ff7d4d90092adc7f604f380527e94b74b4f2e1a897076e19b5a0",
+    "/home/otto/.hermes/cache/scratch/sender-independent-bpg0sgon/sink_crosscheck.json": "d57e8f2240e8ff9c95e0a8cd21ef83c4c09ef35658e7dd43d66415d654a1fd74",
+    "/home/otto/.hermes/cache/scratch/sender-independent-bpg0sgon/fresh_gcc_layout.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/sender-independent-bpg0sgon/fixture_layout_build.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/sender-independent-bpg0sgon/valid_control.stdout": "1a9214df941ee55f5d7c5df6bb3acf0e8b83cc75a9420847ef9aae3849dc6dd7",
+    "/home/otto/.hermes/cache/scratch/sender-independent-bpg0sgon/cli_bad_authority.stdout": "4d994c5e21c0f59d119cf26900cd8641ac826d480eb44c52b2801721a0000ae9",
+    "/home/otto/.hermes/cache/scratch/sender-independent-bpg0sgon/nested_scope.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/sender-independent-bpg0sgon/report_assembly_failed.stderr": "c880e4ad92d2a427f62ffb07933f6a23a618a17dc00d182cd5f0b714679916a6",
+    "/home/otto/.hermes/cache/scratch/sender-independent-bpg0sgon/cli_positive.stdout": "597dea97de3efe9f536596c9a30a1f438c8987ba86bb5f476660e56bedfe45f8",
+    "/home/otto/.hermes/cache/scratch/sender-independent-bpg0sgon/cli_wrong_profile.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/sender-independent-bpg0sgon/native-ast-real-sink-audit.json": "6269acb7714e59533c8da9cc8bd0edd679c6e64eb5b4ac0cd6a8bf07095c6a38",
+    "/home/otto/.hermes/cache/scratch/sender-independent-bpg0sgon/shadow.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/sender-independent-bpg0sgon/valid_control.cpp": "a1a8f66298ddc4f772779267a01dcff6dfe5ee18d7c36117411b26e262818cb8",
+    "/home/otto/.hermes/cache/scratch/sender-independent-bpg0sgon/float_cast.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/sender-independent-bpg0sgon/fixture_layout": "1eb2a7c788122ec9f284325b9db6df778e370ef66eb61ee1d9431ce0b4fab0af",
+    "/home/otto/.hermes/cache/scratch/sender-independent-bpg0sgon/postsend.cpp": "bad09a204112e193dee8227f312dffbeba6fc016b583a09fe5be33d870abf38c",
+    "/home/otto/.hermes/cache/scratch/sender-independent-bpg0sgon/header_reassign.cpp": "e285751754624b0d0b97140485fdcf39d9eea206b0e9055aa3cf8942ad3ee9d6",
+    "/home/otto/.hermes/cache/scratch/sender-independent-bpg0sgon/gcc-layout": "85a2d72d0ee09cefe357a7fcc961b71f6b68ba768791a03462666d2308427dc5",
+    "/home/otto/.hermes/cache/scratch/sender-independent-bpg0sgon/review_probes.py": "22aa868b760ed5fdf52ca924291963c810bec5bbe6369d75a6ebe8b46b428420",
+    "/home/otto/.hermes/cache/scratch/sender-independent-bpg0sgon/probes.json": "c60af080d03a6d5087af88a9d849e2d99bc8cbed2cf022359fb4f2b66b10969d",
+    "/home/otto/.hermes/cache/scratch/sender-independent-bpg0sgon/cli_bad_layout.stdout": "5f647444c6890d0261cfacef940394ffdc5d145d235b8b32bacd29bfaa3acc60",
+    "/home/otto/.hermes/cache/scratch/sender-independent-bpg0sgon/header_reassign.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/sender-independent-bpg0sgon/cli_sitting.stdout": "97d0e4baddf60e824b93d0073f05780d37ff0b775cd7c28717c64d0b4f436ea9",
+    "/home/otto/.hermes/cache/scratch/sender-independent-bpg0sgon/mutable_header.stdout": "34fc35c14d1a7957db3a056b3f44a8c07b47b21cbd8b99249637aa634b3e83d1",
+    "/home/otto/.hermes/cache/scratch/sender-independent-bpg0sgon/shadow.cpp": "f6ccc6f80f720e99dbf0b363c9ebbf7ce345f567927385b835298aeb26b641b8",
+    "/home/otto/.hermes/cache/scratch/sender-independent-bpg0sgon/fresh_gcc_build.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/sender-independent-bpg0sgon/mutable_header.cpp": "23173f8fdb89ebe8b43d0d994474cd403ff49b1cc34d14deab1bd546fbe6393b",
+    "/home/otto/.hermes/cache/scratch/sender-independent-bpg0sgon/fresh_gcc_build.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/sender-independent-bpg0sgon/alias.stdout": "5b91556b9aa65448b9a029ba88e454537add26a10752e43a6f5e15744ca39c9d",
+    "/home/otto/.hermes/cache/scratch/sender-independent-bpg0sgon/header_reassign.stdout": "4976b2027dbf2cd3c0e29a3a36e0f0e54e99de6d5ea806c8fe1f6a6084ffb784",
+    "/home/otto/.hermes/cache/scratch/sender-independent-bpg0sgon/shadow.stdout": "519bdf0e5de2f6b163a40fcee36aea23b1fc297907ca796c751af94bdc5a9859",
+    "/home/otto/.hermes/cache/scratch/sender-independent-bpg0sgon/before.json": "2475e68f12d6f99ef00c265ee83050facd0c635aabe82b9348a2f4ee68da95aa",
+    "/home/otto/.hermes/cache/scratch/sender-independent-bpg0sgon/postsend.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/sender-independent-bpg0sgon/send_arg_helper.stdout": "15dda973635f7c5cb1c6d54528231798182a5a5366a420116b4c27bbc8dbf88f",
+    "/home/otto/.hermes/cache/scratch/sender-independent-bpg0sgon/nested_scope.stdout": "6506925222f146b02afccadc8f177981c144b4f48f484dd2b0885b77de4ced13",
+    "/home/otto/.hermes/cache/scratch/sender-independent-bpg0sgon/fresh_gcc_layout.stdout": "d79dfefd4be7efe0d6fbf3fd8cf7bfb135853dfe8935b39d758e7d99b3140ebf",
+    "/home/otto/.hermes/cache/scratch/sender-independent-bpg0sgon/fixture_layout_build.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/sender-independent-bpg0sgon/unittest.stderr": "c152471567eca43deb130f70f91ecc42d599bc249d016956538203c3cf094c0d",
+    "/home/otto/.hermes/cache/scratch/sender-independent-bpg0sgon/alias.stderr": "e67fa05e97e228b65d5f9168129432a6b4a0a46b2388276fcb9be0969811658b",
+    "/home/otto/.hermes/cache/scratch/sender-independent-bpg0sgon/float_cast.stdout": "d4d888b751d646a7a86085a9e72cb943924101ca220bb1ea6e0e97048af00b21",
+    "/home/otto/.hermes/cache/scratch/sender-independent-bpg0sgon/cli_positive.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/sender-independent-bpg0sgon/cli_bad_layout/fresh-gcc-layout.stdout": "ce1a21569cf46c0044fbcb58bcaebd123ce52a361c597a8ee04c8ab46599ecc0",
+    "/home/otto/.hermes/cache/scratch/sender-independent-bpg0sgon/cli_bad_layout/selected.json": "07238418270d5717f43aa169a51bd5f40c3e58598479831b25aa0d80af30f450",
+    "/home/otto/.hermes/cache/scratch/sender-independent-bpg0sgon/cli_bad_authority/authority.json": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+    "/home/otto/.hermes/cache/scratch/sender-independent-bpg0sgon/cli_bad_ast/fresh-gcc-layout.stdout": "d79dfefd4be7efe0d6fbf3fd8cf7bfb135853dfe8935b39d758e7d99b3140ebf",
+    "/home/otto/.hermes/cache/scratch/sender-independent-bpg0sgon/cli_bad_ast/selected.json": "cf859e032034fa11dd81c04fda8b8f7a1b91552572722f8676b61a1f318d172c"
+  },
+  "elapsed_seconds": 422.6941809654236,
+  "time_cap_exceeded": true,
+  "time_cap_note": "The six-minute target was exceeded during independent provenance verification and report assembly; no additional scope or repairs were performed."
+}

@@ -1,0 +1,119 @@
+{
+  "status": "complete",
+  "verdict": "PASS for owned shutdown scope; repository-wide gates blocked by concurrent unowned protocol work",
+  "repository": "/home/otto/dev/ro-bots",
+  "files_modified_or_created": [
+    "src/robots/app/agent_runtime.py",
+    "tests/test_host_storage_failure.py",
+    "run/reviews/host-storage-failure.json"
+  ],
+  "scope_compliance": {
+    "other_source_tests_or_wiki_edited": false,
+    "live_connections_or_credentials_used": false,
+    "commits_pushes_or_external_writes": false,
+    "dependency_commands": "All project tooling executed through nix develop",
+    "concurrent_work": "Existing unowned changes preserved; repository gate observations are command-time snapshots"
+  },
+  "root_cause": "Session-note persistence raised before client close/offline publication. The host then abandoned remaining agent disconnects, inspector shutdown, and journal release.",
+  "implementation": [
+    "ScheduledAgent.disconnect joins its worker first, then defers session-note and cleanup failures while closing the fake/game client, setting online false, publishing offline, and recording only a disconnected WorldFeed event.",
+    "AgentHost.stop sets stop_flag on every agent before joining the first worker, continues every disconnect despite persistence/cleanup errors, shuts down and joins WorldFeed, then releases all journals.",
+    "Original single failures are re-raised unchanged. Multiple failures use BaseExceptionGroup, which becomes ExceptionGroup for ordinary exceptions, preserving every original exception and traceback rather than replacing or silently dropping failures.",
+    "Both producer joins are timeout-free, reject self-join, and verify the thread is no longer alive before discarding its reference.",
+    "If a join raises or returns while the producer remains alive, host retains thread references and all journal ownership; later external stop safely retries. No storage close is attempted while any owned producer can still write.",
+    "Client-close errors are propagated during disconnect rather than suppressed; the existing best-effort connect-failure cleanup default is preserved.",
+    "A failed durable note is never added to visible memory and no saved-note claim is emitted. fsync failure may leave an unacknowledged on-disk row; durability is intentionally not claimed."
+  ],
+  "tdd_cycles": [
+    {
+      "slice": "failed session disconnect",
+      "red": "1 failed: agent stayed online after persistence error",
+      "green": "1 passed"
+    },
+    {
+      "slice": "host cleanup with 1/2/3 failing agents",
+      "red": "3 failed, 1 passed: inspector remained alive and later errors/resources were skipped",
+      "green": "4 passed"
+    },
+    {
+      "slice": "signal all blocked workers before joining",
+      "red": "1 failed: other workers were not stopped",
+      "green": "5 passed"
+    },
+    {
+      "slice": "preserve original note, close, and publish failures",
+      "red": "1 failed: publish failure replaced note error and client-close failure was only logged",
+      "green": "6 passed"
+    },
+    {
+      "slice": "interrupted worker/inspector join",
+      "red": "2 failed: journal close was attempted with producer alive",
+      "green": "8 passed"
+    },
+    {
+      "slice": "join returning with producer alive",
+      "red": "2 failed, 2 passed: alive thread was discarded without error",
+      "green": "10 passed"
+    }
+  ],
+  "test_coverage_of_requirements": [
+    "Single and multiple simultaneous session-note failures preserve original exception identities.",
+    "Every fake game client closes and every agent/runtime dashboard state is offline before error reaches caller.",
+    "Event-controlled real workers finish their final writes before client/journal shutdown; every worker is signaled before the first blocked join.",
+    "Event-controlled inspector finishes its final write and is joined before any journal close; all journal locks can then be reacquired.",
+    "No post-close worker/inspector writes; journal-close guards independently record and reject unsafe ordering.",
+    "Second stop is idempotent after persistence failure, no extra notes are written, and host.step cannot reconnect stopped agents.",
+    "Interrupted/early-returning joins retain alive producers and journals until retry; self-stop from worker and inspector defers release until external join.",
+    "Real JsonlExperienceStore write and fsync failures poison the store, do not acknowledge the failed session, and still permit complete host cleanup.",
+    "A journal-close failure is reported alongside the original note error without preventing attempts to release later journals."
+  ],
+  "verification": {
+    "new_test_collection": {
+      "command": "nix develop -c uv run pytest tests/test_host_storage_failure.py --collect-only -q",
+      "count": 15
+    },
+    "scoped_integration": {
+      "command": "nix develop -c uv run pytest tests/test_host_storage_failure.py tests/test_host_memory.py tests/test_agent_host.py -vv -o faulthandler_timeout=20",
+      "passed": 48,
+      "failed": 0
+    },
+    "repeatability": "All 15 new tests passed in three additional sequential runs.",
+    "scoped_static": "Black --check, Ruff, and strict mypy passed for both owned files.",
+    "source_gates": "task lint:dead, lint:complexity, lint:dup, and lint:security all passed; duplicate-code score 10.00/10.",
+    "audit": {
+      "command": "nix develop -c task audit",
+      "exit_code": 0,
+      "result": "No known vulnerabilities found"
+    },
+    "full_check": {
+      "command": "nix develop -c task check",
+      "exit_code": 201,
+      "blocker": "Black wants changes to unowned tests/test_packet_conditions.py, tests/test_limb_evidence.py, tests/test_client_protocol.py"
+    },
+    "full_lint": {
+      "command": "nix develop -c task lint",
+      "exit_code": 201,
+      "blocker": "Observed Ruff and mypy errors only in concurrent unowned protocol tests; no owned-file errors"
+    },
+    "latest_full_test": {
+      "command": "nix develop -c task test",
+      "exit_code": 201,
+      "passed": 327,
+      "failed": 1,
+      "subtests_passed": 44,
+      "coverage_percent": 92.94,
+      "coverage_threshold_percent": 85,
+      "failure": "tests/test_packet_conditions.py::DirectiveTests::test_pinned_header_derives_numeric_lengths_for_native_profile: table[0x035F] was 6, expected 5",
+      "warning": "Existing FastAPI/Starlette httpx TestClient deprecation"
+    }
+  },
+  "issues_encountered": [
+    "Full gates changed as other delegates added protocol tests; unowned failures were not repaired or reformatted.",
+    "The fsync fault-injection test initially hit reused descriptor numbers during journal reopen after a concurrent root-directory-fsync improvement. Fixed the fixture by restoring fsync before reopen; no production workaround was added."
+  ],
+  "remaining": [
+    "Parent should rerun repository-wide gates once concurrent protocol edits settle.",
+    "No live-service acceptance was attempted or claimed.",
+    "Joins deliberately have no timeout: a permanently stuck producer retains its handle and journal ownership rather than being abandoned or falsely reported as safely shut down."
+  ]
+}

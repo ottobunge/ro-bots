@@ -1,0 +1,165 @@
+{
+  "passed": false,
+  "implementation_complete": true,
+  "acceptance_blocked": true,
+  "independent_review_complete": false,
+  "bounded_two_agent_run_approved": false,
+  "native_acceptance": false,
+  "native_gameplay_acceptance": false,
+  "native_combat_acceptance": false,
+  "full_goal_acceptance": false,
+  "summary": "The authorized bounded pending-start shutdown and exact run_host origin preservation are implemented and pass all eight independent boundary cases plus 18 new repository cases. Seven configured static gates pass. Acceptance remains blocked: two unchanged legacy tests require shutdown to wait for eventual producer termination and immediately close resources, contrary to the renewed bounded-retention contract. No tests were waived or rewritten.",
+  "authorization": "run/reviews/playing-shutdown-contract-renewed-authorization.json",
+  "scope": {
+    "repo": "/home/otto/dev/ro-bots",
+    "artifact_root": "/home/otto/.hermes/cache/scratch/shutdown-contract-repair",
+    "environment": "nix develop --offline; uv run --offline --no-sync; CPython 3.14.7; real Python threads and synthetic clients",
+    "production_repair_cycles": 1,
+    "production_change_slices": 2,
+    "native_model_sql_engine_private_world_git_changes": false,
+    "protected_existing_test_edits": false,
+    "gate_configuration_or_dependency_edits": false,
+    "secrets": "[REDACTED]"
+  },
+  "changes": [
+    {
+      "file": "src/robots/app/agent_runtime.py",
+      "behavior": "disconnect chooses timeout=0 only when _producer_start_pending is true. Normal online shutdown still selects timeout=None and _join_producer calls thread.join() with no arguments. A failed/unconfirmed join raises before clearing thread/pending state or closing the client; existing AgentHost.stop aggregation therefore attempts later agents and withholds journals. No polling or automatic reap was added."
+    },
+    {
+      "file": "src/robots/playing.py",
+      "behavior": "run_host catches an active BaseException solely to attempt host.stop, adds a sanitized shutdown diagnostic with cleanup exception class if that attempt fails, then uses bare raise to preserve the original object and deepest originating frame. On normal completion, host.stop failure remains unsuppressed. KeyboardInterrupt CLI policy is unchanged."
+    },
+    {
+      "file": "tests/test_pending_start_shutdown_contract.py",
+      "behavior": "18 cases cover real waiting workers, direct disconnect and host stop, later participant cleanup, retained live client/journal, exact RuntimeError/SystemExit/KeyboardInterrupt startup origins with OSError/SystemExit join failure, unpublished ident=None state, explicit confirmed reap order, normal shutdown error propagation, unchanged online join policy, and CLI cancellation. Worker release is controlled by Events, not timer-driven success assertions."
+    }
+  ],
+  "tdd": {
+    "strict_tests_first": true,
+    "first_red": {
+      "path": "/home/otto/.hermes/cache/scratch/shutdown-contract-repair/red-bounded.xml",
+      "testcases": 10,
+      "failures": 5,
+      "errors": 0,
+      "skipped": 0,
+      "meaning": "Before either production change, both owned bounded-shutdown cases and all three originally failed independent cases physically reproduced the defects."
+    },
+    "first_green": {
+      "path": "/home/otto/.hermes/cache/scratch/shutdown-contract-repair/green-bounded.xml",
+      "testcases": 9,
+      "failures": 0,
+      "meaning": "Bounded cleanup fixed first; origin-preservation case deliberately remained outside this slice."
+    },
+    "second_red": {
+      "path": "/home/otto/.hermes/cache/scratch/shutdown-contract-repair/red-origin.xml",
+      "testcases": 6,
+      "failures": 6,
+      "errors": 0,
+      "skipped": 0,
+      "meaning": "All exact-origin combinations failed before run_host was changed."
+    },
+    "second_green": {
+      "path": "/home/otto/.hermes/cache/scratch/shutdown-contract-repair/green-origin.xml",
+      "testcases": 16,
+      "failures": 0
+    },
+    "additional_cases": "Ten compatibility/ownership regression cases were added after the two behavior slices; these characterize retained existing behavior rather than justify additional production changes."
+  },
+  "verification": {
+    "exact_commands": "/home/otto/.hermes/cache/scratch/shutdown-contract-repair/checks.json",
+    "static_gates": {
+      "black": 0,
+      "ruff": 0,
+      "cold_mypy": 0,
+      "vulture": 0,
+      "xenon": 0,
+      "whole_src_duplicate_code": 0,
+      "bandit": 0
+    },
+    "cold_mypy": "--no-incremental, configured strict src/tests: Success: no issues found in 167 source files",
+    "thresholds_unchanged": true,
+    "boundary": {
+      "junit": "/home/otto/.hermes/cache/scratch/shutdown-contract-repair/boundary.xml",
+      "testcases": 26,
+      "passed": 26,
+      "failed": 0,
+      "errors": 0,
+      "skipped": 0,
+      "independent_original_boundary_cases": 8,
+      "new_repository_cases": 18
+    },
+    "prior": {
+      "junit": "/home/otto/.hermes/cache/scratch/shutdown-contract-repair/prior.xml",
+      "testcases": 47,
+      "passed": 45,
+      "failed": 2,
+      "errors": 0,
+      "skipped": 0
+    },
+    "selected_host_storage_core_pose_transport_cli": {
+      "junit": "/home/otto/.hermes/cache/scratch/shutdown-contract-repair/coverage.xml",
+      "testcases": 502,
+      "passed": 501,
+      "failed": 1,
+      "errors": 0,
+      "skipped": 0,
+      "exit_code": 1
+    },
+    "coverage": {
+      "evidence": "/home/otto/.hermes/cache/scratch/shutdown-contract-repair/coverage.json",
+      "scope": "robots.app.agent_runtime and robots.playing, not whole-project coverage",
+      "branch_inclusive_percent": 91.88660801564028,
+      "branch_percent": 86.1344537815126,
+      "statement_percent": 93.63057324840764,
+      "threshold": 85,
+      "coverage_threshold_met": true,
+      "test_gate_passed": false
+    },
+    "preserved_initial_gate_evidence": [
+      "/home/otto/.hermes/cache/scratch/shutdown-contract-repair/initial-checks",
+      "/home/otto/.hermes/cache/scratch/shutdown-contract-repair/second-checks"
+    ],
+    "typing_corrections": "Only the new test file changed while resolving cold-mypy findings: the existing untyped fake's close callable received an explicit Callable[[], None] annotation, and a fresh typed host-agent lookup avoids stale flow narrowing after lifecycle mutation. No production type widening, ignore, protocol relaxation, or gate waiver.",
+    "warnings": "Existing Starlette TestClient deprecation and existing Bandit nosec warnings remain visible."
+  },
+  "acceptance_blockers": [
+    {
+      "id": "LEGACY-TEST-EXPECTS-WAIT-THEN-RELEASE",
+      "targets": [
+        "tests/test_native_startup_producer_ownership.py::test_run_host_finally_does_not_close_memory_with_live_startup_worker",
+        "/home/otto/.hermes/cache/scratch/startup-producer-independent/test_prior_edges.py::test_run_host_finally_does_not_close_memory_with_live_startup_worker"
+      ],
+      "evidence": "The unchanged repository case waits up to two seconds inside its producer and expects observations == [False] and wire.closed == 1 immediately after run_host returns. The prior scratch case similarly auto-terminates after 0.15 seconds and expects immediate close. Renewed shutdown returns while those workers remain active, correctly yielding observations == [] and wire.closed == 0. The original independent bounded cases require return before release and retention; adding a wait or unsafe close to satisfy these legacy assertions would contradict that contract.",
+      "required_decision": "Parent/user must resolve the incompatible legacy expectations or authorize focused test updates. This implementation's ownership grant explicitly prohibited modifying existing tests, so both were preserved byte-for-byte and remain reported failures."
+    }
+  ],
+  "freeze": {
+    "before": "/home/otto/.hermes/cache/scratch/shutdown-contract-repair/before.json",
+    "after": "/home/otto/.hermes/cache/scratch/shutdown-contract-repair/after.json",
+    "protected_baseline_files": 185,
+    "changed_existing_files": ["src/robots/app/agent_runtime.py", "src/robots/playing.py"],
+    "all_other_baseline_hashes_unchanged": true,
+    "final_source_freeze": "/home/otto/.hermes/cache/scratch/shutdown-contract-repair/review-freeze.json",
+    "final_source_stable_through_checks": true,
+    "critical_sha256": {
+      "src/robots/app/agent_runtime.py": "e60d518da5a11dd872f30b8987a03edf5b4a773188264ac21740afe67b64500d",
+      "src/robots/playing.py": "c4e1f310975c1d4781ffdb01dab95f97ddddca0169df0e1eb411b4acae784fcf",
+      "tests/test_pending_start_shutdown_contract.py": "35ed1c078d60bc4df2e42abceed52640f83d65892af5bd6c067221344e1eb53c",
+      "src/robots/app/playing_runtime.py": "56c143c8852a4884fc0632905be168f1c8e63988526b4aca151235de652fadc6",
+      "spikes/003-clientless-limbs/client.py": "e17e3b9e553269a1666e72910fd46fc58d4096f6b5ebf0d0e005a05a71f21e93",
+      "Taskfile.yml": "bf60a77c96fb4cfb4c5475c73a6e7da5a7eef90fc9f63c06a9812cfcbbb1d31d",
+      "pyproject.toml": "e8ae0849a413bc3d705f081f609b92dae702bbd3e491b2c3aeb5d8665c458fba",
+      "flake.lock": "c9c0bac69415b99a29ef3fe149b6f04ef54d291989bdf7218cf819ed52edf2a0",
+      "uv.lock": "2d7b4c187078488d7625e4fd4fa982745cab8d6a65b2ff3e382ffa286f1df245"
+    }
+  },
+  "limitations": [
+    "Independent final source review is still required; this is an implementation report, not an independent approval.",
+    "Parent's earlier whole-suite 3426+65/94.69 percent/audit results predate this contract and were not promoted to current acceptance. Whole-project gate remains blocked and parent-owned.",
+    "No native activation, inference, SQL, engine, accounts, world fixtures, dependency changes, commits or full-goal claims.",
+    "Retained pending workers require an explicit subsequent operator stop after termination is confirmed; no eventual-release or universally-freed-descriptors claim."
+  ],
+  "files_modified": ["src/robots/app/agent_runtime.py", "src/robots/playing.py"],
+  "files_created": ["tests/test_pending_start_shutdown_contract.py", "run/reviews/playing-shutdown-contract-repair.json"]
+}

@@ -1,0 +1,154 @@
+{
+  "review": "independent fresh-world SQL renderer",
+  "verdict": "passed",
+  "verdict_scope": "Offline pure-renderer contract on actual frozen source; not database, engine, init-hook, filesystem-permission, or world acceptance",
+  "completed_at": "2026-10-06T01:57:47.470248+00:00",
+  "source_files": [
+    "src/robots/adapters/world_bootstrap_sql.py",
+    "tests/test_world_bootstrap_sql.py",
+    "src/robots/adapters/rathena_bootstrap_assets.py"
+  ],
+  "freeze": {
+    "before": {
+      "src/robots/adapters/world_bootstrap_sql.py": "cfa64780b9356b04a2e8eb2699fb0e6703f4b3f6ae9b815fb454a03f9b8b2ce5",
+      "tests/test_world_bootstrap_sql.py": "ef8eb762e2b2eb5bdcf42fdc40e1278d4cbdbf8a8823973423c67ba9b500b112",
+      "src/robots/adapters/rathena_bootstrap_assets.py": "257f09e9c318dc060b21e76326a4510fce2d9fc06d048047e0949e098ab3c3c7"
+    },
+    "after": {
+      "src/robots/adapters/world_bootstrap_sql.py": "cfa64780b9356b04a2e8eb2699fb0e6703f4b3f6ae9b815fb454a03f9b8b2ce5",
+      "tests/test_world_bootstrap_sql.py": "ef8eb762e2b2eb5bdcf42fdc40e1278d4cbdbf8a8823973423c67ba9b500b112",
+      "src/robots/adapters/rathena_bootstrap_assets.py": "257f09e9c318dc060b21e76326a4510fce2d9fc06d048047e0949e098ab3c3c7"
+    },
+    "unchanged": true,
+    "matches_parent_report_public_code_hashes": true,
+    "whole_mutable_project_snapshot": false
+  },
+  "execution": {
+    "toolchain": "Existing pinned nix develop --offline; uv run --offline --frozen --no-sync",
+    "python": "3.14.7",
+    "pytest_invocations": 1,
+    "pytest_exit_code": 0,
+    "pytest_seconds": 4.28,
+    "existing_renderer_cases": 36,
+    "existing_reference_cases": 12,
+    "fresh_independent_cases": 60,
+    "total_cases": 108,
+    "distinct_junit_cases": 108,
+    "counts_verified_programmatically": true,
+    "failures": 0,
+    "errors": 0,
+    "skips": 0,
+    "fresh_probe_categories": {
+      "23_accepted_and_24_rejected_for_each_field": 3,
+      "invalid_input_before_derivation": 24,
+      "each_allowed_password_punctuation_rejected_in_database_and_user": 26,
+      "allowed_password_punctuation_hex_roundtrip": 1,
+      "public_source_byte_parity_routing_and_exact_server_row_count": 1,
+      "actual_pinned_role_source_and_login_columns": 1,
+      "derivation_exception_identity_and_origin_frame_preserved": 4
+    },
+    "statement_coverage": {
+      "target": "src/robots/adapters/world_bootstrap_sql.py",
+      "covered_statements": 15,
+      "total_statements": 15,
+      "missing_statements": 0,
+      "percent": 100.0,
+      "branch_coverage_claimed": false
+    },
+    "scoped_static_exit_codes": {
+      "Black_renderer_and_existing_tests": 0,
+      "Ruff_renderer_and_existing_tests": 0,
+      "strict_mypy_renderer": 0,
+      "Bandit_renderer": 0
+    },
+    "scratch": "/home/otto/.hermes/cache/scratch/world-bootstrap-independent-20vycwp2",
+    "evidence": {
+      "fresh_tests": "test_independent.py",
+      "junit": "junit.xml",
+      "coverage_json": "coverage.json",
+      "coverage_data": ".coverage",
+      "before_hashes": "before.json",
+      "pytest_cache": "pytest-cache",
+      "pytest_temporary_directory": "pytest-temp",
+      "mypy_cache": "mypy-cache"
+    }
+  },
+  "primary_source": {
+    "path": "/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source",
+    "revision": "e985006171d2eb320ee512a653f4c83aea3d81b6",
+    "nar": "sha256-ppi6wPYDqwXh+XR39ufl0SDS6gYfdKyHtQ9tU9rgrNI=",
+    "actual_attestation_reached": true,
+    "evidence": [
+      {
+        "file": "src/login/loginclif.cpp",
+        "lines": "409-413,425-440",
+        "finding": "Receiver copies identity and password using NAME_LENGTH; server connection acceptance requires successful auth, sex S, account_id below ARRAYLENGTH(ch_server), and an unused server slot. Account ID 1 meets the static role/index bound, not a demonstrated connection acceptance."
+      },
+      {
+        "file": "src/login/login.hpp",
+        "lines": "62-73",
+        "finding": "MAX_SERVERS is 5 and ch_server is declared with that extent; account_id 1 is an in-range role index."
+      },
+      {
+        "file": "src/common/mmo.hpp",
+        "lines": "154",
+        "finding": "NAME_LENGTH is 23 + 1, consistent with 23 ASCII payload bytes."
+      },
+      {
+        "file": "src/login/account.cpp",
+        "lines": "512-534",
+        "finding": "SQL SELECT and field mapping consume account_id, userid, user_pass, sex, email, group_id and state in the expected order."
+      },
+      {
+        "file": "sql-files/main.sql",
+        "lines": "770-794",
+        "finding": "Login columns permit unsigned account_id, userid varchar(23), user_pass varchar(32), sex including S, email varchar(39), group_id tinyint and unsigned state. Remaining columns have defaults or allow NULL."
+      }
+    ],
+    "public_sql_hashes_attested_by_real_derive": {
+      "main.sql": "40bafce9c3aa14dd997d911b6dd42151d4b0e7afae9273d1ba96993ffdea1c80",
+      "logs.sql": "e2fab8bd57401696403746cdc7dce45330a62ca655517be655202cc4e069439c",
+      "web.sql": "cdfde52db2db5250f5292ff4fd4fff08b52064be4db244ee6db2e8c35def3546",
+      "roulette_default_data.sql": "1f393ee750d7b976f950c1819fd8a953a124f115bec3b0b3afae68a8a0f9d7d8"
+    }
+  },
+  "findings": [],
+  "verified_contract": [
+    "Exactly five bytes-valued files, ordered main, logs, web, roulette, interserver; each begins with USE of the validated quoted selected database.",
+    "Exact builtin str required. All three fields accept length 23 and reject length 24 before derivation; empty strings, injection text, NUL, non-ASCII, booleans, integer zero and str subtypes are rejected before derivation.",
+    "Database and identity reject each punctuation character permitted for passwords. Allowed password punctuation roundtrips through X-prefixed hex literal bytes without a SQL string-escaping step.",
+    "Pinned main body equals the original public bytes with only the established 29900:30138 suppression span removed. Logs, web and roulette equal original public bytes after removal of the USE prefix.",
+    "Independent static table-name extraction finds 70 distinct tables in the same selected database. This is not a SQL parser result.",
+    "Exactly one final plain login INSERT: account_id 1, sex S, empty email, group_id 0 and state 0; credential fields use hex string literals. No IGNORE, REPLACE, upsert, migration, UPDATE, DELETE or CREATE DATABASE operation was introduced.",
+    "ValueError, RuntimeError, KeyboardInterrupt and SystemExit raised by derivation preserve the same exception object and originating frame."
+  ],
+  "existing_private_configs_source_only": {
+    "file": "src/robots/adapters/rathena_runtime.py",
+    "lines": "112-122",
+    "finding": "private_configs routes login_server, ipban_db, char_server, map_server, log_db and web_server database suffixes to the same data[db_name]. This matches the renderer single-database routing.",
+    "private_configs_executed": false,
+    "actual_private_inputs_read": false,
+    "frozen_review_dependency": false
+  },
+  "credentials": "[REDACTED]",
+  "sensitive_rendered_sql_or_hashes_published": false,
+  "side_effects": {
+    "sql_executed": false,
+    "database_started_or_connected": false,
+    "engine_executed": false,
+    "native_server_executed": false,
+    "containers_or_mounts_changed": false,
+    "world_initialized": false,
+    "source_or_repository_tests_changed": false,
+    "existing_reports_changed": false,
+    "full_gate_run": false,
+    "stage_commit_push": false
+  },
+  "limitations": [
+    "Actual MariaDB parsing, executed row readback, fresh-database init-hook ordering and execution remain pending; no database acceptance is inferred from regex/byte checks.",
+    "Mount integration, container UID ownership and private SQL file permissions remain pending. The pure renderer returns bytes and cannot establish correct file modes.",
+    "Hex literals encode plaintext sensitive credentials; they neither encrypt nor redact them.",
+    "Not a migration, reset, existing-world repair, launch authority, or world-initialization result.",
+    "Compose/native integration and combined project gates are outside this independent review."
+  ]
+}

@@ -1,0 +1,320 @@
+{
+  "schema": 1,
+  "finding_id": "L3-TEMP",
+  "status": "fixed_pending_independent_review",
+  "passed": null,
+  "created_at": "2026-10-05T11:44:51.487059+00:00",
+  "repo": "/home/otto/dev/ro-bots",
+  "authority": "run/reviews/protocol-second-cycle-review.json",
+  "authorization": {
+    "scope": "Single explicitly user-authorized extra L3-TEMP repair after two automatic cycles; authority automatic_fix_cycle_allowed=false superseded only for this repair.",
+    "automatic_further_cycle_allowed": false,
+    "independent_review_required": true,
+    "if_rejected": "Stop/escalate, no further automatic repair."
+  },
+  "summary": "Explicit temporary transport ownership retained through confirmed cleanup; handshake and normal-completion cleanup origins preserve identity/traceback. Independent resource/participant cleanup and temporary ownership guard prohibit reuse,retry,later limbs and PASS while release is unknown.",
+  "modified_files": [
+    "spikes/003-clientless-limbs/client.py",
+    "spikes/003-clientless-limbs/test_limbs.py",
+    "tests/test_temporary_handshake_cleanup.py",
+    "spikes/003-clientless-limbs/README.md"
+  ],
+  "source_hashes_before": {
+    "spikes/003-clientless-limbs/client.py": {
+      "sha256": "fd7076aed2a48727130a34468bdbfbe16c8e9a94687880bc86e77d325e23aa9d",
+      "bytes": 34146
+    },
+    "spikes/003-clientless-limbs/test_limbs.py": {
+      "sha256": "d7a85bda1876b0bc28e8475d969e01bb443c7cbe5a49c82ef29eebfe98bc2ef5",
+      "bytes": 16028
+    },
+    "spikes/003-clientless-limbs/README.md": {
+      "sha256": "29d676355586f69c7f8e23ab2dbbc12e3bab17e9d867f70dab6b33352b39fd6a",
+      "bytes": 12321
+    }
+  },
+  "source_hashes_after": {
+    "spikes/003-clientless-limbs/client.py": {
+      "sha256": "d3026f448857c7ec804469cf584ca1f3089c6ad8188224d2b2cb9389e707eb05",
+      "bytes": 36041
+    },
+    "spikes/003-clientless-limbs/test_limbs.py": {
+      "sha256": "cc1f4b66e489375fd89b0f3c2232cc165358a61167b4669ba12952be2466613b",
+      "bytes": 16173
+    },
+    "tests/test_temporary_handshake_cleanup.py": {
+      "sha256": "4c4daa3740b5c3f12441d1c3042a655b4208473904528509b816f38ffd269d79",
+      "bytes": 12023
+    },
+    "spikes/003-clientless-limbs/README.md": {
+      "sha256": "5a87856a051a57891b349105cebfd31633e2a737e19cbc2a3a696de2ad4512dc",
+      "bytes": 12814
+    }
+  },
+  "baseline_client_and_harness_hashes_confirmed_before_edit": true,
+  "excluded_reviewed_source_hash_comparison": {
+    "rathena/config.log": true,
+    "rathena/sql-files/main.sql": true,
+    "rathena/src/char/char_clif.cpp": true,
+    "rathena/src/common/packets.hpp": true,
+    "rathena/src/config/core.hpp": true,
+    "rathena/src/config/packets.hpp": true,
+    "rathena/src/login/login.hpp": true,
+    "rathena/src/login/loginclif.cpp": true,
+    "rathena/src/map/clif.cpp": true,
+    "rathena/src/map/clif_packetdb.hpp": true,
+    "rathena/src/map/clif_shuffle.hpp": true,
+    "rathena/src/map/packets_struct.hpp": true,
+    "run/reviews/protocol-second-cycle.json": true,
+    "run/reviews/spike-protocol-rereview.json": true,
+    "spikes/003-clientless-limbs/packetdb.py": true,
+    "spikes/003-clientless-limbs/scripts/gen_packetdb.py": true,
+    "spikes/003-clientless-limbs/scripts/probe_map.py": true,
+    "spikes/003-clientless-limbs/scripts/seed_fixture.py": true,
+    "spikes/003-clientless-limbs/seed_test.sql": true,
+    "spikes/003-clientless-limbs/test_packetdb.py": true,
+    "tests/test_client_protocol.py": true,
+    "tests/test_limb_evidence.py": true,
+    "tests/test_packet_conditions.py": true,
+    "tests/test_protocol_rereview_repairs.py": true
+  },
+  "changes": [
+    "client.py: retain temporary ownership/framing until successful socket exit; secondary cleanup objects retained with message-free class notes; bare re-raise preserves handshake origin; normal-completion close failure itself remains origin.",
+    "client.py: attempt every temporary transport, map shutdown/close and reader join independently despite BaseException; retain uncertain resources; connect resets nothing before prior cleanup completes.",
+    "test_limbs.py: check temporary ownership even after normal close return; catch cleanup BaseException per participant; permanently poison shared budget on failed/unknown release.",
+    "README.md: precise temporary cleanup/cooperative/power/abstraction boundary correction only."
+  ],
+  "tdd": {
+    "discipline": "Three vertical RED/GREEN tracer bullets. Additional permutations validate those same slices. No unrelated production changes.",
+    "runs": [
+      {
+        "stage": "RED1",
+        "exit_code": 1,
+        "log": "red1.log",
+        "result": "2 failed: actual login/character origins replaced by cleanup OSError"
+      },
+      {
+        "stage": "GREEN1",
+        "exit_code": 0,
+        "log": "green1.log",
+        "result": "2 passed"
+      },
+      {
+        "stage": "RED2",
+        "exit_code": 2,
+        "log": "red2.log",
+        "result": "2 passed then map cleanup KeyboardInterrupt skipped reader"
+      },
+      {
+        "stage": "GREEN2",
+        "exit_code": 0,
+        "log": "green2.log",
+        "result": "3 passed"
+      },
+      {
+        "stage": "RED3",
+        "exit_code": 2,
+        "log": "red3.log",
+        "result": "1 failed,3 passed: unknown-release transport permitted retry; cleanup KeyboardInterrupt skipped second participant"
+      },
+      {
+        "stage": "GREEN3",
+        "exit_code": 0,
+        "log": "green3.log",
+        "result": "5 passed"
+      },
+      {
+        "stage": "final offline supported protocol/compiler regressions",
+        "exit_code": 0,
+        "log": "handoff-scoped.log",
+        "command": "PYTHONDONTWRITEBYTECODE=1 timeout -k 2 120 nix develop --offline -c uv run --offline --no-sync pytest -p no:cacheprovider -o addopts= -q tests/test_temporary_handshake_cleanup.py tests/test_protocol_rereview_repairs.py tests/test_client_protocol.py tests/test_limb_evidence.py tests/test_packet_conditions.py spikes/003-clientless-limbs/test_packetdb.py --basetemp=/home/otto/.hermes/cache/scratch/temp-handshake-cleanup/pytest-handoff -o faulthandler_timeout=10",
+        "result": "138 passed,65 subtests passed in 1.97s",
+        "new_tests": 21,
+        "native_compiler_values": [
+          155,
+          88,
+          118,
+          110,
+          5,
+          9,
+          63,
+          86,
+          103,
+          79,
+          104,
+          80
+        ]
+      },
+      {
+        "stage": "packetdb unittest",
+        "exit_code": 0,
+        "log": "packet-unittest.log",
+        "result": "7 tests OK; included in scoped138, not additional unique tests"
+      },
+      {
+        "stage": "packetdb self-test",
+        "exit_code": 0,
+        "log": "packet-selftest.log",
+        "result": "820 ids derived,864 embedded,mismatches=0"
+      },
+      {
+        "stage": "current repository quality gate",
+        "exit_code": 0,
+        "log": "task-check-accepted.log",
+        "command": "PYTHONDONTWRITEBYTECODE=1 timeout -k 2 180 nix develop --offline -c task check",
+        "result": "black81 unchanged; ruff/mypy/bandit/vulture/xenon/pylint passed;629 passed,65 subtests passed,1 warning in36.38s;coverage93.49%"
+      },
+      {
+        "stage": "git diff --check",
+        "exit_code": 0,
+        "result": "no output"
+      }
+    ],
+    "iterations": [
+      "Initial combined suite:1 failed,137 passed,65 subtests due to reader.*stop diagnostic mismatch; fixed wrapper wording, prior assertion untouched.",
+      "Initial quality failed new test typing/format; corrected annotations/Black without changing quality settings.",
+      "One report construction API-shape error occurred before any report write; retried using tool-side local JSON parsing."
+    ]
+  },
+  "coverage": [
+    "Both real supported login/character origins survive non-releasing close; identity and recv traceback retained.",
+    "Both completed handshakes preserve OSError/KeyboardInterrupt/SystemExit cleanup origin identity/close traceback.",
+    "Normal close once,confirmed framing erasure,eventual successful release,idempotence.",
+    "Temporary,map,reader failures all attempted; retained resources later released successfully.",
+    "Harness unknown-release normal return and KeyboardInterrupt attempt all participants,block retry and following limb.",
+    "Eight actual FixtureClient/connect_pair/run_limb refusal/completion plus OSError/KeyboardInterrupt temporary-close cases:one attempt at t100,none at t130,retained ownership,no PASS.",
+    "All existing offline framing,coordinates,party,identity,slot,compiler,retired-route/seed-renderer tests unchanged."
+  ],
+  "limits": [
+    "No real sockets/game/provider/service/login/SQL/world/reset/live tests; no observed OS descriptor leak or native gameplay acceptance.",
+    "socket.socket.__exit__(None,None,None) calls close and preserves the supported context-only fake transport contract. Normal return confirms release at that abstraction; arbitrary lying transport implementations cannot prove kernel descriptor closure. Failed/interrupted exit defaults to retained unknown release.",
+    "Cooperative monotonic deadline only: blocking create_connection/shutdown/close/join cannot be forcibly interrupted by Python checks. External process timeout is separate containment,not hard real-time cleanup.",
+    "No guarantee under power loss,SIGKILL,process/interpreter termination or resource acquisition that never returns.",
+    "A poisoned harness budget stays permanently prohibited even after eventual manual release; no automatic later-limb recovery.",
+    "cleanup_errors retains private original exception objects; secondary notes/harness output expose class names only,not messages/credentials.",
+    "Current task-check629 overlaps scoped138 and standalone7; no sum of unique totals. Concurrent working tree means this is execution evidence,not independent approval of unrelated work.",
+    "One existing StarletteDeprecationWarning for httpx TestClient; dependencies unchanged. Network CVE audit not run because external service calls prohibited."
+  ],
+  "exclusions_preserved": [
+    "No supplied real private fixture credentials or live authorization; no fixture accounts invented or connected.",
+    "No current native chat/movement/sit-stand/party acceptance, immediate rerun acceptance, general adapter acceptance, autonomous grinding or world isolation acceptance.",
+    "Historical README PASS timings are preserved history only and cannot establish repaired wire logic; offline fake tests do not supersede the defects reproduced here.",
+    "Character creation remains intentionally disabled before wire writes, despite compiler-verified native request/response framing lengths.",
+    "No MariaDB anonymous-block syntax/execution, transactional locking/rollback/concurrency, post-write live DB readback or SQL deployment was exercised.",
+    "Pinned native login/char/skill tables use MyISAM and MUST remain blocked by the InnoDB engine guard; no engine migration is authorized or performed.",
+    "Isolation/stopped flags and offline snapshots are operator attestations/models, not proof of fresh exclusive ownership or absence of in-memory sessions. No unsafe lifecycle/seed execution route is approved.",
+    "Inherited 20211103 snapshot outside exercised/native-corrected families is not fully regenerated. Unknown/unsupported families are not automatically blockers unless a supported path demonstrably misuses them; walking name and sparse slot are demonstrated supported-path mismatches.",
+    "Post-reply party correlation is not causal/cryptographic proof against delayed or injected traffic; very fast valid replies or bounded logs may produce fail-closed false negatives.",
+    "No broad app quality/full-suite acceptance or credential rotation claim; this report does not validate unrelated working-tree changes."
+  ],
+  "constraints": {
+    "owned_source_files_only": true,
+    "prior_tests_packetdb_sql_seedrenderer_runtime_memory_worldstate_mechanics_rust_taskfile_wiki_quality_settings_edited": false,
+    "real_network_calls": 0,
+    "provider_calls": 0,
+    "database_calls": 0,
+    "credentials_printed": false,
+    "staging": false,
+    "commits": false,
+    "push": false
+  },
+  "evidence_logs": {
+    "green3.log": {
+      "path": "/home/otto/.hermes/cache/scratch/temp-handshake-cleanup/green3.log",
+      "sha256": "75182918f00e41cfa0456ea83e7239e807c34b4df075b4f66fe2ac02597b9781",
+      "bytes": 189,
+      "output": "warning: Git tree '/home/otto/dev/ro-bots' is dirty\nro-bots dev shell \u2014 try: task --list\n.....                                                                    [100%]\n5 passed in 0.06s\n"
+    },
+    "task-check-final.log": {
+      "path": "/home/otto/.hermes/cache/scratch/temp-handshake-cleanup/task-check-final.log",
+      "sha256": "16154b151ca112bd713680c6699aea5f3f88dccc0e002df4c969514f6f19c1ab",
+      "bytes": 1123,
+      "output": "warning: Git tree '/home/otto/dev/ro-bots' is dirty\nro-bots dev shell \u2014 try: task --list\ntask: [check] uv run black --check src tests\nAll done! \u2728 \ud83c\udf70 \u2728\n81 files would be left unchanged.\ntask: [lint:dup] uv run pylint --disable=all --enable=duplicate-code --ignore-paths=tests src\ntask: [lint:complexity] uv run xenon src --max-absolute B --max-modules B --max-average A\ntask: [lint:security] uv run bandit -q -c pyproject.toml -r src\ntask: [lint:mypy] uv run mypy\ntask: [lint:dead] uv run vulture src vulture_whitelist.py\ntask: [lint:ruff] uv run ruff check src tests\nAll checks passed!\ntests/test_temporary_handshake_cleanup.py:48: error: Returning Any from function declared to return \"bytes\"  [no-any-return]\ntests/test_temporary_handshake_cleanup.py:145: error: Statement is unreachable  [unreachable]\nFound 2 errors in 1 file (checked 81 source files)\n\n--------------------------------------------------------------------\nYour code has been rated at 10.00/10 (previous run: 10.00/10, +0.00)\n\ntask: Failed to run task \"check\": task: Failed to run task \"lint\": task: Failed to run task \"lint:mypy\": exit status 1\n"
+    },
+    "task-check-accepted.log": {
+      "path": "/home/otto/.hermes/cache/scratch/temp-handshake-cleanup/task-check-accepted.log",
+      "sha256": "b324d57f4d13c5e023d9f410b4ce3b7bb5cb66a4ae73adacf5a74bd8c5e0afd9",
+      "bytes": 6212,
+      "output": "warning: Git tree '/home/otto/dev/ro-bots' is dirty\nro-bots dev shell \u2014 try: task --list\ntask: [check] uv run black --check src tests\nAll done! \u2728 \ud83c\udf70 \u2728\n81 files would be left unchanged.\ntask: [lint:mypy] uv run mypy\ntask: [lint:ruff] uv run ruff check src tests\ntask: [lint:security] uv run bandit -q -c pyproject.toml -r src\ntask: [lint:dup] uv run pylint --disable=all --enable=duplicate-code --ignore-paths=tests src\ntask: [lint:complexity] uv run xenon src --max-absolute B --max-modules B --max-average A\ntask: [lint:dead] uv run vulture src vulture_whitelist.py\nAll checks passed!\nSuccess: no issues found in 81 source files\n\n--------------------------------------------------------------------\nYour code has been rated at 10.00/10 (previous run: 10.00/10, +0.00)\n\ntask: [test] uv run pytest --cov=src/robots --cov-report=term-missing --cov-fail-under=85\n........................................................................ [ 11%]\n........................................................................ [ 22%]\n........................................................................ [ 34%]\n........................................................................ [ 45%]\n........................................................................ [ 57%]\n............................................................................... [ 69%]\n........................................................................ [ 81%]\n........................................................................ [ 92%]\n..............................................                           [100%]\n=============================== warnings summary ===============================\n.venv/lib/python3.14/site-packages/fastapi/testclient.py:1\n  /home/otto/dev/ro-bots/.venv/lib/python3.14/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.\n    from starlette.testclient import TestClient as TestClient  # noqa\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n================================ tests coverage ================================\n_______________ coverage: platform linux, python 3.14.7-final-0 ________________\n\nName                                          Stmts   Miss  Cover   Missing\n---------------------------------------------------------------------------\nsrc/robots/__init__.py                            1      0   100%\nsrc/robots/__main__.py                           38     13    66%   97-117, 121\nsrc/robots/adapters/__init__.py                   4      0   100%\nsrc/robots/adapters/chat/__init__.py              4      0   100%\nsrc/robots/adapters/chat/_http.py                20      4    80%   24-26, 37\nsrc/robots/adapters/chat/chat_local.py            8      2    75%   13, 16\nsrc/robots/adapters/chat/chat_remote.py          11      5    55%   13-15, 18-19\nsrc/robots/adapters/chat/stub.py                 10      0   100%\nsrc/robots/adapters/decision/__init__.py          4      0   100%\nsrc/robots/adapters/decision/_http.py            16      0   100%\nsrc/robots/adapters/decision/clef_local.py        8      2    75%   13, 16\nsrc/robots/adapters/decision/clef_remote.py      12      5    58%   17-19, 22-23\nsrc/robots/adapters/decision/stub.py             12      0   100%\nsrc/robots/adapters/mechanics_stub.py            41      5    88%   162, 165-166, 169-170\nsrc/robots/adapters/mechanics_yaml.py           259     14    95%   173-174, 179-180, 217, 271, 316-317, 364-365, 447-448, 538-539\nsrc/robots/adapters/memory_journal.py           136      2    99%   57-58\nsrc/robots/adapters/worldfeed_server.py         113      5    96%   136, 192, 224-225, 229\nsrc/robots/app/__init__.py                        6      0   100%\nsrc/robots/app/agent_runtime.py                 460     48    90%   180-181, 185, 249, 330-338, 347, 362-363, 369, 386, 397, 401-402, 412, 421-422, 425-432, 446-447, 481, 504, 514-515, 597, 609, 613-616, 633-635, 672, 692-697\nsrc/robots/app/brain.py                         192     17    91%   108, 211, 221-223, 225-226, 235-238, 258, 340-342, 353, 356\nsrc/robots/app/builds.py                        117      2    98%   316, 347\nsrc/robots/app/context_selector.py              104      2    98%   193, 201\nsrc/robots/app/escalation.py                     13      0   100%\nsrc/robots/app/roster_edit.py                    16      1    94%   32\nsrc/robots/app/runner.py                         42      2    95%   46, 72\nsrc/robots/app/scripts.py                        72     18    75%   47, 50-55, 67, 71-73, 86, 102, 109, 121-124\nsrc/robots/app/timers.py                         71      1    99%   92\nsrc/robots/app/world_state.py                   282      9    97%   59-60, 164, 246, 352-354, 360, 427\nsrc/robots/domain/__init__.py                     5      0   100%\nsrc/robots/domain/actions.py                     24      0   100%\nsrc/robots/domain/build.py                       62      4    94%   39-40, 63-64\nsrc/robots/domain/build_templates.py             34      0   100%\nsrc/robots/domain/decisions.py                   17      1    94%   142\nsrc/robots/domain/events.py                      54      3    94%   114, 122, 126\nsrc/robots/domain/farm.py                         9      0   100%\nsrc/robots/domain/model.py                       28      1    96%   81\nsrc/robots/ports/__init__.py                     26      0   100%\nsrc/robots/ports/mechanics.py                    10      1    90%   32\nsrc/robots/society/__init__.py                    6      0   100%\nsrc/robots/society/guild.py                     118      0   100%\nsrc/robots/society/human.py                      56      0   100%\nsrc/robots/society/memory.py                    202     21    90%   79-80, 83-89, 195, 204, 206, 209, 215-216, 246, 262, 264, 266, 286-287\nsrc/robots/society/models.py                     53      0   100%\nsrc/robots/society/society.py                   112      0   100%\n---------------------------------------------------------------------------\nTOTAL                                          2888    188    93%\nRequired test coverage of 85% reached. Total coverage: 93.49%\n629 passed, 1 warning, 65 subtests passed in 36.38s\n"
+    },
+    "packet-selftest.log": {
+      "path": "/home/otto/.hermes/cache/scratch/temp-handshake-cleanup/packet-selftest.log",
+      "sha256": "b24326126edb25a27bc0c11445ba99d1cc60b62ae4fab8b1689aa0b68a3ec17e",
+      "bytes": 155,
+      "output": "warning: Git tree '/home/otto/dev/ro-bots' is dirty\nro-bots dev shell \u2014 try: task --list\npacketdb self-test: 820 ids derived, 864 embedded, mismatches=0\n"
+    },
+    "green1.log": {
+      "path": "/home/otto/.hermes/cache/scratch/temp-handshake-cleanup/green1.log",
+      "sha256": "0d4dd7647c256f3263a85aed4320758d35faf6cab6353b9e9af4e4e9fe87cdc8",
+      "bytes": 189,
+      "output": "warning: Git tree '/home/otto/dev/ro-bots' is dirty\nro-bots dev shell \u2014 try: task --list\n..                                                                       [100%]\n2 passed in 0.03s\n"
+    },
+    "red2.log": {
+      "path": "/home/otto/.hermes/cache/scratch/temp-handshake-cleanup/red2.log",
+      "sha256": "e0774cfa9f203af3283222c43ed48230c9f05427058463be7dbadeb26ba535ff",
+      "bytes": 359,
+      "output": "warning: Git tree '/home/otto/dev/ro-bots' is dirty\nro-bots dev shell \u2014 try: task --list\n..\n!!!!!!!!!!!!!!!!!!!!!!! KeyboardInterrupt: sentinel-map !!!!!!!!!!!!!!!!!!!!!!!!\n/home/otto/dev/ro-bots/tests/test_temporary_handshake_cleanup.py:59: KeyboardInterrupt: sentinel-map\n(to show a full traceback on KeyboardInterrupt use --full-trace)\n2 passed in 0.35s\n"
+    },
+    "final-scoped2.log": {
+      "path": "/home/otto/.hermes/cache/scratch/temp-handshake-cleanup/final-scoped2.log",
+      "sha256": "91e255c8c8a4f6e1b0cea4f28b24c2cde2464c9858636e40586cf01bbcb16ed0",
+      "bytes": 298,
+      "output": "warning: Git tree '/home/otto/dev/ro-bots' is dirty\nro-bots dev shell \u2014 try: task --list\n........................................................................ [ 52%]\n..................................................................              [100%]\n138 passed, 65 subtests passed in 2.01s\n"
+    },
+    "red1.log": {
+      "path": "/home/otto/.hermes/cache/scratch/temp-handshake-cleanup/red1.log",
+      "sha256": "3f22f642f1f92cdfd732122cdde64d1a8d6a8a1be1f7794c97fa08bd8f4b6396",
+      "bytes": 5772,
+      "output": "warning: Git tree '/home/otto/dev/ro-bots' is dirty\nro-bots dev shell \u2014 try: task --list\nFF                                                                       [100%]\n=================================== FAILURES ===================================\n______ test_handshake_origin_survives_unreleased_temporary_cleanup[login] ______\n\ncount = 65536\n\n    def recv(count):\n        if transport.chunks:\n            return original_recv(count)\n>       raise origin\nE       ValueError: sentinel-origin-not-for-output\n\ntests/test_temporary_handshake_cleanup.py:90: ValueError\n\nDuring handling of the above exception, another exception occurred:\n\nmonkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7ffff5ca9810>\nstage = 'login'\n\n    @pytest.mark.parametrize(\"stage\", [\"login\", \"char\"])\n    def test_handshake_origin_survives_unreleased_temporary_cleanup(monkeypatch, stage):\n        origin = ValueError(\"sentinel-origin-not-for-output\")\n        cleanup = OSError(\"sentinel-cleanup-not-for-output\")\n        chunks = [struct.pack(\"<I\", 11)] if stage == \"char\" else []\n        transport = Transport(chunks, close_error=cleanup)\n        # Character entry consumes its account echo before the failing frame read.\n        original_recv = transport.recv\n    \n        def recv(count):\n            if transport.chunks:\n                return original_recv(count)\n            raise origin\n    \n        monkeypatch.setattr(transport, \"recv\", recv)\n        bot = bot_for_stage(monkeypatch, stage, transport)\n        with pytest.raises(ValueError) as caught:\n>           bot.connect()\n\ntests/test_temporary_handshake_cleanup.py:95: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \nspikes/003-clientless-limbs/client.py:362: in connect\n    ip, port = self._login_server()\n               ^^^^^^^^^^^^^^^^^^^^\nspikes/003-clientless-limbs/client.py:160: in _login_server\n    with self._handshake_socket((self.login_ip, self.login_port)) as s:\n         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n../../.local/share/uv/python/cpython-3.14.7-linux-x86_64-gnu/lib/python3.14/contextlib.py:162: in __exit__\n    self.gen.throw(value)\nspikes/003-clientless-limbs/client.py:150: in _handshake_socket\n    with socket.create_connection(address, timeout=self._connection_timeout(5)) as sock:\n         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\ntests/test_temporary_handshake_cleanup.py:66: in __exit__\n    self.close()\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nself = <tests.test_temporary_handshake_cleanup.Transport object at 0x7ffff5b54440>\n\n    def close(self):\n        self.closes += 1\n        if self.close_error is not None:\n>           raise self.close_error\nE           OSError: sentinel-cleanup-not-for-output\n\ntests/test_temporary_handshake_cleanup.py:59: OSError\n______ test_handshake_origin_survives_unreleased_temporary_cleanup[char] _______\n\ncount = 65536\n\n    def recv(count):\n        if transport.chunks:\n            return original_recv(count)\n>       raise origin\nE       ValueError: sentinel-origin-not-for-output\n\ntests/test_temporary_handshake_cleanup.py:90: ValueError\n\nDuring handling of the above exception, another exception occurred:\n\nmonkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7ffff5ca9480>\nstage = 'char'\n\n    @pytest.mark.parametrize(\"stage\", [\"login\", \"char\"])\n    def test_handshake_origin_survives_unreleased_temporary_cleanup(monkeypatch, stage):\n        origin = ValueError(\"sentinel-origin-not-for-output\")\n        cleanup = OSError(\"sentinel-cleanup-not-for-output\")\n        chunks = [struct.pack(\"<I\", 11)] if stage == \"char\" else []\n        transport = Transport(chunks, close_error=cleanup)\n        # Character entry consumes its account echo before the failing frame read.\n        original_recv = transport.recv\n    \n        def recv(count):\n            if transport.chunks:\n                return original_recv(count)\n            raise origin\n    \n        monkeypatch.setattr(transport, \"recv\", recv)\n        bot = bot_for_stage(monkeypatch, stage, transport)\n        with pytest.raises(ValueError) as caught:\n>           bot.connect()\n\ntests/test_temporary_handshake_cleanup.py:95: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \nspikes/003-clientless-limbs/client.py:364: in connect\n    ip, port = self._char_server(ip, port)\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^\nspikes/003-clientless-limbs/client.py:192: in _char_server\n    with self._handshake_socket((ip, port)) as s:\n         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n../../.local/share/uv/python/cpython-3.14.7-linux-x86_64-gnu/lib/python3.14/contextlib.py:162: in __exit__\n    self.gen.throw(value)\nspikes/003-clientless-limbs/client.py:150: in _handshake_socket\n    with socket.create_connection(address, timeout=self._connection_timeout(5)) as sock:\n         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\ntests/test_temporary_handshake_cleanup.py:66: in __exit__\n    self.close()\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nself = <tests.test_temporary_handshake_cleanup.Transport object at 0x7ffff5c8f610>\n\n    def close(self):\n        self.closes += 1\n        if self.close_error is not None:\n>           raise self.close_error\nE           OSError: sentinel-cleanup-not-for-output\n\ntests/test_temporary_handshake_cleanup.py:59: OSError\n=========================== short test summary info ============================\nFAILED tests/test_temporary_handshake_cleanup.py::test_handshake_origin_survives_unreleased_temporary_cleanup[login]\nFAILED tests/test_temporary_handshake_cleanup.py::test_handshake_origin_survives_unreleased_temporary_cleanup[char]\n2 failed in 0.08s\n"
+    },
+    "handoff-scoped.log": {
+      "path": "/home/otto/.hermes/cache/scratch/temp-handshake-cleanup/handoff-scoped.log",
+      "sha256": "edb16f8495f7cbae0d1754bc8dd9949b4828bb252551405c99f6395a79350a8c",
+      "bytes": 298,
+      "output": "warning: Git tree '/home/otto/dev/ro-bots' is dirty\nro-bots dev shell \u2014 try: task --list\n........................................................................ [ 52%]\n..................................................................              [100%]\n138 passed, 65 subtests passed in 1.97s\n"
+    },
+    "task-check-final2.log": {
+      "path": "/home/otto/.hermes/cache/scratch/temp-handshake-cleanup/task-check-final2.log",
+      "sha256": "32c7e563507cfabbe99faf08621a97d6c8cb7766ac408c1db1c130c81e2f673b",
+      "bytes": 350,
+      "output": "warning: Git tree '/home/otto/dev/ro-bots' is dirty\nro-bots dev shell \u2014 try: task --list\ntask: [check] uv run black --check src tests\nwould reformat /home/otto/dev/ro-bots/tests/test_temporary_handshake_cleanup.py\n\nOh no! \ud83d\udca5 \ud83d\udc94 \ud83d\udca5\n1 file would be reformatted, 80 files would be left unchanged.\ntask: Failed to run task \"check\": exit status 1\n"
+    },
+    "final-scoped.log": {
+      "path": "/home/otto/.hermes/cache/scratch/temp-handshake-cleanup/final-scoped.log",
+      "sha256": "d65baa1992a1fd5509b61bd5906af8f2a123fda7d1508c5cdb0ab62c61e34326",
+      "bytes": 298,
+      "output": "warning: Git tree '/home/otto/dev/ro-bots' is dirty\nro-bots dev shell \u2014 try: task --list\n........................................................................ [ 52%]\n..................................................................              [100%]\n138 passed, 65 subtests passed in 2.07s\n"
+    },
+    "green2.log": {
+      "path": "/home/otto/.hermes/cache/scratch/temp-handshake-cleanup/green2.log",
+      "sha256": "be7215c197b1da62b5cf1bfcf1754af03ad929da4028c6b93d882b468393b7ae",
+      "bytes": 189,
+      "output": "warning: Git tree '/home/otto/dev/ro-bots' is dirty\nro-bots dev shell \u2014 try: task --list\n...                                                                      [100%]\n3 passed in 0.04s\n"
+    },
+    "task-check.log": {
+      "path": "/home/otto/.hermes/cache/scratch/temp-handshake-cleanup/task-check.log",
+      "sha256": "a649129b3b5d7df98150beb59a83c3779f2580f835f5cb4a6dec9879c97ad268",
+      "bytes": 3464,
+      "output": "warning: Git tree '/home/otto/dev/ro-bots' is dirty\nro-bots dev shell \u2014 try: task --list\ntask: [check] uv run black --check src tests\nAll done! \u2728 \ud83c\udf70 \u2728\n81 files would be left unchanged.\ntask: [lint:security] uv run bandit -q -c pyproject.toml -r src\ntask: [lint:mypy] uv run mypy\ntask: [lint:dup] uv run pylint --disable=all --enable=duplicate-code --ignore-paths=tests src\ntask: [lint:ruff] uv run ruff check src tests\ntask: [lint:complexity] uv run xenon src --max-absolute B --max-modules B --max-average A\ntask: [lint:dead] uv run vulture src vulture_whitelist.py\nAll checks passed!\ntests/test_temporary_handshake_cleanup.py:66: error: Call to untyped function \"close\" in typed context  [no-untyped-call]\ntests/test_temporary_handshake_cleanup.py:83: error: Call to untyped function \"Transport\" in typed context  [no-untyped-call]\ntests/test_temporary_handshake_cleanup.py:89: error: Call to untyped function (unknown) in typed context  [no-untyped-call]\ntests/test_temporary_handshake_cleanup.py:93: error: Call to untyped function \"bot_for_stage\" in typed context  [no-untyped-call]\ntests/test_temporary_handshake_cleanup.py:129: error: Call to untyped function \"Transport\" in typed context  [no-untyped-call]\ntests/test_temporary_handshake_cleanup.py:131: error: Call to untyped function \"Transport\" in typed context  [no-untyped-call]\ntests/test_temporary_handshake_cleanup.py:132: error: Call to untyped function \"Reader\" in typed context  [no-untyped-call]\ntests/test_temporary_handshake_cleanup.py:144: error: Non-overlapping identity check (left operand type: \"Transport\", right operand type: \"Reader\")  [comparison-overlap]\ntests/test_temporary_handshake_cleanup.py:145: error: Statement is unreachable  [unreachable]\ntests/test_temporary_handshake_cleanup.py:155: error: Call to untyped function \"Transport\" in typed context  [no-untyped-call]\ntests/test_temporary_handshake_cleanup.py:215: error: Call to untyped function \"Transport\" in typed context  [no-untyped-call]\ntests/test_temporary_handshake_cleanup.py:215: error: Call to untyped function \"accepted_frames\" in typed context  [no-untyped-call]\ntests/test_temporary_handshake_cleanup.py:216: error: Call to untyped function \"bot_for_stage\" in typed context  [no-untyped-call]\ntests/test_temporary_handshake_cleanup.py:244: error: Call to untyped function \"Transport\" in typed context  [no-untyped-call]\ntests/test_temporary_handshake_cleanup.py:244: error: Call to untyped function \"accepted_frames\" in typed context  [no-untyped-call]\ntests/test_temporary_handshake_cleanup.py:245: error: Call to untyped function \"bot_for_stage\" in typed context  [no-untyped-call]\ntests/test_temporary_handshake_cleanup.py:276: error: Call to untyped function \"Clock\" in typed context  [no-untyped-call]\ntests/test_temporary_handshake_cleanup.py:301: error: Call to untyped function \"accepted_frames\" in typed context  [no-untyped-call]\ntests/test_temporary_handshake_cleanup.py:309: error: Call to untyped function \"Transport\" in typed context  [no-untyped-call]\ntests/test_temporary_handshake_cleanup.py:340: error: Call to untyped function \"sleep\" in typed context  [no-untyped-call]\nFound 20 errors in 1 file (checked 81 source files)\n\n--------------------------------------------------------------------\nYour code has been rated at 10.00/10 (previous run: 10.00/10, +0.00)\n\ntask: Failed to run task \"check\": task: Failed to run task \"lint\": task: Failed to run task \"lint:mypy\": exit status 1\n"
+    },
+    "red3.log": {
+      "path": "/home/otto/.hermes/cache/scratch/temp-handshake-cleanup/red3.log",
+      "sha256": "80ee57e013fcf14af46c20fb45055dfe0f1fc630653c3aae8010b2e5c9faa382",
+      "bytes": 2146,
+      "output": "warning: Git tree '/home/otto/dev/ro-bots' is dirty\nro-bots dev shell \u2014 try: task --list\n...F\n=================================== FAILURES ===================================\n_ test_harness_retains_unknown_temporary_release_and_cleans_every_participant[False] _\n\ninterruption = False\n\n    @pytest.mark.parametrize(\"interruption\", [False, True])\n    def test_harness_retains_unknown_temporary_release_and_cleans_every_participant(interruption):\n        limbs = load_module(\"temporary_cleanup_limbs\", SPIKE / \"test_limbs.py\")\n        budget = limbs.Budget(59)\n        bot = limbs.FixtureClient(\"offline\", secrets.token_hex(8), verbose=False)\n        bot._temporary_sockets.append(Transport(close_error=OSError()))\n        other = limbs.FixtureClient(\"other\", secrets.token_hex(8), verbose=False)\n        closed = []\n        attempts = []\n    \n        def unknown_close():\n            if interruption:\n                raise KeyboardInterrupt(\"sentinel-cleanup-not-for-output\")\n            # A normal return is not release confirmation while ownership remains.\n    \n        def other_close():\n            closed.append(1)\n    \n        bot.close = unknown_close\n        other.close = other_close\n    \n        def limb(participants, _budget):\n            attempts.append(1)\n            participants.extend((bot, other))\n            raise ValueError(\"sentinel-origin-not-for-output\")\n    \n        limbs.run_limb(\"first\", limb, budget)\n>       assert closed == [1]\nE       assert [1, 1] == [1]\nE         \nE         Left contains one more item: 1\nE         Use -v to get more diff\n\ntests/test_temporary_handshake_cleanup.py:177: AssertionError\n=========================== short test summary info ============================\nFAILED tests/test_temporary_handshake_cleanup.py::test_harness_retains_unknown_temporary_release_and_cleans_every_participant[False]\n!!!!!!!!!!!!!! KeyboardInterrupt: sentinel-cleanup-not-for-output !!!!!!!!!!!!!!\n/home/otto/dev/ro-bots/tests/test_temporary_handshake_cleanup.py:162: KeyboardInterrupt: sentinel-cleanup-not-for-output\n(to show a full traceback on KeyboardInterrupt use --full-trace)\n1 failed, 3 passed in 6.40s\n"
+    },
+    "scoped.log": {
+      "path": "/home/otto/.hermes/cache/scratch/temp-handshake-cleanup/scoped.log",
+      "sha256": "16bf6dac4b2c0e90dd78c1c86783d0f8593c3f8b3ef5c6c99f538e98ce6a515f",
+      "bytes": 1658,
+      "output": "warning: Git tree '/home/otto/dev/ro-bots' is dirty\nro-bots dev shell \u2014 try: task --list\n........................................................................ [ 52%]\n..F...............................................................              [100%]\n=================================== FAILURES ===================================\n_______ test_reader_that_will_not_stop_blocks_retry_and_is_not_forgotten _______\n\nbot = <spike_client_protocol.BotClient object at 0x7ffff5978980>\nmonkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7ffff5ab6d60>\n\n    def test_reader_that_will_not_stop_blocks_retry_and_is_not_forgotten(bot, monkeypatch):\n        class StuckReader:\n            def is_alive(self) -> bool:\n                return True\n    \n            def join(self, timeout: float) -> None:\n                pass\n    \n        reader = StuckReader()\n        bot.rx_thread = reader\n        bot.sock = FakeSocket()\n        monkeypatch.setattr(bot, \"_login_server\", lambda: pytest.fail(\"unsafe reader reuse\"))\n>       with pytest.raises(RuntimeError, match=r\"reader.*stop\"):\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nE       AssertionError: Regex pattern did not match.\nE         Expected regex: 'reader.*stop'\nE         Actual message: 'receive reader cleanup failed; client cannot be reused\\ncleanup failed (RuntimeError); reuse prohibited'\n\ntests/test_client_protocol.py:258: AssertionError\n=========================== short test summary info ============================\nFAILED tests/test_client_protocol.py::test_reader_that_will_not_stop_blocks_retry_and_is_not_forgotten\n1 failed, 137 passed, 65 subtests passed in 2.15s\n"
+    },
+    "packet-unittest.log": {
+      "path": "/home/otto/.hermes/cache/scratch/temp-handshake-cleanup/packet-unittest.log",
+      "sha256": "ea1d34c5146b983c5818b42e1e674480fcdadb164fba911959987a8d116ec270",
+      "bytes": 196,
+      "output": "warning: Git tree '/home/otto/dev/ro-bots' is dirty\nro-bots dev shell \u2014 try: task --list\n.......\n----------------------------------------------------------------------\nRan 7 tests in 0.009s\n\nOK\n"
+    }
+  },
+  "next_action": "Stop implementation; fresh independent parent review required. No further automatic fix cycle."
+}

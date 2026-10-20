@@ -1,0 +1,420 @@
+{
+  "status": "SCOPED_REPAIR_VERIFIED_PENDING_PARENT_AND_INDEPENDENT_REVIEW",
+  "repair_cycle": 2,
+  "last_automatic_cycle": true,
+  "self_approval": false,
+  "scope": "Only Q1-R1 malformed classification shape",
+  "changes": {
+    "contract.py:488": "text(record[\"classification\"]) before unchanged allowed-literal membership; no new exception catch",
+    "test_integration.py:341-369": "Four UNIT ONLY legacy/producer-masked list/dict API and actual subprocess CLI cases; exact coverage preflight succeeds"
+  },
+  "modified_files": [
+    "spikes/008-qualified-packet-catalogue/contract.py",
+    "spikes/008-qualified-packet-catalogue/test_integration.py"
+  ],
+  "created_files": [
+    "run/reviews/native-qualified-catalogue-repair2.json"
+  ],
+  "red": {
+    "commands": [
+      {
+        "name": "red-Q1-legacy-classification-[]",
+        "argv": [
+          "/nix/store/lb41b0anx1f98y9y5s9mdv97gjgsq740-python3-3.14.7/bin/python3",
+          "/home/otto/dev/ro-bots/spikes/008-qualified-packet-catalogue/contract.py",
+          "/home/otto/.hermes/cache/scratch/qualified-catalogue-repair1-independent-review/Q1-legacy-classification-[].json"
+        ],
+        "exit": 1,
+        "seconds": 0.05727815628051758
+      },
+      {
+        "name": "red-Q1-legacy-classification-{}",
+        "argv": [
+          "/nix/store/lb41b0anx1f98y9y5s9mdv97gjgsq740-python3-3.14.7/bin/python3",
+          "/home/otto/dev/ro-bots/spikes/008-qualified-packet-catalogue/contract.py",
+          "/home/otto/.hermes/cache/scratch/qualified-catalogue-repair1-independent-review/Q1-legacy-classification-{}.json"
+        ],
+        "exit": 1,
+        "seconds": 0.05596303939819336
+      },
+      {
+        "name": "red-Q1-producer-classification-zero-count-[]",
+        "argv": [
+          "/nix/store/lb41b0anx1f98y9y5s9mdv97gjgsq740-python3-3.14.7/bin/python3",
+          "/home/otto/dev/ro-bots/spikes/008-qualified-packet-catalogue/contract.py",
+          "/home/otto/.hermes/cache/scratch/qualified-catalogue-repair1-independent-review/Q1-producer-classification-zero-count-[].json"
+        ],
+        "exit": 1,
+        "seconds": 0.09031987190246582
+      },
+      {
+        "name": "red-Q1-producer-classification-zero-count-{}",
+        "argv": [
+          "/nix/store/lb41b0anx1f98y9y5s9mdv97gjgsq740-python3-3.14.7/bin/python3",
+          "/home/otto/dev/ro-bots/spikes/008-qualified-packet-catalogue/contract.py",
+          "/home/otto/.hermes/cache/scratch/qualified-catalogue-repair1-independent-review/Q1-producer-classification-zero-count-{}.json"
+        ],
+        "exit": 1,
+        "seconds": 0.09464240074157715
+      },
+      {
+        "name": "red-tests",
+        "argv": [
+          "/home/otto/dev/ro-bots/.venv/bin/pytest",
+          "-o",
+          "addopts=",
+          "-p",
+          "no:cacheprovider",
+          "/home/otto/dev/ro-bots/spikes/008-qualified-packet-catalogue/test_integration.py",
+          "-k",
+          "classification_shape_reaches_literal_guard",
+          "--basetemp=/home/otto/.hermes/cache/scratch/qualified-r2-child/red-temp",
+          "--junitxml=/home/otto/.hermes/cache/scratch/qualified-r2-child/red.xml"
+        ],
+        "exit": 1,
+        "seconds": 0.4690988063812256
+      }
+    ],
+    "probes": [
+      {
+        "fixture": "/home/otto/.hermes/cache/scratch/qualified-catalogue-repair1-independent-review/Q1-legacy-classification-[].json",
+        "input_sha256": "30d533adb0b8df7d5227e7a11589d52731c2c0736856f5d536935ceb39678672",
+        "api": "TypeError: cannot use 'list' as a set element (unhashable type: 'list')",
+        "cli_exit": 1,
+        "stdout_bytes": 0,
+        "traceback": true,
+        "typeerror": true,
+        "coverage": {
+          "discovered_records": 1,
+          "compiled_records": 1,
+          "unresolved_records": 0
+        },
+        "records": 1
+      },
+      {
+        "fixture": "/home/otto/.hermes/cache/scratch/qualified-catalogue-repair1-independent-review/Q1-legacy-classification-{}.json",
+        "input_sha256": "939fac72f485f2ef83a552bd8e55ef398e4b27fde520e72ebea252a023b5f232",
+        "api": "TypeError: cannot use 'dict' as a set element (unhashable type: 'dict')",
+        "cli_exit": 1,
+        "stdout_bytes": 0,
+        "traceback": true,
+        "typeerror": true,
+        "coverage": {
+          "discovered_records": 1,
+          "compiled_records": 1,
+          "unresolved_records": 0
+        },
+        "records": 1
+      },
+      {
+        "fixture": "/home/otto/.hermes/cache/scratch/qualified-catalogue-repair1-independent-review/Q1-producer-classification-zero-count-[].json",
+        "input_sha256": "f1ac65eb01aa60b50595a50287be574850339bef57a5b9af980891f37d453ba3",
+        "api": "TypeError: cannot use 'list' as a set element (unhashable type: 'list')",
+        "cli_exit": 1,
+        "stdout_bytes": 0,
+        "traceback": true,
+        "typeerror": true,
+        "coverage": {
+          "discovered_records": 631,
+          "compiled_records": 631,
+          "unresolved_records": 0
+        },
+        "records": 632
+      },
+      {
+        "fixture": "/home/otto/.hermes/cache/scratch/qualified-catalogue-repair1-independent-review/Q1-producer-classification-zero-count-{}.json",
+        "input_sha256": "c8d48b38bd091856ccf92d60e27310195ca446f6dde803b98d5297bdd36bb2e4",
+        "api": "TypeError: cannot use 'dict' as a set element (unhashable type: 'dict')",
+        "cli_exit": 1,
+        "stdout_bytes": 0,
+        "traceback": true,
+        "typeerror": true,
+        "coverage": {
+          "discovered_records": 631,
+          "compiled_records": 631,
+          "unresolved_records": 0
+        },
+        "records": 632
+      }
+    ]
+  },
+  "green": {
+    "commands": [
+      {
+        "name": "green-Q1-legacy-classification-[]",
+        "argv": [
+          "/nix/store/lb41b0anx1f98y9y5s9mdv97gjgsq740-python3-3.14.7/bin/python3",
+          "/home/otto/dev/ro-bots/spikes/008-qualified-packet-catalogue/contract.py",
+          "/home/otto/.hermes/cache/scratch/qualified-catalogue-repair1-independent-review/Q1-legacy-classification-[].json"
+        ],
+        "exit": 2,
+        "seconds": 0.05560731887817383
+      },
+      {
+        "name": "green-Q1-legacy-classification-{}",
+        "argv": [
+          "/nix/store/lb41b0anx1f98y9y5s9mdv97gjgsq740-python3-3.14.7/bin/python3",
+          "/home/otto/dev/ro-bots/spikes/008-qualified-packet-catalogue/contract.py",
+          "/home/otto/.hermes/cache/scratch/qualified-catalogue-repair1-independent-review/Q1-legacy-classification-{}.json"
+        ],
+        "exit": 2,
+        "seconds": 0.06182074546813965
+      },
+      {
+        "name": "green-Q1-producer-classification-zero-count-[]",
+        "argv": [
+          "/nix/store/lb41b0anx1f98y9y5s9mdv97gjgsq740-python3-3.14.7/bin/python3",
+          "/home/otto/dev/ro-bots/spikes/008-qualified-packet-catalogue/contract.py",
+          "/home/otto/.hermes/cache/scratch/qualified-catalogue-repair1-independent-review/Q1-producer-classification-zero-count-[].json"
+        ],
+        "exit": 2,
+        "seconds": 0.10201263427734375
+      },
+      {
+        "name": "green-Q1-producer-classification-zero-count-{}",
+        "argv": [
+          "/nix/store/lb41b0anx1f98y9y5s9mdv97gjgsq740-python3-3.14.7/bin/python3",
+          "/home/otto/dev/ro-bots/spikes/008-qualified-packet-catalogue/contract.py",
+          "/home/otto/.hermes/cache/scratch/qualified-catalogue-repair1-independent-review/Q1-producer-classification-zero-count-{}.json"
+        ],
+        "exit": 2,
+        "seconds": 0.09598112106323242
+      },
+      {
+        "name": "green-tests",
+        "argv": [
+          "/home/otto/dev/ro-bots/.venv/bin/pytest",
+          "-o",
+          "addopts=",
+          "-p",
+          "no:cacheprovider",
+          "/home/otto/dev/ro-bots/spikes/008-qualified-packet-catalogue",
+          "--basetemp=/home/otto/.hermes/cache/scratch/qualified-r2-child/green-temp",
+          "--junitxml=/home/otto/.hermes/cache/scratch/qualified-r2-child/green.xml"
+        ],
+        "exit": 0,
+        "seconds": 42.22185206413269
+      },
+      {
+        "name": "black",
+        "argv": [
+          "/home/otto/dev/ro-bots/.venv/bin/black",
+          "--check",
+          "--workers",
+          "1",
+          "/home/otto/dev/ro-bots/spikes/008-qualified-packet-catalogue/contract.py",
+          "/home/otto/dev/ro-bots/spikes/008-qualified-packet-catalogue/test_contract.py",
+          "/home/otto/dev/ro-bots/spikes/008-qualified-packet-catalogue/test_integration.py",
+          "/home/otto/dev/ro-bots/spikes/008-qualified-packet-catalogue/compiler_catalogue.py",
+          "/home/otto/dev/ro-bots/spikes/008-qualified-packet-catalogue/test_compiler_catalogue.py"
+        ],
+        "exit": 0,
+        "seconds": 0.29273509979248047
+      },
+      {
+        "name": "ruff",
+        "argv": [
+          "/home/otto/dev/ro-bots/.venv/bin/ruff",
+          "check",
+          "--no-cache",
+          "/home/otto/dev/ro-bots/spikes/008-qualified-packet-catalogue/contract.py",
+          "/home/otto/dev/ro-bots/spikes/008-qualified-packet-catalogue/test_contract.py",
+          "/home/otto/dev/ro-bots/spikes/008-qualified-packet-catalogue/test_integration.py",
+          "/home/otto/dev/ro-bots/spikes/008-qualified-packet-catalogue/compiler_catalogue.py",
+          "/home/otto/dev/ro-bots/spikes/008-qualified-packet-catalogue/test_compiler_catalogue.py"
+        ],
+        "exit": 0,
+        "seconds": 0.00998997688293457
+      },
+      {
+        "name": "mypy",
+        "argv": [
+          "/home/otto/dev/ro-bots/.venv/bin/mypy",
+          "--strict",
+          "--cache-dir=/home/otto/.hermes/cache/scratch/qualified-r2-child/mypy",
+          "/home/otto/dev/ro-bots/spikes/008-qualified-packet-catalogue/contract.py",
+          "/home/otto/dev/ro-bots/spikes/008-qualified-packet-catalogue/test_contract.py",
+          "/home/otto/dev/ro-bots/spikes/008-qualified-packet-catalogue/test_integration.py",
+          "/home/otto/dev/ro-bots/spikes/008-qualified-packet-catalogue/compiler_catalogue.py",
+          "/home/otto/dev/ro-bots/spikes/008-qualified-packet-catalogue/test_compiler_catalogue.py"
+        ],
+        "exit": 0,
+        "seconds": 1.1200201511383057
+      },
+      {
+        "name": "nominal",
+        "argv": [
+          "/nix/store/lb41b0anx1f98y9y5s9mdv97gjgsq740-python3-3.14.7/bin/python3",
+          "/home/otto/dev/ro-bots/spikes/008-qualified-packet-catalogue/contract.py",
+          "/home/otto/.hermes/cache/scratch/qualified-catalogue-repair1-parent-fresh.json"
+        ],
+        "exit": 0,
+        "seconds": 0.17266297340393066
+      }
+    ],
+    "probes": [
+      {
+        "fixture": "/home/otto/.hermes/cache/scratch/qualified-catalogue-repair1-independent-review/Q1-legacy-classification-[].json",
+        "input_sha256": "30d533adb0b8df7d5227e7a11589d52731c2c0736856f5d536935ceb39678672",
+        "api": "ValueError: nonempty literal text required",
+        "cli_exit": 2,
+        "stdout_bytes": 0,
+        "traceback": false,
+        "typeerror": false,
+        "coverage": {
+          "discovered_records": 1,
+          "compiled_records": 1,
+          "unresolved_records": 0
+        },
+        "records": 1
+      },
+      {
+        "fixture": "/home/otto/.hermes/cache/scratch/qualified-catalogue-repair1-independent-review/Q1-legacy-classification-{}.json",
+        "input_sha256": "939fac72f485f2ef83a552bd8e55ef398e4b27fde520e72ebea252a023b5f232",
+        "api": "ValueError: nonempty literal text required",
+        "cli_exit": 2,
+        "stdout_bytes": 0,
+        "traceback": false,
+        "typeerror": false,
+        "coverage": {
+          "discovered_records": 1,
+          "compiled_records": 1,
+          "unresolved_records": 0
+        },
+        "records": 1
+      },
+      {
+        "fixture": "/home/otto/.hermes/cache/scratch/qualified-catalogue-repair1-independent-review/Q1-producer-classification-zero-count-[].json",
+        "input_sha256": "f1ac65eb01aa60b50595a50287be574850339bef57a5b9af980891f37d453ba3",
+        "api": "ValueError: nonempty literal text required",
+        "cli_exit": 2,
+        "stdout_bytes": 0,
+        "traceback": false,
+        "typeerror": false,
+        "coverage": {
+          "discovered_records": 631,
+          "compiled_records": 631,
+          "unresolved_records": 0
+        },
+        "records": 632
+      },
+      {
+        "fixture": "/home/otto/.hermes/cache/scratch/qualified-catalogue-repair1-independent-review/Q1-producer-classification-zero-count-{}.json",
+        "input_sha256": "c8d48b38bd091856ccf92d60e27310195ca446f6dde803b98d5297bdd36bb2e4",
+        "api": "ValueError: nonempty literal text required",
+        "cli_exit": 2,
+        "stdout_bytes": 0,
+        "traceback": false,
+        "typeerror": false,
+        "coverage": {
+          "discovered_records": 631,
+          "compiled_records": 631,
+          "unresolved_records": 0
+        },
+        "records": 632
+      }
+    ]
+  },
+  "tests": {
+    "prior_physical": 74,
+    "prior_identifiers_retained": 74,
+    "prior_test_bodies_and_assertions_byte_for_byte_retained": true,
+    "new": 4,
+    "physical": 78,
+    "failures": 0,
+    "errors": 0,
+    "skips": 0,
+    "junit": "/home/otto/.hermes/cache/scratch/qualified-r2-child/green.xml"
+  },
+  "quality": "Black/Ruff/strict mypy exit0 across all five Python files",
+  "nominal": {
+    "declarations": 632,
+    "spellings": 631,
+    "headers": 477,
+    "tails": 94,
+    "actual_cli_exit": 0,
+    "raw_evidence_retained_except_derived_classification": true,
+    "canonical_conditions": 6,
+    "all_conditions": "UNDISCHARGED",
+    "compiler_execution_authenticated": false,
+    "sink_admission": false,
+    "runtime_admission": false,
+    "framed_bytes_or_admission_claimed": false
+  },
+  "freeze": {
+    "input_count": 249,
+    "before_mismatches": [],
+    "changed_only_owned": [
+      "spikes/008-qualified-packet-catalogue/contract.py",
+      "spikes/008-qualified-packet-catalogue/test_integration.py"
+    ],
+    "unchanged_nonowned": 247,
+    "canonical206_unchanged": 206,
+    "canonical_mismatches": [],
+    "producer_sha256": "675975cfba524d390b93dc7a6cadf8e8820193a75dcf857d717da7b6f30f490d",
+    "review_sha256": "419c87dc5137cb1b42c81f9a17205cb53ef4896c6d1a0f730de6400fa1fc2d3f",
+    "old_review_artifacts_verified_nonowned": 377,
+    "old_artifact_mismatches": [],
+    "source_manifest_count": 3206,
+    "source_manifest_sha256": "1f2d601dc86d572af78bae036f444fbbd469539457569e4f951438b30e74236a",
+    "source_projection_guard": "Immutable package public manifest equals parent SOURCE_CLOSURE; compiler and 206/247 nonowned hashes unchanged; no source writes",
+    "primary_sources_before_after_equal": true,
+    "before": "/home/otto/.hermes/cache/scratch/qualified-r2-child/freeze-before.json",
+    "after": "/home/otto/.hermes/cache/scratch/qualified-r2-child/freeze-after.json"
+  },
+  "budget": {
+    "target_seconds": 180,
+    "elapsed_seconds": 222.25533652305603,
+    "target_overrun": true,
+    "overrun_seconds": 42.25533652305603,
+    "overrun_waived": false,
+    "note": "Original target12 calls exceeded by prerequisite reads and evidence verification; no scope or budget waiver claimed"
+  },
+  "old_generator_tracer_budgets_unchanged": true,
+  "outstanding": [
+    "Parent combined root/doc gates",
+    "Fresh independent review"
+  ],
+  "evidence_sha256": {
+    "/home/otto/.hermes/cache/scratch/qualified-r2-child/sources-before.json": "e6eadd10e501af64bb113d2d0b5abddd2ab168669fe13931350104e2e4eafa08",
+    "/home/otto/.hermes/cache/scratch/qualified-r2-child/freeze-before.json": "9545c3f3d4bc9326e0216428d4fce421dc44c8829244989ca533e460206d52ba",
+    "/home/otto/.hermes/cache/scratch/qualified-r2-child/mypy.stdout": "e317872697c2cbfdefa321527a6efe73290dff3a390b0fa8723b87092eccba6a",
+    "/home/otto/.hermes/cache/scratch/qualified-r2-child/start.json": "53c22979762f53870d6eafd34cd3a3e6d802fe4974a2f2ad5bdcb51f5f06aa57",
+    "/home/otto/.hermes/cache/scratch/qualified-r2-child/red-Q1-producer-classification-zero-count-{}.stderr": "cafd917d966e622b2e1004df47d8472354da2f6a71746644c37b4e95a84828b0",
+    "/home/otto/.hermes/cache/scratch/qualified-r2-child/red-Q1-producer-classification-zero-count-[].stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/qualified-r2-child/green-Q1-legacy-classification-[].stderr": "2ed99b056c9f589f9fc8c36b6e998ae0083f20689d51d5606b1d72ece43ba19d",
+    "/home/otto/.hermes/cache/scratch/qualified-r2-child/red-Q1-legacy-classification-[].stderr": "7e2ebb7ae5674a3d08af20933d825ed2a223072f76acdbd75cc166369bb2b377",
+    "/home/otto/.hermes/cache/scratch/qualified-r2-child/red-tests.stdout": "ec2cd5b0af74fec0d26e6058fc8aa4a42d66d0a3182e8f9214491fbd09452042",
+    "/home/otto/.hermes/cache/scratch/qualified-r2-child/red-Q1-producer-classification-zero-count-[].stderr": "7e2ebb7ae5674a3d08af20933d825ed2a223072f76acdbd75cc166369bb2b377",
+    "/home/otto/.hermes/cache/scratch/qualified-r2-child/green.xml": "dfe9f0a67eee600ca4712dccb63f289e74a2797f7703c338639137acc370bcdd",
+    "/home/otto/.hermes/cache/scratch/qualified-r2-child/freeze-after.json": "96d5213b3cbf00cd2cdae117ce4792fe7f199e412a2540f24de7429bd3d83eba",
+    "/home/otto/.hermes/cache/scratch/qualified-r2-child/green-Q1-legacy-classification-{}.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/qualified-r2-child/ruff.stdout": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+    "/home/otto/.hermes/cache/scratch/qualified-r2-child/red-results.json": "d4b6bde1ae4c423261472dd30eb8200d974157c9794496a13607ce823035de75",
+    "/home/otto/.hermes/cache/scratch/qualified-r2-child/mypy.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/qualified-r2-child/finalize.py": "64feccc044a616d9583598b95af001677ff3ca4aa40710096126027a72d3d077",
+    "/home/otto/.hermes/cache/scratch/qualified-r2-child/nominal.stdout": "eeea9f8ee2fcf2071d6bbcf3af8b7b26f54e04883f6eacbdd897ce306274c1de",
+    "/home/otto/.hermes/cache/scratch/qualified-r2-child/red.xml": "20e8c75c72e398d6695e0036d7a727091ae02f75770c1df26ba4e53e733dd401",
+    "/home/otto/.hermes/cache/scratch/qualified-r2-child/green-tests.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/qualified-r2-child/source-manifest-after.json": "1f2d601dc86d572af78bae036f444fbbd469539457569e4f951438b30e74236a",
+    "/home/otto/.hermes/cache/scratch/qualified-r2-child/green-Q1-legacy-classification-[].stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/qualified-r2-child/black.stderr": "25369eabb8c122f861d58ddb255f81f4b9ee797f42f3882975bef953218258ed",
+    "/home/otto/.hermes/cache/scratch/qualified-r2-child/green-Q1-producer-classification-zero-count-{}.stderr": "2ed99b056c9f589f9fc8c36b6e998ae0083f20689d51d5606b1d72ece43ba19d",
+    "/home/otto/.hermes/cache/scratch/qualified-r2-child/green-Q1-producer-classification-zero-count-{}.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/qualified-r2-child/ruff.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/qualified-r2-child/red-tests.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/qualified-r2-child/run_checks.py": "2a49ae7a7ff53c1ac093ae76159fdc209923155d612cbe6c737661f571dc3bc3",
+    "/home/otto/.hermes/cache/scratch/qualified-r2-child/owned-before.json": "40246f27944465a29c66d73a386317fc25fa7bda6a1d7fb6300cad0cafd381d5",
+    "/home/otto/.hermes/cache/scratch/qualified-r2-child/black.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/qualified-r2-child/green-tests.stdout": "e812d5bd5f5d3999954613421e7936dfc73e24f78c5934ae0fd69c3d79de22a2",
+    "/home/otto/.hermes/cache/scratch/qualified-r2-child/green-results.json": "3ef503559b5d151c6454fb6a2c1dc90cbe69d7b4340bf4d5d590aea0702a1b96",
+    "/home/otto/.hermes/cache/scratch/qualified-r2-child/red-Q1-producer-classification-zero-count-{}.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/qualified-r2-child/red-Q1-legacy-classification-[].stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/qualified-r2-child/nominal.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/qualified-r2-child/red-Q1-legacy-classification-{}.stderr": "cafd917d966e622b2e1004df47d8472354da2f6a71746644c37b4e95a84828b0",
+    "/home/otto/.hermes/cache/scratch/qualified-r2-child/red-Q1-legacy-classification-{}.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/qualified-r2-child/green-Q1-legacy-classification-{}.stderr": "2ed99b056c9f589f9fc8c36b6e998ae0083f20689d51d5606b1d72ece43ba19d",
+    "/home/otto/.hermes/cache/scratch/qualified-r2-child/green-Q1-producer-classification-zero-count-[].stderr": "2ed99b056c9f589f9fc8c36b6e998ae0083f20689d51d5606b1d72ece43ba19d",
+    "/home/otto/.hermes/cache/scratch/qualified-r2-child/green-Q1-producer-classification-zero-count-[].stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "status": "UNCERTAIN_PARTIAL_STATE_AFTER_FIRST_LIFECYCLE_COMMAND",
+  "receipt": "live CLI output recorded in wiki log and this file",
+  "lifecycle_commands": 1,
+  "executed": [
+    "docker stop --signal=TERM -t -1 <owned-map-id> (succeeded; map listener went dark per listener_observations)"
+  ],
+  "publication": "pending, write_attempted=false, no public writes",
+  "world_now": {
+    "mariadb": "running (pid 38200)",
+    "login": "running (pid 38491)",
+    "char": "running (pid 38610)",
+    "map": "STOPPED (exited after TERM)"
+  },
+  "approval": "756a39dacb6f45581e0b33b824e87a34e2bd7fc2f946f43c09ad994e014c3da9 (window expired during analysis)",
+  "denial_classification": "not captured by CLI receipt (operation_errors empty); denial after map-stop post-checkpoint inside fresh_content_checkpoint or publish pre-write gate",
+  "policy": "uncertain state retained by design; no automatic retry/resume",
+  "recovery_plan": [
+    "restore the map role with a single owned docker start (bounded maintenance, restores pre-cycle state)",
+    "re-issue a fresh approval with baselines captured at issuance (map epoch will be new; rotation successor admits newer clean map epoch)",
+    "run the full reviewed cycle: stop map/char/login, publish guide+import, start login/char/map, all-offline preflight"
+  ],
+  "native_authority": "UNCHANGED_REVOKED"
+}

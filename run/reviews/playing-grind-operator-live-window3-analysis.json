@@ -1,0 +1,14 @@
+{
+  "status": "GRIND_WINDOW3_DECISIVE_OWN_POSITION_INGEST_AND_WALK_SEND_FRONTIER",
+  "completed_at": "2026-10-14T23:29:44.866659+00:00",
+  "raw_receipt": "run/reviews/playing-grind-operator-live-window3.json (frame_timeline 56 rows/agent, frame_counters, walk_audit)",
+  "decisive_evidence": {
+    "map_session_works": "fixture_0 ingested 9 actor frames, parse errors 0; an attackable mob WAS observed (id 110017484, attackable_actors_max 1)",
+    "walk_sends_zero": "fixture_0 sent_pids {0x360:14} time-sync only; 0x035F walk requests ZERO; walk_acks seen 7 at wire level but tracker own_position_ingests 0",
+    "gate_starvation": "with the pending walk never released (arrival predicate needs tracker-ingested 0x87 own position, which never ingests), the single _pending slot starves ALL subsequent Attack/MoveTo/Loot sends - GrindScript had a visible attackable target and still could not act",
+    "fixture_1": "only 2 actor frames (both non-attackable, likely the other fixture); consistent with spawn distribution near its cell"
+  },
+  "root_cause_named": "the live client never sends walk requests and never ingests its own 0x87 position into NativeGameplayTracker; the pending-gate arrival predicate therefore never releases, starving all field actions. Production-path fix required (playing_runtime frame consumption -> tracker _self_position, arrival release), under full TDD + source gates + review.",
+  "next": "production fix slice: wire own-position ingest through the PlayingClient consumption path with the pending-gate arrival release; window 4 then expects walks -> arrival -> attack -> damage/XP/loot.",
+  "native_authority": "UNCHANGED_REVOKED"
+}

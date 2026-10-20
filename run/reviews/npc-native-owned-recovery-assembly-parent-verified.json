@@ -1,0 +1,29 @@
+{
+  "status": "ASSEMBLY27_PARENT_PHYSICAL_VERIFIED_REVIEW_PENDING",
+  "report_sha256": "0ad8c43dd93eb7ce3513f3da4a668f50e9863eb604b1838c4fcc0f9378116995",
+  "unique_passing_cases": 27,
+  "new_cases": 12,
+  "prior_ids_reported_retained": 15,
+  "physical_source_bindings": 132,
+  "artifact_digests_verified": 69,
+  "native_activation": "REVOKED",
+  "actual_recovery": "NOT_EXECUTED",
+  "known_live_admission_limit": {
+    "source_refs": {
+      "map_initial_empty": "src/map/map.cpp:5388-5403,5447-5456",
+      "auth_event": "src/map/pc.cpp:2244-2250",
+      "logout_and_autotrade_event": "src/map/clif.cpp:25684-25705",
+      "autotrade_bootstrap_limit": "src/map/vending.cpp:595-610,692; src/map/buyingstore.cpp:661-757; src/map/battle.cpp:8714",
+      "native_stderr_errors": "src/common/showmsg.cpp:710-772"
+    },
+    "genuine_unknown_fields": [
+      "active_players when startup/event history is incomplete",
+      "autotrade_players when bootstrap is enabled or its complete configuration is unknown",
+      "client_connections when native PID socket ownership cannot be read",
+      "local_native_processes when the process transport is empty"
+    ],
+    "source_limit": "Pinned vending.cpp:609 emits its loaded-autotrader count only when SQL NumRows>0. Missing loading messages cannot establish zero in-memory or bootstrap actors. The actual deployed feature setting and actual complete log/socket history were not observed here.",
+    "decision": "DENY lifecycle on any unknown or active player fact. Parent must establish admissible current administrative player authority and readable current process/socket data before recovery, or decline recovery. Do not disable deployed features, change configuration, invent zero counts, relax the driver guard or treat the FAKE disabled-bootstrap positive fixture as a deployed-world qualification."
+  },
+  "full_goals": "OPEN"
+}

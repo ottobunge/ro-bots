@@ -1,0 +1,122 @@
+{
+  "issue": "POP-001",
+  "cycle": 1,
+  "role": "third_context_corrective_agent",
+  "status": "offline correction green; independent re-review required",
+  "independent_review_passed": false,
+  "modified_source_files": [
+    "src/robots/app/world_state.py",
+    "tests/test_population_binding_race.py"
+  ],
+  "implementation": [
+    "Shared reentrant aggregate lifecycle lock serializes bind_memory persona validation, type validation, exact log installation and permanent host-owned flag.",
+    "Regeneration admission captures defaults under that lock; complete candidate roster/runtime/memory construction remains outside it. Final ownership guard, seed/default-size update, roster/reputation/runtime/memory replacement and successful feed event are under the same lock.",
+    "Feed lock aliases the aggregate lock, removing a separate feed/aggregate inversion.",
+    "Roster getter, runtime getter, reputation rows and memory-log selection wait for the full commit. Memory rendering/appending occurs after aggregate lock release; runtime updates retry if their captured log was replaced.",
+    "No factory population count, RNG, identity logic, protocol payload, host/storage executor or quality configuration was changed."
+  ],
+  "red": {
+    "command": "nix develop -c uv run --offline --no-sync pytest tests/test_population_binding_race.py --no-cov -o addopts='' -q -o faulthandler_timeout=10",
+    "exit_code": 1,
+    "failed": 1,
+    "passed": 1,
+    "expected_failure": "admitted regeneration must reject a later successful binding; observed zero failures instead of one",
+    "log": "run/reviews/population-binding-red.log",
+    "pre_fix_world_state_sha256": "59084c45e40f3ea8f15f983ef6377b71c3db729de7ea02f0a0f48b3e3e24d5bf"
+  },
+  "green": {
+    "new_regression_cases": 9,
+    "verified_by": [
+      "final scoped suite",
+      "final full task check"
+    ],
+    "earlier_isolated_green": {
+      "passed": 5,
+      "log": "run/reviews/population-binding-green.log",
+      "note": "Earlier version before the read-path case was expanded into five cases; final acceptance uses scoped/full logs."
+    }
+  },
+  "tested_subset": [
+    "Host binding after regeneration admission while SocietyRoster.build is paused; binding returns before candidate construction resumes.",
+    "Rejection preserves exact roster/reputation/runtime dictionary/memory dictionary identities and values, populated group/agent reputation rows, exact host MemoryLog and note/rendered content, seed, default maximum size, events and next sequence.",
+    "Unknown-persona binding during candidate build raises CommandError without setting ownership or inserting a log; valid generation still succeeds with 15 requested personas.",
+    "Candidate build failure propagates the exact originating exception object without committed regeneration or success feed event.",
+    "Private-memory owner can bind and push a feed event while another thread is blocked on that memory lock; both threads complete.",
+    "Pausing inside roster replacement during the locked commit blocks each public read entrypoint separately: roster/runtime/memory/reputation/feed; readers complete against committed state after release.",
+    "Existing configured/legacy population, WorldState commands, SocietyRoster, WorldFeed HTTP/SSE retention and AgentHost/private-memory/storage-failure tests."
+  ],
+  "verification": {
+    "scoped": {
+      "command": "nix develop -c uv run --offline --no-sync pytest tests/test_population_binding_race.py tests/test_population_config.py tests/test_society.py tests/test_world_state.py tests/test_worldfeed_server.py tests/test_worldfeed_retention.py tests/test_agent_host.py tests/test_host_memory.py tests/test_host_storage_failure.py --no-cov -o addopts='' -q -o faulthandler_timeout=15",
+      "exit_code": 0,
+      "passed": 140,
+      "warnings": 1,
+      "duration_seconds": 3.77,
+      "log": "run/reviews/population-binding-scoped.log"
+    },
+    "full_python_gate": {
+      "command": "nix develop -c task check",
+      "exit_code": 0,
+      "passed": 608,
+      "subtests_passed": 65,
+      "warnings": 1,
+      "coverage_percent": 93.49,
+      "coverage_minimum_percent_unchanged": 85,
+      "duration_seconds_pytest": 28.98,
+      "static_gates": [
+        "black check (80 files)",
+        "ruff",
+        "mypy (80 source files)",
+        "vulture",
+        "xenon",
+        "pylint duplicate-code",
+        "bandit"
+      ],
+      "log": "run/reviews/population-binding-check.log"
+    },
+    "warning": "Existing Starlette TestClient httpx deprecation; no warning suppression added.",
+    "quality_configuration_changed": false,
+    "reviewed_frozen_sources_unchanged": {
+      "src/robots/society/society.py": true,
+      "tests/test_population_config.py": true,
+      "tests/test_world_state.py": true,
+      "src/robots/adapters/worldfeed_server.py": true,
+      "src/robots/app/agent_runtime.py": true
+    }
+  },
+  "issues_encountered": [
+    "First post-fix run correctly refused regeneration, but the new test initially assumed an unprefixed memory rendering string. Corrected test to capture the actual pre-rejection view and assert preserved note text, without changing renderer behavior.",
+    "Initial full lint found new-test statement-count and property typing failures. Factored test assertions/fixture helpers and obtained the property descriptor through vars(WorldState); final unweakened gates pass."
+  ],
+  "residuals": [
+    "Independent re-review has not been performed by this fixer and remains required before approval.",
+    "WorldFeedServer.roster_snapshot and agent_detail still read the public roster followed by several separate getters. Each read excludes a half-commit, but the whole HTTP response is not a single generation transaction: a concurrent unbound regeneration BETWEEN those calls can mix committed generations or produce an unknown-persona error. Adapter edits were outside ownership scope; external exclusion remains required for this case. Permanently host-bound aggregates cannot regenerate.",
+    "Direct mutation/read of raw roster collections, reputation-store internals, private dictionaries or direct roster assignment is not a supported concurrent aggregate snapshot/write interface.",
+    "Forced actions select a log under the aggregate lock and append after releasing it. Concurrent UNBOUND regeneration can retire that selected stub log; host-bound log detachment is prevented. This pre-existing non-host operator-action lifecycle is not reconciled here.",
+    "Injected clock callbacks run under the event/aggregate lock as the existing feed contract does. They must be nonblocking and must not acquire private memory locks; arbitrary user-defined clock lock inversions are not covered by the tested memory/feed paths.",
+    "Online task audit was not run because provider/network calls are prohibited; no dependency-CVE freshness claim.",
+    "Rust/dashboard gates were not rerun by this WorldState-only fixer. Serializer source and payload contracts remain unchanged; parent Rust review/gates remain separate.",
+    "No live provider, native server, SQL, external world lifecycle or population-account reconciliation acceptance is claimed."
+  ],
+  "hash_algorithm": "sha256",
+  "source_hashes": {
+    "src/robots/app/world_state.py": "01dcd22cd81d3ff24373fed08d4e0ca1007e1a5be73341d43825da2a36e57f03",
+    "tests/test_population_binding_race.py": "57129ac7a653e38161b120a8fdb329b6261b6f97739cd3603f37e6c36c11b7e0",
+    "src/robots/society/society.py": "4109fbad57f3192762447ca7378689374e1cf1fc9a694bb82e827b797836018e",
+    "tests/test_population_config.py": "cecd227079d277bde7bdceab0b33c2eb1c9f3c13aecfaa85329d1d905766268d",
+    "tests/test_world_state.py": "1b026aa85e1ed5a68cc00bbae2b0c0f61cdbececbd94bb03d5f4085614382727",
+    "src/robots/adapters/worldfeed_server.py": "0123fe3964030713452cf174157d998d2f94cd63aa5e5884bcdfccf01ad96344",
+    "src/robots/app/agent_runtime.py": "c05942f8f02059af78f43273a8d59c67eda8c77ed2e6263cb27e9f5a7cdfdef8",
+    "src/robots/society/memory.py": "29dc3abf394daa6107ee72215f7d514220d6262d0e22351911d2bc24246a3ff2"
+  },
+  "commits_staging_or_push": false,
+  "external_services_started": false,
+  "artifacts": [
+    "run/reviews/population-binding-race-fix.json",
+    "run/reviews/population-binding-red.log",
+    "run/reviews/population-binding-green.log",
+    "run/reviews/population-binding-scoped.log",
+    "run/reviews/population-binding-check.log"
+  ],
+  "procedural_memory": "Updated default-profile ro-bots-development skill with atomic binding/final-commit and lock/snapshot limitations."
+}

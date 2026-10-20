@@ -1,0 +1,602 @@
+{
+  "status": "offline_repair_green_pending_parent_gate_and_independent_review",
+  "repair_cycle": 1,
+  "maximum_cycles": 2,
+  "original_review_sha256": "0ab47bdd48ee16247831b5328b03e055421062c510a50ec82c55b6e9f0723506",
+  "classification": {
+    "PLANNER-CLOCK-001": "blocking contract narrowing repaired: no absolute finite-clock cap; local integer conversion overflow sanitized",
+    "PLANNER-SCHEMA-001": "original nonblocking usability probe completed: publish existing enum vocabulary only"
+  },
+  "tests": {
+    "red": {
+      "cases": 47,
+      "unique_identities": 47,
+      "passed": 42,
+      "failures": 5,
+      "errors": 0,
+      "skips": 0,
+      "failed_cases": [
+        "test_large_finite_clock_preserves_real_lifecycle_admission[1000000000001]",
+        "test_large_finite_clock_preserves_real_lifecycle_admission[1000000000000000.0]",
+        "test_tool_schema_matches_enforced_plan_vocabulary",
+        "test_schema_declares_enum_vocabulary_required_by_decoder",
+        "test_core_valid_large_finite_clock_is_not_newly_restricted"
+      ],
+      "identities": [
+        [
+          "tests.test_llm_planner",
+          "test_reader_tool_conversation_reaches_real_lifecycle_admission"
+        ],
+        [
+          "tests.test_llm_planner",
+          "test_http_template_tokenizer_exact_fit_then_production_loop"
+        ],
+        [
+          "tests.test_llm_planner",
+          "test_provider_failure_is_sanitized"
+        ],
+        [
+          "tests.test_llm_planner",
+          "test_invalid_tool_arguments_never_reach_private_memory[arguments0]"
+        ],
+        [
+          "tests.test_llm_planner",
+          "test_invalid_tool_arguments_never_reach_private_memory[arguments1]"
+        ],
+        [
+          "tests.test_llm_planner",
+          "test_invalid_tool_arguments_never_reach_private_memory[arguments2]"
+        ],
+        [
+          "tests.test_llm_planner",
+          "test_invalid_tool_arguments_never_reach_private_memory[arguments3]"
+        ],
+        [
+          "tests.test_llm_planner",
+          "test_invalid_generated_plan_denied_without_idle_fallback[duration-True]"
+        ],
+        [
+          "tests.test_llm_planner",
+          "test_invalid_generated_plan_denied_without_idle_fallback[duration-nan]"
+        ],
+        [
+          "tests.test_llm_planner",
+          "test_invalid_generated_plan_denied_without_idle_fallback[duration-inf]"
+        ],
+        [
+          "tests.test_llm_planner",
+          "test_invalid_generated_plan_denied_without_idle_fallback[duration-10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000]"
+        ],
+        [
+          "tests.test_llm_planner",
+          "test_invalid_generated_plan_denied_without_idle_fallback[review_after-31]"
+        ],
+        [
+          "tests.test_llm_planner",
+          "test_invalid_generated_plan_denied_without_idle_fallback[identity-foreign]"
+        ],
+        [
+          "tests.test_llm_planner",
+          "test_invalid_generated_plan_denied_without_idle_fallback[phases-value6]"
+        ],
+        [
+          "tests.test_llm_planner",
+          "test_invalid_generated_plan_denied_without_idle_fallback[phases-value7]"
+        ],
+        [
+          "tests.test_llm_planner",
+          "test_invalid_generated_plan_denied_without_idle_fallback[required_facts-value8]"
+        ],
+        [
+          "tests.test_llm_planner",
+          "test_no_investigation_and_loop_limit_are_real_denials"
+        ],
+        [
+          "tests.test_llm_planner",
+          "test_duplicate_arguments_and_duplicate_call_ids_denied"
+        ],
+        [
+          "tests.test_llm_planner",
+          "test_expired_foreign_owner_and_reader_mismatch_prevent_model_call"
+        ],
+        [
+          "tests.test_llm_planner",
+          "test_epoch_drift_after_model_denies_private_read"
+        ],
+        [
+          "tests.test_llm_planner",
+          "test_http_preflight_and_failures_never_claim_completed_plan[overflow]"
+        ],
+        [
+          "tests.test_llm_planner",
+          "test_http_preflight_and_failures_never_claim_completed_plan[ceiling]"
+        ],
+        [
+          "tests.test_llm_planner",
+          "test_http_preflight_and_failures_never_claim_completed_plan[http]"
+        ],
+        [
+          "tests.test_llm_planner",
+          "test_http_preflight_and_failures_never_claim_completed_plan[length]"
+        ],
+        [
+          "tests.test_llm_planner",
+          "test_untrusted_private_instructions_cannot_dispatch_native_action"
+        ],
+        [
+          "tests.test_llm_planner",
+          "test_large_finite_clock_preserves_real_lifecycle_admission[1000000000001]"
+        ],
+        [
+          "tests.test_llm_planner",
+          "test_large_finite_clock_preserves_real_lifecycle_admission[1000000000000000.0]"
+        ],
+        [
+          "tests.test_llm_planner",
+          "test_tool_schema_matches_enforced_plan_vocabulary"
+        ],
+        [
+          "tests.test_llm_planner",
+          "test_invalid_clock_or_deadline_remains_sanitized_before_model"
+        ],
+        [
+          "",
+          "test_http_capacity_denial_before_generation[missing_capacity]"
+        ],
+        [
+          "",
+          "test_http_capacity_denial_before_generation[boolean_capacity]"
+        ],
+        [
+          "",
+          "test_http_capacity_denial_before_generation[bad_token]"
+        ],
+        [
+          "",
+          "test_http_capacity_denial_before_generation[reservation]"
+        ],
+        [
+          "",
+          "test_http_capacity_denial_before_generation[caller_ceiling]"
+        ],
+        [
+          "",
+          "test_malformed_calls_never_enter_private_handler[duplicate]"
+        ],
+        [
+          "",
+          "test_malformed_calls_never_enter_private_handler[nan]"
+        ],
+        [
+          "",
+          "test_malformed_calls_never_enter_private_handler[surrogate]"
+        ],
+        [
+          "",
+          "test_malformed_calls_never_enter_private_handler[unknown_function_key]"
+        ],
+        [
+          "",
+          "test_post_model_binding_denial_before_private_read[identity]"
+        ],
+        [
+          "",
+          "test_post_model_binding_denial_before_private_read[epoch]"
+        ],
+        [
+          "",
+          "test_plan_denial_does_not_admit_or_dispatch[foreign]"
+        ],
+        [
+          "",
+          "test_plan_denial_does_not_admit_or_dispatch[unsupported]"
+        ],
+        [
+          "",
+          "test_plan_denial_does_not_admit_or_dispatch[implicit_unknown]"
+        ],
+        [
+          "",
+          "test_stale_http_response_cannot_produce_admitted_plan[deadline]"
+        ],
+        [
+          "",
+          "test_stale_http_response_cannot_produce_admitted_plan[epoch]"
+        ],
+        [
+          "",
+          "test_schema_declares_enum_vocabulary_required_by_decoder"
+        ],
+        [
+          "",
+          "test_core_valid_large_finite_clock_is_not_newly_restricted"
+        ]
+      ]
+    },
+    "red-schema": {
+      "cases": 1,
+      "unique_identities": 1,
+      "passed": 0,
+      "failures": 1,
+      "errors": 0,
+      "skips": 0,
+      "failed_cases": [
+        "test_tool_schema_matches_enforced_plan_vocabulary"
+      ],
+      "identities": [
+        [
+          "tests.test_llm_planner",
+          "test_tool_schema_matches_enforced_plan_vocabulary"
+        ]
+      ]
+    },
+    "final-green": {
+      "cases": 47,
+      "unique_identities": 47,
+      "passed": 47,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "failed_cases": [],
+      "identities": [
+        [
+          "tests.test_llm_planner",
+          "test_reader_tool_conversation_reaches_real_lifecycle_admission"
+        ],
+        [
+          "tests.test_llm_planner",
+          "test_http_template_tokenizer_exact_fit_then_production_loop"
+        ],
+        [
+          "tests.test_llm_planner",
+          "test_provider_failure_is_sanitized"
+        ],
+        [
+          "tests.test_llm_planner",
+          "test_invalid_tool_arguments_never_reach_private_memory[arguments0]"
+        ],
+        [
+          "tests.test_llm_planner",
+          "test_invalid_tool_arguments_never_reach_private_memory[arguments1]"
+        ],
+        [
+          "tests.test_llm_planner",
+          "test_invalid_tool_arguments_never_reach_private_memory[arguments2]"
+        ],
+        [
+          "tests.test_llm_planner",
+          "test_invalid_tool_arguments_never_reach_private_memory[arguments3]"
+        ],
+        [
+          "tests.test_llm_planner",
+          "test_invalid_generated_plan_denied_without_idle_fallback[duration-True]"
+        ],
+        [
+          "tests.test_llm_planner",
+          "test_invalid_generated_plan_denied_without_idle_fallback[duration-nan]"
+        ],
+        [
+          "tests.test_llm_planner",
+          "test_invalid_generated_plan_denied_without_idle_fallback[duration-inf]"
+        ],
+        [
+          "tests.test_llm_planner",
+          "test_invalid_generated_plan_denied_without_idle_fallback[duration-10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000]"
+        ],
+        [
+          "tests.test_llm_planner",
+          "test_invalid_generated_plan_denied_without_idle_fallback[review_after-31]"
+        ],
+        [
+          "tests.test_llm_planner",
+          "test_invalid_generated_plan_denied_without_idle_fallback[identity-foreign]"
+        ],
+        [
+          "tests.test_llm_planner",
+          "test_invalid_generated_plan_denied_without_idle_fallback[phases-value6]"
+        ],
+        [
+          "tests.test_llm_planner",
+          "test_invalid_generated_plan_denied_without_idle_fallback[phases-value7]"
+        ],
+        [
+          "tests.test_llm_planner",
+          "test_invalid_generated_plan_denied_without_idle_fallback[required_facts-value8]"
+        ],
+        [
+          "tests.test_llm_planner",
+          "test_no_investigation_and_loop_limit_are_real_denials"
+        ],
+        [
+          "tests.test_llm_planner",
+          "test_duplicate_arguments_and_duplicate_call_ids_denied"
+        ],
+        [
+          "tests.test_llm_planner",
+          "test_expired_foreign_owner_and_reader_mismatch_prevent_model_call"
+        ],
+        [
+          "tests.test_llm_planner",
+          "test_epoch_drift_after_model_denies_private_read"
+        ],
+        [
+          "tests.test_llm_planner",
+          "test_http_preflight_and_failures_never_claim_completed_plan[overflow]"
+        ],
+        [
+          "tests.test_llm_planner",
+          "test_http_preflight_and_failures_never_claim_completed_plan[ceiling]"
+        ],
+        [
+          "tests.test_llm_planner",
+          "test_http_preflight_and_failures_never_claim_completed_plan[http]"
+        ],
+        [
+          "tests.test_llm_planner",
+          "test_http_preflight_and_failures_never_claim_completed_plan[length]"
+        ],
+        [
+          "tests.test_llm_planner",
+          "test_untrusted_private_instructions_cannot_dispatch_native_action"
+        ],
+        [
+          "tests.test_llm_planner",
+          "test_large_finite_clock_preserves_real_lifecycle_admission[1000000000001]"
+        ],
+        [
+          "tests.test_llm_planner",
+          "test_large_finite_clock_preserves_real_lifecycle_admission[1000000000000000.0]"
+        ],
+        [
+          "tests.test_llm_planner",
+          "test_tool_schema_matches_enforced_plan_vocabulary"
+        ],
+        [
+          "tests.test_llm_planner",
+          "test_invalid_clock_or_deadline_remains_sanitized_before_model"
+        ],
+        [
+          "",
+          "test_http_capacity_denial_before_generation[missing_capacity]"
+        ],
+        [
+          "",
+          "test_http_capacity_denial_before_generation[boolean_capacity]"
+        ],
+        [
+          "",
+          "test_http_capacity_denial_before_generation[bad_token]"
+        ],
+        [
+          "",
+          "test_http_capacity_denial_before_generation[reservation]"
+        ],
+        [
+          "",
+          "test_http_capacity_denial_before_generation[caller_ceiling]"
+        ],
+        [
+          "",
+          "test_malformed_calls_never_enter_private_handler[duplicate]"
+        ],
+        [
+          "",
+          "test_malformed_calls_never_enter_private_handler[nan]"
+        ],
+        [
+          "",
+          "test_malformed_calls_never_enter_private_handler[surrogate]"
+        ],
+        [
+          "",
+          "test_malformed_calls_never_enter_private_handler[unknown_function_key]"
+        ],
+        [
+          "",
+          "test_post_model_binding_denial_before_private_read[identity]"
+        ],
+        [
+          "",
+          "test_post_model_binding_denial_before_private_read[epoch]"
+        ],
+        [
+          "",
+          "test_plan_denial_does_not_admit_or_dispatch[foreign]"
+        ],
+        [
+          "",
+          "test_plan_denial_does_not_admit_or_dispatch[unsupported]"
+        ],
+        [
+          "",
+          "test_plan_denial_does_not_admit_or_dispatch[implicit_unknown]"
+        ],
+        [
+          "",
+          "test_stale_http_response_cannot_produce_admitted_plan[deadline]"
+        ],
+        [
+          "",
+          "test_stale_http_response_cannot_produce_admitted_plan[epoch]"
+        ],
+        [
+          "",
+          "test_schema_declares_enum_vocabulary_required_by_decoder"
+        ],
+        [
+          "",
+          "test_core_valid_large_finite_clock_is_not_newly_restricted"
+        ]
+      ]
+    }
+  },
+  "counts_by_origin": {
+    "original_cases": 25,
+    "unchanged_independent_cases": 18,
+    "new_permanent_cases": 4
+  },
+  "red_chronology": "Both core-valid large-clock cases failed before production edit; fresh enum assertion failure red-schema.xml before production edit; both original independent failures retained in red.xml. Invalid-clock/deadline negative follow-up already passed before fix, not new RED. Initial schema KeyError failure retained separately from corrected assertion RED.",
+  "gates": {
+    "green": {
+      "command": [
+        ".venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "-o",
+        "addopts=",
+        "-p",
+        "no:cacheprovider",
+        "tests/test_llm_planner.py",
+        "/home/otto/.hermes/cache/scratch/llm-planner-tool-loop-independent-review/test_independent.py",
+        "--junitxml=/home/otto/.hermes/cache/scratch/llm-planner-tool-loop-repair1/final-green.xml"
+      ],
+      "exit_code": 0,
+      "log": "/home/otto/.hermes/cache/scratch/llm-planner-tool-loop-repair1/final-green.log"
+    },
+    "black": {
+      "command": [
+        ".venv/bin/black",
+        "--check",
+        "src/robots/ports/planning_model.py",
+        "src/robots/adapters/planning_llm.py",
+        "src/robots/app/llm_planner.py",
+        "tests/test_llm_planner.py"
+      ],
+      "exit_code": 0,
+      "log": "/home/otto/.hermes/cache/scratch/llm-planner-tool-loop-repair1/final-black.log"
+    },
+    "ruff": {
+      "command": [
+        ".venv/bin/ruff",
+        "check",
+        "--no-cache",
+        "src/robots/ports/planning_model.py",
+        "src/robots/adapters/planning_llm.py",
+        "src/robots/app/llm_planner.py",
+        "tests/test_llm_planner.py"
+      ],
+      "exit_code": 0,
+      "log": "/home/otto/.hermes/cache/scratch/llm-planner-tool-loop-repair1/final-ruff.log"
+    },
+    "mypy": {
+      "command": [
+        ".venv/bin/mypy",
+        "--strict",
+        "--cache-dir=/home/otto/.hermes/cache/scratch/llm-planner-tool-loop-repair1/mypy",
+        "src/robots/ports/planning_model.py",
+        "src/robots/adapters/planning_llm.py",
+        "src/robots/app/llm_planner.py",
+        "tests/test_llm_planner.py"
+      ],
+      "exit_code": 0,
+      "log": "/home/otto/.hermes/cache/scratch/llm-planner-tool-loop-repair1/final-mypy.log"
+    },
+    "xenon": {
+      "command": [
+        ".venv/bin/xenon",
+        "src",
+        "--max-absolute",
+        "B",
+        "--max-modules",
+        "B",
+        "--max-average",
+        "A"
+      ],
+      "exit_code": 0,
+      "log": "/home/otto/.hermes/cache/scratch/llm-planner-tool-loop-repair1/final-xenon.log"
+    },
+    "dup": {
+      "command": [
+        ".venv/bin/pylint",
+        "--disable=all",
+        "--enable=duplicate-code",
+        "--ignore-paths=tests",
+        "src"
+      ],
+      "exit_code": 0,
+      "log": "/home/otto/.hermes/cache/scratch/llm-planner-tool-loop-repair1/final-dup.log"
+    },
+    "vulture": {
+      "command": [
+        ".venv/bin/vulture"
+      ],
+      "exit_code": 0,
+      "log": "/home/otto/.hermes/cache/scratch/llm-planner-tool-loop-repair1/final-vulture.log"
+    },
+    "bandit": {
+      "command": [
+        ".venv/bin/bandit",
+        "-q",
+        "-c",
+        "pyproject.toml",
+        "-r",
+        "src"
+      ],
+      "exit_code": 0,
+      "log": "/home/otto/.hermes/cache/scratch/llm-planner-tool-loop-repair1/final-bandit.log"
+    }
+  },
+  "source_freeze": {
+    "inputs": 294,
+    "before_mismatches": [],
+    "after_changed": [
+      "src/robots/app/llm_planner.py",
+      "tests/test_llm_planner.py"
+    ],
+    "unchanged_protected_inputs": 292,
+    "current_owned_sha256": {
+      "src/robots/app/llm_planner.py": "8b2bee0757a6a5c4ee8698a5e5e90d481a9c617cd5ba695556ad793645c6f7ad",
+      "tests/test_llm_planner.py": "eace76219f437651ac1b5336e4903e638bd93f5884978360e2b8ab362f1522f5"
+    },
+    "complete_current_registry": "/home/otto/.hermes/cache/scratch/llm-planner-tool-loop-repair1/final-source-hashes.json"
+  },
+  "preserved_reports": {
+    "run/reviews/llm-planner-tool-loop-combined-parent-gate.json": "3184dd44a4d1f04f15e8dca96dfedb557fefd7aa98acce6ce77062b851d34dc6",
+    "run/reviews/llm-planner-tool-loop-repair1-scope.json": "79e44f3dd52e4bc9f6b407b04a688fbf308a56709b7931c395746263aed1d7e9",
+    "run/reviews/llm-planner-tool-loop.json": "ed4712bc806be0f65e0c88bc92971cd3ed052c42a2f679b3220852bd519f97db",
+    "run/reviews/llm-planner-tool-loop-independent-review.json": "0ab47bdd48ee16247831b5328b03e055421062c510a50ec82c55b6e9f0723506",
+    "run/reviews/llm-planner-tool-loop-scope.json": "60ef8cd2bd4258baae68fd868834d94d64103bff049ee967c9672405382062e6"
+  },
+  "preserved_report_mismatches": [],
+  "artifacts": {
+    "/home/otto/.hermes/cache/scratch/llm-planner-tool-loop-repair1/final-green.xml": "55071029537dcc7e46c93edfe167cc155921a4d162e14cfb1047661454e25427",
+    "/home/otto/.hermes/cache/scratch/llm-planner-tool-loop-repair1/final-bandit.log": "2ee20ac6a3a915ff1204f17c53260bcc2ebfb848f37624608d13ddfdf1cc35ff",
+    "/home/otto/.hermes/cache/scratch/llm-planner-tool-loop-repair1/final-green.log": "7637183fbdf7eb3ca5ef3f450c410ddf8a1bc9211c7543ed9d0934e0781f5913",
+    "/home/otto/.hermes/cache/scratch/llm-planner-tool-loop-repair1/vulture.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/llm-planner-tool-loop-repair1/preserved.json": "c3db2065b24c13d72c6e14147f553de61c826a68a47e6860b1993bed8e51b858",
+    "/home/otto/.hermes/cache/scratch/llm-planner-tool-loop-repair1/red-schema.log": "e6b4557ee8965a59ff6c777af64eb903fda20ef8cb54d7e37514fe74d8da5c16",
+    "/home/otto/.hermes/cache/scratch/llm-planner-tool-loop-repair1/red.log": "80c69aece07231629c0c305dc56d3cf4d34689d08e4539c20e755b72662856da",
+    "/home/otto/.hermes/cache/scratch/llm-planner-tool-loop-repair1/xenon.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/llm-planner-tool-loop-repair1/final-gates.json": "bbcadc4ebe5f2f575090a6d7f22c7b9c8eea72426f03d2d692cf69068faf306b",
+    "/home/otto/.hermes/cache/scratch/llm-planner-tool-loop-repair1/final-dup.log": "8cbfc8cd0b04a4858b0b78b74c6df9631a1695e105e6911d4b57fbcc43b218b5",
+    "/home/otto/.hermes/cache/scratch/llm-planner-tool-loop-repair1/green.log": "29c3786db24da4ea4ba3c23f593c7e04519b70db9d1f9029ebbff1ca85632528",
+    "/home/otto/.hermes/cache/scratch/llm-planner-tool-loop-repair1/green.xml": "def848be6e87711520140ef884bfe462766e9c0ebc13db27bf2ebc9f576055fd",
+    "/home/otto/.hermes/cache/scratch/llm-planner-tool-loop-repair1/red-schema.xml": "fdcf0905b43349771b62aaea96e734550896d026f5a8df4b7145961c203ca281",
+    "/home/otto/.hermes/cache/scratch/llm-planner-tool-loop-repair1/bandit.log": "2ee20ac6a3a915ff1204f17c53260bcc2ebfb848f37624608d13ddfdf1cc35ff",
+    "/home/otto/.hermes/cache/scratch/llm-planner-tool-loop-repair1/final-mypy.log": "71144743c83babea384888a735db0c4daba3d4d7b7942b6839984bd5c21b52bb",
+    "/home/otto/.hermes/cache/scratch/llm-planner-tool-loop-repair1/dup.log": "8cbfc8cd0b04a4858b0b78b74c6df9631a1695e105e6911d4b57fbcc43b218b5",
+    "/home/otto/.hermes/cache/scratch/llm-planner-tool-loop-repair1/red.xml": "95871f2d0170cc626b3bd4f0dff52380c09393b3b9e0790269a4f1a30f230f19",
+    "/home/otto/.hermes/cache/scratch/llm-planner-tool-loop-repair1/final-source-hashes.json": "d42500bb51384071119ae8371b5e63020502b01e82b40775b0510046686d90de",
+    "/home/otto/.hermes/cache/scratch/llm-planner-tool-loop-repair1/mypy.log": "ce4170427c2618ffcc6cf8f5cc3af7fc67c64d5faca6f320b2afc0530a7e267d",
+    "/home/otto/.hermes/cache/scratch/llm-planner-tool-loop-repair1/final-xenon.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/llm-planner-tool-loop-repair1/final-black.log": "26a5fd9505f2b5608a20c4fed4b4c4795e0783d03b72ade02a6af34dae8ad086",
+    "/home/otto/.hermes/cache/scratch/llm-planner-tool-loop-repair1/final-vulture.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/otto/.hermes/cache/scratch/llm-planner-tool-loop-repair1/ruff.log": "3aac9a37aae320e253cf1eb87d5239bb89f430aadc117ced8d5a6c9dbaf0870e",
+    "/home/otto/.hermes/cache/scratch/llm-planner-tool-loop-repair1/format.log": "03fca4f28e71e92e39bb130480f170aaab83160767868bca74dac17deb53d94c",
+    "/home/otto/.hermes/cache/scratch/llm-planner-tool-loop-repair1/before.json": "4c6ce4725e930324260c892f21066c2a16bcf7b0c2e976497f99c2aae0fb8c8a",
+    "/home/otto/.hermes/cache/scratch/llm-planner-tool-loop-repair1/after.json": "6454d726c4034e78d2ef8e0c8dff8585862dd42bff08370082bba1210fe2a19a",
+    "/home/otto/.hermes/cache/scratch/llm-planner-tool-loop-repair1/final-ruff.log": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+    "/home/otto/.hermes/cache/scratch/llm-planner-tool-loop-repair1/gate-results.json": "5a294b8b364599d2dd8fd1851b9de4002e0d895e2e3714d925cacdf7bb45ed2f",
+    "/home/otto/.hermes/cache/scratch/llm-planner-tool-loop-repair1/black.log": "b9cf511501d306d2bd8355ccb165c8ddc0a6fdd62d7c72c4a7b1795cf8934c8c"
+  },
+  "effects": "Offline scripted model and MockTransport only; no network, inference, SQL, Docker, native/service/profile/Git effects. No planner retry, normalization, fallback or capabilities added.",
+  "remaining_open": [
+    "parent fresh whole quality gate",
+    "independent completed-snapshot re-review",
+    "real model/tool qualification",
+    "native integration and acceptance",
+    "all 6 milestones and 11 criteria remain OPEN"
+  ],
+  "issues": "Initial added-test Ruff PT011/B023 and mypy object iteration findings repaired in tests; pre-fix/failing gate logs retained. Bandit exit 0 with inherited nosec warnings."
+}

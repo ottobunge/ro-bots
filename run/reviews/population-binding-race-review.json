@@ -1,0 +1,166 @@
+{
+  "passed": false,
+  "issue": "POP-001",
+  "cycle": 1,
+  "review_type": "fresh_independent_read_only_offline_rereview",
+  "status": "Behavioral verification green; final source-stability verification blocked; fail-closed overall approval withheld",
+  "review_started_at": "2026-10-05T13:40:05+02:00",
+  "scope": {
+    "repository": "/home/otto/dev/ro-bots",
+    "primary_files": ["src/robots/app/world_state.py", "tests/test_population_binding_race.py"],
+    "integration_read_paths": ["src/robots/adapters/worldfeed_server.py", "src/robots/app/agent_runtime.py", "src/robots/society/memory.py", "src/robots/society/society.py"],
+    "authority": ["run/reviews/population-configuration-review.json:POP-001", "run/reviews/population-binding-race-fix.json"],
+    "source_test_edits": false,
+    "commits_staging_push": false,
+    "network_provider_sql_native_service_calls": false,
+    "live_population_acceptance": false,
+    "full_repository_acceptance": false
+  },
+  "security_concerns": [],
+  "logic_errors": [],
+  "approval_blockers": [
+    {
+      "id": "POP-REVIEW-INCOMPLETE",
+      "classification": "verification infrastructure blocker, not a reproduced implementation defect",
+      "description": "A final tool call to repeat source hashes/diff checks and correct an overescaped static-scan regex was blocked before execution. Tool explicitly reported no user consent and prohibited retrying or obtaining the same outcome through a different tool. The reviewer obeyed that restriction. Thus final source stability after alternative probes and the corrected automated security scan were not verified. Overall passed remains false despite all executed behavioral tests/probes passing."
+    }
+  ],
+  "verified_scoped_claims": {
+    "binding_wins_during_generation": true,
+    "refusal_preserves_aggregate_and_feed": true,
+    "unknown_binding_does_not_claim_ownership": true,
+    "individual_public_reads_exclude_half_commit": true,
+    "tested_memory_aggregate_feed_ordering_completes_without_deadlock": true,
+    "runtime_retries_replaced_log_and_preserves_disjoint_updates": true,
+    "whole_multi_call_http_serializer_snapshot_atomic": false,
+    "end_of_review_source_stability_certified": false
+  },
+  "evidence": {
+    "source_reasoning": [
+      {
+        "claim": "A successful binding during construction wins over an already-admitted regeneration.",
+        "locations": ["src/robots/app/world_state.py:199-207", "src/robots/app/world_state.py:284-330"],
+        "reason": "Persona validation, log type validation, exact memory installation and permanent ownership flag all hold _state_lock. Candidate roster/runtime/memory creation occurs outside that lock. The final ownership check and all replacements, defaults and successful feed insertion use the same lock. No aggregate state changes precede the final guard."
+      },
+      {
+        "claim": "Unknown or invalid-log bindings cannot install a log or mark host ownership.",
+        "locations": ["src/robots/app/world_state.py:199-207"],
+        "reason": "Both validations precede memory installation and ownership assignment within the same critical section. A binding waiting behind a completed regeneration validates against the new committed roster, not an old admission snapshot."
+      },
+      {
+        "claim": "Each supported public aggregate read excludes an in-progress population commit.",
+        "locations": ["src/robots/app/world_state.py:130-179", "tests/test_population_binding_race.py:194-276"],
+        "reason": "Roster selection, runtime lookup, memory-log selection, reputation row construction and feed copying acquire the shared lock. Five deterministic regression cases pause after roster replacement but before subsequent collection replacements and require each read entrypoint to wait. Memory rendering intentionally occurs after selection and lock release; it is a view of the selected committed log, not a guarantee of the newest generation at return time."
+      },
+      {
+        "claim": "The exercised aggregate/feed/private-memory ordering avoids the former inversion risk.",
+        "locations": ["src/robots/app/world_state.py:107-115", "src/robots/app/world_state.py:151-165", "src/robots/app/world_state.py:228-260", "src/robots/app/world_state.py:369-379", "src/robots/society/memory.py:120-137", "src/robots/society/memory.py:157-179"],
+        "reason": "_feed_lock aliases _state_lock. Memory rendering and appending happen without the aggregate lock. Private-memory owner callbacks can bind and push events while another thread waits for that log. Reentrant aggregate locking also permits guarded roster assignment and feed insertion during commit. Injected clock callbacks remain subject to the documented nonblocking/no-private-lock precondition."
+      },
+      {
+        "claim": "Runtime publication revalidates memory ownership and merges updates into the latest runtime.",
+        "locations": ["src/robots/app/world_state.py:238-260", "src/robots/app/agent_runtime.py:518-533"],
+        "reason": "After rendering outside the aggregate lock, the setter validates persona existence again, retries when the selected log was replaced, and reads the current runtime inside the final critical section. It does not publish an old rendered log into a newly bound or regenerated runtime or overwrite unrelated concurrent fields."
+      }
+    ],
+    "pytest": {
+      "command": "nix develop -c uv run --offline --no-sync pytest tests/test_population_binding_race.py tests/test_population_config.py tests/test_society.py tests/test_world_state.py tests/test_worldfeed_server.py tests/test_worldfeed_retention.py tests/test_agent_host.py tests/test_host_memory.py tests/test_host_storage_failure.py tests/test_memory_concurrency.py --no-cov -o addopts='' -q -o faulthandler_timeout=15 -p no:cacheprovider",
+      "exit_code": 0,
+      "passed": 143,
+      "warnings": 1,
+      "duration_seconds": 4.98,
+      "warning": "Existing StarletteDeprecationWarning: httpx-backed TestClient is deprecated in favor of httpx2.",
+      "coverage": "not measured; --no-cov",
+      "observed_summary": "143 passed, 1 warning in 4.98s"
+    },
+    "format_and_lint": {
+      "commands": ["nix develop -c uv run --offline --no-sync ruff check src/robots/app/world_state.py tests/test_population_binding_race.py", "nix develop -c uv run --offline --no-sync black --check src/robots/app/world_state.py tests/test_population_binding_race.py"],
+      "exit_code": 0,
+      "ruff": "All checks passed!",
+      "black": "2 files would be left unchanged."
+    },
+    "initial_diff_check": {
+      "command": "git diff --check",
+      "exit_code": 0,
+      "note": "Primary source/test are untracked, so the empty primary git diff is not a content review. Both files were read in full and reviewed directly. The diff check only covers tracked changes."
+    },
+    "alternative_interleavings": {
+      "execution": "nix develop -c uv run --offline --no-sync python -B -c <inline deterministic threading/unittest.mock probe>",
+      "exit_code": 0,
+      "probe_count": 14,
+      "passed": true,
+      "synchronization": "Event/Barrier controlled; bounded waits and joins; captured exceptions; daemon worker termination asserted. No live sockets, services or provider calls.",
+      "results": [
+        {"name": "invalid_log_type_does_not_claim_ownership", "passed": true, "assertions": "TypeError, exact pre/post aggregate snapshot equality, subsequent regeneration succeeds without ownership."},
+        {"name": "bind_wins_during_candidate_memory_construction", "passed": true, "assertions": "Pause candidate MemoryLog initialization after roster factory returns; bind exact host log; resume; CommandError and complete aggregate/feed/default preservation."},
+        {"name": "commit_wins_before_binding_surviving_id", "passed": true, "assertions": "Pause locked commit after roster setter; binding blocks, then succeeds against committed roster; exact host log installed permanently."},
+        {"name": "commit_wins_before_binding_removed_id", "passed": true, "assertions": "Same commit pause; old removed persona binding blocks, then raises CommandError; no ownership or foreign log installation."},
+        {"name": "runtime_selection_revalidation_bind", "passed": true, "render_count": 2, "assertions": "Bind replacement between rendering and final runtime lock; runtime retries old/new log identities and publishes only new view."},
+        {"name": "runtime_selection_revalidation_regenerate", "passed": true, "render_count": 2, "assertions": "Regenerate surviving ID between render and final runtime lock; retries replacement stub log; no old-log marker enters new runtime."},
+        {"name": "runtime_selection_revalidation_remove", "passed": true, "render_count": 1, "assertions": "Regeneration removes selected ID; runtime update raises CommandError and cannot recreate retired runtime."},
+        {"name": "overlapping_runtime_setters_preserve_disjoint_fields", "passed": true, "assertions": "Two renders synchronize at Barrier; goal and script updates both survive in final runtime."},
+        {"name": "private_owner_callback_while_runtime_waits", "passed": true, "assertions": "Private-log owner binds and pushes event while setter waits for private lock; both threads terminate without errors."},
+        {"name": "private_owner_callback_while_force_action_waits", "passed": true, "assertions": "Private-log owner binds and pushes event while forced-action append waits; both threads terminate without errors."},
+        {"name": "actual_private_render_callback_completes", "passed": true, "assertions": "Actual summarizer called while private lock held binds and pushes feed; runtime publication completes without deadlock."},
+        {"name": "actual_private_append_callback_completes", "passed": true, "assertions": "Pure in-memory store append callback under private lock binds and pushes feed; forced-action append completes without deadlock."},
+        {"name": "reverse_admission_generation_commits_are_complete", "passed": true, "final_seed": 10, "assertions": "Two unbound candidates commit in reverse admission order; final roster/runtime/memory keys agree, reputation identity matches and feed sequences are [0,1]. No latest-admission-wins contract assumed."},
+        {"name": "unsupported_multi_call_serializer_gap_reproduced", "passed": true, "classification": "declared exclusion, not POP-001 regression", "assertions": "Complete regeneration between agent_detail roster selection and runtime getter removes selected ID; HTTPException 404 reproduced. No half-commit or whole-HTTP-snapshot approval inferred."}
+      ]
+    },
+    "hash_verification": {
+      "algorithm": "sha256",
+      "execution": "nix develop -c uv run --offline --no-sync python -B -c <inline pathlib/hashlib hash collection>",
+      "exit_code": 0,
+      "repair_hash_count": 8,
+      "all_repair_hashes_match": true,
+      "captured_at_stage": "After independent scoped pytest/lint runs, before alternative-interleaving probes",
+      "rechecked_after_probes": false
+    },
+    "security_review": {
+      "manual_primary_file_review_completed": true,
+      "observed_security_concerns": [],
+      "automated_static_scan_accepted": false,
+      "reason": "Initial tool-produced empty scan used overescaped regular expressions; it is not relied on as negative security proof. The corrected scan was included in the blocked final call and did not execute."
+    },
+    "blocked_final_call": {
+      "executed": false,
+      "tool_calls_made": 0,
+      "message": "BLOCKED: execute_code script timed out without user response. The user has NOT consented to running this code. Do NOT retry, do NOT rephrase the script, and do NOT attempt the same outcome via a different tool. Silence is not consent.",
+      "retried": false
+    }
+  },
+  "hash_algorithm": "sha256",
+  "currenthashes": {
+    "src/robots/app/world_state.py": "01dcd22cd81d3ff24373fed08d4e0ca1007e1a5be73341d43825da2a36e57f03",
+    "tests/test_population_binding_race.py": "57129ac7a653e38161b120a8fdb329b6261b6f97739cd3603f37e6c36c11b7e0",
+    "src/robots/society/society.py": "4109fbad57f3192762447ca7378689374e1cf1fc9a694bb82e827b797836018e",
+    "tests/test_population_config.py": "cecd227079d277bde7bdceab0b33c2eb1c9f3c13aecfaa85329d1d905766268d",
+    "tests/test_world_state.py": "1b026aa85e1ed5a68cc00bbae2b0c0f61cdbececbd94bb03d5f4085614382727",
+    "src/robots/adapters/worldfeed_server.py": "0123fe3964030713452cf174157d998d2f94cd63aa5e5884bcdfccf01ad96344",
+    "src/robots/app/agent_runtime.py": "c05942f8f02059af78f43273a8d59c67eda8c77ed2e6263cb27e9f5a7cdfdef8",
+    "src/robots/society/memory.py": "29dc3abf394daa6107ee72215f7d514220d6262d0e22351911d2bc24246a3ff2",
+    "src/robots/app/roster_edit.py": "202030a31b34b9e0c9d79f7d0827f4c00229f4e71c22c47dc74cbda57abd1e13",
+    "tests/test_society.py": "9e8f1971dda1a4e81d3d1df8eeb8cb9256b0080e7f6f67c9268c6834b4df4b7b",
+    "tests/test_worldfeed_server.py": "8c2a151e5739e59e7a390e1497fe5c2497be7ae45f8e8bff74d68c9b59960898",
+    "tests/test_worldfeed_retention.py": "dec045816b3c457c3cac25b0715dc63f3f03794e401fc48c4c38c8afa08d5c88",
+    "tests/test_agent_host.py": "effeba83435fb43c76a1578d17e190b93219991dbab491786df56ef02bb808f7",
+    "tests/test_host_memory.py": "db28d20ea1d0afa27bc49c5475144f5bd2197cf81c0c147baa91a5bab3bf6d5d",
+    "tests/test_host_storage_failure.py": "0f473837dbcaf1461e4b9d7d73090639361d2e0f9d08a1a2489bb9c06e5cb42f",
+    "tests/test_memory_concurrency.py": "b3023d86a987dbb701cd4767814473fb5330cda50055f70a062ba67d2b1239d3"
+  },
+  "currenthashes_qualification": "Actual tool-derived hashes at the documented capture stage. All eight repair hashes matched. A final repeat was blocked; these are not an end-of-review stability certification.",
+  "limitations": [
+    "No unqualified final approval: final source stability and corrected automated static scan remain blocked by consent enforcement.",
+    "Each public getter excludes partial population replacement, but separate HTTP serializer getters are not one transaction. A call sequence may span two completed unbound generations; the alternative probe confirms this exclusion.",
+    "Memory reads select a committed log under the aggregate lock and render after releasing it. Concurrent unbound regeneration can retire that selected log; the result can reflect the earlier complete log, not necessarily the current one at return.",
+    "Raw mutable roster/reputation collections, private dictionaries and direct roster assignment are not a supported concurrent snapshot/write interface.",
+    "Forced actions append after releasing the aggregate lock. Unbound regeneration may retire that selected stub log. This pre-existing lifecycle is not reconciled; host-bound detachment is prevented.",
+    "Injected clock callbacks execute under event/aggregate locking and must be nonblocking and must not acquire private-memory locks. Arbitrary callback inversions or failures are not certified.",
+    "Permanent host ownership intentionally refuses all regeneration until account/worker/memory reconciliation exists. No unbinding or reconciliation executor is supplied or accepted.",
+    "Bounded deterministic tests demonstrate exercised lock orderings, not fairness, exhaustive scheduling, wait-free progress or universal absence of deadlock under arbitrary callbacks/rebinding.",
+    "The fixer full task check and parent tests are contextual evidence only. This reviewer independently ran only the stated 143-test scoped suite, scoped Black/Ruff and 14 probes; no full Python/Rust gate, new coverage, online dependency audit or vulnerability-freshness approval.",
+    "No native-game, live-population, provider, SQL, Docker-world, whole-dashboard or overall goal acceptance. Adapter commands still do not execute through a host-owned command queue."
+  ],
+  "files_created_or_modified_by_reviewer": ["run/reviews/population-binding-race-review.json"],
+  "summary": "No reproduced POP-001 regression or new scoped logic/security defect: 143 tests and 14 alternative interleavings pass, including refusal preservation, binding validation, individual-read atomicity and tested private-memory ordering. Overall approval is withheld fail-closed because the final hash/static verification call was blocked before execution; whole multi-call HTTP snapshot and live population acceptance remain explicitly excluded."
+}

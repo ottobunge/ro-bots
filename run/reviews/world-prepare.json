@@ -1,0 +1,83 @@
+{
+  "scope": "host-filesystem-preparation-only",
+  "status": "implemented-and-scoped-verified; independent review pending",
+  "api": "robots.adapters.world_prepare.create(target: Path, selection: WorldSelection, settings: PreparationSettings)",
+  "tdd": {
+    "first_red": "Actual public_assets() returned 679 pinned assets before the expected host world preparation API missing assertion failed.",
+    "vertical_red_green_slices": [
+      "Pinned complete runtime/config/bootstrap stage",
+      "Private fields and Compose-specific validation before public reads/allocation",
+      "Existing targets refused before public reads",
+      "Typed API schema rejected before public reads",
+      "IPv4 validation errors do not echo private values"
+    ],
+    "regressions": "Source failures, partial write failures, 63-character world identity with separate 19-character display, custom advertisements/ports, restrictive umask, private modes/ownership, string subtypes."
+  },
+  "verification": {
+    "environment": "Existing pinned nix develop --offline; uv run --offline --no-sync",
+    "owned_tests_passed": 92,
+    "combined_tests_passed": 177,
+    "combined_scope": ["tests/test_world_prepare.py", "tests/test_world_bootstrap_sql.py", "tests/test_world_compose.py"],
+    "new_module_statement_coverage_percent": 100,
+    "new_module_statements": 105,
+    "black": "PASS, owned module/tests only",
+    "ruff": "PASS, owned module/tests only",
+    "mypy": "PASS strict, owned module/tests with --follow-imports=silent",
+    "bandit": "PASS, owned module only; documented B104 exception for required container bridge bind",
+    "xenon": "PASS, max-absolute B / max-modules B / max-average A",
+    "vulture": "PASS, owned module at minimum confidence 85",
+    "whole_source_duplicate_code": "PASS, pylint duplicate-code only; 10.00/10",
+    "broad_quality_gate_run": false
+  },
+  "actual_private_fixture": {
+    "kind": "generated-credential preparation fixture, not a world or provisioned database",
+    "path": "/home/otto/.hermes/cache/scratch/world-prepare-fixture-vwlcgjuz/stage",
+    "world": "test",
+    "profile": "MAIN-pre-re-20180704",
+    "pinned_public_asset_files": 679,
+    "npc_script_files": 527,
+    "configured_maps_checked": 1265,
+    "private_role_configs": 7,
+    "ordered_sql_files": 5,
+    "private_secret_files": 2,
+    "total_files": 693,
+    "total_directories_including_root": 74,
+    "modes_owner_readback": "All directories 0700, all files 0600, all operator-owned",
+    "schema_tables": 70,
+    "bootstrap_account": "Configured server-only row, ID 1, sex S, group 0; decoded credentials match role configs in tests",
+    "default_accounts_suppressed": true,
+    "host_bind_mount_ready": false,
+    "provisioning": false,
+    "native_parser_ran": false
+  },
+  "owned_source_sha256": {
+    "src/robots/adapters/world_prepare.py": "6b05d7e16671d3142497a1c44c093ab76b4a0b31fa8c18cc1fadc2c155867c49",
+    "tests/test_world_prepare.py": "0b25dac7aa36aa2503fa0107188151f276ffca3245725072d7dd516141a614f2",
+    "wiki/guides/world-preparation.md": "34ef84d58bc204216086327ac79e86e7ceeaf3cc27f28cb9d05738414d8c861f"
+  },
+  "dependency_freeze": {
+    "all_four_unchanged_from_initial_read": true,
+    "sha256": {
+      "src/robots/adapters/world_compose.py": "e144168fef33ad54fa61ccd7f713219901bde514b039d60a460913d9746ccd2a",
+      "src/robots/adapters/rathena_runtime.py": "0a52cbbae5ec459022c1348e33c65105c8cf0776a6bf68bca05e1066d8c74293",
+      "src/robots/adapters/rathena_runtime_assets.py": "8cf599ddd633c82879d5a6fc0ed2d98f13399e4094262b6bcafb25c9841650fc",
+      "src/robots/adapters/world_bootstrap_sql.py": "cfa64780b9356b04a2e8eb2699fb0e6703f4b3f6ae9b815fb454a03f9b8b2ce5"
+    }
+  },
+  "boundaries": {
+    "existing_files_modified": false,
+    "commit_stage_push": false,
+    "global_dependencies_installed": false,
+    "docker_engine_provider_actions": false,
+    "sql_or_native_server_execution": false,
+    "whole_checkout_freeze_claimed": false,
+    "rollback_claimed": false
+  },
+  "remaining": [
+    "CLI/private input-file integration belongs to parent; no CLI added here.",
+    "Authorized volume importer must set /world/runtime ownership UID 10000 and database/init readability UID 999 separately.",
+    "Operator-private host stage is not directly MariaDB bind-mount ready.",
+    "Native parser/startup, SQL import/readback, volume import and live lifecycle remain unverified.",
+    "Private partial directory can remain after write failure; origin exception propagates, never success or rollback."
+  ]
+}

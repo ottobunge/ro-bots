@@ -1,0 +1,465 @@
+{
+  "schema": "npc-native-owned-maintenance-independent-review/v1",
+  "passed": true,
+  "status": "PASS_OFFLINE_BOUNDED_MAINTENANCE_WITH_EXPLICIT_SELECTOR_RELOCATION",
+  "security_concerns": [],
+  "logic_errors": [],
+  "summary": "Restored current maintenance snapshot passed fresh 41-case regression, four independent primitive-boundary cases, unchanged scoped quality gates and negative CLI. No candidate changes or live effects. Six prior reviewer cases ran from their exact archived source because the original selector path is absent; raw IDs are preserved and the relocation is explicit.",
+  "scope": [
+    "recovery.py",
+    "live_recovery.py",
+    "test_maintenance.py",
+    "unchanged original regression sources",
+    "exact restored native launcher and three observer helpers",
+    "world_inventory.py",
+    "bound public authorities and source freeze"
+  ],
+  "authority": {
+    "path": "/home/otto/dev/ro-bots/run/reviews/autonomous-maintenance-authority.json",
+    "sha256": "684ab00ffbd2b1759d493cef09afc528e70023a1b59745726b4ad00b29394bcb",
+    "mode": "owned-nonhuman-maintenance-v1",
+    "scope": "owned-test-nonhuman-normal-maintenance-v1",
+    "strict_default_preserved": true,
+    "runtime_approval_created": false
+  },
+  "integrity": {
+    "independent_freeze_path": "/home/otto/.hermes/cache/scratch/npc-owned-recovery/maintenance-independent-freeze.json",
+    "independent_freeze_sha256": "c61a72797454f3d4423820e910ec9cabea18718dc76bbfe1d4eda0a54c40f8fc",
+    "physical_paths": 139,
+    "before": "/home/otto/.hermes/cache/scratch/npc-owned-maintenance-review/before-freeze.json",
+    "after": "/home/otto/.hermes/cache/scratch/npc-owned-maintenance-review/after-freeze.json",
+    "all139_matched_before_and_after": true,
+    "all136_completed_paths_match": true,
+    "candidate_or_interacting_source_changes": [],
+    "historical_maintenance_artifact_digests_verified": 58,
+    "accepted_strict_archive_digests_verified": 9,
+    "SQL_constant_unchanged": true,
+    "restored_helpers": 4,
+    "restored_bytes": 22058,
+    "all_helpers_and_durable_backups_exact": true,
+    "restoration_report_sha256": "aa80ecd9132fbfc1d2e8558308a1c52c7d0164f9b72021d3347a699b37b2296f"
+  },
+  "regression": {
+    "receipt": {
+      "command": [
+        ".venv/bin/python",
+        "-B",
+        "-m",
+        "pytest",
+        "-q",
+        "-o",
+        "addopts=",
+        "-p",
+        "no:cacheprovider",
+        "--confcutdir=/home/otto/.hermes/cache/scratch/npc-owned-recovery",
+        "--rootdir=/home/otto",
+        "--basetemp=/home/otto/.hermes/cache/scratch/npc-owned-maintenance-review/regression-tmp",
+        "--junitxml=/home/otto/.hermes/cache/scratch/npc-owned-maintenance-review/regression41.xml",
+        "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_recovery.py",
+        "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_live_recovery.py",
+        "/home/otto/.hermes/cache/scratch/npc-owned-recovery/accepted-strict-policy-history/test_independent.py",
+        "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_maintenance.py"
+      ],
+      "exit": 0,
+      "elapsed_seconds": 68.31956414401066,
+      "log": "/home/otto/.hermes/cache/scratch/npc-owned-maintenance-review/regression41.log",
+      "log_sha256": "7587d07b35865a29b757a23c6afa7255bcb06fc2a73ac345a70565f5c31d20d3"
+    },
+    "xml": "/home/otto/.hermes/cache/scratch/npc-owned-maintenance-review/regression41.xml",
+    "parsed": "/home/otto/.hermes/cache/scratch/npc-owned-maintenance-review/regression41-parsed.json",
+    "physical_cases": 41,
+    "unique_raw_ids": 41,
+    "original_cases": 27,
+    "prior_review_cases": 6,
+    "maintenance_cases": 8,
+    "failures": 0,
+    "errors": 0,
+    "skips": 0,
+    "raw_ids": [
+      ".hermes.cache.scratch.npc-owned-recovery.test_recovery::test_absent_approval_denied_before_any_effect",
+      ".hermes.cache.scratch.npc-owned-recovery.test_recovery::test_fresh_world_ownership_guard_rejects_before_lifecycle[foreign_volume]",
+      ".hermes.cache.scratch.npc-owned-recovery.test_recovery::test_fresh_world_ownership_guard_rejects_before_lifecycle[foreign_player]",
+      ".hermes.cache.scratch.npc-owned-recovery.test_recovery::test_fresh_world_ownership_guard_rejects_before_lifecycle[unknown_player]",
+      ".hermes.cache.scratch.npc-owned-recovery.test_recovery::test_expected_owned_orphan_admitted_as_one_not_fabricated_offline",
+      ".hermes.cache.scratch.npc-owned-recovery.test_recovery::test_driver_owns_exact_command_order_and_reads_actual_offline_transition",
+      ".hermes.cache.scratch.npc-owned-recovery.test_recovery::test_failed_command_stops_sequence_without_release_or_retry[timeout]",
+      ".hermes.cache.scratch.npc-owned-recovery.test_recovery::test_failed_command_stops_sequence_without_release_or_retry[nonzero]",
+      ".hermes.cache.scratch.npc-owned-recovery.test_recovery::test_unsafe_fresh_identity_refuses_without_lifecycle[changed_role]",
+      ".hermes.cache.scratch.npc-owned-recovery.test_recovery::test_unsafe_fresh_identity_refuses_without_lifecycle[database_target]",
+      ".hermes.cache.scratch.npc-owned-recovery.test_recovery::test_unsafe_fresh_identity_refuses_without_lifecycle[foreign_online]",
+      ".hermes.cache.scratch.npc-owned-recovery.test_recovery::test_already_offline_noop_requires_all_guards_and_records_no_commands",
+      ".hermes.cache.scratch.npc-owned-recovery.test_recovery::test_failed_readback_retains_partial_state_without_starting",
+      ".hermes.cache.scratch.npc-owned-recovery.test_recovery::test_listener_without_parser_and_actual_peer_readiness_does_not_advance",
+      ".hermes.cache.scratch.npc-owned-recovery.test_recovery::test_failed_release_retains_owner_without_automatic_retry",
+      ".hermes.cache.scratch.npc-owned-recovery.test_live_recovery::test_default_cli_executes_concrete_callbacks_and_unchanged_helpers",
+      ".hermes.cache.scratch.npc-owned-recovery.test_live_recovery::test_concrete_default_assembly_exists",
+      ".hermes.cache.scratch.npc-owned-recovery.test_live_recovery::test_source_runtime_parser_is_present",
+      ".hermes.cache.scratch.npc-owned-recovery.test_live_recovery::test_cli_approval_refusal_precedes_private_and_engine[missing]",
+      ".hermes.cache.scratch.npc-owned-recovery.test_live_recovery::test_cli_approval_refusal_precedes_private_and_engine[expired]",
+      ".hermes.cache.scratch.npc-owned-recovery.test_live_recovery::test_real_observer_refuses_changed_or_unknown_authority[storage]",
+      ".hermes.cache.scratch.npc-owned-recovery.test_live_recovery::test_real_observer_refuses_changed_or_unknown_authority[foreign_identity]",
+      ".hermes.cache.scratch.npc-owned-recovery.test_live_recovery::test_real_observer_refuses_changed_or_unknown_authority[unknown_players]",
+      ".hermes.cache.scratch.npc-owned-recovery.test_live_recovery::test_delayed_role_peer_and_parser_facts_are_reobserved",
+      ".hermes.cache.scratch.npc-owned-recovery.test_live_recovery::test_sixty_second_timeout_halts_and_retains_actual_lock[timeout]",
+      ".hermes.cache.scratch.npc-owned-recovery.test_live_recovery::test_sixty_second_timeout_halts_and_retains_actual_lock[readiness]",
+      ".hermes.cache.scratch.npc-owned-recovery.test_live_recovery::test_exact_nonlocal_origin_has_safe_custody_and_no_retry",
+      ".hermes.cache.scratch.npc-owned-recovery.accepted-strict-policy-history.test_independent::test_parent_actual_service_labels_through_real_cli",
+      ".hermes.cache.scratch.npc-owned-recovery.accepted-strict-policy-history.test_independent::test_fresh_primitive_boundary_denials[unreadable]",
+      ".hermes.cache.scratch.npc-owned-recovery.accepted-strict-policy-history.test_independent::test_fresh_primitive_boundary_denials[enabled_bootstrap]",
+      ".hermes.cache.scratch.npc-owned-recovery.accepted-strict-policy-history.test_independent::test_fresh_primitive_boundary_denials[nonzero]",
+      ".hermes.cache.scratch.npc-owned-recovery.accepted-strict-policy-history.test_independent::test_fresh_primitive_boundary_denials[expiry]",
+      ".hermes.cache.scratch.npc-owned-recovery.accepted-strict-policy-history.test_independent::test_fresh_primitive_boundary_denials[stale_sql]",
+      ".hermes.cache.scratch.npc-owned-recovery.test_maintenance::test_maintenance_default_cli_preserves_unknown_counts_and_runs_helper_chain",
+      ".hermes.cache.scratch.npc-owned-recovery.test_maintenance::test_normal_stop_start_accepts_only_owned_dynamic_endpoints",
+      ".hermes.cache.scratch.npc-owned-recovery.test_maintenance::test_foreign_or_human_identity_blocks_before_lifecycle",
+      ".hermes.cache.scratch.npc-owned-recovery.test_maintenance::test_strict_policy_and_unmeasured_worker_socket_authority_still_deny",
+      ".hermes.cache.scratch.npc-owned-recovery.test_maintenance::test_fresh_sql_foreign_drift_aborts_before_next_lifecycle_command",
+      ".hermes.cache.scratch.npc-owned-recovery.test_maintenance::test_wrong_network_image_volume_or_database_lifetime_denies",
+      ".hermes.cache.scratch.npc-owned-recovery.test_maintenance::test_real_timeout_and_nonzero_stop_sequence_with_physical_custody",
+      ".hermes.cache.scratch.npc-owned-recovery.test_maintenance::test_both_owned_flags_may_be_one_but_post_char_flags_must_be_zero"
+    ],
+    "real_readiness_timeout_once": [
+      {
+        "classname": ".hermes.cache.scratch.npc-owned-recovery.test_live_recovery",
+        "name": "test_sixty_second_timeout_halts_and_retains_actual_lock[readiness]",
+        "time": "60.366",
+        "id": ".hermes.cache.scratch.npc-owned-recovery.test_live_recovery::test_sixty_second_timeout_halts_and_retains_actual_lock[readiness]",
+        "failures": 0,
+        "errors": 0,
+        "skips": 0
+      }
+    ]
+  },
+  "identity_provenance": {
+    "historical_41_receipt_and_case_registry_exact": true,
+    "exact_raw_historical_matches": 35,
+    "source_bound_relocated_cases": 6,
+    "raw_identity_set_equal_to_historical41": false,
+    "normalization_performed": false,
+    "selector_relocations": [
+      {
+        "historical_raw_id": ".hermes.cache.scratch.npc-owned-recovery-independent-review.test_independent::test_fresh_primitive_boundary_denials[enabled_bootstrap]",
+        "fresh_raw_id": ".hermes.cache.scratch.npc-owned-recovery.accepted-strict-policy-history.test_independent::test_fresh_primitive_boundary_denials[enabled_bootstrap]",
+        "basis": "Exact unchanged archived test source sha256 76de34efd4208ebef3e9d2fcbc05300c7f4034c095acff444c46671cb6df7479; selector relocation only. Raw XML is not rewritten."
+      },
+      {
+        "historical_raw_id": ".hermes.cache.scratch.npc-owned-recovery-independent-review.test_independent::test_fresh_primitive_boundary_denials[expiry]",
+        "fresh_raw_id": ".hermes.cache.scratch.npc-owned-recovery.accepted-strict-policy-history.test_independent::test_fresh_primitive_boundary_denials[expiry]",
+        "basis": "Exact unchanged archived test source sha256 76de34efd4208ebef3e9d2fcbc05300c7f4034c095acff444c46671cb6df7479; selector relocation only. Raw XML is not rewritten."
+      },
+      {
+        "historical_raw_id": ".hermes.cache.scratch.npc-owned-recovery-independent-review.test_independent::test_fresh_primitive_boundary_denials[nonzero]",
+        "fresh_raw_id": ".hermes.cache.scratch.npc-owned-recovery.accepted-strict-policy-history.test_independent::test_fresh_primitive_boundary_denials[nonzero]",
+        "basis": "Exact unchanged archived test source sha256 76de34efd4208ebef3e9d2fcbc05300c7f4034c095acff444c46671cb6df7479; selector relocation only. Raw XML is not rewritten."
+      },
+      {
+        "historical_raw_id": ".hermes.cache.scratch.npc-owned-recovery-independent-review.test_independent::test_fresh_primitive_boundary_denials[stale_sql]",
+        "fresh_raw_id": ".hermes.cache.scratch.npc-owned-recovery.accepted-strict-policy-history.test_independent::test_fresh_primitive_boundary_denials[stale_sql]",
+        "basis": "Exact unchanged archived test source sha256 76de34efd4208ebef3e9d2fcbc05300c7f4034c095acff444c46671cb6df7479; selector relocation only. Raw XML is not rewritten."
+      },
+      {
+        "historical_raw_id": ".hermes.cache.scratch.npc-owned-recovery-independent-review.test_independent::test_fresh_primitive_boundary_denials[unreadable]",
+        "fresh_raw_id": ".hermes.cache.scratch.npc-owned-recovery.accepted-strict-policy-history.test_independent::test_fresh_primitive_boundary_denials[unreadable]",
+        "basis": "Exact unchanged archived test source sha256 76de34efd4208ebef3e9d2fcbc05300c7f4034c095acff444c46671cb6df7479; selector relocation only. Raw XML is not rewritten."
+      },
+      {
+        "historical_raw_id": ".hermes.cache.scratch.npc-owned-recovery-independent-review.test_independent::test_parent_actual_service_labels_through_real_cli",
+        "fresh_raw_id": ".hermes.cache.scratch.npc-owned-recovery.accepted-strict-policy-history.test_independent::test_parent_actual_service_labels_through_real_cli",
+        "basis": "Exact unchanged archived test source sha256 76de34efd4208ebef3e9d2fcbc05300c7f4034c095acff444c46671cb6df7479; selector relocation only. Raw XML is not rewritten."
+      }
+    ],
+    "missing_original_selector": "/home/otto/.hermes/cache/scratch/npc-owned-recovery-independent-review/test_independent.py",
+    "archive_selector": "/home/otto/.hermes/cache/scratch/npc-owned-recovery/accepted-strict-policy-history/test_independent.py",
+    "archived_source_sha256": "76de34efd4208ebef3e9d2fcbc05300c7f4034c095acff444c46671cb6df7479",
+    "original27_XML": "Unavailable as stated in the parent handoff; durable independent review identities retained, not fabricated. Fresh selected 41 XML revalidates their current source cases.",
+    "prior_durable_physical_XML_inventory": {
+      "original27": {
+        "path": "/home/otto/.hermes/cache/scratch/npc-owned-recovery-independent-review/original-27.xml",
+        "sha256": "3581e9510ca01f852e98fce97062b477758cf28727158e9c4a44f2174b997838",
+        "cases": 27,
+        "unique_ids": 27,
+        "ids": [
+          ".hermes.cache.scratch.npc-owned-recovery.test_recovery::test_absent_approval_denied_before_any_effect",
+          ".hermes.cache.scratch.npc-owned-recovery.test_recovery::test_fresh_world_ownership_guard_rejects_before_lifecycle[foreign_volume]",
+          ".hermes.cache.scratch.npc-owned-recovery.test_recovery::test_fresh_world_ownership_guard_rejects_before_lifecycle[foreign_player]",
+          ".hermes.cache.scratch.npc-owned-recovery.test_recovery::test_fresh_world_ownership_guard_rejects_before_lifecycle[unknown_player]",
+          ".hermes.cache.scratch.npc-owned-recovery.test_recovery::test_expected_owned_orphan_admitted_as_one_not_fabricated_offline",
+          ".hermes.cache.scratch.npc-owned-recovery.test_recovery::test_driver_owns_exact_command_order_and_reads_actual_offline_transition",
+          ".hermes.cache.scratch.npc-owned-recovery.test_recovery::test_failed_command_stops_sequence_without_release_or_retry[timeout]",
+          ".hermes.cache.scratch.npc-owned-recovery.test_recovery::test_failed_command_stops_sequence_without_release_or_retry[nonzero]",
+          ".hermes.cache.scratch.npc-owned-recovery.test_recovery::test_unsafe_fresh_identity_refuses_without_lifecycle[changed_role]",
+          ".hermes.cache.scratch.npc-owned-recovery.test_recovery::test_unsafe_fresh_identity_refuses_without_lifecycle[database_target]",
+          ".hermes.cache.scratch.npc-owned-recovery.test_recovery::test_unsafe_fresh_identity_refuses_without_lifecycle[foreign_online]",
+          ".hermes.cache.scratch.npc-owned-recovery.test_recovery::test_already_offline_noop_requires_all_guards_and_records_no_commands",
+          ".hermes.cache.scratch.npc-owned-recovery.test_recovery::test_failed_readback_retains_partial_state_without_starting",
+          ".hermes.cache.scratch.npc-owned-recovery.test_recovery::test_listener_without_parser_and_actual_peer_readiness_does_not_advance",
+          ".hermes.cache.scratch.npc-owned-recovery.test_recovery::test_failed_release_retains_owner_without_automatic_retry",
+          ".hermes.cache.scratch.npc-owned-recovery.test_live_recovery::test_default_cli_executes_concrete_callbacks_and_unchanged_helpers",
+          ".hermes.cache.scratch.npc-owned-recovery.test_live_recovery::test_concrete_default_assembly_exists",
+          ".hermes.cache.scratch.npc-owned-recovery.test_live_recovery::test_source_runtime_parser_is_present",
+          ".hermes.cache.scratch.npc-owned-recovery.test_live_recovery::test_cli_approval_refusal_precedes_private_and_engine[missing]",
+          ".hermes.cache.scratch.npc-owned-recovery.test_live_recovery::test_cli_approval_refusal_precedes_private_and_engine[expired]",
+          ".hermes.cache.scratch.npc-owned-recovery.test_live_recovery::test_real_observer_refuses_changed_or_unknown_authority[storage]",
+          ".hermes.cache.scratch.npc-owned-recovery.test_live_recovery::test_real_observer_refuses_changed_or_unknown_authority[foreign_identity]",
+          ".hermes.cache.scratch.npc-owned-recovery.test_live_recovery::test_real_observer_refuses_changed_or_unknown_authority[unknown_players]",
+          ".hermes.cache.scratch.npc-owned-recovery.test_live_recovery::test_delayed_role_peer_and_parser_facts_are_reobserved",
+          ".hermes.cache.scratch.npc-owned-recovery.test_live_recovery::test_sixty_second_timeout_halts_and_retains_actual_lock[timeout]",
+          ".hermes.cache.scratch.npc-owned-recovery.test_live_recovery::test_sixty_second_timeout_halts_and_retains_actual_lock[readiness]",
+          ".hermes.cache.scratch.npc-owned-recovery.test_live_recovery::test_exact_nonlocal_origin_has_safe_custody_and_no_retry"
+        ],
+        "failures": 0,
+        "errors": 0,
+        "skips": 0,
+        "times": {
+          "test_absent_approval_denied_before_any_effect": "0.047",
+          "test_fresh_world_ownership_guard_rejects_before_lifecycle[foreign_volume]": "0.002",
+          "test_fresh_world_ownership_guard_rejects_before_lifecycle[foreign_player]": "0.002",
+          "test_fresh_world_ownership_guard_rejects_before_lifecycle[unknown_player]": "0.002",
+          "test_expected_owned_orphan_admitted_as_one_not_fabricated_offline": "0.000",
+          "test_driver_owns_exact_command_order_and_reads_actual_offline_transition": "0.023",
+          "test_failed_command_stops_sequence_without_release_or_retry[timeout]": "0.004",
+          "test_failed_command_stops_sequence_without_release_or_retry[nonzero]": "0.009",
+          "test_unsafe_fresh_identity_refuses_without_lifecycle[changed_role]": "0.004",
+          "test_unsafe_fresh_identity_refuses_without_lifecycle[database_target]": "0.004",
+          "test_unsafe_fresh_identity_refuses_without_lifecycle[foreign_online]": "0.005",
+          "test_already_offline_noop_requires_all_guards_and_records_no_commands": "0.004",
+          "test_failed_readback_retains_partial_state_without_starting": "0.009",
+          "test_listener_without_parser_and_actual_peer_readiness_does_not_advance": "0.015",
+          "test_failed_release_retains_owner_without_automatic_retry": "0.026",
+          "test_default_cli_executes_concrete_callbacks_and_unchanged_helpers": "0.783",
+          "test_concrete_default_assembly_exists": "0.005",
+          "test_source_runtime_parser_is_present": "0.000",
+          "test_cli_approval_refusal_precedes_private_and_engine[missing]": "0.001",
+          "test_cli_approval_refusal_precedes_private_and_engine[expired]": "0.004",
+          "test_real_observer_refuses_changed_or_unknown_authority[storage]": "0.016",
+          "test_real_observer_refuses_changed_or_unknown_authority[foreign_identity]": "0.006",
+          "test_real_observer_refuses_changed_or_unknown_authority[unknown_players]": "0.046",
+          "test_delayed_role_peer_and_parser_facts_are_reobserved": "1.078",
+          "test_sixty_second_timeout_halts_and_retains_actual_lock[timeout]": "0.028",
+          "test_sixty_second_timeout_halts_and_retains_actual_lock[readiness]": "60.358",
+          "test_exact_nonlocal_origin_has_safe_custody_and_no_retry": "0.043"
+        }
+      },
+      "fresh6": {
+        "path": "/home/otto/.hermes/cache/scratch/npc-owned-recovery-independent-review/fresh-6.xml",
+        "sha256": "6cdf84778562eb8578c23e256e0245f0544389eb4544e0509980c2491f025b65",
+        "cases": 6,
+        "unique_ids": 6,
+        "ids": [
+          ".hermes.cache.scratch.npc-owned-recovery-independent-review.test_independent::test_parent_actual_service_labels_through_real_cli",
+          ".hermes.cache.scratch.npc-owned-recovery-independent-review.test_independent::test_fresh_primitive_boundary_denials[unreadable]",
+          ".hermes.cache.scratch.npc-owned-recovery-independent-review.test_independent::test_fresh_primitive_boundary_denials[enabled_bootstrap]",
+          ".hermes.cache.scratch.npc-owned-recovery-independent-review.test_independent::test_fresh_primitive_boundary_denials[nonzero]",
+          ".hermes.cache.scratch.npc-owned-recovery-independent-review.test_independent::test_fresh_primitive_boundary_denials[expiry]",
+          ".hermes.cache.scratch.npc-owned-recovery-independent-review.test_independent::test_fresh_primitive_boundary_denials[stale_sql]"
+        ],
+        "failures": 0,
+        "errors": 0,
+        "skips": 0,
+        "times": {
+          "test_parent_actual_service_labels_through_real_cli": "0.830",
+          "test_fresh_primitive_boundary_denials[unreadable]": "0.024",
+          "test_fresh_primitive_boundary_denials[enabled_bootstrap]": "0.023",
+          "test_fresh_primitive_boundary_denials[nonzero]": "0.038",
+          "test_fresh_primitive_boundary_denials[expiry]": "0.034",
+          "test_fresh_primitive_boundary_denials[stale_sql]": "0.286"
+        }
+      }
+    }
+  },
+  "boundary_probes": {
+    "receipt": {
+      "command": [
+        ".venv/bin/python",
+        "-B",
+        "-m",
+        "pytest",
+        "-q",
+        "-o",
+        "addopts=",
+        "-p",
+        "no:cacheprovider",
+        "--confcutdir=/home/otto/.hermes/cache/scratch/npc-owned-recovery",
+        "--rootdir=/home/otto",
+        "--basetemp=/home/otto/.hermes/cache/scratch/npc-owned-maintenance-review/boundary-tmp",
+        "--junitxml=/home/otto/.hermes/cache/scratch/npc-owned-maintenance-review/boundary4.xml",
+        "/home/otto/.hermes/cache/scratch/npc-owned-maintenance-review/test_boundaries.py"
+      ],
+      "exit": 0,
+      "elapsed_seconds": 7.346412502985913,
+      "log": "/home/otto/.hermes/cache/scratch/npc-owned-maintenance-review/boundary4.log",
+      "log_sha256": "455017ccbe85794cda8d7c593ddf8d16ba7ef399313d030ab56efb892e7a2560"
+    },
+    "xml": "/home/otto/.hermes/cache/scratch/npc-owned-maintenance-review/boundary4.xml",
+    "parsed": "/home/otto/.hermes/cache/scratch/npc-owned-maintenance-review/boundary4-parsed.json",
+    "physical_cases": 4,
+    "unique_raw_ids": 4,
+    "failures": 0,
+    "errors": 0,
+    "skips": 0,
+    "raw_ids": [
+      ".hermes.cache.scratch.npc-owned-maintenance-review.test_boundaries::test_complete_sql_identity_rechecked_at_every_six_command_boundary",
+      ".hermes.cache.scratch.npc-owned-maintenance-review.test_boundaries::test_real_cli_unknown_is_not_false_zero_and_strict_exclusions_survive",
+      ".hermes.cache.scratch.npc-owned-maintenance-review.test_boundaries::test_missing_stopped_metadata_is_allowed_but_wrong_populated_identity_denies",
+      ".hermes.cache.scratch.npc-owned-maintenance-review.test_boundaries::test_database_lifetime_and_command_failures_stop_without_retry_or_next_start"
+    ],
+    "coverage": [
+      "Fresh entire SQL identity drift at each of six pre-command boundaries: account, character, password, PIN, character name, guild member. Exact command prefixes halt and physical flock custody is retained.",
+      "Real default CLI preserves None active/autotrade history, lists both unknown fields and actor_count_exclusion=false. Legacy strict, known worker/client/foreign event and unreadable socket controls deny.",
+      "Normal stops tolerate missing/blank network metadata; start IP/endpoints change, two fresh inspect samples per start and unchanged DB metadata pass. Wrong populated stopped NetworkID denies after first stop; all four final actual synthetic network attachments exist.",
+      "DB StartedAt drift after each of all six commands denies further progress; primitive command timeout and nonzero stop without retry, force kill, helpers or next start and preserve physical custody."
+    ],
+    "method": "Real default assembly/CLI, source-shaped synthetic inspect/log/proc/SQL/file inputs and restored helper chain. Only primitive transports are spied, never an entire observe callback."
+  },
+  "quality_gates": {
+    "black": {
+      "command": [
+        ".venv/bin/black",
+        "--check",
+        "--config",
+        "pyproject.toml",
+        "/home/otto/.hermes/cache/scratch/npc-owned-recovery/recovery.py",
+        "/home/otto/.hermes/cache/scratch/npc-owned-recovery/live_recovery.py",
+        "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_maintenance.py"
+      ],
+      "exit": 0,
+      "elapsed_seconds": 0.4931085670250468,
+      "log": "/home/otto/.hermes/cache/scratch/npc-owned-maintenance-review/black.log",
+      "log_sha256": "45a468fa6205768496f23f1716ebb7575e9b723449d2099b88bf2afef60b721f"
+    },
+    "ruff": {
+      "command": [
+        ".venv/bin/ruff",
+        "check",
+        "--config",
+        "pyproject.toml",
+        "/home/otto/.hermes/cache/scratch/npc-owned-recovery/recovery.py",
+        "/home/otto/.hermes/cache/scratch/npc-owned-recovery/live_recovery.py",
+        "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_maintenance.py"
+      ],
+      "exit": 0,
+      "elapsed_seconds": 0.015823758963961154,
+      "log": "/home/otto/.hermes/cache/scratch/npc-owned-maintenance-review/ruff.log",
+      "log_sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
+    },
+    "mypy": {
+      "command": [
+        ".venv/bin/mypy",
+        "--strict",
+        "--no-incremental",
+        "--cache-dir=/home/otto/.hermes/cache/scratch/npc-owned-maintenance-review/fresh-mypy",
+        "/home/otto/.hermes/cache/scratch/npc-owned-recovery/recovery.py",
+        "/home/otto/.hermes/cache/scratch/npc-owned-recovery/live_recovery.py",
+        "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_maintenance.py",
+        "/home/otto/.hermes/cache/scratch/npc-owned-recovery/test_live_recovery.py"
+      ],
+      "exit": 0,
+      "elapsed_seconds": 1.5249939819914289,
+      "log": "/home/otto/.hermes/cache/scratch/npc-owned-maintenance-review/mypy.log",
+      "log_sha256": "71144743c83babea384888a735db0c4daba3d4d7b7942b6839984bd5c21b52bb"
+    },
+    "xenon": {
+      "command": [
+        ".venv/bin/xenon",
+        "/home/otto/.hermes/cache/scratch/npc-owned-recovery/recovery.py",
+        "/home/otto/.hermes/cache/scratch/npc-owned-recovery/live_recovery.py",
+        "src",
+        "--max-absolute",
+        "B",
+        "--max-modules",
+        "B",
+        "--max-average",
+        "A"
+      ],
+      "exit": 0,
+      "elapsed_seconds": 0.5081891900044866,
+      "log": "/home/otto/.hermes/cache/scratch/npc-owned-maintenance-review/xenon.log",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "duplicates": {
+      "command": [
+        ".venv/bin/pylint",
+        "--disable=all",
+        "--enable=duplicate-code",
+        "/home/otto/.hermes/cache/scratch/npc-owned-recovery/recovery.py",
+        "/home/otto/.hermes/cache/scratch/npc-owned-recovery/live_recovery.py",
+        "src",
+        "/home/otto/.hermes/cache/scratch/passive-skill-context-executor-repair1/native_launcher.py"
+      ],
+      "exit": 0,
+      "elapsed_seconds": 3.3989162190118805,
+      "log": "/home/otto/.hermes/cache/scratch/npc-owned-maintenance-review/duplicates.log",
+      "log_sha256": "bbb6ffa7d7107b760478161908c009d3b85b078b80d54e3ad8dcd57bfe91a142"
+    },
+    "missing_approval_cli": {
+      "command": [
+        ".venv/bin/python",
+        "-B",
+        "/home/otto/.hermes/cache/scratch/npc-owned-recovery/live_recovery.py"
+      ],
+      "exit": 2,
+      "elapsed_seconds": 0.05945701600285247,
+      "log": "/home/otto/.hermes/cache/scratch/npc-owned-maintenance-review/missing_approval_cli.log",
+      "log_sha256": "f47f58551d37edf5d4f0b51581b80009a5667f63b7abb8df28e8422bb3dd9cee"
+    }
+  },
+  "contract_review": {
+    "strict_guard": "Absent mode remains strict and denies unknown/nonzero actor facts; no strict helper predicate was relaxed.",
+    "ownership": "Before each maintenance command, a complete fixed SELECT revalidates exactly two bound non-server account/character identities, group0/state0, passwords/PINs/names and guild subset; only online flags0/1 admitted, then expiry/source authorization rechecked.",
+    "custody": "Uses unchanged reviewed private-directory-parent lock and loader. Private/runtime/source hashes and expiry rechecked under lock after read-only work. Failures retain custody; supported non-Exception origin preserved by original regression. Standalone process exit releases kernel locks; no persistent-custody claim.",
+    "lifecycle": "Only exact qualified map/char/login TERM -t -1 stops and login/char/map starts. CLI bounded60 seconds and two fresh transition readiness/peer samples; changed StartedAt required. DB ID/lifetime/image/volume/health checked against baseline; no SQL UPDATE, retry or force kill.",
+    "network": "Stable maintenance fingerprint excludes lifecycle IP/endpoint/PID/start observations. Owned bridge/local labels, membership subset, running unique address and NetworkID/EndpointID agreement remain enforced; blank stopped metadata is not wrong populated identity.",
+    "labels": "Logical roles correctly map to existing rathena-login/rathena-char/rathena-map Compose service labels. No label defect is asserted.",
+    "unknowns": "Unknown actors are honest observations, not exclusion counts; unknown workers/sockets still deny, and known foreign events deny even with incomplete history."
+  },
+  "limits": [
+    "Offline scoped approval only, not qualification of the actual world or issuance of a live runtime approval.",
+    "The exact historical raw41 ID set was not reproduced: six absent-path prior-review cases were executed from hash-identical archived source under an explicitly different selector/classname. Every raw ID and one-to-one source-backed mapping is recorded without normalization.",
+    "No full-root gate rerun; historical5538+65/95.52 reference is not made current.",
+    "Fresh actual SQL identity, process/socket observability, runtime/configuration/network/engine bindings and current-expiry approval remain parent operational admission responsibilities.",
+    "Later native allOffline/session admission remains separate. No activation issued and no online flags cleared."
+  ],
+  "effects": {
+    "actual_Docker": 0,
+    "actual_SQL": 0,
+    "actual_HTTP_provider": 0,
+    "actual_native_connections": 0,
+    "actual_private_credential_reads": 0,
+    "Git_mutations": 0,
+    "dependency_installs_or_changes": 0,
+    "candidate_repairs": 0,
+    "allowed_writes": "New reviewer scratch artifacts and this new review report only; synthetic files/flock effects in reviewer scratch."
+  },
+  "native_activation": "REVOKED_UNCHANGED",
+  "actual_recovery": "NOT_EXECUTED",
+  "full_goals": "OPEN",
+  "review_artifacts": {
+    "/home/otto/.hermes/cache/scratch/npc-owned-maintenance-review/after-freeze.json": "c61a72797454f3d4423820e910ec9cabea18718dc76bbfe1d4eda0a54c40f8fc",
+    "/home/otto/.hermes/cache/scratch/npc-owned-maintenance-review/before-freeze.json": "c61a72797454f3d4423820e910ec9cabea18718dc76bbfe1d4eda0a54c40f8fc",
+    "/home/otto/.hermes/cache/scratch/npc-owned-maintenance-review/black.json": "dd646baaa6954fa642a90ba7dbadd5ae78e438b32e6765eeeec974e48eb248dc",
+    "/home/otto/.hermes/cache/scratch/npc-owned-maintenance-review/black.log": "45a468fa6205768496f23f1716ebb7575e9b723449d2099b88bf2afef60b721f",
+    "/home/otto/.hermes/cache/scratch/npc-owned-maintenance-review/boundary4-parsed.json": "5124c63f9409188ac6950d5b4cf742c1b6e87dea44e45c075dd6fd34b7572415",
+    "/home/otto/.hermes/cache/scratch/npc-owned-maintenance-review/boundary4.json": "f86de3e208e313de5636cf1cc657f27d9b924bcf0febb17e2772b8e3afcfefbe",
+    "/home/otto/.hermes/cache/scratch/npc-owned-maintenance-review/boundary4.log": "455017ccbe85794cda8d7c593ddf8d16ba7ef399313d030ab56efb892e7a2560",
+    "/home/otto/.hermes/cache/scratch/npc-owned-maintenance-review/boundary4.xml": "b9f7eb8c5e5430f493ded017e8ea68bcae6632397cb7a97a250e8faeb9bf8415",
+    "/home/otto/.hermes/cache/scratch/npc-owned-maintenance-review/duplicates.json": "ab204f8b5bed2272e55df839ed69e4e2a1dfcabbfbb7c7883de44d1199d9f344",
+    "/home/otto/.hermes/cache/scratch/npc-owned-maintenance-review/duplicates.log": "bbb6ffa7d7107b760478161908c009d3b85b078b80d54e3ad8dcd57bfe91a142",
+    "/home/otto/.hermes/cache/scratch/npc-owned-maintenance-review/explicit-test-selector-relocations.json": "257d509d806f3cf5107ce5920cc92d78e48f541796d8645ff5428f9b9c54426c",
+    "/home/otto/.hermes/cache/scratch/npc-owned-maintenance-review/live_recovery.py.diff": "3ab27855cf07e2cf8b3f64d1b21b0a83a68578617a44bc661ed5f5989f6a13a6",
+    "/home/otto/.hermes/cache/scratch/npc-owned-maintenance-review/missing_approval_cli.json": "e515269550c755c3bb7da1c023127b3f2887337edcd25abc0fc14fa3d40c988c",
+    "/home/otto/.hermes/cache/scratch/npc-owned-maintenance-review/missing_approval_cli.log": "f47f58551d37edf5d4f0b51581b80009a5667f63b7abb8df28e8422bb3dd9cee",
+    "/home/otto/.hermes/cache/scratch/npc-owned-maintenance-review/mypy.json": "87e62a8ded144bc0c8ce64fb7cf2a0df9a4f06ffeac639c780d700c9c336c1ac",
+    "/home/otto/.hermes/cache/scratch/npc-owned-maintenance-review/mypy.log": "71144743c83babea384888a735db0c4daba3d4d7b7942b6839984bd5c21b52bb",
+    "/home/otto/.hermes/cache/scratch/npc-owned-maintenance-review/recovery.py.diff": "594dc1bae0726fe6672da094eb2ae9cf0528720e3e12d6a2ca00d0ea96fafe22",
+    "/home/otto/.hermes/cache/scratch/npc-owned-maintenance-review/regression41-parsed.json": "dd028948db20fb420a8ce99172a91945d7959db5f27e4d705c1fd9273e664e2f",
+    "/home/otto/.hermes/cache/scratch/npc-owned-maintenance-review/regression41.json": "44c818fab19abf3045b0f17a99f2ca1a2b1da26178e3870959ed06b48af13539",
+    "/home/otto/.hermes/cache/scratch/npc-owned-maintenance-review/regression41.log": "7587d07b35865a29b757a23c6afa7255bcb06fc2a73ac345a70565f5c31d20d3",
+    "/home/otto/.hermes/cache/scratch/npc-owned-maintenance-review/regression41.xml": "04cc404cecf1086c3c45148082f6e237167a6b70544dce1909584311597cfcac",
+    "/home/otto/.hermes/cache/scratch/npc-owned-maintenance-review/ruff.json": "19a700ced509e59e6b9ca08a9e836f6d2c6d7d48be4707daf6cf5df27305be5f",
+    "/home/otto/.hermes/cache/scratch/npc-owned-maintenance-review/ruff.log": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+    "/home/otto/.hermes/cache/scratch/npc-owned-maintenance-review/test_boundaries.py": "cb744eedab1c1b1edd94d027484a852fc391769e3ead46490188cf96059d2421",
+    "/home/otto/.hermes/cache/scratch/npc-owned-maintenance-review/xenon.json": "6bd8484650c2fb77579ae0798c24ca55d9fd314abbe3e09eccf659eb8103e35b",
+    "/home/otto/.hermes/cache/scratch/npc-owned-maintenance-review/xenon.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "remaining": "Parent may operationally qualify/admit the reviewed maintenance evolution under the standing autonomous authority. This verdict does not claim live admission/execution and does not require a renewed routine permission prompt."
+}

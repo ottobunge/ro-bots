@@ -1,15 +1,16 @@
 """Tests for the SystemOne request schema built from domain state."""
 
-from tests.conftest import make_state
+import pytest
 
-from robots.domain.decisions import PREMADE_CHAT, build_decision_request
+from robots.domain.decisions import PREMADE_CHAT, build_decision_request, goal_summary
 from robots.domain.model import ChatLine, Goal
+from tests.conftest import make_state
 
 
 def test_request_has_model_state_questions(state) -> None:
     request = build_decision_request(state)
     assert request["model"] == "clef"
-    assert set(request) == {"model", "state", "questions", "goal_criterion_grind"}
+    assert set(request) == {"model", "state", "questions"}
     assert request["state"]["bot"]["name"] == "SpikeBot01"
 
 
@@ -48,3 +49,28 @@ def test_chat_and_invites_appear_in_state() -> None:
 def test_hp_ratio_zero_max() -> None:
     state = make_state(max_hp=0)
     assert state.hp_ratio == 0.0
+
+
+@pytest.mark.parametrize(
+    ("goal", "summary"),
+    [
+        (Goal.GRIND, "Level up by fighting monsters suited to my level."),
+        (Goal.FARM_ITEM, "Farm for the specific item I am assigned."),
+        (Goal.IDLE_TOWN, "Relax in town, maybe chat with passers-by."),
+        (Goal.QUEST, "Work on a level-appropriate quest."),
+        (Goal.SOCIAL, "Find and join other players, party or guild."),
+    ],
+)
+def test_goal_summary_and_private_memory_preserved(goal, summary):
+    state = make_state(goal=goal, inventory_known=False)
+    lines = [f"private memory {n}" for n in range(45)]
+    before = list(lines)
+    request = build_decision_request(state, memory_lines=lines)
+    assert set(request) == {"model", "state", "questions"}
+    assert request["state"]["bot"]["goal"] == str(goal)
+    assert request["state"]["inventory"] == "unknown"
+    assert request["state"]["memory_view"] == "\n".join(lines[:40])
+    assert lines == before
+    assert "memory_view" not in build_decision_request(state)["state"]
+    assert build_decision_request(state, memory_lines=[])["state"]["memory_view"] == ""
+    assert goal_summary(goal) == summary

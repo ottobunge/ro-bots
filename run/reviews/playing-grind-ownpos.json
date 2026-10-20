@@ -1,0 +1,71 @@
+{
+  "status": "OWNPOS_GATE_RELEASE_SLICE_COMPLETE",
+  "completed_at_utc": "2026-10-15T00:00:52+00:00",
+  "slice": "wire 0x87 own-position ingest verified; pending-walk arrival gate released on the received-frame drain path",
+  "production_changes": {
+    "src/robots/app/playing_runtime.py": {
+      "before_sha256": "45e9fbaaafd6bb45413ab6f3228cbaeae887c9e81cb794b0752eac7c3d655c56",
+      "after_sha256": "029bb8841f279482a95f952040d9b0968d252629a6ee4897caa4b052265b3c58",
+      "hunks": [
+        "drain_native_events: evaluate _await_pending(tracker.view, pos) after _keepalive (received-frame path, same pacing/budget/exhaustion)",
+        "_await_pending: clear _pending before the exhaustion raise (bounded repair ends once; no permanent re-raise starvation)"
+      ]
+    },
+    "src/robots/adapters/native_gameplay.py": {
+      "before_sha256": "3140239a1e24c15c08c071690a24af1bdaa00be8838e3743f339131dcac8758d",
+      "after_sha256": "3140239a1e24c15c08c071690a24af1bdaa00be8838e3743f339131dcac8758d",
+      "verdict": "UNCHANGED \u2014 0x0087 decode verified byte-correct vs pinned e985 clif.cpp2051-2061/packets.hpp681-686 (WBUFPOS2 start[6:9]/dest[8:11]); ZC_NOTIFY_PLAYERMOVE is SELF-scoped with no AID"
+    }
+  },
+  "test_changes": {
+    "tests/test_playing_runtime.py": {
+      "before_sha256": "abaa1506bdf961556e186402b43c24659d4beeb0a4ac7b9ca094f357d4a07bda",
+      "after_sha256": "da3a741e86daf7734a3cc4ec0340a8467a0d461d166cff11249a53c0079e94bf",
+      "added": [
+        "test_drained_receipt_releases_pending_walk_without_new_dispatch (RED: live window-3 shape)",
+        "test_drain_paced_walk_retries_stay_bounded_and_fail_closed_once (RED: exhaustion raises once, slot cleared)",
+        "test_peer_walk_presentation_cannot_release_pending_or_own_position (RED via drain pacing; pins 0x09FD peer guard)",
+        "test_denied_frame_continuity_never_releases_and_new_epoch_drops_pending (characterization: gap-deny fail-closed, new epoch drops stale pending)"
+      ]
+    },
+    "tests/test_native_gameplay.py": {
+      "before_sha256": "423753c3269270ebdd1ef81dee0c595fb877a7781994f17011261838a9d9024c",
+      "after_sha256": "1f7bb6cf6852fd757f315239122817cb3c9dc474a1493e20791c87358710c253",
+      "added": [
+        "test_peer_walking_presentation_never_becomes_own_position (characterization: peer 0x09FD at destination never mutates position/arrival)"
+      ]
+    }
+  },
+  "tdd_evidence": {
+    "RED": {
+      "path": ".work/playing-grind-ownpos/evidence/RED-ownpos-authoritative.xml",
+      "sha256": "d07b034cd51f8412df76f1a9c42f70289138766d728298bc42fde5837402b73f",
+      "method": "final test bytes run against byte-verified pre-fix playing_runtime.py (45e9fbaa...); 3 behavioral RED, 2 characterization guards pre-passing",
+      "red_tests": [
+        "tests.test_playing_runtime::test_drained_receipt_releases_pending_walk_without_new_dispatch",
+        "tests.test_playing_runtime::test_drain_paced_walk_retries_stay_bounded_and_fail_closed_once",
+        "tests.test_playing_runtime::test_peer_walk_presentation_cannot_release_pending_or_own_position"
+      ]
+    },
+    "GREEN_scoped": {
+      "path": ".work/playing-grind-ownpos/evidence/GREEN-ownpos-scoped.xml",
+      "sha256": "ada8a561931deb92b4f91fcc5cb9fb4d86cdb50e581b5268246eaa61a9c481bb",
+      "scope": "test_playing_runtime.py + test_native_gameplay.py + test_native_playing_keepalive.py + test_native_map_lifecycle.py + test_movement_arrival_evidence.py",
+      "result": "232 passed, 0 failed, 0 errors, 0 skipped"
+    },
+    "root_gate": {
+      "path": ".work/playing-grind-ownpos/evidence/root-task-check.log",
+      "sha256": "8ae49805198dcae18881b1be3664011a7490d28d8d89f662bf39d4a5085c429b",
+      "command": "nix develop -c task check",
+      "result": "exit 0; 5892 passed + 65 subtests (baseline 5887+65 grew only by the 5 new tests); coverage 95.71% >= 85; black/mypy/bandit/vulture/pylint-duplicate/xenon(B/B/A)/ruff all green"
+    },
+    "audit": {
+      "path": ".work/playing-grind-ownpos/evidence/root-task-audit.log",
+      "sha256": "98ca81e6c0a39905caf6120fc515e452ca3932bbd390acf494025a16e9f40c91",
+      "command": "nix develop -c task audit",
+      "result": "exit 0; no known vulnerabilities"
+    }
+  },
+  "forensic_correction": "window-3 'tracker ingested ZERO own 0x87' was a counter artifact (own_position_ingests counts wire packet_counts deltas from the second sample); tracker DID ingest the seq-78 walkok (position 192,361, arrival False). Real defect: gate evaluation unreachable without a new action dispatch; bounded re-request never fired; single pending slot starved all sends.",
+  "live_execution": "PROHIBITED here \u2014 parent runs window 4 per .work/playing-grind-operator/READY-TO-RUN.md (Window-4 section added)"
+}

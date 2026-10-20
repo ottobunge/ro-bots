@@ -1,0 +1,57 @@
+{
+  "scope": "Read-only public pinned native source and existing client/harness; sole new report artifact. No source/test changes, live actions, SQL, resets, provider calls or private configuration reads.",
+  "profile": "MAIN 20180704, pre-renewal; pinned source supplied by coordinator",
+  "native_source_root": "/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source",
+  "private_values": "[REDACTED]",
+  "conclusion": "Movement announcement precedes authoritative cell movement. Harness closes immediately after observing advertised destination. Native logout cancels the pending walk timer without forcing a cell step, then saves actual current coordinates. Parent differential supports this mechanism: immediate close saved spawn; one-second dwell saved requested next cell. Normal cancellation/save semantics, not evidence of corrupt character data.",
+  "evidence": [
+    {"source": "spikes/003-clientless-limbs/test_limbs.py:234-267,285-298,175-224", "finding": "Connect pair pauses one second BEFORE move. Movement predicate tests peer actors x/y against requested destination and returns immediately. Finally closes each client; subsequent limbs reconnect. Total smoke elapsed time is not movement dwell."},
+    {"source": "spikes/003-clientless-limbs/client.py:399-405,447-511,645-650,692-694,728-763", "finding": "Map entry 0x02eb initializes self coordinates. Walking actor 0x09fd places RBUFPOS2 destination in actor x/y, retaining origin in from and walking=true. No 0x0087 self movement dispatch updates actual self position. close uses socket shutdown/close and joins reader; does not send CZ_REQ_DISCONNECT."},
+    {"source": "src/map/clif.cpp:11379-11425; src/map/unit.cpp:841-915,254-319,180-245", "finding": "Walk parser calls unit_walktoxy with flag 4; target stored in ud.to_x/to_y. Path initialization calls nextcell, which schedules tick+speed before emitting clif_move and clif_walkok. Neither announcement requires coordinates to have advanced."},
+    {"source": "src/map/clif.cpp:1369-1414,2051-2088; src/map/packets_struct.hpp:91-108", "finding": "Pinned observer movement is 0x09fd, not an assumed legacy 0x0086. Packet includes current bl.x/y as from, advertised ud.to_x/to_y as to, speed and movement start tick. Self 0x0087 contains type at 0, start tick at 2, six-byte move data at 6; it is a start/accept notification, not an arrival ACK."},
+    {"source": "src/map/unit.cpp:542-628,634-678,747-763; src/map/map.cpp:518-561", "finding": "Walk timer resolves actor and advances exactly one path cell through map_moveblock; map_moveblock assigns bl.x/y. Native arrival authority is those updated coordinates. Final path exhaustion calls nextcell with sendMove=false, so normal successful arrival does not produce a mandatory final self walk ACK."},
+    {"source": "src/map/clif.cpp:25684-25705,2125-2150; src/map/map.cpp:2316-2330; src/map/unit.cpp:3864-3866,3580-3593,1695-1742", "finding": "Socket EOF on active ordinary session calls clif_quitsave then map_quit. map_quit removes PC before making save status. Removal stops walking with USW_RELEASE_TARGET only: deletes timer, does not select USW_MOVE_ONCE or USW_MOVE_FULL_CELL, clears path and resets target to current coordinates. Thus logout before first timer leaves spawn coordinates intact."},
+    {"source": "src/map/pc.cpp:1352-1435; src/map/chrif.cpp:277-328; src/char/char_mapif.cpp:408-445; src/char/char.cpp:283,311-324", "finding": "Normal alive non-nosave/non-instance save copies sd.x/y to last_point. chrif_save serializes status in 0x2b01 with quit flag. Char server saves via char_mmo_char_tosql, then marks offline and emits final save ACK. SQL last_x/last_y derive from last_point, not advertised movement target."}
+  ],
+  "timing": {
+    "authority": "src/map/unit.cpp:226-238; src/map/status.cpp:9104-9109; src/common/mmo.hpp:93; src/map/path.hpp:11-12; src/map/clif.cpp:1386,3549-3557,3646-3648",
+    "cardinal_step": "One current status_get_speed interval in milliseconds after scheduling; DEFAULT_WALK_SPEED is 150, but actual speed must be observed, not presumed.",
+    "diagonal_step": "Integer speed * MOVE_DIAGONAL_COST / MOVE_COST; source constants 14 and 10. Multiple cells require path-dependent intervals; obstruction, retarget, status changes, delayed movement and scheduler lag can invalidate fixed wait assumptions.",
+    "wire_speed": "Peer 0x09fd speed field at offset 13 in pinned layout (client.py:696-711), populated by status_get_speed. Self ZC_PAR_CHANGE 0x00b0 sends SP_SPEED var ID 0 at offset 2 and battle_status.speed value at offset 4. Self 0x0087 has no speed byte/field.",
+    "prediction": "If EOF is processed before first scheduled cell update, stored origin remains; after successful timer update, normal save stores target. Parent one-second dwell demonstrates this one-cell fixture, not a universal one-second arrival guarantee. No exact send-to-EOF timing or wire speed was measured by this source-only review."
+  },
+  "ranked_hypotheses": [
+    {"rank": 1, "hypothesis": "Immediate-close cancellation before first authoritative step", "prediction": "Same request with only post-announcement dwell changes old-coordinate save to target-coordinate save", "status": "Supported by source ordering and parent differential"},
+    {"rank": 2, "hypothesis": "Observer coordinates mean announced target, not current arrival", "prediction": "Actor walking=true and from differs from target even while actor x/y equal target", "status": "Established by parser and native packet construction; explains why smoke passes"},
+    {"rank": 3, "hypothesis": "Rejected path, incorrect destination decoding or unwalkable destination", "prediction": "Dwell alone would not achieve requested native saved coordinates", "status": "Disfavored for this exact differential: target saved after dwell"},
+    {"rank": 4, "hypothesis": "Forced save-point policy or stale/corrupt persistence", "prediction": "Completed walk still saves origin or only later refresh changes DB", "status": "Disfavored by parent's exact offline post-close target readback; no private config inspected"}
+  ],
+  "arrival_confirmation_candidates_not_implemented": {
+    "existing_authoritative_evidence": "Parent exact native saved-coordinate readback after supported cleanup/offline; alternatively normal reconnect 0x02eb gives authoritative accepted-entry coordinates. These are stronger than a sleep or advertised destination.",
+    "in_session_snapshots": "0x09fd from records current coordinates at packet construction, NOT its to field. 0x0088 ZC_STOPMOVE carries actual bl.x/y when a correction is emitted (clif.cpp:2204-2213), but no automatic arrival correction is promised. Native idle/spawn position snapshots can establish actual position when freshly generated; ordinary path exhaustion is not guaranteed to resend them.",
+    "minimal_self_ack_candidate": "Source-supported candidate for future protocol validation, not a fix here: after initial movement request, issue a separately correlated request to the same target and require fresh self 0x0087 whose from AND to equal target. An already-at-target zero-length path sends clif_walkok via unit.cpp:186-192. If still walking, repeated target sets change_walk_target (894-898), and timer/subpath processing can produce the zero-length ACK only after current coordinates reach target. Initial from=origin,to=target ACK alone proves acceptance, never arrival. Must bound retries/deadline and reject stale/unrelated ACKs; candidate not exercised live/offline here.",
+    "graceful_quit": "0x018a type=0 gets 0x018b result from clif_parse_QuitGame (clif.cpp:11429-11463); acceptance flushes ACK and optionally sets EOF. It does NOT wait for movement completion or ACK committed database persistence. Public drop_connection_on_quit default is no. It is not inherently stronger arrival/storage proof than current shutdown plus exact offline readback."
+  },
+  "configuration_limits": {
+    "public_defaults": "conf/battle/player.conf:143 prevent_logout=10000; conf/battle/client.conf:148 drop_connection_on_quit=no. No live/private configuration read.",
+    "logout_delay_exception": "clif_quitsave uses recent canlog_tick to detach socket and delay map_quit by 10000ms; during that interval pending movement may continue. Immediate cancellation explanation applies to ordinary eligible logout, as supported by differential, not every combat disconnect.",
+    "save_policy_exceptions": "Dead PCs save restart point; MF_NOSAVE and instance reconnect policy can redirect saved coordinates; logout scripts can affect state. Normal current-coordinate save conclusion is conditional on these not applying. Differential directly demonstrates target persistence in tested fixture."
+  },
+  "parent_differential": {
+    "artifact": "run/reviews/native-movement-disconnect-differential.json",
+    "read": true,
+    "observations": [
+      {"dwell_seconds": 0.0, "before": [150,150], "target": [150,151], "peer_destination_observed": true, "saved_after_close": [150,150], "both_offline": true, "cleanup_confirmed": true},
+      {"dwell_seconds": 1.0, "before": [150,150], "target": [150,151], "peer_destination_observed": true, "saved_after_close": [150,151], "both_offline": true, "cleanup_confirmed": true}
+    ],
+    "no_sql_writes_or_reseed": true
+  },
+  "acceptance": {
+    "source_investigation_complete": true,
+    "fixes_applied": false,
+    "live_reexecution_by_delegate": false,
+    "full_six_milestones_closed": false,
+    "wider_clef_llm_combat_goal_closed": false,
+    "remaining": "Coordinator-owned TDD and reliable arrival-confirmation acceptance remain open. Do not weaken movement checks or mutate fixture coordinates to restore acceptance."
+  }
+}

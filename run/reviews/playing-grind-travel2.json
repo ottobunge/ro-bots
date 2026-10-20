@@ -1,0 +1,153 @@
+{
+ "operator": "playing-grind-travel2",
+ "task": "window-6 slice: farm-idle travel engagement in the travel wrapper (offline TDD + window-6 packaging)",
+ "frontier_addressed": "run/reviews/playing-grind-operator-live-window5-analysis.json: committed travel engaged only on ScriptStatus.DONE while FarmScript's no-target outcome is ScriptOutcome((), ACTIVE) ('keep farming, no mobs right now'), so agents stood idle instead of walking committed farm cells",
+ "namespace": [
+  ".work/playing-grind-travel2/**",
+  "run/reviews/playing-grind-travel2.json"
+ ],
+ "date": "2026-10-15",
+ "offline_built": true,
+ "live_executed": false,
+ "tdd_chronology": {
+  "red": {
+   "provenance": "4 new tests in tests/test_farm_idle_travel.py run against the byte-identical pre-fix copies of the original namespace modules (pre-fix digest == original digest 297479601d8c64eb... recorded in evidence/originals/COPY_DIGESTS.json)",
+   "junit": ".work/playing-grind-travel2/evidence/RED-farm-idle.xml",
+   "tests": 4,
+   "failures": 4,
+   "errors": 0,
+   "skipped": 0,
+   "named_gap_failures": [
+    "test_farm_idle_active_outcome_engages_committed_travel: assert 0 == 1 (engaged_count; wrapper returned ACTIVE () unchanged)",
+    "test_farm_idle_engagement_keeps_done_and_guard_semantics: assert 1 == 2 (only the DONE engagement existed)",
+    "test_offline_twin_farm_idle_walks_committed_cell_and_watcher_stays_honest: assert 0 >= 1 (dispatched moveTo)",
+    "test_offline_twin_travel_and_replan_watcher_compose: assert 0 >= 1 (dispatched moveTo)"
+   ]
+  },
+  "green": {
+   "junit": ".work/playing-grind-travel2/evidence/GREEN-travel2.xml",
+   "tests": 19,
+   "failures": 0,
+   "errors": 0,
+   "skipped": 0,
+   "content": "window-2 travel contract suite adapted 1:1 (12) + farm-idle/RED tests (4) + composition twins (3); DONE-eligibility, arrival-only re-evaluation and NoRoute degradation regressions all present"
+  },
+  "test_identity_revisions": [
+   "test_travel_contracts offline-twin assertion revised playing-grind-travel -> playing-grind-travel2 (namespace identity of the copied suite; no assertion weakened)"
+  ]
+ },
+ "composition_regression": {
+  "claim": "travel events do not suppress the replan watcher's accumulation; the two compose",
+  "evidence": "tests/test_farm_idle_travel.py::test_offline_twin_travel_and_replan_watcher_compose (GREEN): farm-idle agent walks committed cells (moveTo >= 1, wire.moves non-empty via zero-cell walkok); a non-target Poring received mid-run disengages travel (guard), the watcher accumulates it and fires EXACTLY ONE replan through the production seams with successor verdict 'retargeted'; the retargeted plan attacks the received actor (attack >= 1, 0x437/0x114 in wire.sent)",
+  "honesty_twin": "test_offline_twin_farm_idle_walks_committed_cell_and_watcher_stays_honest: with no mobs the watcher verdict stays no_stale_observation and replans == 0 - walking fabricates no observations",
+  "watcher_code_untouched": true
+ },
+ "combined_suites": {
+  "command": "env -u PYTEST_ADDOPTS -u PYTEST_DISABLE_PLUGIN_AUTOLOAD -u PYTEST_PLUGINS PYTHONOPTIMIZE=0 nix develop -c uv run pytest .work/playing-grind-travel2/tests .work/playing-grind-replan/tests -q -p no:cacheprovider (travel2 first; its conftest fails closed if travel/grind_travel_operator/spawn_knowledge resolve outside the namespace)",
+  "junit": ".work/playing-grind-travel2/evidence/COMBINED-travel2-replan.xml",
+  "tests": 29,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0
+ },
+ "quality_gates": {
+  "scoped_ruff": {
+   "exit": 0,
+   "summary": "All checks passed! (.work/playing-grind-travel2/)",
+   "log": ".work/playing-grind-travel2/evidence/ruff-scoped.txt"
+  },
+  "scoped_mypy_strict": {
+   "exit": 0,
+   "summary": "Success: no issues found in 3 source files (MYPYPATH=src+five grind namespaces)",
+   "log": ".work/playing-grind-travel2/evidence/mypy-scoped.txt"
+  },
+  "scoped_black": {
+   "exit": 0,
+   "note": "no-op by project formatter config (.work force-excluded), matching sibling namespaces",
+   "log": ".work/playing-grind-travel2/evidence/black-scoped.txt"
+  },
+  "scoped_xenon": {
+   "exit": 0,
+   "summary": "no findings on the 3 namespace modules (max-absolute B / max-modules B / max-average A)",
+   "log": ".work/playing-grind-travel2/evidence/xenon-scoped.txt"
+  },
+  "root_gate": {
+   "command": "env -u PYTEST_ADDOPTS -u PYTEST_DISABLE_PLUGIN_AUTOLOAD -u PYTEST_PLUGINS PYTHONOPTIMIZE=0 nix develop -c task check",
+   "workdir": "/home/otto/dev/ro-bots",
+   "exit": 0,
+   "summary": "5892 passed, 65 subtests passed, coverage 95.71% (>=85%) - identical totals to the window-5 baseline gate; src/tests/rathena untouched by this slice",
+   "log": ".work/playing-grind-travel2/evidence/root-task-check.log",
+   "log_exit_marker": "ROOT_GATE_EXIT=0"
+  }
+ },
+ "source_digests": {
+  "travel.py": "545d123961ea6641f798c9b88daa81d421d3a0afbe848ad5c2339994d000d7ff",
+  "grind_travel_operator.py": "620b3e372c6f923b329dc65dc2b1aeb6e1c045a072d7ffb830cdd818d5a6b4b8",
+  "spawn_knowledge.py": "466e81b64f53ca16754f4fbd25269f1f567feda7506616aa10db218b6f964c72",
+  "tests/conftest.py": "7e0cb00ac0ccb1ed4349e6f883dad00c5af238b6db907842f200da0eb1b7dfbf",
+  "tests/test_travel_contracts.py": "c818d860f91d1edce26944e3880b04be5b7def06aee06a03c4e3a11f001cc37c",
+  "tests/test_farm_idle_travel.py": "a732534c82a2807c1d4fea78404a300fd8ccf86fe1941c15b16058737bbfae44",
+  "tests/tests_support/stub_harness.py": "98e5f6747aed8078bcfb39db900d3b95b84616eb39c9270147e602bf976dbc39"
+ },
+ "evidence_readback": {
+  "RED-farm-idle.xml": {
+   "path": ".work/playing-grind-travel2/evidence/RED-farm-idle.xml",
+   "sha256": "8ec975fce024cd1cca5662cac160f7f30b2fbb463ef5559309d8d0346b0525f3"
+  },
+  "GREEN-travel2.xml": {
+   "path": ".work/playing-grind-travel2/evidence/GREEN-travel2.xml",
+   "sha256": "4c465443badfdf58c44d6861e85fc8c0e3b18d51845e7661b39d3323777835bf"
+  },
+  "COMBINED-travel2-replan.xml": {
+   "path": ".work/playing-grind-travel2/evidence/COMBINED-travel2-replan.xml",
+   "sha256": "49e28d5d34e0f1df6780bd20bd75905dff0703c4a2f42bc807feecb75783eb85"
+  },
+  "root-task-check.log": {
+   "path": ".work/playing-grind-travel2/evidence/root-task-check.log",
+   "sha256": "053d976ee7a0f1893728e46d13bbfaf738457196ac89be1d330b3e01ca9b57b6"
+  },
+  "ruff-scoped.txt": {
+   "path": ".work/playing-grind-travel2/evidence/ruff-scoped.txt",
+   "sha256": "1c036e67ed915de46d90b6419c56488c77042c4443c2e4949a2376de19be2bf5"
+  },
+  "mypy-scoped.txt": {
+   "path": ".work/playing-grind-travel2/evidence/mypy-scoped.txt",
+   "sha256": "178293ff5a54730cb4eb84b44bd984ec427c7c3bc7c0d55a419ce01b8f04f489"
+  },
+  "black-scoped.txt": {
+   "path": ".work/playing-grind-travel2/evidence/black-scoped.txt",
+   "sha256": "0fc375d94727024bf7c6edbeaa0ef6e2c074031b4aff04442731f290ffc6e3af"
+  },
+  "xenon-scoped.txt": {
+   "path": ".work/playing-grind-travel2/evidence/xenon-scoped.txt",
+   "sha256": "8d74f95235f4ec25c7e409c7bf0ea0a01f1ae663e1c3d18aeb13afa04e597d6d"
+  },
+  "green-run.log": {
+   "path": ".work/playing-grind-travel2/evidence/green-run.log",
+   "sha256": "5647754aac721c297ff31657b4011c8cb91c65ec4c08de95add9c349b6b707eb"
+  },
+  "combined-run.log": {
+   "path": ".work/playing-grind-travel2/evidence/combined-run.log",
+   "sha256": "e93b4719b5d815803382586a158f7c259c2e2a1aa420e19d571b3aa18ee1df58"
+  },
+  "originals/COPY_DIGESTS.json": {
+   "path": ".work/playing-grind-travel2/evidence/originals/COPY_DIGESTS.json",
+   "sha256": "d2b60fef302372765a246033a18d3513434bf87b847523acc8b1acfebfc7b351"
+  }
+ },
+ "originals": "evidence/originals/COPY_DIGESTS.json: travel.py/spawn_knowledge.py/tests stub byte-identical to .work/playing-grind-travel originals (original digests re-verified untouched after GREEN); grind_travel_operator.py records pre_fix_sha256 == original sha256 and the current GREEN-state sha256",
+ "smallest_change": "engagement condition only: 'if outcome.actions or outcome.status is not ScriptStatus.DONE' -> 'idle_status = outcome.status in (DONE, ACTIVE); if outcome.actions or not idle_status'; plus additive live-path replan-watcher wiring (observes after the mechanical step like replan_operator) and operator identity playing-grind-travel2; travel.py byte-identical",
+ "window6_packaging": {
+  "ready_to_run": ".work/playing-grind-travel2/READY-TO-RUN.md",
+  "command": "cd /home/otto/dev/ro-bots && nix develop -c uv run python .work/playing-grind-travel2/grind_travel_operator.py --playground --duration 300 <manifest args as window 4/5>",
+  "acceptance": "unchanged: dispatched_actions.moveTo >= 1 toward committed public spawn cells with arrival/budget-only re-evaluation; attack at an observed attackable (post-replan retarget when the authored plan target is absent), damage/XP/loot via existing counters; or honest uncertain/None evidence; anti-flap replans <= 1",
+  "receipts": ".work/playing-grind-travel2/evidence/receipt-<epoch>.json (operator field playing-grind-travel2)"
+ },
+ "prohibited_verified": "no live network/native/SQL/inference/containers (offline pytest twins with fake wires only; import probe had no side effects); no production src or spike edits; no git actions; writes confined to .work/playing-grind-travel2/** and this receipt",
+ "tracked_tree_note": "git status over src/tests/rathena carries the project's standing uncommitted baseline unchanged; this slice added no edits there",
+ "honest_limits": [
+  "live execution NOT run (parent runs window 6); composition of fixed travel + replan watcher is proven offline through the real ScheduledAgent/PlayingClient decision loop with fake wires, not on native sessions",
+  "the live entry's replay of the window-5 live path (start_worldfeed, world-feed host) is unchanged from the reviewed window-5 operator; only the travel engagement condition and the additive watcher wiring differ",
+  "walkack wire in offline twins echoes the server's own zero-cell SELF walkok shape (framediag walk-path contract); live arrival still depends on received 0x0087 frames"
+ ]
+}

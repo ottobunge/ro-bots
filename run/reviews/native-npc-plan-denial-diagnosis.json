@@ -1,0 +1,236 @@
+{
+  "status": "OFFLINE_CAPTURED_DECODER_PASS_CAPTURED_RECEIPT_LEASE_DENIAL_REPRODUCED",
+  "native_authority": "REVOKED_AFTER_ENTRY_NAME_SINGLE_ATTEMPT",
+  "actual_native_acceptance": false,
+  "new_inference_calls": 0,
+  "new_gameplay": 0,
+  "private_values": "[REDACTED]",
+  "evidence": [
+    {
+      "path": ".work/operators/npc-native-host-pilot/runs/c79f725d2bb649ec810762e15b0fb43a/private-001.json",
+      "sha256": "fcc538d9ac1817b622ec781495e7c235eaee34a75947db2807bdeb6e8bbf3582",
+      "request_digest": "503e8c610a17fcdd5bf0af818119bf4fa3f33dc247d4de7d479f1fc7245141f3",
+      "response_digest": "a40243c7847f6b9daf73eafb8186b61deb45277ee1f33c0eab39c5de6078f0da",
+      "request_payload_equal": true,
+      "request_wire_digest_equal": true,
+      "response_wire_digest_equal": true,
+      "http_status": 200,
+      "recorded_response_clock": 385876.889109349,
+      "function": "investigate",
+      "argument_keys": [
+        "rule_topic",
+        "topic"
+      ],
+      "captured_tool_result_structure": {
+        "status": "OK",
+        "truncated": false,
+        "encoded_bytes": 207,
+        "requested_max_utf8_bytes": 2048
+      }
+    },
+    {
+      "path": ".work/operators/npc-native-host-pilot/runs/c79f725d2bb649ec810762e15b0fb43a/private-002.json",
+      "sha256": "19c57ccde6508127a332e1374e0d1ee5216916815ee91d435b31b0d3cc51fb57",
+      "request_digest": "1e3c7321e8c73c1800d2e8eab9eab2e970037aa391d8426db70ccfe6f4395bee",
+      "response_digest": "64b59a1b96f6239f8065e4b40c91611eed06bb499a183e102e42a0b3ce64bee9",
+      "request_payload_equal": true,
+      "request_wire_digest_equal": true,
+      "response_wire_digest_equal": true,
+      "http_status": 200,
+      "recorded_response_clock": 385878.466057135,
+      "function": "investigate",
+      "argument_keys": [
+        "cursor",
+        "topic"
+      ],
+      "captured_tool_result_structure": {
+        "status": "OK",
+        "truncated": false,
+        "encoded_bytes": 456,
+        "requested_max_utf8_bytes": 2048
+      }
+    },
+    {
+      "path": ".work/operators/npc-native-host-pilot/runs/c79f725d2bb649ec810762e15b0fb43a/private-003.json",
+      "sha256": "55f95458e11b538dee4f3dd5d148736258055e26fd31883f37413bcbdd04aaa7",
+      "request_digest": "fd8447e4f4b27ac2d52f05f6fde4d8174f6add742733087dcc1c70ad94c1a2bf",
+      "response_digest": "6db5aae6100063f449db1fa8c6056e1e8f28735fbaf0cf92db04f0c227f457dd",
+      "request_payload_equal": true,
+      "request_wire_digest_equal": true,
+      "response_wire_digest_equal": true,
+      "http_status": 200,
+      "recorded_response_clock": 385889.026348894,
+      "function": "submit_plan",
+      "argument_keys": [
+        "duration",
+        "fallback",
+        "objective",
+        "phases",
+        "progress",
+        "reason",
+        "replan_conditions",
+        "required_facts",
+        "review_after",
+        "safety_stop_conditions",
+        "success"
+      ],
+      "captured_tool_result_structure": null
+    }
+  ],
+  "source": {
+    "decoder": {
+      "path": "src/robots/app/llm_planner.py",
+      "line": 126
+    },
+    "domain_denial": {
+      "path": "src/robots/domain/planning.py",
+      "line": 193
+    },
+    "npc_receipt": {
+      "path": "src/robots/domain/planning.py",
+      "line": 335
+    },
+    "npc_eligibility": {
+      "path": "src/robots/domain/planning.py",
+      "line": 147
+    },
+    "lease_predicate": {
+      "path": "src/robots/domain/planning.py",
+      "line": 318
+    },
+    "planner_static_denial": {
+      "path": "src/robots/app/llm_planner.py",
+      "line": 520,
+      "end_line": 528
+    },
+    "detached_job_capture": {
+      "path": "src/robots/app/planning_job_context.py",
+      "line": 111,
+      "end_line": 116
+    },
+    "generic_worker_denial": {
+      "path": "src/robots/app/planning_runtime.py",
+      "line": 77,
+      "end_line": 83
+    },
+    "pilot_post_requirement": {
+      "path": ".work/operators/npc-native-host-pilot/probe.py",
+      "line": 596,
+      "end_line": 608
+    },
+    "evidence_clock_semantics": {
+      "path": ".work/operators/npc-native-host-pilot/pilot_evidence.py",
+      "line": 114,
+      "end_line": 139
+    }
+  },
+  "replay": {
+    "command": "PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=/home/otto/dev/ro-bots/src /home/otto/dev/ro-bots/.venv/bin/python -B /home/otto/dev/ro-bots/.work/native-npc-plan-denial/replay.py",
+    "scope": "Actual strict response/tool decoders and typed plan decoder, captured schema equality, and actual domain denial against only recorded advisory capability projection; NOT a full fresh lifecycle admission replay.",
+    "request_projection_fields": [
+      "identity"
+    ],
+    "missing_original_request_fields": [
+      "token",
+      "base_version",
+      "deadline"
+    ],
+    "decoder": "PASS",
+    "checks": {
+      "shape": true,
+      "timing": true,
+      "supported": true,
+      "prerequisites": true,
+      "npc_receipt": false
+    },
+    "denial": "npc-receipt",
+    "request_payload_equality": "all 3 reconstructed HTTP JSON bodies match recorded request digests",
+    "schema_equality": true
+  },
+  "structural_checks": {
+    "one_call_each": true,
+    "tool_call_ids_unique": true,
+    "all_enum_vocabulary_valid": true,
+    "nested_phase_and_intent_keys_valid": true,
+    "npc_operation": "next",
+    "phase_kind": "npc",
+    "fallback": "idle",
+    "success": "npc ui advanced",
+    "progress": "npc ui advanced",
+    "required_facts": [
+      "vitals"
+    ],
+    "required_facts_in_captured_vocabulary": true,
+    "receipt_field_equalities": {
+      "npc_id": true,
+      "epoch": true,
+      "map_name": true,
+      "opened_sequence": true,
+      "prompt_sequence": true
+    },
+    "stage_equal": true,
+    "ready": true,
+    "identity_matches": true,
+    "epoch_matches": true,
+    "no_unsupported_phase": true
+  },
+  "lease": {
+    "observed_at": 385872.361781145,
+    "expires_at": 385887.361073146,
+    "recorded_response_clocks": [
+      385876.889109349,
+      385878.466057135,
+      385889.026348894
+    ],
+    "response_offsets_from_expiry": [
+      -10.471963796997443,
+      -8.895016010967083,
+      1.6652757480042055
+    ],
+    "first_to_third_response_seconds": 12.137239545001648,
+    "third_response_after_expiry_seconds": 1.6652757480042055,
+    "three_calls_fit_captured_ui_lease": false,
+    "clock_is": "Post-response byte capture time, before adapter and planner decoding; not request-start time",
+    "verdict": "Captured receipt is expired before third response enters planner decoding. Identity/binding/stage/options are valid; time predicate is the sole failed recorded NPC eligibility component."
+  },
+  "actual_verdict_limits": {
+    "actual_private_worker_exception_not_recorded": true,
+    "actual_fresh_admission_not_replayed": true,
+    "missing_fresh_facts": [
+      "exact original PlanningRequest and post-response planner clock",
+      "post-submit character-read result and observed_capabilities",
+      "host fresh admission snapshot and clock, transport/owner/UI lifecycle state"
+    ],
+    "cause_attribution": "Exact deterministic static failure in the captured advisory state is npc-receipt due to expiry. Detached reader retains the captured receipt by source construction. Generic planning denied does not record original stack; do not claim exclusive actual rejection site or a fresh lifecycle verdict."
+  },
+  "conditioning": {
+    "captured_goal": "grind",
+    "captured_supported": [
+      "idle",
+      "npc",
+      "rest"
+    ],
+    "submitted_single_npc_next": true,
+    "pilot_requires_single_npc_next": true,
+    "goal_scenario_mismatch_not_rejection_cause_for_this_plan": true,
+    "explanation": "Actual plan already meets fixed NEXT scenario. Pilot post-requirement is downstream of generic worker planning denied; goal grind is a separate request-conditioning concern, not this replay denial."
+  },
+  "minimal_named_followup": "At the planner/request timing seam, detect the received UI lease before later completion rounds and ensure bounded investigation fits it; do not widen UI lease, provider budgets or phase whitelist. Separately condition an authorized fixed NEXT request explicitly. Any fix requires its own scoped authority and reached regression; no implementation performed.",
+  "remaining_acceptance": [
+    "original worker-denial site remains unrecorded",
+    "fresh real admission, same-version CLEF review, dispatch and newer matching UI progress require separately authorized native run",
+    "reward, XP and full goals remain unverified"
+  ],
+  "discovery_issues": [
+    "Guessed host_investigation.py and run_evidence.py paths absent; used actual planning_context.py and pilot_evidence.py."
+  ],
+  "evidence_bytes_unchanged": true,
+  "diagnosed_source_sha256": {
+    ".work/operators/npc-native-host-pilot/pilot_evidence.py": "714b7af14915a63f931501f3e7a33ff1987fa3e1e8010cba4a3d6d69e0847ab0",
+    ".work/operators/npc-native-host-pilot/probe.py": "113336e813db06650d92e922b5da7d28d1aede1f300fe4a815ba82d4ebe66381",
+    "src/robots/app/llm_planner.py": "6a1c5b04b81bf22727c9c4b26ecef468be9e3b2fc8feb441acb43950fc1c4e1d",
+    "src/robots/app/planning_job_context.py": "ceda3afb9f4fe1fc412d2ee14f509887824472b5355891017c81763d0297bd18",
+    "src/robots/app/planning_runtime.py": "95405567c5162caa68afff72de8df5bee05797aafd8f03dbb59e81597c41ffdf",
+    "src/robots/domain/planning.py": "98109f5bd161bdcfa171e0f81e6e75932c07edd6c870e340f6a4140efa7113b7"
+  }
+}

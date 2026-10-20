@@ -1,0 +1,11 @@
+{
+  "record": "DECIDE_LATENCY_ROOT_CAUSE_GPU_FALLBACK_FROM_DIRTY_LAUNCH_FIXED_BY_CLEAN_RESTART",
+  "date": "2026-10-19 (~19:3x)",
+  "chain": [
+    "The real-shape decide (build_decision_request payload) took 35.34s against the 4-slot Clef \u2014 over the 30s httpx timeout -> PlayingBackendError -> the w50 tick failures and the w50/51 both-stalls. The hand-made probes that 'passed' were malformed (the server's 400s named the missing fields), masking this for hours.",
+    "35s = ~63 tok/s prefill = CPU speed: the 4-slot Clef launched WHILE the restarted chat server held the iGPU -> its HIP offload failed silently -> CPU fallback. Killing the chat (relaunched -ngl 0 on CPU) helped only partially (35->still 35) because the Clef process itself had already fallen back.",
+    "A CLEAN Clef restart with the GPU free: 12.5-19.6s cold decides (under the timeout) \u2014 the agents' repeated prompts will KV-cache-hit far faster (the historical wedged-server log shows same-shape tasks releasing in ~0.5s).",
+    "Lesson: any backend relaunch must happen with the GPU otherwise free, and the validation probe must use the REAL request shape (build_decision_request), not a hand-made one."
+  ],
+  "operational_now": "Clef relaunched clean (proc_bf2c9d556815, -np 4 -c 16384); chat on CPU (proc_5029161dc030, -ngl 0); window 52 live (proc_096043ac42be) with both agents on the field."
+}

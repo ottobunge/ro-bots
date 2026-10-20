@@ -1,0 +1,305 @@
+{
+  "passed": true,
+  "approval_scope": "Pinned-defaults world preparation source/configuration fix only; independent offline review, not a full milestone or independently witnessed live-startup approval.",
+  "security_concerns": [],
+  "logic_errors": [],
+  "findings": [],
+  "summary": "Pinned four-root defaults merge preserves native table defaults and import ordering while retaining effective private settings and fresh-only preparation. No scoped blocking source findings.",
+  "source_revision": "e985006171d2eb320ee512a653f4c83aea3d81b6",
+  "independently_executed": {
+    "tests": {
+      "cases": 162,
+      "unique_cases": 162,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "world_prepare_coverage": {
+      "covered_lines": 131,
+      "num_statements": 131,
+      "percent_covered": 100.0,
+      "percent_covered_display": "100",
+      "missing_lines": 0,
+      "excluded_lines": 0,
+      "percent_statements_covered": 100.0,
+      "percent_statements_covered_display": "100"
+    },
+    "gates": {
+      "pytest": {
+        "command": [
+          "nix",
+          "develop",
+          "--offline",
+          "-c",
+          "uv",
+          "run",
+          "--offline",
+          "--no-sync",
+          "pytest",
+          "tests/test_world_native_defaults.py",
+          "tests/test_world_prepare.py",
+          "tests/test_world_prepare_cleanup.py",
+          "tests/test_world_prepare_cli.py",
+          "tests/test_world_volume_import.py",
+          "-o",
+          "pythonpath=src",
+          "-p",
+          "no:cacheprovider",
+          "--tb=short",
+          "--junitxml=/home/otto/.hermes/cache/scratch/wnr/junit.xml",
+          "--cov=robots.adapters.world_prepare",
+          "--cov-report=term-missing",
+          "--cov-report=json:/home/otto/.hermes/cache/scratch/wnr/coverage.json",
+          "--cov-fail-under=100"
+        ],
+        "exit_code": 0,
+        "log": "/home/otto/.hermes/cache/scratch/wnr/pytest.log"
+      },
+      "black": {
+        "command": [
+          "nix",
+          "develop",
+          "--offline",
+          "-c",
+          "uv",
+          "run",
+          "--offline",
+          "--no-sync",
+          "black",
+          "--check",
+          "--workers",
+          "1",
+          "src/robots/adapters/world_prepare.py",
+          "tests/test_world_native_defaults.py"
+        ],
+        "exit_code": 0,
+        "log": "/home/otto/.hermes/cache/scratch/wnr/black.log"
+      },
+      "ruff": {
+        "command": [
+          "nix",
+          "develop",
+          "--offline",
+          "-c",
+          "uv",
+          "run",
+          "--offline",
+          "--no-sync",
+          "ruff",
+          "check",
+          "--no-cache",
+          "src/robots/adapters/world_prepare.py",
+          "tests/test_world_native_defaults.py"
+        ],
+        "exit_code": 0,
+        "log": "/home/otto/.hermes/cache/scratch/wnr/ruff.log"
+      },
+      "mypy": {
+        "command": [
+          "nix",
+          "develop",
+          "--offline",
+          "-c",
+          "uv",
+          "run",
+          "--offline",
+          "--no-sync",
+          "mypy",
+          "--strict",
+          "--cache-dir=/home/otto/.hermes/cache/scratch/wnr/mypy",
+          "src/robots/adapters/world_prepare.py",
+          "tests/test_world_native_defaults.py"
+        ],
+        "exit_code": 0,
+        "log": "/home/otto/.hermes/cache/scratch/wnr/mypy.log"
+      },
+      "bandit": {
+        "command": [
+          "nix",
+          "develop",
+          "--offline",
+          "-c",
+          "uv",
+          "run",
+          "--offline",
+          "--no-sync",
+          "bandit",
+          "-q",
+          "-c",
+          "pyproject.toml",
+          "src/robots/adapters/world_prepare.py"
+        ],
+        "exit_code": 0,
+        "log": "/home/otto/.hermes/cache/scratch/wnr/bandit.log"
+      },
+      "vulture": {
+        "command": [
+          "nix",
+          "develop",
+          "--offline",
+          "-c",
+          "uv",
+          "run",
+          "--offline",
+          "--no-sync",
+          "vulture",
+          "src/robots/adapters/world_prepare.py",
+          "vulture_whitelist.py",
+          "--min-confidence",
+          "85"
+        ],
+        "exit_code": 0,
+        "log": "/home/otto/.hermes/cache/scratch/wnr/vulture.log"
+      },
+      "xenon": {
+        "command": [
+          "nix",
+          "develop",
+          "--offline",
+          "-c",
+          "uv",
+          "run",
+          "--offline",
+          "--no-sync",
+          "xenon",
+          "src/robots/adapters/world_prepare.py",
+          "--max-absolute",
+          "B",
+          "--max-modules",
+          "B",
+          "--max-average",
+          "A"
+        ],
+        "exit_code": 0,
+        "log": "/home/otto/.hermes/cache/scratch/wnr/xenon.log"
+      }
+    },
+    "additional_public_source_probes": {
+      "status": "passed",
+      "private_scalar_overrides_verified": 58,
+      "role_closure_paths": [
+        "conf/char_athena.conf",
+        "conf/grf-files.txt",
+        "conf/inter_athena.conf",
+        "conf/log_athena.conf",
+        "conf/login_athena.conf",
+        "conf/map_athena.conf",
+        "conf/maps_athena.conf",
+        "conf/subnet_athena.conf"
+      ],
+      "default_config_asset_paths": [
+        "conf/char_athena.conf",
+        "conf/inter_athena.conf",
+        "conf/login_athena.conf",
+        "conf/map_athena.conf",
+        "conf/maps_athena.conf"
+      ],
+      "public_assets": 679,
+      "host_runtime_files": 686,
+      "role_import_walk_paths": 18,
+      "required_char_sql_table_keys": 40,
+      "malformed_import_rejections": 6,
+      "unchanged_public_maps": true,
+      "private_controls_unchanged": true,
+      "recursive_effective_private_overrides": true,
+      "import_order_and_exact_duplicate_behavior": true,
+      "char_per_account_zero": "unlimited, as pinned native initialization states",
+      "source_attestation": "public_assets actual SOURCE and PACKAGE NAR attestation passed",
+      "pinned_public_file_hashes": {
+        "/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source/conf/char_athena.conf": "c407d15be526a2ab70ed2c61d2a5d0960073b933d5cc61803a4fe766b4166074",
+        "/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source/conf/inter_athena.conf": "ef28ffd29a5f4d71eca637fc7678fffc9091109c40ee083ef02c32a54101ee4a",
+        "/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source/conf/login_athena.conf": "936b81ca5d1e4efbf5ef80e3e83f95163191329a8b6a6a8863c293456293bd10",
+        "/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source/conf/map_athena.conf": "5b54eb9f510d8b657015bbb546e1cd5cdb526f623fa7b0a0d9abcd3dcd712b77",
+        "/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source/conf/maps_athena.conf": "de54b6246e89838dabdc2cdf7489b68b9397d54616994eb54b2c2906edb5f94e",
+        "/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source/src/char/char.cpp": "141dd411c11ec9663d49e1274203ba28bdf3761cce0f98782a8cfd37ee34cdff"
+      },
+      "native_executed": false,
+      "database_executed": false
+    },
+    "probe_script": "/home/otto/.hermes/cache/scratch/wnr/probe.py",
+    "dependency_installs": false,
+    "elapsed_scoped_gates_seconds": 34.03
+  },
+  "reviewed_contract": [
+    "create validates typed settings and refuses every existing target before public assets/default reads or allocation.",
+    "create obtains actual public_assets attestation before _role_configs reads fixed pinned roots using existing config_asset closure; no alternate source or artifact helper introduced.",
+    "Four roots merge defaults, replaced scalar fields are removed before private values append, source-order imports persist except exact private-renderer duplicates; optional templates removed by existing helper.",
+    "58 private scalar overrides checked exactly once in own root and effective after recursive import walk; credentials checked by equality only, no private values or private-value hashes recorded.",
+    "Private logging, GRF and subnet bytes unchanged; Docker DNS peers, advertised addresses and role ports preserved.",
+    "All 40 pinned native char SQL table keys checked against 70 offline schema tables by regression, including clan/clan_alliance; native char_per_account zero denotes unlimited.",
+    "Existing diagnostic private_configs/build_bundle contract unchanged; only world preparation applies default merging.",
+    "679 public assets plus seven private role paths yields 686 prepared host runtime files. Eighth role-return path maps_athena.conf is byte-identical existing public config. Three old diagnostic ELFs are included in host public assets but not the separately documented 683-file live import."
+  ],
+  "snapshot": {
+    "repository_fingerprint_count": 137,
+    "unchanged_before_after_tests_and_after_probes": true,
+    "matched_prior_pinned_dependency_hashes": 10,
+    "reviewed_hashes": {
+      "flake.lock": "c9c0bac69415b99a29ef3fe149b6f04ef54d291989bdf7218cf819ed52edf2a0",
+      "flake.nix": "185e4a4babf62a40484c347f59653bd11b79ce847316a3a90349c8545d38a359",
+      "pyproject.toml": "e8ae0849a413bc3d705f081f609b92dae702bbd3e491b2c3aeb5d8665c458fba",
+      "uv.lock": "2d7b4c187078488d7625e4fd4fa982745cab8d6a65b2ff3e382ffa286f1df245",
+      "src/robots/adapters/world_prepare.py": "6742f7b89728cb309853f689ca17f37db6d130a5415f02ee1ea9faceb1031d6a",
+      "tests/test_world_native_defaults.py": "5d5bc931f5c29a1c138ec3e23032bba3c1f1c342e68283d544bc2d3b32371254",
+      "src/robots/adapters/rathena_runtime.py": "0a52cbbae5ec459022c1348e33c65105c8cf0776a6bf68bca05e1066d8c74293",
+      "src/robots/adapters/rathena_runtime_assets.py": "8cf599ddd633c82879d5a6fc0ed2d98f13399e4094262b6bcafb25c9841650fc",
+      "src/robots/adapters/world_bootstrap_sql.py": "cfa64780b9356b04a2e8eb2699fb0e6703f4b3f6ae9b815fb454a03f9b8b2ce5",
+      "src/robots/adapters/rathena_bootstrap_assets.py": "257f09e9c318dc060b21e76326a4510fce2d9fc06d048047e0949e098ab3c3c7"
+    },
+    "full_fingerprint_evidence": "/home/otto/.hermes/cache/scratch/wnr/results.json"
+  },
+  "tdd_evidence": {
+    "attribution": "Existing implementer artifact reviewed; RED not independently reenacted or claimed as reviewer execution.",
+    "report": "run/reviews/world-native-defaults.json",
+    "reported_red_exit_code": 1,
+    "reported_failure": "native SQL defaults missing",
+    "reviewer_green_rerun": true
+  },
+  "separate_parent_evidence": {
+    "live_startup": {
+      "attribution": "Parent-produced persisted report only. Reviewer did not access engine, SQL, native processes, private live config directories or private logs.",
+      "report": "run/reviews/first-test-world-native-defaults-delayed.json",
+      "report_sha256": "fbfcae82652879a2cde3b39917ab623538ffd7c229d725df8a7cc1c30fdc2673",
+      "reported_four_services_running": true,
+      "reported_database_health": "healthy",
+      "reported_role_readiness_and_interserver_connections": true,
+      "reported_loaded_maps": 1265,
+      "reported_loaded_npcs": 13036,
+      "reported_schema_tables": 70,
+      "reported_server_only_accounts": 1,
+      "reported_human_accounts": 0,
+      "reported_characters": 0,
+      "reported_database_preserved": true,
+      "client_login_or_gameplay_proven": false
+    },
+    "complete_gate": {
+      "attribution": "Parent-produced persisted gate report, not rerun as this scoped review.",
+      "report": "run/reviews/native-defaults-final-task-check.json",
+      "exit_code": 0,
+      "scope": "Configured complete Python gate after native defaults and both live bootstrap fixes",
+      "public_fingerprints_unchanged": true,
+      "public_fingerprint_count": 134,
+      "tests": 1839,
+      "subtests": 65,
+      "test_seconds": 282.86,
+      "coverage_percent": 94.32,
+      "log": "run/reviews/native-defaults-final-task-check.log"
+    }
+  },
+  "residuals": [
+    "Offline assertions and 100% statement coverage are not native parser, startup, gameplay, inference or full-goal acceptance.",
+    "Parent-attributed delayed native evidence is separate; no independent human client/bot gameplay verification performed.",
+    "Known optional db/import/map_cache.dat, mob_avail.yml and npc/barters.yml warnings remain outside this defaults contract; not raised as scoped blockers.",
+    "Trusted-user fresh filesystem scope only; no hostile-UID, power-loss, engine ownership/provenance or world reset authority added."
+  ],
+  "changes": {
+    "repository_files_created": [
+      "run/reviews/world-native-defaults-independent-review.json"
+    ],
+    "source_or_test_files_modified": [],
+    "scratch_directory": "/home/otto/.hermes/cache/scratch/wnr"
+  },
+  "issues_encountered": [
+    "No execution blocker; Nix emitted expected dirty-worktree warnings."
+  ]
+}

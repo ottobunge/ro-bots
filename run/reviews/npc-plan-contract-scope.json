@@ -1,0 +1,39 @@
+{
+  "status": "PURE_ACTUAL_DECODER_NPC_INTENT_RED_REACHED_NOT_HOST_EXECUTION",
+  "baseline": {
+    "path": "/home/otto/.hermes/cache/scratch/npc-plan-contract/baseline.json",
+    "sha256": "3bb624187d55a94fccd02c14d8591e3a0f3ce1f3328f9057556ac3eefa632fe0",
+    "inputs": 388
+  },
+  "owned_source": [
+    "src/robots/domain/planning.py",
+    "src/robots/app/llm_planner.py"
+  ],
+  "owned_new_test": "tests/test_npc_plan_contract.py",
+  "owned_new_report": "run/reviews/npc-plan-contract.json",
+  "contract": [
+    "Typed NPC phase with one explicit NEXT or received-index CHOOSE intent only",
+    "Bound npc_id/epoch/map/opened sequence/prompt sequence/expected stage; optional option index only for CHOOSE",
+    "Separate default-None typed caller NPC observation bound to PlanningIdentity; explicit fresh readiness and finite observation/deadline at current admission",
+    "Actual strict JSON decoder/model schema -> PlanLifecycle.admit with fresh receipt comparison",
+    "No arbitrary text/name/command, no source NPC lookup, no CLOSE or submit-name intent",
+    "Current host remains IDLE/REST-only; no NPC advertisement without matching eligible typed observation; no source/controller/execution/runtime changes",
+    "Legacy non-NPC constructors/payloads/default capabilities preserve behavior and schemas; precise unknown-key denial",
+    "One NPC phase, no NPC mixed/multiphase/destination/species/item; NPC progress only npc ui advanced, not closure or reward success"
+  ],
+  "not_authorized": [
+    "Native effects",
+    "Model/network calls",
+    "Host NPC execution wiring",
+    "Source/receiver/protocol updates",
+    "Context budget expansion",
+    "Readiness claims from schema alone"
+  ],
+  "first_red": {
+    "test": "/home/otto/.hermes/cache/scratch/npc-plan-contract/test_npc_decode.py",
+    "xml": "/home/otto/.hermes/cache/scratch/npc-plan-contract/parent-decoder-red.xml",
+    "cause": "Actual decoder denies npc_intent extra phase field; retained explicit assertion",
+    "scope": "Pure decoder feature tracer, not host path"
+  },
+  "full_goals": "OPEN"
+}

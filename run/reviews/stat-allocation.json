@@ -1,0 +1,76 @@
+{
+ "scope": "Criterion-9 leg 1, offline TDD only: composition-side build setup phase (stat allocation) in .work/stat-allocation/**; no production file touched (0x00bb/0x00bc not wired in the adapters, see wire_gate); no native connection, no SQL, no live world effects",
+ "revision": "15e0fef5334a7d9d7bb0ae6b8953e367e828bfb2",
+ "wire_gate": {
+  "verdict": "NOT_WIRED — composition-side lane build, patch-ready production description produced",
+  "evidence": [
+   "spikes/003-clientless-limbs/packetdb.py: no 0x00bb/0x00bc status-up entries",
+   "src/robots/adapters/native_gameplay.py _validate sizes table: no 0x00bc; no 0x00bb send builder exists (grep STATUS_UP src/ = 0 hits)",
+   "src/robots/adapters/native_gameplay.py _status: only 0x00b0 param 24 (inventory-known marker) and params 1/2 (xp); SP_STATUSPOINT (param 9) framed (8B in sizes) but discarded",
+   "src/robots grep 'stat|STAT' | grep -i allocat: no hits"
+  ],
+  "task_brief_correction": "0x00b0 param 24 is SP_WEIGHT, not status points; SP_STATUSPOINT is param 9 (rathena/src/map/map.hpp:498-500). Production already reads param 24 as the weight marker, consistent with map.hpp."
+ },
+ "red": {
+  "command": "env -u PYTEST_DISABLE_PLUGIN_AUTOLOAD -u PYTEST_ADDOPTS TMPDIR=/home/otto/.hermes/cache/scratch/stat_alloc UV_OFFLINE=1 nix develop --offline -c uv run --offline --no-sync pytest .work/stat-allocation/test_stat_setup_phase.py -o pythonpath=src --tb=line -q",
+  "returncode": 1,
+  "failure": "ModuleNotFoundError: No module named 'setup_phase'",
+  "test_written_before_module": true
+ },
+ "green": {
+  "command": "env -u PYTEST_DISABLE_PLUGIN_AUTOLOAD -u PYTEST_ADDOPTS TMPDIR=/home/otto/.hermes/cache/scratch/stat_alloc UV_OFFLINE=1 nix develop --offline -c uv run --offline --no-sync pytest .work/stat-allocation/test_stat_setup_phase.py -o pythonpath=src -q --tb=short",
+  "returncode": 0,
+  "tests_passed": 13
+ },
+ "gates": {
+  "black_check": "passed: 3 files would be left unchanged (explicit paths; .work/ is exclude-listed for directory runs)",
+  "ruff": "passed: All checks passed (repo config, .work/stat-allocation/)",
+  "mypy_strict": "passed: Success, no issues found in 2 source files",
+  "full_gate": "NOT RUN by this lane (shared dirty tree, parent owns it); this lane added no tracked file: git status src/tests unchanged by this lane"
+ },
+ "protocol_facts": {
+  "send": "CZ_STATUS_CHANGE 0x00bb, 5 bytes <HHB packetType statId amount>; parseable_packet(0x00bb,5,clif_parse_StatusUp,2,4) clif_packetdb.hpp:65; stat ids SP_STR=13..SP_LUK=18; this slice sends amount 1",
+  "ack": "ZC_STATUS_CHANGE_ACK 0x00bc, 6 bytes <HHBB packetType sp ok value>; ok 0 fail / 1 success; failure value is 0 (clif.cpp:4291-4305); success value is the final stat capped to 255",
+  "observation": "0x00b0 8 bytes signed: param 9 SP_STATUSPOINT (map.hpp:498-500) on every level-up pc.cpp:8258,8270 and after each successful spend pc.cpp:8907; param 11 base level; params 13-18 stat values; params 24/25 are WEIGHT/MAXWEIGHT, not points",
+  "session_start": "clif_initialstatus (clif.cpp:4123, called at LoadEnd clif.cpp:10917) sends ZC_STATUS 0x00bd 44 bytes: points uint16 @2 (capped INT16_MAX), str/agi/vit/int/dex/luk uint8 @4,6,8,10,12,14 each followed by its next-raise-cost byte (pc_need_status_point(stat,1))",
+  "cost": "pre-re PC_STATUS_POINT_COST(low)=1+(low+9)/10 (pc.cpp:8803, RENEWAL_STAT off); pc_statusup refuses cost > status_point and caps at pc_maxparameter (99 pre-re first class)",
+  "server_order_after_spend": "0x00b0 USTR cost indicator (params 32-37), then 0x00b0 param 9, then 0x00bc (pc.cpp:8905-8913)"
+ },
+ "feature": {
+  "files": [
+   ".work/stat-allocation/setup_phase.py",
+   ".work/stat-allocation/test_stat_setup_phase.py",
+   ".work/stat-allocation/conftest.py"
+  ],
+  "source_of_truth": "run/knowledge/builds/pre-re/novice-bootstrap.json stat_progression (phase base_level 10, allocation str 9, dex 9, others 1; 32 of 80 points spent matches 8+8 raises at cost 2 each)",
+  "policy": "resumable (re-derived every tick from observed points/stats), idempotent (sidecar targets cap spends; leftovers held per leftover_into), bounded (max 8 spend packets per tick), ordered (sidecar allocation key order; an unaffordable leg holds the remainder instead of reshaping the build via a later cheaper leg), conservative (never spend from unobserved/negative points; unknown stat values are never guessed — sessions always receive 0x00bd at LoadEnd)",
+  "tests_cover": "sidecar order until points run out; 5-byte packet layout; resume on next level-up + idempotent stop; ack reflection and failure-ack non-advance; 0x00bd seeding; negative/unknown points and param-24 non-spendability; build_current query with gear legs; bounded batching; setup-before-script ordering seam; all twin frames accepted by production NativeGameplayTracker.consume_snapshot (framing consistency, incl. currently-ignored 0x00bc/0x00bd); sidecar validation rejects; w39-shaped full allocation (48 pts -> str 9 dex 9, 16 held); brain-facing observation includes status_points"
+ },
+ "integration_contract": {
+  "from_operator": "Build setup phase legs ordered (1) stats, (2) skills, (3) equipment assignment, then grinding/questing/socializing; setup is resumable and re-checks on level-up; setup actions must precede goal-script actions in the same tick; the parent dispatches the priority-ladder slice against this interface",
+  "surface": "BuildSetup(observer, sidecar, worn_items) exposes observation() (status_points, base_level, stats, build_current, pending_stat_spends, pending_gear_wears), build_current(), stat_spends(after=()), equipment_wears(), ordered_actions(script_actions), stat-level actions StatusUp(packet); StatObserver.observe_frame(pid, raw) consumes 0x00b0/0x00bc/0x00bd frames",
+  "not_done_here": "No hook in GrindScript or any goal script; no GameAction union edit (outside owned files, mirroring the _equip_progression precedent); the parent ladder concatenates ordered_actions(script.step(state).actions)"
+ },
+ "production_patch": {
+  "status": "patch-ready description only — see .work/stat-allocation/README.md",
+  "summary": "1) domain/actions.py: add StatusUp action; 2) adapters/native_gameplay.py: register 0x00bc=6 in _validate sizes, retain 0x00b0 param 9 and 0x00bc acks in the tracker/view; 3) app/playing_runtime.py: a _stat_progression step beside _equip_progression riding perform_native with self.wire._send(struct.pack('<HHB', 0x00BB, stat, 1)), gated on build-state and bounded per epoch/tick; 4) brain observation: surface status_points via the setup observation(); each step lands test-first in tests/ with the named twin tests as the behavioral contract"
+ },
+ "fixture0_savepoint_followup": {
+  "question": "can fixture_0's savepoint move off prt_in happen through the game instead of DB surgery?",
+  "answer": "YES — via Kafra NPC menu; there is NO dedicated savepoint packet in this rathena (grep savepoint src/map/clif*.hpp: no client parse; CZ_CHOSE_SAVEPOINT does not exist). savepoint is a server-side script command (script.cpp:5644) executed when the player picks the Save menu option",
+  "wire_shape": "existing packets only: walk + TalkToNpc (click), receive mes pages + ZC menu, send CZ_CHOOSE_MENU 0x00b8 with the one-based Save index (1 for prontera Kafras: F_KafSet/F_Kafra menu_num=getarg(1)=0 -> default menu 'Save' first, functions_kafras.txt:78,141-142), then 0x0146 close; selecting Save returns from F_Kafra and the NPC body runs savepoint \"prontera\",157,327,1,1 (kafras.txt:233-245)",
+  "targets": "prontera Kafras loaded by the deployed world (map_athena.conf imports npc/pre-re/scripts_main.conf -> npc/scripts_athena.conf:129 -> npc/kafras/kafras.txt): kaf_prontera 152,326 (saves 157,327), kaf_prontera2 151,29, kaf_prontera3 29,207 — all default menu, Save = one-based index 1",
+  "authority": "no ack frame exists for savepoint; acceptance requires the existing bounded server-side read of the character's savepoint columns (or relog observation), not a wire receipt",
+  "caveat": "Kafra storage costs 40z per prontera callfunc args and Save itself is free; the bot must be on prontera and NPC-adjacent (range rules as for any TalkToNpc)"
+ },
+ "live_context": {
+  "w39": "run/reviews/playing-grind-operator-live-window39.json + -analysis.json: fixture_1 base 4 / job 8 at 7.5x rates, ~1 damage/attack, points unallocated — exactly the shape test_w39_window_fixture_shape_is_served covers offline (48 pts -> str 9 dex 9, 16 held)",
+  "next_live_step": "parent-owned: wire the setup phase into the playing runtime per production_patch, then a live window verifies real 0x00bb dispatch and param-9 decrement"
+ },
+ "known_limits": [
+  "Composition-side only: no production adapter registers 0x00bb/0x00bc yet, so a live bot cannot spend until the parent lands the patch",
+  "Skill points (leg 2) and equipment wear actions (leg 3) are exposed as surfaces (pending_gear_wears) but not implemented here",
+  "Sidecar targets above base_level 10 phases (first-class builds) follow the same phase_for semantics but only the novice bootstrap is exercised live today",
+  "wear_targets consumable filter is the documented lane constant CONSUMABLE_ITEM_IDS={501}; the equipment slice should replace it with an item-DB-backed check"
+ ]
+}

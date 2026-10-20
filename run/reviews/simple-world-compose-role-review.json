@@ -1,0 +1,143 @@
+{
+  "verdict": "PASS",
+  "scope": "Frozen corrected ADR-019 Compose/Taskfile integration, safe config rendering, and offline actual image entrypoint/tree matching; NOT initialized-world/live lifecycle/gameplay acceptance",
+  "security_concerns": [],
+  "logic_errors": [],
+  "source_freeze": {
+    "record": "run/reviews/simple-world-role-integration.json",
+    "input_count": 7,
+    "before_matches_record": true,
+    "after_matches_before_and_record": true,
+    "hashes": {
+      "Taskfile.yml": "efd31ef269e9dcbc407a4e560c806800899d1f3d65ae87553cdb62e2b2962e86",
+      "scripts/world.sh": "d86f803030a0f75cfbfebd98610e0c0f868f1a0ad8f1702bd724a51f5f0b3cf4",
+      "docker-compose.worlds.yml": "b71ae6fd77d3b8ea291c9aec85450047c33fdfedb35a34c55e4a89eae642f1e7",
+      "src/robots/adapters/world_compose.py": "e144168fef33ad54fa61ccd7f713219901bde514b039d60a460913d9746ccd2a",
+      "tests/test_world_task_integration.py": "2dcb48f49484bc7a2a3133c2fe5ba94e341b6127031f9aa6c3ff295bd4cec4a2",
+      "tests/test_taskfile_safety_labels.py": "c0a0f9fae4607aba4c7de3479abe41306719ba020d92aba59e6cb46564c34a06",
+      "tests/test_world_compose.py": "964996888c264148b4d804842b1746b42895497df6eb674e2196ccd46860a0f2"
+    }
+  },
+  "verification": {
+    "runs": [
+      {
+        "junit": "/home/otto/.hermes/cache/scratch/simple-role-review-eibl4km7/scoped-final.xml",
+        "distinct_passed": 71,
+        "failures": 0,
+        "errors": 0,
+        "skips": 0
+      },
+      {
+        "junit": "/home/otto/.hermes/cache/scratch/simple-role-review-eibl4km7/review.xml",
+        "distinct_passed": 27,
+        "failures": 0,
+        "errors": 0,
+        "skips": 0
+      }
+    ],
+    "total_distinct_passed": 98,
+    "deduplicated_by": [
+      "classname",
+      "name"
+    ],
+    "parent_119_cases_not_recounted_or_claimed": true,
+    "toolchain": "Pinned nix develop --offline --no-write-lock-file; existing uv --offline --frozen --no-sync; no install/rebuild",
+    "actual_compose_config_only": true,
+    "effectful_operations": "Injected-runner route assertions and validated plans only"
+  },
+  "image_evidence": {
+    "image": "/nix/store/flv0x7w0yvrpjpj8zkx03mawxzfzgfqc-rathena-playable.tar.gz",
+    "reader_only": true,
+    "sha256": "c3e4eca98ac0180bd334e177ac754ae88de8e481a002ecdbbee885f1bf2887f3",
+    "config": {
+      "Entrypoint": [
+        "/nix/store/plsvbs632sakjv9cl1pbzvjnnqs8y06n-rathena-playable-20180704-e985006171d2/libexec/rathena/login-server"
+      ],
+      "Cmd": [],
+      "User": "10000:10000",
+      "WorkingDir": "/world"
+    },
+    "role_links": {
+      "char": {
+        "path": "/libexec/rathena/char-server",
+        "is_symlink": true,
+        "link_target": "/nix/store/plsvbs632sakjv9cl1pbzvjnnqs8y06n-rathena-playable-20180704-e985006171d2/libexec/rathena/char-server",
+        "executable_target_exists": true,
+        "target_is_elf": true
+      },
+      "login": {
+        "path": "/libexec/rathena/login-server",
+        "is_symlink": true,
+        "link_target": "/nix/store/plsvbs632sakjv9cl1pbzvjnnqs8y06n-rathena-playable-20180704-e985006171d2/libexec/rathena/login-server",
+        "executable_target_exists": true,
+        "target_is_elf": true
+      },
+      "map": {
+        "path": "/libexec/rathena/map-server",
+        "is_symlink": true,
+        "link_target": "/nix/store/plsvbs632sakjv9cl1pbzvjnnqs8y06n-rathena-playable-20180704-e985006171d2/libexec/rathena/map-server",
+        "executable_target_exists": true,
+        "target_is_elf": true
+      }
+    },
+    "archive_role_targets": {
+      "char": {
+        "regular_file": true,
+        "executable": true,
+        "elf_magic": true
+      },
+      "login": {
+        "regular_file": true,
+        "executable": true,
+        "elf_magic": true
+      },
+      "map": {
+        "regular_file": true,
+        "executable": true,
+        "elf_magic": true
+      }
+    }
+  },
+  "image_sha256_matches_implementer_record": true,
+  "verified_contracts": [
+    "debug/test/prod-default/named production derive distinct project/volume identities; invalid raw names and non-string coercions rejected",
+    "Task passes selected WORLD via environment and shell quotes; fresh actual Task probes reject shell metacharacters without command execution",
+    "COMPOSE_* input overrides removed and --env-file /dev/null disables implicit dotenv; fresh actual config override probes preserve derived names",
+    "Only wipe-test selects compose down without -v followed by exact test volume rm without force; failed first runner stops deletion",
+    "Plans never invoke runner; mutation routes require explicit CLI world and prepared schema/private secret files/all four supplied image references",
+    "Actual role entrypoints override image login-only default; all three archive root symlinks resolve to executable role ELF members in the archive, with runtime argv [--runtime-root,/world/runtime]",
+    "Actual changed native-role host publication equals container target; not native listener/client acceptance",
+    "SQL persists under world volume db subtree, has no host database publish, and network is ordinary project default",
+    "safe_config exposes only project/volume/network/named-volume mounts; no environment, secret contents, secret-file paths or bind paths",
+    "Status JSON array and JSON-lines shapes expose only Name/Service/State; provider failure and malformed JSON never echo synthetic private marker"
+  ],
+  "nonblocking_limits": [
+    {
+      "source": "src/robots/adapters/world_compose.py:41,85-118",
+      "issue": "down/status also require all prepared config inputs because Compose interpolates the whole template; operational usability limit, not a new isolation boundary"
+    },
+    {
+      "source": "src/robots/adapters/world_compose.py:45,62,235-237",
+      "issue": "Malformed JSON reports JSONDecodeError line/column rather than a generic provider-error message, but fresh probes establish private output is not echoed"
+    },
+    {
+      "source": "docker-compose.worlds.yml:2-6,39-46",
+      "issue": "Private SQL ownership/permissions and init-hook import, volume/runtime preparation for UID10000, MariaDB file UID, real agent manifest/service images and client connectivity remain functional next steps"
+    }
+  ],
+  "effects": {
+    "engine_resource_mutations": false,
+    "image_loaded": false,
+    "native_run_mode_executed": false,
+    "sql_executed": false,
+    "world_initialized": false,
+    "source_fixed": false,
+    "global_task_check_run": false,
+    "staged_or_pushed": false
+  },
+  "files_created": [
+    "run/reviews/simple-world-compose-role-review.json",
+    "/home/otto/.hermes/cache/scratch/simple-role-review-eibl4km7/ (fresh reviewer probes, JUnit, freeze and archive-reader evidence)"
+  ],
+  "summary": "Corrected simple routing and actual per-role image entrypoints pass independently with stable seven-file freeze; no blocking source findings in this scope."
+}

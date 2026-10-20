@@ -1,0 +1,142 @@
+{
+  "schema": "native-encounter-context-independent-review/v1",
+  "passed": false,
+  "status": "OFFLINE_COMPONENT_REVIEW_FAILED_REACHED_HISTORY_CURSOR_FINDING",
+  "reviewed_report": {
+    "path": "run/reviews/playing-mvp-native-encounter-context-fix.json",
+    "sha256": "7cdd4e39aaa2b3567abc06e1bd4f231e07748544a740901535fc7ac99f063366"
+  },
+  "scope": "Pure decode_actor_species, build_hit_fact, immutable scalar provenance and HitHistory. No runtime integration, gameplay acceptance, repairs or source edits.",
+  "source_freeze": {
+    "authority": "/home/otto/.hermes/cache/scratch/encounter-final-review-freeze.json",
+    "entries": 9,
+    "before_matches": true,
+    "after_matches": true,
+    "before": "/home/otto/.hermes/cache/scratch/ec-independent-p8_l13my/freeze-before.json",
+    "after": "/home/otto/.hermes/cache/scratch/ec-independent-p8_l13my/freeze-after.json",
+    "identical_before_after_sha256": "62c1fc9407256cb7290f927dd6815b01b01938aa5926ae37bb736ee62f773d1d"
+  },
+  "security_blockers": [],
+  "logic_blockers": [
+    {
+      "id": "EC-HISTORY-OVERSIZE-CURSOR",
+      "severity": "medium",
+      "location": "src/robots/adapters/native_encounter_context.py:204-215",
+      "finding": "A valid builder-produced hit with oversized provenance is dropped without consuming its received sequence. After observing that hit, the history accepts an older hit and then accepts the same sequence again with changed provenance.",
+      "cause": "The empty-pending return at lines 211-212 precedes the cursor assignment at line 214. The level binding is accepted as any nonempty string; a 1000-character Unicode binding produces a valid 3196-byte fact, exceeding the 2048-byte history budget.",
+      "reached_trace": [
+        {"sequence": 3, "accepted": true, "retained_sequences": [3]},
+        {"sequence": 10, "fact_utf8_bytes": 3196, "accepted": false, "retained_sequences": [3]},
+        {"sequence": 9, "accepted": true, "retained_sequences": [3, 9]},
+        {"sequence": 10, "fact_utf8_bytes": 192, "accepted": true, "retained_sequences": [3, 9, 10]}
+      ],
+      "impact": "The ordinary monotonic duplicate/older rejection guarantee does not extend across a budget-dropped valid receipt. Byte and record bounds remain intact; this is not an unbounded-memory or hostile-dataclass finding.",
+      "required_contract": "Dropping an oversized same-epoch newer receipt must not permit subsequently ingesting older or equal-sequence facts. Define and enforce the receipt-consumption/drop policy; no repair was performed.",
+      "regression": "/home/otto/.hermes/cache/scratch/ec-independent-p8_l13my/test_independent_boundaries.py::test_oversized_receipt_must_not_allow_older_or_same_sequence_rewrite",
+      "direct_trace": "/home/otto/.hermes/cache/scratch/ec-independent-p8_l13my/oversized-replay.json"
+    }
+  ],
+  "quality_blockers": [],
+  "source_actual_compiler_verification": {
+    "passed": true,
+    "profile": {
+      "revision": "e985006171d2eb320ee512a653f4c83aea3d81b6",
+      "packetver": 20180704,
+      "client_family": "MAIN",
+      "ruleset": "pre-re",
+      "obfuscation": "ABSENT"
+    },
+    "immutable_source_profile_sender_binding_fresh": true,
+    "original_actual_gcc_clang_outputs_inspected": true,
+    "fresh_gcc_full_header_compile_and_executable_run": true,
+    "fresh_clang_compile": false,
+    "flags": "Original commands exactly match tests/test_native_protocol_manifest.py CPPFLAGS and its immutable map-cppflags binding; no forced include or extra profile macro. Fresh GCC reuses the original actual full-header actor.cpp and compiler command with output/dependency paths changed only.",
+    "actual_output": "idle 104 1 0 2 4 5 23 2 2 4 1\nspawn 103 1 0 2 4 5 23 2 2 4 1\nwalking 110 1 0 2 4 5 23 2 2 4 1\n",
+    "signed_job": {"cpp_type": "int16", "offset": 23, "width": 2},
+    "actor_id": {"cpp_type": "uint32", "offset": 5, "width": 4},
+    "objecttype_offset": 4,
+    "header_offsets": {"PacketType": 0, "PacketLength": 2},
+    "family_sizes": {"0x09FD": 110, "0x09FE": 103, "0x09FF": 104},
+    "little_endian_static_assert": true,
+    "original_configured_include_closure_counts": {"g++": 68, "clang++": 68},
+    "original_configured_include_hashes_match_current_files": true,
+    "fresh_gcc_configured_include_count": 68,
+    "fresh_gcc_dependency_set_matches_original_after_path_resolution": true,
+    "source_assignment_verified": "clif.cpp:1130,1278,1392 assign p.job = vd->look[LOOK_BASE]; mob.cpp:4997 initializes mob->vd.look[LOOK_BASE] = mob->id.",
+    "semantic_limit": "Eligible observed presented mob-class only. LOOK_BASE can reflect altered appearance; neither unconditional biological species nor current-instance identity. A future catalog level would be template-level, not current-instance level.",
+    "full_headers_unchanged": true,
+    "generic_catalogue_or_renewal_claim": false,
+    "fresh_evidence": "/home/otto/.hermes/cache/scratch/ec-independent-p8_l13my/gcc.json",
+    "fresh_dependencies": "/home/otto/.hermes/cache/scratch/ec-independent-p8_l13my/fresh-dependency-hashes.json"
+  },
+  "tests": {
+    "fresh_total": 960,
+    "passed": 959,
+    "failures": 1,
+    "errors": 0,
+    "skipped": 0,
+    "fresh_independent_cases": 8,
+    "fresh_independent_passed": 7,
+    "fresh_independent_failures": 1,
+    "per_module": {
+      "tests.test_native_encounter_context": {"tests": 10, "failures": 0},
+      "tests.test_native_actor_presentation": {"tests": 813, "failures": 0},
+      "tests.test_native_gameplay": {"tests": 82, "failures": 0},
+      "tests.test_native_progression": {"tests": 47, "failures": 0},
+      "independent_boundaries": {"tests": 8, "failures": 1}
+    },
+    "boundary_coverage": [
+      "All three complete actor families, SELF/negative alias exclusion, signed nonpositive job unknown, positive signed maximum and malformed declared/actual lengths",
+      "Physical byte-fragmented stream parsing for all three families and existing unknown-packet ValueError policy",
+      "Actor epoch/target/window/future-observation unknown joins and no retrospective enrichment",
+      "Selected sequence-zero baseline, native level receipt ordering, invalid source/binding/foreign epoch null provenance and frozen facts",
+      "Actual ObservedDamage receipts, positive-one first/second/both amounts, SP/pose/foreign source/SELF alias/nonpositive rejection",
+      "Exact cursor/identity integers; bool, float, negative and oversized values rejected",
+      "UTF8 byte accounting including provenance, bounded records, instance isolation, ordinary duplicate/older/foreign rejection and epoch reset",
+      "Oversized provenance dropped receipt followed by older/equal-sequence replay: reached failure"
+    ],
+    "junit": "/home/otto/.hermes/cache/scratch/ec-independent-p8_l13my/tests.xml",
+    "exact_command_and_outputs": "/home/otto/.hermes/cache/scratch/ec-independent-p8_l13my/execution.json",
+    "author_original_junit": {"tests": 92, "failures": 0, "errors": 0, "skipped": 0},
+    "author_count_interpretation": "The author's physical 92-test XML is verified independently of this review's broader 960-case invocation; totals are not interchangeable."
+  },
+  "quality": {
+    "fresh_black_exit_code": 0,
+    "fresh_ruff_exit_code": 0,
+    "fresh_strict_mypy_exit_code": 0,
+    "scope": "Production encounter helper and its owned repository tests, not the private review harness.",
+    "original_quality_four_exit_codes": [0, 0, 0, 0],
+    "original_red_green_logs_inspected": true,
+    "original_evidence_hash_manifest": "/home/otto/.hermes/cache/scratch/ec-independent-p8_l13my/original-evidence-sha256.json",
+    "whole_root_gates_rerun": false,
+    "whole_root_historical_results_not_component_acceptance": true
+  },
+  "artifact_sha256": {
+    "/home/otto/.hermes/cache/scratch/ec-independent-p8_l13my/test_independent_boundaries.py": "359eba1487e5c4f7e61f3bc4df23b83eb78066379d18c40e63e04b287669f38f",
+    "/home/otto/.hermes/cache/scratch/ec-independent-p8_l13my/tests.xml": "b1367167986e9fc544f1ee51489d434ba093b385b00f6364361ce1cdd5318df2",
+    "/home/otto/.hermes/cache/scratch/ec-independent-p8_l13my/execution.json": "8ce9309042dbfe75999faed1e8c480aa678c693024c991771c65e580eefd12c3",
+    "/home/otto/.hermes/cache/scratch/ec-independent-p8_l13my/oversized-replay.json": "b36b4266338d2a81661e2bfe9bb11aa5c27d2439c6fc465243135a2da916fd3e",
+    "/home/otto/.hermes/cache/scratch/ec-independent-p8_l13my/gcc.json": "67a404487e772515b3ed0a5485df2471bec6fcfc12bae7b0f8b601ec6073712d",
+    "/home/otto/.hermes/cache/scratch/ec-independent-p8_l13my/fresh-dependency-hashes.json": "83ef5309f706b72784d996dcff9091cc5e8926a9c347d8d3f446a3c6957fe9a8",
+    "/home/otto/.hermes/cache/scratch/ec-independent-p8_l13my/original-evidence-sha256.json": "47e3acac73b45d8bcd31bc06b3b93686489c69cd887f9426a1827c229acb35f3"
+  },
+  "all_private_artifact_hashes": "/home/otto/.hermes/cache/scratch/ec-independent-p8_l13my/artifact-hashes.json",
+  "review_harness_issue": "An initial fresh dependency-set comparison used noncanonical compiler paths and failed despite both counts being 68. Resolving actual dependency paths established exact set equality; no compiler/source change or fabricated closure was used.",
+  "limits": [
+    "Typed helper inputs are trusted API values; no hostile raw-dataclass endpoint is asserted.",
+    "Caller supplies provenance and maintains transport health/current actor window across vanish, map, gap and ID reuse. This review does not authenticate those inputs or prove all-receiver integration.",
+    "Unknown species or own-level captures stay null; no SQL/persona joins, zero guesses or current-state backfill.",
+    "Species getter does not establish an instance association. Positive HP hit facts do not infer death/life or full gameplay state.",
+    "Only pinned MAIN/pre-re20180704 compiled profile is supported; no Renewal or full catalogue claim.",
+    "Native actuation, brain request/domain models, runtime wiring and full-goal acceptance are out of scope. Parent native activity is not a blocker or evidence for this pure component.",
+    "No repairs performed. Fresh history finding requires follow-up before offline component approval."
+  ],
+  "native_rerun": false,
+  "native_effects": false,
+  "network_calls": 0,
+  "sql_queries": 0,
+  "model_calls": 0,
+  "source_edits": false,
+  "runtime_wiring_acceptance": false,
+  "full_milestones_open": true
+}

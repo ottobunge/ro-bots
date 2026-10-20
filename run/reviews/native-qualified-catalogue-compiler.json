@@ -1,0 +1,86 @@
+{
+  "schema": "native-qualified-catalogue-compiler-review/v1",
+  "status": "OFFLINE_PREFIX_LAYOUT_TRANCHE_EXECUTED_NOT_INDEPENDENTLY_APPROVED",
+  "artifact": "/home/otto/.hermes/cache/scratch/qualified-packet-catalogue-candidates.json",
+  "artifact_sha256": "8a6443efd199edb2fc38d20109e043c637d2923648cd6aa1554cc613aeba802e",
+  "artifact_bytes": 2326090,
+  "evidence_directory": "/home/otto/.hermes/cache/scratch/catalogue-evidence-2gqz8vdc",
+  "package_output": "/nix/store/0w1nfsmj8gaipcidhgx2nkg4axqxcbbr-rathena-playable-callback-qualified-20180704-e985006171d2-callback-qualified",
+  "package_nar_hash": "sha256-hIVo2RvlabG8Jw362W7PxdXkQx2CDYihvHKwhZjP0Es=",
+  "configured_public_source_closure": "1f2d601dc86d572af78bae036f444fbbd469539457569e4f951438b30e74236a",
+  "configured_inventory_entries": 3216,
+  "public_projection_entries": 3206,
+  "generated_makefiles": 10,
+  "profile": {
+    "role": "map",
+    "packetver": 20180704,
+    "family": "MAIN",
+    "ruleset": "pre-re",
+    "packet_obfuscation": false,
+    "packet_obfuscation_warn": false
+  },
+  "coverage": {
+    "discovery_prefixes": ["PACKET_", "packet_"],
+    "discovered_records": 632,
+    "compiled_records": 632,
+    "unresolved_layout_records": 0,
+    "map_declarations": 578,
+    "common_declarations": 54,
+    "unique_declaration_keys": 632,
+    "unique_symbol_spellings": 631,
+    "same_spelling_distinct_declarations": "PACKET_SC_NOTIFY_BAN in separate common/map full-header TUs; declaration_key distinguishes provenance, no merging across invocations",
+    "compiler_derived_conventional_header_candidates": 477,
+    "complete_catalogue": false,
+    "sender_evidence": "UNRESOLVED_FOR_EVERY_RECORD"
+  },
+  "positive_controls": [
+    {"record": "PACKET_ZC_EMOTION", "gcc_size": 7, "clang_size": 7, "conventional_header_candidate": 192},
+    {"record": "PACKET_ZC_STOPMOVE", "gcc_size": 10, "clang_size": 10, "conventional_header_candidate": 136},
+    {"record": "packet_idle_unit", "gcc_size": 104, "clang_size": 104, "conventional_header_candidate": null},
+    {"record": "packet_spawn_unit", "gcc_size": 103, "clang_size": 103, "conventional_header_candidate": null},
+    {"record": "packet_unit_walking", "gcc_size": 110, "clang_size": 110, "conventional_header_candidate": null}
+  ],
+  "compiler_versions": {"gcc": "16.2.0", "clang": "21.1.8"},
+  "compiler_command_count": 24,
+  "commands": {
+    "catalogue": "nix develop --offline --no-write-lock-file path:./spikes/007-native-packet-ast/toolchain -c python3 spikes/008-qualified-packet-catalogue/compiler_catalogue.py --output /home/otto/.hermes/cache/scratch/qualified-packet-catalogue-candidates.json",
+    "pytest": "nix develop --offline --no-write-lock-file path:./spikes/007-native-packet-ast/toolchain -c .venv/bin/pytest -q -o addopts='' spikes/008-qualified-packet-catalogue/test_compiler_catalogue.py",
+    "static": "nix develop --offline --no-write-lock-file path:./spikes/007-native-packet-ast/toolchain -c bash -c '.venv/bin/black --check spikes/008-qualified-packet-catalogue/compiler_catalogue.py spikes/008-qualified-packet-catalogue/test_compiler_catalogue.py; .venv/bin/ruff check spikes/008-qualified-packet-catalogue/compiler_catalogue.py spikes/008-qualified-packet-catalogue/test_compiler_catalogue.py; .venv/bin/mypy --strict spikes/008-qualified-packet-catalogue/compiler_catalogue.py spikes/008-qualified-packet-catalogue/test_compiler_catalogue.py'"
+  },
+  "verification": {
+    "pytest": "11 passed in 23.41s",
+    "black": "2 files would be left unchanged",
+    "ruff": "All checks passed",
+    "strict_mypy": "Success: no issues found in 2 source files",
+    "real_full_header_layouts": "GCC and Clang agree for all 632 scope-qualified declarations",
+    "tdd_red_observed": ["missing producer/discovery", "missing oracle/integer parser", "missing real collector", "header type and duplicate complete-record denial", "protected output denial"],
+    "negative_tests": ["source drift before compiler launch", "CPP/plugin/response arguments denied before collection", "float/bool/mutable header declaration candidates denied", "bad identifier cannot enter generated C++", "bitfield null-offset grammar", "actual GCC syntax failure stderr retained", "labelled synthetic GCC/Clang disagreement retains both observations", "protected source/repository/store outputs denied"],
+    "frozen_existing_dependencies": 206,
+    "frozen_existing_dependency_drift": [],
+    "root_combined_gates": "Not rerun by child; parent fresh combined integration/gates/review required"
+  },
+  "owned_file_sha256": {
+    "spikes/008-qualified-packet-catalogue/compiler_catalogue.py": "675975cfba524d390b93dc7a6cadf8e8820193a75dcf857d717da7b6f30f490d",
+    "spikes/008-qualified-packet-catalogue/test_compiler_catalogue.py": "f7189141aa9555663fefab5bb4e48618900255d6ca2d69f99754706cadd1d6d1",
+    "spikes/008-qualified-packet-catalogue/COMPILER.md": "63c040b1678c163c6e187f3fab90735c223654c0707314211fe83ae0cb1e9f30"
+  },
+  "recipe_boundary": "Scoped CPP/frontend/layout replay. Installed map saved recipe is NPC obj/npc.o CXXFLAG_CLEARS, not clif obj/%.o full CXXFLAGS; no full backend/binary equivalence or inference from CFLAGS -ffast-math.",
+  "incident": {
+    "description": "Protected-output RED test inadvertently wrote null to private configured scratch src/config/core.hpp before its guard existed.",
+    "recovery": "Immediately restored exact bytes from existing cached public header only after its SHA256 matched immutable installed configured-source.json; subsequent full 3206-file guards, real compiler tests and publication repeated.",
+    "restored_header_sha256": "ba04ee9f32d9d334f59b345326105864ddc5fed296ebbaf9d599c26e48aea7ae",
+    "prevention": "Output guard now precedes collection/write; test now uses synthetic scratch source root.",
+    "repository_or_package_source_changed": false
+  },
+  "remaining": [
+    "Parent validator must distinguish true common/map declaration provenance rather than treating repeated spelling PACKET_SC_NOTIFY_BAN as an accidental duplicate.",
+    "Fresh parent combined producer/contract replay and independent review.",
+    "Nonprefix declarations and aliases, receiver registrations, variable/raw WFIFO/manual sender families remain outside discovery.",
+    "Actual sender/header assignment/framing bindings unresolved; conventional ID candidates are not sender proof.",
+    "U2-U5 allocator/session/source/recipient lifetime preconditions remain UNDISCHARGED; U6 is conditional copy, not queue/receipt.",
+    "All world/full-goal milestones remain open."
+  ],
+  "sink_admission": false,
+  "runtime_admission": false,
+  "new_catalogue_independent_approval": false
+}

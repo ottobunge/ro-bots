@@ -1,0 +1,56 @@
+{
+  "scope": "offline host integration only; synthetic wire is not live evidence",
+  "checks": {
+    "scoped_tests": {
+      "command": "nix develop -c uv run --offline pytest tests/test_playing_runtime.py tests/test_empty_farm_plan.py --cov=robots.app.playing_runtime --cov=robots.playing --cov-report=term-missing --cov-fail-under=85",
+      "output": "warning: Git tree '/home/otto/dev/ro-bots' is dirty\nro-bots dev shell \u2014 try: task --list\n........................................................................ [ 78%]\n....................                                                     [100%]\n================================ tests coverage ================================\n_______________ coverage: platform linux, python 3.14.7-final-0 ________________\n\nName                                Stmts   Miss  Cover   Missing\n-----------------------------------------------------------------\nsrc/robots/app/playing_runtime.py     240     27    89%   134-135, 146-147, 201-208, 213, 228, 232, 236, 239-240, 253, 255, 261-262, 270, 282, 334-339\nsrc/robots/playing.py                  94      6    94%   143-147, 162, 167\n-----------------------------------------------------------------\nTOTAL                                 334     33    90%\nRequired test coverage of 85% reached. Total coverage: 90.12%\n92 passed in 0.50s",
+      "exit_code": 0,
+      "error": null
+    },
+    "host_regressions": {
+      "command": "nix develop -c uv run --offline pytest tests/test_agent_host.py tests/test_brain.py tests/test_decisions.py tests/test_host_native_vitals.py tests/test_host_self_chat.py",
+      "output": "warning: Git tree '/home/otto/dev/ro-bots' is dirty\nro-bots dev shell \u2014 try: task --list\n........................................................................ [ 77%]\n.....................                                                    [100%]\n93 passed in 2.26s",
+      "exit_code": 0,
+      "error": null
+    },
+    "quality": {
+      "command": "nix develop -c bash -c \"uv run --offline ruff check src tests/test_playing_runtime.py tests/test_empty_farm_plan.py && uv run --offline black --check src tests/test_playing_runtime.py tests/test_empty_farm_plan.py && uv run --offline mypy src tests/test_playing_runtime.py tests/test_empty_farm_plan.py && uv run --offline xenon src --max-absolute B --max-modules B --max-average A && uv run --offline vulture src vulture_whitelist.py && uv run --offline bandit -q -c pyproject.toml -r src && uv run --offline pylint --disable=all --enable=duplicate-code --ignore-paths=tests src\"",
+      "output": "warning: Git tree '/home/otto/dev/ro-bots' is dirty\nro-bots dev shell \u2014 try: task --list\nAll checks passed!\nAll done! \u2728 \ud83c\udf70 \u2728\n73 files would be left unchanged.\nSuccess: no issues found in 73 source files\n[tester]\tWARNING\tnosec encountered (B105), but no failed test on file src/robots/adapters/rathena_runtime.py:129\n[tester]\tWARNING\tnosec encountered (B105), but no failed test on file src/robots/adapters/rathena_runtime.py:130\n[tester]\tWARNING\tnosec encountered (B105), but no failed test on file src/robots/adapters/rathena_runtime.py:131\n[tester]\tWARNING\tnosec encountered (B105), but no failed test on file src/robots/adapters/rathena_runtime.py:133\n[tester]\tWARNING\tnosec encountered (B105), but no failed test on file src/robots/adapters/rathena_runtime.py:131\n[tester]\tWARNING\tnosec encountered (B105), but no failed test on file src/robots/adapters/rathena_runtime.py:132\n[tester]\tWARNING\tnosec encountered (B105), but no failed test on file src/robots/adapters/rathena_runtime.py:133\n\n--------------------------------------------------------------------\nYour code has been rated at 10.00/10 (previous run: 10.00/10, +0.00)",
+      "exit_code": 0,
+      "error": null
+    }
+  },
+  "owned_source_sha256": {
+    "src/robots/app/playing_runtime.py": "17860512fdf6f57d0411acfc5ba5cedb67f66bc89fbc27fe35dae7f9e42ae2f3",
+    "src/robots/playing.py": "aaaab7b600cdd80deaf2d719da3652305098ef494eb73be1da27871cb2a015fa",
+    "src/robots/app/agent_runtime.py": "7702b7b277ac71f27fed74e9f38b58bd859d9b70b5d1c60ea7b549e4f819f205",
+    "src/robots/app/brain.py": "06e1dd24666b3878e051ec5365f04d4b6af840eaf731057bcf498f62677dffe0",
+    "src/robots/domain/model.py": "ad311ac53e1d3a24bf7fe34cb96461b342d8f3ff12a2397d7d43725221538dbf",
+    "src/robots/domain/decisions.py": "14f9ffa4b5dedd0326aa29b0b790e236dc5ae5775515fed51f5a41ec8f9b453a",
+    "tests/test_playing_runtime.py": "58b59fa29701b6c89889aa5d92af0c800dbc9e947a01816bb01193fccc34ce6d",
+    "tests/test_empty_farm_plan.py": "09d1b9834dccb67209882ca7ef32171d63b1e2fcefc95fe1ea78aad104018975"
+  },
+  "frozen_input_sha256": {
+    "spikes/003-clientless-limbs/client.py": "e17e3b9e553269a1666e72910fd46fc58d4096f6b5ebf0d0e005a05a71f21e93",
+    "src/robots/adapters/native_gameplay.py": "fd9a41c0514d9ce276f2883fa5dc07fb3a10320b06d3c9230bdad4e5ada47b85",
+    "src/robots/adapters/native_navigation.py": "d4d758fc7d827d42aab374ebc0c938b5a066d73638e95d82eca3d7aca2730c0a",
+    "src/robots/adapters/native_session_progression.py": "c7ec4880115c14960642487b34e9ad05ea3ab1718ed0cd54748d361ae84dd55f",
+    "src/robots/adapters/native_progression.py": "ad74be96c5d843cfeabd21ef0bdc0086bd0d9d76546ab3a1954a0f276cbff3fe",
+    "src/robots/adapters/native_vitals.py": "663cc93d1fbe0cb20fb6ae4331e2ad5cf63d9e940a246bb8b332b408f6a7e9ff",
+    "src/robots/adapters/native_actor_presentation.py": "81140e814a682ea44742880dd9a3a7a19e165eb2098debfa657d24615fe5b730",
+    "src/robots/adapters/playing_backends.py": "4db7c5c6e5316b0659c13d34d8ed9a1efba324989b519acac1f1d6cb1dbc3980"
+  },
+  "alive_authority": {
+    "pinned_revision": "e985006171d2eb320ee512a653f4c83aea3d81b6",
+    "source": "clif.cpp10721-10742 fresh allocation; pc_setnewpc1441-1457; pc_authok2080-2239; pc_setpos6930-7189; pc.hpp1148-1150",
+    "policy": "fresh matching healthy authenticated epoch plus actual 02EB receipt establishes initial baseline; SELF0080 reason1 overrides; SELF0148 revives; ordinary0091 never revives; positive HP never life authority"
+  },
+  "remaining_frontiers": [
+    "parent owns native functional run, SQL/engine and real inference; none executed here",
+    "autonomous respawn is not wired: no Respawn action in existing domain; after SELF death combat stays denied pending actual resurrection/new session",
+    "domain has no ItemAcquired event; pickup acquisitions retained in native tracker, not fabricated as item drop events",
+    "movement receipt retries bounded to three per pending waypoint; unavailable confirmation stops progression; no optimistic arrival",
+    "full test suite timed out at120s; three legacy constructor identity tests require parent adaptation for native wrapper; full mypy also has22 outside-ownership native_gameplay/playing_backends test errors"
+  ],
+  "cli": "nix develop -c uv run --offline python -m robots.playing --manifest [REDACTED] --runtime-root [EXPLICIT_WORLD_RUNTIME] --memory-root [EXPLICIT_PRIVATE_MEMORY] --decision-url [REDACTED] --chat-url http://127.0.0.1:8300/v1/chat/completions --worldfeed-port 8400 --playground --duration 120"
+}

@@ -1,0 +1,137 @@
+{
+  "passed": false,
+  "review_type": "independent_read_only_offline",
+  "scope": {
+    "repository": "/home/otto/dev/ro-bots",
+    "primary_files": [
+      "src/robots/society/society.py",
+      "src/robots/app/world_state.py",
+      "tests/test_population_config.py",
+      "tests/test_world_state.py"
+    ],
+    "integration_read_paths": [
+      "src/robots/adapters/worldfeed_server.py",
+      "src/robots/app/agent_runtime.py",
+      "src/robots/app/roster_edit.py",
+      "src/robots/society/models.py"
+    ],
+    "excluded": [
+      "Unfinished unrelated runtime, durable-memory, mechanics, Rust, build and protocol work",
+      "Live population creation, SQL, provider calls, network acceptance and goal acceptance",
+      "Full repository quality gate and online dependency audit"
+    ]
+  },
+  "security_concerns": [],
+  "logic_errors": [
+    {
+      "id": "POP-001",
+      "severity": "high",
+      "title": "Binding and regeneration are not atomic; a successful binding can be discarded",
+      "locations": [
+        "src/robots/app/world_state.py:168-175",
+        "src/robots/app/world_state.py:240-277"
+      ],
+      "description": "Regeneration checks _host_bound only before building the new roster. bind_memory and roster/memory replacement have no shared state lock. A concurrent binding after that check sets _host_bound=True and installs the host's MemoryLog, but the already-admitted regeneration subsequently replaces _memories with fresh stub logs and reports success. Setting the binding flag earlier or rechecking it once without locking would not close all interleavings.",
+      "offline_reproduction": [
+        "Pause SocietyRoster.build inside an admitted regeneration using a threading.Event and unittest.mock.patch.",
+        "On the other thread, bind_memory for a current persona to an in-memory host log and confirm the exact log is installed.",
+        "Resume generation and join the thread.",
+        "Observe _host_bound=True, the bound log no longer present, no regeneration exception, and one successful roster feed event."
+      ],
+      "observed": {
+        "bound_before_regeneration_commit": true,
+        "host_bound_after": true,
+        "host_memory_detached": true,
+        "regeneration_errors": [],
+        "regeneration_event_count": 1
+      },
+      "reachability": "Normal AgentHost construction binds logs before starting its own WorldFeed server, which avoids this interleaving in that ordered path. AgentHost also accepts an existing world_state, and WorldState exposes both mutation methods without requiring exclusive startup ownership. Concurrent binding to an already-served aggregate is therefore not protected by the claimed host-memory refusal boundary.",
+      "recommendation": "Serialize bind_memory's persona validation, memory install and ownership flag with the entire regeneration check/commit using one shared aggregate lifecycle lock. Alternatively build candidate state outside the lock and acquire that same lock for a final guard plus atomic commit. Add a deterministic concurrent-binding regression test, and verify readers cannot observe partially replaced roster/runtime/memory collections."
+    }
+  ],
+  "suggestions": [
+    {
+      "id": "POP-S01",
+      "severity": "nonblocking",
+      "location": "src/robots/society/society.py:209-223",
+      "description": "The public factory trusts new configuration parameters; only WorldState validates them. Direct calls accept solos greater than n_groups, negative solos, negative n_groups, and group_size_min=group_size_max=1 despite solos=0. For example n_groups=2, solos=3 creates only two solos, and n_groups=2, solos=0, both bounds 1 creates two solos. HTTP input is protected, so this is not classified as an HTTP validation bypass.",
+      "recommendation": "Document a trusted validated-input precondition or validate explicit configuration at the factory boundary, including integer types excluding bool, 0 <= solos <= n_groups, and valid friend size bounds. Preserve legacy behavior deliberately when adding validation."
+    },
+    {
+      "id": "POP-S02",
+      "severity": "nonblocking",
+      "location": "tests/test_population_config.py:62-78",
+      "description": "The current ownership test proves only binding-before-request refusal. It does not exercise concurrent admission, preserve all state fields on refusal, or cover binding to an already-served WorldState. The reproduced ownership race is not detected by the passing scoped suite.",
+      "recommendation": "Extend tests with a deterministic admission/binding interleaving and assertions for roster, reputation, runtime states, seed, size defaults, exact memory objects and feed preservation."
+    },
+    {
+      "id": "POP-S03",
+      "severity": "nonblocking",
+      "location": "tests/test_population_config.py",
+      "description": "Add committed regression coverage for legacy factory RNG compatibility, bool/non-integer API values, and group reputation isolation under repeated random labels. Independent review probes cover the first two and graph isolation, but these guarantees are not all encoded in this test file."
+    }
+  ],
+  "supported_subset": {
+    "requested_friend_groups": "Correct for validated HTTP commands: groups counts nonsingleton groups and total factory n_groups is groups + solos.",
+    "independent_solos": "Correct for validated commands, including all-solo and zero-solo configurations; solos counts singleton groups independently.",
+    "size_bounds": "Both minimum and maximum are honored for friend groups via randint(minimum, maximum); singleton counts are independent of these bounds.",
+    "seeded_reproduction": "Identical configured seed and parameters reproduce persona fields, group IDs, memberships, attitudes, schedules and social edges.",
+    "group_identity_isolation": "Explicit solos configuration appends a deterministic index to friend-group labels. Singleton IDs derive from unique persona IDs. Configured IDs are unique, including the existing 70-group collision test, and offline probes verify no cross-group friendship edges.",
+    "legacy_factory_defaults": "Calls without explicit solos preserve the prior final singleton, labels, all generated roster fields, graph and RNG state against HEAD across 360 cases.",
+    "api_validation": "Rejects negative counts, empty population, friends_min < 2, maximum below minimum, and bool/non-integer population fields before replacing state. Changed test_world_state expectation for negative solos correctly requires CommandError rather than accepting a clamped request.",
+    "sequential_host_guard": "A valid binding sets a permanent host-owned flag, even when runtime agents are offline; subsequent regeneration refuses before any state change. There is deliberately no reconciliation or unbinding executor. This sequential guarantee does not hold during concurrent binding, as POP-001 demonstrates."
+  },
+  "verification": {
+    "scoped_pytest": {
+      "command": "nix develop -c uv run --offline --no-sync pytest tests/test_population_config.py tests/test_world_state.py tests/test_society.py tests/test_worldfeed_server.py --no-cov -o addopts='' -q -o faulthandler_timeout=20",
+      "exit_code": 0,
+      "passed": 78,
+      "warnings": 1,
+      "duration_seconds": 0.69,
+      "warning": "Existing StarletteDeprecationWarning for httpx-backed TestClient."
+    },
+    "ruff": {
+      "command": "nix develop -c uv run --offline --no-sync ruff check src/robots/society/society.py src/robots/app/world_state.py tests/test_population_config.py tests/test_world_state.py",
+      "exit_code": 0,
+      "result": "All checks passed"
+    },
+    "black": {
+      "command": "nix develop -c uv run --offline --no-sync black --check src/robots/society/society.py src/robots/app/world_state.py tests/test_population_config.py tests/test_world_state.py",
+      "exit_code": 0,
+      "result": "4 files would be left unchanged"
+    },
+    "offline_probes": {
+      "command": "nix develop -c uv run --offline --no-sync python /home/otto/.hermes/cache/scratch/population_review_probe.py",
+      "exit_code": 0,
+      "legacy_comparisons": 360,
+      "configured_matrix_cases": 1440,
+      "invalid_api_type_cases": 35,
+      "ownership_race_reproduced": true,
+      "legacy_head_source_sha256": "4b85714b979d95eb291233d6c7cef1985f88a85e7814a798f472f1918e9d9878",
+      "sources_unchanged_during_probes": true
+    },
+    "tool_issues": [
+      "Initial nix develop -c python -m pytest failed because the shell Python has no pytest module; reran successfully using the project's existing uv environment with --offline --no-sync.",
+      "Initial probe compared Schedule object identity; corrected only the scratch probe to compare schedule.windows and reran successfully. This was a probe issue, not an implementation regression."
+    ],
+    "source_edits": false,
+    "commits_or_staging": false,
+    "external_services_started": false,
+    "full_quality_claimed": false,
+    "live_creation_or_goal_acceptance_claimed": false
+  },
+  "hash_algorithm": "sha256",
+  "source_hashes": {
+    "src/robots/society/society.py": "4109fbad57f3192762447ca7378689374e1cf1fc9a694bb82e827b797836018e",
+    "src/robots/app/world_state.py": "59084c45e40f3ea8f15f983ef6377b71c3db729de7ea02f0a0f48b3e3e24d5bf",
+    "tests/test_population_config.py": "cecd227079d277bde7bdceab0b33c2eb1c9f3c13aecfaa85329d1d905766268d",
+    "tests/test_world_state.py": "1b026aa85e1ed5a68cc00bbae2b0c0f61cdbececbd94bb03d5f4085614382727",
+    "src/robots/adapters/worldfeed_server.py": "0123fe3964030713452cf174157d998d2f94cd63aa5e5884bcdfccf01ad96344",
+    "src/robots/app/agent_runtime.py": "c05942f8f02059af78f43273a8d59c67eda8c77ed2e6263cb27e9f5a7cdfdef8"
+  },
+  "artifacts_created": [
+    "/home/otto/dev/ro-bots/run/reviews/population-configuration-review.json",
+    "/home/otto/.hermes/cache/scratch/population_review_probe.py"
+  ],
+  "summary": "Validated population counting, both size bounds, deterministic generation, configured identity isolation and legacy factory compatibility pass offline, but a reproduced binding/regeneration race bypasses the host-memory refusal guard; approval is withheld."
+}

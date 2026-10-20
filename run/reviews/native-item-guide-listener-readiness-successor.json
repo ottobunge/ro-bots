@@ -1,0 +1,82 @@
+{
+  "status": "LISTENER_PEER_READINESS_SUCCESSOR_COMPLETED_OFFLINE_CONDITIONAL",
+  "candidate": "/home/otto/dev/ro-bots/.work/native-item-guide-listener-readiness-successor/content",
+  "adopted_base": {
+    "source": "/home/otto/dev/ro-bots/.work/native-item-guide-rotation-evidence-successor/content",
+    "adoption_record": "run/reviews/native-item-guide-rotation-successor-parent-adopted.json",
+    "review_sha256_of_record": "80ec662f329ca9e9042494007da0703f46e8d4efc346adc2b3d6817322adb089",
+    "base_module_digests": {
+      "live_recovery.py": "e0695f1f994df8be7d5b19923c7bd6934fff7c98085848bbd5cf3e10afe1c789",
+      "recovery.py": "295eab4ee5d0baa0e177947c940d622391915fe5a7405c067318d3129e630a13",
+      "item_guide_publication.py": "ec94b628c3d5d45d8ba256f9fe8b9c7f1fee6362669be57ff063e5e1709facb0",
+      "item_guide_files.py": "528b12b88c2ca5a3bacdb0c4786666af7d8caf1042943395814890ac3773ef18",
+      "rootless_socket_reader.py": "a8339f4af3359d6ae283879ce1031a4bcc8e589e9822a203e6a3c68acafd49ae"
+    },
+    "base_freeze": "byte-identical stashed copies under base-freeze/ (sha256-verified against the adopted digests before the first edit)"
+  },
+  "final_module_digests": {
+    "live_recovery.py": {"sha256": "1494b5676b16cb4552c3c2604d7d4cfbd866a16a272cdef86b19bd4b57caaf66", "changed": true},
+    "recovery.py": {"sha256": "83a85cdfd6f78b7c1683c0d51c19a1f48b4820e45970b35a7ff3fa86ecb2e736", "changed": true},
+    "item_guide_publication.py": {"sha256": "ec94b628c3d5d45d8ba256f9fe8b9c7f1fee6362669be57ff063e5e1709facb0", "changed": false},
+    "item_guide_files.py": {"sha256": "528b12b88c2ca5a3bacdb0c4786666af7d8caf1042943395814890ac3773ef18", "changed": false},
+    "rootless_socket_reader.py": {"sha256": "a8339f4af3359d6ae283879ce1031a4bcc8e589e9822a203e6a3c68acafd49ae", "changed": false}
+  },
+  "recorded_diffs": {
+    "live_recovery.py": "green/live_recovery.py.diff (sha256 d5acc58007cbeea5f08b6f796347efccc8b485078d13cab34f88c1dfb8a365c1, 357 lines)",
+    "recovery.py": "green/recovery.py.diff (sha256 e54675c1709184c57c7b9bd5f00d7ff6657bf4329dc20fed88102e992038fb13, 10 lines: one appended frozen-dataclass field listener_evidence=() )"
+  },
+  "design": {
+    "approval_field": "recovery.Approval.listener_evidence: tuple[tuple[str, int], ...] = () - parent-issued at approval time; empty default keeps every prior approval decodable and bit-equal",
+    "evidence_function": "live_recovery.tcp_listener_peer_facts(role_ports, probe) - pure, injectable connect probe; read-only loopback connects that immediately close and send nothing (default loopback_connect_probe, socket.create_connection with 2s timeout); connect failure of any transport class (OSError: refusal, timeout, unreachable) is ListenerFact(reachable=None), never a fabricated zero; non-transport errors propagate",
+    "bound_ports": "login 16900, char 16121, map 15121 (live_recovery.PORTS); validate_listener_evidence denies foreign ports, duplicate roles, mariadb coverage, strict-mode carriage, and unbound dependency closures at every checkpoint authorization",
+    "marker_gate": "rotated_markers_unavailable(baseline): every stream records==0 and sha256==sha256(b'') - the same honestly-empty shape the rotation evidence successor established",
+    "freshness": "Effects.listener_probe_facts captures once per snapshot/checkpoint from the approval-bound probe and appends to listener_observations; nothing is cached across checkpoints; probe results are never derived from current bytes alone - the channel only opens on the parent-issued approval field",
+    "strict_and_non_maintenance": "unchanged fail-closed: validate_listener_evidence denies strict approvals carrying the field (listener_evidence_requires_maintenance); the substitution path is gated on MAINTENANCE_MODE; retained logs keep the exact historical marker path and probe evidence can never deny it (test_retained_logs_admit_through_historical_markers_even_with_unreachable_probe)"
+  },
+  "evidence_vs_fact_mapping": {
+    "running_admission": "role's own reachable loopback listener substitutes the rotated ready/parser marker (facts.ready=True); for char the bound login listener reachability, for map the bound char listener reachability substitutes the rotated peer marker (facts.peer_marker=True); mariadb is NOT probe-covered - its admission stays healthcheck-based, and peer facts keep the separately validated mariadb connection from socket classification",
+    "exited_admission": "maintenance_finish_evidence substitutes the rotated '[Status]: Finished.' marker with docker's recorded clean terminal state (exited, Pid 0, ExitCode 0, OOMKilled False); a nonzero recorded exit remains an inspect fault and denies",
+    "completeness_gate": "operation_native_health gains keyword listener_evidence: the new-startup-epoch completeness gate is satisfied on this path by the fresh same-checkpoint probe reachability; facts.complete itself is never fabricated (stays False on rotated-empty captures)",
+    "limits_documented": [
+      "a reachable listener proves current liveness on the published loopback port, never parser identity, boot completeness or player/session state",
+      "unavailable probes (None), unprobed roles and unbound dependency closures return None and keep the historical denial - admission requires True reachability, denial is the default",
+      "docker ExitCode 0 proves clean process exit, not the in-process shutdown checkpoint; accepted only under the maintenance-only parent-bound channel",
+      "peer dependency reachability (char to login, map to char) is current-path liveness, not protocol-level inter-server session proof; the mariadb dependency path remains healthcheck-derived"
+    ],
+    "receipt_schema": "per-checkpoint listener_observations entries {role: true|null} are reported in the CLI output (listener_observations field) alongside operation_errors; unknown_fields semantics unchanged"
+  },
+  "tdd_provenance": {
+    "red": {
+      "adapted_baseline": "red/adapted-baseline.xml (sha256 df027fed645c6ff0904ce569fefa6cffc8bb9d45fde64bed68fb920859807bbe): 120/120 pass on the stashed byte-identical modules in this namespace before any edit",
+      "exact_denial_probe": "red/listener_rotation_denial_probe.py -> red/listener-rotation-denial.txt (sha256 bf38305c1ee116b938ee50953f208e2aba9ea9eaea102525eea8758080eb98da): real recovery.validate_world/validate_role on the unchanged base deny the rotation-empty world with exactly role_running for login/char/map; channel absent from the base Approval",
+      "new_test_bytes_vs_base": "red/listener-readiness-red.xml (sha256 10604ab3...): 27/27 unit cases failed on the named new gaps (missing tcp_listener_peer_facts/validate_listener_evidence functions, missing Approval.listener_evidence/Effects.probe fields, cycle denial) against the unchanged modules; red/listener-cycle-red.xml (sha256 66b55e3e...): 7/7 cycle fixtures errored on the missing loopback_connect_probe attribute",
+      "oracle_revision_disclosure": "after the RED run, five test-byte revisions were made before GREEN, all test-oracle corrections, no production repair: (1) probe-call order assertion role-sorted not port-sorted; (2) three denial tests moved the expected DeniedError from native_role (which projects, never validates) to the real validate_role guard; (3) dirty-exit expected classification corrected to role_fault (docker inspect fault precedes the finish marker); (4) one malformed-binding case replaced (the original bound a dependency-satisfying closure and was valid); (5) retained-logs harness stub gained the docker-logs bytes parameter. The behavioral RED anchor (exact role_running denial) is the unmodified driver probe; current test digests are recorded above"
+    },
+    "green": {
+      "final_suite": "green/listener-readiness-full-green.xml (sha256 d4b26427510b3d0b613a67f85cc0d46bcd24e14d3ea7dd67ea139a232c35763d): 154 unique cases pass (120 prior retained + 34 new), 0 failures/errors/skips",
+      "identity_check": "programmatic: all 120 prior (classname, name) identities from the adapted baseline are present and passing in the final XML; 0 dropped, 0 regressed; the 34 new identities are the listener contracts",
+      "e2e_cycle": "publication/test_listener_readiness_cycle.py: full maintenance cycle with all four captures honestly rotation-empty reaches recovered_offline with 6 lifecycle commands and the one-shot guarded publication advance (IMPORT_KEY BEFORE->AFTER on the advanced approval); unreachable-listener and listener-timeout variants deny before any lifecycle command with retained custody and honestly-None observations; strict mode in the same state keeps the historical denial; strict cannot carry the channel; the reobserved checkpoint recaptures fresh evidence",
+      "qualified_command": "nix develop --offline --no-write-lock-file path:./spikes/007-native-packet-ast/toolchain -c env -u PYTEST_ADDOPTS -u PYTEST_DISABLE_PLUGIN_AUTOLOAD PYTHONOPTIMIZE=0 PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=src:. .venv/bin/python -B -m pytest .work/native-item-guide-listener-readiness-successor/harness --ignore=.work/native-item-guide-listener-readiness-successor/harness/publication/fixture-support --override-ini addopts='' --junitxml=.work/native-item-guide-listener-readiness-successor/green/listener-readiness-full-green.xml -q"
+    }
+  },
+  "gates": {
+    "scope": "the two changed modules only (content/live_recovery.py, content/recovery.py), project venv toolchain (black 26.10.0, ruff 0.16.10, mypy 2.4.0 --strict, xenon 0.9.3)",
+    "black": "pass - 2 files unchanged (green/gates/black.log b9cf5115..., apply log black-apply.log 7a55b445...)",
+    "ruff": "pass - All checks passed (green/gates/ruff.log 82b3e6a6...)",
+    "mypy_strict": "pass - no issues found in 2 source files (green/gates/mypy.log f9b031e5...)",
+    "xenon": "pass - max-absolute B max-modules B max-average A, silent success (green/gates/xenon.log sha256 of empty output e3b0c442...); intermediate D/C findings on native_role/snapshot/main/listener_channel_substitution were repaired by extracting listener_channel_open/listener_channel_substitution/listener_probe_facts and merging main's per-field conditionals, then re-verified",
+    "base_comparison": "base-freeze modules also re-measured: pass B/B/A unchanged, confirming the new findings were introduced by this diff and repaired within it"
+  },
+  "compliance": {
+    "live_effects": "none: no docker daemon, SQL, publication write, world lock acquisition against the real world, and no real TCP connect - every probe in the suite is an injected synthetic fixture and the real connector is only identity-asserted; guard/E2E worlds run offline with primitive spies",
+    "git": "no git actions; work confined to .work/native-item-guide-listener-readiness-successor/** and this review file",
+    "prior_test_bytes": "the adapted 107 pre-rotation contracts plus the rotation successor's 13 contracts are byte-preserved except the mechanical namespace path rewrite and the disclosed oracle revisions in the new listener file only"
+  },
+  "adoption": "Offline conditional; awaiting independent completed-snapshot review and parent live-activation decision (native authority unchanged: REVOKED_UNCHANGED)",
+  "remaining_parent_steps": [
+    "1. Independent completed-snapshot review of content/ + harness/ against this receipt (verify base-freeze digests, the two recorded diffs, RED/GREEN XMLs and gate logs by their recorded sha256).",
+    "2. Parent decision on live activation: issue the maintenance approval carrying listener_evidence=[[\"login\",16900],[\"char\",16121],[\"map\",15121]] only after the review; the real probe executes only inside the reviewed operator run, never in offline work.",
+    "3. On adoption, verify the live rotation-empty world reaches recovered_offline with the same six-command chain and confirm listener_observations in the run receipt match the deployment's actual loopback reachability."
+  ],
+  "native_authority": "UNCHANGED_REVOKED"
+}

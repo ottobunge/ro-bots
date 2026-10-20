@@ -1,0 +1,485 @@
+{
+  "schema_version": 1,
+  "passed": true,
+  "security_concerns": [],
+  "logic_errors": [],
+  "suggestions": [],
+  "summary": "Scoped offline independent approval for fixed name-reply framing and instance-owned patrol lifecycle; no activation or live acceptance permission.",
+  "repository": "/home/otto/dev/ro-bots",
+  "review_mode": "Read-only offline, pinned Nix; independent reviewer; no Git commands, no native/model/SQL/engine/credentials operations.",
+  "scope_proof": {
+    "patrol": {
+      "before_sha256": "0a3e92d97d540c3496de561074edd42dc64143915f850bda9c1efd2de9298d5f",
+      "after_sha256": "01bef70ffafba860d43c7e9a4b91f91ac0e4271f55cab01b44229903b0103ff6",
+      "changed_functions": [
+        "PlayingClient._field_target",
+        "PlayingClient._reset_epoch",
+        "PlayingClient._consume_metadata",
+        "PlayingClient._move",
+        "PlayingClient.mechanical_actions",
+        "PlayingClient.__init__"
+      ],
+      "new_functions": [
+        "PlayingClient._fail_patrol",
+        "PlayingClient._patrol_arrived",
+        "PlayingClient._patrol_replan",
+        "PlayingClient._sync_patrol_context",
+        "PlayingClient.close",
+        "PlayingClient.connect"
+      ],
+      "deleted_functions": [],
+      "protected": {
+        "PlayingClient._await_pending": {
+          "before": "086954aa2d750d0067efcfcf2a0b3722645e66ca3b7ed12546c832bea2cc61d8",
+          "after": "086954aa2d750d0067efcfcf2a0b3722645e66ca3b7ed12546c832bea2cc61d8"
+        },
+        "PlayingClient._require_standing": {
+          "before": "63322d8efae0353ca32d4877f265f9e6348e01c99bb16ad3799843631e91550a",
+          "after": "63322d8efae0353ca32d4877f265f9e6348e01c99bb16ad3799843631e91550a"
+        }
+      }
+    },
+    "packetdb": {
+      "before_sha256": "acd9f587243f2b918dfbba1897bbe4209bb62dd123befe2d17ee3754ac4f8999",
+      "after_sha256": "db55d456de1f848dae44a05f62e4c7aa892c0f2206c33fd7284e2a9a9032921b",
+      "changed_functions": [],
+      "new_functions": [],
+      "deleted_functions": [],
+      "protected": {},
+      "registry_delta": {
+        "PACKET_DB": {
+          "added": {
+            "0xadf": 58
+          },
+          "removed": [],
+          "changed": []
+        },
+        "NAMES": {
+          "added": {
+            "0xadf": "ZC_ACK_REQNAMEALL_NPC"
+          },
+          "removed": [],
+          "changed": []
+        }
+      }
+    }
+  },
+  "frozencriticalsha": {
+    "/home/otto/dev/ro-bots/src/robots/app/playing_runtime.py": "01bef70ffafba860d43c7e9a4b91f91ac0e4271f55cab01b44229903b0103ff6",
+    "/home/otto/dev/ro-bots/spikes/003-clientless-limbs/packetdb.py": "db55d456de1f848dae44a05f62e4c7aa892c0f2206c33fd7284e2a9a9032921b",
+    "/home/otto/dev/ro-bots/spikes/003-clientless-limbs/client.py": "2f57a0adc0b43a20235835290499ca0043966c5def208642598afb0dc49807fd",
+    "/home/otto/dev/ro-bots/src/robots/adapters/native_gameplay.py": "c7e9f16750bf117ba3a4843264e215d2e653c0376c70acd7ac45e00a6b2100f9",
+    "/home/otto/dev/ro-bots/src/robots/adapters/native_actor_presentation.py": "81140e814a682ea44742880dd9a3a7a19e165eb2098debfa657d24615fe5b730",
+    "/home/otto/dev/ro-bots/src/robots/adapters/native_navigation.py": "d4d758fc7d827d42aab374ebc0c938b5a066d73638e95d82eca3d7aca2730c0a",
+    "/home/otto/dev/ro-bots/src/robots/adapters/native_session_progression.py": "c7ec4880115c14960642487b34e9ad05ea3ab1718ed0cd54748d361ae84dd55f",
+    "/home/otto/dev/ro-bots/src/robots/adapters/native_vitals.py": "663cc93d1fbe0cb20fb6ae4331e2ad5cf63d9e940a246bb8b332b408f6a7e9ff",
+    "/home/otto/dev/ro-bots/src/robots/domain/model.py": "ad311ac53e1d3a24bf7fe34cb96461b342d8f3ff12a2397d7d43725221538dbf",
+    "/home/otto/dev/ro-bots/src/robots/domain/actions.py": "f0b93b6ac48e6954755c8af5691acacd3546e222de5350f0b9fda8dd09c91b4e",
+    "/home/otto/dev/ro-bots/src/robots/app/agent_runtime.py": "e60d518da5a11dd872f30b8987a03edf5b4a773188264ac21740afe67b64500d",
+    "/home/otto/dev/ro-bots/src/robots/app/runner.py": "6eabce7e5b55cf6344dc7d138085d06b4de75059f5b86b04219df037c90f4ea5",
+    "/home/otto/dev/ro-bots/src/robots/app/brain.py": "c4e644fde9780af4f650564edb4115727c95132e39825f0e4c5037f935442777",
+    "/home/otto/dev/ro-bots/tests/test_native_patrol_destination.py": "8e07012011c3931d8b6ff41206087cd7145b6f893a737baf2fabd9abe642a05f",
+    "/home/otto/dev/ro-bots/tests/test_native_name_reply_framing.py": "235bfb4ad76b63e242cc5b4b7439093aa804df48d0a1b19909eb98358295f983",
+    "/home/otto/dev/ro-bots/tests/test_playing_runtime.py": "58b59fa29701b6c89889aa5d92af0c800dbc9e947a01816bb01193fccc34ce6d",
+    "/home/otto/dev/ro-bots/tests/test_client_protocol.py": "3e781d2f50501b2d1bf0c3caccf507f3c6fcde533ad62ea1448b0f857143a5a2",
+    "/home/otto/dev/ro-bots/tests/test_native_tick_reply.py": "ba22fb9aaae74d219852ddfbb2562eda588246184c4e81a2250cd22fce517f0e",
+    "/home/otto/dev/ro-bots/tests/conftest.py": "42dbe1ae3a43a6c34ef2f9abb829b62d1f0a914d64d1a576d9b528142982d307",
+    "/home/otto/dev/ro-bots/pyproject.toml": "e8ae0849a413bc3d705f081f609b92dae702bbd3e491b2c3aeb5d8665c458fba",
+    "/home/otto/dev/ro-bots/flake.nix": "185e4a4babf62a40484c347f59653bd11b79ce847316a3a90349c8545d38a359",
+    "/home/otto/dev/ro-bots/flake.lock": "c9c0bac69415b99a29ef3fe149b6f04ef54d291989bdf7218cf819ed52edf2a0",
+    "/home/otto/dev/ro-bots/uv.lock": "2d7b4c187078488d7625e4fd4fa982745cab8d6a65b2ff3e382ffa286f1df245",
+    "/home/otto/dev/ro-bots/run/reviews/native-name-reply-repair.json": "dc4a15717c9dd1dfe10063c51808e3eee3232d9c0d93012e9d31fd0655a1c23b",
+    "/home/otto/dev/ro-bots/run/reviews/native-patrol-destination-repair.json": "d1fb81770468d5b1d3fb07d194e054f90d7033af2bec2db22378d4d44013f8af",
+    "/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source/src/map/packets_struct.hpp": "5ab5ef13d2a1cdc60d84dcaf2e3be0b6e316b9630e61c3ac7ba0f930d4d31287",
+    "/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source/src/map/clif.cpp": "0b1db098158c240b090c6edb8417978ba495957c8a2df4cd9a0ab4cb39884ac5",
+    "/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source/src/common/mmo.hpp": "883ec2048b726d51f897218989ca66c476bcdbc969d683025fe09a0bf280fa6d",
+    "/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source/src/config/packets.hpp": "180f7ddaf5c978af0db7ed26215388265d51f59957ac7173d617870e2cc0964d"
+  },
+  "freeze_after": {
+    "/home/otto/dev/ro-bots/src/robots/app/playing_runtime.py": "01bef70ffafba860d43c7e9a4b91f91ac0e4271f55cab01b44229903b0103ff6",
+    "/home/otto/dev/ro-bots/spikes/003-clientless-limbs/packetdb.py": "db55d456de1f848dae44a05f62e4c7aa892c0f2206c33fd7284e2a9a9032921b",
+    "/home/otto/dev/ro-bots/spikes/003-clientless-limbs/client.py": "2f57a0adc0b43a20235835290499ca0043966c5def208642598afb0dc49807fd",
+    "/home/otto/dev/ro-bots/src/robots/adapters/native_gameplay.py": "c7e9f16750bf117ba3a4843264e215d2e653c0376c70acd7ac45e00a6b2100f9",
+    "/home/otto/dev/ro-bots/src/robots/adapters/native_actor_presentation.py": "81140e814a682ea44742880dd9a3a7a19e165eb2098debfa657d24615fe5b730",
+    "/home/otto/dev/ro-bots/src/robots/adapters/native_navigation.py": "d4d758fc7d827d42aab374ebc0c938b5a066d73638e95d82eca3d7aca2730c0a",
+    "/home/otto/dev/ro-bots/src/robots/adapters/native_session_progression.py": "c7ec4880115c14960642487b34e9ad05ea3ab1718ed0cd54748d361ae84dd55f",
+    "/home/otto/dev/ro-bots/src/robots/adapters/native_vitals.py": "663cc93d1fbe0cb20fb6ae4331e2ad5cf63d9e940a246bb8b332b408f6a7e9ff",
+    "/home/otto/dev/ro-bots/src/robots/domain/model.py": "ad311ac53e1d3a24bf7fe34cb96461b342d8f3ff12a2397d7d43725221538dbf",
+    "/home/otto/dev/ro-bots/src/robots/domain/actions.py": "f0b93b6ac48e6954755c8af5691acacd3546e222de5350f0b9fda8dd09c91b4e",
+    "/home/otto/dev/ro-bots/src/robots/app/agent_runtime.py": "e60d518da5a11dd872f30b8987a03edf5b4a773188264ac21740afe67b64500d",
+    "/home/otto/dev/ro-bots/src/robots/app/runner.py": "6eabce7e5b55cf6344dc7d138085d06b4de75059f5b86b04219df037c90f4ea5",
+    "/home/otto/dev/ro-bots/src/robots/app/brain.py": "c4e644fde9780af4f650564edb4115727c95132e39825f0e4c5037f935442777",
+    "/home/otto/dev/ro-bots/tests/test_native_patrol_destination.py": "8e07012011c3931d8b6ff41206087cd7145b6f893a737baf2fabd9abe642a05f",
+    "/home/otto/dev/ro-bots/tests/test_native_name_reply_framing.py": "235bfb4ad76b63e242cc5b4b7439093aa804df48d0a1b19909eb98358295f983",
+    "/home/otto/dev/ro-bots/tests/test_playing_runtime.py": "58b59fa29701b6c89889aa5d92af0c800dbc9e947a01816bb01193fccc34ce6d",
+    "/home/otto/dev/ro-bots/tests/test_client_protocol.py": "3e781d2f50501b2d1bf0c3caccf507f3c6fcde533ad62ea1448b0f857143a5a2",
+    "/home/otto/dev/ro-bots/tests/test_native_tick_reply.py": "ba22fb9aaae74d219852ddfbb2562eda588246184c4e81a2250cd22fce517f0e",
+    "/home/otto/dev/ro-bots/tests/conftest.py": "42dbe1ae3a43a6c34ef2f9abb829b62d1f0a914d64d1a576d9b528142982d307",
+    "/home/otto/dev/ro-bots/pyproject.toml": "e8ae0849a413bc3d705f081f609b92dae702bbd3e491b2c3aeb5d8665c458fba",
+    "/home/otto/dev/ro-bots/flake.nix": "185e4a4babf62a40484c347f59653bd11b79ce847316a3a90349c8545d38a359",
+    "/home/otto/dev/ro-bots/flake.lock": "c9c0bac69415b99a29ef3fe149b6f04ef54d291989bdf7218cf819ed52edf2a0",
+    "/home/otto/dev/ro-bots/uv.lock": "2d7b4c187078488d7625e4fd4fa982745cab8d6a65b2ff3e382ffa286f1df245",
+    "/home/otto/dev/ro-bots/run/reviews/native-name-reply-repair.json": "dc4a15717c9dd1dfe10063c51808e3eee3232d9c0d93012e9d31fd0655a1c23b",
+    "/home/otto/dev/ro-bots/run/reviews/native-patrol-destination-repair.json": "d1fb81770468d5b1d3fb07d194e054f90d7033af2bec2db22378d4d44013f8af",
+    "/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source/src/map/packets_struct.hpp": "5ab5ef13d2a1cdc60d84dcaf2e3be0b6e316b9630e61c3ac7ba0f930d4d31287",
+    "/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source/src/map/clif.cpp": "0b1db098158c240b090c6edb8417978ba495957c8a2df4cd9a0ab4cb39884ac5",
+    "/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source/src/common/mmo.hpp": "883ec2048b726d51f897218989ca66c476bcdbc969d683025fe09a0bf280fa6d",
+    "/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source/src/config/packets.hpp": "180f7ddaf5c978af0db7ed26215388265d51f59957ac7173d617870e2cc0964d"
+  },
+  "frozen_dependency_count": 29,
+  "frozen_dependency_drift": [],
+  "docstring_hashes": {
+    "/home/otto/dev/ro-bots/src/robots/app/playing_runtime.py": "8a6366f9fd008859f431069710a56a16e303d339a4c1a0b33d4a20a34ec4dcdb",
+    "/home/otto/dev/ro-bots/spikes/003-clientless-limbs/packetdb.py": "d2eff06cfeceb3ea81c326c77e2f19753c0537bd60f152448d0dd6fd52baa35b",
+    "/home/otto/dev/ro-bots/tests/test_native_patrol_destination.py": "828c5db755b32576f95b0bd639b57cc5645bee536099384be0fbef05ff683eb3",
+    "/home/otto/dev/ro-bots/tests/test_native_name_reply_framing.py": "903bac223e7dfd510b3eb9723687f1979f343aa9f379ad7c3f86a56be76562fb"
+  },
+  "compiled_authority": {
+    "source": "/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source/src",
+    "flags": [
+      "-DPACKETVER=20180704",
+      "-DPRERE"
+    ],
+    "npc": {
+      "header": "0x0ADF",
+      "length": 58,
+      "offsets": [
+        0,
+        2,
+        6,
+        10,
+        34
+      ]
+    },
+    "player": {
+      "header": "0x0A30",
+      "length": 106,
+      "offsets": [
+        0,
+        2,
+        6,
+        30,
+        54,
+        78,
+        102
+      ]
+    },
+    "name_length": 24,
+    "unaltered_guards_and_header_excerpts": true,
+    "oracle_recompiled_and_executed": {
+      "binary": "/home/otto/.hermes/cache/scratch/name-patrol-review/pytest/test_compiled_name_reply_famil0/name-oracle",
+      "cpp": "/home/otto/.hermes/cache/scratch/name-patrol-review/pytest/test_compiled_name_reply_famil0/name-oracle.cpp",
+      "binary_sha256": "bfba62ba6a49daabac652131a1ec9548610cb06b0a3ee6484cfdec11feb49022",
+      "cpp_sha256": "275950472314dfca2bff4b68e1f5a182cea8697303247b2c610c3d8073f23a4c",
+      "executed_stdout": "24 2783 58 0 2 6 10 34 2608 106 0 2 6 30 54 78 102"
+    },
+    "emitter_review": "packets_struct.hpp3563-3602 and clif.cpp9987-10082 read independently; NPC/etc and ordinary mob branches send sizeof(name packet). No name-to-HP/actor/auth promotion introduced."
+  },
+  "verification": {
+    "junit": [
+      {
+        "name": "pytest",
+        "errors": "0",
+        "failures": "0",
+        "skipped": "0",
+        "tests": "1300",
+        "time": "3.801",
+        "timestamp": "2026-10-07T04:54:17.291581+02:00",
+        "hostname": "framework"
+      }
+    ],
+    "junit_path": "/home/otto/.hermes/cache/scratch/name-patrol-review/independent.xml",
+    "junit_sha256": "a07b9581c1fdb4273637062bafdb2902c801012402f8a1a44bc355eb4adaeba1",
+    "physical_selected_tests": 1300,
+    "independent_cases": 19,
+    "independent_case_names": [
+      "test_lifecycle_exact_forwarding[None-connect]",
+      "test_lifecycle_exact_forwarding[None-close]",
+      "test_lifecycle_exact_forwarding[ValueError-connect]",
+      "test_lifecycle_exact_forwarding[ValueError-close]",
+      "test_lifecycle_exact_forwarding[KeyboardInterrupt-connect]",
+      "test_lifecycle_exact_forwarding[KeyboardInterrupt-close]",
+      "test_lifecycle_exact_forwarding[SystemExit-connect]",
+      "test_lifecycle_exact_forwarding[SystemExit-close]",
+      "test_received_map_refresh[prt_fild08]",
+      "test_received_map_refresh[prontera]",
+      "test_none_epoch_no_fake_authority_and_agent_isolation",
+      "test_hold_across_positions_and_nonarrival",
+      "test_strict_receipt_pending_deadline[destination]",
+      "test_strict_receipt_pending_deadline[stale]",
+      "test_different_pending_prevents_new_leg_then_exhausts",
+      "test_cache_failure_order_and_unrelated_move[False]",
+      "test_cache_failure_order_and_unrelated_move[True]",
+      "test_rest_receipt_cannot_claim_leg_completion",
+      "test_actual_framer_unknown_coalesced_and_split_no_authority"
+    ],
+    "new_author_test_counts": {
+      "name_framing": 6,
+      "patrol": 32
+    },
+    "independent_probe": "/home/otto/.hermes/cache/scratch/name-patrol-review/test_independent.py",
+    "independent_probe_sha256": "992eb86ba4aba39312929fce26deca2abc1d476235d8d76c041e1f4d2ca4d799",
+    "seven_whole_src_static_gates": {
+      "black": {
+        "command": [
+          "black",
+          "--check",
+          "src",
+          "tests/test_native_name_reply_framing.py",
+          "tests/test_native_patrol_destination.py"
+        ],
+        "exit_code": 0,
+        "seconds": 0.18149007100146264,
+        "log": "/home/otto/.hermes/cache/scratch/name-patrol-review/black.log"
+      },
+      "ruff": {
+        "command": [
+          "ruff",
+          "check",
+          "src",
+          "tests/test_native_name_reply_framing.py",
+          "tests/test_native_patrol_destination.py"
+        ],
+        "exit_code": 0,
+        "seconds": 0.01972193399706157,
+        "log": "/home/otto/.hermes/cache/scratch/name-patrol-review/ruff.log"
+      },
+      "mypy": {
+        "command": [
+          "mypy",
+          "--cache-dir=/home/otto/.hermes/cache/scratch/name-patrol-review/mypy-fresh",
+          "src",
+          "tests/test_native_name_reply_framing.py",
+          "tests/test_native_patrol_destination.py"
+        ],
+        "exit_code": 0,
+        "seconds": 5.638727965000726,
+        "log": "/home/otto/.hermes/cache/scratch/name-patrol-review/mypy.log"
+      },
+      "vulture": {
+        "command": [
+          "vulture",
+          "src",
+          "vulture_whitelist.py"
+        ],
+        "exit_code": 0,
+        "seconds": 0.2936874320002971,
+        "log": "/home/otto/.hermes/cache/scratch/name-patrol-review/vulture.log"
+      },
+      "xenon": {
+        "command": [
+          "xenon",
+          "src",
+          "--max-absolute",
+          "B",
+          "--max-modules",
+          "B",
+          "--max-average",
+          "A"
+        ],
+        "exit_code": 0,
+        "seconds": 0.30876643199735554,
+        "log": "/home/otto/.hermes/cache/scratch/name-patrol-review/xenon.log"
+      },
+      "pylint": {
+        "command": [
+          "pylint",
+          "--disable=all",
+          "--enable=duplicate-code",
+          "--ignore-paths=tests",
+          "src"
+        ],
+        "exit_code": 0,
+        "seconds": 3.6089478979993146,
+        "log": "/home/otto/.hermes/cache/scratch/name-patrol-review/pylint.log"
+      },
+      "bandit": {
+        "command": [
+          "bandit",
+          "-q",
+          "-c",
+          "pyproject.toml",
+          "-r",
+          "src"
+        ],
+        "exit_code": 0,
+        "seconds": 0.8419817020039773,
+        "log": "/home/otto/.hermes/cache/scratch/name-patrol-review/bandit.log"
+      }
+    },
+    "module_coverage": {
+      "covered_lines": 323,
+      "num_statements": 340,
+      "percent_covered": 91.94915254237289,
+      "percent_covered_display": "92",
+      "missing_lines": 17,
+      "excluded_lines": 0,
+      "percent_statements_covered": 95.0,
+      "percent_statements_covered_display": "95",
+      "num_branches": 132,
+      "num_partial_branches": 15,
+      "covered_branches": 111,
+      "missing_branches": 21,
+      "percent_branches_covered": 84.0909090909091,
+      "percent_branches_covered_display": "84"
+    },
+    "patrol_scope_coverage": {
+      "covered_branches": 18,
+      "branches": 18,
+      "branch_percent": 100.0,
+      "per_function": {
+        "connect": {
+          "covered_lines": 2,
+          "num_statements": 2,
+          "percent_covered": 100.0,
+          "percent_covered_display": "100",
+          "missing_lines": 0,
+          "excluded_lines": 0,
+          "percent_statements_covered": 100.0,
+          "percent_statements_covered_display": "100",
+          "num_branches": 0,
+          "num_partial_branches": 0,
+          "covered_branches": 0,
+          "missing_branches": 0,
+          "percent_branches_covered": 100.0,
+          "percent_branches_covered_display": "100"
+        },
+        "close": {
+          "covered_lines": 2,
+          "num_statements": 2,
+          "percent_covered": 100.0,
+          "percent_covered_display": "100",
+          "missing_lines": 0,
+          "excluded_lines": 0,
+          "percent_statements_covered": 100.0,
+          "percent_statements_covered_display": "100",
+          "num_branches": 0,
+          "num_partial_branches": 0,
+          "covered_branches": 0,
+          "missing_branches": 0,
+          "percent_branches_covered": 100.0,
+          "percent_branches_covered_display": "100"
+        },
+        "_field_target": {
+          "covered_lines": 13,
+          "num_statements": 13,
+          "percent_covered": 100.0,
+          "percent_covered_display": "100",
+          "missing_lines": 0,
+          "excluded_lines": 0,
+          "percent_statements_covered": 100.0,
+          "percent_statements_covered_display": "100",
+          "num_branches": 6,
+          "num_partial_branches": 0,
+          "covered_branches": 6,
+          "missing_branches": 0,
+          "percent_branches_covered": 100.0,
+          "percent_branches_covered_display": "100"
+        },
+        "_sync_patrol_context": {
+          "covered_lines": 4,
+          "num_statements": 4,
+          "percent_covered": 100.0,
+          "percent_covered_display": "100",
+          "missing_lines": 0,
+          "excluded_lines": 0,
+          "percent_statements_covered": 100.0,
+          "percent_statements_covered_display": "100",
+          "num_branches": 2,
+          "num_partial_branches": 0,
+          "covered_branches": 2,
+          "missing_branches": 0,
+          "percent_branches_covered": 100.0,
+          "percent_branches_covered_display": "100"
+        },
+        "_fail_patrol": {
+          "covered_lines": 3,
+          "num_statements": 3,
+          "percent_covered": 100.0,
+          "percent_covered_display": "100",
+          "missing_lines": 0,
+          "excluded_lines": 0,
+          "percent_statements_covered": 100.0,
+          "percent_statements_covered_display": "100",
+          "num_branches": 2,
+          "num_partial_branches": 0,
+          "covered_branches": 2,
+          "missing_branches": 0,
+          "percent_branches_covered": 100.0,
+          "percent_branches_covered_display": "100"
+        },
+        "_patrol_replan": {
+          "covered_lines": 10,
+          "num_statements": 10,
+          "percent_covered": 100.0,
+          "percent_covered_display": "100",
+          "missing_lines": 0,
+          "excluded_lines": 0,
+          "percent_statements_covered": 100.0,
+          "percent_statements_covered_display": "100",
+          "num_branches": 6,
+          "num_partial_branches": 0,
+          "covered_branches": 6,
+          "missing_branches": 0,
+          "percent_branches_covered": 100.0,
+          "percent_branches_covered_display": "100"
+        },
+        "_patrol_arrived": {
+          "covered_lines": 6,
+          "num_statements": 6,
+          "percent_covered": 100.0,
+          "percent_covered_display": "100",
+          "missing_lines": 0,
+          "excluded_lines": 0,
+          "percent_statements_covered": 100.0,
+          "percent_statements_covered_display": "100",
+          "num_branches": 2,
+          "num_partial_branches": 0,
+          "covered_branches": 2,
+          "missing_branches": 0,
+          "percent_branches_covered": 100.0,
+          "percent_branches_covered_display": "100"
+        }
+      }
+    },
+    "coverage_path": "/home/otto/.hermes/cache/scratch/name-patrol-review/coverage.json",
+    "test_command": "TMPDIR and COVERAGE_FILE scratch-local; nix develop --offline -c env -u PYTEST_DISABLE_PLUGIN_AUTOLOAD -u PYTEST_ADDOPTS UV_OFFLINE=1 uv run --no-sync pytest 17 selected repository test files plus scratch/test_independent.py --import-mode=importlib --cov=robots.app.playing_runtime --cov-branch --cov-fail-under=85 --junitxml=scratch/independent.xml; basetemp and cache in scratch."
+  },
+  "independent_findings": [
+    "Packet database function AST entirely unchanged; exact final registry delta only NPC length/name registration; player 0x0A30=106 and clock 0x007F=6 unchanged.",
+    "Original sampler remains eager 16 independent +/-8 x/y draws, first public walkable candidate and prt_fild08 scope; advancing positions and destination-only acknowledgements do not resample a held leg.",
+    "Only fresh actual received from==to target with strictly newer sequence completes the held leg; stale, mismatched, absent and different-pending receipts cannot bypass it.",
+    "Deadline does not interpolate coordinates or clear pending. Three paced one-second movement retries and exhausted-arrival denial preserved in unchanged protected AST.",
+    "Fresh 0091 including same-map refresh and actual epoch reset clear held patrol. Goal/map/cache/context changes do not invent native authentication; legacy native_epoch=None remains an offline context value.",
+    "Lifecycle wrappers forward exact arguments and return identities, preserve exact ValueError/KeyboardInterrupt/SystemExit origin and forward traceback, clear only patrol locally, and do not mutate pending/reader/socket ownership; actual host startup cleanup and native session regression tests pass.",
+    "Public cache is read before held-target return. NoRoute clears patrol only with no unresolved pending; unrelated move failure keeps held patrol.",
+    "Per-agent isolation and Rest/attack/dead/script/floor-loot precedence preserved; no hidden population or new actor authority."
+  ],
+  "legacy_debt_not_waived": {
+    "client_ruff": 46,
+    "client_mypy": 13,
+    "packetdb_mypy": 2,
+    "basis": "Known numerical debt retained from frozen author evidence; no claim all spike files pass and no baseline/threshold adjustments."
+  },
+  "acceptance": {
+    "scoped_offline_contract": true,
+    "parent_whole_gate_required": true,
+    "fresh_owned_fixture_preflight_required": true,
+    "native_playing_retry_performed": false,
+    "combat_xp_loot_accepted": false,
+    "full_goal_accepted": false,
+    "activation_permission": false
+  },
+  "limitations": [
+    "Whole-source module branch coverage is 84.09%; patrol responsibility branches are independently 18/18 (100%). Required 85% scope bound passed; statement coverage module 95%.",
+    "Review is not a universal packet-family correction, native travel/combat proof, goal acceptance, or world activation permission. Parent must finish combined whole gate and approved exact-fixture preflight before live loop."
+  ],
+  "issues_encountered": [
+    "Two scratch-only registry-extraction attempts failed because the registry uses dict.update and struct.calcsize expressions. Repeated with restricted literal parsing plus explicit calcsize handling; final exact-delta assertion passed. No source or test relaxation."
+  ],
+  "files_created": [
+    "/home/otto/dev/ro-bots/run/reviews/native-name-patrol-independent-review.json",
+    "/home/otto/.hermes/cache/scratch/name-patrol-review"
+  ],
+  "sensitive_values": "Token/connection/auth payload values omitted [REDACTED]."
+}

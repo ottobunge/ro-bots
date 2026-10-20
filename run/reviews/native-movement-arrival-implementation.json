@@ -1,0 +1,1453 @@
+{
+  "scope": "Only movement smoke harness, new offline tests, and this report. No client/packetdb/old-test edits, live actions, SQL, private fixture reads, provider calls or git operations.",
+  "implementation": {
+    "requirements": [
+      "Peer exact account-wire actor destination announcement is necessary, not sufficient.",
+      "Exactly one same-target confirmation, only after announcement.",
+      "Snapshot retained raw entry identities BEFORE confirmation send, preserving responses received inside move().",
+      "Fresh native full 12-byte 0x0087 header and MOVE_DATA at offset 6; decode native overlapping RBUFPOS2 fields.",
+      "Both current from and requested to must equal target on exact mover map connection validated by existing connect_pair. No invented wire AID.",
+      "Bounded Budget.wait up to six seconds under unchanged overall monotonic deadline; no polling resend, fixed dwell, tick nonce or self.x arrival shortcut.",
+      "Malformed eligible 0x0087 rejects with ValueError; unrelated packet types ignored. Existing health/cleanup unchanged."
+    ],
+    "pure_helper": "movement_arrival_evidence(records, old, target)",
+    "freshness_limit": "Inherited retained-entry object identity on current bounded fixture stream. Not a universal request nonce, replay-safe/resume/reconnect correlation guarantee."
+  },
+  "native_sources": [
+    "Pinned MAIN/pre-re 20180704 src/map/clif.cpp:182-239 WBUFPOS2/RBUFPOS2,2051-2060 SELF snapshot",
+    "src/map/packets.hpp:681-686 packed 12-byte ZC_NOTIFY_PLAYERMOVE",
+    "run/reviews/native-movement-source-investigation.json"
+  ],
+  "tdd": [
+    {
+      "phase": "RED original actual limb_move",
+      "result": "1 failed: announced target incorrectly returned OK without any authoritative self ACK",
+      "junit": "/home/otto/.hermes/cache/scratch/ma/red-original.xml"
+    },
+    {
+      "phase": "RED pure helper",
+      "result": "1 failed: missing movement_arrival_evidence attribute",
+      "junit": "/home/otto/.hermes/cache/scratch/ma/red-helper.xml"
+    },
+    {
+      "phase": "GREEN minimal helper",
+      "result": "1 passed",
+      "junit": "/home/otto/.hermes/cache/scratch/ma/green-helper.xml"
+    },
+    {
+      "phase": "GREEN integrated false-positive regression",
+      "result": "2 passed",
+      "junit": "/home/otto/.hermes/cache/scratch/ma/green-original.xml"
+    },
+    {
+      "phase": "Remaining adversarial regression coverage",
+      "result": "22 movement test cases pass, including packed boundary, stale/coalesced history, initial nonzero path, wrong target/type/header/size, immediate response, delayed response, wrong stream, missing peer and overall timeout"
+    }
+  ],
+  "verification": {
+    "environment": "Pinned nix develop --offline; UV_OFFLINE=1; uv run --offline --frozen --no-sync; unset inherited pytest flags; process-only scratch TMPDIR, bytecode and pytest cache disabled.",
+    "final_combined_junit": "/home/otto/.hermes/cache/scratch/ma/final-combined.xml",
+    "tests": 194,
+    "unique_cases": 194,
+    "passed": 193,
+    "failed": [
+      {
+        "classname": "tests.test_protocol_rereview_repairs",
+        "name": "test_movement_accepts_only_account_wire_actor[11]",
+        "time": "0.004"
+      }
+    ],
+    "movement_passed": 22,
+    "pytest_subtests_passed_as_reported": 65,
+    "new_test_ruff": "PASS",
+    "new_test_mypy": "PASS",
+    "both_owned_python_black_check": "PASS",
+    "legacy_harness_ruff_counts": {
+      "I001": 1,
+      "RUF100": 1,
+      "PLR0912": 2,
+      "EM101": 24,
+      "PLW0603": 1,
+      "T201": 3,
+      "E501": 1
+    },
+    "legacy_harness_ruff_diagnostics": [
+      {
+        "cell": null,
+        "code": "I001",
+        "end_location": {
+          "column": 49,
+          "row": 28
+        },
+        "filename": "/home/otto/dev/ro-bots/spikes/003-clientless-limbs/test_limbs.py",
+        "fix": {
+          "applicability": "safe",
+          "edits": [
+            {
+              "content": "from client import ACT_SIT, ACT_STAND, BotClient  # noqa: E402\n\n\n",
+              "end_location": {
+                "column": 1,
+                "row": 31
+              },
+              "location": {
+                "column": 1,
+                "row": 28
+              }
+            }
+          ],
+          "message": "Organize imports"
+        },
+        "location": {
+          "column": 1,
+          "row": 28
+        },
+        "message": "Import block is un-sorted or un-formatted",
+        "name": "unsorted-imports",
+        "noqa_row": 28,
+        "severity": "error",
+        "url": "https://docs.astral.sh/ruff/rules/unsorted-imports"
+      },
+      {
+        "cell": null,
+        "code": "RUF100",
+        "end_location": {
+          "column": 63,
+          "row": 28
+        },
+        "filename": "/home/otto/dev/ro-bots/spikes/003-clientless-limbs/test_limbs.py",
+        "fix": {
+          "applicability": "safe",
+          "edits": [
+            {
+              "content": "",
+              "end_location": {
+                "column": 63,
+                "row": 28
+              },
+              "location": {
+                "column": 49,
+                "row": 28
+              }
+            }
+          ],
+          "message": "Remove unused `noqa` directive"
+        },
+        "location": {
+          "column": 51,
+          "row": 28
+        },
+        "message": "Unused `noqa` directive (unused: `E402`)",
+        "name": "unused-noqa",
+        "noqa_row": 28,
+        "severity": "error",
+        "url": "https://docs.astral.sh/ruff/rules/unused-noqa"
+      },
+      {
+        "cell": null,
+        "code": "PLR0912",
+        "end_location": {
+          "column": 21,
+          "row": 31
+        },
+        "filename": "/home/otto/dev/ro-bots/spikes/003-clientless-limbs/test_limbs.py",
+        "fix": null,
+        "location": {
+          "column": 5,
+          "row": 31
+        },
+        "message": "Too many branches (16 > 12)",
+        "name": "too-many-branches",
+        "noqa_row": 31,
+        "severity": "error",
+        "url": "https://docs.astral.sh/ruff/rules/too-many-branches"
+      },
+      {
+        "cell": null,
+        "code": "EM101",
+        "end_location": {
+          "column": 54,
+          "row": 34
+        },
+        "filename": "/home/otto/dev/ro-bots/spikes/003-clientless-limbs/test_limbs.py",
+        "fix": {
+          "applicability": "unsafe",
+          "edits": [
+            {
+              "content": "msg = \"unsupported fixture schema\"\n        ",
+              "end_location": {
+                "column": 9,
+                "row": 34
+              },
+              "location": {
+                "column": 9,
+                "row": 34
+              }
+            },
+            {
+              "content": "msg",
+              "end_location": {
+                "column": 54,
+                "row": 34
+              },
+              "location": {
+                "column": 26,
+                "row": 34
+              }
+            }
+          ],
+          "message": "Assign to variable; remove string literal"
+        },
+        "location": {
+          "column": 26,
+          "row": 34
+        },
+        "message": "Exception must not use a string literal, assign to variable first",
+        "name": "raw-string-in-exception",
+        "noqa_row": 34,
+        "severity": "error",
+        "url": "https://docs.astral.sh/ruff/rules/raw-string-in-exception"
+      },
+      {
+        "cell": null,
+        "code": "EM101",
+        "end_location": {
+          "column": 72,
+          "row": 36
+        },
+        "filename": "/home/otto/dev/ro-bots/spikes/003-clientless-limbs/test_limbs.py",
+        "fix": {
+          "applicability": "unsafe",
+          "edits": [
+            {
+              "content": "msg = \"explicit isolated_disposable opt-in required\"\n        ",
+              "end_location": {
+                "column": 9,
+                "row": 36
+              },
+              "location": {
+                "column": 9,
+                "row": 36
+              }
+            },
+            {
+              "content": "msg",
+              "end_location": {
+                "column": 72,
+                "row": 36
+              },
+              "location": {
+                "column": 26,
+                "row": 36
+              }
+            }
+          ],
+          "message": "Assign to variable; remove string literal"
+        },
+        "location": {
+          "column": 26,
+          "row": 36
+        },
+        "message": "Exception must not use a string literal, assign to variable first",
+        "name": "raw-string-in-exception",
+        "noqa_row": 36,
+        "severity": "error",
+        "url": "https://docs.astral.sh/ruff/rules/raw-string-in-exception"
+      },
+      {
+        "cell": null,
+        "code": "EM101",
+        "end_location": {
+          "column": 57,
+          "row": 39
+        },
+        "filename": "/home/otto/dev/ro-bots/spikes/003-clientless-limbs/test_limbs.py",
+        "fix": {
+          "applicability": "unsafe",
+          "edits": [
+            {
+              "content": "msg = \"loopback literal required\"\n            ",
+              "end_location": {
+                "column": 13,
+                "row": 39
+              },
+              "location": {
+                "column": 13,
+                "row": 39
+              }
+            },
+            {
+              "content": "msg",
+              "end_location": {
+                "column": 57,
+                "row": 39
+              },
+              "location": {
+                "column": 30,
+                "row": 39
+              }
+            }
+          ],
+          "message": "Assign to variable; remove string literal"
+        },
+        "location": {
+          "column": 30,
+          "row": 39
+        },
+        "message": "Exception must not use a string literal, assign to variable first",
+        "name": "raw-string-in-exception",
+        "noqa_row": 39,
+        "severity": "error",
+        "url": "https://docs.astral.sh/ruff/rules/raw-string-in-exception"
+      },
+      {
+        "cell": null,
+        "code": "EM101",
+        "end_location": {
+          "column": 53,
+          "row": 41
+        },
+        "filename": "/home/otto/dev/ro-bots/spikes/003-clientless-limbs/test_limbs.py",
+        "fix": {
+          "applicability": "unsafe",
+          "edits": [
+            {
+              "content": "msg = \"loopback literal required\"\n        ",
+              "end_location": {
+                "column": 9,
+                "row": 41
+              },
+              "location": {
+                "column": 9,
+                "row": 41
+              }
+            },
+            {
+              "content": "msg",
+              "end_location": {
+                "column": 53,
+                "row": 41
+              },
+              "location": {
+                "column": 26,
+                "row": 41
+              }
+            }
+          ],
+          "message": "Assign to variable; remove string literal"
+        },
+        "location": {
+          "column": 26,
+          "row": 41
+        },
+        "message": "Exception must not use a string literal, assign to variable first",
+        "name": "raw-string-in-exception",
+        "noqa_row": 41,
+        "severity": "error",
+        "url": "https://docs.astral.sh/ruff/rules/raw-string-in-exception"
+      },
+      {
+        "cell": null,
+        "code": "EM101",
+        "end_location": {
+          "column": 56,
+          "row": 43
+        },
+        "filename": "/home/otto/dev/ro-bots/spikes/003-clientless-limbs/test_limbs.py",
+        "fix": {
+          "applicability": "unsafe",
+          "edits": [
+            {
+              "content": "msg = \"explicit login_port required\"\n        ",
+              "end_location": {
+                "column": 9,
+                "row": 43
+              },
+              "location": {
+                "column": 9,
+                "row": 43
+              }
+            },
+            {
+              "content": "msg",
+              "end_location": {
+                "column": 56,
+                "row": 43
+              },
+              "location": {
+                "column": 26,
+                "row": 43
+              }
+            }
+          ],
+          "message": "Assign to variable; remove string literal"
+        },
+        "location": {
+          "column": 26,
+          "row": 43
+        },
+        "message": "Exception must not use a string literal, assign to variable first",
+        "name": "raw-string-in-exception",
+        "noqa_row": 43,
+        "severity": "error",
+        "url": "https://docs.astral.sh/ruff/rules/raw-string-in-exception"
+      },
+      {
+        "cell": null,
+        "code": "EM101",
+        "end_location": {
+          "column": 73,
+          "row": 46
+        },
+        "filename": "/home/otto/dev/ro-bots/spikes/003-clientless-limbs/test_limbs.py",
+        "fix": {
+          "applicability": "unsafe",
+          "edits": [
+            {
+              "content": "msg = \"exactly two disposable fixture pairs required\"\n        ",
+              "end_location": {
+                "column": 9,
+                "row": 46
+              },
+              "location": {
+                "column": 9,
+                "row": 46
+              }
+            },
+            {
+              "content": "msg",
+              "end_location": {
+                "column": 73,
+                "row": 46
+              },
+              "location": {
+                "column": 26,
+                "row": 46
+              }
+            }
+          ],
+          "message": "Assign to variable; remove string literal"
+        },
+        "location": {
+          "column": 26,
+          "row": 46
+        },
+        "message": "Exception must not use a string literal, assign to variable first",
+        "name": "raw-string-in-exception",
+        "noqa_row": 46,
+        "severity": "error",
+        "url": "https://docs.astral.sh/ruff/rules/raw-string-in-exception"
+      },
+      {
+        "cell": null,
+        "code": "EM101",
+        "end_location": {
+          "column": 62,
+          "row": 49
+        },
+        "filename": "/home/otto/dev/ro-bots/spikes/003-clientless-limbs/test_limbs.py",
+        "fix": {
+          "applicability": "unsafe",
+          "edits": [
+            {
+              "content": "msg = \"fixture pair must be an object\"\n            ",
+              "end_location": {
+                "column": 13,
+                "row": 49
+              },
+              "location": {
+                "column": 13,
+                "row": 49
+              }
+            },
+            {
+              "content": "msg",
+              "end_location": {
+                "column": 62,
+                "row": 49
+              },
+              "location": {
+                "column": 30,
+                "row": 49
+              }
+            }
+          ],
+          "message": "Assign to variable; remove string literal"
+        },
+        "location": {
+          "column": 30,
+          "row": 49
+        },
+        "message": "Exception must not use a string literal, assign to variable first",
+        "name": "raw-string-in-exception",
+        "noqa_row": 49,
+        "severity": "error",
+        "url": "https://docs.astral.sh/ruff/rules/raw-string-in-exception"
+      },
+      {
+        "cell": null,
+        "code": "EM101",
+        "end_location": {
+          "column": 88,
+          "row": 58
+        },
+        "filename": "/home/otto/dev/ro-bots/spikes/003-clientless-limbs/test_limbs.py",
+        "fix": {
+          "applicability": "unsafe",
+          "edits": [
+            {
+              "content": "msg = \"invalid or missing fixture identity/credential field\"\n                ",
+              "end_location": {
+                "column": 17,
+                "row": 58
+              },
+              "location": {
+                "column": 17,
+                "row": 58
+              }
+            },
+            {
+              "content": "msg",
+              "end_location": {
+                "column": 88,
+                "row": 58
+              },
+              "location": {
+                "column": 34,
+                "row": 58
+              }
+            }
+          ],
+          "message": "Assign to variable; remove string literal"
+        },
+        "location": {
+          "column": 34,
+          "row": 58
+        },
+        "message": "Exception must not use a string literal, assign to variable first",
+        "name": "raw-string-in-exception",
+        "noqa_row": 58,
+        "severity": "error",
+        "url": "https://docs.astral.sh/ruff/rules/raw-string-in-exception"
+      },
+      {
+        "cell": null,
+        "code": "EM101",
+        "end_location": {
+          "column": 74,
+          "row": 66
+        },
+        "filename": "/home/otto/dev/ro-bots/spikes/003-clientless-limbs/test_limbs.py",
+        "fix": {
+          "applicability": "unsafe",
+          "edits": [
+            {
+              "content": "msg = \"explicit positive fixture IDs required\"\n                ",
+              "end_location": {
+                "column": 17,
+                "row": 66
+              },
+              "location": {
+                "column": 17,
+                "row": 66
+              }
+            },
+            {
+              "content": "msg",
+              "end_location": {
+                "column": 74,
+                "row": 66
+              },
+              "location": {
+                "column": 34,
+                "row": 66
+              }
+            }
+          ],
+          "message": "Assign to variable; remove string literal"
+        },
+        "location": {
+          "column": 34,
+          "row": 66
+        },
+        "message": "Exception must not use a string literal, assign to variable first",
+        "name": "raw-string-in-exception",
+        "noqa_row": 66,
+        "severity": "error",
+        "url": "https://docs.astral.sh/ruff/rules/raw-string-in-exception"
+      },
+      {
+        "cell": null,
+        "code": "EM101",
+        "end_location": {
+          "column": 62,
+          "row": 69
+        },
+        "filename": "/home/otto/dev/ro-bots/spikes/003-clientless-limbs/test_limbs.py",
+        "fix": {
+          "applicability": "unsafe",
+          "edits": [
+            {
+              "content": "msg = \"fixture pairs must be distinct\"\n            ",
+              "end_location": {
+                "column": 13,
+                "row": 69
+              },
+              "location": {
+                "column": 13,
+                "row": 69
+              }
+            },
+            {
+              "content": "msg",
+              "end_location": {
+                "column": 62,
+                "row": 69
+              },
+              "location": {
+                "column": 30,
+                "row": 69
+              }
+            }
+          ],
+          "message": "Assign to variable; remove string literal"
+        },
+        "location": {
+          "column": 30,
+          "row": 69
+        },
+        "message": "Exception must not use a string literal, assign to variable first",
+        "name": "raw-string-in-exception",
+        "noqa_row": 69,
+        "severity": "error",
+        "url": "https://docs.astral.sh/ruff/rules/raw-string-in-exception"
+      },
+      {
+        "cell": null,
+        "code": "EM101",
+        "end_location": {
+          "column": 71,
+          "row": 77
+        },
+        "filename": "/home/otto/dev/ro-bots/spikes/003-clientless-limbs/test_limbs.py",
+        "fix": {
+          "applicability": "unsafe",
+          "edits": [
+            {
+              "content": "msg = \"private manifest must not traverse symlinks\"\n        ",
+              "end_location": {
+                "column": 9,
+                "row": 77
+              },
+              "location": {
+                "column": 9,
+                "row": 77
+              }
+            },
+            {
+              "content": "msg",
+              "end_location": {
+                "column": 71,
+                "row": 77
+              },
+              "location": {
+                "column": 26,
+                "row": 77
+              }
+            }
+          ],
+          "message": "Assign to variable; remove string literal"
+        },
+        "location": {
+          "column": 26,
+          "row": 77
+        },
+        "message": "Exception must not use a string literal, assign to variable first",
+        "name": "raw-string-in-exception",
+        "noqa_row": 77,
+        "severity": "error",
+        "url": "https://docs.astral.sh/ruff/rules/raw-string-in-exception"
+      },
+      {
+        "cell": null,
+        "code": "EM101",
+        "end_location": {
+          "column": 78,
+          "row": 82
+        },
+        "filename": "/home/otto/dev/ro-bots/spikes/003-clientless-limbs/test_limbs.py",
+        "fix": {
+          "applicability": "unsafe",
+          "edits": [
+            {
+              "content": "msg = \"manifest must be private and owned (chmod 600)\"\n            ",
+              "end_location": {
+                "column": 13,
+                "row": 82
+              },
+              "location": {
+                "column": 13,
+                "row": 82
+              }
+            },
+            {
+              "content": "msg",
+              "end_location": {
+                "column": 78,
+                "row": 82
+              },
+              "location": {
+                "column": 30,
+                "row": 82
+              }
+            }
+          ],
+          "message": "Assign to variable; remove string literal"
+        },
+        "location": {
+          "column": 30,
+          "row": 82
+        },
+        "message": "Exception must not use a string literal, assign to variable first",
+        "name": "raw-string-in-exception",
+        "noqa_row": 82,
+        "severity": "error",
+        "url": "https://docs.astral.sh/ruff/rules/raw-string-in-exception"
+      },
+      {
+        "cell": null,
+        "code": "EM101",
+        "end_location": {
+          "column": 64,
+          "row": 86
+        },
+        "filename": "/home/otto/dev/ro-bots/spikes/003-clientless-limbs/test_limbs.py",
+        "fix": {
+          "applicability": "unsafe",
+          "edits": [
+            {
+              "content": "msg = \"invalid private fixture manifest\"\n            ",
+              "end_location": {
+                "column": 13,
+                "row": 86
+              },
+              "location": {
+                "column": 13,
+                "row": 86
+              }
+            },
+            {
+              "content": "msg",
+              "end_location": {
+                "column": 64,
+                "row": 86
+              },
+              "location": {
+                "column": 30,
+                "row": 86
+              }
+            }
+          ],
+          "message": "Assign to variable; remove string literal"
+        },
+        "location": {
+          "column": 30,
+          "row": 86
+        },
+        "message": "Exception must not use a string literal, assign to variable first",
+        "name": "raw-string-in-exception",
+        "noqa_row": 86,
+        "severity": "error",
+        "url": "https://docs.astral.sh/ruff/rules/raw-string-in-exception"
+      },
+      {
+        "cell": null,
+        "code": "EM101",
+        "end_location": {
+          "column": 69,
+          "row": 95
+        },
+        "filename": "/home/otto/dev/ro-bots/spikes/003-clientless-limbs/test_limbs.py",
+        "fix": {
+          "applicability": "unsafe",
+          "edits": [
+            {
+              "content": "msg = \"char-server redirect must be loopback\"\n            ",
+              "end_location": {
+                "column": 13,
+                "row": 95
+              },
+              "location": {
+                "column": 13,
+                "row": 95
+              }
+            },
+            {
+              "content": "msg",
+              "end_location": {
+                "column": 69,
+                "row": 95
+              },
+              "location": {
+                "column": 30,
+                "row": 95
+              }
+            }
+          ],
+          "message": "Assign to variable; remove string literal"
+        },
+        "location": {
+          "column": 30,
+          "row": 95
+        },
+        "message": "Exception must not use a string literal, assign to variable first",
+        "name": "raw-string-in-exception",
+        "noqa_row": 95,
+        "severity": "error",
+        "url": "https://docs.astral.sh/ruff/rules/raw-string-in-exception"
+      },
+      {
+        "cell": null,
+        "code": "EM101",
+        "end_location": {
+          "column": 68,
+          "row": 100
+        },
+        "filename": "/home/otto/dev/ro-bots/spikes/003-clientless-limbs/test_limbs.py",
+        "fix": {
+          "applicability": "unsafe",
+          "edits": [
+            {
+              "content": "msg = \"map-server redirect must be loopback\"\n            ",
+              "end_location": {
+                "column": 13,
+                "row": 100
+              },
+              "location": {
+                "column": 13,
+                "row": 100
+              }
+            },
+            {
+              "content": "msg",
+              "end_location": {
+                "column": 68,
+                "row": 100
+              },
+              "location": {
+                "column": 30,
+                "row": 100
+              }
+            }
+          ],
+          "message": "Assign to variable; remove string literal"
+        },
+        "location": {
+          "column": 30,
+          "row": 100
+        },
+        "message": "Exception must not use a string literal, assign to variable first",
+        "name": "raw-string-in-exception",
+        "noqa_row": 100,
+        "severity": "error",
+        "url": "https://docs.astral.sh/ruff/rules/raw-string-in-exception"
+      },
+      {
+        "cell": null,
+        "code": "EM101",
+        "end_location": {
+          "column": 78,
+          "row": 107
+        },
+        "filename": "/home/otto/dev/ro-bots/spikes/003-clientless-limbs/test_limbs.py",
+        "fix": {
+          "applicability": "unsafe",
+          "edits": [
+            {
+              "content": "msg = \"budget must be positive and at most 60 seconds\"\n            ",
+              "end_location": {
+                "column": 13,
+                "row": 107
+              },
+              "location": {
+                "column": 13,
+                "row": 107
+              }
+            },
+            {
+              "content": "msg",
+              "end_location": {
+                "column": 78,
+                "row": 107
+              },
+              "location": {
+                "column": 30,
+                "row": 107
+              }
+            }
+          ],
+          "message": "Assign to variable; remove string literal"
+        },
+        "location": {
+          "column": 30,
+          "row": 107
+        },
+        "message": "Exception must not use a string literal, assign to variable first",
+        "name": "raw-string-in-exception",
+        "noqa_row": 107,
+        "severity": "error",
+        "url": "https://docs.astral.sh/ruff/rules/raw-string-in-exception"
+      },
+      {
+        "cell": null,
+        "code": "EM101",
+        "end_location": {
+          "column": 60,
+          "row": 117
+        },
+        "filename": "/home/otto/dev/ro-bots/spikes/003-clientless-limbs/test_limbs.py",
+        "fix": {
+          "applicability": "unsafe",
+          "edits": [
+            {
+              "content": "msg = \"overall deadline exhausted\"\n            ",
+              "end_location": {
+                "column": 13,
+                "row": 117
+              },
+              "location": {
+                "column": 13,
+                "row": 117
+              }
+            },
+            {
+              "content": "msg",
+              "end_location": {
+                "column": 60,
+                "row": 117
+              },
+              "location": {
+                "column": 32,
+                "row": 117
+              }
+            }
+          ],
+          "message": "Assign to variable; remove string literal"
+        },
+        "location": {
+          "column": 32,
+          "row": 117
+        },
+        "message": "Exception must not use a string literal, assign to variable first",
+        "name": "raw-string-in-exception",
+        "noqa_row": 117,
+        "severity": "error",
+        "url": "https://docs.astral.sh/ruff/rules/raw-string-in-exception"
+      },
+      {
+        "cell": null,
+        "code": "EM101",
+        "end_location": {
+          "column": 80,
+          "row": 123
+        },
+        "filename": "/home/otto/dev/ro-bots/spikes/003-clientless-limbs/test_limbs.py",
+        "fix": {
+          "applicability": "unsafe",
+          "edits": [
+            {
+              "content": "msg = \"insufficient overall budget for required delay\"\n            ",
+              "end_location": {
+                "column": 13,
+                "row": 123
+              },
+              "location": {
+                "column": 13,
+                "row": 123
+              }
+            },
+            {
+              "content": "msg",
+              "end_location": {
+                "column": 80,
+                "row": 123
+              },
+              "location": {
+                "column": 32,
+                "row": 123
+              }
+            }
+          ],
+          "message": "Assign to variable; remove string literal"
+        },
+        "location": {
+          "column": 32,
+          "row": 123
+        },
+        "message": "Exception must not use a string literal, assign to variable first",
+        "name": "raw-string-in-exception",
+        "noqa_row": 123,
+        "severity": "error",
+        "url": "https://docs.astral.sh/ruff/rules/raw-string-in-exception"
+      },
+      {
+        "cell": null,
+        "code": "EM101",
+        "end_location": {
+          "column": 53,
+          "row": 171
+        },
+        "filename": "/home/otto/dev/ro-bots/spikes/003-clientless-limbs/test_limbs.py",
+        "fix": {
+          "applicability": "unsafe",
+          "edits": [
+            {
+              "content": "msg = \"receive thread died\"\n            ",
+              "end_location": {
+                "column": 13,
+                "row": 171
+              },
+              "location": {
+                "column": 13,
+                "row": 171
+              }
+            },
+            {
+              "content": "msg",
+              "end_location": {
+                "column": 53,
+                "row": 171
+              },
+              "location": {
+                "column": 32,
+                "row": 171
+              }
+            }
+          ],
+          "message": "Assign to variable; remove string literal"
+        },
+        "location": {
+          "column": 32,
+          "row": 171
+        },
+        "message": "Exception must not use a string literal, assign to variable first",
+        "name": "raw-string-in-exception",
+        "noqa_row": 171,
+        "severity": "error",
+        "url": "https://docs.astral.sh/ruff/rules/raw-string-in-exception"
+      },
+      {
+        "cell": null,
+        "code": "EM101",
+        "end_location": {
+          "column": 77,
+          "row": 173
+        },
+        "filename": "/home/otto/dev/ro-bots/spikes/003-clientless-limbs/test_limbs.py",
+        "fix": {
+          "applicability": "unsafe",
+          "edits": [
+            {
+              "content": "msg = \"receive/dispatch errors invalidate evidence\"\n            ",
+              "end_location": {
+                "column": 13,
+                "row": 173
+              },
+              "location": {
+                "column": 13,
+                "row": 173
+              }
+            },
+            {
+              "content": "msg",
+              "end_location": {
+                "column": 77,
+                "row": 173
+              },
+              "location": {
+                "column": 32,
+                "row": 173
+              }
+            }
+          ],
+          "message": "Assign to variable; remove string literal"
+        },
+        "location": {
+          "column": 32,
+          "row": 173
+        },
+        "message": "Exception must not use a string literal, assign to variable first",
+        "name": "raw-string-in-exception",
+        "noqa_row": 173,
+        "severity": "error",
+        "url": "https://docs.astral.sh/ruff/rules/raw-string-in-exception"
+      },
+      {
+        "cell": null,
+        "code": "PLR0912",
+        "end_location": {
+          "column": 13,
+          "row": 176
+        },
+        "filename": "/home/otto/dev/ro-bots/spikes/003-clientless-limbs/test_limbs.py",
+        "fix": null,
+        "location": {
+          "column": 5,
+          "row": 176
+        },
+        "message": "Too many branches (14 > 12)",
+        "name": "too-many-branches",
+        "noqa_row": 176,
+        "severity": "error",
+        "url": "https://docs.astral.sh/ruff/rules/too-many-branches"
+      },
+      {
+        "cell": null,
+        "code": "EM101",
+        "end_location": {
+          "column": 83,
+          "row": 213
+        },
+        "filename": "/home/otto/dev/ro-bots/spikes/003-clientless-limbs/test_limbs.py",
+        "fix": {
+          "applicability": "unsafe",
+          "edits": [
+            {
+              "content": "msg = \"client resources remain after cleanup\"\n                        ",
+              "end_location": {
+                "column": 25,
+                "row": 213
+              },
+              "location": {
+                "column": 25,
+                "row": 213
+              }
+            },
+            {
+              "content": "msg",
+              "end_location": {
+                "column": 83,
+                "row": 213
+              },
+              "location": {
+                "column": 44,
+                "row": 213
+              }
+            }
+          ],
+          "message": "Assign to variable; remove string literal"
+        },
+        "location": {
+          "column": 44,
+          "row": 213
+        },
+        "message": "Exception must not use a string literal, assign to variable first",
+        "name": "raw-string-in-exception",
+        "noqa_row": 213,
+        "severity": "error",
+        "url": "https://docs.astral.sh/ruff/rules/raw-string-in-exception"
+      },
+      {
+        "cell": null,
+        "code": "EM101",
+        "end_location": {
+          "column": 71,
+          "row": 237
+        },
+        "filename": "/home/otto/dev/ro-bots/spikes/003-clientless-limbs/test_limbs.py",
+        "fix": {
+          "applicability": "unsafe",
+          "edits": [
+            {
+              "content": "msg = \"cleanup incomplete; connection prohibited\"\n        ",
+              "end_location": {
+                "column": 9,
+                "row": 237
+              },
+              "location": {
+                "column": 9,
+                "row": 237
+              }
+            },
+            {
+              "content": "msg",
+              "end_location": {
+                "column": 71,
+                "row": 237
+              },
+              "location": {
+                "column": 28,
+                "row": 237
+              }
+            }
+          ],
+          "message": "Assign to variable; remove string literal"
+        },
+        "location": {
+          "column": 28,
+          "row": 237
+        },
+        "message": "Exception must not use a string literal, assign to variable first",
+        "name": "raw-string-in-exception",
+        "noqa_row": 237,
+        "severity": "error",
+        "url": "https://docs.astral.sh/ruff/rules/raw-string-in-exception"
+      },
+      {
+        "cell": null,
+        "code": "EM101",
+        "end_location": {
+          "column": 62,
+          "row": 239
+        },
+        "filename": "/home/otto/dev/ro-bots/spikes/003-clientless-limbs/test_limbs.py",
+        "fix": {
+          "applicability": "unsafe",
+          "edits": [
+            {
+              "content": "msg = \"explicit fixture manifest required\"\n        ",
+              "end_location": {
+                "column": 9,
+                "row": 239
+              },
+              "location": {
+                "column": 9,
+                "row": 239
+              }
+            },
+            {
+              "content": "msg",
+              "end_location": {
+                "column": 62,
+                "row": 239
+              },
+              "location": {
+                "column": 26,
+                "row": 239
+              }
+            }
+          ],
+          "message": "Assign to variable; remove string literal"
+        },
+        "location": {
+          "column": 26,
+          "row": 239
+        },
+        "message": "Exception must not use a string literal, assign to variable first",
+        "name": "raw-string-in-exception",
+        "noqa_row": 239,
+        "severity": "error",
+        "url": "https://docs.astral.sh/ruff/rules/raw-string-in-exception"
+      },
+      {
+        "cell": null,
+        "code": "EM101",
+        "end_location": {
+          "column": 86,
+          "row": 262
+        },
+        "filename": "/home/otto/dev/ro-bots/spikes/003-clientless-limbs/test_limbs.py",
+        "fix": {
+          "applicability": "unsafe",
+          "edits": [
+            {
+              "content": "msg = \"connected identity differs from exact fixture pair\"\n                ",
+              "end_location": {
+                "column": 17,
+                "row": 262
+              },
+              "location": {
+                "column": 17,
+                "row": 262
+              }
+            },
+            {
+              "content": "msg",
+              "end_location": {
+                "column": 86,
+                "row": 262
+              },
+              "location": {
+                "column": 34,
+                "row": 262
+              }
+            }
+          ],
+          "message": "Assign to variable; remove string literal"
+        },
+        "location": {
+          "column": 34,
+          "row": 262
+        },
+        "message": "Exception must not use a string literal, assign to variable first",
+        "name": "raw-string-in-exception",
+        "noqa_row": 262,
+        "severity": "error",
+        "url": "https://docs.astral.sh/ruff/rules/raw-string-in-exception"
+      },
+      {
+        "cell": null,
+        "code": "PLW0603",
+        "end_location": {
+          "column": 19,
+          "row": 436
+        },
+        "filename": "/home/otto/dev/ro-bots/spikes/003-clientless-limbs/test_limbs.py",
+        "fix": null,
+        "location": {
+          "column": 12,
+          "row": 436
+        },
+        "message": "Using the global statement to update `fixture` is discouraged",
+        "name": "global-statement",
+        "noqa_row": 436,
+        "severity": "error",
+        "url": "https://docs.astral.sh/ruff/rules/global-statement"
+      },
+      {
+        "cell": null,
+        "code": "T201",
+        "end_location": {
+          "column": 14,
+          "row": 447
+        },
+        "filename": "/home/otto/dev/ro-bots/spikes/003-clientless-limbs/test_limbs.py",
+        "fix": {
+          "applicability": "unsafe",
+          "edits": [
+            {
+              "content": "",
+              "end_location": {
+                "column": 1,
+                "row": 448
+              },
+              "location": {
+                "column": 1,
+                "row": 447
+              }
+            }
+          ],
+          "message": "Remove `print`"
+        },
+        "location": {
+          "column": 9,
+          "row": 447
+        },
+        "message": "`print` found",
+        "name": "print",
+        "noqa_row": 447,
+        "severity": "error",
+        "url": "https://docs.astral.sh/ruff/rules/print"
+      },
+      {
+        "cell": null,
+        "code": "T201",
+        "end_location": {
+          "column": 14,
+          "row": 460
+        },
+        "filename": "/home/otto/dev/ro-bots/spikes/003-clientless-limbs/test_limbs.py",
+        "fix": {
+          "applicability": "unsafe",
+          "edits": [
+            {
+              "content": "pass",
+              "end_location": {
+                "column": 79,
+                "row": 460
+              },
+              "location": {
+                "column": 9,
+                "row": 460
+              }
+            }
+          ],
+          "message": "Remove `print`"
+        },
+        "location": {
+          "column": 9,
+          "row": 460
+        },
+        "message": "`print` found",
+        "name": "print",
+        "noqa_row": 460,
+        "severity": "error",
+        "url": "https://docs.astral.sh/ruff/rules/print"
+      },
+      {
+        "cell": null,
+        "code": "T201",
+        "end_location": {
+          "column": 10,
+          "row": 462
+        },
+        "filename": "/home/otto/dev/ro-bots/spikes/003-clientless-limbs/test_limbs.py",
+        "fix": {
+          "applicability": "unsafe",
+          "edits": [
+            {
+              "content": "",
+              "end_location": {
+                "column": 1,
+                "row": 465
+              },
+              "location": {
+                "column": 1,
+                "row": 462
+              }
+            }
+          ],
+          "message": "Remove `print`"
+        },
+        "location": {
+          "column": 5,
+          "row": 462
+        },
+        "message": "`print` found",
+        "name": "print",
+        "noqa_row": 462,
+        "severity": "error",
+        "url": "https://docs.astral.sh/ruff/rules/print"
+      },
+      {
+        "cell": null,
+        "code": "E501",
+        "end_location": {
+          "column": 102,
+          "row": 463
+        },
+        "filename": "/home/otto/dev/ro-bots/spikes/003-clientless-limbs/test_limbs.py",
+        "fix": null,
+        "location": {
+          "column": 101,
+          "row": 463
+        },
+        "message": "Line too long (101 > 100)",
+        "name": "line-too-long",
+        "noqa_row": 463,
+        "severity": "error",
+        "url": "https://docs.astral.sh/ruff/rules/line-too-long"
+      }
+    ],
+    "legacy_harness_and_imports_mypy": "spikes/003-clientless-limbs/packetdb.py:473: error: Incompatible types in assignment (expression has type \"int | str | None\", variable has type \"int\")  [assignment]\nspikes/003-clientless-limbs/packetdb.py:474: error: Subclass of \"int\" and \"str\" cannot exist: have distinct disjoint bases  [unreachable]\nspikes/003-clientless-limbs/client.py:88: error: Missing type arguments for generic type \"dict\"  [type-arg]\nspikes/003-clientless-limbs/client.py:94: error: Missing type arguments for generic type \"dict\"  [type-arg]\nspikes/003-clientless-limbs/client.py:157: error: Function is missing a type annotation  [no-untyped-def]\nspikes/003-clientless-limbs/client.py:173: error: Function is missing a type annotation  [no-untyped-def]\nspikes/003-clientless-limbs/client.py:182: error: Call to untyped function \"_release_handshake_socket\" in typed context  [no-untyped-call]\nspikes/003-clientless-limbs/client.py:189: error: Call to untyped function \"_release_handshake_socket\" in typed context  [no-untyped-call]\nspikes/003-clientless-limbs/client.py:454: error: Call to untyped function \"_release_handshake_socket\" in typed context  [no-untyped-call]\nspikes/003-clientless-limbs/client.py:729: error: Missing type arguments for generic type \"dict\"  [type-arg]\nspikes/003-clientless-limbs/client.py:747: error: Missing type arguments for generic type \"dict\"  [type-arg]\nspikes/003-clientless-limbs/client.py:766: error: Function is missing a return type annotation  [no-untyped-def]\nspikes/003-clientless-limbs/client.py:766: error: Function is missing a type annotation for one or more parameters  [no-untyped-def]\nspikes/003-clientless-limbs/client.py:794: error: Missing type arguments for generic type \"dict\"  [type-arg]\nspikes/003-clientless-limbs/client.py:812: error: Missing type arguments for generic type \"dict\"  [type-arg]\nspikes/003-clientless-limbs/test_limbs.py:31: error: Function is missing a type annotation  [no-untyped-def]\nspikes/003-clientless-limbs/test_limbs.py:73: error: Function is missing a type annotation  [no-untyped-def]\nspikes/003-clientless-limbs/test_limbs.py:87: error: Call to untyped function \"validate_fixture\" in typed context  [no-untyped-call]\nspikes/003-clientless-limbs/test_limbs.py:93: error: Function is missing a type annotation  [no-untyped-def]\nspikes/003-clientless-limbs/test_limbs.py:98: error: Function is missing a type annotation  [no-untyped-def]\nspikes/003-clientless-limbs/test_limbs.py:105: error: Function is missing a type annotation  [no-untyped-def]\nspikes/003-clientless-limbs/test_limbs.py:114: error: Function is missing a return type annotation  [no-untyped-def]\nspikes/003-clientless-limbs/test_limbs.py:120: error: Function is missing a type annotation  [no-untyped-def]\nspikes/003-clientless-limbs/test_limbs.py:121: error: Call to untyped function \"remaining\" in typed context  [no-untyped-call]\nspikes/003-clientless-limbs/test_limbs.py:125: error: Call to untyped function \"remaining\" in typed context  [no-untyped-call]\nspikes/003-clientless-limbs/test_limbs.py:127: error: Function is missing a type annotation  [no-untyped-def]\nspikes/003-clientless-limbs/test_limbs.py:130: error: Call to untyped function \"remaining\" in typed context  [no-untyped-call]\nspikes/003-clientless-limbs/test_limbs.py:135: error: Call to untyped function \"remaining\" in typed context  [no-untyped-call]\nspikes/003-clientless-limbs/test_limbs.py:139: error: Function is missing a type annotation  [no-untyped-def]\nspikes/003-clientless-limbs/test_limbs.py:168: error: Function is missing a type annotation  [no-untyped-def]\nspikes/003-clientless-limbs/test_limbs.py:176: error: Function is missing a type annotation  [no-untyped-def]\nspikes/003-clientless-limbs/test_limbs.py:177: error: Need type annotation for \"clients\" (hint: \"clients: list[<type>] = ...\")  [var-annotated]\nspikes/003-clientless-limbs/test_limbs.py:192: error: Call to untyped function \"health\" in typed context  [no-untyped-call]\nspikes/003-clientless-limbs/test_limbs.py:228: error: Call to untyped function \"retry_delay\" in typed context  [no-untyped-call]\nspikes/003-clientless-limbs/test_limbs.py:235: error: Function is missing a type annotation  [no-untyped-def]\nspikes/003-clientless-limbs/test_limbs.py:240: error: Statement is unreachable  [unreachable]\nspikes/003-clientless-limbs/test_limbs.py:271: error: Function is missing a type annotation  [no-untyped-def]\nspikes/003-clientless-limbs/test_limbs.py:272: error: Call to untyped function \"connect_pair\" in typed context  [no-untyped-call]\nspikes/003-clientless-limbs/test_limbs.py:311: error: Function is missing a type annotation  [no-untyped-def]\nspikes/003-clientless-limbs/test_limbs.py:312: error: Call to untyped function \"connect_pair\" in typed context  [no-untyped-call]\nspikes/003-clientless-limbs/test_limbs.py:340: error: Function is missing a type annotation  [no-untyped-def]\nspikes/003-clientless-limbs/test_limbs.py:341: error: Call to untyped function \"connect_pair\" in typed context  [no-untyped-call]\nspikes/003-clientless-limbs/test_limbs.py:348: error: Function is missing a return type annotation  [no-untyped-def]\nspikes/003-clientless-limbs/test_limbs.py:355: error: Function is missing a type annotation  [no-untyped-def]\nspikes/003-clientless-limbs/test_limbs.py:359: error: Function is missing a type annotation  [no-untyped-def]\nspikes/003-clientless-limbs/test_limbs.py:363: error: Function is missing a type annotation  [no-untyped-def]\nspikes/003-clientless-limbs/test_limbs.py:372: error: Call to untyped function \"wire_name\" in typed context  [no-untyped-call]\nspikes/003-clientless-limbs/test_limbs.py:378: error: Call to untyped function \"wire_name\" in typed context  [no-untyped-call]\nspikes/003-clientless-limbs/test_limbs.py:379: error: Call to untyped function \"wire_name\" in typed context  [no-untyped-call]\nspikes/003-clientless-limbs/test_limbs.py:385: error: Function is missing a type annotation  [no-untyped-def]\nspikes/003-clientless-limbs/test_limbs.py:386: error: Call to untyped function \"connect_pair\" in typed context  [no-untyped-call]\nspikes/003-clientless-limbs/test_limbs.py:406: error: Value of type \"None\" is not indexable  [index]\nspikes/003-clientless-limbs/test_limbs.py:408: error: Function is missing a return type annotation  [no-untyped-def]\nspikes/003-clientless-limbs/test_limbs.py:409: error: Call to untyped function \"fresh_packets\" in typed context  [no-untyped-call]\nspikes/003-clientless-limbs/test_limbs.py:410: error: Call to untyped function \"wire_name\" in typed context  [no-untyped-call]\nspikes/003-clientless-limbs/test_limbs.py:426: error: Call to untyped function \"party_evidence\" in typed context  [no-untyped-call]\nspikes/003-clientless-limbs/test_limbs.py:426: error: Value of type \"None\" is not indexable  [index]\nspikes/003-clientless-limbs/test_limbs.py:435: error: Function is missing a type annotation  [no-untyped-def]\nspikes/003-clientless-limbs/test_limbs.py:444: error: Call to untyped function \"load_fixture\" in typed context  [no-untyped-call]\nspikes/003-clientless-limbs/test_limbs.py:445: error: Call to untyped function \"Budget\" in typed context  [no-untyped-call]\nspikes/003-clientless-limbs/test_limbs.py:457: error: Call to untyped function \"run_limb\" in typed context  [no-untyped-call]\nspikes/003-clientless-limbs/test_limbs.py:469: error: Call to untyped function \"main\" in typed context  [no-untyped-call]\nFound 62 errors in 3 files (checked 1 source file)\n",
+    "legacy_mypy_summary": "Found 62 errors in 3 files (checked 1 source file)",
+    "quality_debt_waived": false,
+    "full_repository_gate_run": false
+  },
+  "blocker": {
+    "test": "tests/test_protocol_rereview_repairs.py::test_movement_accepts_only_account_wire_actor[11]",
+    "reason": "READONLY old synthetic test expects announced destination alone to PASS and its fake mover lacks raw_log. Parent must update fake to provide fresh native zero-length ACK on second same-target send; do not restore false-positive success or weaken new barrier. Wrong-account case still rejects."
+  },
+  "parent_live_evidence": {
+    "artifact": "run/reviews/native-movement-same-target-live-probe.json",
+    "read_by_delegate": true,
+    "executed_by_delegate": false,
+    "observation": "Parent separate live candidate saw initial (150,151)->(150,152), one fresh same-target ACK (150,152)->(150,152), latency 0.151 sec, no fixed post-move sleep; immediate supported cleanup saved (150,152), both exact characters offline, no SQL writes/reseed. Artifact explicitly does not review/reexecute changed production harness."
+  },
+  "acceptance": {
+    "offline_movement_contract_pass": true,
+    "combined_scoped_regression_pass": false,
+    "own_live_execution": false,
+    "full_quality_pass": false,
+    "remaining": "Parent old-test fixture adaptation, independent frozen review, final combined quality gates and actual revised harness native rerun. No broad milestone or universal replay guarantee claimed."
+  }
+}

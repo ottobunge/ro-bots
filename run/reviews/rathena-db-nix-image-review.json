@@ -1,0 +1,996 @@
+{
+  "scope": "Offline artifact only; not DB startup, SQL compatibility or launch approval",
+  "security_concerns": [
+    {
+      "id": "DBIMG-SEC-001",
+      "scope": "Historical implementation execution scope, not a defect demonstrated in final package/archive",
+      "finding": "Initial root attribute lookup failed; whole-root path getFlake lookup was erroneously attempted and refused on unsupported socket before providing an output; corrected to git+file root lookup then tiny path:nix/db-image only. Never repeated or used whole-root path build.",
+      "source_authority": "run/reviews/rathena-db-nix-image.json:2480-2481 and direct parent clarification",
+      "repro": "Do not reproduce: whole-root path builtins.getFlake lookup would traverse/copy unauthorized checkout contents. Review retained issue acknowledgment instead.",
+      "limits": "Failure before an output was returned is not proof of no temporary read/copy/private exposure. Original raw failure trace was not located or independently verified here; no whole-repo private scan or credential read authorized.",
+      "current_artifacts": "Physical child input limited to flake.nix+flake.lock; final store files byte-compared and final closure verified independently."
+    }
+  ],
+  "logic_errors": [],
+  "suggestions": [
+    {
+      "id": "DBIMG-NOTE-001",
+      "note": "Preserve absent /etc/environment as an explicit future executor concern; do not fill it from host data."
+    },
+    {
+      "id": "DBIMG-NOTE-002",
+      "note": "Quote flake target strings containing # and ^out in guide commands for robust shell portability."
+    }
+  ],
+  "image": {
+    "path": "/nix/store/js40iqnfh3v22c2qclipvwnxrvapnjwv-ro-bots-rathena-db-offline.tar.gz",
+    "sha256": "11e59cd5a8ac332e0baf8480a94c8830557f2a0e8d68c4b6ec7a028bfd02aa9c",
+    "size_bytes": 168286076
+  },
+  "config": {
+    "created": "1970-01-01T00:00:01+00:00",
+    "architecture": "amd64",
+    "os": "linux",
+    "config": {
+      "Cmd": [
+        "--no-defaults",
+        "--version"
+      ],
+      "Entrypoint": [
+        "/nix/store/jhx2a9k5hyyj9jbn0pvxb53qryfnnda9-mariadb-server-11.4.12/bin/mariadbd"
+      ],
+      "Env": [
+        "HOME=/nonexistent",
+        "PATH=/nix/store/jhx2a9k5hyyj9jbn0pvxb53qryfnnda9-mariadb-server-11.4.12/bin:/nix/store/2gfxiwls9hbgwdwcy43mprchwsq36mg6-coreutils-9.11/bin:/nix/store/1ggxndc1gd5061j5hqprhnhx9p30yilv-gnused-4.10/bin:/nix/store/3668q0d9zhc5n9l2pnyvpd44kz9bjsjm-gnugrep-3.12/bin:/nix/store/63g104xwbzfpcq0h7c99w19m6j9ly3p1-gawk-5.4.1/bin"
+      ],
+      "Labels": {
+        "org.opencontainers.image.created": "1970-01-01T00:00:01Z",
+        "org.opencontainers.image.description": "Public DB software only; no initialized world or launch authority",
+        "org.opencontainers.image.revision": "a7868a727837f3c09cee2ce0ca671c76b1589fed",
+        "org.opencontainers.image.version": "11.4.12",
+        "org.ro-bots.authority": "offline-artifact-only",
+        "org.ro-bots.image.format": "docker-archive",
+        "org.ro-bots.nixpkgs.nar-hash": "sha256-KgItSKML8Xvte0B7/uGnBDsYzSnnKHcOaiUbgWBXLXw=",
+        "org.ro-bots.nixpkgs.revision": "a7868a727837f3c09cee2ce0ca671c76b1589fed"
+      },
+      "User": "10001:10001",
+      "WorkingDir": "/"
+    },
+    "rootfs": {
+      "diff_ids": [
+        "sha256:07cbb9a2859b930a8f42f0b6bcf148a09cf8ac340baff33d9e2809930f52c4a4",
+        "sha256:8e493ca6d8b4f9286155a4fa261f672e7cbf3704aa4311e7200fb41151dfb75b",
+        "sha256:26d1a2e6ecc1bc32cec3e87c8eda26b76abb27ece5af75a5b20b2cec4108050b",
+        "sha256:24ccf64156ef488cc4252848250eb3e925db101b68b0ce853ca4b1c25f95040b",
+        "sha256:60fa23f7386a867b57f1494cf801677a98d694ed12cab6b5c152503ee48b1eac",
+        "sha256:90862fef4686c2cc88728f834c28363cc9bba68fb61eb3ef805759d4fbe17af9",
+        "sha256:efe9b4b3837a85abe6a130670f57d86a74fa8038e9921b6657d400f3f77ae3ee",
+        "sha256:5a735437ddd7fca13291b51a8df821187f3d62ff3affeb34b957835927cd1501",
+        "sha256:800f14563bc9b05716920adacc6a3718ed1bf369462c0ebb6ac85b81d98b866c",
+        "sha256:a13ffe18e1964a69f680b29e32917157c1be70ea40232f4c1f54c3fe19041450",
+        "sha256:06ba1ab1124567531c7f6c09535266c59521c10f54ab0c7354688fb988175e00",
+        "sha256:e6ec9c52506c94dd5719c9f0450d52274ca86617e059b9a0125a45ea4bbb223d",
+        "sha256:a3bd5b34dbcdf00cef993b3570241e727771a6e53efe948d9947c82eebdf8a4f",
+        "sha256:33fec7775dd6bfea3b09221a91b9edd396d107d16bc48b1cccac658b8a647cbd",
+        "sha256:227591fcd1e982498d7cfcbdaae3aa8bf9587293cb433f7e7770338c56476b45",
+        "sha256:386410e4f41dcbc1281690ac04c6a37969437e3d11a8d7efb0238c668f9ffbea",
+        "sha256:e4b0652f3d3b2d4bcf942e9266bfc2d1b4f10d20b89248a8580ea4930728918d",
+        "sha256:c85d386f365aabfd3a4672d6a6bfa471276cebe8a44fde295358a949be6aa370",
+        "sha256:caf5b4e7cb87c9e4e4c0e53d81073d98a98bf9c63cb566e6d5780495cfb08059",
+        "sha256:2d0dc183acaa3968e5cfcf0fceeff6db15a7cd7d8ca31ff1ae50d937f6c35765",
+        "sha256:6d23558a9a8d542975480cb973aa4f85a3bd8918bfb21bd8bb472cf6478cf977",
+        "sha256:7e047665f29a755dde92f113e043bc7dcbddd6234fc4c7a03670154e0337ccc5",
+        "sha256:bde70f3db0c56733a599df1122e0e10d18bf94b5f7004c02f5ce94343f4b41ca",
+        "sha256:bd4b5b564386e9f6dc7360892d01605b234f66f9d239c1e48189210019d730b1",
+        "sha256:0582964d4e0a6755787053f8891caba6112cdbcbbb61433af0bf335d61285e9a",
+        "sha256:adf76fc67d183a744eb799c189efc190b9ddaf8326a302fd44bb92ec2bf85d14",
+        "sha256:c10c5fbb50112543641ad719c742faab80381e759e3d8e975d690ce296826069",
+        "sha256:52bf61a1448b74452417b6fb7e0282f5928649be9b0ffe7c966bb6ebaebc3974",
+        "sha256:4b065307705e5786e2aa341ee293d3d3ae13caa6e265c79d5083c8d8d093816d",
+        "sha256:62fabca6e063f619dfad0aa9b7b4844a9f817f710c2206e81c52ff255ca1aebf",
+        "sha256:e8c5caf40965557423c9456bd5c09864ba9348e8ff830e945ce5b93674877653",
+        "sha256:4578253072c2bbd3255ab138c2e35ec9d306bbb45f496dd480b779578885a6e8"
+      ],
+      "type": "layers"
+    },
+    "history": [
+      {
+        "created": "1970-01-01T00:00:01+00:00",
+        "comment": "store paths: ['/nix/store/jp8ql2fnd61xhvb4vsfp0bqwrzf16qrp-libunistring-1.4.2']"
+      },
+      {
+        "created": "1970-01-01T00:00:01+00:00",
+        "comment": "store paths: ['/nix/store/2xmz7szywkppj8v5nm9a8dikc61gdkk1-perl-5.42.3-man']"
+      },
+      {
+        "created": "1970-01-01T00:00:01+00:00",
+        "comment": "store paths: ['/nix/store/h4wfwic161kxrr74jlzla5lsm28hgary-glibc-2.44-25', '/nix/store/q0lbdx5yv93a3md74kjhm0v2kljjii89-libidn2-2.3.8', '/nix/store/g60m3aky9f59wgy1gi0y06xwmbw19d6m-xgcc-16.2.0-libgcc']"
+      },
+      {
+        "created": "1970-01-01T00:00:01+00:00",
+        "comment": "store paths: ['/nix/store/wgw25d181h0qks7qsfp1bh7c5nd3f0s7-zlib-1.3.2']"
+      },
+      {
+        "created": "1970-01-01T00:00:01+00:00",
+        "comment": "store paths: ['/nix/store/wx1y0adli2qggk81pm4marx3km1scqxg-libxcrypt-4.5.2']"
+      },
+      {
+        "created": "1970-01-01T00:00:01+00:00",
+        "comment": "store paths: ['/nix/store/n1i9ph766v9kbjs961j2aiw4qaagc1wj-json-c-0.18']"
+      },
+      {
+        "created": "1970-01-01T00:00:01+00:00",
+        "comment": "store paths: ['/nix/store/mpqgjnlmzy3c5hslbgyc3s7zfz3m32lg-bzip2-1.0.8', '/nix/store/vkwq2iap75p0srizppc3jl2j5b1lxpln-xz-5.8.4']"
+      },
+      {
+        "created": "1970-01-01T00:00:01+00:00",
+        "comment": "store paths: ['/nix/store/7v8b5idfzwfl06hx6n0cvd5ikd5p0sbg-pcre2-10.48']"
+      },
+      {
+        "created": "1970-01-01T00:00:01+00:00",
+        "comment": "store paths: ['/nix/store/328fx8r0jb6l2ai4cli7fhp8g26fbfnh-util-linux-minimal-2.42.3-lib']"
+      },
+      {
+        "created": "1970-01-01T00:00:01+00:00",
+        "comment": "store paths: ['/nix/store/63g104xwbzfpcq0h7c99w19m6j9ly3p1-gawk-5.4.1']"
+      },
+      {
+        "created": "1970-01-01T00:00:01+00:00",
+        "comment": "store paths: ['/nix/store/hzqwc6pv8sb9qrwivc4h42cr811gs1mk-ncurses-6.6']"
+      },
+      {
+        "created": "1970-01-01T00:00:01+00:00",
+        "comment": "store paths: ['/nix/store/gvhdvn542cwd3wr2978nh4ydzp89msq7-systemd-minimal-libs-261.3', '/nix/store/kkf8p18x7bzclm671aq839qnp0rc3r5s-util-linux-minimal-2.42.3-login']"
+      },
+      {
+        "created": "1970-01-01T00:00:01+00:00",
+        "comment": "store paths: ['/nix/store/pi2b23y3gv6zgcziwbgnihf8gam1cmlp-libffi-3.8.0', '/nix/store/abk7a5mlrqgdmgg91a0mmxq2hv1v9jid-libtasn1-4.21.0', '/nix/store/qmhksr7a5niv5kc2yslal3lq55inny75-p11-kit-0.26.2']"
+      },
+      {
+        "created": "1970-01-01T00:00:01+00:00",
+        "comment": "store paths: ['/nix/store/cxd8d2vg70c3pa31v2473hphaa1v0j44-openssl-3.5.8']"
+      },
+      {
+        "created": "1970-01-01T00:00:01+00:00",
+        "comment": "store paths: ['/nix/store/j7qx4s4mr17j1wqgvqdzj33lmrnzb387-gcc-16.2.0-lib', '/nix/store/q2mkz6ca1alqfqf750dygvakmq8kjrwz-gcc-16.2.0-libgcc']"
+      },
+      {
+        "created": "1970-01-01T00:00:01+00:00",
+        "comment": "store paths: ['/nix/store/ph4ib8mxy5yrw40k7a1l03bfd58hq6wj-zstd-1.5.7']"
+      },
+      {
+        "created": "1970-01-01T00:00:01+00:00",
+        "comment": "store paths: ['/nix/store/gqd8w84mhr0h24fnc2p4m3hkicsnxsfm-keyutils-1.6.3-lib', '/nix/store/80z9njiswl9xm6qk93zsjr5bj8v0z2lm-krb5-1.22.2-lib']"
+      },
+      {
+        "created": "1970-01-01T00:00:01+00:00",
+        "comment": "store paths: ['/nix/store/9074l1whzhvk68kj5va99ipj412rk5q2-acl-2.4.0', '/nix/store/p6cir20v12fjj5390b8xr9kdynm8bd9h-attr-2.6.0', '/nix/store/2gfxiwls9hbgwdwcy43mprchwsq36mg6-coreutils-9.11', '/nix/store/chwiiz63ngbsgr2qi82c4g40vn756ky2-gmp-with-cxx-6.3.0']"
+      },
+      {
+        "created": "1970-01-01T00:00:01+00:00",
+        "comment": "store paths: ['/nix/store/jy9fp83kqfw7kn208xm5i38sa8srfbkq-db-4.8.30']"
+      },
+      {
+        "created": "1970-01-01T00:00:01+00:00",
+        "comment": "store paths: ['/nix/store/6sff0zi6fiwghgnvlpq61rwb8zqwacsm-kbd-2.9.0']"
+      },
+      {
+        "created": "1970-01-01T00:00:01+00:00",
+        "comment": "store paths: ['/nix/store/d7p7phj31gihvsig4jyhf7yh75nas2br-dns-root-data-2025-04-14', '/nix/store/z7j20jl3wdi418wbajrbximy6j472y2j-gmp-with-cxx-6.3.0', '/nix/store/4kc4z26a0lpvbp71f4m3fqvw48wr8kwm-gnutls-3.8.13', '/nix/store/1gz4arjikrgvbhkd59zx565wf1qp8fhg-libevent-2.1.13', '/nix/store/jp6w9riaqyh7871qjgmdxvc73q6j8ymn-nettle-3.10.2', '/nix/store/j9j2ywvz4nzkv7sb5xa80gk1b3x8rh9z-unbound-1.26.1-lib']"
+      },
+      {
+        "created": "1970-01-01T00:00:01+00:00",
+        "comment": "store paths: ['/nix/store/7fjvn38n3dnv092jbmb4m87ik5qvmj7g-brotli-1.2.0-lib', '/nix/store/36alc2mwna4nzf6djdj2hvh4w4r3cai5-curl-8.22.0', '/nix/store/lhk23vackrdgmxya733h3wp01xz622gn-libpsl-0.21.5', '/nix/store/6vqggv3cdqkh098nm8brbs2mwhn6bciy-libssh2-1.11.1', '/nix/store/sky8mslz50n51np0z4vhdq61jba12fh2-nghttp2-1.70.0-lib', '/nix/store/r9n1wja9zhj3w4r71pggxal3c6xqak2a-nghttp3-1.17.0', '/nix/store/8vq8ivlhfqkbhs7r9mmirsdp8gh8hmrm-ngtcp2-1.23.0', '/nix/store/vc5lcyxg999ix0wvm7wdhk8dkj625kdc-publicsuffix-list-0-unstable-2026-09-02']"
+      },
+      {
+        "created": "1970-01-01T00:00:01+00:00",
+        "comment": "store paths: ['/nix/store/qvcr74c66s11lv718zmxzz20ar3ckzd5-cryptsetup-2.8.8', '/nix/store/x9n41wj5hmahzc3y1gmzg0lkdg77ibpr-lvm2-2.03.41-lib']"
+      },
+      {
+        "created": "1970-01-01T00:00:01+00:00",
+        "comment": "store paths: ['/nix/store/s7306mp3pdbw8xx2gicsqvyganjhsywp-elfutils-0.195']"
+      },
+      {
+        "created": "1970-01-01T00:00:01+00:00",
+        "comment": "store paths: ['/nix/store/xqwx3h6jz1m6f31was9183phirl7fdpl-libtpms-0.10.2-unstable-2026-05-06', '/nix/store/krm9vmc3dz68gig0hpbrqbgfzjd74r2h-tpm2-tss-4.2.0']"
+      },
+      {
+        "created": "1970-01-01T00:00:01+00:00",
+        "comment": "store paths: ['/nix/store/grxh7wk75nq0li11d35h7fijb9pq10zj-libbpf-1.7.0']"
+      },
+      {
+        "created": "1970-01-01T00:00:01+00:00",
+        "comment": "store paths: ['/nix/store/8g4dmf7l8q1mf9w4wfmlcl8gvdgmhb8v-perl-5.42.3']"
+      },
+      {
+        "created": "1970-01-01T00:00:01+00:00",
+        "comment": "store paths: ['/nix/store/i9v4djnphm9zh3ar4y8a4z1vbyl3amc7-perl5.42.3-DBI-1.653']"
+      },
+      {
+        "created": "1970-01-01T00:00:01+00:00",
+        "comment": "store paths: ['/nix/store/f294xy3n5bn3r9qv6a2ab7fkkmv7g5cp-audit-4.2.1-lib', '/nix/store/bcyd9986cxipzp7z4lman7d7p8x5wm3x-cracklib-2.10.3', '/nix/store/x5hyc0wsiq560p7ipaf2vbicjy5w2i2r-kexec-tools-2.0.32', '/nix/store/vd8b7jqgpcjy092rvbjnarwzbhlfylr6-kmod-31', '/nix/store/0a9k0r3wf695ibidnygdx6kkx8zhdhhg-kmod-31-lib', '/nix/store/y0hvrkm9csmqlsqsw9cv8z0rzxdb6ghf-libapparmor-5.0.2', '/nix/store/xjn862icpw4y48i3mnyl2bgxx30fsjbp-libarchive-3.8.9-lib', '/nix/store/w0xkd23405sbslbfnbhzcwwclvrsnwcf-libcap-ng-0.9.6', '/nix/store/y5751icfyxy1nzr7p1iiv4idwx0s7mjx-libcbor-0.14.0', '/nix/store/7svipfslpzd55jd6rz42k6daaqmdi47b-libfido2-1.17.0', '/nix/store/h53iyxmgp59cgr7vh0yr3pkzhb1z2fqg-libgcrypt-1.12.4-lib', '/nix/store/9ymz748lxp33ix2vixryczq7c5zrp8vp-libgpg-error-1.61', '/nix/store/q230vs5rqpyk1lya3j125ahw35xp0vra-libmicrohttpd-1.0.10', '/nix/store/pwb7izgsl4wbdg0hnv8l5r45yq0l9781-libpwquality-1.4.5-lib', '/nix/store/k81akx4837d7ghz4mfkr7kwzinw4qhp6-libseccomp-2.6.1-lib', '/nix/store/vfj3fn7rp56w7f3xy6vz5s41nziv4jgm-libxml2-2.15.4', '/nix/store/d99sv05pi20zzyind2gw72r7j02g8zaq-linux-pam-1.7.2', '/nix/store/8327b5r0l5k48fpcqiaias8p2m7h52n5-lz4-1.10.0-lib', '/nix/store/2rwjmppsbddj9qbivqhp879a3mcj8smi-pcsclite-2.4.1-lib', '/nix/store/gckp2y92mdfny4cydahvgghxxm968l1n-qrencode-4.1.1', '/nix/store/l5hiab3932k2n4d6nirh09mk6xgxp61w-systemd-261.3', '/nix/store/8wi2xfhr9riz57yh5ndmcmd1x0f0k11g-util-linux-minimal-2.42.3-mount', '/nix/store/n62wk9gdqqbx6pwirlxpz25cxyap5428-util-linux-minimal-2.42.3-swap']"
+      },
+      {
+        "created": "1970-01-01T00:00:01+00:00",
+        "comment": "store paths: ['/nix/store/10dxp0qxqxxsyiljrh2kp0xqhz6arhcx-bash-5.3p15', '/nix/store/1nnfark3kfpj2d7xkpzsp6s36d1f3k3j-judy-1.0.5', '/nix/store/zi4d0awnc6crz18s177bv9y2yz9al3lq-less-710', '/nix/store/dsdapj04rzhg40cz5jprz1jwy3vvf1lx-liburing-2.14', '/nix/store/s8lhwrxz5i6gigw2klddj0sdqxbv18ml-lzo-2.10', '/nix/store/810gbfr7abr6yiajnl0zz88jvmr6ph56-mariadb-connector-c-3.3.5', '/nix/store/jhx2a9k5hyyj9jbn0pvxb53qryfnnda9-mariadb-server-11.4.12', '/nix/store/yw15c19a7r0959dci9jdx2n1l2vljzqb-perl-5.42.3-env', '/nix/store/xm5k71pby5lmgf1yzsk3sxa8nhp33f13-perl5.42.3-Capture-Tiny-0.48', '/nix/store/7d0qyml6lxfpjxf7pi9a5b5lnmv3qqfj-perl5.42.3-DBD-MariaDB-1.23', '/nix/store/3llc783di3ixmbvkxcm7yf5xfayli6m4-perl5.42.3-Devel-CheckLib-1.16', '/nix/store/kj0q7pklijph560pwa2sgrx0w3r561fc-perl5.42.3-Mock-Config-0.03', '/nix/store/4sidyk9p59hi8j4qgmz01xqa0nn6bc94-perl5.42.3-Module-Manifest-1.09', '/nix/store/8b1q4rgn7lzg66mn65xk12c2llyj7apa-perl5.42.3-Params-Util-1.102', '/nix/store/0ci5jamd4bs9qqp74yyjfyh665622kyk-perl5.42.3-TermReadKey-2.38', '/nix/store/x9bbj78v32xq2k0dfzjjwmvhp5582wmv-perl5.42.3-Test-Deep-1.204', '/nix/store/5pnqyh168djqlzkzfdyrkn7zq76jnhf6-perl5.42.3-Test-DistManifest-1.014', '/nix/store/qam3scbv50f6vngz4jn3gv3y4666lr8y-perl5.42.3-Test-Pod-1.52', '/nix/store/56a45nmwdrqfk816gzh8kfv8lqma0qn7-snappy-1.2.2']"
+      },
+      {
+        "created": "1970-01-01T00:00:01+00:00",
+        "comment": "store paths: ['/nix/store/3668q0d9zhc5n9l2pnyvpd44kz9bjsjm-gnugrep-3.12', '/nix/store/1ggxndc1gd5061j5hqprhnhx9p30yilv-gnused-4.10', '/nix/store/k8gb3a6yr973zfw5ycyhw5pxj9m4ngiy-rathena-db-public-identity']"
+      },
+      {
+        "created": "1970-01-01T00:00:01+00:00",
+        "comment": "store paths: ['/nix/store/2pj4dbcjimk7k71s63vjl5c5iybn8x3x-ro-bots-rathena-db-offline-customisation-layer']"
+      }
+    ]
+  },
+  "archive": {
+    "layer_count": 32,
+    "layer_sha256": {
+      "07cbb9a2859b930a8f42f0b6bcf148a09cf8ac340baff33d9e2809930f52c4a4/layer.tar": "07cbb9a2859b930a8f42f0b6bcf148a09cf8ac340baff33d9e2809930f52c4a4",
+      "8e493ca6d8b4f9286155a4fa261f672e7cbf3704aa4311e7200fb41151dfb75b/layer.tar": "8e493ca6d8b4f9286155a4fa261f672e7cbf3704aa4311e7200fb41151dfb75b",
+      "26d1a2e6ecc1bc32cec3e87c8eda26b76abb27ece5af75a5b20b2cec4108050b/layer.tar": "26d1a2e6ecc1bc32cec3e87c8eda26b76abb27ece5af75a5b20b2cec4108050b",
+      "24ccf64156ef488cc4252848250eb3e925db101b68b0ce853ca4b1c25f95040b/layer.tar": "24ccf64156ef488cc4252848250eb3e925db101b68b0ce853ca4b1c25f95040b",
+      "60fa23f7386a867b57f1494cf801677a98d694ed12cab6b5c152503ee48b1eac/layer.tar": "60fa23f7386a867b57f1494cf801677a98d694ed12cab6b5c152503ee48b1eac",
+      "90862fef4686c2cc88728f834c28363cc9bba68fb61eb3ef805759d4fbe17af9/layer.tar": "90862fef4686c2cc88728f834c28363cc9bba68fb61eb3ef805759d4fbe17af9",
+      "efe9b4b3837a85abe6a130670f57d86a74fa8038e9921b6657d400f3f77ae3ee/layer.tar": "efe9b4b3837a85abe6a130670f57d86a74fa8038e9921b6657d400f3f77ae3ee",
+      "5a735437ddd7fca13291b51a8df821187f3d62ff3affeb34b957835927cd1501/layer.tar": "5a735437ddd7fca13291b51a8df821187f3d62ff3affeb34b957835927cd1501",
+      "800f14563bc9b05716920adacc6a3718ed1bf369462c0ebb6ac85b81d98b866c/layer.tar": "800f14563bc9b05716920adacc6a3718ed1bf369462c0ebb6ac85b81d98b866c",
+      "a13ffe18e1964a69f680b29e32917157c1be70ea40232f4c1f54c3fe19041450/layer.tar": "a13ffe18e1964a69f680b29e32917157c1be70ea40232f4c1f54c3fe19041450",
+      "06ba1ab1124567531c7f6c09535266c59521c10f54ab0c7354688fb988175e00/layer.tar": "06ba1ab1124567531c7f6c09535266c59521c10f54ab0c7354688fb988175e00",
+      "e6ec9c52506c94dd5719c9f0450d52274ca86617e059b9a0125a45ea4bbb223d/layer.tar": "e6ec9c52506c94dd5719c9f0450d52274ca86617e059b9a0125a45ea4bbb223d",
+      "a3bd5b34dbcdf00cef993b3570241e727771a6e53efe948d9947c82eebdf8a4f/layer.tar": "a3bd5b34dbcdf00cef993b3570241e727771a6e53efe948d9947c82eebdf8a4f",
+      "33fec7775dd6bfea3b09221a91b9edd396d107d16bc48b1cccac658b8a647cbd/layer.tar": "33fec7775dd6bfea3b09221a91b9edd396d107d16bc48b1cccac658b8a647cbd",
+      "227591fcd1e982498d7cfcbdaae3aa8bf9587293cb433f7e7770338c56476b45/layer.tar": "227591fcd1e982498d7cfcbdaae3aa8bf9587293cb433f7e7770338c56476b45",
+      "386410e4f41dcbc1281690ac04c6a37969437e3d11a8d7efb0238c668f9ffbea/layer.tar": "386410e4f41dcbc1281690ac04c6a37969437e3d11a8d7efb0238c668f9ffbea",
+      "e4b0652f3d3b2d4bcf942e9266bfc2d1b4f10d20b89248a8580ea4930728918d/layer.tar": "e4b0652f3d3b2d4bcf942e9266bfc2d1b4f10d20b89248a8580ea4930728918d",
+      "c85d386f365aabfd3a4672d6a6bfa471276cebe8a44fde295358a949be6aa370/layer.tar": "c85d386f365aabfd3a4672d6a6bfa471276cebe8a44fde295358a949be6aa370",
+      "caf5b4e7cb87c9e4e4c0e53d81073d98a98bf9c63cb566e6d5780495cfb08059/layer.tar": "caf5b4e7cb87c9e4e4c0e53d81073d98a98bf9c63cb566e6d5780495cfb08059",
+      "2d0dc183acaa3968e5cfcf0fceeff6db15a7cd7d8ca31ff1ae50d937f6c35765/layer.tar": "2d0dc183acaa3968e5cfcf0fceeff6db15a7cd7d8ca31ff1ae50d937f6c35765",
+      "6d23558a9a8d542975480cb973aa4f85a3bd8918bfb21bd8bb472cf6478cf977/layer.tar": "6d23558a9a8d542975480cb973aa4f85a3bd8918bfb21bd8bb472cf6478cf977",
+      "7e047665f29a755dde92f113e043bc7dcbddd6234fc4c7a03670154e0337ccc5/layer.tar": "7e047665f29a755dde92f113e043bc7dcbddd6234fc4c7a03670154e0337ccc5",
+      "bde70f3db0c56733a599df1122e0e10d18bf94b5f7004c02f5ce94343f4b41ca/layer.tar": "bde70f3db0c56733a599df1122e0e10d18bf94b5f7004c02f5ce94343f4b41ca",
+      "bd4b5b564386e9f6dc7360892d01605b234f66f9d239c1e48189210019d730b1/layer.tar": "bd4b5b564386e9f6dc7360892d01605b234f66f9d239c1e48189210019d730b1",
+      "0582964d4e0a6755787053f8891caba6112cdbcbbb61433af0bf335d61285e9a/layer.tar": "0582964d4e0a6755787053f8891caba6112cdbcbbb61433af0bf335d61285e9a",
+      "adf76fc67d183a744eb799c189efc190b9ddaf8326a302fd44bb92ec2bf85d14/layer.tar": "adf76fc67d183a744eb799c189efc190b9ddaf8326a302fd44bb92ec2bf85d14",
+      "c10c5fbb50112543641ad719c742faab80381e759e3d8e975d690ce296826069/layer.tar": "c10c5fbb50112543641ad719c742faab80381e759e3d8e975d690ce296826069",
+      "52bf61a1448b74452417b6fb7e0282f5928649be9b0ffe7c966bb6ebaebc3974/layer.tar": "52bf61a1448b74452417b6fb7e0282f5928649be9b0ffe7c966bb6ebaebc3974",
+      "4b065307705e5786e2aa341ee293d3d3ae13caa6e265c79d5083c8d8d093816d/layer.tar": "4b065307705e5786e2aa341ee293d3d3ae13caa6e265c79d5083c8d8d093816d",
+      "62fabca6e063f619dfad0aa9b7b4844a9f817f710c2206e81c52ff255ca1aebf/layer.tar": "62fabca6e063f619dfad0aa9b7b4844a9f817f710c2206e81c52ff255ca1aebf",
+      "e8c5caf40965557423c9456bd5c09864ba9348e8ff830e945ce5b93674877653/layer.tar": "e8c5caf40965557423c9456bd5c09864ba9348e8ff830e945ce5b93674877653",
+      "4578253072c2bbd3255ab138c2e35ec9d306bbb45f496dd480b779578885a6e8/layer.tar": "4578253072c2bbd3255ab138c2e35ec9d306bbb45f496dd480b779578885a6e8"
+    },
+    "merged_entry_count": 13172,
+    "regular_member_count": 8178,
+    "forbidden_entries": [],
+    "store_content_mismatches": [],
+    "config_sha256": "f44dbef99b7c863b93a047504c5d9c775d15cdb3fc346b7b6e8be207671330c5",
+    "manifest": [
+      {
+        "Config": "f44dbef99b7c863b93a047504c5d9c775d15cdb3fc346b7b6e8be207671330c5.json",
+        "RepoTags": [
+          "ro-bots-rathena-db-offline:11.4.12-a7868a727837"
+        ],
+        "Layers": [
+          "07cbb9a2859b930a8f42f0b6bcf148a09cf8ac340baff33d9e2809930f52c4a4/layer.tar",
+          "8e493ca6d8b4f9286155a4fa261f672e7cbf3704aa4311e7200fb41151dfb75b/layer.tar",
+          "26d1a2e6ecc1bc32cec3e87c8eda26b76abb27ece5af75a5b20b2cec4108050b/layer.tar",
+          "24ccf64156ef488cc4252848250eb3e925db101b68b0ce853ca4b1c25f95040b/layer.tar",
+          "60fa23f7386a867b57f1494cf801677a98d694ed12cab6b5c152503ee48b1eac/layer.tar",
+          "90862fef4686c2cc88728f834c28363cc9bba68fb61eb3ef805759d4fbe17af9/layer.tar",
+          "efe9b4b3837a85abe6a130670f57d86a74fa8038e9921b6657d400f3f77ae3ee/layer.tar",
+          "5a735437ddd7fca13291b51a8df821187f3d62ff3affeb34b957835927cd1501/layer.tar",
+          "800f14563bc9b05716920adacc6a3718ed1bf369462c0ebb6ac85b81d98b866c/layer.tar",
+          "a13ffe18e1964a69f680b29e32917157c1be70ea40232f4c1f54c3fe19041450/layer.tar",
+          "06ba1ab1124567531c7f6c09535266c59521c10f54ab0c7354688fb988175e00/layer.tar",
+          "e6ec9c52506c94dd5719c9f0450d52274ca86617e059b9a0125a45ea4bbb223d/layer.tar",
+          "a3bd5b34dbcdf00cef993b3570241e727771a6e53efe948d9947c82eebdf8a4f/layer.tar",
+          "33fec7775dd6bfea3b09221a91b9edd396d107d16bc48b1cccac658b8a647cbd/layer.tar",
+          "227591fcd1e982498d7cfcbdaae3aa8bf9587293cb433f7e7770338c56476b45/layer.tar",
+          "386410e4f41dcbc1281690ac04c6a37969437e3d11a8d7efb0238c668f9ffbea/layer.tar",
+          "e4b0652f3d3b2d4bcf942e9266bfc2d1b4f10d20b89248a8580ea4930728918d/layer.tar",
+          "c85d386f365aabfd3a4672d6a6bfa471276cebe8a44fde295358a949be6aa370/layer.tar",
+          "caf5b4e7cb87c9e4e4c0e53d81073d98a98bf9c63cb566e6d5780495cfb08059/layer.tar",
+          "2d0dc183acaa3968e5cfcf0fceeff6db15a7cd7d8ca31ff1ae50d937f6c35765/layer.tar",
+          "6d23558a9a8d542975480cb973aa4f85a3bd8918bfb21bd8bb472cf6478cf977/layer.tar",
+          "7e047665f29a755dde92f113e043bc7dcbddd6234fc4c7a03670154e0337ccc5/layer.tar",
+          "bde70f3db0c56733a599df1122e0e10d18bf94b5f7004c02f5ce94343f4b41ca/layer.tar",
+          "bd4b5b564386e9f6dc7360892d01605b234f66f9d239c1e48189210019d730b1/layer.tar",
+          "0582964d4e0a6755787053f8891caba6112cdbcbbb61433af0bf335d61285e9a/layer.tar",
+          "adf76fc67d183a744eb799c189efc190b9ddaf8326a302fd44bb92ec2bf85d14/layer.tar",
+          "c10c5fbb50112543641ad719c742faab80381e759e3d8e975d690ce296826069/layer.tar",
+          "52bf61a1448b74452417b6fb7e0282f5928649be9b0ffe7c966bb6ebaebc3974/layer.tar",
+          "4b065307705e5786e2aa341ee293d3d3ae13caa6e265c79d5083c8d8d093816d/layer.tar",
+          "62fabca6e063f619dfad0aa9b7b4844a9f817f710c2206e81c52ff255ca1aebf/layer.tar",
+          "e8c5caf40965557423c9456bd5c09864ba9348e8ff830e945ce5b93674877653/layer.tar",
+          "4578253072c2bbd3255ab138c2e35ec9d306bbb45f496dd480b779578885a6e8/layer.tar"
+        ]
+      }
+    ],
+    "symlink_hardlink_count": 2637,
+    "unresolved_links": [
+      {
+        "path": "nix/store/l5hiab3932k2n4d6nirh09mk6xgxp61w-systemd-261.3/lib/environment.d/99-environment.conf",
+        "target": "../../../../../etc/environment",
+        "resolved_target": "/etc/environment"
+      }
+    ],
+    "additional_image_store_roots": [
+      "/nix/store/1ggxndc1gd5061j5hqprhnhx9p30yilv-gnused-4.10",
+      "/nix/store/3668q0d9zhc5n9l2pnyvpd44kz9bjsjm-gnugrep-3.12",
+      "/nix/store/63g104xwbzfpcq0h7c99w19m6j9ly3p1-gawk-5.4.1",
+      "/nix/store/k8gb3a6yr973zfw5ycyhw5pxj9m4ngiy-rathena-db-public-identity"
+    ],
+    "public_store_regular_files_all_match_host_store": true
+  },
+  "package": {
+    "path": "/nix/store/jhx2a9k5hyyj9jbn0pvxb53qryfnnda9-mariadb-server-11.4.12",
+    "closure_count": 94,
+    "closure_nar_bytes": 545083640,
+    "nar_hash": "sha256-TjSt9yU5V2TlrgNgGAclzo3HcW1GYl1PtMaN7Ok6pRs=",
+    "deriver": "/nix/store/00jrk50vkbdfy86hv54cirhv88hl0zv1-mariadb-server-11.4.12.drv",
+    "closure": [
+      "/nix/store/g60m3aky9f59wgy1gi0y06xwmbw19d6m-xgcc-16.2.0-libgcc",
+      "/nix/store/jp8ql2fnd61xhvb4vsfp0bqwrzf16qrp-libunistring-1.4.2",
+      "/nix/store/q0lbdx5yv93a3md74kjhm0v2kljjii89-libidn2-2.3.8",
+      "/nix/store/h4wfwic161kxrr74jlzla5lsm28hgary-glibc-2.44-25",
+      "/nix/store/q2mkz6ca1alqfqf750dygvakmq8kjrwz-gcc-16.2.0-libgcc",
+      "/nix/store/j7qx4s4mr17j1wqgvqdzj33lmrnzb387-gcc-16.2.0-lib",
+      "/nix/store/ph4ib8mxy5yrw40k7a1l03bfd58hq6wj-zstd-1.5.7",
+      "/nix/store/vkwq2iap75p0srizppc3jl2j5b1lxpln-xz-5.8.4",
+      "/nix/store/0a9k0r3wf695ibidnygdx6kkx8zhdhhg-kmod-31-lib",
+      "/nix/store/0ci5jamd4bs9qqp74yyjfyh665622kyk-perl5.42.3-TermReadKey-2.38",
+      "/nix/store/10dxp0qxqxxsyiljrh2kp0xqhz6arhcx-bash-5.3p15",
+      "/nix/store/1gz4arjikrgvbhkd59zx565wf1qp8fhg-libevent-2.1.13",
+      "/nix/store/1nnfark3kfpj2d7xkpzsp6s36d1f3k3j-judy-1.0.5",
+      "/nix/store/9074l1whzhvk68kj5va99ipj412rk5q2-acl-2.4.0",
+      "/nix/store/chwiiz63ngbsgr2qi82c4g40vn756ky2-gmp-with-cxx-6.3.0",
+      "/nix/store/p6cir20v12fjj5390b8xr9kdynm8bd9h-attr-2.6.0",
+      "/nix/store/2gfxiwls9hbgwdwcy43mprchwsq36mg6-coreutils-9.11",
+      "/nix/store/2rwjmppsbddj9qbivqhp879a3mcj8smi-pcsclite-2.4.1-lib",
+      "/nix/store/2xmz7szywkppj8v5nm9a8dikc61gdkk1-perl-5.42.3-man",
+      "/nix/store/328fx8r0jb6l2ai4cli7fhp8g26fbfnh-util-linux-minimal-2.42.3-lib",
+      "/nix/store/cxd8d2vg70c3pa31v2473hphaa1v0j44-openssl-3.5.8",
+      "/nix/store/wgw25d181h0qks7qsfp1bh7c5nd3f0s7-zlib-1.3.2",
+      "/nix/store/6vqggv3cdqkh098nm8brbs2mwhn6bciy-libssh2-1.11.1",
+      "/nix/store/7fjvn38n3dnv092jbmb4m87ik5qvmj7g-brotli-1.2.0-lib",
+      "/nix/store/gqd8w84mhr0h24fnc2p4m3hkicsnxsfm-keyutils-1.6.3-lib",
+      "/nix/store/80z9njiswl9xm6qk93zsjr5bj8v0z2lm-krb5-1.22.2-lib",
+      "/nix/store/8vq8ivlhfqkbhs7r9mmirsdp8gh8hmrm-ngtcp2-1.23.0",
+      "/nix/store/vc5lcyxg999ix0wvm7wdhk8dkj625kdc-publicsuffix-list-0-unstable-2026-09-02",
+      "/nix/store/lhk23vackrdgmxya733h3wp01xz622gn-libpsl-0.21.5",
+      "/nix/store/r9n1wja9zhj3w4r71pggxal3c6xqak2a-nghttp3-1.17.0",
+      "/nix/store/sky8mslz50n51np0z4vhdq61jba12fh2-nghttp2-1.70.0-lib",
+      "/nix/store/36alc2mwna4nzf6djdj2hvh4w4r3cai5-curl-8.22.0",
+      "/nix/store/wx1y0adli2qggk81pm4marx3km1scqxg-libxcrypt-4.5.2",
+      "/nix/store/8g4dmf7l8q1mf9w4wfmlcl8gvdgmhb8v-perl-5.42.3",
+      "/nix/store/kj0q7pklijph560pwa2sgrx0w3r561fc-perl5.42.3-Mock-Config-0.03",
+      "/nix/store/xm5k71pby5lmgf1yzsk3sxa8nhp33f13-perl5.42.3-Capture-Tiny-0.48",
+      "/nix/store/3llc783di3ixmbvkxcm7yf5xfayli6m4-perl5.42.3-Devel-CheckLib-1.16",
+      "/nix/store/abk7a5mlrqgdmgg91a0mmxq2hv1v9jid-libtasn1-4.21.0",
+      "/nix/store/d7p7phj31gihvsig4jyhf7yh75nas2br-dns-root-data-2025-04-14",
+      "/nix/store/z7j20jl3wdi418wbajrbximy6j472y2j-gmp-with-cxx-6.3.0",
+      "/nix/store/jp6w9riaqyh7871qjgmdxvc73q6j8ymn-nettle-3.10.2",
+      "/nix/store/j9j2ywvz4nzkv7sb5xa80gk1b3x8rh9z-unbound-1.26.1-lib",
+      "/nix/store/pi2b23y3gv6zgcziwbgnihf8gam1cmlp-libffi-3.8.0",
+      "/nix/store/qmhksr7a5niv5kc2yslal3lq55inny75-p11-kit-0.26.2",
+      "/nix/store/4kc4z26a0lpvbp71f4m3fqvw48wr8kwm-gnutls-3.8.13",
+      "/nix/store/8b1q4rgn7lzg66mn65xk12c2llyj7apa-perl5.42.3-Params-Util-1.102",
+      "/nix/store/4sidyk9p59hi8j4qgmz01xqa0nn6bc94-perl5.42.3-Module-Manifest-1.09",
+      "/nix/store/56a45nmwdrqfk816gzh8kfv8lqma0qn7-snappy-1.2.2",
+      "/nix/store/5pnqyh168djqlzkzfdyrkn7zq76jnhf6-perl5.42.3-Test-DistManifest-1.014",
+      "/nix/store/mpqgjnlmzy3c5hslbgyc3s7zfz3m32lg-bzip2-1.0.8",
+      "/nix/store/6sff0zi6fiwghgnvlpq61rwb8zqwacsm-kbd-2.9.0",
+      "/nix/store/810gbfr7abr6yiajnl0zz88jvmr6ph56-mariadb-connector-c-3.3.5",
+      "/nix/store/i9v4djnphm9zh3ar4y8a4z1vbyl3amc7-perl5.42.3-DBI-1.653",
+      "/nix/store/qam3scbv50f6vngz4jn3gv3y4666lr8y-perl5.42.3-Test-Pod-1.52",
+      "/nix/store/x9bbj78v32xq2k0dfzjjwmvhp5582wmv-perl5.42.3-Test-Deep-1.204",
+      "/nix/store/7d0qyml6lxfpjxf7pi9a5b5lnmv3qqfj-perl5.42.3-DBD-MariaDB-1.23",
+      "/nix/store/kkf8p18x7bzclm671aq839qnp0rc3r5s-util-linux-minimal-2.42.3-login",
+      "/nix/store/gvhdvn542cwd3wr2978nh4ydzp89msq7-systemd-minimal-libs-261.3",
+      "/nix/store/y5751icfyxy1nzr7p1iiv4idwx0s7mjx-libcbor-0.14.0",
+      "/nix/store/7svipfslpzd55jd6rz42k6daaqmdi47b-libfido2-1.17.0",
+      "/nix/store/7v8b5idfzwfl06hx6n0cvd5ikd5p0sbg-pcre2-10.48",
+      "/nix/store/8327b5r0l5k48fpcqiaias8p2m7h52n5-lz4-1.10.0-lib",
+      "/nix/store/8wi2xfhr9riz57yh5ndmcmd1x0f0k11g-util-linux-minimal-2.42.3-mount",
+      "/nix/store/9ymz748lxp33ix2vixryczq7c5zrp8vp-libgpg-error-1.61",
+      "/nix/store/bcyd9986cxipzp7z4lman7d7p8x5wm3x-cracklib-2.10.3",
+      "/nix/store/w0xkd23405sbslbfnbhzcwwclvrsnwcf-libcap-ng-0.9.6",
+      "/nix/store/f294xy3n5bn3r9qv6a2ab7fkkmv7g5cp-audit-4.2.1-lib",
+      "/nix/store/jy9fp83kqfw7kn208xm5i38sa8srfbkq-db-4.8.30",
+      "/nix/store/d99sv05pi20zzyind2gw72r7j02g8zaq-linux-pam-1.7.2",
+      "/nix/store/dsdapj04rzhg40cz5jprz1jwy3vvf1lx-liburing-2.14",
+      "/nix/store/gckp2y92mdfny4cydahvgghxxm968l1n-qrencode-4.1.1",
+      "/nix/store/n1i9ph766v9kbjs961j2aiw4qaagc1wj-json-c-0.18",
+      "/nix/store/s7306mp3pdbw8xx2gicsqvyganjhsywp-elfutils-0.195",
+      "/nix/store/grxh7wk75nq0li11d35h7fijb9pq10zj-libbpf-1.7.0",
+      "/nix/store/h53iyxmgp59cgr7vh0yr3pkzhb1z2fqg-libgcrypt-1.12.4-lib",
+      "/nix/store/hzqwc6pv8sb9qrwivc4h42cr811gs1mk-ncurses-6.6",
+      "/nix/store/k81akx4837d7ghz4mfkr7kwzinw4qhp6-libseccomp-2.6.1-lib",
+      "/nix/store/xqwx3h6jz1m6f31was9183phirl7fdpl-libtpms-0.10.2-unstable-2026-05-06",
+      "/nix/store/krm9vmc3dz68gig0hpbrqbgfzjd74r2h-tpm2-tss-4.2.0",
+      "/nix/store/n62wk9gdqqbx6pwirlxpz25cxyap5428-util-linux-minimal-2.42.3-swap",
+      "/nix/store/pwb7izgsl4wbdg0hnv8l5r45yq0l9781-libpwquality-1.4.5-lib",
+      "/nix/store/q230vs5rqpyk1lya3j125ahw35xp0vra-libmicrohttpd-1.0.10",
+      "/nix/store/x9n41wj5hmahzc3y1gmzg0lkdg77ibpr-lvm2-2.03.41-lib",
+      "/nix/store/qvcr74c66s11lv718zmxzz20ar3ckzd5-cryptsetup-2.8.8",
+      "/nix/store/vd8b7jqgpcjy092rvbjnarwzbhlfylr6-kmod-31",
+      "/nix/store/x5hyc0wsiq560p7ipaf2vbicjy5w2i2r-kexec-tools-2.0.32",
+      "/nix/store/vfj3fn7rp56w7f3xy6vz5s41nziv4jgm-libxml2-2.15.4",
+      "/nix/store/xjn862icpw4y48i3mnyl2bgxx30fsjbp-libarchive-3.8.9-lib",
+      "/nix/store/y0hvrkm9csmqlsqsw9cv8z0rzxdb6ghf-libapparmor-5.0.2",
+      "/nix/store/l5hiab3932k2n4d6nirh09mk6xgxp61w-systemd-261.3",
+      "/nix/store/s8lhwrxz5i6gigw2klddj0sdqxbv18ml-lzo-2.10",
+      "/nix/store/yw15c19a7r0959dci9jdx2n1l2vljzqb-perl-5.42.3-env",
+      "/nix/store/zi4d0awnc6crz18s177bv9y2yz9al3lq-less-710",
+      "/nix/store/jhx2a9k5hyyj9jbn0pvxb53qryfnnda9-mariadb-server-11.4.12"
+    ]
+  },
+  "elf": {
+    "mariadbd": {
+      "sha256": "12004b5a979ca97e3152de453f121c06ffb8da0c3b615c30b3b0cf34262dae9d",
+      "interpreter": "/nix/store/h4wfwic161kxrr74jlzla5lsm28hgary-glibc-2.44-25/lib/ld-linux-x86-64.so.2",
+      "needed": [
+        "libpcre2-8.so.0",
+        "liburing.so.2",
+        "libsystemd.so.0",
+        "libz.so.1",
+        "libssl.so.3",
+        "libcrypto.so.3",
+        "libpthread.so.0",
+        "libdl.so.2",
+        "libstdc++.so.6",
+        "libm.so.6",
+        "libgcc_s.so.1",
+        "libc.so.6"
+      ],
+      "rpath": [
+        "/nix/store/l5hiab3932k2n4d6nirh09mk6xgxp61w-systemd-261.3/lib",
+        "/nix/store/wgw25d181h0qks7qsfp1bh7c5nd3f0s7-zlib-1.3.2/lib",
+        "/nix/store/7v8b5idfzwfl06hx6n0cvd5ikd5p0sbg-pcre2-10.48/lib",
+        "/nix/store/cxd8d2vg70c3pa31v2473hphaa1v0j44-openssl-3.5.8/lib",
+        "/nix/store/dsdapj04rzhg40cz5jprz1jwy3vvf1lx-liburing-2.14/lib",
+        "/nix/store/h4wfwic161kxrr74jlzla5lsm28hgary-glibc-2.44-25/lib",
+        "/nix/store/j7qx4s4mr17j1wqgvqdzj33lmrnzb387-gcc-16.2.0-lib/lib"
+      ],
+      "missing_direct_dependencies": [],
+      "archive_match": true
+    },
+    "mariadb": {
+      "sha256": "63ed8d8a04266f8142d81be46f55ef605c03182697293c79013d437de3d6f139",
+      "interpreter": "/nix/store/h4wfwic161kxrr74jlzla5lsm28hgary-glibc-2.44-25/lib/ld-linux-x86-64.so.2",
+      "needed": [
+        "libssl.so.3",
+        "libcrypto.so.3",
+        "libz.so.1",
+        "libdl.so.2",
+        "libncursesw.so.6",
+        "libstdc++.so.6",
+        "libm.so.6",
+        "libgcc_s.so.1",
+        "libc.so.6"
+      ],
+      "rpath": [
+        "/nix/store/hzqwc6pv8sb9qrwivc4h42cr811gs1mk-ncurses-6.6/lib",
+        "/nix/store/wgw25d181h0qks7qsfp1bh7c5nd3f0s7-zlib-1.3.2/lib",
+        "/nix/store/cxd8d2vg70c3pa31v2473hphaa1v0j44-openssl-3.5.8/lib",
+        "/nix/store/h4wfwic161kxrr74jlzla5lsm28hgary-glibc-2.44-25/lib",
+        "/nix/store/j7qx4s4mr17j1wqgvqdzj33lmrnzb387-gcc-16.2.0-lib/lib"
+      ],
+      "missing_direct_dependencies": [],
+      "archive_match": true
+    },
+    "my_print_defaults": {
+      "sha256": "6d7d1023fa346c449797d62b7796aa8097104aa2fc275da1f91b07dee0c5c9e8",
+      "interpreter": "/nix/store/h4wfwic161kxrr74jlzla5lsm28hgary-glibc-2.44-25/lib/ld-linux-x86-64.so.2",
+      "needed": [
+        "libz.so.1",
+        "libdl.so.2",
+        "libstdc++.so.6",
+        "libm.so.6",
+        "libgcc_s.so.1",
+        "libc.so.6"
+      ],
+      "rpath": [
+        "/nix/store/wgw25d181h0qks7qsfp1bh7c5nd3f0s7-zlib-1.3.2/lib",
+        "/nix/store/h4wfwic161kxrr74jlzla5lsm28hgary-glibc-2.44-25/lib",
+        "/nix/store/j7qx4s4mr17j1wqgvqdzj33lmrnzb387-gcc-16.2.0-lib/lib"
+      ],
+      "missing_direct_dependencies": [],
+      "archive_match": true
+    }
+  },
+  "installer": {
+    "sha256": "b3ae95d0ad0e031341d81e4ceed99b7345e6eb7fc993c821234517034e34d990",
+    "shebang": "/nix/store/10dxp0qxqxxsyiljrh2kp0xqhz6arhcx-bash-5.3p15/bin/sh"
+  },
+  "native_probes": [
+    {
+      "binary": "mariadbd",
+      "arguments": [
+        "--no-defaults",
+        "--version"
+      ],
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "stdout_bytes": 138,
+      "stdout_sha256": "0adeea2d703290cbe9d90d915a9c9c879414b7e1a57e586b3e3ae11658a8c49a",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "scratch_entries": [],
+      "empty_inherited_environment": true,
+      "timeout_seconds": 10,
+      "expected_version_found": true
+    },
+    {
+      "binary": "mariadbd",
+      "arguments": [
+        "--no-defaults",
+        "--help"
+      ],
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "stdout_bytes": 411,
+      "stdout_sha256": "f20fd799462312b63aaf3574f40f2c2cb21de8b335ec687deeb67cd396164eb7",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "scratch_entries": [],
+      "empty_inherited_environment": true,
+      "timeout_seconds": 10
+    },
+    {
+      "binary": "mariadb",
+      "arguments": [
+        "--no-defaults",
+        "--version"
+      ],
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "stdout_bytes": 151,
+      "stdout_sha256": "d88e11c477381d964d5a69b44cff2587b546ba7a3a5ea83bc62122b60788efdf",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "scratch_entries": [],
+      "empty_inherited_environment": true,
+      "timeout_seconds": 10,
+      "expected_version_found": true
+    },
+    {
+      "binary": "mariadb",
+      "arguments": [
+        "--no-defaults",
+        "--help"
+      ],
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "stdout_bytes": 13900,
+      "stdout_sha256": "1880ab0e65df42ceccf7241a3549155c72dd7df7d72b8364796e18b57dd28985",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "scratch_entries": [],
+      "empty_inherited_environment": true,
+      "timeout_seconds": 10
+    },
+    {
+      "binary": "mariadb-install-db",
+      "arguments": [
+        "--no-defaults",
+        "--help"
+      ],
+      "exit_code": 1,
+      "expected_exit_code": 1,
+      "stdout_bytes": 3851,
+      "stdout_sha256": "0cad56aa0ab8c4c701ef861ad8e4ae2aa60d232f3979f532dd649f5646fe8ed2",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "scratch_entries": [],
+      "empty_inherited_environment": true,
+      "timeout_seconds": 10
+    }
+  ],
+  "source_authority": {
+    "nixpkgs_source": "/nix/store/5wwvz80gd6v1z981bsrvr7c1vhkyc3as-source",
+    "nixpkgs_default_sha256": "b5e6212d9b0187f5ba6d3b67555433c9e3f4069aa25dca589e7877df3eb39e84",
+    "flake_metadata": {
+      "description": "Pinned MariaDB software for future isolated rAthena worlds; offline defaults",
+      "fingerprint": "7a67b841227ed6f14420ca9924fdbe509c5b55b890634ef2d478906c90b823e3",
+      "lastModified": 1791229211,
+      "locked": {
+        "__final": true,
+        "lastModified": 1791229211,
+        "narHash": "sha256-1GcJ3D2lX/DRxeEKH4YUG+byQ8/fbdyVFIe/x3Q0T4I=",
+        "path": "/home/otto/dev/ro-bots/nix/db-image",
+        "type": "path"
+      },
+      "locks": {
+        "nodes": {
+          "nixpkgs": {
+            "locked": {
+              "lastModified": 1791048980,
+              "narHash": "sha256-KgItSKML8Xvte0B7/uGnBDsYzSnnKHcOaiUbgWBXLXw=",
+              "owner": "NixOS",
+              "repo": "nixpkgs",
+              "rev": "a7868a727837f3c09cee2ce0ca671c76b1589fed",
+              "type": "github"
+            },
+            "original": {
+              "owner": "NixOS",
+              "ref": "nixos-unstable",
+              "repo": "nixpkgs",
+              "type": "github"
+            }
+          },
+          "root": {
+            "inputs": {
+              "nixpkgs": "nixpkgs"
+            }
+          }
+        },
+        "root": "root",
+        "version": 7
+      },
+      "original": {
+        "path": "/home/otto/dev/ro-bots/nix/db-image",
+        "type": "path"
+      },
+      "originalUrl": "path:/home/otto/dev/ro-bots/nix/db-image",
+      "path": "/nix/store/cy2f2yc52n7i3g492jyl5y85knxnakh7-source",
+      "resolved": {
+        "path": "/home/otto/dev/ro-bots/nix/db-image",
+        "type": "path"
+      },
+      "resolvedUrl": "path:/home/otto/dev/ro-bots/nix/db-image",
+      "url": "path:/home/otto/dev/ro-bots/nix/db-image?lastModified=1791229211&narHash=sha256-1GcJ3D2lX/DRxeEKH4YUG%2BbyQ8/fbdyVFIe/x3Q0T4I%3D"
+    },
+    "source_file_sha256": {
+      "sql_mysqld.cc": "388b54d7a6d92f01a888547a6dbb6ed7ba3ccb3cc3e63fbd148e28e979cfaa69",
+      "storage_innobase_CMakeLists.txt": "10e096e951071372a3a65f815da74fa2da9eb878df3b415a7ba564b9b9dc7799",
+      "storage_myisam_CMakeLists.txt": "d5ef450fee2b97b9513c642ff920fe854b5fca47458dae04fa1fba7649263d60",
+      "client_mysql.cc": "0f6095949d0a218accf98774c818f9b8d717810e2fef63bc50bb20c4fa0c402a",
+      "mysys_my_default.c": "64e81fc647ce56904ff90f84044922faa0a132e737005cb4d872e520b749438e"
+    },
+    "ordering": "my_default.c:295-299,433-455 bypass files; mysqld.cc:8252-8264 and 8786-8789 opt_abort -> 4104-4105 exit during init_common_variables at 5905 before 5908/5935/5986/5990; client:mysql.cc:2174-2177,2200-2204 exits before 1383; initializer:118,173,276 first parse before 334 defaults invocation",
+    "engines": "MyISAM CMakeLists:35-38 MANDATORY; InnoDB:435-437 DEFAULT. No engine activity/readback."
+  },
+  "source_fingerprints_before": {
+    "Taskfile.yml": "63616950e21c15c455c2b6f90be4d588b77f31a62181fd7a93253d164a64a7fd",
+    "dashboard/Cargo.lock": "0a57a881e01220685815d98b009bd720e96daf734cda6c410479736184642122",
+    "dashboard/Cargo.toml": "30cf07e68a3651772eedda7d2cd66315c458ec507b049f412443b2afbe8fca9a",
+    "dashboard/Taskfile.yml": "9af0557d4cc01edf0aa10edd2cb1d46faca34d8f5af112ff1cdeb0f881f47eb9",
+    "dashboard/crates/dashboard-app/Cargo.toml": "53e6b5cc6556e84c63399fc3857ef7dc79318e08812e87640eded29c1fb4266c",
+    "dashboard/crates/dashboard-app/src/liveview.rs": "50bd17e42e1f49ca6abdea9cd23e3393b16a7b8feff7b0a95173cfe061b53afa",
+    "dashboard/crates/dashboard-app/src/main.rs": "0253992f028484ae45c29e708089b955f80f7b5dd69815779a1d0c6b5c47fa8d",
+    "dashboard/crates/dashboard-app/src/render.rs": "e02427c8942c101daa5165860b32a2eb4ac901eb3b959ca6ba2bf60aef6eff22",
+    "dashboard/crates/dashboard-app/src/tests.rs": "c6a91e2f974a72863b9b31936e2e0e76930b88991c2c125b166bc7882f2f2273",
+    "dashboard/crates/world-feed/Cargo.toml": "cd13d5f40d6e9759c810574832bf81e8ea817715c44cd60c38c0ef8cb211408a",
+    "dashboard/crates/world-feed/src/lib.rs": "a1008cb5200844e64ccb59edfb8baf2f324e647a43e597a9619a6c09d255bdee",
+    "dashboard/crates/world-feed/src/live.rs": "7ea29f93a8c9534fc4757221dfafde81f7d6c128343a58d11c16b8cef2f0f9b8",
+    "dashboard/crates/world-feed/src/mock/mod.rs": "4eb174704d457f198ea6b249fb72eec21b79bd15e69407e3d0fdb8252d60cec8",
+    "dashboard/crates/world-feed/src/mock/tests.rs": "d88e1b8406134d107694a14a9cbddd025336227eede02403bded001445bc95fb",
+    "dashboard/crates/world-feed/src/wire.rs": "cf54289322d96a182ee10061e35489ebeec1b871b0fe44c3cd6aeb014c328f3d",
+    "dashboard/crates/world-feed/tests/http_live.rs": "92d70a8236fa8f21facee66e2bab293ecf76259153d63625f8480216a2fe33e3",
+    "dashboard/crates/world-feed/tests/population_bounds.rs": "e3941bfe69850ca0d76ef4b3a3e4a54528b1f787f63b0457e220a2e0773f5f03",
+    "dashboard/crates/world-feed/tests/python_wire.rs": "2b8f0f4fab4fa2bb2ada39db13a383c8a814e344734f25c7f2f561e56b1af38f",
+    "dashboard/crates/world-feed/tests/sse.rs": "fbec32331829685b5de258a85eac287a0d2b5eeba95b30cadb98e00daaef6f8b",
+    "docker-compose.worlds.yml": "4712fa181bf2c93495cf3360fe1189ada55c5371c66646514fa87f5c7374cce3",
+    "flake.lock": "c9c0bac69415b99a29ef3fe149b6f04ef54d291989bdf7218cf819ed52edf2a0",
+    "flake.nix": "185e4a4babf62a40484c347f59653bd11b79ce847316a3a90349c8545d38a359",
+    "nix/db-image/flake.lock": "c9c0bac69415b99a29ef3fe149b6f04ef54d291989bdf7218cf819ed52edf2a0",
+    "nix/db-image/flake.nix": "e3dec0f3a0285ff634c8d17b01daefb1948a7dc07d4de7993eb1ef596e134838",
+    "pyproject.toml": "e8ae0849a413bc3d705f081f609b92dae702bbd3e491b2c3aeb5d8665c458fba",
+    "scripts/e2e.sh": "bd225e3019082ec35a7596d3d5735712b26888e315cf0b8e580f25f8cad746f6",
+    "scripts/e2e_runner.py": "c7f46a26f95aa07f901eb72da831681780602b132068583a9a8972c7bb2ec386",
+    "scripts/seed_test_agents.py": "a38da7cbf328a74f7d660bfc9b3955ef71cdf7acdc4b9dec573111f0ba89aed2",
+    "scripts/world.sh": "0fb763180e1bb81bb5a7cfd43adee89e577a955e96159de5d35827948b1861f7",
+    "spikes/003-clientless-limbs/client.py": "d3026f448857c7ec804469cf584ca1f3089c6ad8188224d2b2cb9389e707eb05",
+    "spikes/003-clientless-limbs/packetdb.py": "d106ae277a6c7f75cf597c9051651a27e0ba6fa3663575608e0033048b18f9d4",
+    "spikes/003-clientless-limbs/test_limbs.py": "cc1f4b66e489375fd89b0f3c2232cc165358a61167b4669ba12952be2466613b",
+    "spikes/003-clientless-limbs/test_packetdb.py": "afdb0770e12525f85169ce24af2eaa23cf8015debc1c2a5cb2914c8f1400e7c3",
+    "src/robots/__init__.py": "14a8271c90ed669cc0645c2901ba6a3d93345643b7697e87b965b9008f02b6a6",
+    "src/robots/__main__.py": "d0a31b9a5ee296d1eee592877c7d187fbc7755b794c9e6f7f59a09f9e44fba6b",
+    "src/robots/adapters/__init__.py": "0682851ebbbbcccfb31e82a108d69a92193252f3eda2498f893dc078f3a68b1d",
+    "src/robots/adapters/chat/__init__.py": "aa6f50ce023dc5ead3fd8453f7878331a13e483c1a0db49a43de1e961f69cf89",
+    "src/robots/adapters/chat/_http.py": "7d5993992e40c2e24eed8a4b89ab2be7254da31c86e4ec673955e080a9373c74",
+    "src/robots/adapters/chat/chat_local.py": "7f85405f9169eb6638a29059288cbf684ba6e14789bdb4ddc2c7ca0ca6ffcbf5",
+    "src/robots/adapters/chat/chat_remote.py": "a54cfdfafa0e0bba733425664748342a3347fc053c4b244b3875b33b3c4c357e",
+    "src/robots/adapters/chat/stub.py": "780d993734e9e498dbc0ad8e89ff97143aba3e5a281f3eefd8880412f02e6666",
+    "src/robots/adapters/decision/__init__.py": "64fd99933eb2af166086f3daac17b6223088bc58fcffdecb27d8918440d7b25a",
+    "src/robots/adapters/decision/_http.py": "8a2b6fa356cd01d0bdd62ff19c39dc184eed59f3c8e310372903d32ee72dd196",
+    "src/robots/adapters/decision/clef_local.py": "7390bf0b6a1cc3287aa1fa7b031a1e84f87b062241d247832ca6b270033b9f1f",
+    "src/robots/adapters/decision/clef_remote.py": "8091a7ed76c153e5d209f948a876b4d3d4a69af54f52194d15d59e3a3068f745",
+    "src/robots/adapters/decision/stub.py": "628b86444332373edcdc2ab0d2d357781408f2f5e71f4a3b31f3fec9bb6476f7",
+    "src/robots/adapters/mechanics_stub.py": "38fcfc3d632cbdbf107015d6dc030a08920ebe5722e64a426854539ec19eef18",
+    "src/robots/adapters/mechanics_yaml.py": "c5991bd78af95b213b4fb9a2ca87b065f5b76e826edb84eac593498a80f64b58",
+    "src/robots/adapters/memory_journal.py": "043f109ba8e637b4b26a7a4cd601e64bffa3512815ea0cfbca8c2737c3fb3a00",
+    "src/robots/adapters/rathena_bootstrap_assets.py": "257f09e9c318dc060b21e76326a4510fce2d9fc06d048047e0949e098ab3c3c7",
+    "src/robots/adapters/rathena_runtime.py": "26621ee1e592eaf200ea96422fb349dac20c70e6ec7baa9b1e215cd44f9a787c",
+    "src/robots/adapters/rathena_runtime_assets.py": "8cf599ddd633c82879d5a6fc0ed2d98f13399e4094262b6bcafb25c9841650fc",
+    "src/robots/adapters/rathena_runtime_io.py": "7964077d40e9e2e70dfbeb96ef0555c4cfae16f3ffedf0f2192e46f9f7ecc032",
+    "src/robots/adapters/world_inventory.py": "591340a547ac066af5f5cd491b5bb4d810083323423ad98275945c32ba153b7e",
+    "src/robots/adapters/worldfeed_server.py": "456b110a37b32af9229af49be9587c7316ff47b24fe52f729a51cb42172f5b49",
+    "src/robots/app/__init__.py": "f8051791757f4a44517787195b9b470bd1215251bd457436c52f3c7de9005c03",
+    "src/robots/app/agent_runtime.py": "5e22743b0cbfe00e7e9d99ac3060e18a8b2bcb2d46e15343b7422718033ba1b5",
+    "src/robots/app/brain.py": "e67e13169fb19c1fea9e27e6fd2857a11989328210d899c0b8c8ee1e8c932ed2",
+    "src/robots/app/builds.py": "564926dbbbecf631b3e02f542698f9ae5c00e1ad54bec1d05323c1a17edafa28",
+    "src/robots/app/context_selector.py": "167992303f362464634089122c92d4fdc3974628af72d4e6ea231fa28165680a",
+    "src/robots/app/escalation.py": "8d69da5e9a9ec14037991638df087ca6530a05b264fd25a7fb9b44c73451cfa9",
+    "src/robots/app/host_commands.py": "023af553c24b7ec2fc5d6d5e21d361f1d541b6d499f06d18a0039df7f3a1407b",
+    "src/robots/app/roster_edit.py": "202030a31b34b9e0c9d79f7d0827f4c00229f4e71c22c47dc74cbda57abd1e13",
+    "src/robots/app/runner.py": "6eabce7e5b55cf6344dc7d138085d06b4de75059f5b86b04219df037c90f4ea5",
+    "src/robots/app/scripts.py": "83df6dbd7e124d7316a851b11fb1915aa4d20261d2fb91636a6278ade68e2c34",
+    "src/robots/app/timers.py": "aacecb6ee62b27d202ee8920f7d99739155aa1e72ffeab6011971dfb4521bf3e",
+    "src/robots/app/world_state.py": "61f4daebc1383fd9ee8b9bda27111ed5b1b94c7ccf43099c0d892b7799ce9d0d",
+    "src/robots/domain/__init__.py": "53858cc66817d25bdcf50a47319d581b35e9c415f72881d58c8af83c2a61187a",
+    "src/robots/domain/actions.py": "f0b93b6ac48e6954755c8af5691acacd3546e222de5350f0b9fda8dd09c91b4e",
+    "src/robots/domain/build.py": "0ead8793772d3a7aacdb33c8e0087f700e54c8bdcd1a49c4cfc913dd5b3ddd18",
+    "src/robots/domain/build_templates.py": "7ac6e75780328ab42f0357bc42709419a8c8c939f3c1d45330dc1bf5560c6b1a",
+    "src/robots/domain/decisions.py": "fac0950f779b4221fd4f44bdbbb945ba3d6ff79c508ace621d713e8564fa3803",
+    "src/robots/domain/events.py": "665a13fb1d9d4137a429399914e63ba95802159ed3092b06347285580bed8789",
+    "src/robots/domain/farm.py": "3773b241cbd3c4ab6a467e122f33f2a624897f739ce01fc0e1ba49b17aaf3d8a",
+    "src/robots/domain/model.py": "697646631c2eae15dc01e6cc0219502b1c7a8ed6d830089060e5ee37c700bbbe",
+    "src/robots/ports/__init__.py": "2ceae33cec0ec1ecf299d7d8ef4d3200eca9cc7d3632f28004148668d2f9219c",
+    "src/robots/ports/mechanics.py": "1db9f8a72c11d5c9b6006723e7ceed1d1950e46bac4a602274ff436961d73aae",
+    "src/robots/society/__init__.py": "703247c76c6bb3c10c3a4ecc92bf9bc5500b445c218a9c38ba3e2aa6801c5370",
+    "src/robots/society/guild.py": "c0c97eb94feb6221eea35b22f96fb271ebdac523b63101e503bad61771486b79",
+    "src/robots/society/human.py": "47247be1aee1fb64a8bd0953498a9382fb904c76f623b27f8c77977c678607d6",
+    "src/robots/society/memory.py": "29dc3abf394daa6107ee72215f7d514220d6262d0e22351911d2bc24246a3ff2",
+    "src/robots/society/models.py": "fd92140ccf5ce8ecc63a3036670cf8802ff77df8ef52d377f564c6d560161f65",
+    "src/robots/society/population_limits.py": "e73bc0f8d7e6fa3bf360db70e1ee6019b51370042a4f0a3683b78c757e2b29ca",
+    "src/robots/society/society.py": "fa7a1c6629b9836de6fca90770e50539fd83bffe98abc51cf68534b92af3db53",
+    "tests/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "tests/conftest.py": "42dbe1ae3a43a6c34ef2f9abb829b62d1f0a914d64d1a576d9b528142982d307",
+    "tests/test_agent_host.py": "effeba83435fb43c76a1578d17e190b93219991dbab491786df56ef02bb808f7",
+    "tests/test_brain.py": "14b41aa10bd612c54e538a7d9b998a848c5d89db061e57947a1eaa057f716fa4",
+    "tests/test_build_catalog_integration.py": "bb672f83aaeb2fb0cd613cf719ec3b5da30eeb58e878122a3878142c0a09b9bd",
+    "tests/test_build_templates.py": "c89e79c07fae40e6066f2d399413171b6f514ec005da251c6f5c9441bae198dc",
+    "tests/test_builds.py": "87f460fc7c1d77276bbbf236a8812b2a7f35a06c047bc4ee5af12f90f113b4a4",
+    "tests/test_classic_build_validity.py": "3df8840b54f29c52b8e0900d907ea21413580ec1037d93e0a63dfedf15ab1f16",
+    "tests/test_client_protocol.py": "3e781d2f50501b2d1bf0c3caccf507f3c6fcde533ad62ea1448b0f857143a5a2",
+    "tests/test_context_selector.py": "216a06ea7c6853f3ea970f1cfdacb859b89c00c49d9a029cef1f44260b7c7a4a",
+    "tests/test_core_interruption_cleanup.py": "e985a3f00adebc4161378b6fbe8a7e4e91b6f282e725faee0eef54440f50b3bf",
+    "tests/test_decisions.py": "c299c55ead5ec287ae7423bc32ecd1de50a432b40d5624266e8b2fc797a94f44",
+    "tests/test_escalation.py": "29feec8900dac66a231f32ab0ec10d520ec156d143840f548287fe7a62398c7a",
+    "tests/test_guild_human.py": "a2c2db4b13ddc3fe2c1d82110823766d1789c1261bd91eb9333e8116e969d15c",
+    "tests/test_host_chat_commands.py": "c92969013f656ad8e7fa103bb8662a9acfe6ab7be12dc896b86db26f1785e58c",
+    "tests/test_host_chat_interruptions.py": "cc921d40237a16332fbb9434db3c242a4fe1078214868d4a0199f717a138d826",
+    "tests/test_host_memory.py": "db28d20ea1d0afa27bc49c5475144f5bd2197cf81c0c147baa91a5bab3bf6d5d",
+    "tests/test_host_storage_failure.py": "0f473837dbcaf1461e4b9d7d73090639361d2e0f9d08a1a2489bb9c06e5cb42f",
+    "tests/test_limb_evidence.py": "9669537ee7ed63e7be4850936e96d28fc0a75bb17c77bac753c45ec8be941569",
+    "tests/test_mechanics_review_regressions.py": "4b0d8f690017d2cef2f929148cfdf1be05075aeee2747205a31f5360804c243a",
+    "tests/test_mechanics_yaml.py": "adb969d15359545222e58e28b2d099c17a46ce12e68ef4dcbac75b57ed03fce7",
+    "tests/test_memory.py": "31843258250515e32ff790226a757edfaf50964fc2f404c0169ffda6c7b7b3dd",
+    "tests/test_memory_concurrency.py": "b3023d86a987dbb701cd4767814473fb5330cda50055f70a062ba67d2b1239d3",
+    "tests/test_memory_journal_boundary.py": "d5754f1a9e5eacfeabba031118d980fae8ada3df5426983e509ebcd0d10ff56a",
+    "tests/test_memory_journal_failures.py": "13e7cc87bfb390dbf4f8fd24e82f3932c1333dc0db35ee350f5c9f9e3160957e",
+    "tests/test_memory_storage.py": "1b5ea2b86b922adaef75c560680eb309a3674873abab2cfd7e1fdfba0e4a069b",
+    "tests/test_packet_conditions.py": "abe40cc3af9d56de1f98088ae372e0e1f54cfe5a2d89ea6828f75f6e4d1969d1",
+    "tests/test_population_binding_race.py": "57129ac7a653e38161b120a8fdb329b6261b6f97739cd3603f37e6c36c11b7e0",
+    "tests/test_population_config.py": "cecd227079d277bde7bdceab0b33c2eb1c9f3c13aecfaa85329d1d905766268d",
+    "tests/test_population_resource_limits.py": "852cdebc54c7fc9825802dcd3544d5dbe382ae4badcaa108371bbeebab6c3965",
+    "tests/test_ports.py": "55cab28eb76c9ddf8feeaecdce8bf241530f2385da61020f55c49d67490766f4",
+    "tests/test_protocol_rereview_repairs.py": "587c6aee7058cb18c5537fd41b46cba5e847254817590cfa74c088f198843110",
+    "tests/test_rathena_bootstrap_assets.py": "8cda1166185ae50d2ee03e50b4313e3edf92390b7af6394309ad57decbbffa18",
+    "tests/test_rathena_db_image.py": "06eada91211a5c4e25c373f60d92aa4ef0c2eb610b8521e24862b80124a5620e",
+    "tests/test_rathena_package.py": "d9101fc3c8573a11e22a3f0a69cbaf870db36297598f9300e9f9b4b8eb397869",
+    "tests/test_rathena_runtime.py": "472435dc9baec199191c1d99f20f0b68d9d99df955161cb0be34dc0569bfb297",
+    "tests/test_society.py": "9e8f1971dda1a4e81d3d1df8eeb8cb9256b0080e7f6f67c9268c6834b4df4b7b",
+    "tests/test_taskfile_safety_labels.py": "6cb17b9f5d326c0ccf0260c2d92a3b389ae8794e8530ca98e66dd0d45af347e0",
+    "tests/test_temporary_handshake_cleanup.py": "4c4daa3740b5c3f12441d1c3042a655b4208473904528509b816f38ffd269d79",
+    "tests/test_timers_runner.py": "66fc937ef1f528190e5d44814758283fdd9bfeb5d9c862960ec534f0b7e25406",
+    "tests/test_world_inventory.py": "365b68de29259379c207991e84f1cccac50c6cd2016948503352364ff2bdb3d0",
+    "tests/test_world_isolation_guard.py": "510168243ce69138b4bce39a9f7700eefc2554f4ea9092a592386453682de8b3",
+    "tests/test_world_seed_safety.py": "eede21817970e7db28b4e23a2ca368c6db8233026f9153ed29a9876f36658350",
+    "tests/test_world_state.py": "1b026aa85e1ed5a68cc00bbae2b0c0f61cdbececbd94bb03d5f4085614382727",
+    "tests/test_worldfeed_retention.py": "dec045816b3c457c3cac25b0715dc63f3f03794e401fc48c4c38c8afa08d5c88",
+    "tests/test_worldfeed_server.py": "8c2a151e5739e59e7a390e1497fe5c2497be7ae45f8e8bff74d68c9b59960898",
+    "uv.lock": "2d7b4c187078488d7625e4fd4fa982745cab8d6a65b2ff3e382ffa286f1df245",
+    "wiki/guides/private-rathena-runtime.md": "d192303c789ba030700654c27e789ece9706aee1c0d96a531e744903e946c26d",
+    "wiki/guides/public-rathena-bootstrap-assets.md": "4dfa287c4d04326bf91395b302845eb7c86d991c11b10457e6f9899fc4f32435",
+    "wiki/guides/rathena-db-nix-image.md": "1a1080a849b028d86d4034db9c58319d49d655244b3e93851d2a413254aa5d70"
+  },
+  "source_fingerprints_after": {
+    "Taskfile.yml": "63616950e21c15c455c2b6f90be4d588b77f31a62181fd7a93253d164a64a7fd",
+    "dashboard/Cargo.lock": "0a57a881e01220685815d98b009bd720e96daf734cda6c410479736184642122",
+    "dashboard/Cargo.toml": "30cf07e68a3651772eedda7d2cd66315c458ec507b049f412443b2afbe8fca9a",
+    "dashboard/Taskfile.yml": "9af0557d4cc01edf0aa10edd2cb1d46faca34d8f5af112ff1cdeb0f881f47eb9",
+    "dashboard/crates/dashboard-app/Cargo.toml": "53e6b5cc6556e84c63399fc3857ef7dc79318e08812e87640eded29c1fb4266c",
+    "dashboard/crates/dashboard-app/src/liveview.rs": "50bd17e42e1f49ca6abdea9cd23e3393b16a7b8feff7b0a95173cfe061b53afa",
+    "dashboard/crates/dashboard-app/src/main.rs": "0253992f028484ae45c29e708089b955f80f7b5dd69815779a1d0c6b5c47fa8d",
+    "dashboard/crates/dashboard-app/src/render.rs": "e02427c8942c101daa5165860b32a2eb4ac901eb3b959ca6ba2bf60aef6eff22",
+    "dashboard/crates/dashboard-app/src/tests.rs": "c6a91e2f974a72863b9b31936e2e0e76930b88991c2c125b166bc7882f2f2273",
+    "dashboard/crates/world-feed/Cargo.toml": "cd13d5f40d6e9759c810574832bf81e8ea817715c44cd60c38c0ef8cb211408a",
+    "dashboard/crates/world-feed/src/lib.rs": "a1008cb5200844e64ccb59edfb8baf2f324e647a43e597a9619a6c09d255bdee",
+    "dashboard/crates/world-feed/src/live.rs": "7ea29f93a8c9534fc4757221dfafde81f7d6c128343a58d11c16b8cef2f0f9b8",
+    "dashboard/crates/world-feed/src/mock/mod.rs": "4eb174704d457f198ea6b249fb72eec21b79bd15e69407e3d0fdb8252d60cec8",
+    "dashboard/crates/world-feed/src/mock/tests.rs": "d88e1b8406134d107694a14a9cbddd025336227eede02403bded001445bc95fb",
+    "dashboard/crates/world-feed/src/wire.rs": "cf54289322d96a182ee10061e35489ebeec1b871b0fe44c3cd6aeb014c328f3d",
+    "dashboard/crates/world-feed/tests/http_live.rs": "92d70a8236fa8f21facee66e2bab293ecf76259153d63625f8480216a2fe33e3",
+    "dashboard/crates/world-feed/tests/population_bounds.rs": "e3941bfe69850ca0d76ef4b3a3e4a54528b1f787f63b0457e220a2e0773f5f03",
+    "dashboard/crates/world-feed/tests/python_wire.rs": "2b8f0f4fab4fa2bb2ada39db13a383c8a814e344734f25c7f2f561e56b1af38f",
+    "dashboard/crates/world-feed/tests/sse.rs": "fbec32331829685b5de258a85eac287a0d2b5eeba95b30cadb98e00daaef6f8b",
+    "docker-compose.worlds.yml": "4712fa181bf2c93495cf3360fe1189ada55c5371c66646514fa87f5c7374cce3",
+    "flake.lock": "c9c0bac69415b99a29ef3fe149b6f04ef54d291989bdf7218cf819ed52edf2a0",
+    "flake.nix": "185e4a4babf62a40484c347f59653bd11b79ce847316a3a90349c8545d38a359",
+    "nix/db-image/flake.lock": "c9c0bac69415b99a29ef3fe149b6f04ef54d291989bdf7218cf819ed52edf2a0",
+    "nix/db-image/flake.nix": "e3dec0f3a0285ff634c8d17b01daefb1948a7dc07d4de7993eb1ef596e134838",
+    "pyproject.toml": "e8ae0849a413bc3d705f081f609b92dae702bbd3e491b2c3aeb5d8665c458fba",
+    "scripts/e2e.sh": "bd225e3019082ec35a7596d3d5735712b26888e315cf0b8e580f25f8cad746f6",
+    "scripts/e2e_runner.py": "c7f46a26f95aa07f901eb72da831681780602b132068583a9a8972c7bb2ec386",
+    "scripts/seed_test_agents.py": "a38da7cbf328a74f7d660bfc9b3955ef71cdf7acdc4b9dec573111f0ba89aed2",
+    "scripts/world.sh": "0fb763180e1bb81bb5a7cfd43adee89e577a955e96159de5d35827948b1861f7",
+    "spikes/003-clientless-limbs/client.py": "d3026f448857c7ec804469cf584ca1f3089c6ad8188224d2b2cb9389e707eb05",
+    "spikes/003-clientless-limbs/packetdb.py": "d106ae277a6c7f75cf597c9051651a27e0ba6fa3663575608e0033048b18f9d4",
+    "spikes/003-clientless-limbs/test_limbs.py": "cc1f4b66e489375fd89b0f3c2232cc165358a61167b4669ba12952be2466613b",
+    "spikes/003-clientless-limbs/test_packetdb.py": "afdb0770e12525f85169ce24af2eaa23cf8015debc1c2a5cb2914c8f1400e7c3",
+    "src/robots/__init__.py": "14a8271c90ed669cc0645c2901ba6a3d93345643b7697e87b965b9008f02b6a6",
+    "src/robots/__main__.py": "d0a31b9a5ee296d1eee592877c7d187fbc7755b794c9e6f7f59a09f9e44fba6b",
+    "src/robots/adapters/__init__.py": "0682851ebbbbcccfb31e82a108d69a92193252f3eda2498f893dc078f3a68b1d",
+    "src/robots/adapters/chat/__init__.py": "aa6f50ce023dc5ead3fd8453f7878331a13e483c1a0db49a43de1e961f69cf89",
+    "src/robots/adapters/chat/_http.py": "7d5993992e40c2e24eed8a4b89ab2be7254da31c86e4ec673955e080a9373c74",
+    "src/robots/adapters/chat/chat_local.py": "7f85405f9169eb6638a29059288cbf684ba6e14789bdb4ddc2c7ca0ca6ffcbf5",
+    "src/robots/adapters/chat/chat_remote.py": "a54cfdfafa0e0bba733425664748342a3347fc053c4b244b3875b33b3c4c357e",
+    "src/robots/adapters/chat/stub.py": "780d993734e9e498dbc0ad8e89ff97143aba3e5a281f3eefd8880412f02e6666",
+    "src/robots/adapters/decision/__init__.py": "64fd99933eb2af166086f3daac17b6223088bc58fcffdecb27d8918440d7b25a",
+    "src/robots/adapters/decision/_http.py": "8a2b6fa356cd01d0bdd62ff19c39dc184eed59f3c8e310372903d32ee72dd196",
+    "src/robots/adapters/decision/clef_local.py": "7390bf0b6a1cc3287aa1fa7b031a1e84f87b062241d247832ca6b270033b9f1f",
+    "src/robots/adapters/decision/clef_remote.py": "8091a7ed76c153e5d209f948a876b4d3d4a69af54f52194d15d59e3a3068f745",
+    "src/robots/adapters/decision/stub.py": "628b86444332373edcdc2ab0d2d357781408f2f5e71f4a3b31f3fec9bb6476f7",
+    "src/robots/adapters/mechanics_stub.py": "38fcfc3d632cbdbf107015d6dc030a08920ebe5722e64a426854539ec19eef18",
+    "src/robots/adapters/mechanics_yaml.py": "c5991bd78af95b213b4fb9a2ca87b065f5b76e826edb84eac593498a80f64b58",
+    "src/robots/adapters/memory_journal.py": "043f109ba8e637b4b26a7a4cd601e64bffa3512815ea0cfbca8c2737c3fb3a00",
+    "src/robots/adapters/rathena_bootstrap_assets.py": "257f09e9c318dc060b21e76326a4510fce2d9fc06d048047e0949e098ab3c3c7",
+    "src/robots/adapters/rathena_runtime.py": "26621ee1e592eaf200ea96422fb349dac20c70e6ec7baa9b1e215cd44f9a787c",
+    "src/robots/adapters/rathena_runtime_assets.py": "8cf599ddd633c82879d5a6fc0ed2d98f13399e4094262b6bcafb25c9841650fc",
+    "src/robots/adapters/rathena_runtime_io.py": "7964077d40e9e2e70dfbeb96ef0555c4cfae16f3ffedf0f2192e46f9f7ecc032",
+    "src/robots/adapters/world_inventory.py": "591340a547ac066af5f5cd491b5bb4d810083323423ad98275945c32ba153b7e",
+    "src/robots/adapters/worldfeed_server.py": "456b110a37b32af9229af49be9587c7316ff47b24fe52f729a51cb42172f5b49",
+    "src/robots/app/__init__.py": "f8051791757f4a44517787195b9b470bd1215251bd457436c52f3c7de9005c03",
+    "src/robots/app/agent_runtime.py": "5e22743b0cbfe00e7e9d99ac3060e18a8b2bcb2d46e15343b7422718033ba1b5",
+    "src/robots/app/brain.py": "e67e13169fb19c1fea9e27e6fd2857a11989328210d899c0b8c8ee1e8c932ed2",
+    "src/robots/app/builds.py": "564926dbbbecf631b3e02f542698f9ae5c00e1ad54bec1d05323c1a17edafa28",
+    "src/robots/app/context_selector.py": "167992303f362464634089122c92d4fdc3974628af72d4e6ea231fa28165680a",
+    "src/robots/app/escalation.py": "8d69da5e9a9ec14037991638df087ca6530a05b264fd25a7fb9b44c73451cfa9",
+    "src/robots/app/host_commands.py": "023af553c24b7ec2fc5d6d5e21d361f1d541b6d499f06d18a0039df7f3a1407b",
+    "src/robots/app/roster_edit.py": "202030a31b34b9e0c9d79f7d0827f4c00229f4e71c22c47dc74cbda57abd1e13",
+    "src/robots/app/runner.py": "6eabce7e5b55cf6344dc7d138085d06b4de75059f5b86b04219df037c90f4ea5",
+    "src/robots/app/scripts.py": "83df6dbd7e124d7316a851b11fb1915aa4d20261d2fb91636a6278ade68e2c34",
+    "src/robots/app/timers.py": "aacecb6ee62b27d202ee8920f7d99739155aa1e72ffeab6011971dfb4521bf3e",
+    "src/robots/app/world_state.py": "61f4daebc1383fd9ee8b9bda27111ed5b1b94c7ccf43099c0d892b7799ce9d0d",
+    "src/robots/domain/__init__.py": "53858cc66817d25bdcf50a47319d581b35e9c415f72881d58c8af83c2a61187a",
+    "src/robots/domain/actions.py": "f0b93b6ac48e6954755c8af5691acacd3546e222de5350f0b9fda8dd09c91b4e",
+    "src/robots/domain/build.py": "0ead8793772d3a7aacdb33c8e0087f700e54c8bdcd1a49c4cfc913dd5b3ddd18",
+    "src/robots/domain/build_templates.py": "7ac6e75780328ab42f0357bc42709419a8c8c939f3c1d45330dc1bf5560c6b1a",
+    "src/robots/domain/decisions.py": "fac0950f779b4221fd4f44bdbbb945ba3d6ff79c508ace621d713e8564fa3803",
+    "src/robots/domain/events.py": "665a13fb1d9d4137a429399914e63ba95802159ed3092b06347285580bed8789",
+    "src/robots/domain/farm.py": "3773b241cbd3c4ab6a467e122f33f2a624897f739ce01fc0e1ba49b17aaf3d8a",
+    "src/robots/domain/model.py": "697646631c2eae15dc01e6cc0219502b1c7a8ed6d830089060e5ee37c700bbbe",
+    "src/robots/ports/__init__.py": "2ceae33cec0ec1ecf299d7d8ef4d3200eca9cc7d3632f28004148668d2f9219c",
+    "src/robots/ports/mechanics.py": "1db9f8a72c11d5c9b6006723e7ceed1d1950e46bac4a602274ff436961d73aae",
+    "src/robots/society/__init__.py": "703247c76c6bb3c10c3a4ecc92bf9bc5500b445c218a9c38ba3e2aa6801c5370",
+    "src/robots/society/guild.py": "c0c97eb94feb6221eea35b22f96fb271ebdac523b63101e503bad61771486b79",
+    "src/robots/society/human.py": "47247be1aee1fb64a8bd0953498a9382fb904c76f623b27f8c77977c678607d6",
+    "src/robots/society/memory.py": "29dc3abf394daa6107ee72215f7d514220d6262d0e22351911d2bc24246a3ff2",
+    "src/robots/society/models.py": "fd92140ccf5ce8ecc63a3036670cf8802ff77df8ef52d377f564c6d560161f65",
+    "src/robots/society/population_limits.py": "e73bc0f8d7e6fa3bf360db70e1ee6019b51370042a4f0a3683b78c757e2b29ca",
+    "src/robots/society/society.py": "fa7a1c6629b9836de6fca90770e50539fd83bffe98abc51cf68534b92af3db53",
+    "tests/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "tests/conftest.py": "42dbe1ae3a43a6c34ef2f9abb829b62d1f0a914d64d1a576d9b528142982d307",
+    "tests/test_agent_host.py": "effeba83435fb43c76a1578d17e190b93219991dbab491786df56ef02bb808f7",
+    "tests/test_brain.py": "14b41aa10bd612c54e538a7d9b998a848c5d89db061e57947a1eaa057f716fa4",
+    "tests/test_build_catalog_integration.py": "bb672f83aaeb2fb0cd613cf719ec3b5da30eeb58e878122a3878142c0a09b9bd",
+    "tests/test_build_templates.py": "c89e79c07fae40e6066f2d399413171b6f514ec005da251c6f5c9441bae198dc",
+    "tests/test_builds.py": "87f460fc7c1d77276bbbf236a8812b2a7f35a06c047bc4ee5af12f90f113b4a4",
+    "tests/test_classic_build_validity.py": "3df8840b54f29c52b8e0900d907ea21413580ec1037d93e0a63dfedf15ab1f16",
+    "tests/test_client_protocol.py": "3e781d2f50501b2d1bf0c3caccf507f3c6fcde533ad62ea1448b0f857143a5a2",
+    "tests/test_context_selector.py": "216a06ea7c6853f3ea970f1cfdacb859b89c00c49d9a029cef1f44260b7c7a4a",
+    "tests/test_core_interruption_cleanup.py": "e985a3f00adebc4161378b6fbe8a7e4e91b6f282e725faee0eef54440f50b3bf",
+    "tests/test_decisions.py": "c299c55ead5ec287ae7423bc32ecd1de50a432b40d5624266e8b2fc797a94f44",
+    "tests/test_escalation.py": "29feec8900dac66a231f32ab0ec10d520ec156d143840f548287fe7a62398c7a",
+    "tests/test_guild_human.py": "a2c2db4b13ddc3fe2c1d82110823766d1789c1261bd91eb9333e8116e969d15c",
+    "tests/test_host_chat_commands.py": "c92969013f656ad8e7fa103bb8662a9acfe6ab7be12dc896b86db26f1785e58c",
+    "tests/test_host_chat_interruptions.py": "cc921d40237a16332fbb9434db3c242a4fe1078214868d4a0199f717a138d826",
+    "tests/test_host_memory.py": "db28d20ea1d0afa27bc49c5475144f5bd2197cf81c0c147baa91a5bab3bf6d5d",
+    "tests/test_host_storage_failure.py": "0f473837dbcaf1461e4b9d7d73090639361d2e0f9d08a1a2489bb9c06e5cb42f",
+    "tests/test_limb_evidence.py": "9669537ee7ed63e7be4850936e96d28fc0a75bb17c77bac753c45ec8be941569",
+    "tests/test_mechanics_review_regressions.py": "4b0d8f690017d2cef2f929148cfdf1be05075aeee2747205a31f5360804c243a",
+    "tests/test_mechanics_yaml.py": "adb969d15359545222e58e28b2d099c17a46ce12e68ef4dcbac75b57ed03fce7",
+    "tests/test_memory.py": "31843258250515e32ff790226a757edfaf50964fc2f404c0169ffda6c7b7b3dd",
+    "tests/test_memory_concurrency.py": "b3023d86a987dbb701cd4767814473fb5330cda50055f70a062ba67d2b1239d3",
+    "tests/test_memory_journal_boundary.py": "d5754f1a9e5eacfeabba031118d980fae8ada3df5426983e509ebcd0d10ff56a",
+    "tests/test_memory_journal_failures.py": "13e7cc87bfb390dbf4f8fd24e82f3932c1333dc0db35ee350f5c9f9e3160957e",
+    "tests/test_memory_storage.py": "1b5ea2b86b922adaef75c560680eb309a3674873abab2cfd7e1fdfba0e4a069b",
+    "tests/test_packet_conditions.py": "abe40cc3af9d56de1f98088ae372e0e1f54cfe5a2d89ea6828f75f6e4d1969d1",
+    "tests/test_population_binding_race.py": "57129ac7a653e38161b120a8fdb329b6261b6f97739cd3603f37e6c36c11b7e0",
+    "tests/test_population_config.py": "cecd227079d277bde7bdceab0b33c2eb1c9f3c13aecfaa85329d1d905766268d",
+    "tests/test_population_resource_limits.py": "852cdebc54c7fc9825802dcd3544d5dbe382ae4badcaa108371bbeebab6c3965",
+    "tests/test_ports.py": "55cab28eb76c9ddf8feeaecdce8bf241530f2385da61020f55c49d67490766f4",
+    "tests/test_protocol_rereview_repairs.py": "587c6aee7058cb18c5537fd41b46cba5e847254817590cfa74c088f198843110",
+    "tests/test_rathena_bootstrap_assets.py": "8cda1166185ae50d2ee03e50b4313e3edf92390b7af6394309ad57decbbffa18",
+    "tests/test_rathena_db_image.py": "06eada91211a5c4e25c373f60d92aa4ef0c2eb610b8521e24862b80124a5620e",
+    "tests/test_rathena_package.py": "d9101fc3c8573a11e22a3f0a69cbaf870db36297598f9300e9f9b4b8eb397869",
+    "tests/test_rathena_runtime.py": "472435dc9baec199191c1d99f20f0b68d9d99df955161cb0be34dc0569bfb297",
+    "tests/test_society.py": "9e8f1971dda1a4e81d3d1df8eeb8cb9256b0080e7f6f67c9268c6834b4df4b7b",
+    "tests/test_taskfile_safety_labels.py": "6cb17b9f5d326c0ccf0260c2d92a3b389ae8794e8530ca98e66dd0d45af347e0",
+    "tests/test_temporary_handshake_cleanup.py": "4c4daa3740b5c3f12441d1c3042a655b4208473904528509b816f38ffd269d79",
+    "tests/test_timers_runner.py": "66fc937ef1f528190e5d44814758283fdd9bfeb5d9c862960ec534f0b7e25406",
+    "tests/test_world_inventory.py": "365b68de29259379c207991e84f1cccac50c6cd2016948503352364ff2bdb3d0",
+    "tests/test_world_isolation_guard.py": "510168243ce69138b4bce39a9f7700eefc2554f4ea9092a592386453682de8b3",
+    "tests/test_world_seed_safety.py": "eede21817970e7db28b4e23a2ca368c6db8233026f9153ed29a9876f36658350",
+    "tests/test_world_state.py": "1b026aa85e1ed5a68cc00bbae2b0c0f61cdbececbd94bb03d5f4085614382727",
+    "tests/test_worldfeed_retention.py": "dec045816b3c457c3cac25b0715dc63f3f03794e401fc48c4c38c8afa08d5c88",
+    "tests/test_worldfeed_server.py": "8c2a151e5739e59e7a390e1497fe5c2497be7ae45f8e8bff74d68c9b59960898",
+    "uv.lock": "2d7b4c187078488d7625e4fd4fa982745cab8d6a65b2ff3e382ffa286f1df245",
+    "wiki/guides/private-rathena-runtime.md": "d192303c789ba030700654c27e789ece9706aee1c0d96a531e744903e946c26d",
+    "wiki/guides/public-rathena-bootstrap-assets.md": "4dfa287c4d04326bf91395b302845eb7c86d991c11b10457e6f9899fc4f32435",
+    "wiki/guides/rathena-db-nix-image.md": "1a1080a849b028d86d4034db9c58319d49d655244b3e93851d2a413254aa5d70"
+  },
+  "source_drift": [],
+  "fingerprinted_file_count": 134,
+  "static_and_test_gates": {
+    "passed": true,
+    "pytest_cases": 3,
+    "pytest_result": "3 passed in 44.74s",
+    "ruff": true,
+    "black": true,
+    "mypy": true,
+    "child_flake_check": true,
+    "log": "/home/otto/.hermes/cache/scratch/db-artifact-gates.log",
+    "log_sha256": "726f0a42e3a92a7ca40f4a658f4ce44b3e17f7543f52ca69b62ebcd6bb5037f2"
+  },
+  "limitations": [
+    "Cached resolution only; no independent clean rebuild",
+    "No container engine invocation; archive/static ELF inspection is not execution in image",
+    "No syscall trace; empty scratch and source order cannot exclude every host-side observation",
+    "No datadir, SQL, initialized tables, schema, accounts or world ownership; no bootstrap/start authorization",
+    "One systemd dependency link to absent /etc/environment is harmless for tested offline defaults but remains future executor concern",
+    "Parent whole-suite result is reference only, not independently rerun",
+    "No claim of latest version or current vulnerability-free software"
+  ],
+  "passed": false,
+  "probe_harness_notes": [
+    "Initial parser retained leading slash in layer member keys; normalized archive names without extraction and re-exercised all checks. Absolute Docker layer names are not an artifact defect.",
+    "Second harness assumption expected a literal /etc/environment target; physical relative symlink independently normalizes to /etc/environment. Corrected interpretation without modifying artifact."
+  ],
+  "physical_pin_verification": {
+    "locked_nixpkgs_nar_recomputed": "sha256-KgItSKML8Xvte0B7/uGnBDsYzSnnKHcOaiUbgWBXLXw=",
+    "mariadb_source_tar_sha256_sri_recomputed": "sha256-WreIPbUZv86/3SqsCbxVRKEs4yjznt1G0L8BaQYV72w=",
+    "mariadb_source_tar": "/nix/store/xvjjanm2v2qsvkg27riqk5krpfznmhid-mariadb-11.4.12.tar.gz",
+    "nix_store_verify_no_trust_package_exit_code": 0
+  },
+  "derivation": {
+    "deriver": "/nix/store/00jrk50vkbdfy86hv54cirhv88hl0zv1-mariadb-server-11.4.12.drv",
+    "sha256": "091a2b11259b2ff37021730780da2a68df88fc2853bdf69d1ba3caa6e7490c04",
+    "src": "/nix/store/xvjjanm2v2qsvkg27riqk5krpfznmhid-mariadb-11.4.12.tar.gz",
+    "version": "11.4.12",
+    "pname": "mariadb-server",
+    "cmakeFlags": "-DBUILD_CONFIG=mysql_release -DMANUFACTURER=nixos.org -DDEFAULT_CHARSET=utf8mb4 -DDEFAULT_COLLATION=utf8mb4_unicode_ci -DSECURITY_HARDENED=ON -DINSTALL_UNIX_ADDRDIR=/run/mysqld/mysqld.sock -DINSTALL_BINDIR=bin -DINSTALL_DOCDIR=share/doc/mysql -DINSTALL_DOCREADMEDIR=share/doc/mysql -DINSTALL_INCLUDEDIR=include/mysql -DINSTALL_LIBDIR=lib -DINSTALL_PLUGINDIR=lib/mysql/plugin -DINSTALL_INFODIR=share/mysql/docs -DINSTALL_MANDIR=share/man -DINSTALL_MYSQLSHAREDIR=share/mysql -DINSTALL_SCRIPTDIR=bin -DINSTALL_SUPPORTFILESDIR=share/doc/mysql -DINSTALL_MYSQLTESTDIR=OFF -DINSTALL_SQLBENCHDIR=OFF -DINSTALL_PAMDIR=share/pam/lib/security -DINSTALL_PAMDATADIR=share/pam/etc/security -DWITH_ZLIB=system -DWITH_SSL=system -DWITH_PCRE=system -DWITH_SAFEMALLOC=OFF -DWITH_UNIT_TESTS=OFF -DEMBEDDED_LIBRARY=OFF -DMYSQL_DATADIR=/var/lib/mysql -DENABLED_LOCAL_INFILE=OFF -DWITH_READLINE=ON -DWITH_EXTRA_CHARSETS=all -DWITH_EMBEDDED_SERVER=OFF -DWITH_UNIT_TESTS=OFF -DWITH_WSREP=ON -DWITH_INNODB_DISALLOW_WRITES=ON -DWITHOUT_EXAMPLE=1 -DWITHOUT_FEDERATED=1 -DWITHOUT_TOKUDB=1 -DWITH_ROCKSDB_JEMALLOC=ON -DWITH_JEMALLOC=yes",
+    "postFixup": "wrapProgram $out/bin/mytop --set PATH /nix/store/zi4d0awnc6crz18s177bv9y2yz9al3lq-less-710/bin:/nix/store/hzqwc6pv8sb9qrwivc4h42cr811gs1mk-ncurses-6.6/bin\n",
+    "patches": "/nix/store/zfcalz500cqb643g5hl8jzj7kamn2k6w-cmake-includedir.patch /nix/store/rfhg5qm5f1b76m1hy8p1rps2nwxsd7l9-include-cstdint-full.patch"
+  },
+  "child_path_input": {
+    "path": "/nix/store/cy2f2yc52n7i3g492jyl5y85knxnakh7-source",
+    "files": [
+      "flake.lock",
+      "flake.nix"
+    ]
+  },
+  "offline_artifact_contract_passed": true,
+  "summary": "Final offline artifact contract passes all independent checks; unconditional review withheld because acknowledged historical whole-root path lookup violated execution scope and no-exposure was not proven.",
+  "evidence_files": {
+    "/home/otto/.hermes/cache/scratch/db-artifact-source.log": "430e4a620d5ceec38cc0a1c2bd65a43db02fe445435e53f7a379b21c2284c27b",
+    "/home/otto/.hermes/cache/scratch/db-artifact-extra-source.log": "eed5dea8578a79d6598e6f7b25de14bcca2ed34bba5b97f12862fc7a7175a4f3",
+    "/home/otto/.hermes/cache/scratch/db-artifact-gates.log": "726f0a42e3a92a7ca40f4a658f4ce44b3e17f7543f52ca69b62ebcd6bb5037f2",
+    "/home/otto/.hermes/cache/scratch/db-artifact-probes.log": "0e21d20f7ac44abb84591271b73cbe4f4cd6f50df3240ab74578e25847ce2978",
+    "/home/otto/.hermes/cache/scratch/db_artifact_independent_review.py": "1da7471e83d74339f89c5d74245b310ff84195e11679b2689870a66b8c66832c"
+  },
+  "dependency_reference": {
+    "report": "run/reviews/db-image-parent-verification.json",
+    "before_after_source_files": 134,
+    "parent_file_count": 136,
+    "excluded_parent_keys": [
+      "/home/otto/.hermes/cache/scratch/host_chat_independent_probes.py",
+      "run/reviews/host-chat-command-review.json"
+    ],
+    "parent_suite_not_rerun": true
+  }
+}

@@ -1,0 +1,141 @@
+{
+  "status": "OFFLINE_INPUT_CLOSURE_AUDITED_CONSTRUCTOR_NOT_READY",
+  "scope": "Read-only audit of existing explicit pilot overlay; no sibling runtime files read or polled in initial audit; no native/model/network/SQL/client launches; only owned scratch/report writes.",
+  "binding": {
+    "uses_existing_readiness_overlay": true,
+    "default_location_gap": "Already corrected by explicit assemble_native(location_path=...) argument; no source change needed",
+    "activation": "REVOKED; not invoked or modified"
+  },
+  "source_call_chain": [
+    "probe.Pilot._construct -> playing.parse_args -> playing.build_host",
+    "optional skill knowledge (disabled) -> load_manifest -> MapCache.load(common,pre-re) -> ObservedMobDatabase.load",
+    "make_local_chat/make_private_decision -> build_roster -> AgentHost(load_manifest again)",
+    "WorldState -> _populate_agents -> _build_agent -> _new_memory -> JsonlExperienceStore -> MemoryLog.load",
+    "brain_factory -> PlannedBrain -> PlanningRuntime/PlanLifecycle + ExecutionRuntime -> ScheduledAgent -> HostChatCommands"
+  ],
+  "inputs": [
+    {
+      "input": "existing overlay location/config/host_manifest",
+      "state": "READY: read and manifest parsed without disclosure"
+    },
+    {
+      "input": "db/map_cache.dat",
+      "state": "MISSING in prior constructor-data-diagnosis; restoration owned by sibling, current state UNKNOWN/not re-read",
+      "source": "src/robots/playing.py:107-110"
+    },
+    {
+      "input": "db/pre-re/map_cache.dat",
+      "state": "MISSING in prior constructor-data-diagnosis; restoration owned by sibling, current state UNKNOWN/not re-read",
+      "source": "src/robots/playing.py:107-110"
+    },
+    {
+      "input": "db/pre-re/mob_db.yml",
+      "state": "MISSING in prior constructor-data-diagnosis; restoration owned by sibling, current state UNKNOWN/not re-read",
+      "source": "src/robots/playing.py:107-110"
+    },
+    {
+      "input": "decision/chat configuration",
+      "state": "READY: constructor syntax validated offline; service availability UNKNOWN/not queried"
+    },
+    {
+      "input": "memory root",
+      "state": "READY metadata only",
+      "private_owner_directory": true,
+      "no_symlink_ancestors": true,
+      "read_write_search_access": true,
+      "durable_fsync_and_lock": "UNKNOWN: deliberately not exercised against private storage"
+    },
+    {
+      "input": "per-persona existing durable journals",
+      "state": "READY metadata; restore/schema and lock UNKNOWN",
+      "checks": [
+        {
+          "safe_identifier": true,
+          "exists": true,
+          "metadata_acceptable": true,
+          "history_validation": "UNKNOWN: not opened/restored",
+          "exclusive_lock": "UNKNOWN: not acquired"
+        },
+        {
+          "safe_identifier": true,
+          "exists": true,
+          "metadata_acceptable": true,
+          "history_validation": "UNKNOWN: not opened/restored",
+          "exclusive_lock": "UNKNOWN: not acquired"
+        }
+      ]
+    },
+    {
+      "input": "schedule file / skill knowledge / summary cache files",
+      "state": "NOT REQUIRED for actual pilot arguments (none supplied)"
+    },
+    {
+      "input": "public mob catalogue",
+      "state": "REQUIRED db/pre-re/mob_db.yml; Body with Id/Name and optional Level/Mvp fields; parsed contents not checked pending restoration"
+    },
+    {
+      "input": "build templates / Brain",
+      "state": "READY built-in Python modules; no external template, brain checkpoint, mechanics catalogue, item/skill database file required by this constructor; actual pilot uses PlannedBrain, not EventDrivenBrain"
+    },
+    {
+      "input": "native client/packet table",
+      "state": "READY source import succeeded; factory deferred and not called; packetdb source reader is generation helper, not constructor file I/O"
+    },
+    {
+      "input": "planning model weights / network / SQL / worldfeed listener",
+      "state": "NOT constructor file prerequisites; model factory lazy, client factory deferred, no start_worldfeed/step/connect/tick/run invoked"
+    }
+  ],
+  "offline_public_only_failure_probe": {
+    "constructed": false,
+    "error_class": "FileNotFoundError",
+    "exact_first_missing_input": "db/map_cache.dat",
+    "effect_boundary_calls": {}
+  },
+  "historical_attempt": {
+    "evidence": "run/reviews/npc-native-host-pilot-runtime-policy-attempt2.json",
+    "error": "FileNotFoundError",
+    "planning": 0,
+    "CLEF": 0,
+    "NPC": 0,
+    "cleanup": "PASS (historical receipt, not new native verification)"
+  },
+  "source_sha256": {
+    "src/robots/playing.py": "1d56b0d527bc04ffea4a152d9bf9cfd312156dd9c19c896d2f31bc8ca3668f8e",
+    "src/robots/app/agent_runtime.py": "5d266e7a0bb290855f56be5bb688172fa4ed0b13d005c246289c83185cb7e744",
+    "src/robots/app/host_memory_factory.py": "c3488a284e29332ced59f6f1f05032e1cc98d4065b4033311812790c3cc54e49",
+    "src/robots/app/brain.py": "f5351e49015174c610e50963d8c55f6d334fb2b6800fa8467e176ad63c3ab424",
+    "src/robots/app/planning_brain.py": "9eefac0e5274fa52d8fd601521857a17c0a6228280b26da4b2d8e8300a913e23",
+    "src/robots/app/planning_runtime.py": "95405567c5162caa68afff72de8df5bee05797aafd8f03dbb59e81597c41ffdf",
+    "src/robots/app/plan_lifecycle.py": "5cc4ded4107193e85ce023c9488423f1409fe35c8cb1a7209f934da48cab4f1b",
+    "src/robots/app/execution_decisions.py": "372bf92e70b301f5b1bcef411b00474031243043d83c5c5379896c1b03ba69c1",
+    "src/robots/app/playing_runtime.py": "369171823465b1cc0149bfea789606bc7a9e9b8071dd0c2594e06080bddf45f9",
+    "src/robots/app/host_commands.py": "023af553c24b7ec2fc5d6d5e21d361f1d541b6d499f06d18a0039df7f3a1407b",
+    "src/robots/app/world_state.py": "61f4daebc1383fd9ee8b9bda27111ed5b1b94c7ccf43099c0d892b7799ce9d0d",
+    "src/robots/society/memory.py": "851addd57f04466859af0f2d51af400e64a8a7d96c9c1ea2444cd11b1ad1b4c1",
+    "src/robots/society/society.py": "fa7a1c6629b9836de6fca90770e50539fd83bffe98abc51cf68534b92af3db53",
+    "src/robots/society/models.py": "fd92140ccf5ce8ecc63a3036670cf8802ff77df8ef52d377f564c6d560161f65",
+    "src/robots/adapters/memory_journal.py": "043f109ba8e637b4b26a7a4cd601e64bffa3512815ea0cfbca8c2737c3fb3a00",
+    "src/robots/adapters/native_navigation.py": "d4d758fc7d827d42aab374ebc0c938b5a066d73638e95d82eca3d7aca2730c0a",
+    "src/robots/adapters/playing_backends.py": "4db7c5c6e5316b0659c13d34d8ed9a1efba324989b519acac1f1d6cb1dbc3980",
+    "src/robots/adapters/planning_llm.py": "1c26c7401618fc8ce2228ca31763e2d44c3336253e339a0bfea1751b65b0889e",
+    "src/robots/domain/build_templates.py": "7ac6e75780328ab42f0357bc42709419a8c8c939f3c1d45330dc1bf5560c6b1a",
+    "spikes/003-clientless-limbs/client.py": "2f57a0adc0b43a20235835290499ca0043966c5def208642598afb0dc49807fd",
+    "spikes/003-clientless-limbs/packetdb.py": "497375189d242eda3072e3d86cbff1d98d736ec3742feee7035d84c3d129005b"
+  },
+  "remaining_prerequisites": [
+    "Parent-confirmed restoration and valid parsing of all three runtime public data files",
+    "Private journal restore/schema integrity, available exclusive locks and durable fsync remain unexercised; metadata alone does not prove them"
+  ],
+  "finite_parent_plan": [
+    "After sibling reports restoration complete, run this same scratch script with --restored under the existing qualified interpreter and PYTHONDONTWRITEBYTECODE=1/PYTHONOPTIMIZE=0. It reads the explicit existing overlay, substitutes only scratch memory_root, calls real playing.build_host once, and forbids socket/HTTP/thread/subprocess/native/model construction boundaries.",
+    "Require real PlannedBrain agents, unallocated clients, zero boundary calls; finally call existing host.stop for supported cleanup. Do not call Pilot.run, assemble_native revoked authority, connect, step, tick, start_worldfeed, or model_factory.",
+    "Scratch-root success proves data/provider/brain/host closure, not private-root durable restore. If private-root constructor verification is needed, parent must own that separate local-storage write scope; real AgentHost allocates/locks/fsyncs journals even without client lifecycle. No non-writing private-root constructor path is present."
+  ],
+  "acceptance": {
+    "successful_constructor_claimed": false,
+    "native_activation": false,
+    "native_ui": false,
+    "quest_or_reward": false
+  }
+}

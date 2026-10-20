@@ -1,0 +1,124 @@
+{
+  "acceptance_window3": "receipts must carry the DURING-window frame_timeline; branch mapping in READY-TO-RUN Window-3 acceptance",
+  "date": "2026-10-15",
+  "deliverables": {
+    "frame_wrapper": {
+      "contracts": "received-pid histogram (packet_counts), own-position ingest count (0x087/0x091/0x02EB), actor frames split attackable/non (raw-verified parse + tracker view), walk sends (0x035F at wrapped wire._send with target decode), walk-ack receipts (0x0087 dest-match, period-safe), timeline sampled mid-run, absent facts stay null",
+      "path": ".work/playing-grind-framediag/frame_diagnostics.py",
+      "sha256": "ac6b432a41cf9d1778f509207feaeef00da43f695ad4770e2900d4e6d31537a3"
+    },
+    "ready_to_run": {
+      "live_command": "nix develop -c env ... PYTHONPATH=$PWD/src:$PWD/.work/playing-grind-operator:$PWD/.work/playing-grind-travel:$PWD/.work/playing-grind-framediag .venv/bin/python -B -m grind_framediag_operator --manifest <reviewed private host-manifest> --runtime-root .work/runtime/ro-bots-test --memory-root .work/playing-grind-operator/memory --decision-url http://127.0.0.1:8093/v1/systemone --chat-url http://127.0.0.1:8300/v1/chat/completions --playground --duration 300",
+      "path": ".work/playing-grind-operator/READY-TO-RUN.md",
+      "section": "Window 3: frame-level mid-run diagnostics (playing-grind-framediag)",
+      "sha256": "09cb4dc2959c8f3f89bc24fb576ee508884f0febc398b8befcebc7f54d6686ec",
+      "verified_appended": true
+    },
+    "tests": [
+      "/home/otto/dev/ro-bots/.work/playing-grind-framediag/tests/conftest.py",
+      "/home/otto/dev/ro-bots/.work/playing-grind-framediag/tests/test_frame_diagnostics.py",
+      "/home/otto/dev/ro-bots/.work/playing-grind-framediag/tests/test_walk_path_contract.py"
+    ],
+    "walk_audit_module": {
+      "note": "window-3 live entry: python -m grind_framediag_operator; receipt carries agents.*.frame_timeline (DURING-window), frame_counters, decisive_branch_hint, walk_audit",
+      "path": ".work/playing-grind-framediag/grind_framediag_operator.py",
+      "sha256": "47a98909fd8bf1457f9e1a81f7e81f215e5bb498236e12d00fd60def09659dfe"
+    }
+  },
+  "live_executed": false,
+  "mid_run_diagnosis": "window 2's attackable_count null sampled build_native_state (raises mid-run); the new wrapper samples the tracker view and wire counters directly and records tracker_error instead of an assumed None",
+  "namespace": [
+    ".work/playing-grind-framediag/**",
+    "run/reviews/playing-grind-framediag.json"
+  ],
+  "offline_built": true,
+  "operator": "playing-grind-framediag",
+  "operator_travel_suites": {
+    "junit": "/home/otto/dev/ro-bots/.work/playing-grind-framediag/evidence/GREEN-operator-travel.xml",
+    "note": "operator (19) + travel (15) contract tests unchanged and passing",
+    "sha256": "5a22bfd33a1921507266de5541e32eed2110862d69ae37cd7dbc2e51eaf6e51f",
+    "stats": {
+      "errors": "0",
+      "failures": "0",
+      "name": "pytest",
+      "skipped": "0",
+      "tests": "34"
+    }
+  },
+  "prohibited_verified": "no live network/native/SQL/inference/containers; no production src or spike edits; no git actions; writes confined to .work/playing-grind-framediag/**, .work/playing-grind-operator/READY-TO-RUN.md (Window-3 section) and this receipt",
+  "quality_gates": {
+    "root_gate": {
+      "command": "env -u PYTEST_ADDOPTS -u PYTEST_DISABLE_PLUGIN_AUTOLOAD -u PYTEST_PLUGINS PYTHONOPTIMIZE=0 nix develop -c task check",
+      "duration_s": 202,
+      "exit": 0,
+      "log": {
+        "path": "/home/otto/dev/ro-bots/.work/playing-grind-framediag/evidence/root-task-check.log",
+        "sha256": "4cd0f08fd27d7b6b8e9723f10bd6a3067019e0dd01c3f1a7d13a345d714f872e"
+      },
+      "log_exit_marker": "ROOT_GATE_EXIT=0",
+      "passed_tests": "5887",
+      "workdir": "/home/otto/dev/ro-bots"
+    },
+    "scoped_mypy_strict": {
+      "exit": 0,
+      "log": {
+        "path": "/home/otto/dev/ro-bots/.work/playing-grind-framediag/evidence/mypy-scoped.txt",
+        "sha256": "0a405ffb97f047900a80fd92de355ffeb33b9845ae942c6375e3556315631c25"
+      },
+      "summary": "strict on frame_diagnostics.py + grind_framediag_operator.py"
+    },
+    "scoped_pytest": {
+      "exit": 0,
+      "summary": "18 framediag + 34 operator/travel contracts, 0 failures"
+    },
+    "scoped_ruff": {
+      "exit": 0,
+      "log": {
+        "path": "/home/otto/dev/ro-bots/.work/playing-grind-framediag/evidence/ruff-scoped.txt",
+        "sha256": "189281cd990017b01de62a1b41561b015132b101fe285ff673e7ca240839a384"
+      }
+    },
+    "scoped_xenon": {
+      "exit": 0,
+      "log": {
+        "path": "/home/otto/dev/ro-bots/.work/playing-grind-framediag/evidence/xenon-scoped.txt",
+        "sha256": "6ffff36cf960e2878809202b0b235f3fa852b5f2bcb3c6dda2a310400e60e334"
+      },
+      "summary": "max-absolute B / max-modules B / max-average A: no findings"
+    }
+  },
+  "tdd": {
+    "green": {
+      "junit": "/home/otto/dev/ro-bots/.work/playing-grind-framediag/evidence/GREEN-framediag.xml",
+      "note": "18/18 pass after implementation",
+      "sha256": "852404ec68bc47359a9cf0b5bb7ce2c6aecb49929e56df592fcb475a8eada127",
+      "stats": {
+        "errors": "0",
+        "failures": "0",
+        "name": "pytest",
+        "skipped": "0",
+        "tests": "18"
+      }
+    },
+    "red": {
+      "junit": "/home/otto/dev/ro-bots/.work/playing-grind-framediag/evidence/RED-framediag.xml",
+      "note": "18/18 behavioral failures on named contracts (NotImplementedError stubs), saved before implementation",
+      "sha256": "6237b03df3fd4469cf8e71e1e90eb3dbaeb32a3b40ebe543d105df7510bc6d46",
+      "stats": {
+        "errors": "0",
+        "failures": "18",
+        "name": "pytest",
+        "skipped": "0",
+        "tests": "18"
+      }
+    }
+  },
+  "tracked_tree_note": "standing uncommitted project baseline unchanged by this slice; scoped git status (src/spikes/tests/rathena) head: 'M spikes/bench/RESULTS.md\\n M spikes/bench/bench_framework.py\\n M src/robots/adapters/__init__.py\\n M src/robots/app/brain.py\\n M src/robots/app/builds.py'",
+  "walk_audit": {
+    "arrival_semantics": "native_gameplay.py:378-398: 0x0087 sets arrival only when ack start == destination (zero-cell walk), so a 1-cell walk confirms only via the NEXT walkok starting at the pending cell",
+    "contract_proofs": "scripted walk-ack tests: dispatched MoveTo -> exactly one wire send to path[1]; missing ack -> further sends held, bounded same-point retries, then raise; received arrival ack -> pending released, next dispatch sends again",
+    "release_predicate": "playing_runtime.py:1219-1237: _pending clears only on `view.arrival_confirmed and pos.seq > seq and (pos.x, pos.y) == point`; otherwise same-point re-sends after >=1.0s up to 3 retries then NativeTelemetryUnavailable - a missing ack holds wire sends silently instead of failing the dispatch",
+    "window2_attribution": "wire-send side: the 16 honestly-dispatched MoveTo actions reached perform_native, but the pending-walk gate holds each dispatch while a walk is unacknowledged - playing_runtime.py:1061-1062 (`if self._await_pending(view, pos): return`) - so the only wire send was the first dispatch's single next-path-step at playing_runtime.py:1070-1073 (`point = path[1]; self.wire.move(*point)`), matching the observed 1-tile displacement",
+    "window3_discriminator": "frame_timeline rows pair dispatched_actions.moveTo with walk_sends (0x035F) and walk_acks (0x0087); decisive branches: travel_or_targeting | map_session_ingestion | walk_ack_path | actor_classification (decisive either way)"
+  }
+}

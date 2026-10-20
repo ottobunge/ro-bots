@@ -1,0 +1,30 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+_____ test_obsolete_probe_has_no_literal_credentials_or_import_connections _____
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7ffff5cc1480>
+
+    def test_obsolete_probe_has_no_literal_credentials_or_import_connections(monkeypatch):
+        import client
+    
+        calls = []
+        monkeypatch.setattr(client.BotClient, "connect", lambda *_a, **_k: calls.append(1))
+        path = SPIKE / "scripts/probe_map.py"
+        tree = ast.parse(path.read_text())
+        literal_clients = [
+            node
+            for node in ast.walk(tree)
+            if isinstance(node, ast.Call)
+            and isinstance(node.func, ast.Name)
+            and node.func.id == "BotClient"
+            and any(isinstance(arg, ast.Constant) for arg in node.args[:2])
+        ]
+        has_literal_credentials = bool(literal_clients)
+>       assert not has_literal_credentials, "obsolete probe contains literal credential constructions"
+E       AssertionError: obsolete probe contains literal credential constructions
+E       assert not True
+
+tests/test_protocol_rereview_repairs.py:40: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_protocol_rereview_repairs.py::test_obsolete_probe_has_no_literal_credentials_or_import_connections
+1 failed in 0.03s

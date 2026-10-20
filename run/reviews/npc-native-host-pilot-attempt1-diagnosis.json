@@ -1,0 +1,437 @@
+{
+  "status": "READ_ONLY_DIAGNOSIS_REACHED_OFFLINE_STARTUP_RED_NO_REPAIRS",
+  "summary": [
+    "The actual pilot wrapper requires a complete native state before the scheduler can enter its existing telemetry wait. A delayed received-vitals default-assembly test reaches NativeTelemetryUnavailableError and fails the success assertion.",
+    "Qualified map logs show fixture 0 logging off while its server session was inactive, immediately after authentication. This supplies a source-backed explanation for stale SQL online state without a retained local native socket.",
+    "The exact failed-live-run telemetry gate remains unknown: no original received-frame, status quartet, reader error or dispatch-error snapshot was persisted. The offline RED demonstrates a real wrapper fault, not a reconstructed live packet capture."
+  ],
+  "constraints": {
+    "repairs": 0,
+    "new_native_sessions": 0,
+    "live_gameplay_actions": 0,
+    "actual_provider_calls": 0,
+    "sql_queries_by_this_diagnosis": 0,
+    "sql_writes": 0,
+    "service_lifecycle_changes": 0,
+    "credential_reads": 0,
+    "authority_changes": 0,
+    "native_activation_status": "REVOKED_FAILED_STARTUP_AWAITING_OFFLINE_CONFIRMATION",
+    "all_goals": "OPEN"
+  },
+  "actual_attempt": {
+    "receipt": "run/reviews/npc-native-host-pilot-native-attempt1.json",
+    "elapsed_seconds": 2.432619965984486,
+    "session_report_error": "ValueError",
+    "host_logged_error": "NativeTelemetryUnavailableError (provided parent evidence)",
+    "provider_budgets": {
+      "episodes": 0,
+      "completions": 0,
+      "decisions": 0
+    },
+    "npc_clicks": 0,
+    "npc_responses": 0,
+    "pass": false,
+    "cleanup": "Original cleanup readback refused; do not reinterpret as PASS."
+  },
+  "startup_order": [
+    {
+      "source": "scratch/npc-native-host-pilot/probe.py:192-194,175-181",
+      "operation": "Pilot.connected calls original PlayingClient.connect, then _identity -> build_native_state immediately."
+    },
+    {
+      "source": "spikes/003-clientless-limbs/client.py:470-476,514-520",
+      "operation": "BotClient returns after receiving 0x02EB and sending 0x007D; it does not await HP/SP or complete gameplay context."
+    },
+    {
+      "source": "src/robots/app/playing_runtime.py:238-277,317-329",
+      "operation": "build_native_state first checks transport and received-frame continuity, then vitals, progression and perception readiness."
+    },
+    {
+      "source": "src/robots/app/agent_runtime.py:388-398,473-498,831-844",
+      "operation": "ScheduledAgent telemetry wait runs only after the wrapped connect returns. An earlier wrapper telemetry exception prevents reaching the wait."
+    },
+    {
+      "source": "scratch/npc-native-host-pilot/offline_fixtures.py:80-89,123-128; tests/test_playing_runtime.py:50-74",
+      "operation": "The existing positive effect fixture supplies complete vitals and actor/name/pose context immediately; it does not cover delayed startup."
+    }
+  ],
+  "offline_runtime_test": {
+    "path": "/home/otto/.hermes/cache/scratch/npc-native-host-pilot-startup-diagnosis/test_delayed_startup.py",
+    "sha256": "9de51b5d6446fd8dc04a82374ef9ddc9654bd6667cfcf21e764fed898da5904f",
+    "junit": "/home/otto/.hermes/cache/scratch/npc-native-host-pilot-startup-diagnosis/delayed-default-attempt1.xml",
+    "junit_sha256": "c4c8f5cb7b698908ca94030ce53953c43a7232dbefacd72b0e0e01745b2d380a",
+    "command": "nix develop --offline --no-write-lock-file path:./spikes/007-native-packet-ast/toolchain -c env PYTHONOPTIMIZE=0 PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=/home/otto/.hermes/cache/scratch/npc-native-host-pilot:/home/otto/dev/ro-bots/src:/home/otto/dev/ro-bots PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 .venv/bin/python -B -m pytest -q -o addopts= -p no:cacheprovider --basetemp=/home/otto/.hermes/cache/scratch/npc-native-host-pilot-startup-diagnosis/tests-attempt1 --junitxml=/home/otto/.hermes/cache/scratch/npc-native-host-pilot-startup-diagnosis/delayed-default-attempt1.xml /home/otto/.hermes/cache/scratch/npc-native-host-pilot-startup-diagnosis/test_delayed_startup.py",
+    "exit": 1,
+    "cases": 3,
+    "passed": 2,
+    "failures": 1,
+    "errors": 0,
+    "skips": 0,
+    "test_identities": [
+      {
+        "classname": ".hermes.cache.scratch.npc-native-host-pilot-startup-diagnosis.test_delayed_startup",
+        "name": "test_existing_instant_default_pilot_control",
+        "failed": false,
+        "error": false,
+        "skipped": false
+      },
+      {
+        "classname": ".hermes.cache.scratch.npc-native-host-pilot-startup-diagnosis.test_delayed_startup",
+        "name": "test_default_host_wait_handles_delayed_received_vitals_without_pilot_wrapper",
+        "failed": false,
+        "error": false,
+        "skipped": false
+      },
+      {
+        "classname": ".hermes.cache.scratch.npc-native-host-pilot-startup-diagnosis.test_delayed_startup",
+        "name": "test_pilot_default_wrapper_should_allow_legitimate_delayed_vitals",
+        "failed": true,
+        "error": false,
+        "skipped": false
+      }
+    ],
+    "observation": {
+      "synthetic_offline_only": true,
+      "connected": false,
+      "host_telemetry_wait_calls": 0,
+      "vitals_delivered_before_close": false,
+      "native_close_calls": 1,
+      "planner_completions": 0,
+      "decision_calls": 0,
+      "npc_clicks": 0,
+      "npc_responses": 0,
+      "rx_error": false,
+      "dispatch_error_count": 0
+    },
+    "interpretation": "Behavioral RED, not collection or oracle failure. The instant actual default pilot passes; the default host without the pilot wrapper waits and succeeds after actual BotClient._dispatch of synthetic offline 0x00B0 IDs 5/6/7/8. The unchanged pilot wrapper fails before its telemetry wait, with healthy synthetic transport, no dispatch errors and zero provider/NPC effects. Synthetic payloads are explicitly not original native evidence."
+  },
+  "owned_runtime": {
+    "observed_at": "2026-10-11T08:24:25.005324+00:00",
+    "qualified_roles": "Exact login, char and map container IDs/images/owned volume verified against playing-mvp-qualified-deployment.json; all running, restart counts zero. Inspect Environment was never published.",
+    "attempt_window": {
+      "read_only": true,
+      "since": "2026-10-11T08:12:30Z",
+      "roles": [
+        {
+          "role": "login",
+          "events": [
+            {
+              "timestamp": "2026-10-11T10:12:35.410492000+02:00",
+              "classifications": [
+                "login_accept"
+              ],
+              "fixture_indices": [
+                0
+              ],
+              "packet_ids": [],
+              "digit_group_count": 18
+            },
+            {
+              "timestamp": "2026-10-11T10:12:35.411103000+02:00",
+              "classifications": [
+                "login_accept"
+              ],
+              "fixture_indices": [],
+              "packet_ids": [],
+              "digit_group_count": 13
+            },
+            {
+              "timestamp": "2026-10-11T10:12:35.411519000+02:00",
+              "classifications": [
+                "session_closed"
+              ],
+              "fixture_indices": [],
+              "packet_ids": [],
+              "digit_group_count": 13
+            }
+          ]
+        },
+        {
+          "role": "char",
+          "events": [
+            {
+              "timestamp": "2026-10-11T10:12:35.412386000+02:00",
+              "classifications": [
+                "fixture_id_mention"
+              ],
+              "fixture_indices": [
+                0
+              ],
+              "packet_ids": [],
+              "digit_group_count": 14
+            },
+            {
+              "timestamp": "2026-10-11T10:12:35.413143000+02:00",
+              "classifications": [
+                "fixture_id_mention"
+              ],
+              "fixture_indices": [
+                0
+              ],
+              "packet_ids": [],
+              "digit_group_count": 10
+            },
+            {
+              "timestamp": "2026-10-11T10:12:35.413237000+02:00",
+              "classifications": [
+                "fixture_id_mention"
+              ],
+              "fixture_indices": [
+                0
+              ],
+              "packet_ids": [],
+              "digit_group_count": 10
+            },
+            {
+              "timestamp": "2026-10-11T10:12:35.413938000+02:00",
+              "classifications": [
+                "fixture_id_mention"
+              ],
+              "fixture_indices": [
+                0
+              ],
+              "packet_ids": [],
+              "digit_group_count": 10
+            },
+            {
+              "timestamp": "2026-10-11T10:12:35.414182000+02:00",
+              "classifications": [
+                "fixture_id_mention"
+              ],
+              "fixture_indices": [
+                0
+              ],
+              "packet_ids": [],
+              "digit_group_count": 15
+            },
+            {
+              "timestamp": "2026-10-11T10:12:35.414250000+02:00",
+              "classifications": [
+                "fixture_id_mention"
+              ],
+              "fixture_indices": [
+                0
+              ],
+              "packet_ids": [],
+              "digit_group_count": 15
+            }
+          ]
+        },
+        {
+          "role": "map",
+          "events": [
+            {
+              "timestamp": "2026-10-11T10:12:35.415495000+02:00",
+              "classifications": [
+                "map_authenticated"
+              ],
+              "fixture_indices": [
+                0
+              ],
+              "packet_ids": [],
+              "digit_group_count": 20
+            },
+            {
+              "timestamp": "2026-10-11T10:12:35.416247000+02:00",
+              "classifications": [
+                "inactive_map_logout"
+              ],
+              "fixture_indices": [
+                0
+              ],
+              "packet_ids": [],
+              "digit_group_count": 11
+            }
+          ]
+        }
+      ],
+      "pilot_python_process_count": 0
+    },
+    "interpretation": "Map authentication at October 11, 2026 10:12:35.415495 CEST, followed by fixture 0 inactive-session logout at 10:12:35.416247 CEST. No timeout, SQL error, unsupported client packet or server-link failure appeared in this bounded log window. Absence of logs is not proof of a received client packet or offline DB update.",
+    "process_check": "Corrected exact Python-executable/argv check found zero native pilot processes; ss found zero TCP entries attributed to Python. No descriptors were closed.",
+    "initial_process_counter_issue": "The earlier broad substring counter in runtime-observations.json counted the diagnostic shell command itself. Its count 1 is not qualified; attempt-window-observations.json supersedes it with executable/argument-qualified count 0."
+  },
+  "server_offline_visibility": {
+    "revision": "e985006171d2eb320ee512a653f4c83aea3d81b6",
+    "configured_variant": "/home/otto/.hermes/cache/scratch/callback-package-hut2_cuz/configured-variant",
+    "mechanism": [
+      {
+        "source": "src/char/char_mapif.cpp:1004-1077",
+        "fact": "The character server marks the fixture online upon successful map authentication, before full map initialization."
+      },
+      {
+        "source": "src/map/pc.cpp:2238-2249,2428-2435",
+        "fact": "Map authentication ACK and logged-in notice precede registry completion setting state.active=1."
+      },
+      {
+        "source": "src/map/clif.cpp:25684-25705",
+        "fact": "An inactive EOF emits the exact Player AID/CID logged-off template and calls map_quit, not active clif_quitsave."
+      },
+      {
+        "source": "src/map/map.cpp:2231-2238; src/map/chrif.cpp:136-165",
+        "fact": "Inactive map_quit deletes a matching non-logout auth node and returns. Neither this branch nor chrif_auth_delete sends offline notification or a final save."
+      },
+      {
+        "source": "src/map/chrif.cpp:743-769,1965-1971",
+        "fact": "The over-60-second authentication cleanup sends offline only for auth nodes still present; an EOF-deleted node no longer reaches this timer. A generic wait of 60 seconds is therefore not a guaranteed cure."
+      },
+      {
+        "source": "src/map/chrif.cpp:1431-1449; src/char/char_mapif.cpp:887-892; src/char/char.cpp:162-208",
+        "fact": "Explicit 0x2B17 is 10 bytes (char ID at 2, account ID at 6), reaching char_set_char_offline and its SQL online=0 update."
+      },
+      {
+        "source": "src/map/chrif.cpp:540-550,1808-1848; src/char/char_mapif.cpp:346-398; src/char/char.cpp:2206-2228,3246-3247",
+        "fact": "Periodic 0x2AFE carries a count, not a per-character offline update. Full 0x2AFF membership reconciliation is called on map/char readiness; char cleanup runs every 600 seconds and clears server=-2, not every online record on a healthy known map server."
+      }
+    ],
+    "assessment": "The observed inactive EOF plus the reviewed branch strongly supports a startup-abort offline-notification gap. Native transport termination and SQL online visibility are distinct. No packet trace proves a specific 0x2B17 transmission/absence at the inter-server socket, and no server auth-node memory snapshot was taken.",
+    "separate_source_weakness": "chmapif_parse_setcharoffline checks RFIFOREST < 6 but reads through byte 9 and skips 10; dispatcher calls the handler without a 10-byte table gate. This is a pinned source short-frame weakness, not evidence it caused this run. The observed inactive map_quit branch does not send 0x2B17. No patch or fabricated fragmentation capture was made."
+  },
+  "fixture_readback": {
+    "source": "run/reviews/npc-native-host-pilot-attempt1-online-attribution.json",
+    "freshness": "Existing parent fresh exact-owned SELECT receipt; no new DB query by this subagent.",
+    "total_characters": 2,
+    "owned_online": 1,
+    "foreign_online": 0,
+    "fixture_0": {
+      "online": 1,
+      "saved_map": "prt_fild08",
+      "saved_position": [
+        193,
+        362
+      ]
+    },
+    "fixture_1": {
+      "online": 0,
+      "saved_map": "prt_fild08",
+      "saved_position": [
+        176,
+        374
+      ]
+    },
+    "position_gate": "Fixture 0 is outside the fixed Bard interaction range, a later separate blocker. It cannot explain the earlier telemetry exception. Fixture 1 cannot be connected while the unchanged global all-online==0 preflight is blocked.",
+    "refusals_preserved": [
+      "npc-native-host-pilot-attempt1-offline-readback-first-refusal.json",
+      "npc-native-host-pilot-attempt1-offline-readback-second-refusal.json",
+      "npc-native-host-pilot-attempt1-offline-readback.json"
+    ],
+    "latest_refusal": "Original helper frames 85/25; direct baseline AssertionError at line 80 (all-online==0).",
+    "ownership_note": "Attempt-time retained-owner/lock flags do not prove a live FD after the foreground native process exited 1. Parent fresh physical fixture-lock acquisition and release succeeded. This diagnosis did not acquire or release a fixture lock."
+  },
+  "source_integrity": {
+    "approved_input_checks": {
+      "executor_hashes": {
+        "count": 5,
+        "mismatches": []
+      },
+      "helper_hashes": {
+        "count": 3,
+        "mismatches": []
+      },
+      "source_hashes": {
+        "count": 102,
+        "mismatches": []
+      }
+    },
+    "protected_initial_baseline": {
+      "path": "/home/otto/.hermes/cache/scratch/npc-native-host-pilot/baseline.json",
+      "bindings": 430,
+      "mismatches": [],
+      "private_paths_not_read": []
+    },
+    "current_startup_sources": {
+      "/home/otto/dev/ro-bots/src/robots/adapters/native_vitals.py": "663cc93d1fbe0cb20fb6ae4331e2ad5cf63d9e940a246bb8b332b408f6a7e9ff",
+      "/home/otto/dev/ro-bots/src/robots/app/agent_runtime.py": "5d266e7a0bb290855f56be5bb688172fa4ed0b13d005c246289c83185cb7e744",
+      "/home/otto/dev/ro-bots/src/robots/app/playing_runtime.py": "369171823465b1cc0149bfea789606bc7a9e9b8071dd0c2594e06080bddf45f9",
+      "/home/otto/dev/ro-bots/spikes/003-clientless-limbs/client.py": "2f57a0adc0b43a20235835290499ca0043966c5def208642598afb0dc49807fd",
+      "/home/otto/dev/ro-bots/spikes/003-clientless-limbs/packetdb.py": "497375189d242eda3072e3d86cbff1d98d736ec3742feee7035d84c3d129005b"
+    },
+    "qualified_server_sources": {
+      "src/map/map.cpp": {
+        "sha256": "9629e6b751ca3fd9d160e48c0beb80bf7bbe0c359fa7ecdb46698b074e6c1113",
+        "matches_configured_source_manifest": true
+      },
+      "src/map/clif.cpp": {
+        "sha256": "ace16f15be3b60f730522d620b73a68a9f2cc384016aadce9c985888aea9a1ac",
+        "matches_configured_source_manifest": true
+      },
+      "src/map/pc.cpp": {
+        "sha256": "d12704c1ef7f8321c255175b6f61aa396209b931e2b1687fbbd16963d1def652",
+        "matches_configured_source_manifest": true
+      },
+      "src/map/chrif.cpp": {
+        "sha256": "0bd37260959702dcad627052069cdb18712230f15fa6aabaf893b5dc88334f19",
+        "matches_configured_source_manifest": true
+      },
+      "src/char/char_mapif.cpp": {
+        "sha256": "3000a98802978df0d6bed0b668d329cac8c49d87a52131b4d148b76dc6fd5d6d",
+        "matches_configured_source_manifest": true
+      },
+      "src/char/char.cpp": {
+        "sha256": "141dd411c11ec9663d49e1274203ba28bdf3761cce0f98782a8cfd37ee34cdff",
+        "matches_configured_source_manifest": true
+      },
+      "src/common/socket.cpp": {
+        "sha256": "80712b971c4fe325ee0905e54422da4776e010a3f0bb34ce7971c662678d23ba",
+        "matches_configured_source_manifest": true
+      }
+    },
+    "public_byte_comparison": {
+      "src/map/map.cpp": {
+        "sha256": "9629e6b751ca3fd9d160e48c0beb80bf7bbe0c359fa7ecdb46698b074e6c1113",
+        "matches_configured_variant": true,
+        "snapshot": "/home/otto/.hermes/cache/scratch/npc-native-host-pilot-startup-diagnosis/public-src-map-map.cpp",
+        "source_url": "https://raw.githubusercontent.com/rathena/rathena/e985006171d2eb320ee512a653f4c83aea3d81b6/src/map/map.cpp"
+      },
+      "src/map/chrif.cpp": {
+        "sha256": "0bd37260959702dcad627052069cdb18712230f15fa6aabaf893b5dc88334f19",
+        "matches_configured_variant": true,
+        "snapshot": "/home/otto/.hermes/cache/scratch/npc-native-host-pilot-startup-diagnosis/public-src-map-chrif.cpp",
+        "source_url": "https://raw.githubusercontent.com/rathena/rathena/e985006171d2eb320ee512a653f4c83aea3d81b6/src/map/chrif.cpp"
+      },
+      "src/char/char_mapif.cpp": {
+        "sha256": "3000a98802978df0d6bed0b668d329cac8c49d87a52131b4d148b76dc6fd5d6d",
+        "matches_configured_variant": true,
+        "snapshot": "/home/otto/.hermes/cache/scratch/npc-native-host-pilot-startup-diagnosis/public-src-char-char_mapif.cpp",
+        "source_url": "https://raw.githubusercontent.com/rathena/rathena/e985006171d2eb320ee512a653f4c83aea3d81b6/src/char/char_mapif.cpp"
+      }
+    },
+    "source_manifest_sha256": "1fd585266bbcf2268b2cec9e901100fad68b904a8b2a8c049c5869c56af43e12",
+    "preserved_receipts": {
+      "/home/otto/dev/ro-bots/run/reviews/npc-native-host-pilot-native-attempt1.json": "caeaf966ba1428e1d525a8bc7f4c77aebb55959336f3a3a20b526aae0e808f9a",
+      "/home/otto/dev/ro-bots/run/reviews/npc-native-host-pilot-attempt1-offline-readback-first-refusal.json": "df76681b2acb186df35b653a9409ca35d4eb5df8ad5d792a9d739b22b704eca0",
+      "/home/otto/dev/ro-bots/run/reviews/npc-native-host-pilot-attempt1-offline-readback-second-refusal.json": "98eb99fea919caf4dd759fae54b711651b321ce16e8437f53082c72b9d321f49",
+      "/home/otto/dev/ro-bots/run/reviews/npc-native-host-pilot-attempt1-offline-readback.json": "e3273787f8f7fca16ddf352cb25e1d13f8bb641ab4b1a9f142f3712b4d295179",
+      "/home/otto/dev/ro-bots/run/reviews/npc-native-host-pilot-attempt1-online-attribution.json": "2facf0f5868b4b4de10ef653f260cf79fdd1ff34dd3daabd1d1cbc2d765ceb55",
+      "/home/otto/dev/ro-bots/run/reviews/npc-native-host-pilot-attempt1-investigation-scope.json": "152927927490a6a2ea29ce97daf76242a6a91b131edb042009b11251f5b91def",
+      "/home/otto/dev/ro-bots/run/reviews/npc-native-host-pilot-native-approved.json": "8e804db150d4d4be5f02320e9568f84de515ddcb82467402766058dda8c011c2",
+      "/home/otto/dev/ro-bots/run/reviews/playing-mvp-qualified-deployment.json": "cd622737107fb3a53be4a840a38df25eead9f81a0d765c08b34451ae74976bed",
+      "/home/otto/dev/ro-bots/run/reviews/playing-mvp-configured-source-recovery-verified.json": "604e4784d902f7a7e12347d3c3da8ed2946705163bb9497ac01f8482f639cfa9"
+    }
+  },
+  "remaining_unknowns": [
+    "Which exact native telemetry guard failed on the original client: health, frame continuity, incomplete vitals, progression or perception.",
+    "Original receiver error class/packet ID/offset/preceding frame IDs were not captured. Do not assign an unsupported-frame repair without a source-qualified failing packet.",
+    "Current DB online flag has not been re-queried during this diagnosis; the cited parent receipt remains the latest owned SQL evidence."
+  ],
+  "next_safe_action": [
+    "Parent may consider a separately named offline pilot startup sequencing repair, confined to probe.py::_factory.connected/_identity, using this delayed default-assembly RED. No repair permission is inferred here.",
+    "If a server correction is needed, qualify the exact inactive-EOF map.cpp::map_quit -> chrif_auth_delete path against the pinned/configured variant before assigning a new bounded server patch. Do not reset generic framing/callback/passive budgets.",
+    "Maintain revoked native activation. Require a fresh supported exact-owned offline receipt, resolved fixture scenario eligibility, unchanged approved sources and a new explicit target authorization before any subsequent native pilot. Do not reconnect fixture 1, force SQL flags/positions, or cycle services."
+  ],
+  "issues": [
+    "Initial urllib public-source retrieval failed local certificate verification; system curl succeeded with TLS verification intact.",
+    "One intentional offline behavioral test remains RED. No production or candidate fix was applied."
+  ],
+  "artifacts": {
+    "/home/otto/.hermes/cache/scratch/npc-native-host-pilot-startup-diagnosis/attempt-window-observations.json": "6ed3b4eb1e25045699f239a67100284788fdfe669b67dd6a5f4325d43343b7e3",
+    "/home/otto/.hermes/cache/scratch/npc-native-host-pilot-startup-diagnosis/delayed-default-attempt1.xml": "c4c8f5cb7b698908ca94030ce53953c43a7232dbefacd72b0e0e01745b2d380a",
+    "/home/otto/.hermes/cache/scratch/npc-native-host-pilot-startup-diagnosis/delayed-wrapper-observation.json": "f05f8408c957c69f47da14c899b10903df8ed97ec0d42505f18f2b543cbc1a52",
+    "/home/otto/.hermes/cache/scratch/npc-native-host-pilot-startup-diagnosis/public-src-char-char_mapif.cpp": "3000a98802978df0d6bed0b668d329cac8c49d87a52131b4d148b76dc6fd5d6d",
+    "/home/otto/.hermes/cache/scratch/npc-native-host-pilot-startup-diagnosis/public-src-map-chrif.cpp": "0bd37260959702dcad627052069cdb18712230f15fa6aabaf893b5dc88334f19",
+    "/home/otto/.hermes/cache/scratch/npc-native-host-pilot-startup-diagnosis/public-src-map-map.cpp": "9629e6b751ca3fd9d160e48c0beb80bf7bbe0c359fa7ecdb46698b074e6c1113",
+    "/home/otto/.hermes/cache/scratch/npc-native-host-pilot-startup-diagnosis/runtime-observations.json": "96dabab19c7cf937fa01b77c2184095a3cd461091bb9604ebfc22fc06bdff92b",
+    "/home/otto/.hermes/cache/scratch/npc-native-host-pilot-startup-diagnosis/source-and-test-bindings.json": "22e7042b4cb933eed686bd6a813334a944544aef272a22424d880d2bebb43427",
+    "/home/otto/.hermes/cache/scratch/npc-native-host-pilot-startup-diagnosis/test_delayed_startup.py": "9de51b5d6446fd8dc04a82374ef9ddc9654bd6667cfcf21e764fed898da5904f"
+  }
+}

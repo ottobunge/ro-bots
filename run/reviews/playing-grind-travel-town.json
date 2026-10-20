@@ -1,0 +1,58 @@
+{
+  "status": "TRAVEL_TOWN_ENGAGEMENT_FIXED_RED_GREEN_COMPLETE",
+  "completed_at": "2026-10-16T02:55:00+00:00",
+  "namespace": ".work/playing-grind-travel-town",
+  "task": "Make town-idle travel engagement deterministic (both agents); window 21 = attributed first-kill proof",
+
+  "diagnosis": {
+    "summary": "The town-idle shape DOES reach the travel wrapper every step; the refusal is the predecessor travel-layer map gate. Engagement was plan-luck, not state-driven.",
+    "chain": [
+      "goal=grind in all of windows 18/19/20 (final_goal in receipts 1792114211/1792115263/1792116242) -> goal-level GrindScript returns the empty-DONE idle shape in town (src/robots/app/scripts.py:111); a plan-less planning brain returns empty ACTIVE (src/robots/app/planning_brain.py:400-402)",
+      "install_travel idle predicate passes both shapes (emission operator playing_grind_emission_operator.py:143-157: status DONE/ACTIVE, no actions, no nearby_monsters) -> travel.next_action is called every step",
+      "predecessor travel.py:80 `if has_attackable or position is None or map_name != self._map_name: return None` - the CommittedTravel target map is prt_fild08 (spawn_knowledge.MAP_NAME), so an agent on prontera gets None every step: no commitment, no event, no movement (w20: fx0 [152,150] all-zero dispatches, fx1 [149,148]; travel.state idle, events [] in BOTH)",
+      "w18 fx1 / w19 fx0 traveled because their CLEF plan actions carried them town->field (decisive_branch_hint 'travel_or_targeting'; travel.events BEGIN on the field, e.g. w18 fx1 committed cell [190,375]) - the travel layer never engaged from town",
+      "w20 stayers show 'actor_classification' - no plan actions that window, so nothing moved: the alternation (one traveler per window, none in w20) is plan-arming luck, not a per-agent property"
+    ],
+    "evidence": [
+      ".work/playing-grind-emission/evidence/receipt-1792114211.json agents.*.runtime_diagnostic.travel (w18)",
+      ".work/playing-grind-emission/evidence/receipt-1792115263.json (w19)",
+      ".work/playing-grind-emission/evidence/receipt-1792116242.json (w20: both idle, events [], 900s)",
+      "run/reviews/playing-grind-operator-live-window18-19-analysis.json findings"
+    ]
+  },
+
+  "fix": {
+    "files": {
+      "travel.py": "successor CommittedTravel: optional entry_routes constructor map (normalized .gat-suffix-free); next_action routes a non-target map through a town-entry leg - commits the cited warp cell, records town_committed, degrades honestly on warp-cell arrival without map change or budget expiry; a received map change under a live commitment records map_changed_replan and re-plans the field leg from the arrival cell; _unreachable keyed (map, cell); without entry_routes the predecessor contract is unchanged (unknown maps refuse)",
+      "spawn_knowledge.py": "adds town_entry_routes(warp_text, target_map): parses a pinned public warp line (4 tab columns; the last column merges span and destination '3,2,prt_fild08,170,375') into {source_map: exit_cell}; malformed lines or a foreign target raise",
+      "grind_travel_town.py": "composition: install_travel (idle predicate identical to the emission operator's) + wire_travel(agent, cache, cells, knowledge, budget_s) building CommittedTravel with entry routes from knowledge.warp_citation"
+    },
+    "citation": "rathena npc/warps/cities/prontera.txt:24 'prontera,156,22,0\\twarp\\tprt001\\t3,2,prt_fild08,170,375' (file sha256 434fe0daf761275c... full in .work/playing-grind-travel-town/evidence/manifest.json)",
+    "determinism": "engagement is a pure function of the agent's own received (map, position, attackable): two agents in the same state both commit (test_idle_in_town_is_per_agent_deterministic); no shared or cross-agent state exists",
+    "production_scope": "no src/robots changes; no native world changes (publication-safe: plain MoveTo on the existing client walk path; field mobs live)"
+  },
+
+  "tdd": {
+    "red": "evidence/red-junit.xml: 14 tests / 14 failed / 0 passed against byte-identical predecessor travel.py+spawn_knowledge.py copies (predecessor sha256 545d123961ea6641... shared by travel/, travel2/, emission/ namespaces); failures name the gaps: town_entry_routes absent, entry_routes kwarg absent, wire_travel absent",
+    "green": "evidence/green-junit.xml: 14/14 passed on the successor bytes (same suite, sha256 in evidence/manifest.json)",
+    "notes": "Between RED and GREEN the suite received harness corrections only: ruff PT018 assertion splits, a brace-escape artifact, and the parser's field indexing (the pinned warp line has 4 tab columns, not 5 - found by direct in-process reproduction, not by weakening a contract). Contract-relevant assertions are identical in RED and GREEN bytes."
+  },
+
+  "verification": {
+    "travel_town_suite": "14/14 passed (green-junit.xml)",
+    "scoped_quality": "ruff check clean, black clean (line-length 100, py314) on the namespace",
+    "combined_suites": {
+      "playing-grind-travel-town": "14 passed",
+      "playing-grind-travel2": "pre-existing failures: test_offline_travel_run_never_engages_travel_when_attackable_visible (+ wrapper Attack assertion)",
+      "playing-grind-emission": "pre-existing failure: test_divergence_probes_characterize_current_production",
+      "playing-grind-operator": "pre-existing failure: test_grind_script_emits_attack_on_visible_attackable_actor (got MoveTo(45,41) instead of Attack - domain/state shape drift)",
+      "attribution": "all three reproduce IDENTICALLY with the travel-town namespace parked outside the tree (executed rerun, 3 failed in 1.08s); src/robots/app/{scripts,brain}.py, src/robots/domain/{actions,model}.py carry tracked drift from parallel lanes - sibling-owned, not repaired here"
+    },
+    "root_gate": "executed post-change: nix develop -c task check (background proc_6da5cf43972d), exit 0",
+    "root_gate_result": "GREEN - 5927 passed, 65 subtests passed, coverage 95.76% (>= 85% gate); unchanged baseline 5927+65 (the travel-town namespace lives in Git-ignored .work and is outside the root suite; scratch suites are scoped reviews, not the root gate)"
+  },
+
+  "window21_handoff": ".work/playing-grind-operator/READY-TO-RUN.md '## Window 21' section: graft steps (copy 3 successor files into the emission namespace + add entry_routes kwarg at both CommittedTravel sites), 900s/pacer 6s command, acceptance = BOTH agents on prt_fild08 + attribution_active true with bot_dealt_damage > 0 + >=1 mob death + XP delta, keepalive stable",
+  "prohibited_respected": "no live execution, no spike edits, no Git actions, no operator/sibling namespace edits (emission operator untouched; READY-TO-RUN.md Window-21 section appended only)",
+  "native_authority": "UNCHANGED_REVOKED"
+}

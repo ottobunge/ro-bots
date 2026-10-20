@@ -1,0 +1,162 @@
+{
+  "schema": "offline-native-shop-selection/v1",
+  "workdir": "/home/otto/dev/ro-bots",
+  "commands": {
+  "first_red": "nix develop --offline --no-write-lock-file path:./spikes/007-native-packet-ast/toolchain -c env PYTHONOPTIMIZE=0 PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=src:. .venv/bin/python -B -m pytest .work/novice-equipment-vertical-tracer/test_actual_client_shop_frontier.py --override-ini addopts='' --junitxml=.work/native-shop-selection/first-red.xml -q",
+  "scoped_final": "nix develop --offline --no-write-lock-file path:./spikes/007-native-packet-ast/toolchain -c env PYTHONOPTIMIZE=0 PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=src:. .venv/bin/python -B -m pytest tests/test_native_shop_selection.py tests/test_native_npc*.py tests/test_npc_planning*.py tests/test_llm_planning_npc_host.py tests/test_playing_runtime.py tests/test_native_shop.py .work/native-shop-selection/adapted_tracer.py --override-ini addopts='' --junitxml=.work/native-shop-selection/scoped-final.xml -q",
+  "black": "nix develop --offline --no-write-lock-file path:./spikes/007-native-packet-ast/toolchain -c .venv/bin/black --check src tests",
+  "ruff": "nix develop --offline --no-write-lock-file path:./spikes/007-native-packet-ast/toolchain -c .venv/bin/ruff check src tests",
+  "mypy": "nix develop --offline --no-write-lock-file path:./spikes/007-native-packet-ast/toolchain -c .venv/bin/mypy --cache-dir=.work/native-shop-selection/mypy-final-cache",
+  "xenon": "nix develop --offline --no-write-lock-file path:./spikes/007-native-packet-ast/toolchain -c .venv/bin/xenon src --max-absolute B --max-modules B --max-average A",
+  "duplicate": "nix develop --offline --no-write-lock-file path:./spikes/007-native-packet-ast/toolchain -c .venv/bin/pylint --disable=all --enable=duplicate-code --ignore-paths=tests src"
+},
+  "status": "SCOPED_GREEN_SOURCE_FROZEN_PARENT_ROOT_GATE_AND_REVIEW_PENDING",
+  "native_authority": "REVOKED_AFTER_READY_WINDOW_SINGLE_ATTEMPT",
+  "evidence_kind": "Public synthetic frames through actual BotClient constructor/framer/_dispatch/PlayingClient; only primitive send/clock replaced. No native/network/model/world/SQL effects.",
+  "implementation": "Unadvertised concrete NpcShopBuySelection via owner-local npc_shop_buy_selection() capture then actual perform_native guarded controller C5(type0). No planner/domain enum/schema/capability publication.",
+  "owned_hashes": {
+    "src/robots/domain/actions.py": {
+      "old": "238cbf0b8af1de3e1c272e0678f58ddc14d23dcab49914abb1fe1bf0b7e5e48a",
+      "new": "e5da48ac9eb3f794d8fbe36e63e688b7c869d688d9c149699872e99a3612ea63"
+    },
+    "src/robots/adapters/native_npc_dialogue.py": {
+      "old": "978fa5ff01a33615a4533fc37de0d152db7691c0630047b9dea96c611a6d76de",
+      "new": "b96a6c7d1940a2128cc81633e7baf55c380841fb6c57306846e8a1140eba9a5e"
+    },
+    "src/robots/app/playing_runtime.py": {
+      "old": "4cffa5b60dba17166e4af3a0363a800be9c168e5ae4faa2147c57d3776af993c",
+      "new": "fb5f0de7c5382adf5055dd50dd2b8192aa8b41e6dbebcc14721afc75a0295149"
+    },
+    "tests/test_native_shop_selection.py": {
+      "old": null,
+      "new": "4e4271acd5e1b3b3272d180483ec8d8fb82ce20eb34885f933cd0b2eb00fa8c1"
+    }
+  },
+  "protected_canonical_files": {
+    "checked_existing": 249,
+    "outside_owned_changed": {},
+    "added": [
+      "tests/test_native_shop_selection.py"
+    ]
+  },
+  "source_tracer_unchanged_sha256": "89bb4755ed72aab1ad63e2bfba0a52157c2c17a2a386c9667c33cee90149f340",
+  "tracer_adaptation": "Only test-local intent construction replaced with owner-minted concrete action; prior wire/state assertions retained. API-missing adaptation failures are not additional historical behavioral RED. Diff retained.",
+  "receipts": {
+    "first-red": {
+      "path": ".work/native-shop-selection/first-red.xml",
+      "sha256": "e809d8883b00f19c5ee97e9800f71b79af2a4f80d792a7ad728a3e2139205a6e",
+      "physical_cases": 3,
+      "unique_ids": 3,
+      "failures": 1,
+      "errors": 0,
+      "skips": 0
+    },
+    "fixture-adaptation-red": {
+      "path": ".work/native-shop-selection/fixture-adaptation-red.xml",
+      "sha256": "b8cc9e2653daad38ead41a100e7ddadc73e953186b5344a7a3cfbef9cf0c6313",
+      "physical_cases": 2,
+      "unique_ids": 2,
+      "failures": 2,
+      "errors": 0,
+      "skips": 0
+    },
+    "vertical-green": {
+      "path": ".work/native-shop-selection/vertical-green.xml",
+      "sha256": "14dc8eeea0c35d8e5821f25b068bd0ffbeef30c2b754a51f48d1b249a3b45f51",
+      "physical_cases": 5,
+      "unique_ids": 5,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0
+    },
+    "boundary-red": {
+      "path": ".work/native-shop-selection/boundary-red.xml",
+      "sha256": "cb0433b3a90399791c3ed7581fd7846417cf62ea6b4d75e70dab230b63dd51ea",
+      "physical_cases": 38,
+      "unique_ids": 38,
+      "failures": 3,
+      "errors": 0,
+      "skips": 0
+    },
+    "scoped-green": {
+      "path": ".work/native-shop-selection/scoped-green.xml",
+      "sha256": "c40439d153da255a6aecd2fa84b1dbb560a9304028b5812c4f9a33cca841d3a0",
+      "physical_cases": 1010,
+      "unique_ids": 1010,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0
+    },
+    "scoped-final": {
+      "path": ".work/native-shop-selection/scoped-final.xml",
+      "sha256": "bd8a29e8c3c1a1a816d0e2c87910c93dc9747e9a4cc605ee305e9937e480af76",
+      "physical_cases": 1010,
+      "unique_ids": 1010,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0
+    }
+  },
+  "new_test_contract_groups": 10,
+  "new_physical_tests": 38,
+  "scoped_passing_physical_tests": 1010,
+  "scoped_unique_test_ids": 1010,
+  "tdd_chronology": [
+    "Exact immutable original tracer: 2 characterization PASS/1 true behavioral RED at missing C5 send, before production changes.",
+    "Promoted fixture adaptation: 2 missing capture-API failures, not an extra historical execution RED.",
+    "Minimal first action/controller/dispatcher implementation: normalized actual-client vertical tracer plus first two new tests GREEN (5).",
+    "Boundary coverage added after feature GREEN: 35 PASS; true entry-replacement and reader-replacement behavioral RED; one gap-fixture AttributeError is harness error, not behavioral RED.",
+    "One reached behavioral repair iteration: invalidate shop UI on same-ID new entry; bind received-reader object. Gap fixture corrected to real retained-ring names.",
+    "All 38 new tests plus actual client tracer and scoped NPC/shop regressions GREEN (1010).",
+    "Whole-source Xenon reached rank C in request; extracted supported-operation codec routing without new behavior. Owned test typing/assert formatting fixed. All requested static gates rerun GREEN on final freeze."
+  ],
+  "current_bindings": [
+    "Exact minted action object identity (foreign equivalent DTO denied).",
+    "Reuse existing NpcHostBinding.matches for exact wrapper/wire/planning-session references; also exact socket/controller/reader references.",
+    "NPC ID/epoch/map/opened_sequence/prompt_sequence derive solely from current received C4. Fresh dispatch reobserves and controller compares all fields with strict types.",
+    "Reuse _planning_npc_view for health/frame continuity/vitals/progression/context; extract shared _npc_self_ready preserving existing predicate/read order; reuse verified received/wire map mapper, actor range/life/motion guards.",
+    "Consume owner-local pending binding before any fallible observation/send; controller consumes current UI once and increments shared request budget before sender; failures retain BaseException origin and poison controller."
+  ],
+  "preserved_budgets": {
+    "ready_next_menu_seconds": 30,
+    "other_ui_seconds": 15,
+    "opening_post_send_cancel_seconds": 5,
+    "absolute_seconds": 120,
+    "requests_max": 32
+  },
+  "post_send": "Exactly one 7-byte C5 type0; controller waiting with 5-second bound. C6 receipt does not change inventory, grant purchase/equip, or count progress. No C8/0998 send.",
+  "quality": {
+    "black": {
+      "exit_code": 0,
+      "log": ".work/native-shop-selection/black-final.log",
+      "sha256": "b4b84d0bdd23ec3b0db2f70ef13a68b9d9ef7175c0f1259764fc8b7aa8cec0d2"
+    },
+    "ruff": {
+      "exit_code": 0,
+      "log": ".work/native-shop-selection/ruff-final.log",
+      "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
+    },
+    "mypy": {
+      "exit_code": 0,
+      "log": ".work/native-shop-selection/mypy-final.log",
+      "sha256": "fc7a6f2d81793ead1da3f58bae5ac2a69becd5882de72ae84251b20185317a15"
+    },
+    "xenon": {
+      "exit_code": 0,
+      "log": ".work/native-shop-selection/xenon-final.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "duplicate": {
+      "exit_code": 0,
+      "log": ".work/native-shop-selection/duplicate-final.log",
+      "sha256": "8cbfc8cd0b04a4858b0b78b74c6df9631a1695e105e6911d4b57fbcc43b218b5"
+    }
+  },
+  "issues": [
+    "Initial gap fixture referred to nonexistent ring fields; corrected to actual BotClient retained-ring fields, no production change for gap.",
+    "First Ruff/mypy/Xenon failures preserved; all resolved inside owned files with unchanged thresholds.",
+    "No exact shared-call-site typing issue outside owned files.",
+    "Root full gate/audit and independent completed-freeze review remain parent-owned. No native activation authorized."
+  ],
+  "freeze": ".work/native-shop-selection/freeze.json"
+}

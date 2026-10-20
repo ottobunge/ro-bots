@@ -1,0 +1,389 @@
+{
+  "schema": 1,
+  "passed": false,
+  "summary": "FAIL: two companion-entrypoint security concerns and five reproduced harness/client logic defects remain despite a passing focused offline suite.",
+  "review_type": "fresh independent fail-closed offline rereview",
+  "reviewer": "focused independent protocol reviewer",
+  "repo": "/home/otto/dev/ro-bots",
+  "created_at": "2026-10-05T10:29:12.743616+00:00",
+  "security_concerns": [
+    {
+      "id": "S1",
+      "severity": "high",
+      "file": "spikes/003-clientless-limbs/scripts/probe_map.py",
+      "lines": [
+        7,
+        11
+      ],
+      "description": "The shipped companion probe retains reusable hardcoded account credentials and connects at import time without the private fixture/isolation guard. No credential values are reproduced in this report.",
+      "evidence": "Full source inspection: two BotClient constructions with literal credentials immediately call connect; no main guard, fixture validation, or try/finally cleanup. This file is explicitly referenced as provenance by client.py. It was NOT executed.",
+      "minimal_fix": "Delete/quarantine the obsolete live probe, or require load_fixture and FixtureClient under an explicit main entrypoint, with shared deadline and unconditional cleanup. Remove all reusable credential literals."
+    },
+    {
+      "id": "S2",
+      "severity": "high",
+      "file": "spikes/003-clientless-limbs/scripts/gen_packetdb.py",
+      "lines": [
+        29,
+        42,
+        54,
+        58
+      ],
+      "description": "The referenced regeneration helper still executes guard text with eval, fails open on unsupported syntax, and uses the old incorrect elif branch model. The packetdb.py correction does not cover this alternate entrypoint.",
+      "evidence": "Offline pure probes: eval_cond(\"__import__('os').getpid() > 0\") returned True, demonstrating builtin execution; eval_cond(\"PACKETVER ??? 1\") returned True. No file mutation/network side effect was used.",
+      "minimal_fix": "Retire the historical helper or delegate its guard evaluation and derivation to the strict packetdb implementation; make the intended profile explicit and remove eval/exec of source text."
+    }
+  ],
+  "logic_errors": [
+    {
+      "id": "L1",
+      "severity": "high",
+      "file": "spikes/003-clientless-limbs/test_limbs.py",
+      "lines": [
+        248,
+        252
+      ],
+      "description": "Movement checks the actor wire ID against A character ID instead of A account/wire ID. The repaired client stores info[gid]=wire ID, so legitimate movement fails; an unrelated actor with a matching numeric character ID could satisfy the wrong identity.",
+      "evidence": "Offline actual harness probe: A aid=11, gid=21, B received actors[11]={gid:11,char_id:21,x:165,y:146}; limb_move returned FAIL no A destination after 6.0 synthetic seconds. Pinned clif.cpp:1104-1106 explicitly emits AID=bl.id and GID=char_id.",
+      "minimal_fix": "Compare info[gid] to a.aid (and optionally info[char_id] to a.gid); add positive correct-wire and negative unrelated-wire harness regressions."
+    },
+    {
+      "id": "L2",
+      "severity": "high",
+      "file": "spikes/003-clientless-limbs/test_limbs.py",
+      "lines": [
+        131,
+        143,
+        172,
+        175
+      ],
+      "description": "Conservative login-lock backoff depends on exception class, so OSError and parser ValueError during a partially successful handshake take a six-second retry rather than the required thirty-second boundary. Successful login already installs the auth lock before the char/map stage.",
+      "evidence": "Offline harness probe injected a char-stage OSError after successful login into FixtureClient.connect; run_limb attempted connects at synthetic times 100.0 and 106.0 (6.0 seconds apart). Source loginclif.cpp:161-167 installs the auth node and AUTH_TIMEOUT timer. A native 0x083e refusal also currently becomes parser ValueError rather than decoded refusal.",
+      "minimal_fix": "Record handshake phase/attempt status in connect_pair; preserve >=30 seconds after every failed connection attempt independently of exception type, including OSError/ValueError and final attempts. Keep ordinary non-handshake limb retry policy separate."
+    },
+    {
+      "id": "L3",
+      "severity": "high",
+      "file": "spikes/003-clientless-limbs/test_limbs.py",
+      "lines": [
+        182,
+        186
+      ],
+      "description": "Cleanup stops at the first close exception; the second participant may retain its socket/reader and the entire harness aborts without a structured failure or remaining-client cleanup. BotClient.close intentionally can raise for a non-stopping reader.",
+      "evidence": "Offline run_limb probe with two clients and first.close raising RuntimeError: closed_clients=[first]; second.close was never called. Actual client.py:398-399 supplies a real supported raising close path.",
+      "minimal_fix": "Attempt every close in individual try/except blocks, retain all failures, prohibit PASS and retries while cleanup is incomplete, and preserve the failed reader reference. Report a sanitized cleanup failure only after all participants were attempted."
+    },
+    {
+      "id": "L4",
+      "severity": "medium",
+      "file": "spikes/003-clientless-limbs/client.py",
+      "lines": [
+        225,
+        231,
+        257,
+        260
+      ],
+      "description": "Character selection uses list enumeration rather than the CHARACTER_INFO.CharNum slot. A one-character disposable account is not guaranteed to use slot zero, and its seed/manifest does not constrain the slot.",
+      "evidence": "Actual _char_server receive/pending path exercised with a synthetic 155-byte CHARACTER_INFO having CharNum=5: emitted CH_SELECT_CHAR slot=0. Native common-header compiler oracle confirmed name offset=88, CharNum offset=118 and size=155. Pinned char_clif.cpp:930 selects by account_id and p->slot/char_num.",
+      "minimal_fix": "Retain raw[entry_offset+118] as the slot alongside ID/name and send that slot; add sparse-slot and noncontiguous-list regressions."
+    },
+    {
+      "id": "L5",
+      "severity": "medium",
+      "file": "spikes/003-clientless-limbs/client.py",
+      "lines": [
+        611,
+        620,
+        656,
+        663
+      ],
+      "description": "Walking actor name begins at byte 86 in the native MAIN struct, not byte 83. Synthetic tests preserve the old wrong offset, so they do not validate this field against the server source.",
+      "evidence": "Compiled unaltered packet_unit_walking excerpt from pinned packets_struct.hpp with config.log flags: sizeof=110, AID=5, GID=9, job=23, MoveData=63, name=86. Actual parser probe with OfflineA at native byte 86 returned name=\"\" because it starts at three preceding zero metadata bytes. Idle/spawn name offsets 80/79 were confirmed correct.",
+      "minimal_fix": "Set ENTRY_NAME_OFF_WALK=86, correct the empirical-layout comment, and replace the synthetic byte-83 name fixture with compiler-backed byte-86 regression."
+    }
+  ],
+  "scope_complete": true,
+  "scope_definition": "Full contents of all six requested implementation/document files plus the new protocol/limb/condition tests and existing framing tests; relevant companion scripts were additionally inspected because named source provenance references them. Selected pinned native source/compiler authorities, not an exhaustive native protocol implementation audit.",
+  "reviewed_source_hashes": {
+    "spikes/003-clientless-limbs/client.py": {
+      "sha256": "a3ba947f95cb7010805ecd901831b811fb64dd9c87f40b2bb99f230f6b6a34f5",
+      "bytes": 33960
+    },
+    "spikes/003-clientless-limbs/packetdb.py": {
+      "sha256": "f7e022155ce3c4da2bb28ad6f55ffc35ecf2fd9f29462ebbe39c40dade012444",
+      "bytes": 37953
+    },
+    "spikes/003-clientless-limbs/test_limbs.py": {
+      "sha256": "fc2a4c4fc6298add7f6f2aef44af7daa5651f48881d46dab247b110358ba182b",
+      "bytes": 14750
+    },
+    "spikes/003-clientless-limbs/README.md": {
+      "sha256": "800a9c6086b91c43378024752360257b25a5d714d2515c981fec0d3dd5b7536c",
+      "bytes": 9856
+    },
+    "spikes/003-clientless-limbs/seed_test.sql": {
+      "sha256": "c041c5cb431bc340740ae7b617dd21caedd4c81101a1f8418ef99f81e360d0f0",
+      "bytes": 5655
+    },
+    "spikes/003-clientless-limbs/scripts/seed_fixture.py": {
+      "sha256": "03de2f4f659c8df0a3c5e9c41d74c3cb2493176f420aead8a7022f5631ecdb0e",
+      "bytes": 3284
+    },
+    "spikes/003-clientless-limbs/scripts/probe_map.py": {
+      "sha256": "9d923faa688c740ceb85a28813721fcde0def7a38628e326ea0468d2c045588c",
+      "bytes": 1284
+    },
+    "spikes/003-clientless-limbs/scripts/gen_packetdb.py": {
+      "sha256": "bc86bfd0ec71dfc41201d0a56ca3380caba5aabe616b0ac231616ba238464951",
+      "bytes": 3474
+    },
+    "spikes/003-clientless-limbs/test_packetdb.py": {
+      "sha256": "1db329c09a3fdedb9ca466e06fe8863a0a79a9b75cf03856a3d0761c1483645b",
+      "bytes": 3434
+    },
+    "tests/test_packet_conditions.py": {
+      "sha256": "abe40cc3af9d56de1f98088ae372e0e1f54cfe5a2d89ea6828f75f6e4d1969d1",
+      "bytes": 10259
+    },
+    "tests/test_client_protocol.py": {
+      "sha256": "3e781d2f50501b2d1bf0c3caccf507f3c6fcde533ad62ea1448b0f857143a5a2",
+      "bytes": 18039
+    },
+    "tests/test_limb_evidence.py": {
+      "sha256": "8f886fa22f81938a50be564523533b4efe7f2537f5acd982037b4d38ed3fc8b4",
+      "bytes": 13265
+    },
+    "rathena/config.log": {
+      "sha256": "6bb759d7b65d463ecd38ca81f484659ec2dc6e7885b017a964b9c611114e9d78",
+      "bytes": 48741
+    },
+    "rathena/src/common/packets.hpp": {
+      "sha256": "c92279bf163e9546b649397638c19e57c3eb515b49e841c13f88a5fb97bba693",
+      "bytes": 17432
+    },
+    "rathena/src/map/packets_struct.hpp": {
+      "sha256": "5ab5ef13d2a1cdc60d84dcaf2e3be0b6e316b9630e61c3ac7ba0f930d4d31287",
+      "bytes": 157544
+    },
+    "rathena/src/map/clif_packetdb.hpp": {
+      "sha256": "51c8a9ebd591e0dd4f444f829253a14d449615425405cb8a95f28a6dea460e66",
+      "bytes": 79471
+    },
+    "rathena/src/map/clif_shuffle.hpp": {
+      "sha256": "befba011ca4b2d1186c16fba325a7240a4ff5375e252d2fb4cc62d503c66d2a0",
+      "bytes": 288273
+    },
+    "rathena/src/map/clif.cpp": {
+      "sha256": "0b1db098158c240b090c6edb8417978ba495957c8a2df4cd9a0ab4cb39884ac5",
+      "bytes": 775974
+    },
+    "rathena/src/login/loginclif.cpp": {
+      "sha256": "85b9ef68f01890d505e5ef6089f6fb286516e2a35625f14fbcd79b03a36d9d93",
+      "bytes": 18190
+    },
+    "rathena/src/char/char_clif.cpp": {
+      "sha256": "f50dedd4cf46d0d3bea95c9410f1f0f04c5f7b525e6691b2afb9c4a3677c5654",
+      "bytes": 50916
+    },
+    "rathena/sql-files/main.sql": {
+      "sha256": "40bafce9c3aa14dd997d911b6dd42151d4b0e7afae9273d1ba96993ffdea1c80",
+      "bytes": 41941
+    }
+  },
+  "native_source_commit": "e985006171d2eb320ee512a653f4c83aea3d81b6",
+  "native_profile": {
+    "flags": [
+      "-DPACKETVER=20180704",
+      "-DPRERE"
+    ],
+    "family": "MAIN",
+    "ruleset": "pre-renewal",
+    "authority": "local config.log and pinned compiler/preprocessor; no server/provider/network calls"
+  },
+  "verification": [
+    {
+      "kind": "focused offline suite",
+      "command": "timeout -k 2 120 nix develop --offline -c uv run --offline --no-sync pytest -o addopts= -q tests/test_packet_conditions.py tests/test_client_protocol.py tests/test_limb_evidence.py spikes/003-clientless-limbs/test_packetdb.py -o faulthandler_timeout=10",
+      "exit_code": 0,
+      "result": "86 passed, 65 subtests passed in 0.92s",
+      "acceptance_limit": "These synthetic/stdlib/compiler tests are not live wire, SQL, native, party or world acceptance."
+    },
+    {
+      "kind": "independent inline harness/socket probes",
+      "result": [
+        "Actual actor wire identity rejected by movement harness",
+        "Sparse character slot 5 emitted selection slot 0 through actual char receive/pending flow",
+        "First close error prevented second cleanup",
+        "OSError handshake retried in 6 seconds",
+        "Walking name at compiler offset 86 parsed as empty",
+        "Historical generator executed benign builtin expression and accepted invalid guard"
+      ],
+      "network_calls": 0,
+      "db_calls": 0
+    },
+    {
+      "kind": "native common full-header compiler oracle",
+      "exit_code": 0,
+      "result": {
+        "CHARACTER_INFO": {
+          "size": 155,
+          "name": 88,
+          "CharNum": 118
+        },
+        "AC_REFUSE_LOGIN": {
+          "id": "0x083e",
+          "size": 26
+        },
+        "AC_ACCEPT_LOGIN": {
+          "size": 64,
+          "sex": 46,
+          "char_servers": 64
+        }
+      }
+    },
+    {
+      "kind": "native unaltered struct-excerpt compiler oracle",
+      "exit_code": 0,
+      "source": "Exact regex-extracted complete struct declarations from pinned map/packets_struct.hpp; no field substitutions; included common/packets.hpp with config.log defines. Excerpts used after full map include prerequisites failed.",
+      "result": {
+        "packet_unit_walking": {
+          "size": 110,
+          "AID": 5,
+          "GID": 9,
+          "job": 23,
+          "MoveData": 63,
+          "name": 86
+        },
+        "packet_spawn_unit": {
+          "size": 103,
+          "PosDir": 59,
+          "name": 79
+        },
+        "packet_idle_unit": {
+          "size": 104,
+          "PosDir": 59,
+          "name": 80
+        },
+        "PACKET_ZC_ADD_MEMBER_TO_GROUP": {
+          "size": 89,
+          "offline": 22,
+          "partyName": 23,
+          "playerName": 47
+        },
+        "PACKET_ZC_GROUP_LIST_SUB": {
+          "size": 54
+        }
+      }
+    },
+    {
+      "kind": "compiler preprocessed final map registrations",
+      "exit_code": 0,
+      "headers": [
+        "map/clif_packetdb.hpp",
+        "map/clif_shuffle.hpp"
+      ],
+      "result": {
+        "0x035f": "5 clif_parse_WalkToXY offsets 2",
+        "0x0360": "6 clif_parse_TickSend offsets 2",
+        "0x0437": "7 clif_parse_ActionRequest offsets 2,6",
+        "0x0888": "19 clif_parse_WantToConnection offsets 2,6,10,14,18",
+        "0x086d": "26 clif_parse_PartyInvite2 offsets 2"
+      }
+    }
+  ],
+  "verified_repairs": [
+    {
+      "area": "main guard parser",
+      "assessment": "Restricted grammar rejects arbitrary Python/executable/unsupported guards; tracks current branch independently of previous match. Native numeric table agrees with compiler in focused oracle. This does not vindicate the old separate generator."
+    },
+    {
+      "area": "receive/pending flow",
+      "assessment": "Per-socket byte buffers and packet deque preserve partial reads and all complete coalesced handshake frames. Exact AID echo shares the byte buffer without throwing away remainder. Context-managed temporary sockets remove both state maps. Actual char-stage probe exercised this path."
+    },
+    {
+      "area": "single dispatch",
+      "assessment": "Reader dispatches once; drain only discards queue observations. EOF/framing/dispatch errors retained and harness health prevents PASS. A non-stopping reader remains referenced and blocks reuse."
+    },
+    {
+      "area": "actor wire identity",
+      "assessment": "Client indexes actor entries and vanish by wire ID at offset 5 while retaining separate char_id at offset 9; source confirms. Harness movement consumer remains wrong (L1)."
+    },
+    {
+      "area": "connect deadlines",
+      "assessment": "Absolute monotonic deadline spans login/char/map connect and handshake writes; temporary sockets close on failures. Harness polling/cooldowns share monotonic budget. Runtime blocking calls/cleanup are cooperative and not hard real-time containment."
+    },
+    {
+      "area": "party evidence",
+      "assessment": "Fresh current uniquely named B invitation/nonzero party ID before reply; inviter post-return accepted result=2 for exact recipient AND online member-added exact aid/char/name/current-party fields. Cached roster alone cannot pass. Source/compiler confirms native party member sizes/offsets. No actual party acceptance occurred."
+    },
+    {
+      "area": "primary credential entrypoints",
+      "assessment": "client CLI/harness require private operator manifest; no reusable defaults in requested primary files; harness forbids nonloopback redirects and validates both exact connected IDs before limb mutations. Companion probe remains unsafe (S1)."
+    },
+    {
+      "area": "seed boundary",
+      "assessment": "Renderer has no DB execution API; strips password fields and emits hex-encoded JSON identities. SQL requires explicit isolated/stopped attestations, validates two distinct pairs, rejects non-InnoDB tables before writes, locks/validates both exact login+char ownership/offline/single-character scopes before mutation, rolls back/resignals errors, and reads back seeded char/skill rows before commit. These are source ordering checks only; no SQL syntax/atomicity acceptance."
+    }
+  ],
+  "suggestions": [
+    {
+      "file": "spikes/003-clientless-limbs/packetdb.py",
+      "lines": [
+        321,
+        716
+      ],
+      "description": "ACTOR_ENTRY_LEN and historical summary comments still assert 116/109/110 despite native sizes 110/103/104. This constant is unused in receive framing, so classify the unused assertion/documentation drift separately from the live name-offset bug. Rename historical constants or add explicitly native compiler-backed metadata."
+    },
+    {
+      "file": "spikes/003-clientless-limbs/packetdb.py",
+      "lines": [
+        251,
+        262
+      ],
+      "description": "Native refusal 0x083e/26 is missing and client only decodes old 0x006a/23. Unknown native refusal currently fails closed; do not infer a false handshake PASS. Add compiler-backed refusal framing and decode native uint32 result for diagnostics, and cover error paths while fixing L2."
+    },
+    {
+      "file": "spikes/003-clientless-limbs/test_limbs.py",
+      "lines": [
+        67,
+        75
+      ],
+      "description": "Open is blocking before regular-file fstat; add O_NONBLOCK like the client manifest reader to reject a FIFO without hanging. Existing documented controlled-private-directory and symlink-race caveats remain; no credential leak was demonstrated."
+    },
+    {
+      "file": "spikes/003-clientless-limbs/test_limbs.py",
+      "lines": [
+        277,
+        300
+      ],
+      "description": "Use monotonically allocated packet sequence identities rather than Python tuple id for freshness across bounded-log pruning. Current possible ID reuse excludes legitimate new evidence (false negative); do not mislabel it as demonstrated stale-evidence acceptance."
+    }
+  ],
+  "not_accepted": [
+    "No supplied real private fixture credentials or live authorization; no fixture accounts invented or connected.",
+    "No current native chat/movement/sit-stand/party acceptance, immediate rerun acceptance, general adapter acceptance, autonomous grinding or world isolation acceptance.",
+    "Historical README PASS timings are preserved history only and cannot establish repaired wire logic; offline fake tests do not supersede the defects reproduced here.",
+    "Character creation remains intentionally disabled before wire writes, despite compiler-verified native request/response framing lengths.",
+    "No MariaDB anonymous-block syntax/execution, transactional locking/rollback/concurrency, post-write live DB readback or SQL deployment was exercised.",
+    "Pinned native login/char/skill tables use MyISAM and MUST remain blocked by the InnoDB engine guard; no engine migration is authorized or performed.",
+    "Isolation/stopped flags and offline snapshots are operator attestations/models, not proof of fresh exclusive ownership or absence of in-memory sessions. No unsafe lifecycle/seed execution route is approved.",
+    "Inherited 20211103 snapshot outside exercised/native-corrected families is not fully regenerated. Unknown/unsupported families are not automatically blockers unless a supported path demonstrably misuses them; walking name and sparse slot are demonstrated supported-path mismatches.",
+    "Post-reply party correlation is not causal/cryptographic proof against delayed or injected traffic; very fast valid replies or bounded logs may produce fail-closed false negatives.",
+    "No broad app quality/full-suite acceptance or credential rotation claim; this report does not validate unrelated working-tree changes."
+  ],
+  "issues_encountered": [
+    "Initial full map-struct compiler attempt lacked DEFINE_PACKET_ID/MAX_ITEM_OPTIONS prerequisites; map/packets.hpp retry lacked ryml_std.hpp include path. Used unaltered target struct excerpts with native common header and actual defines instead; explicitly no full map-header build success claim.",
+    "New test files are owned by another child and may have formatting/type-only edits relative to fix reports. Final reviewed-source SHA256 hashes identify this review point; no tests were edited by this reviewer."
+  ],
+  "constraints": {
+    "source_edits": false,
+    "test_edits": false,
+    "staging": false,
+    "commits": false,
+    "provider_calls": false,
+    "network_game_calls": false,
+    "database_calls": false,
+    "report_contains_credentials": false,
+    "temporary_compiler_outputs": "Only scratch temporary directories, cleaned automatically."
+  }
+}

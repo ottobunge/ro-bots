@@ -1,0 +1,275 @@
+{
+  "status": "candidate_for_independent_review",
+  "scope": "public Basic Skill meaning, provider-neutral read-only advice only",
+  "rulesets": [
+    "pre-re",
+    "renewal"
+  ],
+  "native_cli_ruleset": "pre-re",
+  "native_renewal_activation": "OPEN",
+  "source_revision": "e985006171d2eb320ee512a653f4c83aea3d81b6",
+  "baseline_count": 272,
+  "baseline_drift": [
+    "src/robots/playing.py",
+    "src/robots/domain/decisions.py",
+    "src/robots/domain/model.py",
+    "src/robots/app/playing_runtime.py"
+  ],
+  "allowed_baseline_drift": [
+    "src/robots/app/playing_runtime.py",
+    "src/robots/domain/model.py",
+    "src/robots/domain/decisions.py",
+    "src/robots/playing.py"
+  ],
+  "owned_hashes": {
+    "src/robots/domain/skill_knowledge.py": "29cbdb8d38fe227488da6c16b24c731acf691d355d6ecefd1a66228afb1d86a3",
+    "src/robots/adapters/skill_knowledge.py": "fdc14aca7877ff91ced587479368c3e417dbd914bcd6b74c0b81367b0015aa4f",
+    "src/robots/app/playing_runtime.py": "8f6b5861c662705368a4f4fc347d2c990db0f47a140a4ba07aa5772ad41030fd",
+    "src/robots/domain/model.py": "42d151cc75a20ab654c26a196f2d298cce8553e7e4e1a9c76c3d204e32ebfd7d",
+    "src/robots/domain/decisions.py": "c19d0cf931b3337809cf2a97fc90062493e54444520dba1ac778f6c723fa34cb",
+    "src/robots/playing.py": "90ea6f0efaf39c0de45ba26c0631f638cacc9de386eccddad023f57f7f08886d",
+    "tests/test_skill_knowledge.py": "ce4e6544812d3fd6ea83f177019a2edcb30c0ef871810c28d51f4aa0f163ceab",
+    "knowledge/skill-meaning-seed.json": "c05dbedaa5e5e27995c0d21c588064811be515858df584f1af67be4d8280096c"
+  },
+  "gates": {
+    "format": {
+      "command": [
+        ".venv/bin/black",
+        "--workers",
+        "1",
+        "src/robots/domain/skill_knowledge.py",
+        "src/robots/adapters/skill_knowledge.py",
+        "src/robots/app/playing_runtime.py",
+        "src/robots/domain/model.py",
+        "src/robots/domain/decisions.py",
+        "src/robots/playing.py",
+        "tests/test_skill_knowledge.py"
+      ],
+      "exit_code": 0,
+      "log": "/home/otto/.hermes/cache/scratch/public-skill-meaning/format-final.log",
+      "sha256": "d2f8609ac6639be89a28667223aefe7f2a5e3ed41c926ce774b76a054e194772"
+    },
+    "black": {
+      "command": [
+        ".venv/bin/black",
+        "--check",
+        "src/robots/domain/skill_knowledge.py",
+        "src/robots/adapters/skill_knowledge.py",
+        "src/robots/app/playing_runtime.py",
+        "src/robots/domain/model.py",
+        "src/robots/domain/decisions.py",
+        "src/robots/playing.py",
+        "tests/test_skill_knowledge.py"
+      ],
+      "exit_code": 0,
+      "log": "/home/otto/.hermes/cache/scratch/public-skill-meaning/black-final.log",
+      "sha256": "0b479fee9c3c70313b9c5c7a6339ecd413b78bbea93f1ad5050f49bdd3a655af"
+    },
+    "ruff": {
+      "command": [
+        ".venv/bin/ruff",
+        "check",
+        "src/robots/domain/skill_knowledge.py",
+        "src/robots/adapters/skill_knowledge.py",
+        "src/robots/app/playing_runtime.py",
+        "src/robots/domain/model.py",
+        "src/robots/domain/decisions.py",
+        "src/robots/playing.py",
+        "tests/test_skill_knowledge.py"
+      ],
+      "exit_code": 0,
+      "log": "/home/otto/.hermes/cache/scratch/public-skill-meaning/ruff-final.log",
+      "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
+    },
+    "mypy": {
+      "command": [
+        ".venv/bin/mypy",
+        "--strict",
+        "src/robots/domain/skill_knowledge.py",
+        "src/robots/adapters/skill_knowledge.py",
+        "src/robots/app/playing_runtime.py",
+        "src/robots/domain/model.py",
+        "src/robots/domain/decisions.py",
+        "src/robots/playing.py",
+        "tests/test_skill_knowledge.py"
+      ],
+      "exit_code": 0,
+      "log": "/home/otto/.hermes/cache/scratch/public-skill-meaning/mypy-final.log",
+      "sha256": "050c52a2b0c61e8b681ef5c485e0bc03340b8d55148e0acef27d744c8be42033"
+    },
+    "xenon": {
+      "command": [
+        ".venv/bin/xenon",
+        "src",
+        "--max-absolute",
+        "B",
+        "--max-modules",
+        "B",
+        "--max-average",
+        "A"
+      ],
+      "exit_code": 0,
+      "log": "/home/otto/.hermes/cache/scratch/public-skill-meaning/xenon-final.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "duplicates": {
+      "command": [
+        ".venv/bin/pylint",
+        "--disable=all",
+        "--enable=duplicate-code",
+        "--ignore-paths=tests",
+        "src"
+      ],
+      "exit_code": 0,
+      "log": "/home/otto/.hermes/cache/scratch/public-skill-meaning/duplicates-final.log",
+      "sha256": "8cbfc8cd0b04a4858b0b78b74c6df9631a1695e105e6911d4b57fbcc43b218b5"
+    },
+    "security": {
+      "command": [
+        ".venv/bin/bandit",
+        "-q",
+        "-c",
+        "pyproject.toml",
+        "-r",
+        "src"
+      ],
+      "exit_code": 0,
+      "log": "/home/otto/.hermes/cache/scratch/public-skill-meaning/security-final.log",
+      "sha256": "2ee20ac6a3a915ff1204f17c53260bcc2ebfb848f37624608d13ddfdf1cc35ff"
+    },
+    "deadcode": {
+      "command": [
+        ".venv/bin/vulture",
+        "src",
+        "vulture_whitelist.py"
+      ],
+      "exit_code": 0,
+      "log": "/home/otto/.hermes/cache/scratch/public-skill-meaning/deadcode-final.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "pytest": {
+      "command": [
+        ".venv/bin/python",
+        "-m",
+        "pytest",
+        "tests/test_skill_knowledge.py",
+        "tests/test_native_skill_context.py",
+        "tests/test_playing_runtime.py",
+        "tests/test_decisions.py",
+        "tests/test_systemone_request_contract.py",
+        "tests/test_native_encounter_request.py",
+        "tests/test_native_npc_cancel_recovery.py",
+        "tests/test_decision_vitals_context.py",
+        "--junitxml=/home/otto/.hermes/cache/scratch/public-skill-meaning/final-green.xml",
+        "--cov=robots.domain.skill_knowledge",
+        "--cov=robots.adapters.skill_knowledge",
+        "--cov-report=term-missing",
+        "--cov-report=json:/home/otto/.hermes/cache/scratch/public-skill-meaning/coverage.json",
+        "--cov-fail-under=85"
+      ],
+      "exit_code": 0,
+      "log": "/home/otto/.hermes/cache/scratch/public-skill-meaning/pytest-final.log",
+      "sha256": "f0edccb5c4ceb782076b8546371be373127ed76096c4e234ee7a99b396ed1261"
+    }
+  },
+  "receipts": {
+    "final-green.xml": {
+      "path": "/home/otto/.hermes/cache/scratch/public-skill-meaning/final-green.xml",
+      "sha256": "c42f0b230e30a572c39229631747caee519f742dfbca4a343a5e94d44baf78e1",
+      "cases": 261,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0
+    },
+    "negative-red.xml": {
+      "path": "/home/otto/.hermes/cache/scratch/public-skill-meaning/negative-red.xml",
+      "sha256": "2543042dc22fa41015f77673847916e1a3c0f2456aa6b7e5048bfc27c56a9127",
+      "cases": 24,
+      "failures": 3,
+      "errors": 0,
+      "skips": 0
+    },
+    "budget-red.xml": {
+      "path": "/home/otto/.hermes/cache/scratch/public-skill-meaning/budget-red.xml",
+      "sha256": "4d6c99b04d2cabb82042afb240d4a0adbc6d8b032602a0b47437902008f65ed1",
+      "cases": 25,
+      "failures": 1,
+      "errors": 0,
+      "skips": 0
+    },
+    "incremental-green.xml": {
+      "path": "/home/otto/.hermes/cache/scratch/public-skill-meaning/incremental-green.xml",
+      "sha256": "c784b5809a92c3df18dae3441bb8f84c4ed8a3e76a9637f3538e259115964fd7",
+      "cases": 19,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0
+    },
+    "incremental-red.xml": {
+      "path": "/home/otto/.hermes/cache/scratch/public-skill-meaning/incremental-red.xml",
+      "sha256": "d21d1493e92f57ae3dd41d405df2525df613d919ca914ed86e3e6e4fe5f7f23f",
+      "cases": 19,
+      "failures": 1,
+      "errors": 0,
+      "skips": 0
+    },
+    "first-green.xml": {
+      "path": "/home/otto/.hermes/cache/scratch/public-skill-meaning/first-green.xml",
+      "sha256": "6a16db5354d89fd6ffddc3ea83f90d665e456b4552dc20e501c6489f7762395d",
+      "cases": 1,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0
+    },
+    "first-red.xml": {
+      "path": "/home/otto/.hermes/cache/scratch/public-skill-meaning/first-red.xml",
+      "sha256": "82b13d8de173d4dd48b2d70326b64ce06bdaa7554066b93b36229deae2f5a897",
+      "cases": 1,
+      "failures": 1,
+      "errors": 0,
+      "skips": 0
+    }
+  },
+  "evidence": {
+    "path": "/home/otto/.hermes/cache/scratch/public-skill-meaning/source-evidence.json",
+    "sha256": "9e4a61bd3e541c35966e4f350b68fb0779089e5d02b09eb90dccff3d5ca3b8d7"
+  },
+  "tdd_note": "Initial vertical assertion RED -> GREEN; CLI assertion RED -> GREEN; malformed injected catalog assertion RED -> GREEN; complete UTF-8 envelope assertion RED (2050 > 2048) -> GREEN. Other guard tests characterize the initial bounded implementation, not independently failing tests-first receipts. Initial tracer missing-module fallback removed after genuine assertion RED; casting_legality test spelling corrected before first GREEN.",
+  "limitations": [
+    "No native connections, inference, SQL, casting or allocation performed.",
+    "Not a full client tooltip, nine-level table, all skills catalog or planner implementation.",
+    "Independent completed-snapshot review and parent whole-root gate pending.",
+    "All six full milestones and ten criteria remain OPEN.",
+    "Configured source closure contains no db directory: DB metadata verified against actual pinned checkout bytes, not a claimed configured DB snapshot."
+  ],
+  "new_feature_repair_budget": "at most two independent-review autofix cycles; old budgets unchanged",
+  "new_module_coverage_percent": 100.0,
+  "new_feature_physical_cases": 25,
+  "source_snapshot_license": "rAthena GPL-3.0; bounded public source paraphrase, no proprietary client tooltip data",
+  "configured_clif_gate_excerpt_matches": [
+    {
+      "start": 11623,
+      "matches": true
+    },
+    {
+      "start": 11740,
+      "matches": true
+    },
+    {
+      "start": 12364,
+      "matches": true
+    },
+    {
+      "start": 12493,
+      "matches": true
+    },
+    {
+      "start": 13797,
+      "matches": true
+    }
+  ],
+  "source_supplement": {
+    "path": "/home/otto/.hermes/cache/scratch/public-skill-meaning/source-supplement.json",
+    "sha256": "7a39245330d12e6ebe623060f78420bb96cddcf6bc47180d476a6957e5bb42e0"
+  }
+}

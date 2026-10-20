@@ -1,0 +1,220 @@
+{
+  "status": "offline memory-kind blocker implemented; independent review pending",
+  "scope_grant": "playing-mvp-npc-finite-completion-scope.json memory_kind only",
+  "modified": [
+    "src/robots/society/memory.py: NoteKind extension only",
+    "src/robots/app/brain.py: _remember_npc actual kind argument and comment only",
+    "tests/test_native_npc_guidance.py: added explicit npc_dialogue assertion only"
+  ],
+  "created": [
+    "tests/test_native_npc_memory_journal.py",
+    "run/reviews/playing-mvp-npc-memory-kind-completion.json"
+  ],
+  "tdd": {
+    "durable_red": "real append rejected npc_dialogue with ValueError invalid journal note values; explicit pytest failure, no import/collection error",
+    "durable_green": "Literal extension only; real append, fresh Memory/store replay and fresh Python-process replay passed",
+    "brain_red": "real received-frame NPC event persisted old other kind; assertion expected other,npc_dialogue,npc_dialogue and failed",
+    "brain_green": "changed only actual remember kind/comment; two received pages persisted, reached next actual NPC menu decision memory_view and restored in fresh Memory",
+    "physical_xml_directory": "/home/otto/.hermes/cache/scratch/npc-memory-kind-completion",
+    "xml_counts": {
+      "red1": {
+        "tests": 1,
+        "failures": 1,
+        "errors": 0,
+        "skipped": 0
+      },
+      "green1": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "red2": {
+        "tests": 1,
+        "failures": 1,
+        "errors": 0,
+        "skipped": 0
+      },
+      "green2": {
+        "tests": 2,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "scoped": {
+        "tests": 205,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      }
+    }
+  },
+  "verification": {
+    "xml": {
+      "red1": {
+        "tests": 1,
+        "failures": 1,
+        "errors": 0,
+        "skipped": 0
+      },
+      "green1": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "red2": {
+        "tests": 1,
+        "failures": 1,
+        "errors": 0,
+        "skipped": 0
+      },
+      "green2": {
+        "tests": 2,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "scoped": {
+        "tests": 205,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      }
+    },
+    "replay": {
+      "fresh_process_note": {
+        "count": 1,
+        "kinds": [
+          "npc_dialogue"
+        ]
+      },
+      "brain_notes": {
+        "count": 3,
+        "kinds": [
+          "other",
+          "npc_dialogue",
+          "npc_dialogue"
+        ]
+      },
+      "old_kinds": {
+        "count": 8,
+        "kinds": [
+          "chat",
+          "combat",
+          "party",
+          "loot",
+          "quest",
+          "session",
+          "reputation",
+          "other"
+        ]
+      }
+    },
+    "quality": {
+      "black": {
+        "command": [
+          ".venv/bin/black",
+          "--check",
+          "src/robots/society/memory.py",
+          "src/robots/app/brain.py",
+          "tests/test_native_npc_guidance.py",
+          "tests/test_native_npc_memory_journal.py"
+        ],
+        "exit_code": 0,
+        "log": "/home/otto/.hermes/cache/scratch/npc-memory-kind-completion/black.log"
+      },
+      "ruff": {
+        "command": [
+          ".venv/bin/ruff",
+          "check",
+          "src/robots/society/memory.py",
+          "src/robots/app/brain.py",
+          "tests/test_native_npc_guidance.py",
+          "tests/test_native_npc_memory_journal.py"
+        ],
+        "exit_code": 0,
+        "log": "/home/otto/.hermes/cache/scratch/npc-memory-kind-completion/ruff.log"
+      },
+      "mypy": {
+        "command": [
+          ".venv/bin/mypy",
+          "--strict",
+          "--follow-imports=silent",
+          "--cache-dir=/home/otto/.hermes/cache/scratch/npc-memory-kind-completion/mypy",
+          "src/robots/society/memory.py",
+          "src/robots/app/brain.py",
+          "tests/test_native_npc_guidance.py",
+          "tests/test_native_npc_memory_journal.py"
+        ],
+        "exit_code": 0,
+        "log": "/home/otto/.hermes/cache/scratch/npc-memory-kind-completion/mypy.log"
+      },
+      "scoped-tests": {
+        "command": [
+          ".venv/bin/pytest",
+          "tests/test_brain.py",
+          "tests/test_host_memory.py",
+          "tests/test_memory.py",
+          "tests/test_memory_concurrency.py",
+          "tests/test_memory_journal_boundary.py",
+          "tests/test_memory_journal_failures.py",
+          "tests/test_memory_storage.py",
+          "tests/test_memory_summary_cache.py",
+          "tests/test_native_npc_guidance.py",
+          "tests/test_native_npc_memory_journal.py",
+          "-o",
+          "addopts=",
+          "-p",
+          "no:cacheprovider",
+          "--basetemp=/home/otto/.hermes/cache/scratch/npc-memory-kind-completion/scoped-tmp",
+          "--junitxml=/home/otto/.hermes/cache/scratch/npc-memory-kind-completion/scoped.xml",
+          "-q"
+        ],
+        "exit_code": 0,
+        "log": "/home/otto/.hermes/cache/scratch/npc-memory-kind-completion/scoped-tests.log"
+      }
+    },
+    "source_sha256": {
+      "src/robots/society/memory.py": "ce7abeecd931212e8bc46e875ab0cab111965d71954e5be4aaed5fdb526d4d15",
+      "src/robots/app/brain.py": "94cf0f8483eab0abb24e58a924765e1fcd454e065cea2b175d1ad00120902a60",
+      "tests/test_native_npc_guidance.py": "d8ad55ecddd4d4274344b37113bf349df5afd9cc97c051dc326980a9d3c0f2b4",
+      "tests/test_native_npc_memory_journal.py": "d06907915b2c5eebdc28d24a4ee8298952194ec05d288dc75140a095747f83ad"
+    },
+    "journal_implementation_unchanged": true,
+    "brain_scope_ast_verified": true,
+    "memory_scope_ast_verified": true
+  },
+  "preserved": [
+    "All eight old literal kinds accepted and replayed unchanged; no historical NPC other-note rewriting",
+    "Arbitrary unknown kind rejected on append and replay; failed append leaves journal unchanged",
+    "Corrupt/torn history fails closed, retains bytes and releases writer lock on failed Memory restore",
+    "Foreign persona ownership rejects; cross-world symlink alias rejects; independent world/persona memories remain empty",
+    "Private world directory 0700 and raw journal 0600; provenance, page order, session identity and dedup unchanged",
+    "Existing journal implementation, schema version/format and summary/cache implementation unmodified"
+  ],
+  "compatibility": "New reader accepts npc_dialogue and every prior tag. Old-reader forward compatibility is NOT promised: fail closed, no migration.",
+  "fixtures": "Only Hermes scratch private JSONL fixture roots. Fixed timestamps 0.0, 1.0, 2.0, 10.0, 12.5, 123.5; no real-clock replay binding.",
+  "issues": [
+    "Requested run/reviews/playing-mvp-npc-guidance.json absent at discovery; available finite completion scope was read. Existing guidance test had no other-kind assertion to replace, so only an explicit new-tag assertion was added.",
+    "Initial Ruff findings in new test were corrected; final scoped gates all exit 0."
+  ],
+  "remaining": [
+    "Parent final whole-source stable gates after parallel writer finishes",
+    "New NPC feature independent review pending; no self-approval or current-live adoption"
+  ],
+  "no_effects": [
+    "network",
+    "models",
+    "native accounts",
+    "SQL",
+    "services",
+    "Git",
+    "credentials/private config",
+    "actual native journals",
+    "source world seed"
+  ],
+  "quest_success_claimed": false,
+  "public_wiki_changed": false,
+  "all_milestones_open": true
+}

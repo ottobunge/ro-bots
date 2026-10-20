@@ -1,0 +1,186 @@
+{
+  "task": "Ingest db.irowiki.org (iRO Wiki Database) monster/item stat data into a local searchable corpus under run/knowledge/iro-db/",
+  "generated_at": "2026-10-15T21:47:44Z",
+  "source": {
+    "site": "db.irowiki.org",
+    "base_url": "https://db.irowiki.org/db/",
+    "attribution": "Data (c) Gravity Co., Ltd. and the iRO Wiki (irowiki.org / db.irowiki.org) contributors. Ingested read-only for local research use; no redistribution or republishing. Ragnarok Online is (c) Gravity Co., Ltd.",
+    "robots_txt": "robots.txt at db.irowiki.org returned empty (no Disallow rules) at ingest time"
+  },
+  "url_patterns_discovered": {
+    "root_redirect": "https://db.irowiki.org/ -> https://db.irowiki.org/db/ (302)",
+    "monster_info": "https://db.irowiki.org/db/monster-info/<id>/",
+    "item_info": "https://db.irowiki.org/db/item-info/<id>/",
+    "monster_listing": "https://db.irowiki.org/db/monster-search/?search&ltype=2&sort=1,0&header=100 (single page, all 1042 monsters)",
+    "item_listings": "https://db.irowiki.org/db/{gear,weapon,card,consume,costume}-search/?search&ltype=2&sort=1,0&header=100 (single page per section, 6562 items total)",
+    "etc_coverage": "no item search section covers Etc-type items; those ids were harvested from monster drop tables (item-info links on fetched monster pages) plus the /db/arrow-craft/ listing",
+    "card_listing_note": "card-search states \"2220 items\" but those are entries including duplicate variant rows (685 ids have >1 row, e.g. id 4662 x13); unique card item ids = 1009. Completeness cross-checked: 569 distinct card ids are referenced by monster drops, 568 of which are in the card listing; the missing one (4179 Dragon Fly Card) was harvested via drops and ingested.",
+    "json_api": "none found; all pages are server-rendered HTML (search is GET-param driven, parsed from stable CSS-classed tables)"
+  },
+  "enumeration": {
+    "listing_counts": {
+      "item-card-search.html": 1036,
+      "item-consume-search.html": 710,
+      "item-costume-search.html": 599,
+      "item-gear-search.html": 1983,
+      "item-weapon-search.html": 1050,
+      "monster-search-all.html": 1042
+    },
+    "monsters_listed": 1042,
+    "items_enumerated_sections": 5316,
+    "etc_ids_via_drops_arrowcraft": 532,
+    "items_total": 5848
+  },
+  "counts": {
+    "items": 5848,
+    "monsters": 1042
+  },
+  "politeness": {
+    "backoff": "15s*attempt on 403/429/5xx, max 3 attempts",
+    "base_delay_s": 0.4,
+    "concurrency": 1,
+    "jitter_s": 0.1,
+    "user_agent": "ro-bots-knowledge-ingest/0.1 (local research corpus; polite sequential crawler)"
+  },
+  "requests": {
+    "total_this_run": 6906,
+    "retries": 2,
+    "blocked": false,
+    "errors_404_or_unparseable": [
+      {
+        "error": "unparseable page",
+        "id": 0,
+        "url": "https://db.irowiki.org/db/item-info/0/"
+      },
+      {
+        "error": "unparseable page",
+        "id": 3,
+        "url": "https://db.irowiki.org/db/item-info/3/"
+      },
+      {
+        "error": "unparseable page",
+        "id": 6753,
+        "url": "https://db.irowiki.org/db/item-info/6753/"
+      },
+      {
+        "error": "unparseable page",
+        "id": 22699,
+        "url": "https://db.irowiki.org/db/item-info/22699/"
+      },
+      {
+        "error": "unparseable page",
+        "id": 23076,
+        "url": "https://db.irowiki.org/db/item-info/23076/"
+      },
+      {
+        "error": "unparseable page",
+        "id": 23077,
+        "url": "https://db.irowiki.org/db/item-info/23077/"
+      },
+      {
+        "error": "unparseable page",
+        "id": 23078,
+        "url": "https://db.irowiki.org/db/item-info/23078/"
+      },
+      {
+        "error": "unparseable page",
+        "id": 25156,
+        "url": "https://db.irowiki.org/db/item-info/25156/"
+      },
+      {
+        "error": "unparseable page",
+        "id": 25157,
+        "url": "https://db.irowiki.org/db/item-info/25157/"
+      },
+      {
+        "error": "unparseable page",
+        "id": 25158,
+        "url": "https://db.irowiki.org/db/item-info/25158/"
+      },
+      {
+        "error": "unparseable page",
+        "id": 27178,
+        "url": "https://db.irowiki.org/db/item-info/27178/"
+      },
+      {
+        "error": "unparseable page",
+        "id": 27179,
+        "url": "https://db.irowiki.org/db/item-info/27179/"
+      },
+      {
+        "error": "unparseable page",
+        "id": 27180,
+        "url": "https://db.irowiki.org/db/item-info/27180/"
+      }
+    ],
+    "note": "one earlier aborted run made ~9 requests before a crawler-detection bug (false-positive Cloudflare check) was fixed; ingest is resumable and the aborted run stored no records"
+  },
+  "schema": {
+    "monsters_jsonl": "{id, section:\"monsters\", name, url, fetched_at, fields:{level, hp, def, mdef, attack, range, aspd, move_speed, base_exp, job_exp, hit, flee, size, race, element, mode, stats{agi,vit,int,dex,luk}, elemental_damage{}, drops:[{id,name,rate}]}, raw_html}",
+    "items_jsonl": "{id, section:\"items\", name, url, fetched_at, sections:[gear|weapon|card|consume|costume], fields:{type, subtype, weight, element, weapon_level, required_level, upgradable, damagable, atk, def, buying_price, selling_price, slots, description, extra{}, dropped_by[{id,name,rate}]}, raw_html}",
+    "sqlite": "iro-db.db: entities(section,id,name,url,fetched_at,sections,fields_json,raw_html) + fts_pages(title,body,section UNINDEXED,ref_id UNINDEXED,url UNINDEXED) + meta(k,v)"
+  },
+  "files": {
+    "monsters.jsonl": {
+      "sha256": "78dd9e560467e0891e9ce564a7945e9a411b09e0f9a77f093c97762d13bdd9f9",
+      "bytes": 21824630
+    },
+    "items.jsonl": {
+      "sha256": "7b7be47cfdc6a5bf30a8665caec1db8fdd7de7d6cf3b0ccb39cf0063b5336c5a",
+      "bytes": 115706685
+    },
+    "iro-db.db": {
+      "sha256": "1d9e9b750d6d1b7a35786f407e6d643f0487f8bff48f3099058427ece3e9480e",
+      "bytes": 137711616
+    },
+    "meta.json": {
+      "sha256": "9326494bd0ea62574fd29c770b900b1f22623449ab27976ffa1bf668deaae179",
+      "bytes": 2331
+    }
+  },
+  "spot_checks": {
+    "poring_id_1002": {
+      "argv": "query_iro_db.py --id 1002",
+      "exit_code": 0,
+      "output_head": "[monsters] Poring (id 1002)\n  url: https://db.irowiki.org/db/monster-info/1002/\n  fetched_at: 2026-10-15T20:13:46Z\n  fields:\n{\n    \"level\": \"1\",\n    \"def\": \"2 + 1 0.45%\",\n    \"hp\": \"60\",\n    \"mdef\": \"5 4.29%\",\n    \"attack\": \"8 ~ 9\",\n    \"range\": \"1 cell\",\n    \"aspd\": \"106.4\",\n    \"move_speed\": \"400 ms\",\n    \"base_exp\": \"27\",\n    \"base_exp_per_hp\": \"0.45\",\n    \"job_exp\": \"20\",\n    \"job_exp_per_hp\": \"0.45\",\n    \"hit\": \"202\",\n    \"flee\": \"177\",\n    \"size\": \"Medium\",\n    \"race\": \"Plant\",\n    \"element\": \"Water 1\",\n    \"mode\": [\n        \"Passive\",\n        \"Looter\"\n    ],\n    \"stats\": {\n        \"agi\": \"1\",\n        \"vit\": \"1\",\n        \"int\": \"0\",\n        \"dex\": \"6\",\n        \"luk\": \"5\"\n    },\n    \"elemental_damage\": {\n        \"Neutral\": \"100%\",\n        \"Poison\": \"100%\",\n        \"Holy\": \"100%\",\n        \"Earth\": \"100%\",\n        \"Shadow\": \"100%\",\n        \"Ghost\": \"100%\",\n        \"Undead\": \"100%\"\n    },\n    \"drops\": [\n        {\n            \"id\": 909,\n            \"name\": \"Jellopy\",\n            \"rate\": \"70.00%\"\n        },\n        {\n            \"id\": 1202,\n            \"name\": \"Knife [4]\",\n            \"rate\": \"1.00%\"\n        },\n        {\n            \"id\": 938,\n            \"name\": \"Sticky Mucus\",\n            \"rate\": \"4.00%\"\n        },\n        {\n            \"id\": 512,\n            \"name\": \"Apple\",\n            \"rate\": \"10.00%\"\n        },\n        {\n            \"id\": 713,\n            \"name\": \"Empty Bottle\",\n            \"rate\": \"15.00%\"\n        },\n        {\n            \"id\": 512,\n            \"name\": \"Apple\",\n            \"rate\": \"1.51%\"\n        },\n        {\n            \"id\": 619,\n            \"name\": \"Unripe Apple\",\n            \"rate\": \"0.21%\"\n        },\n        {\n            \"id\": 4001,\n            \"name\": \"Poring Card\",\n            \"rate\": \"0.02%\"\n        }\n    ]\n}\n[items] Iron Ore (id 1002)\n  url: https://db.irowiki.org/db/item-info/1002/\n  fetched_at: 2026-10-15T20:31:55Z\n  sections: []\n  fields:\n{\n    \"type\": \"Misc\",\n    \"subtype\": \"Ore\",\n    \"weight\": \"15\",\n    \"required_level\": \"0\",\n    \"buying_price\": \"--\",\n    \"selling_price\": \"25 Z (31 Z)\",\n    \"description\": \"An impure ore that forms Iron after being refined.\",\n    \"dropped_by\": []\n}\n"
+    },
+    "lunatic_id_1063": {
+      "argv": "query_iro_db.py --id 1063",
+      "exit_code": 0,
+      "output_head": "[monsters] Lunatic (id 1063)\n  url: https://db.irowiki.org/db/monster-info/1063/\n  fetched_at: 2026-10-15T20:14:29Z\n  fields:\n{\n    \"level\": \"3\",\n    \"def\": \"18 + 3 3.88%\",\n    \"hp\": \"55\",\n    \"mdef\": \"0 0.00%\",\n    \"attack\": \"11 ~ 12\",\n    \"range\": \"1 cell\",\n    \"aspd\": \"127.2\",\n    \"move_speed\": \"200 ms\",\n    \"base_exp\": \"36\",\n    \"base_exp_per_hp\": \"0.655\",\n    \"job_exp\": \"27\",\n    \"job_exp_per_hp\": \"0.655\",\n    \"hit\": \"206\",\n    \"flee\": \"181\",\n    \"size\": \"Small\",\n    \"race\": \"Brute\",\n    \"element\": \"Neutral 3\",\n    \"mode\": [\n        \"Passive\"\n    ],\n    \"stats\": {\n        \"agi\": \"3\",\n        \"vit\": \"3\",\n        \"int\": \"0\",\n        \"dex\": \"8\",\n        \"luk\": \"5\"\n    },\n    \"elemental_damage\": {\n        \"Neutral\": \"100%\",\n        \"Poison\": \"100%\",\n        \"Fire\": \"100%\",\n        \"Holy\": \"100%\",\n        \"Earth\": \"100%\",\n        \"Shadow\": \"100%\",\n        \"Wind\": \"100%\",\n        \"Water\": \"100%\",\n        \"Undead\": \"100%\"\n    },\n    \"drops\": [\n        {\n            \"id\": 705,\n            \"name\": \"Clover\",\n            \"rate\": \"65.00%\"\n        },\n        {\n            \"id\": 949,\n            \"name\": \"Feather\",\n            \"rate\": \"10.00%\"\n        },\n        {\n            \"id\": 2262,\n            \"name\": \"Clown Nose\",\n            \"rate\": \"0.05%\"\n        },\n        {\n            \"id\": 512,\n            \"name\": \"Apple\",\n            \"rate\": \"20.00%\"\n        },\n        {\n            \"id\": 507,\n            \"name\": \"Red Herb\",\n            \"rate\": \"6.00%\"\n        },\n        {\n            \"id\": 515,\n            \"name\": \"Carrot\",\n            \"rate\": \"11.00%\"\n        },\n        {\n            \"id\": 622,\n            \"name\": \"Rainbow Carrot\",\n            \"rate\": \"0.21%\"\n        },\n        {\n            \"id\": 4006,\n            \"name\": \"Lunatic Card\",\n            \"rate\": \"0.02%\"\n        }\n    ]\n}\n[items] Fang (id 1063)\n  url: https://db.irowiki.org/db/item-info/1063/\n  fetched_at: 2026-10-15T20:32:41Z\n  sections: []\n  fields:\n{\n    \"type\": \"Misc\",\n    \"subtype\": \"General\",\n    \"weight\": \"1\",\n    \"required_level\": \"0\",\n    \"buying_price\": \"--\",\n    \"selling_price\": \"340 Z (421 Z)\",\n    \"description\": \"A sharp cuspid yanked from some monster's mouth.\",\n    \"dropped_by\": []\n}\n"
+    },
+    "knife_id_1201": {
+      "argv": "query_iro_db.py --id 1201 --section items",
+      "exit_code": 0,
+      "output_head": "[items] Knife [3] (id 1201)\n  url: https://db.irowiki.org/db/item-info/1201/\n  fetched_at: 2026-10-15T20:33:52Z\n  sections: [\"weapon\"]\n  fields:\n{\n    \"type\": \"Weapon\",\n    \"subtype\": \"Dagger\",\n    \"weight\": \"40\",\n    \"element\": \"Neutral\",\n    \"weapon_level\": \"1\",\n    \"required_level\": \"1\",\n    \"upgradable\": \"Yes\",\n    \"damagable\": \"Yes\",\n    \"atk\": \"17\",\n    \"extra\": {\n        \"Small\": \"100%\",\n        \"Medium\": \"75%\",\n        \"Large\": \"50%\"\n    },\n    \"buying_price\": \"50 Z (38 Z)\",\n    \"selling_price\": \"25 Z (31 Z)\",\n    \"description\": \"A simple knife.\",\n    \"slots\": 3,\n    \"dropped_by\": []\n}\n"
+    },
+    "fts_poring": {
+      "argv": "query_iro_db.py poring --limit 3",
+      "exit_code": 0,
+      "output_head": "1. [items] Poring Box (id 12109)  (rank -8.78)\n   [Poring] Box type Usable subtype General weight 20 required_level 1 buying_price -- selling … \n2. [items] Poring Letter (id 5675)  (rank -8.41)\n   [Poring] Letter type Gear subtype Headgear weight 10 required_level 10 upgradable No def … \n3. [items] Costume: 10th Anniversary Poring Hat (id 19577)  (rank -8.34)\n    … 10th Anniversary [Poring] Hat type Costume subtype Headgear weight 10 required_level 1 extra … \n"
+    },
+    "fts_knife_dagger": {
+      "argv": "query_iro_db.py knife NEAR(\"dagger\", 5) --section items --limit 3",
+      "exit_code": 0,
+      "output_head": "1. [items] Knife [4] (id 1202)  (rank -13.02)\n   [Knife] [4] type Weapon subtype [Dagger] weight 40 element Neutral weapon_level 1 required … \n2. [items] Knife [3] (id 1201)  (rank -12.84)\n   [Knife] [3] type Weapon subtype [Dagger] weight 40 element Neutral weapon_level 1 required … \n3. [items] Zeny Knife (id 1238)  (rank -12.68)\n   Zeny [Knife] type Weapon subtype [Dagger] weight 120 element Neutral weapon_level 3 required … \n"
+    }
+  },
+  "offline_fallback": {
+    "note": "pinned rathena YAML DBs are already in-repo and are the authoritative offline alternative; this iRO DB ingest complements them with iRO-specific live values (drops, NPC prices, iRO current stats)",
+    "rathena": {
+      "path": "rathena/db (in-repo, pinned)",
+      "subdirs": [
+        "import",
+        "import-tmpl",
+        "pre-re",
+        "re"
+      ]
+    }
+  },
+  "example_invocations": [
+    "python3 run/knowledge/iro-db/query_iro_db.py poring --limit 5",
+    "python3 run/knowledge/iro-db/query_iro_db.py --id 1002",
+    "python3 run/knowledge/iro-db/query_iro_db.py --id 1201 --raw",
+    "python3 run/knowledge/iro-db/query_iro_db.py 'knife NEAR/5 dagger' --section items"
+  ]
+}

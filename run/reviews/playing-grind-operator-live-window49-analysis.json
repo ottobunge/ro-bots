@@ -1,0 +1,16 @@
+{
+  "record": "GRIND_WINDOW49_FX1_KILL_LANDED_FX0_TRAP_NAMED_NPC_DEAL_IN_SHOP_INTERIOR_LOGIN",
+  "date": "2026-10-19 (~16:4x)",
+  "fixture_1": "A REAL KILL: 171 attacks, 37 attributed, 432 bot-dealt, 1 mob death (prt_fild08), floor met. floor_items still 0 client-side; the picklog (armed) shows 0 rows \u2014 the drop roll either missed or the 0x9D ingest is still unverified. The next kill window answers via the picklog.",
+  "fixture_0": "THE TRAP IS NAMED: the journal shows a login->logoff cycle (6+ clean pairs). Its login lands INSIDE the prt_in shop interior (last position), the merchant scripts open the dealer NPC dialog, in-deal walks are IGNORED server-side (174 0x0360 walk sends, DB position unchanged), the scripts deadlock awaiting shop lists, the session churns. The save-point move (w43) was necessary but not sufficient \u2014 the LAST-POSITION login kept re-trapping it.",
+  "fixes_this_round": [
+    "Entry-seed: the handshake now dispatches the consumed 0x02EB to the tracker (the view seeds own-position + the inventory marker on every login); the no-rewind contract preserved and pinned (2 tests updated).",
+    "Health gate: dispatch_errors no longer poison telemetry forever (one unparseable frame starved every tick; the gate checks real transport health; a regression test pins it). Full gate 6,024+65 green."
+  ],
+  "operational": "fx0 last-position moved to the field (prt_fild08 [167,352], matching its save) so logins land off the trap.",
+  "next": [
+    "Window 50: fx0 should log in ON the field, seed, and engage for the first time in ~8 windows.",
+    "Production NPC-close discipline (queued): the merchant step must close an open NPC deal before walk planning, so a shop-interior login can never trap a bot again.",
+    "The picklog testifies on fx1's next kill: a type-M row = the server drops; then the 0x9D client ingest is the last loot-leg link."
+  ]
+}

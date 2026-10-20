@@ -1,0 +1,950 @@
+{
+  "status": "OFFLINE_CONTRACT_IMPLEMENTED_BLOCKED_BY_PROTECTED_LEGACY_TEST_ASSUMPTIONS",
+  "approval": "NOT_APPROVED; parent independent review and full-root gates remain pending",
+  "scope_authority": {
+    "path": "/home/otto/dev/ro-bots/run/reviews/npc-plan-contract-scope.json",
+    "sha256": "1b344ced1d1f43aa5c9b6b448628bb7362c6a7227207fe882fe7edfae89c4f80"
+  },
+  "owned_modified": [
+    "src/robots/domain/planning.py",
+    "src/robots/app/llm_planner.py"
+  ],
+  "owned_created": [
+    "tests/test_npc_plan_contract.py",
+    "run/reviews/npc-plan-contract.json"
+  ],
+  "api": {
+    "NpcOperation": [
+      "next",
+      "choose"
+    ],
+    "NpcIntent": "(operation: robots.domain.planning.NpcOperation, npc_id: int, epoch: int, map_name: str, opened_sequence: int, prompt_sequence: int, expected_stage: str, option_index: int | None = None) -> None",
+    "NpcObservation": "(identity: robots.domain.planning.PlanningIdentity, npc_id: int, epoch: int, map_name: str, opened_sequence: int, prompt_sequence: int, stage: str, option_indices: tuple[int, ...] = (), ready: bool = False, observed_at: float = 0.0, expires_at: float = 0.0) -> None",
+    "Phase": "(kind: robots.domain.planning.PhaseKind, map_name: str, destination: tuple[int, int] | None = None, public_species: int | None = None, public_item: int | None = None, npc_intent: robots.domain.planning.NpcIntent | None = None) -> None",
+    "Capabilities": "(supported: frozenset[robots.domain.planning.PhaseKind], known_maps: frozenset[str], fresh_facts: frozenset[str], npc_observation: robots.domain.planning.NpcObservation | None = None) -> None",
+    "NPC_condition": "ObservableCondition.NPC_UI_ADVANCED = npc ui advanced",
+    "validation": "Frozen typed records; malformed model data denied by decoder; direct typed receipt/plan invalidity denied by core admission. Observation ready defaults False, capabilities observation defaults None.",
+    "receipt_time": "finite plain int/float readings, observed_at <= current time < expires_at; OverflowError guarded; no arbitrary absolute-clock cap or protocol response timers"
+  },
+  "implemented": [
+    "Strict bound NEXT/CHOOSE decoder; exact phase and intent keys; no null legacy NPC phase targets; plain integer identity/sequence/index ranges; literal map binding.",
+    "Singleton NPC plan, NPC-only success/progress condition, original IDLE/REST fallback, no NPC intent/predicate on other phases.",
+    "Admission compares supplied current typed receipt identity, npc/map/epoch/open/prompt/stage, explicit readiness, finite caller timestamps, and exact received menu-index membership.",
+    "Unchanged real PlanLifecycle positive admission, stale-receipt rejection, prior-active preservation, and unchanged attempt exhaustion behavior.",
+    "Actual ScriptedModel + unchanged InvestigationReader on seeded immutable received UI, investigation-first LlmPlanner, current-bound schema/advisory, real lifecycle admission.",
+    "NPC invisible without an eligible explicitly supported typed receipt; non-NPC advisory fields and schema byte-shape vocabulary retain the pre-NPC form.",
+    "Schema has exact operation/binding/index enums, additionalProperties False, singleton NPC conditional and no NPC predicate for non-NPC schema branches.",
+    "Schema and advisory share one current clock sample; final proposal validation resamples after final receipt read.",
+    "Malformed duplicate/unknown keys, bool/coercion/free text/CANCEL, bad UTF8/NUL, oversized time integers, invalid receipt shape rejected without native effects."
+  ],
+  "source_freeze": {
+    "baseline_path": "/home/otto/.hermes/cache/scratch/npc-plan-contract/baseline.json",
+    "baseline_sha256": "3bb624187d55a94fccd02c14d8591e3a0f3ce1f3328f9057556ac3eefa632fe0",
+    "baseline_inputs": 388,
+    "protected_inputs": 386,
+    "protected_changes": {},
+    "owned_changes": {
+      "src/robots/domain/planning.py": {
+        "baseline": "2722eb5cea7627c071b13a3e7966d7bfb6d3307ac81335314d63d0c0a51f9ffb",
+        "current": "98109f5bd161bdcfa171e0f81e6e75932c07edd6c870e340f6a4140efa7113b7"
+      },
+      "src/robots/app/llm_planner.py": {
+        "baseline": "43043a8f264991a2139c9d1e3335a881db0cbb8219405db48c3ad8ed8a0a618e",
+        "current": "6a1c5b04b81bf22727c9c4b26ecef468be9e3b2fc8feb441acb43950fc1c4e1d"
+      }
+    },
+    "freeze_inputs": 389,
+    "new_test_sha256": "935c94ad2305f63991348f03fcffae6aa39cbf0d473a81fb5a7d101b9814dcbe",
+    "path": "/home/otto/.hermes/cache/scratch/npc-plan-contract/verified-candidate-freeze.json",
+    "sha256": "1a4e103964f57f16b6434338d3bb647b7b8beca5c7e96b80d5585363b8b5c239",
+    "owned_source_hashes": {
+      "src/robots/domain/planning.py": "98109f5bd161bdcfa171e0f81e6e75932c07edd6c870e340f6a4140efa7113b7",
+      "src/robots/app/llm_planner.py": "6a1c5b04b81bf22727c9c4b26ecef468be9e3b2fc8feb441acb43950fc1c4e1d",
+      "tests/test_npc_plan_contract.py": "935c94ad2305f63991348f03fcffae6aa39cbf0d473a81fb5a7d101b9814dcbe"
+    }
+  },
+  "physical_ids": {
+    "scope_count": 270,
+    "new_test_count": 97,
+    "selected_legacy_test_count": 172,
+    "unchanged_parent_tracer_count": 1,
+    "all": {
+      "path": "/home/otto/.hermes/cache/scratch/npc-plan-contract/verified-candidate-physical-ids.json",
+      "sha256": "18b7e497da58ad2a82d143c5c3245dab7eab50b229c83ad15a1be238ab8001eb"
+    },
+    "new": {
+      "path": "/home/otto/.hermes/cache/scratch/npc-plan-contract/verified-candidate-npc-physical-ids.json",
+      "sha256": "043ba881c0af4281e0cbf590e092ba4714d37d6d5ee62ec2ed52c90bffc8abfd"
+    },
+    "selected_legacy": {
+      "path": "/home/otto/.hermes/cache/scratch/npc-plan-contract/selected-legacy-physical-ids.json",
+      "sha256": "87c500b94e5322392bc48cc41b60611f356ff71a6f26244743d180b1e90265d9"
+    },
+    "collection": {
+      "path": "/home/otto/.hermes/cache/scratch/npc-plan-contract/verified-candidate-collection.txt",
+      "sha256": "91b998a198c2fe296715dd99c071977fd0b6291ca7f151d45594e2ff5e965eec"
+    },
+    "collection_repair": "Initial collector omitted the external scratch tracer shown by pytest as ::test_name; preserved earlier artifacts, normalized its exact path, recollected, reran to new XML paths, and reconciled 270 collected/executed physical IDs.",
+    "scope": "Selected authorized regressions only, not full-root collection or execution."
+  },
+  "verified_execution": {
+    "verified-candidate-npc-contract": {
+      "command": [
+        "/home/otto/dev/ro-bots/.venv/bin/python",
+        "-B",
+        "-m",
+        "pytest",
+        "-q",
+        "-o",
+        "addopts=",
+        "-p",
+        "no:cacheprovider",
+        "--tb=short",
+        "--junitxml=/home/otto/.hermes/cache/scratch/npc-plan-contract/verified-candidate-npc-contract.xml",
+        "tests/test_npc_plan_contract.py",
+        "/home/otto/.hermes/cache/scratch/npc-plan-contract/test_npc_decode.py"
+      ],
+      "exit_code": 0,
+      "cases": 98,
+      "passed": 98,
+      "failed": [],
+      "errors": [],
+      "skipped": []
+    },
+    "verified-candidate-scoped-regression": {
+      "command": [
+        "/home/otto/dev/ro-bots/.venv/bin/python",
+        "-B",
+        "-m",
+        "pytest",
+        "-q",
+        "-o",
+        "addopts=",
+        "-p",
+        "no:cacheprovider",
+        "--tb=short",
+        "--junitxml=/home/otto/.hermes/cache/scratch/npc-plan-contract/verified-candidate-scoped-regression.xml",
+        "tests/test_npc_plan_contract.py",
+        "tests/test_llm_planner.py",
+        "tests/test_plan_lifecycle.py",
+        "tests/test_planning_context.py",
+        "tests/test_planning_job_context.py",
+        "tests/test_llm_planning_host_tick.py",
+        "tests/test_llm_planning_host_construction.py",
+        "tests/test_llm_planning_host_cleanup.py",
+        "tests/test_llm_planning_rest_execution.py",
+        "tests/test_llm_planning_clef_execution.py",
+        "/home/otto/.hermes/cache/scratch/npc-plan-contract/test_npc_decode.py"
+      ],
+      "exit_code": 1,
+      "cases": 270,
+      "passed": 268,
+      "failed": [
+        {
+          "classname": "tests.test_llm_planner",
+          "name": "test_round_capabilities_refresh_and_final_fresh_denial_offline",
+          "message": "AssertionError: assert ['farm', 'gri...st', 'travel'] == ['farm', 'gri...st', 'travel']\n  \n  At index 3 diff: 'rest' != 'npc'\n  Right contains one more item: 'travel'\n  Use -v to get more diff"
+        },
+        {
+          "classname": "tests.test_llm_planner",
+          "name": "test_tool_schema_matches_enforced_plan_vocabulary",
+          "message": "AssertionError: assert [<ObservableC...it complete'>] == [<ObservableC...mplete'>, ...]\n  \n  Right contains one more item: <ObservableCondition.NPC_UI_ADVANCED: 'npc ui advanced'>\n  Use -v to get more diff"
+        }
+      ],
+      "errors": [],
+      "skipped": []
+    }
+  },
+  "quality": {
+    "black": {
+      "command": [
+        "/home/otto/dev/ro-bots/.venv/bin/python",
+        "-B",
+        "-m",
+        "black",
+        "--check",
+        "src/robots/domain/planning.py",
+        "src/robots/app/llm_planner.py",
+        "tests/test_npc_plan_contract.py"
+      ],
+      "exit_code": 0,
+      "output": "All done! \u2728 \ud83c\udf70 \u2728\n3 files would be left unchanged.\n"
+    },
+    "ruff": {
+      "command": [
+        "/home/otto/dev/ro-bots/.venv/bin/python",
+        "-B",
+        "-m",
+        "ruff",
+        "check",
+        "--no-cache",
+        "src/robots/domain/planning.py",
+        "src/robots/app/llm_planner.py",
+        "tests/test_npc_plan_contract.py"
+      ],
+      "exit_code": 0,
+      "output": "All checks passed!\n"
+    },
+    "mypy": {
+      "command": [
+        "/home/otto/dev/ro-bots/.venv/bin/python",
+        "-B",
+        "-m",
+        "mypy",
+        "--cache-dir",
+        "/home/otto/.hermes/cache/scratch/npc-plan-contract/mypy-cache"
+      ],
+      "exit_code": 1,
+      "output": "tests/test_llm_planner.py:208: error: Argument 2 to \"replace\" of \"Capabilities\" has incompatible type \"**dict[str, frozenset[Never]]\"; expected \"NpcObservation | None\"  [arg-type]\nFound 1 error in 1 file (checked 243 source files)\n"
+    },
+    "xenon": {
+      "command": [
+        "/home/otto/dev/ro-bots/.venv/bin/python",
+        "-B",
+        "-m",
+        "xenon",
+        "src",
+        "--max-absolute",
+        "B",
+        "--max-modules",
+        "B",
+        "--max-average",
+        "A"
+      ],
+      "exit_code": 0,
+      "output": ""
+    },
+    "duplicate": {
+      "command": [
+        "/home/otto/dev/ro-bots/.venv/bin/python",
+        "-B",
+        "-m",
+        "pylint",
+        "--disable=all",
+        "--enable=duplicate-code",
+        "--ignore-paths=tests",
+        "src"
+      ],
+      "exit_code": 0,
+      "output": "\n--------------------------------------------------------------------\nYour code has been rated at 10.00/10 (previous run: 10.00/10, +0.00)\n\n"
+    }
+  },
+  "blockers": [
+    {
+      "target": "tests/test_llm_planner.py::test_round_capabilities_refresh_and_final_fresh_denial_offline",
+      "location": "tests/test_llm_planner.py:193-197",
+      "cause": "Protected test requires every generic frozenset(PhaseKind) member in schema/advisory, including new NPC without a receipt. Required contract explicitly filters unready NPC."
+    },
+    {
+      "target": "tests/test_llm_planner.py::test_tool_schema_matches_enforced_plan_vocabulary",
+      "location": "tests/test_llm_planner.py:547-573",
+      "cause": "Protected test expects all enum members in no-capability schemas and independently accepts each observable enum on a REST plan. New NPC_UI_ADVANCED must not be advertised without a receipt and must deny on REST; adding the mandated enums makes these assertions incompatible."
+    },
+    {
+      "target": "configured whole-project strict mypy",
+      "location": "tests/test_llm_planner.py:208",
+      "cause": "Protected dynamic dataclasses.replace(caps, **{missing: frozenset()}) dict is checked against the appended typed NpcObservation | None field. Runtime legacy 3-argument constructors and named-field replacement remain valid, but this consumer needs explicit typed branch arguments or a suitable narrowed argument annotation."
+    }
+  ],
+  "authority_needed": "Parent approval to change the three protected legacy test assumptions above, or an explicit revised contract. No protected tests, annotations, source consumers, gates, ignores or waivers were modified to hide these conflicts.",
+  "tdd_history": {
+    "first_red": "Parent actual strict decoder tracer reached RED in parent-decoder-red.xml before implementation; unchanged tracer first GREEN in step1-decoder-green.xml.",
+    "vertical_order": [
+      "typed decoder",
+      "missing supplied receipt at lifecycle admission",
+      "bound current receipt/readiness/options/expiry",
+      "NPC plan semantics",
+      "current model-visible binding and schema",
+      "malformed fields and Unicode core denial",
+      "late final receipt clock",
+      "shared schema/advisory clock",
+      "malformed supplied receipt fail-closed"
+    ],
+    "chronology_notes": [
+      "Original step3 RED includes two invalid negative-clock lifecycle fixture expectations; unchanged lifecycle starts cooldown at zero. Corrected the new fixture only and separately tested negative finite clocks directly through pure contract denial.",
+      "Step4/5 GREEN controls retain the protected failing assertions; never labeled the whole regression set green.",
+      "Step6 fixes appear as 93 passing prior cases in step7 RED; step7 fix as 94 passing prior cases in step8 RED; step9 final GREEN is verified-candidate-npc-contract.xml (97 new cases plus unchanged tracer). No approved implementation rollback manufactured RED."
+    ],
+    "xml_receipt_count": 20,
+    "xml_receipts": [
+      {
+        "path": "/home/otto/.hermes/cache/scratch/npc-plan-contract/candidate-npc-contract.xml",
+        "sha256": "8b92a686bcec5a98c70bdd1289377c2eeba0b900942264156a8f26e15a835a90",
+        "cases": 98,
+        "passed": 98,
+        "failures": [],
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "path": "/home/otto/.hermes/cache/scratch/npc-plan-contract/candidate-scoped-regression.xml",
+        "sha256": "c716882decf83edc9706c6c5a22cd4199af6c9c09e4c7b46081a7c3ed9da20b3",
+        "cases": 270,
+        "passed": 268,
+        "failures": [
+          {
+            "classname": "tests.test_llm_planner",
+            "name": "test_round_capabilities_refresh_and_final_fresh_denial_offline"
+          },
+          {
+            "classname": "tests.test_llm_planner",
+            "name": "test_tool_schema_matches_enforced_plan_vocabulary"
+          }
+        ],
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "path": "/home/otto/.hermes/cache/scratch/npc-plan-contract/final-scoped-regression.xml",
+        "sha256": "5a12a4ecc76e2c9b5ce6a5216a7165b78c9a8c098ca4d5405ff171ce1f0747d5",
+        "cases": 270,
+        "passed": 268,
+        "failures": [
+          {
+            "classname": "tests.test_llm_planner",
+            "name": "test_round_capabilities_refresh_and_final_fresh_denial_offline"
+          },
+          {
+            "classname": "tests.test_llm_planner",
+            "name": "test_tool_schema_matches_enforced_plan_vocabulary"
+          }
+        ],
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "path": "/home/otto/.hermes/cache/scratch/npc-plan-contract/parent-decoder-red.xml",
+        "sha256": "4c1921a182729805e6869af7a8427b11425df2677025693910d106196e753956",
+        "cases": 1,
+        "passed": 0,
+        "failures": [
+          {
+            "classname": ".hermes.cache.scratch.npc-plan-contract.test_npc_decode",
+            "name": "test_received_npc_next_intent_reaches_typed_decoder"
+          }
+        ],
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "path": "/home/otto/.hermes/cache/scratch/npc-plan-contract/step1-decoder-green.xml",
+        "sha256": "0e7ce5edb77441e9c597da5844e1637f0a694286bcb9e59c9763e530cfb72305",
+        "cases": 1,
+        "passed": 1,
+        "failures": [],
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "path": "/home/otto/.hermes/cache/scratch/npc-plan-contract/step2-missing-receipt-green.xml",
+        "sha256": "42c0d81a790a4a041ba431fc35ef087f2178ded851f7ccfb6c6daaaaf5d8044b",
+        "cases": 31,
+        "passed": 31,
+        "failures": [],
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "path": "/home/otto/.hermes/cache/scratch/npc-plan-contract/step2-missing-receipt-red.xml",
+        "sha256": "a5ddd588950598df0b8a8ebd679b5f0268705eccd7ec8e4d1ab71547fad3420e",
+        "cases": 1,
+        "passed": 0,
+        "failures": [
+          {
+            "classname": "tests.test_npc_plan_contract",
+            "name": "test_missing_supplied_receipt_denies_preserving_active_and_attempt_budget"
+          }
+        ],
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "path": "/home/otto/.hermes/cache/scratch/npc-plan-contract/step3-bound-receipt-green.xml",
+        "sha256": "dff3c23553781cad385e2fcf41bc3a3c797d3db7b463154940f2efb35a51d090",
+        "cases": 59,
+        "passed": 59,
+        "failures": [],
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "path": "/home/otto/.hermes/cache/scratch/npc-plan-contract/step3-bound-receipt-red.xml",
+        "sha256": "ceb4c4dde16d77b9c0267ae42c1c319a8d88e25ad1e96a740fbcd38c3ef1d29f",
+        "cases": 31,
+        "passed": 5,
+        "failures": [
+          {
+            "classname": "tests.test_npc_plan_contract",
+            "name": "test_exact_fresh_receipt_admits_through_real_lifecycle[-1000000000000000.0-next]"
+          },
+          {
+            "classname": "tests.test_npc_plan_contract",
+            "name": "test_exact_fresh_receipt_admits_through_real_lifecycle[-1000000000000000.0-choose]"
+          },
+          {
+            "classname": "tests.test_npc_plan_contract",
+            "name": "test_current_receipt_drift_denies_before_and_at_admission[identity-value0]"
+          },
+          {
+            "classname": "tests.test_npc_plan_contract",
+            "name": "test_current_receipt_drift_denies_before_and_at_admission[npc_id-322]"
+          },
+          {
+            "classname": "tests.test_npc_plan_contract",
+            "name": "test_current_receipt_drift_denies_before_and_at_admission[npc_id-True]"
+          },
+          {
+            "classname": "tests.test_npc_plan_contract",
+            "name": "test_current_receipt_drift_denies_before_and_at_admission[epoch-2]"
+          },
+          {
+            "classname": "tests.test_npc_plan_contract",
+            "name": "test_current_receipt_drift_denies_before_and_at_admission[map_name-izlude]"
+          },
+          {
+            "classname": "tests.test_npc_plan_contract",
+            "name": "test_current_receipt_drift_denies_before_and_at_admission[opened_sequence-2]"
+          },
+          {
+            "classname": "tests.test_npc_plan_contract",
+            "name": "test_current_receipt_drift_denies_before_and_at_admission[prompt_sequence-6]"
+          },
+          {
+            "classname": "tests.test_npc_plan_contract",
+            "name": "test_current_receipt_drift_denies_before_and_at_admission[stage-menu]"
+          },
+          {
+            "classname": "tests.test_npc_plan_contract",
+            "name": "test_current_receipt_drift_denies_before_and_at_admission[ready-False]"
+          },
+          {
+            "classname": "tests.test_npc_plan_contract",
+            "name": "test_current_receipt_drift_denies_before_and_at_admission[ready-1]"
+          },
+          {
+            "classname": "tests.test_npc_plan_contract",
+            "name": "test_current_receipt_drift_denies_before_and_at_admission[observed_at-101.0]"
+          },
+          {
+            "classname": "tests.test_npc_plan_contract",
+            "name": "test_current_receipt_drift_denies_before_and_at_admission[expires_at-100.0]"
+          },
+          {
+            "classname": "tests.test_npc_plan_contract",
+            "name": "test_current_receipt_drift_denies_before_and_at_admission[expires_at-inf]"
+          },
+          {
+            "classname": "tests.test_npc_plan_contract",
+            "name": "test_current_receipt_drift_denies_before_and_at_admission[observed_at-nan]"
+          },
+          {
+            "classname": "tests.test_npc_plan_contract",
+            "name": "test_current_receipt_drift_denies_before_and_at_admission[observed_at-10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000]"
+          },
+          {
+            "classname": "tests.test_npc_plan_contract",
+            "name": "test_current_receipt_drift_denies_before_and_at_admission[expires_at-10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000]"
+          },
+          {
+            "classname": "tests.test_npc_plan_contract",
+            "name": "test_current_receipt_drift_denies_before_and_at_admission[option_indices-value16]"
+          },
+          {
+            "classname": "tests.test_npc_plan_contract",
+            "name": "test_choose_requires_exact_valid_received_indices[indices0]"
+          },
+          {
+            "classname": "tests.test_npc_plan_contract",
+            "name": "test_choose_requires_exact_valid_received_indices[indices1]"
+          },
+          {
+            "classname": "tests.test_npc_plan_contract",
+            "name": "test_choose_requires_exact_valid_received_indices[indices2]"
+          },
+          {
+            "classname": "tests.test_npc_plan_contract",
+            "name": "test_choose_requires_exact_valid_received_indices[indices3]"
+          },
+          {
+            "classname": "tests.test_npc_plan_contract",
+            "name": "test_choose_requires_exact_valid_received_indices[indices4]"
+          },
+          {
+            "classname": "tests.test_npc_plan_contract",
+            "name": "test_choose_requires_exact_valid_received_indices[indices5]"
+          },
+          {
+            "classname": "tests.test_npc_plan_contract",
+            "name": "test_receipt_expiry_at_admission_preserves_previous_active_and_budget"
+          }
+        ],
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "path": "/home/otto/.hermes/cache/scratch/npc-plan-contract/step4-plan-shape-green-controls.xml",
+        "sha256": "901f3e2d61208b5aef5a87cbcdc7bf2a41a943a5cdee9a519116b41baea3f943",
+        "cases": 140,
+        "passed": 139,
+        "failures": [
+          {
+            "classname": "tests.test_llm_planner",
+            "name": "test_tool_schema_matches_enforced_plan_vocabulary"
+          }
+        ],
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "path": "/home/otto/.hermes/cache/scratch/npc-plan-contract/step4-plan-shape-red.xml",
+        "sha256": "9f00a562a548b388ddaedcab15f139599f03f92f943a6c5e0bc6826d6113d83d",
+        "cases": 71,
+        "passed": 65,
+        "failures": [
+          {
+            "classname": "tests.test_npc_plan_contract",
+            "name": "test_npc_plan_semantics_deny_unsafe_shape_or_binding[multi]"
+          },
+          {
+            "classname": "tests.test_npc_plan_contract",
+            "name": "test_npc_plan_semantics_deny_unsafe_shape_or_binding[mixed]"
+          },
+          {
+            "classname": "tests.test_npc_plan_contract",
+            "name": "test_npc_plan_semantics_deny_unsafe_shape_or_binding[success]"
+          },
+          {
+            "classname": "tests.test_npc_plan_contract",
+            "name": "test_npc_plan_semantics_deny_unsafe_shape_or_binding[progress]"
+          },
+          {
+            "classname": "tests.test_npc_plan_contract",
+            "name": "test_npc_plan_semantics_deny_unsafe_shape_or_binding[idle-predicate]"
+          },
+          {
+            "classname": "tests.test_npc_plan_contract",
+            "name": "test_npc_plan_semantics_deny_unsafe_shape_or_binding[nul]"
+          }
+        ],
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "path": "/home/otto/.hermes/cache/scratch/npc-plan-contract/step5-model-binding-green-controls.xml",
+        "sha256": "20c4bcd38dd060094634d66d6dbac36a09c776e932fe56b92790c6f897152eb6",
+        "cases": 143,
+        "passed": 141,
+        "failures": [
+          {
+            "classname": "tests.test_llm_planner",
+            "name": "test_round_capabilities_refresh_and_final_fresh_denial_offline"
+          },
+          {
+            "classname": "tests.test_llm_planner",
+            "name": "test_tool_schema_matches_enforced_plan_vocabulary"
+          }
+        ],
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "path": "/home/otto/.hermes/cache/scratch/npc-plan-contract/step5-model-binding-red.xml",
+        "sha256": "d2e2258704a7128b25bcac557c5f1777934fda92f4dc7da14d2775b1ddaf53e3",
+        "cases": 74,
+        "passed": 71,
+        "failures": [
+          {
+            "classname": "tests.test_npc_plan_contract",
+            "name": "test_unready_npc_is_not_model_visible_even_when_generic_caps_include_enum"
+          },
+          {
+            "classname": "tests.test_npc_plan_contract",
+            "name": "test_investigation_first_model_gets_exact_binding_then_real_admission[next]"
+          },
+          {
+            "classname": "tests.test_npc_plan_contract",
+            "name": "test_investigation_first_model_gets_exact_binding_then_real_admission[choose]"
+          }
+        ],
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "path": "/home/otto/.hermes/cache/scratch/npc-plan-contract/step6-malformed-red.xml",
+        "sha256": "ba0d8d054536887e1aa5048e0fdf3eb443ba4f07024a5eac7eb54c45c16b373f",
+        "cases": 93,
+        "passed": 89,
+        "failures": [
+          {
+            "classname": "tests.test_npc_plan_contract",
+            "name": "test_npc_decoder_denies_even_null_legacy_phase_fields[destination]"
+          },
+          {
+            "classname": "tests.test_npc_plan_contract",
+            "name": "test_npc_decoder_denies_even_null_legacy_phase_fields[public_species]"
+          },
+          {
+            "classname": "tests.test_npc_plan_contract",
+            "name": "test_npc_decoder_denies_even_null_legacy_phase_fields[public_item]"
+          },
+          {
+            "classname": "tests.test_npc_plan_contract",
+            "name": "test_invalid_utf8_core_plan_denies_without_escaping_lifecycle"
+          }
+        ],
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "path": "/home/otto/.hermes/cache/scratch/npc-plan-contract/step7-final-clock-red.xml",
+        "sha256": "a7d9854766ce2743063c855c1cc63a90a4eacc56c4dee59399d4eb1576811f5e",
+        "cases": 94,
+        "passed": 93,
+        "failures": [
+          {
+            "classname": "tests.test_npc_plan_contract",
+            "name": "test_final_receipt_read_advancing_clock_denies_expired_model_proposal"
+          }
+        ],
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "path": "/home/otto/.hermes/cache/scratch/npc-plan-contract/step8-shared-clock-green.xml",
+        "sha256": "5d32d78dcedee66051bd253a1f62e5f7e22ee3ba5d3baf9d82418235123e433f",
+        "cases": 96,
+        "passed": 96,
+        "failures": [],
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "path": "/home/otto/.hermes/cache/scratch/npc-plan-contract/step8-shared-clock-red.xml",
+        "sha256": "45a0254b21a90e7f04dd4ed0b307ddd1ed7f7b4c8e1092645bdd9cb3eefc34f7",
+        "cases": 95,
+        "passed": 94,
+        "failures": [
+          {
+            "classname": "tests.test_npc_plan_contract",
+            "name": "test_expiring_receipt_schema_and_advisory_share_one_clock_sample"
+          }
+        ],
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "path": "/home/otto/.hermes/cache/scratch/npc-plan-contract/step9-malformed-receipt-red.xml",
+        "sha256": "8c76a76de6fc85890020bb67c9415d7fa8eac13b6df6b5e7c7b64239cd110ad2",
+        "cases": 97,
+        "passed": 95,
+        "failures": [
+          {
+            "classname": "tests.test_npc_plan_contract",
+            "name": "test_malformed_typed_receipt_denies_before_schema_or_lifecycle[option_indices-None]"
+          },
+          {
+            "classname": "tests.test_npc_plan_contract",
+            "name": "test_malformed_typed_receipt_denies_before_schema_or_lifecycle[map_name-value1]"
+          }
+        ],
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "path": "/home/otto/.hermes/cache/scratch/npc-plan-contract/verified-candidate-npc-contract.xml",
+        "sha256": "065e63309b9792b52c78cb28194ea57cedddbb5144e70bbf43672846f645e8f9",
+        "cases": 98,
+        "passed": 98,
+        "failures": [],
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "path": "/home/otto/.hermes/cache/scratch/npc-plan-contract/verified-candidate-scoped-regression.xml",
+        "sha256": "711aa9598fe8b7d1351236e6796d0c2bd545b4a80d83ace11a3079c6692b8a7e",
+        "cases": 270,
+        "passed": 268,
+        "failures": [
+          {
+            "classname": "tests.test_llm_planner",
+            "name": "test_round_capabilities_refresh_and_final_fresh_denial_offline"
+          },
+          {
+            "classname": "tests.test_llm_planner",
+            "name": "test_tool_schema_matches_enforced_plan_vocabulary"
+          }
+        ],
+        "errors": 0,
+        "skipped": 0
+      }
+    ]
+  },
+  "evidence_artifact_count": 64,
+  "evidence_artifacts": {
+    "baseline.json": {
+      "path": "/home/otto/.hermes/cache/scratch/npc-plan-contract/baseline.json",
+      "sha256": "3bb624187d55a94fccd02c14d8591e3a0f3ce1f3328f9057556ac3eefa632fe0"
+    },
+    "candidate-collection.txt": {
+      "path": "/home/otto/.hermes/cache/scratch/npc-plan-contract/candidate-collection.txt",
+      "sha256": "ef174dd0eb5b6afcabb1875d86a1c1c6585d570c94130c5fbc2cb7b32d59ce9f"
+    },
+    "candidate-npc-contract.txt": {
+      "path": "/home/otto/.hermes/cache/scratch/npc-plan-contract/candidate-npc-contract.txt",
+      "sha256": "348b93ba8410d6497fda7d69441252b8b5764542908befd721ab1c3ecec16e47"
+    },
+    "candidate-npc-contract.xml": {
+      "path": "/home/otto/.hermes/cache/scratch/npc-plan-contract/candidate-npc-contract.xml",
+      "sha256": "8b92a686bcec5a98c70bdd1289377c2eeba0b900942264156a8f26e15a835a90"
+    },
+    "candidate-npc-physical-ids.json": {
+      "path": "/home/otto/.hermes/cache/scratch/npc-plan-contract/candidate-npc-physical-ids.json",
+      "sha256": "043ba881c0af4281e0cbf590e092ba4714d37d6d5ee62ec2ed52c90bffc8abfd"
+    },
+    "candidate-physical-ids.json": {
+      "path": "/home/otto/.hermes/cache/scratch/npc-plan-contract/candidate-physical-ids.json",
+      "sha256": "e9b6c872f8d39ba6b6f4e6949d2e28201cac4f596bee93544ab5f5a261a097c1"
+    },
+    "candidate-scoped-regression.txt": {
+      "path": "/home/otto/.hermes/cache/scratch/npc-plan-contract/candidate-scoped-regression.txt",
+      "sha256": "9a95b78ed07ed7b67ad328d11fff16569ba386f0af16a7fc50662abb22cf4afd"
+    },
+    "candidate-scoped-regression.xml": {
+      "path": "/home/otto/.hermes/cache/scratch/npc-plan-contract/candidate-scoped-regression.xml",
+      "sha256": "c716882decf83edc9706c6c5a22cd4199af6c9c09e4c7b46081a7c3ed9da20b3"
+    },
+    "edit_step1.py": {
+      "path": "/home/otto/.hermes/cache/scratch/npc-plan-contract/edit_step1.py",
+      "sha256": "12e80e4b1ac7962192f21bb2aa8f00d471cbd7fbe12d32e8da481742273c3d90"
+    },
+    "final-scoped-regression.xml": {
+      "path": "/home/otto/.hermes/cache/scratch/npc-plan-contract/final-scoped-regression.xml",
+      "sha256": "5a12a4ecc76e2c9b5ce6a5216a7165b78c9a8c098ca4d5405ff171ce1f0747d5"
+    },
+    "parent-decoder-red.xml": {
+      "path": "/home/otto/.hermes/cache/scratch/npc-plan-contract/parent-decoder-red.xml",
+      "sha256": "4c1921a182729805e6869af7a8427b11425df2677025693910d106196e753956"
+    },
+    "quality-candidate-black.txt": {
+      "path": "/home/otto/.hermes/cache/scratch/npc-plan-contract/quality-candidate-black.txt",
+      "sha256": "45a468fa6205768496f23f1716ebb7575e9b723449d2099b88bf2afef60b721f"
+    },
+    "quality-candidate-duplicate.txt": {
+      "path": "/home/otto/.hermes/cache/scratch/npc-plan-contract/quality-candidate-duplicate.txt",
+      "sha256": "8cbfc8cd0b04a4858b0b78b74c6df9631a1695e105e6911d4b57fbcc43b218b5"
+    },
+    "quality-candidate-mypy.txt": {
+      "path": "/home/otto/.hermes/cache/scratch/npc-plan-contract/quality-candidate-mypy.txt",
+      "sha256": "a312c632c67a31462ad41616c01b342476a6059ca88ca8cc61abd1e342a6cbbe"
+    },
+    "quality-candidate-ruff.txt": {
+      "path": "/home/otto/.hermes/cache/scratch/npc-plan-contract/quality-candidate-ruff.txt",
+      "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
+    },
+    "quality-candidate-xenon.txt": {
+      "path": "/home/otto/.hermes/cache/scratch/npc-plan-contract/quality-candidate-xenon.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "quality-candidate.json": {
+      "path": "/home/otto/.hermes/cache/scratch/npc-plan-contract/quality-candidate.json",
+      "sha256": "10f1802bce7570efcea7f174f3e538dfa1ca2c4558ee90121b5c0f8a87fef13b"
+    },
+    "quality-final-black.txt": {
+      "path": "/home/otto/.hermes/cache/scratch/npc-plan-contract/quality-final-black.txt",
+      "sha256": "45a468fa6205768496f23f1716ebb7575e9b723449d2099b88bf2afef60b721f"
+    },
+    "quality-final-duplicate.txt": {
+      "path": "/home/otto/.hermes/cache/scratch/npc-plan-contract/quality-final-duplicate.txt",
+      "sha256": "8cbfc8cd0b04a4858b0b78b74c6df9631a1695e105e6911d4b57fbcc43b218b5"
+    },
+    "quality-final-mypy.txt": {
+      "path": "/home/otto/.hermes/cache/scratch/npc-plan-contract/quality-final-mypy.txt",
+      "sha256": "c3070810fa4b4f46d0a9419e7863926c8e3034de76e4ec4bd8e5927578af6e7f"
+    },
+    "quality-final-ruff.txt": {
+      "path": "/home/otto/.hermes/cache/scratch/npc-plan-contract/quality-final-ruff.txt",
+      "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
+    },
+    "quality-final-xenon.txt": {
+      "path": "/home/otto/.hermes/cache/scratch/npc-plan-contract/quality-final-xenon.txt",
+      "sha256": "63616ca49b55fad27262798e40fa64cbda09a48c8051048ef4fa3b4bcefe5be8"
+    },
+    "quality-final.json": {
+      "path": "/home/otto/.hermes/cache/scratch/npc-plan-contract/quality-final.json",
+      "sha256": "f87b0bf9e54054c8db16519989e1847244480b8201a3fa39f930559717d4355e"
+    },
+    "quality-initial-black.txt": {
+      "path": "/home/otto/.hermes/cache/scratch/npc-plan-contract/quality-initial-black.txt",
+      "sha256": "45a468fa6205768496f23f1716ebb7575e9b723449d2099b88bf2afef60b721f"
+    },
+    "quality-initial-duplicate.txt": {
+      "path": "/home/otto/.hermes/cache/scratch/npc-plan-contract/quality-initial-duplicate.txt",
+      "sha256": "bbb6ffa7d7107b760478161908c009d3b85b078b80d54e3ad8dcd57bfe91a142"
+    },
+    "quality-initial-mypy.txt": {
+      "path": "/home/otto/.hermes/cache/scratch/npc-plan-contract/quality-initial-mypy.txt",
+      "sha256": "097b40f2c29800189d067fed63f4283d32692a01f59ecb97a8f6d23d82dcf5da"
+    },
+    "quality-initial-ruff.txt": {
+      "path": "/home/otto/.hermes/cache/scratch/npc-plan-contract/quality-initial-ruff.txt",
+      "sha256": "c9012cce22466777b8c86a3c71614fc4afc2c25d270c6590676e1be5bfd28d0c"
+    },
+    "quality-initial-xenon.txt": {
+      "path": "/home/otto/.hermes/cache/scratch/npc-plan-contract/quality-initial-xenon.txt",
+      "sha256": "8334dc836e4d24b7ce98bd45f84886a1b161b8b0e47647f18b37385dda6c1732"
+    },
+    "quality-initial.json": {
+      "path": "/home/otto/.hermes/cache/scratch/npc-plan-contract/quality-initial.json",
+      "sha256": "26e0de83114c920834c64fd56ade81c25c41d0489b92662fc93874ffda41e5bc"
+    },
+    "quality-stable-black.txt": {
+      "path": "/home/otto/.hermes/cache/scratch/npc-plan-contract/quality-stable-black.txt",
+      "sha256": "45a468fa6205768496f23f1716ebb7575e9b723449d2099b88bf2afef60b721f"
+    },
+    "quality-stable-duplicate.txt": {
+      "path": "/home/otto/.hermes/cache/scratch/npc-plan-contract/quality-stable-duplicate.txt",
+      "sha256": "8cbfc8cd0b04a4858b0b78b74c6df9631a1695e105e6911d4b57fbcc43b218b5"
+    },
+    "quality-stable-mypy.txt": {
+      "path": "/home/otto/.hermes/cache/scratch/npc-plan-contract/quality-stable-mypy.txt",
+      "sha256": "a312c632c67a31462ad41616c01b342476a6059ca88ca8cc61abd1e342a6cbbe"
+    },
+    "quality-stable-ruff.txt": {
+      "path": "/home/otto/.hermes/cache/scratch/npc-plan-contract/quality-stable-ruff.txt",
+      "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
+    },
+    "quality-stable-xenon.txt": {
+      "path": "/home/otto/.hermes/cache/scratch/npc-plan-contract/quality-stable-xenon.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "quality-stable.json": {
+      "path": "/home/otto/.hermes/cache/scratch/npc-plan-contract/quality-stable.json",
+      "sha256": "10f1802bce7570efcea7f174f3e538dfa1ca2c4558ee90121b5c0f8a87fef13b"
+    },
+    "quality.py": {
+      "path": "/home/otto/.hermes/cache/scratch/npc-plan-contract/quality.py",
+      "sha256": "ebda81e476317964b1cf9ba0e9787268669f009f49e7a54a53c670b99159590f"
+    },
+    "report_candidate.py": {
+      "path": "/home/otto/.hermes/cache/scratch/npc-plan-contract/report_candidate.py",
+      "sha256": "e4f71f9528f8883bd97351bfc8cc6b09f432493ebc1cc0edbb11b55d336b3ba2"
+    },
+    "selected-legacy-physical-ids.json": {
+      "path": "/home/otto/.hermes/cache/scratch/npc-plan-contract/selected-legacy-physical-ids.json",
+      "sha256": "87c500b94e5322392bc48cc41b60611f356ff71a6f26244743d180b1e90265d9"
+    },
+    "step1-decoder-green.xml": {
+      "path": "/home/otto/.hermes/cache/scratch/npc-plan-contract/step1-decoder-green.xml",
+      "sha256": "0e7ce5edb77441e9c597da5844e1637f0a694286bcb9e59c9763e530cfb72305"
+    },
+    "step2-missing-receipt-green.xml": {
+      "path": "/home/otto/.hermes/cache/scratch/npc-plan-contract/step2-missing-receipt-green.xml",
+      "sha256": "42c0d81a790a4a041ba431fc35ef087f2178ded851f7ccfb6c6daaaaf5d8044b"
+    },
+    "step2-missing-receipt-red.xml": {
+      "path": "/home/otto/.hermes/cache/scratch/npc-plan-contract/step2-missing-receipt-red.xml",
+      "sha256": "a5ddd588950598df0b8a8ebd679b5f0268705eccd7ec8e4d1ab71547fad3420e"
+    },
+    "step3-bound-receipt-green.xml": {
+      "path": "/home/otto/.hermes/cache/scratch/npc-plan-contract/step3-bound-receipt-green.xml",
+      "sha256": "dff3c23553781cad385e2fcf41bc3a3c797d3db7b463154940f2efb35a51d090"
+    },
+    "step3-bound-receipt-red.xml": {
+      "path": "/home/otto/.hermes/cache/scratch/npc-plan-contract/step3-bound-receipt-red.xml",
+      "sha256": "ceb4c4dde16d77b9c0267ae42c1c319a8d88e25ad1e96a740fbcd38c3ef1d29f"
+    },
+    "step4-plan-shape-green-controls.xml": {
+      "path": "/home/otto/.hermes/cache/scratch/npc-plan-contract/step4-plan-shape-green-controls.xml",
+      "sha256": "901f3e2d61208b5aef5a87cbcdc7bf2a41a943a5cdee9a519116b41baea3f943"
+    },
+    "step4-plan-shape-red.xml": {
+      "path": "/home/otto/.hermes/cache/scratch/npc-plan-contract/step4-plan-shape-red.xml",
+      "sha256": "9f00a562a548b388ddaedcab15f139599f03f92f943a6c5e0bc6826d6113d83d"
+    },
+    "step5-model-binding-green-controls.xml": {
+      "path": "/home/otto/.hermes/cache/scratch/npc-plan-contract/step5-model-binding-green-controls.xml",
+      "sha256": "20c4bcd38dd060094634d66d6dbac36a09c776e932fe56b92790c6f897152eb6"
+    },
+    "step5-model-binding-red.xml": {
+      "path": "/home/otto/.hermes/cache/scratch/npc-plan-contract/step5-model-binding-red.xml",
+      "sha256": "d2e2258704a7128b25bcac557c5f1777934fda92f4dc7da14d2775b1ddaf53e3"
+    },
+    "step6-malformed-red.xml": {
+      "path": "/home/otto/.hermes/cache/scratch/npc-plan-contract/step6-malformed-red.xml",
+      "sha256": "ba0d8d054536887e1aa5048e0fdf3eb443ba4f07024a5eac7eb54c45c16b373f"
+    },
+    "step7-final-clock-red.xml": {
+      "path": "/home/otto/.hermes/cache/scratch/npc-plan-contract/step7-final-clock-red.xml",
+      "sha256": "a7d9854766ce2743063c855c1cc63a90a4eacc56c4dee59399d4eb1576811f5e"
+    },
+    "step8-shared-clock-green.xml": {
+      "path": "/home/otto/.hermes/cache/scratch/npc-plan-contract/step8-shared-clock-green.xml",
+      "sha256": "5d32d78dcedee66051bd253a1f62e5f7e22ee3ba5d3baf9d82418235123e433f"
+    },
+    "step8-shared-clock-red.xml": {
+      "path": "/home/otto/.hermes/cache/scratch/npc-plan-contract/step8-shared-clock-red.xml",
+      "sha256": "45a0254b21a90e7f04dd4ed0b307ddd1ed7f7b4c8e1092645bdd9cb3eefc34f7"
+    },
+    "step9-malformed-receipt-red.xml": {
+      "path": "/home/otto/.hermes/cache/scratch/npc-plan-contract/step9-malformed-receipt-red.xml",
+      "sha256": "8c76a76de6fc85890020bb67c9415d7fa8eac13b6df6b5e7c7b64239cd110ad2"
+    },
+    "test_npc_decode.py": {
+      "path": "/home/otto/.hermes/cache/scratch/npc-plan-contract/test_npc_decode.py",
+      "sha256": "00bc03c6e99eef67316eaa5c0e461a804b740759c5905ccfd31d1d31f70d32fd"
+    },
+    "verified-candidate-collection.txt": {
+      "path": "/home/otto/.hermes/cache/scratch/npc-plan-contract/verified-candidate-collection.txt",
+      "sha256": "91b998a198c2fe296715dd99c071977fd0b6291ca7f151d45594e2ff5e965eec"
+    },
+    "verified-candidate-freeze.json": {
+      "path": "/home/otto/.hermes/cache/scratch/npc-plan-contract/verified-candidate-freeze.json",
+      "sha256": "1a4e103964f57f16b6434338d3bb647b7b8beca5c7e96b80d5585363b8b5c239"
+    },
+    "verified-candidate-npc-contract.txt": {
+      "path": "/home/otto/.hermes/cache/scratch/npc-plan-contract/verified-candidate-npc-contract.txt",
+      "sha256": "5f11b565a3022bf2987de952ca1a876cc5306d01c823db9496905fbacee2612b"
+    },
+    "verified-candidate-npc-contract.xml": {
+      "path": "/home/otto/.hermes/cache/scratch/npc-plan-contract/verified-candidate-npc-contract.xml",
+      "sha256": "065e63309b9792b52c78cb28194ea57cedddbb5144e70bbf43672846f645e8f9"
+    },
+    "verified-candidate-npc-physical-ids.json": {
+      "path": "/home/otto/.hermes/cache/scratch/npc-plan-contract/verified-candidate-npc-physical-ids.json",
+      "sha256": "043ba881c0af4281e0cbf590e092ba4714d37d6d5ee62ec2ed52c90bffc8abfd"
+    },
+    "verified-candidate-physical-ids.json": {
+      "path": "/home/otto/.hermes/cache/scratch/npc-plan-contract/verified-candidate-physical-ids.json",
+      "sha256": "18b7e497da58ad2a82d143c5c3245dab7eab50b229c83ad15a1be238ab8001eb"
+    },
+    "verified-candidate-scope-verification.json": {
+      "path": "/home/otto/.hermes/cache/scratch/npc-plan-contract/verified-candidate-scope-verification.json",
+      "sha256": "f4a337e5c0576519d1e648a91883b60deb48f5318388cfc5ec798b75a9e0d47c"
+    },
+    "verified-candidate-scoped-regression.txt": {
+      "path": "/home/otto/.hermes/cache/scratch/npc-plan-contract/verified-candidate-scoped-regression.txt",
+      "sha256": "c50ea351030a75207b564126f0e7b3b5d67558c22ae5229ab8cd47b3df86e311"
+    },
+    "verified-candidate-scoped-regression.xml": {
+      "path": "/home/otto/.hermes/cache/scratch/npc-plan-contract/verified-candidate-scoped-regression.xml",
+      "sha256": "711aa9598fe8b7d1351236e6796d0c2bd545b4a80d83ace11a3079c6692b8a7e"
+    },
+    "verified-candidate-test-results.json": {
+      "path": "/home/otto/.hermes/cache/scratch/npc-plan-contract/verified-candidate-test-results.json",
+      "sha256": "56b23fd2c0765f84eef279db536383a4a80d6acf9d9722af64f39e8bd57da178"
+    },
+    "verify_candidate.py": {
+      "path": "/home/otto/.hermes/cache/scratch/npc-plan-contract/verify_candidate.py",
+      "sha256": "1f68b88b95b749b3570ba42c5aa3f2d3cb8c33d1bd09afdf59e731aa461a6817"
+    }
+  },
+  "not_claimed": [
+    "Host NPC execution, native send/receipt/gameplay, mutable callback lifecycle, close/name/free-text/spending/resource policy.",
+    "NPC job capture integration: unchanged job-context capability copy still carries the old three fields; this fixture contract is not physically captured host NPC work.",
+    "Progress observation implementation: NPC_UI_ADVANCED is a contract condition name only.",
+    "Audit source 3s/30s windows or newer-close-after-0146 ACK policy; no such timers/ACK authority adopted.",
+    "No Git/dependency/service/SQL/native operations, no real provider/model/network calls, and no source/controller/execution/runtime changes; only supplied offline fixtures and owned planner sources were exercised. No global installs.",
+    "Independent approval, full-root quality acceptance, deployment or completed live MVP/full goals."
+  ],
+  "full_goals": "OPEN"
+}

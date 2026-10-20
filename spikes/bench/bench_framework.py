@@ -14,6 +14,8 @@ Backends:
     cloudflare-flash  Workers AI @cf/cloudflare/clef-flash
     cloudflare-27b    Workers AI @cf/cloudflare/clef
     heavengraph-*     GPU llama.cpp (requires HEAVENGRAPH_CLEF_URL, spike 005)
+    local-rocm        local Radeon 890M HIP llama.cpp (LOCAL_ROCM_CLEF_URL,
+                      spikes/006-rocm-local, default http://127.0.0.1:8093)
 
 Auth: hosted backends read CLOUDFLARE_ACCOUNT_ID/CLOUDFLARE_API_TOKEN from
 ~/.hermes/.env, falling back to wrangler's local OAuth config. MAX_BENCH_CALLS
@@ -113,6 +115,14 @@ def heavengraph(model_key: str) -> Backend:
     return Backend(model_key, base.rstrip("/") + "/v1/systemone")
 
 
+def local_rocm() -> Backend:
+    base = os.environ.get("LOCAL_ROCM_CLEF_URL")
+    if not base:
+        msg = "LOCAL_ROCM_CLEF_URL not set (start spikes/006-rocm-local/start_server.sh)"
+        raise RuntimeError(msg)
+    return Backend("local-rocm", base.rstrip("/") + "/v1/systemone")
+
+
 def run_single(backend: Backend, requests: list[dict], runs: int) -> dict:
     request = dict(requests[0])
     if backend.model:
@@ -190,6 +200,7 @@ def main() -> None:
         "cloudflare-27b": lambda: cloudflare("cloudflare-27b", "@cf/cloudflare/clef"),
         "heavengraph-flash": lambda: heavengraph("heavengraph-flash"),
         "heavengraph-27b": lambda: heavengraph("heavengraph-27b"),
+        "local-rocm": local_rocm,
     }
 
     rows = []

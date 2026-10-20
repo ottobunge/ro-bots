@@ -1,0 +1,28 @@
+{
+  "status": "NAMED_CACHED_MAP_COMPLETION_BEHAVIORAL_RED_REACHED",
+  "author_report_sha256": "50193264066db0891a3a0146d68a1046e855c50730da0c0114990371f5c16014",
+  "owned_source": "src/robots/app/playing_runtime.py",
+  "owned_test": "tests/test_npc_planning_observation.py",
+  "reason": "Existing _map_identity already derives .gat to bare only for a verified cache member while retaining literal received map names; raw equality in new observer blocks that existing route",
+  "permitted": "Use existing _map_identity for both current received view and wire identity comparisons; preserve literal raw map data and all actor/session/context gates",
+  "not_permitted": [
+    "Changes to domain/controller/protocol/cache source",
+    "Ad-hoc suffix stripping/case folding/unknown-map defaults",
+    "Hidden actor or quest permission",
+    "Host phase activation/native effects"
+  ],
+  "red_xml": "/home/otto/.hermes/cache/scratch/npc-planning-observation/parent-cached-map-red.xml",
+  "source_and_test_before": {
+    "modified": [
+      "src/robots/app/playing_runtime.py"
+    ],
+    "created": [
+      "tests/test_npc_planning_observation.py",
+      "run/reviews/npc-planning-observation.json"
+    ],
+    "source_sha256": "01593bf6e70a70fc23237b9e83f3dea46eee09f91798d4fadc86318a6a56368d",
+    "test_sha256": "eeb367d70bbb2fe97687d52d9ca5e3b33de6eea031b65bdcd31fe0039ae82b68"
+  },
+  "scope_evidence_before": "1462scopedpass/106new/395protected; alias restrictive test is explicitly revised for verified-cache-only behavior, with unknown/no-cache negatives retained",
+  "full_goals": "OPEN"
+}

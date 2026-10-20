@@ -1,0 +1,24 @@
+{
+  "basis": "Actual LLM/native send occurred but exact owned server warned message too long and peer received no reply",
+  "source": "Pinned map.hpp CHAT_SIZE_MAX256 and clif_process_message post20151001 counts one extra; legacy wire.say includes one NUL",
+  "safe_UTF8_payload_bytes_for_existing_wire": 253,
+  "intent": "Normalize only native public Say text to a UTF-8-safe bounded prefix; keep short strings and existing wire packet/client unchanged",
+  "owned_files": [
+    "src/robots/adapters/native_chat_text.py",
+    "src/robots/app/playing_runtime.py",
+    "tests/test_native_chat_text.py",
+    "run/reviews/playing-mvp-native-chat-text-fix.json"
+  ],
+  "requirements": [
+    "Vertical RED actual PlayingClient.perform_native(Say(long_reply)) demonstrates oversized emitted message before change",
+    "Whole-header/profile/source oracles confirm active byte limit; no inferred new packet lengths",
+    "Byte budget, not characters; do not split UTF8 code points",
+    "No frame/actor/goal/recovery/keepalive/party semantics changes",
+    "Keep sender prefix and current wire NUL unchanged; bound only public message text",
+    "Retain previous oversized rejection and distinguish clipped transmitted text from original model output",
+    "Current source review and stable root gate before live repeat"
+  ],
+  "native_effects_by_delegate": false,
+  "no_new_goal_or_attack_overrides": true,
+  "all_milestones_open": true
+}

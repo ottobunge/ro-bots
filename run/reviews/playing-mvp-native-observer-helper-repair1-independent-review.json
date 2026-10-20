@@ -1,0 +1,118 @@
+{
+  "passed": false,
+  "status": "BLOCKED: both finite role/storage repairs close under non-optimized Python; ordinary inherited PYTHONOPTIMIZE bypass is not bound by the current executor",
+  "qualification": "Independent frozen offline review of repair cycle 1 only; not parent approval, native authorization, or milestone acceptance",
+  "security_concerns": [
+    {
+      "id": "OBS-OPTIMIZATION-01",
+      "severity": "blocking",
+      "summary": "Safety guards are assertions; the supported native caller and nested helper commands preserve PYTHONOPTIMIZE without overriding it or rejecting optimization.",
+      "callsites": [
+        "passive-skill-context-default-integration/native_launcher.py:172-183 helper_proof uses sys.executable -B and env=dict(os.environ, PYTHONDONTWRITEBYTECODE='1')",
+        "native-observer-helper-repair1/playing-mvp-live-preflight.py:13-20 preserves the same environment; lines 26,37-47,81-93 dispatch child helpers with -B only",
+        "native-observer-helper-repair1/playing-mvp-engine-preflight.py:70-94 role/qualified-ID/image and storage guards are assertions",
+        "native-observer-helper-repair1/playing-mvp-readonly-baseline.py:37-46 fresh identity/health/project/storage guards are assertions before the SQL command at lines 63-69"
+      ],
+      "reproduction": "REVIEW_PHASE=optimized-receipt PYTHONOPTIMIZE=1 .venv/bin/python -B /home/otto/.hermes/cache/scratch/native-observer-helper-repair1-independent-review/optimized_probes.py",
+      "evidence": "/home/otto/.hermes/cache/scratch/native-observer-helper-repair1-independent-review/optimized-counterexamples.json",
+      "actual_counterexamples": [
+        {"case": "wrong-fresh-storage", "optimization": 1, "exit": 0, "passed": true, "mock_socket_sql_calls": 1},
+        {"case": "missing-login-duplicate-map", "optimization": 1, "exit": 0, "passed": true, "mock_socket_sql_calls": 1}
+      ],
+      "reachability": "An inherited PYTHONOPTIMIZE=1 is ordinary local process configuration, not malicious source modification. -B controls bytecode writing, not optimization. Static inspection of helper_proof and guards found no optimization restriction. All execution in these reproductions remained runpy plus allowlisted synthetic spies, not real Docker/SQL.",
+      "minimum_resolution": "Bind and test an explicit non-optimized helper invocation contract: ensure PYTHONOPTIMIZE=0 in the actual helper child environment and reject unsupported optimized helper entry before any SQL, or replace safety assertions with explicit unconditional denials. Any repair belongs to the parent within the existing finite budget, not this reviewer.",
+      "required_parent_evidence": "A frozen actual executor invocation/test enforcing non-optimized child Python even under inherited PYTHONOPTIMIZE=1, plus these counterexamples denying before SQL. No such enforcement is present in the inspected current caller."
+    }
+  ],
+  "logic_errors": [],
+  "quality_blockers": [
+    {"id": "OBS-OPTIMIZATION-01", "diagnostic": "Bandit B101", "disposition": "Genuine executable guard bypass, not waived because assertions were inherited. 41 current assertion findings include 12 new repair guards."}
+  ],
+  "helper_hashes": {
+    "/home/otto/.hermes/cache/scratch/native-observer-helper-repair1/playing-mvp-engine-preflight.py": "af74734dc4fbaf5a9407edcb8679d3c251c444ba722529363bdf216d4abdeaf4",
+    "/home/otto/.hermes/cache/scratch/native-observer-helper-repair1/playing-mvp-live-preflight.py": "eb58502596ad24cf9d3a6ad604de14f5fcc6cc61f98f4d96d42d7b7571547f85",
+    "/home/otto/.hermes/cache/scratch/native-observer-helper-repair1/playing-mvp-readonly-baseline.py": "2a8c60bba2cb53dcd5aecb7cd1b39021176ce2e63353a8f07ad9e9f138e01b67"
+  },
+  "dependencies": {
+    "/home/otto/dev/ro-bots/src/robots/adapters/world_inventory.py": "591340a547ac066af5f5cd491b5bb4d810083323423ad98275945c32ba153b7e",
+    "/home/otto/dev/ro-bots/run/reviews/playing-mvp-qualified-deployment.json": "cd622737107fb3a53be4a840a38df25eead9f81a0d765c08b34451ae74976bed",
+    "/home/otto/dev/ro-bots/run/reviews/playing-world-execution-scope.json": "1b81a373464678800aad433b2428c0ada7ed7f0ca8c2463c80e5de919abdf552",
+    "/home/otto/dev/ro-bots/run/reviews/playing-mvp-passive-skill-context-scope.json": "2ff94c8d21f640504dce14c1b42a772a98d258c20da0c508e2f353620203a471",
+    "/home/otto/dev/ro-bots/run/reviews/scheduled-native-host-private-location.json": "aec240d6923153cfa43b4b82af78344c413792d4df3a652d11795e42cbdcb6f0"
+  },
+  "freeze": {
+    "completed_path": "/home/otto/.hermes/cache/scratch/native-observer-helper-repair1/completed-freeze.json",
+    "completed_sha256": "34058d3d1fe714e7b165015f288ccef236c71b6a0d110b104a5eec487036927a",
+    "source_path": "/home/otto/.hermes/cache/scratch/native-skill-context-independent-freeze.json",
+    "source_sha256": "ce778f13ef76f93c10974d27edde4fc2035a532259fc468dbaaba5abeb49c68b",
+    "source_count": 270,
+    "source_drift": [],
+    "helper_drift": [],
+    "completed_input_drift": [],
+    "implementer_report_path": "/home/otto/dev/ro-bots/run/reviews/playing-mvp-native-observer-helper-repair1.json",
+    "implementer_report_sha256": "05b6b185c73d726aa370cf31c03fe47d9d0cc213b157c83c221c8ccfe01f7e4f"
+  },
+  "functional_verification": {
+    "normal_optimization_level": 0,
+    "fresh_cases": 33,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "inherited_cases": 27,
+    "reviewer_added_cases": 6,
+    "reviewer_added_names": ["reordered deployment positive", "swapped qualified role IDs denied", "extra qualified role denied", "duplicate database service denied", "fresh missing storage mount denied", "fresh wrong volume name denied"],
+    "actual_chain": "runpy world_inventory -> exact new engine helper -> exact new baseline helper, with subprocess.run allowlisted and Popen/socket hard denied before helper import",
+    "spy_hardening": "Reviewer harness assertion allowlists converted to unconditional if/raise so PYTHONOPTIMIZE cannot disable the spies themselves. Helpers remain byte-identical and are executed via actual runpy.",
+    "role_closure": "Exactly four distinct IDs, one each mariadb/login/char/map; native roles map to deployment list entries by role and exact ID/image. Original missing-login/duplicate-map counterexample and qualified-role mutations deny before mock SQL at optimization 0.",
+    "storage_closure": "Positive inventory database_mount plus current engine and baseline inspect require volume type, exact test name, /var/lib/mysql destination, no foreign mounts. Stale-positive cached inventory does not override current mount mismatch at optimization 0.",
+    "retained_guards": "Fixed four SELECTs; int-converted exact two account/character IDs; account/password/PIN/character-pair comparison; all-world online count zero; socket-only fixed SQL shell with no TCP or SQL writes; private owner/0600 checks; sanitized summaries; positive Docker and Podman health controls."
+  },
+  "physical_xml_artifact_registry": {
+    "/home/otto/.hermes/cache/scratch/native-observer-helper-repair1/original-red/junit.xml": {"sha256": "d29e8c171adb8bb112566a945a66782baaa87a6a3d8d489f4f1b62d65c213c60", "cases": 2, "failures": 2, "errors": 0, "skipped": 0},
+    "/home/otto/.hermes/cache/scratch/native-observer-helper-repair1/red-dispatch-scaffold/junit.xml": {"sha256": "6819f1ba4d524937d3ee172c8dee513b5fb6c3b073c06d402e2ca65e1e4ad2b4", "cases": 27, "failures": 7, "errors": 0, "skipped": 0},
+    "/home/otto/.hermes/cache/scratch/native-observer-helper-repair1/red/junit.xml": {"sha256": "fcb7558c78556c5f994c7304918e83bd1cc59167370a64319e8676dcc2f2cd8f", "cases": 27, "failures": 10, "errors": 0, "skipped": 0},
+    "/home/otto/.hermes/cache/scratch/native-observer-helper-repair1/green/junit.xml": {"sha256": "0f24fdefd666c3a7f8d06d0bb2371adb52943bf8cd87ae6449ca93a7a0e4cd54", "cases": 27, "failures": 0, "errors": 0, "skipped": 0},
+    "/home/otto/.hermes/cache/scratch/native-observer-helper-repair1/final/junit.xml": {"sha256": "0f24fdefd666c3a7f8d06d0bb2371adb52943bf8cd87ae6449ca93a7a0e4cd54", "cases": 27, "failures": 0, "errors": 0, "skipped": 0},
+    "/home/otto/.hermes/cache/scratch/native-observer-helper-repair1-independent-review/normal/junit.xml": {"sha256": "b7de11c363b46ebba65534c48879917a270c81c82ca315ac20b16053ccf9cab6", "cases": 33, "failures": 0, "errors": 0, "skipped": 0}
+  },
+  "quality_disposition": {
+    "configured_project_policy": "Unchanged src/tests gates; this scratch qualification does not waive or replace full project check/audit. Parent full-suite totals are not independently rerun here.",
+    "fresh_black_exit": 0,
+    "fresh_pycompile": "Three exact helpers passed with explicit reviewer-owned cfiles in the 33-case suite",
+    "fresh_project_mypy": {"exit": 0, "result": "Success: no issues found in 214 source files", "cache": "reviewer-owned fresh mypy-cache"},
+    "fresh_ruff_exit": 1,
+    "fresh_scoped_E_F_S_exit": 1,
+    "fresh_bandit_exit": 1,
+    "preserved_exact_diagnostics": {
+      "ruff_current_all_owned_count": 106,
+      "ruff_original_helpers_count": 36,
+      "ruff_current_codes": {"E501": 36, "T201": 6, "E731": 3, "PT018": 21, "B023": 1, "EM101": 6, "PLW1510": 2, "F401": 3, "B905": 2, "PLR0911": 1, "PT027": 4, "PT009": 18, "N802": 3},
+      "ruff_original_codes": {"PT018": 11, "EM101": 4, "E501": 12, "T201": 3, "PLW1510": 2, "W291": 1, "E702": 3},
+      "bandit_current_count": 53,
+      "bandit_original_count": 41,
+      "bandit_current_codes": {"B404": 3, "B101": 41, "B603": 4, "B607": 2, "B608": 3},
+      "bandit_original_codes": {"B404": 3, "B101": 29, "B603": 4, "B607": 2, "B608": 3},
+      "bandit_delta": {"B101": 12},
+      "scope_caveat": "Ruff 106 scans all owned scratch Python including finalizer/harness; original 36 scans only three helpers. 70 is not an attributable helper regression count. Exact supplied diagnostic bytes were within verified completed inputs."
+    },
+    "nonblocking_classification": [
+      "E501/W291/E702 line-length/whitespace/statement-layout debt; E731 immediate lambda naming; T201 intentional CLI summaries; EM101 sanitized literal errors; PT018 assertion layout; PT009/PT027/N802 unittest style. These do not independently demonstrate unsafe behavior in this bounded scratch caller contract.",
+      "F401 three unused harness imports; B905 fixture zip lengths fixed to four service IDs and three role IDs; PLR0911 allowlisted mock dispatcher branching. Neither truncation nor omitted fixture role was observed.",
+      "B023 finalize.py:85-95 captures key in a lambda immediately called for old/new within that same loop iteration, not stored for deferred execution. Nonblocking for this actual call site.",
+      "PLW1510 live/baseline subprocess calls explicitly check returned returncode and raise sanitized failures; absence of explicit check=False is style, not missing failure handling.",
+      "B404/B603/B607: subprocess import and fixed argv, no shell=True; validated inventory IDs and fixed new helper paths; trusted same-UID PATH/executable environment remains a stated local assumption, not hostile-sandbox approval.",
+      "B608: SELECT identifiers interpolate only int-converted reviewed fixture IDs, no untrusted SQL string or mutation command. Four exact SELECTs enforced by spies."
+    ],
+    "blocking_classification": "B101 all safety assertions depend on non-optimized Python; both original omission fixes become ineffective under reachable inherited optimization. See OBS-OPTIMIZATION-01. Not dismissed as historical or merely lint style.",
+    "transport_limit": "Fresh broad Ruff/Bandit .txt output was tool-truncated and is not an independently complete diagnostic JSON receipt. Use the verified original ruff.json/security.json exact catalogs, not the truncated .txt files, for complete finding attribution.",
+    "approval_blocker": "An additional combined full-stream scan/caller simulation request was blocked for lack of user consent and did not execute; no retry or alternative to that blocked request was performed. Existing offline counterexamples and static caller inspection suffice for this negative verdict."
+  },
+  "artifact_registry_path": "/home/otto/.hermes/cache/scratch/native-observer-helper-repair1-independent-review/artifact-registry.json",
+  "effects": {"real_docker": 0, "real_sql": 0, "native_tcp": 0, "inference": 0, "actual_private_credentials_read": 0, "source_edits": 0, "old_helper_edits": 0, "old_report_edits": 0, "config_edits": 0, "git_calls": 0},
+  "limitations": ["Trusted same-UID ordinary-misconfiguration model, not hostile filesystem/PATH isolation", "Timeout guarantees apply to a direct child, not universally to descendants", "No all-Python OOM/exotic-failure guarantee", "No current operational ownership/resource permission from frozen role hashes", "Native authorization remains false; all full milestones and criterion 9 memory remain OPEN"],
+  "native_authorization": false,
+  "operational_world_preflight": false,
+  "suggestions": [],
+  "files_created": "Only this new report and reviewer-owned fresh scratch fixtures, harness/probes, XML, diagnostics and registry; no repairs",
+  "summary": "33/33 normal-Python cases verify the two finite repairs, but two optimized offline counterexamples reopen both faults before socket SELECT, so unconditional frozen qualification is denied."
+}

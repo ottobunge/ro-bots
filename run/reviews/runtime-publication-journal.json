@@ -1,0 +1,76 @@
+{
+  "status": "implemented_source_only_pending_independent_review",
+  "approval_claimed": false,
+  "schema": "historical journal event version 1; not publication receipt schema 2",
+  "files_created": [
+    "src/robots/adapters/runtime_publication_journal.py",
+    "tests/test_runtime_publication_journal.py",
+    "run/reviews/runtime-publication-journal.json"
+  ],
+  "source_sha256": "d1300c7b7038b311aa363d4bdb50d2c9a2b441d68904809a44b2268274d0aea2",
+  "test_sha256": "9586500c50d356417b9f7ff31269b0d64ca00f320d27ef3933d1112c4e1caed0",
+  "snapshot": {
+    "before": "/home/otto/.hermes/cache/scratch/publication-journal-before.json",
+    "after": "/home/otto/.hermes/cache/scratch/publication-journal-after.json",
+    "existing_python_files": 104,
+    "existing_python_files_changed": []
+  },
+  "verification": {
+    "focused_tests": 51,
+    "journal_statement_coverage_percent": 94.82758620689656,
+    "whole_source_duplicate_check": "passed",
+    "whole_source_complexity_check": "passed",
+    "configured_command": "nix develop --offline -c env UV_OFFLINE=1 task check",
+    "configured_exit_code": 0,
+    "configured_tests": 1196,
+    "configured_subtests": 65,
+    "configured_total_coverage_percent": 93.75,
+    "configured_test_seconds": 195.65,
+    "configured_log": "/home/otto/.hermes/cache/scratch/journal-full-check.log",
+    "warnings": ["existing bandit nosec warnings", "existing FastAPI StarletteDeprecationWarning"],
+    "source_and_test_freeze": "Before/after fingerprints of every existing src/tests Python file unchanged."
+  },
+  "tdd_evidence": {
+    "log_directory": "/home/otto/.hermes/cache/scratch",
+    "cycles": [
+      {"red": "journal-red-1.log", "green": "journal-green-1.log", "scope": "real creation/persistence/reopen", "caveat": "Initial RED was missing-module ImportError, not an assertion failure."},
+      {"red": "journal-red-2.log", "green": "journal-green-2.log", "scope": "actual independent process lock and restart"},
+      {"red": "journal-red-3.log", "green": "journal-green-3.log", "scope": "append validation and phase identity"},
+      {"red": "journal-red-4.log", "green": "journal-green-4.log", "scope": "strict malformed historical replay"},
+      {"red": "journal-red-5.log", "green": "journal-green-5.log", "scope": "private metadata and retained binding"},
+      {"red": "journal-red-6.log", "green": "journal-green-6.log", "scope": "reached syscall faults and thread append/close serialization"},
+      {"red": "journal-red-7.log", "green": "journal-green-7.log", "scope": "exact existing world tokens; intermediate static failures retained"},
+      {"red": "journal-red-8.log", "green": "journal-green-8.log", "scope": "close fault identity/redaction and exact acknowledgement identifier type"}
+    ],
+    "other_retained_log": "journal-static-first.log"
+  },
+  "contract": {
+    "borrowed_root": "Caller-owned directory fd remains caller-owned and must stay valid. Actual effective UID ownership, exact 0700 root, regular exact 0600 journal, single link, no-follow and retained inode/entry binding are checked.",
+    "basename": "publication-journal.jsonl",
+    "records": "Fixed six required keys; canonical sorted compact UTF-8 JSON plus newline; no unknown/duplicate fields, floats, bool version, NaN, arbitrary payload, private configuration or durable inode provenance.",
+    "limits": {"record_bytes": 4096, "records": 8192, "file_bytes": 33554432},
+    "worlds": "Exact test/debug or prod- followed by 1..14 safe suffix bytes; no normalization or truncation.",
+    "generation": "uuid4 hex generated inside each open; never supplied by caller as trusted authority.",
+    "durable_append": "One unbuffered O_APPEND os.write must write the whole bounded newline-terminated record. No userspace buffering/flush stage. File fsync, root-directory fsync, exact full readback and stable metadata/binding precede confirmed memory state and volatile event acknowledgement.",
+    "serialization": "Private RLock serializes append, confirmed-record snapshot, acknowledgement and close; exclusive nonblocking flock holds the owned journal file fd until explicit close, including poisoned lifetime.",
+    "poison": "Reached short write, syscall/readback/binding failure or interrupt poisons the live instance; later appends reject and acknowledgements deny. No automatic retry, compensating write, truncation or repair.",
+    "restart": "All replayed records are historical only. Prior transaction IDs stay reserved and cannot progress into the new generation. Reopened acknowledgements are false even for visible committed events after fsync failure or a previous successful writer.",
+    "cleanup": "Reuse unchanged close_owned for exactly one close attempt. Reached released-close and pre-release close faults are distinguished. Origin object/errno/traceback preserved; generated OSError text is redacted on append/close failures. Constructor KeyboardInterrupt plus released cleanup fault preserves origin and sanitized note."
+  },
+  "boundaries": [
+    "Historical committed event bytes are not acknowledged publication/tree commit and never grant workspace or world admission.",
+    "No builder, deploy manager, launch, recovery or admission integration exists. Fresh manager authority and future external recovery protocol remain absent.",
+    "Private mode, UUID and advisory flock do not prove initial mkdir identity, controlled ancestry or exclusion of privileged/same-UID mutators.",
+    "Root checks anchor a borrowed root inode and its journal entry; no arbitrary destination pathname is accepted or claimed bound.",
+    "No multi-file atomicity, filesystem/hardware power-loss guarantee or universal quarantine persistence is claimed.",
+    "Poisoned confirmed-record snapshots are historical memory observations, not current acknowledgement.",
+    "Synthetic wrong UID is a labeled monkeypatched effective-UID metadata probe, not an actual other-user ownership experiment.",
+    "No server, SQL, engine, world, socket, provider, credential or private input operations performed.",
+    "Original runtime construction-identity and failure-marker findings remain open; existing launch/reset guards unchanged."
+  ],
+  "issues": [
+    "Initial RED used import absence; subsequent vertical behavior slices have reached assertion-failure evidence.",
+    "One bounded cycle used parameterized examples within behavior slices rather than separate implementation changes for every individual parameter.",
+    "The configured full gate took 195.65 seconds; final snapshot/report preparation slightly exceeded the nominal fifteen-minute target."
+  ]
+}

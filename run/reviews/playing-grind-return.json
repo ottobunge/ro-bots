@@ -1,0 +1,65 @@
+{
+  "slice": "window-30-merchant-return-legs",
+  "date": "2026-10-18",
+  "namespace": ".work/playing-grind-return/",
+  "status": "COMPLETE",
+  "live_execution": "prohibited here (the coordinator runs window 30); offline production slice only",
+  "finding_addressed": {
+    "source": "run/reviews/playing-grind-operator-live-window29-analysis.json (receipt 1792279277)",
+    "shape": "fixture_0 trapped in prt_in: empty inventory (no sellables), zeny 0 (start_zeny), no weapon; merchant_drive_cell correctly refuses but MERCHANT_ROUTE held only the outbound legs, so the goal script idled/DONE under the 60 s idle-kick with no return route."
+  },
+  "production_changes": {
+    "file": "src/robots/app/scripts.py",
+    "sha256": "5b06a80d83e63fd6387a7281a62716c89d173c304354400006822eb52b12d224",
+    "additions": [
+      "MERCHANT_ROUTE_RETURN walk-home legs, cells cited from pinned public rathena e985006171d2 bytes (npc/warps/cities/prontera.txt; the deployed world copy run/worlds/test-first-live-86e7c36895db/runtime/npc/warps/cities/prontera.txt is line-identical at :24/:25/:40): prt_in -> (168, 124) [:40 prt_in,168,124,0 warp prt05-1 2,1,prontera,174,218 — the interior exit door, mirror of the cited prt05 entry :25] and prontera -> (156, 22) [:24 prontera,156,22,0 warp prt001 3,2,prt_fild08,170,375 — the field warp; arrival prt_fild08,170,375 beside the cited outbound field leg 170,378]. The field itself is absent (prt_fild08 behavior never changes); unknown maps fail closed.",
+      "merchant_return_cell(state): fires only when ALL of job Novice; KNOWN inventory with no wanted weapon 1201/1202/1204 (a worn weapon stays in received inventory and releases the return exactly like the drive); merchant_drive_cell is None (the outbound drive owns an affordable/stocked bot); map_name in MERCHANT_ROUTE_RETURN. Covers both the trapped-in-prt_in shape and the just-sold-everything shape (same no-stock condition).",
+      "_merchant_step restructured into named helpers: drive cell -> unchanged _merchant_engage (talk-once hold preserved, rest precedence unchanged); else return cell -> ONE MoveTo per evaluation (warp map changes re-derive the next leg from received map_name), never a retalk. Heading home POPS the per-bot dealer-contact hold so the next outbound visit talks to the SAME dealer npc id again (the sell-and-buy cycle can repeat across trips)."
+    ]
+  },
+  "tdd": {
+    "red": {
+      "receipt": ".work/playing-grind-return/evidence/RED-provenance.md",
+      "named_gaps": [
+        "collection ImportError: cannot import name 'MERCHANT_ROUTE_RETURN' from 'robots.app.scripts'",
+        "behavioral probe on unchanged source: trapped-state GrindScript.step returned DONE/no actions; spent prontera state returned no action"
+      ]
+    },
+    "green": {
+      "receipt": ".work/playing-grind-return/evidence/green-receipt-scoped.txt",
+      "scoped": "tests/test_merchant_drive.py: 40 passed (26 prior + 14 new return-leg contracts), plus tests/test_native_npc_guidance.py + tests/test_native_npc_page_budget.py 244 combined green after the recorded test revision"
+    }
+  },
+  "gates": {
+    "root_task_check": {
+      "command": "nix develop -c task check",
+      "result": "6014 passed + 65 subtests, exit 0, coverage 95.48%",
+      "baseline": "6000 passed + 65 subtests",
+      "new": 14,
+      "receipt": ".work/playing-grind-return/evidence/root-task-check-final.log"
+    },
+    "first_gate_attribution": {
+      "receipt": ".work/playing-grind-return/evidence/root-task-check-attribution.log",
+      "note": "First run failed exactly 3 legacy guidance/page-budget tests: their fixtures stage a spent Novice on a prontera receipt with a synthetic monster — the return legs' exact claim. Assertions were kept byte-identical; the three synthetic scenes moved to a prt_fild08 receipt (the real fixture field). Recorded in evidence/test-revision-note.md with the exact test IDs; no production behavior was bent to keep the old scenery green."
+    },
+    "black": "black --check src tests: 275 files would be left unchanged",
+    "ruff": "ruff check src tests: All checks passed (also scoped on the 4 touched files)",
+    "mypy": "mypy src/robots/app/scripts.py: Success: no issues found in 1 source file"
+  },
+  "files_modified": [
+    "src/robots/app/scripts.py",
+    "tests/test_merchant_drive.py",
+    "tests/test_native_npc_guidance.py",
+    "tests/test_native_npc_page_budget.py",
+    ".work/playing-grind-operator/READY-TO-RUN.md"
+  ],
+  "test_file_digests": {
+    "tests/test_merchant_drive.py": "2d2e26f823f322ea76e93eb45bfb01bc68b87c17503ae7fa407bce35b838c696",
+    "tests/test_native_npc_guidance.py": "4f1d41a2cbf3677c9700be8a76c6bf92e82b2121dd36b11d43b3505696885a46",
+    "tests/test_native_npc_page_budget.py": "13f2f62686b6a437c1d152e1e91664d965ff55a1948d6c52b0f0c73368699ef1"
+  },
+  "window30_packaging": {
+    "ready_to_run_note": ".work/playing-grind-operator/READY-TO-RUN.md Window-30 section appended: live command unchanged from window 29 (production script seam, no new operator/PYTHONPATH); acceptance = the trapped-in-prt_in bot walks prt_in (168,124) -> prontera (156,22) -> prt_fild08 and resumes committed kills, the cycle can repeat (dealer contact re-arms after a return), honest fail-closed paths recorded."
+  },
+  "remaining": "Coordinator executes window 30 live; the receipt decides the acceptance gates above."
+}

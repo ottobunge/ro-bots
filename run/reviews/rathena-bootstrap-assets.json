@@ -1,0 +1,76 @@
+{
+  "scope": "public-reference-derivation-only",
+  "source": "/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source",
+  "revision": "e985006171d2eb320ee512a653f4c83aea3d81b6",
+  "source_nar": "sha256-ppi6wPYDqwXh+XR39ufl0SDS6gYfdKyHtQ9tU9rgrNI=",
+  "actual_attestation": "nix hash path --sri /nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source",
+  "sql_executed": false,
+  "mutation_authorized": false,
+  "world_initialized": false,
+  "reset_authorized": false,
+  "server_sql_acceptance": false,
+  "private_inputs_consumed": false,
+  "db_image_dependency": false,
+  "artifact_root": "/home/otto/.hermes/cache/scratch/rathena-bootstrap-public-_uev2gnn",
+  "artifact_retention": "temporary scratch; independently archive if needed",
+  "artifacts": {
+    "main.sql": {"sha256": "48b741520f0d33e2081f9f69d1de73478510a5e73c5395f4a6da9bb192b5cf4f", "size": 41703},
+    "logs.sql": {"sha256": "e2fab8bd57401696403746cdc7dce45330a62ca655517be655202cc4e069439c", "size": 7312},
+    "web.sql": {"sha256": "cdfde52db2db5250f5292ff4fd4fff08b52064be4db244ee6db2e8c35def3546", "size": 1308},
+    "roulette_default_data.sql": {"sha256": "1f393ee750d7b976f950c1819fd8a953a124f115bec3b0b3afae68a8a0f9d7d8", "size": 5263},
+    "manifest.json": {"sha256": "8a8b95c1ab65e3c398eb534ea5a87ada6a807cf9a4527e8c2abfbb2417b2df23", "size": 30809}
+  },
+  "output_readback": "all five actual exclusively created files read back; exact SHA256 and byte-size checked",
+  "suppression": {
+    "target": "one standard operational login INSERT [REDACTED]",
+    "source_statement_line": 799,
+    "adjacent_comment_lines": [796, 797],
+    "source_byte_span": [29900, 30138],
+    "proof": "whole-file SHA256 then fixed span/table/column-header/unique-count/terminator validation",
+    "preservation": "all bytes outside fixed range unchanged; all other files byte-identical"
+  },
+  "schema_counts": {
+    "main.sql": {"tables": 56, "fields": 651, "engines": {"MyISAM": 53, "InnoDB": 3}, "insert_count": 12},
+    "logs.sql": {"tables": 10, "fields": 98, "engines": {"MyISAM": 10}, "insert_count": 0},
+    "web.sql": {"tables": 4, "fields": 17, "engines": {"MyISAM": 4}, "insert_count": 0},
+    "roulette_default_data.sql": {"tables": 0, "fields": 0, "engines": {}, "insert_count": 42}
+  },
+  "tdd": [
+    {"slice": "unique suppression and complete byte preservation", "red": "1 failed: derivation missing", "green": "1 passed"},
+    {"slice": "missing/extra/cross-target/changed-shape/changed-DDL refusal", "red": "5 failed: hash-guarded suppression proof missing", "green": "6 passed aggregate"},
+    {"slice": "actual artifact readback and complete schema manifest", "red": "1 failed: provenance/schema bundle missing", "green": "7 passed aggregate", "source_correction": "actual ENGINE whitespace discovered; exact table counts unchanged"},
+    {"slice": "sanitized failed Nix attestation before SQL reads", "red": "2 failed: timeout and missing-Nix propagated instead of sanitized refusal", "green": "11 passed aggregate"}
+  ],
+  "scoped_gates": {
+    "command_prefix": "nix develop --offline --no-write-lock-file -c; uv run --offline",
+    "tests": "12 passed",
+    "black": "passed",
+    "ruff": "passed",
+    "mypy": "passed: no issues in 2 source files",
+    "bandit": "passed",
+    "xenon": "passed at unchanged B/B/A thresholds",
+    "vulture": "passed at existing 85 min confidence",
+    "side_effect_boundary": "real derivation allowed exactly one fixed Nix child; socket construction/connections forbidden by spies"
+  },
+  "full_gate": {
+    "command": "nix develop --offline --no-write-lock-file -c bash -c 'UV_OFFLINE=1 task check'",
+    "exit_code": 0,
+    "tests_passed": 884,
+    "subtests_passed": 65,
+    "coverage_percent": 93.51,
+    "seconds": 174.05,
+    "warnings": ["existing FastAPI TestClient deprecation", "runtime Bandit nosec warnings"],
+    "qualification": "actual observed whole-tree gate; concurrent runtime dependencies not frozen, no independent combined approval"
+  },
+  "fingerprints": {
+    "src/robots/adapters/rathena_bootstrap_assets.py": "257f09e9c318dc060b21e76326a4510fce2d9fc06d048047e0949e098ab3c3c7",
+    "tests/test_rathena_bootstrap_assets.py": "8cda1166185ae50d2ee03e50b4313e3edf92390b7af6394309ad57decbbffa18"
+  },
+  "limitations": [
+    "Static projection only, not SQL server/parser acceptance or schema creation.",
+    "No MyISAM rollback claim or InnoDB conversion.",
+    "Default server row absent; separate owned private account write/readback still required and unimplemented.",
+    "No engine/client/container/server/network/world/provider/gateway execution.",
+    "No fresh-world/launch/readiness/reset permission or integration."
+  ]
+}

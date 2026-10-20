@@ -1,0 +1,15 @@
+{
+  "status": "GRIND_WINDOW5_REPLAN_IDLE_LOW_DENSITY_TRAVEL_ENGAGEMENT_FRONTIER",
+  "completed_at": "2026-10-15T00:37:05.155941+00:00",
+  "raw_receipt": "run/reviews/playing-grind-operator-live-window5.json",
+  "results": {
+    "transport": "healthy both agents",
+    "replan_verdict": "no_stale_observation (watcher idle: budget requires non-target observations; only 4 actor frames ingested this session)",
+    "fixture_0": "1 attackable seen briefly; walk_sends 0",
+    "fixture_1": "2 non-attackable frames; walk_sends 0",
+    "combat": "none"
+  },
+  "cause_named": "whole-map spawn scatter is per-login random: window 4 drew 63 frames/3 mobs near the cells, window 5 drew 4 frames. And the committed-travel engagement condition fires only on ScriptStatus.DONE, while FarmScript with no targets returns ACTIVE-with-no-actions forever - so the agent stands idle instead of walking its committed farm cells.",
+  "fix_scope": "travel wrapper engagement: treat the farm-idle no-action ACTIVE outcome as travel-eligible (committed cells already built); keep replan watcher unchanged (it correctly accumulated nothing without observations). Small bounded TDD slice in the travel namespace.",
+  "native_authority": "UNCHANGED_REVOKED"
+}
