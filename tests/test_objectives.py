@@ -9,7 +9,7 @@ names + character names), which is how friends FIND each other in-game.
 """
 
 import inspect
-from typing import Any
+from typing import Any, Literal
 
 import pytest
 
@@ -17,7 +17,7 @@ import robots.society.objectives as objectives_module
 import robots.society.relations as relations_module
 from robots.adapters.chat.stub import StaticChatGenerator
 from robots.adapters.decision.stub import ScriptedDecisionModel
-from robots.app.brain import EventDrivenBrain
+from robots.app.brain import EventDrivenBrain, TickResult
 from robots.domain.actions import AcceptInvite, InviteToParty, PartyChat, Say, WhisperTo
 from robots.domain.events import ChatHeard, Heartbeat, InviteReceived
 from robots.domain.model import BotState, ChatLine, Goal, PartyInvite
@@ -807,6 +807,261 @@ def test_brain_solo_outsider_replies_to_a_public_join_call() -> None:
     whispers = [a for a in result.actions if isinstance(a, WhisperTo)]
     assert [w.to for w in whispers] == ["PartyLeader"]
     assert result.escalated is False
+
+
+# -- the seed-7 week: the full offline loop through the fake packet bus ----------
+
+HearChannel = Literal["party", "public", "whisper"]
+
+
+class FakePacketBus:
+    """The server between the hosts: packet-level delivery, nothing else.
+
+    Coordination reaches another agent ONLY as these packets (the invite
+    packet, public/party chat, whispers) — the bus is the offline proof that
+    no out-of-band channel exists in the loop.
+    """
+
+    def __init__(self) -> None:
+        self.rigs: dict[str, AgentRig] = {}
+        self.online: set[str] = set()
+        self.trace: list[str] = []
+        self._inviter: dict[str, str] = {}  # invited persona -> inviting persona
+
+    def add(self, rig: AgentRig) -> None:
+        self.rigs[rig.persona_id] = rig
+        self.online.add(rig.persona_id)
+
+    def online_names(self) -> tuple[str, ...]:
+        return tuple(sorted(self.online))
+
+    def rig_by_name(self, name: str) -> AgentRig:
+        for rig in self.rigs.values():
+            if rig.name == name:
+                return rig
+        msg = f"no agent named {name!r}"
+        raise ValueError(msg)
+
+    def submit(self, sender_id: str, actions: Sequence[object]) -> None:
+        for action in actions:
+            self._deliver(sender_id, action)
+
+    def _deliver(self, sender_id: str, action: object) -> None:
+        sender = self.rigs[sender_id]
+        match action:
+            case InviteToParty(player=name):
+                target = self.rig_by_name(name)
+                self.trace.append(f"party-invite packet: {sender.name} invites {name}")
+                self._inviter[target.persona_id] = sender_id
+                received = target.brain.handle_event(
+                    target.state(),
+                    InviteReceived(invite=PartyInvite(from_name=sender.name, at=1.0)),
+                )
+                self.submit(target.persona_id, received.actions)
+            case AcceptInvite():
+                self.trace.append(f"party-invite packet: {sender.name} accepts")
+                sender.in_party = True
+                leader_id = self._inviter.get(sender.persona_id)
+                if leader_id is not None:
+                    leader = self.rigs[leader_id]
+                    leader.in_party = True
+                    self.submit(leader_id, leader.coordinator.record_party_join(sender.name))
+            case PartyChat(text):
+                self.trace.append(f"party chat: {sender.name}: {text}")
+                for rig in self.rigs.values():
+                    if (
+                        rig.persona_id != sender_id
+                        and rig.in_party
+                        and rig.persona_id in self.online
+                    ):
+                        self._hear(rig, sender, "party", text)
+            case Say(text):
+                self.trace.append(f"public chat: {sender.name}: {text}")
+                for rig in self.rigs.values():
+                    if rig.persona_id != sender_id and rig.persona_id in self.online:
+                        self._hear(rig, sender, "public", text)
+            case WhisperTo(to=name, text=text):
+                target = self.rig_by_name(name)
+                self.trace.append(f"whisper: {sender.name} -> {name}: {text}")
+                self._hear(target, sender, "whisper", text)
+            case _:
+                self.trace.append(f"(game action): {sender.name}: {type(action).__name__}")
+
+    def _hear(self, rig: AgentRig, sender: AgentRig, channel: HearChannel, text: str) -> None:
+        line = ChatLine(channel=channel, sender=sender.name, text=text, at=1.0)
+        received = rig.brain.handle_event(rig.state(), ChatHeard(line=line))
+        self.submit(rig.persona_id, received.actions)
+
+    def heartbeat(self, persona_id: str, **state_overrides: Any) -> TickResult:
+        rig = self.rigs[persona_id]
+        result = rig.brain.handle_event(rig.state(**state_overrides), Heartbeat(seq=0))
+        self.submit(persona_id, result.actions)
+        return result
+
+    def channels_used(self) -> set[str]:
+        return {line.split(":", 1)[0] for line in self.trace}
+
+
+class AgentRig:
+    """One agent's host: its ledger, coordinator, brain and mutable state."""
+
+    def __init__(self, bus: FakePacketBus, persona: Any, answers: list[dict[str, Any]]) -> None:
+        self.persona_id = persona.persona_id
+        self.name = persona.name
+        self.group_id = persona.group_id
+        self.in_party = False
+        self.goal: Goal = Goal.GRIND
+        self.ledger = RelationshipLedger()
+        seed_roster(self.ledger, pop_2_2_1())  # the injected roster (creation-time)
+        self.coordinator = GroupCoordinator(self.ledger, self.persona_id)
+        self.hook = BoundCoordinator(
+            self.coordinator,
+            online=bus.online_names,
+            meet_where="prontera 156,22",
+            meet_when="19:00",
+        )
+        self.model = CapturingModel(answers=answers)
+        self.brain = EventDrivenBrain(
+            decision_model=self.model,
+            chat=StaticChatGenerator(["gg", "nice", "ty", "hi", "ok", "sure", "later"]),
+            coordination=self.hook,
+            social_view=lambda: self.ledger.context_lines(
+                self.persona_id, online_members=bus.online_names()
+            ),
+        )
+
+    def state(self, **overrides: Any) -> BotState:
+        base: dict[str, Any] = {
+            "name": self.name,
+            "job": "Swordsman",
+            "base_level": 42,
+            "hp": 800,
+            "max_hp": 1000,
+            "sp": 60,
+            "max_sp": 80,
+            "map_name": "prt_fild08",
+            "x": 120,
+            "y": 74,
+            "goal": self.goal,
+            "in_party": self.in_party,
+            "nearby": (),
+            "inventory": {"Red Potion": 5},
+            "pending_invites": (),
+            "recent_chat": (),
+        }
+        base.update(overrides)
+        return BotState(**base)
+
+
+def make_week() -> tuple[FakePacketBus, dict[str, AgentRig]]:
+    """The seed-7 example: two 2-member friend groups + 1 solo, all wired.
+
+    Fixed answer mappings (not queues): every decide is stateless, and the
+    coordination guard re-checks the window before forming, so a repeated
+    ``objective_action`` answer cannot double-form.
+    """
+    bus = FakePacketBus()
+    keep = base_answers()
+    leader_a = {
+        **keep,
+        "objective_action": {"type": "choice", "choice": "hunt"},
+        "farm_target": {"type": "choice", "choice": "porings"},
+    }
+    leader_b = {
+        **keep,
+        "objective_action": {"type": "choice", "choice": "farm"},
+        "farm_target": {"type": "choice", "choice": "jellopy"},
+    }
+    member = {
+        **keep,
+        "accept_invite": {"type": "noul", "noul": 0.9},
+        "change_goal": {"type": "choice", "choice": "town"},
+    }
+    by_group: dict[str, list[Any]] = {}
+    solo_persona: Any = None
+    for persona in pop_2_2_1().personas:
+        if persona.group_id is None:
+            solo_persona = persona
+        else:
+            by_group.setdefault(persona.group_id, []).append(persona)  # first = leader
+    rigs: dict[str, AgentRig] = {}
+    leader_answers = {"hunt": leader_a, "farm": leader_b}
+    for index, group_id in enumerate(sorted(by_group)):
+        members = by_group[group_id]
+        kind = "hunt" if index == 0 else "farm"
+        leader_rig = AgentRig(bus, members[0], leader_answers[kind])
+        mate_rig = AgentRig(bus, members[1], dict(member))
+        rigs[f"lead-{group_id}"] = leader_rig
+        rigs[f"mate-{group_id}"] = mate_rig
+        bus.add(leader_rig)
+        bus.add(mate_rig)
+    solo_rig = AgentRig(bus, solo_persona, dict(keep))
+    rigs["solo"] = solo_rig
+    bus.add(solo_rig)
+    return bus, rigs
+
+
+def test_seed7_week_full_loop_coordination_through_game_socials() -> None:
+    bus, rigs = make_week()
+    groups = sorted(rig.group_id for rig in rigs.values() if rig.group_id is not None)
+    g_a, g_b = groups[0], groups[1]
+    lead, mate = rigs[f"lead-{g_a}"], rigs[f"mate-{g_a}"]
+    lead_b, mate_b = rigs[f"lead-{g_b}"], rigs[f"mate-{g_b}"]
+
+    # t1: the schedule window opens; the LEADER's review authors the objective.
+    bus.heartbeat(lead.persona_id)
+    social = lead.model.requests[0]["state"]["social_relations"]
+    assert "you lead" in social  # the decide context carried the formation window
+    # The whole proposed -> invited -> active lifecycle ran inside the review:
+    # the invites went out on the wire and the member accepted in-game.
+    objective = lead.coordinator.book.objectives_for_group(g_a, statuses=(OBJECTIVE_ACTIVE,))
+    assert len(objective) == 1
+    assert objective[0].accepted == (mate.persona_id,)
+    assert mate.in_party and lead.in_party
+    assert any("accepts" in line for line in bus.trace)
+
+    # t2: the member's goal review ADOPTS the objective (the model said town).
+    member_review = bus.heartbeat(mate.persona_id)
+    assert any("objective alignment" in note for note in member_review.notes)
+
+    # The solo drift: it heard the PUBLIC join call and whispered a join request.
+    join_call_line = f"whisper: {solo_name if (solo_name := rigs['solo'].name) else ''} -> "
+    assert any(
+        join_call_line in line and "can I join? Swordsman lvl 42" in line for line in bus.trace
+    )
+    # The leader received the whisper IN GAME (its escalation path answered).
+    assert any(f"public chat: {lead.name}: gg" in line for line in bus.trace)
+
+    # t3: the second group's leader forms its own objective the same way.
+    bus.heartbeat(lead_b.persona_id)
+    assert len(lead_b.coordinator.book.live_objectives()) == 1
+    assert mate_b.in_party
+
+    # The welcome premade fired at each join transition.
+    assert sum(f"party chat: {lead.name}: welcome, {mate.name}!" in l for l in bus.trace) == 1
+    assert sum(f"welcome, {mate_b.name}!" in line for line in bus.trace) == 1
+
+    # t4: the schedule window closes (only the leaders stay online).
+    bus.online -= {mate.persona_id, mate_b.persona_id, rigs["solo"].persona_id}
+    gone = bus.heartbeat(lead.persona_id)
+    # The goodbye premade fires on the leader's current channel (in a party).
+    assert any(isinstance(a, (Say, PartyChat)) and a.text == "gg wp" for a in gone.actions)
+    dissolved = lead.coordinator.book.objectives_for_group(g_a, statuses=(OBJECTIVE_DISSOLVED,))
+    assert dissolved[0].reason == "schedule window closed"
+    bus.heartbeat(mate.persona_id)
+    member_dissolved = mate.coordinator.book.objectives_for_group(
+        g_a, statuses=(OBJECTIVE_DISSOLVED,)
+    )
+    assert len(member_dissolved) == 1
+
+    # Every trace line is an in-game channel — no out-of-band delivery exists.
+    assert bus.channels_used() <= {
+        "party-invite packet",
+        "public chat",
+        "party chat",
+        "whisper",
+        "(game action)",
+    }
 
 
 # -- the no-telepathy guard -------------------------------------------------------

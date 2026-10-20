@@ -386,10 +386,10 @@ class EventDrivenBrain:
             self._coordination.on_invite_accepted(leader_name)
 
     def _coordination_outsider(self, line: ChatLine, state: BotState) -> GameAction | None:
-        """The solo's affinity-gated whisper answering a public join call."""
+        """A heard line through the coordination layer: offer note + outsider gate."""
         if self._coordination is None:
             return None
-        return self._coordination.outsider_reply(line, state)
+        return self._coordination.observe_chat(line, state)
 
     def _party_event_announce(
         self, state: BotState, answers: dict[str, Any], notes: list[str]

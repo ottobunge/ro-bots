@@ -442,12 +442,10 @@ class GroupCoordinator:
                     objective.objective_id, member, meet_premade(meet_where, meet_when)
                 )
         channel = PartyChat if in_party else Say
-        actions: list[GameAction] = [
-            InviteToParty(self._ledger.display_name(m)) for m in suggestion.invitee_ids
-        ]
-        actions.append(channel(objective_premade(kind, map_name, target)))
+        actions: list[GameAction] = [channel(objective_premade(kind, map_name, target))]
         names = ", ".join(self._ledger.display_name(m) for m in suggestion.invitee_ids)
         actions.append(channel(f"inviting {names}"))
+        actions.extend(InviteToParty(self._ledger.display_name(m)) for m in suggestion.invitee_ids)
         return objective, tuple(actions)
 
     def deliver_whispers(self, online_members: Sequence[str]) -> tuple[GameAction, ...]:
@@ -648,6 +646,11 @@ class BoundCoordinator:
     def on_invite_accepted(self, leader_name: str) -> GroupObjective | None:
         """MY accept of the in-game invite: record the join in MY book."""
         return self._coordinator.accept_invite_from(leader_name)
+
+    def observe_chat(self, line: ChatLine, state: BotState) -> GameAction | None:
+        """A heard line: record a join-call offer, then the solo outsider gate."""
+        self._coordinator.note_announcement(line.sender, line.text)
+        return self.outsider_reply(line, state)
 
     def outsider_reply(self, line: ChatLine, state: BotState) -> GameAction | None:
         """The solo's affinity-gated whisper answering a public join call."""
