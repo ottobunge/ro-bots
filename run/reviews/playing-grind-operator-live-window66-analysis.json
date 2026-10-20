@@ -79,5 +79,8 @@
   ],
   "fake_wire_debug_2": [
     "The 0x0091 feedback IS ingested correctly (the self-position parser handles it). The remaining explanation for moveTo:72/attack:0: the FakeWire injects the monster ONCE at the opening \u2014 the tracker's actor-freshness purge expires it, so the state oscillates: the empty view (the roam fires) vs the brief re-see. The real wire refreshes the actor frames continuously. THE FAKE NEEDS: the periodic monster_frame re-adds (the actor refresh) in addition to the walk feedback. The next session: add the monster refresh to the FakeWire (a tick-hook or the pre-refreshed frames), then the reconcile lands and the validation window runs."
+  ],
+  "fake_wire_0x0087": [
+    "The 0x0087 feedback added (the hand-verified packed from/to: (42,37)->(45,41) parses correctly per _position and the raw[8:11] destination logic) \u2014 yet the pos samples stay (42,37). THE LAST LINK: the instrumented _self_position trace on the exact frames (a 5-minute job: print the seq/pid/parse inside _self_position during the debug loop). The FakeWire also needs the actor-refresh verification (the 123 SimpleNamespace registered; the refresh rides the move)."
   ]
 }
