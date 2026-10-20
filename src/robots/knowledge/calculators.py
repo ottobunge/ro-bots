@@ -202,24 +202,7 @@ def equip_projection(item: dict[str, Any], stats: dict[str, int] | None = None) 
     """
     kind = _item_kind(item)
     buy, sell = _item_prices(item)
-    delta: dict[str, int] = {}
-    projected_atk: int | None = None
-    if kind == "weapon":
-        weapon_atk = leading_int(_item_field(item, "attack", "Attack", "atk", "ATK"))
-        if weapon_atk is not None:
-            delta["atk"] = weapon_atk
-            if stats:
-                projected_atk = atk_with_weapon(
-                    weapon_atk,
-                    stats.get("str_", 0),
-                    stats.get("dex", 0),
-                    stats.get("luk", 0),
-                    equip_atk=stats.get("equip_atk", 0),
-                )
-    elif kind == "armor":
-        defense = leading_int(_item_field(item, "defense", "Defense", "def", "Def"))
-        if defense is not None:
-            delta["def"] = defense
+    delta, projected_atk = _equip_delta(kind, item, stats)
 
     name = str(item.get("name") or item.get("Name") or item.get("AegisName") or "?")
     if delta:
@@ -240,3 +223,28 @@ def equip_projection(item: dict[str, Any], stats: dict[str, int] | None = None) 
         "projected_atk": projected_atk,
         "line": line,
     }
+
+
+def _equip_delta(
+    kind: str, item: dict[str, Any], stats: dict[str, int] | None
+) -> tuple[dict[str, int], int | None]:
+    """The stat deltas one item grants, plus the projected atk for weapons."""
+    delta: dict[str, int] = {}
+    projected_atk: int | None = None
+    if kind == "weapon":
+        weapon_atk = leading_int(_item_field(item, "attack", "Attack", "atk", "ATK"))
+        if weapon_atk is not None:
+            delta["atk"] = weapon_atk
+            if stats:
+                projected_atk = atk_with_weapon(
+                    weapon_atk,
+                    stats.get("str_", 0),
+                    stats.get("dex", 0),
+                    stats.get("luk", 0),
+                    equip_atk=stats.get("equip_atk", 0),
+                )
+    elif kind == "armor":
+        defense = leading_int(_item_field(item, "defense", "Defense", "def", "Def"))
+        if defense is not None:
+            delta["def"] = defense
+    return delta, projected_atk

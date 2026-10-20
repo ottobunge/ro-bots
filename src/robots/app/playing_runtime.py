@@ -178,6 +178,11 @@ an ack is not a verdict; after the cap the worn state stays unknown and no
 further requests go out until a new session epoch."""
 
 
+def _received_stats(stats: tuple[int, ...] | None) -> tuple[int, ...] | None:
+    """The 0x00BD six-stat tuple as received; None stays None (never zeros)."""
+    return tuple(stats) if stats else None
+
+
 class PlayingClient:
     """Wrap native limbs while retaining AgentHost's client lifecycle contract."""
 
@@ -598,7 +603,7 @@ class PlayingClient:
             capacity_receipt=self._capacity.receipt,
             weight=self._capacity.weight_count,
             max_weight=self._capacity.max_weight_count,
-            received_stats=tuple(view.stats) if view.stats else None,
+            received_stats=_received_stats(view.stats),
             inventory_known=view.inventory_known,
             inventory_slots=self._server_slot_allowance(),
             server_self_slots=self._server_self_slots,

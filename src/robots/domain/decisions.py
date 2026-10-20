@@ -93,11 +93,7 @@ def build_decision_request(
     _add_encounters(json_state, state)
     _add_npc_context(json_state, state)
     _add_skill_context(json_state, state)
-
-    if knowledge_lines:
-        # game_context.MAX_DECIDE_LINES is the composition-side cap; re-cap
-        # here so no caller path can exceed the payload budget.
-        json_state["game_knowledge"] = list(knowledge_lines[:6])
+    _add_game_knowledge(json_state, knowledge_lines)
 
     if memory_lines is not None:
         json_state["memory_view"] = "\n".join(memory_lines[:40])
@@ -170,6 +166,16 @@ def build_decision_request(
         "state": json_state,
         "questions": questions,
     }
+
+
+def _add_game_knowledge(json_state: dict[str, Any], knowledge_lines: list[str] | None) -> None:
+    """Bounded game-knowledge lines (criterion 4/10); absent keeps legacy shape.
+
+    game_context.MAX_DECIDE_LINES is the composition-side cap; re-capped here
+    so no caller path can exceed the decide payload budget.
+    """
+    if knowledge_lines:
+        json_state["game_knowledge"] = list(knowledge_lines[:6])
 
 
 def _add_npc_context(json_state: dict[str, Any], state: BotState) -> None:

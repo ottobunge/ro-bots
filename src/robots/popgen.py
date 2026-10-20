@@ -161,6 +161,21 @@ _NAME_TAILS: Final[tuple[str, ...]] = (
 )
 
 
+def _validate_tier_weights(weights: tuple[float, float, float]) -> None:
+    if len(weights) != len(BUDGET_TIERS) or any(weight < 0 for weight in weights):
+        msg = "budget_tier_weights must be three non-negative weights"
+        raise ValueError(msg)
+    if abs(sum(weights) - 1.0) > 1e-6:
+        msg = "budget_tier_weights must sum to 1"
+        raise ValueError(msg)
+
+
+def _validate_farmer_share(share: float) -> None:
+    if not 0.0 <= share <= 1.0:
+        msg = "farmer_share must be within 0..1"
+        raise ValueError(msg)
+
+
 @final
 @dataclass(frozen=True, slots=True)
 class PopulationSpec:
@@ -177,17 +192,8 @@ class PopulationSpec:
         if self.friend_groups < 0:
             msg = "friend_groups must be zero or more"
             raise ValueError(msg)
-        if len(self.budget_tier_weights) != len(BUDGET_TIERS) or any(
-            weight < 0 for weight in self.budget_tier_weights
-        ):
-            msg = "budget_tier_weights must be three non-negative weights"
-            raise ValueError(msg)
-        if abs(sum(self.budget_tier_weights) - 1.0) > 1e-6:
-            msg = "budget_tier_weights must sum to 1"
-            raise ValueError(msg)
-        if not 0.0 <= self.farmer_share <= 1.0:
-            msg = "farmer_share must be within 0..1"
-            raise ValueError(msg)
+        _validate_tier_weights(self.budget_tier_weights)
+        _validate_farmer_share(self.farmer_share)
         lo, hi = self.friends_per_group
         if lo < 2 or hi < lo or hi > MAX_GROUP_SIZE:
             msg = "friends_per_group must be 2 <= min <= max <= 12"
@@ -238,10 +244,6 @@ class GeneratedPopulation:
                 groups.setdefault(persona.group_id, []).append(persona.persona_id)
         lo, hi = self.spec.friends_per_group
         solo_count = sum(1 for p in self.personas if p.group_id is None)
-        tier_counts = {
-            tier: sum(1 for p in self.personas if p.budget_tier == tier) for tier in BUDGET_TIERS
-        }
-        farmers = sum(1 for p in self.personas if p.playstyle == FARMER_PLAYSTYLE)
         return {
             "schema": 1,
             "generator": "robots.popgen",
@@ -260,8 +262,8 @@ class GeneratedPopulation:
                 "friend_groups": len(groups),
                 "solo_agents": solo_count,
             },
-            "budget_tiers": tier_counts,
-            "farmers": farmers,
+            "budget_tiers": self._tier_counts(),
+            "farmers": self._farmer_count(),
             "groups": [
                 self._group_row(group_id, members) for group_id, members in sorted(groups.items())
             ],
@@ -272,6 +274,14 @@ class GeneratedPopulation:
                 persona.persona_id: [list(w) for w in persona.schedule] for persona in self.personas
             },
         }
+
+    def _tier_counts(self) -> dict[str, int]:
+        return {
+            tier: sum(1 for p in self.personas if p.budget_tier == tier) for tier in BUDGET_TIERS
+        }
+
+    def _farmer_count(self) -> int:
+        return sum(1 for p in self.personas if p.playstyle == FARMER_PLAYSTYLE)
 
     def _group_row(self, group_id: str, members: list[str]) -> dict[str, Any]:
         first = self.personas[
