@@ -110,11 +110,13 @@ def build_host(args: argparse.Namespace) -> AgentHost:
     catalog = ObservedMobDatabase.load(root / "db/pre-re/mob_db.yml")
     databases = {pid: ObservedMobDatabase(catalog.catalog.values()) for pid in entries}
 
-    from robots.adapters.spawn_species import spawn_species as _spawn_species  # noqa: PLC0415
+    from robots.adapters.spawn_species import spawn_species_index  # noqa: PLC0415
+
+    _spawn_index = spawn_species_index(Path("rathena/npc/pre-re/mobs/fields"))
 
     def spawn_species_for(map_name: str) -> tuple[str, ...]:
         """Declared species for the map (criterion-10 knowledge; w59)."""
-        return _spawn_species(Path("rathena/npc/pre-re/mobs/fields") / f"{map_name}.txt", map_name)
+        return _spawn_index.get(map_name, ())
 
     chat = make_local_chat(args.chat_url)
     decision = make_private_decision(args.decision_url)
