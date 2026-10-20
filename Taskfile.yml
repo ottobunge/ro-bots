@@ -210,3 +210,16 @@ tasks:
     cmds:
       - cd spikes/bench && python3 bench_framework.py --backends {{.BACKENDS}} --runs {{.RUNS}} --json-out RESULTS.json
       - echo "Compare with spikes/bench/RESULTS.md (append notable rows there)"
+
+  bench:
+    desc: Benchmark decision+chat backends with real-shape probes (scripts/bench_backends.json); appends run/benchmarks/decide-<date>.jsonl and prints the comparison table
+    vars:
+      DECIDE_N: "{{.decide_n | default \"30\"}}"
+      CHAT_N: "{{.chat_n | default \"10\"}}"
+    cmds:
+      - uv run python scripts/bench_decision.py run --out-dir run/benchmarks --decide-n {{.DECIDE_N}} --chat-n {{.CHAT_N}}
+
+  bench-report:
+    desc: Render the latest benchmark rows as run/benchmarks/latest.md
+    cmds:
+      - uv run python scripts/bench_decision.py report --benchmarks-dir run/benchmarks
