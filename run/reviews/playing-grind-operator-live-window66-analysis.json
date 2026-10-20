@@ -67,5 +67,8 @@
   ],
   "bisect_progress_2": [
     "THE WATCHER WAS THE SECOND CONSUMER: ReplanWatcher._received_state called client.build_native_state directly \u2014 an observing read per operator tick, ADVANCING the cursor mid-runtime. FIXED: the cache-first (the live PlayingClient: last_built_state), the explicit-build fallback ONLY for the offline twins without the attribute. The watcher suite: 8/10 green; the 2 offline-twin tests need the mechanical reconcile (their replay clients build through the FakeWire path). ALSO: the pace layer exonerated by the bisect probe (the ticks count with the watchers+pacers active). The session ended mid-reconcile \u2014 finish the 2 tests, the gate, then the validation window."
+  ],
+  "offline_twin_reconcile_state": [
+    "The 2 offline-twin failures (the healthy-target case): the replans==0 assertion PASSES (the watcher's cache read works), but counts['attack']>=1 FAILS \u2014 the FarmScript's attack dispatch produced 0 in the replay. The suspects narrowed to today's runtime changes in the attack path: (a) the standing re-arm's epoch math (the FakeWire's clock interplay), (b) the knowledge-lines decide payload shifting the scripted answers' handling, (c) the GrindScript roam leaking into the FarmScript path (unlikely \u2014 the separate class). The debug: run test_offline_twin_healthy_target_never_replans with the receipt's diagnostics dumped (the payload['agents']['fx0'] has the dispatched/gates/diagnostics fields \u2014 print them) and compare against the pre-change receipt shape. NOTE: the .work lane is git-ignored so git stash cannot isolate the watcher change \u2014 the manual revert is the only A/B."
   ]
 }
