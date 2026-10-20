@@ -162,8 +162,20 @@ CHRYSLIS_FIELDS = {
     "selling_price": "4 Z (4 Z)",
     "description": "Skin from a larva that has been shed or peeled off.",
 }
-KNIFE_FIELDS = {"type": "Weapon", "subtype": "Dagger", "attack": "17"}
-SHIRT_FIELDS = {"type": "Armor", "defense": "1"}
+KNIFE_FIELDS = {
+    "type": "Weapon",
+    "subtype": "Dagger",
+    "atk": "17",
+    "buying_price": "50 Z (38 Z)",
+    "selling_price": "25 Z (31 Z)",
+    "slots": 3,
+}
+SHIRT_FIELDS = {
+    "type": "Gear",
+    "subtype": "Armor",
+    "def": "10",
+    "selling_price": "5 Z (6 Z)",
+}
 
 
 class TestEquipProjection:
@@ -182,13 +194,14 @@ class TestEquipProjection:
         assert projection["kind"] == "weapon"
         assert projection["equip_delta"] == {"atk": 17}
         assert projection["projected_atk"] == 27  # batk 10 + knife 17
-        # sell defaults to buy//2 when the corpus omits a sell price
-        assert projection["sell_price_z"] is None
+        assert projection["buy_price_z"] == 50
+        assert projection["sell_price_z"] == 25  # corpus selling price "25 Z (31 Z)"
 
     def test_armor_projects_def_delta(self) -> None:
         projection = equip_projection({"id": 2302, "name": "Cotton Shirt", **SHIRT_FIELDS})
-        assert projection["kind"] == "armor"
-        assert projection["equip_delta"] == {"def": 1}
+        assert projection["kind"] == "armor"  # iro-db "Gear"/subtype Armor
+        assert projection["equip_delta"] == {"def": 10}
+        assert projection["sell_price_z"] == 5
 
     def test_rathena_style_fields_accepted(self) -> None:
         # db/pre-re/item_db.yml shape: Buy: 8 with no Sell -> sell 4

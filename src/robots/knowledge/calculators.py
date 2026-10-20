@@ -157,10 +157,14 @@ def _item_field(item: dict[str, Any], *names: str) -> Any:
 
 def _item_kind(item: dict[str, Any]) -> str:
     raw = _item_field(item, "type", "Type")
+    sub = _item_field(item, "subtype", "SubType")
     text = str(raw).strip().lower() if raw is not None else ""
+    sub_text = str(sub).strip().lower() if sub is not None else ""
     if text == "weapon":
         return "weapon"
-    if text == "armor":
+    # iro-db marks wearable gear as "Gear" (subtype Armor/Shield/Accessory...);
+    # rathena marks it "Armor".
+    if text in ("armor", "gear") or sub_text == "armor":
         return "armor"
     if text in _USABLE_TYPES:
         return "usable"
@@ -197,7 +201,7 @@ def equip_projection(item: dict[str, Any], stats: dict[str, int] | None = None) 
     delta: dict[str, int] = {}
     projected_atk: int | None = None
     if kind == "weapon":
-        weapon_atk = _first_int(_item_field(item, "attack", "Attack"))
+        weapon_atk = _first_int(_item_field(item, "attack", "Attack", "atk", "ATK"))
         if weapon_atk is not None:
             delta["atk"] = weapon_atk
             if stats:
@@ -209,7 +213,7 @@ def equip_projection(item: dict[str, Any], stats: dict[str, int] | None = None) 
                     equip_atk=stats.get("equip_atk", 0),
                 )
     elif kind == "armor":
-        defense = _first_int(_item_field(item, "defense", "Defense"))
+        defense = _first_int(_item_field(item, "defense", "Defense", "def", "Def"))
         if defense is not None:
             delta["def"] = defense
 

@@ -117,6 +117,16 @@ def _leading_int(raw: Any) -> int | None:
     return int(digits) if digits else None
 
 
+def item_weapon_attack(fields: dict[str, Any]) -> int | None:
+    """The parsed weapon attack from an iro-db item row (``atk``/``attack``)."""
+    for key in ("atk", "attack", "Attack", "ATK"):
+        if key in fields:
+            value = _leading_int(fields[key])
+            if value is not None:
+                return value
+    return None
+
+
 def _pct_value(drop: dict[str, Any]) -> float:
     raw = str(drop.get("rate", "0"))
     text = ""
@@ -137,7 +147,7 @@ def monster_context_line(fields: dict[str, Any]) -> str:
     hp = _leading_int(fields.get("hp"))
     base_exp = _leading_int(fields.get("base_exp"))
     job_exp = _leading_int(fields.get("job_exp"))
-    parts = [f"{name}:"]
+    parts: list[str] = []
     if hp is not None:
         parts.append(f"HP {hp}")
     if base_exp is not None and job_exp is not None:
@@ -150,8 +160,7 @@ def monster_context_line(fields: dict[str, Any]) -> str:
     if drops:
         rendered = ", ".join(f"{drop.get('name', '?')} {_pct_value(drop):g}%" for drop in drops)
         parts.append(f"drops {rendered}…")
-    line = ", ".join(parts)
-    return line[:MAX_LINE_CHARS]
+    return (f"{name}: " + ", ".join(parts))[:MAX_LINE_CHARS]
 
 
 def item_projection_line(item_id: int, stats: dict[str, int] | None = None) -> str | None:

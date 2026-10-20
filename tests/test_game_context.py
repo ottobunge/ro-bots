@@ -41,7 +41,12 @@ CHRYSLIS_FIELDS: dict[str, Any] = {
     "buying_price": "--",
     "selling_price": "4 Z (4 Z)",
 }
-KNIFE_FIELDS: dict[str, Any] = {"type": "Weapon", "subtype": "Dagger", "attack": "17"}
+KNIFE_FIELDS: dict[str, Any] = {
+    "type": "Weapon",
+    "subtype": "Dagger",
+    "atk": "17",
+    "selling_price": "25 Z (31 Z)",
+}
 
 
 def _build_iro_db(path: Path) -> None:
@@ -86,8 +91,10 @@ def _build_iro_wiki(path: Path) -> None:
         (
             "maps",
             "Prontera South Gate",
-            ("prt_fild08 connects Prontera to the fields. Monsters: Poring, Drops, "
-            "Lunatic, Pupa. A classic newbie grinding field."),
+            (
+                "prt_fild08 connects Prontera to the fields. Monsters: Poring, Drops, "
+                "Lunatic, Pupa. A classic newbie grinding field."
+            ),
         ),
     )
     con.commit()
@@ -119,7 +126,8 @@ class TestCorporaReaders:
     def test_item_fields_items_section_only(self, fake_corpora: None) -> None:
         # id 1201 is Knife among items AND Rybio among monsters; section filter wins.
         knife = corpora.item_fields(1201)
-        assert knife is not None and knife["type"] == "Weapon"
+        assert knife is not None
+        assert knife["type"] == "Weapon"
 
     def test_monster_fields_by_name(self, fake_corpora: None) -> None:
         fields = corpora.monster_fields("Poring")
@@ -205,5 +213,8 @@ class TestRealCorpusSmoke:
             inventory={"915": 2, "1201": 1},
         )
         lines = game_context.decide_knowledge_lines(state)
-        assert any(line.startswith("Poring:") and "HP" in line for line in lines)
-        assert any("Chrysalis" in line for line in lines)
+        assert any(line.startswith("Poring: HP") for line in lines)
+        assert any("Chrysalis" in line and "sellable 4z" in line for line in lines)
+        # The real corpus row keys weapon attack as "atk": the self line must
+        # project batk 10 + knife 17, not a bare-handed 10.
+        assert any("atk 27 (batk 10 + Knife [3] 17)" in line for line in lines)

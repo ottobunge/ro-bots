@@ -48,7 +48,7 @@ def _self_line(state: BotState, stats: tuple[int, ...]) -> str | None:
             continue
         fields = corpora.item_fields(item_id)
         if fields and str(fields.get("type", "")).lower() == "weapon":
-            weapon_atk = corpora._leading_int(fields.get("attack"))
+            weapon_atk = corpora.item_weapon_attack(fields)
             if weapon_atk is not None:
                 atk = atk_with_weapon(weapon_atk, str_, dex, luk)
                 weapon_note = f" + {fields.get('name', 'weapon')} {weapon_atk}"
