@@ -21,10 +21,11 @@ from robots.app import agent_runtime
 from robots.app import playing_runtime as runtime
 from robots.app.agent_runtime import AgentHost, ManifestEntry, PersonaClock, ScheduledAgent
 from robots.app.brain import EventDrivenBrain
+from robots.app.scripts import GrindScript
 from robots.domain.actions import Attack, Loot, MoveTo, PartyChat, Rest, Say
 from robots.domain.decisions import build_decision_request
 from robots.domain.events import DamageTaken, MonsterSpotted
-from robots.domain.model import Goal
+from robots.domain.model import BotState, Goal
 from robots.society.models import Attitude, Playstyle, SocietyPersona
 
 
@@ -148,6 +149,34 @@ def test_last_built_state_reads_without_reobserving() -> None:
     assert client.last_built_state is None  # nothing built yet
     state = client.build_native_state(Goal.GRIND)
     assert client.last_built_state is state
+
+
+def test_grind_script_roams_when_no_mobs_in_view() -> None:
+    """w65-69: the goal-grind path (GrindScript, no authored plan) must roam
+    when the view is empty — the FarmScript got the roam leg; the GrindScript
+    still stood still, which is exactly what the goal-assigned agents run."""
+    script = GrindScript()
+    state = BotState(
+        name="bot",
+        job="Novice",
+        base_level=1,
+        hp=100,
+        max_hp=100,
+        sp=10,
+        max_sp=10,
+        map_name="prt_fild08",
+        x=100,
+        y=100,
+        goal=Goal.GRIND,
+        in_party=False,
+        nearby=(),
+        inventory={},
+        pending_invites=(),
+        recent_chat=(),
+    )
+    outcome = script.step(state)
+    moves = [a for a in outcome.actions if isinstance(a, MoveTo)]
+    assert moves, "the GrindScript empty view must roam, not stand"
 
 
 def test_wire_state_not_persona_truth():

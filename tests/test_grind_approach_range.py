@@ -179,7 +179,8 @@ def test_hp_rest_still_precedes_approach():
 
 def test_no_monsters_tail_unchanged():
     assert _grind(_state(inventory={"Jellopy": 3})).actions == (Loot(),)
-    assert _grind(_state()).status.name == "DONE"
+    # w65-69: the empty view roams (ACTIVE) instead of completing DONE
+    assert _grind(_state()).status.name == "ACTIVE"
     outcome = _farm(_state(inventory={"Jellopy": 3}))
     assert outcome.actions == (Loot(),)  # loot still precedes keep-farming idle
     assert _farm(_state()).status.name == "ACTIVE"

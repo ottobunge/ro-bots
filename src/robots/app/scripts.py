@@ -488,7 +488,14 @@ class GrindScript:
         _release_commitment(state, self._commit_window)
         if state.inventory:
             return ScriptOutcome((Loot(),), ScriptStatus.ACTIVE)
-        return ScriptOutcome((), ScriptStatus.DONE)
+        # w65-69 roam leg (mirrors FarmScript): an empty view must not
+        # complete as DONE — the goal-grind agent would churn DONE forever
+        # standing in a mobless patch. Patrol a bounded step instead.
+        dx, dy = random.choice(((8, 0), (-8, 0), (0, 8), (0, -8), (5, 5), (-5, -5)))
+        return ScriptOutcome(
+            (MoveTo(max(0, state.x + dx), max(0, state.y + dy)),),
+            ScriptStatus.ACTIVE,
+        )
 
 
 @final
