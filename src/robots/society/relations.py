@@ -99,6 +99,7 @@ class RelationshipLedger:
         self._persona_id = persona_id
         self._path = path
         self._names: dict[str, str] = {}
+        self._persona_by_name: dict[str, str] = {}
         self._groups: dict[str, tuple[str, ...]] = {}
         self._group_maps: dict[str, str] = {}
         self._member_group: dict[str, str] = {}
@@ -142,11 +143,20 @@ class RelationshipLedger:
         """The group's save map, when registered with one."""
         return self._group_maps.get(group_id)
 
+    def display_name(self, persona_id: str) -> str:
+        """The persona's in-game character name (injected roster knowledge)."""
+        return self._names.get(persona_id, persona_id)
+
+    def persona_of(self, display_name: str) -> str | None:
+        """The persona id behind an in-game character name (recognizing the inviter)."""
+        return self._persona_by_name.get(display_name)
+
     # -- registration ----------------------------------------------------------
 
     def register_persona(self, persona_id: str, display_name: str) -> None:
         """Bind a persona id to its in-game char name (for context lines)."""
         self._names[persona_id] = display_name
+        self._persona_by_name[display_name] = persona_id
 
     def seed_group(
         self, group_id: str, members: Sequence[str], *, save_map: str | None = None
@@ -455,6 +465,7 @@ class RelationshipLedger:
     def _restore_from(self, other: RelationshipLedger) -> None:
         self._persona_id = other._persona_id
         self._names = other._names
+        self._persona_by_name = {name: pid for pid, name in other._names.items()}
         self._groups = other._groups
         self._group_maps = other._group_maps
         self._member_group = other._member_group

@@ -8,11 +8,15 @@ mutation. The roster itself is injected knowledge at agent creation (persona
 names + character names), which is how friends FIND each other in-game.
 """
 
+import inspect
 from typing import Any
 
 import pytest
 
+import robots.society.objectives as objectives_module
+import robots.society.relations as relations_module
 from robots.domain.model import Goal
+from robots.popgen import GeneratedPopulation, PopulationSpec, generate_population
 from robots.society.objectives import (
     OBJECTIVE_ACTIVE,
     OBJECTIVE_DISSOLVED,
@@ -25,7 +29,17 @@ from robots.society.objectives import (
     objective_goal,
     objective_premade,
     parse_objective_premade,
+    seed_roster,
 )
+from robots.society.relations import RelationshipLedger
+
+
+def pop_2_2_1() -> GeneratedPopulation:
+    """The acceptance example: two 2-member friend groups + 1 solo, seed 7."""
+    return generate_population(
+        PopulationSpec(friend_groups=2, friends_per_group=(2, 2), solo_agents=1, seed=7)
+    )
+
 
 # -- the premade protocol (the in-game message content) -----------------------
 
@@ -217,3 +231,68 @@ def test_kind_constants_are_exhaustive() -> None:
         "active",
         "dissolved",
     }
+
+
+# -- the injected roster (agent-level knowledge, character-level identity) ------
+
+
+def test_seed_roster_knows_group_character_names_without_contact() -> None:
+    """At creation every group member knows the roster: persona ids AND the
+    in-game character names — no chat, party or whisper ever exchanged."""
+    population = pop_2_2_1()
+    by_group: dict[str, list[str]] = {}
+    for persona in population.personas:
+        if persona.group_id is not None:
+            by_group.setdefault(persona.group_id, []).append(persona.persona_id)
+    names = {p.persona_id: p.name for p in population.personas}
+    save_maps = {p.persona_id: p.save_map for p in population.personas}
+    for group_id, members in by_group.items():
+        ledger = RelationshipLedger()
+        seed_roster(ledger, population)
+        # The whole roster resolved to character names, zero in-game contact.
+        for member in members:
+            assert ledger.display_name(member) == names[member]
+            assert ledger.persona_of(names[member]) == member
+        assert ledger.group_members(group_id) == tuple(members)
+        assert ledger.group_map(group_id) == save_maps[members[0]]
+        # The decide-context group line shows CHARACTER names, not bare ids.
+        lines = ledger.context_lines(members[0])
+        assert any(names[m] in line for line in lines for m in members[1:])
+
+
+def test_seed_roster_leaves_solos_registered_but_ungrouped() -> None:
+    population = pop_2_2_1()
+    solo = next(p for p in population.personas if p.group_id is None)
+    ledger = RelationshipLedger()
+    seed_roster(ledger, population)
+    assert ledger.display_name(solo.persona_id) == solo.name
+    assert ledger.group_of(solo.persona_id) is None
+
+
+# -- the no-telepathy guard -------------------------------------------------------
+
+
+def test_no_api_writes_another_agents_state_or_chat() -> None:
+    """The coordination surface exposes NO cross-agent writer: one agent can
+    never hand another agent its ledger/book/brain/state. Coordination leaves
+    an agent only as emitted game packets (the emission-purity pin lives with
+    the coordinator tests)."""
+    forbidden_params = {"ledger", "book", "brain", "state", "bot_state", "other_agent"}
+    for module in (relations_module, objectives_module):
+        for name, member in vars(module).items():
+            if not inspect.isclass(member) or member.__module__ != module.__name__:
+                continue
+            for method_name, method in vars(member).items():
+                if method_name.startswith("_"):
+                    continue
+                try:
+                    signature = inspect.signature(method)
+                except TypeError, ValueError:
+                    continue
+                params = {p for p in signature.parameters if p != "self"}
+                clashes = params & forbidden_params
+                assert not clashes, (
+                    f"{module.__name__}.{name}.{method_name} accepts {sorted(clashes)}: "
+                    "a cross-agent state writer must not exist — coordination travels "
+                    "only as game packets"
+                )

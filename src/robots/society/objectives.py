@@ -29,9 +29,13 @@ from __future__ import annotations
 
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
-from typing import Any, Final, final
+from typing import TYPE_CHECKING, Any, Final, final
 
 from robots.domain.model import Goal
+
+if TYPE_CHECKING:
+    from robots.popgen import GeneratedPopulation
+    from robots.society.relations import RelationshipLedger
 
 OBJECTIVE_KINDS: Final = ("hunt", "farm", "town")
 OBJECTIVE_PROPOSED: Final = "proposed"
@@ -109,6 +113,26 @@ def objective_goal(kind: str) -> Goal:
         msg = f"unknown objective kind: {kind!r}"
         raise ValueError(msg)
     return goal
+
+
+def seed_roster(ledger: RelationshipLedger, population: GeneratedPopulation) -> None:
+    """Inject the group roster at agent creation (agent-level meta-knowledge).
+
+    Every group member's ledger learns the persona ids AND the in-game
+    character names of its whole group before any in-game contact — this is
+    how friend groups start together and FIND each other in-game (the leader
+    invites by the known character name; the members recognize the inviter).
+    This is roster injection, NOT telepathy: no coordination MESSAGE content
+    ever travels this way — those go only through the game channels.
+    """
+    by_group: dict[str, list[str]] = {}
+    for persona in population.personas:
+        ledger.register_persona(persona.persona_id, persona.name)
+        if persona.group_id is not None:
+            by_group.setdefault(persona.group_id, []).append(persona.persona_id)
+    saves = {p.persona_id: p.save_map for p in population.personas}
+    for group_id, members in by_group.items():
+        ledger.seed_group(group_id, members, save_map=saves[members[0]])
 
 
 @final
