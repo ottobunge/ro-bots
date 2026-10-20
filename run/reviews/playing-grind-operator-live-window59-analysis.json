@@ -1,0 +1,8 @@
+{
+  "record": "GRIND_WINDOW59_ROAM_GAP_NAMED_AGENTS_STAND_IN_MOBLESS_PATCHES",
+  "date": "2026-10-20 (~07:4x)",
+  "finding": "Both agents stood at their login cells (own_pos 0, no moves, no gate reasons \u2014 _move never called), attackable_max 1 (a mobless patch \u2014 the spawns scatter per login), no MonsterSpotted events, plan_targets null (nothing to author against). The decides landed at full cadence (238/230 \u2014 the heavengraph layer is solid).",
+  "design_gap": "THE ROAM: when the GrindScript completes DONE (no mobs in view) the brain re-plans but nothing wires the next_action 'grind' (with no mobs nearby) to the PATROL machinery (_field_target's \u00b18-cell roam targets exist but are unwired from this path). Real players WALK to find mobs; the agents stand and wait.",
+  "fix_design_next_session": "On the GrindScript DONE with the next_action 'grind': author a patrol MoveTo via _field_target (the machinery exists), or a travel plan toward the known-dense cluster (the spawn knowledge: prt_fild08's [170-210, 355-375]). TDD in the brain tests with the state fixture; the heavengraph decides make the live observation cheap.",
+  "context": "The decides at full cadence; the picklog armed; the schema theories retracted (the event questions are correct). The delegates: the dashboard (running) + the e2e continuation (running)."
+}
