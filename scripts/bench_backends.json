@@ -1,0 +1,28 @@
+{
+  "backends": [
+    {
+      "name": "local-rocm",
+      "base_url": "http://127.0.0.1:8093",
+      "kind": "systemone",
+      "probes": ["decide"]
+    },
+    {
+      "name": "heavengraph",
+      "base_url": "http://192.168.1.156:8091",
+      "kind": "systemone",
+      "probes": ["decide"]
+    },
+    {
+      "name": "cloudflare-clef-flash",
+      "base_url": "https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/ai/run/@cf/cloudflare/clef-flash",
+      "kind": "workers",
+      "probes": ["decide"]
+    },
+    {
+      "name": "chat-qwen3-4b",
+      "base_url": "http://127.0.0.1:8300",
+      "kind": "chat",
+      "probes": ["chat"]
+    }
+  ]
+}
