@@ -1,0 +1,308 @@
+"""Group objectives: a shared goal that travels ONLY through game socials.
+
+The operator directive: agent planning exists at the agent level AND the
+character level — agents hold objectives WITH other agents, but all
+coordination runs through GAME SOCIALS (party invites, party chat, whispers,
+public chat). This module owns the shared-goal lifecycle and the premade
+vocabulary; it never mutates another agent. A member joins by accepting the
+in-game party invite (its own brain's ``accept_invite`` path, affinity-gated
+through its RelationshipLedger), and its own goal review then aligns with the
+objective for its duration.
+
+- **Lifecycle**: ``proposed`` (the leader's goal review opens one when the
+  group's schedule-overlap window opens) -> ``invited`` (the in-game party
+  invites went out to the online members) -> ``active`` (at least one member
+  accepted) -> ``dissolved`` (the schedule window closed / the members left).
+- **Premade protocol**: the announcement text (``hunting porings prt_fild08,
+  join me``) is the in-game message content — structured enough to recognise
+  on receive, exactly what a player would type.
+- **Offline coordination**: an offline group member is never telepathised; the
+  leader records a ``meet at ...`` whisper that the runtime delivers as a real
+  in-game whisper once both are online.
+- **Persistence**: the book serialises into the RelationshipLedger's JSON (the
+  reconnect-continuity carrier).
+
+Pure stdlib; deterministic; ``ts`` values are caller-supplied floats.
+"""
+
+from __future__ import annotations
+
+from collections.abc import Mapping, Sequence
+from dataclasses import dataclass
+from typing import Any, Final, final
+
+from robots.domain.model import Goal
+
+OBJECTIVE_KINDS: Final = ("hunt", "farm", "town")
+OBJECTIVE_PROPOSED: Final = "proposed"
+OBJECTIVE_INVITED: Final = "invited"
+OBJECTIVE_ACTIVE: Final = "active"
+OBJECTIVE_DISSOLVED: Final = "dissolved"
+LIVE_STATUSES: Final = (OBJECTIVE_PROPOSED, OBJECTIVE_INVITED, OBJECTIVE_ACTIVE)
+
+_KIND_VERBS: Final = {"hunt": "hunting", "farm": "farming", "town": "idling in"}
+_GOALS: Final = {
+    "hunt": Goal.GRIND,
+    "farm": Goal.FARM_ITEM,
+    "town": Goal.IDLE_TOWN,
+}
+_JOIN_ME: Final = ", join me"
+
+
+def objective_premade(kind: str, map_name: str, target: str = "") -> str:
+    """The public/party-chat announcement for one objective (the join call)."""
+    verb = _KIND_VERBS.get(kind)
+    if verb is None:
+        msg = f"unknown objective kind: {kind!r}"
+        raise ValueError(msg)
+    subject = f" {target}" if target else ""
+    if kind == "town":
+        return f"{verb} {map_name}{_JOIN_ME}"
+    return f"{verb}{subject} {map_name}{_JOIN_ME}"
+
+
+def meet_premade(where: str, when: str) -> str:
+    """The recorded whisper for offline group coordination (delivered in-game)."""
+    return f"meet at {where} at {when}"
+
+
+@final
+@dataclass(frozen=True, slots=True)
+class ObjectiveAnnouncement:
+    """One recognised objective announcement (kind + map, target when named)."""
+
+    kind: str
+    map_name: str
+    target: str | None
+
+
+def parse_objective_premade(text: str) -> ObjectiveAnnouncement | None:
+    """Recognise one of our own announcements; everyday chat returns None.
+
+    The premades are the protocol: the receiver decodes the same canonical
+    text the leader emitted (what a player reads from the join call).
+    """
+    stripped = text.strip()
+    for kind in OBJECTIVE_KINDS:
+        verb = _KIND_VERBS[kind]
+        if not stripped.startswith(verb):
+            continue
+        body = stripped[len(verb) :].strip()
+        if not body.endswith(_JOIN_ME.strip()):
+            continue
+        body = body[: -len(_JOIN_ME.strip())].strip()
+        if kind == "town":
+            return ObjectiveAnnouncement(kind=kind, map_name=body, target=None) if body else None
+        if not body:
+            return None
+        target, _, map_name = body.rpartition(" ")
+        if not target:
+            return ObjectiveAnnouncement(kind=kind, map_name=body, target=None)
+        return ObjectiveAnnouncement(kind=kind, map_name=map_name, target=target)
+    return None
+
+
+def objective_goal(kind: str) -> Goal:
+    """The drive a member's goal review adopts while the objective is active."""
+    goal = _GOALS.get(kind)
+    if goal is None:
+        msg = f"unknown objective kind: {kind!r}"
+        raise ValueError(msg)
+    return goal
+
+
+@final
+@dataclass(frozen=True, slots=True)
+class GroupObjective:
+    """One shared group goal, as THIS agent's book records it."""
+
+    objective_id: str
+    group_id: str
+    leader_id: str
+    kind: str
+    map_name: str
+    target: str | None
+    status: str
+    invited: tuple[str, ...]
+    accepted: tuple[str, ...]
+    reason: str | None = None
+
+
+@final
+class GroupObjectiveBook:
+    """One agent's record of the group objectives it leads or joined.
+
+    Per-agent state: the leader's book tracks its own formation steps, a
+    member's book tracks the objective it joined through the in-game invite.
+    Nothing here writes to another agent — cross-agent effects exist only as
+    the game packets the caller sends.
+    """
+
+    def __init__(self) -> None:
+        self._objectives: dict[str, dict[str, Any]] = {}
+        self._pending_whispers: dict[str, list[dict[str, str]]] = {}
+
+    # -- lifecycle -------------------------------------------------------------
+
+    def propose(
+        self,
+        objective_id: str,
+        group_id: str,
+        leader_id: str,
+        kind: str,
+        map_name: str,
+        *,
+        target: str | None = None,
+        invited: Sequence[str] = (),
+        ts: float | None = None,
+    ) -> GroupObjective:
+        """Open a proposed objective (the leader's goal review decided)."""
+        del ts  # kept for call-site symmetry with the ledger's timestamped records
+        if kind not in OBJECTIVE_KINDS:
+            msg = f"unknown objective kind: {kind!r}"
+            raise ValueError(msg)
+        self._objectives[objective_id] = {
+            "objective_id": objective_id,
+            "group_id": group_id,
+            "leader_id": leader_id,
+            "kind": kind,
+            "map_name": map_name,
+            "target": target,
+            "status": OBJECTIVE_PROPOSED,
+            "invited": tuple(invited),
+            "accepted": (),
+            "reason": None,
+        }
+        return self.objective(objective_id)  # type: ignore[return-value]
+
+    def mark_invited(
+        self, objective_id: str, member_ids: Sequence[str], *, ts: float | None = None
+    ) -> GroupObjective:
+        """The party-invite packets went out on the wire."""
+        del ts
+        row = self._row(objective_id)
+        row["invited"] = tuple(member_ids)
+        row["status"] = OBJECTIVE_INVITED
+        return self.objective(objective_id)  # type: ignore[return-value]
+
+    def record_join(
+        self, objective_id: str, member_id: str, *, ts: float | None = None
+    ) -> GroupObjective:
+        """One member accepted the in-game invite; the first join activates."""
+        del ts
+        row = self._row(objective_id)
+        if member_id not in row["accepted"]:
+            row["accepted"] = (*row["accepted"], member_id)
+        if row["status"] in (OBJECTIVE_PROPOSED, OBJECTIVE_INVITED):
+            row["status"] = OBJECTIVE_ACTIVE
+        return self.objective(objective_id)  # type: ignore[return-value]
+
+    def record_leave(
+        self, objective_id: str, member_id: str, *, ts: float | None = None
+    ) -> GroupObjective:
+        """One member left; the last leave dissolves the objective."""
+        del ts
+        row = self._row(objective_id)
+        row["accepted"] = tuple(m for m in row["accepted"] if m != member_id)
+        if not row["accepted"]:
+            row["status"] = OBJECTIVE_DISSOLVED
+            row["reason"] = "members left"
+        return self.objective(objective_id)  # type: ignore[return-value]
+
+    def dissolve(
+        self, objective_id: str, *, reason: str, ts: float | None = None
+    ) -> GroupObjective:
+        """The schedule window closed (or the leader ended it)."""
+        del ts
+        row = self._row(objective_id)
+        row["status"] = OBJECTIVE_DISSOLVED
+        row["reason"] = reason
+        return self.objective(objective_id)  # type: ignore[return-value]
+
+    # -- offline coordination --------------------------------------------------
+
+    def record_whisper(self, objective_id: str, member_id: str, text: str) -> None:
+        """Record the meet whisper for an offline member (delivered in-game later)."""
+        self._row(objective_id)
+        self._pending_whispers.setdefault(objective_id, []).append({"to": member_id, "text": text})
+
+    def due_whispers(
+        self, objective_id: str, online_members: Sequence[str]
+    ) -> list[tuple[str, str]]:
+        """The recorded whispers whose target is online now (and marks them sent)."""
+        online = set(online_members)
+        pending = self._pending_whispers.get(objective_id, [])
+        due = [(w["to"], w["text"]) for w in pending if w["to"] in online]
+        self._pending_whispers[objective_id] = [w for w in pending if w["to"] not in online]
+        return due
+
+    # -- reading ---------------------------------------------------------------
+
+    def objective(self, objective_id: str) -> GroupObjective | None:
+        row = self._objectives.get(objective_id)
+        return self._snapshot(objective_id, row) if row is not None else None
+
+    def objectives_for_group(
+        self, group_id: str, *, statuses: Sequence[str] = ()
+    ) -> tuple[GroupObjective, ...]:
+        wanted = tuple(statuses) if statuses else LIVE_STATUSES
+        return tuple(
+            snapshot
+            for objective_id in self._objectives
+            if self._objectives[objective_id]["group_id"] == group_id
+            and self._objectives[objective_id]["status"] in wanted
+            and (snapshot := self.objective(objective_id)) is not None
+        )
+
+    def joined_objectives(self) -> tuple[GroupObjective, ...]:
+        """The active objectives (a member's own goal-alignment source)."""
+        return tuple(
+            snapshot
+            for objective_id in self._objectives
+            if self._objectives[objective_id]["status"] == OBJECTIVE_ACTIVE
+            and (snapshot := self.objective(objective_id)) is not None
+        )
+
+    def _row(self, objective_id: str) -> dict[str, Any]:
+        row = self._objectives.get(objective_id)
+        if row is None:
+            msg = f"unknown objective: {objective_id!r}"
+            raise ValueError(msg)
+        return row
+
+    @staticmethod
+    def _snapshot(objective_id: str, row: Mapping[str, Any]) -> GroupObjective:
+        return GroupObjective(
+            objective_id=objective_id,
+            group_id=str(row["group_id"]),
+            leader_id=str(row["leader_id"]),
+            kind=str(row["kind"]),
+            map_name=str(row["map_name"]),
+            target=row["target"],
+            status=str(row["status"]),
+            invited=tuple(row["invited"]),
+            accepted=tuple(row["accepted"]),
+            reason=row["reason"],
+        )
+
+    # -- persistence -------------------------------------------------------------
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "objectives": {key: dict(row) for key, row in self._objectives.items()},
+            "pending_whispers": {
+                key: [dict(w) for w in rows] for key, rows in self._pending_whispers.items()
+            },
+        }
+
+    @classmethod
+    def from_dict(cls, data: Mapping[str, Any]) -> GroupObjectiveBook:
+        book = cls()
+        for objective_id, row in dict(data.get("objectives", {})).items():
+            merged = dict(row)
+            merged.setdefault("reason", None)
+            merged["objective_id"] = str(objective_id)
+            book._objectives[str(objective_id)] = merged
+        for objective_id, rows in dict(data.get("pending_whispers", {})).items():
+            book._pending_whispers[str(objective_id)] = [dict(w) for w in rows]
+        return book
