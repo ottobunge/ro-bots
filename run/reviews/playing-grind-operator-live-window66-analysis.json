@@ -58,5 +58,8 @@
   ],
   "next_probe_wire_level": [
     "SIDE-BY-SIDE FRAME PROBE: (1) the bare BotClient connect -> dump the native_frame_snapshot count + the pids seen; (2) the runtime-built PlayingClient (the playing.build_host path) connect -> the same dump. The DIFF (the missing pids/the empty ring/the reader thread state) IS the answer. The suspicion: the runtime's client connect path starts or filters the reader differently than the spike's, OR the server treats the two connections differently (the handshake details)."
+  ],
+  "FINAL_NARROWING": [
+    "THE FULL HOST STEPS HEALTHY: the host_trace_probe (build_host + the manual host.step loop) \u2014 the rings FILL (69->86 frames), the ticks COUNT (16->36), the standing true, zero raises, BOTH agents. The bare client, the runtime-wrapped client, AND the full host all work when stepped directly. THE ONLY REMAINING VARIABLE: the emission operator's _live_tick additions layered around host.step (the pacer deliveries, the watcher observes, the capture/tail instrumentation, the dispatch-counter installs). NEXT: bisect _live_tick's layers one at a time with the host_trace_probe pattern + each layer added; the layer that freezes the ticks names itself. My bet: the HeartbeatPacer.deliver_event cadence or the ReplanWatcher's post-step observe re-entering the agent mid-tick."
   ]
 }
