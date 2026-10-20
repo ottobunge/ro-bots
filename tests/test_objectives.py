@@ -1003,7 +1003,7 @@ def make_week() -> tuple[FakePacketBus, dict[str, AgentRig]]:
 
 def test_seed7_week_full_loop_coordination_through_game_socials() -> None:
     bus, rigs = make_week()
-    groups = sorted(rig.group_id for rig in rigs.values() if rig.group_id is not None)
+    groups = sorted({rig.group_id for rig in rigs.values() if rig.group_id is not None})
     g_a, g_b = groups[0], groups[1]
     lead, mate = rigs[f"lead-{g_a}"], rigs[f"mate-{g_a}"]
     lead_b, mate_b = rigs[f"lead-{g_b}"], rigs[f"mate-{g_b}"]
