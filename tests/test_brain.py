@@ -1,10 +1,13 @@
 """Brain tests: event handling, scripts, plans, escalation (all offline)."""
 
+from typing import cast
+
 import pytest
 
 from robots.adapters.chat.stub import StaticChatGenerator
 from robots.adapters.decision.stub import ScriptedDecisionModel
 from robots.app.brain import EventDrivenBrain
+from robots.app.scripts import FarmScript
 from robots.domain.actions import AcceptInvite, PartyChat, Rest, Say
 from robots.domain.events import (
     ChatHeard,
@@ -225,6 +228,48 @@ def test_plan_none_without_spawn_knowledge_and_empty_observation(state) -> None:
     brain = make_brain(answers=answers)
     plan = brain._setup_farm_plan(state, answers, [])
     assert plan is None
+
+
+def test_widen_streak_survives_plan_reauthoring_with_same_targets(state) -> None:
+    """w65-69 root cause: the brain re-authors the farm plan on every decide,
+    and each re-author used to create a fresh FarmScript with _starved=0 —
+    the widen threshold (20 consecutive starved evaluations) could never
+    accumulate, so the script held fire on a never-observed species forever.
+    The streak must survive when the re-authored plan's target set matches."""
+    answers = dict(base_answers())
+    answers["farm_target"] = {"type": "choice", "choice": "Pupa", "confidence": 0.9}
+    brain = make_brain(answers=answers, spawn_species=lambda _m: ("Pupa",))
+    brain._run_review(state, answers, [])
+    script_one = brain._script
+    assert isinstance(script_one, FarmScript)
+    assert script_one.plan is not None
+    # the same-species re-author (the next decide's heartbeat review)
+    brain._run_review(state, answers, [])
+    script_two = brain._script
+    assert isinstance(script_two, FarmScript)
+    assert script_two.plan.plan_id != script_one.plan.plan_id
+    assert script_two.plan.target_mobs == script_one.plan.target_mobs
+    assert (
+        script_two._starved == script_one._starved
+    ), "the same-target re-author must carry the widen streak forward"
+
+
+def test_widen_streak_resets_when_targets_change(state) -> None:
+    """A changed target set is an honest new commitment: the streak resets."""
+    answers = dict(base_answers())
+    answers["farm_target"] = {"type": "choice", "choice": "Pupa", "confidence": 0.9}
+    brain = make_brain(answers=answers, spawn_species=lambda _m: ("Pupa", "Poring"))
+    brain._run_review(state, answers, [])
+    first = cast(FarmScript, brain._script)
+    assert first is not None
+    assert first._starved == 0
+    answers2 = dict(base_answers())
+    answers2["farm_target"] = {"type": "choice", "choice": "Poring", "confidence": 0.9}
+    brain._run_review(state, answers2, [])
+    second = cast(FarmScript, brain._script)
+    assert second is not None
+    assert second.plan.target_mobs != first.plan.target_mobs
+    assert second._starved == 0
 
 
 def test_goal_enum_values() -> None:

@@ -465,6 +465,11 @@ class EventDrivenBrain:
         if self._script is None:
             self._script = script_for(state.goal, state)
         outcome: ScriptOutcome = self._script.step(state)
+        # the widen streak sync: the streak survives the plan re-authoring
+        if isinstance(self._script, FarmScript) and self._plan is not None:
+            key = (frozenset(self._plan.target_mobs), self._plan.map_name)
+            streaks = getattr(self, "_widen_streaks", {})
+            self._widen_streaks = {**streaks, key: self._script._starved}
         if any(isinstance(action, Rest) for action in outcome.actions):
             self._recovering = True
         if outcome.status in (ScriptStatus.DONE, ScriptStatus.FAILED):

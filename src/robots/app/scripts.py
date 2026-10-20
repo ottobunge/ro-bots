@@ -527,12 +527,13 @@ class FarmScript:
         hp_rest_below: float = 0.25,
         widen_steps: int = TARGET_WIDEN_STEPS,
         commit_window: int = KILL_COMMIT_WINDOW,
+        initial_starved: int = 0,
     ) -> None:
         self.plan = plan
         self._hp_rest_below = hp_rest_below
         self._widen_steps = widen_steps
         self._commit_window = commit_window
-        self._starved = 0
+        self._starved = max(0, int(initial_starved))
         self._roam_rng = random.Random(f"roam-{plan.plan_id}-{plan.map_name}")
 
     def step(self, state: BotState) -> ScriptOutcome:
