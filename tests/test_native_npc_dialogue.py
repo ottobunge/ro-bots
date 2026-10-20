@@ -176,7 +176,8 @@ def test_existing_890_registrations_preserved_and_unknown_stays_strict():
         0x01B3,
         0x099D,
         0x00BC,
+        0x00BE,
     }
-    assert len(module.PACKET_DB) == 899
+    assert len(module.PACKET_DB) == 900
     with pytest.raises(ValueError, match="unknown packet 0xfafa"):
         module.parse_stream(dialog(0xB4, "guide") + b"\xfa\xfa")
