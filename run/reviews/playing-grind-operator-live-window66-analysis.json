@@ -61,5 +61,11 @@
   ],
   "FINAL_NARROWING": [
     "THE FULL HOST STEPS HEALTHY: the host_trace_probe (build_host + the manual host.step loop) \u2014 the rings FILL (69->86 frames), the ticks COUNT (16->36), the standing true, zero raises, BOTH agents. The bare client, the runtime-wrapped client, AND the full host all work when stepped directly. THE ONLY REMAINING VARIABLE: the emission operator's _live_tick additions layered around host.step (the pacer deliveries, the watcher observes, the capture/tail instrumentation, the dispatch-counter installs). NEXT: bisect _live_tick's layers one at a time with the host_trace_probe pattern + each layer added; the layer that freezes the ticks names itself. My bet: the HeartbeatPacer.deliver_event cadence or the ReplanWatcher's post-step observe re-entering the agent mid-tick."
+  ],
+  "bisect_progress": [
+    "THE PACE LAYER EXONERATED: the layer_bisect_probe (.work/engagement-diagnosis/layer_bisect_probe.py, the LAYERS env) with the watchers+pacers active: the ticks COUNT (57->62), the rings FILL (77->92), the standing true \u2014 HEALTHY. The remaining untested layers: (1) ReplanWatcher.observe (the replan trigger \u2014 the plan churn suspect: the DEFAULT_MAX_REPLANS/the budget \u2014 READ IT: what does observe DO when it fires; the w63/64 had it too but the threshold interactions may differ), (2) the EmissionCapture attach + the summary interval reads, (3) frame_diagnostics.frame_entry (the timeline sampling), (4) the goal-guard re-arm edge cases. THE TOOLING: the layer_bisect_probe.py with the LAYERS env (counters|pace) \u2014 extend with the watcher|capture|timeline flags."
+  ],
+  "bisect_progress_2": [
+    "THE WATCHER WAS THE SECOND CONSUMER: ReplanWatcher._received_state called client.build_native_state directly \u2014 an observing read per operator tick, ADVANCING the cursor mid-runtime. FIXED: the cache-first (the live PlayingClient: last_built_state), the explicit-build fallback ONLY for the offline twins without the attribute. The watcher suite: 8/10 green; the 2 offline-twin tests need the mechanical reconcile (their replay clients build through the FakeWire path). ALSO: the pace layer exonerated by the bisect probe (the ticks count with the watchers+pacers active). The session ended mid-reconcile \u2014 finish the 2 tests, the gate, then the validation window."
   ]
 }
