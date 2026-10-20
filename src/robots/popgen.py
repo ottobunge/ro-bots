@@ -29,7 +29,7 @@ import argparse
 import json
 import random
 import sys
-from collections.abc import Sequence
+from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Final, final
@@ -54,6 +54,32 @@ class BuildPath:
     family: str
     path: str
     playstyle: str
+
+
+# Criterion: some players create characters for farming — item-yield-focused
+# gatherers that grind the sellables. One path per class family keeps the
+# friend-group family invariant intact when a group member farms.
+FARMER_BUILDS: Final[tuple[str, ...]] = (
+    "swordman-grinder",
+    "mage-grinder",
+    "archer-range-grinder",
+    "thief-flee-grinder",
+    "acolyte-battle",
+    "merchant-economy",
+)
+FARMER_PLAYSTYLE: Final = "farming"
+
+# Budget tiers (criterion: some players go for expensive builds, others for
+# cheaper ones). The tier selects the sidecar equipment_order PREFIX: the
+# cheapest N legs. Non-numeric leg prices ("given at creation", quest rewards)
+# count as free and never break the prefix.
+BUDGET_TIERS: Final[tuple[str, ...]] = ("thrifty", "standard", "luxurious")
+TIER_PRICE_CAPS_Z: Final[dict[str, int | None]] = {
+    "thrifty": 100,
+    "standard": 1000,
+    "luxurious": None,
+}
+DEFAULT_TIER_WEIGHTS: Final[tuple[float, float, float]] = (0.5, 0.35, 0.15)
 
 
 # Derived from run/knowledge/builds/pre-re/*.json (playstyle_axis per sidecar);
@@ -144,10 +170,23 @@ class PopulationSpec:
     friends_per_group: tuple[int, int]
     solo_agents: int
     seed: int
+    budget_tier_weights: tuple[float, float, float] = DEFAULT_TIER_WEIGHTS
+    farmer_share: float = 0.0
 
     def __post_init__(self) -> None:
         if self.friend_groups < 0:
             msg = "friend_groups must be zero or more"
+            raise ValueError(msg)
+        if len(self.budget_tier_weights) != len(BUDGET_TIERS) or any(
+            weight < 0 for weight in self.budget_tier_weights
+        ):
+            msg = "budget_tier_weights must be three non-negative weights"
+            raise ValueError(msg)
+        if abs(sum(self.budget_tier_weights) - 1.0) > 1e-6:
+            msg = "budget_tier_weights must sum to 1"
+            raise ValueError(msg)
+        if not 0.0 <= self.farmer_share <= 1.0:
+            msg = "farmer_share must be within 0..1"
             raise ValueError(msg)
         lo, hi = self.friends_per_group
         if lo < 2 or hi < lo or hi > MAX_GROUP_SIZE:
@@ -178,6 +217,7 @@ class PersonaProfile:
     schedule: tuple[Window, ...]
     save_map: str
     save_point: tuple[int, int]
+    budget_tier: str = "standard"
 
 
 @final
@@ -198,6 +238,10 @@ class GeneratedPopulation:
                 groups.setdefault(persona.group_id, []).append(persona.persona_id)
         lo, hi = self.spec.friends_per_group
         solo_count = sum(1 for p in self.personas if p.group_id is None)
+        tier_counts = {
+            tier: sum(1 for p in self.personas if p.budget_tier == tier) for tier in BUDGET_TIERS
+        }
+        farmers = sum(1 for p in self.personas if p.playstyle == FARMER_PLAYSTYLE)
         return {
             "schema": 1,
             "generator": "robots.popgen",
@@ -216,6 +260,8 @@ class GeneratedPopulation:
                 "friend_groups": len(groups),
                 "solo_agents": solo_count,
             },
+            "budget_tiers": tier_counts,
+            "farmers": farmers,
             "groups": [
                 self._group_row(group_id, members) for group_id, members in sorted(groups.items())
             ],
@@ -248,6 +294,7 @@ class GeneratedPopulation:
             "playstyle": persona.playstyle,
             "build": persona.build,
             "build_stage": "novice-bootstrap",
+            "budget_tier": persona.budget_tier,
             "save_map": persona.save_map,
             "save_point": [x, y],
             "weekly_online_hours": weekly_online_hours(persona.schedule),
@@ -312,6 +359,7 @@ def generate_population(spec: PopulationSpec, seed: int | None = None) -> Genera
                 sessions=sessions,
                 save_point=save_point,
                 used_names=used_names,
+                spec=spec,
             )
             personas.append(persona)
             occupied |= schedule_to_slots(persona.schedule)
@@ -322,6 +370,7 @@ def generate_population(spec: PopulationSpec, seed: int | None = None) -> Genera
             account=f"pop{tag:04x}_s{si:02d}",
             occupied=occupied,
             used_names=used_names,
+            spec=spec,
         )
         personas.append(persona)
         occupied |= schedule_to_slots(persona.schedule)
@@ -431,12 +480,58 @@ def _credentials(rng: random.Random) -> tuple[str, str, str]:
     return password, pincode, rng.choice(("M", "F"))
 
 
-def _persona_build(rng: random.Random, family: str | None) -> BuildPath:
-    """The class path: one family per friend group, any family for solos."""
+def _persona_build(rng: random.Random, family: str | None, *, farmer: bool = False) -> BuildPath:
+    """The class path: one family per friend group, any family for solos.
+
+    Farmers draw from the item-yield-focused paths within the same family
+    constraint, and their playstyle is the farming archetype.
+    """
     candidates = [
         b for b in BUILDS if b.path != "novice-bootstrap" and (family is None or b.family == family)
     ]
+    if farmer:
+        farmer_paths = [b for b in candidates if b.path in FARMER_BUILDS]
+        if farmer_paths:
+            candidates = farmer_paths
     return rng.choice(candidates)
+
+
+def _draw_farmer(rng: random.Random, share: float) -> bool:
+    return rng.random() < share
+
+
+def _draw_budget_tier(rng: random.Random, weights: tuple[float, float, float]) -> str:
+    """One cumulative draw over the tier weights (deterministic per seed)."""
+    roll = rng.random() * sum(weights)
+    cumulative = 0.0
+    for tier, weight in zip(BUDGET_TIERS, weights, strict=True):
+        cumulative += weight
+        if roll < cumulative:
+            return tier
+    return BUDGET_TIERS[-1]
+
+
+def budget_tier_legs(order: Sequence[Mapping[str, Any]], tier: str) -> list[Mapping[str, Any]]:
+    """The sidecar equipment_order prefix a budget tier can afford.
+
+    Legs keep their sidecar order; the prefix stops at the first leg whose
+    numeric ``price_z`` exceeds the tier cap (thrifty 100z, standard 1000z,
+    luxurious uncapped). Legs with a non-numeric price (given at creation,
+    quest rewards) are free and never break the prefix. Unknown tiers raise.
+    """
+    if tier not in TIER_PRICE_CAPS_Z:
+        msg = f"unknown budget tier: {tier}"
+        raise ValueError(msg)
+    cap = TIER_PRICE_CAPS_Z[tier]
+    if cap is None:
+        return list(order)
+    prefix: list[Mapping[str, Any]] = []
+    for leg in order:
+        price = leg.get("price_z") if isinstance(leg, Mapping) else None
+        if isinstance(price, (int, float)) and not isinstance(price, bool) and price > cap:
+            break
+        prefix.append(leg)
+    return prefix
 
 
 def _group_member(
@@ -449,10 +544,13 @@ def _group_member(
     sessions: Sequence[tuple[int, int, int]],
     save_point: tuple[int, int],
     used_names: set[str],
+    spec: PopulationSpec,
 ) -> PersonaProfile:
     """One friend-group member: shared family, shared save site, jittered windows."""
     password, pincode, sex = _credentials(rng)
-    build = _persona_build(rng, family)
+    farmer = _draw_farmer(rng, spec.farmer_share)
+    build = _persona_build(rng, family, farmer=farmer)
+    tier = _draw_budget_tier(rng, spec.budget_tier_weights)
     return PersonaProfile(
         persona_id=persona_id,
         name=_draw_name(rng, used_names),
@@ -461,11 +559,12 @@ def _group_member(
         pincode=pincode,
         sex=sex,
         group_id=group_id,
-        playstyle=build.playstyle,
+        playstyle=FARMER_PLAYSTYLE if farmer else build.playstyle,
         build=build.path,
         schedule=_windows_from_sessions(rng, sessions),
         save_map="prontera",
         save_point=save_point,
+        budget_tier=tier,
     )
 
 
@@ -476,11 +575,14 @@ def _solo_outsider(
     account: str,
     occupied: set[int],
     used_names: set[str],
+    spec: PopulationSpec,
 ) -> PersonaProfile:
     """One solo outsider: own schedule (disjoint by construction), field save."""
     password, pincode, sex = _credentials(rng)
-    build = _persona_build(rng, None)
+    farmer = _draw_farmer(rng, spec.farmer_share)
+    build = _persona_build(rng, None, farmer=farmer)
     save_map, save_point = _field_point(rng)
+    tier = _draw_budget_tier(rng, spec.budget_tier_weights)
     return PersonaProfile(
         persona_id=persona_id,
         name=_draw_name(rng, used_names),
@@ -489,11 +591,12 @@ def _solo_outsider(
         pincode=pincode,
         sex=sex,
         group_id=None,
-        playstyle=build.playstyle,
+        playstyle=FARMER_PLAYSTYLE if farmer else build.playstyle,
         build=build.path,
         schedule=_solo_windows(rng, occupied),
         save_map=save_map,
         save_point=save_point,
+        budget_tier=tier,
     )
 
 

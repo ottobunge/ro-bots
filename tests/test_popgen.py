@@ -36,8 +36,15 @@ REFERENCE_MANIFEST = (
 BUILDS_DIR = REPO / "run/knowledge/builds/pre-re"
 
 
-def make_spec(seed: int = 7) -> PopulationSpec:
-    return PopulationSpec(friend_groups=2, friends_per_group=(2, 4), solo_agents=1, seed=seed)
+def make_spec(seed: int = 7, **overrides: Any) -> PopulationSpec:
+    base: dict[str, Any] = {
+        "friend_groups": 2,
+        "friends_per_group": (2, 4),
+        "solo_agents": 1,
+        "seed": seed,
+    }
+    base.update(overrides)
+    return PopulationSpec(**base)
 
 
 def group_members(pop: GeneratedPopulation, group_id: str) -> list[str]:
