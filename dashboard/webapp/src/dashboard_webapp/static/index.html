@@ -30,6 +30,7 @@
   main section[data-view] { display: none; }
   body[data-view="agents"] section[data-view="agents"],
   body[data-view="runs"] section[data-view="runs"],
+  body[data-view="population"] section[data-view="population"],
   body[data-view="agent"] section[data-view="agent"] { display: block; }
   body[data-view="agent"] section[data-view="agent"] { grid-column: 1 / -1; }
   section h2 { font-size: 13px; text-transform: uppercase; letter-spacing: .06em;
@@ -72,6 +73,16 @@
   .event { padding: 3px 0; border-bottom: 1px solid #21262d; font-size: 12.5px; }
   .event .kind { color: var(--accent); font-family: var(--mono); }
   .event .forced { color: var(--warn); }
+  form.genform { display: grid; grid-template-columns: repeat(3, minmax(0,1fr));
+                 gap: 8px 10px; margin: 6px 0 10px; }
+  form.genform label { display: flex; flex-direction: column; gap: 3px;
+                       font-size: 12px; color: var(--muted); }
+  form.genform input { background: #0a0d12; border: 1px solid var(--border);
+                       color: var(--text); border-radius: 6px; padding: 6px 8px;
+                       font-family: var(--mono); width: 100%; }
+  form.genform .wide { grid-column: 1 / -1; }
+  .pathrow { font-family: var(--mono); font-size: 12px; margin: 2px 0;
+             word-break: break-all; }
   #agentPopover { position: fixed; z-index: 50; max-width: 440px;
                   background: var(--panel); border: 1px solid var(--accent);
                   border-radius: 8px; padding: 10px 12px; pointer-events: none;
@@ -88,6 +99,7 @@
 <nav class="tabs">
   <button data-view="agents" class="active" onclick="setView('agents')">Agents</button>
   <button data-view="runs" onclick="setView('runs')">Runs</button>
+  <button data-view="population" onclick="setView('population')">Population</button>
   <button data-view="agent" id="agentTabButton" class="hidden"
           onclick="openAgentTab(currentAgent)">Agent</button>
 </nav>
@@ -128,6 +140,44 @@
       <button style="float:right" onclick="closeRun()">close</button></h2>
     <div id="runMeta" class="kv"></div>
     <div id="runAgents"></div>
+  </section>
+
+  <section data-view="population">
+    <h2>Population generator <span class="kv">(writes manifest + population.json + fixture.sql under the world dir)</span></h2>
+    <form class="genform" id="popForm" onsubmit="return generatePopulation(event)">
+      <label>world dir name
+        <input type="text" id="popWorld" value="test-first-live-86e7c36895db" spellcheck="false">
+      </label>
+      <label>friend groups
+        <input type="number" id="popGroups" min="0" max="64" step="1" value="2">
+      </label>
+      <label>solo agents
+        <input type="number" id="popSolo" min="0" max="512" step="1" value="0">
+      </label>
+      <label>friends per group — min
+        <input type="number" id="popFriendsMin" min="2" max="12" step="1" value="2">
+      </label>
+      <label>friends per group — max
+        <input type="number" id="popFriendsMax" min="2" max="12" step="1" value="4">
+      </label>
+      <label>seed
+        <input type="number" id="popSeed" min="0" step="1" value="0">
+      </label>
+      <div class="wide row">
+        <button type="submit" id="popGenerate">POST /api/population</button>
+        <span id="popError" class="err"></span>
+      </div>
+    </form>
+    <div id="popResult" class="hidden">
+      <p id="popCounts" style="margin:6px 0 4px"></p>
+      <div id="popPaths"></div>
+      <p style="margin:8px 0 4px"><b>fixture.sql</b>
+        <button id="popApply" onclick="applyPopulation()" style="margin-left:8px">apply to world DB</button>
+        <span id="popApplyStatus" class="kv"></span></p>
+      <pre id="popFixture"></pre>
+      <p class="muted" style="margin-bottom:0">Generate only stages files; “apply” runs the
+        allowlisted INSERTs (login/char/skill) against the world MariaDB.</p>
+    </div>
   </section>
 
   <section data-view="agent" id="agentDetail" class="hidden">
@@ -288,8 +338,70 @@ async function refreshAgents() {
   } catch (e) { $("agentError").textContent = "agents: " + e.message; }
 }
 
+let lastPopulation = null;
+
+async function generatePopulation(ev) {
+  ev.preventDefault();
+  $("popError").textContent = "";
+  const button = $("popGenerate"), old = button.textContent;
+  button.textContent = "generating…";
+  const body = {
+    world: $("popWorld").value.trim(),
+    friend_groups: parseInt($("popGroups").value, 10) || 0,
+    friends_per_group: [
+      parseInt($("popFriendsMin").value, 10) || 2,
+      parseInt($("popFriendsMax").value, 10) || 4,
+    ],
+    solo_agents: parseInt($("popSolo").value, 10) || 0,
+    seed: parseInt($("popSeed").value, 10) || 0,
+  };
+  try {
+    lastPopulation = await api("/api/population", {
+      method: "POST", headers: { "content-type": "application/json" },
+      body: JSON.stringify(body),
+    });
+    renderPopulation(lastPopulation);
+  } catch (e) {
+    $("popError").textContent = e.message;
+  }
+  button.textContent = old;
+  return false;
+}
+window.generatePopulation = generatePopulation;
+
+function renderPopulation(p) {
+  const c = p.counts || {};
+  $("popCounts").innerHTML =
+    `<b>${esc(p.population_id)}</b> — ${c.personas || 0} personas ` +
+    `(${c.friend_groups || 0} friend groups, ${c.solo_agents || 0} solo) in ${esc(p.world)}`;
+  $("popPaths").innerHTML = Object.entries(p.paths || {}).map(([k, v]) =>
+    `<div class="pathrow">${esc(k)}: ${esc(v)}</div>`).join("");
+  $("popFixture").textContent = p.fixture_sql || "";
+  $("popApplyStatus").textContent = "";
+  $("popResult").classList.remove("hidden");
+}
+
+async function applyPopulation() {
+  if (!lastPopulation) return;
+  const status = $("popApplyStatus");
+  status.textContent = "applying…";
+  try {
+    const res = await api(`/api/population/${encodeURIComponent(lastPopulation.population_id)}/apply`, {
+      method: "POST", headers: { "content-type": "application/json" },
+      body: JSON.stringify({ world: lastPopulation.world }),
+    });
+    status.textContent = `applied: ${res.accounts} accounts, ${res.characters} characters` +
+      ` (${res.statements} statements)`;
+  } catch (e) {
+    status.textContent = "apply failed: " + e.message;
+  }
+}
+window.applyPopulation = applyPopulation;
+
 async function sendCommand(charId, text, tr) {
   const button = tr.querySelector("button"), old = button.textContent;
+  const hint = /^(say |goal )/.test(text.trim()) ? null : "allowed: say <text> · goal <grind|farm_item|idle_town|quest|social>";
+  if (hint) { button.textContent = "refused"; tr.title = hint; setTimeout(() => { button.textContent = old; }, 2500); return; }
   button.textContent = "…";
   try {
     const res = await api(`/api/agents/${charId}/command`, {
@@ -299,11 +411,26 @@ async function sendCommand(charId, text, tr) {
     button.textContent = "queued";
     tr.title = `${res.id} — ${res.note}`;
     input_reset(tr);
+    pollCommandStatus(res.id, button, old);
   } catch (e) {
     button.textContent = "failed";
     tr.title = e.message;
+    setTimeout(() => { button.textContent = old; }, 2500);
   }
-  setTimeout(() => { button.textContent = old; }, 2500);
+}
+function pollCommandStatus(id, button, old) {
+  const check = async () => {
+    try {
+      const status = await api("/api/commands/" + encodeURIComponent(id));
+      if (status.status === "applied") {
+        button.textContent = "applied";
+        setTimeout(() => { button.textContent = old; }, 4000);
+        return;
+      }
+    } catch (e) { /* status is best-effort */ }
+    setTimeout(check, 1500);
+  };
+  setTimeout(check, 1200);
 }
 function input_reset(tr) { const i = tr.querySelector("input"); i.value = ""; }
 window.input_reset = input_reset;

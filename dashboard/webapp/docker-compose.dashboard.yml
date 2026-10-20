@@ -16,6 +16,9 @@
 #   WORLD_NETWORK   compose network of the world stack (default ro-bots-test_default)
 #   WORLDFEED_URL   default http://worldfeed:8400 (in-network service name)
 #   DB_HOST/DB_PORT/DB_NAME/DB_USER  default mariadb/3306/ragnarok/root
+#   WORLDS_DIR      repo run/worlds dir (default ../../run/worlds; mounted rw —
+#                   population generation writes under it)
+#   RUNTIME_DIR     command runtime root parent (default ../../.work/runtime)
 
 name: ro-bots-dashboard-webapp
 
@@ -35,6 +38,8 @@ services:
       DB_NAME: ${DB_NAME:-ragnarok}
       DB_USER: ${DB_USER:-root}
       DB_ROOT_SECRET_FILE: /run/secrets/db-root
+      WORLDS_ROOT: /data/worlds
+      COMMAND_RUNTIME_ROOT: /data/runtime/commands
     secrets:
       - source: db-root
         target: db-root
@@ -47,6 +52,12 @@ services:
         source: ${MEMORY_DIR:?set MEMORY_DIR to the world memory directory}
         target: /data/memory
         read_only: true
+      - type: bind
+        source: ${WORLDS_DIR:-../../run/worlds}
+        target: /data/worlds
+      - type: bind
+        source: ${RUNTIME_DIR:-../../.work/runtime}
+        target: /data/runtime
     restart: unless-stopped
 
 networks:

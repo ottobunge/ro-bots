@@ -13,13 +13,71 @@ liveview dashboard lives at `dashboard/` top level (`dashboard/README.md`); it
 is untouched and reads only the WorldFeed. The two overlap on host port 8401 —
 run one at a time or override `DASHBOARD_PORT` here.
 
-Read-only posture (v1): the DB connection opens with
+Read-only posture for *observation* (the DB connection opens
 `SET SESSION TRANSACTION READ ONLY` and every statement passes a
 SELECT/SHOW/DESCRIBE allowlist; receipts and memory are mounted read-only; the
 root password is read from the world's `secrets/db-root` file at runtime and is
-never echoed, stored in reprs, or logged. `POST /api/agents/{id}/command` is a
-stub: it queues in memory and answers `202` — no live agent delivery exists in
-this slice.
+never echoed, stored in reprs, or logged).
+
+## Control plane (operator)
+
+Three write surfaces, all deliberately narrow:
+
+1. `POST /api/population` — body is the PopulationSpec
+   (`{"world", "friend_groups", "friends_per_group": [min, max], "solo_agents",
+   "seed"}`). Runs the real deterministic generator (`robots.popgen`) and writes
+   `manifest.json` + `population.json` + `fixture.sql` into a fresh
+   `run/worlds/<world>/population/<pop-…>/` directory. Returns `201` with the
+   counts, the absolute paths and the generated `fixture_sql`. No DB write
+   happens here; the world directory must already exist.
+2. `POST /api/population/{id}/apply` — body `{"world"}`. Applies the stored
+   fixture through the narrow writer: every statement must be `INSERT INTO`
+   `login`/`char`/`skill` (the fixture's leading `USE ragnarok` is recognised
+   and skipped); anything else is refused with `403` *before* a connection is
+   opened (`SqlNotAllowed`). Connection = secret-file credentials + autocommit,
+   write-capable (the write-side twin of the read-only source). Returns the
+   account/character/statement counts.
+3. `POST /api/agents/{id}/command` — allowlisted operator commands only:
+   `say <text>` and `goal <grind|farm_item|idle_town|quest|social>`; anything
+   else is `422` and nothing is persisted. The command is appended to
+   `commands.jsonl` under `COMMAND_RUNTIME_ROOT`
+   (default `.work/runtime/ro-bots-test/commands/`) and `202` returns the
+   command id.
+
+Command round-trip (dashboard → host → status):
+
+```
+POST /api/agents/150001/command {"command": "say hello"}
+  -> 202 {"id": "cmd-…", "kind": "say", "text": "hello", …}
+     runtime/commands/commands.jsonl += {"id","queued_ts","agent_id","char_name","kind","text","status":"queued"}
+host tick (python -m robots.playing --command-root <runtime dir>):
+  robots.app.command_poller.poll_once(host, runtime_dir)
+    -> drain_commands() yields the unreceipted lines (non-allowlisted kind = loud error)
+    -> say: host chat dispatcher (same admission path as WorldFeed POST /commands; offline agent = failed receipt)
+    -> goal: persona goal override (applies even while offline)
+    -> receipts.jsonl += {"id","applied_ts","ok","detail"}
+GET /api/commands/cmd-…  -> {"status": "applied", "applied_ts": …}   (queued until the receipt lands)
+```
+
+The agent row's command box validates the allowlist client-side, then polls the
+status endpoint and flips its button to **applied** when the receipt arrives.
+
+## Operator: generate a population from the browser
+
+1. Start the dashboard with `WORLDS_ROOT` pointing at the repo's `run/worlds`
+   (the compose file mounts it at `/data/worlds` and the dev default is
+   `run/worlds` relative to the process cwd) and `DB_*` configured.
+2. Open the **Population** tab, fill in friend groups / per-group range /
+   solo agents / seed, and press **POST /api/population** — the result panel
+   shows counts, artifact paths and the fixture SQL.
+3. Press **apply to world DB** (or `POST /api/population/{id}/apply`) to create
+   the actual accounts/characters in the world's MariaDB.
+4. Point a host at the generated population: the new
+   `run/worlds/<world>/population/<id>/manifest.json` is a host-manifest, and
+   the sibling `population.json` `schedules` mapping is its `--schedule-file`.
+   Launch the host with `python -m robots.playing --manifest <that manifest>
+   --command-root <COMMAND_RUNTIME_ROOT dir> …` so the dashboard's command box
+   reaches live agents.
 
 ## Endpoints
 
@@ -31,8 +89,11 @@ this slice.
 | `GET /api/runs` | window receipts, newest first, pass/fail + headline counters (decisions, walks, attributed attacks, XP, engagement-floor met) |
 | `GET /api/runs/{id}` | one receipt: per-agent counters, decide tail, script tail, move-gate reasons, gates, kill-commit block; bulky diagnostics are omitted (listed in `omitted`) |
 | `GET /api/events?limit=N` | recent WorldFeed events (bounded SSE read; upstream failures degrade to `upstream.ok=false`, never a 500) |
-| `POST /api/agents/{id}/command` | **stub**: validates `{"command": "..."}`, queues in memory, returns `202` with a `cmd-…` id (`GET /api/commands/{id}` shows the stub status) |
-| `GET /` | single-page dashboard (vanilla JS, no build step): Agents/Runs/Agent views — hover an agent row for a popover (map+position, stats, inventory summary; detail cached 30s), click for the full agent tab with stats, inventory, memory and the decision-history table (limit selector 50/100/250) |
+| `POST /api/agents/{id}/command` | allowlisted operator command (`say <text>` / `goal <goal>`), persists to `commands.jsonl`, returns `202` with a `cmd-…` id; non-allowlisted input is `422` |
+| `GET /api/commands/{id}` | command status: `queued` until the host poller's receipt lands, then `applied` (+ `applied_ts`) |
+| `POST /api/population` | generate a population (PopulationSpec + world name); `201` with counts, paths, fixture_sql |
+| `POST /api/population/{id}/apply` | apply the stored fixture via the allowlisted writer; `403` on non-allowlisted SQL, `404` unknown world/population |
+| `GET /` | single-page dashboard (vanilla JS, no build step): Agents/Runs/Population/Agent views — hover an agent row for a popover (map+position, stats, inventory summary; detail cached 30s), click for the full agent tab with stats, inventory, memory and the decision-history table (limit selector 50/100/250) |
 | `GET /api/health` | version + config echo (no secrets) |
 
 A missing/degraded source answers honestly: `404` for unknown agent/run ids,
@@ -102,20 +163,26 @@ nix develop --offline /home/otto/dev/ro-bots -c bash -c \
   'cd dashboard/webapp && uv sync && uv run pytest'   # from a linked worktree
 ```
 
-85 tests: config/secrets, receipt store (glob order, headline sums, schema
+154 tests: config/secrets, receipt store (glob order, headline sums, schema
 drift, path traversal), MariaDB source (SQL allowlist, mapping, connection
-seam, secret handling), memory viewer, goal enrichment, SSE parsing, command
-queue, all API endpoints (including the cross-receipt decision-history
-aggregation: newest-first ordering, limit clamping/stops, missing tails,
-missing agents, unreadable receipts, persona-index join), UI + health.
+seam, secret handling), memory viewer, goal enrichment, SSE parsing, the JSONL
+command queue + say/goal allowlist, the population endpoints + the real
+`robots.popgen` generator, the fixture applier + write allowlist guard, and all
+API endpoints (including the cross-receipt decision-history aggregation and
+the dashboard→poller command round-trip against the real poller), UI + health.
 
-## Known v1 boundaries
+## Known boundaries
 
-- Commands are queued, not delivered — the wire-up to the live command seam is
-  a later slice (the WorldFeed `POST /commands` endpoint is the natural target).
+- Command delivery requires a host running with `--command-root`; until one
+  polls the runtime dir, commands stay `queued` (they persist and are applied
+  on the next host tick).
+- `POST /api/population` never touches the DB; applying the fixture is the
+  separate allowlisted `…/apply` step, and it writes only `login`/`char`/
+  `skill` INSERTs.
 - Memory listing matches the character name in file paths; there is no
-  authoritative char↔persona mapping in v1 (WorldFeed goal join uses persona
-  name/id == character name).
+  authoritative char↔persona mapping (WorldFeed goal join uses persona
+  name/id == character name; the command seam resolves personas by char_name
+  from the agent source, falling back to persona-id == agent_id).
 - `GET /api/events` returns a bounded snapshot, not a live stream.
 - Older window receipts legitimately lack tails/gates; the run detail renders
   them as empty ("not supplied") instead of failing.
