@@ -39,6 +39,34 @@ def test_index_serves_single_page_dashboard() -> None:
     assert "<script>" in html
 
 
+def test_index_has_agent_tooltip_popover_with_cached_fetch() -> None:
+    html = _client().get("/").text
+
+    assert 'id="agentPopover"' in html
+    # detail fetched on hover through the shared cached accessor
+    assert "getAgentDetail" in html
+    assert "/api/agents/" in html
+    assert "DETAIL_TTL_MS = 30000" in html  # 30s cache
+
+
+def test_index_has_third_agent_tab_view() -> None:
+    html = _client().get("/").text
+
+    assert 'data-view="agents"' in html
+    assert 'data-view="runs"' in html
+    assert 'data-view="agent"' in html
+
+
+def test_index_has_decision_history_table_with_limit_selector() -> None:
+    html = _client().get("/").text
+
+    assert 'id="decisionTable"' in html
+    assert "/decisions?limit=" in html
+    assert ">50</option>" in html
+    assert ">100</option>" in html
+    assert ">250</option>" in html
+
+
 def test_health_reports_config_without_secrets() -> None:
     res = _client().get("/api/health")
 

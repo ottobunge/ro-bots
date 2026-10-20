@@ -19,10 +19,19 @@
   header .sub { color: var(--muted); font-size: 12px; }
   header .dot { width: 9px; height: 9px; border-radius: 50%; background: var(--bad);
                 display: inline-block; margin-right: 4px; }
+  nav.tabs { display: flex; gap: 6px; padding: 10px 18px 0;
+             border-bottom: 1px solid var(--border); }
+  nav.tabs button { border-radius: 6px 6px 0 0; border-bottom: none; }
+  nav.tabs button.active { border-color: var(--accent); color: var(--accent); }
   main { display: grid; grid-template-columns: 1.2fr 1fr; gap: 14px; padding: 14px 18px; }
   @media (max-width: 1000px) { main { grid-template-columns: 1fr; } }
   section { background: var(--panel); border: 1px solid var(--border);
             border-radius: 8px; padding: 12px 14px; min-width: 0; }
+  main section[data-view] { display: none; }
+  body[data-view="agents"] section[data-view="agents"],
+  body[data-view="runs"] section[data-view="runs"],
+  body[data-view="agent"] section[data-view="agent"] { display: block; }
+  body[data-view="agent"] section[data-view="agent"] { grid-column: 1 / -1; }
   section h2 { font-size: 13px; text-transform: uppercase; letter-spacing: .06em;
                color: var(--muted); margin: 0 0 10px; }
   table { width: 100%; border-collapse: collapse; font-size: 13px; }
@@ -30,6 +39,7 @@
            white-space: nowrap; }
   th { color: var(--muted); font-weight: 500; }
   td.num, th.num { text-align: right; font-family: var(--mono); }
+  td.wrap, th.wrap { white-space: normal; }
   tr.clickable { cursor: pointer; }
   tr.clickable:hover td { background: #1c2129; }
   .badge { display: inline-block; padding: 1px 8px; border-radius: 10px;
@@ -47,6 +57,8 @@
   input[type=text] { flex: 1; background: #0a0d12; border: 1px solid var(--border);
                      color: var(--text); border-radius: 6px; padding: 6px 9px;
                      font-family: var(--mono); }
+  select { background: #0a0d12; border: 1px solid var(--border); color: var(--text);
+           border-radius: 6px; padding: 4px 6px; font-family: var(--mono); }
   button { background: #21262d; color: var(--text); border: 1px solid var(--border);
            border-radius: 6px; padding: 6px 12px; cursor: pointer; }
   button:hover { border-color: var(--accent); }
@@ -60,16 +72,27 @@
   .event { padding: 3px 0; border-bottom: 1px solid #21262d; font-size: 12.5px; }
   .event .kind { color: var(--accent); font-family: var(--mono); }
   .event .forced { color: var(--warn); }
+  #agentPopover { position: fixed; z-index: 50; max-width: 440px;
+                  background: var(--panel); border: 1px solid var(--accent);
+                  border-radius: 8px; padding: 10px 12px; pointer-events: none;
+                  box-shadow: 0 6px 24px rgba(0,0,0,.55); font-size: 12.5px; }
+  #agentPopover .kv { font-size: 11px; }
 </style>
 </head>
-<body>
+<body data-view="agents">
 <header>
   <h1>ro-bots dashboard</h1>
   <span class="sub">agents &middot; world feed &middot; 30-min window receipts</span>
   <span style="margin-left:auto" class="sub"><span class="dot" id="healthDot"></span><span id="healthText">checking…</span></span>
 </header>
+<nav class="tabs">
+  <button data-view="agents" class="active" onclick="setView('agents')">Agents</button>
+  <button data-view="runs" onclick="setView('runs')">Runs</button>
+  <button data-view="agent" id="agentTabButton" class="hidden"
+          onclick="openAgentTab(currentAgent)">Agent</button>
+</nav>
 <main>
-  <section>
+  <section data-view="agents">
     <h2>Agents</h2>
     <table id="agentTable">
       <thead><tr>
@@ -79,10 +102,16 @@
       <tbody></tbody>
     </table>
     <div id="agentError" class="err"></div>
-    <p class="muted" style="margin-bottom:0">Click a row for inventory, stats and memory files.</p>
+    <p class="muted" style="margin-bottom:0">Hover a row for a quick look; click for the full agent tab.</p>
   </section>
 
-  <section>
+  <section data-view="agents">
+    <h2>World feed (recent events)</h2>
+    <div id="feedStatus" class="kv"></div>
+    <div id="eventList" style="max-height:260px;overflow:auto"></div>
+  </section>
+
+  <section data-view="runs">
     <h2>Runs (window receipts, newest first)</h2>
     <table id="runTable">
       <thead><tr>
@@ -94,31 +123,47 @@
     <div id="runError" class="err"></div>
   </section>
 
-  <section>
-    <h2>World feed (recent events)</h2>
-    <div id="feedStatus" class="kv"></div>
-    <div id="eventList" style="max-height:260px;overflow:auto"></div>
-  </section>
-
-  <section id="runDetail" class="hidden">
+  <section data-view="runs" id="runDetail" class="hidden">
     <h2>Run detail <span id="runDetailId" class="kv"></span>
       <button style="float:right" onclick="closeRun()">close</button></h2>
     <div id="runMeta" class="kv"></div>
     <div id="runAgents"></div>
   </section>
 
-  <section id="agentDetail" class="hidden">
-    <h2>Agent detail <span id="agentDetailId" class="kv"></span>
-      <button style="float:right" onclick="document.getElementById('agentDetail').classList.add('hidden')">close</button></h2>
+  <section data-view="agent" id="agentDetail" class="hidden">
+    <h2>Agent <span id="agentDetailId" class="kv"></span>
+      <span style="float:right">
+        <label class="kv">history
+          <select id="decisionsLimit" onchange="loadDecisions(currentAgent)">
+            <option value="50">50</option>
+            <option value="100" selected>100</option>
+            <option value="250">250</option>
+          </select>
+        </label>
+        <button onclick="closeAgentTab()">close</button>
+      </span></h2>
     <div id="agentDetailBody"></div>
+    <p style="margin:10px 0 2px"><b>Decision history</b>
+      <span id="decisionsMeta" class="kv"></span>
+      <span id="decisionsError" class="err"></span></p>
+    <table id="decisionTable">
+      <thead><tr>
+        <th>Run</th><th>Time</th><th>Event</th><th class="wrap">Plan targets</th>
+        <th class="wrap">Actions</th><th>Error</th>
+      </tr></thead>
+      <tbody></tbody>
+    </table>
   </section>
 </main>
+<div id="agentPopover" class="hidden"></div>
 <script>
 "use strict";
 const $ = (id) => document.getElementById(id);
 const esc = (s) => { const d = document.createElement("span"); d.textContent = s == null ? "" : String(s); return d.innerHTML; };
 const num = (v) => (v == null ? "–" : String(v));
 const clsName = (c) => c === 0 ? "Novice" : c == null ? "–" : "class " + c;
+const jshort = (v, max) => { if (v == null) return "–"; const s = JSON.stringify(v); return s.length > max ? s.slice(0, max) + "…" : s; };
+const tsShort = (ts) => ts ? new Date(ts * 1000).toISOString().replace("T", " ").slice(0, 16) : "–";
 
 async function api(path, opts) {
   const res = await fetch(path, opts);
@@ -126,6 +171,15 @@ async function api(path, opts) {
   if (!res.ok) throw new Error(body.detail || (res.status + " " + res.statusText));
   return body;
 }
+
+/* --- views --- */
+let currentAgent = null;
+function setView(name) {
+  document.body.dataset.view = name;
+  for (const b of document.querySelectorAll("nav.tabs button"))
+    b.classList.toggle("active", b.dataset.view === name);
+}
+window.setView = setView;
 
 async function refreshHealth() {
   try {
@@ -139,11 +193,75 @@ async function refreshHealth() {
   }
 }
 
+/* --- shared agent-detail fetch with a 30s cache (popover + agent tab) --- */
+const detailCache = new Map(); // charId -> {at, data}
+const DETAIL_TTL_MS = 30000;
+async function getAgentDetail(charId) {
+  const hit = detailCache.get(charId);
+  if (hit && Date.now() - hit.at < DETAIL_TTL_MS) return hit.data;
+  const data = await api("/api/agents/" + encodeURIComponent(charId));
+  detailCache.set(charId, { at: Date.now(), data });
+  return data;
+}
+
+/* --- hover popover (pure HTML/CSS, positioned by JS) --- */
+let hoverTimer = null, hideTimer = null;
+function hidePopover() { $("agentPopover").classList.add("hidden"); }
+window.hidePopover = hidePopover;
+
+function renderPopover(d) {
+  const a = d.agent || {};
+  const stats = ["str", "agi", "vit", "dex", "int", "luk"]
+    .filter((k) => d.stats && d.stats[k] != null)
+    .map((k) => `<span class="chip">${k}: ${num(d.stats[k])}</span>`).join("");
+  const inv = d.inventory || [];
+  const equipped = inv.filter((i) => i.equip).length;
+  const items = inv.slice(0, 6).map((i) =>
+    `<span class="chip">${num(i.nameid)} ×${num(i.amount)}${i.equip ? " ⚑" : ""}</span>`).join("");
+  $("agentPopover").innerHTML =
+    `<b>${esc(a.name)} <span class="kv">#${esc(a.char_id)}${a.online ? " · online" : ""}</span></b>` +
+    `<div style="margin:4px 0"><span class="chip">${esc(a.map || "?")} ${num(a.x)},${num(a.y)}</span>` +
+    `<span class="chip">hp ${num(a.hp)}/${num(a.sp)}</span></div>` +
+    `<div>${stats || '<span class="muted">no stats</span>'}</div>` +
+    `<div class="kv" style="margin-top:4px">inventory: ${inv.length} item(s) · ${equipped} equipped</div>` +
+    `<div>${items || '<span class="muted">inventory empty</span>'}</div>`;
+}
+
+function showPopoverAt(tr, d) {
+  renderPopover(d);
+  const pop = $("agentPopover");
+  pop.classList.remove("hidden");
+  const rect = tr.getBoundingClientRect();
+  const pw = pop.offsetWidth, ph = pop.offsetHeight;
+  let left = Math.min(rect.left, window.innerWidth - pw - 10);
+  left = Math.max(6, left);
+  let top = rect.bottom + 6;
+  if (top + ph > window.innerHeight - 6) top = Math.max(6, rect.top - ph - 6);
+  pop.style.left = left + "px";
+  pop.style.top = top + "px";
+}
+
+function wireHover(tr, charId) {
+  tr.addEventListener("mouseenter", () => {
+    clearTimeout(hideTimer);
+    clearTimeout(hoverTimer);
+    hoverTimer = setTimeout(async () => {
+      try { showPopoverAt(tr, await getAgentDetail(charId)); }
+      catch (e) { hidePopover(); } // popover is best-effort; row click still works
+    }, 150);
+  });
+  tr.addEventListener("mouseleave", () => {
+    clearTimeout(hoverTimer);
+    hideTimer = setTimeout(hidePopover, 120);
+  });
+}
+
 async function refreshAgents() {
   try {
     const body = await api("/api/agents");
     $("agentError").textContent = body.source && body.source.goals_error
       ? "goal feed: " + body.source.goals_error : "";
+    hidePopover();
     const tbody = $("agentTable").tBodies[0];
     tbody.innerHTML = "";
     for (const a of body.agents) {
@@ -160,8 +278,9 @@ async function refreshAgents() {
         `<button data-cmd="${esc(a.char_id)}">send</button></td>`;
       tr.addEventListener("click", (ev) => {
         if (ev.target.tagName === "INPUT" || ev.target.tagName === "BUTTON") return;
-        showAgent(a.char_id);
+        openAgentTab(a.char_id);
       });
+      wireHover(tr, a.char_id);
       const input = tr.querySelector("input");
       tr.querySelector("button").addEventListener("click", () => sendCommand(a.char_id, input.value, tr));
       tbody.appendChild(tr);
@@ -213,6 +332,7 @@ async function refreshRuns() {
 }
 
 async function showRun(runId) {
+  setView("runs");
   try {
     const r = await api("/api/runs/" + encodeURIComponent(runId));
     $("runDetailId").textContent = runId;
@@ -255,26 +375,79 @@ async function showRun(runId) {
 }
 window.closeRun = () => $("runDetail").classList.add("hidden");
 
-async function showAgent(charId) {
+/* --- agent tab: full detail + decision history --- */
+function openAgentTab(charId) {
+  currentAgent = charId;
+  $("agentTabButton").classList.remove("hidden");
+  setView("agent");
+  hidePopover();
+  renderAgentDetail(charId);
+  loadDecisions(charId);
+}
+window.openAgentTab = openAgentTab;
+
+function closeAgentTab() {
+  currentAgent = null;
+  $("agentTabButton").classList.add("hidden");
+  $("agentDetail").classList.add("hidden");
+  setView("agents");
+}
+window.closeAgentTab = closeAgentTab;
+
+async function renderAgentDetail(charId) {
   try {
-    const d = await api("/api/agents/" + encodeURIComponent(charId));
-    $("agentDetailId").textContent = `${d.agent.name} (#${d.agent.char_id})`;
+    const d = await getAgentDetail(charId);
+    if (currentAgent !== charId) return;
+    $("agentDetail").classList.remove("hidden");
+    $("agentDetailId").textContent = `${d.agent.name} (#${d.agent.char_id}) · ` +
+      `${d.agent.map || "?"} ${num(d.agent.x)},${num(d.agent.y)}` +
+      (d.agent.online ? " · online" : " · offline");
     const inv = (d.inventory || []).map((i) =>
       `<tr><td class="num">${num(i.nameid)}</td><td class="num">${num(i.amount)}</td>` +
       `<td class="num">${num(i.refine)}</td><td class="num">${num(i.equip)}</td></tr>`).join("");
     const stats = Object.entries(d.stats || {}).map(([k, v]) => `<span class="chip">${esc(k)}: ${num(v)}</span>`).join("");
     const mem = (d.memory.files || []).map((f) =>
       `<tr><td class="kv">${esc(f.path)}</td><td class="num">${f.size_bytes} B</td>` +
-      `<td class="num">${new Date(f.modified_ts * 1000).toISOString().replace("T", " ").slice(0, 19)}</td></tr>`).join("");
+      `<td class="num">${tsShort(f.modified_ts)}</td></tr>`).join("");
     $("agentDetailBody").innerHTML =
       `<p>${stats || '<span class="muted">no stats</span>'}</p>` +
       `<p style="margin:4px 0 2px"><b>Inventory</b></p>` +
       `<table><tr><th>item</th><th>qty</th><th>refine</th><th>equip</th></tr>${inv || '<tr><td colspan="4" class="muted">empty</td></tr>'}</table>` +
       `<p style="margin:8px 0 2px"><b>Memory files</b> <span class="kv">(root: ${esc(d.memory.root || "not configured")})</span></p>` +
       `<table><tr><th>path</th><th>size</th><th>modified</th></tr>${mem || '<tr><td colspan="3" class="muted">none found</td></tr>'}</table>`;
+  } catch (e) {
     $("agentDetail").classList.remove("hidden");
-  } catch (e) { $("agentDetailBody").textContent = "agent detail failed: " + e.message; }
+    $("agentDetailBody").textContent = "agent detail failed: " + e.message;
+  }
 }
+
+async function loadDecisions(charId) {
+  if (charId == null) return;
+  const limit = parseInt($("decisionsLimit").value, 10) || 100;
+  $("decisionsError").textContent = "";
+  try {
+    const body = await api(`/api/agents/${charId}/decisions?limit=${limit}`);
+    if (currentAgent !== charId) return;
+    $("decisionsMeta").textContent =
+      `${body.decisions.length} shown · ${body.runs_covered} run(s) covered`;
+    $("decisionTable").tBodies[0].innerHTML = body.decisions.map((d) =>
+      `<tr>` +
+      `<td class="kv">${esc(String(d.run_id || "").replace(/^receipt-/, ""))}</td>` +
+      `<td class="num">${tsShort(d.started_ts)}</td>` +
+      `<td>${esc(d.event == null ? "–" : d.event)}</td>` +
+      `<td class="wrap kv" title="${esc(jshort(d.plan_targets, 200))}">${esc(jshort(d.plan_targets, 60))}</td>` +
+      `<td class="wrap kv" title="${esc(jshort(d.actions, 300))}">${esc(jshort(d.actions, 90))}</td>` +
+      `<td>${d.error_class ? `<span class="badge fail">${esc(d.error_class)}</span>` : '<span class="muted">–</span>'}</td>` +
+      `</tr>`).join("") ||
+      '<tr><td colspan="6" class="muted">no decisions recorded</td></tr>';
+  } catch (e) {
+    if (currentAgent !== charId) return;
+    $("decisionsError").textContent = "decision history: " + e.message;
+    $("decisionTable").tBodies[0].innerHTML =
+      '<tr><td colspan="6" class="muted">unavailable</td></tr>';
+  }
+}
+window.loadDecisions = loadDecisions;
 
 async function refreshEvents() {
   try {

@@ -27,11 +27,12 @@ this slice.
 | --- | --- |
 | `GET /api/agents` | agent/character list (char_id, name, class, base/job level, hp/sp, position, map, online) + latest goal/plan when the WorldFeed knows the persona |
 | `GET /api/agents/{id}` | detail: inventory, stats, memory-view listing (files, sizes, mtimes) |
+| `GET /api/agents/{id}/decisions?limit=N` | one agent's decision history aggregated across receipts, newest receipt first; each entry tagged with its `run_id` + receipt timestamp (`event`, `goal`, `plan_targets`, `actions`, `error_class`); `limit` default 100 (clamped to `[1, 1000]`), plus `runs_covered`; the receipt key `host_fixture_N` matches the char whose name ends in `_N` — receipts missing the tail or the agent are skipped |
 | `GET /api/runs` | window receipts, newest first, pass/fail + headline counters (decisions, walks, attributed attacks, XP, engagement-floor met) |
 | `GET /api/runs/{id}` | one receipt: per-agent counters, decide tail, script tail, move-gate reasons, gates, kill-commit block; bulky diagnostics are omitted (listed in `omitted`) |
 | `GET /api/events?limit=N` | recent WorldFeed events (bounded SSE read; upstream failures degrade to `upstream.ok=false`, never a 500) |
 | `POST /api/agents/{id}/command` | **stub**: validates `{"command": "..."}`, queues in memory, returns `202` with a `cmd-…` id (`GET /api/commands/{id}` shows the stub status) |
-| `GET /` | single-page dashboard (vanilla JS, no build step) |
+| `GET /` | single-page dashboard (vanilla JS, no build step): Agents/Runs/Agent views — hover an agent row for a popover (map+position, stats, inventory summary; detail cached 30s), click for the full agent tab with stats, inventory, memory and the decision-history table (limit selector 50/100/250) |
 | `GET /api/health` | version + config echo (no secrets) |
 
 A missing/degraded source answers honestly: `404` for unknown agent/run ids,
@@ -101,10 +102,12 @@ nix develop --offline /home/otto/dev/ro-bots -c bash -c \
   'cd dashboard/webapp && uv sync && uv run pytest'   # from a linked worktree
 ```
 
-71 tests: config/secrets, receipt store (glob order, headline sums, schema
+85 tests: config/secrets, receipt store (glob order, headline sums, schema
 drift, path traversal), MariaDB source (SQL allowlist, mapping, connection
 seam, secret handling), memory viewer, goal enrichment, SSE parsing, command
-queue, all API endpoints, UI + health.
+queue, all API endpoints (including the cross-receipt decision-history
+aggregation: newest-first ordering, limit clamping/stops, missing tails,
+missing agents, unreadable receipts, persona-index join), UI + health.
 
 ## Known v1 boundaries
 
