@@ -5,6 +5,7 @@ in charge until the world produces an event (see robots.domain.events) or it
 completes/fails. No decision-model calls happen inside a script.
 """
 
+import random
 from collections.abc import Sequence
 from enum import Enum, auto
 from typing import TYPE_CHECKING, Protocol, assert_never, final
@@ -525,6 +526,7 @@ class FarmScript:
         self._widen_steps = widen_steps
         self._commit_window = commit_window
         self._starved = 0
+        self._roam_rng = random.Random(f"roam-{plan.plan_id}-{plan.map_name}")
 
     def step(self, state: BotState) -> ScriptOutcome:
         if state.hp_ratio < self._hp_rest_below:
@@ -551,7 +553,15 @@ class FarmScript:
         _release_commitment(state, self._commit_window)
         if state.inventory:
             return ScriptOutcome((Loot(),), ScriptStatus.ACTIVE)
-        return ScriptOutcome((), ScriptStatus.ACTIVE)  # keep farming, no mobs right now
+        # w59/w60 roam leg: an empty view must not stand still. Emit a bounded
+        # patrol step near the current cell so the agent walks to find its
+        # plan's species (the runtime's pending-walk pacing throttles the
+        # re-sends; deterministic per plan for testability).
+        dx, dy = self._roam_rng.choice(((8, 0), (-8, 0), (0, 8), (0, -8), (5, 5), (-5, -5)))
+        return ScriptOutcome(
+            (MoveTo(max(0, state.x + dx), max(0, state.y + dy)),),
+            ScriptStatus.ACTIVE,
+        )
 
 
 @final

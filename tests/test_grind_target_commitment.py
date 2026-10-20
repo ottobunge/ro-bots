@@ -215,7 +215,9 @@ def test_farm_commitment_stays_inside_the_plan_filter() -> None:
     # When the committed plan target dies the strict filter holds fire again
     # — the out-of-filter id is never adopted as a commitment.
     empty = script.step(_state([_lunatic(7)], goal=Goal.FARM_ITEM))
-    assert empty.actions == ()
+    # the w60 roam leg: an empty view patrols (MoveTo) instead of standing
+    assert all(isinstance(a, MoveTo) for a in empty.actions)
+    assert empty.actions
     assert _committed_id(BOT_A) is None
 
 
@@ -235,7 +237,11 @@ def test_farm_commitment_released_on_rest_and_loot() -> None:
 def test_farm_widening_persists_while_the_plan_species_stays_absent() -> None:
     script = FarmScript(_plan(("Poring",)))
     for _ in range(19):
-        assert script.step(_state([_lunatic(7)], goal=Goal.FARM_ITEM)).actions == ()
+        # the out-of-plan species holds fire but still roams (w60)
+        assert all(
+            isinstance(a, MoveTo)
+            for a in script.step(_state([_lunatic(7)], goal=Goal.FARM_ITEM)).actions
+        )
     widened = script.step(_state([_lunatic(7)], goal=Goal.FARM_ITEM))
     assert widened.actions == (Attack(target_id=7),)
     assert script.step(_state([_lunatic(7)], goal=Goal.FARM_ITEM)).actions == (Attack(target_id=7),)
