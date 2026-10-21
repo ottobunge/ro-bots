@@ -121,5 +121,8 @@
   ],
   "walk_crawl_narrowing": [
     "The concrete next diagnostic: THE CLIENT'S POSITION TRACKING OVER A WALK CHAIN. The suspicion: the tracker's 0x0087 parse takes the from-coords, so the state's x/y stays at the walk-start; the approach recomputes shortest_path from the STALE position every tick and re-sends the same adjacent cell \u2014 the server sees the no-op walk and the char never advances. The w63/64's 365 walks: the position chain worked THEN \u2014 the diff: today's walk cadence (the per-tick re-sends at 0.25s) vs the then (the 6s pacer): the rapid re-sends may interleave the 0x0087s so the tracker's parse lags the chain. THE PROBE: the bare client + the PlayingClient: send the move(170,355), then the per-second dumps: the native_frame_snapshot's 0x0087 raws (the from/to hex), the tracker's view.position, and the state's x/y \u2014 10 frames. The parse mismatch names itself."
+  ],
+  "probe_iteration": [
+    "The walk-chain probe hit the stale-login position (the shop interior from the w76/77) \u2014 the probe's field coords invalid there. The lesson: the probe MUST reset the char (the SQL) BEFORE the login. The corrected probe is queued: the reset -> the relogin at (167,352) -> the walk -> the 0x0087 dumps. The 0x0087 from/to parse check then names the tracking mismatch or clears it."
   ]
 }
