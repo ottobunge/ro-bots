@@ -293,7 +293,11 @@ same file that carries the outbound legs):
 The field itself is absent: prt_fild08 behavior never changes, and unknown
 maps stay absent (fail-closed)."""
 
-DEALER_TALK_RANGE = 2
+DEALER_TALK_RANGE = 1
+"""Chebyshev radius for matching the received dealer npc to the cited
+cell. The shop interior's Item Guide sits 2 cells from the cited Weapon
+Dealer cell (170,130 vs 172,130) — a radius of 2 captured it and the
+talk latched on a dialog that never opens (the w79 empty hold)."""
 """Chebyshev distance from the cited dealer cell within which a received
 npc actor counts as the dealer candidate; farther or position-less npcs are
 never guessed — the step keeps walking instead (fail-closed)."""
@@ -393,7 +397,12 @@ def _merchant_engage(state: BotState, destination: tuple[int, int]) -> ScriptOut
 
 
 def _dealer_talk(state: BotState, dealer_cell: tuple[int, int]) -> TalkToNpc | None:
-    """The received dealer npc nearest the cited cell, else None."""
+    """The received dealer npc AT the cited cell, else None.
+
+    The match must be tight (Chebyshev <= 1): the shop interior holds the
+    Item Guide 2 cells from the cited Weapon Dealer cell, and a loose
+    range-2 match talks to the guide — the latch then holds on a dialog
+    that never opens (the w79 empty-actions hold)."""
     candidates = [
         actor
         for actor in state.nearby

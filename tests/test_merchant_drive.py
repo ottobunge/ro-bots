@@ -37,6 +37,7 @@ from robots.app.scripts import (  # noqa: E402
     FarmScript,
     GrindScript,
     ScriptStatus,
+    _dealer_talk,
     _merchant_engage,
     merchant_drive_cell,
     merchant_return_cell,
@@ -397,3 +398,21 @@ def test_stale_dealer_latch_clears_when_dealer_absent() -> None:
     moves = [a for a in outcome.actions if isinstance(a, MoveTo)]
     assert moves, "a stale latch must resume the dealer walk"
     assert _DEALER_TALKED.get(state.name) is None, "the stale latch must clear"
+
+
+def test_dealer_match_excludes_the_item_guide_two_cells_away() -> None:
+    """w79: the range-2 match captured the Item Guide npc (170,130) for the
+    cited dealer cell (172,130) — the talk latched on a dialog that never
+    opens and the drive emitted empty actions forever. The match is tight
+    (radius 1); the guide must not be a candidate, the walk must resume."""
+    state = _state(
+        map_name="prt_in",
+        x=168,
+        y=128,
+        inventory={"915": 1},
+        nearby=(_dealer(id=110013036, x=170, y=130),),
+    )
+    _DEALER_TALKED[state.name] = 110013036  # the talk happened AT the guide
+    assert (
+        _dealer_talk(state, (172, 130)) is None
+    ), "the Item Guide 2 cells from the cited cell is not the dealer"
