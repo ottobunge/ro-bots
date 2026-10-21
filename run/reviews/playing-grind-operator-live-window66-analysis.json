@@ -112,5 +112,8 @@
   ],
   "w76_wire_truth": [
     "The spike client logs every wire move ('move -> (x,y)') \u2014 the w76 runner's log has ZERO: the moves never dispatched, confirming the drive's dealer-approach leg is held. The merchant chain state: _merchant_engage inside prt_in: _dealer_talk returns the received dealer npc within DEALER_TALK_RANGE(2, Chebyshev from the cited cell); no candidate -> MoveTo(destination) continues; a candidate + _DEALER_TALKED latch -> the empty hold. THE AMBIGUITY: the agents at (168,128), the dealer actor would be 4+ cells away (out of range) -> the MoveTo SHOULD fire; it doesn't -> either the dealer actor IS received within range (the received actor coords differ from the cited cell), or the _merchant_step's destination/return-cell logic returns None upstream (the goal/driver gate). NEXT SESSION: instrument _merchant_step + _dealer_talk internals per tick (the destination, the candidates, the latch state) \u2014 10 minutes."
+  ],
+  "w77_outcome": [
+    "THE DEALER APPROACH RESUMED: fx1 walked (168,128)->(167,133) en route to the cited dealer (172,130) \u2014 the stale-latch fix works (the drive walks when the dealer is absent and clears the latch). The zeny 0: the sell fires when the dealer npc enters the DEALER_TALK_RANGE(2). The next window should complete: the arrival -> the talk -> the offer -> the sell C5 -> the zeny -> the Knife purchase -> the equip."
   ]
 }
