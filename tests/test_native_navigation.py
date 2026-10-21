@@ -291,3 +291,27 @@ def test_compiled_pinned_native_struct_layout(tmp_path):
         [str(executable)], check=True, capture_output=True, text=True, timeout=5
     )
     assert result.stdout == "8 4 20 0 12 14 16"
+
+
+def test_mark_walkable_ground_corrects_cited_cells() -> None:
+    """The map-cache tool has marked rathena warp cells blocked (tile 1) —
+    the cited warp declaration proves them walkable on the live server
+    (the players warp through (170,378) on prt_fild08). mark_walkable
+    ground-corrects such cells so client-side pathfinding can route the
+    merchant trip (the w65-69 no_route root cause)."""
+    width, height = 4, 4
+    tile_rows = bytearray([0] * width * height)
+    tile_rows[3 * width + 3] = 1  # the cited warp cell: cached blocked
+    tiles = bytes(tile_rows)
+    cache = MapCache([WalkMap("prt_fild08", width, height, tiles)])
+    assert not cache.get("prt_fild08").walkable((3, 3))
+
+    cache.mark_walkable("prt_fild08", (3, 3))
+    assert cache.get("prt_fild08").walkable((3, 3))
+
+
+def test_mark_walkable_unknown_map_or_out_of_bounds_is_noop() -> None:
+    cache = MapCache([WalkMap("m", 2, 2, bytes([0, 0, 0, 0]))])
+    cache.mark_walkable("nope", (0, 0))  # no raise
+    cache.mark_walkable("m", (9, 9))  # out of bounds: no raise
+    assert cache.get("m").walkable((0, 0))

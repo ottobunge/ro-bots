@@ -152,6 +152,19 @@ class MapCache:
             )
         return cls(maps.values())
 
+    def mark_walkable(self, map_name: str, point: Point) -> None:
+        """Ground-correct a cited cell: warp/dealer cells are walkable on the
+        live server even when the cached grid disagrees (the map-cache tool
+        has marked rathena warp cells blocked). Citation-backed callers only.
+        """
+        walk_map = self.maps.get(map_name)
+        if walk_map is None or not walk_map.contains(point):
+            return
+        tiles = bytearray(walk_map.tiles)
+        tiles[point[0] + point[1] * walk_map.width] = 0
+        # WalkMap is frozen+slots; bypass deliberately for this ground-correction.
+        object.__setattr__(walk_map, "tiles", bytes(tiles))
+
     def get(self, name: str) -> WalkMap:
         try:
             return self.maps[name]

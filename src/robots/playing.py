@@ -22,6 +22,7 @@ from robots.app import agent_runtime, command_poller
 from robots.app.agent_runtime import AgentHost, ManifestEntry, PersonaClock
 from robots.app.planning_brain import PlannedBrain
 from robots.app.playing_runtime import ObservedMobDatabase, PlayingClient
+from robots.app.scripts import MERCHANT_ROUTE, MERCHANT_ROUTE_RETURN
 from robots.domain.planning import PlanningIdentity
 from robots.society.models import (
     Attitude,
@@ -108,6 +109,13 @@ def build_host(args: argparse.Namespace) -> AgentHost:
     entries = agent_runtime.load_manifest(args.manifest)
     root = args.runtime_root
     cache = MapCache.load(root / "db/map_cache.dat", root / "db/pre-re/map_cache.dat")
+    # Ground-correct the cited warp/dealer cells: the map-cache tool marks
+    # rathena warp cells blocked, but the live server walks players into
+    # them (the merchant trip's field leg is cited prtf004 at (170,378)).
+    # rathena e985006171d2: npc/pre-re/warps/fields/prontera_fild.txt:65,
+    # npc/warps/cities/prontera.txt:25/:40, npc/merchants/shops.txt:255.
+    for map_name, (x, y) in {**MERCHANT_ROUTE, **MERCHANT_ROUTE_RETURN}.items():
+        cache.mark_walkable(map_name, (x, y))
     catalog = ObservedMobDatabase.load(root / "db/pre-re/mob_db.yml")
     databases = {pid: ObservedMobDatabase(catalog.catalog.values()) for pid in entries}
 
