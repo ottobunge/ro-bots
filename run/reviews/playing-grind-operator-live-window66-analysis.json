@@ -109,5 +109,8 @@
   ],
   "w76_outcome": [
     "BOTH agents reached the shop interior (168,128) and STAND 4 cells from the cited dealer (172,130). The route EXISTS (7 cells, walkable \u2014 verified). The zeny 0, no sell. THE DRIVE'S DEALER-APPROACH LEG ISN'T RESUMING: the suspects: (1) the talk-once-then-hold latch (the earlier talk set the npc_shopid state -> the drive holds instead of re-walking), (2) the drive's condition ordering (the sellable stock gate vs the walk leg), (3) the received-offer state machine (the offer must be received -> the sell C5). THE MERCHANT MACHINE'S STATE AT THE (168,128) STAND is the next session's first read: dump the drive's internals (the merchant scripts.py state) mid-window."
+  ],
+  "w76_wire_truth": [
+    "The spike client logs every wire move ('move -> (x,y)') \u2014 the w76 runner's log has ZERO: the moves never dispatched, confirming the drive's dealer-approach leg is held. The merchant chain state: _merchant_engage inside prt_in: _dealer_talk returns the received dealer npc within DEALER_TALK_RANGE(2, Chebyshev from the cited cell); no candidate -> MoveTo(destination) continues; a candidate + _DEALER_TALKED latch -> the empty hold. THE AMBIGUITY: the agents at (168,128), the dealer actor would be 4+ cells away (out of range) -> the MoveTo SHOULD fire; it doesn't -> either the dealer actor IS received within range (the received actor coords differ from the cited cell), or the _merchant_step's destination/return-cell logic returns None upstream (the goal/driver gate). NEXT SESSION: instrument _merchant_step + _dealer_talk internals per tick (the destination, the candidates, the latch state) \u2014 10 minutes."
   ]
 }
