@@ -103,5 +103,8 @@
   ],
   "DEFINITIVE_ROOT_CAUSE": [
     "THE ROAM/CANDIDATE TARGETS ARE NOT WALKABILITY-FILTERED. The scripts emit MoveTo(170,378) constantly \u2014 (170,378) is UNWALKABLE terrain in prt_fild08's map grid (verified: walkable((170,378))==False; (170,375)==True; the reachable walkable ground at (155,360) via a 13-cell route). Every MoveTo dies in shortest_path with NoRouteError ('invalid or blocked route endpoint') -> no_route gate -> zero wire movement. THE BARE CLIENT moved because the spike sends raw walk packets WITHOUT client-side pathfinding. THE FIX (small, TDD): the walkability filter on every roam/candidate target \u2014 the FarmScript/GrindScript roam + the spawn-knowledge candidates consult cache.walkable(target); the blocked targets re-roll to the nearest walkable cell. The cache is already wired into the runtime (the _move's shortest_path uses it)."
+  ],
+  "merchant_trip_live": [
+    "W75 (the plain-host runner): THE MERCHANT TRIP EXECUTED LIVE \u2014 fx1: the field -> the warp (the routeable cell fix) -> the prontera -> THE SHOP INTERIOR (prt_in 168,128, the ~4 cells from the cited dealer at 172,130); fx0 followed to the town-side (168,212). The warp-cell ground correction UNBLOCKED the route. The zeny 0 + the inventory held: the SELL step (the dealer talk at the DEALER_TALK_RANGE 2 -> the sell C5) is the next transition \u2014 the next window or the tail of this one."
   ]
 }
