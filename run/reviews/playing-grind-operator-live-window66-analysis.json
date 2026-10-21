@@ -133,5 +133,11 @@
   ],
   "w81_correction": [
     "CORRECTION from the static read + the trace re-read: the talk DID reach the REAL Weapon Dealer at tick 1 (gid 110001762 = the npc at the exact cited cell (172,130), range 0; the later npcs_nearby dumps dropped it from view but the latch held). _await_pending is statically correct. THE REMAINING GAP IS THE SHOP EXCHANGE: the 0xC4 dealtype receipt -> the shop-loop sell dispatch -> the zeny. The instrument: a shop-loop trace (the offer context per tick + the sell actions) inside the composition. The 1-2 cell movement is a symptom, not the blocker: the hold after the tick-1 talk froze further walks by design (the talk-once latch)."
+  ],
+  "shop_trace_findings": [
+    "The Weapon Dealer#prt IS received at (172,130) \u2014 the earlier 'dealer absent' readings were the old probe's near[:3] truncation artifact.",
+    "The talk fires at the REAL dealer (latch 110001762 = its gid) and the hold is by design; no npc dialog stage opens because the shop answer travels the 0xC7 offer path, not the dialog path.",
+    "The shop-exchange instrument: build_native_state already carries shop_offer (playing_runtime.py:611) \u2014 the traced _merchant_step hook can dump the state's shop_offer directly; the host-internals probe failed on the agent-container name.",
+    "NEXT: one 4-min run dumping state.shop_offer per tick names the exchange gap (the offer absent = the 0xC7 not received/parsed; present = the sell dispatch)."
   ]
 }
