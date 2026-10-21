@@ -115,5 +115,8 @@
   ],
   "w77_outcome": [
     "THE DEALER APPROACH RESUMED: fx1 walked (168,128)->(167,133) en route to the cited dealer (172,130) \u2014 the stale-latch fix works (the drive walks when the dealer is absent and clears the latch). The zeny 0: the sell fires when the dealer npc enters the DEALER_TALK_RANGE(2). The next window should complete: the arrival -> the talk -> the offer -> the sell C5 -> the zeny -> the Knife purchase -> the equip."
+  ],
+  "w78_outcome": [
+    "fx1 moved only ~3 cells in 30 min (167,133->166,135) \u2014 the approach is pathologically slow. The remaining suspects: (1) the server-side walk rejection (the map-server's walk-request handling for the clientless: check the map-server log for the rejected walks), (2) the clientless movement: the server walks the char over TIME (the speed) and the client must not re-send until the arrival \u2014 the re-send cadence vs the walk speed: the packets at 0.25s vs the walk speed ~0.15s/cell: the re-sends DURING the walk RESTART the walk from the current cell (the rAthena: the walk: the path processed; the new walk request mid-walk: accepted, the path restarts!) \u2014 the 6s pacer: the moves every ~6s: the 26 cells = ~26 walks = ~2.6 min at the walk speed... the 3 cells/30min: NOT the cadence. (3) THE NEXT SESSION: the map-server log grep for the fx1's walk requests + the client's movement simulation check."
   ]
 }
