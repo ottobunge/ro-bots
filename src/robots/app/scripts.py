@@ -371,6 +371,11 @@ def _merchant_engage(state: BotState, destination: tuple[int, int]) -> ScriptOut
     once at the dealer and hold for the dealtype."""
     if state.map_name == "prt_in":
         talk = _dealer_talk(state, destination)
+        if talk is None and _DEALER_TALKED.get(state.name) is not None:
+            # The dealer npc is no longer received: any latch is stale (the
+            # npc actor expired / the relog closed the dialog). Clear it so
+            # the walk resumes and a fresh contact can talk again (w76).
+            _DEALER_TALKED.pop(state.name, None)
         if talk is not None:
             # One talk per (bot, npc) contact: re-sending resets the server's
             # npc_shopid before the 0xC4 dealtype can be answered (window-29:
@@ -379,6 +384,8 @@ def _merchant_engage(state: BotState, destination: tuple[int, int]) -> ScriptOut
             bot = state.name
             npc_id = talk.npc_id
             if _DEALER_TALKED.get(bot) == npc_id:
+                # One talk per (bot, npc) contact; the shop-loop mechanical
+                # owns the exchange while the dealer npc stays received.
                 return ScriptOutcome((), ScriptStatus.ACTIVE)
             _DEALER_TALKED[bot] = npc_id
             return ScriptOutcome((talk,), ScriptStatus.ACTIVE)

@@ -30,12 +30,14 @@ for candidate in (str(REPO / "src"), str(REPO), str(REPO / "tests")):
 
 from robots.app import scripts  # noqa: E402
 from robots.app.scripts import (  # noqa: E402
+    _DEALER_TALKED,
     MERCHANT_ROUTE,
     MERCHANT_ROUTE_RETURN,
     MERCHANT_ZENY_MIN,
     FarmScript,
     GrindScript,
     ScriptStatus,
+    _merchant_engage,
     merchant_drive_cell,
     merchant_return_cell,
 )
@@ -383,3 +385,15 @@ def test_return_ends_the_contact_so_the_next_visit_retalks() -> None:
     )
     back = _state(map_name="prt_in", x=172, y=129, zeny=60, nearby=(_dealer(),))
     assert script.step(back).actions == (TalkToNpc(npc_id=55),)
+
+
+def test_stale_dealer_latch_clears_when_dealer_absent() -> None:
+    """w76: the talk-once latch held forever after the dealer npc actor
+    expired from view — the hold requires the dealer received; without it
+    the latch is stale and must clear so the walk resumes."""
+    state = _state(map_name="prt_in", x=168, y=128, inventory={"915": 1})
+    _DEALER_TALKED[state.name] = 110013036  # the stale latch: the dealer actor is gone
+    outcome = _merchant_engage(state, (172, 130))
+    moves = [a for a in outcome.actions if isinstance(a, MoveTo)]
+    assert moves, "a stale latch must resume the dealer walk"
+    assert _DEALER_TALKED.get(state.name) is None, "the stale latch must clear"
