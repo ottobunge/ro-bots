@@ -407,6 +407,7 @@ def _dealer_talk(state: BotState, dealer_cell: tuple[int, int]) -> TalkToNpc | N
         actor
         for actor in state.nearby
         if actor.kind == "npc"
+        and getattr(actor, "name", "").startswith("Weapon Dealer")
         and getattr(actor, "x", None) is not None
         and getattr(actor, "y", None) is not None
         and max(

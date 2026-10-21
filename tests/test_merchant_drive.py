@@ -416,3 +416,29 @@ def test_dealer_match_excludes_the_item_guide_two_cells_away() -> None:
     assert (
         _dealer_talk(state, (172, 130)) is None
     ), "the Item Guide 2 cells from the cited cell is not the dealer"
+
+
+def test_dealer_talk_matches_by_name_not_position() -> None:
+    """w80: position matching talked at whatever shop npc stood near the
+    cited cell and latched on a dialog that never opens. The dealer is
+    identified BY NAME (Weapon Dealer#prt, the rathena npc declaration);
+    other shop npcs (Item Guide, Armor Dealer) are never candidates."""
+    state = _state(
+        map_name="prt_in",
+        x=170,
+        y=129,
+        inventory={"915": 1},
+        nearby=(ActorRef(110013036, "Item Guide#knife1201", "npc", 1.4, 170, 130),),
+    )
+    assert _dealer_talk(state, (172, 130)) is None
+    dealer_nearby = (ActorRef(110001762, "Weapon Dealer#prt", "npc", 2.8, 172, 130),)
+    state2 = _state(
+        map_name="prt_in",
+        x=170,
+        y=129,
+        inventory={"915": 1},
+        nearby=dealer_nearby,
+    )
+    talk = _dealer_talk(state2, (172, 130))
+    assert talk is not None
+    assert talk.npc_id == 110001762
