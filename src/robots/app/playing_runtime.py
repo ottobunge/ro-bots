@@ -205,6 +205,7 @@ class PlayingClient:
         self.public_skill_knowledge = public_skill_knowledge
         self._now = monotonic
         self._pending: tuple[tuple[int, int], int, float, int] | None = None
+        self._retry_talk: int | None = None
         self._event_cursor = 0
         self._seen_actors: set[int] = set()
         self._invite = 0
@@ -569,6 +570,7 @@ class PlayingClient:
     def build_native_state(self, goal: Goal) -> BotState:
         tracker = self._observe()
         wire, view = self.wire, tracker.view
+
         try:
             vitals = require_native_vitals(wire.status_params)
             progression = self._progression()
@@ -625,7 +627,16 @@ class PlayingClient:
             recent_encounters=self._encounters.records if self._encounters is not None else (),
         )
         self._last_built_state = state
+        self._drain_retry_talk(state)
         return state
+
+    def _drain_retry_talk(self, state: BotState) -> None:
+        """One deferred click: the walk-end tail dropped the first, so the
+        scripts' talk-once latch must not hold on an unsent 0x0090."""
+        if self._retry_talk is None or self._standing is not True:
+            return
+        npc_id, self._retry_talk = self._retry_talk, None
+        self._talk_npc(state, npc_id)
 
     def _validate_npc_context(
         self, view: NativeGameplayView, map_name: str, pos: ObservedPosition
@@ -804,6 +815,7 @@ class PlayingClient:
         if self._npc.actuation_blocked and isinstance(action, (Attack, Loot, MoveTo, TalkToNpc)):
             return True
         if isinstance(action, TalkToNpc):
+            self._retry_talk = None  # the fresh scripted intent replaces the retry
             self._talk_npc(state, action.npc_id)
             return True
         if not isinstance(action, (NpcNext, NpcSelect, NpcClose, NpcSubmitName)):
@@ -1215,12 +1227,25 @@ class PlayingClient:
         if tracker is None or not self._npc_open_ready(state):
             return
         actor = observed_npc(tracker.view, npc_id)
-        if actor is None or actor.walking or not tracker.view.arrival_confirmed:
+        # The scripts' adjacency gate (DEALER_TALK_RANGE / talk range) is the
+        # sufficient in-range proof: tracker arrival_confirmed stays False
+        # after every real walk (a moving walkok proves nothing about the
+        # destination), so it must not gate the click (the w82 null-offer
+        # trace: TalkToNpc dispatched but the 0x0090 never sent).
+        if actor is None:
             return
+        if actor.walking or not self._attack_ready() or self._rest_seq is not None:
+            # The server-side click may land during the walk-end tail
+            # (pc_cant_act2) — schedule one retry; the scripts' talk-once
+            # latch must not be left holding on a click the server dropped.
+            self._retry_talk = npc_id
+            return
+        self._retry_talk = None
         distance = math.hypot(actor.position.x - state.x, actor.position.y - state.y)
         if distance > 3:
             self._move(state, (actor.position.x, actor.position.y))
-        elif self._rest_seq is None and self._attack_ready():
+        else:
+            self._retry_talk = None
             raw = self._npc.begin(
                 npc_id, self.wire.native_epoch, state.map_name, self._metadata_cursor, self._now()
             )

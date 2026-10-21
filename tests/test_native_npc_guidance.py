@@ -420,13 +420,29 @@ def test_clef_provider_boundary_menu_selection_encodes_actual_received_index(mon
     assert len(requests) == 1
 
 
-def test_received_self_motion_denies_click_without_inferred_arrival():
+def test_click_sends_from_adjacency_not_arrival_flag():
+    """w82: the click gate is the tracked adjacency (the honest positional
+    evidence), not the arrival flag — a moving walkok leaves arrival
+    unconfirmed forever, and the flag silently dropped in-range clicks.
+    The agent here is adjacent to the npc (the tracked destination), so
+    the 0x0090 click sends."""
     wire = npc_wire()
     wire.add(walk_ack((42, 37), (43, 37)))
     client = PlayingClient(wire)
     client.perform_native(TalkToNpc(321))
-    assert not wire.sent
-    assert not wire.moves
+    assert any(frame[:2] == b"\x90\x00" for frame in wire.sent)
+
+
+def test_far_npc_click_defers_to_walk():
+    """A received npc 20 cells away: no click (out of range); the drive
+    walks instead."""
+    wire = npc_wire()
+    raw = bytearray(monster(kind=6, aid=322))
+    raw[59:62] = position(62, 58)
+    wire.add(bytes(raw))
+    client = PlayingClient(wire)
+    client.perform_native(TalkToNpc(322))
+    assert not any(frame[:2] == b"\x90\x00" for frame in wire.sent)
 
 
 def test_nonfinite_clock_denies_npc_requests():
