@@ -410,6 +410,14 @@ def _dealer_talk(state: BotState, dealer_cell: tuple[int, int]) -> TalkToNpc | N
         and getattr(actor, "name", "").startswith("Weapon Dealer")
         and getattr(actor, "x", None) is not None
         and getattr(actor, "y", None) is not None
+        # The talk must be ADJACENT to the agent: rAthena's npc_click range
+        # check silently rejects clicks from 2+ cells and the latch would
+        # hold on a shop that never opens (the w81 null-offer trace).
+        and max(
+            abs(actor.x - state.x),  # type: ignore[operator]
+            abs(actor.y - state.y),  # type: ignore[operator]
+        )
+        <= DEALER_TALK_RANGE
         and max(
             abs(actor.x - dealer_cell[0]),  # type: ignore[operator]
             abs(actor.y - dealer_cell[1]),  # type: ignore[operator]

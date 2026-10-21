@@ -431,14 +431,39 @@ def test_dealer_talk_matches_by_name_not_position() -> None:
         nearby=(ActorRef(110013036, "Item Guide#knife1201", "npc", 1.4, 170, 130),),
     )
     assert _dealer_talk(state, (172, 130)) is None
-    dealer_nearby = (ActorRef(110001762, "Weapon Dealer#prt", "npc", 2.8, 172, 130),)
+    dealer_nearby = (ActorRef(110001762, "Weapon Dealer#prt", "npc", 1.4, 172, 130),)
     state2 = _state(
         map_name="prt_in",
-        x=170,
-        y=129,
+        x=171,
+        y=129,  # adjacent (Chebyshev 1): the click is in range
         inventory={"915": 1},
         nearby=dealer_nearby,
     )
     talk = _dealer_talk(state2, (172, 130))
+    assert talk is not None
+    assert talk.npc_id == 110001762
+
+
+def test_dealer_talk_requires_adjacency_to_the_agent() -> None:
+    """w81 trace: the offer (0xC7) never arrived because the click went out
+    at Chebyshev 2-3 — rAthena's npc_click range check rejects it silently
+    and the latch held on a shop that never opened. The talk requires the
+    agent ADJACENT to the dealer; at distance the drive keeps walking."""
+    far = _state(
+        map_name="prt_in",
+        x=169,
+        y=128,  # Chebyshev 3 from the dealer at (172,130)
+        inventory={"915": 1},
+        nearby=(ActorRef(110001762, "Weapon Dealer#prt", "npc", 3.6, 172, 130),),
+    )
+    assert _dealer_talk(far, (172, 130)) is None
+    near = _state(
+        map_name="prt_in",
+        x=171,
+        y=130,  # adjacent
+        inventory={"915": 1},
+        nearby=(ActorRef(110001762, "Weapon Dealer#prt", "npc", 1.0, 172, 130),),
+    )
+    talk = _dealer_talk(near, (172, 130))
     assert talk is not None
     assert talk.npc_id == 110001762
