@@ -10,6 +10,7 @@ from pathlib import Path
 import pytest
 
 from robots.adapters import native_navigation
+from robots.adapters.native_gameplay import NativeGameplayTracker
 from robots.adapters.native_navigation import (
     InvalidMapCache,
     MapCache,
@@ -315,3 +316,31 @@ def test_mark_walkable_unknown_map_or_out_of_bounds_is_noop() -> None:
     cache.mark_walkable("nope", (0, 0))  # no raise
     cache.mark_walkable("m", (9, 9))  # out of bounds: no raise
     assert cache.get("m").walkable((0, 0))
+
+
+def test_tracker_0x0087_tracks_walk_destination() -> None:
+    """A clientless client has no walk interpolation: the tracked position
+    after a move-end (0x0087) must be the walk DESTINATION, not the
+    from-cell — otherwise every approach recomputes from the stale start
+    and re-walks the same first cell forever (the w65-78 crawl)."""
+    tracker = NativeGameplayTracker(own_actor_id=999)
+    entry = (
+        struct.pack("<H", 0x02EB)
+        + bytes(4)
+        + bytes((167 >> 2, ((167 & 3) << 6) | ((352 >> 4) & 15), ((352 & 15) << 4)))
+        + bytes(4)
+    )
+    # the move-end: the from (167,352) at 6..8, the to (168,352) in the raw[8:11]
+    frm = bytes((167 >> 2, ((167 & 3) << 6) | ((352 >> 4) & 15), ((352 & 15) << 4) | (168 >> 6)))
+    b = ((168 & 63) << 2) | ((352 >> 8) & 3)
+    c = 352 & 255
+    d = 352 & 255
+    move_end = struct.pack("<H", 0x0087) + bytes(4) + frm + bytes([b, c, d])
+    frames = ((1, 1.0, 0x02EB, entry), (2, 2.0, 0x0087, move_end))
+    assert tracker.consume_snapshot(1, 0, frames) is True
+    assert tracker._position is not None
+    assert (tracker._position.x, tracker._position.y) == (
+        168,
+        352,
+    ), "the tracked position must be the walk DESTINATION"
+    assert tracker._arrival is False  # the walk is IN FLIGHT (from != to)

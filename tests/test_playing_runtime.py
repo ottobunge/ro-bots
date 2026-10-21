@@ -303,10 +303,12 @@ def test_movement_waits_for_same_target_receipt():
     now[0] = 3.5
     client.perform_native(MoveTo(44, 37))
     # The frames stalled 1.5s with the point unproven: the release + the
-    # fresh approach.
-    assert wire.moves == [(43, 37), (43, 37)]
-    assert client.build_native_state(Goal.GRIND).x == 42
-    wire.add(walk_ack((43, 37), (43, 37)))
+    # fresh approach FROM THE TRACKED DESTINATION (the 0x0087 tracks the
+    # walk's to-cell, so the chain advances instead of re-walking the
+    # stale from-cell — the w65-78 crawl fix).
+    assert wire.moves == [(43, 37), (44, 37)]
+    assert client.build_native_state(Goal.GRIND).x == 43
+    wire.add(walk_ack((44, 37), (44, 37)))
     client.perform_native(MoveTo(44, 37))
     assert wire.moves[-1] == (44, 37)
 
@@ -339,11 +341,14 @@ def test_drained_receipt_releases_pending_walk_without_new_dispatch():
     client.drain_native_events()
     assert client._pending is None
     assert wire.moves == [(43, 37)]
-    client.perform_native(MoveTo(43, 37))
-    assert wire.moves == [(43, 37), (43, 37)]
-    wire.add(walk_ack((43, 37), (43, 37)))
+    client.perform_native(MoveTo(44, 37))
+    # The tracked position is the walk's destination (43,37): a fresh
+    # MoveTo advances to the NEXT cell instead of re-walking the stale
+    # from-cell (the w65-78 crawl fix).
+    assert wire.moves == [(43, 37), (44, 37)]
+    wire.add(walk_ack((44, 37), (44, 37)))
     client.drain_native_events()
-    assert client.build_native_state(Goal.GRIND).x == 43
+    assert client.build_native_state(Goal.GRIND).x == 44
     client.perform_native(Attack(123))
     assert wire.sent == [bytes.fromhex("37047b00000000")]
 

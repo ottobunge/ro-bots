@@ -672,16 +672,25 @@ class NativeGameplayTracker:
             self._arrival = True
         else:
             position = _position(raw, 6, seq, at)
-            self._position = position
-            self._arrival = pid == 0x02EB
-            if pid == 0x02EB:
-                self._inventory.clear()
-                self._inventory_initial = True
-                self._inventory_known = False
-            else:
+            if pid == 0x0087:
+                # A clientless client has no walk interpolation: the tracked
+                # position must be the walk DESTINATION, not the from-cell,
+                # or every approach recomputes from the stale start and
+                # re-walks the same first cell forever (the w65-78 crawl).
+                # The PENDING-walk lifecycle is unchanged: a moving walkok
+                # (from != to) is a walk IN FLIGHT — only a zero-length
+                # walkok proves arrival.
                 b, c, d = raw[8:11]
                 destination = (((b & 15) << 6) | (c >> 2), ((c & 3) << 8) | d)
+                self._position = ObservedPosition(destination[0], destination[1], seq, at)
                 self._arrival = (position.x, position.y) == destination
+            else:
+                self._position = position
+                self._arrival = pid == 0x02EB
+                if pid == 0x02EB:
+                    self._inventory.clear()
+                    self._inventory_initial = True
+                    self._inventory_known = False
 
     def _life(self, seq: int, at: float, pid: int, raw: bytes) -> None:
         aid = int.from_bytes(raw[2:6], "little")

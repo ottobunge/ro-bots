@@ -138,15 +138,21 @@ def test_unknown_framed_event_is_ignored():
     assert not tracker.view.actors
 
 
-def test_map_move_and_self_walk_start_not_destination():
+def test_map_move_and_self_walk_tracks_destination():
+    """A clientless client has no walk interpolation: the 0x0087 move-end
+    tracks the walk DESTINATION so approaches chain instead of re-walking
+    the stale from-cell (the w65-78 crawl fix). The walk is still in
+    flight (from != to), so arrival is not confirmed."""
     tracker = gameplay.NativeGameplayTracker(999)
     tracker.ingest(1, 1.0, 0x0091, struct.pack("<H16sHH", 0x0091, b"prontera.gat", 42, 37))
     assert tracker.view.map_name == "prontera.gat"
-    move = bytes([10, 0x82, 0x52, 0xBD, 0x80, 0])
+    # start (42,37) -> destination (43,37)
+    move = bytes((42 >> 2, ((42 & 3) << 6) | (37 >> 4), (37 & 15) << 4 | (43 >> 6)))
+    move += bytes((((43 & 63) << 2) | (37 >> 8), 37 & 255, 0))
     tracker.ingest(2, 2.0, 0x0087, struct.pack("<HI", 0x0087, 0) + move)
     position = tracker.view.position
     assert position is not None
-    assert (position.x, position.y) == (42, 37)
+    assert (position.x, position.y) == (43, 37)
     assert not tracker.view.arrival_confirmed
 
 
@@ -158,7 +164,10 @@ def test_peer_walking_presentation_never_becomes_own_position():
 
     tracker = gameplay.NativeGameplayTracker(999)
     tracker.ingest(1, 1.0, 0x0091, struct.pack("<H16sHH", 0x0091, b"prontera.gat", 42, 37))
-    move = bytes([10, 0x82, 0x52, 0xBD, 0x80, 0])  # start 42,37 -> destination 43,37
+    move = bytes((42 >> 2, ((42 & 3) << 6) | (37 >> 4), (37 & 15) << 4 | (43 >> 6)))
+    move += bytes(
+        (((43 & 63) << 2) | (37 >> 8), 37 & 255, 0)
+    )  # start (42,37) -> destination (43,37)
     tracker.ingest(2, 2.0, 0x0087, struct.pack("<HI", 0x0087, 0) + move)
     peer = bytearray(110)
     struct.pack_into("<HHBII", peer, 0, 0x09FD, 110, 5, 555, 77)
@@ -167,7 +176,8 @@ def test_peer_walking_presentation_never_becomes_own_position():
     tracker.ingest(3, 3.0, 0x09FD, bytes(peer))
     position = tracker.view.position
     assert position is not None
-    assert (position.x, position.y, position.seq) == (42, 37, 2)
+    # the peer frame must not advance own position past the tracked destination
+    assert (position.x, position.y, position.seq) == (43, 37, 2)
     assert not tracker.view.arrival_confirmed
     assert any(a.actor_id == 555 and a.walking for a in tracker.view.actors)
 

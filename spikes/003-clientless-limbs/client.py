@@ -753,6 +753,13 @@ class BotClient:
                 message = "malformed native entry position packet"
                 raise ValueError(message)
             self.x, self.y = self._rbufpos(raw, 6)
+        elif pid == 0x0087:
+            # A clientless client has no walk interpolation: the tracked
+            # position is the walk DESTINATION (the server walks the char).
+            if type(raw) is not bytes or len(raw) < 12 or raw[:2] != b"\x87\x00":
+                message = "malformed native move-end packet"
+                raise ValueError(message)
+            self.x, self.y = self._rbufpos(raw, 8)  # the to-coords (the raw[8:11])
         elif pid == 0x00B0:
             # Pinned packets_struct.hpp:354-359: packed i16/u16/i32.
             if len(raw) != 8 or raw[:2] != b"\xb0\x00":

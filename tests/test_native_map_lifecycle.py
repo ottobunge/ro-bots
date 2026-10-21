@@ -137,7 +137,9 @@ def test_announced_destination_is_not_arrival_and_warp_resets_pending():
     now[0] = 0.5
     playing.perform_native(MoveTo(44, 37))
     assert wire.moves == [(43, 37)]
-    assert playing.build_native_state(Goal.SOCIAL).x == 42
+    # The 0x0087 tracks the walk DESTINATION (the clientless crawl fix);
+    # the walk is still IN FLIGHT (from != to), so the pending holds.
+    assert playing.build_native_state(Goal.SOCIAL).x == 43
     wire.add(struct.pack("<H16sHH", 0x0091, b"prontera", 50, 50))
     playing.perform_native(MoveTo(51, 50))
     assert wire.moves[-1] == (51, 50)
