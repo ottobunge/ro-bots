@@ -63,9 +63,7 @@ def _select(configs: list[Any], names: str | None) -> list[Any]:
 
 def _run(args: argparse.Namespace) -> int:
     configs = _select(load_backends(args.config), args.backends)
-    rows = run_benchmark(
-        configs, decide_n=args.decide_n, chat_n=args.chat_n, timeout=args.timeout
-    )
+    rows = run_benchmark(configs, decide_n=args.decide_n, chat_n=args.chat_n, timeout=args.timeout)
     path = benchmark_path(args.out_dir)
     append_rows(path, rows)
     print(f"appended {len(rows)} rows -> {path}")

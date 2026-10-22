@@ -45,23 +45,29 @@ def main(argv: list[str] | None = None) -> int:
 
     checks: list[tuple[str, bool, str]] = []
     scope = receipt.get("run_scope", {})
-    checks.append((
-        "receipt exists and parses",
-        True,
-        str(receipt_path),
-    ))
+    checks.append(
+        (
+            "receipt exists and parses",
+            True,
+            str(receipt_path),
+        )
+    )
     scope_manifest = str(scope.get("manifest", ""))
-    checks.append((
-        "receipt belongs to the e2e world manifest",
-        scope_manifest.endswith(manifest),
-        f"{scope_manifest or 'missing'} vs {manifest}",
-    ))
+    checks.append(
+        (
+            "receipt belongs to the e2e world manifest",
+            scope_manifest.endswith(manifest),
+            f"{scope_manifest or 'missing'} vs {manifest}",
+        )
+    )
     scope_duration = float(scope.get("duration_s") or 0)
-    checks.append((
-        f"bounded duration ~= {duration:g}s",
-        abs(scope_duration - duration) <= max(30.0, duration * 0.2),
-        f"run_scope.duration_s={scope_duration:g}",
-    ))
+    checks.append(
+        (
+            f"bounded duration ~= {duration:g}s",
+            abs(scope_duration - duration) <= max(30.0, duration * 0.2),
+            f"run_scope.duration_s={scope_duration:g}",
+        )
+    )
 
     agents = receipt.get("agents", {})
     if not agents:
@@ -77,11 +83,13 @@ def main(argv: list[str] | None = None) -> int:
             floor_met.append((persona, str(entry.get("engagement_floor"))))
 
         for persona, healthy, transport, own_pos in landed:
-            checks.append((
-                f"login landed: {persona}",
-                healthy,
-                f"transport_state={transport} own_position_ingests={own_pos}",
-            ))
+            checks.append(
+                (
+                    f"login landed: {persona}",
+                    healthy,
+                    f"transport_state={transport} own_position_ingests={own_pos}",
+                )
+            )
 
         # progress: position left the start cell OR decisions happened
         progress_details = []
@@ -93,10 +101,13 @@ def main(argv: list[str] | None = None) -> int:
             map_name = str(diag.get("map_name") or "")
             start = by_persona.get(persona, {}).get("start", {})
             left_start = (
-                map_name and start
-                and (map_name.split(".")[0] != str(start.get("last_map"))
-                     or position[0] != start.get("last_x")
-                     or position[1] != start.get("last_y"))
+                map_name
+                and start
+                and (
+                    map_name.split(".")[0] != str(start.get("last_map"))
+                    or position[0] != start.get("last_x")
+                    or position[1] != start.get("last_y")
+                )
             )
             decides = counter(entry.get("decision_calls"))
             counts = (entry.get("dispatched_actions") or {}).get("count") or {}
@@ -110,11 +121,13 @@ def main(argv: list[str] | None = None) -> int:
                 f"decisions={decides} (failures={counter(entry.get('decision_failures'))}), "
                 f"dispatched={dispatched}, floor={dict(floor_met).get(persona)}"
             )
-        checks.append((
-            "progress: a position changed OR decisions happened",
-            any_progress,
-            "; ".join(progress_details),
-        ))
+        checks.append(
+            (
+                "progress: a position changed OR decisions happened",
+                any_progress,
+                "; ".join(progress_details),
+            )
+        )
 
     failed = [c for c in checks if not c[1]]
     print(f"e2e-assert: receipt {receipt_path.name}")

@@ -1,4 +1,5 @@
 """Population live-run runner: the plain host + passive decide/memory sampling.
+import json
 
 Same composition as scripts/plain_host_runner.py (playing.build_host, direct
 host.step(), nothing wraps or re-observes the runtime) with three additive
@@ -50,6 +51,8 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--out-dir", default="run/plain_host_receipts")
     parser.add_argument("--worldfeed-port", type=int, default=8402)
     parser.add_argument("--schedule-file", default=None)
+    parser.add_argument("--heartbeat-min-s", type=float, default=None)
+    parser.add_argument("--heartbeat-max-s", type=float, default=None)
     parser.add_argument("--seed", type=int, default=0)
     parser.add_argument("--leg", default="leg")
     args = parser.parse_args(argv)
@@ -84,6 +87,20 @@ def main(argv: list[str] | None = None) -> int:
 
     print(
         f"POPULATION-RUNNER[{args.leg}]: duration {args.duration}s, agents {list(host.agents)}",
+        flush=True,
+    )
+    _now = host.clock.local_now()
+    print("CLOCK:", _now, flush=True)
+    print(
+        "SCHED:",
+        {pid: host._scheduled_on(pid, _now) for pid in host.agents},
+        "windows:",
+        {
+            g.group_id: (getattr(g.schedule, "windows", None), getattr(g, "member_ids", None))
+            for g in host.roster.groups
+        },
+        "configured:",
+        (json.loads(args.schedule_file.read_text()) if args.schedule_file else None) is not None,
         flush=True,
     )
     while time.time() < deadline:

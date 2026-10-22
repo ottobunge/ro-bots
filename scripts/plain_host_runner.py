@@ -9,6 +9,7 @@ Receipt: run/plain_host_receipts/receipt-<unix>.json with per-tick passive
 samples: wire sent count, moves list, last built position, DB-visible state
 is collected by the operator separately.
 """
+
 import argparse
 import json
 import sys
@@ -37,6 +38,7 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
     args.duration = float(args.duration)
     from pathlib import Path as _P
+
     args.runtime_root = _P(args.runtime_root)
     args.memory_root = _P(args.memory_root)
     if args.schedule_file:
@@ -81,7 +83,11 @@ def main(argv: list[str] | None = None) -> int:
                         "standing": getattr(client, "_standing", None),
                         "wire_sent": len(getattr(wire, "sent", []) or []),
                         "moves": len(getattr(wire, "moves", []) or []),
-                        "frames": len((wire.native_frame_snapshot()[2]) if wire is not None and hasattr(wire, "native_frame_snapshot") else []),
+                        "frames": len(
+                            (wire.native_frame_snapshot()[2])
+                            if wire is not None and hasattr(wire, "native_frame_snapshot")
+                            else []
+                        ),
                         "pos": (state.x, state.y) if state is not None else None,
                         "xp_total": getattr(state, "xp_total", None),
                         "nearby_n": len(state.nearby_monsters) if state is not None else None,

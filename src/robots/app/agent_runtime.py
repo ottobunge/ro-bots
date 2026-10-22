@@ -104,7 +104,13 @@ except ImportError:  # pragma: no cover - spike missing is a deployment issue
 
 DEFAULT_TICK_SECONDS = 2.0
 HEARTBEAT_MIN_S = 300.0
-HEARTBEAT_MAX_S = 1200.0
+HEARTBEAT_MAX_S = 300.0
+"""The user directive (2026-10-22): no agent stands idle longer than five
+minutes — the heartbeat's upper bound equals its lower bound, so every agent
+reviews its goal (and can socialize) at least once every five minutes."""
+IDLE_REVIEW_S = 300.0
+"""An agent whose last executed action is older than this gets a synthetic
+idle-review decide immediately, without waiting for the heartbeat timer."""
 DEFAULT_CHAT_URL = "http://127.0.0.1:8301/v1/chat/completions"
 DEFAULT_WORLDFEED_PORT = 8400
 
@@ -678,6 +684,7 @@ class ScheduledAgent:
                 self.deliver_event(state, self._as_heartbeat(fired))
         self._advance_script(state)
         self._publish(state)
+        self._idle_watch(state)
 
     def _advance_script(self, state: BotState) -> None:
         brain = self.brain
@@ -762,6 +769,27 @@ class ScheduledAgent:
             return
         commands.finish(request, "dispatched")
 
+    def _idle_watch(self, state: BotState) -> None:
+        """Synthesize an idle-review decide when no action has executed for
+        IDLE_REVIEW_S. An agent that just stands there — no mobs, no plan
+        progress, no script output — must re-plan (and may socialize) rather
+        than wait out the heartbeat timer (the user directive: <= 5 minutes
+        without doing something)."""
+        now = self._tick_clock.monotonic()
+        last = getattr(self, "_last_action_monotonic", None)
+        if last is None:
+            self._last_action_monotonic = now
+            return
+        if now - last < IDLE_REVIEW_S:
+            return
+        self._last_action_monotonic = now
+        if self.brain is None or self.client is None:
+            return
+        logger.info(
+            "agent %s: idle %.0fs; forcing goal review", self.persona.persona_id, now - last
+        )
+        self.deliver_event(state, self._as_heartbeat("idle_review"))
+
     def deliver_event(self, state: BotState, event: WorldEvent) -> None:
         """Hand one event to the brain and execute the resulting actions."""
         if self.brain is None:
@@ -781,6 +809,8 @@ class ScheduledAgent:
         """Push brain/script actions through the client's limbs."""
         if self.client is None:
             return
+        if actions:
+            self._last_action_monotonic = self._tick_clock.monotonic()
         for action in actions:
             try:
                 self._perform(action)

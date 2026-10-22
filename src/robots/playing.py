@@ -45,6 +45,18 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--duration", type=float)
     parser.add_argument("--playground", action="store_true")
     parser.add_argument("--schedule-file", type=Path)
+    parser.add_argument(
+        "--heartbeat-min-s",
+        type=float,
+        default=None,
+        help="Override the decide heartbeat lower bound (default 300s).",
+    )
+    parser.add_argument(
+        "--heartbeat-max-s",
+        type=float,
+        default=None,
+        help="Override the decide heartbeat upper bound (default 1200s).",
+    )
     parser.add_argument("--command-root", type=Path, default=None)
     parser.add_argument("--skill-knowledge", type=Path, default=None)
     parser.add_argument("--solo", action="store_true")
@@ -155,6 +167,8 @@ def build_host(args: argparse.Namespace) -> AgentHost:
     return AgentHost(
         build_roster(entries, args),
         args.manifest,
+        heartbeat_min_s=getattr(args, "heartbeat_min_s", None) or 300.0,
+        heartbeat_max_s=getattr(args, "heartbeat_max_s", None) or 1200.0,
         decision_factory=lambda: decision,
         chat_generator=chat,
         client_factory=client_factory,
