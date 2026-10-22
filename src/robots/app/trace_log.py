@@ -67,47 +67,81 @@ def chat_channel(action: Any) -> str | None:
     return None
 
 
+def _monster_payload(event: Any) -> dict[str, Any]:
+    actor = event.actor
+    return {
+        "monster": actor.name,
+        "monster_id": actor.id,
+        "monster_x": actor.x,
+        "monster_y": actor.y,
+        "distance": actor.distance,
+        "aggressive": event.aggressive,
+    }
+
+
+def _damage_payload(event: Any) -> dict[str, Any]:
+    return {"amount": event.amount, "from_id": event.from_id}
+
+
+def _chat_payload(event: Any) -> dict[str, Any]:
+    return {"channel": event.line.channel, "sender": event.line.sender, "message": event.line.text}
+
+
+def _invite_payload(event: Any) -> dict[str, Any]:
+    return {"from": event.invite.from_name, "invited_at": event.invite.at}
+
+
+def _item_payload(event: Any) -> dict[str, Any]:
+    return {"item": event.item, "x": event.x, "y": event.y}
+
+
+def _arrived_payload(event: Any) -> dict[str, Any]:
+    return {"x": event.x, "y": event.y}
+
+
+def _script_failed_payload(event: Any) -> dict[str, Any]:
+    return {"reason": event.reason}
+
+
+def _heartbeat_payload(event: Any) -> dict[str, Any]:
+    return {"seq": event.seq}
+
+
+def _timer_payload(event: Any) -> dict[str, Any]:
+    return {"timer": event.name, "seq": event.seq}
+
+
+def _plan_expired_payload(event: Any) -> dict[str, Any]:
+    return {"plan_id": event.plan_id}
+
+
+def _npc_dialogue_payload(event: Any) -> dict[str, Any]:
+    return {"npc_id": event.dialogue.npc_id, "stage": event.dialogue.stage}
+
+
+_PAYLOAD_HANDLERS = {
+    MonsterSpotted: _monster_payload,
+    DamageTaken: _damage_payload,
+    ChatHeard: _chat_payload,
+    InviteReceived: _invite_payload,
+    ItemSeen: _item_payload,
+    Arrived: _arrived_payload,
+    ScriptFailed: _script_failed_payload,
+    Heartbeat: _heartbeat_payload,
+    TimerFired: _timer_payload,
+    PlanExpired: _plan_expired_payload,
+    NpcDialogueReceived: _npc_dialogue_payload,
+}
+
+
 def event_payload(event: Any) -> dict[str, Any]:
     """A self-contained field summary of one WorldEvent (never raises)."""
     payload: dict[str, Any] = {"event": type(event).__name__}
+    handler = _PAYLOAD_HANDLERS.get(type(event))
+    if handler is None:
+        return payload  # an unknown future event still traces, by type name
     try:
-        if isinstance(event, MonsterSpotted):
-            payload["monster"] = event.actor.name
-            payload["monster_id"] = event.actor.id
-            payload["monster_x"] = event.actor.x
-            payload["monster_y"] = event.actor.y
-            payload["distance"] = event.actor.distance
-            payload["aggressive"] = event.aggressive
-        elif isinstance(event, DamageTaken):
-            payload["amount"] = event.amount
-            payload["from_id"] = event.from_id
-        elif isinstance(event, ChatHeard):
-            payload["channel"] = event.line.channel
-            payload["sender"] = event.line.sender
-            payload["message"] = event.line.text
-        elif isinstance(event, InviteReceived):
-            payload["from"] = event.invite.from_name
-            payload["invited_at"] = event.invite.at
-        elif isinstance(event, ItemSeen):
-            payload["item"] = event.item
-            payload["x"] = event.x
-            payload["y"] = event.y
-        elif isinstance(event, Arrived):
-            payload["x"] = event.x
-            payload["y"] = event.y
-        elif isinstance(event, ScriptFailed):
-            payload["reason"] = event.reason
-        elif isinstance(event, Heartbeat):
-            payload["seq"] = event.seq
-        elif isinstance(event, TimerFired):
-            payload["timer"] = event.name
-            payload["seq"] = event.seq
-        elif isinstance(event, PlanExpired):
-            payload["plan_id"] = event.plan_id
-        elif isinstance(event, NpcDialogueReceived):
-            payload["npc_id"] = event.dialogue.npc_id
-            payload["stage"] = event.dialogue.stage
-        # An unknown future event still traces, at least by type name.
+        payload.update(handler(event))
     except AttributeError:  # a partially-formed event still names its type
         pass
     return payload

@@ -74,6 +74,13 @@ URGENCY_TALK = 1.5
 GRIND_DIALOGUE_BLOCK_BUDGET = 8
 
 
+def _review_trigger(event: WorldEvent, trigger: str | None) -> str:
+    """The review provenance: the runtime's label, else derived from the event."""
+    if trigger is not None:
+        return trigger
+    return "heartbeat" if isinstance(event, Heartbeat) else "event"
+
+
 @dataclass(frozen=True, slots=True)
 class TickResult:
     """Outcome of one event handling — actions plus introspection for observers."""
@@ -230,8 +237,7 @@ class EventDrivenBrain:
     def _handle_world_event(
         self, state: BotState, event: WorldEvent, *, trigger: str | None
     ) -> TickResult:
-        if trigger is None:
-            trigger = "heartbeat" if isinstance(event, Heartbeat) else "event"
+        trigger = _review_trigger(event, trigger)
         response = self._model.decide(self._decision_request(state, event))
         self.decision_count += 1
         answers: dict[str, Any] = response["answers"]
