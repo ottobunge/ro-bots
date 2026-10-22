@@ -34,6 +34,8 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Final, final
 
+from robots.society.wants import assign_personalities
+
 Window = tuple[int, float, float]  # (day_of_week 0-6, start_hour, end_hour)
 
 ACCOUNT_ID_BASE: Final = 2_200_000  # unreserved band; two-bot fixture uses 2000000+
@@ -224,6 +226,7 @@ class PersonaProfile:
     save_map: str
     save_point: tuple[int, int]
     budget_tier: str = "standard"
+    personality: str = ""  # wants-system personality (society/wants.py)
 
 
 @final
@@ -305,6 +308,7 @@ class GeneratedPopulation:
             "build": persona.build,
             "build_stage": "novice-bootstrap",
             "budget_tier": persona.budget_tier,
+            "personality": persona.personality,
             "save_map": persona.save_map,
             "save_point": [x, y],
             "weekly_online_hours": weekly_online_hours(persona.schedule),
@@ -359,6 +363,9 @@ def generate_population(spec: PopulationSpec, seed: int | None = None) -> Genera
         family = rng.choice(CLASS_FAMILIES)
         sessions = _group_sessions(rng)
         save_point = _plaza_point(rng)
+        # Design section 3: friend groups mix personalities (a Socializer in
+        # an Achiever group is the interesting case).
+        personalities = assign_personalities(rng, size)
         for mi in range(size):
             persona = _group_member(
                 rng,
@@ -370,6 +377,7 @@ def generate_population(spec: PopulationSpec, seed: int | None = None) -> Genera
                 save_point=save_point,
                 used_names=used_names,
                 spec=spec,
+                personality=personalities[mi].value,
             )
             personas.append(persona)
             occupied |= schedule_to_slots(persona.schedule)
@@ -381,6 +389,7 @@ def generate_population(spec: PopulationSpec, seed: int | None = None) -> Genera
             occupied=occupied,
             used_names=used_names,
             spec=spec,
+            personality=assign_personalities(rng, 1)[0].value,
         )
         personas.append(persona)
         occupied |= schedule_to_slots(persona.schedule)
@@ -555,6 +564,7 @@ def _group_member(
     save_point: tuple[int, int],
     used_names: set[str],
     spec: PopulationSpec,
+    personality: str,
 ) -> PersonaProfile:
     """One friend-group member: shared family, shared save site, jittered windows."""
     password, pincode, sex = _credentials(rng)
@@ -575,6 +585,7 @@ def _group_member(
         save_map="prontera",
         save_point=save_point,
         budget_tier=tier,
+        personality=personality,
     )
 
 
@@ -586,6 +597,7 @@ def _solo_outsider(
     occupied: set[int],
     used_names: set[str],
     spec: PopulationSpec,
+    personality: str,
 ) -> PersonaProfile:
     """One solo outsider: own schedule (disjoint by construction), field save."""
     password, pincode, sex = _credentials(rng)
@@ -607,6 +619,7 @@ def _solo_outsider(
         save_map=save_map,
         save_point=save_point,
         budget_tier=tier,
+        personality=personality,
     )
 
 

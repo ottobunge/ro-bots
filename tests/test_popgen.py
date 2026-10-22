@@ -28,6 +28,7 @@ from robots.popgen import (
     weekly_online_hours,
 )
 from robots.society.models import Schedule
+from robots.society.wants import Personality
 
 REPO = Path(__file__).resolve().parents[1]
 REFERENCE_MANIFEST = (
@@ -255,6 +256,37 @@ def test_group_members_share_a_playstyle_family() -> None:
         for member in members:
             member_families = {b.family for b in BUILDS if b.path == member.build}
             assert member_families & families, (group_id, member.build)
+
+
+# --------------------------------------------------------------- personality
+
+
+def test_personas_carry_a_valid_wants_personality() -> None:
+    """Design section 3/5: popgen assigns a wants personality per agent."""
+    pop = generate_population(make_spec(seed=7))
+    assert pop.personas
+    valid = {p.value for p in Personality}
+    for persona in pop.personas:
+        assert persona.personality in valid, (persona.persona_id, persona.personality)
+
+
+def test_friend_groups_mix_personalities() -> None:
+    """Design section 3: the friend group mixes personalities."""
+    pop = generate_population(make_spec(seed=7, friends_per_group=(3, 4)))
+    groups = {p.group_id for p in pop.personas if p.group_id is not None}
+    assert groups
+    for group_id in groups:
+        members = [p for p in pop.personas if p.group_id == group_id]
+        assert len({m.personality for m in members}) >= 2, group_id
+
+
+def test_summary_rows_carry_the_personality() -> None:
+    pop = generate_population(make_spec(seed=7))
+    valid = {p.value for p in Personality}
+    rows = pop.summary()["personas"]
+    assert rows
+    for row in rows:
+        assert row["personality"] in valid
 
 
 # -------------------------------------------------------------- spec checks
