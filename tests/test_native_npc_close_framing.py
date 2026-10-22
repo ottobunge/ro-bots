@@ -197,13 +197,19 @@ def test_all_889_mappings_macros_and_parser_preserved_bitexact() -> None:
     )
     assert raw.count(char_page_block) == 1
     raw = raw.replace(char_page_block, b"", 1)
-    assert hashlib.sha256(raw).hexdigest() == (
-        "26291ffbe4ab0bf1c64adcbaf3be46c10f2e720d8bc6ff408c8052244ad8a240"
+    assert hashlib.sha256(raw).hexdigest() in (
+        # the party slice: the 0x2C4 shadow override (6 -> 26, MAIN 20180704
+        # CZ_PARTY_JOIN_REQ) + its accounting comment appended to packetdb.py
+        "9c041193ba212927aeb19263436c5bcfbcb91271a453d3b427e04728317cb99e",
+        "26291ffbe4ab0bf1c64adcbaf3be46c10f2e720d8bc6ff408c8052244ad8a240",
     )
     token = b", 0x00B6: 6"
     assert raw.count(token) == 1
-    assert hashlib.sha256(raw.replace(token, b"", 1)).hexdigest() == (
-        "2b0a38740ef0fcae523a586ea84860acc6e3ca46d46c76faf6b37ef21e4ab445"
+    assert hashlib.sha256(raw.replace(token, b"", 1)).hexdigest() in (
+        # the party slice: the 0x2C4 shadow override (6 -> 26, MAIN 20180704
+        # CZ_PARTY_JOIN_REQ) + its accounting comment appended to packetdb.py
+        "3ae219473ecb152f882ee12622d59e1ae17db9c8772a5c6f8061ab4dda86c94a",
+        "2b0a38740ef0fcae523a586ea84860acc6e3ca46d46c76faf6b37ef21e4ab445",
     )
 
 

@@ -264,6 +264,11 @@ def validate_exact_addition(table: dict[int, int], raw: bytes) -> None:
     # ZC_PC_SELL_ITEMLIST (0x00C7, the shop-list slice): length-prefixed
     # variable packet; the framer strictly rejected it before this addition.
     prior_901 = prior_900 | {0x00C7: -1}
+    # Party invite re-registration (0x2C4: 6 -> 26, the party slice): MAIN
+    # 20180704 parse registration CZ_PARTY_JOIN_REQ (packets.hpp:1368-1373);
+    # the numeric section still carries the older-era 6B size, hence the
+    # live-verified shadow override rather than an addition.
+    prior_901 = prior_901 | {0x2C4: 26}
     assert len(table) == 901
     assert table == prior_901
     assert raw.count(CUTIN_BLOCK) == 1
@@ -285,6 +290,9 @@ def validate_exact_addition(table: dict[int, int], raw: bytes) -> None:
         # the shop-list slice: +0x00C7 (and 0x00C6 already present) appended
         # after the 0x00BE block (the w82/w83 null-offer framer fix)
         "d190c4837b578b2ba4fb6afd702197690314c74fe858b9f478106b942a2b7411",
+        # the party slice: the 0x2C4 shadow override (6 -> 26, MAIN 20180704
+        # CZ_PARTY_JOIN_REQ) + its accounting comment appended to packetdb.py
+        "ebbd4985b4d714c1a6b291d8944640521e3ee37d8dc0cbf4f6b7be133668d2cd",
     )
 
 

@@ -67,8 +67,11 @@ def _fed(frames: tuple[bytes, ...], own: int = 17) -> NativeGameplayTracker:
 # --- adapter encoders (pinned MAIN 20180704 wire layouts) ---
 
 
-def test_sell_open_is_c5_type_one() -> None:
-    assert ng.sell_open(4123) == struct.pack("<HIB", 0xC5, 4123, 1)
+def test_sell_open_is_c5_type_zero() -> None:
+    """w84 live wire: type 1 made the pinned server answer the BUY list
+    (0xc6, knife 1201 @ 50z in the raw rows); type 0 answers the SELL list
+    0xc7. The source comment "1 = click" does not match the binary."""
+    assert ng.sell_open(4123) == struct.pack("<HIB", 0xC5, 4123, 0)
 
 
 def test_sell_open_rejects_bad_npc_id() -> None:

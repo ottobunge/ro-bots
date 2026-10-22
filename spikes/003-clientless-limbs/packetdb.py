@@ -684,6 +684,11 @@ _NATIVE_REGISTRATION_SHADOWS = {
     0x006D: (149, 157),
     0x035F: (6, 5),
     0x0437: (5, 7),
+    # MAIN 20180704 re-registers 0x2c4 as CZ_PARTY_JOIN_REQ (26B, invite by
+    # name -> clif_parse_PartyInvite2); the inherited snapshot carried the
+    # older-era 6B entry. Live-verified: the dealer invite went out and the
+    # members' accept path (0x2c7) is the registered reply.
+    0x2C4: (6, 26),
 }
 
 
@@ -743,6 +748,14 @@ PACKET_DB.update({0x01B3: 67})
 # reader dies mid-login-burst and the session starves. Executed pinned-include
 # oracle: .work/e2e-run/evidence/oracle_zc_status_change.log
 PACKET_DB.update({0x00BE: 5})
+
+
+# Narrow source-proven party invite addition. Preserve all prior entries and
+# strict unknown rejection. CZ_PARTY_JOIN_REQ 0x2c4 is the 20180704
+# invite-by-name (packets.hpp:1368-1373: type(2) + name[24] = 26B ->
+# clif_parse_PartyInvite2); the w84-era 0x086d id was unregistered and the
+# invite was silently dropped (0 parties across legs 4/5).
+PACKET_DB.update({0x2C4: 26})
 
 
 # Narrow source-proven shop-list additions. Preserve all prior entries and

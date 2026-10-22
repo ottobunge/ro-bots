@@ -644,8 +644,13 @@ class BotClient:
         self.log(f"party_create {name!r}")
 
     def party_invite(self, name: str) -> None:
-        """CZ_PARTY_JOIN_REQ (0x086d): invite by name (PACKETVER-correct)."""
-        self._send(pdb.pack(0x086D, name.encode().ljust(24, b"\x00")))
+        """CZ_PARTY_JOIN_REQ (0x2c4, MAIN 20180704): type(2) + name[24], 26B.
+
+        The w84-era 0x086d id is unregistered on the pinned server — the
+        invite was silently dropped and no party ever formed (leg 4/5).
+        The reply path (0x2c7) and the invitee prompt (0x2c6) were already
+        correct."""
+        self._send(pdb.pack(0x2C4, name.encode().ljust(24, b"\x00")))
 
     def party_reply(self, party_id: int, accept: bool = True) -> None:
         """CZ_PARTY_JOIN_REQ_ACK (0x2c7): party_id.L flag.B (1 = accept)."""
