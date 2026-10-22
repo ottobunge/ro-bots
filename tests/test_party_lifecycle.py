@@ -47,6 +47,8 @@ def test_first_invite_creates_the_party_then_invites() -> None:
     name = wire.frames[0][1]
     assert isinstance(name, str), name
     assert name.startswith("NyxSong"), name
+    # alphanumerics only: the pinned char_name_option: 1 forbids the hyphen
+    assert "-" not in name, name
 
 
 def test_subsequent_invites_do_not_recreate() -> None:

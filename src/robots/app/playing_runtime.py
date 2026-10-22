@@ -1290,7 +1290,11 @@ class PlayingClient:
         if getattr(self.wire, "party_created", False):
             return
         bucket = int(time.time()) // 3600
-        self.wire.party_create(f"{self.wire.char_name}-p{bucket}")
+        # ALPHANUMERIC ONLY: the pinned conf sets char_name_option: 1 with
+        # char_name_letters = letters/digits/space — a hyphen makes the
+        # char-server reject the create (mapif_parse_CreateParty's
+        # char_name_letters filter -> result=1; leg 9's zero-party cause).
+        self.wire.party_create(f"{self.wire.char_name}p{bucket}")
         self.wire.party_created = True
 
     def _loot(self, state: BotState) -> None:
