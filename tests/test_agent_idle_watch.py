@@ -35,7 +35,7 @@ def test_idle_agent_gets_synthetic_review() -> None:
     agent.client = SimpleNamespace()
     reviews: list[str] = []
 
-    def fake_deliver(state, event):
+    def fake_deliver(state, event, **_kwargs):  # trigger kwarg: trace provenance
         reviews.append(str(event))
 
     agent.deliver_event = fake_deliver  # type: ignore[method-assign]

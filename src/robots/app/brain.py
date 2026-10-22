@@ -22,6 +22,7 @@ from robots.app.scripts import (
     needs_npc_preparation,
     script_for,
 )
+from robots.app.trace_log import TraceLog
 from robots.domain.actions import (
     AcceptInvite,
     GameAction,
@@ -104,6 +105,7 @@ class EventDrivenBrain:
         social_view: Callable[[], Sequence[str]] | None = None,
         coordination: BoundCoordinator | None = None,
         wants: WantState | None = None,
+        trace: TraceLog | None = None,
     ) -> None:
         """``social_view`` feeds relationship facts into every decide context
         (the RelationshipLedger's lines): accept_invite/premade_pick can then
@@ -142,6 +144,7 @@ class EventDrivenBrain:
         self._social_view = social_view
         self._coordination = coordination
         self.wants = wants
+        self._trace = trace
         self._social_level: int | None = None
         self._social_in_party: bool | None = None
         self._pending_party_event: str | None = None
@@ -207,8 +210,14 @@ class EventDrivenBrain:
             self._plan = None
             self._recovery_epoch = state.native_epoch
 
-    def handle_event(self, state: BotState, event: WorldEvent) -> TickResult:
-        """React to one world event — the only path that reaches Clef."""
+    def handle_event(
+        self, state: BotState, event: WorldEvent, *, trigger: str | None = None
+    ) -> TickResult:
+        """React to one world event — the only path that reaches Clef.
+
+        ``trigger`` labels the review provenance in the trace (heartbeat |
+        idle_review); None derives it from the event type.
+        """
         self.sync_context(state)
         self._remember_npc(state)
         if state.npc_dialogue is not None and state.npc_dialogue.stage not in (
@@ -216,9 +225,13 @@ class EventDrivenBrain:
             "cancel_abandoned",
         ):
             return self._handle_npc_event(state, event)
-        return self._handle_world_event(state, event)
+        return self._handle_world_event(state, event, trigger=trigger)
 
-    def _handle_world_event(self, state: BotState, event: WorldEvent) -> TickResult:
+    def _handle_world_event(
+        self, state: BotState, event: WorldEvent, *, trigger: str | None
+    ) -> TickResult:
+        if trigger is None:
+            trigger = "heartbeat" if isinstance(event, Heartbeat) else "event"
         response = self._model.decide(self._decision_request(state, event))
         self.decision_count += 1
         answers: dict[str, Any] = response["answers"]
@@ -245,7 +258,7 @@ class EventDrivenBrain:
                 if isinstance(self._script, FarmScript):
                     self._script = None
             case Heartbeat():
-                actions.extend(self._run_review(state, answers, notes))
+                actions.extend(self._run_review(state, answers, notes, trigger=trigger))
             case _:
                 pass
 
@@ -381,14 +394,21 @@ class EventDrivenBrain:
         return kind
 
     def _run_review(
-        self, state: BotState, answers: dict[str, Any], notes: list[str]
+        self,
+        state: BotState,
+        answers: dict[str, Any],
+        notes: list[str],
+        *,
+        trigger: str = "heartbeat",
     ) -> list[GameAction]:
         """Heartbeat: goal review, farm-plan authoring, optional announcement."""
         goal = self._aligned_goal(self._review_goal(state, answers, notes), notes)
+        self._trace_review(state, goal, trigger)
         if self.is_recovering and self._choice(answers, "change_goal", "") == "keep":
             return self._coordination_review(state, answers, notes)
         plan = self._setup_farm_plan(state, answers, notes) if self._wants_farming(goal) else None
         self._plan = plan
+        self._trace_plan(goal, plan, trigger)
         self._script = FarmScript(plan) if plan is not None else script_for(goal, state)
         notes.append(f"script->{type(self._script).__name__}")
         review_actions: list[GameAction] = list(self._party_event_announce(state, answers, notes))
@@ -400,6 +420,32 @@ class EventDrivenBrain:
                 review_actions = [PartyChat(text) if is_party else Say(text)]
         review_actions.extend(self._coordination_review(state, answers, notes))
         return review_actions
+
+    def _trace_review(self, state: BotState, goal: Goal, trigger: str) -> None:
+        """goal_review: every fired review with its provenance (trace line)."""
+        trace = self._trace
+        if trace is None:
+            return
+        trace.log(
+            "goal_review",
+            goal=goal.value,
+            previous_goal=state.goal.value,
+            trigger=trigger,
+        )
+
+    def _trace_plan(self, goal: Goal, plan: FarmPlan | None, trigger: str) -> None:
+        """plan_authored: every (re-)authored farm plan summary (trace line)."""
+        trace = self._trace
+        if trace is None or plan is None:
+            return
+        trace.log(
+            "plan_authored",
+            goal=goal.value,
+            targets=list(plan.target_mobs),
+            map=plan.map_name,
+            duration_s=plan.duration_s,
+            trigger=trigger,
+        )
 
     def _aligned_goal(self, goal: Goal, notes: list[str]) -> Goal:
         """An ACTIVE group objective pins the drive for its duration."""
