@@ -156,5 +156,15 @@
   },
   "leg4_social_result": [
     "LEG 4 (dense-heartbeat social trigger, 110 min, 26,209 steps, 0 errors, decides 2-124/agent): decide density FIXED (30-75s heartbeat, was 300-1200s) and all 7 agents stayed connected, but STILL 0 parties and 0 chat emissions. The density prerequisite is met; the blocker is now the EMISSION PATH itself: the decide answers include premade_pick/accept_invite questions but no agent ever authored an InviteToParty action. Next diagnostic: read brain.py's social emission path (GroupObjective propose -> InviteToParty authoring) and check what condition gates it \u2014 likely the objective-proposal never fires or the leader election requires a state the agents never reach. DB ground truth: 7 chars, 0 parties, solo agent cross-mapped to pay_fild04 on its own."
-  ]
+  ],
+  "return_leg_diagnosis_state": {
+    "symptom": "Agents adjacent to the dealer (172,129/173,130), inventory empty, zeny 4/46, DB position frozen across w85/w86/diag windows \u2014 zero walks dispatched, zero _merchant_step calls in the trace probe (which worked in trace80 with 100+ lines).",
+    "hypotheses_ranked": [
+      "1. STREAM DESYNC from the framer additions: the 0xC6/0xC7 variable-length parse (added for the sell list) may mis-parse the REAL server stream (the synthetic tests pass but the live stream shape is unverified) \u2014 a desync would turn every subsequent frame into garbage, the tracker denies, build_state raises NativeTelemetryUnavailable, tick returns early, no script step, frozen. FITS ALL EVIDENCE.",
+      "2. The server-side deal state: clif.cpp:12324/12359 clear npc_shopid after buy/sell complete, so post-sale walks should be free \u2014 weaker.",
+      "3. The probe wrap itself broke \u2014 weakest (the plain runner shows the same freeze)."
+    ],
+    "next_instrument": "Extend the trace probe to print per-tick: the frame count + the tracker deny state + one build_native_state try/except result. One 5-min run names it: frames flowing + deny = the parse; no frames = the connection; frames + no deny = the script layer.",
+    "verification_needed": "The framer's variable-length parse against the LIVE 0xC6/0xC7 bytes (the synthetic test row layout was hand-built, the real row may differ \u2014 verify against rathena packets.hpp PACKET_ZC_PC_SELL_ITEMLIST_sub: index.W price.L overcharge.L = 10B/row, matches the tracker's <HII>)."
+  }
 }
