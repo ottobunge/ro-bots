@@ -14,7 +14,7 @@ from typing import Any
 
 import pytest
 
-from robots.app.agent_runtime import load_manifest
+from robots.app.agent_runtime import load_manifest, meet_when_for
 from robots.popgen import (
     ACCOUNT_ID_BASE,
     BUILDS,
@@ -22,6 +22,7 @@ from robots.popgen import (
     GeneratedPopulation,
     PopulationSpec,
     generate_population,
+    load_population,
     main,
     overlap_fraction,
     schedule_to_slots,
@@ -367,3 +368,80 @@ def test_overlap_fraction_handles_wrap_and_disjoint_windows() -> None:
     assert overlap_fraction(evening, evening) == 1.0
     assert overlap_fraction((), evening) == 0.0
     assert schedule_to_slots(late_night) == schedule_to_slots(((1, 22.0, 24.0), (2, 0.0, 2.0)))
+
+
+# ------------------------------------------------------------ load_population
+
+
+def test_load_population_reads_the_summary_rows(tmp_path: Path) -> None:
+    population = generate_population(make_spec(seed=7))
+    path = tmp_path / "population.json"
+    path.write_text(json.dumps(population.summary(), indent=1) + "\n")
+    loaded = load_population(path)
+    assert [p.persona_id for p in loaded.personas] == [p.persona_id for p in population.personas]
+    for persona, source in zip(loaded.personas, population.personas, strict=True):
+        # The wiring-consumed fields come from the file's rows, exactly.
+        assert persona.name == source.name
+        assert persona.group_id == source.group_id
+        assert persona.schedule == source.schedule
+        assert persona.save_map == source.save_map
+        assert persona.save_point == source.save_point
+        assert persona.playstyle == source.playstyle
+        assert persona.budget_tier == source.budget_tier
+    assert loaded.spec.seed == population.spec.seed
+    assert loaded.spec.friend_groups == population.spec.friend_groups
+    assert loaded.spec.friends_per_group == population.spec.friends_per_group
+    assert loaded.spec.solo_agents == population.spec.solo_agents
+
+
+def test_load_population_tracks_the_rows_not_a_regeneration(tmp_path: Path) -> None:
+    """The file is the world truth: a row edit loads as-is, no rebuild trust."""
+    population = generate_population(make_spec(seed=7))
+    summary = population.summary()
+    summary["personas"][0]["name"] = "RenamedInWorld"
+    path = tmp_path / "population.json"
+    path.write_text(json.dumps(summary, indent=1) + "\n")
+    loaded = load_population(path)
+    assert loaded.personas[0].name == "RenamedInWorld"
+
+
+def test_load_population_rejects_a_malformed_persona_row(tmp_path: Path) -> None:
+    path = tmp_path / "population.json"
+    path.write_text(
+        json.dumps(
+            {
+                "schema": 1,
+                "generator": "robots.popgen",
+                "seed": 1,
+                "spec": {"friend_groups": 1, "friends_per_group": [2, 2], "solo_agents": 0},
+                "personas": [{"persona_id": "pop_x_g00m00"}],  # no name
+            }
+        )
+    )
+    with pytest.raises(ValueError, match="malformed persona row"):
+        load_population(path)
+
+
+def test_load_population_rejects_foreign_files(tmp_path: Path) -> None:
+    path = tmp_path / "population.json"
+    path.write_text(json.dumps({"schema": 99, "generator": "someone-else"}))
+    with pytest.raises(ValueError, match=r"robots\.popgen"):
+        load_population(path)
+
+
+def test_load_population_reads_the_checked_in_live_artifact() -> None:
+    path = REPO / "run/worlds/population-live/population.json"
+    loaded = load_population(path)
+    grouped = [p for p in loaded.personas if p.group_id is not None]
+    solos = [p for p in loaded.personas if p.group_id is None]
+    assert len(grouped) == 6
+    assert len({p.group_id for p in grouped}) == 2
+    assert len(solos) == 1
+    # The loaded names are the world's character names (the manifest match).
+    manifest = json.loads((REPO / "run/worlds/population-live/manifest.json").read_text())
+    assert {p.persona_id: p.name for p in loaded.personas} == {
+        row["persona_id"]: row["char_name"] for row in manifest["accounts"]
+    }
+    # Every grouped persona carries a derivable rendezvous window.
+    for persona in loaded.personas:
+        assert meet_when_for(persona.persona_id, loaded) is not None

@@ -32,7 +32,7 @@ import socket
 import threading
 import time
 import urllib.parse
-from collections.abc import Callable, Mapping
+from collections.abc import Callable, Mapping, Sequence
 from contextlib import suppress
 from datetime import datetime
 from pathlib import Path
@@ -72,8 +72,11 @@ from robots.domain.actions import (
 )
 from robots.domain.events import ChatHeard, Heartbeat, TimerFired, WorldEvent
 from robots.domain.model import ActorRef, BotState, ChatLine, Goal
+from robots.popgen import GeneratedPopulation, load_population
 from robots.society.memory import Memory, StubSummarizer
 from robots.society.models import SocietyClock, SocietyPersona
+from robots.society.objectives import BoundCoordinator, GroupCoordinator, seed_roster
+from robots.society.relations import RelationshipLedger
 from robots.society.society import SocietyRoster
 from robots.society.wants import Personality, WantEvent, WantSatisfier, WantState
 
@@ -1054,6 +1057,36 @@ class ScheduledAgent:
         )
 
 
+def meet_when_for(persona_id: str, population: GeneratedPopulation) -> str | None:
+    """The rendezvous time hint for one agent: the group's window start (HH:MM).
+
+    The group's window is its FIRST registered member's first window (the same
+    rule ``build_roster`` applies to configured schedule files); solos derive
+    from their own first window. Personas absent from the population derive
+    nothing (``None``), which leaves the BoundCoordinator's rendezvous hint
+    unset.
+    """
+    persona = next((p for p in population.personas if p.persona_id == persona_id), None)
+    if persona is None:
+        return None
+    if persona.group_id is not None:
+        members = [p for p in population.personas if p.group_id == persona.group_id]
+        if members:
+            persona = members[0]
+    for window in persona.schedule:
+        return _format_hhmm(window[1])
+    return None
+
+
+def _format_hhmm(hour: float) -> str:
+    """A fractional schedule hour as HH:MM (the quarter-hour grid stays exact)."""
+    whole = int(hour)
+    minute = round((hour - whole) * 60)
+    if minute >= 60:
+        whole, minute = whole + 1, minute - 60
+    return f"{whole % 24:02d}:{minute:02d}"
+
+
 @final
 class AgentHost:
     """Orchestrates N scheduled agents against the live server + WorldFeed."""
@@ -1082,6 +1115,10 @@ class AgentHost:
         summary_cache_world: str | None = None,
         summary_cache_policy: str | None = None,
         max_agents: int = 0,
+        population: GeneratedPopulation | None = None,
+        population_file: str | Path | None = None,
+        meet_where: str | None = "prontera 156,22",
+        meet_when: str | None = None,
         brain_factory: (
             Callable[[SocietyPersona, ManifestEntry, Memory], PlannedBrain] | None
         ) = None,
@@ -1106,6 +1143,17 @@ class AgentHost:
         self._lifecycle_lock = threading.RLock()
         self._worldfeed_server: Any | None = None
         self._worldfeed_thread: threading.Thread | None = None
+        # The social coordination inputs: a GeneratedPopulation (or its
+        # population.json) turns on the per-agent coordination wiring; without
+        # one, brains keep coordination=None (today's behavior).
+        self._population = (
+            population
+            if population is not None
+            else (load_population(population_file) if population_file is not None else None)
+        )
+        self._meet_where = meet_where
+        self._meet_when = meet_when
+        self._ledgers: dict[str, RelationshipLedger] = {}
         self._decision_factory = decision_factory or self._select_decision_factory(clef_url)
         self.chat = chat_generator or self._autodetect_chat(chat_url)
         self.world_state: WorldState | None = world_state or self._default_world_state(roster)
@@ -1180,6 +1228,7 @@ class AgentHost:
             if self.world_state is not None:
                 self.world_state.bind_memory(persona.persona_id, memory.log)
             wants = self._new_want_state(persona)
+            social_view, coordination = self._new_coordination(persona.persona_id)
             return ScheduledAgent(
                 persona,
                 self.manifest[persona.persona_id],
@@ -1197,6 +1246,8 @@ class AgentHost:
                         ),
                         spawn_species=self._spawn_species_factory,
                         wants=wants,
+                        social_view=social_view,
+                        coordination=coordination,
                     )
                 ),
                 memory=memory,
@@ -1253,6 +1304,58 @@ class AgentHost:
         # Memory owns both stores from entry, including failed restore cleanup.
         return Memory(summarizer, store=raw, summary_store=cache)
 
+    def _new_coordination(
+        self, persona_id: str
+    ) -> tuple[Callable[[], Sequence[str]] | None, BoundCoordinator | None]:
+        """The per-agent social coordination wiring (None without a population).
+
+        The ledger persists under ``memory_root/relations/`` (restore on
+        construction = reconnect continuity), the roster is injected at
+        creation (meta-knowledge only — no coordination message ever travels
+        this channel), and the online provider reads ``self.agents`` LIVE: the
+        agents reconnect, so a cached list would lie.
+        """
+        population = self._population
+        if population is None:
+            return None, None
+        ledger = RelationshipLedger(persona_id, path=self._relations_path(persona_id))
+        seed_roster(ledger, population)
+        ledger.save()  # the injected roster is durable from the first start
+        self._ledgers[persona_id] = ledger
+
+        def online_members() -> tuple[str, ...]:
+            return tuple(pid for pid, agent in self.agents.items() if agent.online)
+
+        bound = BoundCoordinator(
+            GroupCoordinator(ledger, persona_id),
+            online=online_members,
+            meet_where=self._meet_where,
+            meet_when=(
+                self._meet_when
+                if self._meet_when is not None
+                else meet_when_for(persona_id, population)
+            ),
+        )
+
+        def social_view() -> tuple[str, ...]:
+            return tuple(ledger.context_lines(persona_id, online_members=online_members()))
+
+        return social_view, bound
+
+    def _relations_path(self, persona_id: str) -> Path | None:
+        """The persisted ledger file; an ephemeral host keeps memory only."""
+        if self.memory_root is None:
+            return None
+        return self.memory_root / "relations" / f"{persona_id}.json"
+
+    def _save_ledgers(self, errors: list[BaseException]) -> None:
+        """Persist every relationship ledger (the reconnect-continuity carrier)."""
+        for ledger in self._ledgers.values():
+            try:
+                ledger.save()
+            except BaseException as exc:
+                errors.append(exc)
+
     # ------------------------------------------------------------- schedule
     def _scheduled_on(self, persona_id: str, now: tuple[int, float]) -> bool:
         group = next((g for g in self.roster.groups if persona_id in g.member_ids), None)
@@ -1302,6 +1405,7 @@ class AgentHost:
                 self.shutdown_worldfeed()
             except BaseException as exc:
                 errors.append(exc)
+            self._save_ledgers(errors)
             self._close_memories(errors)
             _raise_cleanup_errors(errors)
 

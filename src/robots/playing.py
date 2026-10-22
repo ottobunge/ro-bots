@@ -63,6 +63,16 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--seed", type=int, default=0)
     parser.add_argument("--llm-planning", action="store_true")
     parser.add_argument("--planning-world")
+    parser.add_argument(
+        "--population-file",
+        type=Path,
+        default=None,
+        help=(
+            "population.json produced by robots.popgen: wires the social "
+            "coordination layer (per-agent ledgers, group objectives, in-game "
+            "party formation). Absent keeps today's uncoordinated behavior."
+        ),
+    )
     args = parser.parse_args(argv)
     if args.llm_planning:
         try:
@@ -176,6 +186,7 @@ def build_host(args: argparse.Namespace) -> AgentHost:
         spawn_species_factory=spawn_species_for,
         memory_root=args.memory_root,
         worldfeed_port=args.worldfeed_port,
+        population_file=getattr(args, "population_file", None),
         brain_factory=(
             (
                 lambda persona, entry, memory: PlannedBrain(

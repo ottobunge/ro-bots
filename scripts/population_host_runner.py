@@ -51,6 +51,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--out-dir", default="run/plain_host_receipts")
     parser.add_argument("--worldfeed-port", type=int, default=8402)
     parser.add_argument("--schedule-file", default=None)
+    parser.add_argument("--population-file", default=None)
     parser.add_argument("--heartbeat-min-s", type=float, default=None)
     parser.add_argument("--heartbeat-max-s", type=float, default=None)
     parser.add_argument("--seed", type=int, default=0)
@@ -62,6 +63,7 @@ def main(argv: list[str] | None = None) -> int:
     args.runtime_root = Path(args.runtime_root)
     args.memory_root = Path(args.memory_root)
     args.schedule_file = Path(args.schedule_file) if args.schedule_file else None
+    args.population_file = Path(args.population_file) if args.population_file else None
     args.playground = False
     args.command_root = None
     args.skill_knowledge = None
