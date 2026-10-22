@@ -81,14 +81,18 @@ def sell_open(npc_id: int) -> bytes:
     """CZ_ACK_SELECT_DEALTYPE type 1 (sell-list request), pinned MAIN 20180704.
 
     packets.hpp:1519-1524 (``<packetType>.W <GID>.L <type>.B``, 7 bytes);
-    clif.cpp:12255-12271 documents ``1 = sell`` and npc.cpp:2387-2418 sets
-    ``npc_shopid`` then answers ZC_PC_SELL_ITEMLIST 0xc7. The id bound is
-    positive-uint, mirroring native_shop.encode_buy_selection.
+    npc.cpp:2387-2418 sets ``npc_shopid`` then answers the deal list. The id
+    bound is positive-uint, mirroring native_shop.encode_buy_selection.
+
+    TYPE SEMANTICS ARE EMPIRICAL (w84 live wire): type **0** makes the
+    pinned server answer ZC_PC_SELL_ITEMLIST 0xc7 (the sell list — knife
+    1201 @ 50z verified in the raw rows); type 1 answers the BUY list 0xc6.
+    The source comment "1 = click" does not match the pinned binary.
     """
     error = "Expected positive uint32 npc id"
     if type(npc_id) is not int or not 1 <= npc_id <= 0xFFFFFFFF:
         raise ValueError(error)
-    return struct.pack("<HIB", 0xC5, npc_id, 1)
+    return struct.pack("<HIB", 0xC5, npc_id, 0)
 
 
 def sell(entries: tuple[tuple[int, int], ...]) -> bytes:

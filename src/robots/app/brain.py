@@ -234,6 +234,23 @@ class EventDrivenBrain:
             return self._handle_npc_event(state, event)
         return self._handle_world_event(state, event, trigger=trigger)
 
+    def _invite_actions(
+        self, event: InviteReceived, answers: dict[str, Any]
+    ) -> tuple[GameAction, ...]:
+        """The member-side accept: same-group invites accept by GROUP POLICY.
+
+        The roster is injected knowledge and the friend group parties together
+        by design; the model's bare ``accept_invite`` noul sat at ~0.007
+        across 347 decides in leg 8, so a policy-gated accept is the only
+        formation path that completes. Cross-group and solo invites stay on
+        the model's gate.
+        """
+        if self._coordination is not None and self._coordination.same_group(event.invite.from_name):
+            return (AcceptInvite(),)
+        if self._noul(answers, "accept_invite"):
+            return (AcceptInvite(),)
+        return ()
+
     def _handle_world_event(
         self, state: BotState, event: WorldEvent, *, trigger: str | None
     ) -> TickResult:
@@ -254,8 +271,9 @@ class EventDrivenBrain:
                 chat_actions, escalated = self._react_to_chat(state, answers, event)
                 actions.extend(chat_actions)
             case InviteReceived():
-                if self._noul(answers, "accept_invite"):
-                    actions.append(AcceptInvite())
+                invite_actions = self._invite_actions(event, answers)
+                if invite_actions:
+                    actions.extend(invite_actions)
                     notes.append(f"accepted invite from {event.invite.from_name}")
                     self._record_member_join(event.invite.from_name)
             case PlanExpired():

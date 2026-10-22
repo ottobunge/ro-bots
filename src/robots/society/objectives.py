@@ -379,6 +379,19 @@ class GroupCoordinator:
     def book(self) -> GroupObjectiveBook:
         return self._ledger.objectives
 
+    def same_group(self, display_name: str) -> bool:
+        """Is the in-game character behind ``display_name`` in MY friend group?
+
+        The roster is injected knowledge (seed_roster), so recognizing the
+        inviter is meta-knowledge, not telepathy. The group POLICY is that a
+        same-group invite is accepted — the group plays and parties together
+        by design; the model's bare ``accept_invite`` noul never crossed the
+        0.5 gate in leg 8 (~0.007 across 347 decides).
+        """
+        other = self._ledger.persona_of(display_name) or display_name
+        mine = self._ledger.group_of(self._persona_id)
+        return mine is not None and self._ledger.group_of(other) == mine
+
     # -- the leader's side -----------------------------------------------------
 
     def formation_suggestion(self, online_members: Sequence[str]) -> FormationSuggestion | None:
@@ -673,6 +686,10 @@ class BoundCoordinator:
         """A heard line: record a join-call offer, then the solo outsider gate."""
         self._coordinator.note_announcement(line.sender, line.text)
         return self.outsider_reply(line, state)
+
+    def same_group(self, display_name: str) -> bool:
+        """The bound passthrough: the group-policy accept check."""
+        return self._coordinator.same_group(display_name)
 
     def outsider_reply(self, line: ChatLine, state: BotState) -> GameAction | None:
         """The solo's affinity-gated whisper answering a public join call."""
