@@ -73,6 +73,16 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
             "party formation). Absent keeps today's uncoordinated behavior."
         ),
     )
+    parser.add_argument(
+        "--trace-dir",
+        type=Path,
+        default=None,
+        help=(
+            "Directory for per-agent full-trace JSONL files (<persona>.jsonl: "
+            "chats, decides, LLM calls, events, actions, state snapshots). "
+            "Default: no tracing."
+        ),
+    )
     args = parser.parse_args(argv)
     if args.llm_planning:
         try:
@@ -187,6 +197,7 @@ def build_host(args: argparse.Namespace) -> AgentHost:
         memory_root=args.memory_root,
         worldfeed_port=args.worldfeed_port,
         population_file=getattr(args, "population_file", None),
+        trace_dir=getattr(args, "trace_dir", None),
         brain_factory=(
             (
                 lambda persona, entry, memory: PlannedBrain(

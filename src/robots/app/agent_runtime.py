@@ -60,6 +60,15 @@ from robots.app.npc_planning_execution import NpcHostBinding
 from robots.app.planning_brain import PlannedBrain
 from robots.app.playing_runtime import PlayingClient
 from robots.app.timers import TimerSet
+from robots.app.trace_log import (
+    STATE_TICK_INTERVAL_S,
+    TracedChatGenerator,
+    TracedDecisionModel,
+    TraceLog,
+    action_params,
+    chat_channel,
+    event_payload,
+)
 from robots.domain.actions import (
     AcceptInvite,
     GameAction,
@@ -69,6 +78,7 @@ from robots.domain.actions import (
     PartyChat,
     Rest,
     Say,
+    WhisperTo,
 )
 from robots.domain.events import ChatHeard, Heartbeat, TimerFired, WorldEvent
 from robots.domain.model import ActorRef, BotState, ChatLine, Goal
@@ -352,11 +362,15 @@ class ScheduledAgent:
         threaded: bool = True,
         telemetry_wait_s: float = 5.0,
         wants: WantState | None = None,
+        trace: TraceLog | None = None,
     ) -> None:
         if type(telemetry_wait_s) not in (int, float) or not 0 <= telemetry_wait_s <= 5:
             msg = "telemetry_wait_s must be a plain number from 0 to 5"
             raise ValueError(msg)
         self._telemetry_wait_s = telemetry_wait_s
+        # Full-trace JSONL logging (None = no tracing, zero behavior change).
+        self._trace = trace
+        self._last_state_tick: float | None = None
         self.persona = persona
         self.entry = entry
         self.brain = brain
@@ -685,6 +699,7 @@ class ScheduledAgent:
             return
         self.tick_count += 1
         self._session_ticks += 1
+        self._trace_state_tick(state)
         for event in self._drain_events():
             self.deliver_event(state, event)
         timers = self.timers
@@ -797,15 +812,27 @@ class ScheduledAgent:
         logger.info(
             "agent %s: idle %.0fs; forcing goal review", self.persona.persona_id, now - last
         )
-        self.deliver_event(state, self._as_heartbeat(TimerFired(name="idle_review", seq=0)))
+        self.deliver_event(
+            state, self._as_heartbeat(TimerFired(name="idle_review", seq=0)), trigger="idle_review"
+        )
 
-    def deliver_event(self, state: BotState, event: WorldEvent) -> None:
-        """Hand one event to the brain and execute the resulting actions."""
+    def deliver_event(
+        self, state: BotState, event: WorldEvent, *, trigger: str | None = None
+    ) -> None:
+        """Hand one event to the brain and execute the resulting actions.
+
+        ``trigger`` labels the review provenance in the trace (the idle watch
+        passes "idle_review"; None lets the brain derive it from the event).
+        """
+        self._trace_event(state, event)
         self._observe_wants(state)
         if self.brain is None:
             return
         self._ensure_planning_binding()
-        result = self.brain.handle_event(state, event)
+        if isinstance(self.brain, EventDrivenBrain):
+            result = self.brain.handle_event(state, event, trigger=trigger)
+        else:
+            result = self.brain.handle_event(state, event)
         self._apply_goal_notes(result.notes)
         self.execute_actions(result.actions)
 
@@ -850,6 +877,7 @@ class ScheduledAgent:
         if actions:
             self._last_action_monotonic = self._tick_clock.monotonic()
         for action in actions:
+            self._trace_action(action)
             try:
                 self._perform(action)
             except Exception as exc:
@@ -859,6 +887,85 @@ class ScheduledAgent:
                     type(action).__name__,
                     exc,
                 )
+
+    # ------------------------------------------------------------- tracing
+    def _trace_context(self) -> dict[str, Any]:
+        """The self-contained context block, from the CACHED built state.
+
+        Reads ``last_built_state`` (the view the tick already built) — never a
+        fresh observing read, which would starve the runtime's event windows.
+        """
+        state = getattr(self.client, "last_built_state", None)
+        if state is None:
+            return {"map": None, "x": None, "y": None}
+        return {"map": state.map_name, "x": state.x, "y": state.y}
+
+    def _trace_state_tick(self, state: BotState) -> None:
+        """The bounded periodic snapshot (about one per interval of ticks)."""
+        trace = self._trace
+        if trace is None:
+            return
+        now = self._tick_clock.monotonic()
+        last = self._last_state_tick
+        if last is not None and now - last < STATE_TICK_INTERVAL_S:
+            return
+        self._last_state_tick = now
+        trace.log(
+            "state_tick",
+            map=state.map_name,
+            x=state.x,
+            y=state.y,
+            hp=state.hp,
+            hp_max=state.max_hp,
+            sp=state.sp,
+            sp_max=state.max_sp,
+            base_level=state.base_level,
+            zeny=state.zeny,
+            inventory_counts=dict(state.inventory),
+            adjacent_monsters=len(state.nearby_monsters),
+            online=self.online,
+        )
+
+    def _trace_event(self, state: BotState, event: WorldEvent) -> None:
+        """Every delivered WorldEvent (plus the chat_heard alias), pre-brain."""
+        trace = self._trace
+        if trace is None:
+            return
+        context = {"map": state.map_name, "x": state.x, "y": state.y}
+        trace.log(
+            "world_event",
+            **context,
+            adjacent_monsters=len(state.nearby_monsters),
+            **event_payload(event),
+        )
+        if isinstance(event, ChatHeard):
+            trace.log(
+                "chat_heard",
+                **context,
+                speaker=event.line.sender,
+                message=event.line.text,
+                channel=event.line.channel,
+            )
+
+    def _trace_action(self, action: GameAction) -> None:
+        """Every executed action; Say/PartyChat/WhisperTo also alias chat_sent."""
+        trace = self._trace
+        if trace is None:
+            return
+        trace.log(
+            "action_executed",
+            **self._trace_context(),
+            action=type(action).__name__,
+            params=action_params(action),
+        )
+        if isinstance(action, (Say, PartyChat, WhisperTo)):
+            trace.log(
+                "chat_sent",
+                **self._trace_context(),
+                channel=chat_channel(action),
+                message=action.text,
+                action=type(action).__name__,
+            )
 
     def _perform(self, action: GameAction) -> None:
         if self._perform_planned_npc(action):
@@ -1122,6 +1229,7 @@ class AgentHost:
         brain_factory: (
             Callable[[SocietyPersona, ManifestEntry, Memory], PlannedBrain] | None
         ) = None,
+        trace_dir: str | Path | None = None,
     ) -> None:
         validate_summary_cache(memory_root, summary_cache_world, summary_cache_policy)
         self.roster = roster
@@ -1154,6 +1262,10 @@ class AgentHost:
         self._meet_where = meet_where
         self._meet_when = meet_when
         self._ledgers: dict[str, RelationshipLedger] = {}
+        # Full-trace JSONL logging: per-persona files under trace_dir; None
+        # keeps today's behavior (no tracing, no files, no wrapping).
+        self.trace_dir = Path(trace_dir) if trace_dir is not None else None
+        self._traces: dict[str, TraceLog] = {}
         self._decision_factory = decision_factory or self._select_decision_factory(clef_url)
         self.chat = chat_generator or self._autodetect_chat(chat_url)
         self.world_state: WorldState | None = world_state or self._default_world_state(roster)
@@ -1224,11 +1336,21 @@ class AgentHost:
 
     def _build_agent(self, persona: SocietyPersona) -> ScheduledAgent:
         memory = self._new_memory(persona.persona_id)
+        trace = self._open_trace(persona.persona_id)
         try:
             if self.world_state is not None:
                 self.world_state.bind_memory(persona.persona_id, memory.log)
             wants = self._new_want_state(persona)
             social_view, coordination = self._new_coordination(persona.persona_id)
+            # Trace wiring: the same TraceLog feeds the runtime taps, the
+            # brain's review/plan lines and the transparent decide/LLM
+            # proxies. A custom brain_factory owns its own model, so the
+            # wrappers apply to the EventDrivenBrain path only.
+            model: Any = self._decision_factory()
+            chat: Any = self.chat
+            if trace is not None:
+                model = TracedDecisionModel(model, trace)
+                chat = TracedChatGenerator(chat, trace)
             return ScheduledAgent(
                 persona,
                 self.manifest[persona.persona_id],
@@ -1236,8 +1358,8 @@ class AgentHost:
                     self._brain_factory(persona, self.manifest[persona.persona_id], memory)
                     if self._brain_factory is not None
                     else EventDrivenBrain(
-                        self._decision_factory(),
-                        self.chat,
+                        model,
+                        chat,
                         memory=memory,
                         mob_db=(
                             self._mob_db_factory(persona.persona_id)
@@ -1248,6 +1370,7 @@ class AgentHost:
                         wants=wants,
                         social_view=social_view,
                         coordination=coordination,
+                        trace=trace,
                     )
                 ),
                 memory=memory,
@@ -1258,10 +1381,25 @@ class AgentHost:
                 heartbeat_max_s=self._heartbeat_range[1],
                 rng=random.Random(self.rng.getrandbits(64)),
                 wants=wants,
+                trace=trace,
             )
         except BaseException as origin:
             _close_failed_memory(origin, memory.close)
+            if trace is not None:
+                _close_failed_memory(origin, trace.close)
             raise
+
+    def _open_trace(self, persona_id: str) -> TraceLog | None:
+        """The persona's TraceLog; an unusable dir disables tracing (fails open)."""
+        if self.trace_dir is None:
+            return None
+        try:
+            trace = TraceLog(self.trace_dir, persona_id)
+        except OSError as exc:
+            logger.warning("trace disabled for %s (%s)", persona_id, exc)
+            return None
+        self._traces[persona_id] = trace
+        return trace
 
     @staticmethod
     def _new_want_state(persona: SocietyPersona) -> WantState | None:
@@ -1407,6 +1545,7 @@ class AgentHost:
                 errors.append(exc)
             self._save_ledgers(errors)
             self._close_memories(errors)
+            self._close_traces(errors)
             _raise_cleanup_errors(errors)
 
     def _close_memories(self, errors: list[BaseException]) -> None:
@@ -1421,6 +1560,14 @@ class AgentHost:
         for agent in self.agents.values():
             try:
                 agent.memory.close()
+            except BaseException as exc:
+                errors.append(exc)
+
+    def _close_traces(self, errors: list[BaseException]) -> None:
+        """Release the trace files after the agents stopped writing."""
+        for trace in self._traces.values():
+            try:
+                trace.close()
             except BaseException as exc:
                 errors.append(exc)
 
