@@ -140,10 +140,8 @@ def event_payload(event: Any) -> dict[str, Any]:
     handler = _PAYLOAD_HANDLERS.get(type(event))
     if handler is None:
         return payload  # an unknown future event still traces, by type name
-    try:
+    with suppress(AttributeError):  # a partially-formed event still names its type
         payload.update(handler(event))
-    except AttributeError:  # a partially-formed event still names its type
-        pass
     return payload
 
 
