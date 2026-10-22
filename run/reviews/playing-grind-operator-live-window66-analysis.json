@@ -145,5 +145,8 @@
   ],
   "w84_ECONOMY_CLOSED": [
     "THE ECONOMY LOOP IS CLOSED: fx0 earned 4 zeny (1 Chrysalis sold), fx1 earned 46 zeny (Clover+Chrysalis+more), both inventories emptied through the dealer. The complete chain verified live: adjacency -> in-range click 0x0090 -> ZC_SELECT_DEALTYPE 0xC4 -> C5 sell_open type 1 -> ZC_PC_SELL_ITEMLIST 0xC7 (the framer fix: added to the packet table) -> sell dispatch -> zeny in the DB. fx1's 46z vs the 50z Knife: the loop now correctly requires another farm trip - the self-sustaining economy cycle (farm -> loot -> travel -> sell -> zeny -> equip) is the game loop a real player runs. Remaining in the economy arc: one more sell trip crosses the Knife threshold, then the buy + equip legs."
+  ],
+  "w86_return_leg_gap": [
+    "w85/w86: after the sell emptied the inventories, both agents FROZE at the dealer (172,129/173,130, DB-confirmed across two windows, zero walks). The sell->zeny hop is proven; the RETURN leg (empty inventory -> merchant_return_cell -> MoveTo home/field) never dispatches. The suspects: merchant_return_cell returning None (the home anchor missing for these agents) or the drive->return handoff not firing when the sellable stock hits zero. The instrument: merchant_trace_probe (drive_dest + outcome per tick) \u2014 one run names it. This is the ONLY remaining hop in the economy cycle: return -> farm -> loot -> travel -> sell(again) -> zeny>=50 -> Knife buy -> equip."
   ]
 }
