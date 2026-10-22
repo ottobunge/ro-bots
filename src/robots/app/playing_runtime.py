@@ -1271,10 +1271,27 @@ class PlayingClient:
                 if self.wire.party_invite_pid:
                     self.wire.party_reply(self.wire.party_invite_pid, True)
             case InviteToParty(player=player):
+                self._ensure_party_for_invite()
                 self.wire.party_invite(player)
             case _:
                 message = "unsupported native playing action"
                 raise ValueError(message)
+
+    def _ensure_party_for_invite(self) -> None:
+        """Create the session party once before the first invite.
+
+        rAthena's party_invite requires the INVITER to already lead a party
+        (party.cpp:383-386: ``p == nullptr -> return false`` with no
+        client-visible reply) and to be its leader (party.cpp:390-395). The
+        name is unique per leader-hour so re-runs never hit the
+        duplicate-party-name rejection; recreating into an existing party is
+        refused by the server with the create-ack and is harmless.
+        """
+        if getattr(self.wire, "party_created", False):
+            return
+        bucket = int(time.time()) // 3600
+        self.wire.party_create(f"{self.wire.char_name}-p{bucket}")
+        self.wire.party_created = True
 
     def _loot(self, state: BotState) -> None:
         tracker = self._tracker
