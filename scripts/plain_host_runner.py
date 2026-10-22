@@ -35,12 +35,18 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--solo", action="store_true")
     parser.add_argument("--llm-planning", action="store_true")
     parser.add_argument("--planning-world", default="debug")
+    parser.add_argument(
+        "--trace-dir",
+        default=None,
+        help="Per-agent full-trace JSONL directory (<persona>.jsonl). Default: no tracing.",
+    )
     args = parser.parse_args(argv)
     args.duration = float(args.duration)
     from pathlib import Path as _P
 
     args.runtime_root = _P(args.runtime_root)
     args.memory_root = _P(args.memory_root)
+    args.trace_dir = _P(args.trace_dir) if args.trace_dir else None
     if args.schedule_file:
         args.schedule_file = _P(args.schedule_file)
 

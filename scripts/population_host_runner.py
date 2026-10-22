@@ -56,12 +56,18 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--heartbeat-max-s", type=float, default=None)
     parser.add_argument("--seed", type=int, default=0)
     parser.add_argument("--leg", default="leg")
+    parser.add_argument(
+        "--trace-dir",
+        default=None,
+        help="Per-agent full-trace JSONL directory (<persona>.jsonl). Default: no tracing.",
+    )
     args = parser.parse_args(argv)
     args.duration = float(args.duration)
 
     # playing.parse_args owns validation; build_host consumes the namespace.
     args.runtime_root = Path(args.runtime_root)
     args.memory_root = Path(args.memory_root)
+    args.trace_dir = Path(args.trace_dir) if args.trace_dir else None
     args.schedule_file = Path(args.schedule_file) if args.schedule_file else None
     args.population_file = Path(args.population_file) if args.population_file else None
     args.playground = False
@@ -157,6 +163,7 @@ def main(argv: list[str] | None = None) -> int:
         "duration_s": args.duration,
         "steps": steps,
         "step_errors": errors,
+        "trace_dir": str(args.trace_dir) if args.trace_dir else None,
         "samples": samples,
         "passed": None,  # the operator asserts separately from the DB
     }
