@@ -1,4 +1,5 @@
 """Regression tests for spike 003's stream framing (no live server)."""
+
 from __future__ import annotations
 
 import struct
@@ -29,9 +30,7 @@ class FramingTests(unittest.TestCase):
         config = bytes.fromhex("da0200")
         stat = bytes.fromhex("d9020200000000000000")
         packets, leftover = packetdb.parse_stream(pin_status + config + stat)
-        self.assertEqual(
-            packets, [(0x08B9, pin_status), (0x02DA, config), (0x02D9, stat)]
-        )
+        self.assertEqual(packets, [(0x08B9, pin_status), (0x02DA, config), (0x02D9, stat)])
         self.assertEqual(leftover, b"")
 
     def test_attack_range_preserves_next_frame(self):
@@ -47,18 +46,21 @@ class FramingTests(unittest.TestCase):
 
     def test_walking_destination_uses_rbufpos2(self):
         from client import BotClient
+
         raw = bytearray(110)
         struct.pack_into("<HHBII", raw, 0, 0x09FD, 110, 0, 2000000, 150000)
         # Packed per rAthena clif.cpp WBUFPOS2, not two independent PosDir values.
         x0, y0, x1, y1 = 165, 145, 168, 145
-        raw[63:69] = bytes([
-            x0 >> 2,
-            ((x0 << 6) | ((y0 >> 4) & 0x3f)) & 0xff,
-            ((y0 << 4) | ((x1 >> 6) & 0x0f)) & 0xff,
-            ((x1 << 2) | ((y1 >> 8) & 0x03)) & 0xff,
-            y1 & 0xff,
-            0,
-        ])
+        raw[63:69] = bytes(
+            [
+                x0 >> 2,
+                ((x0 << 6) | ((y0 >> 4) & 0x3F)) & 0xFF,
+                ((y0 << 4) | ((x1 >> 6) & 0x0F)) & 0xFF,
+                ((x1 << 2) | ((y1 >> 8) & 0x03)) & 0xFF,
+                y1 & 0xFF,
+                0,
+            ]
+        )
         # Native MAIN 20180704 name@86/sizeof=110, independently compiled
         # from the pinned unaltered struct in test_protocol_rereview_repairs.
         raw[86:110] = b"SpikeBot01".ljust(24, b"\x00")
@@ -78,7 +80,6 @@ class FramingTests(unittest.TestCase):
         packets, leftover = packetdb.parse_stream(action)
         self.assertEqual(packets, [(0x08C8, action)])
         self.assertEqual(leftover, b"")
-
 
     def test_charinfo_per_page_framing_from_pinned_layout(self):
         # Pinned 20180704: HC_ACK_CHARINFO_PER_PAGE 0x099D is char-server S->C,
@@ -106,6 +107,7 @@ class FramingTests(unittest.TestCase):
         for pid in (0x02E1, 0x09A1, 0x0B0B, 0x0B1B, 0x0B72):
             with self.assertRaisesRegex(ValueError, f"unknown packet 0x{pid:04x}"):
                 packetdb.parse_stream(struct.pack("<HH", pid, 4))
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -102,5 +102,9 @@ def test_every_legacy_mapping_is_preserved() -> None:
     prior_889 = expected | {0x00C0: 7}
     prior_890 = prior_889 | {0x00B6: 6}
     prior_891 = prior_890 | {0x00BC: 6}
-    assert prior_891 | additions | presentation | char_page | stat_change == packetdb.PACKET_DB
-    assert len(packetdb.PACKET_DB) == 900
+    shop_lists = {0x00C7: -1}  # ZC_PC_SELL_ITEMLIST: length-prefixed variable (clif.cpp:2265-2280)
+    assert (
+        prior_891 | additions | presentation | char_page | stat_change | shop_lists
+        == packetdb.PACKET_DB
+    )
+    assert len(packetdb.PACKET_DB) == 901

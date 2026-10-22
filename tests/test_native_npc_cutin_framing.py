@@ -261,8 +261,11 @@ def validate_exact_addition(table: dict[int, int], raw: bytes) -> None:
     prior_899 = prior_898 | {0x00BC: 6}
     # ZC_STATUS_CHANGE point-cost updates (0x00BE, the e2e-world slice).
     prior_900 = prior_899 | {0x00BE: 5}
-    assert len(table) == 900
-    assert table == prior_900
+    # ZC_PC_SELL_ITEMLIST (0x00C7, the shop-list slice): length-prefixed
+    # variable packet; the framer strictly rejected it before this addition.
+    prior_901 = prior_900 | {0x00C7: -1}
+    assert len(table) == 901
+    assert table == prior_901
     assert raw.count(CUTIN_BLOCK) == 1
     assert raw.count(CHAR_PAGE_BLOCK) == 1
     assert raw.count(STAT_CHANGE_BLOCK) == 1
@@ -279,6 +282,9 @@ def validate_exact_addition(table: dict[int, int], raw: bytes) -> None:
     assert current_hash in (
         historical,
         "465274d1518bdb8151840660490fd116c11a4c44dc69cb0241331d5ca21813bc",
+        # the shop-list slice: +0x00C7 (and 0x00C6 already present) appended
+        # after the 0x00BE block (the w82/w83 null-offer framer fix)
+        "d190c4837b578b2ba4fb6afd702197690314c74fe858b9f478106b942a2b7411",
     )
 
 

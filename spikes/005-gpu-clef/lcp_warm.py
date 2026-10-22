@@ -4,6 +4,7 @@
 Fires the SAME request twice back-to-back N times; reports first-call (cold-ish)
 and second-call (prefix-cache hit) latency. Usage: lcp_warm.py --url URL [--reps 10]
 """
+
 from __future__ import annotations
 
 import argparse
@@ -34,8 +35,10 @@ def main() -> None:
         second.append(d2 * 1000)
         print(f"rep {i}: first {d1*1000:.0f} ms, second {d2*1000:.0f} ms")
     print(f"\nfirst-call  p50 {statistics.median(first):.0f} ms")
-    print(f"second-call p50 {statistics.median(second):.0f} ms  "
-          f"(LCP/prefix-cache warm), min {min(second):.0f}")
+    print(
+        f"second-call p50 {statistics.median(second):.0f} ms  "
+        f"(LCP/prefix-cache warm), min {min(second):.0f}"
+    )
 
 
 if __name__ == "__main__":

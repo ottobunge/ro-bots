@@ -745,6 +745,17 @@ PACKET_DB.update({0x01B3: 67})
 PACKET_DB.update({0x00BE: 5})
 
 
+# Narrow source-proven shop-list additions. Preserve all prior entries and
+# strict unknown rejection. ZC_PC_PURCHASE_ITEMLIST 0x00C6 and
+# ZC_PC_SELL_ITEMLIST 0x00C7 are length-prefixed variable packets
+# (clif.cpp:2265-2280 builds packetLength = sizeof + count*row; the 2 bytes at
+# offset 2 are the total length, the documented "-1" convention). Without them
+# the framer strictly rejects the dealer's sell list and the shop offer never
+# reaches the tracker (the w82/w83 null-offer trace: 0xC4 received, 0xC5 sent,
+# 0xC7 invisible).
+PACKET_DB.update({0x00C6: -1, 0x00C7: -1})
+
+
 def parse_stream(buf: bytes) -> tuple[list[tuple[int, bytes]], bytes]:
     """
     Split a byte stream into complete (pid, raw) packets.

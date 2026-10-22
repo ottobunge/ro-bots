@@ -138,6 +138,7 @@ def test_all_889_mappings_macros_and_parser_preserved_bitexact() -> None:
     presentation = {0x01B3: 67}
     char_page = {0x099D: -1}  # charlist-per-page framing (pinned common/packets.hpp:621-626)
     stat_change = {0x00BE: 5}  # ZC_STATUS_CHANGE SP_U* point-cost updates (clif.cpp:3774)
+    shop_lists = {0x00C7: -1}  # ZC_PC_SELL_ITEMLIST: length-prefixed variable (clif.cpp:2265-2280)
     assert module.PACKET_DB[0x01B3] == 67
     prior_891 = {
         key: value
@@ -146,13 +147,17 @@ def test_all_889_mappings_macros_and_parser_preserved_bitexact() -> None:
         and key not in presentation
         and key not in char_page
         and key not in stat_change
+        and key not in shop_lists
     }
     assert old | {0x00B6: 6, 0x00BC: 6} == prior_891
     assert len(prior_891) == 891
     assert not additions.keys() & prior_891.keys()
     assert not char_page.keys() & prior_891.keys()
-    assert prior_891 | additions | presentation | char_page | stat_change == module.PACKET_DB
-    assert len(module.PACKET_DB) == 900
+    assert (
+        prior_891 | additions | presentation | char_page | stat_change | shop_lists
+        == module.PACKET_DB
+    )
+    assert len(module.PACKET_DB) == 901
     raw = (ROOT / "spikes/003-clientless-limbs/packetdb.py").read_bytes()
     cutin_block = (
         b"# Source/compiler-measured cut-in presentation only; no NPC/gameplay authority.\n"
@@ -193,12 +198,12 @@ def test_all_889_mappings_macros_and_parser_preserved_bitexact() -> None:
     assert raw.count(char_page_block) == 1
     raw = raw.replace(char_page_block, b"", 1)
     assert hashlib.sha256(raw).hexdigest() == (
-        "a39161df589049c1f80dfd2dc6fa3118c1853794ad75edf33906c581883d5902"
+        "26291ffbe4ab0bf1c64adcbaf3be46c10f2e720d8bc6ff408c8052244ad8a240"
     )
     token = b", 0x00B6: 6"
     assert raw.count(token) == 1
     assert hashlib.sha256(raw.replace(token, b"", 1)).hexdigest() == (
-        "fba0c89bdff83d56046af3416e9b06741bde6ab34909dc6776b2f0c4d1f65125"
+        "2b0a38740ef0fcae523a586ea84860acc6e3ca46d46c76faf6b37ef21e4ab445"
     )
 
 

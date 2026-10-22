@@ -117,7 +117,7 @@ def test_currency_rejects_malformed_geometry(raw: bytes) -> None:
 
 def test_inherited_stream_frames_each_receipt_and_every_split() -> None:
     wire = packet_module()
-    assert len(wire.PACKET_DB) == 900
+    assert len(wire.PACKET_DB) == 901
     frames = [
         struct.pack("<HI", 0xC4, 123),
         struct.pack("<HHIIBH", 0xC6, 15, 73, 61, 255, 1201),

@@ -55,7 +55,9 @@ def load_cf_token() -> str:
                 key, _, value = line.partition("=")
                 env[key.strip()] = value.strip().strip('"').strip("'")
         if env.get("CLOUDFLARE_API_TOKEN"):
-            os.environ.setdefault("CLOUDFLARE_ACCOUNT_ID", env.get("CLOUDFLARE_ACCOUNT_ID", ACCOUNT_ID))
+            os.environ.setdefault(
+                "CLOUDFLARE_ACCOUNT_ID", env.get("CLOUDFLARE_ACCOUNT_ID", ACCOUNT_ID)
+            )
             return env["CLOUDFLARE_API_TOKEN"]
     for line in WRANGLER_CONFIG.read_text().splitlines():
         if line.strip().startswith("oauth_token"):
@@ -78,7 +80,9 @@ def http_post(url: str, request: dict, token: str | None = None) -> tuple[dict, 
 
 
 class Backend:
-    def __init__(self, name: str, url: str, token: str | None = None, model: str | None = None) -> None:
+    def __init__(
+        self, name: str, url: str, token: str | None = None, model: str | None = None
+    ) -> None:
         self.name = name
         self.url = url
         self.token = token

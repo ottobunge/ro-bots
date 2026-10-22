@@ -29,14 +29,55 @@ import urllib.request
 
 # ---------------------------------------------------------------- RO state
 
-MONSTERS = ["Poring", "Lunatic", "Fabre", "Drops", "Poporing", "Orc Warrior",
-            "Orc Lady", "High Orc", "Steam Goblin", "Hornet", "Thief Bug", "Wolf"]
-PLAYERS = ["KafraFan99", "xXAssassinXx", "PoringLover", "GeffenWizard",
-           "MjolnirKid", "TristanIII", "YggdrasilSeed", "BuffBotPrime"]
-MAPS = ["prontera", "geffen", "morocc", "payon", "alberta", "izlude",
-        "moc_fild04", "prt_fild08", "gef_fild03", "pay_fild04", "aldebaran"]
-ITEMS = ["Jellopy", "Sticky Mucus", "Feather", "Clover", "Red Herb",
-         "Zargon", "Orc's Fang", "Golden Gem", "Green Live", "Wing of Fly"]
+MONSTERS = [
+    "Poring",
+    "Lunatic",
+    "Fabre",
+    "Drops",
+    "Poporing",
+    "Orc Warrior",
+    "Orc Lady",
+    "High Orc",
+    "Steam Goblin",
+    "Hornet",
+    "Thief Bug",
+    "Wolf",
+]
+PLAYERS = [
+    "KafraFan99",
+    "xXAssassinXx",
+    "PoringLover",
+    "GeffenWizard",
+    "MjolnirKid",
+    "TristanIII",
+    "YggdrasilSeed",
+    "BuffBotPrime",
+]
+MAPS = [
+    "prontera",
+    "geffen",
+    "morocc",
+    "payon",
+    "alberta",
+    "izlude",
+    "moc_fild04",
+    "prt_fild08",
+    "gef_fild03",
+    "pay_fild04",
+    "aldebaran",
+]
+ITEMS = [
+    "Jellopy",
+    "Sticky Mucus",
+    "Feather",
+    "Clover",
+    "Red Herb",
+    "Zargon",
+    "Orc's Fang",
+    "Golden Gem",
+    "Green Live",
+    "Wing of Fly",
+]
 CHAT_LINES = [
     "anyone selling zargons??",
     "lvl 62 hunter LFP grinding orcs",
@@ -94,9 +135,7 @@ def make_bot(bot_id: int, rng: random.Random) -> dict:
             "save_map": "prontera",
         },
         "nearby": {"monsters": near_monsters, "players": near_players},
-        "inventory": {
-            item: rng.randint(0, 350) for item in rng.sample(ITEMS, 5)
-        },
+        "inventory": {item: rng.randint(0, 350) for item in rng.sample(ITEMS, 5)},
         "party": {
             "in_party": rng.choice([True, False]),
             "party_name": rng.choice([None, "OrcSlayers", "GeffenGrind"]),
@@ -110,8 +149,7 @@ def make_bot(bot_id: int, rng: random.Random) -> dict:
         },
         "chat": {
             "last_lines": [
-                {"from": rng.choice(PLAYERS), "text": rng.choice(CHAT_LINES)}
-                for _ in range(3)
+                {"from": rng.choice(PLAYERS), "text": rng.choice(CHAT_LINES)} for _ in range(3)
             ],
         },
         "time": {"server_hour": rng.randint(0, 23), "online_minutes": rng.randint(5, 400)},
@@ -141,7 +179,10 @@ def make_bot(bot_id: int, rng: random.Random) -> dict:
         "target_map": {
             "type": "choice",
             "instructions": "Which map should the bot travel to if it relocates?",
-            "criteria": {m: None for m in ["prt_fild08", "moc_fild04", "gef_fild03", "pay_fild04", "prontera"]},
+            "criteria": {
+                m: None
+                for m in ["prt_fild08", "moc_fild04", "gef_fild03", "pay_fild04", "prontera"]
+            },
         },
         "threat_level": {
             "type": "score",
@@ -262,6 +303,7 @@ def make_bot(bot_id: int, rng: random.Random) -> dict:
 
 # ---------------------------------------------------------------- helpers
 
+
 def post(url: str, body: dict, timeout: float = 300.0) -> tuple[dict, float]:
     data = json.dumps(body).encode()
     req = urllib.request.Request(
@@ -284,6 +326,7 @@ def pct(values: list[float], p: float) -> float:
 
 # ---------------------------------------------------------------- main
 
+
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--url", default="http://127.0.0.1:8091")
@@ -298,10 +341,12 @@ def main() -> None:
     # -- sanity + cold timing (first decision of this process)
     req0 = make_bot(0, rng)
     n_questions = len(req0["questions"])
-    print(f"questions per request: {n_questions} "
-          f"(choice={sum(1 for q in req0['questions'].values() if q['type']=='choice')}, "
-          f"noul={sum(1 for q in req0['questions'].values() if q['type']=='noul')}, "
-          f"score={sum(1 for q in req0['questions'].values() if q['type']=='score')})")
+    print(
+        f"questions per request: {n_questions} "
+        f"(choice={sum(1 for q in req0['questions'].values() if q['type']=='choice')}, "
+        f"noul={sum(1 for q in req0['questions'].values() if q['type']=='noul')}, "
+        f"score={sum(1 for q in req0['questions'].values() if q['type']=='score')})"
+    )
     try:
         ans0, cold = post(url, req0)
     except urllib.error.URLError as e:
@@ -323,11 +368,14 @@ def main() -> None:
             tokens = ans0.get("usage", {}).get("input_tokens")
     lats_ms = [l * 1000 for l in lats]
     print(f"\nwarm single decision over {args.runs} runs:")
-    print(f"  p50 = {pct(lats_ms, 50):.0f} ms   p95 = {pct(lats_ms, 95):.0f} ms   "
-          f"mean = {statistics.mean(lats_ms):.0f} ms   min = {min(lats_ms):.0f}   max = {max(lats_ms):.0f}")
+    print(
+        f"  p50 = {pct(lats_ms, 50):.0f} ms   p95 = {pct(lats_ms, 95):.0f} ms   "
+        f"mean = {statistics.mean(lats_ms):.0f} ms   min = {min(lats_ms):.0f}   max = {max(lats_ms):.0f}"
+    )
 
     # -- batched: 8 different bots, one HTTP request each, fired concurrently
     import threading
+
     bots = [make_bot(100 + i, random.Random(1000 + i)) for i in range(args.batch)]
     results = [None] * args.batch
 
@@ -352,16 +400,22 @@ def main() -> None:
             continue
         batch_times.append(wall)
         per_call = [r[1] * 1000 for r in results if not isinstance(r, Exception)]
-        print(f"batch trial {trial}: wall={wall*1000:.0f} ms for {args.batch} bots "
-              f"(= {wall*1000/args.batch:.0f} ms/bot), slowest call {max(per_call):.0f} ms")
+        print(
+            f"batch trial {trial}: wall={wall*1000:.0f} ms for {args.batch} bots "
+            f"(= {wall*1000/args.batch:.0f} ms/bot), slowest call {max(per_call):.0f} ms"
+        )
 
     if batch_times:
         best = min(batch_times)
-        print(f"\nbatched throughput: {args.batch} bots in {best*1000:.0f} ms wall "
-              f"-> {args.batch/best:.1f} decisions/s "
-              f"(vs single-bot rate {1000/ (pct(lats_ms,50)):.1f}/s at p50)")
-    print("\nNOTE: 'cold' above is first-request-of-process with model already loaded. "
-          "True cold start (model load) is measured by bench_cold.py / README procedure.")
+        print(
+            f"\nbatched throughput: {args.batch} bots in {best*1000:.0f} ms wall "
+            f"-> {args.batch/best:.1f} decisions/s "
+            f"(vs single-bot rate {1000/ (pct(lats_ms,50)):.1f}/s at p50)"
+        )
+    print(
+        "\nNOTE: 'cold' above is first-request-of-process with model already loaded. "
+        "True cold start (model load) is measured by bench_cold.py / README procedure."
+    )
 
 
 if __name__ == "__main__":
