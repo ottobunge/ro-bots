@@ -56,11 +56,9 @@ def main(argv: list[str] | None = None) -> int:
     args.duration = float(args.duration)
 
     # playing.parse_args owns validation; build_host consumes the namespace.
-    from pathlib import Path as _P
-
-    args.runtime_root = _P(args.runtime_root)
-    args.memory_root = _P(args.memory_root)
-    args.schedule_file = _P(args.schedule_file) if args.schedule_file else None
+    args.runtime_root = Path(args.runtime_root)
+    args.memory_root = Path(args.memory_root)
+    args.schedule_file = Path(args.schedule_file) if args.schedule_file else None
     args.playground = False
     args.command_root = None
     args.skill_knowledge = None
@@ -68,7 +66,7 @@ def main(argv: list[str] | None = None) -> int:
     args.llm_planning = False
     args.planning_world = None
 
-    from robots import playing
+    from robots import playing  # noqa: PLC0415 (heavy import kept out of --help)
 
     host = playing.build_host(args)
     host.start_worldfeed()
@@ -85,8 +83,7 @@ def main(argv: list[str] | None = None) -> int:
     next_sample = 0.0
 
     print(
-        f"POPULATION-RUNNER[{args.leg}]: duration {args.duration}s, "
-        f"agents {list(host.agents)}",
+        f"POPULATION-RUNNER[{args.leg}]: duration {args.duration}s, agents {list(host.agents)}",
         flush=True,
     )
     while time.time() < deadline:
