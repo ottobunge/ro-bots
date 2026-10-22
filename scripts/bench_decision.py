@@ -1,3 +1,4 @@
+# ruff: noqa: T201  (CLI benchmark tool: prints are the output)
 #!/usr/bin/env python3
 """Decision-pipeline benchmark CLI: ``task bench`` and ``task bench-report``.
 
@@ -18,8 +19,8 @@ from typing import Any
 from robots.bench import (
     append_rows,
     benchmark_path,
-    load_backends,
     latest_rows,
+    load_backends,
     read_rows,
     render_report,
     run_benchmark,

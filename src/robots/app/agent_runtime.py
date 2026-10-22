@@ -788,7 +788,7 @@ class ScheduledAgent:
         logger.info(
             "agent %s: idle %.0fs; forcing goal review", self.persona.persona_id, now - last
         )
-        self.deliver_event(state, self._as_heartbeat("idle_review"))
+        self.deliver_event(state, self._as_heartbeat(TimerFired(name="idle_review", seq=0)))
 
     def deliver_event(self, state: BotState, event: WorldEvent) -> None:
         """Hand one event to the brain and execute the resulting actions."""
