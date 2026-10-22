@@ -50,6 +50,12 @@ from robots.domain.model import ChatLine, Goal
 from robots.knowledge.game_context import decide_knowledge_lines
 from robots.society.objectives import BoundCoordinator
 from robots.society.relations import SOCIAL_CONTEXT_MAX_LINES, party_event_premade
+from robots.society.wants import (
+    WANT_SERVE_CRITERIA,
+    WantEvent,
+    WantSatisfier,
+    WantState,
+)
 
 if TYPE_CHECKING:
     from robots.domain.model import BotState
@@ -97,13 +103,16 @@ class EventDrivenBrain:
         recovery_hp_ratio: float = 0.75,
         social_view: Callable[[], Sequence[str]] | None = None,
         coordination: BoundCoordinator | None = None,
+        wants: WantState | None = None,
     ) -> None:
         """``social_view`` feeds relationship facts into every decide context
         (the RelationshipLedger's lines): accept_invite/premade_pick can then
         prefer friends and high-affinity groups over strangers. ``coordination``
         (the BoundCoordinator) adds the group-objective layer: the leader's
         objective_action review question, the packet emission, the member's
-        goal alignment and the solo outsider reply — all in-game channels only."""
+        goal alignment and the solo outsider reply — all in-game channels only.
+        ``wants`` (the agent's WantState) injects the design's want block into
+        every decide context and applies the brain-observable satisfactions."""
         if (
             type(recovery_hp_ratio) not in (int, float)
             or not math.isfinite(recovery_hp_ratio)
@@ -132,6 +141,7 @@ class EventDrivenBrain:
         self._dialogue_cleared_stages: set[str] = set()
         self._social_view = social_view
         self._coordination = coordination
+        self.wants = wants
         self._social_level: int | None = None
         self._social_in_party: bool | None = None
         self._pending_party_event: str | None = None
@@ -322,7 +332,38 @@ class EventDrivenBrain:
             if lines:
                 request["state"]["social_relations"] = "\n".join(lines)
         self._pending_party_event = self._party_event_kind(state)
+        if self.wants is not None:
+            self._observe_want_events(state, event)
+            self._satisfy_group_diff(self._pending_party_event)
+            request["state"]["wants"] = self.wants.decide_block()
         return request
+
+    def _observe_want_events(self, state: BotState, event: WorldEvent) -> None:
+        """The brain-observable satisfactions (design section 5 item 2).
+
+        Time-based decay and state-only diffs (map, death, low HP) belong to
+        the runtime (ScheduledAgent._observe_wants); the brain applies what
+        arrives as WorldEvents plus the party/level diffs it already computes.
+        """
+        wants = self.wants
+        if wants is None:
+            return
+        if isinstance(event, ChatHeard):
+            if state.in_party:
+                WantSatisfier.apply(wants, WantEvent("chat_exchange"))
+        elif isinstance(event, InviteReceived):
+            WantSatisfier.apply(wants, WantEvent("invite_received"))
+        elif isinstance(event, MonsterSpotted):
+            WantSatisfier.apply(wants, WantEvent("new_species", name=event.actor.name))
+
+    def _satisfy_group_diff(self, kind: str | None) -> None:
+        """Satisfy on the social diffs the brain computes for announcements."""
+        if self.wants is None or kind is None:
+            return
+        if kind == "level_up":
+            WantSatisfier.apply(self.wants, WantEvent("level_up"))
+        elif kind == "party_joined":
+            WantSatisfier.apply(self.wants, WantEvent("party_join"))
 
     def _party_event_kind(self, state: BotState) -> str | None:
         """Diff the last decision snapshot into a party/group event kind.
@@ -657,6 +698,16 @@ class EventDrivenBrain:
                 "town": "Switch: go idle in town for a while.",
             },
         }
+        if self.wants is not None:
+            # Design section 4: one motivation question, so the model reasons
+            # about wants, not just mechanics (the block carries the scores).
+            questions["which_want_to_serve"] = {
+                "type": "choice",
+                "instructions": "Which want should my next activity serve?",
+                "criteria": {
+                    want.value: WANT_SERVE_CRITERIA[want] for want, _score in self.wants.top_wants()
+                },
+            }
         if self._mob_db is not None:
             mobs = self._mob_db.mobs_on_map(state.map_name)
             if mobs:

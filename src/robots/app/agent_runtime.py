@@ -75,6 +75,7 @@ from robots.domain.model import ActorRef, BotState, ChatLine, Goal
 from robots.society.memory import Memory, StubSummarizer
 from robots.society.models import SocietyClock, SocietyPersona
 from robots.society.society import SocietyRoster
+from robots.society.wants import Personality, WantEvent, WantSatisfier, WantState
 
 if TYPE_CHECKING:
     from robots.ports import ChatGenerator, DecisionModel, TickClock
@@ -347,6 +348,7 @@ class ScheduledAgent:
         rng: random.Random | None = None,
         threaded: bool = True,
         telemetry_wait_s: float = 5.0,
+        wants: WantState | None = None,
     ) -> None:
         if type(telemetry_wait_s) not in (int, float) or not 0 <= telemetry_wait_s <= 5:
             msg = "telemetry_wait_s must be a plain number from 0 to 5"
@@ -365,6 +367,10 @@ class ScheduledAgent:
         self._heartbeat_max_s = heartbeat_max_s
         self.rng = rng or random.Random()
         self._threaded = threaded
+        self.wants = wants
+        self._wants_clock: float | None = None
+        self._wants_last_map: str | None = None
+        self._wants_was_alive = True
         self.goal: Goal = Goal.GRIND
         self.online = False
         self._client_cleanup_pending = False
@@ -788,16 +794,45 @@ class ScheduledAgent:
         logger.info(
             "agent %s: idle %.0fs; forcing goal review", self.persona.persona_id, now - last
         )
-        self.deliver_event(state, self._as_heartbeat("idle_review"))
+        self.deliver_event(state, self._as_heartbeat(TimerFired(name="idle_review", seq=0)))
 
     def deliver_event(self, state: BotState, event: WorldEvent) -> None:
         """Hand one event to the brain and execute the resulting actions."""
+        self._observe_wants(state)
         if self.brain is None:
             return
         self._ensure_planning_binding()
         result = self.brain.handle_event(state, event)
         self._apply_goal_notes(result.notes)
         self.execute_actions(result.actions)
+
+    def _observe_wants(self, state: BotState) -> None:
+        """Runtime-side want observation (design section 5 items 2-3).
+
+        Time-based decay runs on the agent's own clock at each delivered
+        event; state-only diffs (map change, death, low HP) satisfy here.
+        The brain applies what arrives as WorldEvents (chat, invites, mob
+        sightings) plus its party/level diffs.
+        """
+        wants = self.wants
+        if wants is None:
+            return
+        now = self._tick_clock.monotonic()
+        if self._wants_clock is None:
+            self._wants_clock = now
+        elif now > self._wants_clock:
+            wants.decay((now - self._wants_clock) / 3600.0)
+            self._wants_clock = now
+        if state.map_name != self._wants_last_map:
+            if self._wants_last_map is not None:
+                WantSatisfier.apply(wants, WantEvent("map_change", name=state.map_name))
+            self._wants_last_map = state.map_name
+        alive = state.alive is not False
+        if self._wants_was_alive and not alive:
+            WantSatisfier.apply(wants, WantEvent("death"))
+        self._wants_was_alive = alive
+        if state.hp_ratio < 0.25:
+            WantSatisfier.apply(wants, WantEvent("hp_low"))
 
     def _apply_goal_notes(self, notes: tuple[str, ...]) -> None:
         for note in notes:
@@ -1144,6 +1179,7 @@ class AgentHost:
         try:
             if self.world_state is not None:
                 self.world_state.bind_memory(persona.persona_id, memory.log)
+            wants = self._new_want_state(persona)
             return ScheduledAgent(
                 persona,
                 self.manifest[persona.persona_id],
@@ -1160,6 +1196,7 @@ class AgentHost:
                             else None
                         ),
                         spawn_species=self._spawn_species_factory,
+                        wants=wants,
                     )
                 ),
                 memory=memory,
@@ -1169,10 +1206,29 @@ class AgentHost:
                 heartbeat_min_s=self._heartbeat_range[0],
                 heartbeat_max_s=self._heartbeat_range[1],
                 rng=random.Random(self.rng.getrandbits(64)),
+                wants=wants,
             )
         except BaseException as origin:
             _close_failed_memory(origin, memory.close)
             raise
+
+    @staticmethod
+    def _new_want_state(persona: SocietyPersona) -> WantState | None:
+        """One WantState per agent, from the persona's assigned personality.
+
+        An unknown personality string keeps the agent want-less (log, no
+        crash) — the want layer is motivational garnish, never a hard
+        dependency of the session loop.
+        """
+        try:
+            return WantState(Personality(persona.personality))
+        except ValueError:
+            logger.warning(
+                "persona %s: unknown personality %r; wants disabled",
+                persona.persona_id,
+                persona.personality,
+            )
+            return None
 
     def _new_memory(self, persona_id: str) -> Memory:
         summarizer = StubSummarizer()

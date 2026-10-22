@@ -46,6 +46,7 @@ class SocietyPersona:
     attitude: Attitude
     chattiness: float
     level_band: tuple[int, int]
+    personality: str = "Casual"  # wants-system personality (society/wants.py)
 
 
 ScheduleWindow = tuple[int, float, float]  # (day_of_week 0-6, start_hour, end_hour)

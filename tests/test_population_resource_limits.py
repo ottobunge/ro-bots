@@ -160,12 +160,14 @@ def test_exact_maximum_is_bounded_real_offline_factory() -> None:
 @pytest.mark.parametrize(
     ("kwargs", "rng_hash"),
     [
-        ({}, "dd5fdcbeb04f5aab16c758383f1a15f70bb3d1cadbf3e91158220d2198abeb2c"),
+        # fingerprints updated for the wants-system personality assignment
+        # (assign_personalities now draws from the same seeded rng)
+        ({}, "e41cc51d37c791bf833fa8cc007eef9308d4c4ce7d00c37173ad7340bc1f4bec"),
         ({"n_groups": 0}, "a52169fac48aa2d80acadd41f776ce38656ab70adc3b32c80c1fb1f0ee56b71f"),
-        ({"n_groups": 3}, "2a71f1af51e999111a657e0e7fcf96cb9f8d3a8dbb572a2985754fec140d567b"),
+        ({"n_groups": 3}, "c48babd265d0fa4d26b6ba0478ccfdd1c34ea2f603309705b91ad559ab62cdff"),
         (
             {"n_groups": 5, "solos": 2, "group_size_min": 3, "group_size_max": 5},
-            "29a08b538807849607b38d16d3de92d84e78474b85ba15a03301908415c0df6c",
+            "29d79ce4f00d849ec1d7c80195e5b4bead7d8e1d957b6ac9d0aa915d3f073476",
         ),
     ],
 )

@@ -12,6 +12,7 @@ from robots.society.models import (
     SocietyPersona,
 )
 from robots.society.population_limits import validate_population
+from robots.society.wants import assign_personalities
 
 if TYPE_CHECKING:
     from robots.society.models import Schedule
@@ -227,7 +228,8 @@ class SocietyRoster:
                 rng, overlap_hint=rng.randint(1, 3)
             )
             member_ids: list[str] = []
-            for _ in range(size):
+            personalities = assign_personalities(rng, size)
+            for member_index in range(size):
                 persona_seq += 1
                 name = f"{_PERSONA_NAMES[persona_seq % len(_PERSONA_NAMES)]}-{persona_seq:02d}"
                 member_ids.append(name)
@@ -238,6 +240,7 @@ class SocietyRoster:
                     attitude=attitude,
                     chattiness=rng.random(),
                     level_band=(rng.randint(1, 70), rng.randint(70, 99)),
+                    personality=personalities[member_index].value,
                 )
                 persona_seq += 1
             group_label = f"{rng.choice(_GROUP_ADJECTIVES)} {rng.choice(_GROUP_NOUNS)}"
