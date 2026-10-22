@@ -148,5 +148,10 @@
   ],
   "w86_return_leg_gap": [
     "w85/w86: after the sell emptied the inventories, both agents FROZE at the dealer (172,129/173,130, DB-confirmed across two windows, zero walks). The sell->zeny hop is proven; the RETURN leg (empty inventory -> merchant_return_cell -> MoveTo home/field) never dispatches. The suspects: merchant_return_cell returning None (the home anchor missing for these agents) or the drive->return handoff not firing when the sellable stock hits zero. The instrument: merchant_trace_probe (drive_dest + outcome per tick) \u2014 one run names it. This is the ONLY remaining hop in the economy cycle: return -> farm -> loot -> travel -> sell(again) -> zeny>=50 -> Knife buy -> equip."
-  ]
+  ],
+  "session_close_2026_10_22": {
+    "economy": "SELL CLOSED LIVE (w84: fx0 4z, fx1 46z, DB-verified through click->C4->C5->C7->sell). The ONLY remaining economy hop: the RETURN leg (empty stock -> walk home/field -> farm again -> the 50z Knife) \u2014 w85/86 confirmed the agents freeze at the dealer post-sell with zero walks; merchant_return_cell's conditions all look satisfiable (Novice, inventory_known, no wanted weapon, drive None, prt_in route pinned) so the merchant_trace rerun (which stayed silent this time \u2014 probe login timing suspected) names the exact holding condition.",
+    "population": "LEG 3 LIVE: 7 agents, one fully-overlapping window (the social trigger), continuing the same journal continuity chain from the delegate's legs. The schedule instrumentation gotchas are pinned: the runner needs the TRUE local time (the kernel Python is UTC; the system is CEST \u2014 derive schedules from `date`, not datetime.now()), --worldfeed-port 8402 avoids the collision with the test-world runner on 8400, and the memory dirs must be 700/600 (owner-private enforced).",
+    "process": "Recovery from the session crash: all containers survived; the runners relaunched from the same roots; the chat stub is the systemd unit ro-bots-chat-stub."
+  }
 }
