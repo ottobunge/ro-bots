@@ -402,13 +402,17 @@ def generate_population(spec: PopulationSpec, seed: int | None = None) -> Genera
 
 
 def load_population(path: str | Path) -> GeneratedPopulation:
-    """Rebuild the population from its ``population.json`` summary file.
+    """Load the population from its ``population.json`` summary rows.
 
-    The summary carries the seed + the spec fields it was generated with, so
-    the deterministic generator reproduces the exact personas. Every
-    wiring-consumed persona field (id, name, group, save map, schedule) is
-    verified against the file's rows: a drifted or hand-edited file fails
-    closed instead of silently wiring a different population.
+    The file's persona rows are the world truth (the fixture imported exactly
+    the names/schedules these rows carry, and the manifest's char names match
+    them), so they are parsed directly — never regenerated. Regenerating from
+    seed+spec would silently rewire a running world to different characters
+    whenever the generator code moves; the loader therefore fails closed on
+    malformed rows instead of trusting a rebuild. The summary does not carry
+    the secret identity fields (password/pincode/sex); they are placeholdered
+    because the coordination wiring consumes only ids, names, groups,
+    schedules and save maps — the world manifest stays the identity source.
     """
     data = json.loads(Path(path).read_text())
     if (
@@ -418,6 +422,11 @@ def load_population(path: str | Path) -> GeneratedPopulation:
     ):
         msg = f"not a robots.popgen population.json: {path}"
         raise ValueError(msg)
+    rows = data.get("personas")
+    if not isinstance(rows, list) or not rows:
+        msg = f"population.json has no persona rows: {path}"
+        raise ValueError(msg)
+    personas = tuple(_persona_from_row(row, path) for row in rows)
     spec_row = dict(data.get("spec", {}))
     lo, hi = spec_row.get("friends_per_group", (0, 0))
     spec = PopulationSpec(
@@ -426,40 +435,33 @@ def load_population(path: str | Path) -> GeneratedPopulation:
         solo_agents=int(spec_row.get("solo_agents", 0)),
         seed=int(data.get("seed", 0)),
     )
-    rebuilt = generate_population(spec)
-    rows = data.get("personas")
-    if not isinstance(rows, list) or len(rows) != len(rebuilt.personas):
-        msg = f"population.json drifts from its spec rebuild: {path}"
-        raise ValueError(msg)
-    for persona, row in zip(rebuilt.personas, rows):
-        _verify_persona_row(persona, row, path)
-    return rebuilt
+    return GeneratedPopulation(spec=spec, personas=personas, fixture_sql="", manifest={})
 
 
-def _verify_persona_row(
-    persona: PersonaProfile, row: Any, path: str | Path
-) -> None:
-    """The rebuilt persona must match the file's row on the consumed fields."""
-    if not isinstance(row, dict):
-        msg = f"population.json drifts from its spec rebuild: {path}"
+def _persona_from_row(row: Any, path: str | Path) -> PersonaProfile:
+    """One PersonaProfile from a summary row (wiring fields only)."""
+    if not isinstance(row, dict) or not row.get("persona_id") or not row.get("name"):
+        msg = f"population.json has a malformed persona row: {path}"
         raise ValueError(msg)
-    expected: dict[str, Any] = {
-        "persona_id": persona.persona_id,
-        "name": persona.name,
-        "group_id": persona.group_id,
-        "save_map": persona.save_map,
-        "schedule": [list(window) for window in persona.schedule],
-    }
-    for key, want in expected.items():
-        got = row.get(key)
-        if key == "schedule" and isinstance(got, list):
-            got = [list(window) for window in got]
-        if got != want:
-            msg = (
-                f"population.json drifts from its spec rebuild: "
-                f"persona {persona.persona_id} {key}: {got!r} != {want!r}"
-            )
-            raise ValueError(msg)
+    group_id = row.get("group_id")
+    save_point = row.get("save_point", (0, 0))
+    return PersonaProfile(
+        persona_id=str(row["persona_id"]),
+        name=str(row["name"]),
+        account=str(row.get("account", "")),
+        password="identity-from-manifest",
+        pincode="0000",
+        sex="M",
+        group_id=str(group_id) if group_id is not None else None,
+        playstyle=str(row.get("playstyle", "")),
+        build=str(row.get("build", "")),
+        schedule=tuple(
+            (int(day), float(start), float(end)) for day, start, end in row.get("schedule", ())
+        ),
+        save_map=str(row.get("save_map", "prontera")),
+        save_point=(int(save_point[0]), int(save_point[1])),
+        budget_tier=str(row.get("budget_tier", "standard")),
+    )
 
 
 def _group_sessions(rng: random.Random) -> list[tuple[int, int, int]]:
