@@ -575,6 +575,7 @@ def make_agent(wants: WantState | None) -> tuple[ScheduledAgent, FakeClock]:
     agent._wants_clock = None
     agent._wants_last_map = None
     agent._wants_was_alive = True
+    agent._trace = None  # partial construction: the tap lane stays off
     agent.brain = None
     agent.client = None
     return agent, clock
