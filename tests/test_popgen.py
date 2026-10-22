@@ -22,6 +22,7 @@ from robots.popgen import (
     GeneratedPopulation,
     PopulationSpec,
     generate_population,
+    load_population,
     main,
     overlap_fraction,
     schedule_to_slots,
@@ -367,3 +368,35 @@ def test_overlap_fraction_handles_wrap_and_disjoint_windows() -> None:
     assert overlap_fraction(evening, evening) == 1.0
     assert overlap_fraction((), evening) == 0.0
     assert schedule_to_slots(late_night) == schedule_to_slots(((1, 22.0, 24.0), (2, 0.0, 2.0)))
+
+
+# ------------------------------------------------------------ load_population
+
+
+def test_load_population_rebuilds_the_summary_file(tmp_path: Path) -> None:
+    population = generate_population(make_spec(seed=7))
+    path = tmp_path / "population.json"
+    path.write_text(json.dumps(population.summary(), indent=1) + "\n")
+    loaded = load_population(path)
+    assert loaded.personas == population.personas
+    assert loaded.spec == population.spec
+
+
+def test_load_population_rejects_a_file_that_drifts_from_its_spec(
+    tmp_path: Path,
+) -> None:
+    """A hand-edited persona row must fail closed, not silently re-wire."""
+    population = generate_population(make_spec(seed=7))
+    summary = population.summary()
+    summary["personas"][0]["name"] = "RenamedDrift"
+    path = tmp_path / "population.json"
+    path.write_text(json.dumps(summary, indent=1) + "\n")
+    with pytest.raises(ValueError, match="drift"):
+        load_population(path)
+
+
+def test_load_population_rejects_foreign_files(tmp_path: Path) -> None:
+    path = tmp_path / "population.json"
+    path.write_text(json.dumps({"schema": 99, "generator": "someone-else"}))
+    with pytest.raises(ValueError, match="robots.popgen"):
+        load_population(path)

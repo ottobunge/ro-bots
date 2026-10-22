@@ -401,6 +401,67 @@ def generate_population(spec: PopulationSpec, seed: int | None = None) -> Genera
     )
 
 
+def load_population(path: str | Path) -> GeneratedPopulation:
+    """Rebuild the population from its ``population.json`` summary file.
+
+    The summary carries the seed + the spec fields it was generated with, so
+    the deterministic generator reproduces the exact personas. Every
+    wiring-consumed persona field (id, name, group, save map, schedule) is
+    verified against the file's rows: a drifted or hand-edited file fails
+    closed instead of silently wiring a different population.
+    """
+    data = json.loads(Path(path).read_text())
+    if (
+        not isinstance(data, dict)
+        or data.get("generator") != "robots.popgen"
+        or data.get("schema") != 1
+    ):
+        msg = f"not a robots.popgen population.json: {path}"
+        raise ValueError(msg)
+    spec_row = dict(data.get("spec", {}))
+    lo, hi = spec_row.get("friends_per_group", (0, 0))
+    spec = PopulationSpec(
+        friend_groups=int(spec_row.get("friend_groups", 0)),
+        friends_per_group=(int(lo), int(hi)),
+        solo_agents=int(spec_row.get("solo_agents", 0)),
+        seed=int(data.get("seed", 0)),
+    )
+    rebuilt = generate_population(spec)
+    rows = data.get("personas")
+    if not isinstance(rows, list) or len(rows) != len(rebuilt.personas):
+        msg = f"population.json drifts from its spec rebuild: {path}"
+        raise ValueError(msg)
+    for persona, row in zip(rebuilt.personas, rows):
+        _verify_persona_row(persona, row, path)
+    return rebuilt
+
+
+def _verify_persona_row(
+    persona: PersonaProfile, row: Any, path: str | Path
+) -> None:
+    """The rebuilt persona must match the file's row on the consumed fields."""
+    if not isinstance(row, dict):
+        msg = f"population.json drifts from its spec rebuild: {path}"
+        raise ValueError(msg)
+    expected: dict[str, Any] = {
+        "persona_id": persona.persona_id,
+        "name": persona.name,
+        "group_id": persona.group_id,
+        "save_map": persona.save_map,
+        "schedule": [list(window) for window in persona.schedule],
+    }
+    for key, want in expected.items():
+        got = row.get(key)
+        if key == "schedule" and isinstance(got, list):
+            got = [list(window) for window in got]
+        if got != want:
+            msg = (
+                f"population.json drifts from its spec rebuild: "
+                f"persona {persona.persona_id} {key}: {got!r} != {want!r}"
+            )
+            raise ValueError(msg)
+
+
 def _group_sessions(rng: random.Random) -> list[tuple[int, int, int]]:
     """Base (day, start_quarter, duration_quarters) evening sessions per group."""
     return [
