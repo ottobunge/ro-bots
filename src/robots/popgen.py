@@ -449,6 +449,8 @@ def _persona_from_row(row: Any, path: str | Path) -> PersonaProfile:
         persona_id=str(row["persona_id"]),
         name=str(row["name"]),
         account=str(row.get("account", "")),
+        # nosec B106 - placeholder marker, not a credential: the summary rows
+        # carry no secrets; the world manifest stays the identity source.
         password="identity-from-manifest",
         pincode="0000",
         sex="M",
