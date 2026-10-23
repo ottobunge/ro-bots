@@ -26,6 +26,8 @@ def test_defaults(monkeypatch: pytest.MonkeyPatch) -> None:
     assert cfg.receipts_glob == ".work/playing-grind-emission/evidence/receipt-*.json"
     assert cfg.memory_root is None
     assert cfg.db_configured is False
+    assert cfg.traces_dir == ".work/runtime/population-live/traces"
+    assert cfg.host_manifest == ".work/runtime/population-live/host-manifest.json"
 
 
 def test_env_overrides(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -38,6 +40,8 @@ def test_env_overrides(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setenv("DB_NAME", "ragnarok")
     monkeypatch.setenv("DB_USER", "root")
     monkeypatch.setenv("DB_ROOT_SECRET_FILE", "/run/secrets/db-root")
+    monkeypatch.setenv("TRACES_DIR", "/data/runtime/population-live/traces")
+    monkeypatch.setenv("HOST_MANIFEST", "/data/runtime/population-live/host-manifest.json")
     cfg = AppConfig.from_env()
     assert cfg.bind == "0.0.0.0:8401"
     assert cfg.worldfeed_url == "http://worldfeed:8400"
@@ -49,6 +53,8 @@ def test_env_overrides(monkeypatch: pytest.MonkeyPatch) -> None:
     assert cfg.db_user == "root"
     assert cfg.db_root_secret_file == "/run/secrets/db-root"
     assert cfg.db_configured is True
+    assert cfg.traces_dir == "/data/runtime/population-live/traces"
+    assert cfg.host_manifest == "/data/runtime/population-live/host-manifest.json"
 
 
 def test_read_secret_strips_trailing_newline(tmp_path) -> None:
