@@ -329,12 +329,13 @@ def test_world_state_binding_validates_persona_and_log() -> None:
 def test_llm_escalation_receives_only_bounded_private_memory(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
+    monkeypatch.setenv("CHAT_COOLDOWN_S", "0")
     host = memory_host(tmp_path)
     prompts: list[str] = []
 
     def capture_chat(prompt: str, *, system: str = "") -> str:
         prompts.append(prompt)
-        return "offline reply"
+        return f"offline reply {len(prompts)}"
 
     try:
         first, second = list(host.agents.values())[:2]

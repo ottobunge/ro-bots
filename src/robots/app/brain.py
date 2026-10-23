@@ -6,11 +6,12 @@ Decision-model calls happen ONLY here — on world events or periodic heartbeats
 
 import math
 import os
+import time
 from collections.abc import Callable, Sequence
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Any, final
 
-from robots.adapters.chat_prompt import build_system_prompt
+from robots.adapters.chat_prompt import build_system_prompt, should_send_chat
 from robots.app.escalation import EscalationPolicy
 from robots.app.scripts import (
     MELEE_RANGE,
@@ -136,6 +137,9 @@ class EventDrivenBrain:
         self._model = decision_model
         self._chat = chat
         self._chat_style = os.environ.get("CHAT_PROMPT_STYLE", "qwen")
+        self._chat_cooldown_s = float(os.environ.get("CHAT_COOLDOWN_S", "12"))
+        self._last_chat_text: str | None = None
+        self._last_chat_monotonic: float | None = None
         self.memory = memory
         self.policy = policy or EscalationPolicy()
         self._script: BehaviorScript | None = None
@@ -461,6 +465,21 @@ class EventDrivenBrain:
         ):
             actions.insert(0, AcceptGuildInvite())
 
+    def _chat_cooldown_ok(self) -> bool:
+        """The pre-generation rate gate: no escalation inside the cooldown."""
+        if self._last_chat_monotonic is None:
+            return True
+        return (time.monotonic() - self._last_chat_monotonic) >= self._chat_cooldown_s
+
+    def _since_last_chat(self) -> float | None:
+        if self._last_chat_monotonic is None:
+            return None
+        return time.monotonic() - self._last_chat_monotonic
+
+    def _record_chat(self, text: str) -> None:
+        self._last_chat_text = text
+        self._last_chat_monotonic = time.monotonic()
+
     def _trace_review(self, state: BotState, goal: Goal, trigger: str) -> None:
         """goal_review: every fired review with its provenance (trace line)."""
         trace = self._trace
@@ -753,7 +772,7 @@ class EventDrivenBrain:
             {"next_action": answers.get("next_action", {"confidence": 1.0})},
             chat_directed_at_bot=directed,
         )
-        if escalate:
+        if escalate and self._chat_cooldown_ok():
             self.escalation_count += 1
             prompt = (
                 f"A player named {event.line.sender} said to you: {event.line.text}\n"
@@ -768,7 +787,16 @@ class EventDrivenBrain:
                 goal=str(state.goal),
                 style=self._chat_style,
             )
-            return [Say(self._chat.generate_chat(prompt, system=system))], True
+            reply = self._chat.generate_chat(prompt, system=system)
+            if not should_send_chat(
+                reply,
+                last_text=self._last_chat_text,
+                since_s=self._since_last_chat(),
+                cooldown_s=self._chat_cooldown_s,
+            ):
+                return [], False
+            self._record_chat(reply)
+            return [Say(reply)], True
         outsider = self._coordination_outsider(event.line, state)
         if outsider is not None:
             return [outsider], False

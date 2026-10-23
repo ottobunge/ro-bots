@@ -87,3 +87,18 @@ def sanitize_reply(text: str) -> str | None:
     if any(s in low for s in _ASSISTANT_SPEAK):
         return None
     return line[:MAX_CHAT_LEN]
+
+
+def should_send_chat(
+    text: str,
+    *,
+    last_text: str | None,
+    since_s: float | None,
+    cooldown_s: float,
+) -> bool:
+    """The spam governor: cooldown + repeat filter (leg 14's reply storm)."""
+    if not text.strip():
+        return False
+    if since_s is not None and since_s < cooldown_s:
+        return False
+    return not (last_text is not None and text.strip() == last_text.strip())
