@@ -11,11 +11,16 @@ Composes, for one tick's ``BotState``:
 
 Absent corpora degrade to zero lines; every line is length-bounded and the
 whole bundle is capped at ``MAX_DECIDE_LINES`` so the decide payload budget
-holds.
+holds. When the tick's free text (explicit topics such as objective/want
+wording, recent chat, NPC pages) names a corpus item or mob — e.g. the
+Emperium for a guild objective — a few ``queries.mention_lines`` ride along
+inside the same cap.
 """
 
+from collections.abc import Sequence
+
 from robots.domain.model import BotState
-from robots.knowledge import corpora
+from robots.knowledge import corpora, queries
 from robots.knowledge.calculators import (
     atk_with_weapon,
     base_atk,
@@ -29,6 +34,7 @@ from robots.knowledge.calculators import (
 
 MAX_DECIDE_LINES = 6
 MAX_ITEM_LINES = 3
+MAX_MENTION_LINES = 3
 MAX_LINE_CHARS = corpora.MAX_LINE_CHARS
 _SELF_PREFIX = "self"
 
@@ -101,8 +107,23 @@ def _map_line(state: BotState) -> str | None:
     return f"{state.map_name}: {snippets[0]}"[:MAX_LINE_CHARS] if snippets else None
 
 
-def decide_knowledge_lines(state: BotState) -> list[str]:
-    """The bounded knowledge bundle for one decide tick; [] when corpora lack it."""
+def _state_text_surfaces(state: BotState) -> tuple[str, ...]:
+    """Free-text state surfaces a corpus name can appear in (chat, NPC pages)."""
+    texts = [line.text for line in state.recent_chat[-3:]]
+    dialog = state.npc_dialogue
+    if dialog is not None:
+        texts.extend(str(page) for page in dialog.pages[-2:])
+    return tuple(texts)
+
+
+def decide_knowledge_lines(state: BotState, *, topics: Sequence[str] = ()) -> list[str]:
+    """The bounded knowledge bundle for one decide tick; [] when corpora lack it.
+
+    ``topics`` carries the tick's free text worth mining for corpus names
+    (objective/want wording the caller has at hand); recent chat and NPC
+    pages are mined by default. Mention lines ride along last, inside the
+    existing ``MAX_DECIDE_LINES`` cap.
+    """
     lines: list[str] = []
     stats = state.received_stats
     if stats is not None:
@@ -113,4 +134,7 @@ def decide_knowledge_lines(state: BotState) -> list[str]:
     for candidate in (_target_line(state), _map_line(state)):
         if candidate is not None:
             lines.append(candidate)
+    lines.extend(
+        queries.mention_lines((*topics, *_state_text_surfaces(state)), max_lines=MAX_MENTION_LINES)
+    )
     return lines[:MAX_DECIDE_LINES]

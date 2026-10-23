@@ -139,6 +139,9 @@ def test_all_889_mappings_macros_and_parser_preserved_bitexact() -> None:
     char_page = {0x099D: -1}  # charlist-per-page framing (pinned common/packets.hpp:621-626)
     stat_change = {0x00BE: 5}  # ZC_STATUS_CHANGE SP_U* point-cost updates (clif.cpp:3774)
     shop_lists = {0x00C7: -1}  # ZC_PC_SELL_ITEMLIST: length-prefixed variable (clif.cpp:2265-2280)
+    # Guild-create slice: ZC_RESULT_MAKE_GUILD 0x0167 (3B), the live-verified
+    # charter reply (0x0165 30B is already in the migration baseline).
+    guild_reply = {0x0167: 3}
     assert module.PACKET_DB[0x01B3] == 67
     prior_891 = {
         key: value
@@ -148,16 +151,17 @@ def test_all_889_mappings_macros_and_parser_preserved_bitexact() -> None:
         and key not in char_page
         and key not in stat_change
         and key not in shop_lists
+        and key not in guild_reply
     }
     assert old | {0x00B6: 6, 0x00BC: 6} == prior_891
     assert len(prior_891) == 891
     assert not additions.keys() & prior_891.keys()
     assert not char_page.keys() & prior_891.keys()
     assert (
-        prior_891 | additions | presentation | char_page | stat_change | shop_lists
+        prior_891 | additions | presentation | char_page | stat_change | shop_lists | guild_reply
         == module.PACKET_DB
     )
-    assert len(module.PACKET_DB) == 901
+    assert len(module.PACKET_DB) == 902
     raw = (ROOT / "spikes/003-clientless-limbs/packetdb.py").read_bytes()
     cutin_block = (
         b"# Source/compiler-measured cut-in presentation only; no NPC/gameplay authority.\n"
@@ -202,6 +206,9 @@ def test_all_889_mappings_macros_and_parser_preserved_bitexact() -> None:
         # CZ_PARTY_JOIN_REQ) + its accounting comment appended to packetdb.py
         "9c041193ba212927aeb19263436c5bcfbcb91271a453d3b427e04728317cb99e",
         "26291ffbe4ab0bf1c64adcbaf3be46c10f2e720d8bc6ff408c8052244ad8a240",
+        # the guild-create slice: ZC_RESULT_MAKE_GUILD 0x0167 (3B) appended
+        # (the live-verified charter reply; 0x0165 30B already in the baseline)
+        "d257a7779bb4b60e2c1081a1892759efe0a6736a6e1b002f6020b12125e94bd8",
     )
     token = b", 0x00B6: 6"
     assert raw.count(token) == 1
@@ -210,6 +217,9 @@ def test_all_889_mappings_macros_and_parser_preserved_bitexact() -> None:
         # CZ_PARTY_JOIN_REQ) + its accounting comment appended to packetdb.py
         "3ae219473ecb152f882ee12622d59e1ae17db9c8772a5c6f8061ab4dda86c94a",
         "2b0a38740ef0fcae523a586ea84860acc6e3ca46d46c76faf6b37ef21e4ab445",
+        # the guild-create slice: ZC_RESULT_MAKE_GUILD 0x0167 (3B) appended
+        # (the live-verified charter reply; 0x0165 30B already in the baseline)
+        "fc6a3fa048b19e444d86abae4d183eec8ee95bd727eabd7c9f17fbdcd63f159c",
     )
 
 

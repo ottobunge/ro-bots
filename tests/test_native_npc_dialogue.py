@@ -178,7 +178,8 @@ def test_existing_890_registrations_preserved_and_unknown_stays_strict():
         0x00BC,
         0x00BE,
         0x00C7,
+        0x0167,  # ZC_RESULT_MAKE_GUILD 3B, the live-verified charter reply
     }
-    assert len(module.PACKET_DB) == 901
+    assert len(module.PACKET_DB) == 902
     with pytest.raises(ValueError, match="unknown packet 0xfafa"):
         module.parse_stream(dialog(0xB4, "guide") + b"\xfa\xfa")
