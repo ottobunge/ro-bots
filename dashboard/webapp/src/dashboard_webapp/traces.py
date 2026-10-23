@@ -15,6 +15,7 @@ char-name lookup provided by the agent source.
 from __future__ import annotations
 
 import json
+import re
 from collections import deque
 from datetime import UTC, datetime
 from pathlib import Path
@@ -74,16 +75,24 @@ def parse_kinds(raw: str | None) -> tuple[str, ...]:
 
 
 def parse_before(raw: str | None) -> datetime | None:
-    """Parse the ``before`` cursor (ISO-8601); naive values are taken as UTC."""
+    """Parse the ``before`` cursor (ISO-8601); naive values are taken as UTC.
+
+    ``+`` in a timestamp arrives as a space through unencoded query strings
+    (curl, hand-built URLs), so a space before a trailing ``HH:MM`` offset is
+    retried as ``+`` before the cursor is rejected.
+    """
     if raw is None or not raw.strip():
         return None
-    try:
-        moment = datetime.fromisoformat(raw.strip().replace("Z", "+00:00"))
-    except ValueError:
-        raise InvalidHistoryQuery(f"invalid before cursor: {raw.strip()}") from None
-    if moment.tzinfo is None:
-        moment = moment.replace(tzinfo=UTC)
-    return moment
+    candidates = (raw.strip(), re.sub(r" (\d{2}:\d{2}(?::\d+)?)$", r"+\1", raw.strip()))
+    for candidate in candidates:
+        try:
+            moment = datetime.fromisoformat(candidate.replace("Z", "+00:00"))
+        except ValueError:
+            continue
+        if moment.tzinfo is None:
+            moment = moment.replace(tzinfo=UTC)
+        return moment
+    raise InvalidHistoryQuery(f"invalid before cursor: {raw.strip()}")
 
 
 def _parse_t(raw: Any) -> datetime | None:

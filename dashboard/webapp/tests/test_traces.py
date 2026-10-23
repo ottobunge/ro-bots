@@ -250,6 +250,11 @@ class TestQueryParsing:
         with pytest.raises(InvalidHistoryQuery):
             parse_before("yesterday")
 
+    def test_parse_before_repairs_space_decoded_plus(self) -> None:
+        # a raw query string decodes "+00:00" as " 00:00" (curl, hand-built URLs)
+        repaired = parse_before("2026-10-22T10:00:00.038897 00:00")
+        assert repaired == datetime(2026, 10, 22, 10, 0, 0, 38897, tzinfo=UTC)
+
 
 class TestHistory:
     def test_newest_first_default_kinds_exclude_bulk_kinds(self, traces: TraceHistory) -> None:
