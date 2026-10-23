@@ -195,6 +195,39 @@ def _close_failed_memory(origin: BaseException, close: Callable[[], None]) -> No
 
 
 @final
+class ConnectBackoff:
+    """Per-agent connect pacing: exponential from 5s, capped at 240s.
+
+    The e2e login's connect_check DDoS throttle hardens on every failed
+    connect and each failure refreshes the window, so a tight retry storm
+    (the runner's step() tick) latches the shared source and locks everyone
+    out. One failure = wait; success = reset."""
+
+    _BASE_S = 5.0
+    _CAP_S = 240.0
+
+    def __init__(self) -> None:
+        self._fails = 0
+        self._last_attempt = 0.0
+
+    def ready(self, monotonic: float) -> bool:
+        return monotonic >= self._last_attempt + self.delay()
+
+    def delay(self) -> float:
+        return float(min(self._CAP_S, self._BASE_S * (2 ** max(0, self._fails - 1))))
+
+    def record_attempt(self, monotonic: float) -> None:
+        self._last_attempt = monotonic
+
+    def record_failure(self, monotonic: float) -> None:
+        self._fails += 1
+        self._last_attempt = monotonic
+
+    def record_success(self) -> None:
+        self._fails = 0
+        self._last_attempt = 0.0
+
+
 class PersonaClock:
     """SocietyClock adapter over local wall-clock time (Monday=0)."""
 
@@ -1310,6 +1343,7 @@ class AgentHost:
         self._heartbeat_range = (heartbeat_min_s, heartbeat_max_s)
         self._stop = False
         self._lifecycle_lock = threading.RLock()
+        self._connect_gates: dict[str, ConnectBackoff] = {}
         self._worldfeed_server: Any | None = None
         self._worldfeed_thread: threading.Thread | None = None
         # The social coordination inputs: a GeneratedPopulation (or its
@@ -1568,11 +1602,19 @@ class AgentHost:
             if self._stop:
                 return
             now = self.clock.local_now()
+            tick = time.monotonic()
             for persona_id, agent in self.agents.items():
                 scheduled = self._scheduled_on(persona_id, now)
                 if scheduled and not agent.online:
+                    gate = self._connect_gates.setdefault(persona_id, ConnectBackoff())
+                    if not gate.ready(tick):
+                        continue
+                    gate.record_attempt(tick)
                     logger.info("schedule window open: connecting %s", persona_id)
-                    agent.connect()
+                    if agent.connect():
+                        gate.record_success()
+                    else:
+                        gate.record_failure(tick)
                 elif not scheduled and agent.online:
                     logger.info("schedule window closed: disconnecting %s", persona_id)
                     agent.disconnect()
