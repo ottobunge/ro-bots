@@ -8,3 +8,11 @@ prompt
 request
 action
 AdviseAdvisor
+# robots.knowledge public query surface: consumed by the decide context and
+# the coordinator's seed flow (tests pin them; src callers are the seam).
+mobs_dropping
+mob_drops
+mob_spawns
+route_hint
+quest_lines
+seed_knowledge_lines
