@@ -32,6 +32,7 @@ import socket
 import threading
 import time
 import urllib.parse
+from collections import deque
 from collections.abc import Callable, Mapping, Sequence
 from contextlib import suppress
 from datetime import datetime
@@ -340,6 +341,31 @@ def _require_native_session(client: Any) -> None:
         raise NativeTelemetryUnavailable(msg)
 
 
+def _party_chat_events(agent: Any, client: Any) -> tuple[WorldEvent, ...]:
+    """New 0x0109 party lines as ChatHeard (the premade reply loop's ear).
+
+    Module-level so unbound-drain test hosts (SimpleNamespace agents) work;
+    the cursor lives on the agent (``_party_chat_seen``).
+    """
+    cursor = getattr(agent, "_party_chat_seen", 0)
+    party_log = getattr(client, "party_chat", None)
+    if not isinstance(party_log, (list, tuple, deque)):
+        return ()
+    events: list[WorldEvent] = []
+    while cursor < len(party_log):
+        aid, name, text = party_log[cursor]
+        cursor += 1
+        if aid in (getattr(client, "aid", None), getattr(client, "gid", None)):
+            continue  # our own line echoed back
+        events.append(
+            ChatHeard(
+                line=ChatLine(channel="party", sender=str(name), text=str(text), at=time.time())
+            )
+        )
+    agent._party_chat_seen = cursor
+    return tuple(events)
+
+
 @final
 class ScheduledAgent:
     """One persona + one character + one brain + one client + one loop."""
@@ -400,6 +426,7 @@ class ScheduledAgent:
         self.tick_count = 0
         self._session_ticks = 0
         self._chat_seen = 0
+        self._party_chat_seen = 0
 
         self.commands: HostChatCommands | None = None
         self._planning_binding: NpcHostBinding | None = None
@@ -420,6 +447,7 @@ class ScheduledAgent:
             self.stop_flag = False
             self._session_ticks = 0
             self._chat_seen = 0
+            self._party_chat_seen = 0
             self.timers = TimerSet(self._tick_clock, self.rng)
             self.timers.add_periodic("idle_review", self._heartbeat_min_s, self._heartbeat_max_s)
             if self.brain is not None:
@@ -1125,6 +1153,7 @@ class ScheduledAgent:
                     line=ChatLine(channel="public", sender=sender, text=str(text), at=time.time())
                 )
             )
+        events.extend(_party_chat_events(self, client))
         return tuple(events)
 
     def _as_heartbeat(self, event: WorldEvent) -> WorldEvent:
