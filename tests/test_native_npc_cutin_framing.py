@@ -269,8 +269,11 @@ def validate_exact_addition(table: dict[int, int], raw: bytes) -> None:
     # the numeric section still carries the older-era 6B size, hence the
     # live-verified shadow override rather than an addition.
     prior_901 = prior_901 | {0x2C4: 26}
-    assert len(table) == 901
-    assert table == prior_901
+    # Guild-create slice: ZC_RESULT_MAKE_GUILD 0x0167 (3B), the reply the
+    # pinned server sent to the live-verified charter request (0x0165).
+    prior_902 = prior_901 | {0x0167: 3}
+    assert len(table) == 902
+    assert table == prior_902
     assert raw.count(CUTIN_BLOCK) == 1
     assert raw.count(CHAR_PAGE_BLOCK) == 1
     assert raw.count(STAT_CHANGE_BLOCK) == 1
@@ -293,6 +296,9 @@ def validate_exact_addition(table: dict[int, int], raw: bytes) -> None:
         # the party slice: the 0x2C4 shadow override (6 -> 26, MAIN 20180704
         # CZ_PARTY_JOIN_REQ) + its accounting comment appended to packetdb.py
         "ebbd4985b4d714c1a6b291d8944640521e3ee37d8dc0cbf4f6b7be133668d2cd",
+        # the guild-create slice: ZC_RESULT_MAKE_GUILD 0x0167 (3B) appended
+        # (the live-verified charter reply; 0x0165 30B already in the baseline)
+        "f03d980fb94fce07b62db95269be76c2cc437976d1e8697538330d2c69255386",
     )
 
 

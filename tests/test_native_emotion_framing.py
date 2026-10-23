@@ -103,8 +103,11 @@ def test_every_legacy_mapping_is_preserved() -> None:
     prior_890 = prior_889 | {0x00B6: 6}
     prior_891 = prior_890 | {0x00BC: 6}
     shop_lists = {0x00C7: -1}  # ZC_PC_SELL_ITEMLIST: length-prefixed variable (clif.cpp:2265-2280)
+    # Guild-create slice: ZC_RESULT_MAKE_GUILD 0x0167 (3B), the reply the
+    # pinned server sent to the live-verified charter request (0x0165).
+    guild_reply = {0x0167: 3}
     assert (
-        prior_891 | additions | presentation | char_page | stat_change | shop_lists
+        prior_891 | additions | presentation | char_page | stat_change | shop_lists | guild_reply
         == packetdb.PACKET_DB
     )
-    assert len(packetdb.PACKET_DB) == 901
+    assert len(packetdb.PACKET_DB) == 902
