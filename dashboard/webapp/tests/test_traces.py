@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import json
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 import pytest
@@ -30,21 +30,152 @@ T10 = "2026-10-22T10:09:00+00:00"
 
 # Chronological fixture: two encounters with Poring, one with Lunatic.
 FIXTURE_LINES = [
-    {"t": T1, "persona": "pop_test_m0", "kind": "goal_review", "goal": "grind", "previous_goal": "idle_town", "trigger": "heartbeat"},
-    {"t": T2, "persona": "pop_test_m0", "kind": "plan_authored", "goal": "farm_item", "targets": ["Poring"], "map": "prt_fild08", "duration_s": 900.0, "trigger": "heartbeat"},
-    {"t": T3, "persona": "pop_test_m0", "kind": "world_event", "map": "prt_fild08", "x": 170, "y": 372, "event": "MonsterSpotted", "monster": "Poring", "monster_id": 1001, "monster_x": 174, "monster_y": 358},
-    {"t": T3, "persona": "pop_test_m0", "kind": "action_executed", "map": "prt_fild08", "x": 170, "y": 372, "action": "Attack", "params": {"target_id": 1001}},
-    {"t": T4, "persona": "pop_test_m0", "kind": "world_event", "map": "prt_fild08", "x": 170, "y": 372, "event": "DamageTaken", "amount": 6, "from_id": 1001},
-    {"t": T5, "persona": "pop_test_m0", "kind": "action_executed", "map": "prt_fild08", "x": 170, "y": 372, "action": "Attack", "params": {"target_id": 1001}},
-    {"t": T6, "persona": "pop_test_m0", "kind": "chat_sent", "map": "prt_fild08", "x": 170, "y": 372, "channel": "party", "message": "poring train", "action": "PartyChat"},
-    {"t": T6, "persona": "pop_test_m0", "kind": "chat_heard", "map": "prt_fild08", "x": 170, "y": 372, "speaker": "RinceNyan", "message": "gg", "channel": "public"},
-    {"t": T6, "persona": "pop_test_m0", "kind": "decide_response", "answers": {"next_action": {"type": "choice", "choice": "grind", "confidence": 0.4}}, "duration_s": 1.75},
-    {"t": T6, "persona": "pop_test_m0", "kind": "state_tick", "map": "prt_fild08", "hp": 80, "hp_max": 86},
+    {
+        "t": T1,
+        "persona": "pop_test_m0",
+        "kind": "goal_review",
+        "goal": "grind",
+        "previous_goal": "idle_town",
+        "trigger": "heartbeat",
+    },
+    {
+        "t": T2,
+        "persona": "pop_test_m0",
+        "kind": "plan_authored",
+        "goal": "farm_item",
+        "targets": ["Poring"],
+        "map": "prt_fild08",
+        "duration_s": 900.0,
+        "trigger": "heartbeat",
+    },
+    {
+        "t": T3,
+        "persona": "pop_test_m0",
+        "kind": "world_event",
+        "map": "prt_fild08",
+        "x": 170,
+        "y": 372,
+        "event": "MonsterSpotted",
+        "monster": "Poring",
+        "monster_id": 1001,
+        "monster_x": 174,
+        "monster_y": 358,
+    },
+    {
+        "t": T3,
+        "persona": "pop_test_m0",
+        "kind": "action_executed",
+        "map": "prt_fild08",
+        "x": 170,
+        "y": 372,
+        "action": "Attack",
+        "params": {"target_id": 1001},
+    },
+    {
+        "t": T4,
+        "persona": "pop_test_m0",
+        "kind": "world_event",
+        "map": "prt_fild08",
+        "x": 170,
+        "y": 372,
+        "event": "DamageTaken",
+        "amount": 6,
+        "from_id": 1001,
+    },
+    {
+        "t": T5,
+        "persona": "pop_test_m0",
+        "kind": "action_executed",
+        "map": "prt_fild08",
+        "x": 170,
+        "y": 372,
+        "action": "Attack",
+        "params": {"target_id": 1001},
+    },
+    {
+        "t": T6,
+        "persona": "pop_test_m0",
+        "kind": "chat_sent",
+        "map": "prt_fild08",
+        "x": 170,
+        "y": 372,
+        "channel": "party",
+        "message": "poring train",
+        "action": "PartyChat",
+    },
+    {
+        "t": T6,
+        "persona": "pop_test_m0",
+        "kind": "chat_heard",
+        "map": "prt_fild08",
+        "x": 170,
+        "y": 372,
+        "speaker": "RinceNyan",
+        "message": "gg",
+        "channel": "public",
+    },
+    {
+        "t": T6,
+        "persona": "pop_test_m0",
+        "kind": "decide_response",
+        "answers": {"next_action": {"type": "choice", "choice": "grind", "confidence": 0.4}},
+        "duration_s": 1.75,
+    },
+    {
+        "t": T6,
+        "persona": "pop_test_m0",
+        "kind": "state_tick",
+        "map": "prt_fild08",
+        "hp": 80,
+        "hp_max": 86,
+    },
     # ~10 minutes later: a fresh Poring encounter (beyond the 300s gap) + Lunatic
-    {"t": "2026-10-22T10:17:00+00:00", "persona": "pop_test_m0", "kind": "world_event", "map": "prt_fild08", "x": 175, "y": 360, "event": "MonsterSpotted", "monster": "Poring", "monster_id": 1001, "monster_x": 176, "monster_y": 361},
-    {"t": "2026-10-22T10:17:02+00:00", "persona": "pop_test_m0", "kind": "action_executed", "map": "prt_fild08", "x": 175, "y": 360, "action": "Attack", "params": {"target_id": 1001}},
-    {"t": "2026-10-22T10:17:10+00:00", "persona": "pop_test_m0", "kind": "world_event", "map": "prt_fild08", "x": 175, "y": 360, "event": "MonsterSpotted", "monster": "Lunatic", "monster_id": 1002, "monster_x": 178, "monster_y": 363},
-    {"t": "2026-10-22T10:17:11+00:00", "persona": "pop_test_m0", "kind": "action_executed", "map": "prt_fild08", "x": 175, "y": 360, "action": "MoveTo", "params": {"x": 178, "y": 363}},
+    {
+        "t": "2026-10-22T10:17:00+00:00",
+        "persona": "pop_test_m0",
+        "kind": "world_event",
+        "map": "prt_fild08",
+        "x": 175,
+        "y": 360,
+        "event": "MonsterSpotted",
+        "monster": "Poring",
+        "monster_id": 1001,
+        "monster_x": 176,
+        "monster_y": 361,
+    },
+    {
+        "t": "2026-10-22T10:17:02+00:00",
+        "persona": "pop_test_m0",
+        "kind": "action_executed",
+        "map": "prt_fild08",
+        "x": 175,
+        "y": 360,
+        "action": "Attack",
+        "params": {"target_id": 1001},
+    },
+    {
+        "t": "2026-10-22T10:17:10+00:00",
+        "persona": "pop_test_m0",
+        "kind": "world_event",
+        "map": "prt_fild08",
+        "x": 175,
+        "y": 360,
+        "event": "MonsterSpotted",
+        "monster": "Lunatic",
+        "monster_id": 1002,
+        "monster_x": 178,
+        "monster_y": 363,
+    },
+    {
+        "t": "2026-10-22T10:17:11+00:00",
+        "persona": "pop_test_m0",
+        "kind": "action_executed",
+        "map": "prt_fild08",
+        "x": 175,
+        "y": 360,
+        "action": "MoveTo",
+        "params": {"x": 178, "y": 363},
+    },
     # malformed line: skipped, never blanks the history
     "NOT JSON AT ALL",
 ]
@@ -111,8 +242,8 @@ class TestQueryParsing:
             parse_kinds("chat_sent,telemetry")
 
     def test_parse_before_accepts_z_and_naive_utc(self) -> None:
-        assert parse_before("2026-10-22T10:00:00Z") == datetime(2026, 10, 22, 10, tzinfo=timezone.utc)
-        assert parse_before("2026-10-22T10:00:00") == datetime(2026, 10, 22, 10, tzinfo=timezone.utc)
+        assert parse_before("2026-10-22T10:00:00Z") == datetime(2026, 10, 22, 10, tzinfo=UTC)
+        assert parse_before("2026-10-22T10:00:00") == datetime(2026, 10, 22, 10, tzinfo=UTC)
         assert parse_before(None) is None
 
     def test_parse_before_rejects_garbage(self) -> None:
@@ -157,7 +288,9 @@ class TestHistory:
         first = traces.history("pop_test_m0", kinds=("action_executed", "world_event"), limit=3)
         assert first["next_before"] == "2026-10-22T10:17:02+00:00"  # oldest of the page
         second = traces.history(
-            "pop_test_m0", kinds=("action_executed", "world_event"), limit=3,
+            "pop_test_m0",
+            kinds=("action_executed", "world_event"),
+            limit=3,
             before=parse_before(first["next_before"]),
         )
         assert second["count"] == 3
@@ -180,7 +313,12 @@ class TestHistory:
 
     def test_decide_response_summary_names_the_picks(self) -> None:
         row = summarize(
-            {"t": T1, "kind": "decide_response", "answers": {"next_action": {"choice": "grind"}}, "duration_s": 2.5}
+            {
+                "t": T1,
+                "kind": "decide_response",
+                "answers": {"next_action": {"choice": "grind"}},
+                "duration_s": 2.5,
+            }
         )
         assert row["summary"] == "next_action=grind (2.5s)"
 
@@ -207,7 +345,14 @@ class TestCombat:
         traces_dir.mkdir()
         (traces_dir / "pop_x.jsonl").write_text(
             json.dumps(
-                {"t": T1, "persona": "pop_x", "kind": "action_executed", "map": "m", "action": "Attack", "params": {"target_id": 77}}
+                {
+                    "t": T1,
+                    "persona": "pop_x",
+                    "kind": "action_executed",
+                    "map": "m",
+                    "action": "Attack",
+                    "params": {"target_id": 77},
+                }
             )
             + "\n",
             encoding="utf-8",
@@ -234,4 +379,5 @@ class TestPlans:
 
     def test_limit_applies_to_plans(self, traces: TraceHistory) -> None:
         body = traces.plans("pop_test_m0", limit=1)
-        assert body["count"] == 1 and body["limit"] == 1
+        assert body["count"] == 1
+        assert body["limit"] == 1

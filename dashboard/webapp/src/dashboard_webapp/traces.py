@@ -16,7 +16,7 @@ from __future__ import annotations
 
 import json
 from collections import deque
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
@@ -82,7 +82,7 @@ def parse_before(raw: str | None) -> datetime | None:
     except ValueError:
         raise InvalidHistoryQuery(f"invalid before cursor: {raw.strip()}") from None
     if moment.tzinfo is None:
-        moment = moment.replace(tzinfo=timezone.utc)
+        moment = moment.replace(tzinfo=UTC)
     return moment
 
 
@@ -94,7 +94,7 @@ def _parse_t(raw: Any) -> datetime | None:
     except ValueError:
         return None
     if moment.tzinfo is None:
-        moment = moment.replace(tzinfo=timezone.utc)
+        moment = moment.replace(tzinfo=UTC)
     return moment
 
 
@@ -218,9 +218,7 @@ class TraceHistory:
     def trace_path(self, persona: str) -> Path:
         return self.traces_dir / f"{persona}.jsonl"
 
-    def resolve_persona(
-        self, agent_ref: str, char_lookup: Any = None
-    ) -> str | None:
+    def resolve_persona(self, agent_ref: str, char_lookup: Any = None) -> str | None:
         """Map a dashboard agent id (char id, char name or persona id)."""
         names = self._manifest_names()
         for name, persona in names.items():

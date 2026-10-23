@@ -15,6 +15,8 @@ DEFAULT_WORLDFEED_URL = "http://127.0.0.1:8400"
 DEFAULT_RECEIPTS_GLOB = ".work/playing-grind-emission/evidence/receipt-*.json"
 DEFAULT_WORLDS_ROOT = "run/worlds"
 DEFAULT_COMMAND_RUNTIME_ROOT = ".work/runtime/ro-bots-test/commands"
+DEFAULT_TRACES_DIR = ".work/runtime/population-live/traces"
+DEFAULT_HOST_MANIFEST = ".work/runtime/population-live/host-manifest.json"
 
 
 class SecretFileError(Exception):
@@ -46,6 +48,8 @@ class AppConfig:
     events_deadline_s: float = 2.0
     worlds_root: str = DEFAULT_WORLDS_ROOT
     command_runtime_root: str = DEFAULT_COMMAND_RUNTIME_ROOT
+    traces_dir: str = DEFAULT_TRACES_DIR
+    host_manifest: str = DEFAULT_HOST_MANIFEST
 
     @classmethod
     def from_env(cls, env: dict[str, str] | None = None) -> AppConfig:
@@ -63,6 +67,8 @@ class AppConfig:
             events_deadline_s=float(source.get("EVENTS_DEADLINE_S", "2.0")),
             worlds_root=source.get("WORLDS_ROOT", DEFAULT_WORLDS_ROOT),
             command_runtime_root=source.get("COMMAND_RUNTIME_ROOT", DEFAULT_COMMAND_RUNTIME_ROOT),
+            traces_dir=source.get("TRACES_DIR", DEFAULT_TRACES_DIR),
+            host_manifest=source.get("HOST_MANIFEST", DEFAULT_HOST_MANIFEST),
         )
 
     @property
