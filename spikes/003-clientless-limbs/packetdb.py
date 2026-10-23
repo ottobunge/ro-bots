@@ -689,6 +689,9 @@ _NATIVE_REGISTRATION_SHADOWS = {
     # older-era 6B entry. Live-verified: the dealer invite went out and the
     # members' accept path (0x2c7) is the registered reply.
     0x2C4: (6, 26),
+    # the guild invite-by-account: the derived 2B stub vs the 20180704 parse
+    # registration (14B); live-verified.
+    0x0168: (2, 14),
 }
 
 
@@ -770,6 +773,12 @@ PACKET_DB.update({0x0167: 3})
 # ZC_REQ_JOIN_GUILD 0x016a (type+guild_id+guild_name[24], 30B) and the
 # reply echo CZ_JOIN_GUILD 0x016b (type+guild_id+answer, 10B).
 PACKET_DB.update({0x0169: 3, 0x016A: 30, 0x016B: 10})
+# The invite-by-name request itself: the numeric section derives 0x0168 = 2B
+# (the older-era stub), but the 20180704 parse registration is
+# CZ_REQ_JOIN_GUILD (packets.hpp:1302-1308): type(2)+AID(4)+inviter_AID(4)+
+# inviter_CID(4) = 14B, live-verified (the invite reached the member and the
+# accept landed char.guild_id). Same shadow pattern as 0x2C4.
+PACKET_DB.update({0x0168: 14})
 
 
 # Narrow source-proven shop-list additions. Preserve all prior entries and

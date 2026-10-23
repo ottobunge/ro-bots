@@ -113,6 +113,9 @@ class BotClient:
         self.party_chat: deque[tuple[int, str, str]] = deque(maxlen=16)
         self.party_invite_from = ""  # name of last inviter (0x2c6)
         self.party_invite_pid = 0  # party id of last invite
+        self.guild_invite_gid = 0  # guild id of last invite (0x16a)
+        self.guild_invite_name = ""  # guild name of last invite
+        self.party_members: dict[str, int] = {}  # char name -> AID (the roster)
         self.party_members: list[dict] = []
         self.chat_event = threading.Event()
         self.entry_event = threading.Event()
@@ -657,6 +660,27 @@ class BotClient:
         """CZ_PARTY_JOIN_REQ_ACK (0x2c7): party_id.L flag.B (1 = accept)."""
         self._send(pdb.pack(0x02C7, struct.pack("<I", party_id) + bytes([1 if accept else 0])))
 
+    def guild_create(self, name: str) -> None:
+        """CZ_REQ_MAKE_GUILD (0x0165): type(2)+char_id(4)+name(24) = 30B, NO len.
+
+        The founder must hold an Emperium (714) when guild_emperium_check is
+        on — the live-verified charter path."""
+        self._send(
+            pdb.pack(0x0165, struct.pack("<I", self.gid) + name.encode().ljust(24, b"\x00"))
+        )
+
+    def guild_invite(self, target_aid: int, inviter_aid: int, inviter_cid: int) -> None:
+        """CZ_REQ_JOIN_GUILD (0x0168): type(2)+AID(4)+inviter_AID(4)+inviter_CID(4) = 14B.
+
+        The invite is by ACCOUNT id (packets.hpp:1302-1308); live-verified."""
+        self._send(
+            pdb.pack(0x0168, struct.pack("<III", target_aid, inviter_aid, inviter_cid))
+        )
+
+    def guild_reply(self, guild_id: int, accept: bool = True) -> None:
+        """CZ_JOIN_GUILD (0x16b): type(2)+guild_id(4)+answer(4) = 10B (1 = accept)."""
+        self._send(pdb.pack(0x016B, struct.pack("<Ii", guild_id, 1 if accept else 0)))
+
     def keepalive(self) -> None:
         """CZ_REQUEST_TIME (0x0360): final unshuffled tick registration."""
         self._send(pdb.pack(0x0360, struct.pack("<I", int(time.time() * 1000) & 0xFFFFFFFF)))
@@ -828,6 +852,11 @@ class BotClient:
                 self.actors[info["gid"]] = info
                 self.actor_event.set()
                 self.log(f"actor entry 0x{pid:04x}: {info}")
+
+        elif pid == 0x016A:  # ZC_REQ_JOIN_GUILD (incoming guild invite)
+            self.guild_invite_gid = struct.unpack_from("<I", raw, 2)[0]
+            self.guild_invite_name = raw[6:30].split(b"\x00")[0].decode(errors="replace")
+            self.log(f"guild invite from {self.guild_invite_name!r}")
 
         elif pid == 0x02C6:  # ZC_PARTY_JOIN_REQ (incoming invite)
             self.party_invite_pid = struct.unpack_from("<I", raw, 2)[0]
