@@ -5,10 +5,12 @@ Decision-model calls happen ONLY here — on world events or periodic heartbeats
 """
 
 import math
+import os
 from collections.abc import Callable, Sequence
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Any, final
 
+from robots.adapters.chat_prompt import build_system_prompt
 from robots.app.escalation import EscalationPolicy
 from robots.app.scripts import (
     MELEE_RANGE,
@@ -133,6 +135,7 @@ class EventDrivenBrain:
         self._recovery_hp_ratio = recovery_hp_ratio
         self._model = decision_model
         self._chat = chat
+        self._chat_style = os.environ.get("CHAT_PROMPT_STYLE", "qwen")
         self.memory = memory
         self.policy = policy or EscalationPolicy()
         self._script: BehaviorScript | None = None
@@ -752,10 +755,20 @@ class EventDrivenBrain:
         )
         if escalate:
             self.escalation_count += 1
-            prompt = f"A player named {event.line.sender} said: {event.line.text}"
+            prompt = (
+                f"A player named {event.line.sender} said to you: {event.line.text}\n"
+                "Reply to them in one short in-character line."
+            )
             if self.memory is not None:
-                prompt += "\n\nMy private memory:\n" + "\n".join(self.memory.view())
-            return [Say(self._chat.generate_chat(prompt))], True
+                prompt += "\n\nWhat you remember:\n" + "\n".join(self.memory.view()[-4:])
+            system = build_system_prompt(
+                name=state.name,
+                job=state.job,
+                map_name=state.map_name,
+                goal=str(state.goal),
+                style=self._chat_style,
+            )
+            return [Say(self._chat.generate_chat(prompt, system=system))], True
         outsider = self._coordination_outsider(event.line, state)
         if outsider is not None:
             return [outsider], False

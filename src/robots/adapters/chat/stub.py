@@ -11,7 +11,7 @@ class StaticChatGenerator:
         self._replies = replies or ["ok!", "ha, nice", "brb"]
         self._next = 0
 
-    def generate_chat(self, prompt: str) -> str:
+    def generate_chat(self, prompt: str, *, system: str = "") -> str:
         reply = self._replies[self._next % len(self._replies)]
         self._next += 1
         return reply

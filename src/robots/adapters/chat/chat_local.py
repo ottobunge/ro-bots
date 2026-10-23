@@ -12,5 +12,5 @@ class LocalChatServer:
     def __init__(self, url: str = "http://127.0.0.1:8301/v1/chat/completions") -> None:
         self._url = url
 
-    def generate_chat(self, prompt: str) -> str:
+    def generate_chat(self, prompt: str, *, system: str = "") -> str:  # noqa: ARG002
         return post_chat(self._url, chat_payload(prompt))

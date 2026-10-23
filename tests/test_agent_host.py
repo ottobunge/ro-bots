@@ -181,7 +181,7 @@ def make_agent(
 
 
 class _StaticChat:
-    def generate_chat(self, prompt: str) -> str:
+    def generate_chat(self, prompt: str, *, system: str = "") -> str:
         return "hello there"
 
 

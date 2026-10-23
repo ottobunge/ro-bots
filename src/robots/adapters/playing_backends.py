@@ -13,6 +13,8 @@ from urllib.parse import urlsplit
 
 import httpx
 
+from robots.adapters.chat_prompt import sanitize_reply
+
 
 class PlayingBackendError(RuntimeError):
     """A real provider failed; callers must surface unavailability."""
@@ -141,17 +143,21 @@ class PlayingChat:
         self._url = url
         self._timeout = timeout
 
-    def generate_chat(self, prompt: str) -> str:
+    def generate_chat(self, prompt: str, *, system: str = "") -> str:
+        messages = ([{"role": "system", "content": system}] if system else []) + [
+            {"role": "user", "content": prompt}
+        ]
         body = _post(
             self._url,
             {
-                "messages": [{"role": "user", "content": prompt}],
+                "messages": messages,
                 "max_tokens": 60,
                 "temperature": 0.8,
             },
             {},
             self._timeout,
         )
+
         try:
             content = body["choices"][0]["message"]["content"]
             if not isinstance(content, str) or not content.strip():
@@ -160,7 +166,11 @@ class PlayingChat:
         except KeyError, IndexError, TypeError:
             msg = "real chat response is malformed"
             raise PlayingBackendError(msg) from None
-        return content
+        sanitized = sanitize_reply(content)
+        if sanitized is None:
+            msg = "real chat response answered like an assistant"
+            raise PlayingBackendError(msg) from None
+        return sanitized
 
 
 def make_local_chat(url: str, *, timeout: float = 60.0) -> PlayingChat:

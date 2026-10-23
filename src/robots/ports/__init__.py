@@ -32,7 +32,7 @@ class DecisionModel(Protocol):
 class ChatGenerator(Protocol):
     """Generates free-form chat text when the decision model escalated."""
 
-    def generate_chat(self, prompt: str) -> str:
+    def generate_chat(self, prompt: str, *, system: str = "") -> str:
         """Return one short in-character chat line."""
         ...
 

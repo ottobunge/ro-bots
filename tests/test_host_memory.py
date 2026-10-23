@@ -332,7 +332,7 @@ def test_llm_escalation_receives_only_bounded_private_memory(
     host = memory_host(tmp_path)
     prompts: list[str] = []
 
-    def capture_chat(prompt: str) -> str:
+    def capture_chat(prompt: str, *, system: str = "") -> str:
         prompts.append(prompt)
         return "offline reply"
 
@@ -357,7 +357,7 @@ def test_llm_escalation_receives_only_bounded_private_memory(
         second.client.chat.append((9001, f"again {second.entry.char_name}"))
         second.tick()
         assert len(prompts) == 2
-        marker, memory_view = prompts[-1].split("My private memory:\n", 1)
+        marker, memory_view = prompts[-1].split("What you remember:\n", 1)
         assert "again" in marker
         assert memory_view
         assert len(memory_view) <= VIEW_BUDGET_CHARS

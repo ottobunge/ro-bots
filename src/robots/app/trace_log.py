@@ -250,7 +250,7 @@ class TracedChatGenerator:
         self._chat = chat
         self._trace = trace
 
-    def generate_chat(self, prompt: str) -> str:
+    def generate_chat(self, prompt: str, *, system: str = "") -> str:  # noqa: ARG002
         self._trace.log("llm_request", messages=[{"role": "user", "content": prompt}])
         started = time.perf_counter()
         try:
