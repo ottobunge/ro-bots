@@ -132,7 +132,7 @@ def test_stream_all_families_fragmented_and_coalesced() -> None:
     assert observed == expected
     assert not pending
     # 901 prior registrations + the guild-create reply 0x0167 (charter slice).
-    assert len(module.PACKET_DB) == 902
+    assert len(module.PACKET_DB) == 905
 
 
 def test_empty_list_only_empty_receipt_then_partner_add() -> None:

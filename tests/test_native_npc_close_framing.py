@@ -142,6 +142,9 @@ def test_all_889_mappings_macros_and_parser_preserved_bitexact() -> None:
     # Guild-create slice: ZC_RESULT_MAKE_GUILD 0x0167 (3B), the live-verified
     # charter reply (0x0165 30B is already in the migration baseline).
     guild_reply = {0x0167: 3}
+    # Guild invite slice (packets.hpp:1302-1330): the inviter ack + the
+    # invitee prompt + the reply echo, all live-verified on the e2e world.
+    guild_invite = {0x0169: 3, 0x016A: 30, 0x016B: 10}
     assert module.PACKET_DB[0x01B3] == 67
     prior_891 = {
         key: value
@@ -152,16 +155,24 @@ def test_all_889_mappings_macros_and_parser_preserved_bitexact() -> None:
         and key not in stat_change
         and key not in shop_lists
         and key not in guild_reply
+        and key not in guild_invite
     }
     assert old | {0x00B6: 6, 0x00BC: 6} == prior_891
     assert len(prior_891) == 891
     assert not additions.keys() & prior_891.keys()
     assert not char_page.keys() & prior_891.keys()
     assert (
-        prior_891 | additions | presentation | char_page | stat_change | shop_lists | guild_reply
+        prior_891
+        | additions
+        | presentation
+        | char_page
+        | stat_change
+        | shop_lists
+        | guild_reply
+        | guild_invite
         == module.PACKET_DB
     )
-    assert len(module.PACKET_DB) == 902
+    assert len(module.PACKET_DB) == 905
     raw = (ROOT / "spikes/003-clientless-limbs/packetdb.py").read_bytes()
     cutin_block = (
         b"# Source/compiler-measured cut-in presentation only; no NPC/gameplay authority.\n"
@@ -205,6 +216,9 @@ def test_all_889_mappings_macros_and_parser_preserved_bitexact() -> None:
         # the party slice: the 0x2C4 shadow override (6 -> 26, MAIN 20180704
         # CZ_PARTY_JOIN_REQ) + its accounting comment appended to packetdb.py
         "9c041193ba212927aeb19263436c5bcfbcb91271a453d3b427e04728317cb99e",
+        # the guild invite slice: the 0x0169/0x016A/0x016B block appended
+        # to packetdb.py after the 0x0167 registration
+        "9e63c5fccd387a0bdbbbfe07646e1154fda663654361aec42ee3934876a05c82",
         "26291ffbe4ab0bf1c64adcbaf3be46c10f2e720d8bc6ff408c8052244ad8a240",
         # the guild-create slice: ZC_RESULT_MAKE_GUILD 0x0167 (3B) appended
         # (the live-verified charter reply; 0x0165 30B already in the baseline)
@@ -216,6 +230,8 @@ def test_all_889_mappings_macros_and_parser_preserved_bitexact() -> None:
         # the party slice: the 0x2C4 shadow override (6 -> 26, MAIN 20180704
         # CZ_PARTY_JOIN_REQ) + its accounting comment appended to packetdb.py
         "3ae219473ecb152f882ee12622d59e1ae17db9c8772a5c6f8061ab4dda86c94a",
+        # the guild invite slice
+        "14dac668fabe5ab6928ed5b98f5f0e793bb40e9f10ee5ba93918a98d252c4225",
         "2b0a38740ef0fcae523a586ea84860acc6e3ca46d46c76faf6b37ef21e4ab445",
         # the guild-create slice: ZC_RESULT_MAKE_GUILD 0x0167 (3B) appended
         # (the live-verified charter reply; 0x0165 30B already in the baseline)

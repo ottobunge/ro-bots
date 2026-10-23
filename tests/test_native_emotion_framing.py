@@ -106,8 +106,18 @@ def test_every_legacy_mapping_is_preserved() -> None:
     # Guild-create slice: ZC_RESULT_MAKE_GUILD 0x0167 (3B), the reply the
     # pinned server sent to the live-verified charter request (0x0165).
     guild_reply = {0x0167: 3}
+    # Guild invite slice (packets.hpp:1302-1330): the inviter ack + the
+    # invitee prompt + the reply echo, all live-verified on the e2e world.
+    guild_invite = {0x0169: 3, 0x016A: 30, 0x016B: 10}
     assert (
-        prior_891 | additions | presentation | char_page | stat_change | shop_lists | guild_reply
+        prior_891
+        | additions
+        | presentation
+        | char_page
+        | stat_change
+        | shop_lists
+        | guild_reply
+        | guild_invite
         == packetdb.PACKET_DB
     )
-    assert len(packetdb.PACKET_DB) == 902
+    assert len(packetdb.PACKET_DB) == 905

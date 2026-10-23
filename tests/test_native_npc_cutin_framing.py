@@ -272,8 +272,11 @@ def validate_exact_addition(table: dict[int, int], raw: bytes) -> None:
     # Guild-create slice: ZC_RESULT_MAKE_GUILD 0x0167 (3B), the reply the
     # pinned server sent to the live-verified charter request (0x0165).
     prior_902 = prior_901 | {0x0167: 3}
-    assert len(table) == 902
-    assert table == prior_902
+    # Guild invite slice (packets.hpp:1302-1330): the inviter ack + the
+    # invitee prompt + the reply echo, live-verified on the e2e world.
+    prior_905 = prior_902 | {0x0169: 3, 0x016A: 30, 0x016B: 10}
+    assert len(table) == 905
+    assert table == prior_905
     assert raw.count(CUTIN_BLOCK) == 1
     assert raw.count(CHAR_PAGE_BLOCK) == 1
     assert raw.count(STAT_CHANGE_BLOCK) == 1
@@ -299,6 +302,9 @@ def validate_exact_addition(table: dict[int, int], raw: bytes) -> None:
         # the guild-create slice: ZC_RESULT_MAKE_GUILD 0x0167 (3B) appended
         # (the live-verified charter reply; 0x0165 30B already in the baseline)
         "f03d980fb94fce07b62db95269be76c2cc437976d1e8697538330d2c69255386",
+        # the guild invite slice: the 0x0169/0x016A/0x016B block appended
+        # to packetdb.py after the 0x0167 registration
+        "bc0fdb024901ecbf624df54c1cc4e89b67fee52fa879c4082398b7b956c919e1",
     )
 
 
