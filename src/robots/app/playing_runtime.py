@@ -183,6 +183,22 @@ def _received_stats(stats: tuple[int, ...] | None) -> tuple[int, ...] | None:
     return tuple(stats) if stats else None
 
 
+def _recent_chat_lines(wire: Any, pos_at: float) -> tuple[ChatLine, ...]:
+    """The public + party lines, newest last (the decide-state chat block).
+
+    The party lines come from the 0x0109 ZC_PARTY_CHAT dispatch
+    (spike client.party_chat); the public lines from the 0x008D path.
+    """
+    public = tuple(ChatLine("public", str(aid), text, pos_at) for aid, text in wire.chat[-5:])
+    party: tuple[ChatLine, ...] = ()
+    try:
+        party_log = getattr(wire, "party_chat", ())
+        party = tuple(ChatLine("party", name, msg, pos_at) for _aid, name, msg in party_log[-5:])
+    except TypeError, AttributeError:
+        party = ()  # stub wires expose Mock/custom attrs; logging never blocks play
+    return public + party
+
+
 class PlayingClient:
     """Wrap native limbs while retaining AgentHost's client lifecycle contract."""
 
@@ -603,9 +619,7 @@ class PlayingClient:
             nearby=tuple(nearby),
             inventory={str(key): count for key, count in (view.inventory_counts or ())},
             pending_invites=invites,
-            recent_chat=tuple(
-                ChatLine("public", str(aid), text, pos.at) for aid, text in wire.chat[-5:]
-            ),
+            recent_chat=_recent_chat_lines(wire, pos.at),
             npc_dialogue=self._npc.view,
             npc_instructions_received=self._npc.instructions_received,
             received_skills=self.received_skills,

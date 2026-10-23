@@ -110,6 +110,7 @@ class BotClient:
         self.chat: list[tuple[int, str]] = []
         self.damage: list[tuple[int, int, int, int]] = []
         self.party_id = 0
+        self.party_chat: deque[tuple[int, str, str]] = deque(maxlen=16)
         self.party_invite_from = ""  # name of last inviter (0x2c6)
         self.party_invite_pid = 0  # party id of last invite
         self.party_members: list[dict] = []
@@ -792,6 +793,16 @@ class BotClient:
             self.chat.append((0, msg))
             self.chat_event.set()
             self.log(f"broadcast: {msg!r}")
+
+        elif pid == 0x0109:  # ZC_PARTY_CHAT: len.W AID.L "name : msg" NUL
+            aid = struct.unpack_from("<I", raw, 4)[0]
+            text = raw[8:].split(b"\x00")[0].decode(errors="replace")
+            # the wire format carries "name : msg" — split on the LAST
+            # separator so message colons survive (leg-10 probe byte check)
+            name, _, msg = text.partition(" : ")
+            self.party_chat.append((aid, name, msg))
+            self.chat_event.set()
+            self.log(f"party chat from {name}: {msg!r}")
 
         elif pid == 0x0080:  # ZC_NOTIFY_VANISH: GID.L
             gid = struct.unpack_from("<I", raw, 2)[0]

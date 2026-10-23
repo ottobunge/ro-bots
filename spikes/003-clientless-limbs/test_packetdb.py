@@ -111,3 +111,18 @@ class FramingTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class PartyInviteTests(unittest.TestCase):
+    def test_party_invite_2c4_is_registered_and_packs_padded_name(self):
+        """MAIN 20180704 invite-by-name = CZ_PARTY_JOIN_REQ 0x2c4, 26B
+        (packets.hpp:1368-1373). The w84-era 0x086d id was unregistered on
+        the pinned server and the invite was silently dropped (0 parties
+        across legs 4/5)."""
+        name = b"RinceNyan".ljust(24, b"\x00")
+        pkt = packetdb.pack(0x2C4, name)
+        self.assertEqual(pkt[:2], b"\xc4\x02")
+        self.assertEqual(pkt[2:11], b"RinceNyan")
+        self.assertEqual(len(pkt), 26)
+        self.assertIn(0x2C4, packetdb.PACKET_DB)
+        self.assertEqual(packetdb.PACKET_DB[0x2C4], 26)
