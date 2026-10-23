@@ -758,6 +758,13 @@ PACKET_DB.update({0x00BE: 5})
 PACKET_DB.update({0x2C4: 26})
 
 
+# Guild creation ack: ZC_RESULT_MAKE_GUILD 0x0167, type(2)+result(1)=3B
+# (clif.cpp:8628-8637; the result byte: 0 ok, 3 emperium missing). The
+# strict framer rejected it and killed the parse loop on the first
+# guild-create attempt.
+PACKET_DB.update({0x0167: 3})
+
+
 # Narrow source-proven shop-list additions. Preserve all prior entries and
 # strict unknown rejection. ZC_PC_PURCHASE_ITEMLIST 0x00C6 and
 # ZC_PC_SELL_ITEMLIST 0x00C7 are length-prefixed variable packets
