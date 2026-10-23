@@ -78,25 +78,11 @@ def _entity_fields(section: str, subject: str | int) -> tuple[int, str, dict[str
     con = corpora._connect_readonly(corpora.iro_db_path())
     if con is None:
         return None
+    row: Any = None
     try:
-        if isinstance(subject, int):
-            row = con.execute(
-                "SELECT id, name, fields_json FROM entities WHERE section = ? AND id = ?",
-                (section, subject),
-            ).fetchone()
-        else:
-            row = con.execute(
-                "SELECT id, name, fields_json FROM entities WHERE section = ? AND name = ?",
-                (section, subject),
-            ).fetchone()
-            if row is None:
-                row = con.execute(
-                    "SELECT id, name, fields_json FROM entities "
-                    "WHERE section = ? AND name LIKE ? ORDER BY id LIMIT 1",
-                    (section, f"{subject}%"),
-                ).fetchone()
+        row = _select_entity_row(con, section, subject)
     except sqlite3.Error:
-        return None
+        row = None
     finally:
         con.close()
     if row is None:
@@ -105,6 +91,26 @@ def _entity_fields(section: str, subject: str | int) -> tuple[int, str, dict[str
     if fields is None:
         return None
     return int(row[0]), str(row[1]), fields
+
+
+def _select_entity_row(con: sqlite3.Connection, section: str, subject: str | int) -> Any:
+    """Exact id/name hit first, then a name-prefix hit (corpora's order)."""
+    if isinstance(subject, int):
+        return con.execute(
+            "SELECT id, name, fields_json FROM entities WHERE section = ? AND id = ?",
+            (section, subject),
+        ).fetchone()
+    exact = con.execute(
+        "SELECT id, name, fields_json FROM entities WHERE section = ? AND name = ?",
+        (section, subject),
+    ).fetchone()
+    if exact is not None:
+        return exact
+    return con.execute(
+        "SELECT id, name, fields_json FROM entities "
+        "WHERE section = ? AND name LIKE ? ORDER BY id LIMIT 1",
+        (section, f"{subject}%"),
+    ).fetchone()
 
 
 @lru_cache(maxsize=4)
@@ -206,21 +212,30 @@ def _absorb_spawn_line(
     by_id: dict[int, dict[str, int]],
 ) -> None:
     """Fold one declaration line into the per-name/per-id spawn buckets."""
-    fields = line.split("\t")
-    if len(fields) < 4 or fields[1] != "monster" or line.startswith("//"):
+    parts = _spawn_parts(line)
+    if parts is None:
         return
-    map_name = fields[0].split(",")[0]
-    declared_name = fields[2].strip()
-    id_count = fields[3].split(",")
-    mob_id = _int_or_none(id_count[0]) if id_count else None
-    count = _int_or_none(id_count[1]) if len(id_count) > 1 else None
-    count = 1 if count is None else count
-    if not map_name or count <= 0:
-        return
+    map_name, declared_name, mob_id, count = parts
     if declared_name:
         _bump(by_name.setdefault(declared_name.lower(), {}), map_name, count)
     if mob_id is not None:
         _bump(by_id.setdefault(mob_id, {}), map_name, count)
+
+
+def _spawn_parts(line: str) -> tuple[str, str, int | None, int] | None:
+    """(map, declared name, mob id, count) for one valid declaration line."""
+    fields = line.split("\t")
+    if len(fields) < 4 or fields[1] != "monster" or line.startswith("//"):
+        return None
+    id_count = fields[3].split(",")
+    count = _int_or_none(id_count[1]) if len(id_count) > 1 else None
+    if count is None:
+        count = 1
+    map_name = fields[0].split(",")[0]
+    if not map_name or count <= 0:
+        return None
+    mob_id = _int_or_none(id_count[0]) if id_count else None
+    return (map_name, fields[2].strip(), mob_id, count)
 
 
 def _bump(maps: dict[str, int], map_name: str, count: int) -> None:
@@ -399,11 +414,25 @@ def mention_lines(
     along. Position in the text orders the lines; unknown names are skipped.
     """
     universe = _mention_universe(str(corpora.iro_db_path()))
-    if not universe:
-        return ()
     joined = "\n".join(str(text) for text in texts).lower()
-    if not joined.strip():
+    if not universe or not joined.strip():
         return ()
+    bound = max(0, min(max_lines, MAX_MENTION_LINES))
+    lines: list[str] = []
+    for _position, name, kind in _find_mentions(joined, universe):
+        line = _mention_query_line(name, kind)
+        if line is None:
+            continue
+        lines.append(line)
+        if len(lines) >= bound:
+            break
+    return tuple(lines)
+
+
+def _find_mentions(
+    joined: str, universe: tuple[tuple[re.Pattern[str], str, str], ...]
+) -> list[tuple[int, str, str]]:
+    """Distinct (position, name, kind) mentions, ordered by position."""
     found: dict[str, tuple[int, str, str]] = {}
     for pattern, name, kind in universe:
         match = pattern.search(joined)
@@ -412,16 +441,7 @@ def mention_lines(
         prior = found.get(name)
         if prior is None or match.start() < prior[0]:
             found[name] = (match.start(), name, kind)
-    bound = max(0, min(max_lines, MAX_MENTION_LINES))
-    lines: list[str] = []
-    for _position, name, kind in sorted(found.values(), key=lambda entry: entry[0]):
-        line = _mention_query_line(name, kind)
-        if line is None:
-            continue
-        lines.append(line)
-        if len(lines) >= bound:
-            break
-    return tuple(lines)
+    return sorted(found.values(), key=lambda entry: entry[0])
 
 
 def _mention_query_line(name: str, kind: str) -> str | None:
