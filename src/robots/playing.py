@@ -13,10 +13,15 @@ import time
 from contextlib import suppress
 from pathlib import Path
 from typing import Any
+from urllib.parse import urlsplit
 
 from robots.adapters.native_navigation import MapCache
 from robots.adapters.planning_llm import LocalPlanningModel
-from robots.adapters.playing_backends import make_local_chat, make_private_decision
+from robots.adapters.playing_backends import (
+    make_local_chat,
+    make_private_chat,
+    make_private_decision,
+)
 from robots.adapters.skill_knowledge import load_skill_knowledge
 from robots.app import agent_runtime, command_poller
 from robots.app.agent_runtime import AgentHost, ManifestEntry, PersonaClock
@@ -159,7 +164,10 @@ def build_host(args: argparse.Namespace) -> AgentHost:
         """Declared species for the map (criterion-10 knowledge; w59)."""
         return _spawn_index.get(map_name, ())
 
-    chat = make_local_chat(args.chat_url)
+    if urlsplit(args.chat_url).hostname in {"127.0.0.1", "::1"}:
+        chat = make_local_chat(args.chat_url)
+    else:
+        chat = make_private_chat(args.chat_url)
     decision = make_private_decision(args.decision_url)
 
     def client_factory(entry: ManifestEntry) -> PlayingClient:

@@ -167,3 +167,14 @@ def make_local_chat(url: str, *, timeout: float = 60.0) -> PlayingChat:
     """Construct real local chat without probing or silently selecting a stub."""
     _validate_local(url, "/v1/chat/completions", timeout)
     return PlayingChat(url, timeout)
+
+
+def make_private_chat(url: str, *, timeout: float = 60.0) -> PlayingChat:
+    """Explicit owned private-network chat endpoint (mirrors make_private_decision).
+
+    The heavengraph LLM serves the friend groups' escalations; the endpoint is
+    uncredentialed and private-network only, and the caller chooses it
+    explicitly rather than by probing.
+    """
+    _validate_endpoint(url, "/v1/chat/completions", timeout)
+    return PlayingChat(url, timeout)
