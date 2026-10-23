@@ -108,7 +108,7 @@ def test_every_legacy_mapping_is_preserved() -> None:
     guild_reply = {0x0167: 3}
     # Guild invite slice (packets.hpp:1302-1330): the inviter ack + the
     # invitee prompt + the reply echo, all live-verified on the e2e world.
-    guild_invite = {0x0169: 3, 0x016A: 30, 0x016B: 10}
+    guild_invite = {0x0168: 14, 0x0169: 3, 0x016A: 30, 0x016B: 10}
     assert (
         prior_891
         | additions
@@ -120,4 +120,4 @@ def test_every_legacy_mapping_is_preserved() -> None:
         | guild_invite
         == packetdb.PACKET_DB
     )
-    assert len(packetdb.PACKET_DB) == 905
+    assert len(packetdb.PACKET_DB) == 906

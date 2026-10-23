@@ -274,9 +274,11 @@ def validate_exact_addition(table: dict[int, int], raw: bytes) -> None:
     prior_902 = prior_901 | {0x0167: 3}
     # Guild invite slice (packets.hpp:1302-1330): the inviter ack + the
     # invitee prompt + the reply echo, live-verified on the e2e world.
-    prior_905 = prior_902 | {0x0169: 3, 0x016A: 30, 0x016B: 10}
-    assert len(table) == 905
-    assert table == prior_905
+    # the invite-by-account request: the numeric stub 2B -> the 14B era
+    # registration (packets.hpp:1302-1308), live-verified.
+    prior_906 = prior_902 | {0x0168: 14, 0x0169: 3, 0x016A: 30, 0x016B: 10}
+    assert len(table) == 906
+    assert table == prior_906
     assert raw.count(CUTIN_BLOCK) == 1
     assert raw.count(CHAR_PAGE_BLOCK) == 1
     assert raw.count(STAT_CHANGE_BLOCK) == 1
@@ -305,6 +307,9 @@ def validate_exact_addition(table: dict[int, int], raw: bytes) -> None:
         # the guild invite slice: the 0x0169/0x016A/0x016B block appended
         # to packetdb.py after the 0x0167 registration
         "bc0fdb024901ecbf624df54c1cc4e89b67fee52fa879c4082398b7b956c919e1",
+        # the guild invite slice: the 0x0168 14B registration + its era-chain
+        # entry appended to packetdb.py after the 0x0167 block
+        "2509b47e273800c97a3c210c3393efae5feed3498c78f6807dd480849caca765",
     )
 
 

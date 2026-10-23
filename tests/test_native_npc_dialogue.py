@@ -181,10 +181,11 @@ def test_existing_890_registrations_preserved_and_unknown_stays_strict():
         0x0167,  # ZC_RESULT_MAKE_GUILD 3B, the live-verified charter reply
         # the guild invite slice (packets.hpp:1302-1330): the inviter ack +
         # the invitee prompt + the reply echo, live-verified on the e2e world
+        0x0168,  # the invite-by-account request (the 14B era registration)
         0x0169,
         0x016A,
         0x016B,
     }
-    assert len(module.PACKET_DB) == 905
+    assert len(module.PACKET_DB) == 906
     with pytest.raises(ValueError, match="unknown packet 0xfafa"):
         module.parse_stream(dialog(0xB4, "guide") + b"\xfa\xfa")
