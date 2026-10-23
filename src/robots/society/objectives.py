@@ -31,7 +31,15 @@ from collections.abc import Callable, Mapping, Sequence
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any, Final, final
 
-from robots.domain.actions import GameAction, InviteToParty, PartyChat, Say, WhisperTo
+from robots.domain.actions import (
+    FoundGuild,
+    GameAction,
+    GuildInvite,
+    InviteToParty,
+    PartyChat,
+    Say,
+    WhisperTo,
+)
 from robots.domain.model import BotState, ChatLine, Goal
 
 if TYPE_CHECKING:
@@ -379,6 +387,10 @@ class GroupCoordinator:
     def book(self) -> GroupObjectiveBook:
         return self._ledger.objectives
 
+    def guild_name(self) -> str:
+        """The founder's guild name: alphanumeric only (char_name_option: 1)."""
+        return f"{self._ledger.display_name(self._persona_id)}Guard"
+
     def same_group(self, display_name: str) -> bool:
         """Is the in-game character behind ``display_name`` in MY friend group?
 
@@ -659,6 +671,7 @@ class BoundCoordinator:
                 meet_when=self._meet_when,
             )
             actions.extend(formed)
+            actions.extend(self.guild_formation_actions(self._online()))
         actions.extend(self._coordinator.deliver_whispers(self._online()))
         actions.extend(self._coordinator.tick(self._online(), in_party=state.in_party))
         return tuple(actions)
@@ -690,6 +703,24 @@ class BoundCoordinator:
     def same_group(self, display_name: str) -> bool:
         """The bound passthrough: the group-policy accept check."""
         return self._coordinator.same_group(display_name)
+
+    def guild_formation_actions(self, online_members: Sequence[str]) -> tuple[GameAction, ...]:
+        """The founder's guild packets once the party objective is formed.
+
+        One FoundGuild + one GuildInvite per online group member (by the known
+        character name); the runtime's once-guards bound the volume, and the
+        server rejects re-creates/re-invites harmlessly."""
+        if not self._coordinator.book.live_objectives():
+            return ()
+        name = self._coordinator.guild_name()
+        actions: list[GameAction] = [FoundGuild(name=name)]
+        for member in online_members:
+            if member == self._coordinator._persona_id:
+                continue
+            display = self._coordinator._ledger.display_name(member)
+            if display != member:
+                actions.append(GuildInvite(player=display))
+        return tuple(actions)
 
     def outsider_reply(self, line: ChatLine, state: BotState) -> GameAction | None:
         """The solo's affinity-gated whisper answering a public join call."""

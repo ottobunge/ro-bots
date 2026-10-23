@@ -24,6 +24,7 @@ from robots.app.scripts import (
 )
 from robots.app.trace_log import TraceLog
 from robots.domain.actions import (
+    AcceptGuildInvite,
     AcceptInvite,
     GameAction,
     MoveTo,
@@ -443,7 +444,19 @@ class EventDrivenBrain:
                 notes.append("announce")
                 review_actions = [PartyChat(text) if is_party else Say(text)]
         review_actions.extend(self._coordination_review(state, answers, notes))
+        self._accept_guild_policy(state, review_actions)
         return review_actions
+
+    def _accept_guild_policy(self, state: BotState, actions: list[GameAction]) -> None:
+        """The guild invite accept rides the same group policy as the party
+        accept: a same-group guild invite is accepted by policy (the roster
+        is injected knowledge; the group parties AND guilds together)."""
+        if (
+            state.pending_guild_invite
+            and self._coordination is not None
+            and self._coordination.same_group(state.pending_guild_invite)
+        ):
+            actions.insert(0, AcceptGuildInvite())
 
     def _trace_review(self, state: BotState, goal: Goal, trigger: str) -> None:
         """goal_review: every fired review with its provenance (trace line)."""

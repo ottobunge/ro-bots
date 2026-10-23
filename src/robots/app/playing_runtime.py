@@ -58,9 +58,12 @@ from robots.app.scripts import (
     shop_sellable_stock,
 )
 from robots.domain.actions import (
+    AcceptGuildInvite,
     AcceptInvite,
     Attack,
+    FoundGuild,
     GameAction,
+    GuildInvite,
     InviteToParty,
     Loot,
     MoveTo,
@@ -181,6 +184,13 @@ further requests go out until a new session epoch."""
 def _received_stats(stats: tuple[int, ...] | None) -> tuple[int, ...] | None:
     """The 0x00BD six-stat tuple as received; None stays None (never zeros)."""
     return tuple(stats) if stats else None
+
+
+def _pending_guild_invite(wire: Any) -> str | None:
+    """The pending 0x16a guild name, if an invite is outstanding."""
+    if getattr(wire, "guild_invite_gid", 0):
+        return getattr(wire, "guild_invite_name", None) or None
+    return None
 
 
 def _recent_chat_lines(wire: Any, pos_at: float) -> tuple[ChatLine, ...]:
@@ -619,6 +629,7 @@ class PlayingClient:
             nearby=tuple(nearby),
             inventory={str(key): count for key, count in (view.inventory_counts or ())},
             pending_invites=invites,
+            pending_guild_invite=_pending_guild_invite(wire),
             recent_chat=_recent_chat_lines(wire, pos.at),
             npc_dialogue=self._npc.view,
             npc_instructions_received=self._npc.instructions_received,
@@ -1272,13 +1283,23 @@ class PlayingClient:
             self._npc.failed = True
             raise
 
-    def _social(self, state: BotState, action: GameAction) -> None:
+    def _social_chat(self, state: BotState, action: GameAction) -> bool:
+        """The chat limbs; True = handled."""
         match action:
             case PartyChat(text=text):
                 if state.in_party:
                     self.wire._send(party_chat(text, speaker_name=self.wire.char_name))
+                return True
             case Say(text=text):
                 self.wire.say(public_chat_text(text, self.wire.char_name))
+                return True
+            case _:
+                return False
+
+    def _social(self, state: BotState, action: GameAction) -> None:
+        if self._social_chat(state, action):
+            return
+        match action:
             case Rest():
                 self._rest(state)
             case AcceptInvite():
@@ -1287,6 +1308,12 @@ class PlayingClient:
             case InviteToParty(player=player):
                 self._ensure_party_for_invite()
                 self.wire.party_invite(player)
+            case FoundGuild(name=name):
+                self._found_guild(name)
+            case GuildInvite(player=player):
+                self._invite_to_guild(player)
+            case AcceptGuildInvite():
+                self._accept_guild_invite()
             case _:
                 message = "unsupported native playing action"
                 raise ValueError(message)
@@ -1310,6 +1337,28 @@ class PlayingClient:
         # char_name_letters filter -> result=1; leg 9's zero-party cause).
         self.wire.party_create(f"{self.wire.char_name}p{bucket}")
         self.wire.party_created = True
+
+    def _found_guild(self, name: str) -> None:
+        """The charter: one create per session (the re-creates bounce)."""
+        if not getattr(self.wire, "guild_created", False):
+            self.wire.guild_create(name)
+            self.wire.guild_created = True
+
+    def _invite_to_guild(self, player: str) -> None:
+        """One invite per member per session; the AID resolves from the roster."""
+        invited: set[str] = getattr(self.wire, "guild_invited", set())
+        if player in invited:
+            return
+        target = self.wire.party_members.get(player)
+        if target:
+            self.wire.guild_invite(target, self.wire.aid, self.wire.gid)
+            invited.add(player)
+            self.wire.guild_invited = invited
+
+    def _accept_guild_invite(self) -> None:
+        """Answer the pending 0x16a prompt with the accept flag."""
+        if getattr(self.wire, "guild_invite_gid", 0):
+            self.wire.guild_reply(self.wire.guild_invite_gid, True)
 
     def _loot(self, state: BotState) -> None:
         tracker = self._tracker

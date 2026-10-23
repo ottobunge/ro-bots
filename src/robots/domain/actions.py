@@ -48,6 +48,25 @@ class AcceptInvite:
 
 
 @dataclass(frozen=True, slots=True)
+class FoundGuild:
+    """Create the speaker's guild (the founder holds the Emperium charter)."""
+
+    name: str
+
+
+@dataclass(frozen=True, slots=True)
+class GuildInvite:
+    """Invite a player (by character name) to the speaker's guild."""
+
+    player: str
+
+
+@dataclass(frozen=True, slots=True)
+class AcceptGuildInvite:
+    """Accept the pending guild invitation."""
+
+
+@dataclass(frozen=True, slots=True)
 class UseWarp:
     map_name: str
 
@@ -172,6 +191,9 @@ GameAction = (
     | PartyChat
     | WhisperTo
     | InviteToParty
+    | FoundGuild
+    | GuildInvite
+    | AcceptGuildInvite
     | AcceptInvite
     | UseWarp
     | Rest

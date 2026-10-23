@@ -71,8 +71,11 @@ from robots.app.trace_log import (
     event_payload,
 )
 from robots.domain.actions import (
+    AcceptGuildInvite,
     AcceptInvite,
+    FoundGuild,
     GameAction,
+    GuildInvite,
     InviteToParty,
     MoveTo,
     NpcRespond,
@@ -339,6 +342,26 @@ def _require_native_session(client: Any) -> None:
     reader: Any = getattr(client, "rx_thread", missing)
     if reader is not missing and (reader is None or not reader.is_alive()):
         raise NativeTelemetryUnavailable(msg)
+
+
+def _public_chat_events(agent: Any, client: Any) -> tuple[WorldEvent, ...]:
+    """New 0x008D public lines as ChatHeard (the cursor on the agent)."""
+    chat_model = getattr(client, "chat", None) or []
+    actors = getattr(client, "actors", None) or {}
+    events: list[WorldEvent] = []
+    while agent._chat_seen < len(chat_model):
+        gid, text = chat_model[agent._chat_seen]
+        agent._chat_seen += 1
+        if gid == getattr(client, "aid", None) or gid == getattr(client, "gid", None):
+            continue  # account-ID sender or legacy senderless self tag
+        actor = actors.get(gid) if isinstance(actors, dict) else None
+        sender = str(actor.get("name", gid)) if isinstance(actor, dict) else str(gid)
+        events.append(
+            ChatHeard(
+                line=ChatLine(channel="public", sender=sender, text=str(text), at=time.time())
+            )
+        )
+    return tuple(events)
 
 
 def _party_chat_events(agent: Any, client: Any) -> tuple[WorldEvent, ...]:
@@ -1007,6 +1030,26 @@ class ScheduledAgent:
             return
         self._perform_legacy(client, action)
 
+    def _perform_guild_legacy(self, client: Any, action: GameAction) -> bool:
+        """The guild limbs for the legacy host; True = handled."""
+        match action:
+            case AcceptGuildInvite():
+                ggid = getattr(client, "guild_invite_gid", 0)
+                if ggid:
+                    client.guild_reply(ggid, True)
+                return True
+            case FoundGuild(name=name):
+                client.guild_create(name)
+                client.guild_created = True
+                return True
+            case GuildInvite(player=player):
+                target = client.party_members.get(player)
+                if target:
+                    client.guild_invite(target, client.aid, client.gid)
+                return True
+            case _:
+                return False
+
     def _perform_legacy(self, client: Any, action: GameAction) -> None:
         match action:
             case MoveTo(x=x, y=y):
@@ -1026,6 +1069,8 @@ class ScheduledAgent:
                     client.party_reply(pid, True)
             case InviteToParty(player=player):
                 client.party_invite(player)
+            case AcceptGuildInvite() | FoundGuild() | GuildInvite():
+                self._perform_guild_legacy(client, action)
             case _:
                 logger.debug(
                     "agent %s: no limb for %s", self.persona.persona_id, type(action).__name__
@@ -1139,20 +1184,7 @@ class ScheduledAgent:
         native = getattr(client, "drain_native_events", None)
         if native is not None:
             events.extend(native())
-        chat_model = getattr(client, "chat", None) or []
-        actors = getattr(client, "actors", None) or {}
-        while self._chat_seen < len(chat_model):
-            gid, text = chat_model[self._chat_seen]
-            self._chat_seen += 1
-            if gid == getattr(client, "aid", None) or gid == getattr(client, "gid", None):
-                continue  # account-ID sender or legacy senderless self tag
-            actor = actors.get(gid) if isinstance(actors, dict) else None
-            sender = str(actor.get("name", gid)) if isinstance(actor, dict) else str(gid)
-            events.append(
-                ChatHeard(
-                    line=ChatLine(channel="public", sender=sender, text=str(text), at=time.time())
-                )
-            )
+        events.extend(_public_chat_events(self, client))
         events.extend(_party_chat_events(self, client))
         return tuple(events)
 

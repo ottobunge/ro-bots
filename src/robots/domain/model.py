@@ -85,6 +85,7 @@ class BotState:
     inventory: dict[str, int]
     pending_invites: tuple[PartyInvite, ...]
     recent_chat: tuple[ChatLine, ...]
+    pending_guild_invite: str | None = None
     inventory_known: bool = True
     alive_known: bool = True
     alive: bool | None = True
