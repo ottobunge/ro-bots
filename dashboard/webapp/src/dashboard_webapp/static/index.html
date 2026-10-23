@@ -88,6 +88,18 @@
                   border-radius: 8px; padding: 10px 12px; pointer-events: none;
                   box-shadow: 0 6px 24px rgba(0,0,0,.55); font-size: 12.5px; }
   #agentPopover .kv { font-size: 11px; }
+  .hrow { padding: 3px 0; border-bottom: 1px solid #21262d; font-size: 12.5px;
+          display: flex; gap: 8px; align-items: baseline; }
+  .hrow .htime { color: var(--muted); font-family: var(--mono); white-space: nowrap; }
+  .hrow .hkind { color: var(--accent); font-family: var(--mono); white-space: nowrap; }
+  .hrow .hsum { min-width: 0; word-break: break-word; }
+  .chan { font-family: var(--mono); font-size: 10.5px; padding: 0 6px;
+          border-radius: 8px; white-space: nowrap; align-self: center; }
+  .chan-party { background: rgba(88,166,255,.18); color: var(--accent); border: 1px solid rgba(88,166,255,.4); }
+  .chan-public { color: var(--muted); border: 1px solid var(--border); }
+  .chipbtn { cursor: pointer; }
+  .chipbtn.on { border-color: var(--accent); color: var(--accent); }
+  button.htab.active { border-color: var(--accent); color: var(--accent); }
 </style>
 </head>
 <body data-view="agents">
@@ -203,6 +215,33 @@
       </tr></thead>
       <tbody></tbody>
     </table>
+
+    <div id="historySection" style="margin-top:14px">
+      <p style="margin:10px 0 2px"><b>History</b>
+        <span id="historyMeta" class="kv"></span>
+        <span id="historyError" class="err"></span>
+        <span style="float:right">
+          <button class="htab active" data-htab="timeline" onclick="setHistoryTab('timeline')">Timeline</button>
+          <button class="htab" data-htab="combat" onclick="setHistoryTab('combat')">Combat</button>
+          <button class="htab" data-htab="plans" onclick="setHistoryTab('plans')">Plans</button>
+          <button onclick="loadHistory(currentAgent)">Refresh</button>
+          <button id="historyOlder" onclick="historyOlder()">older ↑</button>
+        </span></p>
+      <div id="historyChips"></div>
+      <div id="historyTimeline" style="max-height:360px;overflow:auto"></div>
+      <table id="combatTable" class="hidden">
+        <thead><tr><th>Monster</th><th class="num">Encounters</th><th class="num">Attacks</th>
+          <th class="num">Dealt</th><th class="num">Taken</th><th>First seen</th><th>Last seen</th></tr></thead>
+        <tbody></tbody>
+      </table>
+      <table id="plansTable" class="hidden">
+        <thead><tr><th>Time</th><th>Kind</th><th>Goal</th><th>From</th>
+          <th class="wrap">Targets</th><th>Trigger</th></tr></thead>
+        <tbody></tbody>
+      </table>
+      <p class="muted" style="margin:6px 0 0">Read-only JSONL traces (newest first);
+        “older ↑” pages back through the cursor.</p>
+    </div>
   </section>
 </main>
 <div id="agentPopover" class="hidden"></div>
@@ -510,6 +549,8 @@ function openAgentTab(charId) {
   hidePopover();
   renderAgentDetail(charId);
   loadDecisions(charId);
+  resetHistoryState();
+  loadHistory(charId);
 }
 window.openAgentTab = openAgentTab;
 
@@ -575,6 +616,126 @@ async function loadDecisions(charId) {
   }
 }
 window.loadDecisions = loadDecisions;
+
+/* --- agent history: timeline + combat + plans over the JSONL traces --- */
+const HISTORY_KINDS = ["action_executed", "world_event", "chat_sent", "chat_heard",
+  "goal_review", "plan_authored", "decide_response"];
+let historyKinds = new Set(HISTORY_KINDS);
+let historyCursor = null;
+
+function resetHistoryState() {
+  historyKinds = new Set(HISTORY_KINDS);
+  historyCursor = null;
+  setHistoryTab("timeline");
+}
+
+const isoShort = (iso) => (iso ? String(iso).replace("T", " ").slice(5, 16) : "–");
+
+function renderHistoryChips() {
+  $("historyChips").innerHTML = HISTORY_KINDS.map((k) =>
+    `<button class="chip chipbtn ${historyKinds.has(k) ? "on" : ""}" ` +
+    `onclick="toggleHistoryKind('${k}')">${k}</button>`).join("");
+}
+
+function toggleHistoryKind(kind) {
+  if (historyKinds.has(kind)) historyKinds.delete(kind); else historyKinds.add(kind);
+  renderHistoryChips();
+  historyCursor = null;
+  loadHistory(currentAgent);
+}
+window.toggleHistoryKind = toggleHistoryKind;
+
+function setHistoryTab(tab) {
+  for (const b of document.querySelectorAll("button[data-htab]"))
+    b.classList.toggle("active", b.dataset.htab === tab);
+  const on = (id, show) => $(id).classList.toggle("hidden", !show);
+  on("historyTimeline", tab === "timeline");
+  on("historyChips", tab === "timeline");
+  on("combatTable", tab === "combat");
+  on("plansTable", tab === "plans");
+  if (tab === "combat") loadCombat(currentAgent);
+  if (tab === "plans") loadPlans(currentAgent);
+}
+window.setHistoryTab = setHistoryTab;
+
+function historyRow(e) {
+  const chan = e.channel
+    ? `<span class="chan chan-${esc(e.channel)}">${esc(e.channel)}</span>` : "";
+  return `<div class="hrow"><span class="htime">${isoShort(e.t)}</span>` +
+    `<span class="hkind">${esc(e.kind || "?")}</span>${chan}` +
+    `<span class="hsum">${esc(e.summary || "")}</span></div>`;
+}
+
+async function loadHistory(charId, before) {
+  if (charId == null) return;
+  $("historyError").textContent = "";
+  const params = new URLSearchParams();
+  params.set("limit", "200");
+  if (historyKinds.size !== HISTORY_KINDS.length) params.set("kinds", [...historyKinds].join(","));
+  if (before) params.set("before", before);
+  try {
+    const body = await api(`/api/agents/${encodeURIComponent(charId)}/history?` + params);
+    if (currentAgent !== charId) return;
+    historyCursor = body.next_before;
+    const src = body.source || {};
+    $("historyMeta").textContent =
+      `${body.count} shown` + (body.persona ? ` · ${body.persona}` : "") +
+      (src.ok === false ? ` · ${src.reason || "traces unavailable"}` : "");
+    $("historyOlder").classList.toggle("hidden", !body.next_before);
+    $("historyTimeline").innerHTML = body.events.map(historyRow).join("") ||
+      '<p class="muted" style="margin:4px 0">no history recorded</p>';
+  } catch (e) {
+    if (currentAgent !== charId) return;
+    $("historyError").textContent = "history: " + e.message;
+  }
+}
+window.loadHistory = loadHistory;
+
+function historyOlder() {
+  if (currentAgent != null && historyCursor) loadHistory(currentAgent, historyCursor);
+}
+window.historyOlder = historyOlder;
+
+async function loadCombat(charId) {
+  if (charId == null) return;
+  try {
+    const body = await api(`/api/agents/${encodeURIComponent(charId)}/combat`);
+    if (currentAgent !== charId) return;
+    $("historyMeta").textContent =
+      `${body.engagements} monster type(s) · ${body.attacks_total} attacks · ` +
+      `${body.damage_taken_total} dmg taken` + (body.persona ? ` · ${body.persona}` : "");
+    $("combatTable").tBodies[0].innerHTML = (body.monsters || []).map((m) =>
+      `<tr><td>${esc(m.name)}</td><td class="num">${num(m.encounters)}</td>` +
+      `<td class="num">${num(m.attacks)}</td><td class="num">${num(m.damage_dealt)}</td>` +
+      `<td class="num">${num(m.damage_taken)}</td>` +
+      `<td class="kv">${isoShort(m.first_seen)}</td><td class="kv">${isoShort(m.last_seen)}</td></tr>`).join("") ||
+      '<tr><td colspan="7" class="muted">no combat recorded</td></tr>';
+  } catch (e) {
+    if (currentAgent !== charId) return;
+    $("historyError").textContent = "combat: " + e.message;
+  }
+}
+window.loadCombat = loadCombat;
+
+async function loadPlans(charId) {
+  if (charId == null) return;
+  try {
+    const body = await api(`/api/agents/${encodeURIComponent(charId)}/plans`);
+    if (currentAgent !== charId) return;
+    $("historyMeta").textContent = `${body.count} plan event(s)` +
+      (body.persona ? ` · ${body.persona}` : "");
+    $("plansTable").tBodies[0].innerHTML = (body.plans || []).map((p) =>
+      `<tr><td class="kv">${isoShort(p.t)}</td><td class="hkind">${esc(p.kind || "?")}</td>` +
+      `<td>${esc(p.goal || "–")}</td><td class="muted">${esc(p.previous_goal || "–")}</td>` +
+      `<td class="wrap kv">${esc((p.targets || []).join(", "))}</td>` +
+      `<td>${esc(p.trigger || "–")}</td></tr>`).join("") ||
+      '<tr><td colspan="6" class="muted">no plans recorded</td></tr>';
+  } catch (e) {
+    if (currentAgent !== charId) return;
+    $("historyError").textContent = "plans: " + e.message;
+  }
+}
+window.loadPlans = loadPlans;
 
 async function refreshEvents() {
   try {

@@ -93,7 +93,10 @@ status endpoint and flips its button to **applied** when the receipt arrives.
 | `GET /api/commands/{id}` | command status: `queued` until the host poller's receipt lands, then `applied` (+ `applied_ts`) |
 | `POST /api/population` | generate a population (PopulationSpec + world name); `201` with counts, paths, fixture_sql |
 | `POST /api/population/{id}/apply` | apply the stored fixture via the allowlisted writer; `403` on non-allowlisted SQL, `404` unknown world/population |
-| `GET /` | single-page dashboard (vanilla JS, no build step): Agents/Runs/Population/Agent views — hover an agent row for a popover (map+position, stats, inventory summary; detail cached 30s), click for the full agent tab with stats, inventory, memory and the decision-history table (limit selector 50/100/250) |
+| `GET /` | single-page dashboard (vanilla JS, no build step): Agents/Runs/Population/Agent views — hover an agent row for a popover (map+position, stats, inventory summary; detail cached 30s), click for the full agent tab with stats, inventory, memory, the decision-history table (limit selector 50/100/250) and the History section (kind-filter chips, newest-first timeline, Combat + Plans sub-tabs, manual refresh + “older ↑” cursor paging) |
+| `GET /api/agents/{id}/history` | per-agent timeline over the JSONL traces (persona via the host manifest): `?kinds=a,b` (default action_executed, world_event, chat_sent, chat_heard, goal_review, plan_authored, decide_response), `?limit=N` (default 200, cap 2000), `?before=<ISO>` cursor pages strictly older; newest-first compact rows (t, kind, map/x/y, summary); `200` with empty lists when traces are absent/unconfigured, `404` unknown agent, `422` bad kinds/before |
+| `GET /api/agents/{id}/combat` | per-monster aggregation over the same traces (MonsterSpotted/DamageTaken + Attack actions): encounters (>300s gap = new encounter), attacks, damage taken totals, first/last seen |
+| `GET /api/agents/{id}/plans` | goal_review/plan_authored timeline: goal, previous_goal, trigger, farm targets, newest first |
 | `GET /api/health` | version + config echo (no secrets) |
 
 A missing/degraded source answers honestly: `404` for unknown agent/run ids,
@@ -142,6 +145,8 @@ command line or in the environment: compose reads the secret file path from
 | `DASHBOARD_PORT` | `8401` | host port mapping in compose |
 | `RECEIPTS_GLOB` | `.work/playing-grind-emission/evidence/receipt-*.json` | window receipts glob |
 | `AGENT_MEMORY_ROOT` | *(unset)* | memory dir root for read-only per-agent listings |
+| `TRACES_DIR` | `.work/runtime/population-live/traces` | per-agent JSONL trace dir (read-only; backs the history/combat/plans endpoints) |
+| `HOST_MANIFEST` | `.work/runtime/population-live/host-manifest.json` | host manifest mapping persona_id <-> char_name for the history endpoints |
 | `WORLDFEED_URL` | `http://127.0.0.1:8400` | WorldFeed base URL |
 | `EVENTS_DEADLINE_S` | `2.0` | bounded SSE read deadline |
 | `DB_HOST`/`DB_PORT`/`DB_NAME`/`DB_USER` | unset/`3306`/`ragnarok`/`root` | MariaDB coordinates |
@@ -163,13 +168,16 @@ nix develop --offline /home/otto/dev/ro-bots -c bash -c \
   'cd dashboard/webapp && uv sync && uv run pytest'   # from a linked worktree
 ```
 
-154 tests: config/secrets, receipt store (glob order, headline sums, schema
+196 tests: config/secrets, receipt store (glob order, headline sums, schema
 drift, path traversal), MariaDB source (SQL allowlist, mapping, connection
 seam, secret handling), memory viewer, goal enrichment, SSE parsing, the JSONL
 command queue + say/goal allowlist, the population endpoints + the real
-`robots.popgen` generator, the fixture applier + write allowlist guard, and all
-API endpoints (including the cross-receipt decision-history aggregation and
-the dashboard→poller command round-trip against the real poller), UI + health.
+`robots.popgen` generator, the fixture applier + write allowlist guard, the
+per-agent trace history (persona mapping, kind/limit/cursor, combat
+aggregation, plans timeline — against fixture JSONL files, never the live
+traces), and all API endpoints (including the cross-receipt decision-history
+aggregation and the dashboard→poller command round-trip against the real
+poller), UI + health.
 
 ## Known boundaries
 
@@ -179,10 +187,9 @@ the dashboard→poller command round-trip against the real poller), UI + health.
 - `POST /api/population` never touches the DB; applying the fixture is the
   separate allowlisted `…/apply` step, and it writes only `login`/`char`/
   `skill` INSERTs.
-- Memory listing matches the character name in file paths; there is no
-  authoritative char↔persona mapping (WorldFeed goal join uses persona
-  name/id == character name; the command seam resolves personas by char_name
-  from the agent source, falling back to persona-id == agent_id).
+- Memory listing matches the character name in file paths; for the history
+  endpoints the char↔persona mapping comes from the host manifest
+  (`HOST_MANIFEST`), falling back to persona-id == trace file name.
 - `GET /api/events` returns a bounded snapshot, not a live stream.
 - Older window receipts legitimately lack tails/gates; the run detail renders
   them as empty ("not supplied") instead of failing.

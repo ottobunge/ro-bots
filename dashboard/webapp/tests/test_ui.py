@@ -105,3 +105,50 @@ def test_index_command_box_targets_allowlist_and_shows_applied_status() -> None:
     assert "say " in html
     assert "goal " in html
     assert "applied" in html
+
+
+def test_index_has_history_timeline_with_kind_chips_and_cursor_paging() -> None:
+    html = _client().get("/").text
+
+    assert 'id="historyTimeline"' in html
+    assert 'id="historyChips"' in html
+    # kind filter chips cover the default history kinds
+    for kind in (
+        "action_executed",
+        "world_event",
+        "chat_sent",
+        "chat_heard",
+        "goal_review",
+        "plan_authored",
+        "decide_response",
+    ):
+        assert kind in html
+    assert "toggleHistoryKind" in html
+    # the timeline fetch + the manual refresh + the older-page cursor
+    assert "/history?" in html
+    assert "before" in html
+    assert "historyOlder" in html
+    assert "loadHistory" in html
+
+
+def test_index_history_rows_render_kind_summary_and_distinct_party_channel() -> None:
+    html = _client().get("/").text
+
+    assert "historyRow" in html
+    assert 'class="hkind"' in html
+    assert "chan-party" in html  # party chat visually distinct
+    assert "chan-public" in html
+
+
+def test_index_has_combat_and_plans_history_sub_tabs() -> None:
+    html = _client().get("/").text
+
+    assert 'data-htab="combat"' in html
+    assert 'id="combatTable"' in html
+    assert "/combat" in html
+    assert "Encounters" in html
+    assert 'data-htab="plans"' in html
+    assert 'id="plansTable"' in html
+    assert "/plans" in html
+    assert "loadCombat" in html
+    assert "loadPlans" in html

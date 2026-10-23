@@ -54,6 +54,14 @@ from dashboard_webapp.repository import (
     UnknownAgentError,
     UnknownRunError,
 )
+from dashboard_webapp.traces import (
+    HISTORY_LIMIT_DEFAULT,
+    InvalidHistoryQuery,
+    TraceHistory,
+    clamp_limit,
+    parse_before,
+    parse_kinds,
+)
 
 STATIC_DIR = Path(__file__).parent / "static"
 _EVENTS_LIMIT_CAP = 200
@@ -96,6 +104,7 @@ def create_app(
     memory: MemoryViewerLike | None,
     population: PopulationStore | None = None,
     applier: DbApplier | None = None,
+    traces: TraceHistory | None = None,
     config: AppConfig | None = None,
 ) -> FastAPI:
     cfg = config or AppConfig()
@@ -126,6 +135,56 @@ def create_app(
     @app.exception_handler(SqlNotAllowed)
     async def _refused_sql(_request: Any, exc: SqlNotAllowed) -> JSONResponse:
         return JSONResponse(status_code=403, content={"detail": str(exc)})
+
+    @app.exception_handler(InvalidHistoryQuery)
+    async def _bad_history_query(_request: Any, exc: InvalidHistoryQuery) -> JSONResponse:
+        return JSONResponse(status_code=422, content={"detail": str(exc)})
+
+    def _char_name_lookup(agent_ref: str) -> str | None:
+        """char-id -> char name through the agent source (best-effort)."""
+        if agents is None or not agent_ref.isdigit():
+            return None
+        return agents.agent_detail(int(agent_ref)).agent.name
+
+    def _agent_identity(agent_ref: str) -> dict[str, Any] | None:
+        if agents is None or not agent_ref.isdigit():
+            return None
+        try:
+            agent = agents.agent_detail(int(agent_ref)).agent
+        except Exception:
+            return None
+        return {"char_id": agent.char_id, "name": agent.name}
+
+    def _agent_exists(agent_ref: str) -> bool:
+        """Does the agent source know this char id / name? (best-effort)"""
+        if agents is None:
+            return False
+        try:
+            if agent_ref.isdigit():
+                agents.agent_detail(int(agent_ref))
+                return True
+            return any(a.name == agent_ref for a in agents.list_agents())
+        except Exception:
+            return False
+
+    def _resolve_traced_agent(agent_ref: str) -> tuple[TraceHistory, str | None]:
+        """The TraceHistory + persona for a dashboard agent id.
+
+        An agent unknown to both the manifest and the agent source is 404; an
+        agent that merely has no trace file resolves to persona None (the
+        history endpoints then answer empty lists, never 404).
+        """
+        if traces is None:
+            raise UnknownAgentError(f"trace history not configured: {agent_ref}")
+        persona = traces.resolve_persona(agent_ref, char_lookup=_char_name_lookup)
+        if persona is None and not _agent_exists(agent_ref):
+            raise UnknownAgentError(f"unknown agent: {agent_ref}")
+        return traces, persona
+
+    def _history_source_meta(traces_src: TraceHistory | None, ok: bool) -> dict[str, Any]:
+        if traces_src is None:
+            return {"ok": False, "reason": "traces not configured"}
+        return {"ok": ok, "dir": str(traces_src.traces_dir)}
 
     @app.get("/api/agents")
     async def get_agents() -> dict[str, Any]:
@@ -166,6 +225,71 @@ def create_app(
         runs_source = _require(runs, "run source")
         agent_source = _require(agents, "agent source")
         return agent_decision_history(runs_source, agent_source, char_id, limit)
+
+    def _history_unconfigured() -> dict[str, Any]:
+        return {
+            "agent": None,
+            "persona": None,
+            "source": _history_source_meta(traces, ok=False),
+        }
+
+    @app.get("/api/agents/{agent_ref}/history")
+    async def get_agent_history(
+        agent_ref: str,
+        kinds: str | None = None,
+        limit: int = HISTORY_LIMIT_DEFAULT,
+        before: str | None = None,
+    ) -> dict[str, Any]:
+        parsed_kinds = parse_kinds(kinds)  # InvalidHistoryQuery -> 422
+        cursor = parse_before(before)
+        if traces is None or not traces.configured():
+            return {
+                **_history_unconfigured(),
+                "events": [],
+                "count": 0,
+                "limit": clamp_limit(limit),
+                "next_before": None,
+            }
+        history_src, persona = _resolve_traced_agent(agent_ref)
+        body = history_src.history(persona or "", kinds=parsed_kinds, limit=limit, before=cursor)
+        return {
+            "agent": _agent_identity(agent_ref),
+            "persona": persona,
+            **body,
+            "source": _history_source_meta(traces, ok=True),
+        }
+
+    @app.get("/api/agents/{agent_ref}/combat")
+    async def get_agent_combat(agent_ref: str) -> dict[str, Any]:
+        if traces is None or not traces.configured():
+            return {
+                **_history_unconfigured(),
+                "monsters": [],
+                "engagements": 0,
+                "attacks_total": 0,
+                "damage_taken_total": 0,
+            }
+        history_src, persona = _resolve_traced_agent(agent_ref)
+        body = history_src.combat(persona or "")
+        return {
+            "agent": _agent_identity(agent_ref),
+            "persona": persona,
+            **body,
+            "source": _history_source_meta(traces, ok=True),
+        }
+
+    @app.get("/api/agents/{agent_ref}/plans")
+    async def get_agent_plans(agent_ref: str, limit: int = HISTORY_LIMIT_DEFAULT) -> dict[str, Any]:
+        if traces is None or not traces.configured():
+            return {**_history_unconfigured(), "plans": [], "count": 0, "limit": clamp_limit(limit)}
+        history_src, persona = _resolve_traced_agent(agent_ref)
+        body = history_src.plans(persona or "", limit=limit)
+        return {
+            "agent": _agent_identity(agent_ref),
+            "persona": persona,
+            **body,
+            "source": _history_source_meta(traces, ok=True),
+        }
 
     @app.get("/api/runs")
     async def get_runs() -> dict[str, Any]:
@@ -259,6 +383,7 @@ def create_app(
                 "db_configured": cfg.db_configured,
                 "worlds_root": cfg.worlds_root,
                 "command_runtime_root": cfg.command_runtime_root,
+                "traces_dir": cfg.traces_dir,
             },
         }
 
@@ -294,6 +419,7 @@ def create_app_from_env() -> FastAPI:
     from dashboard_webapp.events_source import SseEventSource
     from dashboard_webapp.goals_source import HttpGoalSource
     from dashboard_webapp.runs_store import ReceiptRunStore
+    from dashboard_webapp.traces import TraceHistory
 
     return create_app(
         agents=agents,
@@ -304,5 +430,6 @@ def create_app_from_env() -> FastAPI:
         memory=MemoryViewer(cfg.memory_root),
         population=PopgenStore(Path(cfg.worlds_root)),
         applier=applier,
+        traces=TraceHistory(cfg.traces_dir, cfg.host_manifest),
         config=cfg,
     )
