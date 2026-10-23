@@ -765,6 +765,13 @@ PACKET_DB.update({0x2C4: 26})
 PACKET_DB.update({0x0167: 3})
 
 
+# Guild invite chain (20180704, packets.hpp:1302-1330): the inviter ack
+# ZC_ACK_REQ_JOIN_GUILD 0x0169 (type+result, 3B), the invitee prompt
+# ZC_REQ_JOIN_GUILD 0x016a (type+guild_id+guild_name[24], 30B) and the
+# reply echo CZ_JOIN_GUILD 0x016b (type+guild_id+answer, 10B).
+PACKET_DB.update({0x0169: 3, 0x016A: 30, 0x016B: 10})
+
+
 # Narrow source-proven shop-list additions. Preserve all prior entries and
 # strict unknown rejection. ZC_PC_PURCHASE_ITEMLIST 0x00C6 and
 # ZC_PC_SELL_ITEMLIST 0x00C7 are length-prefixed variable packets
