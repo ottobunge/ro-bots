@@ -237,7 +237,10 @@ def test_manifest_empty_raises(tmp_path: Any) -> None:
         load_manifest(path)
 
 
-def test_agent_connects_when_window_opens_and_publishes_online() -> None:
+def test_agent_connects_when_window_opens_and_publishes_online(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setenv("CHAT_INITIATIVE_CHANCE", "1")
     roster = make_roster()
     ws = WorldState(roster)
     agent, client, _clock = make_agent(world_state=ws)

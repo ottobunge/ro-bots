@@ -11,7 +11,12 @@ from collections.abc import Callable, Sequence
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Any, final
 
-from robots.adapters.chat_prompt import build_system_prompt, should_send_chat
+from robots.adapters.chat_prompt import (
+    build_system_prompt,
+    initiative_due,
+    initiative_premade,
+    should_send_chat,
+)
 from robots.app.escalation import EscalationPolicy
 from robots.app.scripts import (
     MELEE_RANGE,
@@ -140,6 +145,9 @@ class EventDrivenBrain:
         self._chat_cooldown_s = float(os.environ.get("CHAT_COOLDOWN_S", "12"))
         self._last_chat_text: str | None = None
         self._last_chat_monotonic: float | None = None
+        self._initiative_min_s = float(os.environ.get("CHAT_INITIATIVE_MIN_S", "240"))
+        self._initiative_chance = float(os.environ.get("CHAT_INITIATIVE_CHANCE", "0.4"))
+        self._last_initiative_monotonic: float | None = None
         self.memory = memory
         self.policy = policy or EscalationPolicy()
         self._script: BehaviorScript | None = None
@@ -445,11 +453,10 @@ class EventDrivenBrain:
         notes.append(f"script->{type(self._script).__name__}")
         review_actions: list[GameAction] = list(self._party_event_announce(state, answers, notes))
         if not review_actions:
-            announce = self._premade_text(state, answers, min_urgency=URGENCY_TALK)
-            if announce is not None:
-                text, is_party = announce
-                notes.append("announce")
-                review_actions = [PartyChat(text) if is_party else Say(text)]
+            initiative = self._initiative_text(state)
+            if initiative is not None:
+                notes.append("initiative announce")
+                review_actions = [initiative]
         review_actions.extend(self._coordination_review(state, answers, notes))
         self._accept_guild_policy(state, review_actions)
         return review_actions
@@ -464,6 +471,33 @@ class EventDrivenBrain:
             and self._coordination.same_group(state.pending_guild_invite)
         ):
             actions.insert(0, AcceptGuildInvite())
+
+    def _initiative_text(self, state: BotState) -> GameAction | None:
+        """The cadence-gated goal announcement: a Clef-layer premade, zero LLM.
+
+        The leg-15 announce path was dead (URGENCY_TALK=1.5 above the 0-1
+        chat_urgency range), so nobody ever spoke first; this paces the
+        goal-keyed premade pool instead (CHAT_INITIATIVE_MIN_S/CHANCE)."""
+        now_s = time.monotonic()
+        last = self._last_initiative_monotonic
+        min_s = self._initiative_min_s
+        chance = self._initiative_chance
+        if not initiative_due(last_s=last, now_s=now_s, min_s=min_s, chance=chance):
+            return None
+        premade_id = initiative_premade(state.goal, inventory=tuple(state.inventory))
+        if premade_id not in PREMADE_CHAT:
+            return None
+        text = self._expand_premade(PREMADE_CHAT[premade_id], state)
+        if not should_send_chat(
+            text,
+            last_text=self._last_chat_text,
+            since_s=self._since_last_chat(),
+            cooldown_s=self._chat_cooldown_s,
+        ):
+            return None
+        self._last_initiative_monotonic = now_s
+        self._record_chat(text)
+        return PartyChat(text) if state.in_party else Say(text)
 
     def _chat_cooldown_ok(self) -> bool:
         """The pre-generation rate gate: no escalation inside the cooldown."""

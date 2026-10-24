@@ -15,7 +15,9 @@ Select via CHAT_PROMPT_STYLE (playing.build_host).
 
 from __future__ import annotations
 
+import random
 import re
+from collections.abc import Callable
 
 MAX_CHAT_LEN = 100
 
@@ -102,3 +104,36 @@ def should_send_chat(
     if since_s is not None and since_s < cooldown_s:
         return False
     return not (last_text is not None and text.strip() == last_text.strip())
+
+
+_GOAL_PREMADE: dict[str, str] = {
+    "GRIND": "lfp",
+    "FARM_ITEM": "lfp",
+    "SOCIAL": "lfp",
+    "QUEST": "lfp",
+}
+
+
+def initiative_premade(goal: object, *, inventory: object) -> str:
+    """The goal-keyed default premade id (the sell line only with stock)."""
+    name = getattr(goal, "name", str(goal))
+    if name == "IDLE_TOWN":
+        return "sell_wts" if inventory else "greet"
+    return _GOAL_PREMADE.get(name, "lfp")
+
+
+def initiative_due(
+    *,
+    last_s: float | None,
+    now_s: float,
+    min_s: float,
+    roll: Callable[[], float] | None = None,
+    chance: float = 1.0,
+) -> bool:
+    """The initiative cadence: the min gap + the probability roll."""
+    if last_s is not None and (now_s - last_s) < min_s:
+        return False
+    if chance >= 1.0:
+        return True
+    draw = roll() if roll is not None else random.random()
+    return draw < chance

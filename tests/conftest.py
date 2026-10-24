@@ -1,5 +1,7 @@
 """Shared fixtures: a deterministic BotState factory and test doubles."""
 
+import os
+
 import pytest
 
 from robots.domain.model import ActorRef, BotState, ChatLine, Goal, PartyInvite
@@ -52,3 +54,10 @@ def invited_state() -> BotState:
     return make_state(
         pending_invites=(PartyInvite(from_name="PartyLeader", at=2.0),),
     )
+
+
+# The world default (chance 0.4) would fire inside tests that pin the exact
+# review actions; the initiative tests cover the policy directly. Set at the
+# import time (NOT an autouse monkeypatch fixture: its per-test teardown
+# interplay broke the runtime_tree_sync injected-fault teardowns).
+os.environ.setdefault("CHAT_INITIATIVE_CHANCE", "0")
