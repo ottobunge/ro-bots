@@ -75,6 +75,7 @@ if TYPE_CHECKING:
 
 REVIEW_BAD = 0.5
 URGENCY_TALK = 1.5
+SCRIPT_TRACE_PERIOD_S = 10.0
 # Window-8 root cause: a retained non-terminal NPC dialogue diverted the grind
 # goal script forever (69 dialogue actions, zero attacks). Bounded received-step
 # budget: strict dialogue handling keeps the goal script for at most this many
@@ -645,6 +646,7 @@ class EventDrivenBrain:
         if self._script is None:
             self._script = script_for(state.goal, state)
         outcome: ScriptOutcome = self._script.step(state)
+        self._trace_script_step(state, outcome)
         # the widen streak sync: the streak survives the plan re-authoring
         if isinstance(self._script, FarmScript) and self._plan is not None:
             key = (frozenset(self._plan.target_mobs), self._plan.map_name)
@@ -655,6 +657,31 @@ class EventDrivenBrain:
         if outcome.status in (ScriptStatus.DONE, ScriptStatus.FAILED):
             self._script = None
         return outcome
+
+    def _trace_script_step(self, state: BotState, outcome: ScriptOutcome) -> None:
+        """Sampled script_step telemetry: the decision context per step.
+
+        Leg 17 recorded 5,209 moves and 7 attacks with no way to tell WHY the
+        approaches never converged; the sampled line carries the script, the
+        status, the emitted action kinds and the nearest-monster distance."""
+        trace = self._trace
+        if trace is None:
+            return
+        now = time.monotonic()
+        last = getattr(self, "_last_script_trace", None)
+        if last is not None and (now - last) < SCRIPT_TRACE_PERIOD_S:
+            return
+        self._last_script_trace = now
+        distances = [a.distance for a in state.nearby if getattr(a, "kind", "") == "monster"]
+        nearest = min(distances) if distances else None
+        trace.log(
+            "script_step",
+            script=type(self._script).__name__,
+            status=outcome.status.name,
+            actions=[type(action).__name__ for action in outcome.actions[:4]],
+            nearest_monster_d=round(nearest, 1) if nearest is not None else None,
+            nearby_n=len(state.nearby),
+        )
 
     def _divert_grind_dialogue(self, state: BotState, dialog: NpcDialogue) -> ScriptOutcome | None:
         """Strict NPC handling, bounded for grind goals (window-8 starvation).
