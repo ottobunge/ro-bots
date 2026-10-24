@@ -41,6 +41,14 @@ def _goal_criterion(goal: Goal) -> str:
     }[goal]
 
 
+def _drop_moot_options(questions: dict[str, Any], state: BotState) -> None:
+    """The facts gate the options: party_join is moot for a member of a
+    persisted party (leg 16: 339 party_join picks starved grinding to zero
+    attacks), so the schema drops what the state makes impossible."""
+    if state.in_party:
+        del questions["next_action"]["criteria"]["party_join"]
+
+
 def build_decision_request(
     state: BotState,
     memory_lines: list[str] | None = None,
@@ -160,6 +168,8 @@ def build_decision_request(
             "criteria": ["Badly, reconsider", "Going okay", "Going great"],
         },
     }
+
+    _drop_moot_options(questions, state)
 
     return {
         "model": "clef",
