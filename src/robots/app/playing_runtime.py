@@ -754,6 +754,7 @@ class PlayingClient:
     def _attack(self, state: BotState, target: int) -> None:
         if (
             state.alive is True
+            and self._pending is None
             and any(actor.id == target for actor in state.nearby_monsters)
             and self._rest_seq is None
             and self._attack_ready()

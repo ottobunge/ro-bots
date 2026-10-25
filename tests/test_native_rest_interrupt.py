@@ -143,6 +143,11 @@ def test_attack_cannot_bypass_pending_movement_arrival():
     client.perform_native(Attack(123))
     assert not wire.sent
     wire.add(walk_ack((43, 37), (43, 37)))
+    # the stop-and-swing contract: the arrival release clears the pending
+    # walk (the per-tick _await_pending does this in production) before the
+    # attack fires - the mid-walk swings are silently dropped by the server
+    # (the attack_fail_probe evidence)
+    client._pending = None
     client.perform_native(Attack(123))
     assert wire.sent == [bytes.fromhex("37047b00000000")]
 
