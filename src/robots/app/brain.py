@@ -58,6 +58,7 @@ from robots.domain.events import (
 from robots.domain.farm import FARM_DURATION_S, INTERRUPT_LEVEL_MARGIN, FarmPlan
 from robots.domain.model import ChatLine, Goal
 from robots.knowledge.game_context import decide_knowledge_lines
+from robots.knowledge.travel_routes import TRAVEL_ROUTES
 from robots.society.objectives import BoundCoordinator
 from robots.society.relations import SOCIAL_CONTEXT_MAX_LINES, party_event_premade
 from robots.society.wants import (
@@ -450,7 +451,7 @@ class EventDrivenBrain:
         plan = self._setup_farm_plan(state, answers, notes) if self._wants_farming(goal) else None
         self._plan = plan
         self._trace_plan(goal, plan, trigger)
-        self._script = FarmScript(plan) if plan is not None else script_for(goal, state)
+        self._script = FarmScript(plan) if plan is not None else self._goal_script(goal, state)
         notes.append(f"script->{type(self._script).__name__}")
         review_actions: list[GameAction] = list(self._party_event_announce(state, answers, notes))
         if not review_actions:
@@ -644,7 +645,7 @@ class EventDrivenBrain:
             # (ADR-021): execute it instead of re-entering novice guidance.
             return NpcGuidanceScript().step(state)
         if self._script is None:
-            self._script = script_for(state.goal, state)
+            self._script = self._goal_script(state.goal, state)
         outcome: ScriptOutcome = self._script.step(state)
         self._trace_script_step(state, outcome)
         # the widen streak sync: the streak survives the plan re-authoring
@@ -932,6 +933,16 @@ class EventDrivenBrain:
         if self._coordination is None:
             return None
         return self._coordination.objective_map()
+
+    def _goal_script(self, goal: Goal, state: BotState):
+        """The goal script, with the travel plan when the map needs a route.
+
+        Leg 20: a grind goal on prontera patrolled a mobless town while the
+        field (prt_fild08's spawns) sat across the warp - the seeded route
+        table turns the empty-view grind into the walk to the field."""
+        if goal == Goal.GRIND and state.map_name in TRAVEL_ROUTES:
+            return GrindScript(travel_plan=TRAVEL_ROUTES[state.map_name])
+        return script_for(goal, state)
 
     def _setup_farm_plan(
         self, state: BotState, answers: dict[str, Any], notes: list[str]

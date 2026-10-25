@@ -519,10 +519,14 @@ class GrindScript:
     """
 
     def __init__(
-        self, hp_rest_below: float = 0.25, commit_window: int = KILL_COMMIT_WINDOW
+        self,
+        hp_rest_below: float = 0.25,
+        commit_window: int = KILL_COMMIT_WINDOW,
+        travel_plan: tuple[tuple[str, int, int], ...] = (),
     ) -> None:
         self._hp_rest_below = hp_rest_below
         self._commit_window = commit_window
+        self._travel_plan = travel_plan
 
     def step(self, state: BotState) -> ScriptOutcome:
         if state.hp_ratio < self._hp_rest_below:
@@ -535,6 +539,13 @@ class GrindScript:
         if monsters:
             return _engage(state, monsters, self._commit_window)
         _release_commitment(state, self._commit_window)
+        # the travel leg (leg 20): a grind goal on a mobless map walks the
+        # route toward the known field instead of patrolling the town (the
+        # Loot branch is pointless while the bot is off-field)
+        if self._travel_plan:
+            leg = self._travel_leg(state)
+            if leg is not None:
+                return ScriptOutcome((MoveTo(x=leg[0], y=leg[1]),), ScriptStatus.ACTIVE)
         if state.inventory:
             return ScriptOutcome((Loot(),), ScriptStatus.ACTIVE)
         # w65-69 roam leg (mirrors FarmScript): an empty view must not
@@ -545,6 +556,19 @@ class GrindScript:
             (MoveTo(max(0, state.x + dx), max(0, state.y + dy)),),
             ScriptStatus.ACTIVE,
         )
+
+    def _travel_leg(self, state: BotState) -> tuple[int, int] | None:
+        """The first unmet route cell on the bot's current map; None = arrived.
+
+        The plan is the ordered [(map, x, y)] warp route from the knowledge
+        surface (route_hint). Legs on other maps are already behind the bot."""
+        for leg_map, x, y in self._travel_plan:
+            if leg_map != state.map_name:
+                continue
+            if (state.x, state.y) == (x, y):
+                continue
+            return (x, y)
+        return None
 
 
 @final
