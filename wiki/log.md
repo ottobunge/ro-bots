@@ -5611,3 +5611,42 @@ Priority order for every bot session: **(1) stat allocation, (2) skill allocatio
 - The ONLY inter-agent channel is game packets: `GroupCoordinator` emits InviteToParty (by the injected roster's character name) + the join-call premade (`hunting porings prt_fild08, join me`) + `inviting ...` + recorded `meet at prontera 156,22 at 19:00` whispers delivered as real whispers once both are online. Emission purity + no-cross-agent-writer API pins added (operator directive: roster injection = allowed meta-knowledge; telepathy chat = forbidden, tested).
 - Brain hooks (keyword-only `coordination`, legacy behavior unchanged without it): the leader's `objective_action` review question when party_formation sees an open window; the member's goal/map alignment while an objective is active (objective wins over the model's change_goal; farm plans adopt the objective map); join recorded on the member's own accept; the solo outsider whisper reply, affinity-gated (negative friendship = declined).
 - Full offline loop proven on the seed-7 2+2+1 population through a packet-level fake bus (`tests/test_objectives.py::test_seed7_week_full_loop_coordination_through_game_socials`): leader announces + invites -> member accepts -> alignment -> welcome -> second group farms -> schedule closes -> 4x `gg wp` dissolve. Gate: `task check` green — 6,184 passed + 65 subtests (+48 tests), coverage 95.72%.
+
+
+## 2026-10-24 - the chat/combat tuning arc (legs 13-18)
+
+The tuning sprint that made the population world feel alive, each fix driven
+by a leg receipt and named by the trace instrumentation:
+
+- **Chat personas** (`adapters/chat_prompt.py`): the roleplay system prompt
+  per model style (qwen strict / generic, `CHAT_PROMPT_STYLE`), the reply
+  sanitizer (one line, emoji/markdown stripped, assistant-speak rejected to
+  silence), the escalation framed "said to you, reply in character" with the
+  bounded 4-line memory. Leg 12's "welcome back - and thanks for the context!
+  (star emoji)" slop became "Always, NyxSong. Let's go."
+- **The chat governor**: leg 14's mutual-reply loop sent 818 chats/agent; the
+  cooldown (`CHAT_COOLDOWN_S`, 12s) + the repeat filter closed it (leg 15: 7).
+- **The chat initiative**: the review announce path was DEAD CODE
+  (`URGENCY_TALK = 1.5` vs the 0-1 chat_urgency range) so nobody spoke first.
+  `_initiative_text` = the cadence policy (`CHAT_INITIATIVE_MIN_S` 240s,
+  `CHAT_INITIATIVE_CHANCE` 0.4) emitting the goal-keyed premade, zero LLM.
+- **The connect backoff** (`ConnectBackoff`): the runner's step() retried the
+  connect every tick (~4/s); the solo's storm latched the login's connect_check
+  DDoS throttle for the shared source. 5s doubling to 240s, reset on success.
+- **The decide schema honours the facts**: `party_join` drops from
+  next_action when `in_party` (leg 16: 339 moot picks starved grinding to
+  zero attacks; leg 17: the filter held, 78 picks = the partyless solo only).
+- **The script_step telemetry**: every 10s the trace records the script, the
+  status, the action kinds and the nearest-monster distance. It named the
+  adjacency gap: ZERO samples at distance <=1 (the tracked position updates
+  only at the walk-end, so the adjacency moment passes invisible).
+- **The intercept approach** (`_approach_cell`): walk to the neighbouring
+  cell of the target nearest the bot, not the mob's own cell - a one-cell mob
+  shift still ends the walk in melee range.
+
+Leg progression: 0 -> 7 -> 40 attacks; 31 -> 5,209 -> 6,184 moves; the parties
+persist; 2+ autonomous guilds; the shop opened (NpcShopSellOpen). The dashboard
+reads the right world (:8401 on the e2e traces) with the history/combat/plans
+views. Next: the leg-19 telemetry readout (the adjacent bucket as the
+convergence proof), then the economy closure (the kills -> the drops -> the
+sell trips) and the WoE arc.
