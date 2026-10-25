@@ -934,7 +934,7 @@ class EventDrivenBrain:
             return None
         return self._coordination.objective_map()
 
-    def _goal_script(self, goal: Goal, state: BotState):
+    def _goal_script(self, goal: Goal, state: BotState) -> BehaviorScript:
         """The goal script, with the travel plan when the map needs a route.
 
         Leg 20: a grind goal on prontera patrolled a mobless town while the

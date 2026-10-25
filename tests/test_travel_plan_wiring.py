@@ -6,16 +6,18 @@ from robots.app.brain import EventDrivenBrain
 from robots.app.scripts import GrindScript
 from robots.domain.model import Goal
 from tests.conftest import make_state
+from tests.test_host_memory import memory_host  # the fixture hosts the brain
 
 
 def _brain(tmp_path) -> EventDrivenBrain:
-    from tests.test_host_memory import memory_host  # the fixture hosts the brain
 
     host = memory_host(tmp_path)
     try:
         agent = next(iter(host.agents.values()))
-        assert agent.brain is not None
-        return agent.brain
+        brain = agent.brain
+        assert brain is not None
+        assert isinstance(brain, EventDrivenBrain)
+        return brain
     finally:
         host.stop()
 
