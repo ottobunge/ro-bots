@@ -107,7 +107,7 @@ def test_melee_range_is_the_verified_pinned_value():
 def test_grind_approaches_out_of_range_target():
     state = _state(nearby=[LocatedMonster(42, "Poring", "monster", 14.0, x=114, y=100)])
     outcome = _grind(state)
-    assert outcome.actions == (MoveTo(x=114, y=100),)
+    assert outcome.actions == (MoveTo(x=113, y=100),)
     assert outcome.status.name == "ACTIVE"
 
 
@@ -118,7 +118,7 @@ def test_farm_approaches_out_of_range_plan_target():
     ]
     outcome = _farm(_state(nearby=targets))
     # The plan target is approached; the adjacent non-target is still ignored.
-    assert outcome.actions == (MoveTo(x=114, y=100),)
+    assert outcome.actions == (MoveTo(x=113, y=100),)
 
 
 def test_in_range_target_attacks_immediately():
@@ -132,8 +132,10 @@ def test_boundary_two_tiles_straight_approaches_instead_of_doomed_attack():
     # Chebyshev 2 > pinned unarmed range 1: attacking here is exactly the
     # window-13 0x0139 failure, so the script must keep approaching.
     two_straight = [LocatedMonster(42, "Poring", "monster", 2.0, x=102, y=100)]
-    assert _grind(_state(nearby=two_straight)).actions == (MoveTo(x=102, y=100),)
-    assert _farm(_state(nearby=two_straight)).actions == (MoveTo(x=102, y=100),)
+    # the intercept: the neighbour of the mob nearest the bot — the walk ends
+    # adjacent even when the mob shifts one cell
+    assert _grind(_state(nearby=two_straight)).actions == (MoveTo(x=101, y=100),)
+    assert _farm(_state(nearby=two_straight)).actions == (MoveTo(x=101, y=100),)
 
 
 def test_positionless_target_keeps_honest_attack():
@@ -151,13 +153,13 @@ def test_approach_refollows_moved_target_each_step():
     first = script.step(
         _state(nearby=[LocatedMonster(42, "Poring", "monster", 14.0, x=114, y=100)])
     )
-    assert first.actions == (MoveTo(x=114, y=100),)
+    assert first.actions == (MoveTo(x=113, y=100),)
     # The Poring moved before the next evaluation: the next MoveTo must use
     # the fresh cell, never the stale one.
     moved = script.step(
         _state(nearby=[LocatedMonster(42, "Poring", "monster", 9.8488578, x=107, y=97)])
     )
-    assert moved.actions == (MoveTo(x=107, y=97),)
+    assert moved.actions == (MoveTo(x=106, y=98),)  # the intercept cell
 
 
 def test_farm_non_target_mob_in_range_does_not_change_approach():

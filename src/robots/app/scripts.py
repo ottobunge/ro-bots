@@ -451,6 +451,29 @@ def _engage(state: BotState, candidates: list[ActorRef], window: int) -> ScriptO
     return ScriptOutcome((action,), ScriptStatus.ACTIVE)
 
 
+def _approach_cell(tx: int, ty: int, state: BotState) -> tuple[int, int]:
+    """The neighbouring cell of the target nearest the bot (the intercept).
+
+    Walking to the target's own cell lands the bot where a wandering mob WAS
+    (leg 18: 31 near samples, zero adjacent). A one-cell mob shift from an
+    adjacent-cell walk still ends in melee range. Deterministic tie-break on
+    the cell coordinates."""
+    best = (tx + 1, ty)
+    best_key = (99, 99, 99 * 1000 + 99)
+    for dx in (-1, 0, 1):
+        for dy in (-1, 0, 1):
+            if dx == 0 and dy == 0:
+                continue
+            cell = (tx + dx, ty + dy)
+            cheb = max(abs(cell[0] - state.x), abs(cell[1] - state.y))
+            euclid = (cell[0] - state.x) ** 2 + (cell[1] - state.y) ** 2
+            key = (cheb, euclid, cell[0] * 1000 + cell[1])
+            if key < best_key:
+                best_key = key
+                best = cell
+    return best
+
+
 def _melee_action(target: ActorRef, state: BotState) -> GameAction:
     """Attack within melee range; otherwise walk toward the target's cell.
 
@@ -466,7 +489,8 @@ def _melee_action(target: ActorRef, state: BotState) -> GameAction:
         return Attack(target_id=target.id)
     if max(abs(x - state.x), abs(y - state.y)) <= MELEE_RANGE:
         return Attack(target_id=target.id)
-    return MoveTo(x=x, y=y)
+    cell = _approach_cell(x, y, state)
+    return MoveTo(x=cell[0], y=cell[1])
 
 
 @final

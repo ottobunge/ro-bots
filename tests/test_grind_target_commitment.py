@@ -161,7 +161,10 @@ def test_commitment_expires_after_the_bounded_window_without_a_landed_attack() -
     script.step(_state([_lunatic(42)]))
     far = _state([_lunatic(42, x=105, y=100), _poring(7)])
     for _ in range(KILL_COMMIT_WINDOW):
-        assert script.step(far).actions == (MoveTo(x=105, y=100),)
+        # the intercept approach: the walk targets the neighbour cell of the
+        # mob nearest the bot (a wandering mob's one-cell shift still ends the
+        # walk in melee range), not the mob's own cell
+        assert script.step(far).actions == (MoveTo(x=104, y=100),)
     # The window of approach-only evaluations is exhausted: closest-picking
     # resumes instead of chasing an unreachable id forever.
     assert script.step(far).actions == (Attack(target_id=7),)
@@ -258,7 +261,7 @@ def test_unheld_pick_prefers_the_lowest_pinned_hp_species() -> None:
     pupa_closer = _mob("Pupa", 7, x=101, y=100)  # distance 1
     poring_farther = _mob("Poring", 42, x=103, y=100)  # distance 3
     outcome = script.step(_state([pupa_closer, poring_farther]))
-    assert outcome.actions == (MoveTo(x=103, y=100),)  # approach the Poring
+    assert outcome.actions == (MoveTo(x=102, y=100),)  # the intercept cell
     arrived = _state([_mob("Pupa", 7, x=102, y=100), _poring(42, x=101, y=100)])
     assert script.step(arrived).actions == (Attack(target_id=42),)  # melee now
 
