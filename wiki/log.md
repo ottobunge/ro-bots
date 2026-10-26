@@ -5788,3 +5788,53 @@ knife costs 50z) - the loop needs more farm->sell trips per character, and the
 buy->equip leg fires once a character can afford the weapon. Two agents still
 read npc_stage "blocked" at the window end (the post-sell dialogue denial) -
 their decisions flowed regardless, so this is cosmetic next to the fix.
+
+## 2026-10-26 night — diagnostic probe slice: WHY THE SWINGS NEVER LAND
+
+The leg-27 window's grind leg is still starving (138 Attack actions, 3 landed
+hits, no kills, no drops). This slice NAMED the mechanism with wire evidence;
+it fixed nothing (production `src/` stayed read-only). Receipt:
+`run/reviews/mob-position-staleness.json`; probe:
+`.work/engagement-diagnosis/mob_pos_probe.py`.
+
+- **The mobs are not lost and their positions are not merged.** The tracker
+  ingests every `0x09FD` ZC_NOTIFY_MOVEENTRY frame and its projected cell is
+  byte-exact with that frame's from-cell (`delta_from = [0,0]` on every frame
+  of both captures). The three hypotheses in the brief (move frames not
+  ingested / ids merged / frozen at the spawn spot) are rejected as stated.
+- **The real mechanism is time-slice mixing in the melee gate.** The pinned
+  server (rathena e985006171d2, `unit.cpp:238-246`) emits ONE move frame per
+  WALK, and that frame's payload is `(current cell, walk destination)`
+  (`clif.cpp:1369+ WBUFPOS2(&p.MoveData[0], 0, bl.x, bl.y, ud.to_x, ud.to_y,
+  ...)`). Production keeps the CURRENT cell for a mob
+  (`native_gameplay.py:595-608 _actor`, offset 63) and the DESTINATION for the
+  agent (`native_gameplay.py:739-741 _self_position`, the deliberate w65-78
+  fix). So the gate compares the agent's FUTURE cell with the mob's PAST cell.
+- **Measured on the e2e world (180 s, one bare spike client):** the tracked
+  self cell was up to **15 cells** ahead of the agent's real cell (mean 8.19
+  over 331 samples); the tracked mob cell was up to **7 cells** behind the
+  mob's real cell (mean 4.81 over 48 frames).
+- **The proof that the swings die on the wire:** the probe ran the PRODUCTION
+  gate (`scripts._melee_action` over `playing_runtime._nearby`) and sent the
+  production Attack. 8/8 swings came out of the gate with a tracked distance
+  of exactly 1 cell, and **8/8 were answered by the server with
+  `0x0139 ZC_ATTACK_FAILURE_FOR_DISTANCE`** carrying the server's own
+  coordinates: the tracked mob cell was 3-7 cells off, the true distance 4-6
+  cells, the server's range 1 (the circular client metric, `path.cpp:485-521`).
+  Zero damage, zero exp. And **nothing in `src/robots/` ingests `0x0139`** -
+  the rejection is silent, which is why the agents keep swinging.
+- **The population trace shows the same geometry without any probe:** the same
+  mob id (110022454) is projected 10-30 cells apart between two consecutive
+  `MonsterSpotted` events, and the agent swings from a tracked cell 6-14 cells
+  away from the mob's last projected cell while the script's own
+  `nearest_monster_d` reads 1.4.
+- Side findings: `0x0080` vanish IS handled (`native_gameplay.py:751-761`
+  pops the actor, so a mob that wanders out of the client's area drops out of
+  the state's nearby list and re-enters with a fresh cell); the client area
+  broadcast is short-range (a mob 5-7 cells away vanishes from the view); and
+  a clientless session that stops sending is dropped by the map server within
+  ~60 s (the probe now keeps the `CZ_REQUEST_TIME` keepalive alive).
+- World side effects: only the probe account's own char row in the
+  disposable e2e world was moved into the field, and it was restored
+  afterwards. No population leg, no ro-bots-test world, no llama-server, no
+  production source edit, no commit to main.

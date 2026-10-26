@@ -1,0 +1,169 @@
+{
+  "review": "mob-position-staleness",
+  "status": "COMPLETE",
+  "author": "diagnostic-probe-slice (research sub-agent; production src/ read-only, no fixes applied)",
+  "branch": "probe/mob-position-staleness",
+  "world": "ro-bots-e2e (login 127.0.0.1:26900, map 25121) - the disposable isolated e2e world",
+  "server_pin": "rathena e985006171d2 (callback-qualified) MAIN/pre-renewal 20180704",
+
+  "question": "Name the exact mechanism by which the production native tracker projects a MOVING mob's position, and whether that projection diverges from the wire.",
+
+  "mechanism": {
+    "name": "TIME-SLICE MIXING IN THE MELEE GATE: the tracked mob cell is the mob's PRE-WALK cell (frozen for the whole walk), the tracked self cell is the agent's POST-WALK cell (jumped to the walk destination), and the gate compares those two different moments. The server rejects every such swing with 0x0139 ZC_ATTACK_FAILURE_FOR_DISTANCE, and no production code path ingests 0x0139, so the miss is silent.",
+
+    "one_line": "native_gameplay._actor stores a moving mob at its PRE-WALK cell (the 0x09FD from-cell) while native_gameplay._self_position stores the agent at its POST-WALK cell (the 0x0087 destination); scripts._melee_action then reads 'adjacent' on that mixture, and the server answers 0x0139 which production never ingests.",
+
+    "why_the_wire_lets_this_happen": {
+      "server_move_frame": "clif.cpp:2064-2090 clif_move() -> clif_set_unit_walking(*bl, nullptr, ud, AREA_WOS) -> 0x09FD ZC_NOTIFY_MOVEENTRY to every client in the area",
+      "server_move_payload": "clif.cpp:1369+ WBUFPOS2(&p.MoveData[0], 0, bl.x, bl.y, ud.to_x, ud.to_y, ud.sx, ud.sy): MoveData[0..2] = the unit's CURRENT cell, MoveData[2..4] = the walk's FINAL TARGET",
+      "server_emission_rate": "unit.cpp:238-246 unit_walktoxy_nextcell(): clif_move()/clif_walkok() are called ONLY under `if (sendMove || DIFF_TICK(tick, ud->dmg_tick) < MOVE_REFRESH_TIME)`, i.e. ONCE per walk, not once per cell step. unit.cpp:186-192 sends the final zero-length walkok when the path ends.",
+      "packing_helpers": "clif.cpp:177-185 WBUFPOS2 / clif.cpp:213-239 RBUFPOS2 (the 6-byte MoveData layout)",
+      "self_walk_payload": "clif.cpp:2052-2060 clif_walkok() -> WBUFPOS2(packet.moveData, 0, sd.x, sd.y, sd.ud.to_x, sd.ud.to_y, 8, 8): the 0x0087 destination is the walk's FINAL TARGET too",
+      "server_range_check": "unit.cpp:3254-3264: range = sstatus->rhw.range (1 for the pinned Novice); `if (sd && !check_distance_client_bl(src,target,range)) { clif_movetoattack(*sd,*target); return 1; }`",
+      "server_metric": "path.hpp:48 + path.cpp:485-521: check_distance_client = distance_client = (int)(Euclidean(dx,dy) - 0.1) <= range -> the client-style CIRCULAR metric, NOT Chebyshev. Range 1 accepts only the 8 adjacent cells (Euclidean 1.0/1.414).",
+      "server_verdict_frame": "clif.cpp:8172-8186 clif_movetoattack() -> 0x0139 ZC_ATTACK_FAILURE_FOR_DISTANCE carrying targetAID, the server's target x/y, the server's self x/y and the attack range"
+    },
+
+    "production_code_path": {
+      "mob_projection": "src/robots/adapters/native_gameplay.py:595-608 _actor(): offset = 63 if p.packet_id == 0x09FD else 59; _position(raw, 63, ...) decodes the MoveData FROM-cell. The destination (bytes 65..67 of the same frame) is never decoded anywhere in src/.",
+      "self_projection": "src/robots/adapters/native_gameplay.py:720-746 _self_position(): for 0x0087 it decodes the DESTINATION (`destination = (((b & 15) << 6) | (c >> 2), ((c & 3) << 8) | d)`) and sets _position to it, with the comment 'the tracked position must be the walk DESTINATION, not the from-cell'.",
+      "state_projection": "src/robots/app/playing_runtime.py:1904-1937 _nearby(): ActorRef.x/y = the tracker's actor cell; ActorRef.distance = math.hypot(actor.position - tracked self position).",
+      "the_gate": "src/robots/app/scripts.py:477-493 _melee_action(): `if max(abs(x - state.x), abs(y - state.y)) <= MELEE_RANGE: return Attack(target_id=target.id)` - MELEE_RANGE=1, CHEBYSHEV, over the two stale projections.",
+      "silent_feedback": "no handler for 0x0139 exists anywhere under src/robots/ (grep: only a docstring mention in scripts.py:59 and scripts.py:484). The frame arrives on the wire and is dropped by the tracker, so an out-of-range swing is indistinguishable from a miss.",
+      "documented_metric": "src/robots/app/scripts.py:53-60 already records that the server range-checks with the circular client metric and that '1 on the server's own metric is the only known-accepted boundary' - the gate is right, but it is fed stale cells."
+    }
+  },
+
+  "measured": {
+    "self_staleness": {
+      "what": "tracked self cell (0x0087 destination) vs the agent's ACTUAL cell (the 0x0087 from-cell)",
+      "capture": "out/mobpos-run1 (180 s walking capture, e2e world)",
+      "samples": 331,
+      "max_chebyshev_cells": 15,
+      "mean_chebyshev_cells": 8.19,
+      "histogram": {"0": 72, "10": 235, "15": 24}
+    },
+    "mob_staleness": {
+      "what": "tracked mob cell (0x09FD from-cell) vs the mob's walk destination (the 0x09FD to-cell, never decoded by production)",
+      "capture": "out/mobpos-run1",
+      "frames": 48,
+      "max_chebyshev_cells": 7,
+      "mean_chebyshev_cells": 4.81,
+      "histogram": {"0": 1, "1": 4, "2": 4, "3": 4, "4": 5, "5": 6, "6": 11, "7": 13}
+    },
+    "attack_outcomes": {
+      "capture": "out/mobpos-run3 (chase mode: the production gate + the production _approach_cell drive the probe's own walks; the probe then sends the production Attack)",
+      "attacks_sent": 8,
+      "rejected_with_0x0139": 8,
+      "damage_landed": 0,
+      "tracked_gate_distance_all_attacks": 1,
+      "true_distance_at_the_server": [5, 6, 6, 4, 5, 5, 6, 6],
+      "tracked_mob_cell_vs_server_mob_cell": [4, 7, 7, 3, 6, 6, 5, 5]
+    }
+  },
+
+  "examples": [
+    {
+      "id": "E1 - the mob frame that freezes the tracked cell",
+      "mob": "110064613 (Lunatic, objecttype 5)",
+      "frame": "0x09FD ZC_NOTIFY_MOVEENTRY, at=13.277 s, len=110",
+      "wire": {"from_cell": [208, 338], "walk_destination": [204, 337]},
+      "production_tracker": {"tracked_cell": [208, 338], "note": "the destination cell [204,337] is never decoded"},
+      "later": "at 18.377 s the next 0x09FD for the same mob has from_cell [204,337] - the tracker only learns the mob moved when the mob starts its NEXT walk, 5.1 s later"
+    },
+    {
+      "id": "E2 - the attack the gate opened and the server rejected",
+      "mob": "110064613",
+      "gate": "at 17.141 s the production state projected tracked self [209,339] and tracked mob [208,338] -> Chebyshev 1 -> _melee_action returns Attack",
+      "frame": "0x0139 ZC_ATTACK_FAILURE_FOR_DISTANCE at 17.141 s, len=16",
+      "server_truth": {"target_xy": [204, 337], "self_xy": [209, 339], "atk_range": 1},
+      "reading": "the server puts the mob at (204,337) - 4 cells from the cell the tracker was projecting - so the swing is out of range and the server answers 0x0139. The self cell was exact here; the MOB cell was the stale half."
+    },
+    {
+      "id": "E3 - the same failure with a 7-cell mob error",
+      "mob": "110064613",
+      "gate": "at 21.161 s and 23.172 s the gate again read Chebyshev 1 (tracked self [205,338], tracked mob [204,337])",
+      "frame": "0x0139 at 21.161 s: target_xy [204,344], self_xy [205,338], atk_range 1",
+      "reading": "the mob had walked from (204,337) to (204,344) - the tracker still held the pre-walk cell (204,337), 7 cells off. Two swings, both rejected, neither announced in any production receipt."
+    },
+    {
+      "id": "E4 - the mob error alone decides the swing (all eight attacks)",
+      "mob": "110064613",
+      "table": [
+        {"at": 17.14, "tracked_mob": [208, 338], "server_mob": [204, 337], "error": 4, "true_distance": 5},
+        {"at": 21.16, "tracked_mob": [204, 337], "server_mob": [204, 344], "error": 7, "true_distance": 6},
+        {"at": 23.17, "tracked_mob": [204, 337], "server_mob": [204, 344], "error": 7, "true_distance": 6},
+        {"at": 27.19, "tracked_mob": [204, 344], "server_mob": [201, 347], "error": 3, "true_distance": 4},
+        {"at": 31.21, "tracked_mob": [201, 347], "server_mob": [205, 341], "error": 6, "true_distance": 5},
+        {"at": 33.22, "tracked_mob": [201, 347], "server_mob": [205, 341], "error": 6, "true_distance": 5},
+        {"at": 37.23, "tracked_mob": [205, 341], "server_mob": [210, 339], "error": 5, "true_distance": 6},
+        {"at": 39.24, "tracked_mob": [205, 341], "server_mob": [210, 339], "error": 5, "true_distance": 6}
+      ],
+      "reading": "every swing came from the production gate with a tracked distance of exactly 1; the server's own coordinates (from its own 0x0139) put the true distance at 4-6 cells. 8/8 rejected, 0 damage, 0 exp."
+    },
+    {
+      "id": "E5 - the self half: the tracked self cell is the walk's FUTURE cell",
+      "self": "the probe character",
+      "frame": "0x0087 ZC_NOTIFY_PLAYERMOVE at 15.078 s, len=12: from_cell [190,360], walk destination [205,350]",
+      "production_tracker": {"tracked_self": [205, 350]},
+      "reading": "the tracker jumps the agent 15 cells to the walk destination while the agent is still walking; the agent only reaches (205,350) at the next 0x0087 (27.09 s). Over the 180 s capture the tracked self was on average 8.19 cells ahead of the agent's actual cell (max 15). With the production walk-chase cadence (a MoveTo every decide cycle) the gate therefore compares the agent's FUTURE cell against the mob's PAST cell."
+    },
+    {
+      "id": "E6 - the population trace shows the same geometry (no probe involved)",
+      "trace": ".work/runtime/population-live/traces/pop_0003_g00m01.jsonl (agent RinceNyan)",
+      "rows": [
+        {"t": "2026-10-22T10:52:03.033532+00:00", "event": "MonsterSpotted", "mob": 110022454, "mob_cell": [182, 359], "agent_cell": [196, 359]},
+        {"t": "2026-10-22T10:52:43.066886+00:00", "event": "action_executed", "action": "Attack", "target_id": 110022454, "agent_cell": [188, 360]},
+        {"t": "2026-10-22T10:57:17.998349+00:00", "event": "MonsterSpotted", "mob": 110022454, "mob_cell": [214, 337], "agent_cell": [203, 351]},
+        {"t": "2026-10-22T11:00:25.355479+00:00", "event": "action_executed", "action": "Attack", "target_id": 110022454, "agent_cell": [205, 350]}
+      ],
+      "reading": "the agent swings from a tracked cell 6-14 cells away from the mob's last projected cell, and the script still emitted Attack (the script_step rows next to these attacks carry nearest_monster_d = 1.4, i.e. the tracked gate was open). The mob's projected cell moves 10-30 cells between two consecutive MonsterSpotted events of the SAME mob id, which is the signature of the pre-walk cell being projected instead of the mob's real cell."
+    }
+  ],
+
+  "answers_to_the_briefs_hypotheses": {
+    "mob_positions_may_not_ingest_move_frames_at_all": "REJECTED - the tracker does ingest 0x09FD (29-49 MOVEENTRY frames per capture) and its projected cell always equals the frame's from-cell exactly (delta_from = [0,0] on every single frame).",
+    "merge_across_mobs": "REJECTED - the tracker keys the actor map by the wire AID (bl.id) and every probe frame's tracked cell matched its own mob; no cross-mob contamination was observed.",
+    "freeze_at_spawn_or_spot": "PARTLY TRUE, BUT NOT THE MECHANISM - the cell does freeze, but not at the spawn/spot cell: it freezes at the PRE-WALK cell of the mob's current walk, because the server emits one MOVEENTRY per walk and the tracker reads only that frame's from-cell.",
+    "the_real_mechanism": "the tracked mob cell lags the mob by up to 7 cells / ~6 s (the pre-walk cell), the tracked self cell leads the agent by up to 15 cells (the walk destination), the melee gate compares the two, and the server's 0x0139 rejection is invisible to production."
+  },
+
+  "secondary_findings": [
+    "ZC_NOTIFY_VANISH (0x0080) IS handled: native_gameplay._life (line 751-761) pops the actor, so a mob that walks out of the client's area disappears from the state's nearby list. The mob then re-enters with a fresh entry frame - which resets the tracked cell, so the agent re-approaches. The vanishes in the capture (2-7 per mob per 180 s) are the churn that makes the treadmill visible.",
+    "The client broadcast is area-bounded, not distance-bounded: rAthena's AREA_SIZE default is 14 cells (battle.cpp:8553), so a mob that crosses an area boundary is sent ZC_NOTIFY_VANISH (0x0080) and then re-enters with a fresh entry frame (0x09FD/0x09FF). In the capture the mobs walked 5-7 cells, crossed a boundary and vanished - which is also why the tracked cell sometimes refreshes unexpectedly.",
+    "The probe must send a keepalive: a clientless session that stops sending (CZ_REQUEST_TIME 0x0360 every 8 s) is dropped by the map server within ~60 s - the probe's first chase capture died that way."
+  ],
+
+  "probe": {
+    "script": ".work/engagement-diagnosis/mob_pos_probe.py",
+    "committed_at": ".work/engagement-diagnosis/mob_pos_probe.py (force-added: /.work/ is gitignored in this repo)",
+    "pattern": "follows the existing .work/engagement-diagnosis probes (probe_shop.py / attack_fail_probe.py): the pinned spike BotClient + packetdb, credentials read at runtime from the world manifest, nothing printed",
+    "how_it_works": [
+      "subclasses the pinned spike BotClient and taps every dispatched frame (no spikes/ file is modified or reformatted)",
+      "feeds those frames, in order, into the PRODUCTION NativeGameplayTracker (src/robots/adapters/native_gameplay.py) exactly as the production runtime pumps the client's native-frame ring",
+      "decodes the wire positions independently from the pinned server source (WBUFPOS2/RBUFPOS2) and prints them next to the production projection for the same actor id",
+      "rebuilds the production state projection with the production PlayingClient._nearby and runs the production robots.app.scripts._melee_action over it (--chase), so the probe's own decisions are the production decisions",
+      "in --chase mode it sends the production Attack (CZ_REQUEST_ACT 0x0437) and records the server's verdict frame (0x0139) and any damage (0x08C8)"
+    ],
+    "runs": [
+      {"dir": ".work/engagement-diagnosis/out/mobpos-run1", "mode": "route walk, 180 s", "purpose": "self/mob staleness statistics"},
+      {"dir": ".work/engagement-diagnosis/out/mobpos-run3", "mode": "--chase --max-attacks 8, 180 s", "purpose": "the 8 gated attacks and their 0x0139 verdicts"}
+    ],
+    "reproduce": "python3 .work/engagement-diagnosis/mob_pos_probe.py --manifest run/worlds/e2e/e2e-isolated/host-manifest.json --seconds 180 --chase --max-attacks 8 --out .work/engagement-diagnosis/out/mobpos-run3"
+  },
+
+  "world_side_effects": {
+    "db": "the probe account's own char row (char_id 150100, the e2e fixture account Fx_f59b96f3af_0) was moved to prt_fild08 so the probe could stand in the field; the row was restored to its pre-probe values (last_map prontera, last_x 150, last_y 145) after the capture. No other row, no other world.",
+    "spawns": "none touched; the probe only killed nothing - the 8 swings were all rejected, so no mob died.",
+    "untouched": "the ro-bots-test world, every llama-server, every population leg, and all production src/ files"
+  },
+
+  "not_in_scope": [
+    "fixing production src/ (this slice names the mechanism; the fix belongs to the coordinator)",
+    "launching population legs",
+    "touching the ro-bots-test world",
+    "restarting any llama-server"
+  ],
+
+  "conclusion": "The mobs are not lost and their positions are not merged: the tracker reads every 0x09FD frame and its projected cell is byte-exact with that frame's from-cell. The staleness is structural: the pinned server emits ONE move frame per walk whose payload is (current cell, walk destination), the production tracker keeps the current cell for the mob and the walk destination for the agent, so the melee gate compares the agent's future cell with the mob's past cell. The server range-checks the real geometry with its circular client metric and answers 0x0139, which nothing in production ingests - so 138 swings can read 'adjacent' in the state, land nothing on the wire, and starve the economy exactly as observed."
+}
