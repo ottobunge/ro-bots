@@ -3,6 +3,8 @@ fresh begin so the bot never freezes for whole windows (leg 23: 598 ticks)."""
 
 from __future__ import annotations
 
+import threading
+
 from robots.adapters.native_npc_dialogue import NativeNpcDialogue
 from robots.app.playing_runtime import PlayingClient
 
@@ -16,6 +18,9 @@ class _RecordingWire:
 
     def _send(self, frame: bytes) -> None:
         self.sent.append(frame)
+
+    def keepalive(self) -> None:
+        self.sent.append(b"ka")
 
 
 def _runtime(now: list[float], budget: int = 3) -> PlayingClient:
@@ -56,6 +61,26 @@ def test_retry_re_fires_on_each_new_deny_within_budget() -> None:
     assert client._retry_blocked_dialogue()
     assert len(client.wire.sent) > first
     assert client._npc_retries == 1
+
+
+def test_keepalive_drives_the_retry_without_decisions() -> None:
+    """The leg-24 gap: a dead-decide agent never dispatches actions, so the
+    action-path retry starved - the blocked dialogue self-heals on the tick."""
+    now = [300.0]
+    client = _runtime(now)
+    _deny(client)
+    client._keepalive_at = None
+    client._keepalive_failed = False
+    client._keepalive_interval_s = 10.0
+    client._keepalive_lock = threading.Lock()
+    client._keepalive_thread = None
+    client._closed = True  # the ensure-thread tail is out of scope here
+    client._keepalive()
+    first = len(client.wire.sent)  # the click from the immediate action-path retry
+    now[0] = 312.0  # past the cadence AND the keepalive interval
+    client._keepalive()
+    assert len(client.wire.sent) > first  # the fresh click went out on the tick
+    assert not client._npc.failed
 
 
 def test_retry_budget_caps_the_attempts() -> None:

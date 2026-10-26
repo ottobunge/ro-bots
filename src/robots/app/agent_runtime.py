@@ -422,6 +422,9 @@ def _party_chat_events(agent: Any, client: Any) -> tuple[WorldEvent, ...]:
     return tuple(events)
 
 
+NPC_HOLD_HORIZON_S = 150.0
+
+
 @final
 class ScheduledAgent:
     """One persona + one character + one brain + one client + one loop."""
@@ -456,6 +459,7 @@ class ScheduledAgent:
         self.persona = persona
         self.entry = entry
         self.brain = brain
+        self._npc_hold_until = 0.0
         self.memory = memory or Memory(StubSummarizer())
         self.client = client
         self._client_factory = client_factory
@@ -794,10 +798,24 @@ class ScheduledAgent:
         self._publish(state)
         self._idle_watch(state)
 
+    def _npc_recovery_hold(self, brain: object) -> bool:
+        """True while a planner decision owns NPC recovery. The hold outlives
+        the pending by the planner horizon: a pending CLEF timeout must not
+        free the tick-retry either."""
+        lifecycle = getattr(getattr(brain, "runtime", None), "lifecycle", None)
+        if lifecycle is None:
+            return False
+        now = time.monotonic()
+        if lifecycle.pending is not None:
+            self._npc_hold_until = now + NPC_HOLD_HORIZON_S
+        return lifecycle.pending is not None or now < self._npc_hold_until
+
     def _advance_script(self, state: BotState) -> None:
         brain = self.brain
         if brain is None:
             return
+        if isinstance(self.client, PlayingClient):
+            self.client.npc_recovery_hold = self._npc_recovery_hold(brain)
         context = getattr(brain, "sync_context", None)
         if context is not None:
             context(state)

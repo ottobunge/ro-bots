@@ -214,6 +214,9 @@ def _recent_chat_lines(wire: Any, pos_at: float) -> tuple[ChatLine, ...]:
 
 
 class PlayingClient:
+
+    # the pending planner owns NPC recovery while a decide is in flight
+    npc_recovery_hold = False
     """Wrap native limbs while retaining AgentHost's client lifecycle contract."""
 
     _stat_unacked: int
@@ -1750,6 +1753,29 @@ class PlayingClient:
         self._invite = self.wire.party_invite_pid
         return tuple(events)
 
+    def _retry_blocked_dialogue_on_tick(self, now: float) -> None:
+        """The leg-24 gap: a dead-decide agent never dispatches actions, so the
+        action-path retry starved - the blocked dialogue self-heals on the tick."""
+        if self.npc_recovery_hold:
+            return  # the pending planner owns the recovery (the passive keepalive)
+        if not self._npc.failed or self._npc.view is None:
+            return
+        if self._npc.deny_origin != "timeout" or self._npc_retries <= 0:
+            return
+        if now < self._npc_retry_at:
+            return
+        self._npc_retries -= 1
+        self._npc_retry_at = now + NPC_RETRY_CADENCE_S
+        view = self._npc.view
+        raw = self._npc.begin(
+            view.npc_id,
+            self.wire.native_epoch,
+            view.map_name,
+            self._metadata_cursor,
+            now,
+        )
+        self._send_npc(raw)
+
     def _keepalive(self) -> None:
         """Pump before host cognition; getters/state projection never send.
 
@@ -1787,6 +1813,7 @@ class PlayingClient:
                 self.wire.keepalive()
                 self._keepalive_failed = False
                 self._keepalive_at = now
+                self._retry_blocked_dialogue_on_tick(now)
             self._ensure_keepalive_thread()
 
     def _ensure_keepalive_thread(self) -> None:
