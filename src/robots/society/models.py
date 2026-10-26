@@ -1,10 +1,16 @@
-"""Society domain models (ADR-005): personas, groups, schedules."""
+"""Society domain models (ADR-005): personas, groups, schedules.
+
+The persona is the persistent identity: it owns 1-N characters
+(:class:`CharacterIdentity`). Memories, goals, and relationships are
+persona-level; the in-game runtime state (inventory, position, buffs) is
+character-level and never outlives the character's session.
+"""
 
 import random
 from collections.abc import Sequence
 from dataclasses import dataclass
 from enum import StrEnum
-from typing import Protocol, final
+from typing import Final, Protocol, final
 
 
 class Playstyle(StrEnum):
@@ -16,6 +22,37 @@ class Playstyle(StrEnum):
     HUNTER = "hunter"
     SUPPORT = "support"
     MELEE = "melee"
+
+
+# The playstyle -> class-family limiter (the class families are popgen's
+# BUILDS families; the test suite pins the subset relation).
+PLAYSTYLE_CLASS_FAMILIES: Final[dict[Playstyle, tuple[str, ...]]] = {
+    Playstyle.TANK: ("swordman",),
+    Playstyle.HEALER: ("acolyte",),
+    Playstyle.SUPPORT: ("acolyte",),
+    Playstyle.MAGE: ("mage",),
+    Playstyle.HUNTER: ("archer",),
+    Playstyle.MELEE: ("swordman", "thief"),
+}
+
+
+def playstyle_class_families(playstyle: Playstyle) -> tuple[str, ...]:
+    """The class families the playstyle limits class choice to."""
+    return PLAYSTYLE_CLASS_FAMILIES[playstyle]
+
+
+@dataclass(frozen=True, slots=True)
+class CharacterIdentity:
+    """One playable character of a persona's account (slot 0 = primary)."""
+
+    name: str
+    char_num: int  # the rAthena char-server slot (0..2)
+    build: str = ""  # the class path (run/knowledge/builds/pre-re sidecar)
+    char_id: int = 0  # the wire character id (0 = unnamed fixture row)
+
+    @property
+    def primary(self) -> bool:
+        return self.char_num == 0
 
 
 class Attitude(StrEnum):
@@ -38,7 +75,12 @@ class SocietyClock(Protocol):
 
 @dataclass(frozen=True, slots=True)
 class SocietyPersona:
-    """One bot's social identity: name, role, talkativeness, level range."""
+    """One bot's social identity: name, role, talkativeness, level range.
+
+    The identity persists across character switches: ``characters`` is the
+    persona's account roster (the first entry is the primary); memories,
+    goals, and relationships attach here, never to a single character.
+    """
 
     persona_id: str
     name: str
@@ -47,6 +89,7 @@ class SocietyPersona:
     chattiness: float
     level_band: tuple[int, int]
     personality: str = "Casual"  # wants-system personality (society/wants.py)
+    characters: tuple[CharacterIdentity, ...] = ()
 
 
 ScheduleWindow = tuple[int, float, float]  # (day_of_week 0-6, start_hour, end_hour)
