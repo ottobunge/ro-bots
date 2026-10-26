@@ -79,11 +79,14 @@ class NativeNpcDialogue:
         self.absolute_deadline = 0.0
         self.failed = False
         self.cancel_uncertain = False
+        self.deny_origin: str | None = None
         self._last_now = 0.0
         self.instructions_received = False
 
     @property
     def active(self) -> bool:
+        # 'blocked' is deliberately NOT terminal: the fail-closed barrier
+        # holds until the runtime schedules a fresh begin (the retry cadence)
         return self.view is not None and self.view.stage not in (
             "close_requested",
             "cancel_abandoned",
@@ -104,6 +107,11 @@ class NativeNpcDialogue:
         self.requests = 1
         self.presentations = 0
         self.absolute_deadline = now + 120.0
+        # a denied predecessor must not deafen the fresh dialogue (leg 23:
+        # the blocked state froze the actuation for whole windows)
+        self.failed = False
+        self.cancel_uncertain = False
+        self.deny_origin = None
         return struct.pack("<HIB", 0x0090, npc_id, 1)
 
     def consume(self, frames: tuple[tuple[int, float, int, bytes], ...], now: float) -> None:
@@ -125,10 +133,13 @@ class NativeNpcDialogue:
                 # Local policy terminal only: the server may still be running prompt().
                 self.view = replace(self.view, stage="cancel_abandoned", options=())
             else:
-                self._deny()
+                self._deny("timeout")
 
-    def _deny(self) -> None:
+    def _deny(self, origin: str = "poison") -> None:
         self.failed = True
+        # "timeout" (the innocent deadline expiry) is the retryable origin;
+        # the poison denies (the malformed/the send failure) hold the barrier.
+        self.deny_origin = origin
         if self.view is not None:
             self.view = replace(self.view, stage="blocked", options=())
 

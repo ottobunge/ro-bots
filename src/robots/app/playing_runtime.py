@@ -186,6 +186,10 @@ def _received_stats(stats: tuple[int, ...] | None) -> tuple[int, ...] | None:
     return tuple(stats) if stats else None
 
 
+NPC_RETRY_BUDGET = 3
+NPC_RETRY_CADENCE_S = 5.0
+
+
 def _pending_guild_invite(wire: Any) -> str | None:
     """The pending 0x16a guild name, if an invite is outstanding."""
     if getattr(wire, "guild_invite_gid", 0):
@@ -250,6 +254,7 @@ class PlayingClient:
         self._standing: bool | None = None
         self._last_built_state: BotState | None = None
         self._stand_pending: tuple[int, float, float, int] | None = None
+        self._npc_retries, self._npc_retry_at = NPC_RETRY_BUDGET, 0.0
         self._patrol: _FieldPatrol | None = None
         self._keepalive_at: float | None = None
         self._keepalive_failed = False
@@ -696,21 +701,30 @@ class PlayingClient:
             raise NativeTelemetryUnavailable(message)
         return key
 
-    def perform_native(self, action: GameAction) -> None:
+    def _dispatch_shop_action(self, action: GameAction) -> bool:
+        """The shop actions; True = dispatched."""
         if isinstance(action, NpcShopPurchase):
             self._dispatch_purchase(action)
-            return
+            return True
         if isinstance(action, NpcShopBuySelection):
             self._select_shop_buy(action)
-            return
+            return True
         if isinstance(action, NpcShopSellOpen):
             self._send_sell_open(action)
-            return
+            return True
         if isinstance(action, NpcShopSell):
             self._send_sell(action)
-            return
+            return True
         if isinstance(action, NpcRespond):
             self._respond_npc(action)
+            return True
+        return False
+
+    def perform_native(self, action: GameAction) -> None:
+        shop = self._dispatch_shop_action(action)
+        if shop:
+            return
+        if self._retry_blocked_dialogue():
             return
         state = self.build_native_state(Goal.GRIND)
         if self._npc_action(state, action):
@@ -750,6 +764,33 @@ class PlayingClient:
             return
         self.wire._send(npc_close(dialog.npc_id))
         tracker.clear_npc_dialog()
+
+    def _retry_blocked_dialogue(self) -> bool:
+        """The fail-closed barrier holds, but the runtime schedules the fresh
+        begin so the bot never freezes for whole windows (leg 23: 598 ticks).
+
+        True = the barrier/retry owns this dispatch (the caller returns)."""
+        if not self._npc.failed or self._npc.view is None:
+            return False
+        if self._npc.deny_origin != "timeout":
+            return True  # the poisoned barrier holds (the malformed/the send failure)
+        if self._npc_retries <= 0:
+            return True  # the budget spent: the barrier holds for the epoch
+        now = self._now()
+        if now < self._npc_retry_at:
+            return True  # the cadence wait
+        self._npc_retries -= 1
+        self._npc_retry_at = now + NPC_RETRY_CADENCE_S
+        view = self._npc.view
+        raw = self._npc.begin(
+            view.npc_id,
+            self.wire.native_epoch,
+            view.map_name,
+            self._metadata_cursor,
+            now,
+        )
+        self._send_npc(raw)
+        return True
 
     def _attack(self, state: BotState, target: int) -> None:
         if (
