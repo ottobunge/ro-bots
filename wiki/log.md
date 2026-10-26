@@ -5738,3 +5738,37 @@ Also landed today: the human-player contribution/reputation system
 (deleg_abafc5e2, rebased onto the interaction ledger), the README rewrite, the
 git push discipline restored (the push had fallen 169 commits behind; the two
 >100MB corpus binaries rewritten out of the unpushed history and gitignored).
+
+## 2026-10-26 — the e2e shop C7 root cause: the client's dealtype byte was wrong; the "w84 inversion" never existed
+
+The bare-client shop probe (`.work/shop-c7-probe/probe_shop.py`, spike BotClient
+login + production frame builders) settled the leg-26 frontier in one pass on
+each world. Both map containers run the IDENTICAL image
+(`rathena-playable:20180704-e985006171d2`, sha256 3a0e4fcf…), the NPC
+declarations (`runtime/npc/merchants/shops.txt`, `scripts_athena.conf`) are
+byte-identical, and `Weapon Dealer#prt` answers the click on both.
+
+- The semantic map: C5 (CZ_ACK_SELECT_DEALTYPE) type **0** is answered with the
+  BUY list **0xC6** (213 B of dealer stock — knife 1201 @ 50z in its
+  price/discount/type/nameid rows) on BOTH worlds; type **1** answers the SELL
+  list **0xC7** (player-inventory rows: RinceNyan jellopy+bottle @ 3z, NyxSong
+  emperium @ 1z + chrysalis @ 4z). The pinned binary follows npc.cpp:2411
+  source semantics. The production `sell_open` sent type 0 — so EVERY sell-open
+  got a buy list, no C7 ever arrived, and the dialogue timed out to
+  npc_stage 'blocked' (legs 24-26, x4 agents).
+- The "w84 empirical inversion" note was a MIS-DECODED C6: its cited proof
+  ("knife 1201 @ 50z in the raw rows") is only visible in a C6 row layout; a
+  real C7 row is index/price/overcharge and carries no nameid at all. The test
+  world's zeny-4 predates the byte flip to 0 (the original implementation sent
+  type 1).
+- Fix (RED→GREEN, one byte): `native_gameplay.sell_open` type 0 → 1;
+  `test_sell_open_is_c5_type_one` failed at index 6 (0x00 vs 0x01) before the
+  change and passes after; the buy path keeps its own type-0 encoder (correct
+  for buying). Full gate green (6565 passed; the 6 red were the known
+  fresh-worktree missing artifacts — rathena/config.log + knowledge corpora —
+  all green once copied in).
+- Live proof on the e2e world (the failing world): click → C4 → C5 type 1 →
+  **C7 rows arrived** → C9 sell of one jellopy → 0x07FA item-deleted, 0x00B0
+  weight, 0x00B1 **zeny 3**, 0x00CB result 0. DB readback: RinceNyan zeny
+  0 → 3, inventory 2 rows → 1; NyxSong untouched (the Emperium charter stays).
+  The sell→zeny economy leg is unblocked for the next window.

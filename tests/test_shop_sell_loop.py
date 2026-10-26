@@ -67,11 +67,19 @@ def _fed(frames: tuple[bytes, ...], own: int = 17) -> NativeGameplayTracker:
 # --- adapter encoders (pinned MAIN 20180704 wire layouts) ---
 
 
-def test_sell_open_is_c5_type_zero() -> None:
-    """w84 live wire: type 1 made the pinned server answer the BUY list
-    (0xc6, knife 1201 @ 50z in the raw rows); type 0 answers the SELL list
-    0xc7. The source comment "1 = click" does not match the binary."""
-    assert ng.sell_open(4123) == struct.pack("<HIB", 0xC5, 4123, 0)
+def test_sell_open_is_c5_type_one() -> None:
+    """CZ_ACK_SELECT_DEALTYPE type **1** asks for the sell list.
+
+    Live wire 2026-10-26, BOTH worlds on the same pinned image
+    (rathena-playable:20180704-e985006171d2, sha256 3a0e4fcf...): a type-0 C5
+    is answered with the BUY list 0xc6 (the dealer's stock, knife 1201 @ 50z
+    in its price/discount/type/nameid rows), a type-1 C5 with the SELL list
+    0xc7 (player inventory rows, index/price/overcharge). The pinned binary
+    follows npc.cpp:2411 source semantics (type==0 -> clif_buylist); the
+    earlier "w84 inversion" note had decoded a C6 buy list as a C7 — a real
+    C7 row has no nameid field, so "knife 1201" is unseeable in one.
+    """
+    assert ng.sell_open(4123) == struct.pack("<HIB", 0xC5, 4123, 1)
 
 
 def test_sell_open_rejects_bad_npc_id() -> None:

@@ -84,15 +84,20 @@ def sell_open(npc_id: int) -> bytes:
     npc.cpp:2387-2418 sets ``npc_shopid`` then answers the deal list. The id
     bound is positive-uint, mirroring native_shop.encode_buy_selection.
 
-    TYPE SEMANTICS ARE EMPIRICAL (w84 live wire): type **0** makes the
-    pinned server answer ZC_PC_SELL_ITEMLIST 0xc7 (the sell list — knife
-    1201 @ 50z verified in the raw rows); type 1 answers the BUY list 0xc6.
-    The source comment "1 = click" does not match the pinned binary.
+    TYPE SEMANTICS FOLLOW THE SOURCE AND THE BINARY (live wire 2026-10-26,
+    both worlds, image rathena-playable:20180704-e985006171d2): type **0**
+    makes the pinned server answer ZC_PC_PURCHASE_ITEMLIST 0xc6 (the BUY
+    list) and type **1** answers ZC_PC_SELL_ITEMLIST 0xc7, matching
+    npc.cpp:2411 ``type == 0 -> clif_buylist``. The earlier "w84 inversion"
+    note had mis-decoded a 0xc6 buy list as the sell answer (its cited
+    "knife 1201 @ 50z" rows are buy-list price/discount/type/nameid rows; a
+    0xc7 row is index/price/overcharge and carries no nameid). The buy path
+    keeps its own encoder (native_shop.encode_buy_selection, type 0).
     """
     error = "Expected positive uint32 npc id"
     if type(npc_id) is not int or not 1 <= npc_id <= 0xFFFFFFFF:
         raise ValueError(error)
-    return struct.pack("<HIB", 0xC5, npc_id, 0)
+    return struct.pack("<HIB", 0xC5, npc_id, 1)
 
 
 def sell(entries: tuple[tuple[int, int], ...]) -> bytes:
