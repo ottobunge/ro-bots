@@ -5720,3 +5720,21 @@ Also landed today: the interaction ledger + rivalries (deleg_9366589a), the
 multi-character switch (deleg_585efc59), the corpus recovery after the
 filter-branch working-tree reset (restore from refs/original; TestMobSpawns
 green again), the full post-merge gate 6,545+65 green.
+
+## 2026-10-26 — leg 26: the decide fix validated; the frontier narrows to the server's shop answer
+
+38,184 steps, 0 errors. ALL SEVEN agents decided 142-161 times at full cadence -
+the three dealer agents went from 1 decide/window (legs 24-25) to 161. The
+decide-starvation fix (the routing + the keepalive self-heal) is proven live.
+
+The zeny stayed 0 and the cause is now precise: four agents read npc_stage
+"blocked" - the server never answers the shop chain on the e2e world (no C7
+sell list arrives after the click -> C4 -> C5), so the dialogue denies, the
+retry budget exhausts, and the actuation gate holds while decisions flow. The
+same chain earned the first zeny on the shared test world - the next slice
+diffs the C4/C5/C7 exchange between the two worlds (the shop_trace_probe).
+
+Also landed today: the human-player contribution/reputation system
+(deleg_abafc5e2, rebased onto the interaction ledger), the README rewrite, the
+git push discipline restored (the push had fallen 169 commits behind; the two
+>100MB corpus binaries rewritten out of the unpushed history and gitignored).
