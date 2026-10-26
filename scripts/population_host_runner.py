@@ -144,6 +144,26 @@ def main(argv: list[str] | None = None) -> int:
                     "xp_total": getattr(state, "xp_total", None),
                     "nearby_n": len(state.nearby_monsters) if state is not None else None,
                     "memory": _memory_stats(args.memory_root, pid),
+                    # the sell-chain state (leg 22: the shop-offer -> the sell
+                    # submission hop needs the per-tick visibility)
+                    "npc_stage": getattr(
+                        getattr(
+                            getattr(getattr(client, "_npc", None), "view", None),
+                            "stage",
+                            None,
+                        ),
+                        "value",
+                        getattr(
+                            getattr(getattr(client, "_npc", None), "view", None),
+                            "stage",
+                            None,
+                        ),
+                    ),
+                    "shop_offer": (
+                        "rows=%d" % len(getattr(state.shop_offer, "rows", []))
+                        if state is not None and getattr(state, "shop_offer", None)
+                        else None
+                    ),
                 }
                 row[pid] = entry_sample
                 summary_parts.append(
