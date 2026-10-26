@@ -56,6 +56,13 @@ Key properties:
   Friend groups form parties and guilds in-game; coordination happens exclusively
   through in-game channels (party chat, whispers, public chat) — never direct
   state mutation.
+- **Wants drive motivation (Sims-style)** — every agent carries nine wants scored
+  0–100 that decay over time at personality-modulated rates (hunger, energy, fun,
+  social, comfort, room, hygiene, Bladder, CharSwitch itch — see
+  `docs/wants-design.md`). In-game actions satisfy them; the want block rides every
+  decide context, so Clef chooses actions serving the most-pressing wants —
+  including socializing, character switching, or creating a new character. Goal
+  reviews ask which want to serve next.
 - **Everything is traced** — per-agent JSONL history (decides, LLM calls, chat
   heard/sent, actions, script steps, goal reviews) under `--trace-dir`, feeding the
   dashboard history views and future decision improvements.
