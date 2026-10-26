@@ -77,6 +77,15 @@ Key properties:
   rival below −15 aggregate. Rivalry effects: the gossip multiplier, taunt/war
   premades emitted as in-game channel actions only, a `Rival: X (worst standing
   −52)` decide line, and `rival_of()` for the upcoming WoE arc.
+- **Human players carry a friendship score** — party members absent from the
+  persona roster are humans; their witnessed damage, heals/buffs (ZC_USE_SKILL)
+  and shared-exp participation raise the per-(human, agent) score, quiet
+  dead-weight party windows lower it, and everything decays toward neutral on
+  the weekly half-life (`society/contributions.py` → the RelationshipLedger).
+  At the goal-review cadence a material verdict propagates to allied groups at
+  the gossip hop decay and leaves ONLY as an in-game party/public chat premade
+  — other agents update from what they hear, never from each other's internals;
+  the standing rides the decide context so Clef can favor or avoid a human.
 - **Everything is traced** — per-agent JSONL history (decides, LLM calls, chat
   heard/sent, actions, script steps, goal reviews) under `--trace-dir`, feeding the
   dashboard history views and future decision improvements.

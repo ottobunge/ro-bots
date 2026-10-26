@@ -207,6 +207,25 @@ class ObservedDamage:
 
 
 @dataclass(frozen=True)
+class ObservedSkillUse:
+    """One received skill-use presentation (ZC_USE_SKILL 0x09CB).
+
+    The heal/buff observation source for the human-contribution ear: the
+    spike packetdb pins the audited MAIN20180704 size (17 = pid + skill_id.W
+    + skill_lv.W + target_id.L + source_id.L + failed.B, the clif_use_skill
+    field order), and the tracker rejects any other length.
+    """
+
+    seq: int
+    at: float
+    skill_id: int
+    skill_lv: int
+    target_id: int
+    source_id: int
+    failed: bool
+
+
+@dataclass(frozen=True)
 class ObservedXP:
     seq: int
     at: float
@@ -306,6 +325,7 @@ class NativeGameplayView:
     base_level: int | None
     stats: tuple[int, ...] | None
     stat_acks: tuple[ObservedStatAck, ...]
+    skill_uses: tuple[ObservedSkillUse, ...] = ()
 
 
 def _position(raw: bytes, offset: int, seq: int, at: float) -> ObservedPosition:
@@ -337,6 +357,7 @@ class NativeGameplayTracker:
         self._ready = True
         self._damage: deque[ObservedDamage] = deque(maxlen=MAX_EVENTS)
         self._xp: deque[ObservedXP] = deque(maxlen=MAX_EVENTS)
+        self._skill_uses: deque[ObservedSkillUse] = deque(maxlen=MAX_EVENTS)
         self._xp_values: dict[int, int] = {}
         self._deaths: deque[ObservedDeath] = deque(maxlen=MAX_EVENTS)
         # Worn state is known ONLY from received successful equip acks in this
@@ -406,6 +427,7 @@ class NativeGameplayTracker:
             self._base_level,
             None if self._stats is None else tuple(self._stats.get(i, 1) for i in range(6)),
             tuple(self._stat_acks),
+            tuple(self._skill_uses),
         )
 
     def consume_snapshot(
@@ -480,6 +502,10 @@ class NativeGameplayTracker:
             0x0080: 7,
             0x0148: 8,
             0x08C8: 34,
+            # ZC_USE_SKILL: 17 bytes (the spike packetdb audit: audited
+            # MAIN20180704 fixed sizeof; pid + skill_id.W + skill_lv.W
+            # + target_id.L + source_id.L + failed.B).
+            0x09CB: 17,
             0x00B0: 8,
             0x00AF: 6,
             0x07FA: 8,
@@ -615,21 +641,42 @@ class NativeGameplayTracker:
             self._status_table(raw)
         elif pid == 0x00BC:
             self._stat_ack(seq, at, raw)
-        elif pid == 0x08C8:
-            self._damage.append(
-                ObservedDamage(
-                    seq,
-                    at,
-                    int.from_bytes(raw[2:6], "little"),
-                    int.from_bytes(raw[6:10], "little"),
-                    raw[29],
-                    struct.unpack_from("<i", raw, 22)[0],
-                    struct.unpack_from("<i", raw, 30)[0],
-                    bool(raw[26]),
-                )
-            )
+        elif pid in (0x08C8, 0x09CB):
+            self._combat_observation(seq, at, pid, raw)
         elif pid == 0x0999:
             self._equip_ack(seq, at, raw)
+
+    def _combat_observation(self, seq: int, at: float, pid: int, raw: bytes) -> None:
+        """The two combat presentations: damage (0x08C8) and skill use (0x09CB)."""
+        if pid == 0x08C8:
+            self._damage.append(self._parse_damage(seq, at, raw))
+        else:
+            self._skill_uses.append(self._parse_skill_use(seq, at, raw))
+
+    @staticmethod
+    def _parse_damage(seq: int, at: float, raw: bytes) -> ObservedDamage:
+        return ObservedDamage(
+            seq,
+            at,
+            int.from_bytes(raw[2:6], "little"),
+            int.from_bytes(raw[6:10], "little"),
+            raw[29],
+            struct.unpack_from("<i", raw, 22)[0],
+            struct.unpack_from("<i", raw, 30)[0],
+            bool(raw[26]),
+        )
+
+    @staticmethod
+    def _parse_skill_use(seq: int, at: float, raw: bytes) -> ObservedSkillUse:
+        return ObservedSkillUse(
+            seq,
+            at,
+            int.from_bytes(raw[2:4], "little"),
+            int.from_bytes(raw[4:6], "little"),
+            int.from_bytes(raw[6:10], "little"),
+            int.from_bytes(raw[10:14], "little"),
+            bool(raw[14]),
+        )
 
     def _equip_ack(self, seq: int, at: float, raw: bytes) -> None:
         ack = decode_equip_ack(raw)

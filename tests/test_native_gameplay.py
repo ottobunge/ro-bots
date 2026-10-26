@@ -222,6 +222,39 @@ def test_damage_xp_death_resurrection_receipts():
     assert gameplay.respawn() == bytes.fromhex("b20000")
 
 
+# -- ZC_USE_SKILL (0x09CB): the heal/buff observation source -----------------
+
+
+def use_skill_frame(
+    skill_id: int = 28,
+    skill_lv: int = 9,
+    target_id: int = 555,
+    source_id: int = 4242,
+    failed: int = 0,
+) -> bytes:
+    raw = bytearray(17)
+    struct.pack_into("<HHHIIB", raw, 0, 0x09CB, skill_id, skill_lv, target_id, source_id, failed)
+    return bytes(raw)
+
+
+def test_zc_use_skill_receipt_parses_the_skill_fields():
+    tracker = gameplay.NativeGameplayTracker(999)
+    tracker.ingest(1, 1.0, 0x09CB, use_skill_frame())
+    use = tracker.view.skill_uses[0]
+    assert (use.skill_id, use.skill_lv, use.target_id, use.source_id) == (28, 9, 555, 4242)
+    assert use.failed is False
+    tracker.ingest(2, 2.0, 0x09CB, use_skill_frame(skill_id=34, failed=1))
+    second = tracker.view.skill_uses[1]
+    assert (second.skill_id, second.failed) == (34, True)
+
+
+def test_zc_use_skill_wrong_length_rejected():
+    tracker = gameplay.NativeGameplayTracker(999)
+    with pytest.raises(ValueError, match="Malformed"):
+        tracker.ingest(1, 1.0, 0x09CB, use_skill_frame()[:-1])
+    assert tracker.view.skill_uses == ()
+
+
 @pytest.mark.parametrize("text", ["hello", "é", "x" * 254])
 def test_party_chat_native_nonterminated(text):
     raw = gameplay.party_chat(text, speaker_name="Novice")

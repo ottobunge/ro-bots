@@ -45,9 +45,9 @@ FRIEND_AFFINITY: Final = 0.3  # >= this counts as a friend: invites accepted, fo
 WEEKLY_HALF_LIFE_S: Final = 7 * 24 * 3600.0  # the weekly half-life constant
 PARTY_AFFINITY_PER_HOUR: Final = 0.04  # 12.5h of shared party time -> +0.5
 CHAT_AFFINITY_DELTA: Final = 0.05
-CONTRIBUTION_UP: Final = 0.2  # one witnessed damage/heal/buff contribution
+CONTRIBUTION_UP: Final = 0.2  # one witnessed damage/heal/buff/exp-share contribution
 DEAD_WEIGHT_DELTA: Final = -0.1  # one witnessed party window without contribution
-CONTRIBUTION_KINDS: Final = ("damage", "heal", "buff")
+CONTRIBUTION_KINDS: Final = ("damage", "heal", "buff", "exp_share")
 GOSSIP_THRESHOLD: Final = 0.2  # smaller reports are not worth repeating
 GOSSIP_HOP_DECAY: Final = 0.5  # the decayed weight per gossip hop
 # The interaction-event layer's feed vocabulary (society/interactions.py owns
@@ -87,6 +87,17 @@ PARTY_EVENT_PREMADES: Final[dict[str, str]] = {
     "seeking_party": "Looking for party! %job lvl %level",
     "need_buffs": "Buffs please!",
 }
+
+# The human-report premades (the gossip emission): the reviewed verdict about a
+# human leaves ONLY as this in-game line — never as a ledger-to-ledger handoff.
+HUMAN_REPORT_GOOD: Final = "%human is carrying the party"
+HUMAN_REPORT_BAD: Final = "party warning: %human is dead weight"
+
+
+def human_report_line(human_name: str, delta: float) -> str:
+    """The premade gossip line for a reviewed human report."""
+    template = HUMAN_REPORT_GOOD if delta > 0 else HUMAN_REPORT_BAD
+    return template.replace("%human", human_name)
 
 
 def party_event_premade(kind: str) -> str | None:
@@ -274,6 +285,23 @@ class RelationshipLedger:
         """
         self._advance(ts)
         self._human_scores[human_name] = _clamp(self._human_scores.get(human_name, 0.0) + delta)
+        row = self._group_reputation.setdefault(group_id, {})
+        row[human_name] = _clamp(row.get(human_name, 0.0) + delta)
+        return self._gossip(human_name, delta, group_id)
+
+    def gossip_human(
+        self, human_name: str, delta: float, *, group_id: str, ts: float | None = None
+    ) -> list[tuple[str, float]]:
+        """Publish the reviewed share of already-scored observations.
+
+        The contribution-tracking callers score per observation via
+        :meth:`record_contribution`; at the review cadence the accumulated
+        verdict is published here to the group's reputation row and the
+        allied-group gossip hop — WITHOUT re-applying it to the agent's own
+        score (that would double-count). Returns ``(group_id, shift)`` per
+        allied group for observability.
+        """
+        self._advance(ts)
         row = self._group_reputation.setdefault(group_id, {})
         row[human_name] = _clamp(row.get(human_name, 0.0) + delta)
         return self._gossip(human_name, delta, group_id)

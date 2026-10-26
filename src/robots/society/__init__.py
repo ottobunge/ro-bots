@@ -1,5 +1,10 @@
 """Society layer (ADR-004 episodic memory, ADR-005 groups & reputation)."""
 
+from robots.society.contributions import (
+    DEAD_WEIGHT_WINDOW_S,
+    HumanContributionObserver,
+    HumanReport,
+)
 from robots.society.guild import (
     Guild,
     GuildRegistry,
@@ -45,6 +50,7 @@ from robots.society.relations import (
     PARTY_EVENT_PREMADES,
     PartyPlan,
     RelationshipLedger,
+    human_report_line,
     party_event_premade,
 )
 from robots.society.society import (
@@ -57,6 +63,7 @@ from robots.society.society import (
 )
 
 __all__ = [
+    "DEAD_WEIGHT_WINDOW_S",
     "PARTY_EVENT_PREMADES",
     "PROPAGATION_FACTOR",
     "PROPAGATION_THRESHOLD",
@@ -68,6 +75,8 @@ __all__ = [
     "Guild",
     "GuildRegistry",
     "HumanContribution",
+    "HumanContributionObserver",
+    "HumanReport",
     "HumanTracker",
     "InteractionLedger",
     "Memory",
@@ -93,6 +102,7 @@ __all__ = [
     "WoeParticipation",
     "classify_chat",
     "fit_budget",
+    "human_report_line",
     "party_event_premade",
     "render_view",
     "rivalry_premade",

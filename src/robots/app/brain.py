@@ -122,6 +122,7 @@ class EventDrivenBrain:
         recovery_hp_ratio: float = 0.75,
         social_view: Callable[[], Sequence[str]] | None = None,
         coordination: BoundCoordinator | None = None,
+        human_reports: Callable[[], Sequence[Any]] | None = None,
         wants: WantState | None = None,
         trace: TraceLog | None = None,
         interaction_ingest: Callable[[ChatLine], None] | None = None,
@@ -132,8 +133,12 @@ class EventDrivenBrain:
         (the BoundCoordinator) adds the group-objective layer: the leader's
         objective_action review question, the packet emission, the member's
         goal alignment and the solo outsider reply — all in-game channels only.
+        ``human_reports`` drains the reviewed human contribution verdicts at
+        the review cadence; each leaves ONLY as an in-game party/public chat
+        premade (the anti-telepathy channel — never a direct ledger write).
         ``wants`` (the agent's WantState) injects the design's want block into
-        every decide context and applies the brain-observable satisfactions."""
+        every decide context and applies the brain-observable satisfactions.
+        """
         if (
             type(recovery_hp_ratio) not in (int, float)
             or not math.isfinite(recovery_hp_ratio)
@@ -169,6 +174,7 @@ class EventDrivenBrain:
         self._dialogue_cleared_stages: set[str] = set()
         self._social_view = social_view
         self._coordination = coordination
+        self._human_reports = human_reports
         self.wants = wants
         self._trace = trace
         self._interaction_ingest = interaction_ingest
@@ -461,8 +467,9 @@ class EventDrivenBrain:
         """Heartbeat: goal review, farm-plan authoring, optional announcement."""
         goal = self._aligned_goal(self._review_goal(state, answers, notes), notes)
         self._trace_review(state, goal, trigger)
+        reports = self._human_report_announce(state)
         if self.is_recovering and self._choice(answers, "change_goal", "") == "keep":
-            return self._coordination_review(state, answers, notes)
+            return [*reports, *self._coordination_review(state, answers, notes)]
         plan = self._setup_farm_plan(state, answers, notes) if self._wants_farming(goal) else None
         self._plan = plan
         self._trace_plan(goal, plan, trigger)
@@ -474,6 +481,7 @@ class EventDrivenBrain:
             if initiative is not None:
                 notes.append("initiative announce")
                 review_actions = [initiative]
+        review_actions.extend(reports)
         review_actions.extend(self._coordination_review(state, answers, notes))
         self._accept_guild_policy(state, review_actions)
         return review_actions
@@ -612,6 +620,29 @@ class EventDrivenBrain:
         notes.append(f"party-event chat ({kind})")
         expanded = self._expand_premade(text, state)
         return [PartyChat(expanded) if state.in_party else Say(expanded)]
+
+    def _human_report_announce(self, state: BotState) -> list[GameAction]:
+        """The reviewed human verdicts leave ONLY as in-game chat.
+
+        The premade line rides party chat in a party, else a public say — the
+        anti-telepathy channel. No other agent's ledger is touched here: they
+        update from what they HEAR, never from my internals.
+        """
+        if self._human_reports is None:
+            return []
+        actions: list[GameAction] = []
+        for report in self._human_reports():
+            text = report.line
+            if not should_send_chat(
+                text,
+                last_text=self._last_chat_text,
+                since_s=self._since_last_chat(),
+                cooldown_s=self._chat_cooldown_s,
+            ):
+                continue
+            self._record_chat(text)
+            actions.append(PartyChat(text) if state.in_party else Say(text))
+        return actions
 
     def _augment_request_for_event(self, event: WorldEvent, request: dict[str, Any]) -> None:
         """Add event-specific questions to the request (react_monster etc.)."""

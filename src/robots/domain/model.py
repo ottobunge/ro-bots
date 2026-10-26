@@ -31,6 +31,24 @@ ChatChannel = Literal["public", "party", "guild", "whisper"]
 
 
 @dataclass(frozen=True, slots=True)
+class PartyObservation:
+    """One party-relevant wire observation, actors named by AID.
+
+    The human-contribution ear's row type (drained once per tick from the
+    native view): ``damage`` rows carry amount dealt source->target, ``skill``
+    rows a heal/buff cast (``failed`` marks the server-rejected ones), ``exp``
+    rows a positive shared-exp delta the bot received while partied.
+    """
+
+    kind: Literal["damage", "skill", "exp"]
+    source_id: int
+    target_id: int
+    amount: int
+    skill_id: int = 0
+    failed: bool = False
+
+
+@dataclass(frozen=True, slots=True)
 class ActorRef:
     """Something visible near the bot.
 

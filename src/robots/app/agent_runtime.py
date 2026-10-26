@@ -85,8 +85,9 @@ from robots.domain.actions import (
     WhisperTo,
 )
 from robots.domain.events import ChatHeard, Heartbeat, TimerFired, WorldEvent
-from robots.domain.model import ActorRef, BotState, ChatLine, Goal
+from robots.domain.model import ActorRef, BotState, ChatLine, Goal, PartyObservation
 from robots.popgen import GeneratedPopulation, load_population
+from robots.society.contributions import HumanContributionObserver
 from robots.society.interactions import InteractionLedger, seed_interaction_roster
 from robots.society.memory import Memory, StubSummarizer
 from robots.society.models import SocietyClock, SocietyPersona
@@ -541,6 +542,7 @@ class ScheduledAgent:
         threaded: bool = True,
         telemetry_wait_s: float = 5.0,
         wants: WantState | None = None,
+        human_observer: HumanContributionObserver | None = None,
         trace: TraceLog | None = None,
     ) -> None:
         if type(telemetry_wait_s) not in (int, float) or not 0 <= telemetry_wait_s <= 5:
@@ -573,6 +575,8 @@ class ScheduledAgent:
         self.rng = rng or random.Random()
         self._threaded = threaded
         self.wants = wants
+        # The human-player contribution ear (None keeps today's behavior).
+        self.human_observer = human_observer
         self._wants_clock: float | None = None
         self._wants_last_map: str | None = None
         self._wants_was_alive = True
@@ -965,6 +969,7 @@ class ScheduledAgent:
         self._trace_state_tick(state)
         for event in self._drain_events():
             self.deliver_event(state, event)
+        self._observe_humans(state)
         timers = self.timers
         if timers is not None:
             for fired in timers.fire_due(self._tick_clock.monotonic()):
@@ -1140,6 +1145,30 @@ class ScheduledAgent:
         self._wants_was_alive = alive
         if state.hp_ratio < 0.25:
             WantSatisfier.apply(wants, WantEvent("hp_low"))
+
+    def _observe_humans(self, state: BotState) -> None:  # noqa: ARG002 (state symmetry)
+        """Fold this tick's party observations into the human scores.
+
+        Reads the client's cached party roster (char name -> AID) and drains
+        the party-scoped observation rows once; a client without the limb
+        (the offline doubles) contributes nothing. The ledger's ts drives the
+        weekly half-life, so the wall clock is the honest timestamp here.
+        """
+        observer = self.human_observer
+        client = self.client
+        if observer is None or client is None:
+            return
+        members = getattr(getattr(client, "wire", None), "party_members", None)
+        if members is None:
+            members = getattr(client, "party_members", None)
+        party = {
+            str(member["name"]): int(member["aid"])
+            for member in members or ()
+            if isinstance(member, dict) and member.get("name") and member.get("aid")
+        }
+        drain = getattr(client, "drain_party_observations", None)
+        observations: tuple[PartyObservation, ...] = tuple(drain()) if callable(drain) else ()
+        observer.observe(party=party, observations=observations, ts=time.time())
 
     def _apply_goal_notes(self, notes: tuple[str, ...]) -> None:
         for note in notes:
@@ -1630,7 +1659,9 @@ class AgentHost:
             if self.world_state is not None:
                 self.world_state.bind_memory(persona.persona_id, memory.log)
             wants = self._new_want_state(persona)
-            social_view, coordination, chat_ingest = self._new_coordination(persona.persona_id)
+            social_view, coordination, chat_ingest, human_observer = self._new_coordination(
+                persona.persona_id
+            )
             # Trace wiring: the same TraceLog feeds the runtime taps, the
             # brain's review/plan lines and the transparent decide/LLM
             # proxies. A custom brain_factory owns its own model, so the
@@ -1660,6 +1691,7 @@ class AgentHost:
                         social_view=social_view,
                         coordination=coordination,
                         interaction_ingest=chat_ingest,
+                        human_reports=human_observer.review if human_observer else None,
                         trace=trace,
                     )
                 ),
@@ -1671,6 +1703,7 @@ class AgentHost:
                 heartbeat_max_s=self._heartbeat_range[1],
                 rng=random.Random(self.rng.getrandbits(64)),
                 wants=wants,
+                human_observer=human_observer,
                 trace=trace,
             )
         except BaseException as origin:
@@ -1732,10 +1765,11 @@ class AgentHost:
         # Memory owns both stores from entry, including failed restore cleanup.
         return Memory(summarizer, store=raw, summary_store=cache)
 
-    def _new_coordination(
-        self, persona_id: str
-    ) -> tuple[
-        Callable[[], Sequence[str]] | None, BoundCoordinator | None, Callable[[Any], None] | None
+    def _new_coordination(self, persona_id: str) -> tuple[
+        Callable[[], Sequence[str]] | None,
+        BoundCoordinator | None,
+        Callable[[Any], None] | None,
+        HumanContributionObserver | None,
     ]:
         """The per-agent social coordination wiring (None without a population).
 
@@ -1746,15 +1780,20 @@ class AgentHost:
         agents reconnect, so a cached list would lie. The interaction ledger
         (the observed agent-to-agent event layer) rides the same wiring: its
         decide lines join the social view and its review-cadence emissions
-        travel the coordinator's in-game channels.
+        travel the coordinator's in-game channels. The human-contribution
+        observer scores the witnessed party humans on the same ledger; at
+        review it feeds the brain's report premades (in-game chat only).
         """
         population = self._population
         if population is None:
-            return None, None, None
+            return None, None, None, None
         ledger = RelationshipLedger(persona_id, path=self._relations_path(persona_id))
         seed_roster(ledger, population)
         ledger.save()  # the injected roster is durable from the first start
         self._ledgers[persona_id] = ledger
+        # The human-player contribution ear: it scores the witnessed party
+        # humans into this ledger and queues the reviewed reports.
+        observer = HumanContributionObserver(ledger, persona_id)
 
         interactions = InteractionLedger(
             persona_id,
@@ -1784,8 +1823,9 @@ class AgentHost:
             interactions.ingest_chat(line.sender, line.text, ts=line.at)
 
         def social_view() -> tuple[str, ...]:
+            human_lines = observer.party_human_lines() if observer else ()
             inter_lines = interactions.decide_lines(persona_id)
-            budget = SOCIAL_CONTEXT_MAX_LINES - len(inter_lines)
+            budget = SOCIAL_CONTEXT_MAX_LINES - len(inter_lines) - len(human_lines)
             return tuple(
                 inter_lines
                 + list(
@@ -1793,9 +1833,10 @@ class AgentHost:
                         persona_id, online_members=online_members(), max_lines=budget
                     )
                 )
+                + list(human_lines)
             )
 
-        return social_view, bound, chat_ingest
+        return social_view, bound, chat_ingest, observer
 
     def _relations_path(self, persona_id: str) -> Path | None:
         """The persisted ledger file; an ephemeral host keeps memory only."""

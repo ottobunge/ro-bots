@@ -4,6 +4,7 @@ import re
 import shutil
 import struct
 import subprocess
+from dataclasses import replace
 from pathlib import Path
 
 import pytest
@@ -179,7 +180,11 @@ def test_real_reader_fixed_frames_preserve_authority(aid: int) -> None:
     assert bot.dispatch_errors == []
     assert isinstance(bot.rx_error, ConnectionError)  # Deliberate EOF only.
     assert tracker.consume_snapshot(*snapshot)
-    assert tracker.view == before
+    # The probes are observationally inert except ZC_USE_SKILL (0x09CB): its
+    # received skill-use rows are real observations now (the human-contribution
+    # ear), so the invariance pin compares everything but that field.
+    after = tracker.view
+    assert replace(after, skill_uses=()) == before
     assert (bot.x, bot.y, bot.class_fresh, bot.status_params) == client_before
     assert tracker.view.position is None
     assert tracker.view.alive is None

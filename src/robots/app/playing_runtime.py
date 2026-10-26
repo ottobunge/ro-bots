@@ -27,7 +27,10 @@ from robots.adapters.native_encounter_stream import SELECTION_BINDING, NativeEnc
 from robots.adapters.native_gameplay import (
     NativeGameplayTracker,
     NativeGameplayView,
+    ObservedDamage,
     ObservedPosition,
+    ObservedSkillUse,
+    ObservedXP,
     attack,
     equip,
     npc_close,
@@ -89,7 +92,7 @@ from robots.domain.events import (
     WorldEvent,
 )
 from robots.domain.farm import MobInfo
-from robots.domain.model import ActorRef, BotState, ChatLine, Goal, PartyInvite
+from robots.domain.model import ActorRef, BotState, ChatLine, Goal, PartyInvite, PartyObservation
 from robots.domain.npc import NpcDialogue
 from robots.domain.planning import (
     NpcIntent,
@@ -239,7 +242,7 @@ class PlayingClient:
         self._now = monotonic
         self._pending: tuple[tuple[int, int], int, float, int] | None = None
         self._retry_talk: int | None = None
-        self._event_cursor = 0
+        self._event_cursor = self._party_obs_cursor = 0
         self._seen_actors: set[int] = set()
         self._invite = 0
         self._rng = random.Random(wire.char_name)
@@ -2066,6 +2069,75 @@ class PlayingClient:
                     events.append(DamageTaken(amount, damage.source_id))
         return tuple(events)
 
+    def drain_party_observations(self) -> tuple[PartyObservation, ...]:
+        """Party-scoped contribution rows new since the last drain, once each.
+
+        The human-contribution ear: the damage rows name EVERY actor (the
+        bot-dealt ones already exist; the human-dealt ones name the human as
+        the source), the skill rows are the received heal/buff casts, and the
+        exp rows are the party's shared exp flowing in. Reads only the cached
+        tracker view — never a re-observing read (the w65-67 double-consumer
+        stall); rows are attributed to humans by the society layer.
+        """
+        tracker = self._tracker
+        if tracker is None:
+            return ()
+        view = tracker.view
+        rows = [
+            *self._party_damage_rows(view.damage),
+            *self._party_skill_rows(view.skill_uses),
+            *self._party_exp_rows(view.xp),
+        ]
+        self._party_obs_cursor = max(
+            [self._party_obs_cursor]
+            + [damage.seq for damage in view.damage]
+            + [use.seq for use in view.skill_uses]
+            + [xp.seq for xp in view.xp]
+        )
+        return tuple(rows)
+
+    def _party_damage_rows(self, damage: tuple[ObservedDamage, ...]) -> list[PartyObservation]:
+        cursor = self._party_obs_cursor
+        return [
+            PartyObservation(
+                kind="damage",
+                source_id=row.source_id,
+                target_id=row.target_id,
+                amount=max(0, row.damage) + max(0, row.damage2),
+            )
+            for row in damage
+            if row.seq > cursor
+        ]
+
+    def _party_skill_rows(self, uses: tuple[ObservedSkillUse, ...]) -> list[PartyObservation]:
+        cursor = self._party_obs_cursor
+        return [
+            PartyObservation(
+                kind="skill",
+                source_id=use.source_id,
+                target_id=use.target_id,
+                amount=0,
+                skill_id=use.skill_id,
+                failed=use.failed,
+            )
+            for use in uses
+            if use.seq > cursor
+        ]
+
+    def _party_exp_rows(self, xp: tuple[ObservedXP, ...]) -> list[PartyObservation]:
+        cursor = self._party_obs_cursor
+        return [
+            PartyObservation(
+                kind="exp",
+                source_id=0,
+                target_id=0,
+                amount=int(row.delta or 0),
+                skill_id=row.parameter,
+            )
+            for row in xp
+            if row.seq > cursor and (row.delta or 0) > 0
+        ]
+
     def say(self, text: str) -> None:
         self.perform_native(Say(text))
 
@@ -2098,6 +2170,7 @@ class PlayingClient:
         self._keepalive_failed = False
         self._patrol = None
         self._tracker = NativeGameplayTracker(self.wire.aid)
+        self._party_obs_cursor = base
         self._equip_attempts = {}
         self._stat_unacked: int = 0
         self._stat_acks_seen: int = 0
