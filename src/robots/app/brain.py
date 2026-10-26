@@ -245,9 +245,19 @@ class EventDrivenBrain:
         """
         self.sync_context(state)
         self._remember_npc(state)
-        if state.npc_dialogue is not None and state.npc_dialogue.stage not in (
+        dialog = state.npc_dialogue
+        # "blocked" joins the terminal stages in the ROUTING decision only: a
+        # denied dialogue can never reach the menu lane (receipts are ignored
+        # while failed until the runtime schedules a fresh begin), so routing
+        # every event into _handle_npc_event starved decisions for the whole
+        # session (legs 24/25: the dealer shop chain ends denied, and the two
+        # parked agents decided exactly once per window). The fail-closed
+        # ACTUATION barrier is owned by the native dialogue and the runtime's
+        # retry gate — this lane only restores the decide path.
+        if dialog is not None and dialog.stage not in (
             "close_requested",
             "cancel_abandoned",
+            "blocked",
         ):
             return self._handle_npc_event(state, event)
         return self._handle_world_event(state, event, trigger=trigger)
