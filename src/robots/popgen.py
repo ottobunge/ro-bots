@@ -30,16 +30,19 @@ import json
 import random
 import sys
 from collections.abc import Mapping, Sequence
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from pathlib import Path
 from typing import Any, Final, final
 
+from robots.society.models import CharacterIdentity
 from robots.society.wants import assign_personalities
 
 Window = tuple[int, float, float]  # (day_of_week 0-6, start_hour, end_hour)
 
 ACCOUNT_ID_BASE: Final = 2_200_000  # unreserved band; two-bot fixture uses 2000000+
 CHAR_ID_BASE: Final = 300_000  # rAthena auto-creates chars from 150000 upward
+EXTRA_CHAR_ID_BASE: Final = 400_000  # on-demand roster characters (primary stays index-based)
+CHAR_SLOTS: Final = 3  # the rAthena char-server's default slot count per account
 LOGIN_HOST: Final = "127.0.0.1"
 LOGIN_PORT: Final = 16_900
 MAX_GROUP_SIZE: Final = 12  # rAthena party size
@@ -211,7 +214,12 @@ class PopulationSpec:
 @final
 @dataclass(frozen=True, slots=True)
 class PersonaProfile:
-    """One generated bot identity + its stable weekly connect schedule."""
+    """One generated bot identity + its stable weekly connect schedule.
+
+    ``characters`` is the persona's account roster (the first entry is the
+    primary); an empty tuple means the persona predates multi-character
+    rosters and is its own single character.
+    """
 
     persona_id: str
     name: str
@@ -227,6 +235,7 @@ class PersonaProfile:
     save_point: tuple[int, int]
     budget_tier: str = "standard"
     personality: str = ""  # wants-system personality (society/wants.py)
+    characters: tuple[CharacterIdentity, ...] = ()
 
 
 @final
@@ -315,6 +324,15 @@ class GeneratedPopulation:
             "account_id": ACCOUNT_ID_BASE + index,
             "char_id": CHAR_ID_BASE + index,
             "schedule": [list(w) for w in persona.schedule],
+            "characters": [
+                {
+                    "name": character.name,
+                    "char_num": character.char_num,
+                    "build": character.build,
+                    "char_id": character.char_id,
+                }
+                for character in persona.characters
+            ],
         }
 
 
@@ -393,12 +411,116 @@ def generate_population(spec: PopulationSpec, seed: int | None = None) -> Genera
         )
         personas.append(persona)
         occupied |= schedule_to_slots(persona.schedule)
+    # Every persona owns at least its primary character (roster slot 0); the
+    # extras join on demand via extend_roster().
+    rostered = [
+        replace(
+            persona,
+            characters=(
+                CharacterIdentity(
+                    name=persona.name,
+                    char_num=0,
+                    build=persona.build,
+                    char_id=CHAR_ID_BASE + index,
+                ),
+            ),
+        )
+        for index, persona in enumerate(personas)
+    ]
     return GeneratedPopulation(
         spec=spec,
-        personas=tuple(personas),
-        fixture_sql=_fixture_sql(personas),
-        manifest=_manifest(personas),
+        personas=tuple(rostered),
+        fixture_sql=_fixture_sql(rostered),
+        manifest=_manifest(rostered),
     )
+
+
+def _roster_candidates(primary_build: str) -> list[BuildPath]:
+    """The play-style-constrained class paths for a roster extra.
+
+    Class choice is limited by the persona's play-style family: candidates
+    come from the same BUILDS family as the primary build (the builds
+    sidecars), so a persona's characters share its class family.
+    """
+    family = next((b.family for b in BUILDS if b.path == primary_build), None)
+    candidates = [
+        b for b in BUILDS if b.path != "novice-bootstrap" and (family is None or b.family == family)
+    ]
+    return candidates or [b for b in BUILDS if b.path != "novice-bootstrap"]
+
+
+def extend_roster(
+    population: GeneratedPopulation,
+    persona_id: str,
+    *,
+    seed: int | None = None,
+) -> tuple[GeneratedPopulation, CharacterIdentity]:
+    """Generate one on-demand roster character for the persona.
+
+    The extra takes the persona's next free char-server slot (capped at the
+    rAthena default of 3), a play-style-constrained build from the persona's
+    class family, a population-unique name, and a fresh char id from the
+    on-demand band. Pure and deterministic: the rng is keyed by
+    seed:persona_id:roster-size. Returns the extended population (a new
+    immutable object; the artifacts are rebuilt) and the new character.
+    """
+    _persona, roster = _roster_target(population, persona_id)
+    actual_seed = population.spec.seed if seed is None else seed
+    rng = random.Random(f"popgen-roster:{actual_seed}:{persona_id}:{len(roster)}")
+    used = {name for p in population.personas for name in (p.name, *(c.name for c in p.characters))}
+    character = CharacterIdentity(
+        name=_draw_name(rng, used),
+        char_num=len(roster),
+        build=rng.choice(_roster_candidates(roster[0].build)).path,
+        char_id=EXTRA_CHAR_ID_BASE
+        + sum(max(0, len(p.characters) - 1) for p in population.personas),
+    )
+    rostered = _with_extra_character(population.personas, persona_id, character)
+    return (
+        replace(
+            population,
+            personas=rostered,
+            fixture_sql=_fixture_sql(rostered),
+            manifest=_manifest(rostered),
+        ),
+        character,
+    )
+
+
+def _roster_target(
+    population: GeneratedPopulation, persona_id: str
+) -> tuple[PersonaProfile, tuple[CharacterIdentity, ...]]:
+    """The persona and its roster; fail closed on unknown ids and full rosters."""
+    persona = next((p for p in population.personas if p.persona_id == persona_id), None)
+    if persona is None:
+        msg = f"unknown persona: {persona_id}"
+        raise ValueError(msg)
+    roster = persona.characters or _implicit_roster(persona)
+    if len(roster) >= CHAR_SLOTS:
+        msg = f"roster full for {persona_id}: rAthena provides {CHAR_SLOTS} slots"
+        raise ValueError(msg)
+    return persona, roster
+
+
+def _with_extra_character(
+    personas: tuple[PersonaProfile, ...],
+    persona_id: str,
+    character: CharacterIdentity,
+) -> tuple[PersonaProfile, ...]:
+    """The population with the persona's roster extended by ``character``."""
+    rostered: list[PersonaProfile] = []
+    for other in personas:
+        if other.persona_id != persona_id:
+            rostered.append(other)
+            continue
+        existing = other.characters or _implicit_roster(other)
+        rostered.append(replace(other, characters=(*existing, character)))
+    return tuple(rostered)
+
+
+def _implicit_roster(persona: PersonaProfile) -> tuple[CharacterIdentity, ...]:
+    """The pre-roster persona as its own single (unnumbered) character."""
+    return (CharacterIdentity(name=persona.name, char_num=0, build=persona.build),)
 
 
 def load_population(path: str | Path) -> GeneratedPopulation:
@@ -463,7 +585,29 @@ def _persona_from_row(row: Any, path: str | Path) -> PersonaProfile:
         save_map=str(row.get("save_map", "prontera")),
         save_point=(int(save_point[0]), int(save_point[1])),
         budget_tier=str(row.get("budget_tier", "standard")),
+        characters=_characters_from_row(row, path),
     )
+
+
+def _characters_from_row(row: Any, path: str | Path) -> tuple[CharacterIdentity, ...]:
+    """The row's roster entries; tolerant like every wiring field."""
+    characters = row.get("characters", ())
+    if not isinstance(characters, list):
+        return ()
+    parsed: list[CharacterIdentity] = []
+    for offset, entry in enumerate(characters):
+        if not isinstance(entry, dict) or not entry.get("name"):
+            msg = f"population.json has a malformed character row: {path}"
+            raise ValueError(msg)
+        parsed.append(
+            CharacterIdentity(
+                name=str(entry["name"]),
+                char_num=int(entry.get("char_num", offset)),
+                build=str(entry.get("build", "")),
+                char_id=int(entry.get("char_id", 0)),
+            )
+        )
+    return tuple(parsed)
 
 
 def _group_sessions(rng: random.Random) -> list[tuple[int, int, int]]:
@@ -696,13 +840,16 @@ def _hex(value: str) -> str:
 
 
 def _fixture_sql(personas: Sequence[PersonaProfile]) -> str:
-    """The two-bot fixture.sql pattern: novice start, status 48, skill 9."""
+    """The two-bot fixture.sql pattern: novice start, status 48, skill 9.
+
+    The account holds the persona's whole roster: one `char` row per
+    character at its char-server slot, each with its own char id and skill
+    bootstrap row.
+    """
     lines = ["USE `ragnarok`;"]
     for index, persona in enumerate(personas):
         account_id = ACCOUNT_ID_BASE + index
-        char_id = CHAR_ID_BASE + index
-        last_x = 150 + 2 * (index % 5)
-        save_x, save_y = persona.save_point
+        roster = persona.characters or _implicit_roster(persona)
         lines.append(
             # nosec B608: fixture-file text, never executed; generated ids only
             "INSERT INTO `login` (`account_id`, `userid`, `user_pass`, `sex`, "  # nosec B608
@@ -711,39 +858,61 @@ def _fixture_sql(personas: Sequence[PersonaProfile]) -> str:
             f"'{persona.sex}', '', 0, 0, {_hex(persona.pincode)}, "
             "UNIX_TIMESTAMP());"
         )
-        lines.append(
-            # nosec B608: fixture-file text, never executed; generated ids only
-            "INSERT INTO `char` (`char_id`, `account_id`, `char_num`, `name`, "  # nosec B608
-            "`class`, `base_level`, `job_level`, `str`, `agi`, `vit`, `int`, "
-            "`dex`, `luk`, `max_hp`, `hp`, `max_sp`, `sp`, `last_map`, "
-            "`last_x`, `last_y`, `save_map`, `save_x`, `save_y`, `sex`, "
-            f"`online`, `status_point`, `skill_point`) VALUES ({char_id}, "
-            f"{account_id}, 0, {_hex(persona.name)}, 0, 10, 10, 1, 1, 1, 1, "
-            f"1, 1, 40, 40, 11, 11, 'prontera', {last_x}, 150, "
-            f"'{persona.save_map}', {save_x}, {save_y}, '{persona.sex}', "
-            "0, 48, 9);"
-        )
-        lines.append(
-            f"INSERT INTO `skill` (`char_id`, `id`, `lv`, `flag`) VALUES ({char_id}, 1, 9, 0);"  # nosec B608
-        )
+        for character in roster:
+            last_x = 150 + 2 * ((index + character.char_num) % 5)
+            save_x, save_y = persona.save_point
+            lines.append(
+                # nosec B608: fixture-file text, never executed; generated ids only
+                "INSERT INTO `char` (`char_id`, `account_id`, `char_num`, `name`, "  # nosec B608
+                "`class`, `base_level`, `job_level`, `str`, `agi`, `vit`, `int`, "
+                "`dex`, `luk`, `max_hp`, `hp`, `max_sp`, `sp`, `last_map`, "
+                "`last_x`, `last_y`, `save_map`, `save_x`, `save_y`, `sex`, "
+                f"`online`, `status_point`, `skill_point`) VALUES "
+                f"({character.char_id}, {account_id}, {character.char_num}, "
+                f"{_hex(character.name)}, 0, 10, 10, 1, 1, 1, 1, "
+                f"1, 1, 40, 40, 11, 11, 'prontera', {last_x}, 150, "
+                f"'{persona.save_map}', {save_x}, {save_y}, '{persona.sex}', "
+                "0, 48, 9);"
+            )
+            lines.append(
+                f"INSERT INTO `skill` (`char_id`, `id`, `lv`, `flag`) VALUES "  # nosec B608
+                f"({character.char_id}, 1, 9, 0);"
+            )
     return "\n".join(lines) + "\n"
 
 
 def _manifest(personas: Sequence[PersonaProfile]) -> dict[str, Any]:
-    """The host-manifest schema build_host consumes via load_manifest()."""
+    """The host-manifest schema build_host consumes via load_manifest().
+
+    A persona whose roster exceeds one character carries its ``characters``
+    list (name/char_id/slot/build, primary first); single-character rows keep
+    the reference schema exactly.
+    """
+
+    def row(persona: PersonaProfile) -> dict[str, Any]:
+        entry: dict[str, Any] = {
+            "persona_id": persona.persona_id,
+            "account": persona.account,
+            "password": persona.password,
+            "char_name": persona.name,
+            "pincode": persona.pincode,
+        }
+        if len(persona.characters) > 1:
+            entry["characters"] = [
+                {
+                    "name": character.name,
+                    "char_id": character.char_id,
+                    "slot": character.char_num,
+                    "build": character.build,
+                }
+                for character in persona.characters
+            ]
+        return entry
+
     return {
         "login_host": LOGIN_HOST,
         "login_port": LOGIN_PORT,
-        "accounts": [
-            {
-                "persona_id": persona.persona_id,
-                "account": persona.account,
-                "password": persona.password,
-                "char_name": persona.name,
-                "pincode": persona.pincode,
-            }
-            for persona in personas
-        ],
+        "accounts": [row(persona) for persona in personas],
     }
 
 

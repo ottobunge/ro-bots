@@ -92,7 +92,14 @@ from robots.society.models import SocietyClock, SocietyPersona
 from robots.society.objectives import BoundCoordinator, GroupCoordinator, seed_roster
 from robots.society.relations import RelationshipLedger
 from robots.society.society import SocietyRoster
-from robots.society.wants import Personality, WantEvent, WantSatisfier, WantState
+from robots.society.wants import (
+    CHAR_SWITCH_ROLL_THRESHOLD,
+    Personality,
+    Want,
+    WantEvent,
+    WantSatisfier,
+    WantState,
+)
 
 if TYPE_CHECKING:
     from robots.ports import ChatGenerator, DecisionModel, TickClock
@@ -250,16 +257,23 @@ class WallClock:
 
 @final
 class ManifestEntry:
-    """One row with a literal IPv4 endpoint; defaults retain legacy port 6900."""
+    """One row with a literal IPv4 endpoint; defaults retain legacy port 6900.
+
+    ``char_id`` is the target character id of the row's ``char_name``; a
+    persona with several characters carries them all in ``roster`` (the
+    primary first) so the login flow can take any of them as its target.
+    """
 
     __slots__ = (
         "account",
+        "char_id",
         "char_name",
         "login_host",
         "login_port",
         "password",
         "persona_id",
         "pincode",
+        "roster",
     )
 
     def __init__(
@@ -272,10 +286,16 @@ class ManifestEntry:
         login_host: str = "127.0.0.1",
         login_port: int = 6900,
         pincode: str | None = None,
+        char_id: int = 0,
+        roster: tuple[ManifestEntry, ...] = (),
     ) -> None:
         _validate_login_endpoint(login_host, login_port)
         if pincode is not None:
             _validate_pincode(pincode)
+        _validate_char_id(char_id)
+        if type(roster) is not tuple or any(type(item) is not ManifestEntry for item in roster):
+            msg = "roster must be a tuple of ManifestEntry"
+            raise ValueError(msg)
         self.persona_id = persona_id
         self.account = account
         self.password = password
@@ -283,6 +303,14 @@ class ManifestEntry:
         self.login_host = login_host
         self.login_port = login_port
         self.pincode = pincode
+        self.char_id = char_id
+        self.roster = roster
+
+
+def _validate_char_id(char_id: object) -> None:
+    if type(char_id) is not int or char_id < 0:
+        msg = "char_id must be a non-negative integer"
+        raise ValueError(msg)
 
 
 def _validate_login_endpoint(host: object, port: object) -> None:
@@ -329,7 +357,11 @@ def load_manifest(path: str | Path) -> dict[str, ManifestEntry]:
     duplicate ids are skipped (first one wins), malformed rows are tolerated.
     Optional root login_host/login_port must be a complete validated IPv4 pair.
     Optional row pincode must be four ASCII digits, even on skipped rows.
-    No endpoint declaration means legacy 127.0.0.1:6900, not native-world selection.
+    Optional row char_id must be a non-negative integer (the target character
+    id of the row's char_name); a row-level ``characters`` list (name, optional
+    char_id, optional slot/build) parses into the persona's roster with the
+    primary first. No endpoint declaration means legacy 127.0.0.1:6900, not
+    native-world selection.
     """
     data = json.loads(Path(path).read_text())
     if not isinstance(data, dict):
@@ -347,6 +379,7 @@ def load_manifest(path: str | Path) -> dict[str, ManifestEntry]:
         char_name = raw.get("char_name")
         if not persona_id or not account or persona_id in entries:
             continue
+        char_id = _manifest_row_char_id(raw)
         entries[str(persona_id)] = ManifestEntry(
             str(persona_id),
             str(account),
@@ -355,11 +388,66 @@ def load_manifest(path: str | Path) -> dict[str, ManifestEntry]:
             login_host=login_host,
             login_port=login_port,
             pincode=raw.get("pincode"),
+            char_id=char_id,
+            roster=_manifest_row_roster(
+                raw,
+                persona_id=str(persona_id),
+                account=str(account),
+                login_host=login_host,
+                login_port=login_port,
+            ),
         )
     if not entries:
         msg = f"manifest {path} maps no personas to accounts"
         raise ValueError(msg)
     return entries
+
+
+def _manifest_row_char_id(raw: dict[str, Any]) -> int:
+    """The row's target character id; absent means 0 (unknown/legacy)."""
+    value = raw.get("char_id", 0)
+    if value is None:
+        return 0
+    _validate_char_id(value)
+    return int(value)
+
+
+def _manifest_row_roster(
+    raw: dict[str, Any],
+    *,
+    persona_id: str,
+    account: str,
+    login_host: str,
+    login_port: int,
+) -> tuple[ManifestEntry, ...]:
+    """The row's character roster (primary first); absent/short lists are ()."""
+    characters = raw.get("characters")
+    if not isinstance(characters, list):
+        return ()
+    roster: list[ManifestEntry] = []
+    for character in characters:
+        if not isinstance(character, dict):
+            continue
+        name = character.get("name")
+        if not name or not isinstance(name, str):
+            continue
+        value = character.get("char_id", 0)
+        if value is None:
+            value = 0
+        _validate_char_id(value)
+        roster.append(
+            ManifestEntry(
+                persona_id,
+                account,
+                str(raw.get("password", "")),
+                name,
+                login_host=login_host,
+                login_port=login_port,
+                pincode=raw.get("pincode"),
+                char_id=int(value),
+            )
+        )
+    return tuple(roster) if len(roster) > 1 else ()
 
 
 def _require_native_session(client: Any) -> None:
@@ -427,7 +515,12 @@ NPC_HOLD_HORIZON_S = 150.0
 
 @final
 class ScheduledAgent:
-    """One persona + one character + one brain + one client + one loop."""
+    """One persona + its character roster + one brain + one client + one loop.
+
+    The persona is the identity (memory, goals, relationships persist across
+    switches); ``entry`` is the character currently logged in, chosen from
+    the manifest roster (round-robin on a character switch).
+    """
 
     def __init__(
         self,
@@ -458,6 +551,14 @@ class ScheduledAgent:
         self._last_state_tick: float | None = None
         self.persona = persona
         self.entry = entry
+        # The persona's character roster: the manifest row's characters (the
+        # primary first); a legacy single-character entry is its own roster.
+        self._roster: tuple[ManifestEntry, ...] = tuple(entry.roster) or (entry,)
+        self._char_index = 0
+        if entry.roster:
+            self.entry = self._roster[0]  # the roster primary is the identity source
+        self._pending_switch = False
+        self._itch_armed = False
         self.brain = brain
         self._npc_hold_until = 0.0
         self.memory = memory or Memory(StubSummarizer())
@@ -500,6 +601,7 @@ class ScheduledAgent:
             return True
         try:
             self._invalidate_planning_binding()
+            self._consume_pending_switch()
             if self.client is None:
                 self.client = self._new_client()
             self._client_cleanup_pending = True
@@ -575,6 +677,10 @@ class ScheduledAgent:
             except BaseException as exc:
                 errors.append(exc)
             self.online = False
+            # Every clean session end (window close or itch switch) is a
+            # rotation trigger: the next window-open resumes as the NEXT
+            # roster character. Roster-less agents clear it at connect.
+            self._pending_switch = True
         self._close_planning(errors)
         closed = self._finish_client_cleanup(errors)
         cleanups: tuple[Callable[[], None], ...] = (self._publish,)
@@ -711,7 +817,21 @@ class ScheduledAgent:
         self.thread = None
         self._producer_start_pending = False
 
+    def _consume_pending_switch(self) -> None:
+        """A pending switch rotates the roster at connect and discards the old
+        wire: its char identity is baked in, so the next login must build a
+        fresh client for the selected character."""
+        if self._pending_switch and self._advance_roster():
+            self.client = None
+
     def _new_client(self) -> Any:
+        """A fresh wire for the CURRENT roster character (``self.entry``).
+
+        The spike wire client (read-only) selects the character at the
+        login's char-list stage by exact name and drives the char-server's
+        CH_SELECT_CHAR (0x0066) slot packet; ``entry.char_id`` rides along as
+        the target character id for factory-backed wires and the logs.
+        """
         if self._client_factory is not None:
             return self._client_factory(self.entry)
         if _BotClient is not None:
@@ -743,6 +863,59 @@ class ScheduledAgent:
             self.world_state.push_event(
                 "session", f"{self.persona.persona_id} {what} as {self.entry.char_name}"
             )
+
+    # ---------------------------------------------------- character switching
+    @property
+    def pending_switch(self) -> bool:
+        """A character switch is armed: the next connect advances the roster."""
+        return self._pending_switch
+
+    def _observe_character_switch_itch(self) -> None:
+        """The CharSwitch itch crossing its threshold arms a switch (design
+        section 5 item 4). The trigger is the hot EDGE, not the level: the
+        switch consumes the itch (the pinned roster_switch satisfaction), so
+        the same itch cannot fire twice while its score is still high; the
+        latch rearms only after the score falls back under the threshold.
+        """
+        wants = self.wants
+        if wants is None or len(self._roster) < 2 or not self.online:
+            return
+        hot = wants.scores[Want.CHAR_SWITCH] > CHAR_SWITCH_ROLL_THRESHOLD
+        if hot and not self._itch_armed and not self._pending_switch:
+            self._itch_armed = True
+            self._pending_switch = True
+            logger.info(
+                "agent %s: char-switch itch crossed %.0f; switch pending as %s",
+                self.persona.persona_id,
+                CHAR_SWITCH_ROLL_THRESHOLD,
+                self._roster[(self._char_index + 1) % len(self._roster)].char_name,
+            )
+        elif not hot:
+            self._itch_armed = False
+
+    def _advance_roster(self) -> bool:
+        """Round-robin to the next roster character; consume the switch.
+
+        The persona keeps its memory/goals/relationships (the same agent
+        object serves the next login); the itch is satisfied by actually
+        switching (the roster_switch event). Roster-less agents never move.
+        """
+        if len(self._roster) < 2:
+            self._pending_switch = False
+            return False
+        previous = self.entry.char_name
+        self._char_index = (self._char_index + 1) % len(self._roster)
+        self.entry = self._roster[self._char_index]
+        self._pending_switch = False
+        if self.wants is not None:
+            WantSatisfier.apply(self.wants, WantEvent("roster_switch"))
+        logger.info(
+            "agent %s: character switch %s -> %s",
+            self.persona.persona_id,
+            previous,
+            self.entry.char_name,
+        )
+        return True
 
     # ------------------------------------------------------------ tick loop
     def _run_loop(self) -> None:
@@ -777,6 +950,7 @@ class ScheduledAgent:
                 if request is None:
                     break
                 self._dispatch_chat(request)
+        self._observe_character_switch_itch()
         if self.client is None or self.brain is None:
             return
         self._ensure_planning_binding()
@@ -1615,7 +1789,13 @@ class AgentHost:
         return group.schedule.is_online(now)
 
     def step(self) -> None:
-        """One scheduling pass: open/close sessions per each persona's schedule."""
+        """One scheduling pass: open/close sessions per each persona's schedule.
+
+        A pending character switch performs a clean logout through this same
+        schedule-close path and reconnects on the pass (the roster advances
+        at connect), bypassing the failure backoff — a deliberate switch is
+        not a retry storm.
+        """
         with self._lifecycle_lock:
             if self._stop:
                 return
@@ -1623,19 +1803,35 @@ class AgentHost:
             tick = time.monotonic()
             for persona_id, agent in self.agents.items():
                 scheduled = self._scheduled_on(persona_id, now)
-                if scheduled and not agent.online:
-                    gate = self._connect_gates.setdefault(persona_id, ConnectBackoff())
-                    if not gate.ready(tick):
-                        continue
-                    gate.record_attempt(tick)
-                    logger.info("schedule window open: connecting %s", persona_id)
-                    if agent.connect():
-                        gate.record_success()
-                    else:
-                        gate.record_failure(tick)
-                elif not scheduled and agent.online:
-                    logger.info("schedule window closed: disconnecting %s", persona_id)
-                    agent.disconnect()
+                self._step_agent(persona_id, agent, scheduled, tick)
+
+    def _step_agent(
+        self, persona_id: str, agent: ScheduledAgent, scheduled: bool, tick: float
+    ) -> None:
+        """One agent's scheduling pass: itch switch, window open, window close."""
+        if scheduled and agent.online and agent.pending_switch:
+            logger.info(
+                "character switch due: logging out %s as %s", persona_id, agent.entry.char_name
+            )
+            agent.disconnect()
+        if scheduled and not agent.online:
+            self._connect_scheduled(persona_id, agent, tick)
+        elif not scheduled and agent.online:
+            logger.info("schedule window closed: disconnecting %s", persona_id)
+            agent.disconnect()
+
+    def _connect_scheduled(self, persona_id: str, agent: ScheduledAgent, tick: float) -> None:
+        """Open a scheduled session; a pending switch bypasses the failure backoff
+        (a deliberate character switch is not a retry storm)."""
+        gate = self._connect_gates.setdefault(persona_id, ConnectBackoff())
+        if not gate.ready(tick) and not agent.pending_switch:
+            return
+        gate.record_attempt(tick)
+        logger.info("schedule window open: connecting %s", persona_id)
+        if agent.connect():
+            gate.record_success()
+        else:
+            gate.record_failure(tick)
 
     def run(self, poll_seconds: float = 5.0) -> None:
         """Schedule forever (until :meth:`stop`); one last pass when stopped."""
