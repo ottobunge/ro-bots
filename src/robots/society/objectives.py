@@ -27,6 +27,7 @@ Pure stdlib; deterministic; ``ts`` values are caller-supplied floats.
 
 from __future__ import annotations
 
+import time
 from collections.abc import Callable, Mapping, Sequence
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any, Final, final
@@ -44,6 +45,7 @@ from robots.domain.model import BotState, ChatLine, Goal
 
 if TYPE_CHECKING:
     from robots.popgen import GeneratedPopulation
+    from robots.society.interactions import InteractionLedger
     from robots.society.relations import RelationshipLedger
 
 OBJECTIVE_KINDS: Final = ("hunt", "farm", "town")
@@ -624,11 +626,15 @@ class BoundCoordinator:
         online: Callable[[], Sequence[str]],
         meet_where: str | None = None,
         meet_when: str | None = None,
+        interactions: InteractionLedger | None = None,
+        now: Callable[[], float] | None = None,
     ) -> None:
         self._coordinator = coordinator
         self._online = online
         self._meet_where = meet_where
         self._meet_when = meet_when
+        self._interactions = interactions
+        self._now = now if now is not None else time.time
 
     @property
     def book(self) -> GroupObjectiveBook:
@@ -674,7 +680,14 @@ class BoundCoordinator:
             actions.extend(self.guild_formation_actions(self._online()))
         actions.extend(self._coordinator.deliver_whispers(self._online()))
         actions.extend(self._coordinator.tick(self._online(), in_party=state.in_party))
+        actions.extend(self._interaction_review(state))
         return tuple(actions)
+
+    def _interaction_review(self, state: BotState) -> tuple[GameAction, ...]:
+        """The interaction layer's review-cadence emissions (in-game chat only)."""
+        if self._interactions is None:
+            return ()
+        return self._interactions.review_actions(in_party=state.in_party, ts=self._now())
 
     def active_objective(self) -> GroupObjective | None:
         """The objective this agent joined (the alignment source), if any."""

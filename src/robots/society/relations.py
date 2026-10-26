@@ -50,6 +50,25 @@ DEAD_WEIGHT_DELTA: Final = -0.1  # one witnessed party window without contributi
 CONTRIBUTION_KINDS: Final = ("damage", "heal", "buff")
 GOSSIP_THRESHOLD: Final = 0.2  # smaller reports are not worth repeating
 GOSSIP_HOP_DECAY: Final = 0.5  # the decayed weight per gossip hop
+# The interaction-event layer's feed vocabulary (society/interactions.py owns
+# the weights); kept in sync with its POSITIVE_WEIGHTS/NEGATIVE_WEIGHTS keys.
+INTERACTION_POSITIVE_KINDS: Final = (
+    "party_time",
+    "party_session",
+    "damage_shared",
+    "shared_kill",
+    "invite_accept",
+    "helpful_chat",
+    "heal_received",
+    "buff_received",
+)
+INTERACTION_NEGATIVE_KINDS: Final = (
+    "invite_decline",
+    "attack_partner",
+    "attack_groupmate",
+    "rude_chat",
+    "party_leave_in_fight",
+)
 SOCIAL_CONTEXT_MAX_LINES: Final = 12  # the brain's bound on the decide-context block
 LEDGER_SCHEMA: Final = 1
 _PAIR_SEP: Final = "|"
@@ -216,6 +235,33 @@ class RelationshipLedger:
             raise ValueError(msg)
         self._advance(ts)
         self._human_scores[human_name] = _clamp(self._human_scores.get(human_name, 0.0) + delta)
+
+    def ingest_interaction(
+        self, a: str, b: str, kind: str, *, seconds: float = 0.0, ts: float | None = None
+    ) -> None:
+        """THE narrow interaction-event seam: one observed event feeds friendship.
+
+        The interaction layer (:mod:`robots.society.interactions`) owns the
+        bounded asymmetric per-pair standing, the group aggregates, the gossip
+        and the rivalries; this method only FEEDS the existing friendship
+        score with the same recorders the direct events use — party time via
+        its per-hour rate, every other positive kind via the chat-exchange
+        bump, negative kinds reduced by that same bounded bump (an attacker is
+        not a friend; party_formation and the affinity gates see that).
+        """
+        self._advance(ts)
+        if kind == "party_time":
+            self.record_party_time([a, b], seconds, ts=ts)
+            return
+        if kind in INTERACTION_POSITIVE_KINDS:
+            self.record_chat_exchange(a, b, ts=ts)
+            return
+        if kind in INTERACTION_NEGATIVE_KINDS:
+            key = _pair_key(a, b)
+            self._friendship[key] = _clamp(self._friendship.get(key, 0.0) - CHAT_AFFINITY_DELTA)
+            return
+        msg = f"unknown interaction kind: {kind!r}"
+        raise ValueError(msg)
 
     def report_human(
         self, human_name: str, delta: float, *, group_id: str, ts: float | None = None

@@ -80,7 +80,11 @@ def test_build_host_wires_coordination_from_the_population_file(
             assert brain is not None
             assert isinstance(brain._coordination, BoundCoordinator)
         ledger_files = {p.name for p in (tmp_path / "memory" / "relations").glob("*.json")}
-        assert ledger_files == {f"{pid}.json" for pid in host.agents}
+        expected = {f"{pid}.json" for pid in host.agents}
+        # the interaction-event layer (feature/agent-interaction-ledger)
+        # persists its own per-agent file beside the relationship ledger
+        expected |= {f"{pid}.interactions.json" for pid in host.agents}
+        assert ledger_files == expected
     finally:
         host.stop()
 

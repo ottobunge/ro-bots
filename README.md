@@ -63,6 +63,20 @@ Key properties:
   decide context, so Clef chooses actions serving the most-pressing wants —
   including socializing, character switching, or creating a new character. Goal
   reviews ask which want to serve next.
+- **Agents track each other** — `src/robots/society/interactions.py` is the
+  observed agent-to-agent interaction layer that feeds the RelationshipLedger:
+  in-game events between two roster-known agents (shared party time, bot-dealt
+  damage rows, invite accepts/declines, helpful/rude chat premades, attacks,
+  party-leave-in-fight) move a bounded per-pair standing (−100..+100) where
+  negatives weigh 3× positives, decayed with the weekly half-life. The standing
+  aggregates per (group, agent) and (group, group), reaches the decide context as
+  bounded lines (`X: +34 (party 3 sessions, 420 shared dmg; no negatives)`),
+  propagates between allied groups on the review cadence at `GOSSIP_HOP_DECAY`
+  (rival pairs ×2), and selects RIVALRIES: a new guild rivals the existing guild
+  with the worst aggregate relationship (ties through a seeded rng), friend groups
+  rival below −15 aggregate. Rivalry effects: the gossip multiplier, taunt/war
+  premades emitted as in-game channel actions only, a `Rival: X (worst standing
+  −52)` decide line, and `rival_of()` for the upcoming WoE arc.
 - **Everything is traced** — per-agent JSONL history (decides, LLM calls, chat
   heard/sent, actions, script steps, goal reviews) under `--trace-dir`, feeding the
   dashboard history views and future decision improvements.
