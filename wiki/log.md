@@ -5772,3 +5772,19 @@ byte-identical, and `Weapon Dealer#prt` answers the click on both.
   weight, 0x00B1 **zeny 3**, 0x00CB result 0. DB readback: RinceNyan zeny
   0 → 3, inventory 2 rows → 1; NyxSong untouched (the Emperium charter stays).
   The sell→zeny economy leg is unblocked for the next window.
+
+## 2026-10-26 evening — leg 27: THE FIRST AUTONOMOUS IN-WINDOW ZENY
+
+38,187 steps, 0 errors, all seven agents at full decide cadence (143-187).
+NyxSong ended the window with 5 zeny and RinceNyan with 3 - earned IN-WINDOW
+through the corrected sell chain (the C5 type-1 dealtype byte, the C7 sell
+list, the completed sells). The earlier "empirical inversion" (type 0 -> sell)
+was a mis-decoded C6 buy list; the binary follows npc.cpp:2411 exactly. The
+live proof chain: click 0x0090 -> C4 -> C5 type 1 -> C7 rows -> sell -> the
+item deleted -> 0xB1 zeny -> the DB row.
+
+Remaining for the full economy closure: the sell amounts are small (5z; the
+knife costs 50z) - the loop needs more farm->sell trips per character, and the
+buy->equip leg fires once a character can afford the weapon. Two agents still
+read npc_stage "blocked" at the window end (the post-sell dialogue denial) -
+their decisions flowed regardless, so this is cosmetic next to the fix.
