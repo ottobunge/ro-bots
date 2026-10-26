@@ -87,10 +87,11 @@ from robots.domain.actions import (
 from robots.domain.events import ChatHeard, Heartbeat, TimerFired, WorldEvent
 from robots.domain.model import ActorRef, BotState, ChatLine, Goal
 from robots.popgen import GeneratedPopulation, load_population
+from robots.society.interactions import InteractionLedger, seed_interaction_roster
 from robots.society.memory import Memory, StubSummarizer
 from robots.society.models import SocietyClock, SocietyPersona
 from robots.society.objectives import BoundCoordinator, GroupCoordinator, seed_roster
-from robots.society.relations import RelationshipLedger
+from robots.society.relations import SOCIAL_CONTEXT_MAX_LINES, RelationshipLedger
 from robots.society.society import SocietyRoster
 from robots.society.wants import (
     CHAR_SWITCH_ROLL_THRESHOLD,
@@ -1549,6 +1550,7 @@ class AgentHost:
         self._meet_where = meet_where
         self._meet_when = meet_when
         self._ledgers: dict[str, RelationshipLedger] = {}
+        self._interactions: dict[str, InteractionLedger] = {}
         # Full-trace JSONL logging: per-persona files under trace_dir; None
         # keeps today's behavior (no tracing, no files, no wrapping).
         self.trace_dir = Path(trace_dir) if trace_dir is not None else None
@@ -1628,7 +1630,7 @@ class AgentHost:
             if self.world_state is not None:
                 self.world_state.bind_memory(persona.persona_id, memory.log)
             wants = self._new_want_state(persona)
-            social_view, coordination = self._new_coordination(persona.persona_id)
+            social_view, coordination, chat_ingest = self._new_coordination(persona.persona_id)
             # Trace wiring: the same TraceLog feeds the runtime taps, the
             # brain's review/plan lines and the transparent decide/LLM
             # proxies. A custom brain_factory owns its own model, so the
@@ -1657,6 +1659,7 @@ class AgentHost:
                         wants=wants,
                         social_view=social_view,
                         coordination=coordination,
+                        interaction_ingest=chat_ingest,
                         trace=trace,
                     )
                 ),
@@ -1731,22 +1734,36 @@ class AgentHost:
 
     def _new_coordination(
         self, persona_id: str
-    ) -> tuple[Callable[[], Sequence[str]] | None, BoundCoordinator | None]:
+    ) -> tuple[
+        Callable[[], Sequence[str]] | None, BoundCoordinator | None, Callable[[Any], None] | None
+    ]:
         """The per-agent social coordination wiring (None without a population).
 
         The ledger persists under ``memory_root/relations/`` (restore on
         construction = reconnect continuity), the roster is injected at
         creation (meta-knowledge only — no coordination message ever travels
         this channel), and the online provider reads ``self.agents`` LIVE: the
-        agents reconnect, so a cached list would lie.
+        agents reconnect, so a cached list would lie. The interaction ledger
+        (the observed agent-to-agent event layer) rides the same wiring: its
+        decide lines join the social view and its review-cadence emissions
+        travel the coordinator's in-game channels.
         """
         population = self._population
         if population is None:
-            return None, None
+            return None, None, None
         ledger = RelationshipLedger(persona_id, path=self._relations_path(persona_id))
         seed_roster(ledger, population)
         ledger.save()  # the injected roster is durable from the first start
         self._ledgers[persona_id] = ledger
+
+        interactions = InteractionLedger(
+            persona_id,
+            path=self._interactions_path(persona_id),
+            rng=random.Random(self.rng.getrandbits(64)),
+        )
+        seed_interaction_roster(interactions, population)
+        interactions.save()
+        self._interactions[persona_id] = interactions
 
         def online_members() -> tuple[str, ...]:
             return tuple(pid for pid, agent in self.agents.items() if agent.online)
@@ -1760,12 +1777,25 @@ class AgentHost:
                 if self._meet_when is not None
                 else meet_when_for(persona_id, population)
             ),
+            interactions=interactions,
         )
 
-        def social_view() -> tuple[str, ...]:
-            return tuple(ledger.context_lines(persona_id, online_members=online_members()))
+        def chat_ingest(line: Any) -> None:
+            interactions.ingest_chat(line.sender, line.text, ts=line.at)
 
-        return social_view, bound
+        def social_view() -> tuple[str, ...]:
+            inter_lines = interactions.decide_lines(persona_id)
+            budget = SOCIAL_CONTEXT_MAX_LINES - len(inter_lines)
+            return tuple(
+                inter_lines
+                + list(
+                    ledger.context_lines(
+                        persona_id, online_members=online_members(), max_lines=budget
+                    )
+                )
+            )
+
+        return social_view, bound, chat_ingest
 
     def _relations_path(self, persona_id: str) -> Path | None:
         """The persisted ledger file; an ephemeral host keeps memory only."""
@@ -1773,11 +1803,22 @@ class AgentHost:
             return None
         return self.memory_root / "relations" / f"{persona_id}.json"
 
+    def _interactions_path(self, persona_id: str) -> Path | None:
+        """The interaction ledger's own file (schema-independent of the ledger JSON)."""
+        if self.memory_root is None:
+            return None
+        return self.memory_root / "relations" / f"{persona_id}.interactions.json"
+
     def _save_ledgers(self, errors: list[BaseException]) -> None:
         """Persist every relationship ledger (the reconnect-continuity carrier)."""
         for ledger in self._ledgers.values():
             try:
                 ledger.save()
+            except BaseException as exc:
+                errors.append(exc)
+        for interactions_ledger in self._interactions.values():
+            try:
+                interactions_ledger.save()
             except BaseException as exc:
                 errors.append(exc)
 

@@ -5650,3 +5650,44 @@ reads the right world (:8401 on the e2e traces) with the history/combat/plans
 views. Next: the leg-19 telemetry readout (the adjacent bucket as the
 convergence proof), then the economy closure (the kills -> the drops -> the
 sell trips) and the WoE arc.
+
+## 2026-10-26 - the agent-to-agent interaction ledger + rivalries (feature/agent-interaction-ledger)
+
+The relationship ledger gained the event layer UNDER it (`society/interactions.py`,
+63 offline tests): OBSERVED in-game interactions between two roster-known agents
+move a bounded per-pair standing, and the standing drives the social behavior.
+
+- **Score model**: -100..+100 per pair; negatives weigh NEGATIVE_RATIO=3x their
+  base weight (one attack_partner -30 erases six invite_accepts), party_time per
+  30 min, damage_shared per 250 bot-dealt co-party damage; the same weekly
+  half-life decay, lazily advanced from caller timestamps; atomic JSON
+  persistence beside the relationship ledger (`<pid>.interactions.json`).
+- **Groups and gossip**: (group, agent) and (group, group) means (unevidenced
+  pairs neutral); the review cadence propagates material attitudes (>= 10) to
+  allied groups at GOSSIP_HOP_DECAY - rival pairs at x2 - and the report itself
+  becomes an in-game chat premade when the standing crosses 30 ("careful with
+  Yuri, bad blood there"). Anti-telepathy pinned: review emissions are
+  Say/PartyChat/WhisperTo only.
+- **Rivalries**: a new guild with >1 guild in existence rivals the existing
+  guild with the WORST aggregate relationship (mean over all cross member
+  pairs; ties through a seeded rng, the seed recorded on the Rivalry);
+  friend groups rival below the documented -15 aggregate (noise at 0.0 never
+  rivals). Effects: the gossip multiplier, taunt/war premades (cadence-gated,
+  in-game only), a bounded `Rival: g2 (worst standing -100)` decide line, and
+  `rival_of()` for the WoE arc.
+- **The decide block**: the social view composes the interaction lines first
+  (max 4: `Xavier: +8 (party 3 sessions, 420 shared dmg; no negatives)`), then
+  the RelationshipLedger lines within the 12-line budget. accept_invite/
+  premade_pick read the same block as before - no new knowledge source.
+- **Wiring (live-constructed)**: AgentHost._new_coordination builds +
+  seeds + persists the InteractionLedger per agent; the brain's ChatHeard
+  seam classifies helpful/rude premade chat live; BoundCoordinator carries
+  the ledger and emits its review actions. The relations.py seam stayed
+  NARROW (one `ingest_interaction` method feeding the existing friendship
+  recorders) for the feature/human-contribution rebase.
+- **Deferred kinds, honestly**: heal/buff - the ZC_USE_SKILL frames exist in
+  the pinned packetdb (0x0114/0x0115) but the clientless client parses no
+  skill-use rows yet, so the kinds are implemented with no producer;
+  loot-steal - NOT observable (the wire reports only own pickups;
+  ZC_NOTIFY_VANISH on a floor item is ambiguous), deferred not faked.
+  Party/damage/invite producers land with the host-layer native-view diffing.

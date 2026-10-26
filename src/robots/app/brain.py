@@ -124,6 +124,7 @@ class EventDrivenBrain:
         coordination: BoundCoordinator | None = None,
         wants: WantState | None = None,
         trace: TraceLog | None = None,
+        interaction_ingest: Callable[[ChatLine], None] | None = None,
     ) -> None:
         """``social_view`` feeds relationship facts into every decide context
         (the RelationshipLedger's lines): accept_invite/premade_pick can then
@@ -170,6 +171,7 @@ class EventDrivenBrain:
         self._coordination = coordination
         self.wants = wants
         self._trace = trace
+        self._interaction_ingest = interaction_ingest
         self._social_level: int | None = None
         self._social_in_party: bool | None = None
         self._pending_party_event: str | None = None
@@ -383,6 +385,9 @@ class EventDrivenBrain:
                 f"heard [{event.line.channel}] {event.line.sender}: {event.line.text}",
                 ts=event.line.at,
             )
+        if self._interaction_ingest is not None and isinstance(event, ChatHeard):
+            # the interaction layer classifies the premade categories itself
+            self._interaction_ingest(event.line)
         request = build_decision_request(
             state,
             self.memory.view() if self.memory is not None else None,

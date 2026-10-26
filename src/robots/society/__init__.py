@@ -12,6 +12,12 @@ from robots.society.human import (
     HumanContribution,
     HumanTracker,
 )
+from robots.society.interactions import (
+    InteractionLedger,
+    classify_chat,
+    rivalry_premade,
+    seed_interaction_roster,
+)
 from robots.society.memory import (
     VIEW_BUDGET_CHARS,
     ExperienceNote,
@@ -63,6 +69,7 @@ __all__ = [
     "GuildRegistry",
     "HumanContribution",
     "HumanTracker",
+    "InteractionLedger",
     "Memory",
     "MemoryLog",
     "NoteKind",
@@ -84,8 +91,11 @@ __all__ = [
     "WoeCalendar",
     "WoeEvent",
     "WoeParticipation",
+    "classify_chat",
     "fit_budget",
     "party_event_premade",
     "render_view",
+    "rivalry_premade",
+    "seed_interaction_roster",
     "zoom",
 ]
