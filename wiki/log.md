@@ -5691,3 +5691,32 @@ move a bounded per-pair standing, and the standing drives the social behavior.
   loot-steal - NOT observable (the wire reports only own pickups;
   ZC_NOTIFY_VANISH on a floor item is ambiguous), deferred not faked.
   Party/damage/invite producers land with the host-layer native-view diffing.
+
+## 2026-10-26 — leg 25: the starvation mechanism confirmed, the fix landed
+
+45,479 steps, 0 errors, 7 agents, window Mon 10.00-12.00. The split the receipt
+shows is the cleanest evidence yet: four agents decided 135-237 times at full
+cadence (the heavengraph backends healthy all window, 2 PlayingBackendErrors
+total) while THREE agents (g00m00, g00m01 at the dealer cells, g01m01 at
+50,105) decided exactly once each - all three with npc_stage "blocked".
+
+Root cause (deleg_d5573ba7, merged aa02c8ed): EventDrivenBrain.handle_event
+routed EVERY event into the NPC lane while a dialogue was non-terminal; the
+dealer shop chain ends denied (blocked is deliberately non-terminal for the
+fail-closed actuation barrier), so the brain swallowed every heartbeat forever.
+The fix adds "blocked" to the terminal stages in the ROUTING decision only -
+the actuation barrier stays owned by the native dialogue machine and the
+runtime retry gate. RED-GREEN verified: the new test fails on main's brain,
+passes on the branch.
+
+Leg 25 also validated: the corrected schedule convention (PersonaClock
+Monday=0), the self-heal keepalive retry, and the runner's 2 backend errors
+(vs 296 in leg 24's outage). Zeny stayed 0 - the dealer agents decided the buy
+branch once and froze before correcting; leg 26 (13.00-15.00) is the first
+window with the decide fix live, so the sell->zeny->knife->equip iteration can
+finally run.
+
+Also landed today: the interaction ledger + rivalries (deleg_9366589a), the
+multi-character switch (deleg_585efc59), the corpus recovery after the
+filter-branch working-tree reset (restore from refs/original; TestMobSpawns
+green again), the full post-merge gate 6,545+65 green.
