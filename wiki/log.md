@@ -6105,3 +6105,20 @@ request.
 
 Leg 29 was LIVE during this slice: its traces were read freely and nothing was
 mutated.
+
+## 2026-10-28 early — LAW 3 landed: a C7 binds to its epoch
+
+`_pending_sell` now requires the sell list's frame to postdate the CURRENT
+dialogue's click (`dialog.opened_sequence`, the cursor the click armed): a
+C7 received under a previous dialogue never authorises a sell — the recovery
+re-click opens a fresh epoch instead. Pinned by T5 (RED->GREEN: the stale-C7
+epoch does not sell), T6 (one C9 per received C7), T8 (the happy path end to
+end: C5 -> C7 -> sell, and no recovery re-click), T12 (the 0xC9 carries the
+C7's epoch). The harness also learned the real shape: the dialogue
+self-invalidates when the dealer actor is missing/walking/out of range
+(playing_runtime _validate_npc_context), so every shop-loop test now carries
+the dealer frame and arms the click before the C4. The pre-existing
+mechanical-seam test was reconciled to the epoch chain (an orphan C7 with no
+dialogue is exactly what LAW 3 refuses). Remaining from the law: T7/T9/T10 —
+the no-C7 deadline recovery, expected to compose with the existing
+deny-origin machinery; verify on a live window before building anything new.
