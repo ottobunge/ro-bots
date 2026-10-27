@@ -5868,3 +5868,38 @@ projection (attack failed, target truthfully at X) is cheap hardening on top
 of this fix. Leg 28 (the economy-closure window) runs on this fix: attacks
 should land, kills pool, drops flow, and the sell->knife->equip chain gets
 its stock.
+
+## 2026-10-27 — leg 28: the mob-destination fix converted the LANDING rate (2.2% -> 18.8%); the constraint moved to attack volume (warp leg + sell churn)
+
+First window on the mob-destination fix (4715ce24: mobs tracked at their
+0x09FD walk destination). Receipt
+`run/plain_host_receipts/population-receipt-28-1793096707.json`: 40,615
+steps, 0 errors, decides at full cadence (154-277 per agent).
+
+- LANDING RATE FIXED: 16 attacks -> 3 landed hits (18.8%) vs leg 27's
+  3/138 (2.2%) — an x8.5 ratio jump; every swing the gate approves now
+  reaches the mob (12 dmg each, STR 9/DEX 9).
+- But NO pooled kills: 36 total damage spread one-tap-per-mob across 3
+  mobs; exp unchanged except PipinWalker +2 base (first kill-signal). The
+  constraint is upstream: only 16 attacks in 2h because the agents' time
+  went to travel and sell churn:
+  - THE WARP LEG: PipinWalker emitted 1,117 MoveTos, 97 of them to the
+    pinned warp cell (170,378) and 385 to the prontera warp cell — the
+    town<->field warp does not trigger from a walk-to-cell (rAthena warps
+    fire on cell entry; the clientless walk ends adjacent or the walk is
+    rejected), so the farm loop ping-ponged town<->field all window.
+  - THE SELL CHURN: 32 NpcShopSellOpen with no completed sell (the
+    dialogue re-opens instead of progressing to the C7 rows + sell rows);
+    npc_stage 'blocked' on both dealer agents at window end; PipinWalker
+    still holds its Jellopy, zeny 0.
+  - THE NO-SCRIPT PERSONAS: PoringMuffin14 + xXLunasongXx ran zero script
+    steps again (2 windows running), 0 exp.
+- FIRST REAL POPULATION LOOT: PipinWalker's inventory holds 909 Jellopy
+  x1 (a farmed drop, picked up) — the kill->drop->pickup chain fired once
+  at population scale; NyxSong sold its stock (5z) last leg and holds
+  nothing.
+
+Named fixes for leg 29, in order: (1) the warp-trigger retry (walk ONTO
+the warp cell or re-issue the walk when the map did not change), (2) the
+sell-completion gate (one open per dialogue; progress only on the C7 rows;
+re-open only after a bounded timeout), (3) the no-script persona diagnosis.
