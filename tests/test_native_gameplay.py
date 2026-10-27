@@ -12,6 +12,25 @@ def actor(pid: int = 0x09FD, actor_id: int = 123, objecttype: int = 5) -> bytes:
     raw = bytearray(size)
     struct.pack_into("<HHBII", raw, 0, pid, size, objecttype, actor_id, 77)
     raw[offset : offset + 3] = bytes([10, 0x82, 0x50])  # observed 42,37
+    if pid == 0x09FD:
+        # The move entry carries WBUFPOS2 (from, destination); encode the
+        # same cell as the destination (a stationary spawn) so the frame is
+        # wire-shaped: raw[offset+2] is the shared nibble byte.
+        raw[offset + 2 : offset + 5] = bytes([0x50, 42 << 2, 37])
+    return bytes(raw)
+
+
+def move_entry(from_xy: tuple[int, int], to_xy: tuple[int, int], actor_id: int = 123) -> bytes:
+    """A walking mob's 0x09FD: WBUFPOS2 from-cell then destination."""
+    size, offset = 110, 63
+    raw = bytearray(size)
+    struct.pack_into("<HHBII", raw, 0, 0x09FD, size, 5, actor_id, 77)
+    (x1, y1), (x2, y2) = from_xy, to_xy
+    raw[offset + 0] = x1 >> 2
+    raw[offset + 1] = ((x1 << 6) | (y1 >> 4)) & 0xFF
+    raw[offset + 2] = ((y1 << 4) | (x2 >> 6)) & 0xFF
+    raw[offset + 3] = ((x2 << 2) | (y2 >> 8)) & 0xFF
+    raw[offset + 4] = y2 & 0xFF
     return bytes(raw)
 
 
@@ -25,6 +44,30 @@ def test_actor_to_attack_vertical(pid):
     assert observed.walking == (pid == 0x09FD)
     assert observed.attackable
     assert gameplay.attack(observed.actor_id) == bytes.fromhex("37047b00000000")
+
+
+def test_move_entry_tracks_walk_destination():
+    """A walking mob is tracked at its walk DESTINATION, not the from-cell.
+
+    The 0x09FD move entry carries WBUFPOS2 (from, destination) — one frame
+    per walk (unit.cpp:238-246, clif.cpp:1369+). Tracking the from-cell put
+    the mob's believed cell up to a walk-cycle behind its true cell, so the
+    melee gate compared the agent's future cell with the mob's past cell and
+    every believed-adjacent swing landed 4-6 cells off (the leg-27 probe:
+    8/8 gate-approved swings rejected 0x0139; 138 attacks, 3 landed hits).
+    """
+    tracker = gameplay.NativeGameplayTracker(999)
+    tracker.ingest(1, 4.0, 0x09FD, move_entry((42, 37), (45, 39)))
+    observed = tracker.view.actors[0]
+    assert (observed.position.x, observed.position.y) == (45, 39)
+
+
+def test_move_entry_stationary_spawn_unchanged():
+    """A stationary 0x09FD (from == destination) tracks the same cell."""
+    tracker = gameplay.NativeGameplayTracker(999)
+    tracker.ingest(1, 4.0, 0x09FD, move_entry((42, 37), (42, 37)))
+    observed = tracker.view.actors[0]
+    assert (observed.position.x, observed.position.y) == (42, 37)
 
 
 @pytest.mark.parametrize("kind", [0, 1, 2, 3, 4, 6, 7, 8, 9, 10, 11, 12, 13, 14, 255])

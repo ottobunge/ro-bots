@@ -5838,3 +5838,33 @@ it fixed nothing (production `src/` stayed read-only). Receipt:
   disposable e2e world was moved into the field, and it was restored
   afterwards. No population leg, no ro-bots-test world, no llama-server, no
   production source edit, no commit to main.
+
+## 2026-10-26 night — the mob-destination fix: mobs now tracked at their walk destination (the melee gate finally compares two true cells)
+
+The probe (`1473b72b`) named the mechanism: the pinned server emits one move
+frame per walk (0x09FD, `unit.cpp:238-246`), carrying WBUFPOS2
+`(from, destination)` (`clif.cpp:1369+`). Production tracked the agent at the
+destination (the w65-78 self fix) but the mob at the from-cell — the melee
+gate compared the agent's FUTURE cell with the mob's PAST cell. The probe
+measured the tracked self up to 15 cells ahead of truth and the tracked mob up
+to 7 behind, and drove the production gate to 8/8 believed-adjacent swings
+that the server rejected 0x0139 at true distance 4-6. That is why leg 27
+landed 138 attacks for 3 hits (12 dmg each) and ~0 kills — and why the
+economy starved (no kills -> no drops -> no sellables -> the sell chain had
+nothing to sell).
+
+Fix (RED->GREEN, one parse site): `_actor` (`native_gameplay.py`) now decodes
+the destination nibbles at `raw[offset+2:offset+5]` for 0x09FD — the same
+WBUFPOS2 tail the self 0x0087 branch has decoded since w65-78 — and tracks
+the mob there. Stationary spawns carry from == destination and are unchanged.
+`tests/test_native_gameplay.py` gains wire-shaped frame builders
+(`move_entry`) and two tests (walking -> destination, stationary -> same
+cell); the shared `actor()` builder now emits a destination (a stationary
+spawn) so every frame the suite builds is wire-shaped.
+
+Follow-up noted, not landed: the server's 0x0139 range-rejection carries the
+server's own cells and has NO handler under src/robots — a feedback
+projection (attack failed, target truthfully at X) is cheap hardening on top
+of this fix. Leg 28 (the economy-closure window) runs on this fix: attacks
+should land, kills pool, drops flow, and the sell->knife->equip chain gets
+its stock.

@@ -243,6 +243,7 @@
           mypy             # static type checking
           cargo rustc rustfmt clippy cargo-audit cargo-machete
           pkg-config openssl
+          clang             # the source-bound shop oracle compiles with g++ AND clang++ (tests/test_native_shop.py)
         ];
         shellHook = ''
           echo "ro-bots dev shell — try: task --list"

@@ -596,11 +596,25 @@ class NativeGameplayTracker:
         p = parse_actor_presentation(raw)
         offset = 63 if p.packet_id == 0x09FD else 59
         aid = p.actor_id
+        position = _position(raw, offset, seq, at)
+        if p.packet_id == 0x09FD:
+            # The move entry carries WBUFPOS2 (from, destination) — one frame
+            # per walk (unit.cpp:238-246, clif.cpp:1369+). Tracking the
+            # from-cell put the mob's believed cell up to a walk-cycle behind
+            # its true cell: the melee gate compared the agent's future cell
+            # with the mob's PAST cell and every believed-adjacent swing
+            # landed 4-6 cells off, silently rejected (the leg-27 probe: 8/8
+            # gate-approved swings rejected 0x0139; 138 attacks, 3 landed
+            # hits, zero kills). Track the destination — the cell the mob
+            # occupies when the walk ends; stationary spawns carry
+            # from == destination and are unchanged.
+            b, c, d = raw[offset + 2 : offset + 5]
+            position = ObservedPosition(((b & 15) << 6) | (c >> 2), ((c & 3) << 8) | d, seq, at)
         self._actors[aid] = ObservedActor(
             aid,
             p.character_id,
             p.objecttype,
-            _position(raw, offset, seq, at),
+            position,
             p.packet_id == 0x09FD,
             p.objecttype == 5 and aid not in (self.own_actor_id, (-self.own_actor_id) & 0xFFFFFFFF),
         )
