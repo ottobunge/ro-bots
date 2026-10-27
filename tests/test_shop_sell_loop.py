@@ -22,9 +22,9 @@ from robots.adapters.native_gameplay import NativeGameplayTracker  # noqa: E402
 from robots.adapters.native_shop import PurchaseEntry, encode_purchase  # noqa: E402
 from robots.app import playing_runtime as runtime  # noqa: E402
 from robots.app import scripts  # noqa: E402
-from robots.domain.actions import NpcShopSell  # noqa: E402
+from robots.domain.actions import NpcShopSell, NpcShopSellOpen  # noqa: E402
 from robots.domain.model import Goal  # noqa: E402
-from tests.test_playing_runtime import Wire, entry, map_frame  # noqa: E402
+from tests.test_playing_runtime import Wire, entry, map_frame, walk_ack  # noqa: E402
 
 
 class RecordingWire(Wire):
@@ -211,3 +211,112 @@ def test_sell_open_is_fail_closed_without_a_received_dialog() -> None:
     state = client.build_native_state(Goal.GRIND)
     out = client.mechanical_actions(state, ())
     assert not any(type(a).__name__ == "NpcShopSellOpen" for a in out)
+
+
+# --- the sell-completion gate (leg 28: 32 opens, zero sells) ---
+
+DEALER = 4123
+
+
+def _c4(npc_id: int) -> bytes:
+    """ZC_SELECT_DEALTYPE 0x00C4: 6B total — id.W + npc gid.L at offset 2."""
+    return struct.pack("<HI", 0x00C4, npc_id)
+
+
+def _dealer(at: tuple[int, int], npc_id: int = DEALER) -> bytes:
+    """A 0x09FE dealer presentation (objecttype 6) standing at `at`."""
+    size, offset = 103, 59
+    raw = bytearray(size)
+    struct.pack_into("<HHBII", raw, 0, 0x09FE, size, 6, npc_id, 77)
+    raw[offset + 0] = at[0] >> 2
+    raw[offset + 1] = ((at[0] & 3) << 6) | (at[1] >> 4)
+    raw[offset + 2] = (at[1] & 15) << 4
+    return bytes(raw)
+
+
+def _armed(client: runtime.PlayingClient, npc_id: int = DEALER) -> None:
+    """The click arms the dialogue (native_npc_dialogue.begin) — the C4 is
+    only ingested for the npc the client clicked. The 5s dialog deadline is
+    armed on the CLIENT's monotonic, not a test-time zero."""
+    client._npc.begin(npc_id, 1, "prontera", 0, client._now())
+
+
+def test_sell_open_is_sent_after_a_real_walk_to_the_dealer() -> None:
+    """T1, the leg-28 regression: a REAL walk leaves arrival_confirmed False
+    forever (only a zero-length walkok proves arrival), and the sell limb
+    gated the 0xC5 on it — 32 mints, zero sends. Readiness is tracked
+    adjacency to the received dealer, never the walk-arrival flag."""
+    client = _client_with(
+        walk_ack((42, 37), (43, 37)),  # a real walk: from != to
+        _dealer((43, 37)),
+        _inv(((6, 909, 5),)),
+        _weight(),
+    )
+    state = client.build_native_state(Goal.GRIND)  # the epoch initialises
+    _armed(client)
+    client.wire.add(_c4(DEALER))  # the dealer answers the click
+    state = client.build_native_state(Goal.GRIND)
+    out = client.mechanical_actions(state, ())
+    assert len(out) == 1
+    assert isinstance(out[0], NpcShopSellOpen)
+    client.perform_native(out[0])
+    assert ng.sell_open(DEALER) in client.wire.sent
+
+
+def test_sell_open_is_minted_once_per_dialog_epoch() -> None:
+    """T3: the epoch latches at the MINT, not after the send guard — a guard
+    failure (no adjacency, no arrival proof) must not re-mint the same
+    epoch's open every tick (leg 28: 32 opens)."""
+    client = _client_with(
+        _dealer((43, 37)),
+        _inv(((6, 909, 5),)),
+        _weight(),
+    )
+    state = client.build_native_state(Goal.GRIND)
+    _armed(client)
+    client.wire.add(_c4(DEALER))
+    state = client.build_native_state(Goal.GRIND)
+    first = client.mechanical_actions(state, ())
+    assert len(first) == 1
+    assert isinstance(first[0], NpcShopSellOpen)
+    second = client.mechanical_actions(state, ())
+    assert not any(isinstance(a, NpcShopSellOpen) for a in second)  # not re-minted
+
+
+def test_a_new_dialog_epoch_mints_a_new_sell_open() -> None:
+    """T4: the latch is per-epoch (a fresh received C4 = a fresh epoch) —
+    the dedupe must not over-suppress the next dialogue."""
+    client = _client_with(
+        _dealer((43, 37)),
+        _inv(((6, 909, 5),)),
+        _weight(),
+    )
+    state = client.build_native_state(Goal.GRIND)
+    _armed(client)
+    client.wire.add(_c4(DEALER))
+    state = client.build_native_state(Goal.GRIND)
+    assert len(client.mechanical_actions(state, ())) == 1
+    client.wire.add(_c4(DEALER))  # a fresh dialog epoch (a new received C4)
+    state = client.build_native_state(Goal.GRIND)
+    second = client.mechanical_actions(state, ())
+    assert len(second) == 1
+    assert isinstance(second[0], NpcShopSellOpen)
+
+
+def test_the_sell_request_is_fail_closed_on_a_rejected_target() -> None:
+    """T11: `_send_sell` compared a bool guard to None — the guard NEVER
+    fired, so a rejected 0xC9 went out anyway (fail-open where the
+    codebase's convention is fail-closed)."""
+    client = _client_with(
+        _inv(((6, 909, 5),)),
+        _weight(),
+        _c7(((6, 12, 12),)),
+    )
+    state = client.build_native_state(Goal.GRIND)
+    (action,) = client.mechanical_actions(state, ())
+    assert isinstance(action, NpcShopSell)
+    # the local guards reject this 0xc9 (the epoch moved under it, the
+    # receipt is gone — any False from `_sell_request_target` must close)
+    client._sell_request_target = lambda *_a, **_k: False  # type: ignore[method-assign]
+    client.perform_native(action)
+    assert client.wire.sent == []

@@ -1030,7 +1030,6 @@ class PlayingClient:
                 self._standing is True,
                 self._stand_pending is None,
                 self._rest_seq is None,
-                self._npc_motion_ready(),
             )
         )
 
@@ -1111,6 +1110,11 @@ class PlayingClient:
             return None
         if shop_sellable_stock(tracker.view.inventory_counts) <= 0:
             return None
+        # The epoch latches at the MINT, not after the send guard: a guard
+        # failure (no adjacency, no arrival proof) must not re-mint the same
+        # epoch's open every tick (leg 28: 32 opens). A fresh received C4 is
+        # a fresh epoch and mints again.
+        self._sell_open_issued = (dialog.opened_sequence, dialog.sequence)
         return NpcShopSellOpen(
             dialog.npc_id,
             dialog.epoch,
@@ -1130,6 +1134,23 @@ class PlayingClient:
             self._buy_open_issued = (dialog.opened_sequence, dialog.sequence)
         return selection
 
+    def _dealer_adjacent(self, tracker: NativeGameplayTracker, npc_id: int) -> bool:
+        """Tracked adjacency to the RECEIVED dealer — never the walk-arrival
+        flag (it stays False after every real walk; gating the shop limb on
+        it is what kept leg 28's 32 sell-opens from ever sending). Same
+        contract e06dc511 gave the click path. Fail closed: no received
+        dealer or out of range reads as not adjacent."""
+        dealer = observed_npc(tracker.view, npc_id)
+        if dealer is None or dealer.position is None or tracker.view.position is None:
+            return False
+        return (
+            math.hypot(
+                dealer.position.x - tracker.view.position.x,
+                dealer.position.y - tracker.view.position.y,
+            )
+            <= 3
+        )
+
     def _send_sell_open(self, action: NpcShopSellOpen) -> None:
         mint = self._sell_open_mint
         self._sell_open_mint = None
@@ -1141,8 +1162,9 @@ class PlayingClient:
             return
         if not self._sell_open_request_ready(action, tracker, dialog):
             return
+        if not self._dealer_adjacent(tracker, action.npc_id):
+            return
         self._npc.requests += 1
-        self._sell_open_issued = (action.opened_sequence, action.prompt_sequence)
         self._send_npc(sell_open(action.npc_id))
 
     def _sell_open_request_ready(
@@ -1178,7 +1200,7 @@ class PlayingClient:
         if mint is None or mint[0] is not action or not self._sell_owner_ok(mint[1]):
             return
         tracker = self._tracker
-        if tracker is None or self._sell_request_target(action, tracker) is None:
+        if tracker is None or self._sell_request_target(action, tracker) is not True:
             return
         self._npc.requests += 1
         self._sell_sent.append(action.sell_sequence)
