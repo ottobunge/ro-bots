@@ -7,7 +7,7 @@ from dataclasses import replace
 import pytest
 
 from robots.adapters.native_navigation import MapCache, NoRoute, WalkMap
-from robots.app.playing_runtime import PlayingClient
+from robots.app.playing_runtime import NO_ROUTE_DIRECT_SENDS, PlayingClient
 from robots.domain.actions import Attack, GameAction, Rest
 from robots.domain.model import Goal
 from tests.test_playing_runtime import Wire, entry, walk_ack
@@ -225,6 +225,13 @@ def test_unreachable_public_destination_invalidates_for_bounded_replan(planner):
     if planner == "mechanical":
         assert client.mechanical_actions(state, ()) == ()
     else:
+        # leg 28 contract update: an unreachable destination first receives
+        # the bounded NoRoute direct sends (the server path-finds its own
+        # side — the walk may cross a warp); only the exhausted budget
+        # invalidates the patrol for the bounded replan.
+        for _ in range(NO_ROUTE_DIRECT_SENDS):
+            client._move(state, target)
+            client._pending = None  # the drain released the slot
         client._move(state, target)
     assert client._patrol is None
     assert rng.calls == 32
