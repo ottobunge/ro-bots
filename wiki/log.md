@@ -5903,3 +5903,55 @@ Named fixes for leg 29, in order: (1) the warp-trigger retry (walk ONTO
 the warp cell or re-issue the walk when the map did not change), (2) the
 sell-completion gate (one open per dialogue; progress only on the C7 rows;
 re-open only after a bounded timeout), (3) the no-script persona diagnosis.
+
+## 2026-10-27 — review slice: agent memory vs the ORIGINAL OptChat gist (verdict: WORKS WITH GAPS)
+
+Read-and-verdict review of the memory system against Victor Taelin's
+original UniiChat gist (.work/reference/optchat-gist-original.md; the
+Hermes plugin was treated as a derivative, not authority). Receipt:
+`run/reviews/optchat-memory-review.json` (full fidelity table with
+file:line citations). Production src/ untouched.
+
+- HEADLINE: the production memory is an "OptChat-style" REIMPLEMENTATION
+  (society/memory.py MemoryLog, ADR-004), not the gist mechanics. The
+  faithful gist stack that EXISTS in the repo — society/optchat_view.py
+  (rollback-push due-rank view, 64k/128k byte sawtooth, id+n| lines),
+  adapters/optchat_view_store.py (view.json checkpoint) and the ADR-006
+  relevance/zoom selector (app/context_selector.py) — is wired to
+  NOTHING but its own tests (grep: zero production callers).
+- Per-mechanic: append-only log IMPLEMENTED (memory_journal.py: append +
+  fsync + flock + persona_id row validation); isolation IMPLEMENTED and
+  live-verified (7/7 journals single-persona over 18,149 rows); bounded
+  recent-fine/old-coarse view APPROXIMATED (4,000 CHARS vs the gist's
+  64-128 KB bytes; drop-oldest-under-pressure instead of merge-coarser);
+  merge order DIVERGED in production (minimal binary cover, not the
+  due-rank); the summarizer LACKED — agent_runtime.py:1746 hardcodes
+  StubSummarizer ("A ~ B" truncated to 120 chars; QwenSummarizer is dead
+  code); zoom LACKED on the decide path (single-pass Clef has no tool
+  loop; zoom() and select_with_zoom() have zero callers).
+- CORRECTNESS: bounded tests green — nix develop -c uv run pytest
+  tests/ -q -k 'optchat or memory or context' = 701 collected, exit 0.
+  The decide context's memory comes from MemoryLog, not the faithful
+  module and not a third path: brain.py:397-401 -> build_decision_request
+  -> state['memory_view'] (decisions.py:106-107); the "What you
+  remember:" block (brain.py:890) is the chat-escalation prompt and
+  takes the same view's last 4 lines.
+- LIVE: all 7 population journals grow and persist with exact cross-leg
+  continuity (receipts 13-28: leg N starts at leg N-1's exact line
+  counts; 1,062-5,590 notes/agent over 10-22..10-27, ~21 sessions each).
+  s00's traces carry 8,866 decide_request events, EVERY one with a
+  memory_view; the final one renders 5,590 notes as 8 lines / 953 chars
+  (L12:0 -> L0:5588) — the tree works, and the stub's quality ceiling is
+  visible in the merged lines (truncated "A ~ B ~ C" concatenations).
+- TOP GAPS (ranked in the receipt): (1) summarization is a stub — the
+  one mechanic the design exists for never runs; (2) memory content is
+  chat-centric — combat/loot/quest/reputation kinds are declared but
+  written by nothing, so the agents' own gameplay history (the gist's
+  tool/echo) never reaches the tree (recent_encounters is a separate
+  bypass channel); (3) the faithful stack is decorative; (4) zoom is
+  unreachable; (5) 4k-char budget + drop-oldest; (6) node persistence
+  (JsonlSummaryNodeStore) exists but the population runner exposes no
+  flag to enable it — fine with the stub, blocking for any real
+  summarizer (2N calls per session start, synchronous in the decide).
+- The Hermes plugin divergences: essentially none INHERITED — ro-bots
+  does not use the plugin's architecture; its divergences are its own.
