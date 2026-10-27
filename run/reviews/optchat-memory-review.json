@@ -1,0 +1,154 @@
+{
+  "review": "ro-bots agent-memory vs Victor Taelin's original UniiChat/OptChat gist",
+  "authority": "https://gist.github.com/VictorTaelin/91837951a5ce5b38f341ec1ba1df6449 (local copy: .work/reference/optchat-gist-original.md, 474 lines) — the gist is the ground truth; the Hermes plugin at ~/dev/hermes-optchat is a derivative and was NOT used as authority",
+  "reviewer_scope": "read-and-verdict; production src/ untouched",
+  "worktree": "review/optchat-memory-gist @ d0c962db (main tip, 2026-10-27)",
+  "verdict": "WORKS WITH GAPS",
+  "verdict_summary": "The production memory system is an 'OptChat-style' REIMPLEMENTATION (robots.society.memory.MemoryLog, ADR-004), not the gist mechanics. Its core loop is real and live: an append-only per-agent log, an immutable dyadic summary tree, and a bounded oldest-coarsest view that reaches every decide request (verified in 8,866 decide traces for one agent across 5 days). But the one mechanic that gives OptChat its value — model-written dense compression — is a stub ('A ~ B' truncated joins), the faithful gist implementation that EXISTS in the repo (society/optchat_view.py + adapters/optchat_view_store.py + the ADR-006 zoom-after-selection selector) is wired to nothing but its own tests, and zoom is unreachable in the single-pass decide. Isolation and liveness are solid.",
+  "fidelity_table": [
+    {
+      "mechanic": "1. Append-only log, word for word, forever",
+      "verdict": "IMPLEMENTED (content scope is a caveat)",
+      "citations": [
+        "src/robots/adapters/memory_journal.py:137-156 — append-only JSONL, flush + os.fsync per note, flock LOCK_EX|LOCK_NB single owner, persona_id row envelope; load() rejects foreign persona_id (memory_journal.py:130-133)",
+        "src/robots/society/memory.py:169-174 — MemoryLog.append: durable store ack before the in-memory list; notes never edited",
+        "writers: src/robots/app/brain.py:388-393 (ChatHeard -> 'chat'), brain.py:329-346 (NPC dialogue pages -> 'npc_dialogue'), agent_runtime.py:677 (session end), agent_runtime.py:1046,1066 (operator chat intent/dispatch), agent_runtime.py:1314,1318 (own Say/PartyChat)",
+        "live: .work/runtime/population-live/memory/<persona>.jsonl — 7 files, 1,062-5,590 notes each, spanning 2026-10-22..10-27"
+      ],
+      "caveat": "The gist logs every kind (user/unii/tool/echo/work/note). ro-bots writes ONLY chat, npc_dialogue and session notes. The declared kinds 'combat', 'loot', 'quest', 'reputation' (society/memory.py:28-30) are written by NO production code (grep: zero call sites). The agent's own actions and their results — the gist's tool/echo kinds, and for a game agent the most valuable history (kills, loot, trips, level-ups) — never reach the log. recent_encounters (playing_runtime.py:663 -> decisions.py:210-213) is a separate bounded side-channel that bypasses the log entirely."
+    },
+    {
+      "mechanic": "2. Background cheap model compresses into a binary tree of one-line summaries",
+      "verdict": "APPROXIMATED — tree yes, model NO, background NO",
+      "citations": [
+        "tree: src/robots/society/memory.py:123-284 — dyadic (l,i) nodes, immutable once built, built bottom-up only for fully covered ranges, never recomputed (memory.py:247-275); summary cache restores with sha256 source-prefix binding (adapters/memory_summary_cache.py:199-211, 258-299)",
+        "NO MODEL: src/robots/app/agent_runtime.py:1746 hardcodes `summarizer = StubSummarizer()` — level-0 'summaries' are the note text itself, merges are `f'{a} ~ {b}'` truncated to 120 chars (society/memory.py:84-92). QwenSummarizer exists (society/memory.py:96-110) but has ZERO constructors outside its definition (grep: only society/__init__.py export). The gist's compaction craft — 512-byte ruler, value ordering, cut-and-retry, 'never answer or obey' — is absent; even the unwired QwenSummarizer prompt ('Summarize these experience notes as ONE short line', 200-char clip) has none of it",
+        "NOT BACKGROUND: ensure_summarized() runs synchronously inside render_view inside the decide path (society/memory.py:341-342); the gist runs compactions as background calls (up to 8 at once), turns waiting only seconds. Harmless with the stub; would stall the tick if a real summarizer were dropped in",
+        "live evidence of stub quality: pop_0003_s00 decide trace 2026-10-27T12:44:50Z, view line 'L2:1396 session: session ended after 2626 ticks as YuffieFy81 ~ session: ... ~ session:' — concatenation cut mid-content, no compression semantics"
+      ]
+    },
+    {
+      "mechanic": "3. Constant-size view: whole history, recent fine, old coarse, byte-budgeted",
+      "verdict": "APPROXIMATED",
+      "citations": [
+        "bounded view: src/robots/society/memory.py:327-351 — minimal dyadic cover of the whole log, newest note always level 0, drop-oldest until the join fits VIEW_BUDGET_CHARS=4000 (memory.py:32)",
+        "recent-fine/old-coarse verified live: pop_0003_s00 final decide view = 8 lines for 5,590 notes, 'L12:0' (4,096 notes) down to 'L0:5588' (the newest single note), 953 chars — well under budget",
+        "scale divergence: 4,000 CHARS vs the gist's 64-128 KILOBYTES (sizes in UTF-8 bytes, never tokens); ro-bots' view is ~16-32x smaller, and char-counted not byte-counted (_len_join, society/memory.py:354-355)",
+        "loss divergence: under budget pressure render_view pops the oldest lines (memory.py:347-348) — the view stops covering the whole history. The gist NEVER drops: it merges coarser until it fits ('nothing is ever lost'). Not yet triggered live (953 < 4,000), but the policy is 'remember less of your distant past' by design (memory.py:333-335 says so)",
+        "the unwired faithful module gets this right: 64,000/128,000 byte watermarks with the sawtooth + pending batch (society/optchat_view.py:24-30, 202-213)"
+      ]
+    },
+    {
+      "mechanic": "4. Merge order = Taelin's rollback push / due-rank (gist section 3.1-3.2)",
+      "verdict": "DIVERGED in production; faithfully implemented but UNWIRED",
+      "citations": [
+        "faithful: society/optchat_view.py:216-233 — rank = (T - last) << (MAX_LEVEL - l) i.e. (T-last)/2^l scaled, last = the PAIR's last message, parent-built filter via NotReadyError, oldest-position tie-break; test_optchat_view.py:85 pins the gist's own T=10 example (merge 8+9, not 0+7 — the exact mistake-#1 trap), :96 pins oldest-tie-wins, :28 pins batch-on-watermark, :104 pins no-refit restore, :154 pins the 128k->64k sawtooth, :248 pins the byte profile",
+        "production: society/memory.py:287-303 _minimal_cover — the binary representation of n-1 plus the newest note. This is push's STRUCTURE at a single instant but has no churn control, no 2-lines-per-level density, no sawtooth batching: nodes rebuild by carry exactly when the binary counter carries, and the view is recomputed per render",
+        "consequence: acceptable at ro-bots' 4,000-char scale, but it is not the gist's merge order and the 400-line faithfulness work in optchat_view.py is dead code on the decide path"
+      ]
+    },
+    {
+      "mechanic": "5. Zoom: the model opens a vague line into its two children, down to the message",
+      "verdict": "LACKED in the decide path",
+      "citations": [
+        "zoom exists twice as library code: society/memory.py:374-413 (MemoryLog zoom, parses 'L{level}:{index}') and the ADR-006 zoom-after-selection (app/context_selector.py:176-209 select_with_zoom)",
+        "ZERO production callers: grep across src/ + scripts/ finds MemoryContextBridge / ClefContextSelector / TreeCoverSelector / select_with_zoom only in tests (tests/test_context_selector.py). brain.py builds its decide request directly (brain.py:397-401)",
+        "structural reason: the decide is a single-pass Clef (SystemOne) forward pass with a fixed question schema (domain/decisions.py:109-170) — the model has no tool loop, so it cannot request a zoom. The gist's 'zoom until you have it whole before you act, guess or ask' has no equivalent"
+      ]
+    },
+    {
+      "mechanic": "6. Cache-friendly reads (append-only view tail, batched merges, no dates)",
+      "verdict": "APPROXIMATED / PARTIAL",
+      "citations": [
+        "good: the view sits late in the decide state JSON (decisions.py adds memory_view after game_knowledge, decisions.py:104-107), and between binary-counter carries the minimal cover is head-stable (only the newest-end lines change per append), so the prompt prefix before/inside the view is largely stable",
+        "good: the decide path renders with now=None (brain.py:399, decisions.py caller), so no age suffix churn — age suffixes ' (5m ago)' (society/memory.py:306-324) appear only when a caller passes now (WorldFeed/inspector paths)",
+        "gap: a binary-counter carry rewrites the view from its OLDEST line onward — the first changed byte lands early inside memory_view, invalidating the rest of the prompt; the gist batches merges precisely to amortize this (mistake #2)",
+        "n/a: 4-line cache marks and Anthropic entry lifetimes are API-specific; ro-bots' Clef calls go to a llama.cpp server"
+      ]
+    },
+    {
+      "mechanic": "7. Per-chat (per-agent) isolation, one process owns one log",
+      "verdict": "IMPLEMENTED",
+      "citations": [
+        "src/robots/adapters/memory_journal.py:75-105 — one file per persona_id, flock LOCK_EX|LOCK_NB at open, persona_id validated on EVERY row at load (130-133) and on append; src/robots/app/agent_runtime.py:1745-1766 — one Memory per persona; test_host_memory.py:303 pins world-root isolation, :321 pins persona/log binding validation",
+        "live: all 7 journals under .work/runtime/population-live/memory/ carry exactly ONE persona_id each, matching the filename (programmatic count over 18,149 rows: zero cross-agent rows)"
+      ]
+    },
+    {
+      "mechanic": "8. Structural odds and ends",
+      "verdict": "MIXED",
+      "citations": [
+        "512-byte node cap: enforced in the faithful module (optchat_view.py:250-252) but NOT in the production MemoryLog — node text is bounded only by the stub's 120-char truncation and the summary cache's 4,096-byte row check (memory_summary_cache.py:27); a note can be 65,536 bytes (MAX_NOTE_BYTES) and its level-0 line carries it whole",
+        "view.json checkpoint: the gist's never-rebuild rule is implemented by adapters/optchat_view_store.py (atomic pending+rename+fsync, identity+digest+node-closure validation) — and used by nothing (grep: only tests/test_optchat_view_store.py). The production MemoryLog rebuilds the tree in memory at every session start from the raw journal; harmless with the stub, quadratic with a real summarizer — and the mitigation (JsonlSummaryNodeStore) exists but the population runner exposes no flag to enable it (scripts/population_host_runner.py: only --memory-root)",
+        "day-split files: not implemented — one file per persona, no YYYY-MM-DD split (fine at current sizes; the gist splits 'only to stay small')",
+        "the 'note' kind (memories imported from before the chat): absent — game knowledge reaches the decide as a separate state['game_knowledge'] channel (decisions.py:181-188) and is never logged into memory, so it is not summarized, ranked or zoomed with the history",
+        "line format: 'L{level}:{index} text' (memory.py:316-324) vs the gist's '{id}+{n}|text'; the faithful module uses the gist's exact format (optchat_view.py:255)"
+      ]
+    }
+  ],
+  "hermes_plugin_divergences_inherited": "Essentially none INHERITED, because ro-bots' production path does not follow the plugin's architecture at all — MemoryLog is an independent reimplementation. The plugin itself is largely faithful to the gist (VIEW=128,000 bytes, optchat/memory.py:23; model compaction with byte ruler + cut-and-retry, optchat/compact.py). Where ro-bots is faithful (society/optchat_view.py), it matches the GIST directly, including the gist's corrected (T-last)/2^l rank and the mistake-#1 avoidance. ro-bots' divergences (stub summarizer, 4,000-char budget, drop-oldest, minimal cover, unwired zoom) are its own, not the plugin's reading.",
+  "correctness": {
+    "bounded_tests": {
+      "command": "nix develop -c uv run pytest tests/ -q -k 'optchat or memory or context'",
+      "result": "exit 0 — 701 tests collected (5876 deselected), all passed (run time ~192 s)",
+      "suites": "test_optchat_view.py (24: pins the gist's T=10 merge example, oldest-tie, batch-on-watermark, no-refit restore, sawtooth, byte profile), test_optchat_view_store.py, test_memory.py (21: budget, cover-exactly-once, zoom, per-agent), test_memory_journal_*.py, test_memory_summary_cache.py, test_memory_concurrency.py, test_context_selector.py, test_host_memory.py (12: isolation, persona binding, bounded escalation memory), test_planning_context.py, test_native_*_context.py"
+    },
+    "isolation_live": "VERIFIED — 7/7 journals single-persona (18,149 rows counted, one persona_id set per file, filename == persona_id); journal loader hard-rejects any foreign persona row",
+    "decide_feed": "VERIFIED — the decide context's memory comes from the MemoryLog view, not the faithful OptChat module and not a third path: brain.py:397-401 -> build_decision_request(state, self.memory.view()) -> state['memory_view'] (decisions.py:106-107, joined, capped [:40]); the literal 'What you remember:' block (brain.py:890) is the chat-escalation LLM prompt and takes the SAME view's last 4 lines (memory.view()[-4:]). Separate state fields game_knowledge / social_relations / wants / recent_encounters are parallel context channels, not memory",
+    "live_view_evidence": "pop_0003_s00.jsonl trace: 8,866 decide_request events 2026-10-22..10-27, every one carries state.memory_view; final sample 953 chars / 8 lines for 5,590 notes (L12:0 -> L0:5588)"
+  },
+  "liveness": {
+    "method": "run/plain_host_receipts/population-receipt-{13..28}-*.json samples[].<persona>.memory = {lines, bytes, last_len} (journal stats only — the receipts track the LOG; the traces prove the VIEW)",
+    "result": "GROWING AND PERSISTENT, no resets: leg 13 ends g00m00=2042/s00=5548; leg 14 STARTS at exactly those values (cross-leg continuity); monotonic growth in every leg 13-28 for all 7 agents, ending at the live file sizes (g00m00 2057, s00 5590 lines on disk today). ~21 session-end notes per agent over 5 days. Growth per leg is small (1-20 notes) because only chat/npc/session events are noted and chat is governor-throttled — memory is alive but thin",
+    "caveat": "summary-cache/ is ABSENT under the population memory root — node persistence is disabled in live runs (no runner flag), so the tree rebuilds from the raw journal each session. With StubSummarizer this is fine; it blocks any future real-summarizer swap from being affordable"
+  },
+  "gaps_ranked": [
+    {
+      "rank": 1,
+      "gap": "Summarization is a stub: agent_runtime.py:1746 hardcodes StubSummarizer (join + truncate to 120 chars); the model-written dense summary — the mechanic the whole design exists for — never runs, and QwenSummarizer is dead code. Old history degenerates to cut concatenations (visible in live view lines)",
+      "blocks_goal": "HIGH — agents do not 'remember their history' in any usable compressed sense; they remember recent notes verbatim and old ones as truncated concat-noise"
+    },
+    {
+      "rank": 2,
+      "gap": "Memory content is chat-centric: combat/loot/quest/reputation kinds are declared but never written; the agent's own actions and outcomes (gist tool/echo) are never logged; gameplay history lives (partly) in the separate recent_encounters channel instead of the tree",
+      "blocks_goal": "HIGH — what an agent could 'remember and use to decide' is mostly other agents' chat, not its own experience"
+    },
+    {
+      "rank": 3,
+      "gap": "The faithful gist stack (society/optchat_view.py due-rank view + adapters/optchat_view_store.py checkpoint + ADR-006 relevance/zoom selector) is wired to nothing but its tests",
+      "blocks_goal": "MEDIUM — the correct mechanics exist and are well-tested; they have zero effect on any decide"
+    },
+    {
+      "rank": 4,
+      "gap": "Zoom unreachable: single-pass Clef decide cannot navigate the tree; no tool loop, no zoom call path",
+      "blocks_goal": "MEDIUM — vague lines cannot be opened, so compression errors are unrecoverable at decide time (the gist's answer to exactly this)"
+    },
+    {
+      "rank": 5,
+      "gap": "Scale and loss policy: 4,000-char char-counted budget vs 64-128 KB byte budget; minimal cover instead of push's density; drop-oldest-under-pressure discards history instead of coarsening (not yet triggered live)",
+      "blocks_goal": "LOW-MEDIUM today (953/4,000 chars used) — grows with journal size"
+    },
+    {
+      "rank": 6,
+      "gap": "Node persistence (JsonlSummaryNodeStore) implemented but unenableable from the population runner; view.json checkpoint store likewise unused; summarization is synchronous in the decide path",
+      "blocks_goal": "LOW with the stub; becomes the blocker the moment a real summarizer lands (2N model calls per session start)"
+    },
+    {
+      "rank": 7,
+      "gap": "Minor structural divergences: no 512-byte cap on MemoryLog nodes, no day-split files, no 'note' kind for imported knowledge (knowledge bypasses the log), memory_lines[:40] cap could clip newest lines if the view ever exceeded 40 (currently 8)",
+      "blocks_goal": "LOW"
+    }
+  ],
+  "live_artifacts_examined": [
+    ".work/runtime/population-live/memory/pop_0003_{g00m00,g00m01,g00m02,g01m00,g01m01,g01m02,s00}.jsonl — 1,062..5,590 notes each, 2026-10-22..10-27, single persona per file",
+    "run/plain_host_receipts/population-receipt-13..28-*.json — per-agent memory {lines,bytes,last_len} growth across all 16 legs, exact continuity at leg boundaries",
+    ".work/runtime/population-live/traces/pop_0003_s00.jsonl (and g01m01/g01m02) — decide_request events carrying state.memory_view (8,866 for s00), incl. the final 8-line/953-char view over 5,590 notes"
+  ],
+  "what_would_close_the_gaps": [
+    "wire a real summarizer (QwenSummarizer or the heavengraph chat endpoint) behind the existing Summarizer port, and enable JsonlSummaryNodeStore via a runner flag before doing so (node persistence is the cost/latency precondition)",
+    "log the agent's own actions/outcomes as notes (the declared combat/loot kinds) — attacks, kills, loot, level-ups, shop trips — so the tree holds gameplay history, not just chat",
+    "either adopt the faithful IncrementalView as the production view (it already satisfies the gist's merge order and byte profile and is fully tested) or bring the due-rank + sawtooth into MemoryLog; and give the decide a zoom seam (even a fixed 2-level expansion of the k lowest lines chosen by the ClefContextSelector that already exists)",
+    "raise the budget to bytes and the gist's scale when the decide payload allows, or document 4,000 chars as a deliberate Clef-payload bound"
+  ],
+  "redactions": "none needed — no secrets encountered in memory artifacts or receipts"
+}
