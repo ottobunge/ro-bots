@@ -390,6 +390,81 @@ def test_move_gate_reason_recorded_for_blocked_move():
     )
 
 
+def blocked_map(blocked: tuple[int, int], name: str = "prontera") -> MapCache:
+    """A 12x12 all-walkable grid with exactly one blocked cell."""
+    size = 12
+    tiles = bytearray(size * size)
+    tiles[blocked[0] + blocked[1] * size] = 1
+    return MapCache((WalkMap(name, size, size, bytes(tiles)),))
+
+
+def entry_at(x: int, y: int) -> bytes:
+    return b"\xeb\x02" + bytes(4) + position(x, y) + bytes(4)
+
+
+def map_frame_at(x: int, y: int) -> bytes:
+    return struct.pack("<H16sHH", 0x0091, b"prontera", x, y)
+
+
+def test_no_route_walks_direct_at_the_target():
+    """leg 28: the field warp cell (170,378) is unwalkable in the client
+    grid, so shortest_path raised NoRoute and _move sent NOTHING - the
+    server never moved the unit, the warp never fired, and the script
+    re-authored the same MoveTo 97 times. The clientless client must send
+    the walk DIRECTLY at the target on NoRoute: the server path-finds its
+    own side (the spike clients always worked this way), and the pending
+    lifecycle paces the retries."""
+
+    wire = Wire()
+    now = [0.0]
+    client = runtime.PlayingClient(wire, cache=blocked_map((5, 5)), monotonic=lambda: now[0])
+    wire.frames = []
+    wire.add(entry_at(2, 2), map_frame_at(2, 2))
+    client.perform_native(MoveTo(5, 5))
+    assert wire.moves == [(5, 5)]
+    assert any(reason == "no_route_direct" for _, reason in client._move_gate_reasons)
+    assert client._pending is not None
+
+
+def test_no_route_direct_sends_are_bounded():
+    """A cell unreachable on BOTH sides must not be retried forever: the
+    direct sends are capped per (map, target); the exhaustion fails the
+    patrol so the goal layer re-rolls a reachable target."""
+
+    wire = Wire()
+    now = [0.0]
+    client = runtime.PlayingClient(wire, cache=blocked_map((5, 5)), monotonic=lambda: now[0])
+    wire.frames = []
+    wire.add(entry_at(2, 2), map_frame_at(2, 2))
+    for _ in range(runtime.NO_ROUTE_DIRECT_SENDS):
+        client.perform_native(MoveTo(5, 5))
+        client._pending = None  # the drain released the slot
+    sent = len(wire.moves)
+    assert sent == runtime.NO_ROUTE_DIRECT_SENDS
+    client.perform_native(MoveTo(5, 5))
+    assert len(wire.moves) == sent  # exhausted: nothing more is sent
+    assert any(reason == "no_route_exhausted" for _, reason in client._move_gate_reasons)
+
+
+def test_no_route_attempts_reset_when_a_route_exists():
+    """A target that was once unreachable re-sends from a fresh budget once
+    the grid finds a route to it: the cap counts CONSECUTIVE no-route
+    attempts per (map, target), not lifetime."""
+
+    wire = Wire()
+    now = [0.0]
+    client = runtime.PlayingClient(wire, cache=blocked_map((5, 5)), monotonic=lambda: now[0])
+    wire.frames = []
+    wire.add(entry_at(2, 2), map_frame_at(2, 2))
+    for _ in range(runtime.NO_ROUTE_DIRECT_SENDS):
+        client.perform_native(MoveTo(5, 5))
+        client._pending = None
+    client.perform_native(MoveTo(6, 6))  # walkable: a route exists
+    client._pending = None
+    client.perform_native(MoveTo(5, 5))
+    assert len(wire.moves) == runtime.NO_ROUTE_DIRECT_SENDS + 2
+
+
 def test_drain_paced_walk_releases_on_stall_without_stale_resend():
     """The walk stalls with the point unproven: the slot releases so the next
     scripted approach is a FRESH move from the current geometry — the old

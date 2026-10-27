@@ -191,6 +191,10 @@ def _received_stats(stats: tuple[int, ...] | None) -> tuple[int, ...] | None:
 
 NPC_RETRY_BUDGET = 3
 NPC_RETRY_CADENCE_S = 5.0
+NO_ROUTE_DIRECT_SENDS = 5
+"""Direct walks sent at a grid-unreachable target before the patrol fails
+(leg 28: the warp cell NoRoute silence — the server path-finds its own
+side, so a direct send is the only way a clientless unit ever warps)."""
 
 
 def _pending_guild_invite(wire: Any) -> str | None:
@@ -220,6 +224,9 @@ class PlayingClient:
 
     # the pending planner owns NPC recovery while a decide is in flight
     npc_recovery_hold = False
+    # consecutive NoRoute direct-walk sends (class default; instance shadow
+    # on first use — a successful walk anywhere resets it to 0)
+    _no_route_attempts = 0
     """Wrap native limbs while retaining AgentHost's client lifecycle contract."""
 
     _stat_unacked: int
@@ -1637,9 +1644,25 @@ class PlayingClient:
         pos = tracker.view.position
         try:
             path = shortest_path(cache.get(state.map_name), (state.x, state.y), target)
+            self._no_route_attempts = 0
         except NoRoute:
-            self._note_move_gate("no_route")
-            self._fail_patrol(target)
+            # leg 28: the field warp cell (170,378) is unwalkable in the
+            # client grid, so the route died here and NO walk was ever sent —
+            # the server never moved the unit, the warp never fired, and the
+            # script re-authored the same MoveTo 97 times. The server
+            # path-finds its own side: send the walk DIRECTLY at the target
+            # (the spike clients always worked this way), paced on the same
+            # pending-walk lifecycle, capped on CONSECUTIVE no-route sends so
+            # a cell unreachable on both sides cannot be retried forever (a
+            # successful walk elsewhere resets the budget).
+            self._no_route_attempts += 1
+            if self._no_route_attempts > NO_ROUTE_DIRECT_SENDS:
+                self._note_move_gate("no_route_exhausted")
+                self._fail_patrol(target)
+                return
+            self._note_move_gate("no_route_direct")
+            self.wire.move(*target)
+            self._pending = (target, pos.seq, self._now(), 0)
             return
         if len(path) > 1:
             point = path[1]

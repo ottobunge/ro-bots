@@ -5955,3 +5955,29 @@ file:line citations). Production src/ untouched.
   summarizer (2N calls per session start, synchronous in the decide).
 - The Hermes plugin divergences: essentially none INHERITED — ro-bots
   does not use the plugin's architecture; its divergences are its own.
+
+## 2026-10-27 evening — the warp-trigger fix: NoRoute walks are sent DIRECTLY at the target (the server path-finds its own side)
+
+Leg 28's biggest farming-time thief: the field warp cell (170,378) is
+unwalkable in the client grid, so `shortest_path` raised NoRoute and `_move`
+returned WITHOUT sending any walk packet — the server never moved the unit,
+the warp never fired, and the script re-authored the same MoveTo (leg 28:
+PipinWalker walked at the warp leg 97 times, 1,117 MoveTos in one window).
+The spike clients warp precisely because they send raw walks without
+client-side pathfinding.
+
+Fix (RED->GREEN, `_move`): on NoRoute the client now sends the walk DIRECTLY
+at the target — the server path-finds its own side and walks the unit as far
+as it can; when the server-side path crosses the warp cell, the warp fires
+and the map change arrives through the normal entry frames. The retry is
+paced on the SAME pending-walk lifecycle as any walk (stall clock releases
+the slot), and bounded: NO_ROUTE_DIRECT_SENDS=5 consecutive no-route sends,
+then `no_route_exhausted` + the patrol fails so the goal layer re-rolls a
+reachable target; a successful walk anywhere resets the budget. Tests: three
+wire-shaped cases (direct send on NoRoute, the cap, the reset); the gate
+names both new shapes (`no_route_direct`, `no_route_exhausted`) in the
+receipt.
+
+Leg 29 (the first window on this fix + the leg-28 mob-destination fix)
+targets the town<->field round trip: farm on the field, warp to town, sell,
+warp back, farm again — the loop whose travel legs were silently dead.
