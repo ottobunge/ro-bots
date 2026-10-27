@@ -5981,3 +5981,92 @@ receipt.
 Leg 29 (the first window on this fix + the leg-28 mob-destination fix)
 targets the town<->field round trip: farm on the field, warp to town, sell,
 warp back, farm again — the loop whose travel legs were silently dead.
+
+## 2026-10-27 night — LAW SLICE: the sell-completion gate — why leg 28's 32 sell-opens never became a sell (the arrival flag, again)
+
+Research slice (no production change; `src/` read-only, `spikes/` untouched).
+The law: `run/reviews/sell-completion-gate-law.md`. The reproduction:
+`.work/probe/sell_gate_probe.py` (offline, read-only against production `src/`).
+
+**The question.** Leg 28 (`run/plain_host_receipts/population-receipt-28-1793096707.json`)
+minted 32 `NpcShopSellOpen` with ZERO completed sells; `npc_stage` walked
+`unsupported_shop` (t=3641.4) -> `blocked` (t=3731.5) and stayed blocked; zeny
+stayed 0. The frame probe (`.work/engagement-diagnosis/c7_probe.py`, 18:54, the
+LIVE e2e dealer) had already proved the WIRE is healthy: click 0x0090 -> C4 ->
+C5 type 1 -> **ZC_PC_SELL_ITEMLIST 0xC7 ARRIVES**. So the defect was in the
+runtime's DIALOGUE PROGRESSION, not the wire.
+
+**The mechanism (named, with citations).** The tick's shop path mints fine
+(`_shop_loop_action` :1062 -> `_sell_open_action` :1106: the stage is
+`unsupported_shop`, the dedupe key is unissued, and the agent held Jellopy 909
+the whole window — `shop_sellable_stock` was 1, so "nothing to sell" never
+blocked it). The failure is in the DISPATCH: `_send_sell_open` (:1133) ->
+`_sell_open_request_ready` (:1148) -> `_sell_actuation_ready` (:1026) ->
+`_npc_motion_ready` (:1298) -> **`tracker.view.arrival_confirmed` is False** ->
+the C5 type 1 NEVER LEFT THE CLIENT. No C5 -> no C7 -> `_pending_sell` (:1080)
+never mints a sell -> zeny 0. The chain terminates exactly at that guard.
+
+**Why arrival_confirmed was False.** `native_gameplay.py:756` sets
+`_arrival = (position.x, position.y) == destination` on a 0x0087 walk frame —
+True only for a ZERO-LENGTH walkok; the pinned comment at :750-752 says so
+("a moving walkok is IN FLIGHT"). PipinWalker WALKED to the dealer
+(`(156,156) -> ... -> (173,130)`), so the flag was permanently False from the
+arrival onward, and the agent stood still at the dealer for 13 minutes with it
+False. **This is the SAME defect the w82 fix already cured for the CLICK path**
+(`e06dc511`: "the npc click gate is tracked adjacency, not the arrival flag").
+`_talk_npc` (:1305) was changed to tracked adjacency; the sell-open limb was
+never given the same treatment and still reads `_npc_motion_ready`. The click
+succeeded (the C4 arrived); the C5 that follows it could never leave.
+
+**The reproduction proves it is the only difference.** Same offline state, two
+cases: with a REAL walk -> `arrival_confirmed=False`, `_sell_actuation_ready=
+False`, `wire.sent=[]`, and the mint REPEATS identically on the next tick.
+With a zero-length walkok -> `arrival_confirmed=True`, the C5 type 1 goes out
+(`b'\xc5\x00b~\x8e\x06\x01'`), the dedupe latches `(9, 10)`, and the second
+tick mints no second sell-open.
+
+**The re-mint, answered precisely (the brief asked).** It was NOT the dedupe key
+advancing on server dialog updates. TWO separate facts: (a) WITHIN an epoch the
+mint repeated 8x with the SAME `(opened_sequence, prompt_sequence)` because
+`_sell_open_issued` is latched at :1145 — INSIDE `_send_sell_open`, AFTER the
+failing guard at :1142 — so a refused send never latched; (b) BETWEEN bursts the
+key advanced because the runtime **re-clicked** the dealer (a fresh 0x0090 =>
+a new `opened_sequence`), which is the deny-origin recovery
+(`_retry_blocked_dialogue` :781 / `_retry_blocked_dialogue_on_tick` :1782) after
+the dialogue's deadline denied it with `deny_origin='timeout'`. (The re-click
+cadence is resolved by the TRACE — its `NpcDialogueReceived` `stage='opening'`
+events at 11:26:09.118 / 11:26:30.057 / 11:26:50.975; the receipt's 30s sampler
+catches only `unsupported_shop` and `blocked`, because the ~3s opening windows
+fall between samples.) So the loop was:
+click -> C4 -> mint -> guard fails -> no C5 -> no C7 -> deadline -> deny(timeout)
+-> retry re-click -> ... 4 epochs, `NPC_RETRY_BUDGET=3` spent, blocked forever.
+`self._npc.requests` never hit its 32 cap: `begin()` resets it to 1 each re-click.
+
+**A second defect the reproduction exposed.** `_send_sell` (:1181) reads
+`self._sell_request_target(action, tracker) is None`, but that method returns a
+**bool** (:1187). `False is None` is False, so the guard NEVER fires — the C9
+sell request is sent even when every local guard rejects it (probe CASE C: the
+C9 went out with `arrival_confirmed=False` and `_sell_actuation_ready=False`).
+A fail-open where the codebase's convention is fail-closed; it must be closed in
+the same port.
+
+**The law's shape.** The shop loop becomes a state machine over DIALOG EPOCHS
+(one click -> one C4 -> one C5 -> one C7 -> one C9): the shop's actuation
+readiness uses TRACKED ADJACENCY, not the arrival flag (the w82 lesson); ONE
+sell-open per epoch, latched at the MINT site (not after the send guards); the
+stage advances ONLY on received C7 rows, and a C7 is bound to the epoch that
+requested it (today `_pending_sell` reads `sell_lists[-1]` with no epoch check);
+no C7 within N seconds of the C5 = a DEAD epoch, recovered by a FRESH CLICK
+through the EXISTING deny-origin path (`deny_origin='timeout'`, the same marker
+`_expire` uses) — never a second C5, never a second retry mechanism; bounded
+epoch retries; and the fail-open sell guard closed.
+
+**The RED tests the coordinator writes before the port** (13, named and
+state-pinned in the law): the five that are RED today are the actuation gate
+after a real walk, the readiness predicate's independence from the arrival flag,
+the no-C7 deadline recovering with a click and NOT a second C5, the dead epoch
+marking the dialogue denied with the timeout origin, and the fail-closed sell
+request.
+
+Leg 29 was LIVE during this slice: its traces were read freely and nothing was
+mutated.
