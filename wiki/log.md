@@ -5981,3 +5981,39 @@ receipt.
 Leg 29 (the first window on this fix + the leg-28 mob-destination fix)
 targets the town<->field round trip: farm on the field, warp to town, sell,
 warp back, farm again — the loop whose travel legs were silently dead.
+
+## 2026-10-27 night — the sell-completion gate ported: readiness is tracked adjacency, the epoch latches at the mint, the 0xC9 guard is fail-closed
+
+The law (`feature/sell-completion-gate-law`, `6bc729bf`) named leg 28's sell
+churn precisely: the C5 sell-open was gated on `tracker.view.arrival_confirmed`
+through `_sell_actuation_ready` -> `_npc_motion_ready` — False after every
+real walk — so 32 mints never sent one packet, no C7 was ever requested, and
+the dialogue timed out to 'blocked'. The click path had been cured of the
+same defect in e06dc511; the sell limb had not.
+
+Ported (RED->GREEN, tests/test_shop_sell_loop.py T1/T3/T4/T11):
+- `_sell_actuation_ready` no longer requires the arrival flag; `_send_sell_open`
+  gates on TRACKED ADJACENCY to the received dealer (hypot <= 3, mirroring
+  the click path), fail-closed.
+- The epoch latch moved to the MINT (`_sell_open_action`): a guard failure
+  cannot re-mint the same epoch's open (leg 28's 32 opens); a fresh received
+  C4 is a fresh epoch and mints again.
+- `_send_sell` compared a bool guard to `None` (never fired — fail-open):
+  now fail-closed (`is not True`).
+Remaining from the law (next lane): the C7-epoch binding (T5/T6/T12), the
+no-C7 deadline recovery through the existing deny-origin path (T7-T10).
+
+## 2026-10-27 late — leg 30 receipt: the pop is alive and social; the sell chain advanced one hop (C7 offer in state); 0 kills, 0 new zeny
+
+Receipt population-receipt-30-1793130666.json (window 21:05-23:05, 33,504
+steps, 0 step errors, all 7 online ~240/280 samples, decides 17k-30k each).
+Socials live: 1,922 chats heard, PartyChats, GuildInvites dispatched. The
+warp fixes held (agents farming the field anchor). The sell chain reached
+further than ever: g00m00's state carried a received C7 sell offer
+(shop_offer=1) with the dialogue ending 'blocked' — the C5 escaped (a
+zero-length walkok epoch) but the C9 sell sat unsold behind the same
+arrival_confirmed gate the law named; the port (this branch) removes it.
+Combat: 418 attacks (g00m01) + 82 DamageTaken but 0 kills (no exp gain) —
+mobs engage, the bots swing, nothing lands; the melee-landing discipline is
+the next frontier after the sell gate. DB ground truth: NyxSong 5z,
+RinceNyan 3z (holds Emperium 713 + 1002), PipinWalker 4z — unchanged.
