@@ -806,15 +806,36 @@ class PlayingClient:
         self._send_npc(raw)
         return True
 
+    def _note_attack_gate(self, reason: str) -> None:
+        """Bounded gate-reason telemetry: WHY an authored Attack sent nothing.
+
+        Leg 33: 516 approaches produced 6 swings and the receipt could not
+        name the drop. Mirrors `_note_move_gate` (w58): the reasons ride the
+        client for the runner sample to lift into the receipt.
+        """
+        reasons = getattr(self, "_attack_gate_reasons", None)
+        if reasons is None:
+            reasons = deque(maxlen=64)
+            self._attack_gate_reasons = reasons
+        reasons.append((self._now(), reason))
+
     def _attack(self, state: BotState, target: int) -> None:
-        if (
-            state.alive is True
-            and self._pending is None
-            and any(actor.id == target for actor in state.nearby_monsters)
-            and self._rest_seq is None
-            and self._attack_ready()
-        ):
-            self.wire._send(attack(target))
+        if state.alive is not True:
+            self._note_attack_gate("dead")
+            return
+        if self._pending is not None:
+            self._note_attack_gate("pending_walk")
+            return
+        if not any(actor.id == target for actor in state.nearby_monsters):
+            self._note_attack_gate("target_not_visible")
+            return
+        if self._rest_seq is not None:
+            self._note_attack_gate("resting")
+            return
+        if not self._attack_ready():
+            self._note_attack_gate("cooldown")
+            return
+        self.wire._send(attack(target))
 
     def _equip_progression(self, state: BotState) -> None:
         """Wear an owned wanted weapon once per epoch (equip progression rule).

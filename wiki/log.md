@@ -6248,3 +6248,15 @@ starvation (6 attacks from 516 approaches) is the next instrumentation slice.
 
 Gate 6,592 + 65 subtests green: `guild_candidate_aid` extracted to
 src/robots/app/party_roster.py (both invite limbs share it; xenon back under B).
+
+## 2026-10-28 evening — the attack-gate telemetry: a suppressed swing names its reason
+
+Leg 33's 6-attacks-from-516-approaches had no instrument on the LAST hop:
+`_attack`'s early-return gates (alive / pending-walk / target-visibility /
+resting / cooldown) dropped swings silently. Mirroring the w58 move-gate
+contract, `_note_attack_gate` records the drop reason on the client
+(`_attack_gate_reasons`, bounded deque) and the population runner samples it
+into the receipt as `attack_gates: {pending_walk: 12, ...}`. Two stop-and-
+swing pins added (a pending walk records pending_walk; an invisible target
+records target_not_visible). Leg 34's receipt will NAME the swing drop, and
+the fix follows from the named reason.

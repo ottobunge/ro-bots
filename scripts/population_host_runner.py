@@ -21,6 +21,17 @@ import argparse
 import json
 import time
 from pathlib import Path
+from typing import Any
+
+
+def _reason_summary(reasons: Any) -> dict[str, int] | None:
+    """Count the recorded gate reasons: {'pending_walk': 12, ...} or None."""
+    if not reasons:
+        return None
+    counts: dict[str, int] = {}
+    for _, reason in reasons:
+        counts[str(reason)] = counts.get(str(reason), 0) + 1
+    return counts
 
 
 def _memory_stats(memory_root: Path | None, persona_id: str) -> dict[str, int] | None:
@@ -164,6 +175,9 @@ def main(argv: list[str] | None = None) -> int:
                         if state is not None and getattr(state, "shop_offer", None)
                         else None
                     ),
+                    # the attack-gate telemetry (leg 33: 516 approaches, 6
+                    # swings — the receipt must name the drop reason)
+                    "attack_gates": _reason_summary(getattr(client, "_attack_gate_reasons", None)),
                 }
                 row[pid] = entry_sample
                 summary_parts.append(

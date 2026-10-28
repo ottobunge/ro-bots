@@ -29,6 +29,7 @@ def _runtime(pending: object) -> tuple[PlayingClient, _RecordingWire]:
     wire = _RecordingWire()
     runtime = PlayingClient.__new__(PlayingClient)  # the gate is the unit
     runtime.wire = wire
+    runtime._now = lambda: 0.0  # type: ignore[method-assign]
     runtime._pending = pending  # type: ignore[assignment]
     runtime._rest_seq = None
     runtime._attack_ready = lambda *_a, **_k: True  # type: ignore[method-assign]
@@ -53,3 +54,24 @@ def test_attack_fires_when_standing() -> None:
     state = _state()
     runtime._attack(state, 42)
     assert len(wire.sent) == 1
+
+
+def test_a_suppressed_attack_names_its_gate() -> None:
+    """Leg 33: 516 approaches produced 6 swings and no telemetry could say
+    why. Every suppressed attack records its drop reason on the client for
+    the runner sample to lift into the receipt (`attack_gates`)."""
+    runtime, wire = _runtime(pending=((100, 100), 0, 0.0, 1))
+    state = _state()
+    runtime._attack(state, 42)
+    reasons = {reason: 1 for _, reason in getattr(runtime, "_attack_gate_reasons", ())}
+    assert reasons.get("pending_walk") == 1
+    assert wire.sent == []
+
+
+def test_an_invisible_target_names_the_visibility_gate() -> None:
+    runtime, wire = _runtime(pending=None)
+    state = make_state(nearby=())  # no monsters in view
+    runtime._attack(state, 42)
+    reasons = {reason: 1 for _, reason in getattr(runtime, "_attack_gate_reasons", ())}
+    assert reasons.get("target_not_visible") == 1
+    assert wire.sent == []
