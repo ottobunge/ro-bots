@@ -416,3 +416,36 @@ def test_the_sell_request_carries_the_native_epoch_of_its_c7() -> None:
     state = client.build_native_state(Goal.GRIND)
     (action,) = [a for a in client.mechanical_actions(state, ()) if isinstance(a, NpcShopSell)]
     assert action.epoch == client._epoch
+
+
+def test_no_c7_recovers_with_a_fresh_click_not_a_second_c5(monkeypatch) -> None:
+    """T7+T9+T10 composed through PlayingClient (LAW 4/5): the C5 goes out,
+    the C7 never comes, the dialog deadline expires — the dialogue denies
+    with the timeout origin, the deny-origin recovery re-begins with a
+    FRESH 0x0090 click, and the dead epoch's C5 count stays at exactly one
+    (never a second sell-open for the epoch that already asked)."""
+    client = _client_with(
+        walk_ack((42, 37), (43, 37)),
+        _dealer((43, 37)),
+        _inv(((6, 909, 5),)),
+        _weight(),
+    )
+    state = client.build_native_state(Goal.GRIND)
+    _armed(client)
+    client.wire.add(_c4(DEALER))
+    state = client.build_native_state(Goal.GRIND)
+    (open_action,) = [
+        a for a in client.mechanical_actions(state, ()) if isinstance(a, NpcShopSellOpen)
+    ]
+    client.perform_native(open_action)
+    assert sum(1 for f in client.wire.sent if f[:2] == b"\xc5\x00") == 1
+
+    real_now = client._now
+    client._now = lambda: real_now() + 30  # jump past the 5s dialog deadline
+    state = client.build_native_state(Goal.GRIND)  # consume expires the dialog
+    assert client._npc.failed is True
+    assert client._npc.deny_origin == "timeout"
+
+    assert client._retry_blocked_dialogue() is True
+    assert sum(1 for f in client.wire.sent if f[:2] == b"\x90\x00") >= 1  # a fresh click
+    assert sum(1 for f in client.wire.sent if f[:2] == b"\xc5\x00") == 1  # never a second C5
