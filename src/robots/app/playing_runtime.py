@@ -1081,6 +1081,13 @@ class PlayingClient:
         if not lists:
             return None
         latest = lists[-1]
+        # LAW 3: a C7 binds to its epoch. The sell list must postdate the
+        # CURRENT dialogue's click (opened_sequence is the cursor the click
+        # armed): a C7 received under a previous dialogue never authorises a
+        # sell here — the recovery re-click opens a fresh epoch instead.
+        dialog = self._npc.view
+        if dialog is None or latest.seq <= dialog.opened_sequence:
+            return None
         if not latest.rows or latest.seq in self._sell_sent:
             return None
         stock = tracker.indexed_inventory

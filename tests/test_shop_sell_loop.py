@@ -180,17 +180,23 @@ def _client_with(*extra: bytes) -> runtime.PlayingClient:
 
 
 def test_mechanical_seam_sells_the_received_sell_list() -> None:
-    client = _client_with(_inv(((6, 909, 5),)), _weight(), _c7(((6, 12, 12),)))
+    client = _client_with(_dealer((43, 37)), _inv(((6, 909, 5),)), _weight())
+    state = client.build_native_state(Goal.GRIND)
+    _armed(client)
+    client.wire.add(_c4(DEALER))
+    client.wire.add(_c7(((6, 12, 12),)))
     state = client.build_native_state(Goal.GRIND)
     out = client.mechanical_actions(state, ())
     assert len(out) == 1
     (action,) = out
     assert isinstance(action, NpcShopSell)
     assert action.sales == ((6, 5),)
-    assert action.sell_sequence == 5  # the 5th received frame
+    assert action.sell_sequence == 7  # the 7th received frame
     client.perform_native(action)
     assert client.wire.sent == [ng.sell(((6, 5),))]
-    assert client.mechanical_actions(state, ()) == ()  # sold once per C7 receipt
+    assert not any(
+        isinstance(a, NpcShopSell) for a in client.mechanical_actions(state, ())
+    )  # sold once per C7 receipt
 
 
 def test_mechanical_seam_is_inert_without_a_shop_context() -> None:
@@ -303,20 +309,110 @@ def test_a_new_dialog_epoch_mints_a_new_sell_open() -> None:
     assert isinstance(second[0], NpcShopSellOpen)
 
 
+def test_a_c7_from_a_previous_epoch_does_not_authorise_a_sell() -> None:
+    """T5, LAW 3: the C7 binds to its epoch. A sell list received under the
+    PREVIOUS dialogue must not authorise a sell under the new one — the
+    mint requires the C7's frame to postdate the current epoch's click."""
+    client = _client_with(
+        _dealer((43, 37)),
+        _inv(((6, 909, 5),)),
+        _weight(),
+    )
+    state = client.build_native_state(Goal.GRIND)
+    _armed(client)
+    client.wire.add(_c4(DEALER))
+    client.wire.add(_c7(((6, 12, 12),)))  # the C7 of epoch A
+    state = client.build_native_state(Goal.GRIND)
+    first = client.mechanical_actions(state, ())
+    assert any(isinstance(a, NpcShopSell) for a in first)  # epoch A sells
+    # a fresh click opens epoch B (the cursor is past every epoch-A frame)
+    cursor = client._npc.cursor
+    client._npc.begin(DEALER, 1, "prontera", cursor, client._now())
+    client.wire.add(_c4(DEALER))
+    state = client.build_native_state(Goal.GRIND)
+    second = client.mechanical_actions(state, ())
+    assert not any(isinstance(a, NpcShopSell) for a in second)  # the stale C7 is dead
+
+
+def test_a_sell_is_minted_once_per_received_c7() -> None:
+    """T6 (a pin): one C9 per received C7 sequence — the `_sell_sent` guard."""
+    client = _client_with(
+        _dealer((43, 37)),
+        _inv(((6, 909, 5),)),
+        _weight(),
+    )
+    state = client.build_native_state(Goal.GRIND)
+    _armed(client)
+    client.wire.add(_c4(DEALER))
+    client.wire.add(_c7(((6, 12, 12),)))
+    state = client.build_native_state(Goal.GRIND)
+    (action,) = [a for a in client.mechanical_actions(state, ()) if isinstance(a, NpcShopSell)]
+    client.perform_native(action)
+    again = client.mechanical_actions(state, ())
+    assert not any(isinstance(a, NpcShopSell) for a in again)
+
+
+def test_a_c7_within_the_dialogue_mints_the_sell_without_a_reclick() -> None:
+    """T8 (a pin, the happy path end to end): C5 sent (adjacency, the gate)
+    -> C7 received -> the sell mints and NO second 0x0090 click went out."""
+    client = _client_with(
+        walk_ack((42, 37), (43, 37)),
+        _dealer((43, 37)),
+        _inv(((6, 909, 5),)),
+        _weight(),
+    )
+    state = client.build_native_state(Goal.GRIND)
+    _armed(client)
+    client.wire.add(_c4(DEALER))
+    state = client.build_native_state(Goal.GRIND)
+    (open_action,) = [
+        a for a in client.mechanical_actions(state, ()) if isinstance(a, NpcShopSellOpen)
+    ]
+    client.perform_native(open_action)
+    assert ng.sell_open(DEALER) in client.wire.sent
+    client.wire.add(_c7(((6, 12, 12),)))
+    state = client.build_native_state(Goal.GRIND)
+    sells = [a for a in client.mechanical_actions(state, ()) if isinstance(a, NpcShopSell)]
+    assert len(sells) == 1
+    # no recovery re-click: the harness drives begin() itself, so ANY 0x0090
+    # on the wire would be a false recovery
+    assert not any(f[:2] == b"\x90\x00" for f in client.wire.sent)
+
+
 def test_the_sell_request_is_fail_closed_on_a_rejected_target() -> None:
     """T11: `_send_sell` compared a bool guard to None — the guard NEVER
     fired, so a rejected 0xC9 went out anyway (fail-open where the
     codebase's convention is fail-closed)."""
     client = _client_with(
+        _dealer((43, 37)),
         _inv(((6, 909, 5),)),
         _weight(),
-        _c7(((6, 12, 12),)),
     )
     state = client.build_native_state(Goal.GRIND)
-    (action,) = client.mechanical_actions(state, ())
-    assert isinstance(action, NpcShopSell)
+    _armed(client)
+    client.wire.add(_c4(DEALER))
+    client.wire.add(_c7(((6, 12, 12),)))
+    state = client.build_native_state(Goal.GRIND)
+    (action,) = [a for a in client.mechanical_actions(state, ()) if isinstance(a, NpcShopSell)]
     # the local guards reject this 0xc9 (the epoch moved under it, the
     # receipt is gone — any False from `_sell_request_target` must close)
     client._sell_request_target = lambda *_a, **_k: False  # type: ignore[method-assign]
     client.perform_native(action)
     assert client.wire.sent == []
+
+
+def test_the_sell_request_carries_the_native_epoch_of_its_c7() -> None:
+    """T12 (a pin): the minted 0xC9 carries the epoch the C7 was received
+    under — the guards compare it against the client's live epoch."""
+    client = _client_with(
+        _dealer((43, 37)),
+        _inv(((6, 909, 5),)),
+        _weight(),
+    )
+    state = client.build_native_state(Goal.GRIND)
+    _armed(client)
+    client.wire.add(_c4(DEALER))
+    client.wire.add(_c7(((6, 12, 12),)))
+    state = client.build_native_state(Goal.GRIND)
+    (action,) = [a for a in client.mechanical_actions(state, ()) if isinstance(a, NpcShopSell)]
+    assert action.epoch == client._epoch
