@@ -6260,3 +6260,75 @@ into the receipt as `attack_gates: {pending_walk: 12, ...}`. Two stop-and-
 swing pins added (a pending walk records pending_walk; an invisible target
 records target_not_visible). Leg 34's receipt will NAME the swing drop, and
 the fix follows from the named reason.
+
+## 2026-10-28 evening — leg 34 receipt: the attack gate is EXONERATED, the starve is UPSTREAM of it
+
+Receipt population-receipt-34-1793202892.json (window 18:00-20:00 CEST, 57,484
+steps, 0 errors, all 7 personas online for the whole window and a clean
+scheduled logout at 20:00). The leg's purpose was the attack-gate telemetry
+(fea2b2db): the receipt names WHY an authored Attack sends nothing. THE
+INSTRUMENT ANSWERS, AND IT EXONERATES THE GATE: the attack-gates counter
+recorded ONE event in the entire leg (pending_walk=1, on g00m01). Every other
+gate (dead / target_not_visible / resting / cooldown) is ZERO on every
+persona. So the swings were not suppressed by the melee/standing/visibility
+gates — they were never AUTHORED.
+
+The traces show where they died. In the window the agents authored 691
+MoveTos and exactly 1 Attack (script_step rows: 692, of which 691 MoveTo and
+1 Attack; action_executed: 3,482 MoveTo and 3 Attack, all three from
+g00m01/RinceNyan on the same gid 110090709 from (189,366)). 43 decide-requests
+saw a mob that was NOT the plan's species, and the widen escape hatch that
+should have covered that case never opened.
+
+THE ROOT CAUSE, from the pinned source: the widen streak is written but
+never read. brain.py:490 constructs `FarmScript(plan)` with NO
+`initial_starved`, so every plan re-author restarts `_starved` at 0, and the
+threshold TARGET_WIDEN_STEPS=20 (scripts.py:63) can never be reached - the
+streak resets every ~49s (g00m01) / ~55s (s00) median plan cadence while the
+plan lifetime carries only a median 5-7 script steps. The persistence half
+exists but is orphaned: brain.py:717-718 writes `self._widen_streaks` and
+nothing ever reads it back (`initial_starved` has no caller outside
+scripts.py itself; the only other reference is a test fixture). Consequence:
+the agents only ever attack the plan's EXACT species, and a visible-but-
+different mob (43 samples) is ignored forever.
+
+The second, independent limiter: MELEE_RANGE=1 (scripts.py:44) against a
+median plan-species distance of 9 cells (g00m01) and 14 cells (s00, which
+never once got within 1 cell in 56 samples). The approach is a MoveTo toward
+the target's neighbouring cell, re-targeted every evaluation, so the agents
+walk for the whole window without closing. Even the 3 swings that landed did
+not kill: the fixture chars carry NO WEAPON (weapon=0 on all 7, and the
+inventory has no blade), so a Novice's bare-hand damage cannot clear a 60-HP
+Poring. RinceNyan took 9 DamageTaken from that same gid while its HP fell
+86 -> 7 (it rested and recovered to 43; it never died).
+
+Economy: ZERO kills, ZERO sells, ZERO zeny. The DB is byte-identical to the
+pre-window baseline for all 7 chars (exp unchanged, zeny unchanged: NyxSong
+5z, RinceNyan 3z, PipinWalker 4z, the rest 0z; every char still at level 10
+base/10 job). The picklog is empty. The 2 items on RinceNyan (713 Empty
+Bottle, 1002 Iron Ore) PREDATE this window - no pickup/loot/sell action was
+executed by any persona in the window, and the char server autosaved
+`Saved Inventory (0)` for every char throughout.
+
+SOCIAL: the guild layer is healthy and the GuildInvite fix holds -
+`GuildInvite failed` count is ZERO (10 GuildInvite actions, 0 failures,
+after a95e00f6); 2 guilds found (NyxSongGuard, PipinWalkerGuard) and
+persisted in the DB (char 300000 guild_id 2, char 300003 guild_id 3);
+4 InviteToParty, 12 PartyChat; parties 2/3/4 intact across the window.
+
+THE NEXT SLICE is therefore NOT a gate fix: (1) wire the widen streak -
+pass `initial_starved` from `self._widen_streaks` when the re-authored plan
+has the SAME target set and map (the key already computed at brain.py:716),
+so a plan-species re-author cannot reset the streak; (2) give the fixture a
+weapon (the 50z knife the economy is supposed to buy) or the melee leg has no
+damage even when the chase closes; (3) then re-measure the approach
+convergence - with MELEE_RANGE=1 and a median 9-cell distance, the approach
+needs its own convergence rule.
+
+Also worth recording: the login server's socket-level `connect_check` DDoS
+throttle rejected the 7th login of the window (6 logins inside 3s from one
+IP). The pinned rule is in rathena/src/common/socket.cpp:1089-1091
+(ddos_interval=3s, ddos_count=10, ddos_autoreset=10min) and a rejected
+connection does NOT refresh the flag's tick, so the block self-expires: the
+solo (pop_0003_s00) rejoined unprompted ~15 min later with no intervention.
+The fix is the roster's login stagger, not a runner change.
