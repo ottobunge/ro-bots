@@ -51,6 +51,7 @@ from robots.adapters.native_shop_context import NativeShopContext
 from robots.adapters.native_skills import NativeSkillContext
 from robots.adapters.native_vitals import NativeTelemetryUnavailable, require_native_vitals
 from robots.app.npc_planning_execution import LocalNpcDispatch, NpcHostBinding, NpcUiObservation
+from robots.app.party_roster import guild_candidate_aid
 from robots.app.planning_execution import RestObservation
 from robots.app.scripts import (
     NOVICE_STAT_TARGETS,
@@ -1433,7 +1434,8 @@ class PlayingClient:
         invited: set[str] = getattr(self.wire, "guild_invited", set())
         if player in invited:
             return
-        target = self.wire.party_members.get(player)
+        members = getattr(self.wire, "party_members", None)
+        target = guild_candidate_aid(members, player)
         if target:
             self.wire.guild_invite(target, self.wire.aid, self.wire.gid)
             invited.add(player)

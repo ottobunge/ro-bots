@@ -6234,3 +6234,17 @@ nearby_monsters visibility at the arrival cell) so the receipt names WHY
 approaches do not become swings. Also live this window: the GuildInvite
 legacy-limb crash x10 (party_members.get on a list) - the TDD fix lands
 today (name->aid from the nearby actors).
+
+## 2026-10-28 evening — the GuildInvite crash fixed in BOTH limbs (the live shape was a list)
+
+Leg 33's 10 live crashes traced to TWO sites with the same bug: `party_members.get(player)`
+on a client whose party_members is a LIST of {name, aid} dicts (the existing
+test had pinned the dict fake, so it never matched production). Both the
+native `_invite_to_guild` (playing_runtime) and the legacy limb
+(agent_runtime) now resolve the candidate from either shape and fail closed
+on an unknown candidate (0x0168 = target_AID). RED->GREEN:
+test_guild_invite_limb_accepts_the_live_party_members_shape. The attack-layer
+starvation (6 attacks from 516 approaches) is the next instrumentation slice.
+
+Gate 6,592 + 65 subtests green: `guild_candidate_aid` extracted to
+src/robots/app/party_roster.py (both invite limbs share it; xenon back under B).

@@ -58,6 +58,7 @@ from robots.app.brain import EventDrivenBrain, TickResult
 from robots.app.host_commands import ChatRequest, HostChatCommands
 from robots.app.host_memory_factory import validate_summary_cache
 from robots.app.npc_planning_execution import NpcHostBinding
+from robots.app.party_roster import guild_candidate_aid
 from robots.app.planning_brain import PlannedBrain
 from robots.app.playing_runtime import PlayingClient
 from robots.app.timers import TimerSet
@@ -1298,7 +1299,10 @@ class ScheduledAgent:
                 client.guild_created = True
                 return True
             case GuildInvite(player=player):
-                target = client.party_members.get(player)
+                members = getattr(getattr(client, "wire", None), "party_members", None)
+                if members is None:
+                    members = getattr(client, "party_members", None)
+                target = guild_candidate_aid(members, player)
                 if target:
                     client.guild_invite(target, client.aid, client.gid)
                 return True

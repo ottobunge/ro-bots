@@ -91,3 +91,31 @@ def test_guild_invite_limb_resolves_the_aid_and_invites_once() -> None:
     runtime._social(state, GuildInvite(player="RinceNyan"))
     runtime._social(state, GuildInvite(player="RinceNyan"))
     assert wire.frames == [(2000101, 2000100, 150100)]
+
+
+def test_guild_invite_limb_accepts_the_live_party_members_shape() -> None:
+    """Leg 33 (10 live crashes): the client's party_members is a LIST of
+    {name, aid} dicts, and the limb called .get() on it —
+    "'list' object has no attribute 'get'". The candidate resolves from the
+    list; an unknown candidate sends nothing (fail closed)."""
+
+    class _Wire:
+        def __init__(self) -> None:
+            self.frames: list[tuple[int, int, int]] = []
+            self.party_members = [
+                {"name": "RinceNyan", "aid": 2000101},
+                {"name": "NyxSong", "aid": 2000102},
+            ]
+            self.aid = 2000100
+            self.gid = 150100
+
+        def guild_invite(self, target: int, inviter_aid: int, inviter_gid: int) -> None:
+            self.frames.append((target, inviter_aid, inviter_gid))
+
+    wire = _Wire()
+    runtime = PlayingClient.__new__(PlayingClient)
+    runtime.wire = wire
+    state: Any = None
+    runtime._social(state, GuildInvite(player="RinceNyan"))
+    runtime._social(state, GuildInvite(player="Stranger"))
+    assert wire.frames == [(2000101, 2000100, 150100)]
