@@ -6156,3 +6156,18 @@ between heartbeat reviews; a social/idle goal with zero emitted actions for
 SOCIAL_IDLE_STREAK_LIMIT (3) consecutive reviews bounces to GRIND — the
 economy resumes. Real activity resets the streak honestly (the widen-streak
 pattern applied to the goal itself).
+
+## 2026-10-28 morning — two launch traps caught before they ate leg 32
+
+(a) RUNNER DURATION VS WINDOW: the runner was launched 3h04m before its
+window with duration 8400s — it would have died at ~07:46, 24 minutes
+BEFORE the 08:10 window opened, producing an empty receipt. The duration
+must cover launch -> window close + receipt margin.
+(b) SCHEDULE DAY INDEX: the schedule file said day index 3 (Thursday) but
+the launch was on WEDNESDAY — PersonaClock (Python weekday(), Monday=0)
+silently never opens the window and the runner idles at 0/0/None forever.
+The symptom is unmistakable: agents 0/0/None well past the window's open.
+Both caught by the log readback before the window; leg 32 relaunched 08:57
+with day 2, window 09:00-10:40, duration 7200. ALSO: T3 schedule_task's
+weekdays are SUNDAY=0 (Tue=2, Wed=3, Thu=4) — the OPPOSITE of the runner's
+Monday=0; a readout scheduled with the runner's convention fires a day late.
