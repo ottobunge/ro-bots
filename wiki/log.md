@@ -6184,3 +6184,21 @@ party-member lookup. Per-action caught; the runner unaffected. NEXT FIX
 (leg 33, TDD): the guild-invite limb resolves the candidate from
 state.nearby players (name -> aid) and the native path's _invite_to_guild is
 audited for the same assumption.
+
+## 2026-10-28 midday — leg 32 receipt: the behavioral layer is FIXED; the bottleneck is now singular (kills)
+
+Receipt population-receipt-32-1793173804.json (28,724 steps, 0 errors, all
+7 online the whole window). THE BOUNCE VERDICT: WORKS. After leg 31's five
+frozen agents, every agent emitted actions this window: goals went farm_item
+(4 agents) / grind / social-with-actions — the moot drop and the
+starved-social bounce changed behavior qualitatively. g00m01 held goal=grind
+for 69/69 reviews on the field (412 MoveTos); g00m00/g01m00 drove real shop
+limbs (NpcShopBuySelection — the buy list opened); FoundGuild fired twice.
+THE CONVERT CHAIN IS NOW PRECISE: 1,343 Loots picked up NOTHING (no kills ->
+no drops -> no floor items), 2 attacks total, no sells, no exp, zeny
+unchanged (5/3/4/0). Everything downstream of the kill is built and waiting
+(sell gate, shop limbs, loot, travel, warp). THE SLICE: the grind script
+spams targetless Loot (1,343!) instead of attacking visible monsters — the
+Loot action must be gated on observed floor items (the walkability-filter
+precedent), and the approach->attack chain then gets its chance. The
+melee-landing discipline (18.8% at leg 28) is the open question behind it.
