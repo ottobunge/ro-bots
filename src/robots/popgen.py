@@ -878,6 +878,14 @@ def _fixture_sql(personas: Sequence[PersonaProfile]) -> str:
                 f"INSERT INTO `skill` (`char_id`, `id`, `lv`, `flag`) VALUES "  # nosec B608
                 f"({character.char_id}, 1, 9, 0);"
             )
+            # Leg 34's third limiter: a weaponless novice cannot kill. The
+            # knife starts EQUIPPED on the right hand (EQP_HAND_R = 2) and
+            # identified, so the first swing carries damage.
+            lines.append(
+                # nosec B608: fixture-file text, never executed; generated ids only
+                "INSERT INTO `inventory` (`char_id`, `nameid`, `amount`, `equip`, "
+                f"`identify`) VALUES ({character.char_id}, 1201, 1, 2, 1);"  # nosec B608
+            )
     return "\n".join(lines) + "\n"
 
 

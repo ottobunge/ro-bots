@@ -6349,3 +6349,7 @@ open the target set to the observed species, the plan species meets the
 roam, and the approach chain gets its chance. NEXT: the fixture weapon (the
 7 chars carry weapon=0 — even a landed swing cannot kill a 60-HP Poring),
 then re-measure the approach convergence at MELEE_RANGE=1.
+
+The live e2e chars received their knives too (an INSERT for char_id >= 300000
+against the existing world — 7 rows verified, equip=2): leg 35's swings carry
+damage without waiting for the fixture regeneration.

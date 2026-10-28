@@ -445,3 +445,23 @@ def test_load_population_reads_the_checked_in_live_artifact() -> None:
     # Every grouped persona carries a derivable rendezvous window.
     for persona in loaded.personas:
         assert meet_when_for(persona.persona_id, loaded) is not None
+
+
+def test_fixture_equips_a_knife_per_character() -> None:
+    """Leg 34's third limiter: the fixture chars carried weapon=0, so even a
+    landed swing cannot kill a 60-HP Poring. Each character starts with an
+    identified Knife (1201) EQUIPPED on the right hand (EQP_HAND_R = 2) —
+    the weapon the economy loop would otherwise have to buy before any
+    melee damage is possible."""
+    pop = generate_population(make_spec(seed=7))
+    n = len(pop.personas)
+    sql = pop.fixture_sql
+    # one knife row per character, equipped right hand, identified
+    knife_rows = re.findall(
+        r"INSERT INTO `inventory` \(`char_id`, `nameid`, `amount`, `equip`, `identify`\) "
+        r"VALUES \((\d+), 1201, 1, 2, 1\);",
+        sql,
+    )
+    assert len(knife_rows) == n
+    char_rows = re.findall(r"INSERT INTO `char` \([^)]+\) VALUES \((\d+), ", sql)
+    assert sorted(int(c) for c in knife_rows) == sorted(int(c) for c in char_rows)
