@@ -179,12 +179,21 @@ def test_hp_rest_still_precedes_approach():
     assert _farm(state).actions == (Rest(),)
 
 
-def test_no_monsters_tail_unchanged():
-    assert _grind(_state(inventory={"Jellopy": 3})).actions == (Loot(),)
+def test_no_monsters_tail_roams_without_floor_visibility():
+    """Leg 32: the scripts minted Loot on `state.inventory` — a stand-in for
+    floor items a script cannot see (1,343 no-op Loots in one window, the
+    roam starved). Loot priority lives in the runtime (`_loot_first`
+    injects the pickup when drops are OBSERVED); the script's empty-view
+    path roams so the approach -> attack chain gets its chance."""
+    out = _grind(_state(inventory={"Jellopy": 3}))
+    assert not any(isinstance(a, Loot) for a in out.actions)
+    assert out.status.name == "ACTIVE"
+    assert any(isinstance(a, MoveTo) for a in out.actions)
+    farm_out = _farm(_state(inventory={"Jellopy": 3}))
+    assert not any(isinstance(a, Loot) for a in farm_out.actions)
+    assert farm_out.status.name == "ACTIVE"
     # w65-69: the empty view roams (ACTIVE) instead of completing DONE
     assert _grind(_state()).status.name == "ACTIVE"
-    outcome = _farm(_state(inventory={"Jellopy": 3}))
-    assert outcome.actions == (Loot(),)  # loot still precedes keep-farming idle
     assert _farm(_state()).status.name == "ACTIVE"
 
 

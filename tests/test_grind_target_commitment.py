@@ -26,7 +26,7 @@ import pytest
 
 from robots.app import scripts
 from robots.app.scripts import FarmScript, GrindScript
-from robots.domain.actions import Attack, Loot, MoveTo, Rest
+from robots.domain.actions import Attack, MoveTo, Rest
 from robots.domain.farm import FarmPlan
 from robots.domain.model import ActorRef, BotState, Goal
 
@@ -195,9 +195,9 @@ def test_loot_releases_the_commitment() -> None:
     script = GrindScript()
     script.step(_state([_lunatic(42)]))
     loot = _state([], inventory={"Jellopy": 3})
-    assert script.step(loot).actions == (Loot(),)
-    back = _state([_lunatic(42, x=101, y=101), _poring(7)])
-    assert script.step(back).actions == (Attack(target_id=7),)
+    out = script.step(loot)
+    assert not any(isinstance(a, Attack) for a in out.actions)  # no monsters to engage
+    assert _committed_id(BOT_A) is None
 
 
 def test_positionless_committed_target_keeps_the_honest_attack() -> None:
@@ -233,7 +233,8 @@ def test_farm_commitment_released_on_rest_and_loot() -> None:
     assert _committed_id(BOT_A) is None
     script.step(_state([_poring(42)], goal=Goal.FARM_ITEM))
     looted = _state([], inventory={"Jellopy": 3}, goal=Goal.FARM_ITEM)
-    assert script.step(looted).actions == (Loot(),)
+    out = script.step(looted)
+    assert not any(isinstance(a, Attack) for a in out.actions)  # no monsters to engage
     assert _committed_id(BOT_A) is None
 
 

@@ -10,7 +10,7 @@ from collections.abc import Sequence
 from enum import Enum, auto
 from typing import TYPE_CHECKING, Protocol, assert_never, final
 
-from robots.domain.actions import Attack, GameAction, Loot, MoveTo, Rest, TalkToNpc
+from robots.domain.actions import Attack, GameAction, MoveTo, Rest, TalkToNpc
 from robots.domain.farm import FarmPlan
 from robots.domain.model import ActorRef, Goal
 
@@ -546,8 +546,6 @@ class GrindScript:
             leg = self._travel_leg(state)
             if leg is not None:
                 return ScriptOutcome((MoveTo(x=leg[0], y=leg[1]),), ScriptStatus.ACTIVE)
-        if state.inventory:
-            return ScriptOutcome((Loot(),), ScriptStatus.ACTIVE)
         # w65-69 roam leg (mirrors FarmScript): an empty view must not
         # complete as DONE — the goal-grind agent would churn DONE forever
         # standing in a mobless patch. Patrol a bounded step instead.
@@ -632,8 +630,6 @@ class FarmScript:
         if targets:
             return _engage(state, targets, self._commit_window)
         _release_commitment(state, self._commit_window)
-        if state.inventory:
-            return ScriptOutcome((Loot(),), ScriptStatus.ACTIVE)
         # w59/w60 roam leg: an empty view must not stand still. Emit a bounded
         # patrol step near the current cell so the agent walks to find its
         # plan's species (the runtime's pending-walk pacing throttles the

@@ -6202,3 +6202,19 @@ spams targetless Loot (1,343!) instead of attacking visible monsters — the
 Loot action must be gated on observed floor items (the walkability-filter
 precedent), and the approach->attack chain then gets its chance. The
 melee-landing discipline (18.8% at leg 28) is the open question behind it.
+
+## 2026-10-28 afternoon — the loot gate: the scripts no longer mint Loot on their own inventory
+
+Leg 32's convert chain pinpointed the waste: the grind/farm scripts minted
+`Loot()` whenever `state.inventory` was non-empty — a stand-in for floor
+items a script cannot SEE (BotState has no floor field; the observed drops
+live in tracker.view.floor_items). g00m01 minted 1,343 Loot actions that the
+floor-item-aware performer silently no-oped, and each one PREEMPTED the roam
+leg — the agent stood ticking Loot instead of walking to find mobs. Loot
+priority already lives in the RUNTIME (`_loot_first` injects the pickup when
+drops are actually observed, window-24's contract). The scripts' branches
+are removed: an empty view now falls through to the roam/approach/attack
+chain, and the runtime keeps owning real pickups. Reconciled:
+test_no_monsters_tail (roam, not Loot), the two commitment-release tests
+(the release is the intent; the action is the roam). The GuildInvite legacy
+limb crash (party_members.get on a list) is the other queued fix.
