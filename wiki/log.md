@@ -6122,3 +6122,21 @@ mechanical-seam test was reconciled to the epoch chain (an orphan C7 with no
 dialogue is exactly what LAW 3 refuses). Remaining from the law: T7/T9/T10 —
 the no-C7 deadline recovery, expected to compose with the existing
 deny-origin machinery; verify on a live window before building anything new.
+
+## 2026-10-28 night — leg 31 receipt: the sell gate never got its chance; the SOCIAL goal starves the economy
+
+Receipt population-receipt-31-1793141373.json (window Wed 00:10-02:10, 33,533
+steps, 0 errors, all 7 online). THE SELL QUESTION: no — zeny unchanged
+(NyxSong 5z, RinceNyan 3z, PipinWalker 4z), no C7/C5 evidence (no shop_offer
+samples; npc stages opening->blocked), zero sells, zero kills. The dominant
+finding is UPSTREAM of the shop: 5 of 7 agents executed ZERO actions over the
+whole window (only decides + goal reviews), RinceNyan 2,051 targetless Loots,
+s00 2,057 MoveTos. The traces name it: the goal reviews hold goal='social'
+(heartbeat after heartbeat) and Clef answers next_action=party_invite
+(p=0.45) — but every agent is ALREADY in a party from earlier legs, so the
+social action path dispatches nothing and the agent idles. The motivation
+layer's social goal has no fall-through: when the social action cannot act
+(in-party, no candidate), the brain must hand the tick back to the economy
+scripts (farm/sell) instead of standing. NEXT SLICE: the social fall-through
+(goal precedence — social attempts bounded per window, then economy). The
+sell gate's live validation waits for agents whose goal reaches the shop.
