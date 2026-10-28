@@ -6218,3 +6218,19 @@ chain, and the runtime keeps owning real pickups. Reconciled:
 test_no_monsters_tail (roam, not Loot), the two commitment-release tests
 (the release is the intent; the action is the roam). The GuildInvite legacy
 limb crash (party_members.get on a list) is the other queued fix.
+
+## 2026-10-28 afternoon — leg 33 receipt: mobility healthy, the attack layer is the starving limb
+
+Receipt population-receipt-33-1793182164.json (window 13:00-15:00, 57,459
+steps, 0 errors, all 7 online throughout). The behavioural stack HOLDS: goals
+distributed grind 309 / farm_item 236 / social 70, mobility HEALTHY (2,206
+MoveTos, positions advancing on the field), the loot gate worked as designed
+(zero targetless Loot spam). But the convert chain still ends at zero: only
+6 Attacks (g00m01, the field agent) from 516 approaches, no kills, no drops,
+zeny unchanged. THE STARVING LIMB IS THE ATTACK: 516 approaches -> 6 swings.
+Next slice: instrument the attack gate (the melee-range check vs the tracked
+mob position after arrival; the stop-and-swing standing gate; the
+nearby_monsters visibility at the arrival cell) so the receipt names WHY
+approaches do not become swings. Also live this window: the GuildInvite
+legacy-limb crash x10 (party_members.get on a list) - the TDD fix lands
+today (name->aid from the nearby actors).
