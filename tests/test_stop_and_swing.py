@@ -29,7 +29,7 @@ def _runtime(pending: object) -> tuple[PlayingClient, _RecordingWire]:
     wire = _RecordingWire()
     runtime = PlayingClient.__new__(PlayingClient)  # the gate is the unit
     runtime.wire = wire
-    runtime._now = lambda: 0.0  # type: ignore[method-assign]
+    runtime._now = lambda: 0.0
     runtime._pending = pending  # type: ignore[assignment]
     runtime._rest_seq = None
     runtime._attack_ready = lambda *_a, **_k: True  # type: ignore[method-assign]
