@@ -44,9 +44,20 @@ def _goal_criterion(goal: Goal) -> str:
 def _drop_moot_options(questions: dict[str, Any], state: BotState) -> None:
     """The facts gate the options: party_join is moot for a member of a
     persisted party (leg 16: 339 party_join picks starved grinding to zero
-    attacks), so the schema drops what the state makes impossible."""
+    attacks), so the schema drops what the state makes impossible. Leg 31's
+    starvation is the same shape one hop over: a partied agent with no
+    nearby outsider kept choosing party_invite (p=0.45 every heartbeat) and
+    the social action path dispatched nothing for two hours — an inviter
+    needs a candidate, so without one the option is moot too."""
     if state.in_party:
         del questions["next_action"]["criteria"]["party_join"]
+        nearby_players = [
+            a
+            for a in state.nearby
+            if getattr(a, "kind", "") == "player" and getattr(a, "name", "") != state.name
+        ]
+        if not nearby_players:
+            del questions["next_action"]["criteria"]["party_invite"]
 
 
 def build_decision_request(

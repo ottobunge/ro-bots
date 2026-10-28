@@ -6,8 +6,8 @@ import pytest
 
 from robots.adapters.chat.stub import StaticChatGenerator
 from robots.adapters.decision.stub import ScriptedDecisionModel
-from robots.app.brain import EventDrivenBrain
-from robots.app.scripts import FarmScript
+from robots.app.brain import SOCIAL_IDLE_STREAK_LIMIT, EventDrivenBrain
+from robots.app.scripts import FarmScript, GrindScript
 from robots.domain.actions import AcceptInvite, PartyChat, Rest, Say
 from robots.domain.events import (
     ChatHeard,
@@ -20,6 +20,7 @@ from robots.domain.events import (
 )
 from robots.domain.farm import MobInfo
 from robots.domain.model import ActorRef, ChatLine, Goal, PartyInvite
+from tests.conftest import make_state
 
 # -- fakes --------------------------------------------------------------
 
@@ -288,3 +289,36 @@ def test_farm_duration_mapping(state, score: float, expected_s: float) -> None:
     brain.handle_event(state, Heartbeat(seq=1))
     assert brain.current_plan is not None
     assert brain.current_plan.duration_s == expected_s
+
+
+def test_a_starved_social_goal_bounces_to_grind(state) -> None:
+    """Leg 31: five of seven agents stood for two full hours — change_goal
+    answered 'keep' every heartbeat, next_action was party_invite with
+    nobody to invite, and zero actions dispatched all window. A social/idle
+    goal that produced no actions for SOCIAL_IDLE_STREAK_LIMIT consecutive
+    heartbeat reviews may not persist: the economy resumes (grind)."""
+    answers = dict(base_answers())
+    answers["change_goal"] = {"type": "choice", "choice": "keep", "confidence": 0.9}
+    social = make_state(goal=Goal.SOCIAL)
+    brain = make_brain(answers=answers)
+    for _ in range(SOCIAL_IDLE_STREAK_LIMIT - 1):
+        notes: list[str] = []
+        brain._run_review(social, answers, notes)
+        assert not any("GRIND" in n for n in notes)  # the streak is building
+    notes = []
+    brain._run_review(social, answers, notes)
+    assert any("GRIND" in n for n in notes)
+    assert isinstance(brain._script, GrindScript)
+
+
+def test_social_activity_resets_the_starvation_streak(state) -> None:
+    """Real dispatched actions are the honest reset: a social goal that IS
+    doing things (chat, invites) is never bounced."""
+    answers = dict(base_answers())
+    answers["change_goal"] = {"type": "choice", "choice": "keep", "confidence": 0.9}
+    social = make_state(goal=Goal.SOCIAL)
+    brain = make_brain(answers=answers)
+    for _ in range(SOCIAL_IDLE_STREAK_LIMIT):
+        brain._actions_since_review = 4  # the ticks dispatched real actions
+        brain._run_review(social, answers, [])
+    assert brain._social_idle_reviews == 0

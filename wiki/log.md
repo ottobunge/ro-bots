@@ -6140,3 +6140,19 @@ layer's social goal has no fall-through: when the social action cannot act
 scripts (farm/sell) instead of standing. NEXT SLICE: the social fall-through
 (goal precedence — social attempts bounded per window, then economy). The
 sell gate's live validation waits for agents whose goal reaches the shop.
+
+## 2026-10-28 dawn — the starved-social bounce: a social goal that produces nothing may not persist
+
+Leg 31's dominant finding (5 of 7 agents, ZERO actions in 2 hours) named the
+mechanism: the goal reviews held goal='social' (change_goal=keep every
+heartbeat) while Clef answered next_action=party_invite (p=0.45) — but every
+agent was ALREADY in a party, so the social action path dispatched nothing,
+forever. Two fixes, both in the landed design's style:
+(1) the moot-options drop (decisions.py) now also drops party_invite when
+in_party AND no nearby outsider — an inviter needs a candidate (the leg-16
+precedent: party_join dropped for members);
+(2) the starved-social bounce (brain.py): the brain counts actions emitted
+between heartbeat reviews; a social/idle goal with zero emitted actions for
+SOCIAL_IDLE_STREAK_LIMIT (3) consecutive reviews bounces to GRIND — the
+economy resumes. Real activity resets the streak honestly (the widen-streak
+pattern applied to the goal itself).

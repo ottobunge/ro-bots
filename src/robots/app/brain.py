@@ -77,6 +77,11 @@ if TYPE_CHECKING:
 REVIEW_BAD = 0.5
 URGENCY_TALK = 1.5
 SCRIPT_TRACE_PERIOD_S = 10.0
+
+# The starved-social bounce (leg 31): after this many consecutive heartbeat
+# reviews with a social/idle goal and ZERO dispatched actions, the goal
+# bounces to GRIND — the economy resumes.
+SOCIAL_IDLE_STREAK_LIMIT = 3
 # Window-8 root cause: a retained non-terminal NPC dialogue diverted the grind
 # goal script forever (69 dialogue actions, zero attacks). Bounded received-step
 # budget: strict dialogue handling keeps the goal script for at most this many
@@ -109,6 +114,11 @@ class EventDrivenBrain:
     Every decision-model call is counted, as is every LLM escalation — the
     ratio is the experiment's headline metric.
     """
+
+    # the starved-social counters (leg 31): actions emitted since the last
+    # heartbeat review, and the consecutive starved-review streak
+    _actions_since_review = 0
+    _social_idle_reviews = 0
 
     def __init__(
         self,
@@ -465,7 +475,11 @@ class EventDrivenBrain:
         trigger: str = "heartbeat",
     ) -> list[GameAction]:
         """Heartbeat: goal review, farm-plan authoring, optional announcement."""
-        goal = self._aligned_goal(self._review_goal(state, answers, notes), notes)
+        actions_since = self._actions_since_review
+        self._actions_since_review = 0
+        goal = self._aligned_goal(
+            self._review_goal(state, answers, notes, actions_since=actions_since), notes
+        )
         self._trace_review(state, goal, trigger)
         reports = self._human_report_announce(state)
         if self.is_recovering and self._choice(answers, "change_goal", "") == "keep":
@@ -672,8 +686,11 @@ class EventDrivenBrain:
         self._remember_npc(state)
         diverted = self._dialogue_route(state)
         if diverted is not None:
+            self._actions_since_review += len(diverted.actions)
             return diverted
-        return self._step_goal_script(state, can_resume=can_resume)
+        outcome = self._step_goal_script(state, can_resume=can_resume)
+        self._actions_since_review += len(outcome.actions)
+        return outcome
 
     def _dialogue_route(self, state: BotState) -> ScriptOutcome | None:
         """A retained non-terminal dialogue routes the step before the goal."""
@@ -1022,7 +1039,26 @@ class EventDrivenBrain:
         )
         return plan
 
-    def _review_goal(self, state: BotState, answers: dict[str, Any], notes: list[str]) -> Goal:
+    def _review_goal(
+        self, state: BotState, answers: dict[str, Any], notes: list[str], *, actions_since: int = 0
+    ) -> Goal:
+        # The starved-social bounce: a social/idle goal that produced no
+        # actions for SOCIAL_IDLE_STREAK_LIMIT consecutive heartbeat reviews
+        # may not persist (leg 31: five agents stood for two hours —
+        # change_goal answered 'keep' every heartbeat, next_action was
+        # party_invite with nobody to invite, zero actions dispatched). The
+        # economy resumes; real activity resets the streak honestly.
+        if state.goal in (Goal.SOCIAL, Goal.IDLE_TOWN):
+            if actions_since == 0:
+                self._social_idle_reviews += 1
+            else:
+                self._social_idle_reviews = 0
+            if self._social_idle_reviews >= SOCIAL_IDLE_STREAK_LIMIT:
+                self._social_idle_reviews = 0
+                notes.append(f"goal {state.goal}->GRIND (social idle x{SOCIAL_IDLE_STREAK_LIMIT})")
+                return Goal.GRIND
+        else:
+            self._social_idle_reviews = 0
         change = self._choice(answers, "change_goal", "")
         if change == "keep":
             return state.goal
