@@ -6171,3 +6171,16 @@ Both caught by the log readback before the window; leg 32 relaunched 08:57
 with day 2, window 09:00-10:40, duration 7200. ALSO: T3 schedule_task's
 weekdays are SUNDAY=0 (Tue=2, Wed=3, Thu=4) — the OPPOSITE of the runner's
 Monday=0; a readout scheduled with the runner's convention fires a day late.
+
+## 2026-10-28 09:15 — leg 32 window LIVE; the guild-invite legacy limb crashes on a list
+
+The corrected window opened on time and the agents are acting. Live error
+(spotted in /tmp/population_leg32.log, 5 occurrences): `action GuildInvite
+failed: 'list' object has no attribute 'get'` — agent_runtime.py:1301's
+legacy limb does `client.party_members.get(player)` but party_members is a
+LIST on this host, and semantically a guild invite (CZ_REQ_JOIN_GUILD 0x0168
+= target_AID) needs the CANDIDATE's account id from the nearby actors, not a
+party-member lookup. Per-action caught; the runner unaffected. NEXT FIX
+(leg 33, TDD): the guild-invite limb resolves the candidate from
+state.nearby players (name -> aid) and the native path's _invite_to_guild is
+audited for the same assumption.
