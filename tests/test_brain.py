@@ -322,3 +322,30 @@ def test_social_activity_resets_the_starvation_streak(state) -> None:
         brain._actions_since_review = 4  # the ticks dispatched real actions
         brain._run_review(social, answers, [])
     assert brain._social_idle_reviews == 0
+
+
+def test_the_widen_streak_injection_survives_a_starved_reauthor(state) -> None:
+    """Leg 34's verdict (3776019f): the persistence half was orphaned — the
+    brain wrote `_widen_streaks` and NOTHING read it back, so every
+    re-author reset `_starved` to 0 and TARGET_WIDEN_STEPS=20 could never
+    accumulate (691 MoveTos, 1 authored Attack in the whole window). The
+    construction must inject the recorded streak for the SAME
+    (targets, map) key; the sibling test pins the honest reset on a target
+    change."""
+    answers = dict(base_answers())
+    answers["farm_target"] = {"type": "choice", "choice": "Pupa", "confidence": 0.9}
+    brain = make_brain(answers=answers, spawn_species=lambda _m: ("Pupa",))
+    brain._run_review(state, answers, [])
+    script_one = brain._script
+    assert isinstance(script_one, FarmScript)
+    # the window starves the plan: real steps against a mobless state
+    mobless = make_state(nearby=(), map_name=state.map_name)
+    for _ in range(5):
+        brain.step_script(mobless)
+    assert script_one._starved == 5
+    # the heartbeat re-author constructs the replacement script
+    brain._run_review(state, answers, [])
+    script_two = brain._script
+    assert isinstance(script_two, FarmScript)
+    assert script_two.plan.target_mobs == script_one.plan.target_mobs
+    assert script_two._starved == 5, "the re-authored script must inherit the recorded widen streak"

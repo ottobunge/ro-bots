@@ -487,7 +487,18 @@ class EventDrivenBrain:
         plan = self._setup_farm_plan(state, answers, notes) if self._wants_farming(goal) else None
         self._plan = plan
         self._trace_plan(goal, plan, trigger)
-        self._script = FarmScript(plan) if plan is not None else self._goal_script(goal, state)
+        if plan is not None:
+            # Leg 34 (3776019f): the persistence half was orphaned — the
+            # streak was WRITTEN per (targets, map) but never READ back, so
+            # every re-author reset _starved to 0 and the widen threshold
+            # could never accumulate. Inject the recorded streak for the
+            # same key; a target change is a different key and resets
+            # honestly.
+            streak_key = (frozenset(plan.target_mobs), plan.map_name)
+            streak = int(getattr(self, "_widen_streaks", {}).get(streak_key, 0))
+            self._script = FarmScript(plan, initial_starved=streak)
+        else:
+            self._script = self._goal_script(goal, state)
         notes.append(f"script->{type(self._script).__name__}")
         review_actions: list[GameAction] = list(self._party_event_announce(state, answers, notes))
         if not review_actions:

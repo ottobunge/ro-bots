@@ -6332,3 +6332,20 @@ IP). The pinned rule is in rathena/src/common/socket.cpp:1089-1091
 connection does NOT refresh the flag's tick, so the block self-expires: the
 solo (pop_0003_s00) rejoined unprompted ~15 min later with no intervention.
 The fix is the roster's login stagger, not a runner change.
+
+## 2026-10-28 night — the widen-streak read half is wired: the re-author inherits the recorded streak
+
+Leg 34's verdict (3776019f) named the orphan: brain.py wrote `_widen_streaks`
+per (targets, map) at every step and NOTHING read it back — `FarmScript(plan)`
+constructed with the default `initial_starved=0`, so the median-49s re-author
+reset the starvation count forever and TARGET_WIDEN_STEPS=20 could never
+accumulate (691 MoveTos, 1 authored Attack). The construction now injects
+`initial_starved` from the recorded streak for the same (targets, map) key; a
+target change is a different key and resets honestly (the sibling test). The
+old survival test passed VACUOUSLY (both scripts at 0 == 0); the new test
+starves the first script through 5 real steps before the re-author and
+demands the streak carry. The widen now converges: ~20 starved evaluations
+open the target set to the observed species, the plan species meets the
+roam, and the approach chain gets its chance. NEXT: the fixture weapon (the
+7 chars carry weapon=0 — even a landed swing cannot kill a 60-HP Poring),
+then re-measure the approach convergence at MELEE_RANGE=1.
