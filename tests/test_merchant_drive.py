@@ -467,3 +467,18 @@ def test_dealer_talk_requires_adjacency_to_the_agent() -> None:
     talk = _dealer_talk(near, (172, 130))
     assert talk is not None
     assert talk.npc_id == 110001762
+
+
+def test_field_loot_species_count_as_sellable_stock() -> None:
+    """Leg 39: RinceNyan carried Empty Bottle (713) + Iron Ore (1002) from
+    the field and NO sell trip ever engaged - the sellables set only knew
+    Jellopy (909) and Chrysalis (915). The pinned mob_db drops of the
+    prt_fild08 species are ALL sellable stock (Pupa 1008: Chrysalis/
+    Sticky_Mucus/Iron_Ore; Drops 1113: Jellopy/Empty_Bottle; Lunatic 1063:
+    Clover/Feather; the leg-38 inventory carried 713+1002)."""
+    state = _state(zeny=0, inventory={"713": 2, "1002": 1})
+    assert merchant_drive_cell(state) is not None
+    state = _state(zeny=0, inventory={"938": 1, "705": 1})
+    assert merchant_drive_cell(state) is not None
+    state = _state(zeny=0, inventory={"949": 1, "917": 1, "914": 1})
+    assert merchant_drive_cell(state) is not None

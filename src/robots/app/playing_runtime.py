@@ -239,6 +239,16 @@ class PlayingClient:
     # (the _no_route_attempts shadow idiom; a mutable class default would
     # leak across clients).
     _rerolled_moves_memo: dict[tuple[str, tuple[int, int]], tuple[int, int]] | None = None
+    # own positions whose sealed-pocket escalation already fired (leg 39)
+    _deadlock_cells_memo: set[tuple[str, tuple[int, int]]] | None = None
+
+    @property
+    def _deadlock_cells(self) -> set[tuple[str, tuple[int, int]]]:
+        cells = self._deadlock_cells_memo
+        if cells is None:
+            cells = set()
+            self._deadlock_cells_memo = cells
+        return cells
 
     @property
     def _rerolled_moves(self) -> dict[tuple[str, tuple[int, int]], tuple[int, int]]:
@@ -1782,8 +1792,29 @@ class PlayingClient:
             exclude=((state.x, state.y), target),
         )
         if alt is None:
-            self._note_move_gate("target_unwalkable")
-            self._fail_patrol(target)
+            # leg 39: s00's pocket is sealed at radius 2 but the roam box
+            # holds walkable cells ~7 cells away (34/289). Escalate ONCE per
+            # own position to radius 12 and let the server path-find its own
+            # side (the leg-28 rule); a second sealed verdict at the same
+            # position is the honest stop.
+            if (state.map_name, (state.x, state.y)) in self._deadlock_cells:
+                self._note_move_gate("escalated_target_dead")
+                self._fail_patrol(target)
+                return
+            alt = nearest_walkable(
+                self.cache.get(state.map_name),
+                target,
+                radius=12,
+                exclude=((state.x, state.y), target),
+            )
+            if alt is None:
+                self._note_move_gate("target_unwalkable")
+                self._fail_patrol(target)
+                return
+            self._deadlock_cells.add((state.map_name, (state.x, state.y)))
+            self._note_move_gate("target_unwalkable_escalated")
+            self.wire.move(*alt)
+            self._pending = (alt, pos.seq, self._now(), 0)
             return
         self._rerolled_moves[key] = alt
         self._note_move_gate("target_unwalkable_rerolled")

@@ -7075,3 +7075,29 @@ needs a decide-level trigger (sellable loot + no planned kill target ⇒ go_town
 RinceNyan's carried loot remains the live test case; (3) PipinWalker's town
 stickiness (0 attacks, 26 socials — the guidance/roam never pulled it to a
 field).
+
+## 2026-10-29 ~20:3x — leg 39 follow-up: the field loot is sellable stock + the sealed-pocket escalator
+
+Leg 39's verdict (aa1703a9): 6 of 7 on the fields held, 107 attacks, 5 of 7 above
+baseline XP (kills at population scale), TRANSPORT DOWN 0 (e39bb69d holds),
+socials live (2 new guilds, 2 parties). Two defects named, both fixed TDD:
+
+(1) THE SELL TRIP NEVER ENGAGED because the merchant want's stock set only knew
+Jellopy 909 + Chrysalis 915 - RinceNyan carried Empty Bottle 713 + Iron Ore 1002
+(the leg-38 pickups) and nothing decided to go to town. The stock set is now the
+pinned mob_db drops of the field species (Pupa 1008: 915/938/1002; Drops 1113:
+909/713; Lunatic 1063: 705/949; Poring 1009: 917; Fabre 1007: 914 - mob_db.yml +
+item_db_etc.yml, pinned e985006171d2). Any of them in a Novice's known inventory
+now drives the dealer trip (the w84-proven chain owns the exchange).
+
+(2) s00's pocket HELD and the ground correction never fired: the correction's
+predicate is the cell's walkability, but s00's cell is walkable-in-grid while
+every NEIGHBOR is walled - shortest_path dies, the direct sends are
+server-refused, and the radius-2 reroll finds nothing (target_unwalkable x8,
+1,949 MoveTos, zero movement). The sealed verdict now ESCALATES once per own
+position to radius 12 (nearest_walkable, ring order) and direct-sends the far
+walkable cell (target_unwalkable_escalated) - the server path-finds its own side
+(the leg-28 rule); a second sealed verdict at the same position is the honest
+stop (escalated_target_dead). The roam box's 34 walkable cells are within 12.
+
+Gate 6,665+65.

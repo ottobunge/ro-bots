@@ -457,7 +457,9 @@ def test_no_route_with_a_sealed_pocket_names_the_gate_and_stops():
     and sends NOTHING instead of flooding the wire."""
 
     size = 12
-    tiles = bytearray(size * size)
+    tiles = bytearray([1]) * (size * size)  # a fully walled map...
+    tiles[1 + 1 * size] = 0  # ...except the agent's own cell: even radius 12
+    # from the target finds nothing, so the escalation honestly stops too.
     for x in range(3, 8):
         for y in range(3, 8):  # the target's whole radius-2 pocket is unwalkable
             tiles[x + y * size] = 1
@@ -984,3 +986,39 @@ def test_initial_model_social_goal_is_not_forced_to_grind():
         assert agent.goal == Goal.SOCIAL
     finally:
         agent.disconnect()
+
+
+def test_sealed_pocket_escalates_once_to_a_far_walkable_cell():
+    """leg 39: s00's pocket is sealed at radius 2 but walkable cells exist
+    ~7 cells away (34/289 in the roam box). The SECOND sealed verdict at
+    the same own position escalates to radius 12 and direct-sends the far
+    walkable cell once; a third authoring is the honest stop."""
+
+    size = 16
+    tiles = bytearray([1]) * (size * size)
+    for x in range(3, 8):
+        for y in range(3, 8):  # the target's radius-2 pocket is unwalkable
+            tiles[x + y * size] = 0 if (x, y) == (10, 10) else 1
+    # a walkable cell 7 cells from the target, outside the pocket
+    tiles[10 + 10 * size] = 0
+    wire = Wire()
+    now = [0.0]
+    client = runtime.PlayingClient(
+        wire,
+        cache=MapCache((WalkMap("prontera", size, size, bytes(tiles)),)),
+        monotonic=lambda: now[0],
+    )
+    wire.frames = []
+    wire.add(entry_at(1, 1), map_frame_at(1, 1))
+    for _ in range(runtime.NO_ROUTE_DIRECT_SENDS):
+        client.perform_native(MoveTo(5, 5))
+        client._pending = None
+    # the first post-cap attempt: radius 2 is sealed -> escalate to radius 12
+    client.perform_native(MoveTo(5, 5))
+    assert wire.moves[-1] == (10, 10)  # the fixture's one walkable cell
+    assert any(reason == "target_unwalkable_escalated" for _, reason in client._move_gate_reasons)
+    client._pending = None
+    sent = len(wire.moves)
+    client.perform_native(MoveTo(5, 5))  # the same position never re-escalates
+    assert len(wire.moves) == sent
+    assert any(reason == "escalated_target_dead" for _, reason in client._move_gate_reasons)

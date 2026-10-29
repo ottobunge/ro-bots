@@ -347,8 +347,26 @@ def merchant_drive_cell(state: BotState) -> tuple[int, int] | None:
         return None
     # Two reasons to walk to the dealer: affordable purchase (zeny >= 50) or
     # sellable stock (start_zeny is 0 in the owned world - the first trip
-    # EARNS the zeny by selling; window-28 finding).
-    sellables = {"909", "915"}  # Jellopy 909, Chrysalis 915 (pinned drops)
+    # EARNS the zeny by selling; window-28 finding). The stock set is the
+    # pinned mob_db drops of the prt_fild08 field species (all non-equipment
+    # loot is dealer stock; leg 39: RinceNyan carried 713+1002 and no trip
+    # engaged because the set only knew 909/915):
+    #   Pupa 1008 -> Chrysalis 915, Sticky_Mucus 938, Iron_Ore 1002
+    #   Drops 1113 -> Jellopy 909, Empty_Bottle 713
+    #   Lunatic 1063 -> Clover 705, Feather 949
+    #   Poring 1009 -> Talon 917;  Fabre 1007 -> Fluff 914
+    # (rathena db/pre-re/mob_db.yml + item_db_etc.yml, pinned e985006171d2)
+    sellables = {
+        "909",
+        "915",
+        "938",
+        "1002",
+        "713",
+        "705",
+        "949",
+        "917",
+        "914",
+    }
     affordable = type(state.zeny) is int and state.zeny >= MERCHANT_ZENY_MIN
     has_stock = any(str(item) in sellables for item in state.inventory)
     if not (affordable or has_stock):
