@@ -60,3 +60,42 @@ def test_farm_item_on_the_field_keeps_the_plain_script(tmp_path) -> None:
     script = brain._goal_script(Goal.FARM_ITEM, make_state(map_name="prt_fild08"))
     assert isinstance(script, GrindScript)
     assert script._travel_plan == ()
+
+
+def test_farming_goal_in_the_shop_interior_gets_the_exit_route(tmp_path) -> None:
+    """Leg 37: three agents logged in on prt_in and roamed it forever.
+
+    A char logs in where it LOGGED OUT (last_map), not at its Kafra save
+    point: the merchant trip of an earlier leg left three of them inside
+    the prontera interior, so every later leg opened them on prt_in. That
+    map has no spawn declaration (no plan) and no TRAVEL_ROUTES entry (no
+    route) - the goal script's plain GrindScript then patrolled the
+    interior at random for the whole window (leg 37: 117 distinct random
+    MoveTo targets, never the exit door).
+
+    The route table is the general mechanism for "a farming goal on a map
+    whose spawns are elsewhere", and prt_in is exactly such a map. Its
+    pinned exit door is prt_in,168,124 (warp prt05-1 -> prontera,174,218),
+    the same cell the merchant return leg already cites; the route then
+    continues through the prontera field warp to prt_fild08."""
+    brain = _brain(tmp_path)
+    script = brain._goal_script(Goal.FARM_ITEM, make_state(map_name="prt_in"))
+    assert isinstance(script, GrindScript)
+    assert script._travel_plan == (
+        ("prt_in", 168, 124),
+        ("prontera", 156, 22),
+        ("prt_fild08", 170, 375),
+    )
+
+
+def test_grind_in_the_shop_interior_gets_the_exit_route(tmp_path) -> None:
+    """The interior is no different for Goal.GRIND: both farming goals
+    need a way out of a spawnless map."""
+    brain = _brain(tmp_path)
+    script = brain._goal_script(Goal.GRIND, make_state(map_name="prt_in"))
+    assert isinstance(script, GrindScript)
+    assert script._travel_plan == (
+        ("prt_in", 168, 124),
+        ("prontera", 156, 22),
+        ("prt_fild08", 170, 375),
+    )
