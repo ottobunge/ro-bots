@@ -230,6 +230,56 @@ def shortest_path(
     raise NoRoute(msg)
 
 
+def walkable_region(grid: WalkMap, start: Point) -> frozenset[Point]:
+    """The walkable cells reachable from ``start`` (8-neighbor, no cutting).
+
+    The same 8-neighbor, no-corner-cutting rule as :func:`shortest_path`, so
+    the region and the path agree on what is walkable. A map can hold
+    several doors that are each in a different region (prt_in's 26
+    disconnected building interiors), and only one of them is the agent's
+    way out.
+    """
+    if not grid.walkable(start):
+        return frozenset()
+    seen = {start}
+    frontier = deque((start,))
+    while frontier:
+        current = frontier.popleft()
+        for neighbor in _neighbors(grid, current, frozenset()):
+            if neighbor not in seen:
+                seen.add(neighbor)
+                frontier.append(neighbor)
+    return frozenset(seen)
+
+
+def exit_in_region(region: frozenset[Point], candidates: Iterable[Point]) -> Point | None:
+    """The first candidate that lies in ``region``, or None.
+
+    The candidates are considered in the order given, so the answer is
+    deterministic when more than one of them is reachable. The rule lives
+    here so a caller with a CACHED region and a caller with a fresh flood
+    cannot disagree about which door is the agent's way out.
+    """
+    for candidate in candidates:
+        if candidate in region:
+            return candidate
+    return None
+
+
+def reachable_exit(grid: WalkMap, start: Point, candidates: Iterable[Point]) -> Point | None:
+    """The candidate cell the agent can walk to from ``start``, or None.
+
+    A flood over the walkable region of ``start`` - the same 8-neighbor,
+    no-corner-cutting rule as :func:`shortest_path` - so the answer is the
+    candidate in the agent's OWN connected region. A map can hold several
+    doors that are each in a different region (prt_in's 26 disconnected
+    building interiors), and only one of them is the agent's way out.
+    """
+    if not candidates:
+        return None
+    return exit_in_region(walkable_region(grid, start), candidates)
+
+
 @dataclass(frozen=True, slots=True)
 class StarterRoute:
     """One current-map leg. Warp completion requires received native map change."""

@@ -128,6 +128,7 @@ class EventDrivenBrain:
         policy: EscalationPolicy | None = None,
         mob_db: MobDatabase | None = None,
         spawn_species: Any | None = None,
+        travel_resolver: Any | None = None,
         memory: Memory | None = None,
         recovery_hp_ratio: float = 0.75,
         social_view: Callable[[], Sequence[str]] | None = None,
@@ -176,6 +177,7 @@ class EventDrivenBrain:
         self._plan_seq = 0
         self._mob_db: MobDatabase | None = mob_db
         self._spawn_species = spawn_species
+        self._travel_resolver = travel_resolver
         self._npc_menu_seen: tuple[int, int, int] | None = None
         self._npc_memory_session: tuple[int, str, int, int] | None = None
         self._npc_memory_pages = 0
@@ -1020,7 +1022,10 @@ class EventDrivenBrain:
         forever - 6 of 7 agents never reached a field. Any farming goal
         gets the route."""
         if self._wants_farming(goal) and state.map_name in TRAVEL_ROUTES:
-            return GrindScript(travel_plan=TRAVEL_ROUTES[state.map_name])
+            return GrindScript(
+                travel_plan=TRAVEL_ROUTES[state.map_name],
+                travel_resolver=self._travel_resolver,
+            )
         return script_for(goal, state)
 
     def _setup_farm_plan(

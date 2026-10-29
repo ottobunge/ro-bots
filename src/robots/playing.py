@@ -164,6 +164,15 @@ def build_host(args: argparse.Namespace) -> AgentHost:
         """Declared species for the map (criterion-10 knowledge; w59)."""
         return _spawn_index.get(map_name, ())
 
+    # The travel route, resolved by REACHABILITY from the agent's own cell
+    # (leg 37: prt_in is 26 disconnected interiors, each with its own door,
+    # so the route table keyed by MAP NAME hands every agent the same door -
+    # and for the agent in another interior that door cannot be reached at
+    # all). The router needs the client grid, which the composition owns.
+    from robots.app.travel_routing import plan_factory, travel_router  # noqa: PLC0415
+
+    _travel_plan_factory = plan_factory(travel_router(cache))
+
     if urlsplit(args.chat_url).hostname in {"127.0.0.1", "::1"}:
         chat = make_local_chat(args.chat_url)
     else:
@@ -202,6 +211,7 @@ def build_host(args: argparse.Namespace) -> AgentHost:
         client_factory=client_factory,
         mob_db_factory=databases.__getitem__,
         spawn_species_factory=spawn_species_for,
+        travel_plan_factory=_travel_plan_factory,
         memory_root=args.memory_root,
         worldfeed_port=args.worldfeed_port,
         population_file=getattr(args, "population_file", None),

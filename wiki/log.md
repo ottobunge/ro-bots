@@ -6726,10 +6726,11 @@ sequences show exactly what happened. g00m02 walked north cell by cell from
 (159,170) to (159,184) to (159,193) in the first two minutes, and then STOPPED -
 (159,193) is the last cell before the wall at (159,194), and it stood there for
 the remaining 117 minutes, re-authoring the same impossible move. s00 never
-moved at all: it stood at (204,165) for the whole window, and that cell is ITSELF
-unwalkable in the client grid (tile 1) - the client's picture of the map and
-the server's disagree about where the agent is, and its target (204,166) is a
-wall on both sides.
+moved at all: it stood at (204,165) for the whole window (ONE distinct position
+across 118 state ticks), and that cell is ITSELF unwalkable in the client grid
+(tile 1) - so the client's picture of the map and the server's disagree about
+where the agent is, and its target (204,166) is a wall in the client's grid
+too.
 
 The root cause is that a MoveTo target's walkability is never checked before
 the script authors it. `IdleTownScript` - the script for the `social` goal,
@@ -6756,3 +6757,65 @@ walkability filter - two agents walked into a wall for two hours; (3) the
 drop->pickup hop (the 0x009D floor ingest -> the 0x0362 pickup) with the picklog
 ARMED ON THE E2E WORLD (`sql_logs: yes` + `enable_logs: 0xFFF`) so the next leg's
 pickup evidence is decisive.
+
+## 2026-10-29 ~09:0x — the prt_in exit is resolved by REACHABILITY (each interior gets its own door)
+
+Leg 37's prt_in trap had TWO causes, and the second one is the deeper one.
+The first: the running leg did not even HAVE the prt_in route - the commit
+landed at 05:20 UTC, 74 minutes after the 04:06:32 launch. The second: the
+route names ONE door, and **prt_in is not one room**. It is 26 disconnected
+building interiors, and the pinned warp bytes give 15 of them their own door
+to prontera (npc/warps/cities/prontera.txt:39-:69). A BFS over the live client
+grid finds 26 disconnected walkable components, and a flood from each of the
+15 door cells lands in a different one. So the single door (168,124) - the
+prt05 interior's - could only ever have released the agents that woke up in
+THAT interior: NyxSong (166,137) and PipinWalker (168,134), but NOT
+xXLunasongXx (44,102), whose own interior's door is (53,105).
+`shortest_path` from (44,102) to (168,124) returns NoRoute - the door is not
+merely far, it is in another component of the map.
+
+The exit is a property of the INTERIOR the agent stands in, so it is now
+resolved by REACHABILITY from the agent's own cell, live, on the client grid.
+The door table stays knowledge (robots/knowledge/travel_routes.py: EXIT_CELLS,
+the 15 pinned doors, plus INTERNAL_WARPS, the 12 interior hops for the four
+interiors that have no door of their own); the reachability is navigation
+(robots/adapters/native_navigation.py: `walkable_region` + `exit_in_region`,
+the same 8-neighbour no-corner-cutting rule as `shortest_path`); and the
+composition is the app layer (robots/app/travel_routing.py: the TravelRouter,
+which memoizes the per-map region index so the live resolution is a set
+lookup, not a flood per step).
+
+The plan is no longer baked into the goal script: the brain hands the script
+a RESOLVER (the `travel_resolver` protocol, `(map_name, x, y) -> legs`), and
+the script resolves the leg from the agent's CURRENT cell every step - so an
+agent that warps into another interior re-resolves on the next step instead
+of walking to a door that is no longer reachable.
+
+Two deliberate choices. (1) A map with SEVERAL exits resolves by reachability
+(prt_in's 15 doors); a map with ONE exit (prontera's field warp) resolves
+UNCONDITIONALLY - the client grid is a lossy picture of the server's and the
+server path-finds its own side (the leg-28 direct-send path), so a
+client-side "unreachable" there would veto a walk the server would happily
+make. (2) When the grid does not carry the map at all, the seeded static
+route is the fallback, so a world without the map keeps a route rather than
+losing it.
+
+Verified against the LIVE client grid, not a fixture: the three leg-37
+trapped agents now resolve to their OWN doors - NyxSong (166,137) -> 168,124,
+PipinWalker (168,134) -> 168,124, xXLunasongXx (44,102) -> **53,105** (the
+door the old route could never have reached) - and all 15 doors resolve to
+themselves from their own cells. prontera still resolves to the field warp
+from every position tested, and the field itself resolves to None (it is the
+destination, not a route). Every one of the 74 distinct historical prt_in
+positions resolves (43 to the prt05 door, 31 to the prt03 door, 0
+unresolved).
+
+**AND THE WALK IS LIVE-PROVEN AGAINST THE SERVER.** A probe drove the real
+client for xXLunasongXx (the agent that the old route could never have
+released) against the live e2e world: it logged in on prt_in at (40,99), the
+resolver named (53,105) for its cell, the client path was 10 cells, the agent
+walked it and **the warp fired 13 seconds later** - it arrived on prontera at
+(136,186), exactly the pinned arrival cell for that door
+(npc/warps/cities/prontera.txt:61). The door the fix names is a door the
+SERVER will let the agent walk into, not only a cell the client grid can
+path to.
