@@ -7186,3 +7186,20 @@ Also landed this session: 8599e32f — the sell arm survives the wanted weapon
 (the knife release gates only the BUY arm; sellable stock drives the trip).
 Leg 40's sell verdict (baa0cb76) named it: the fixture knife in every inventory
 kept the old single release from ever firing the drive.
+
+### RETRACTION (same day, ~01:2x) — the "missing pay_fild04 cache entry" claim above is WRONG
+
+The 5a0c7b53 entry names a false root cause. Verified: the RUNTIME cache the
+runner actually loads is .work/runtime/population-live/db/map_cache.dat (the
+3 MB primary; playing.py:148 loads it TOGETHER with the trimmed pre-re file),
+and pay_fild04 IS in it — the leg-38 analysis (204,165 unwalkable, nearest
+walkable (204,172)) already knew this. I probed only the trimmed pre-re file.
+The true state: the map is loaded and analyzed correctly; (204,165) is a real
+wall the server saved twice; the ground correction marks it walkable but the
+server still refuses the escape walk (leg 40: escalated_target_dead x8 — the
+server path-finds from a blocked cell and fails).
+
+VERIFIED FIX in place: the save-move to (206,175) — walkable in the runtime
+cache (checked (206,175)/(206,176)/(205,175) all True) — releases s00 to real
+cells. No cache work is needed. The rathena/db/pre-re/map_cache.dat merge from
+the false lead has been reverted (submodule content restored).
