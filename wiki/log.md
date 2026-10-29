@@ -6721,20 +6721,34 @@ door of their own.
 **TWO NEW STUCK-LOOP SHAPES, both from the SAME root cause.** g00m02 (prontera)
 and s00 (pay_fild04) each burned the entire window walking to ONE adjacent cell:
 3,210 MoveTo to (159,194) and 3,224 to (204,166) - and BOTH target cells are
-UNWALKABLE in the client grid (`WalkMap.walkable` -> False). s00's own standing
-cell (204,165) is unwalkable too. The runtime's `_move` catches the NoRoute and
-sends the walk DIRECTLY at the target (the leg-28 NO_ROUTE_DIRECT_SENDS path), so
-the server walks it - and the server's own grid says the cell is fine, so the
-server accepts the walk and the agent never arrives at the cell the CLIENT grid
-believes it is standing in. The two grids disagree about the agent's own
-position, and every re-authored MoveTo re-sends the same unreachable target. The
-walkability of a MoveTo target is not checked before the script authors it -
-`IdleTownScript` (used for the `social` goal, which both agents had: 132 and 133
-goal reviews) emits `MoveTo(x=state.x, y=state.y+1)` with NO walkability check,
-and `state.y + 1` landed on a wall for both. The FarmScript/GrindScript roam leg
-DOES filter for walkability (the w59 fix), but the IdleTownScript twin path was
-never given the same filter - the recurring "fix one script variant, grep for the
-twin" lesson (script_for: GrindScript/FarmScript/NpcGuidanceScript/IdleTownScript).
+UNWALKABLE in the client grid (tile 1, not in the walkable set). The position
+sequences show exactly what happened. g00m02 walked north cell by cell from
+(159,170) to (159,184) to (159,193) in the first two minutes, and then STOPPED -
+(159,193) is the last cell before the wall at (159,194), and it stood there for
+the remaining 117 minutes, re-authoring the same impossible move. s00 never
+moved at all: it stood at (204,165) for the whole window, and that cell is ITSELF
+unwalkable in the client grid (tile 1) - the client's picture of the map and
+the server's disagree about where the agent is, and its target (204,166) is a
+wall on both sides.
+
+The root cause is that a MoveTo target's walkability is never checked before
+the script authors it. `IdleTownScript` - the script for the `social` goal,
+which both agents had (132 and 133 goal reviews) - emits
+`MoveTo(x=state.x, y=state.y+1)`: an unconditional one-cell step NORTH. It
+walked g00m02 up its column until the next cell was a wall, and then re-authored
+that wall-ward move forever. The FarmScript/GrindScript roam leg filters its
+candidates for walkability (the w59 fix), but the IdleTownScript twin path was
+never given the same filter - the recurring "fix one script variant, grep for
+the twin" lesson (script_for: GrindScript/FarmScript/NpcGuidanceScript/
+IdleTownScript).
+
+The DEALER TRIP has the same shape and will need the same treatment:
+MERCHANT_ROUTE["prt_in"] = (172,130) and MERCHANT_ROUTE_RETURN["prt_in"] =
+(168,124) are both in the PRT05 interior, so from the prt03 interior
+`shortest_path` returns NoRoute for BOTH (verified on the live grid) - the
+dealer cell and the exit door are both unreachable from there. The merchant
+legs are a separate fix from the travel route, but they are the same defect:
+a cell pinned to a map instead of to the region the agent stands in.
 
 Next slice, in order: (1) the reachability-aware prt_in door resolution - three
 agents are locked out of the field by one shared door; (2) the IdleTownScript
