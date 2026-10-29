@@ -6629,3 +6629,116 @@ Note for the next leg: the worktree needs the git-ignored corpus DBs
 (`run/knowledge/iro-db/iro-db.db`, `run/knowledge/iro-wiki/iro-wiki.db`) and
 `rathena/config.log` present or six unrelated tests fail - a fresh worktree has
 neither. They are not part of the fix.
+
+## 2026-10-29 ~08:0x — leg 37 receipt: the route fix is live, 2 agents reached a field, and the loot hop is UNPROVEN
+
+Window 04:30-06:30 UTC (05:30-07:30 Madrid), 43,109 steps, **0 step errors**, receipt
+`run/plain_host_receipts/population-receipt-37-1793246792.json`. Clean: 7/7 online
+at open, zero `TRANSPORT DOWN`, zero `GuildInvite failed`, zero `rx_error`, zero
+`dispatch_errors`, no traceback. One transient keepalive failure
+(`action Rest failed: native keepalive send failed`) which self-recovered - the
+agent kept its session and no transport-down followed it.
+
+**THE ROUTE VERDICT: 2 of 7 agents reached a field (one CROSSED the warp during
+the window, the other already lived there), and the five that did not were trapped
+for reasons the fix did not touch.**
+
+| persona | map in window | plans | attacks | attacks' gates | outcome |
+|---|---|---|---|---|---|
+| g00m00 NyxSong | prt_in | 0 | 0 | - | PATROL FOREVER (the prt_in trap) |
+| g00m01 RinceNyan | prt_fild08 | 140 | 32 | pending_walk only | field, KILLS (exp 17/20 -> 30/29) |
+| g00m02 zeny_wing | prontera | 0 | 0 | - | stuck in a 1-cell walk loop |
+| g01m00 PipinWalker | prt_in | 0 | 0 | - | PATROL FOREVER (the prt_in trap) |
+| g01m01 xXLunasongXx | prt_in | 0 | 0 | - | PATROL FOREVER (the prt_in trap) |
+| g01m02 PoringMuffin14 | prontera -> prt_fild08 | 151 | 3 | pending_walk only | field, CROSSED the warp |
+| s00 YuffieFy81 | pay_fild04 | 2 | 0 | - | stuck in a 1-cell walk loop |
+
+The leg-36 fix (78167c2b, the route on any farming goal) is CONFIRMED LIVE:
+g01m02 - a `farm_item` goal on prontera that patrolled its town forever in leg 36 -
+crossed to prt_fild08 inside the window and authored 151 farm plans. Its first
+`state_tick` is prontera (153,35), its last is prt_fild08 (182,358), and its
+MoveTo targets include the field warp cell (156,22) 21 times - the route cell from
+the pinned warp bytes. g00m01 was already on prt_fild08 (it lives there: its
+`last_map` is prt_fild08) and farmed 140 plans with 32 attacks.
+
+**Kills: 1 agent killed (g00m01), +13 base / +9 job exp over the leg-36 baseline
+(17/20 -> 30/29).** The odd totals are the fractional co-attack exp split, not a DB
+anomaly. 32 attacks on Porings at ~12 dmg/hit, and the DB inventory confirms the
+kill is real: g00m01's inventory now holds 713 Empty Bottle + 1002 Iron Ore, the
+Poring drop species (mob_db.yml `Id: 1002`, Drops Jellopy 7000 / Knife_ 100 /
+Empty_Bottle 1500). **`sells: 0`** - every zeny is unchanged from the baseline
+(NyxSong 5, RinceNyan 3, zeny_wing 0, PipinWalker 4, xXLunasongXx 0,
+PoringMuffin14 0, YuffieFy81 0). The economy closure did NOT happen.
+
+**THE LOOT HOP IS UNPROVEN, AND IT IS A REGRESSION IN THE ACTION COUNT.** Zero
+`Loot` actions in the window, against 8,338 across leg 35-36 for the same agent
+(2026-10-26: 2,271, 10-27: 1,982, 10-28: 4,081, 10-29: **0**). The action-count
+change is pinned to a commit: `2c99e7f0` (2026-10-28 11:07, "the grind/farm
+scripts no longer mint Loot on their own inventory") removed the scripts'
+`if state.inventory: return (Loot(),)` branch - correctly, `state.inventory` is
+the agent's BAG, not the floor - leaving the runtime's `_loot_first` as the sole
+owner of real pickups. So the zero is EXPECTED for the script layer and the
+question moves to the runtime hop, which this leg does NOT settle: the picklog
+on the e2e world is EMPTY (`SELECT COUNT(*) FROM picklog` -> 0) but that proves
+nothing here, because `log_athena.conf` on e2e has `sql_logs: no` /
+`enable_logs: 0` - the picklog was armed on the TEST world, not on e2e. The
+0x009D / 0x0ADD / 0x00A1 / 0x0A37 packet ids ARE all registered in the client
+table (packetdb.py:313/315/321), so the framer is not the blocker, and the
+inventory readback shows the kill was real (713 Empty Bottle + 1002 Iron Ore -
+the Poring drop species, mob_db.yml `Id: 1002`). So: the drop->floor->pickup hop
+is UNPROVEN on this world, not disproven. Named next slice, with the picklog
+ARMED ON E2E so the evidence is decisive.
+
+**THE prt_in TRAP SURVIVED THE FIX, AND THE FIX IS INCOMPLETE.** Three agents
+still patrolled prt_in for the whole window - 3510/3504/3514 MoveTo to 218/213/264
+distinct random targets, zero plans, zero attacks. Two causes, both real:
+
+(a) The running leg did not HAVE the prt_in route. The runner launched at
+04:06:32 UTC (the receipt's own epoch, `population-receipt-37-1793246792`), the
+window opened 04:30 UTC, and the prt_in route commit landed at 05:20:08 UTC
+(`5c2b24dd`, 06:20:08 +0100) - 74 minutes after the launch and 50 minutes after
+the window opened. Python binds the module at process start, so the leg ran
+without it. (The leg-36 fix `78167c2b` at 03:58:16 UTC DID land before the
+launch, which is why g01m02 crossed to the field.)
+
+(b) Even WITH it, the route would not have released the third agent: **the route
+names ONE door and prt_in is 26 disconnected building interiors** - `prt_in` is
+not one room. The pinned warp bytes give 15 interiors their own door to prontera
+(npc/warps/cities/prontera.txt:39-:69), each in its own component of the client
+grid: BFS over the live grid finds 26 disconnected walkable components, and a
+flood from each of the 15 door cells lands in a different one. The single door
+(168,124) is in the prt05 interior, so it could only have walked out the agents
+that woke up there - NyxSong (166,137) and PipinWalker (168,134) - and NOT
+xXLunasongXx (44,102), whose interior's door is (53,105).
+`shortest_path` from (44,102) to (168,124) returns NoRoute. All 34,892
+historical prt_in positions sampled across the whole trace history are in
+direct-door components, so reachability-aware door selection covers 100% of the
+observed cases. The fix in flight: resolve the exit BY REACHABILITY from the
+agent's real position (a flood over the agent's own component), with the
+internal prt_in warp hops as the fallback for the four interiors that have no
+door of their own.
+
+**TWO NEW STUCK-LOOP SHAPES, both from the SAME root cause.** g00m02 (prontera)
+and s00 (pay_fild04) each burned the entire window walking to ONE adjacent cell:
+3,210 MoveTo to (159,194) and 3,224 to (204,166) - and BOTH target cells are
+UNWALKABLE in the client grid (`WalkMap.walkable` -> False). s00's own standing
+cell (204,165) is unwalkable too. The runtime's `_move` catches the NoRoute and
+sends the walk DIRECTLY at the target (the leg-28 NO_ROUTE_DIRECT_SENDS path), so
+the server walks it - and the server's own grid says the cell is fine, so the
+server accepts the walk and the agent never arrives at the cell the CLIENT grid
+believes it is standing in. The two grids disagree about the agent's own
+position, and every re-authored MoveTo re-sends the same unreachable target. The
+walkability of a MoveTo target is not checked before the script authors it -
+`IdleTownScript` (used for the `social` goal, which both agents had: 132 and 133
+goal reviews) emits `MoveTo(x=state.x, y=state.y+1)` with NO walkability check,
+and `state.y + 1` landed on a wall for both. The FarmScript/GrindScript roam leg
+DOES filter for walkability (the w59 fix), but the IdleTownScript twin path was
+never given the same filter - the recurring "fix one script variant, grep for the
+twin" lesson (script_for: GrindScript/FarmScript/NpcGuidanceScript/IdleTownScript).
+
+Next slice, in order: (1) the reachability-aware prt_in door resolution - three
+agents are locked out of the field by one shared door; (2) the IdleTownScript
+walkability filter - two agents walked into a wall for two hours; (3) the
+drop->pickup hop (the 0x009D floor ingest -> the 0x0362 pickup) with the picklog
+ARMED ON THE E2E WORLD (`sql_logs: yes` + `enable_logs: 0xFFF`) so the next leg's
+pickup evidence is decisive.
