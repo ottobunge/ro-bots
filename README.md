@@ -160,7 +160,9 @@ Live-proven (population legs 13–37, isolated e2e world, 7 scheduled agents):
   char DB), party chat round-trip, guild create + invite chain
 - Chat personas with governor + initiative; connect backoff; full tracing
 - World travel via warp routes (a farming goal on a spawnless map walks the route
-  to a field: `prontera` and the `prt_in` interior both route to `prt_fild08`);
+  to a field: `prontera` and the `prt_in` interiors route to `prt_fild08`; the
+  `prt_in` exit is resolved by reachability, so each of its 26 building interiors
+  gets its own door);
   build setup (stat allocation from build sidecars)
 - Dashboard: tracking, generation, history/combat/plans views, live commands
 - Repeated e2e (`task e2e`) on isolated volumes

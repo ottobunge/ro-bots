@@ -24,6 +24,21 @@ class ScriptStatus(Enum):
     FAILED = auto()
 
 
+class TravelResolver(Protocol):
+    """The route out of the map the agent is standing on, resolved live.
+
+    ``(map_name, x, y) -> the ordered [(map, x, y)] warp legs | None``. The
+    resolver exists because the way out of a map can depend on WHERE in it
+    the agent stands: ``prt_in`` is 26 disconnected building interiors,
+    each with its own door, and only one of them is reachable from the
+    agent's own interior (leg 37).
+    """
+
+    def __call__(
+        self, map_name: str, x: int, y: int
+    ) -> tuple[tuple[str, int, int], ...] | None: ...
+
+
 class BehaviorScript(Protocol):
     """Anything that can run as a bot's autopilot between events."""
 
@@ -523,10 +538,12 @@ class GrindScript:
         hp_rest_below: float = 0.25,
         commit_window: int = KILL_COMMIT_WINDOW,
         travel_plan: tuple[tuple[str, int, int], ...] = (),
+        travel_resolver: TravelResolver | None = None,
     ) -> None:
         self._hp_rest_below = hp_rest_below
         self._commit_window = commit_window
         self._travel_plan = travel_plan
+        self._travel_resolver = travel_resolver
 
     def step(self, state: BotState) -> ScriptOutcome:
         if state.hp_ratio < self._hp_rest_below:
@@ -542,8 +559,9 @@ class GrindScript:
         # the travel leg (leg 20): a grind goal on a mobless map walks the
         # route toward the known field instead of patrolling the town (the
         # Loot branch is pointless while the bot is off-field)
-        if self._travel_plan:
-            leg = self._travel_leg(state)
+        plan = self._travel_plan_for(state)
+        if plan:
+            leg = self._travel_leg(state, plan)
             if leg is not None:
                 return ScriptOutcome((MoveTo(x=leg[0], y=leg[1]),), ScriptStatus.ACTIVE)
         # w65-69 roam leg (mirrors FarmScript): an empty view must not
@@ -555,12 +573,29 @@ class GrindScript:
             ScriptStatus.ACTIVE,
         )
 
-    def _travel_leg(self, state: BotState) -> tuple[int, int] | None:
+    def _travel_plan_for(self, state: BotState) -> tuple[tuple[str, int, int], ...]:
+        """The route legs to follow from where the agent stands NOW.
+
+        The resolver is AUTHORITATIVE when there is one: the way out of a
+        map can depend on the agent's own cell (leg 37's prt_in interiors),
+        so a resolver that names no route means exactly that - there is no
+        way out from here - and the seeded plan must NOT be substituted
+        for it (the seeded plan names one door, and from another interior
+        that door cannot be reached at all). The seeded plan is the
+        fallback only for a world with NO resolver.
+        """
+        if self._travel_resolver is not None:
+            return self._travel_resolver(state.map_name, state.x, state.y) or ()
+        return self._travel_plan
+
+    def _travel_leg(
+        self, state: BotState, plan: tuple[tuple[str, int, int], ...]
+    ) -> tuple[int, int] | None:
         """The first unmet route cell on the bot's current map; None = arrived.
 
         The plan is the ordered [(map, x, y)] warp route from the knowledge
         surface (route_hint). Legs on other maps are already behind the bot."""
-        for leg_map, x, y in self._travel_plan:
+        for leg_map, x, y in plan:
             if leg_map != state.map_name:
                 continue
             if (state.x, state.y) == (x, y):
