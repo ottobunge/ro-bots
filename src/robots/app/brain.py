@@ -1013,8 +1013,13 @@ class EventDrivenBrain:
 
         Leg 20: a grind goal on prontera patrolled a mobless town while the
         field (prt_fild08's spawns) sat across the warp - the seeded route
-        table turns the empty-view grind into the walk to the field."""
-        if goal == Goal.GRIND and state.map_name in TRAVEL_ROUTES:
+        table turns the empty-view grind into the walk to the field.
+        Leg 36: the route was bound to the goal NAME (Goal.GRIND only), so a
+        farm_item goal on a town map had neither a plan (_setup_farm_plan
+        returns None where no spawns are declared) nor a route and patrolled
+        forever - 6 of 7 agents never reached a field. Any farming goal
+        gets the route."""
+        if self._wants_farming(goal) and state.map_name in TRAVEL_ROUTES:
             return GrindScript(travel_plan=TRAVEL_ROUTES[state.map_name])
         return script_for(goal, state)
 

@@ -6561,3 +6561,27 @@ stale-ref under-count the brief warned about did not bite. The `picklog` is
 still empty (0 rows) despite the verified kills, so the loot pickup is the
 next unproven hop: the mobs died but no drop was picked up and zeny is
 unchanged (no sells). The trace shows `Loot=0` for every agent.
+
+## 2026-10-29 ~04:4x — leg 36 follow-up: the travel route unbound from the goal name (brain.py:1014)
+
+Leg 36 closed with the first kills (9 attacks, 2 confirmed: RinceNyan 9/17 -> 17/20,
+the mob_db arithmetic naming Poring 2/1 + Lunatic 6/2 uniquely) - but 6 of 7 agents
+authored ZERO plans and burned ~21k MoveTos with no swing, their attack_gates None
+for the third leg running (the gate is exonerated; they never reached it).
+
+Mechanism, proven to the second: `_goal_script` handed TRAVEL_ROUTES to GrindScript
+only `if goal == Goal.GRIND`, and `_setup_farm_plan` returns None on a town map
+(prontera/prt_in have no spawn declaration in rathena/npc/pre-re/mobs/fields), so a
+farm_item goal on a town map had NEITHER a plan NOR a route and patrolled forever.
+g00m02's 31 warp-cell MoveTos stopped at 01:01:13; its goal_review flipped
+grind -> farm_item at 01:01:16. g01m02 stopped at exactly its own flip (01:05:51).
+Only g00m01 stayed on grind (48 grind answers) and only it reached the field.
+
+Fix (one line): `_wants_farming(goal)` - ANY farming goal gets the seeded route when
+the current map has one; the goal's NAME is irrelevant. RED test
+`test_farm_item_on_a_routed_town_gets_the_travel_plan` reproduced the leg-36
+patrol-forever shape; the on-field cases pin no route. Gate 6,637+65 / 95.50%.
+
+Still open from leg 36: the picklog 0 rows + Loot=0 despite verified kills (the
+drop->pickup hop unproven), zeny unchanged (no sells) - the economy closure. Next:
+leg 37 in a window where all 7 can actually reach a field.
