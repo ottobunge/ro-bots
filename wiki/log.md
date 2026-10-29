@@ -6942,3 +6942,53 @@ The leg-38 run itself still carries the old table (its receipt row for g01m00
 will show the transport loss) - the fix serves the legs after it.
 
 Gate 6,662+65.
+
+## 2026-10-29 ~15:4x — receipt: leg 38 — six of seven on the field, first e2e loot, s00's unwalkable spawn nailed
+
+The Thursday window (day-3, 12:30-14:30 CET, all 7 personas) opened with every
+agent ON TIME and held full cadence the whole leg: 1,397 decide requests /
+1,397 responses (zero decide failures, heavengraph :8091), 18,768 actions, 775
+plans authored, 50,227 runner steps / 0 step errors / 420 samples. Receipt
+run/plain_host_receipts/population-receipt-38-1793272245.json.
+
+FIELD VERDICT: 6 of 7 reached prt_fild08 (leg 37: 2 of 7) — the three prt_in
+dwellers (NyxSong, PipinWalker, xXLunasongXx) walked their own interior doors
+out per 02657775/453823b1 and the roster hunted the dense band (y 335-372).
+COMBAT: 46 attacks across 6 agents (PoringMuffin14 15 + 8 rests; NyxSong 11;
+RinceNyan 6); kills: 6 of 7 gained XP over the pre-read baselines, +30 base /
++12 job total. Attack gates nearly silent all leg (12 deferrals: 8
+pending_walk + 4 resting — stop-and-swing healthy). KILLS LANDED but the
+economy hop did not: sells 0 (zeny unchanged everywhere), though the
+DROP->PICKUP hop is now CLOSED on the e2e world — RinceNyan holds Empty Bottle
++ Iron Ore picked up in the field (zeny unchanged rules out purchase). The
+picklog stayed 0 rows despite the verified pickup — its write path is dead
+again; the inventory table is the loot evidence.
+
+SOCIALS at population scale for the first time: 2 guilds founded (NyxSong,
+PipinWalker), 12 GuildInvites with 0 failures, 4 InviteToParty, 110 chats
+sent / 203 heard, PartyChat on all six group agents.
+
+s00 (YuffieFy81) was the single stand-still, now ROOT-CAUSED by cache probe:
+pay_fild04 (204,165) is UNWALKABLE in the loaded map cache (db/map_cache.dat;
+the merged pre-re set agrees; the server disagrees — it saved the char
+standing there twice), nearest walkable (204,172), only 34/289 roam-box cells
+walkable. Every MoveTo routed from an unwalkable origin: 3,300 authored / 0
+executed / 0 mobs ever seen / 199 decides. The d692a66d deadlock fix did not
+recur on the six field agents (ZERO stand-still among them). Named fix:
+mark_walkable ground-correction (native_navigation.py:155) of a login cell the
+server demonstrates, plus walkability-filtered roam targets for that 88%
+unwalkable corner.
+
+TRANSPORT: one loud loss all leg (PipinWalker, unknown 0x014e at the login
+burst) — ConnectBackoff recovered inside 30s; the mid-leg hotfix e39bb69d
+registered ZC_ACK_GUILD_MENUINTERFACE, so leg 39 expects zero. RECEIPT GAP:
+_move_gate_reasons exist on the client but the plain-host samples carry only
+attack_gates — ride them into the receipt next leg (this leg's move verdict
+came from live position samples + the cache probe). LOGOFF-SAVE ARTIFACT: 3
+chars saved AT SAVE POINTS on logoff (last==save), so DB last_map is not
+field-presence truth — the traces are.
+
+NEXT: (1) s00 login-cell ground correction + pay_fild04 roam-target filter,
+(2) ride _move_gate_reasons in the receipt samples, (3) economy closure — the
+sell trip, with RinceNyan's carried loot as the live test case, (4) leg 39
+validates the 0x014e registration.
