@@ -6896,3 +6896,30 @@ from the prt03 interior — the same defect one layer over, needing the resolver
 through _merchant_step (FarmScript holds no resolver yet). Next slice.
 
 Gate 6,654+65 / 95.3x%.
+
+## 2026-10-29 ~11:2x — leg 38 slice (a2): the merchant legs respect interior components
+
+The second half of leg 37 defect 2: MERCHANT_ROUTE/MERCHANT_ROUTE_RETURN's prt_in
+cells are pinned PRT05-interior cells, component-blind from the prt03 interior —
+the dealer trip from a foreign interior walked into a wall exactly like the exit
+route did before 02657775.
+
+- travel_routing.TravelRouter.reachable(map, position, cell) -> bool | None: the
+  cell's membership in the agent's own walkable region; None = no authority for
+  the map (fail-open — the client grid is a lossy picture of the server's, so
+  only an explicit False vetoes a leg).
+- scripts.MerchantReachable protocol + _merchant_step(state, resolver, reachable):
+  when the authority says the pinned dealer cell is in ANOTHER component, the
+  outbound walk starts with the agent's OWN door (the resolver's first
+  current-map leg); from prontera the route's own prontera leg (177,221) takes
+  over, re-enters through the prt05 warp, and the dealer cell is same-component
+  from there. No authority wired = the pinned leg unchanged (all pre-existing
+  behavior pinned).
+- Both goal scripts carry the authority: GrindScript gained merchant_reachable;
+  FarmScript gained travel_resolver + merchant_reachable (it held neither); the
+  brain wires both at both construction sites.
+
+RED tests: the router's region verdicts (same region True / cross-component
+False / unknown map None), the trapped outbound walking its own door (53,105),
+the same-component dealer leg unchanged, and the no-authority fallback. Gate
+6,659+65.

@@ -98,3 +98,16 @@ def test_the_router_is_injected_and_resolves_per_agent_cell(tmp_path) -> None:
         ("prontera", 156, 22),
         ("prt_fild08", 170, 375),
     )
+
+
+def test_merchant_reachable_reaches_both_goal_scripts(tmp_path) -> None:
+    """leg 37 defect 2's merchant half: the reachability authority rides the
+    same wiring as the resolver, into BOTH goal scripts (the dealer trip
+    runs from GrindScript AND FarmScript)."""
+    router = TravelRouter(walled_prt_in())
+    brain = _brain(tmp_path, resolver=router.travel_plan)
+    brain._merchant_reachable = router.reachable
+    for goal in (Goal.GRIND, Goal.FARM_ITEM):
+        script = brain._goal_script(goal, make_state(map_name="prt_in"))
+        assert isinstance(script, GrindScript)
+        assert script._merchant_reachable is not None

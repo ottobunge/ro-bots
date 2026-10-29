@@ -129,6 +129,7 @@ class EventDrivenBrain:
         mob_db: MobDatabase | None = None,
         spawn_species: Any | None = None,
         travel_resolver: Any | None = None,
+        merchant_reachable: Any | None = None,
         memory: Memory | None = None,
         recovery_hp_ratio: float = 0.75,
         social_view: Callable[[], Sequence[str]] | None = None,
@@ -178,6 +179,7 @@ class EventDrivenBrain:
         self._mob_db: MobDatabase | None = mob_db
         self._spawn_species = spawn_species
         self._travel_resolver = travel_resolver
+        self._merchant_reachable = merchant_reachable
         self._npc_menu_seen: tuple[int, int, int] | None = None
         self._npc_memory_session: tuple[int, str, int, int] | None = None
         self._npc_memory_pages = 0
@@ -498,7 +500,12 @@ class EventDrivenBrain:
             # honestly.
             streak_key = (frozenset(plan.target_mobs), plan.map_name)
             streak = int(getattr(self, "_widen_streaks", {}).get(streak_key, 0))
-            self._script = FarmScript(plan, initial_starved=streak)
+            self._script = FarmScript(
+                plan,
+                initial_starved=streak,
+                travel_resolver=self._travel_resolver,
+                merchant_reachable=self._merchant_reachable,
+            )
         else:
             self._script = self._goal_script(goal, state)
         notes.append(f"script->{type(self._script).__name__}")
@@ -1025,6 +1032,7 @@ class EventDrivenBrain:
             return GrindScript(
                 travel_plan=TRAVEL_ROUTES[state.map_name],
                 travel_resolver=self._travel_resolver,
+                merchant_reachable=self._merchant_reachable,
             )
         return script_for(goal, state)
 

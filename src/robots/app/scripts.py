@@ -39,6 +39,20 @@ class TravelResolver(Protocol):
     ) -> tuple[tuple[str, int, int], ...] | None: ...
 
 
+class MerchantReachable(Protocol):
+    """Whether a pinned leg's cell is walkable from the agent's own region.
+
+    ``(map_name, position, cell) -> True | False | None`` — None when the
+    grid carries no authority for the map (the caller keeps its pinned leg;
+    the client grid is a lossy picture of the server's, so only an explicit
+    False vetoes a leg).
+    """
+
+    def __call__(
+        self, map_name: str, position: tuple[int, int], cell: tuple[int, int]
+    ) -> bool | None: ...
+
+
 class BehaviorScript(Protocol):
     """Anything that can run as a bot's autopilot between events."""
 
@@ -362,7 +376,11 @@ def merchant_return_cell(state: BotState) -> tuple[int, int] | None:
     return MERCHANT_ROUTE_RETURN.get(state.map_name)
 
 
-def _merchant_step(state: BotState) -> ScriptOutcome | None:
+def _merchant_step(
+    state: BotState,
+    resolver: TravelResolver | None = None,
+    reachable: MerchantReachable | None = None,
+) -> ScriptOutcome | None:
     """The goal-level merchant interruption (windows 29-30), rest/loot class.
 
     Returns None when neither the outbound want nor a return leg holds (the
@@ -371,9 +389,23 @@ def _merchant_step(state: BotState) -> ScriptOutcome | None:
     is received at the cited cell (the window-28 shop loop owns the
     exchange), return: the walk back to the field, one MoveTo per
     evaluation; warp map changes re-derive the next leg.
+
+    leg 37's merchant half: when the reachability authority says the pinned
+    leg sits in ANOTHER interior component, the walk starts with the agent's
+    OWN door (the resolver's first current-map leg) — from prontera the
+    route's own prontera leg re-enters through the dealer's warp.
     """
     destination = merchant_drive_cell(state)
     if destination is not None:
+        if (
+            reachable is not None
+            and resolver is not None
+            and reachable(state.map_name, (state.x, state.y), destination) is False
+        ):
+            plan = resolver(state.map_name, state.x, state.y) or ()
+            for leg_map, leg_x, leg_y in plan:
+                if leg_map == state.map_name and (leg_x, leg_y) != (state.x, state.y):
+                    return ScriptOutcome((MoveTo(x=leg_x, y=leg_y),), ScriptStatus.ACTIVE)
         return _merchant_engage(state, destination)
     home = merchant_return_cell(state)
     if home is None:
@@ -539,17 +571,21 @@ class GrindScript:
         commit_window: int = KILL_COMMIT_WINDOW,
         travel_plan: tuple[tuple[str, int, int], ...] = (),
         travel_resolver: TravelResolver | None = None,
+        merchant_reachable: MerchantReachable | None = None,
     ) -> None:
         self._hp_rest_below = hp_rest_below
         self._commit_window = commit_window
         self._travel_plan = travel_plan
         self._travel_resolver = travel_resolver
+        self._merchant_reachable = merchant_reachable
 
     def step(self, state: BotState) -> ScriptOutcome:
         if state.hp_ratio < self._hp_rest_below:
             _release_commitment(state, self._commit_window)
             return ScriptOutcome((Rest(),), ScriptStatus.ACTIVE)
-        merchant = _merchant_step(state)  # window-29: want-driven dealer trip
+        merchant = _merchant_step(
+            state, self._travel_resolver, self._merchant_reachable
+        )  # window-29: want-driven dealer trip
         if merchant is not None:
             return merchant
         monsters = sorted(state.nearby_monsters, key=lambda m: m.distance)
@@ -649,6 +685,9 @@ class FarmScript:
         widen_steps: int = TARGET_WIDEN_STEPS,
         commit_window: int = KILL_COMMIT_WINDOW,
         initial_starved: int = 0,
+        *,
+        travel_resolver: TravelResolver | None = None,
+        merchant_reachable: MerchantReachable | None = None,
     ) -> None:
         self.plan = plan
         self._hp_rest_below = hp_rest_below
@@ -656,12 +695,16 @@ class FarmScript:
         self._commit_window = commit_window
         self._starved = max(0, int(initial_starved))
         self._roam_rng = random.Random(f"roam-{plan.plan_id}-{plan.map_name}")
+        self._travel_resolver = travel_resolver
+        self._merchant_reachable = merchant_reachable
 
     def step(self, state: BotState) -> ScriptOutcome:
         if state.hp_ratio < self._hp_rest_below:
             _release_commitment(state, self._commit_window)
             return ScriptOutcome((Rest(),), ScriptStatus.ACTIVE)
-        merchant = _merchant_step(state)  # window-29: want-driven dealer trip
+        merchant = _merchant_step(
+            state, self._travel_resolver, self._merchant_reachable
+        )  # window-29: want-driven dealer trip
         if merchant is not None:
             return merchant
         monsters = sorted(state.nearby_monsters, key=lambda a: a.distance)

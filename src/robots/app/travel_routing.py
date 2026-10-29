@@ -116,6 +116,23 @@ class TravelRouter:
             return walkable[0]
         return exit_in_region(self._region_of(grid, map_name, position), walkable)
 
+    def reachable(self, map_name: str, position: Point, cell: Point) -> bool | None:
+        """Whether ``cell`` is walkable in ``position``'s own region.
+
+        leg 37's merchant half: the pinned dealer/return cells sit in ONE
+        interior (prt05), and an agent in another component cannot walk to
+        them. None when the grid does not carry the map — no authority, the
+        caller keeps its pinned leg (fail-open; the client grid is a lossy
+        picture of the server's, so only an explicit False vetoes a leg).
+        """
+        grid = self._grid(map_name)
+        if grid is None:
+            return None
+        region = self._region_of(grid, map_name, position)
+        if not region:
+            return None
+        return cell in region
+
     def hop_target(self, map_name: str, position: Point) -> Point | None:
         """The internal warp cell the agent can walk to, when one leads out.
 
