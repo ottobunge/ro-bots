@@ -7162,3 +7162,27 @@ server-refused too (escalated_target_dead x8) — the pocket exceeds radius 12.
 The pragmatic release is the fx0-precedent save-move (the SQL last-position
 reset), applied before the next leg; the radius-sweep/wall-follow law stays a
 named option if the pocket recurs elsewhere.
+
+## 2026-10-30 ~00:4x — leg 39/40 follow-up: THE s00 ROOT CAUSE IS THE MISSING MAP CACHE ENTRY
+
+Discovered while placing s00's save-move: the e2e runtime's client-side
+map_cache.dat (.work/runtime/population-live/db/pre-re/map_cache.dat) carries
+only alberta/izlude/morocc/prontera/prt_church/prt_fild05/prt_fild08/prt_in —
+pay_fild04 IS ABSENT. The map-server loads it (s00 logs in and stays online
+there), so the docker image's conf/build differs from the public source tree
+whose mapcache the runtime copies. Consequence: every walkability check for
+s00's moves had NO AUTHORITY — no grid, no route, no roam, no escalation; the
+leg-38/39 client-grid analyses of s00's pocket were analyses of a MISSING map,
+not of disagreeing geometry. The ground correction (7b05e66a) and the escalator
+(4ffc515d) never had a grid to work with on pay_fild04.
+
+THE NEXT SLICE (before any leg with s00): get pay_fild04 into the client-side
+cache — either regenerate the runtime cache from the docker image's own
+mapcache (it must carry the map: the server loads it) or add pay_fild04 to the
+pinned build's maps_athena.conf and rebuild. Then re-run the pocket analysis
+against REAL cells: the save-move to (206,175) stands either way.
+
+Also landed this session: 8599e32f — the sell arm survives the wanted weapon
+(the knife release gates only the BUY arm; sellable stock drives the trip).
+Leg 40's sell verdict (baa0cb76) named it: the fixture knife in every inventory
+kept the old single release from ever firing the drive.
