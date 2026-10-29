@@ -1,0 +1,28 @@
+{
+  "leg": 41,
+  "created": "2026-10-30T00:20:00+01:00",
+  "timezone": "Europe/Madrid",
+  "day_index": 4,
+  "day_name": "Friday",
+  "window_local": ["01:00", "03:00"],
+  "window_utc": ["00:00", "02:00"],
+  "goal": "the economy closure leg: the sell arm (8599e32f) drives RinceNyan (713 Empty Bottle + 1002 Iron Ore held) and NyxSong (909 Jellopy held) to the Weapon Dealer; the sell loop (C4 dealtype type 1 -> C7 sell list -> sell) must land the first zeny; s00 released to pay_fild04 (206,175) walks real ground for the first time",
+  "agents": [
+    {"persona": "pop_0003_g00m00", "char": "NyxSong", "baseline_zeny": 5, "baseline_inventory": {"909": 1, "1201": 1}},
+    {"persona": "pop_0003_g00m01", "char": "RinceNyan", "baseline_zeny": 3, "baseline_inventory": {"713": 1, "1002": 1, "1201": 1}},
+    {"persona": "pop_0003_g00m02", "char": "zeny_wing", "baseline_zeny": 0, "baseline_inventory": {"1201": 1}},
+    {"persona": "pop_0003_g01m00", "char": "PipinWalker", "baseline_zeny": 4, "baseline_inventory": {"1201": 1}},
+    {"persona": "pop_0003_g01m01", "char": "xXLunasongXx", "baseline_zeny": 0, "baseline_inventory": {"1201": 1}},
+    {"persona": "pop_0003_g01m02", "char": "PoringMuffin14", "baseline_zeny": 0, "baseline_inventory": {"1201": 1}},
+    {"persona": "pop_0003_s00", "char": "YuffieFy81", "baseline_zeny": 0, "baseline_inventory": {"1201": 1}}
+  ],
+  "save_state_note": "s00 save-moved to pay_fild04 (206,175) verified walkable in the runtime cache (304bf8e9 retraction records the false cache-entry lead); all 7 save cells are field/town walkable cells",
+  "decide_backend": "http://192.168.1.156:8091/v1/systemone",
+  "chat_backend": "http://192.168.1.156:8092/v1/chat/completions",
+  "acceptance": [
+    "shop_offer non-null on a sell-carrying agent (RinceNyan or NyxSong) — npc_stage reaches the sell list",
+    "zeny INCREASES for at least one agent above its baseline (the first sell zeny)",
+    "s00 distinct sampled positions >= 2 (it moves on real ground)",
+    "no TRANSPORT DOWN; every agent online during its window (online=1, deciding)"
+  ]
+}
