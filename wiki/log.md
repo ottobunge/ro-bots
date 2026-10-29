@@ -6737,11 +6737,51 @@ the script authors it. `IdleTownScript` - the script for the `social` goal,
 which both agents had (132 and 133 goal reviews) - emits
 `MoveTo(x=state.x, y=state.y+1)`: an unconditional one-cell step NORTH. It
 walked g00m02 up its column until the next cell was a wall, and then re-authored
-that wall-ward move forever. The FarmScript/GrindScript roam leg filters its
-candidates for walkability (the w59 fix), but the IdleTownScript twin path was
-never given the same filter - the recurring "fix one script variant, grep for
-the twin" lesson (script_for: GrindScript/FarmScript/NpcGuidanceScript/
-IdleTownScript).
+that wall-ward move forever.
+
+**CORRECTION (the fix shape this entry first named was wrong).** This entry
+said the FarmScript/GrindScript roam leg "filters its candidates for
+walkability (the w59 fix)" and that IdleTownScript was the twin path never
+given the same filter. That is false: `grep -n walkable
+src/robots/app/scripts.py` returns NOTHING. The script layer has no walkability
+check anywhere. The only walkability filter in the whole stack lives in the
+RUNTIME at `playing_runtime.py:2059` (`_field_target`, which filters its random
+patrol candidates) and it is reached only through `_legacy_mechanical`, which
+fires only when the script authored NO actions and the goal is GRIND/FARM_ITEM.
+So "give IdleTownScript the filter its siblings have" was not implementable as
+written - there was no sibling filter to copy.
+
+**THE REAL MECHANISM, PROVEN.** `IdleTownScript.step`
+(`src/robots/app/scripts.py:619`) emits `MoveTo(x=state.x, y=state.y+1)` with no
+grid knowledge. The runtime's `_move` then calls `shortest_path`, which raises
+NoRoute because the TARGET is unwalkable, and the leg-28 fallback sends the
+walk DIRECTLY at the target (`no_route_direct`) up to
+`NO_ROUTE_DIRECT_SENDS`=5 times, then stops with `no_route_exhausted`.
+`_no_route_attempts` is reset ONLY by a successful path
+(`playing_runtime.py:1699`) - so a permanently unreachable target burns the
+budget and the agent then sends NOTHING for the rest of the window.
+
+**AND THE SERVER AGREES WITH THE WALL - this is not a client-grid-only
+disagreement.** A probe drove the real client for s00 (YuffieFy81) on the live
+e2e world: it logged in at (204,165), the walk to (204,166) was sent DIRECTLY
+(the server path-finds its own side), and the server REFUSED it - the agent did
+not move after 120s. The client's grid is right about (204,165) and (204,166):
+both are tile 1, and so is every cell in the 11x11 around them (a 41-cell
+blocked run 185-225 on row 165). The agent is standing INSIDE a blocked cell,
+and the script's only possible move is +1 north, into that same blocked band.
+So every walk it can ever author is into the wall.
+
+**THE FIX BELONGS IN THE RUNTIME, not the script.** The script has no grid and
+cannot know; the runtime owns `self.cache` and already owns the walkability
+notion (the `_field_target` filter). The shape: in the runtime's move path,
+when the authored target is not walkable in the client grid, do not send it and
+do not burn the no-route budget on it - pick a walkable NEIGHBOUR of the
+agent's CURRENT cell (the same 8-neighbour no-corner-cutting rule as
+`shortest_path`) and send that, or stand still and re-plan. The picker must
+consider neighbours even when the CURRENT cell is itself blocked (s00's case),
+because the agent must be able to walk OUT of a blocked cell; and the leg-28
+direct-send must stay, because the server path-finds its own side and may
+accept a walk the client grid refuses.
 
 The DEALER TRIP has the same shape and will need the same treatment:
 MERCHANT_ROUTE["prt_in"] = (172,130) and MERCHANT_ROUTE_RETURN["prt_in"] =
@@ -6752,11 +6792,11 @@ legs are a separate fix from the travel route, but they are the same defect:
 a cell pinned to a map instead of to the region the agent stands in.
 
 Next slice, in order: (1) the reachability-aware prt_in door resolution - three
-agents are locked out of the field by one shared door; (2) the IdleTownScript
-walkability filter - two agents walked into a wall for two hours; (3) the
-drop->pickup hop (the 0x009D floor ingest -> the 0x0362 pickup) with the picklog
-ARMED ON THE E2E WORLD (`sql_logs: yes` + `enable_logs: 0xFFF`) so the next leg's
-pickup evidence is decisive.
+agents are locked out of the field by one shared door (DONE, 9330defd); (2) the
+RUNTIME-side walkability-aware move picker - two agents walked into a wall for
+two hours; (3) the drop->pickup hop (the 0x009D floor ingest -> the 0x0362
+pickup) with the picklog ARMED ON THE E2E WORLD (`sql_logs: yes` +
+`enable_logs: 0xFFF`) so the next leg's pickup evidence is decisive.
 
 ## 2026-10-29 ~09:0x — the prt_in exit is resolved by REACHABILITY (each interior gets its own door)
 
