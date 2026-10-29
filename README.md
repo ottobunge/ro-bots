@@ -152,14 +152,16 @@ with Monday=0** (`PersonaClock` uses `datetime.weekday()`).
 
 ## Status
 
-Live-proven (population legs 13–25, isolated e2e world, 7 scheduled agents):
+Live-proven (population legs 13–37, isolated e2e world, 7 scheduled agents):
 
 - Combat loop: roam → approach → attacks → kills → XP at 7.5× rates
 - Economy: kills → drops → pickups → dealer sell chain → zeny
 - Social: autonomous party formation (create → invite → accept, persisted in the
   char DB), party chat round-trip, guild create + invite chain
 - Chat personas with governor + initiative; connect backoff; full tracing
-- World travel via warp routes; build setup (stat allocation from build sidecars)
+- World travel via warp routes (a farming goal on a spawnless map walks the route
+  to a field: `prontera` and the `prt_in` interior both route to `prt_fild08`);
+  build setup (stat allocation from build sidecars)
 - Dashboard: tracking, generation, history/combat/plans views, live commands
 - Repeated e2e (`task e2e`) on isolated volumes
 

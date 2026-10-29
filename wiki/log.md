@@ -6585,3 +6585,47 @@ patrol-forever shape; the on-field cases pin no route. Gate 6,637+65 / 95.50%.
 Still open from leg 36: the picklog 0 rows + Loot=0 despite verified kills (the
 drop->pickup hop unproven), zeny unchanged (no sells) - the economy closure. Next:
 leg 37 in a window where all 7 can actually reach a field.
+
+## 2026-10-29 ~06:2x — leg 37 follow-up: a farming goal on prt_in gets the exit route (travel_routes.py)
+
+Leg 37 measured the leg-36 route fix and it WORKS: PoringMuffin14 - a farm_item
+goal on prontera that patrolled its town forever in leg 36 - crossed to prt_fild08
+within a minute of the window opening and authored 61 farm plans. The goal-name-free
+handout (78167c2b) is confirmed live.
+
+But three agents still patrolled forever, and the mechanism is NOT the goal name this
+time - it is the LOGIN POSITION. A char logs in where it LOGGED OUT (the char table's
+`last_map`, via pc.cpp's `pc_lastpoint_special`), not at its Kafra save point. The
+popgen fixture sets `save_map=prontera` for six of the seven personas, but the merchant
+trip of an earlier leg left NyxSong, PipinWalker and xXLunasongXx inside the prontera
+INTERIOR, so every later leg opened them on `prt_in`. Verified from the DB and the
+trace: NyxSong's `last_map=prt_in, last_x=166, last_y=137` and its first leg-36 action
+was at prt_in (167,138) - its last position, not its save point.
+
+`prt_in` has no spawn declaration (so `_setup_farm_plan` returns None - no plan) AND
+no TRAVEL_ROUTES entry (so `_goal_script` hands over the plain GrindScript - no route).
+The goal script then roamed the interior at random: 117 distinct random MoveTo targets
+for one agent over the window, never the exit door, never the dealer cell. It is the
+same patrol-forever SHAPE as leg 36, with a different cause - which is why the leg-36
+fix could not have caught it.
+
+The trap is sticky across legs: PipinWalker's history shows prontera + prt_fild08 on
+10-27 11:00, a walk to the dealer cell (172,130) at 11:25, and prt_in for every window
+since. The route table is the general mechanism for "a farming goal on a map whose
+spawns are elsewhere", and prt_in is exactly such a map.
+
+Fix: the pinned exit door `prt_in,168,124` (warp prt05-1 -> prontera,174,218 - the
+same cell the merchant return leg already cites) joins the route table, and the route
+continues through the prontera field warp to prt_fild08. The three legs of the route
+were simulated against the live map cache: from all three stuck agents' positions
+(166,137), (168,134) and (44,102) every hop cell is walkable and the pinned warp
+arrivals chain prt_in -> prontera -> prt_fild08.
+
+RED: `test_farming_goal_in_the_shop_interior_gets_the_exit_route` and its GRIND twin
+both failed on the empty travel plan. GREEN: the prt_in route added. Full gate green:
+6,639 passed, coverage 95.50%.
+
+Note for the next leg: the worktree needs the git-ignored corpus DBs
+(`run/knowledge/iro-db/iro-db.db`, `run/knowledge/iro-wiki/iro-wiki.db`) and
+`rathena/config.log` present or six unrelated tests fail - a fresh worktree has
+neither. They are not part of the fix.
