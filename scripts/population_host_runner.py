@@ -206,6 +206,9 @@ def main(argv: list[str] | None = None) -> int:
                     # the attack-gate telemetry (leg 33: 516 approaches, 6
                     # swings — the receipt must name the drop reason)
                     "attack_gates": _reason_summary(getattr(client, "_attack_gate_reasons", None)),
+                    # the move-gate telemetry (w58, leg 38: the unwalkable
+                    # deadlock + the ground correction must name themselves)
+                    "move_gates": _reason_summary(getattr(client, "_move_gate_reasons", None)),
                     # The transport's own failure reason (leg 35: all seven
                     # agents froze because the rx thread died on an unknown
                     # packet - "unknown packet 0x0999" - and NOTHING in the

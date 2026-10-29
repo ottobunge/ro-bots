@@ -480,6 +480,26 @@ def test_no_route_with_a_sealed_pocket_names_the_gate_and_stops():
     assert any(reason == "target_unwalkable" for _, reason in client._move_gate_reasons)
 
 
+def test_own_unwalkable_cell_is_ground_corrected():
+    """leg 38: s00 logged into a cell the client grid calls a wall (the
+    server saved it there twice - the received entry/0x0087 stream is the
+    ONLY source of the tracked position, so it is server truth). The
+    runtime ground-corrects the cell so the roam machinery can engage; the
+    leg-28 direct send carries the walk and the server path-finds its own
+    side."""
+
+    wire = Wire()
+    now = [0.0]
+    client = runtime.PlayingClient(wire, cache=blocked_map((2, 2)), monotonic=lambda: now[0])
+    wire.frames = []
+    wire.add(entry_at(2, 2), map_frame_at(2, 2))
+    assert client.cache is not None
+    assert not client.cache.get("prontera").walkable((2, 2))
+    client.perform_native(MoveTo(5, 5))
+    assert client.cache.get("prontera").walkable((2, 2))
+    assert any(reason == "ground_corrected_own_cell" for _, reason in client._move_gate_reasons)
+
+
 def test_no_route_attempts_reset_when_a_route_exists():
     """A target that was once unreachable re-sends from a fresh budget once
     the grid finds a route to it: the cap counts CONSECUTIVE no-route

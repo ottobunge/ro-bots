@@ -1714,6 +1714,16 @@ class PlayingClient:
             self._note_move_gate("gate_state_drift")
             return
         pos = tracker.view.position
+        grid = cache.get(state.map_name)
+        # leg 38: the tracked position comes ONLY from the received
+        # entry/0x0087 stream - it is server truth even when the client
+        # grid calls the cell a wall (s00 logged into pay_fild04 (204,165),
+        # a cell the server saved twice). Ground-correct the own cell so
+        # the roam/reroll machinery can engage; the leg-28 direct send then
+        # carries the walk and the server path-finds its own side.
+        if not grid.walkable((state.x, state.y)):
+            cache.mark_walkable(state.map_name, (state.x, state.y))
+            self._note_move_gate("ground_corrected_own_cell")
         try:
             path = shortest_path(cache.get(state.map_name), (state.x, state.y), target)
             self._no_route_attempts = 0

@@ -6992,3 +6992,33 @@ NEXT: (1) s00 login-cell ground correction + pay_fild04 roam-target filter,
 (2) ride _move_gate_reasons in the receipt samples, (3) economy closure — the
 sell trip, with RinceNyan's carried loot as the live test case, (4) leg 39
 validates the 0x014e registration.
+
+## 2026-10-29 ~16:1x — leg 38 follow-up: the own-cell ground correction + the move gates in the receipt
+
+Leg 38's readout named s00's corner precisely: pay_fild04 (204,165) is UNWALKABLE
+in the loaded client grid (nearest walkable 7 cells away; 34/289 roam-box cells
+walkable) while the SERVER saved the char there twice — the tracked position
+comes only from the received entry/0x0087 stream, so it is server truth and the
+grid's picture of that corner is wrong. The d692a66d deadlock did not recur on
+the six field agents; s00 authored 3,300 MoveTos / 0 executed / 0 mobs seen.
+
+Two slices, both TDD:
+- playing_runtime._move: when the tracked own cell is unwalkable per the grid,
+  mark_walkable it (the server demonstrably placed us there) and note
+  ground_corrected_own_cell. The leg-28 direct send then carries the walk (the
+  server path-finds its own side) and the roam/reroll machinery engages from a
+  walkable start instead of stopping.
+- population_host_runner: the receipt samples now carry move_gates beside
+  attack_gates (the w58/leg-38 reasons ride the receipt; no more invisible
+  stand-stills).
+
+Also closed from leg 38: the drop->pickup hop is CLOSED on the e2e world
+(RinceNyan holds Empty Bottle + Iron Ore picked up in the field; the picklog's
+SQL write path is dead AGAIN — inventory is the evidence). The 0x014e transport
+down recovered by ConnectBackoff in <=30s; e39bb69d makes leg 39 expect zero.
+
+Frontier: the economy closure — RinceNyan ended the leg carrying unsold loot;
+the sell trip is the live test. Then WoE, sustained population, dashboard
+control, benchmarks.
+
+Gate 6,663+65.
