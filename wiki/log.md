@@ -7101,3 +7101,44 @@ walkable cell (target_unwalkable_escalated) - the server path-finds its own side
 stop (escalated_target_dead). The roam box's 34 walkable cells are within 12.
 
 Gate 6,665+65.
+
+## 2026-10-29 ~23:4x — leg 40: the sell trip STILL never engaged at population scale; the escalator fired once and the pocket held
+
+Leg 40 verdict (run/plain_host_receipts/population-receipt-40-1793302886.json,
+window 21:00-23:00 Madrid, all 7 personas, day-3 schedule): 43,080 steps, 0
+errors, TRANSPORT DOWN 0, "GuildInvite failed" 0, clean open (7/7 online with
+decides flowing ~3 min after 21:00 - the healthiest opening to date) and clean
+23:00 close (7/7 offline in the samples).
+
+THE SELL VERDICT: DID NOT ENGAGE. shop_offer was never non-null on any of the
+360 receipt samples, npc_stage never set, zero NpcDialogue/shop trace kinds
+20:00-22:00 UTC, and zeny is unchanged for all 7 (5/3/0/4/0/0/0). RinceNyan
+still holds Empty Bottle 713 + Iron Ore 1002 after 170 decides - the 4ffc515d
+stock-set fix made the items SELLABLE but the goal layer never selected the
+trip. zeny_wing even walked a full prontera corridor to (216,133) on social
+premades without opening a deal. The config fix alone does not fire the trip:
+NEXT, a decide-level trigger (sellable stock held + no planned kill target =>
+go_town), TDD on RinceNyan's exact stock as the fixture.
+
+s00 (YuffieFy81): the escalator FIRED exactly once (target_unwalkable_escalated)
+and the radius-12 direct-send also failed (escalated_target_dead on 8 samples) -
+the honest stop held per design and s00 never left (204,165): distinct sampled
+positions = 1, 3,375 MoveTos, 0 attacks, 0 exp. ground_corrected_own_cell fired
+once (the leg-39 correction works). The pay_fild04 pocket exceeds a radius-12
+escape; cheapest next step is a fixture save-move (the fx0 precedent) or a
+wall-follow/radius-sweep law.
+
+The rest: field count 6 of 7 (every group member entered prt_fild08 during the
+window; matches legs 38/39). Attacks 69 total: xXLunasongXx 28 (3 targets) and
+PoringMuffin14 25 (3 targets) - the two campers; rovers authored ~3.3-3.5k
+MoveTos each (await_pending 12,539 remains the approach-pacing frontier;
+attack:pending_walk 1,965 = stop-and-swing discipline; rerolled_target_dead
+2,451 + escalated_target_dead 2,538 = roam-target churn). KILLS: 6 of 7 above
+baseline XP at the e2e world's 1x rates (+1..+5 each: NyxSong +2/+1, RinceNyan
++2/+1, zeny_wing +2/+2, PipinWalker +1/+1, xXLunasongXx +4/+5, PoringMuffin14
++4/+5; s00 zero) - the first leg where both attack leaders converted. NyxSong
+looted a Jellopy 909 (inventory ground truth). Socials: guild rows UNCHANGED
+from leg 39 (NyxSongGuard, PipinWalkerGuard stand; this leg's FoundGuild/
+GuildInvite actions repeated without new guild rows and without failures);
+6 of 7 in parties at readback (4 party rows; s00 solo); 133 chat_sent, 87 LLM
+escalations.
