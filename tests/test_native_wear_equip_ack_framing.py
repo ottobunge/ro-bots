@@ -94,9 +94,16 @@ def test_packethash_stays_pinned_to_the_equipped_item_block() -> None:
     assert raw.count(CHARSTAT_BLOCK) == 1
     # The pinned blocks are the ONLY change to the packet table's evidence
     # bytes: the file minus both hashes to the pre-leg-35 table.
-    stripped = raw.replace(WEAR_ACK_BLOCK, b"", 1).replace(CHARSTAT_BLOCK, b"", 1)
+    stripped = (
+        raw.replace(WEAR_ACK_BLOCK, b"", 1)
+        .replace(CHARSTAT_BLOCK, b"", 1)
+        .replace(GUILD_MENU_BLOCK, b"", 1)
+    )
+    # leg 38: the strip now also removes the menu block, so the remainder is
+    # the post-leg-35 layout minus three blocks (its doubled separators are
+    # part of the state, exactly as 13fbacab carried them at leg 35).
     assert hashlib.sha256(stripped).hexdigest() == (
-        "13fbacab7a78c4fb6b3f1f4fa63dd311b7699a4dc0c86e8d66d4c627915c575b"
+        "827ccf459694ba6de9243c96b36abafcd0d3ab2777914ad35acebba6b38e5374"
     )
 
 
@@ -132,9 +139,16 @@ def test_guild_login_notice_does_not_desync_the_following_frame() -> None:
 def test_charstat_block_stays_pinned_to_the_equipped_item_block() -> None:
     raw = PACKETDB.read_bytes()
     assert raw.count(CHARSTAT_BLOCK) == 1
-    stripped = raw.replace(WEAR_ACK_BLOCK, b"", 1).replace(CHARSTAT_BLOCK, b"", 1)
+    stripped = (
+        raw.replace(WEAR_ACK_BLOCK, b"", 1)
+        .replace(CHARSTAT_BLOCK, b"", 1)
+        .replace(GUILD_MENU_BLOCK, b"", 1)
+    )
+    # leg 38: the strip now also removes the menu block, so the remainder is
+    # the post-leg-35 layout minus three blocks (its doubled separators are
+    # part of the state, exactly as 13fbacab carried them at leg 35).
     assert hashlib.sha256(stripped).hexdigest() == (
-        "13fbacab7a78c4fb6b3f1f4fa63dd311b7699a4dc0c86e8d66d4c627915c575b"
+        "827ccf459694ba6de9243c96b36abafcd0d3ab2777914ad35acebba6b38e5374"
     )
 
 
@@ -179,6 +193,48 @@ def test_guild_member_position_notice_does_not_desync_the_following_frame() -> N
     assert rest == b""
 
 
+# Leg 38 (2026-10-29): the guild-menu-interface ack — the frame the pinned
+# server answers when a PERSISTED guild's member logs in (leg 33's guilds
+# survive the volume). ZC_ACK_GUILD_MENUINTERFACE 0x014e (<menu flag>.L =
+# 6B, map/packets.hpp:842, clif.cpp:8755-8768).
+GUILD_MENU_BLOCK = (
+    b"# Leg 38 (2026-10-29): the guild-menu-interface ack. The persisted guilds\n"
+    b"# (leg 33's creations survive the volume) make the client ask for the guild\n"
+    b"# menu interface on login; the pinned server answers with\n"
+    b"# ZC_ACK_GUILD_MENUINTERFACE 0x014e (<menu flag>.L = 6B, map/packets.hpp:842\n"
+    b"# DEFINE_PACKET_HEADER; clif.cpp:8755-8768, compiled sizeof=6). Live\n"
+    b"# evidence, leg-38 TRANSPORT DOWN line: tail 4e01 d7000000 = 0x014e + the\n"
+    b"# menu-flag bitmap 0xd7 \xe2\x80\x94 the same silent transport-loss class as legs 35's\n"
+    b"# three (the guild path again).\n"
+    b"PACKET_DB.update({0x014E: 6})\n"
+)
+
+
+def guild_menu(flag: int = 0xD7) -> bytes:
+    return struct.pack("<HI", 0x014E, flag)
+
+
+def test_guild_menu_interface_ack_is_a_known_fixed_frame() -> None:
+    module = packet_module()
+    assert 0x014E in module.PACKET_DB, "the guild menu ack must be framable"
+    assert module.PACKET_DB[0x014E] == 6
+    assert module.length_of(0x014E) == 6
+    assert not module.is_variable(0x014E)
+
+
+def test_guild_menu_interface_ack_frames_out_of_the_stream() -> None:
+    raw = guild_menu()
+    assert len(raw) == 6
+    assert packet_module().parse_stream(raw) == ([(0x014E, raw)], b"")
+
+
+def test_guild_menu_interface_ack_does_not_desync_the_following_frame() -> None:
+    following = struct.pack("<HHi", 0x00B0, 5, 42)
+    packets, rest = packet_module().parse_stream(guild_menu() + following)
+    assert [pid for pid, _ in packets] == [0x014E, 0x00B0]
+    assert rest == b""
+
+
 def test_the_three_guild_frames_are_all_pinned_together() -> None:
     """The three frames of the guild/equip path share ONE pinned digest."""
     raw = PACKETDB.read_bytes()
@@ -187,9 +243,12 @@ def test_the_three_guild_frames_are_all_pinned_together() -> None:
         raw.replace(WEAR_ACK_BLOCK, b"", 1)
         .replace(CHARSTAT_BLOCK, b"", 1)
         .replace(GUILDM_BLOCK, b"", 1)
+        .replace(GUILD_MENU_BLOCK, b"", 1)
     )
+    # leg 38: the four-block strip's remainder (the doubled separators are
+    # part of the state, as at every earlier slice).
     assert hashlib.sha256(stripped).hexdigest() == (
-        "c2e5816690ab68ac9f8674f1c31290e6644e494e74911e29dccd19732c693f42"
+        "79b338c838b4362b76461e6028f8fae951ae694f815ecebc755469eac14870ea"
     )
 
 

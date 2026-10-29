@@ -6923,3 +6923,22 @@ RED tests: the router's region verdicts (same region True / cross-component
 False / unknown map None), the trapped outbound walking its own door (53,105),
 the same-component dealer leg unchanged, and the no-authority fallback. Gate
 6,659+65.
+
+## 2026-10-29 ~13:5x — leg 38 mid-window: the fourth guild-path packet (0x014e) registered
+
+Leg 38's loud transport reporting did its job: g01m00 (PipinWalker) died with
+"unknown packet 0x014e" and the error tail DECODED — 4e01 d7000000 = 0x014e + the
+menu-flag bitmap 0xd7. The persisted guilds (leg 33's creations survive the
+volume) make the client ask for the guild menu interface on login; the pinned
+server answers ZC_ACK_GUILD_MENUINTERFACE 0x014e (<menu flag>.L = 6B,
+map/packets.hpp:842, clif.cpp:8755-8768). The same silent transport-loss class as
+leg 35's three - the guild path keeps paying for its persistence.
+
+Registered 0x014E: 6 in the packet table (source-cited block, byte-exact pins
+reconciled across ALL seven digest/count tests: the close/cutin/wear-equip
+chains, the emotion baseline, the dialogue-era set, the shop and skill-context
+counts; each new digest read from its own pytest failure per the discipline).
+The leg-38 run itself still carries the old table (its receipt row for g01m00
+will show the transport loss) - the fix serves the legs after it.
+
+Gate 6,662+65.

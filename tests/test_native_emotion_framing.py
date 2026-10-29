@@ -112,7 +112,7 @@ def test_every_legacy_mapping_is_preserved() -> None:
     # Leg 35 (2026-10-28): ZC_ACK_WEAR_EQUIP_V5 0x0999 (11B) - the reply to
     # the equip progression's CZ_REQ_WEAR_EQUIP (0x0998). Without it the
     # framer raised "unknown packet 0x0999" and every agent froze.
-    wear_ack = {0x0999: 11, 0x01F2: 20, 0x01EB: 10}
+    wear_ack = {0x0999: 11, 0x01F2: 20, 0x01EB: 10, 0x014E: 6}
     assert (
         prior_891
         | additions
@@ -125,4 +125,4 @@ def test_every_legacy_mapping_is_preserved() -> None:
         | wear_ack
         == packetdb.PACKET_DB
     )
-    assert len(packetdb.PACKET_DB) == 909
+    assert len(packetdb.PACKET_DB) == 910

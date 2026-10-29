@@ -150,7 +150,7 @@ def test_all_889_mappings_macros_and_parser_preserved_bitexact() -> None:
     # framer raised "unknown packet 0x0999" and every agent froze.
     # ZC_UPDATE_CHARSTAT 0x01F2 (20B) - the guild member login notice, the
     # next frame in the same path (map/packets.hpp:876-885).
-    wear_ack = {0x0999: 11, 0x01F2: 20, 0x01EB: 10}
+    wear_ack = {0x0999: 11, 0x01F2: 20, 0x01EB: 10, 0x014E: 6}
     assert module.PACKET_DB[0x01B3] == 67
     prior_891 = {
         key: value
@@ -180,7 +180,7 @@ def test_all_889_mappings_macros_and_parser_preserved_bitexact() -> None:
         | wear_ack
         == module.PACKET_DB
     )
-    assert len(module.PACKET_DB) == 909
+    assert len(module.PACKET_DB) == 910
     raw = (ROOT / "spikes/003-clientless-limbs/packetdb.py").read_bytes()
     cutin_block = (
         b"# Source/compiler-measured cut-in presentation only; no NPC/gameplay authority.\n"
@@ -274,6 +274,10 @@ def test_all_889_mappings_macros_and_parser_preserved_bitexact() -> None:
         # appended to packetdb.py after the shop-list block (the leg-35
         # all-agent freeze)
         "b2ab6286b29de0939c7b90a63e1b17a55c3ff1fa997a76c707b5d5567ac84e3d",
+        # leg 38: the guild-menu ack ZC_ACK_GUILD_MENUINTERFACE 0x014e (6B)
+        # block appended after the 0x01EB block (the persisted guilds fire
+        # it on login; the leg-38 TRANSPORT DOWN line)
+        "a4eba8ae4614238a94a3b53c5fd3c06c77ce7b501f74ef950db20287d251c05e",
     )
     token = b", 0x00B6: 6"
     assert raw.count(token) == 1
@@ -294,6 +298,8 @@ def test_all_889_mappings_macros_and_parser_preserved_bitexact() -> None:
         # ZC_ACK_WEAR_EQUIP_V5 0x0999 + ZC_UPDATE_CHARSTAT 0x01F2 +
         # ZC_NOTIFY_POSITION_TO_GUILDM 0x01EB blocks stripped)
         "a2516d00f0e9a31b637a7ca3c6d4fcde7ddf7dec67871c879d82d988c1a2c4e8",
+        # leg 38: the guild-menu ack 0x014e (6B) block + its doubled separators
+        "9dad1baad8828e738caea01766b1bafc9513cf0e408493697fd888e925d2bdf0",
     )
 
 

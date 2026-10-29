@@ -322,8 +322,12 @@ def validate_exact_addition(table: dict[int, int], raw: bytes) -> None:
     prior_908 = prior_907 | {0x01F2: 20}
     # ZC_NOTIFY_POSITION_TO_GUILDM 0x01EB (10B) - the guild position notice.
     prior_909 = prior_908 | {0x01EB: 10}
-    assert len(table) == 909
-    assert table == prior_909
+    # Leg 38 (2026-10-29): ZC_ACK_GUILD_MENUINTERFACE 0x014e (6B, <menu
+    # flag>.L, packets.hpp:842, clif.cpp:8755-8768) - the guild menu bitmap
+    # the server answers when a persisted guild's member asks for it.
+    prior_910 = prior_909 | {0x014E: 6}
+    assert len(table) == 910
+    assert table == prior_910
     assert raw.count(CUTIN_BLOCK) == 1
     assert raw.count(CHAR_PAGE_BLOCK) == 1
     assert raw.count(STAT_CHANGE_BLOCK) == 1
@@ -367,6 +371,10 @@ def validate_exact_addition(table: dict[int, int], raw: bytes) -> None:
         # appended to packetdb.py after the shop-list block (the leg-35
         # all-agent freeze)
         "193b726451abf72c6120e49ddcdb1b58b880e9b9d13db2ef5da777bad1305590",
+        # leg 38: the guild-menu ack ZC_ACK_GUILD_MENUINTERFACE 0x014e (6B)
+        # block appended after the 0x01EB block (the persisted guilds fire
+        # it on login; the leg-38 TRANSPORT DOWN line)
+        "1ce88b7b837c46fe86b84cd845c2256b538de5c9a1ed62a545d0f4ac6289627e",
     )
 
 

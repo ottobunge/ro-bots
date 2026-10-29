@@ -820,6 +820,17 @@ PACKET_DB.update({0x01F2: 20})
 PACKET_DB.update({0x01EB: 10})
 
 
+# Leg 38 (2026-10-29): the guild-menu-interface ack. The persisted guilds
+# (leg 33's creations survive the volume) make the client ask for the guild
+# menu interface on login; the pinned server answers with
+# ZC_ACK_GUILD_MENUINTERFACE 0x014e (<menu flag>.L = 6B, map/packets.hpp:842
+# DEFINE_PACKET_HEADER; clif.cpp:8755-8768, compiled sizeof=6). Live
+# evidence, leg-38 TRANSPORT DOWN line: tail 4e01 d7000000 = 0x014e + the
+# menu-flag bitmap 0xd7 — the same silent transport-loss class as legs 35's
+# three (the guild path again).
+PACKET_DB.update({0x014E: 6})
+
+
 def parse_stream(buf: bytes) -> tuple[list[tuple[int, bytes]], bytes]:
     """
     Split a byte stream into complete (pid, raw) packets.
