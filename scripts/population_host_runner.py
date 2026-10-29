@@ -34,6 +34,31 @@ def _reason_summary(reasons: Any) -> dict[str, int] | None:
     return counts
 
 
+def _error_text(exc: Any) -> str | None:
+    """The transport's failure reason, as text.
+
+    Leg 35: the rx thread died on "unknown packet 0x0999" and the whole
+    window froze with nothing in the receipt, the log or the trace naming
+    it. The receipt must carry the reason, so it is recorded as
+    "<ExceptionType>: <message>" - never the traceback.
+    """
+    if exc is None:
+        return None
+    message = str(exc)
+    return f"{type(exc).__name__}: {message}" if message else type(exc).__name__
+
+
+def _dispatch_error_summary(errors: Any) -> dict[str, int] | None:
+    """Count the per-pid dispatch errors: {'0x0099': 3, ...} or None."""
+    if not errors:
+        return None
+    counts: dict[str, int] = {}
+    for pid, _ in errors:
+        key = f"0x{int(pid):04X}"
+        counts[key] = counts.get(key, 0) + 1
+    return counts
+
+
 def _memory_stats(memory_root: Path | None, persona_id: str) -> dict[str, int] | None:
     if memory_root is None:
         return None
@@ -100,6 +125,9 @@ def main(argv: list[str] | None = None) -> int:
     started = time.time()
     deadline = started + args.duration
     samples: list[dict[str, object]] = []
+    # The distinct transport-failure reasons already reported (leg 35: a
+    # dead transport must be loud in the log, once per distinct reason).
+    reported_rx_errors: set[str] = set()
     steps = 0
     errors = 0
     next_sample = 0.0
@@ -178,12 +206,35 @@ def main(argv: list[str] | None = None) -> int:
                     # the attack-gate telemetry (leg 33: 516 approaches, 6
                     # swings — the receipt must name the drop reason)
                     "attack_gates": _reason_summary(getattr(client, "_attack_gate_reasons", None)),
+                    # The transport's own failure reason (leg 35: all seven
+                    # agents froze because the rx thread died on an unknown
+                    # packet - "unknown packet 0x0999" - and NOTHING in the
+                    # receipt, the log or the trace named it. The agent's
+                    # tick early-returned on NativeTelemetryUnavailable
+                    # forever, so a whole window died silently. The receipt
+                    # must carry the reason the transport went down.
+                    "rx_error": _error_text(getattr(client, "rx_error", None)),
+                    "dispatch_errors": _dispatch_error_summary(
+                        getattr(client, "dispatch_errors", None)
+                    ),
                 }
                 row[pid] = entry_sample
                 summary_parts.append(
                     f"{pid[:14]}={int(entry_sample['online'])}/"
                     f"{entry_sample['decides']}/{entry_sample['pos']}"
                 )
+                # A transport that died must be LOUD, once, in the runner log
+                # (leg 35: the whole window froze on "unknown packet 0x0999"
+                # and the log never said so). Print it the first time each
+                # distinct reason appears.
+                reason = entry_sample["rx_error"]
+                if reason is not None and reason not in reported_rx_errors:
+                    reported_rx_errors.add(reason)
+                    print(
+                        f"POPULATION-RUNNER[{args.leg}] TRANSPORT DOWN "
+                        f"pid={pid}: {reason}",
+                        flush=True,
+                    )
             samples.append(row)
             print(
                 f"POPULATION-RUNNER[{args.leg}] t={row['t']}: {' '.join(summary_parts)}",

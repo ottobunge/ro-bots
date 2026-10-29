@@ -248,6 +248,67 @@ class PersonaClock:
 
 
 @final
+class LoginStagger:
+    """The roster's login spacing: each login resets the server's counter.
+    The login server's socket-level ``connect_check`` throttle (the pinned
+    rule in rathena/src/common/socket.cpp:1089-1091, ``connect_check_`` at
+    1112-1204) is SLIDING, and that is the whole point::
+
+        if (hist->ddos)                                   return 0;   # flagged
+        else if (DIFF_TICK(gettick(),hist->tick) < ddos_interval) {
+            hist->tick = gettick();
+            if (hist->count++ >= ddos_count) { hist->ddos = 1; ... }     # trip
+        } else { hist->tick = gettick(); hist->count = 0; }              # RESET
+
+    ``ddos_count=10``, ``ddos_interval=3s``. The count is a CHAIN count: it
+    is only cleared when a connection arrives more than ``ddos_interval``
+    after the previous one. So merely spacing the logins by a second is NOT
+    enough - a chain of 1s-apart logins accumulates (7 agents + the solo's
+    retry storm = >10) and trips the throttle, which then rejects that IP
+    until the 10-minute auto-reset.
+
+    The rule this implements: space each login MORE than ``ddos_interval``
+    after the previous one, so every login takes the reset branch and the
+    chain count never grows. The roster opens over ~3.5s x N seconds, which
+    is free against a 90-minute window.
+
+    Leg 35 proved the shape in the live login log: six logins at 0.79-1.13s
+    apart (22:30:00.24 -> 22:30:04.45 local), then "connect_check: DDoS
+    Attack detected from 10.89.3.6!" on the seventh (the solo), which lost
+    13 minutes of its window to the block.
+
+    This staggers DIFFERENT personas only. The per-agent ``ConnectBackoff``
+    already owns the retry pacing for one persona; blocking a persona on
+    itself would double-pace the retry path.
+    """
+
+    # More than the pinned ddos_interval (3s), so every login takes the
+    # server's reset branch and the chain count stays at zero.
+    DEFAULT_INTERVAL_S = 3.5
+
+    def __init__(self, interval_s: float = DEFAULT_INTERVAL_S) -> None:
+        # The (monotonic time, persona) of every login this stagger granted.
+        self._logins: list[tuple[float, str]] = []
+        # The spacing floor. Injectable so a test can open a roster inside
+        # one step; production uses the default, which clears the server's
+        # ddos_interval.
+        self.interval_s = interval_s
+
+    def ready(self, persona_id: str, monotonic: float) -> bool:
+        """True when this persona may open a login now."""
+        others = [
+            at for at, pid in self._logins if monotonic - at < self.interval_s and pid != persona_id
+        ]
+        return not (others and monotonic - max(others) < self.interval_s)
+
+    def record(self, persona_id: str, monotonic: float) -> None:
+        """Record a granted login."""
+        self._logins.append((monotonic, persona_id))
+        # Keep only the recent window (bounded memory).
+        self._logins = [(at, pid) for at, pid in self._logins if monotonic - at < 30.0]
+
+
+@final
 class WallClock:
     """TickClock over ``time.monotonic`` / ``time.sleep`` (the real loop)."""
 
@@ -1570,6 +1631,10 @@ class AgentHost:
         self._stop = False
         self._lifecycle_lock = threading.RLock()
         self._connect_gates: dict[str, ConnectBackoff] = {}
+        # The roster's login stagger (the login server's chained
+        # connect_check throttle - socket.cpp:1089-1091). Public so a caller
+        # (a test) can replace the pacing without the wall-clock wait.
+        self.login_stagger = LoginStagger()
         self._worldfeed_server: Any | None = None
         self._worldfeed_thread: threading.Thread | None = None
         # The social coordination inputs: a GeneratedPopulation (or its
@@ -1912,10 +1977,20 @@ class AgentHost:
         gate = self._connect_gates.setdefault(persona_id, ConnectBackoff())
         if not gate.ready(tick) and not agent.pending_switch:
             return
+        # The roster's login stagger: the login server's connect_check
+        # throttle is chained (socket.cpp:1089-1091), so the whole roster
+        # connecting at once trips it and locks the tail of the roster out
+        # for 10 minutes (leg 35: the solo lost 13 minutes). A deliberate
+        # character switch bypasses the WAIT (it is not a retry storm) but
+        # is still RECORDED below, so the next regular login waits for the
+        # server's counter to reset.
+        if not agent.pending_switch and not self.login_stagger.ready(persona_id, tick):
+            return
         gate.record_attempt(tick)
         logger.info("schedule window open: connecting %s", persona_id)
         if agent.connect():
             gate.record_success()
+            self.login_stagger.record(persona_id, tick)
         else:
             gate.record_failure(tick)
 

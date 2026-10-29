@@ -185,7 +185,15 @@ def test_existing_890_registrations_preserved_and_unknown_stays_strict():
         0x0169,
         0x016A,
         0x016B,
+        # Leg 35 (2026-10-28): ZC_ACK_WEAR_EQUIP_V5 0x0999 (11B) - the reply
+        # to the equip progression's CZ_REQ_WEAR_EQUIP (0x0998). Without it the
+        # framer raised "unknown packet 0x0999" and every agent froze.
+        0x0999,
+        # ZC_UPDATE_CHARSTAT 0x01F2 (20B) - the guild member login notice.
+        0x01F2,
+        # ZC_NOTIFY_POSITION_TO_GUILDM 0x01EB (10B) - the guild position notice.
+        0x01EB,
     }
-    assert len(module.PACKET_DB) == 906
+    assert len(module.PACKET_DB) == 909
     with pytest.raises(ValueError, match="unknown packet 0xfafa"):
         module.parse_stream(dialog(0xB4, "guide") + b"\xfa\xfa")

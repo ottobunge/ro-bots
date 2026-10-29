@@ -117,8 +117,9 @@ def test_currency_rejects_malformed_geometry(raw: bytes) -> None:
 
 def test_inherited_stream_frames_each_receipt_and_every_split() -> None:
     wire = packet_module()
-    # 901 prior registrations + the guild-create reply 0x0167 (charter slice).
-    assert len(wire.PACKET_DB) == 906
+    # 901 prior registrations + the guild-create reply 0x0167 (charter slice)
+    # + the wear-equip ack 0x0999 and the guild login notice 0x01F2 (leg 35).
+    assert len(wire.PACKET_DB) == 909
     frames = [
         struct.pack("<HI", 0xC4, 123),
         struct.pack("<HHIIBH", 0xC6, 15, 73, 61, 255, 1201),

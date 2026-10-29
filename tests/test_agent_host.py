@@ -17,6 +17,7 @@ import pytest
 from robots.__main__ import build_host, parse_args
 from robots.app.agent_runtime import (
     AgentHost,
+    LoginStagger,
     ManifestEntry,
     PersonaClock,
     ScheduledAgent,
@@ -423,9 +424,19 @@ def test_host_step_connects_and_disconnects_by_schedule(tmp_path: Any) -> None:
         world_state=ws,
         run_worldfeed=False,
     )
+    # The roster's login stagger paces the logins (the login server's
+    # chained connect_check throttle). This test is about the schedule's
+    # connect/disconnect contract, not that pacing, so it opens the roster
+    # without the wait (tests/test_login_stagger.py owns the pacing).
+    host.login_stagger = LoginStagger(interval_s=0.0)
     assert set(host.agents) == set(forced.personas)
 
     # window open -> agent connects, WorldState shows online + character
+    # The roster's login stagger spaces the logins (the login server's
+    # chained connect_check throttle), so the group opens over a few steps.
+    # The stagger is injected with a zero interval here: this test is about
+    # the schedule's connect/disconnect contract, not the throttle's pacing
+    # (tests/test_login_stagger.py owns the pacing).
     host.step()
     online_ids = {pid for pid, a in host.agents.items() if a.online}
     assert online_ids == set(group.member_ids)

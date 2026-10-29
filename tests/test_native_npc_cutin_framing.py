@@ -183,6 +183,43 @@ STAT_CHANGE_BLOCK = (
     b"# oracle: .work/e2e-run/evidence/oracle_zc_status_change.log\n"
     b"PACKET_DB.update({0x00BE: 5})\n\n\n"
 )
+WEAR_ACK_BLOCK = (
+    b"# Leg 35 (2026-10-28): the wear-equip ack. A Knife in the right hand\n"
+    b"# makes the runtime's equip progression send CZ_REQ_WEAR_EQUIP (0x0998);\n"
+    b"# the pinned server answers with ZC_ACK_WEAR_EQUIP_V5 0x0999\n"
+    b"# (<index>.W <wear location>.L <view id>.W <result>.B = 11B,\n"
+    b"# packets_struct.hpp:1269-1276, clif.cpp:4302-4328). The framer did not\n"
+    b'# know it: parse_stream raised "unknown packet 0x0999", the rx thread\n'
+    b"# died and all seven leg-35 agents froze on a silent transport loss.\n"
+    b"PACKET_DB.update({0x0999: 11})\n"
+)
+CHARSTAT_BLOCK = (
+    b"# The guild member login notice, the next frame in the same path:\n"
+    b"# ZC_UPDATE_CHARSTAT 0x01f2 (<account id>.L <char id>.L <status>.L\n"
+    b"# <gender>.W <hair style>.W <hair color>.W = 20B, map/packets.hpp:876-885;\n"
+    b"# compiled sizeof=20). The server sends it to a guild's other members when\n"
+    b"# one logs in (map/guild.cpp:1439 -> clif_guild_memberlogin_notice), so it\n"
+    b"# arrives at any char that shares a guild - the same silent transport loss.\n"
+    b"PACKET_DB.update({0x01F2: 20})\n"
+)
+CHARSTAT_BLOCK = (
+    b"# The guild member login notice, the next frame in the same path:\n"
+    b"# ZC_UPDATE_CHARSTAT 0x01f2 (<account id>.L <char id>.L <status>.L\n"
+    b"# <gender>.W <hair style>.W <hair color>.W = 20B, map/packets.hpp:876-885;\n"
+    b"# compiled sizeof=20). The server sends it to a guild's other members when\n"
+    b"# one logs in (map/guild.cpp:1439 -> clif_guild_memberlogin_notice), so it\n"
+    b"# arrives at any char that shares a guild - the same silent transport loss.\n"
+    b"PACKET_DB.update({0x01F2: 20})\n"
+)
+GUILDM_BLOCK = (
+    b"# The guild member position notice - the THIRD frame in the same path, and\n"
+    b"# the one that killed the rx thread after 0x0999 and 0x01f2 were framed.\n"
+    b"# ZC_NOTIFY_POSITION_TO_GUILDM 0x01eb (<account id>.L <x>.W <y>.W = 10B,\n"
+    b"# map/packets.hpp:859-865; compiled sizeof=10). The server sends it to a\n"
+    b"# guild's members when one of them moves (map/clif.cpp:3316-3335), so it\n"
+    b"# reaches every char that shares a guild - the same silent transport loss.\n"
+    b"PACKET_DB.update({0x01EB: 10})\n"
+)
 SELF = struct.pack("<HHi", 0x00B0, 5, 42)
 CLOCK = struct.pack("<HI", 0x007F, 123)
 CLOSE = struct.pack("<HI", 0x00B6, 0x12345678)
@@ -277,15 +314,29 @@ def validate_exact_addition(table: dict[int, int], raw: bytes) -> None:
     # the invite-by-account request: the numeric stub 2B -> the 14B era
     # registration (packets.hpp:1302-1308), live-verified.
     prior_906 = prior_902 | {0x0168: 14, 0x0169: 3, 0x016A: 30, 0x016B: 10}
-    assert len(table) == 906
-    assert table == prior_906
+    # Leg 35 (2026-10-28): ZC_ACK_WEAR_EQUIP_V5 0x0999 (11B) - the reply to
+    # the equip progression's CZ_REQ_WEAR_EQUIP (0x0998). Without it the
+    # framer raised "unknown packet 0x0999" and every agent froze.
+    prior_907 = prior_906 | {0x0999: 11}
+    # ZC_UPDATE_CHARSTAT 0x01F2 (20B) - the guild member login notice.
+    prior_908 = prior_907 | {0x01F2: 20}
+    # ZC_NOTIFY_POSITION_TO_GUILDM 0x01EB (10B) - the guild position notice.
+    prior_909 = prior_908 | {0x01EB: 10}
+    assert len(table) == 909
+    assert table == prior_909
     assert raw.count(CUTIN_BLOCK) == 1
     assert raw.count(CHAR_PAGE_BLOCK) == 1
     assert raw.count(STAT_CHANGE_BLOCK) == 1
+    assert raw.count(WEAR_ACK_BLOCK) == 1
+    assert raw.count(CHARSTAT_BLOCK) == 1
+    assert raw.count(GUILDM_BLOCK) == 1
     stripped = (
         raw.replace(CUTIN_BLOCK, b"", 1)
         .replace(CHAR_PAGE_BLOCK, b"", 1)
         .replace(STAT_CHANGE_BLOCK, b"", 1)
+        .replace(WEAR_ACK_BLOCK, b"", 1)
+        .replace(CHARSTAT_BLOCK, b"", 1)
+        .replace(GUILDM_BLOCK, b"", 1)
     )
     current_hash = hashlib.sha256(stripped).hexdigest()
     historical = prior["files"]["spikes/003-clientless-limbs/packetdb.py"]
@@ -310,6 +361,12 @@ def validate_exact_addition(table: dict[int, int], raw: bytes) -> None:
         # the guild invite slice: the 0x0168 14B registration + its era-chain
         # entry appended to packetdb.py after the 0x0167 block
         "2509b47e273800c97a3c210c3393efae5feed3498c78f6807dd480849caca765",
+        # leg 35: the ZC_ACK_WEAR_EQUIP_V5 0x0999 (11B) + the guild member
+        # login notice ZC_UPDATE_CHARSTAT 0x01F2 (20B) + the guild member
+        # position notice ZC_NOTIFY_POSITION_TO_GUILDM 0x01EB (10B) blocks
+        # appended to packetdb.py after the shop-list block (the leg-35
+        # all-agent freeze)
+        "193b726451abf72c6120e49ddcdb1b58b880e9b9d13db2ef5da777bad1305590",
     )
 
 

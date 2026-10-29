@@ -792,6 +792,34 @@ PACKET_DB.update({0x0168: 14})
 PACKET_DB.update({0x00C6: -1, 0x00C7: -1})
 
 
+# Leg 35 (2026-10-28): the wear-equip ack. A Knife in the right hand
+# makes the runtime's equip progression send CZ_REQ_WEAR_EQUIP (0x0998);
+# the pinned server answers with ZC_ACK_WEAR_EQUIP_V5 0x0999
+# (<index>.W <wear location>.L <view id>.W <result>.B = 11B,
+# packets_struct.hpp:1269-1276, clif.cpp:4302-4328). The framer did not
+# know it: parse_stream raised "unknown packet 0x0999", the rx thread
+# died and all seven leg-35 agents froze on a silent transport loss.
+PACKET_DB.update({0x0999: 11})
+
+
+# The guild member login notice, the next frame in the same path:
+# ZC_UPDATE_CHARSTAT 0x01f2 (<account id>.L <char id>.L <status>.L
+# <gender>.W <hair style>.W <hair color>.W = 20B, map/packets.hpp:876-885;
+# compiled sizeof=20). The server sends it to a guild's other members when
+# one logs in (map/guild.cpp:1439 -> clif_guild_memberlogin_notice), so it
+# arrives at any char that shares a guild - the same silent transport loss.
+PACKET_DB.update({0x01F2: 20})
+
+
+# The guild member position notice - the THIRD frame in the same path, and
+# the one that killed the rx thread after 0x0999 and 0x01f2 were framed.
+# ZC_NOTIFY_POSITION_TO_GUILDM 0x01eb (<account id>.L <x>.W <y>.W = 10B,
+# map/packets.hpp:859-865; compiled sizeof=10). The server sends it to a
+# guild's members when one of them moves (map/clif.cpp:3316-3335), so it
+# reaches every char that shares a guild - the same silent transport loss.
+PACKET_DB.update({0x01EB: 10})
+
+
 def parse_stream(buf: bytes) -> tuple[list[tuple[int, bytes]], bytes]:
     """
     Split a byte stream into complete (pid, raw) packets.

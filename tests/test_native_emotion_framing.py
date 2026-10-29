@@ -109,6 +109,10 @@ def test_every_legacy_mapping_is_preserved() -> None:
     # Guild invite slice (packets.hpp:1302-1330): the inviter ack + the
     # invitee prompt + the reply echo, all live-verified on the e2e world.
     guild_invite = {0x0168: 14, 0x0169: 3, 0x016A: 30, 0x016B: 10}
+    # Leg 35 (2026-10-28): ZC_ACK_WEAR_EQUIP_V5 0x0999 (11B) - the reply to
+    # the equip progression's CZ_REQ_WEAR_EQUIP (0x0998). Without it the
+    # framer raised "unknown packet 0x0999" and every agent froze.
+    wear_ack = {0x0999: 11, 0x01F2: 20, 0x01EB: 10}
     assert (
         prior_891
         | additions
@@ -118,6 +122,7 @@ def test_every_legacy_mapping_is_preserved() -> None:
         | shop_lists
         | guild_reply
         | guild_invite
+        | wear_ack
         == packetdb.PACKET_DB
     )
-    assert len(packetdb.PACKET_DB) == 906
+    assert len(packetdb.PACKET_DB) == 909

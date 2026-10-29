@@ -145,6 +145,12 @@ def test_all_889_mappings_macros_and_parser_preserved_bitexact() -> None:
     # Guild invite slice (packets.hpp:1302-1330): the inviter ack + the
     # invitee prompt + the reply echo, all live-verified on the e2e world.
     guild_invite = {0x0168: 14, 0x0169: 3, 0x016A: 30, 0x016B: 10}
+    # Leg 35 (2026-10-28): ZC_ACK_WEAR_EQUIP_V5 0x0999 (11B) - the reply to
+    # the equip progression's CZ_REQ_WEAR_EQUIP (0x0998). Without it the
+    # framer raised "unknown packet 0x0999" and every agent froze.
+    # ZC_UPDATE_CHARSTAT 0x01F2 (20B) - the guild member login notice, the
+    # next frame in the same path (map/packets.hpp:876-885).
+    wear_ack = {0x0999: 11, 0x01F2: 20, 0x01EB: 10}
     assert module.PACKET_DB[0x01B3] == 67
     prior_891 = {
         key: value
@@ -156,6 +162,7 @@ def test_all_889_mappings_macros_and_parser_preserved_bitexact() -> None:
         and key not in shop_lists
         and key not in guild_reply
         and key not in guild_invite
+        and key not in wear_ack
     }
     assert old | {0x00B6: 6, 0x00BC: 6} == prior_891
     assert len(prior_891) == 891
@@ -170,9 +177,10 @@ def test_all_889_mappings_macros_and_parser_preserved_bitexact() -> None:
         | shop_lists
         | guild_reply
         | guild_invite
+        | wear_ack
         == module.PACKET_DB
     )
-    assert len(module.PACKET_DB) == 906
+    assert len(module.PACKET_DB) == 909
     raw = (ROOT / "spikes/003-clientless-limbs/packetdb.py").read_bytes()
     cutin_block = (
         b"# Source/compiler-measured cut-in presentation only; no NPC/gameplay authority.\n"
@@ -212,6 +220,40 @@ def test_all_889_mappings_macros_and_parser_preserved_bitexact() -> None:
     )
     assert raw.count(char_page_block) == 1
     raw = raw.replace(char_page_block, b"", 1)
+    wear_ack_block = (
+        b"# Leg 35 (2026-10-28): the wear-equip ack. A Knife in the right hand\n"
+        b"# makes the runtime's equip progression send CZ_REQ_WEAR_EQUIP (0x0998);\n"
+        b"# the pinned server answers with ZC_ACK_WEAR_EQUIP_V5 0x0999\n"
+        b"# (<index>.W <wear location>.L <view id>.W <result>.B = 11B,\n"
+        b"# packets_struct.hpp:1269-1276, clif.cpp:4302-4328). The framer did not\n"
+        b'# know it: parse_stream raised "unknown packet 0x0999", the rx thread\n'
+        b"# died and all seven leg-35 agents froze on a silent transport loss.\n"
+        b"PACKET_DB.update({0x0999: 11})\n"
+    )
+    assert raw.count(wear_ack_block) == 1
+    raw = raw.replace(wear_ack_block, b"", 1)
+    charstat_block = (
+        b"# The guild member login notice, the next frame in the same path:\n"
+        b"# ZC_UPDATE_CHARSTAT 0x01f2 (<account id>.L <char id>.L <status>.L\n"
+        b"# <gender>.W <hair style>.W <hair color>.W = 20B, map/packets.hpp:876-885;\n"
+        b"# compiled sizeof=20). The server sends it to a guild's other members when\n"
+        b"# one logs in (map/guild.cpp:1439 -> clif_guild_memberlogin_notice), so it\n"
+        b"# arrives at any char that shares a guild - the same silent transport loss.\n"
+        b"PACKET_DB.update({0x01F2: 20})\n"
+    )
+    assert raw.count(charstat_block) == 1
+    raw = raw.replace(charstat_block, b"", 1)
+    guildm_block = (
+        b"# The guild member position notice - the THIRD frame in the same path, and\n"
+        b"# the one that killed the rx thread after 0x0999 and 0x01f2 were framed.\n"
+        b"# ZC_NOTIFY_POSITION_TO_GUILDM 0x01eb (<account id>.L <x>.W <y>.W = 10B,\n"
+        b"# map/packets.hpp:859-865; compiled sizeof=10). The server sends it to a\n"
+        b"# guild's members when one of them moves (map/clif.cpp:3316-3335), so it\n"
+        b"# reaches every char that shares a guild - the same silent transport loss.\n"
+        b"PACKET_DB.update({0x01EB: 10})\n"
+    )
+    assert raw.count(guildm_block) == 1
+    raw = raw.replace(guildm_block, b"", 1)
     assert hashlib.sha256(raw).hexdigest() in (
         # the party slice: the 0x2C4 shadow override (6 -> 26, MAIN 20180704
         # CZ_PARTY_JOIN_REQ) + its accounting comment appended to packetdb.py
@@ -226,6 +268,12 @@ def test_all_889_mappings_macros_and_parser_preserved_bitexact() -> None:
         # the guild-create slice: ZC_RESULT_MAKE_GUILD 0x0167 (3B) appended
         # (the live-verified charter reply; 0x0165 30B already in the baseline)
         "d257a7779bb4b60e2c1081a1892759efe0a6736a6e1b002f6020b12125e94bd8",
+        # leg 35: the ZC_ACK_WEAR_EQUIP_V5 0x0999 (11B) + the guild member
+        # login notice ZC_UPDATE_CHARSTAT 0x01F2 (20B) + the guild member
+        # position notice ZC_NOTIFY_POSITION_TO_GUILDM 0x01EB (10B) blocks
+        # appended to packetdb.py after the shop-list block (the leg-35
+        # all-agent freeze)
+        "b2ab6286b29de0939c7b90a63e1b17a55c3ff1fa997a76c707b5d5567ac84e3d",
     )
     token = b", 0x00B6: 6"
     assert raw.count(token) == 1
@@ -242,6 +290,10 @@ def test_all_889_mappings_macros_and_parser_preserved_bitexact() -> None:
         # the guild-create slice: ZC_RESULT_MAKE_GUILD 0x0167 (3B) appended
         # (the live-verified charter reply; 0x0165 30B already in the baseline)
         "fc6a3fa048b19e444d86abae4d183eec8ee95bd727eabd7c9f17fbdcd63f159c",
+        # leg 35: the same file with the 0x00B6 token ALSO removed (the
+        # ZC_ACK_WEAR_EQUIP_V5 0x0999 + ZC_UPDATE_CHARSTAT 0x01F2 +
+        # ZC_NOTIFY_POSITION_TO_GUILDM 0x01EB blocks stripped)
+        "a2516d00f0e9a31b637a7ca3c6d4fcde7ddf7dec67871c879d82d988c1a2c4e8",
     )
 
 

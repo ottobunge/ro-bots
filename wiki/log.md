@@ -6353,3 +6353,136 @@ then re-measure the approach convergence at MELEE_RANGE=1.
 The live e2e chars received their knives too (an INSERT for char_id >= 300000
 against the existing world — 7 rows verified, equip=2): leg 35's swings carry
 damage without waiting for the fixture regeneration.
+
+## 2026-10-29 00:30 — LEG 35 VERDICT: the window was dead from minute one — a MISSING PACKET, not a mechanic
+
+**The kill question: 0 attacks, 0 kills, 0 sells. The widen convergence and the
+knife never got a chance to be tested.** The leg-35 traces hold, for the whole
+window (21:30-23:00 UTC), only: 9 decide_request/response, 7 goal_review, 4
+state_tick, 4 script_step, 7 action_executed = 4 MoveTo + 3 PartyChat. Not one
+Attack. Not one Loot. The DB exp/zeny are byte-identical to the pre-leg
+baselines (NyxSong 2/4, RinceNyan 9/17, zeny_wing 7/10, PipinWalker 7/2, the
+rest 0; zeny 5/3/0/4/0/0/0). `GuildInvite failed` = 0.
+
+**The cause: the framer did not know the wear-equip ack.** Leg 35 was the first
+window with a Knife in every char's right hand (2b0f249e, `equip=2` =
+EQP_HAND_R, all 7 rows verified). The runtime's equip progression then sends
+CZ_REQ_WEAR_EQUIP (0x0998) and the pinned server answers with
+ZC_ACK_WEAR_EQUIP_V5 **0x0999** (11B: <index>.W <wear location>.L <view id>.W
+<result>.B, packets_struct.hpp:1269-1276; sent by clif_equipitemack,
+clif.cpp:4302-4328). `spikes/003-clientless-limbs/packetdb.py` had no entry for
+it, so `parse_stream` raised `ValueError('unknown packet 0x0999')`, the rx
+thread died, the transport went unavailable, and `agent_runtime.py` took the
+silent `NativeTelemetryUnavailable` early-return forever. Every agent froze
+1-3 s after its own connect (six at 21:30:01-05, the throttled solo at
+21:43:16 -> 21:43:18).
+
+**The proof is an A/B on the production host**, not a reading:
+`.work/engagement-diagnosis/leg35_host_probe.py` connects two fixture chars
+against the e2e world. With the Knife: `rx_error: ValueError('unknown packet
+0x0999')`, transport unavailable, ZERO continuing ticks. Without it: ticks
+continue normally. The frame-set diff of the two raw login captures showed the
+Knife run carrying exactly one extra frame (0x0A0D, the equipment list), and
+replaying both sets through the production `NativeGameplayTracker` ingested
+cleanly - so 0x0A0D was NOT the cause; the 0x0999 REPLY was. (0x0A9B, an
+earlier hypothesis, is also absent from the table but is not causal.)
+
+**The fix: THREE frames, all sized from the pinned headers, not transcribed.**
+`PACKET_DB.update({0x0999: 11})`, `{0x01F2: 20}`, `{0x01EB: 10}`.
+
+The gaps came out in a chain, each one revealed by the fix before it (the rx
+thread lived long enough to reach the next):
+
+1. **0x0999** ZC_ACK_WEAR_EQUIP_V5 (<index>.W <wear location>.L <view id>.W
+   <result>.B = 11B, packets_struct.hpp:1269-1276; sent by clif_equipitemack,
+   clif.cpp:4302-4328). The leg-35 killer: the Knife made the equip
+   progression send CZ_REQ_WEAR_EQUIP (0x0998) and the reply killed the rx
+   thread.
+2. **0x01F2** ZC_UPDATE_CHARSTAT, the guild member login notice (<account
+   id>.L <char id>.L <status>.L <gender>.W <hair style>.W <hair color>.W =
+   20B, map/packets.hpp:876-885; compiled sizeof=20, and the live capture is
+   exactly 20 bytes decoding to aid=2000101/cid=150101 - the other fixture
+   char). The server sends it to a guild's other members when one logs in
+   (map/guild.cpp:1439 -> clif_guild_memberlogin_notice), so it reaches any
+   char that shares a guild - and two population chars do (guild 2 = NyxSong,
+   guild 3 = PipinWalker; `guild_member` verified).
+3. **0x01EB** ZC_NOTIFY_POSITION_TO_GUILDM (<account id>.L <x>.W <y>.W = 10B,
+   map/packets.hpp:859-865; compiled sizeof=10), the guild member position
+   notice the server sends when one of them moves (map/clif.cpp:3316-3335).
+
+Fixing one at a time is slow, so the third was found with a SWEEP instead: a
+tolerant framer that RECORDS every unknown frame instead of raising
+(`.work/engagement-diagnosis/leg35_unknown_sweep.py`). With the first two
+framed, the sweep reported exactly ONE remaining unknown - 0x01eb - and with
+it tolerated both fixture clients ran clean (`rx_error: None`). That is the
+whole guild/equip path, closed.
+
+**Verified live after the fix:** the same A/B probe with the Knife now ticks
+75 times with `rx_error: None`, `tracker_ready: true`, `standing: true`, and
+the char MOVES (pos 169,132 -> 169,133). With all three frames framed, both
+fixtures tick cleanly (71 and 72 ticks, `rx_error: None`, `wire_running:
+true`, positions advancing). The ack is not merely framable, it is CONSUMED:
+`native_gameplay.py:665` dispatches pid 0x0999 to `_equip_ack`, which calls
+`decode_equip_ack` (native_equipment.py:71-77) and settles the worn state.
+
+One honest detail the live probe surfaced: the knife is ALREADY equipped
+server-side (the fixture inserted it with `equip=2` = EQP_HAND_R), so the
+server's ack is a FAILURE (pc.cpp:12056-12063 rejects an already-worn item)
+and the client's `worn` set stays EMPTY. The damage path is unaffected - the
+server applies the knife's damage from ITS state, and the fixture knife is
+worn there - but the client will keep re-sending the equip request until the
+attempt cap (3). That is a bounded, harmless loop, not a stall.
+
+**The digest discipline held.** All three additions are byte-exact evidence
+blocks, so the SHA-pinned framing tests needed reconciling: the era chains
+(906 -> 909 entries, `0x0999: 11`, `0x01F2: 20` and `0x01EB: 10` added to
+the wear_ack set) and the accepted-hash tuples - the actual hashes, read
+from the pytest failures or computed from the file, never written by hand.
+The new test file `tests/test_native_wear_equip_ack_framing.py` pins all
+three frames' sizes, their framing, their non-desync of the following frame,
+and the evidence bytes (one shared digest for the three blocks).
+
+**What leg 35 does NOT tell us:** nothing about the widen convergence, the
+knife's damage, the approach chain, or the mob kill. All of it was downstream
+of a dead transport. The next window (leg 36) is the first real test of
+2b0f249e + 429e54a7.
+
+**The login throttle recurred and is NOT the cause here.** The solo
+(pop_0003_s00) was rejected by the login server's socket-level `connect_check`
+throttle (leg 34's note above) and rejoined unprompted at 21:43:16 - 13
+minutes later, no intervention, the self-expiry the pinned rule predicts. The
+8 `connect failed (ConnectionError)` lines in the runner log are those
+retries. The other six agents were already connected and still froze, and the
+solo froze too, 2 s after its own successful connect - so the throttle is not
+the cause.
+
+**The throttle's real rule, read from the pinned source and confirmed live.**
+`connect_check_` (rathena/src/common/socket.cpp:1112-1204) is CHAINED, not
+windowed::
+
+    if (hist->ddos)                                   return 0;   # flagged
+    else if (DIFF_TICK(gettick(),hist->tick) < ddos_interval) {
+        hist->tick = gettick();
+        if (hist->count++ >= ddos_count) { hist->ddos = 1; ... }     # trip
+    } else { hist->tick = gettick(); hist->count = 0; }              # RESET
+
+`ddos_count=10`, `ddos_interval=3s`, `ddos_autoreset=10min`. The count is
+only CLEARED when a connection arrives MORE than ddos_interval after the
+previous one - so a chain of 1s-apart logins ACCUMULATES (7 agents plus the
+solo's retry storm = >10) and trips it. The live login log shows the shape
+exactly: six logins at 0.79-1.13s apart (22:30:00.24 -> 22:30:04.45 local),
+then "connect_check: DDoS Attack detected from 10.89.3.6!" on the seventh.
+The fix is therefore NOT "space them a second" but "space them MORE than
+ddos_interval", so every login takes the reset branch and the chain count
+never grows. `LoginStagger` (agent_runtime.py) does exactly that - 3.5s
+between personas - and the host's connect path consults it. The roster opens
+over ~24s instead of ~5s, which is free against a 90-minute window.
+
+**Two observability gaps are closed too, because leg 35 burned three hours
+on a failure NOTHING named.** The runner's receipt had no transport field and
+its log printed only the online/decides summary, so the whole window's death
+was invisible: no "unknown packet", no "Traceback", no receipt line. The
+receipt now carries `rx_error` (the transport's own reason, as
+"<Type>: <message>") and `dispatch_errors` (counted per packet id), and the
+runner prints "TRANSPORT DOWN pid=...: <reason>" the first time each distinct
+reason appears. A dead transport must be loud.
