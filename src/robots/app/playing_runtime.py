@@ -39,7 +39,13 @@ from robots.adapters.native_gameplay import (
     sell,
     sell_open,
 )
-from robots.adapters.native_navigation import MapCache, NoRoute, shortest_path, starter_route
+from robots.adapters.native_navigation import (
+    MapCache,
+    NoRoute,
+    nearest_walkable,
+    shortest_path,
+    starter_route,
+)
 from robots.adapters.native_npc_dialogue import NativeNpcDialogue, observed_npc, received_npc_name
 from robots.adapters.native_purchase import NativePurchase, PurchaseAdmission
 from robots.adapters.native_self_metadata import server_self_slots
@@ -228,6 +234,20 @@ class PlayingClient:
     # consecutive NoRoute direct-walk sends (class default; instance shadow
     # on first use — a successful walk anywhere resets it to 0)
     _no_route_attempts = 0
+    # per-(map, target) exhausted-target re-roll memory (leg 37 defect 2);
+    # a successful walk anywhere clears it with the budget. Lazily created
+    # (the _no_route_attempts shadow idiom; a mutable class default would
+    # leak across clients).
+    _rerolled_moves_memo: dict[tuple[str, tuple[int, int]], tuple[int, int]] | None = None
+
+    @property
+    def _rerolled_moves(self) -> dict[tuple[str, tuple[int, int]], tuple[int, int]]:
+        memo = self._rerolled_moves_memo
+        if memo is None:
+            memo = {}
+            self._rerolled_moves_memo = memo
+        return memo
+
     """Wrap native limbs while retaining AgentHost's client lifecycle contract."""
 
     _stat_unacked: int
@@ -1709,8 +1729,7 @@ class PlayingClient:
             # successful walk elsewhere resets the budget).
             self._no_route_attempts += 1
             if self._no_route_attempts > NO_ROUTE_DIRECT_SENDS:
-                self._note_move_gate("no_route_exhausted")
-                self._fail_patrol(target)
+                self._move_reroll(state, target, pos)
                 return
             self._note_move_gate("no_route_direct")
             self.wire.move(*target)
@@ -1722,6 +1741,44 @@ class PlayingClient:
             self._pending = (point, pos.seq, self._now(), 0)
         else:
             self._note_move_gate("single_cell_path")
+
+    def _move_reroll(
+        self,
+        state: BotState,
+        target: tuple[int, int],
+        pos: Any,
+    ) -> None:
+        """The exhausted target gets ONE walkable re-roll (leg 37 defect 2).
+
+        The scripts author targets; the client grid is the walkability
+        authority (the w59 split). When the bounded direct sends could not
+        move the unit (the cell is a wall on BOTH sides), the runtime walks
+        to the nearest walkable neighbor of the target instead of letting
+        the script re-author the same impossible cell forever — g00m02
+        burned 117 minutes that way. The re-roll is tried once per (map,
+        target); a successful walk anywhere resets both budgets."""
+        if self.cache is None:
+            self._note_move_gate("no_map_cache")
+            self._fail_patrol(target)
+            return
+        key = (state.map_name, target)
+        if key in self._rerolled_moves:
+            self._note_move_gate("rerolled_target_dead")
+            self._fail_patrol(target)
+            return
+        alt = nearest_walkable(
+            self.cache.get(state.map_name),
+            target,
+            exclude=((state.x, state.y), target),
+        )
+        if alt is None:
+            self._note_move_gate("target_unwalkable")
+            self._fail_patrol(target)
+            return
+        self._rerolled_moves[key] = alt
+        self._note_move_gate("target_unwalkable_rerolled")
+        self.wire.move(*alt)
+        self._pending = (alt, pos.seq, self._now(), 0)
 
     def mechanical_actions(
         self, state: BotState, actions: tuple[GameAction, ...]

@@ -442,8 +442,42 @@ def test_no_route_direct_sends_are_bounded():
     sent = len(wire.moves)
     assert sent == runtime.NO_ROUTE_DIRECT_SENDS
     client.perform_native(MoveTo(5, 5))
-    assert len(wire.moves) == sent  # exhausted: nothing more is sent
-    assert any(reason == "no_route_exhausted" for _, reason in client._move_gate_reasons)
+    assert len(wire.moves) == sent + 1  # the re-roll walks the neighbor once
+    assert wire.moves[-1] == (4, 4)  # the nearest walkable ring cell, not (5,5)
+    assert any(reason == "target_unwalkable_rerolled" for _, reason in client._move_gate_reasons)
+    client._pending = None  # the drain released the re-rolled walk's slot
+    client.perform_native(MoveTo(5, 5))
+    assert len(wire.moves) == sent + 1  # the re-roll is tried ONCE per target
+    assert any(reason == "rerolled_target_dead" for _, reason in client._move_gate_reasons)
+
+
+def test_no_route_with_a_sealed_pocket_names_the_gate_and_stops():
+    """leg 37 defect 2's honest stop: when no walkable alternative exists
+    (s00's client-vs-server map disagreement), the runtime notes the gate
+    and sends NOTHING instead of flooding the wire."""
+
+    size = 12
+    tiles = bytearray(size * size)
+    for x in range(3, 8):
+        for y in range(3, 8):  # the target's whole radius-2 pocket is unwalkable
+            tiles[x + y * size] = 1
+    wire = Wire()
+    now = [0.0]
+    client = runtime.PlayingClient(
+        wire,
+        cache=MapCache((WalkMap("prontera", size, size, bytes(tiles)),)),
+        monotonic=lambda: now[0],
+    )
+    wire.frames = []
+    wire.add(entry_at(1, 1), map_frame_at(1, 1))
+    for _ in range(runtime.NO_ROUTE_DIRECT_SENDS):
+        client.perform_native(MoveTo(5, 5))
+        client._pending = None
+    sent = len(wire.moves)
+    assert sent == runtime.NO_ROUTE_DIRECT_SENDS
+    client.perform_native(MoveTo(5, 5))
+    assert len(wire.moves) == sent  # sealed: the re-roll finds nothing
+    assert any(reason == "target_unwalkable" for _, reason in client._move_gate_reasons)
 
 
 def test_no_route_attempts_reset_when_a_route_exists():

@@ -607,16 +607,31 @@ class GrindScript:
 @final
 class IdleTownScript:
     """Stand around; occasionally shift position a step. Done never — events or a
-    goal review end it."""
+    goal review end it.
+
+    Leg 37: the step used to be MoveTo(x, y+1) unconditionally, so one wall
+    locked the whole script lifetime onto a single impossible cell (g00m02
+    authored 3,210 MoveTos to an unwalkable (159,194) and stood 117 minutes).
+    The steps now cycle the four directions deterministically — the runtime's
+    walkability/route handling stays the single authority on whether a cell
+    can actually be walked (the w59 split: scripts author, the grid gates)."""
+
+    _DIRECTIONS: tuple[tuple[int, int], ...] = ((0, 1), (1, 0), (0, -1), (-1, 0))
 
     def __init__(self, max_steps: int = 10) -> None:
         self._remaining = max_steps
+        self._tick = 0
 
     def step(self, state: BotState) -> ScriptOutcome:
         if self._remaining <= 0:
             return ScriptOutcome((), ScriptStatus.DONE)
         self._remaining -= 1
-        return ScriptOutcome((MoveTo(x=state.x, y=state.y + 1),), ScriptStatus.ACTIVE)
+        dx, dy = self._DIRECTIONS[self._tick % len(self._DIRECTIONS)]
+        self._tick += 1
+        return ScriptOutcome(
+            (MoveTo(max(0, state.x + dx), max(0, state.y + dy)),),
+            ScriptStatus.ACTIVE,
+        )
 
 
 @final

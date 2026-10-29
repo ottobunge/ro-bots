@@ -230,6 +230,38 @@ def shortest_path(
     raise NoRoute(msg)
 
 
+def nearest_walkable(
+    grid: WalkMap,
+    point: Point,
+    *,
+    radius: int = 2,
+    exclude: Iterable[Point] = (),
+) -> Point | None:
+    """The walkable cell nearest ``point``, rings outward, or None.
+
+    leg 37 defect 2: a script can author a target the client grid calls
+    unwalkable (g00m02's (159,194); s00's own cell, the client's map picture
+    disagreeing with the server's). After the bounded direct sends fail, the
+    runtime re-rolls to the nearest walkable alternative instead of
+    dead-stopping — the same candidate-filter idea as the w59 roam fix, one
+    layer down. Ring order keeps the answer deterministic.
+    """
+    banned = frozenset(exclude)
+    if grid.walkable(point) and point not in banned:
+        return point
+    x, y = point
+    for r in range(1, radius + 1):
+        for dy in range(-r, r + 1):
+            for dx in range(-r, r + 1):
+                if max(abs(dx), abs(dy)) != r:
+                    continue
+                candidate = (x + dx, y + dy)
+                if candidate in banned or not grid.walkable(candidate):
+                    continue
+                return candidate
+    return None
+
+
 def walkable_region(grid: WalkMap, start: Point) -> frozenset[Point]:
     """The walkable cells reachable from ``start`` (8-neighbor, no cutting).
 

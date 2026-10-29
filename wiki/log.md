@@ -6859,3 +6859,40 @@ walked it and **the warp fired 13 seconds later** - it arrived on prontera at
 (npc/warps/cities/prontera.txt:61). The door the fix names is a door the
 SERVER will let the agent walk into, not only a cell the client grid can
 path to.
+
+## 2026-10-29 ~10:4x — leg 38 slice (a): the unwalkable-target deadlock closed (IdleTownScript + the runtime re-roll)
+
+Leg 37 defect 2: g00m02 (prontera) authored 3,210 MoveTos to (159,194) — unwalkable
+in the client grid — and stood 117 minutes re-authoring it; s00 (pay_fild04) never
+moved at all (its own cell (204,165) is unwalkable in the client grid; the client's
+map picture and the server's disagree). Both agents ran the `social` goal's
+IdleTownScript, which emitted MoveTo(x, y+1) unconditionally — one wall locked the
+whole script lifetime onto a single impossible cell. The twin roam paths vary their
+step among several directions; IdleTownScript never got the same treatment (the
+corrected mechanism per 44af0c7e: the SCRIPT layer has no walkability filter — the
+runtime owns the grid).
+
+Two halves, both TDD:
+- scripts.py: IdleTownScript cycles the four directions deterministically
+  (N->E->S->W, clamped at 0). The runtime's walkability/route handling stays the
+  single authority on whether a cell can actually be walked.
+- native_navigation.py: nearest_walkable (pure, ring order, radius 2) + playing_runtime._move_reroll:
+  when the bounded NoRoute direct sends cannot move the unit (the cell is a wall on
+  BOTH sides), the exhausted target gets ONE walk to the nearest walkable neighbor
+  (target_unwalkable_rerolled), tried once per (map, target) — a second failure
+  names rerolled_target_dead and fails the patrol for the bounded replan; a sealed
+  pocket (no walkable neighbor at all) names target_unwalkable and sends NOTHING
+  (the honest stop; s00's case). The leg-28 warp cells are untouched: their first
+  direct send succeeds before any exhaustion.
+
+Note the deliberate placement: a HEAD gate on the client-grid walkability (walk to a
+neighbor BEFORE routing) would have preempted leg 28's warp direct-sends ((170,378)
+is unwalkable client-side and the server must still receive the walk). The re-roll
+lives at the EXHAUSTED branch, after the server has refused the cell five times.
+
+Merchant legs (the second half of defect 2) NOT yet fixed: MERCHANT_ROUTE/
+MERCHANT_ROUTE_RETURN prt_in cells are pinned PRT05-interior cells, component-blind
+from the prt03 interior — the same defect one layer over, needing the resolver wired
+through _merchant_step (FarmScript holds no resolver yet). Next slice.
+
+Gate 6,654+65 / 95.3x%.

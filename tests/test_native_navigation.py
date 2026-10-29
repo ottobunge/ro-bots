@@ -16,6 +16,7 @@ from robots.adapters.native_navigation import (
     MapCache,
     NoRoute,
     WalkMap,
+    nearest_walkable,
     shortest_path,
     starter_route,
 )
@@ -344,3 +345,32 @@ def test_tracker_0x0087_tracks_walk_destination() -> None:
         352,
     ), "the tracked position must be the walk DESTINATION"
     assert tracker._arrival is False  # the walk is IN FLIGHT (from != to)
+
+
+def test_nearest_walkable_finds_a_neighbor_of_an_unwalkable_target():
+    """leg 37 defect 2: (159,194)-shaped targets — the client grid calls the
+    authored cell unwalkable — must resolve to the nearest walkable cell so
+    the runtime can re-roll instead of dead-stopping."""
+    size = 8
+    tiles = bytearray(size * size)
+    for x, y in ((5, 5), (4, 5), (5, 4)):  # a small unwalkable pocket
+        tiles[x + y * size] = 1
+    grid = WalkMap("prontera", size, size, bytes(tiles))
+    assert nearest_walkable(grid, (5, 5)) == (4, 4)  # ring order: (4,4) precedes (6,5)
+
+
+def test_nearest_walkable_returns_none_when_the_pocket_is_sealed():
+    size = 8
+    tiles = bytearray(size * size)
+    for x in range(2, 7):
+        for y in range(2, 7):
+            tiles[x + y * size] = 1
+    grid = WalkMap("prontera", size, size, bytes(tiles))
+    assert nearest_walkable(grid, (4, 4), radius=2) is None
+
+
+def test_nearest_walkable_walks_cells_in_ring_order():
+    size = 16
+    grid = WalkMap("prontera", size, size, bytes(size * size))
+    assert nearest_walkable(grid, (8, 8)) == (8, 8)  # already walkable
+    assert nearest_walkable(grid, (8, 8), exclude=((8, 8),)) == (7, 7)
