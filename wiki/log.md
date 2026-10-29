@@ -7022,3 +7022,56 @@ the sell trip is the live test. Then WoE, sustained population, dashboard
 control, benchmarks.
 
 Gate 6,663+65.
+
+## 2026-10-29 ~19:45 — receipt: leg 39 - kills on 5 of 7, transports zero, but s00's pocket held and the sell trip never fired
+
+Thursday 17:00-19:00 window (launch 16:41, 43090 steps, 0 step errors, no
+tracebacks). TRANSPORT DOWN = 0 — the e39bb69d 0x014e registration holds; GuildInvite
+failed = 0. THE VERDICT by question:
+
+- FIELD: 6 of 7 on the fields during the window (4 roaming prt_fild08 wide:
+  NyxSong (84,349), RinceNyan (173,360) after walking out of prontera,
+  zeny_wing (266,359), xXLunasongXx + PoringMuffin14 roaming the (150-230,330-370)
+  band; s00 on pay_fild04; PipinWalker stayed in prontera (208,266), 0 attacks,
+  26 socials). Leg 38 was also 6/7.
+- s00 THE POCKET HELD: move_gates = {target_unwalkable: 8} — every roam target
+  rejected; ground_corrected_own_cell NEVER fired. Root finding: the correction
+  triggers on a server-DEMONSTRATED unwalkable own cell, but the server SILENTLY
+  IGNORES walks sent from an unwalkable own cell — the demonstration cannot
+  arrive, so 7b05e66a's trigger is unreachable by construction for a char that
+  spawns parked in the bad cell. The state_ticks show it alive (86 decides→217,
+  hp full, 1 adjacent monster, 1949 MoveTos in-window) and unmoved at (204,165).
+- MOVE/ATTACK GATES (receipt, cumulative): attack_gates pending_walk
+  14/2/5/0/5/0/0 + resting 1/3 (RinceNyan ground 43 Rests in-window — grinding
+  at low HP, stop-and-swing discipline working); move_gates await_pending
+  6-8 each, no_route_direct 2 (PipinWalker), no_position_or_dead 2 (zeny_wing),
+  target_unwalkable 8 (s00). rx_error / dispatch_errors: clean on all 7.
+- ATTACKS: 107 in-window (NyxSong 49, zeny_wing 34, xXLunasongXx 12,
+  RinceNyan 8, PoringMuffin14 4, PipinWalker 0, s00 0). Two agents ground
+  IN PLACE at mob clusters (NyxSong/zeny_wing stationary for ~1h while attacking).
+- KILLS: 5 of 7 above their pre-window baselines — NyxSong +16/+10 base/job,
+  RinceNyan +6/+2, zeny_wing +6/+6, xXLunasongXx +6/+3, PoringMuffin14 +9/+3
+  (4 attacks → +9 base: the pooled-target discipline pays). PoringMuffin14
+  killed with 4 swings; PipinWalker and s00 flat (0 attacks each, different
+  reasons: town vs pocket).
+- THE SELL VERDICT: NO TRIP. Zeny flat at baselines on all 7 (max 5z),
+  shop_offer never opened, npc_stage None end-to-end; RinceNyan still carries
+  Empty Bottle + Iron Ore + Knife. The w84-proven merchant chain did not
+  engage — the agents never decided to go to town to sell.
+- SOCIALS: 2 NEW GUILDS formed live — guild 2 NyxSongGuard (master NyxSong),
+  guild 3 PipinWalkerGuard (master PipinWalker); parties regrouped: party 3
+  NyxSong+zeny_wing, party 2 PipinWalker+xXLunasongXx+PoringMuffin14,
+  RinceNyan solo in party 4. 69 social actions in-window.
+
+Receipt: run/plain_host_receipts/population-receipt-39-1793288428.json.
+NOTE: the receipt samples' wire_sent/moves are post-logoff zeros — in-window
+activity truth is the traces (window-filtered census above).
+
+NEXT: (1) s00's release needs a REACHABLE trigger — repeated target_unwalkable
++ zero position change while standing must mark the own cell walkable (or check
+the entry-frame cell at login against the grid and correct there), since the
+server will never demonstrate the cell; (2) the economy closure — the sell trip
+needs a decide-level trigger (sellable loot + no planned kill target ⇒ go_town),
+RinceNyan's carried loot remains the live test case; (3) PipinWalker's town
+stickiness (0 attacks, 26 socials — the guidance/roam never pulled it to a
+field).
