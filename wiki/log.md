@@ -6486,3 +6486,78 @@ receipt now carries `rx_error` (the transport's own reason, as
 "<Type>: <message>") and `dispatch_errors` (counted per packet id), and the
 runner prints "TRANSPORT DOWN pid=...: <reason>" the first time each distinct
 reason appears. A dead transport must be loud.
+
+## 2026-10-29 04:30 — LEG 36 VERDICT: the widen CONVERGED and the knife killed — but only 1 of 7 agents ever left the town
+
+**The kill question: YES, and for the first time in the population series, the
+exp moved.** RinceNyan (pop_0003_g00m01) went 9/17 -> **17/20** base/job exp
+(+8 base, +3 job) and ended on prt_fild08. The arithmetic names the kills
+exactly: the pinned `mob_db.yml` gives Poring 2/1 and Lunatic 6/2, and
+`Poring + Lunatic = 8 base / 3 job` — the ONLY two-mob combination in the
+species set that sums to the observed delta. The trace agrees: 4 swings at
+Lunatic 110095584 (01:36:27-35) and 4 at Poring 110095692 (01:37:34-41), then
+one more Poring swing at 110095691 (02:10:06). Three mobs died.
+
+**The widen convergence WORKS.** g00m01 authored **127 plans**, 105 of them
+with the STABLE target set `(Lunatic, Pupa) on prt_fild08`. That stability is
+the precondition the read half (429e54a7) needs — the streak is keyed on
+`(frozenset(target_mobs), map_name)`, so a stable target set is exactly the
+case where the recorded `_starved` is inherited instead of reset. The first
+plan was authored at 01:08:27 and the first swing landed at 01:36:27: **28
+minutes** for 20 starved evaluations, matching the ~49s re-author cadence
+leg 34 measured. The widen did its job.
+
+**The knife did its job.** The swing at 01:36:27 is on a level-10 Novice with
+a Knife (1201, equip=2) against a 60-HP Lunatic: 4 swings per mob, mobs
+dying, +8/+3 exp. Leg 34's third limiter (weapon=0 on all 7) is closed.
+
+**The transport held.** 0 `TRANSPORT DOWN`, 0 `rx_error`, 0 `dispatch_errors`
+on every one of the 7 agents — the three packet ids (0x0999, 0x01F2, 0x01EB,
+64dc6c83) are registered and the leg-35 death does not recur. 0
+`GuildInvite failed`. 43,114 steps, **0 step errors**. LoginStagger admitted
+all 7 with no connect_check throttle. The window opened on time: the runner
+printed `CLOCK: (3, 1.4)` (Thursday, 01:24 Madrid) and the schedule's day-3
+02:00-04:00 window opened with all 7 online by t=2162s.
+
+**But 6 of 7 agents never fought, and the reason is NOT the widen.** They
+authored **zero** plans (0 each, except s00 with 7), never entered a farm
+map, and racked up 21,000 MoveTos without a single swing. The receipt's
+`attack_gates` is `None` for all six — they never reached the attack gate,
+because they never authored an Attack. The gate is exonerated for the third
+leg running.
+
+**The mechanism, named exactly: the travel route is consulted only for
+`Goal.GRIND`, and the agents' goals were `farm_item` or `social`.**
+`brain._goal_script` (brain.py:1014-1019) hands the route to `GrindScript`
+only `if goal == Goal.GRIND and state.map_name in TRAVEL_ROUTES`, and
+`TRAVEL_ROUTES` (src/robots/knowledge/travel_routes.py) has exactly ONE
+entry: prontera -> (156,22) -> prt_fild08. Meanwhile `_setup_farm_plan`
+returns None for a town map (no observed mobs, and prontera/prt_in have NO
+spawn declaration in the rathena fields files — only prt_fild08 and
+pay_fild04 do), so those agents fell back to the bare `GrindScript()` with no
+route and no plan, and simply patrolled their town all window.
+
+The timeline proves it to the second. g00m02 (in prontera) issued 31 MoveTos
+to the warp cell (156,22) between 01:00:08 and 01:01:13, then STOPPED — and
+its `goal_review` flipped `grind -> farm_item` at 01:01:16, three seconds
+later. The same flip killed the route: `farm_item` is not `Goal.GRIND`, so
+`_goal_script` stopped handing over `TRAVEL_ROUTES`, and the agent roamed
+prontera for the remaining 119 minutes. g01m02 walked to the warp 159 times
+and then stopped at exactly its own flip (01:05:51). The Clef answers are
+unmistakable: `change_goal` chose `farm` 137/128 times for the two prontera
+agents and `keep`/`farm` for the rest; only g00m01 stayed on `grind` (48
+`grind` answers) and only g00m01 reached the field.
+
+**So the leg's verdict is: the widen converges, the knife kills, the transport
+is healthy — and the remaining limiter is that the TRAVEL ROUTE IS BOUND TO
+THE GOAL NAME.** A `farm_item` goal on a town map has neither a plan nor a
+route, so it patrols forever. That is a one-line-class fix in
+`_goal_script`/`_setup_farm_plan` (route on any farming goal, or route to the
+map the plan names), not a mechanic hunt.
+
+Also recorded: the decide counters in the receipt are EXACT this leg
+(154/174/147/162/147/146/161 = the trace's own decide_response counts) — the
+stale-ref under-count the brief warned about did not bite. The `picklog` is
+still empty (0 rows) despite the verified kills, so the loot pickup is the
+next unproven hop: the mobs died but no drop was picked up and zeny is
+unchanged (no sells). The trace shows `Loot=0` for every agent.
