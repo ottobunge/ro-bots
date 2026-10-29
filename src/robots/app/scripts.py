@@ -335,15 +335,14 @@ never guessed — the step keeps walking instead (fail-closed)."""
 def merchant_drive_cell(state: BotState) -> tuple[int, int] | None:
     """Engage cell of the want-driven dealer trip, else None (window-29).
 
-    Fires only when the received state shows all of: a Novice, no wanted
-    weapon known in inventory (a bought OR looted weapon — a worn weapon
-    stays in received inventory — releases the drive), a KNOWN zeny balance
-    >= MERCHANT_ZENY_MIN, known inventory, and a pinned route map. Anything
-    else returns None and the field behavior is unchanged.
+    Two arms: the BUY arm (a Novice with no wanted weapon and a KNOWN zeny
+    >= MERCHANT_ZENY_MIN) and the SELL arm (a Novice holding sellable
+    stock, weapon or not — leg 40: the fixture knife in every inventory
+    kept the old single release from ever firing the trip). Both need a
+    KNOWN inventory and a pinned route map; anything else returns None and
+    the field behavior is unchanged.
     """
     if state.job != "Novice" or not state.inventory_known:
-        return None
-    if any(str(item) in state.inventory for item in NOVICE_WANTED_WEAPONS):
         return None
     # Two reasons to walk to the dealer: affordable purchase (zeny >= 50) or
     # sellable stock (start_zeny is 0 in the owned world - the first trip
@@ -370,6 +369,14 @@ def merchant_drive_cell(state: BotState) -> tuple[int, int] | None:
     affordable = type(state.zeny) is int and state.zeny >= MERCHANT_ZENY_MIN
     has_stock = any(str(item) in sellables for item in state.inventory)
     if not (affordable or has_stock):
+        return None
+    # Leg 40: the wanted-weapon release gates only the BUY arm (the knife
+    # want is satisfied and there is nothing to buy). A weapon holder with
+    # SELLABLE STOCK still walks the trip - the fixture knife (1201) sat in
+    # every inventory since 2b0f249e and the stock-set fix alone never fired
+    # the drive because this release ran first.
+    has_weapon = any(str(item) in state.inventory for item in NOVICE_WANTED_WEAPONS)
+    if has_weapon and not has_stock:
         return None
     return MERCHANT_ROUTE.get(state.map_name)
 

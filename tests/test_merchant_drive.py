@@ -482,3 +482,19 @@ def test_field_loot_species_count_as_sellable_stock() -> None:
     assert merchant_drive_cell(state) is not None
     state = _state(zeny=0, inventory={"949": 1, "917": 1, "914": 1})
     assert merchant_drive_cell(state) is not None
+
+
+def test_sell_want_fires_even_with_the_wanted_weapon_held() -> None:
+    """Leg 40: the sell trip never engaged because merchant_drive_cell
+    RELEASES the whole drive when a wanted weapon is held - and every agent
+    has carried the fixture knife (1201) since 2b0f249e. The weapon check
+    gates only the BUY arm; sellable stock fires the SELL arm regardless."""
+    armed = _state(zeny=0, inventory={"1201": 1, "713": 2, "1002": 1})
+    assert merchant_drive_cell(armed) is not None
+
+
+def test_weapon_alone_still_releases_the_drive() -> None:
+    """A knife with NO sellable stock and no zeny: the buy want is satisfied
+    and there is nothing to sell - the field behavior stays."""
+    armed = _state(zeny=0, inventory={"1201": 1})
+    assert merchant_drive_cell(armed) is None

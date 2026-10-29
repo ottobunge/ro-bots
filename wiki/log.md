@@ -7142,3 +7142,23 @@ from leg 39 (NyxSongGuard, PipinWalkerGuard stand; this leg's FoundGuild/
 GuildInvite actions repeated without new guild rows and without failures);
 6 of 7 in parties at readback (4 party rows; s00 solo); 133 chat_sent, 87 LLM
 escalations.
+
+## 2026-10-29 ~00:1x (Oct 30) — leg 40 follow-up: the sell arm survives the knife
+
+Leg 40's verdict (baa0cb76): 6 of 7 on the fields held, 69 attacks, 6 of 7 above
+baseline XP, TRANSPORT DOWN 0 — and THE SELL TRIP NEVER ENGAGED despite 4ffc515d
+making the loot sellable. Mechanism: merchant_drive_cell RELEASED the whole drive
+when a wanted weapon is held — and every agent has carried the fixture knife
+(1201) since 2b0f249e. The stock-set fix never got a chance to fire.
+
+Fix: the weapon release now gates only the BUY arm. The SELL arm (sellable stock
+held, weapon or not) walks the trip; a weapon holder with no stock and no zeny
+still releases to the field. Both arms need a KNOWN inventory + a pinned route
+map (unchanged fail-closes). RED tests: the armed-and-stocked state gets the
+drive cell; the armed-and-empty state releases. Gate 6,667+65.
+
+s00's pocket: the radius-12 escalation fired once and the far send was
+server-refused too (escalated_target_dead x8) — the pocket exceeds radius 12.
+The pragmatic release is the fx0-precedent save-move (the SQL last-position
+reset), applied before the next leg; the radius-sweep/wall-follow law stays a
+named option if the pocket recurs elsewhere.
