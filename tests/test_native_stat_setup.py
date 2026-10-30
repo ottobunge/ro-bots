@@ -15,6 +15,7 @@ import struct
 
 from robots.app.playing_runtime import PlayingClient
 from robots.domain.actions import Attack
+from robots.domain.model import Goal
 from tests.test_native_gameplay_equip import auth
 from tests.test_playing_runtime import Wire
 
@@ -128,3 +129,27 @@ def test_runtime_without_point_observation_sends_nothing() -> None:
     client = PlayingClient(Wire())
     client.perform_native(Attack(123))
     assert stat_sends(client.wire) == []
+
+
+def test_sp_zeny_param_twenty_seeds_the_view_balance() -> None:
+    """The login zeny arrives as 0x00B0 parameter 20 (SP_ZENY; the pinned
+    rathena enum src/map/map.hpp:501 places SP_ZENY at 20 in _sp). Leg 43:
+    no handler existed, state.zeny stayed None the whole window, and the
+    merchant drive's affordable gate (zeny >= 50) could never arm."""
+    client = PlayingClient(Wire())
+    wire = client.wire
+    wire.add(auth(), b0(20, 60))
+    client.perform_native(Attack(123))
+    tracker = client._tracker
+    assert tracker is not None
+    assert tracker.view.zeny == 60
+
+
+def test_build_native_state_prefers_the_tracked_zeny() -> None:
+    """The tracked login zeny is the balance authority; the shop-context
+    balance stays the fallback for wires that never delivered param 20."""
+    client = PlayingClient(Wire())
+    client.wire.add(auth(), b0(20, 60))
+    client.perform_native(Attack(123))
+    state = client.build_native_state(Goal.GRIND)
+    assert state.zeny == 60

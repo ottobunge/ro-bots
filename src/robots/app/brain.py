@@ -813,6 +813,14 @@ class EventDrivenBrain:
             drive = NpcClose(dialog.npc_id)
         elif dialog.stage == "menu":
             drive = NpcSelect(dialog.npc_id, 255)
+        elif dialog.stage == "blocked":
+            # Leg 43: the blocked stage had no reviewed drive, so the
+            # fail-closed divert fed _npc_step's empty outcome forever (the
+            # 2h17m dialogue-await latch). A blocked dialogue reached its
+            # state through deny_origin 'timeout' (the retryable origin)
+            # once the retry budget exhausted; the close is the one send
+            # that terminates it server-side and releases the goal script.
+            drive = NpcClose(dialog.npc_id)
         if drive is None:
             return None
         self._dialogue_cleared_stages.add(dialog.stage)

@@ -227,8 +227,15 @@ def test_currency_clears_on_session_or_continuity_loss(monkeypatch, boundary):
         with pytest.raises(NativeTelemetryUnavailable):
             client.build_native_state(Goal.GRIND)
         assert client._shop_context.currency is None
-    else:
+    elif boundary == "wire":
+        # a wire swap rebuilds the tracker: a fresh session whose balance is
+        # unknown until the server re-delivers it (no stale carry-over)
         assert client.build_native_state(Goal.GRIND).zeny is None
+    else:
+        # the tracked SP_ZENY balance (0x00B1 param 20) survives the shop
+        # context's clearance - the agent's zeny did not vanish with it
+        # (leg 43 made the tracked balance the state authority)
+        assert client.build_native_state(Goal.GRIND).zeny == 0
     assert historical.zeny == 0
     assert len(sent) == 2
 
@@ -261,10 +268,20 @@ def test_missing_received_readiness_permanently_clears_offer(monkeypatch, readin
     assert client._shop_context.offer is None
 
 
-def test_ordinary_warp_retains_historical_zeny_not_b0_balance(monkeypatch):
+def test_ordinary_warp_retains_tracked_zeny_across_the_map_epoch(monkeypatch):
+    """The tracked SP_ZENY balance survives an ordinary warp (no reset).
+
+    Contract history: this test once pinned the shop-only authority (a b0
+    param-20 frame was ignored and state.zeny stayed None until the shop
+    loop's own receipt). Leg 43 falsified that: with no ingest the balance
+    was None the WHOLE window and the merchant drive's affordable gate could
+    never arm. The pinned server broadcasts zeny via clif_longpar_change
+    (0x00B1 param 20; clif.cpp:3735 case SP_ZENY) and the tracker now
+    ingests it as the balance authority; the shop-context receipt stays the
+    zeny_receipt audit trail."""
     wire, client, receive, sent = actual_clients(monkeypatch)
     receive(struct.pack("<HHi", 0xB0, 20, 99), struct.pack("<HHi", 0xB1, 21, 99))
-    assert client.build_native_state(Goal.GRIND).zeny is None
+    assert client.build_native_state(Goal.GRIND).zeny == 99
     receive(struct.pack("<HHi", 0xB1, 20, -7))
     historical = client.build_native_state(Goal.GRIND).zeny_receipt
     receive(map_frame())

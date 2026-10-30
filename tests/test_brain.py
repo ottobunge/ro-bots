@@ -8,7 +8,7 @@ from robots.adapters.chat.stub import StaticChatGenerator
 from robots.adapters.decision.stub import ScriptedDecisionModel
 from robots.app.brain import SOCIAL_IDLE_STREAK_LIMIT, EventDrivenBrain
 from robots.app.scripts import FarmScript, GrindScript
-from robots.domain.actions import AcceptInvite, PartyChat, Rest, Say
+from robots.domain.actions import AcceptInvite, NpcClose, PartyChat, Rest, Say
 from robots.domain.events import (
     ChatHeard,
     DamageTaken,
@@ -20,6 +20,7 @@ from robots.domain.events import (
 )
 from robots.domain.farm import MobInfo
 from robots.domain.model import ActorRef, ChatLine, Goal, PartyInvite
+from robots.domain.npc import NpcDialogue
 from tests.conftest import make_state
 
 # -- fakes --------------------------------------------------------------
@@ -349,3 +350,28 @@ def test_the_widen_streak_injection_survives_a_starved_reauthor(state) -> None:
     assert isinstance(script_two, FarmScript)
     assert script_two.plan.target_mobs == script_one.plan.target_mobs
     assert script_two._starved == 5, "the re-authored script must inherit the recorded widen streak"
+
+
+def test_blocked_dialogue_gets_one_close_drive() -> None:
+    """Leg 43: a 'blocked' stage had no reviewed drive, so the fail-closed
+    divert fed _npc_step's empty outcome forever (zeny_wing: NpcNext at
+    07:32, then 2h17m silent - the dialogue-await latch). A blocked dialogue
+    is deny-origin 'timeout' (the retryable origin) once the retries are
+    exhausted; the one send that terminates it server-side is the close.
+    The cleared-stages set keeps it a one-shot per session."""
+    brain = make_brain()
+    dialog = NpcDialogue(
+        npc_id=110000883,
+        epoch=1,
+        map_name="prontera",
+        opened_sequence=5,
+        sequence=9,
+        stage="blocked",
+    )
+    state = make_state(goal=Goal.GRIND, npc_dialogue=dialog)
+    assert state.npc_dialogue is not None  # the divert path's precondition
+    first = brain._dialogue_clear_drive(dialog)
+    assert isinstance(first, NpcClose)
+    assert first.npc_id == 110000883
+    # once per stage: the second review mints nothing (no spam)
+    assert brain._dialogue_clear_drive(dialog) is None

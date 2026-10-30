@@ -331,6 +331,7 @@ class NativeGameplayView:
     stats: tuple[int, ...] | None
     stat_acks: tuple[ObservedStatAck, ...]
     skill_uses: tuple[ObservedSkillUse, ...] = ()
+    zeny: int | None = None
 
 
 def _position(raw: bytes, offset: int, seq: int, at: float) -> ObservedPosition:
@@ -380,6 +381,7 @@ class NativeGameplayTracker:
         # bounded 0x00BC ack tail.
         self._status_points: int | None = None
         self._base_level: int | None = None
+        self._zeny: int | None = None
         self._stats: dict[int, int] | None = None
         self._stat_acks: deque[ObservedStatAck] = deque(maxlen=MAX_EVENTS)
 
@@ -433,6 +435,7 @@ class NativeGameplayTracker:
             None if self._stats is None else tuple(self._stats.get(i, 1) for i in range(6)),
             tuple(self._stat_acks),
             tuple(self._skill_uses),
+            self._zeny,
         )
 
     def consume_snapshot(
@@ -778,17 +781,7 @@ class NativeGameplayTracker:
     def _status(self, seq: int, at: float, pid: int, raw: bytes) -> None:
         parameter = int.from_bytes(raw[2:4], "little")
         if pid == 0x00B0:
-            if parameter == 24 and self._inventory_initial and self._ready:
-                self._inventory_known = True
-                self._inventory_initial = False
-            elif parameter == 9:
-                # Status points, signed: negative values are retained raw and
-                # never spend-ready (the setup phase gates on points > 0).
-                self._status_points = struct.unpack_from("<i", raw, 4)[0]
-            elif parameter == 11:
-                self._base_level = int.from_bytes(raw[4:], "little")
-            elif 13 <= parameter <= 18:
-                self._seed_stat(parameter - 13, int.from_bytes(raw[4:], "little"))
+            self._absorb_param(parameter, raw)
         elif parameter in (1, 2):
             value = int.from_bytes(raw[4:], "little", signed=True)
             previous = self._xp_values.get(parameter)
@@ -798,3 +791,28 @@ class NativeGameplayTracker:
                 )
             )
             self._xp_values[parameter] = value
+        elif pid == 0x00B1 and parameter == 20:
+            # SP_ZENY rides ZC_NOTIFY_PARAM2 (0x00B1) on this pin: clif.cpp's
+            # clif_updatestatus case SP_ZENY calls clif_longpar_change (the
+            # long variant; clif.cpp:3735). The tracker's balance authority.
+            self._zeny = struct.unpack_from("<i", raw, 4)[0]
+
+    def _absorb_param(self, parameter: int, raw: bytes) -> None:
+        """The known 0x00B0 parameter handlers (pinned rathena _sp ids)."""
+        if parameter == 24 and self._inventory_initial and self._ready:
+            self._inventory_known = True
+            self._inventory_initial = False
+        elif parameter == 9:
+            # Status points, signed: negative values are retained raw and
+            # never spend-ready (the setup phase gates on points > 0).
+            self._status_points = struct.unpack_from("<i", raw, 4)[0]
+        elif parameter == 20:
+            # SP_ZENY (pinned rathena src/map/map.hpp:501, _sp offset 20):
+            # the login/updated balance. Leg 43: its absence kept
+            # state.zeny None all window and the merchant drive's
+            # affordable gate could never arm.
+            self._zeny = struct.unpack_from("<i", raw, 4)[0]
+        elif parameter == 11:
+            self._base_level = int.from_bytes(raw[4:], "little")
+        elif 13 <= parameter <= 18:
+            self._seed_stat(parameter - 13, int.from_bytes(raw[4:], "little"))

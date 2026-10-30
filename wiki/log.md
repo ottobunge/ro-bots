@@ -7467,3 +7467,32 @@ fix that one hop so affordable is computable in a fresh session;
 the send-less divert, so a blocked frame cannot starve the goal script.
 Leg 44 re-proves the buy; the fixture stays applied and reusable
 (zeny_wing 60z, no knife — verified unchanged at close).
+
+## 2026-10-30 ~12:1x — the leg-43 two-gate fix: SP_ZENY ingest + the blocked-dialogue close drive
+
+Leg 43's stacked gates (668e5714), fixed in one TDD slice (3 RED -> GREEN):
+
+(1) THE ZENY OBSERVATION. The pinned server broadcasts the balance via
+clif_longpar_change = ZC_NOTIFY_PARAM2 0x00B1 parameter 20 (clif.cpp:3735,
+case SP_ZENY; SP_ZENY = 20 in the pinned _sp enum, map.hpp:501). The tracker
+had no handler: state.zeny was None all window (the shop-context balance is
+only populated inside the shop loop) and the merchant drive's affordable gate
+could never arm. Now: 0x00B0 param 20 AND 0x00B1 param 20 both ingest into
+tracker view.zeny; build_native_state prefers the tracked balance with the
+shop-context balance as fallback (zeny_receipt unchanged). The warp/continuity
+tests reconciled: the tracked balance survives an ordinary warp and the shop
+context's clearance; a WIRE SWAP still resets it (a fresh session knows
+nothing until re-delivery).
+
+(2) THE BLOCKED-STAGE STARVE. _dialogue_clear_drive had no reviewed drive for
+stage 'blocked', so the fail-closed divert fed _npc_step's empty outcome
+forever (zeny_wing: NpcNext at 07:32, then 2h17m of decide-only ticks). Now a
+blocked dialogue gets ONE NpcClose drive per session (the cleared-stages set
+bounds it): the close passes _npc_action's actuation gate (it only eats
+Attack/Loot/MoveTo/TalkToNpc), terminates the deal server-side, and the
+script resumes. The retry budget (3/epoch) still runs first - the close is
+the escalation after it.
+
+Gate 6,671+65. Leg 44 re-proves the buy: zeny_wing (60z fixture) should arm
+the drive on the tracked balance, walk the dealer, open the C6 buy list,
+purchase the knife (zeny 60->10, knife back in inventory).

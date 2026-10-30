@@ -685,7 +685,11 @@ class PlayingClient:
             received_skills=self.received_skills,
             public_skill_knowledge=self.public_skill_knowledge,
             shop_offer=self._shop_context.offer,
-            zeny=self._shop_context.balance,
+            # The tracked SP_ZENY balance (0x00B0 param 20, pinned rathena
+            # src/map/map.hpp:501) is the authority; the shop-context balance
+            # stays the fallback for wires that never delivered it (leg 43:
+            # state.zeny was None all window and the buy could never arm).
+            zeny=view.zeny if view.zeny is not None else self._shop_context.balance,
             zeny_receipt=self._shop_context.currency,
             capacity_receipt=self._capacity.receipt,
             weight=self._capacity.weight_count,
