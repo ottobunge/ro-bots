@@ -7720,3 +7720,50 @@ tap: every seen 0xC6 frame logs seq/issued/after/consumed/rows before the
 guards. Leg 47 (or 46's close) names the guard definitively. The dispatch chain
 re-verified clean (NpcShopBuySelection -> _select_shop_buy -> _npc.request ->
 issued()).
+
+## 2026-10-30 ~21:55 — leg 46 readout: BOTH 2470dd93 taps silent with the purchase still missing — the reply frame is the 0xC4 deal marker, not a C6; the drop is the C4 handoff, upstream of both taps
+
+Launch 19:32:24 UTC (20:32 CET; receipt epoch 1793388724); window 21:00-22:30
+Madrid CET = 20:00-21:30 UTC — the brief's "19:00-20:30 UTC" was the CEST
+mis-conversion; the runner's CLOCK is Madrid and the logins fired exactly at
+20:00:00 UTC. The zeny seed proven live again (first state_tick zeny=60; the
+seed file matched the fresh pre-launch char-table readback exactly). 7/7
+online all window; steps 29911, step_errors 0; ZERO TRANSPORT DOWN.
+
+THE ATTEMPT (the only one; the per-epoch drive spent after it): 20:00:08.184
+TalkToNpc(110001762) -> 20:00:10.187 NpcShopBuySelection executed — the C5 WAS
+sent (the request-drop tap stayed silent) -> 20:00:10.1866 world_event
+NpcDialogueReceived npc=110001762 stage=unsupported_shop, 0.5 ms after the C5;
+0xC4 is the ONLY pid the STAGES table maps to that stage
+(native_npc_dialogue.py:25). shop_offer non-null in ZERO of 250 receipt
+samples. NpcClose 20:00:26 + 20:01:07 (the close-drive cycling the latch);
+zeny_wing held one cell (prt_in 172,129) all window; DB zeny 60->60, no knife.
+
+THE LOCALIZATION: ZERO 'shop-debug:' lines in the whole leg log. Both C6 taps
+sit BEHIND the bind gate `pid != 0xC6 ... return` (native_shop_context.py:107)
+— the 0xC4 the server actually sends dies there BEFORE any tap can emit. No
+0xC6 was ever consumed post-issued: an in-window registered 0xC6 would have
+bound the offer or tripped the window/decode tap, and an unregistered frame id
+would have killed the transport LOUDLY (zero TRANSPORT DOWN). The C4 half of
+the handoff was never wired: decode_deal_type (native_shop.py:57) has ZERO
+callers. VERDICT: the acceptance's letter (a tap line naming the drop, or the
+purchase landing) was NOT met — and that silence IS the answer: the killer is
+the third, upstream drop, the C5->C4->C6 handoff; the 2470dd93 tap is
+structurally unreachable for the frame the server actually sends.
+
+Reconciliation with 1afddfce (the guard-level C6 tap, landed 21:51 CET
+mid-window): it keys `if pid == 0xC6` — on this evidence it logs ZERO lines on
+a rerun. The instrument that names the drop definitively is a pid census of
+EVERY frame arriving while a selection is issued (one bounded line), or skip
+the instrument and wire decode_deal_type into the handoff — that is the fix.
+
+The rest of the window: kills by exp delta, mob_db-exact — RinceNyan +6/+2 =
+one Lunatic; PoringMuffin14 +6/+2 = one Lunatic; xXLunasongXx +4/+3 = one
+Drops; NyxSong/PipinWalker/YuffieFy81/zeny_wing zero. No sells (zeny flat
+8/31/60/4/0/0/0). Social actions fired (FoundGuild/GuildInvite on NyxSong and
+PipinWalker). move_gates: await_pending 6680, escalated_target_dead 1393,
+no_route_direct 90, target_unwalkable_escalated 3, no_position_or_dead 123;
+attack_gates: resting 698, pending_walk 383, dead 156; npc_stage 'blocked'
+x193 samples. NEXT SLICE: wire the 0xC4 deal marker through decode_deal_type
+into the shop handoff so the offer bind can proceed; leg 47 lands the buy or
+prints the 0xC4 bytes.
