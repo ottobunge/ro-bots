@@ -1,9 +1,13 @@
 """Owner-thread, bounded read-only shop observer. No sends or policy timers."""
 
+import logging
+
 from robots.adapters.native_shop import decode_currency, decode_shop_offer
 from robots.domain.actions import NpcShopBuySelection
 from robots.domain.npc import NpcDialogue
 from robots.domain.shop import ReceivedShopOffer, ReceivedShopRow, ReceivedZeny
+
+logger = logging.getLogger(__name__)
 
 
 class NativeShopContext:
@@ -104,11 +108,26 @@ class NativeShopContext:
             return
         self._consumed = True
         if not self._sent_at <= at < self._deadline:
+            # e2e-45 diagnostic tap: a C6 outside the issue window is one of
+            # the two silent drop points - name it (fails open, bounded line)
+            logger.warning(
+                "shop-debug: C6 outside the issue window (seq=%s sent_at=%s deadline=%s)",
+                seq,
+                self._sent_at,
+                self._deadline,
+            )
             self.invalidate_offer()
             return
         try:
             decoded = decode_shop_offer(raw)
         except ValueError:
+            # e2e-45 diagnostic tap: the decode drop - the raw frame is the
+            # evidence (hex, bounded to the first 64 bytes)
+            logger.warning(
+                "shop-debug: C6 decode failed (%d bytes): %s",
+                len(raw),
+                raw[:64].hex(),
+            )
             self.invalidate_offer()
             return
         self.offer = ReceivedShopOffer(

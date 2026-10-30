@@ -7699,3 +7699,13 @@ the emission/trace lane) logging request()'s return + decode_shop_offer's
 exceptions around zeny_wing's buy attempts; leg 46 runs it inside the window
 and the drop point falls out of the log. Then the one-line fix, leg 47, the
 buy lands, and the economy is closed.
+
+## 2026-10-30 ~20:4x — the shop-debug tap (fails-open warnings on both C6 drop points)
+
+The two silent drops (e02d875b) now name themselves in the runner log:
+(1) _select_shop_buy logs a warning when request() returns None (the stage,
+the request counter, the deadline, now) — the clock/cap deny falls out;
+(2) _consume_offer logs a warning on a C6 outside the issue window and on
+decode_shop_offer's ValueError (with the first 64 bytes hex — the row layout
+evidence). No behavior change; the gate 6,675+65. Leg 46 runs the tap inside
+the window; the drop point falls out of /tmp/population_leg46.log.

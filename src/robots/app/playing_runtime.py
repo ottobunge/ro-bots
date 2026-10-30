@@ -5,6 +5,7 @@ Initial life uses fresh authenticated map-session source authority; SELF death
 overrides it until an explicit resurrection receipt. Warp alone never revives.
 """
 
+import logging
 import math
 import random
 import struct
@@ -225,6 +226,9 @@ def _recent_chat_lines(wire: Any, pos_at: float) -> tuple[ChatLine, ...]:
     except TypeError, AttributeError:
         party = ()  # stub wires expose Mock/custom attrs; logging never blocks play
     return public + party
+
+
+logger = logging.getLogger(__name__)
 
 
 class PlayingClient:
@@ -1075,6 +1079,16 @@ class PlayingClient:
         if self._shop_dialogue(now) is None:
             return
         raw = self._npc.request(action, now)
+        if raw is None:
+            # e2e-45 diagnostic tap: the C5 never sent - name the drop
+            logger.warning(
+                "shop-debug: buy selection request returned None"
+                " (stage=%s requests=%d deadline=%s now=%.2f)",
+                self._npc.view.stage if self._npc.view is not None else None,
+                self._npc.requests,
+                self._npc.deadline,
+                now,
+            )
         if raw is not None:
             self._shop_context.invalidate_offer()
             _, base, frames = self.wire.native_frame_snapshot()
