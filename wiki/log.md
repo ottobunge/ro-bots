@@ -7603,3 +7603,48 @@ case), and now a post-death warp does too (the [warp] case — the pose
 machinery re-engages: the stand request fires instead of the dead-gate's
 silence). RED test
 test_map_change_after_own_death_clears_the_death_latch. Gate 6,675+65.
+
+## 2026-10-30 18:3x — leg 45 (Fri 16:00-18:00 Madrid): the zeny seed proven live; the buy stops at dialogue stage `unsupported_shop`
+
+The seed slice CLOSED: zeny_wing's first state_tick reads zeny=60 with an
+empty inventory, and all seven agents carried their exact seeded balances
+all window (8/31/60/4/0/0/0 — the tracked > shop > seed chain live). Two
+launch defects were fixed en route: the population runner's own argparse
+never accepted --seed-zeny-file (0ef5df79 — 2743782a wired playing.py's
+parser only), and the deeper gap the first live window then exposed: the
+runner overrides the runtime's seed-aware client factory, so seed_zeny
+never reached PlayingClient (b7a4890d — first launch live-proved it:
+state_tick zeny null with the seed file loaded and parsed). The committed
+receipt covers launch 3 (16:38-18:33); launches 1-2 were void for the
+slice (no seed / short duration) and their trace segment reads zeny=null.
+
+The trip machinery is PROVEN to the C6 hop: zeny_wing walked
+prontera (177,221) -> the prt05 warp -> prt_in within ~3 minutes of login,
+clicked the cited Weapon Dealer cell (172,130 +/-1, npc 110001762), and on
+the fresh epoch re-talked 2 seconds after login, authoring
+NpcShopBuySelection (opened_sequence 68) 2 seconds after the dialogue
+arrived. The purchase never authored: the dealer's deal frame lands as
+dialogue stage `unsupported_shop` — the C6 purchase list is never ingested
+as a shoppable offer (receipt: shop_offer NONE across 230 samples; DB
+zeny 60->60, no knife in inventory). The close-drive then cycled the stage
+per its design (4x NpcClose -> "opening" re-received, one close per
+received-dialogue session) and the per-epoch drive budget was spent: 109
+decides standing at the dealer cell, goal_review farm_item every ~45s,
+zero re-talks for the rest of the window.
+
+Rest of the window: 5/7 farmed kills (base_exp +4..+8; s00 — leg 44's dead
+agent — farmed pay_fild04 the whole window, the death stall did NOT recur
+with the warp-clears-latch fix live in the tree mid-edit), sells 0 (no
+other agent reached a dealer), RinceNyan weak (178 MoveTos vs peers'
+~1550, static at (188,323) from 16:10 with climbing decides — the leg-44
+carry candidate, owned by the main lane). Receipt
+population-receipt-45-1793374702.json: 27,511 steps, 0 errors, rx_error
+NONE, all 7 online through the window.
+
+NAMED NEXT SLICE: make the shop stage shoppable — ingest the C6 purchase
+list so the dealer's deal frame carries offer rows into the shop loop
+(killing the `unsupported_shop` classification) and exempt shop stages
+from the blocked-close drive. RED test: after NpcShopBuySelection with an
+opened_sequence, a NpcShopPurchase must author within N decides when the
+wanted id (1201) is on the received offer; DB acceptance stays
+zeny 60->10 + nameid 1201 back in inventory.
