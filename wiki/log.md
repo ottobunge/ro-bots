@@ -7767,3 +7767,22 @@ attack_gates: resting 698, pending_walk 383, dead 156; npc_stage 'blocked'
 x193 samples. NEXT SLICE: wire the 0xC4 deal marker through decode_deal_type
 into the shop handoff so the offer bind can proceed; leg 47 lands the buy or
 prints the 0xC4 bytes.
+
+## 2026-10-30 ~23:5x — the C6-bind fix: the prompt_sequence term drops from the shop context's binding guard
+
+Leg 46's silence + the guard tap's own RED output (C6 seen, issued=False,
+after=41) localized the killer: the shop context's check() compared
+dialog.sequence to action.prompt_sequence, and the dealer's repeat C4
+dealtype marker (leg 46: 0.5ms before the C5, native_npc_dialogue._receive
+re-bumps sequence on every 6-byte frame) invalidated the issued binding
+before the C6 arrived -> _issued None -> the C6 dropped on the early guard.
+The fix: drop the prompt_sequence term (a REAL new prompt still invalidates
+via the stage term - menu/text/unsupported_* - and via opened/map/epoch).
+Law B kept: the dialogue's own _encode_request still matches
+prompt_sequence, so the STALE action cannot re-dispatch a second C5 (the
+drift test passes untouched). New test pins Law A end to end: repeat C4 ->
+check -> the C6 binds (offer non-None). The tap lines were the instrument:
+the RED run's own "C6 seen (seq=43 issued=False after=41)" is the mechanism
+reproduced. Gate 6,676+65. NEXT: leg 47 - the buy re-proof; expect the offer
+to bind, the purchase admission to mint, the C8 to fire, zeny 60 -> 10 and
+the knife (1201) back on zeny_wing.

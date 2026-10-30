@@ -76,7 +76,13 @@ class NativeShopContext:
         if not all(
             (
                 dialog.stage == "waiting",
-                dialog.sequence == action.prompt_sequence,
+                # the prompt_sequence term is deliberately absent: the dealer's
+                # repeat C4 dealtype marker (leg 46, 0.5ms before the C5)
+                # re-bumps dialog.sequence after the C5 moved the stage to
+                # "waiting", and an invalidation here killed the in-flight C6
+                # binding (_issued None -> the C6 dropped silently). A REAL new
+                # prompt still invalidates: it changes the stage (menu/text/
+                # unsupported_*) or the opened dialogue, both still guarded.
                 dialog.opened_sequence == action.opened_sequence,
                 dialog.map_name == action.map_name,
                 dialog.epoch == action.epoch,
@@ -110,7 +116,11 @@ class NativeShopContext:
             # so the drop may sit in these early guards themselves
             logger.warning(
                 "shop-debug: C6 seen (seq=%s issued=%s after=%s consumed=%s rows=%d)",
-                seq, action is not None, self._after, self._consumed, len(raw),
+                seq,
+                action is not None,
+                self._after,
+                self._consumed,
+                len(raw),
             )
         if pid != 0xC6 or action is None or seq <= self._after or self._consumed:
             return
