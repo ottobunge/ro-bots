@@ -7673,3 +7673,29 @@ instrument) over the leg-45 trace window on zeny_wing — dump state.shop_offer
 / the context's _issued/_sent_at/_deadline per tick — to name which half of
 the issue->bind handoff dropped. Then the one-line fix, leg 46, the buy lands,
 and the economy is closed end to end.
+
+## 2026-10-30 ~19:4x — the C6 offer-bind gap narrowed to two silent drop points
+
+Static trace of the full issue->bind chain (all steps verified present):
+NpcShopBuySelection mint (npc_shop_buy_selection, the C4 unsupported_shop
+stage live) -> perform_native -> _select_shop_buy (binding stashed at mint) ->
+_npc.request(action, now) [encodes C5 type 0 via _encode_shop] -> the send +
+_shop_context.issued(action, after, now, deadline) -> the server's C6 ->
+_consume_offer binds the offer.
+
+Two silent drop points survive the audit:
+(1) request() returns None BEFORE sending: the _name_request_clock denies when
+now >= min(deadline, absolute_deadline) — the unsupported_shop stage's window
+is 15s from the C4 receipt (the mint->dispatch gap must fit it); or
+requests >= 32 denies a long-lived dialogue.
+(2) the C6 arrives but decode_shop_offer RAISES (ValueError -> invalidate_offer,
+silent): the decoder's row layout vs the pinned server's actual C6 bytes — the
+w84-era note says the C6 rows are price/discount/type/nameid; a single
+field-order mismatch poisons every attempt.
+
+The leg-45 window's raw frames are not persisted, so neither point is
+decidable offline. THE INSTRUMENT for the next leg: a debug tap (one-off, in
+the emission/trace lane) logging request()'s return + decode_shop_offer's
+exceptions around zeny_wing's buy attempts; leg 46 runs it inside the window
+and the drop point falls out of the log. Then the one-line fix, leg 47, the
+buy lands, and the economy is closed.
