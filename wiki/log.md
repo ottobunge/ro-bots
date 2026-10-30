@@ -7377,3 +7377,16 @@ combat question, plus the post-sell dealer stall the leg-42 receipt names.
 
 Leg 43 acceptance shape: RinceNyan (31z) + one farm-and-sell cycle crosses 50z
 -> NpcShopPurchaseOpen in the trace -> the economy is closed end to end.
+
+## 2026-10-30 ~07:5x — leg 43 armed: the 50z BUY with the sanctioned fixture
+
+Every agent holds a (worn) knife, so the BUY arm (no weapon + zeny >= 50) can
+never fire naturally - the buy hop had no live path. Fixture applied (the
+sanctioned class: Emperium for the guild probe, knife 2b0f249e): zeny_wing
+(300002) zeny 0->60 + knife DELETEd. The BUY arm now fires for it: dealer trip
+-> 0x00C4 dealtype type 0 -> 0x00C6 buy list -> purchase 50z -> the knife
+returns (DB evidence: zeny 60->10 + nameid 1201 back in inventory).
+
+Leg 43 scheduled (Friday 08:30-10:30 Madrid). Secondary: RinceNyan's second
+sell after farming; carry-overs: the post-sell dealer stall, s00's attack->kill
+conversion (weapon ruled out).

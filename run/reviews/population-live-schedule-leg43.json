@@ -1,0 +1,32 @@
+{
+  "leg": 43,
+  "created": "2026-10-30T07:55:00+02:00",
+  "timezone": "Europe/Madrid",
+  "day_index": 4,
+  "day_name": "Friday",
+  "window_local": ["08:30", "10:30"],
+  "window_utc": ["06:30", "08:30"],
+  "goal": "the LAST economy hop: the 50z BUY. Fixture: zeny_wing granted 60z + knife removed (the sanctioned fixture class - Emperium for the guild probe, knife 2b0f249e) so the BUY arm (no weapon + affordable) fires: dealer trip -> 0x00C4 dealtype type 0 -> 0x00C6 buy list -> purchase -> the knife returns to inventory (DB evidence). Secondary: RinceNyan (31z, saved at the dealer) farms, sells again, and approaches 50z.",
+  "fixture_applied": "char 300002 zeny_wing: zeny 0->60, inventory knife 1201 DELETEd (verified: zeny 60, no knife)",
+  "agents": [
+    {"persona": "pop_0003_g00m00", "char": "NyxSong", "baseline_zeny": 8, "last_pos": "prt_fild08 (213,318)"},
+    {"persona": "pop_0003_g00m01", "char": "RinceNyan", "baseline_zeny": 31, "last_pos": "prt_in (172,129) - saved AT the dealer; sells again after farming"},
+    {"persona": "pop_0003_g00m02", "char": "zeny_wing", "baseline_zeny": 60, "last_pos": "prontera (150,143)", "note": "THE BUY CANDIDATE: no knife + 60z >= 50 -> the BUY arm fires"},
+    {"persona": "pop_0003_g01m00", "char": "PipinWalker", "baseline_zeny": 4, "last_pos": "prontera (153,156)"},
+    {"persona": "pop_0003_g01m01", "char": "xXLunasongXx", "baseline_zeny": 0, "last_pos": "prontera (153,156)"},
+    {"persona": "pop_0003_g01m02", "char": "PoringMuffin14", "baseline_zeny": 0, "last_pos": "prt_fild08 (176,351)"},
+    {"persona": "pop_0003_s00", "char": "YuffieFy81", "baseline_zeny": 0, "last_pos": "pay_fild04 (206,175)", "note": "savepoint reset held through leg 42"}
+  ],
+  "findings_carried": [
+    "leg 42: the sell fix PROVEN (RinceNyan +28z in the first minute, 9c196846); equip DB-proven 7/7 (3c71c01e)",
+    "the post-sell dealer stall (RinceNyan held the dealer cell long after selling) - watch npc_stage/goal_review this leg",
+    "s00 attack->kill conversion on pay_fild04 (weapon ruled out: knife worn, 12 dmg/hit vs Pupa 60 HP = 5 hits)"
+  ],
+  "decide_backend": "http://192.168.1.156:8091/v1/systemone",
+  "chat_backend": "http://192.168.1.156:8092/v1/chat/completions",
+  "acceptance": [
+    "zeny_wing's trace shows NpcShopPurchaseOpen (0x00C6 buy list reached) AND its inventory table gains nameid 1201 with zeny dropping 60->10 (the knife's 50z price)",
+    "no TRANSPORT DOWN; all 7 online during the window",
+    "RinceNyan's second sell if it farms + loots (zeny > 31 at close is the evidence)"
+  ]
+}
