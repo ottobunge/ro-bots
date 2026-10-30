@@ -7496,3 +7496,25 @@ the escalation after it.
 Gate 6,671+65. Leg 44 re-proves the buy: zeny_wing (60z fixture) should arm
 the drive on the tracked balance, walk the dealer, open the C6 buy list,
 purchase the knife (zeny 60->10, knife back in inventory).
+
+## 2026-10-30 ~13:1x — the login zeny is NEVER sent on this pin; the fix shape is a runner-side seed
+
+Leg 44's live trace settles it: zeny_wing's state_tick zeny is None even after
+61f44ef6's 0x00B0/0x00B1 param-20 ingest. Pinned-source reading: the map-server
+emits SP_ZENY only on a CHANGE (pc.cpp:5810/5844 pay/get, trade.cpp, mail.cpp —
+all via 0x00B1 param 20, clif.cpp:3735); the login entry packets
+(ZC_ACCEPT_ENTER 0x0073/0x02EB, clif.cpp:751-753) carry position only, and
+clif_initialstatus has no zeny field. A real client knows its wallet from the
+CHAR-server character list — a clientless agent never parses that channel.
+
+THE GOOD NEWS from the same trace: the 61f44ef6 close-drive fix WORKS LIVE —
+the same TalkToNpc latch that starved 2h17m in leg 43 now terminates in ~6s
+(TalkToNpc -> NpcNext x2 -> NpcClose at +6s -> the script resumed and zeny_wing
+is walking freely).
+
+FIX SHAPE (next slice, TDD): the runner seeds each agent's balance from the
+fixture DB (the shepherd reads the char table pre-launch anyway — the same
+ground truth any player's screen shows; parity, not a shortcut).
+--seed-zeny-file {persona: int} -> build_host -> the client's initial tracked
+zeny (used only until the wire delivers its own change update). Then leg 45
+proves the buy.
