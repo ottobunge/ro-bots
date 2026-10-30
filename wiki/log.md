@@ -7390,3 +7390,27 @@ returns (DB evidence: zeny 60->10 + nameid 1201 back in inventory).
 Leg 43 scheduled (Friday 08:30-10:30 Madrid). Secondary: RinceNyan's second
 sell after farming; carry-overs: the post-sell dealer stall, s00's attack->kill
 conversion (weapon ruled out).
+
+## 2026-10-30 ~09:55 — the leg-43 buy stall: a dialogue-await latch (named mid-window)
+
+zeny_wing (the 60z/no-knife buy fixture): window open -> PartyChat ->
+TalkToNpc(npc_id=110000883) from its save (150,143) -> 15 clicks over 2 min
+while walking east to (158,135) -> NpcNext(110000883) at 07:32:08 -> then
+SILENCE: 108 decides over 2h17m with ZERO actions. The buy never fired; zeny
+stays 60, no knife.
+
+Named shape: a DIALOGUE-AWAIT LATCH. The click/NpcNext sequence opened (or
+believed it opened) a dialogue with npc 110000883 — which is NOT the Weapon
+Dealer (that one lives at prt_in,172,130) — and the dialogue state sits
+awaiting a menu/dealtype that never arrives. The leg-24 recovery only expires
+the BEGIN deadline (_expire, deny_origin='timeout', 5s); an OPEN dialogue
+awaiting a response has NO timeout, so neither the fail-closed barrier nor
+_retry_blocked_dialogue ever engages. Two candidate root layers for the fix
+slice: (1) the missing await timeout (open dialogue + expected response
+absent for N s -> deny_origin='timeout' -> close/re-begin); (2) WHY the
+merchant leg clicked an npc at (150,143) instead of walking the route cell
+(177,221) first — the drive's engage path skipped the walk leg.
+
+The steered shepherd readout (npc_stage + move_gates for g00m02) confirms
+which. Fix slice: TDD the await timeout + re-check the drive's walk-then-click
+ordering; leg 44 re-proves the buy.
