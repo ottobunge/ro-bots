@@ -606,6 +606,7 @@ class ScheduledAgent:
         wants: WantState | None = None,
         human_observer: HumanContributionObserver | None = None,
         trace: TraceLog | None = None,
+        seed_zeny: int | None = None,
     ) -> None:
         if type(telemetry_wait_s) not in (int, float) or not 0 <= telemetry_wait_s <= 5:
             msg = "telemetry_wait_s must be a plain number from 0 to 5"
@@ -629,6 +630,10 @@ class ScheduledAgent:
         self.memory = memory or Memory(StubSummarizer())
         self.client = client
         self._client_factory = client_factory
+        # The runner-side balance seed (e2e-43: the map server sends SP_ZENY
+        # on changes only - pc.cpp:5810/5844 - so a clientless client never
+        # sees its login wallet). Used until the wire delivers a change.
+        self._seed_zeny = seed_zeny
         self._tick_clock: TickClock = tick_clock or WallClock()
         self.world_state = world_state
         self.tick_seconds = tick_seconds
@@ -911,7 +916,7 @@ class ScheduledAgent:
                 login_port=self.entry.login_port,
                 pincode=self.entry.pincode,
             )
-            return PlayingClient(wire)
+            return PlayingClient(wire, seed_zeny=self._seed_zeny)
         msg = "no BotClient (spike 003 import failed) and no client_factory"
         raise RuntimeError(msg)
 
@@ -1606,6 +1611,7 @@ class AgentHost:
         max_agents: int = 0,
         population: GeneratedPopulation | None = None,
         population_file: str | Path | None = None,
+        seed_zeny_by_persona: dict[str, int] | None = None,
         meet_where: str | None = "prontera 156,22",
         meet_when: str | None = None,
         brain_factory: (
@@ -1623,6 +1629,9 @@ class AgentHost:
         self._mob_db_factory = mob_db_factory
         self._spawn_species_factory = spawn_species_factory
         self._travel_plan_factory = travel_plan_factory
+        # Per-persona balance seeds (e2e-43: the login zeny is never sent);
+        # resolved per agent in _build_agent (the ctor's complexity cap).
+        self._seed_zeny_by_persona = seed_zeny_by_persona
         self._brain_factory = brain_factory
         self.memory_root = memory_root
         self.summary_cache_world = summary_cache_world
@@ -1777,6 +1786,7 @@ class AgentHost:
                 wants=wants,
                 human_observer=human_observer,
                 trace=trace,
+                seed_zeny=(self._seed_zeny_by_persona or {}).get(persona.persona_id),
             )
         except BaseException as origin:
             _close_failed_memory(origin, memory.close)

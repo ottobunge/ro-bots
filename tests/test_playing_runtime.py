@@ -1022,3 +1022,18 @@ def test_sealed_pocket_escalates_once_to_a_far_walkable_cell():
     client.perform_native(MoveTo(5, 5))  # the same position never re-escalates
     assert len(wire.moves) == sent
     assert any(reason == "escalated_target_dead" for _, reason in client._move_gate_reasons)
+
+
+def test_seed_zeny_reports_until_the_wire_delivers_the_balance() -> None:
+    """The runner-side seed stands in for the char-list balance a clientless
+    client never receives (e2e-43: the map server sends SP_ZENY on changes
+    only, pc.cpp:5810/5844). A wire-delivered balance overrides the seed."""
+    client = runtime.PlayingClient(Wire(), seed_zeny=60)
+    wire = client.wire
+    wire.add(entry(), map_frame())
+    client.perform_native(Attack(123))
+    assert client.build_native_state(Goal.GRIND).zeny == 60
+    # the wire-delivered balance (0x00B1 param 20, clif.cpp:3735) overrides
+    wire.add(struct.pack("<HHi", 0x00B1, 20, 55))
+    client.perform_native(Attack(123))
+    assert client.build_native_state(Goal.GRIND).zeny == 55

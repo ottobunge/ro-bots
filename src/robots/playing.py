@@ -79,6 +79,17 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         ),
     )
     parser.add_argument(
+        "--seed-zeny-file",
+        type=Path,
+        default=None,
+        help=(
+            "JSON {persona_id: balance} seeding each agent's wallet (e2e-43: "
+            "the map server sends SP_ZENY on changes only, pc.cpp:5810/5844, "
+            "so a clientless client never sees its login balance). Values are "
+            "the fixture DB's char.zeny read back before launch."
+        ),
+    )
+    parser.add_argument(
         "--trace-dir",
         type=Path,
         default=None,
@@ -136,6 +147,18 @@ def build_roster(entries: dict[str, ManifestEntry], args: argparse.Namespace) ->
         groups.append(group)
         graph.seed_group(group)
     return SocietyRoster(groups, personas, graph, ReputationStore())
+
+
+def load_seed_zeny(path: Path | None) -> dict[str, int] | None:
+    """Read the --seed-zeny-file mapping ({persona_id: balance}).
+
+    The shepherd writes it from the fixture DB's char.zeny readback before
+    launch (e2e-43: the map server sends SP_ZENY on changes only, so the
+    login wallet must be seeded). None keeps today's unseeded behavior."""
+    if path is None:
+        return None
+    raw = json.loads(path.read_text())
+    return {str(persona): int(balance) for persona, balance in raw.items()}
 
 
 def build_host(args: argparse.Namespace) -> AgentHost:
@@ -215,6 +238,7 @@ def build_host(args: argparse.Namespace) -> AgentHost:
         memory_root=args.memory_root,
         worldfeed_port=args.worldfeed_port,
         population_file=getattr(args, "population_file", None),
+        seed_zeny_by_persona=load_seed_zeny(getattr(args, "seed_zeny_file", None)),
         trace_dir=getattr(args, "trace_dir", None),
         brain_factory=(
             (

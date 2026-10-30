@@ -499,3 +499,20 @@ def test_worldfeed_defaults_to_a_live_state(tmp_path: Any) -> None:
     host.start_worldfeed()  # disabled via run_worldfeed=False: must be a no-op
     host.stop()
     assert all(not a.online for a in host.agents.values())
+
+
+def test_seed_zeny_map_reaches_each_agent(tmp_path: Any) -> None:
+    """The runner's --seed-zeny-file mapping ({persona: balance}) lands on
+    every scheduled agent's client seed (e2e-43: the login zeny is never
+    sent - changes only, pc.cpp:5810/5844)."""
+    roster = make_roster()
+    manifest = write_manifest(tmp_path)
+    mapping = dict.fromkeys(roster.personas, 60)
+    host = AgentHost(
+        roster,
+        manifest,
+        seed_zeny_by_persona=mapping,
+        run_worldfeed=False,
+    )
+    for persona_id, agent in host.agents.items():
+        assert agent._seed_zeny == mapping[persona_id]

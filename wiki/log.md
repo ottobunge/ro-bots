@@ -7518,3 +7518,21 @@ ground truth any player's screen shows; parity, not a shortcut).
 --seed-zeny-file {persona: int} -> build_host -> the client's initial tracked
 zeny (used only until the wire delivers its own change update). Then leg 45
 proves the buy.
+
+## 2026-10-30 ~14:2x — the runner-side zeny seed (TDD, 4 hops) — the wallet parity fix
+
+The login zeny is never sent on this pin (the previous entry): a real client
+reads its wallet from the char-server character list, which a clientless agent
+never parses. Fix: the runner passes the fixture DB's true balance per persona
+(the same number any player's screen shows — parity, not a shortcut).
+
+Wiring (each hop one test): --seed-zeny-file {persona_id: balance} ->
+load_seed_zeny (playing.py) -> AgentHost(seed_zeny_by_persona=...) ->
+ScheduledAgent(seed_zeny=...) -> PlayingClient(seed_zeny=...) -> the balance
+authority chain in _zeny_balance: tracked wire observation (0x00B1 param 20)
+> shop-context receipt > the seed. A wire-delivered balance always overrides
+the seed; a wire swap still resets to unknown.
+
+Shepherd launch delta: write run/worlds/population-live/seed-zeny.json from the
+pre-launch char-table readback and add --seed-zeny-file to the runner command.
+Gate 6,674+65.

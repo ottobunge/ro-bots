@@ -226,3 +226,24 @@ def test_manifest_preserves_legacy_skip_and_first_duplicate(tmp_path: Path) -> N
     assert entries["persona"].char_name == "first"
     assert entries["persona"].login_port == 6900
     assert entries["persona"].pincode is None
+
+
+def test_seed_zeny_reaches_the_constructed_client(monkeypatch: pytest.MonkeyPatch) -> None:
+    """The runner-side balance seed (e2e-43: the map server never sends the
+    login zeny - changes only, pc.cpp:5810/5844) rides the ctor into the
+    client's initial tracked balance."""
+    spy = ConstructorSpy()
+    monkeypatch.setattr(agent_runtime, "_BotClient", spy)
+    entry = ManifestEntry(
+        "persona",
+        "synthetic-account",
+        "synthetic-password",
+        "SyntheticCharacter",
+        login_host="127.0.0.1",
+        login_port=16900,
+        pincode="0042",
+    )
+    agent = ScheduledAgent(cast(SocietyPersona, object()), entry, threaded=False, seed_zeny=60)
+    constructed = agent._new_client()
+    assert isinstance(constructed, PlayingClient)
+    assert constructed._zeny_seed == 60

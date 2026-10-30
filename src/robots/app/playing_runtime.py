@@ -273,11 +273,15 @@ class PlayingClient:
         public_skill_knowledge: PublicSkillKnowledge | None = None,
         monotonic: Callable[[], float] = time.monotonic,
         keepalive_interval_s: float | None = None,
+        seed_zeny: int | None = None,
     ) -> None:
         self.wire = wire
         self.cache = cache
         self.public_skill_knowledge = public_skill_knowledge
         self._now = monotonic
+        # the runner-side balance seed (e2e-43): the wire delivers SP_ZENY on
+        # changes only, so the login wallet must be seeded (lowest precedence)
+        self._zeny_seed = seed_zeny
         self._pending: tuple[tuple[int, int], int, float, int] | None = None
         self._retry_talk: int | None = None
         self._event_cursor = self._party_obs_cursor = 0
@@ -311,9 +315,7 @@ class PlayingClient:
         self._received_vitals: dict[int, int] = {}
         self._vitals_seq = 0
         self._closed = False
-        self._npc = NativeNpcDialogue()
-        self._npc_event_sequence = 0
-        self._npc_explorations = 0
+        self._init_npc_state()
 
         self._shop_context = NativeShopContext()
         self._purchase = NativePurchase()
@@ -470,6 +472,24 @@ class PlayingClient:
 
     def __getattr__(self, name: str) -> Any:
         return getattr(self.wire, name)
+
+    def _zeny_balance(self, view: Any) -> int | None:
+        """The balance authority chain: tracked wire observation, then the
+        shop loop's receipt, then the runner-side seed (e2e-43: the wire
+        delivers SP_ZENY on changes only, so the login wallet is seeded)."""
+        if view.zeny is not None:
+            tracked: int = view.zeny
+            return tracked
+        if self._shop_context.balance is not None:
+            receipt: int = self._shop_context.balance
+            return receipt
+        return self._zeny_seed
+
+    def _init_npc_state(self) -> None:
+        """The NPC-dialogue observer trio (extracted: the ctor's statement cap)."""
+        self._npc = NativeNpcDialogue()
+        self._npc_event_sequence = 0
+        self._npc_explorations = 0
 
     def _init_keepalive_pump(self, keepalive_interval_s: float | None) -> None:
         """Validate the interval and build the shared pump state."""
@@ -685,11 +705,12 @@ class PlayingClient:
             received_skills=self.received_skills,
             public_skill_knowledge=self.public_skill_knowledge,
             shop_offer=self._shop_context.offer,
-            # The tracked SP_ZENY balance (0x00B0 param 20, pinned rathena
+            # The tracked SP_ZENY balance (0x00B1 param 20, pinned rathena
             # src/map/map.hpp:501) is the authority; the shop-context balance
-            # stays the fallback for wires that never delivered it (leg 43:
+            # is the fallback inside the shop loop and the runner-side seed
+            # stands in for the login wallet the wire never delivers (leg 43:
             # state.zeny was None all window and the buy could never arm).
-            zeny=view.zeny if view.zeny is not None else self._shop_context.balance,
+            zeny=self._zeny_balance(view),
             zeny_receipt=self._shop_context.currency,
             capacity_receipt=self._capacity.receipt,
             weight=self._capacity.weight_count,
