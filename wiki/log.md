@@ -7203,3 +7203,62 @@ VERIFIED FIX in place: the save-move to (206,175) — walkable in the runtime
 cache (checked (206,175)/(206,176)/(205,175) all True) — releases s00 to real
 cells. No cache work is needed. The rathena/db/pre-re/map_cache.dat merge from
 the false lead has been reverted (submodule content restored).
+
+## Leg 41 — Friday 2026-10-30, 01:00-03:00 Madrid (00:00-02:00 UTC), day 4 — THE FIRST SELL ZENY
+
+Head e9aa6457 at launch (00:26 Madrid, duration 10800s, receipt
+`population-receipt-41-1793316328.json`: steps 43053, errors 0). Launch fix
+first: the leg-41 schedule file at HEAD was a review document, not the runner
+format (`{"persona_id": [[day, start, end]]}`) — the runner died on
+`KeyError: 'pop_0003_g00m00'`; rewrote it to `[[4, 1.0, 3.0]]` x7 (the
+convention of every prior leg) and relaunched.
+
+VERDICT: **PASS — the economy-closure leg landed its goal.** All four
+acceptance criteria hold:
+
+1. SELL LIST REACHED: the receipt's `shop_offer` field never read non-null at
+   a 30s sample instant, but the sell list reaching the client is proven by
+   `npc_stage='unsupported_shop'` (the stage name for a RECEIVED 0xC4 market
+   packet — native_npc_dialogue.py STAGES) on NyxSong x2 and RinceNyan x2
+   samples, plus the executed chain. The offer field is a transient decoded
+   view; npc_stage + the completed sell are the stronger evidence.
+2. **FIRST SELL ZENY EVER: NyxSong 5 -> 8 (+3 = exactly Jellopy 909's 3z sell
+   price)** — DB ground truth. Complete wire chain at 00:16 UTC:
+   `TalkToNpc -> NpcShopSellOpen -> NpcShopSell` all at prt_in (173,130), the
+   Weapon Dealer interior — the merchant trip (walk into the interior, deal,
+   sell) worked END TO END. DB inventory: 909 gone; the fixture knife (1201)
+   correctly kept (sell = Jellopy only).
+3. s00 MOVED ON REAL GROUND: traces show 2 distinct positions on pay_fild04,
+   (206,175) login cell -> (207,176), plus 3 `Attack` actions in the first 35s
+   of the window. The receipt's 30s sampler caught only (207,176) (it moved
+   before the first sample). The DB reads last=(204,165)==save — the known
+   logoff-save fallback to the save point, NOT evidence of no movement;
+   movement truth is the trace series.
+4. TRANSPORT CLEAN: zero TRANSPORT DOWN, rx_error=0, dispatch_errors=0, all 7
+   agents online 33/33 ticks, decides 155-277 each.
+
+KILLS (DB exp deltas vs the 00:21 baseline): zeny_wing +2/+1, xXLunasongXx
++2/+1, PoringMuffin14 +8/+4 = 1 + 1 + 4 Porings (2/1 base/job each, mob_db)
+= 6 kills. Socials: zero new rows — the FoundGuild/GuildInvite/InviteToParty
+actions (NyxSong: FoundGuild 1 + GuildInvite 6; PipinWalker: FoundGuild 1 +
+GuildInvite 6) were replays; guilds NyxSongGuard/PipinWalkerGuard and the
+party set stand from leg 39 (cumulative-table rule held).
+
+GATES: NyxSong/RinceNyan move_gates.await_pending ~2319 (sell trip walking,
+no attack gates — never authored an Attack); farmers carried
+attack_gates.pending_walk + no_route_direct (PoringMuffin14 x99 — the loudest
+farmer, 142 distinct positions); s00 pending_walk 290 + resting 289 (attacked,
+then idled at its spawn cell — it has no farm plan on pay_fild04's spawn
+declaration yet).
+
+THE NEXT SLICE — extend SELLABLE_ITEM_IDS to the carried loot species:
+RinceNyan reached the dealer (TalkToNpc 00:14 UTC, received the C4 twice) and
+NEVER sent NpcShopSellOpen — `_sell_open_action` returns None when
+`shop_sellable_stock(...) <= 0`, and `SELLABLE_ITEM_IDS = (909, 915)`
+(scripts.py:230) does not include the 713 Empty Bottle + 1002 Iron Ore it
+carries. Re-derive the set from the pinned drop tables (prt_fild08/pay_fild04
+`Drops:` -> item_db ids, per the economy-want rule) so every loot species can
+fund a sell leg. SECONDARY: s00's release is NOT sticky across logouts — the
+logoff save fell back to the save point (204,165), so leg 42 logs it back into
+the sealed pocket unless the last_point is re-pinned pre-window or the logoff
+write is fixed to keep the live position.
