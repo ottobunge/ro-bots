@@ -7648,3 +7648,28 @@ from the blocked-close drive. RED test: after NpcShopBuySelection with an
 opened_sequence, a NpcShopPurchase must author within N decides when the
 wanted id (1201) is on the received offer; DB acceptance stays
 zeny 60->10 + nameid 1201 back in inventory.
+
+## 2026-10-30 ~19:3x — leg 45: the seed proven; the buy's last hop named (the C6 offer never binds)
+
+Leg 45 (46e1de70): the zeny seed PROVEN live — zeny_wing's first state_tick
+read zeny=60 (all 7 seeded exactly; the shepherd also landed b7a4890d: the
+population runners override build_host's client_factory, so the seed needed
+forwarding through the factory). The leg-44 death stall did NOT recur (0b256526
+validated live). 5/7 farmed kills, no transport down.
+
+THE BUY's last hop named: the chain reached TalkToNpc -> NpcShopBuySelection
+(the C4 dealtype answered with the buy arm, 15:38:32) — and the server's C6
+buy-list frame NEVER BOUND THE OFFER: the deal frame lands as dialogue stage
+'unsupported_shop' and state.shop_offer stays None, so _buy_purchase_actions
+(`if offer is None: return None`) can't mint the purchase; the close-drive
+cycled the dialogue and the per-epoch drive spent. The bind path exists
+(native_shop_context._consume_offer keyed on pid 0xC6 + self._issued + the
+send window) — the break is in the ISSUE->BIND handoff: either the authored
+NpcShopBuySelection never registered as the context's _issued, or the C6 fell
+outside the _sent_at/_deadline window.
+
+NEXT SLICE: drive .work/engagement-diagnosis/shop_trace_probe.py (the w84-era
+instrument) over the leg-45 trace window on zeny_wing — dump state.shop_offer
+/ the context's _issued/_sent_at/_deadline per tick — to name which half of
+the issue->bind handoff dropped. Then the one-line fix, leg 46, the buy lands,
+and the economy is closed end to end.
