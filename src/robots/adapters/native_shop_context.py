@@ -104,6 +104,14 @@ class NativeShopContext:
     def _consume_offer(self, frame: tuple[int, float, int, bytes]) -> None:
         seq, at, pid, raw = frame
         action = self._issued
+        if pid == 0xC6:
+            # e2e-45 diagnostic tap: EVERY seen C6 names its guard state -
+            # leg 46 showed zero tap lines with the purchase still missing,
+            # so the drop may sit in these early guards themselves
+            logger.warning(
+                "shop-debug: C6 seen (seq=%s issued=%s after=%s consumed=%s rows=%d)",
+                seq, action is not None, self._after, self._consumed, len(raw),
+            )
         if pid != 0xC6 or action is None or seq <= self._after or self._consumed:
             return
         self._consumed = True

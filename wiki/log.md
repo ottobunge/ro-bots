@@ -7709,3 +7709,14 @@ the request counter, the deadline, now) — the clock/cap deny falls out;
 decode_shop_offer's ValueError (with the first 64 bytes hex — the row layout
 evidence). No behavior change; the gate 6,675+65. Leg 46 runs the tap inside
 the window; the drop point falls out of /tmp/population_leg46.log.
+
+## 2026-10-30 ~22:0x — the guard-level tap: every seen C6 names its guard state
+
+Leg 46's mid-window evidence: NpcShopBuySelection minted (20:00:10), the C5
+sent (no request-drop warning), the purchase still missing, and ZERO tap lines
+— so `_consume_offer`'s EARLY GUARDS (pid/issued/after/consumed) are the
+remaining suspects; the two drop-point taps never fired. Added the guard-level
+tap: every seen 0xC6 frame logs seq/issued/after/consumed/rows before the
+guards. Leg 47 (or 46's close) names the guard definitively. The dispatch chain
+re-verified clean (NpcShopBuySelection -> _select_shop_buy -> _npc.request ->
+issued()).
