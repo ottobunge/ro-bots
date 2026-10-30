@@ -202,6 +202,13 @@ def build_host(args: argparse.Namespace) -> AgentHost:
         chat = make_private_chat(args.chat_url)
     decision = make_private_decision(args.decision_url)
 
+    # e2e-45: the population runners override the runtime's default client
+    # factory, so the wallet seed must ride THIS factory -- the seed-aware
+    # default in agent_runtime (_BotClient factory) never runs when a
+    # client_factory is supplied, and the leg-45 launch proved it live
+    # (state_tick zeny null with the seed file loaded).
+    seed_zeny_by_persona = load_seed_zeny(getattr(args, "seed_zeny_file", None)) or {}
+
     def client_factory(entry: ManifestEntry) -> PlayingClient:
         native = vars(agent_runtime)["_BotClient"]
         if native is None:
@@ -222,6 +229,7 @@ def build_host(args: argparse.Namespace) -> AgentHost:
             databases[entry.persona_id],
             cache=cache,
             public_skill_knowledge=public_skill_knowledge,
+            seed_zeny=seed_zeny_by_persona.get(entry.persona_id),
         )
 
     return AgentHost(
@@ -238,7 +246,7 @@ def build_host(args: argparse.Namespace) -> AgentHost:
         memory_root=args.memory_root,
         worldfeed_port=args.worldfeed_port,
         population_file=getattr(args, "population_file", None),
-        seed_zeny_by_persona=load_seed_zeny(getattr(args, "seed_zeny_file", None)),
+        seed_zeny_by_persona=seed_zeny_by_persona or None,
         trace_dir=getattr(args, "trace_dir", None),
         brain_factory=(
             (
