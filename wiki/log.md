@@ -7360,3 +7360,20 @@ PoringMuffin14 (prt_fild08 176,351) kept true field positions.
 Next leg: post-sell re-route for the economy arm (RinceNyan must leave the
 dealer once stock is empty) + s00's attack landing on pay_fild04; the 50z
 knife purchase stays queued behind them.
+
+## 2026-10-30 ~07:3x — the EQUIP hop is DB-proven on all 7 agents
+
+Post-leg-42 readback: every agent's knife (nameid 1201) carries equip=2
+(EQP_HAND_R) in the inventory table — the wear-equip progression
+(_equip_progression -> native_gameplay.equip, 0x0999 ack as authority) works
+live on the whole population. The economy loop's proven hops: farm -> kills ->
+drops -> loot-first -> SELL (2 of 2 legs: NyxSong +3, RinceNyan +28 through the
+fixed SELLABLE_ITEM_IDS) -> EQUIP (all 7 worn). The last unproven economy hop:
+the 50z BUY (C6 buy list + purchase).
+
+s00's zero-kill is therefore NOT the weapon (it hits for 12): the attack->kill
+conversion on pay_fild04 (Pupa 60 HP at 1x rates = 5 hits) is the remaining
+combat question, plus the post-sell dealer stall the leg-42 receipt names.
+
+Leg 43 acceptance shape: RinceNyan (31z) + one farm-and-sell cycle crosses 50z
+-> NpcShopPurchaseOpen in the trace -> the economy is closed end to end.
