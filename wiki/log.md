@@ -7414,3 +7414,56 @@ merchant leg clicked an npc at (150,143) instead of walking the route cell
 The steered shepherd readout (npc_stage + move_gates for g00m02) confirms
 which. Fix slice: TDD the await timeout + re-check the drive's walk-then-click
 ordering; leg 44 re-proves the buy.
+
+
+## 2026-10-30 10:45 — leg 43 CLOSE: the buy never armed — two stacked gates (receipt 001b4738 + population-receipt-43-1793343336)
+
+Window held: 7/7 online 239-240/320 samples each, 0 TRANSPORT DOWN, 38302
+steps, 0 step_errors, decides 148-216 per agent. The BUY did NOT land:
+DB zeny_wing zeny 60->60, no knife; receipt shop_offer 0 samples;
+move_gates {} (ZERO MoveTos authored all window); npc_stage samples
+opening x1 -> next x2 -> BLOCKED x247 (npc 110000883 YuPi#pront, the
+novice guide 2.8 cells from the stall cell 158,135). Secondary not
+landed: RinceNyan zeny 31->31 despite field kills (exp 40->44/33->38);
+zero Loot actions authored, no sellable stock, no return trip. Zero zeny
+movement in the whole population; only exp moved (NyxSong +8/+3 and
+PipinWalker +8/+3 = one Poring+Lunatic pair each; xXLunasongXx,
+PoringMuffin14, s00: zero kills; s00's move_gates read
+escalated_target_dead 1916 around pay_fild04 (208,183) — the pocket in a
+new cell).
+
+GATE A (decisive, arithmetic): the runtime NEVER learned the zeny. Zero
+in-window decide states carry non-null zeny for ANY agent; the 0xB0/B1
+currency receipt arrives only when a zeny-paying transaction answers
+(RinceNyan's 117 x "zeny":31 decide states are the leg-42 post-sell
+session tail — native_shop_context._consume_currency), never at login.
+So state.zeny is None all window, merchant_drive_cell's
+`affordable = type(state.zeny) is int and zeny >= 50` is False, and with
+the fixture-emptied inventory has_stock is False too: the drive returned
+None all window. The 60z exists only in the DB. The clicks were NOT the
+merchant engage: they were the novice-guidance lane talking the guide
+NPC (needs_npc_preparation / NpcGuidanceScript; the drive cell
+(177,221) was never computed, so there was no engage that "skipped the
+walk" — candidate (2) of the 09:55 entry is disproven).
+
+GATE B (would have blocked the buy even with zeny known): the retained
+guide dialogue sits at stage "blocked" (pages/options empty — a dialog
+frame the client could not drive). _dialogue_route diverts every
+step_script before the goal script; for farming goals
+_grind_dialogue_block_expired burns its budget on the first minute's
+NpcNext loop, then _dialogue_clear_drive has NO reviewed send for
+"blocked" (it handles next/close/unsupported_input/string_input/menu),
+the stage never enters _dialogue_cleared_stages, and _npc_step returns
+an EMPTY outcome forever — GrindScript (where _merchant_step lives)
+never ran again: plans 0, actions frozen at (158,135). Candidate (1) of
+the 09:55 entry is the right family; the precise mechanism is the
+send-less stage in the divert loop, not a missing await timeout.
+
+Next slice (one TDD slice, two RED tests): (a) login zeny receipt
+reachability — frame-capture a login to decide whether the pinned server
+sends ZC_ZENY and the framer/consumer drops it, or never sends it, then
+fix that one hop so affordable is computable in a fresh session;
+(b) a reviewed clear drive for stage "blocked" (NpcClose) or a bound on
+the send-less divert, so a blocked frame cannot starve the goal script.
+Leg 44 re-proves the buy; the fixture stays applied and reusable
+(zeny_wing 60z, no knife — verified unchanged at close).
