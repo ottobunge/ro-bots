@@ -7583,3 +7583,23 @@ container either carries a respawn patch or is not this exact pin. Cost:
 ~2 agent-hours plus RinceNyan's secondary sell. Next slice candidate: a
 death-recovery drive — on dead detection, re-begin at the save cell (the
 gate exists; only the resume is missing).
+
+## 2026-10-30 ~16:4x — the death-recovery fix: a map change clears the stale death latch
+
+Leg 44's new defect class (89bccea5), fixed: after the own-vanish death
+(0x0080), the save-cell respawn warps via pc_setpos -> clif_changemap
+(0x0091; pinned rathena src/map/pc.cpp:7118; pc_respawn -> pc_setpos,
+pc.cpp:9653) — and the tracker's 0x0091 branch re-seeded position/map but NOT
+the death latch, so the agent dead-gated forever (no_position_or_dead x840)
+while the server body stood alive at the save cell.
+
+Fix: the 0x0091 handler clears a stale latch (alive False -> True) — a map
+change IS the server pointing at a live body; there is no dead-body-warp
+case (only pc_respown warps a dead one). The old [warp] contract
+("life authority never from positive hp" pinning the latch as warp-proof) is
+reconciled with the leg-44 falsification: positive hp ALONE still never
+resurrects (the [authless] case), a received 0x0148 does (the resurrection
+case), and now a post-death warp does too (the [warp] case — the pose
+machinery re-engages: the stand request fires instead of the dead-gate's
+silence). RED test
+test_map_change_after_own_death_clears_the_death_latch. Gate 6,675+65.

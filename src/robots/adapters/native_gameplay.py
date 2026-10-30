@@ -743,6 +743,14 @@ class NativeGameplayTracker:
             self._map_name = name
             self._position = ObservedPosition(x, y, seq, at)
             self._arrival = True
+            if self._alive is False:
+                # A map change is the server pointing at a live body: the
+                # save-cell respawn warps via pc_setpos -> clif_changemap
+                # (pinned rathena src/map/pc.cpp:7118; pc_respawn calls
+                # pc_setpos, pc.cpp:9653) and the stale death latch must not
+                # survive it (leg 44: no_position_or_dead x840 for the rest
+                # of the window while the server body stood alive).
+                self._alive = True
         else:
             position = _position(raw, 6, seq, at)
             if pid == 0x0087:

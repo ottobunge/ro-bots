@@ -783,8 +783,13 @@ def test_life_authority_never_from_positive_hp(kind):
     client = runtime.PlayingClient(wire)
     state = client.build_native_state(Goal.GRIND)
     assert state.hp > 0
+    # Contract history: the [warp] case once pinned the death latch as
+    # warp-proof (alive stays False) - leg 44 falsified it: the save-cell
+    # respawn IS a warp (pc_setpos -> clif_changemap, pc.cpp:7118) and the
+    # stale latch dead-gated agents for whole windows. The warp now clears
+    # the latch; positive hp ALONE still never does (the [authless] case).
     assert state.alive is (
-        True if kind == "resurrection" else None if kind == "authless" else False
+        True if kind in ("resurrection", "warp") else None if kind == "authless" else False
     )
     client.perform_native(Attack(123))
     if kind == "resurrection":
@@ -796,6 +801,12 @@ def test_life_authority_never_from_positive_hp(kind):
         wire.add(bytes(standing))
         client.perform_native(Attack(123))
         assert wire.sent == ["stand", struct.pack("<HIB", 0x0437, 123, 0)]
+    elif kind == "warp":
+        # the respawn cleared the latch: the pose machinery re-engages (the
+        # stand request fires instead of the dead-gate's silence). The
+        # attack contract past the stand is the resurrection branch above -
+        # the identical path once standing is received.
+        assert wire.sent == ["stand"]
     else:
         assert not wire.sent
 

@@ -21,7 +21,9 @@ for candidate in (str(REPO / "src"), str(REPO)):
 
 from robots.adapters.native_progression import SelectedCharacterSnapshot  # noqa: E402
 from robots.app.playing_runtime import PlayingClient  # noqa: E402
+from robots.domain.actions import Rest  # noqa: E402
 from robots.domain.model import Goal  # noqa: E402
+from tests.test_playing_runtime import Wire  # noqa: E402
 
 MAP = "prt_fild08"
 
@@ -128,3 +130,27 @@ def test_no_monster_frames_project_no_monsters() -> None:
     client = PlayingClient(wire)
     state = client.build_native_state(Goal.GRIND)
     assert not [m for m in state.nearby_monsters if m.kind == "monster"]
+
+
+def test_map_change_after_own_death_clears_the_death_latch() -> None:
+    """The respawn's own warp: pc_setpos sends clif_changemap (0x0091) on
+    EVERY warp including the save-cell respawn (pinned rathena
+    src/map/pc.cpp:7118; pc_respawn -> pc_setpos(CLR_OUTSIGHT), pc.cpp:9653).
+    Leg 44: the death latch (alive False from the own 0x0080 vanish)
+    survived the respawn's 0x0091, so the agent dead-gated for the rest of
+    the window (no_position_or_dead x840) while the server body stood alive
+    at the save cell. A map change is the server pointing at a live body:
+    clear the stale latch."""
+    client = PlayingClient(Wire())
+    wire = client.wire
+    own_death = struct.pack("<HIB", 0x0080, 999, 1)  # own actor vanishes
+    wire.add(own_death)
+    client.perform_native(Rest())
+    dead = client.build_native_state(Goal.GRIND)
+    assert dead.alive is False
+    # the respawn: pc_setpos -> 0x0091 at the save cell
+    wire.add(struct.pack("<H16sHH", 0x0091, b"prontera", 206, 175))
+    client.perform_native(Rest())
+    state = client.build_native_state(Goal.GRIND)
+    assert state.alive is not False
+    assert (state.x, state.y) == (206, 175)
