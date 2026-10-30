@@ -1,0 +1,34 @@
+{
+  "leg": 44,
+  "created": "2026-10-30T12:05:00+02:00",
+  "timezone": "Europe/Madrid",
+  "day_index": 4,
+  "day_name": "Friday",
+  "window_local": ["12:30", "14:30"],
+  "window_utc": ["10:30", "12:30"],
+  "goal": "the buy re-proof: the leg-43 gates are fixed (61f44ef6 - the SP_ZENY ingest arms the affordable gate; the blocked-dialogue close drive un-starves the script). zeny_wing (60z, no knife, the applied fixture) should now arm the drive, walk the dealer, open the C6 buy list, purchase the 50z knife. DB evidence: zeny 60->10 + nameid 1201 back in inventory.",
+  "fixture_state": "zeny_wing (300002): zeny 60, knife absent (verified post-leg-43); s00's savepoint reset HELD through leg 43 (pay_fild04 208,183 at close - real ground)",
+  "agents": [
+    {"persona": "pop_0003_g00m00", "char": "NyxSong", "baseline_zeny": 8, "last_pos": "prontera (150,143)"},
+    {"persona": "pop_0003_g00m01", "char": "RinceNyan", "baseline_zeny": 31, "last_pos": "prt_fild08 (200,326)", "note": "31z + one sell cycle crosses 50z -> a SECOND buy candidate"},
+    {"persona": "pop_0003_g00m02", "char": "zeny_wing", "baseline_zeny": 60, "last_pos": "prontera (158,135)", "note": "THE BUY CANDIDATE - leg 43 stalled on the fixed gates"},
+    {"persona": "pop_0003_g01m00", "char": "PipinWalker", "baseline_zeny": 4, "last_pos": "prt_fild08 (176,344)"},
+    {"persona": "pop_0003_g01m01", "char": "xXLunasongXx", "baseline_zeny": 0, "last_pos": "prt_fild08 (185,342)"},
+    {"persona": "pop_0003_g01m02", "char": "PoringMuffin14", "baseline_zeny": 0, "last_pos": "prontera (153,156)"},
+    {"persona": "pop_0003_s00", "char": "YuffieFy81", "baseline_zeny": 0, "last_pos": "pay_fild04 (208,183)"}
+  ],
+  "findings_carried": [
+    "leg 43 (668e5714): the buy never armed - state.zeny None all window (no SP_ZENY ingest) + the guide NPC's blocked-stage divert starved the script",
+    "61f44ef6: both gates fixed (0x00B1 param 20 per clif.cpp:3735; the blocked stage now mints one NpcClose per session)",
+    "watch: if zeny_wing's balance arrives ONLY at login, the tracked balance should read 60 in its first state_tick (the ingest proof)"
+  ],
+  "decide_backend": "http://192.168.1.156:8091/v1/systemone",
+  "chat_backend": "http://192.168.1.156:8092/v1/chat/completions",
+  "acceptance": [
+    "zeny_wing's first state_tick carries zeny=60 (the SP_ZENY ingest works live)",
+    "zeny_wing: NpcShopPurchaseOpen in the trace (the C6 buy list reached)",
+    "DB: zeny_wing zeny 60->10 AND nameid 1201 back in its inventory",
+    "no TRANSPORT DOWN; all 7 online during the window",
+    "no repeat of the 2h17m silent-divert stall: zeny_wing's action_executed rows continue past any dialogue"
+  ]
+}
