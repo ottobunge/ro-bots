@@ -91,6 +91,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--heartbeat-min-s", type=float, default=None)
     parser.add_argument("--heartbeat-max-s", type=float, default=None)
     parser.add_argument("--seed", type=int, default=0)
+    parser.add_argument("--seed-zeny-file", type=Path, default=None)
     parser.add_argument("--leg", default="leg")
     parser.add_argument(
         "--trace-dir",
