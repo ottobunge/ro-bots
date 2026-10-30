@@ -1,0 +1,29 @@
+{
+  "leg": 45,
+  "created": "2026-10-30T15:25:00+02:00",
+  "timezone": "Europe/Madrid",
+  "day_index": 4,
+  "day_name": "Friday",
+  "window_local": ["16:00", "18:00"],
+  "window_utc": ["14:00", "16:00"],
+  "goal": "THE BUY PROOF with the zeny seed: zeny_wing (60z, no knife) arms the drive on the seeded balance, walks the dealer, opens the C6 buy list, purchases the 50z knife. DB evidence: zeny 60->10 + nameid 1201 back in inventory. This closes the economy end to end (farm -> kills -> drops -> loot -> sell 2/2 -> equip 7/7 -> BUY).",
+  "seed": "run/worlds/population-live/seed-zeny.json (89bccea5, written from the char-table readback at leg-44 close): g00m00 8, g00m01 31, g00m02 60, g01m00 4, rest 0",
+  "agents": [
+    {"persona": "pop_0003_g00m00", "char": "NyxSong", "baseline_zeny": 8},
+    {"persona": "pop_0003_g00m01", "char": "RinceNyan", "baseline_zeny": 31, "note": "died in leg 44; respawns at its save"},
+    {"persona": "pop_0003_g00m02", "char": "zeny_wing", "baseline_zeny": 60, "note": "THE BUY CANDIDATE - seeded 60z, no knife"},
+    {"persona": "pop_0003_g01m00", "char": "PipinWalker", "baseline_zeny": 4},
+    {"persona": "pop_0003_g01m01", "char": "xXLunasongXx", "baseline_zeny": 0},
+    {"persona": "pop_0003_g01m02", "char": "PoringMuffin14", "baseline_zeny": 0},
+    {"persona": "pop_0003_s00", "char": "YuffieFy81", "baseline_zeny": 0, "note": "died in leg 44; respawns at its save"}
+  ],
+  "known_defect_carry": "the leg-44 death stall (dead-gated agents produce zero script steps after a respawn; move_gates no_position_or_dead) is UNDER FIX in the main lane - 2 agents may still stall on death this leg; do not chase it, it is owned",
+  "decide_backend": "http://192.168.1.156:8091/v1/systemone",
+  "chat_backend": "http://192.168.1.156:8092/v1/chat/completions",
+  "acceptance": [
+    "zeny_wing's first state_tick carries zeny=60 (the SEED works live)",
+    "zeny_wing: NpcShopPurchaseOpen in the trace (the C6 buy list reached)",
+    "DB: zeny_wing zeny 60->10 AND nameid 1201 back in its inventory",
+    "no TRANSPORT DOWN; all 7 online during the window"
+  ]
+}
