@@ -7262,3 +7262,23 @@ fund a sell leg. SECONDARY: s00's release is NOT sticky across logouts — the
 logoff save fell back to the save point (204,165), so leg 42 logs it back into
 the sealed pocket unless the last_point is re-pinned pre-window or the logoff
 write is fixed to keep the live position.
+
+## 2026-10-30 03:5x — leg 41: THE FIRST SELL ZENY + the 713/1002 sellable-stock fix
+
+Leg 41 (be486068, window 01:00-03:00) closed the first hop of the economy:
+NyxSong walked the dealer trip and SOLD its Jellopy — zeny 5 -> 8 (+3) through
+TalkToNpc -> NpcShopSellOpen -> NpcShopSell, the first sell zeny ever. s00
+walked real pay_fild04 ground (save-move verified). All 7 online, zero
+TRANSPORT DOWN.
+
+The named remainder: RinceNyan held 713 Empty Bottle + 1002 Iron Ore AT the
+dealer for 100+ decides and its sell never opened — SELLABLE_ITEM_IDS was
+(909, 915) only, so shop_sellable_stock returned 0 and the sell leg was
+skipped while the DRIVE (merchant_drive_cell's separate sellables set) fired
+correctly. Fixed: SELLABLE_ITEM_IDS now carries the full prt_fild08 drop set
+(705 Clover, 713 Empty Bottle, 909 Jellopy, 914 Fluff, 915 Chrysalis, 917
+Talon, 938 Sticky Mucus, 949 Feather, 1002 Iron Ore). RED test
+test_empty_bottle_and_iron_ore_are_sellable_stock. Gate 6,668+65.
+
+Next leg: RinceNyan's sell opens and lands — then the 50z knife purchase
+(zeny 3 + sell proceeds vs the 50z price), then equip.

@@ -227,11 +227,16 @@ def novice_weapon_index(
     return None
 
 
-SELLABLE_ITEM_IDS = (909, 915)
-"""Looted drop species this slice sells to a merchant NPC: Jellopy 909 and
-Chrysalis 915 (the window-26/27 Poring-field loots). The constant only decides
-whether a sell leg is worth opening; sellability and prices always come from
-the received ZC_PC_SELL_ITEMLIST rows (clif.cpp:2265-2280), never from here."""
+SELLABLE_ITEM_IDS = (705, 713, 909, 914, 915, 917, 938, 949, 1002)
+"""Looted drop species this slice sells to a merchant NPC: Clover 705,
+Jellopy 909, Fluff 914, Chrysalis 915, Talon 917, Sticky Mucus 938, Feather
+949 (window-26/27 Poring-field loots) plus Empty Bottle 713 and Iron Ore 1002
+(leg 41: RinceNyan carried exactly these, held the trip at the dealer, and
+its sell never opened because this constant lacked them — the drive fires on
+merchant_drive_cell's sellables set but the shop loop filters the sale here).
+The constant only decides whether a sell leg is worth opening; sellability
+and prices always come from the received ZC_PC_SELL_ITEMLIST rows
+(clif.cpp:2265-2280), never from here."""
 
 
 def shop_sellable_stock(

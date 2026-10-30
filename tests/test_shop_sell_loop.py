@@ -449,3 +449,12 @@ def test_no_c7_recovers_with_a_fresh_click_not_a_second_c5(monkeypatch) -> None:
     assert client._retry_blocked_dialogue() is True
     assert sum(1 for f in client.wire.sent if f[:2] == b"\x90\x00") >= 1  # a fresh click
     assert sum(1 for f in client.wire.sent if f[:2] == b"\xc5\x00") == 1  # never a second C5
+
+
+def test_empty_bottle_and_iron_ore_are_sellable_stock() -> None:
+    """Leg 41: RinceNyan carried 713 Empty Bottle + 1002 Iron Ore, held the
+    trip at the dealer, and its sell never opened - SELLABLE_ITEM_IDS lacked
+    them, so shop_sellable_stock returned 0 and the sell leg was skipped."""
+    assert scripts.shop_sellable_stock(((713, 1), (1002, 1))) == 2
+    # the full prt_fild08 drop set (rathena db/pre-re/mob_db.yml drops)
+    assert scripts.shop_sellable_stock(((705, 1), (914, 1), (917, 1), (938, 1), (949, 1))) == 5
