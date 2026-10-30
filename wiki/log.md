@@ -7308,3 +7308,55 @@ future respawn now lands on real ground.
 Leg 42 scheduled (run/reviews/population-live-schedule-leg42.json): Friday
 05:00-07:00 Madrid. Primary acceptance: RinceNyan (713+1002, saved AT the
 dealer) sells through the fixed SELLABLE_ITEM_IDS (3b8bdac5).
+
+
+## 2026-10-30 ~06:20 — leg 42: THE FIX PROVEN — RinceNyan sells 713+1002 (+28z, first minute); s00 walks free ground; next: the post-sell stall + s00's dead attacks
+
+Window 05:00-07:00 Madrid CET = 04:00-06:00 UTC (the schedule DOC's
+"03:00-05:00 UTC" was a CEST leftover; the runner works Madrid-local so it
+changed nothing). The schedule file was DOC-shaped AGAIN (2584 bytes of
+brief) — rewritten in place to the runner mapping
+`{persona: [[4, 5.0, 7.0]]}` and committed (bbf3403e) before launch, the
+doc staying in git history. Launch 03:27:34 UTC (receipt
+population-receipt-42-1793330854.json), duration 9600 s, DONE steps 38280,
+errors 0, ZERO TRANSPORT DOWN, all 7 online throughout (decides 158-349).
+
+PRIMARY ACCEPTANCE MET in the window's first minute: RinceNyan ran
+TalkToNpc(110001762) -> NpcShopSellOpen -> NpcShopSell
+sales=[[2,1],[3,1]] at 04:00:04-08 UTC at the dealer cell (prt_in 172,129);
+DB zeny 3 -> 31 (+28 = bottle + iron ore) and 713/1002 are GONE from its
+inventory. The SELLABLE_ITEM_IDS fix (3b8bdac5) is proven end-to-end. It
+even browsed NpcShopBuySelection right after — but nobody reached 50 z
+(max 31), so the buy-list condition correctly never armed
+(shop_offer 0 across all 320 samples).
+
+s00: the savepoint reset held — 37 distinct sampled positions on
+pay_fild04 (spawn (206,175) -> (247,200)), its DB logout row last==save
+(206,175) (the logoff-save fallback, walkable either way). The multi-leg
+sealed pocket is DISARMED: no death parked it, because the savepoint no
+longer points into the pocket.
+
+Kills (DB exp, ground truth): 6/7 gained — NyxSong +12/+4 (exactly two
+Lunatics), PipinWalker +10/+4 (2 Poring + 1 Lunatic), PoringMuffin14 +2/+1
+(one Poring), zeny_wing +4/+5, xXLunasongXx +2/+4. YuffieFy81 (s00) ZERO
+despite 349 decides and 554 actions of movement.
+
+FINDING 1 — the post-sell stall: RinceNyan stood at the dealer for the
+remaining ~115 min (ONE distinct position all window), its npc_stage
+reading blocked x253 / opening x1 / unsupported_shop x1. After the sell
+emptied its stock the sell arm kept engaging a dead shop dialog instead of
+handing back to the field grind. The sell trip needs a POST-sell re-route
+(the sell arm must not re-arm on empty stock).
+
+FINDING 2 — s00's attacks never land on pay_fild04: attack_gates
+pending_walk x214 / resting x213, zero exp. It walks (37 positions) but
+nothing dies. Field density or the pending-walk gate on that map — next
+diagnostic pass.
+
+Also: the logoff-save fallback (last==save) hit 4/7 this leg (zeny_wing,
+PipinWalker, xXLunasongXx, s00); NyxSong (prt_fild08 213,318) and
+PoringMuffin14 (prt_fild08 176,351) kept true field positions.
+
+Next leg: post-sell re-route for the economy arm (RinceNyan must leave the
+dealer once stock is empty) + s00's attack landing on pay_fild04; the 50z
+knife purchase stays queued behind them.
