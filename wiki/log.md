@@ -7282,3 +7282,29 @@ test_empty_bottle_and_iron_ore_are_sellable_stock. Gate 6,668+65.
 
 Next leg: RinceNyan's sell opens and lands — then the 50z knife purchase
 (zeny 3 + sell proceeds vs the 50z price), then equip.
+
+## 2026-10-30 ~04:35 — the s00 pocket mechanism is the SAVEPOINT (204,165) + leg 42 armed
+
+The leg-41 trace closes the s00 question: it logged in at the save-move
+(206,175), stepped out (207,176), took ~43 damage in the first minute (86->43,
+NOT a death), and held (207,176) in every state_tick all window — yet the
+server logged it out at (204,165), the pocket cell, with NO 0x0087 walk in
+between (the tracked position never moved after 00:00:30). Two facts now
+pinned:
+
+1. s00's SAVEPOINT in the char table IS (pay_fild04, 204, 165) — the pocket
+   cell. Every death/respawn parks it inside the sealed run; the walk-out is
+   refused server-side (leg 40). That is the multi-leg "sealed pocket"
+   mechanism.
+2. The leg-41 logout divergence (server (204,165) vs tracked (207,176), no
+   0x0087 between) is an OPEN question: a server-initiated reposition the
+   client never saw — the unregistered-packet class (leg 35). Sweep with
+   .work/engagement-diagnosis/leg35_unknown_sweep.py on a diagnostic pass.
+
+OPERATIONAL RESET applied: s00 save_map/save_x/save_y AND last_map/last_x/
+last_y -> pay_fild04 (206,175) (verified walkable in the runtime cache). Any
+future respawn now lands on real ground.
+
+Leg 42 scheduled (run/reviews/population-live-schedule-leg42.json): Friday
+05:00-07:00 Madrid. Primary acceptance: RinceNyan (713+1002, saved AT the
+dealer) sells through the fixed SELLABLE_ITEM_IDS (3b8bdac5).
