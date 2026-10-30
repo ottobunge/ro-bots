@@ -7536,3 +7536,50 @@ the seed; a wire swap still resets to unknown.
 Shepherd launch delta: write run/worlds/population-live/seed-zeny.json from the
 pre-launch char-table readback and add --seed-zeny-file to the runner command.
 Gate 6,674+65.
+
+## 2026-10-30 ~14:50 — leg 44 window: the close-drive un-starve is LIVE-proven; the buy voided by the missing login zeny (as predicted); seed-zeny.json delivered; NEW defect class: death mid-window = permanent silent stall
+
+Window 12:30-14:30 Madrid (11:30-13:30 UTC; the brief's "10:30-12:30 UTC" was
+the CEST conversion trap again — the runner's CLOCK: line is Madrid-local and
+the first tick landed at 11:30:08 UTC exactly). 7/7 online at open, decided
+186-519x each, 0 TRANSPORT DOWN, DONE steps 38296 errors 0
+(receipt population-receipt-44-1793358352.json, launch 11:05:52 UTC).
+
+The steer's three readout points:
+
+1. CLOSE DRIVE (61f44ef6 gate 2): zeny_wing opened the SAME guide npc
+   (110000883) at window-open: TalkToNpc 11:30:08 -> NpcNext 11:30:10 ->
+   NpcClose 11:30:14 — the latch held ~6s vs leg 43's 2h17m silent divert.
+   The receipt's npc_stage is non-null in exactly ONE sample, and 210 MoveTos
+   followed with zero frozen stretches: the script stayed un-starved all window.
+2. TRACKED ZENY: stayed None ALL window for ALL agents (zero non-null zeny in
+   any state_tick or decide-state) — confirming the seed's necessity. The buy
+   never armed (shop_offer non-null in 0 samples, no NpcShopPurchaseOpen);
+   zeny_wing's DB row ended zeny=60 with the knife still absent (the fixture
+   held), so the acceptance "zeny 10 + knife back" was NOT met — expected,
+   since the parser has no login frame to parse on this pin.
+3. SEED DELIVERED: run/worlds/population-live/seed-zeny.json written at close
+   from the char-table readback (all 7 personas; zeny_wing 60). Leg 45
+   launches with --seed-zeny-file run/worlds/population-live/seed-zeny.json.
+
+Economy/kills (DB exp deltas over the pre-window baseline): xXLunasongXx
++23/+14, NyxSong +12/+6, PoringMuffin14 +6/+3, PipinWalker +5/+3, RinceNyan
++4/+2, zeny_wing +1/+1, YuffieFy81 0. Zero zeny movement anywhere (no sell
+trip engaged — RinceNyan, the only candidate, died 43 minutes in).
+
+NEW DEFECT CLASS — death mid-window = permanent silent stall: RinceNyan was
+swarmed at prt_fild08 (264,364) (hp 86->5 with DamageTaken 7 arriving at
+11:47:37 = dead) and YuffieFy81 at pay_fild04 (244,193) (hp 86->9 at
+12:00:4x). After the death both kept ticking decides on a FROZEN tracker
+state — map/pos stuck at the death cell, hp frozen at 43 = exactly max/2 —
+and authored ZERO script steps for the remaining ~2h/1.5h, while the SERVER
+teleported the body to its SAVE CELL at hp 43 (DB: last_map/last_x/last_y ==
+save_map/save_x/save_y for both, hp column 43). The receipt names the
+client-side half: YuffieFy81's move_gates carry no_position_or_dead x840 —
+the runtime gates the moves as dead but nothing resumes scripting (no
+re-begin at the save cell). Open question: the vendored rathena's
+pc_setrestartvalue heals a respawn to FULL (86), not 43 — the running
+container either carries a respawn patch or is not this exact pin. Cost:
+~2 agent-hours plus RinceNyan's secondary sell. Next slice candidate: a
+death-recovery drive — on dead detection, re-begin at the save cell (the
+gate exists; only the resume is missing).
