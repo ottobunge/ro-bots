@@ -645,7 +645,7 @@ class PlayingClient:
         self._purchase.consume(frame, tracker.indexed_inventory)
         progress = self._purchase.progress
         if progress is not None and progress.ca_result is not None:
-            self._shop_context.invalidate_offer()
+            self._shop_context.invalidate_offer("purchase-ca-result")
 
     def _validate_received_npc_context(self, view: NativeGameplayView) -> None:
         if self._npc.view is None:
@@ -1140,7 +1140,7 @@ class PlayingClient:
                 now,
             )
         if raw is not None:
-            self._shop_context.invalidate_offer()
+            self._shop_context.invalidate_offer("selection-sent")
             _, base, frames = self.wire.native_frame_snapshot()
             after = frames[-1][0] if frames else base
             self._send_npc(raw)

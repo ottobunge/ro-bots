@@ -35,9 +35,18 @@ class NativeShopContext:
     def invalidate(self) -> None:
         self.currency = None
         self._currency_blocked = True
-        self.invalidate_offer()
+        self.invalidate_offer("identity-changed")
 
-    def invalidate_offer(self) -> None:
+    def invalidate_offer(self, reason: str = "unspecified") -> None:
+        # e2e-48 lifecycle tap: an invalidation only matters when a binding or
+        # an offer existed - log WHAT died and WHY (fails open, bounded)
+        if self._issued is not None or self.offer is not None:
+            logger.warning(
+                "shop-debug: offer invalidated (%s) had_issued=%s had_offer=%s",
+                reason,
+                self._issued is not None,
+                self.offer is not None,
+            )
         self.offer = None
         self._issued = None
 
@@ -55,7 +64,7 @@ class NativeShopContext:
     def issued(
         self, action: NpcShopBuySelection, after: int, sent_at: float, deadline: float
     ) -> None:
-        self.invalidate_offer()
+        self.invalidate_offer("re-issued")
         self._issued = NpcShopBuySelection(
             action.npc_id,
             action.epoch,
@@ -71,7 +80,10 @@ class NativeShopContext:
         if action is None:
             return
         if not ready or dialog is None or now >= self._deadline:
-            self.invalidate_offer()
+            self.invalidate_offer(
+                f"not-ready={not ready} dialog-none={dialog is None}"
+                f" past-deadline={now >= self._deadline}"
+            )
             return
         if not all(
             (
@@ -89,7 +101,11 @@ class NativeShopContext:
                 dialog.npc_id == action.npc_id,
             )
         ):
-            self.invalidate_offer()
+            self.invalidate_offer(
+                f"guard-failed stage={dialog.stage} opened={dialog.opened_sequence}"
+                f"/{action.opened_sequence} map={dialog.map_name == action.map_name}"
+                f" epoch={dialog.epoch == action.epoch} npc={dialog.npc_id == action.npc_id}"
+            )
 
     def consume(self, frame: tuple[int, float, int, bytes], epoch: int) -> None:
         self._consume_currency(frame, epoch)
@@ -134,7 +150,7 @@ class NativeShopContext:
                 self._sent_at,
                 self._deadline,
             )
-            self.invalidate_offer()
+            self.invalidate_offer("c6-outside-window")
             return
         try:
             decoded = decode_shop_offer(raw)
@@ -146,8 +162,11 @@ class NativeShopContext:
                 len(raw),
                 raw[:64].hex(),
             )
-            self.invalidate_offer()
+            self.invalidate_offer("c6-decode-failed")
             return
+        logger.warning(
+            "shop-debug: C6 BOUND (seq=%s rows=%d npc=%s)", seq, len(decoded.rows), action.npc_id
+        )
         self.offer = ReceivedShopOffer(
             rows=tuple(
                 ReceivedShopRow(r.price, r.discount_price, r.item_type, r.item_id)

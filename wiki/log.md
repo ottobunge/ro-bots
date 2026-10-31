@@ -7874,3 +7874,18 @@ The dealer stocks the knife (rathena/npc/merchants/shops.txt:255 Weapon Dealer#p
 THE LATCH IS DEAL-AGNOSTIC AND ATE BOTH DEALERS: PipinWalker CLOSED A SELL (TalkToNpc 03:02:17 -> NpcShopSellOpen 03:02:22 -> NpcShopSell 03:02:24 sales=[[3,1]] -> DB zeny 4 -> 7, one Jellopy-priced item) and THEN latched: his last window action is the 03:03:33 NpcClose, 'blocked' x108, 27 min silent at the dealer cell. zeny_wing latched 119 min after her failed deal. The blocked-stage close-drive's one-close-per-session cannot release a RE-latched deal and the drive never re-arms - a post-deal latch release is now a named slice of its own (second sell proof stands: the sell arm works end to end from a mid-window trip, zeny DB-proven).
 
 Kills by exp delta: NyxSong +2/+1, PipinWalker +2/+4, xXLunasongXx +4/+2, PoringMuffin14 +1/+1 (330-360 actions each); RinceNyan patrolled 1637 MoveTos with ZERO kills (exp 60 -> 60 - the only mover who never engaged); YuffieFy81 near-idle (9 actions, exp 0 - watch her next leg; 7 actions last leg too). Socials: GuildInvite x6 (NyxSong, PipinWalker), party chat traffic. Fixture intact for the re-proof: zeny_wing still 60z, no knife. NEXT: leg 49 - the bind re-proof on the extended taps (find WHY the deal classified 'blocked' instead of 'waiting'), THEN relaunch the economy close on 3c6cb3bf once the offer binds again.
+
+## 2026-10-31 ~05:5x — the offer lifecycle tap: every invalidation names its reason, the bind announces itself
+
+Leg 48 (ba3d8247) narrowed the drop to the offer lifecycle: the C6 arrived,
+issued=True, but shop_offer never surfaced (0 samples) with npc_stage 'blocked'
+x174 from the first sample. The lifecycle tap now names every step:
+- "shop-debug: C6 BOUND (seq/rows/npc)" when an offer actually lands;
+- "shop-debug: offer invalidated (<reason>) had_issued/had_offer" at every
+  invalidate_offer call site, each with a literal reason (identity-changed,
+  re-issued, not-ready/dialog-none/past-deadline, guard-failed with the exact
+  failing term and values, c6-outside-window, c6-decode-failed,
+  purchase-ca-result, selection-sent).
+Leg 49 reads which line fires between the bind and the offer surfacing — the
+two candidates (the dialogue-deadline invalidation vs the consume-order) fall
+out of the log directly. No behavior change; gate 6,677+65.
