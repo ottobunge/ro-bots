@@ -7808,3 +7808,51 @@ the seed reports 80, the mechanical layer mints NpcShopPurchase. Gate
 allowance and the max-weight receipt bind only from the operator proof /
 B0-24+25 frames — whether the live login delivers the weight pair is
 observable in the next receipt.
+
+## 2026-10-31 02:2x — leg 47 receipt: the C6-bind fix is PROVEN live; the purchase admission starved exactly as 3c6cb3bf diagnosed (that fix landed mid-window, NOT under test); the sell arm closed end to end (+4z)
+
+Window 00:45-01:45 CET (23:45-00:45 UTC), runner launched 00:23:40 CET on
+02d10b35 (b78f105b binary), duration 6900s, DONE steps 27493 step_errors 0,
+zero TRANSPORT DOWN, 7/7 online (decides 84-136/agent). Receipt:
+run/plain_host_receipts/population-receipt-47-1793402622.json.
+
+THE FIX UNDER TEST HELD AT ITS HOP. The guard tap printed once, verbatim:
+`shop-debug: C6 seen (seq=70 issued=True after=69 consumed=False rows=213)`
+— leg 46's RED tap (issued=False) did not reproduce; the dealer's repeat C4
+no longer kills the issued binding. The binding is receipt-proven too:
+sample i=43 (t=1291.3, 23:45:13.3 UTC) reads npc_stage='waiting' with
+shop_offer='rows=19' — leg 46 never had a non-null shop_offer in any sample.
+(NB: the tap's rows=213 is the frame's declared row count; the bound offer
+carries rows=19 — a row-count mismatch worth one look when the list decode
+is next touched.)
+
+THE BUY STILL DID NOT LAND — and the failure signature is precisely the
+starvation 3c6cb3bf fixed 88 minutes after this leg's launch (so the leg ran
+without it): the offer sat bound ~13s (23:45:13 -> the expiry close
+23:45:26), the purchase admission never minted (zero purchase actions in the
+trace), the dialogue expired deny('timeout') -> 'blocked' (the structural
+shop-chain end), the blocked-stage close fired 3x, and shop_offer reads None
+from sample i=44 to the end. DB: zeny_wing zeny 60 -> 60, no 1201 in
+inventory, zero exp — parked at the dealer cell (172,129) all window (1
+distinct sampled position, 84 decides). ACCEPTANCE NOT MET on the buy; the
+verbatim tap above plus the bound-sample is the OR-branch evidence, and the
+drop is now NAMED one hop downstream: offer-bound -> purchase-admission
+(wallet read + knife qualification), fixed by 3c6cb3bf for the next leg.
+
+THE SELL ARM CLOSED END TO END in the same window: PoringMuffin14
+TalkToNpc 00:10:58 -> NpcShopSellOpen 00:11:03 -> NpcShopSell 00:11:05
+(sales=[[3,1]], 2s after the C5 — the admission CAN mint inside the waiting
+window) -> DB zeny 0 -> 4, ended prt_in (173,130), one cell from the dealer.
+Closes the sell hop with a real zeny move; the buy arm is the last open hop.
+
+Other legs' business: kills by exp delta (NyxSong +5/+10, RinceNyan +2/+2,
+PipinWalker +5/+3 with 406 Attacks + 4 Loots, xXLunasongXx +3/+3 with 11
+Loots, PoringMuffin14 +6/+4; YuffieFy81 and zeny_wing zero). Socials
+participated: FoundGuild x2 (NyxSong, PipinWalker), GuildInvite x6 each,
+InviteToParty x2 each, party chat traffic. Observation for the next readout:
+neither arm re-armed after its blocked expiry (one trip each all window) —
+the drive re-arm condition is still an open question if a leg ever needs a
+second trip inside one window. Fixture intact for the re-proof: zeny_wing
+still holds 60z and no knife. NEXT: leg 48 — relaunch on 3c6cb3bf; expect
+the admission to mint on the seeded wallet + the qualified knife: the C8
+fires, zeny 60 -> 10, the 1201 back in inventory — THE ECONOMY CLOSES.
