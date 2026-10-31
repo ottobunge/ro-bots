@@ -8113,3 +8113,10 @@ attacks 37/20/7/13/28/0/0 across the seven; no kill attribution this leg —
 the pre-launch baseline SQL omitted base_exp/job_exp (baseline gap; next
 shepherd re-adds the exp columns). Receipt:
 run/plain_host_receipts/population-receipt-51-1793441833.json.
+
+## 2026-10-31 ~13:5x — the moved-on term tap: WHICH bound-deal-lost term fired
+
+Leg 52 mid-window: C6 BOUND then bound-deal-lost moved-on=True AGAIN with
+75054047 live — so the firing term is NOT the sequence (dropped); it is
+opened_sequence (a re-click/re-begin) or the stage leaving the deal set. The
+tap now names the term values at every moved-on invalidation. Leg 53 reads it.

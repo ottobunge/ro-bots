@@ -178,6 +178,20 @@ class NativeShopContext:
             )
         )
         if moved_on:
+            # e2e-52: name WHICH term moved - the re-click (opened), the
+            # re-marker (sequence), or the stage leaving the deal set
+            logger.warning(
+                "shop-debug: moved-on terms"
+                " (seq=%s->%s opened=%s->%s stage=%s epoch=%s map=%s npc=%s)",
+                offer.prompt_sequence,
+                dialog.sequence,
+                offer.opened_sequence,
+                dialog.opened_sequence,
+                dialog.stage,
+                offer.epoch == dialog.epoch,
+                offer.map_name == dialog.map_name,
+                offer.npc_id == dialog.npc_id,
+            )
             self.invalidate_offer("bound-deal-lost moved-on=True")
         elif now >= offer.deadline:
             self.invalidate_offer("offer-ttl-expired")
