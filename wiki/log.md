@@ -8230,3 +8230,51 @@ _dialogue_clear_drive - and the new _merchant_engage hold - on the CONTEXT's
 bound offer; RED test: bind in the context, leave state.shop_offer=None,
 assert the close (and the empty-ACTIVE engage hold) fire nothing. With the
 close truly held, c0f99258's re-begin arm finally gets its live at-bat.
+
+
+## 2026-10-31 ~18:35 — receipt: leg 54 - THE ECONOMY DID NOT CLOSE (fourth window); leg 54 names the first domino: the TICK-PATH dialogue retry begins INSIDE the bound window
+
+Launched 16:55 from 626f11db (5c71a9e4 in). Window 17:15-18:15 Madrid, day
+index 5 (CLOCK (5, 16.92) at t=60, SCHED windows all (5, 17.25, 18.25)); the
+pump's doc-shaped brief rewritten to the bare mapping and committed
+(626f11db, bbf3403e precedent); seed refreshed from the 16:52 char readback
+(unchanged bytes; fixture intact) and verified live (first state_tick
+zeny=150 at 16:15:08 UTC). The whole buy chain ran in the first 40s of the
+window - zeny_wing logged in ON the dealer cell (prt_in 172,129, leg 53's
+logout point): TalkToNpc 16:15:08 -> C4 (unsupported_shop 16:15:10) ->
+NpcShopBuySelection 16:15:10 -> C6 BOUND ~16:15:28. The offer then died to
+moved-on ~13s later, BEFORE the close and before any decide-paced mint (the
+next decide was 16:15:55): a begin() fired at ~16:15:28 INSIDE the bound
+window - world event NpcDialogueReceived stage='opening' at 16:15:28.255,
+and 'opening' is begin()'s stage (native_npc_dialogue.py:104) - its server
+answer moved the cursor 70->72, and the next check read moved-on. By
+elimination that begin is _retry_blocked_dialogue_on_tick
+(playing_runtime.py:2078) - the tick-path twin of the leg-50-held
+action-path retry (:862, which HAS the c0f99258 hold) - and it carries NO
+bound-offer hold at all. The census rules out every other begin source: ONE
+TalkToNpc total (16:15:08, before the bind - the fifth guard's re-click arm
+never fired, confirming 4b1d4d05's leg-53 retraction on fresh evidence) and
+no recovery NpcClose until later. The blocked-stage close still fired
+NpcClose at +19s (16:15:47) with two more begins after it (16:15:49/58) -
+e593544d's hold silent because it reads state.shop_offer, null on every
+tick (shop_offer in 0/180 samples); the context knew the whole time
+(had_issued=True had_offer=True). Verbatim taps:
+
+    shop-debug: C6 seen (seq=71 issued=True after=70 consumed=False rows=213)
+    shop-debug: C6 BOUND (seq=71 rows=19 npc=110001762)
+    shop-debug: moved-on terms (seq=70->72 opened=69->72 stage=opening epoch=True map=True npc=True)
+    shop-debug: offer invalidated (bound-deal-lost moved-on=True) had_issued=True had_offer=True
+
+DB: zeny_wing 150->150, no 1201 (the economy did not close); the farmers
+landed kills (base_exp NyxSong 99->105, RinceNyan 77->82, PoringMuffin14
+52->56, xXLunasongXx 86->90); zeny_wing parked at the dealer cell all
+window (83 decides, 0 further npc actions - the one-at-bat shape again).
+7/7 online, 21506 steps, 0 step_errors, 0 TRANSPORT DOWN. Receipt
+run/plain_host_receipts/population-receipt-54-1793462104.json. NEXT SLICE
+(4b1d4d05's slice, EXTENDED by leg 54): plumb the shop context into
+EventDrivenBrain and gate _dialogue_clear_drive, _merchant_engage AND
+_retry_blocked_dialogue_on_tick on the CONTEXT's bound offer - leg 54 shows
+a close-only gate cannot save the offer, because the tick-path retry's
+first begin precedes the close by ~19s. RED test: bind in the context,
+leave state.shop_offer=None, tick past the dialogue timeout, assert no
+begin, no close, and no empty-ACTIVE engage while bound.
