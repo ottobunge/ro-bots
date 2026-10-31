@@ -7786,3 +7786,25 @@ the RED run's own "C6 seen (seq=43 issued=False after=41)" is the mechanism
 reproduced. Gate 6,676+65. NEXT: leg 47 - the buy re-proof; expect the offer
 to bind, the purchase admission to mint, the C8 to fire, zeny 60 -> 10 and
 the knife (1201) back on zeny_wing.
+
+## 2026-10-31 ~01:1x — the buy-mint starvation: the seeded wallet + the operator knife qualification
+
+Leg 47's mid-window proof: the C6 BOUND (issued=True, the guard tap printed
+"C6 seen (seq=70 issued=True after=69 rows=213)" — the b78f105b fix works
+LIVE) but the purchase still never minted. Two starvation points, one class:
+(1) _buy_mint_attempt read the shop context's wire-observed balance; the wire
+delivers SP_ZENY on changes only, so a fresh login wallet is None there. The
+mint now reads _zeny_balance's authority chain (tracked > receipt > seed).
+(2) The purchase machine refuses to mint on unbound facts; nothing in the
+live flow ever bound them. The first live qualification binds the operator's
+knife template (item identity 1201/weight 400/ordinary/non-stackable from the
+pinned item_db_equip.yml:2262-2265) to the CURRENT exchange; the price fields
+qualify from the RECEIVED row (the dealer's actual price is the exchange's,
+not the db's Buy column — _eligible re-checks them equal anyway), and the
+admission's receipt falls back to the seeded balance (marked runner-seed).
+The RED test drives the offered() harness minus the B1 zeny: the offer binds,
+the seed reports 80, the mechanical layer mints NpcShopPurchase. Gate
+6,677+65. STILL OPEN (production observation for the next leg): the slot
+allowance and the max-weight receipt bind only from the operator proof /
+B0-24+25 frames — whether the live login delivers the weight pair is
+observable in the next receipt.

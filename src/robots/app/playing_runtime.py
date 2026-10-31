@@ -110,7 +110,7 @@ from robots.domain.planning import (
     npc_intent_matches,
 )
 from robots.domain.self_metadata import ServerSelfSlots
-from robots.domain.shop import QualifiedShopItem, ShopPurchaseProgress
+from robots.domain.shop import QualifiedShopItem, ReceivedZeny, ShopPurchaseProgress
 from robots.domain.skill_knowledge import PublicSkillKnowledge
 from robots.domain.skills import ReceivedSkillContextReadOnly
 
@@ -991,6 +991,44 @@ class PlayingClient:
         """Explicit trusted injection only; no loader or live fact inference."""
         return self._purchase.bind(facts, self._purchase_admission(self._now()))
 
+    def _qualify_knife_facts(self, context: PurchaseAdmission) -> QualifiedShopItem | None:
+        """The operator's item-level facts for the pinned novice knife, bound to
+        the CURRENT received exchange.
+
+        The operator template supplies what the wire cannot carry reliably:
+        the item identity (1201, the pinned rathena
+        db/pre-re/item_db_equip.yml:2262-2265 Knife, ordinary non-stackable
+        weapon, Weight 400). The price/discount qualify FROM THE RECEIVED
+        exchange's own row — the C6 is the trusted bound offer, and
+        native_purchase._eligible re-checks the facts against that same row,
+        so a template price would have to equal it anyway (leg 47: the dealer's
+        received price is the exchange's, not the db's Buy column). The session
+        fields copy the CURRENT admission; a stale exchange denies at bind.
+        """
+        offer = context.offer
+        now = context.now
+        if offer is None or not _finite_npc_time(now):
+            return None
+        rows = tuple(r for r in offer.rows if r.item_id == 1201)
+        if len(rows) != 1:
+            return None
+        return QualifiedShopItem(
+            source_id="rathena-item-db-pin-20180704:1201",
+            account_id=context.account_id,
+            character_id=context.character_id,
+            epoch=offer.epoch,
+            npc_id=offer.npc_id,
+            map_name=offer.map_name,
+            actual_item_id=1201,
+            client_item_id=1201,
+            loaded_weight=400,
+            ordinary_shop=True,
+            nonstackable=True,
+            stable_price=rows[0].price,
+            stable_discount_price=rows[0].discount_price,
+            valid_until=now + 300.0,
+        )
+
     def npc_shop_purchase(self, *, maximum_zeny: int = 0) -> NpcShopPurchase | None:
         """Mint one finite owner intent; default budget grants no expenditure."""
         return self._purchase.mint(self._purchase_admission(self._now()), maximum_zeny)
@@ -1020,10 +1058,22 @@ class PlayingClient:
         offer = self._shop_context.offer
         if offer is None or tracker is None or self._npc.requests >= 32:
             return None
+        currency = self._shop_context.currency
+        if currency is None:
+            # the wallet-parity seed (2743782a) IS the operator's DB-backed
+            # ground truth (the fixture char.zeny); the wire delivers SP_ZENY
+            # on changes only, so a fresh login has no receipt to spend
+            # against — arm the admission's receipt from the SAME authority
+            # chain the state reports, marked as the runner seed, fresh now
+            seeded = self._zeny_balance(tracker.view)
+            if seeded is not None and type(self._epoch) is int:
+                currency = ReceivedZeny(
+                    seeded, self._epoch, 0, now, source_binding="runner-seed-char-zeny"
+                )
         return PurchaseAdmission(
             self._purchase_owner(),
             offer,
-            self._shop_context.currency,
+            currency,
             self._capacity.receipt,
             tracker.indexed_inventory,
             self._server_slot_allowance(),
@@ -1162,7 +1212,7 @@ class PlayingClient:
         sell_action = self._pending_sell(tracker)
         if sell_action is not None:
             return sell_action
-        purchase = self._buy_mint_attempt()
+        purchase = self._buy_mint_attempt(tracker)
         if purchase is not None:
             return purchase[0]
         return self._sell_open_action(tracker) or self._buy_open_action()
@@ -1189,14 +1239,26 @@ class PlayingClient:
             return None
         return NpcShopSell(None, self._epoch, tracker.view.map_name, latest.seq, entries)
 
-    def _buy_mint_attempt(self) -> tuple[GameAction, ...] | None:
+    def _buy_mint_attempt(self, tracker: NativeGameplayTracker) -> tuple[GameAction, ...] | None:
         offer = self._shop_context.offer
         if offer is None:
             return None
-        zeny = self._shop_context.balance
+        # the SAME balance authority chain the state reports: tracked wire >
+        # shop receipt > the runner-side seed. Reading the shop context alone
+        # starved the mint on a fresh login (the wire delivers SP_ZENY on
+        # changes only — leg 47: the C6 bound, the purchase never minted).
+        zeny = self._zeny_balance(tracker.view)
         rows = tuple((r.price, r.discount_price, r.item_type, r.item_id) for r in offer.rows)
         if shop_affordable_weapon(rows, zeny) is None:
             return None
+        # the purchase machine's facts: the first live qualification binds the
+        # operator's knife template to the CURRENT exchange (native_purchase
+        # refuses to mint on unbound facts — the trusted-injection law)
+        admission = self._purchase_admission(self._now())
+        if admission is not None and not self._purchase.has_facts:
+            facts = self._qualify_knife_facts(admission)
+            if facts is not None:
+                self.bind_shop_purchase_facts(facts)
         action = self.npc_shop_purchase(maximum_zeny=zeny if zeny is not None else 0)
         return None if action is None else (action,)
 

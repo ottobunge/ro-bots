@@ -139,6 +139,10 @@ class NativePurchase:
         self._expected_balance: int | None = None
         self._successful_send = False
 
+    @property
+    def has_facts(self) -> bool:
+        return self._facts is not None
+
     def bind(self, facts: QualifiedShopItem, context: PurchaseAdmission | None) -> bool:
         self._facts = None
         if (
