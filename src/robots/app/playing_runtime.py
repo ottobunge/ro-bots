@@ -2070,6 +2070,17 @@ class PlayingClient:
             return
         if self._npc.deny_origin != "timeout" or self._npc_retries <= 0:
             return
+        if self._shop_context.offer is not None:
+            # leg 54: the tick-path twin of the action-path hold (c0f99258) —
+            # the tick retry re-began INSIDE the bound window (+13s past the
+            # C6 bind), the fresh begin replaced the view with a NEW exchange
+            # round (opened 69->72, stage 'opening') and the next check read
+            # moved-on, killing a received deal before the decide-paced mint's
+            # first tick. The deal is alive server-side even though the
+            # dialogue clock expired: the barrier holds and the re-begin
+            # waits until the offer dies on its own terms (the exchange
+            # gone / identity loss / a real new click / the 300s TTL).
+            return
         if now < self._npc_retry_at:
             return
         self._npc_retries -= 1
