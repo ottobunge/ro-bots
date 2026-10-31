@@ -8190,3 +8190,43 @@ exchange and the decide-paced mint sees it on the same tick. The chain's
 guards are now FIVE: the clock, the recovery re-begin, the repeat-C4
 re-marker, the close drive, and the drive's re-click. Gate 6,682+65. Leg 54
 = the buy attempt with every layer held.
+
+## 2026-10-31 ~17:10 — receipt: leg 53 - THE ECONOMY DID NOT CLOSE; the killer is the blocked-stage CLOSE, and e593544d's hold never fired (it reads state.shop_offer, null at the moment)
+
+7/7 online all window, 25,112 steps, 0 errors, 0 TRANSPORT DOWN; seed verified
+live (first state_tick zeny=150, inventory_counts {} - fixture intact: 150z,
+no 1201). The full chain ran in the session's first 90s: TalkToNpc 14:30:08 ->
+C4 14:30:10 -> NpcShopBuySelection +2ms -> C6 frame 14:30:28 -> C6 BOUND
+(seq=71 rows=19 npc=110001762) -> **NpcClose 14:30:47 (+19s inside the bound
+window)** -> NpcDialogueReceived reopen 14:30:49 (begin() bumps opened AND
+sequence) -> moved-on -> invalidated; two more close/reopen pairs (14:31:06/08,
+then close 14:31:27) and the agent idled at the dealer cell for the remaining
+hour (1 distinct position, 0 MoveTos, no re-arm - the leg-50 shape). DB
+zeny_wing 150->150, no 1201. Verbatim taps (the first leg carrying 077b214b):
+
+    shop-debug: C6 seen (seq=71 issued=True after=70 consumed=False rows=213)
+    shop-debug: C6 BOUND (seq=71 rows=19 npc=110001762)
+    shop-debug: moved-on terms (seq=70->72 opened=69->72 stage=opening epoch=True map=True npc=True)
+    shop-debug: offer invalidated (bound-deal-lost moved-on=True) had_issued=True had_offer=True
+
+THE REMAINING DROP: e593544d gates the close on `state.shop_offer is not
+None` (brain.py:828), but the decide-state projection was null on every
+state_tick through the bound window (14:30:08/14:31:10/14:32:10 all
+shop_offer=null) - the hold's trigger is unreachable in exactly the state it
+was written for, and brain.py holds no `_shop_context` to read the authority
+(grep: zero hits). The bound offer lives ONLY in the shop context (the tap's
+had_offer=True). The leg-51 prescription was to gate on the CONTEXT's bound
+offer; the diff shipped the projection instead.
+
+RETRACTION of the entry above (5c71a9e4's attribution): the leg-53 trace
+action census names ONE TalkToNpc for the whole leg (the opening click) -
+there is NO fresh click after the bind; the actions in the bound span are
+NpcClose x3. "opened 69->72" is begin()'s post-close bump (the reopen 2s
+after the close), not a new exchange round from a re-click. The
+merchant-drive re-click hold aims at an arm that did not fire, and it too
+keys on the unreliable `state.shop_offer` projection. NEXT SLICE: plumb the
+shop context (or the bind state) into EventDrivenBrain and gate
+_dialogue_clear_drive - and the new _merchant_engage hold - on the CONTEXT's
+bound offer; RED test: bind in the context, leave state.shop_offer=None,
+assert the close (and the empty-ACTIVE engage hold) fire nothing. With the
+close truly held, c0f99258's re-begin arm finally gets its live at-bat.
