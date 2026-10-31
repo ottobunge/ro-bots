@@ -8048,3 +8048,68 @@ receipt_sequence) is dropped. The detached-once law holds: the old offer
 object is never mutated. The [new_c4]/detached contracts reconciled to the
 same-prompt + latest-list laws. Gate 6,680+65. Leg 52 = the buy attempt on
 the complete chain (bind survives clock + recovery + re-marker).
+
+## Leg 51 — the economy-close attempt on the recovery-hold guard (c0f99258): NOT CLOSED, the remaining drop is the close drive
+
+Window Saturday 2026-10-31 11:30-12:30 Madrid (10:30-11:30 UTC), day index 5;
+launched 11:17:40 (receipt epoch 1793441833, duration 6600s) from 4c07c561 —
+so the leg ran WITHOUT 75054047 (the re-marker fix landed after the launch
+and is leg 52's code). 7/7 online the whole window, decides 72-172/agent,
+26,309 steps, 0 errors, 0 TRANSPORT DOWN.
+
+Pre-launch fixture work (4c07c561): the brief arrived doc-shaped AGAIN —
+rewrote to the bare runner mapping (bbf3403e precedent); seed-zeny refreshed
+from the char-table readback and zeny_wing's grant bumped 60->150z: the
+received C6 knife row price is 73z (leg-49 decode; db Buy says 50) and
+affordability compares the FULL received price, so 60z could never cover the
+buy. Seed delivery VERIFIED: the first state_tick read zeny=150 at
+10:30:08 UTC. zeny_wing logged back in at prt_in (172,129), one cell from
+Weapon Dealer#prt (172,130).
+
+VERDICT: THE ECONOMY DID NOT CLOSE. zeny_wing DB zeny 150->150, no 1201 in
+inventory. The chain advanced one hop and named the remaining drop verbatim:
+
+    shop-debug: C6 seen (seq=71 issued=True after=70 consumed=False rows=213)
+    shop-debug: C6 BOUND (seq=71 rows=19 npc=110001762)
+    shop-debug: offer invalidated (bound-deal-lost moved-on=True) had_issued=True had_offer=True
+
+The trace (pop_0003_g00m02.jsonl, UTC): TalkToNpc 10:30:08.179 -> C4
+10:30:10.181 -> NpcShopBuySelection (the C5) 10:30:10.182 -> C6 BOUND ->
+**NpcClose 10:30:26.204 — 16s into the bound window** -> the offer
+invalidated -> the FIRST re-begin 10:30:28.211 (AFTER the offer died) ->
+two more close/re-begin cycles (10:31:05/07, 10:31:23/25). The bound offer
+surfaced in the decide state for exactly 1 of 220 receipt samples (t=780.8,
+rows=19, stage waiting) — the C6 handoff WORKED end to end. Every decide
+after 10:30:26 read offer=None, so the decide-paced mint never saw a bound
+offer; the admission/affordability hop (and the 150z grant) was never
+reached. One buy at-bat per window, as leg 50 predicted; it never re-armed.
+
+THE REMAINING DROP: c0f99258 gated only the RE-BEGIN arm of the dialogue
+recovery (_retry_blocked_dialogue, playing_runtime.py:849). The
+BLOCKED-STAGE CLOSE DRIVE is ungated and minted that NpcClose while the
+offer was bound — the server deal terminated and the context read
+deal-lost. The re-begin hold itself held at its own layer: no re-begin
+until after the invalidation (leg 50's +2s re-begins are gone). No dealer
+frame arrived between the bind and the close (the world-event stream is
+empty there), so the close is the killer — not a repeat C4.
+
+NEXT SLICE: extend the hold to the close drive — gate
+_dialogue_clear_drive's blocked-stage NpcClose on
+`self._shop_context.offer is not None` (the mirror of the re-begin hold).
+RED test in the test_recovery_holds_bound_offer.py harness: bind an offer,
+expire the dialogue into stage 'blocked' past the retry budget, assert NO
+NpcClose while bound and that the next heartbeat decide mints the purchase
+from the intact offer. NOTE for leg 52 (launched 13:07 from 48f50cf0 with
+75054047 in): the close-drive hold is NOT in that tree either — expect the
+same 16s kill at the 13:30 open unless it lands first. After the close
+drive holds, the chain should finally close: mint -> C8 -> 0xCA -> DB zeny
+drop by the received price (73z per leg 49; grant now 150z) + 1201 in
+inventory.
+
+Secondary: guild actions fired again (FoundGuild + 6 GuildInvite x2 — the
+cumulative-tables rule: check the masters against leg 50 before claiming
+new formation); a party formed (2 AcceptInvite; party chat flowed);
+attacks 37/20/7/13/28/0/0 across the seven; no kill attribution this leg —
+the pre-launch baseline SQL omitted base_exp/job_exp (baseline gap; next
+shepherd re-adds the exp columns). Receipt:
+run/plain_host_receipts/population-receipt-51-1793441833.json.
