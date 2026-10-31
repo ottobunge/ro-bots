@@ -451,6 +451,12 @@ def _merchant_engage(state: BotState, destination: tuple[int, int]) -> ScriptOut
     """The outbound dealer engagement (window-29): walk the leg, or talk
     once at the dealer and hold for the dealtype."""
     if state.map_name == "prt_in":
+        # LEG 53: a BOUND offer means the exchange is in flight — the
+        # mechanical purchase path owns it and any fresh click here opens a
+        # new round that kills the bound offer (moved-on) before the
+        # decide-paced mint ever sees it. Hold the click; author nothing.
+        if state.shop_offer is not None:
+            return ScriptOutcome((), ScriptStatus.ACTIVE)
         talk = _dealer_talk(state, destination)
         if talk is None and _DEALER_TALKED.get(state.name) is not None:
             # The dealer npc is no longer received: any latch is stale (the

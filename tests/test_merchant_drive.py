@@ -45,6 +45,7 @@ from robots.app.scripts import (  # noqa: E402
 from robots.domain.actions import Attack, MoveTo, Rest, TalkToNpc  # noqa: E402
 from robots.domain.farm import FarmPlan  # noqa: E402
 from robots.domain.model import ActorRef, BotState, Goal  # noqa: E402
+from robots.domain.shop import ReceivedShopOffer, ReceivedShopRow  # noqa: E402
 
 
 def _state(**over: object) -> BotState:
@@ -498,3 +499,48 @@ def test_weapon_alone_still_releases_the_drive() -> None:
     and there is nothing to sell - the field behavior stays."""
     armed = _state(zeny=0, inventory={"1201": 1})
     assert merchant_drive_cell(armed) is None
+
+
+def test_merchant_engage_holds_the_click_while_an_offer_is_bound() -> None:
+    """Leg 53: with a BOUND offer the goal script must author nothing - the
+    mechanical purchase path owns the exchange. The drive's re-click (a fresh
+    TalkToNpc while the offer was bound) opened a new exchange round and the
+    bound offer died moved-on before the decide-paced mint ever saw it
+    (the moved-on terms: opened 69->72, stage 'opening' - a fresh begin)."""
+    dealer = _dealer(id=110001762)
+    state = BotState(
+        name="probe",
+        job="Novice",
+        base_level=10,
+        hp=100,
+        max_hp=100,
+        sp=20,
+        max_sp=20,
+        map_name="prt_in",
+        x=172,
+        y=129,
+        goal=Goal.GRIND,
+        nearby=(dealer,),
+        in_party=False,
+        inventory={},
+        pending_invites=(),
+        recent_chat=(),
+        shop_offer=_sentinel_offer(),
+    )
+    outcome = _merchant_engage(state, (172, 130))
+    assert all(not isinstance(a, TalkToNpc) for a in outcome.actions)
+
+
+def _sentinel_offer() -> ReceivedShopOffer:
+    """A minimal bound-offer stand-in: the guard only checks `is not None`."""
+    return ReceivedShopOffer(
+        rows=(ReceivedShopRow(price=73, discount_price=61, item_type=4, item_id=1201),),
+        npc_id=110001762,
+        epoch=1,
+        map_name="prontera",
+        opened_sequence=7,
+        prompt_sequence=9,
+        receipt_sequence=12,
+        observed_at=100.0,
+        deadline=400.0,
+    )

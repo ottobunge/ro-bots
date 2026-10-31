@@ -8176,3 +8176,17 @@ with a bound offer, the close without). The chain's guards are now COMPLETE:
 the clock (bf93474a), the recovery re-begin (c0f99258), the repeat-C4
 re-marker (75054047), and the close drive (this slice). Gate 6,681+65. Leg 53
 = the buy attempt with every arm held.
+
+## 2026-10-31 ~17:0x — the fifth guard: the merchant drive holds its click while an offer is bound (the leg-53 tap verdict)
+
+Leg 53's term tap (the first leg to carry 077b214b) named the term exactly:
+"moved-on terms (seq=70->72 opened=69->72 stage=opening ...)" — a FRESH
+CLICK opened a new exchange round while the offer was bound. Not the
+recovery, not the marker: the merchant drive's own TalkToNpc re-mint (the
+dialogue's resting stage 'blocked' reads as no-deal to the script). The
+guard (the script layer's first): _merchant_engage returns empty ACTIVE when
+state.shop_offer is not None — the mechanical purchase path owns the
+exchange and the decide-paced mint sees it on the same tick. The chain's
+guards are now FIVE: the clock, the recovery re-begin, the repeat-C4
+re-marker, the close drive, and the drive's re-click. Gate 6,682+65. Leg 54
+= the buy attempt with every layer held.
