@@ -31,7 +31,15 @@ def _runtime(now: list[float], budget: int = 3) -> PlayingClient:
     client._now = lambda: now[0]
     client._npc_retries = budget
     client._npc_retry_at = 0.0
+    # the leg-50 guard reads the shop context; no offer exists on this stub
+    client._shop_context = _NoOfferContext()  # type: ignore[assignment]
     return client
+
+
+class _NoOfferContext:
+    """The stub's shop context: no bound offer, so the retry cadence runs."""
+
+    offer = None
 
 
 def _deny(client: PlayingClient) -> None:

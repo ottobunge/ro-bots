@@ -8012,3 +8012,21 @@ death-stall this leg (2 attacks, 11 MoveTos, 1 Rest, 89 decides, no
 death-latch fingerprint). Socials flowed (PartyChat 26, Say 35,
 InviteToParty 4, GuildInvite 12 — cumulative tables, attribute by diff not
 by count).
+
+## 2026-10-31 ~11:3x — the recovery holds while a bound offer exists (the leg-50 verdict, TDD)
+
+Leg 50's receipt (c17fbf00) named the last hop: the C6 BOUND survived the
+leg-49 clock killer (bf93474a at its own layer) but the offer died to the
+dialogue RECOVERY's own re-begin inside the bound window — the retry budget
+re-arms the dialogue, the fresh begin replaces the view, and the shop context
+reads a NEW exchange round (bound-deal-lost moved-on=True) before a decide
+ever saw the offer. The guard: _retry_blocked_dialogue returns True (the
+barrier owns the dispatch) WITHOUT the re-begin while _shop_context.offer is
+not None — the deal is alive server-side even though the dialogue clock
+expired; the re-begin waits until the offer dies on its own terms (the
+exchange gone / identity loss / a real new click / the 300s TTL). The RED
+test reproduces leg 50 verbatim (the fresh 'opening' view at
+opened_sequence 12 vs the blocked 10 while the offer was bound); the retry
+stubs gain a no-offer shop context so the cadence still runs unbound. Gate
+6,679+65. Leg 51: the full chain to the C8 — the offer binds and SURVIVES,
+the admission mints, the purchase fires, the economy closes.

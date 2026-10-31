@@ -849,6 +849,15 @@ class PlayingClient:
             return True  # the poisoned barrier holds (the malformed/the send failure)
         if self._npc_retries <= 0:
             return True  # the budget spent: the barrier holds for the epoch
+        if self._shop_context.offer is not None:
+            # leg 50: the recovery's OWN re-begin killed a BOUND offer —
+            # a fresh begin replaces the view and the shop context reads a
+            # NEW exchange round (bound-deal-lost moved-on=True). The deal
+            # is alive server-side even though the dialogue clock expired:
+            # the barrier holds and the re-begin waits until the offer dies
+            # on its own terms (the exchange gone / identity loss / a real
+            # new click / the 300s TTL).
+            return True
         now = self._now()
         if now < self._npc_retry_at:
             return True  # the cadence wait
