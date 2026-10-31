@@ -8396,3 +8396,43 @@ still gate). Add mint-path taps while there (announce affordable-weapon
 verdict, admission, qualification, purchase-action build) so any FURTHER
 drop (affordability row match, knife qualification, admission) names itself
 next leg instead of re-derivation.
+
+
+## 2026-11-01 ~00:15 - the sixth arm landed: the mint precondition holds on the CONTEXT's bound offer (timeout denials only) + the mint-path skip tap
+
+feat/mint-precondition-hold: `_shop_loop_action`'s `self._npc.failed` term no
+longer gates the decide-paced mint while `self._shop_context.offer is not None`
+AND the denial is the innocent clock expiry (`deny_origin == "timeout"`, the
+legs 23-24 retryable origin). The poison denials (malformed / send-failure)
+still block with an offer bound, and a failed dialogue with no bound offer
+keeps the barrier complete - the hold lives on the CONTEXT's offer (the same
+gate the leg-49 healing gave the offer's own survival), not on the state
+mirror. `cancel_uncertain` is unchanged: it still blocks always.
+
+Guard shape: `_mint_skip_term` names the failing precondition term
+("alive" / "cancel_uncertain" / "npc_failed"); `_timeout_denial_with_live_offer`
+is the one held-off shape; `_note_mint_skip` is the mint-path TAP
+(tap-before-fix doctrine): one
+`shop-debug: mint skipped by <term> (alive=... npc_failed=... deny_origin=...
+cancel_uncertain=... offer_bound=...)` WARNING whenever the precondition skips
+the shop loop while an offer is bound - the next leg can name any remaining
+gate from the log instead of re-deriving. Bounded to the mint window (a bound
+offer: without one no mint was pending), fails open, never behavior.
+
+TDD RED->GREEN (tests/test_mint_precondition_bound_offer.py, the seeded-wallet
+ready_shop harness + the REAL dialogue machine deny: the timeout class driven
+by pulling the post-C5 deadline under the harness clock, the poison class by
+the machine's backwards-clock guard):
+1. timeout denial + bound offer -> NpcShopPurchase mints (RED first:
+   `assert 0 == 1` with failed=True, deny_origin='timeout', shop_offer set -
+   the exact leg-55 starvation, the offer alive and the mint starved),
+2. poison denial + bound offer -> still blocked, and the tap names it
+   ("mint skipped by npc_failed ... deny_origin=poison offer_bound=True"),
+3. no bound offer + failed -> still blocked, tap silent (no mint pending).
+
+Full gate green on the branch: 6690 passed + 65 subtests, coverage 95.36%
+(`nix develop -c task check`, exit 0). NEXT SLICE (leg 56, the coordinator
+dispatches): the live window - zeny_wing re-armed at the dealer with the hold
+active; the mint-path tap line names the next gate if the economy still does
+not close (candidates: the re-arm cadence, the admission/facts window after
+the 300s TTL death).

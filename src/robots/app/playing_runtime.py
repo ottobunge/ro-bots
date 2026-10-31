@@ -1216,7 +1216,9 @@ class PlayingClient:
             for action in actions
         ):
             return None
-        if state.alive is not True or self._npc.failed or self._npc.cancel_uncertain:
+        skip = self._mint_skip_term(state)
+        if skip is not None:
+            self._note_mint_skip(state, skip)
             return None
         sell_action = self._pending_sell(tracker)
         if sell_action is not None:
@@ -1225,6 +1227,49 @@ class PlayingClient:
         if purchase is not None:
             return purchase[0]
         return self._sell_open_action(tracker) or self._buy_open_action()
+
+    def _mint_skip_term(self, state: BotState) -> str | None:
+        """The mint precondition's failing term, named for the tap. Leg 55:
+        the post-C6 _deny('timeout') set _npc.failed ~15s after every bind
+        and gated the decide-paced mint for the offer's whole TTL. The
+        dialogue denial is a NORMAL clock-expiry artifact while the deal
+        lives server-side: the failed term is held off the mint while the
+        shop CONTEXT still carries the received offer - but ONLY the innocent
+        timeout origin (the deny_origin='timeout' retryable contract, legs
+        23-24); the poison denials and any offer-less dialogue still block."""
+        if state.alive is not True:
+            return "alive"
+        if self._npc.cancel_uncertain:
+            return "cancel_uncertain"
+        if self._npc.failed and not self._timeout_denial_with_live_offer():
+            return "npc_failed"
+        return None
+
+    def _timeout_denial_with_live_offer(self) -> bool:
+        """The one held-off shape: the failed dialogue's innocent timeout
+        (deny_origin='timeout', the legs 23-24 retryable origin) does not
+        gate the mint while the shop CONTEXT still holds the received offer.
+        The poison denials (malformed, send-failure) and the offer-less
+        dialogue keep the barrier complete."""
+        return self._npc.deny_origin == "timeout" and self._shop_context.offer is not None
+
+    def _note_mint_skip(self, state: BotState, term: str) -> None:
+        """Mint-path tap (tap-before-fix doctrine): name the gate that skipped
+        the shop loop's mint with every term's value, so the next leg can name
+        any remaining gate. Bounded to the mint window (a bound offer -
+        without one no mint was pending); fails open, never behavior."""
+        if self._shop_context.offer is None:
+            return
+        logger.warning(
+            "shop-debug: mint skipped by %s (alive=%r npc_failed=%s"
+            " deny_origin=%s cancel_uncertain=%s offer_bound=%s)",
+            term,
+            state.alive,
+            self._npc.failed,
+            self._npc.deny_origin,
+            self._npc.cancel_uncertain,
+            self._shop_context.offer is not None,
+        )
 
     def _pending_sell(self, tracker: NativeGameplayTracker) -> NpcShopSell | None:
         lists = tracker.view.sell_lists
