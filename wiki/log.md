@@ -7949,3 +7949,66 @@ receipt counter names the latch-clear, so participation is unreadable — name
 the counter when auditing. Secondary: RinceNyan zero kills a SECOND leg
 running (exp flat, full-window patrol) and 5/7 agents farmed nothing — grind
 engagement is thin; watch, do not fix in the economy lane.
+
+
+## Leg 50 — the buy proof ran; the bound offer died to the recovery's OWN re-begin
+
+Launch 08:37:50 Madrid from 106ebeb6+01326562 (the pump shipped the schedule
+brief DOC-SHAPED again; rewritten in place to the bare
+`{persona: [[5, 9.0, 10.0]]}` mapping and committed before launch, bbf3403e
+precedent — the doc stays in git history). Seed-zeny refreshed from a fresh
+char-table readback (byte-identical to the committed file: 8/31/60/7/0/4/0);
+fixture re-verified pre-launch: zeny_wing zeny=60, inventory EMPTY, all six
+others wearing 1201 equip=2. Window 09:00-10:00 Madrid = 08:00-09:00 UTC —
+the brief's own "07:00-08:00 UTC" line carried the CEST assumption; the
+runner's CLOCK line was the authority. Logins staggered clean, seed verified
+delivered (every persona's first state_tick zeny == the seed file).
+
+Receipt: steps 25110, step_errors 0, 210 samples, 7/7 online, decides
+77-116/agent, 0 TRANSPORT DOWN. The BUY chain got exactly one at-bat:
+TalkToNpc 08:00:08 -> NpcShopBuySelection 08:00:10 -> C6 seen (seq=71
+issued=True after=70 consumed=False rows=213) -> C6 BOUND (seq=71 rows=19
+npc=110001762). THE LEG-49 KILLER DID NOT FIRE — no
+not-ready/past-deadline invalidation; bf93474a worked at its own layer.
+Then, VERBATIM taps (/tmp/population_leg50.log):
+
+    shop-debug: C6 seen (seq=71 issued=True after=70 consumed=False rows=213)
+    shop-debug: C6 BOUND (seq=71 rows=19 npc=110001762)
+    shop-debug: offer invalidated (bound-deal-lost moved-on=True) had_issued=True had_offer=True
+
+shop_offer surfaced in 0/210 samples; the admission never ran; no C8, no
+0xCA. DB ground truth: zeny_wing zeny 60 -> 60, inventory still 0 rows —
+THE ECONOMY DID NOT CLOSE. Remaining drop, named by the trace timeline:
+the NPC-dialogue recovery acted INSIDE the bound window — NpcClose x3
+(08:00:26/08:00:44/08:01:12 UTC) plus three runtime re-begins
+(NpcDialogueReceived stage='opening' 08:00:28/46/56, same npc, no
+TalkToNpc action rows = runtime clicks). No dealer frame arrived after the
+bind (world events: nothing between 08:00:10 'unsupported_shop' and
+08:00:28 'opening'), and the C6 itself cannot move the machine's sequence
+(a 213-byte frame either never matches or _deny()s — and _deny sets
+stage='blocked' WITHOUT touching sequence; that deny IS the measured
+post-C6 resting 'blocked'). So the moved-on trigger was the recovery's own
+re-begin: begin() mints a fresh view (sequence AND opened_sequence reset),
+and the next build's `_check_bound_offer` read it as a NEW exchange round.
+The heartbeat decide (30-75 s) came at 08:00:52 — after the invalidation;
+the mint never had shop_offer to read.
+
+NEXT SLICE (economy lane): hold the dialogue recovery OFF while a bound
+offer exists — gate the re-begin budget AND the blocked-stage close drive
+on the shop context's bound offer (a bound offer IS live-deal evidence;
+recovery must not re-click or close into it). RED test: bind an offer,
+exhaust the dialogue budget, assert no re-begin and no NpcClose while
+bound, and that the next decide mints from the intact offer. Secondary
+watch: zeny_wing never re-armed after the trip (farm_item + empty-plan
+GrindScript at the dealer cell, 0 MoveTos, 33 decides all next_action=None
+— only chat) — a recovery hold-off makes the single at-bat survivable; the
+re-arm cadence is the gap after that.
+
+Window health: kills = RinceNyan +4/+2 (SWITCHED attack target — the
+leg's kill), NyxSong +2/+1, xXLunasongXx +2/+1, 21 attacks total; zero
+zeny moves anywhere (no sells; the sell arms correctly idle — nobody
+holds sellables beyond the worn knives). YuffieFy81 did NOT recur the
+death-stall this leg (2 attacks, 11 MoveTos, 1 Rest, 89 decides, no
+death-latch fingerprint). Socials flowed (PartyChat 26, Say 35,
+InviteToParty 4, GuildInvite 12 — cumulative tables, attribute by diff not
+by count).
