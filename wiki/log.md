@@ -8121,6 +8121,47 @@ Leg 52 mid-window: C6 BOUND then bound-deal-lost moved-on=True AGAIN with
 opened_sequence (a re-click/re-begin) or the stage leaving the deal set. The
 tap now names the term values at every moved-on invalidation. Leg 53 reads it.
 
+## 2026-10-31 15:00 — leg 52: the close-drive kill confirmed live (second window); THE ECONOMY DID NOT CLOSE
+
+Receipt: run/plain_host_receipts/population-receipt-52-1793448485.json.
+Launched 13:08 from 48f50cf0 on the SHIFTED window 13:30-14:30 Madrid (the
+12:46 launch died at boot: BlockingIOError memory_journal.py:93 — the
+still-running leg-51 runner held the memory-journal flocks; they release only
+at its 13:07 exit). CLOCK (5, 13.13) matched the file's day 5; logins fired at
+the 13:30 open; 7/7 online in every sample to the 14:30 close; 26262 steps,
+0 errors, 0 TRANSPORT DOWN.
+
+THE BUY: bound, then killed at the same hop ~16s in —
+  shop-debug: C6 seen (seq=71 issued=True after=70 consumed=False rows=213)
+  shop-debug: C6 BOUND (seq=71 rows=19 npc=110001762)
+  shop-debug: offer invalidated (bound-deal-lost moved-on=True) had_issued=True had_offer=True
+Trace: TalkToNpc 12:30:08.7Z -> NpcDialogueReceived (the C4) 12:30:10.7 ->
+NpcShopBuySelection 12:30:10.7 -> BOUND -> NpcClose 12:30:26.732 with NO
+decide between 12:30:08.7 and 12:30:28.7 (runtime-minted, not decided) -> a
+fresh dialogue 12:30:28.7 (new opened_sequence) -> moved-on=True. The mint
+never ran: zero mint/prepare/purchase taps, shop_offer in 0/220 samples (the
+offer lived <=16s, sub-sample). zeny_wing then ground in place at the dealer
+cell (prt_in 172,129) to the close — no re-arm (the leg-50 gap, still open;
+80 decides, zero MoveTos, zero attack gates).
+
+Leg-51's diagnosis CONFIRMED live: _dialogue_clear_drive's blocked-stage
+NpcClose (brain.py:828) is the ungated second terminator — the post-C6
+resting stage IS "blocked", the grind divert budget expires ~16s in, and the
+close kills the bound deal. c0f99258 held only _retry_blocked_dialogue.
+
+DB (acceptance arm 1 failed): zeny_wing 150->150, NO 1201 back (the six
+others still wear theirs, equip=2). Seed verified live: the first state_tick
+read zeny=150 (top-level field). Kills (exp delta): NyxSong +3/+2, RinceNyan
++9/+5, YuffieFy81 +2/+1, others 0; zeny moves: none.
+
+NOTE: two pump commits landed mid/post-window: 077b214b (the moved-on term
+tap, 13:51) and e593544d (the blocked-stage close drive holds while a shop
+offer is bound — the exact next slice this entry names). Leg 52 ran with
+NEITHER (launched 13:08; the moved-on line above carries no term values).
+Leg 53 launches with both: the moved-on invalidation should not fire while
+bound at all, the offer should survive to the decide-paced mint, and the
+re-arm cadence is the named gap after that.
+
 ## 2026-10-31 ~15:1x — the blocked-stage close holds while a shop offer is bound (the leg-51 receipt verdict)
 
 The leg-51 receipt (5349321a) named the killer precisely: the blocked-stage
