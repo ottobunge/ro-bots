@@ -7889,3 +7889,63 @@ x174 from the first sample. The lifecycle tap now names every step:
 Leg 49 reads which line fires between the bind and the offer surfacing — the
 two candidates (the dialogue-deadline invalidation vs the consume-order) fall
 out of the log directly. No behavior change; gate 6,677+65.
+
+## 2026-10-31 ~07:05 — leg 49: the lifecycle tap FIRED — hypothesis (a) confirmed; the bound-offer fix TDD'd and landed (bf93474a)
+
+Pre-launch caught a window-killer: the pump's brief carried day index 6
+(Sunday) but 2026-10-31 is a SATURDAY (weekday()=5; the runner's own
+`CLOCK: (5, 6.05)` proved it) — a day-6 window never opens today and the agents
+idle offline forever. The t=60s SCHED line showed all-False; the fresh runner
+was killed, the file rewritten to `{persona: [[5, 6.5, 7.5]]}` and relaunched
+06:05:26 Madrid (a995317a; seed-zeny refreshed from the fresh char-table
+readback — fixture verified intact: zeny_wing 60z, NO 1201, worn knives on the
+other six; PipinWalker 4->7).
+
+THE VERDICT — the tap named the offer's fate in the logins' first seconds
+(zeny_wing logs in at prt_in 172,129, the dealer is 172,130):
+
+    shop-debug: C6 seen (seq=71 issued=True after=70 consumed=False rows=213)
+    shop-debug: C6 BOUND (seq=71 rows=19 npc=110001762)
+    shop-debug: offer invalidated (not-ready=True dialog-none=False past-deadline=True) had_issued=True had_offer=True
+
+Hypothesis (a): the offer BOUND and the NEXT snapshot's `check()` killed it on
+the dialogue-liveness terms — the ~5s dialogue deadline vs the decide-paced
+tick gap. One lifecycle sequence all window; zeny_wing latched 'blocked' x168
+(pos=1 all window, 79 decides, 8 actions), shop_offer in 0 samples — the
+leg-48 shape, now with the kill point NAMED.
+
+THE FIX (bf93474a, TDD'd this session, gate green 6678 passed / 95.34%): a
+bound offer is RECEIVED DATA. `NativeShopContext.check`'s new bound branch
+dies only on: the received exchange GONE (dialog None), lost
+identity/self-readiness (`context_ok`), a NEW exchange round (the repeat-C4
+sequence/opened_sequence/epoch/map/npc terms), or AGE at its own 300s working
+TTL (`_SHOP_OFFER_TTL` — native_purchase's own guards at :168/:257 read the
+same deadline, so the TTL is what makes the decide-paced mint reachable at
+all); never on the clock/`_npc.failed`/cancel-uncertainty terms. MEASURED, not
+inferred (per-term diagnostics over every pinned boundary): the post-C6
+resting stage IS 'blocked' (the dialogue retry budget expires failed while the
+deal lives) — the conjunction cannot discriminate latch from walk-away, so the
+runtime passes the narrow `context_ok`; the motion/sit/map/vanish/round-move
+pins still die. The purchase [timeout] pin reconciled to 'acquired': the ca is
+the server's receipt — refusing to account a completed purchase invites the
+retry double-spend, and the anti-retry asserts still hold via
+purchase-ca-result invalidation. The synthetic RED test reproduced the live
+tap VERBATIM before the fix.
+
+Leg 50 is the proof leg (a fix committed mid-window is not in the running
+leg): expect C6 BOUND to SURVIVE, the mint to fire from the seeded 60z, and
+the economy close = DB zeny drop + 1201 in inventory.
+
+Window health: 7/7 online, steps 26299, step_errors 0, 0 TRANSPORT DOWN.
+DB: kills = NyxSong +4/+5, xXLunasongXx +10/+5; zero zeny moves anywhere; no
+purchase (pre-fix leg); fixture intact for leg 50 (60z, no knife).
+
+FINDING (recurrence): YuffieFy81 hit the death-mid-window signature AGAIN
+despite 0b256526's landed latch-clear — `move:no_position_or_dead` x510
+samples, decides climbing to 216, the respawn fingerprint last==save exact
+(pay_fild04 206,175), exp 6/3 -> 6/3 (zero kills). The fix's trigger
+reachability is the audit: did a 0x0091 actually arrive at THIS respawn? No
+receipt counter names the latch-clear, so participation is unreadable — name
+the counter when auditing. Secondary: RinceNyan zero kills a SECOND leg
+running (exp flat, full-window patrol) and 5/7 agents farmed nothing — grind
+engagement is thin; watch, do not fix in the economy lane.
