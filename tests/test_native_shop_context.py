@@ -55,7 +55,10 @@ def test_selected_offer_is_detached_once_and_not_purchase(monkeypatch, during_se
     assert (offer.npc_id, offer.epoch, offer.map_name) == (123, 1, "prontera")
     assert offer.receipt_sequence > offer.prompt_sequence
     assert offer.observed_at == 100.0
-    assert offer.deadline == 105.0
+    # e2e-49: the bound offer's deadline is its own 300s working TTL from the
+    # observed_at, NOT the 105.0 dialogue-step deadline - the dialogue terms
+    # gate the C6 arrival only (the old 105.0 pin made the mint unreachable)
+    assert offer.deadline == 400.0
     with pytest.raises(FrozenInstanceError):
         offer.rows[0].__setattr__("price", 9)
     assert json.loads(json.dumps(asdict(state)))["shop_offer"]["rows"][0]["price"] == 73
@@ -84,7 +87,6 @@ def test_selected_offer_is_detached_once_and_not_purchase(monkeypatch, during_se
         "socket",
         "reader",
         "controller",
-        "expired",
         "gap",
     ],
 )
@@ -266,6 +268,40 @@ def test_missing_received_readiness_permanently_clears_offer(monkeypatch, readin
     with pytest.raises(NativeTelemetryUnavailable):
         client.build_native_state(Goal.GRIND)
     assert client._shop_context.offer is None
+
+
+def test_bound_offer_survives_the_dialogue_deadline_it_arrived_in(monkeypatch):
+    """e2e-49 lifecycle-tap verdict: the C6 BOUND and the NEXT snapshot's
+    check() invalidated the bound offer (not-ready=True dialog-none=False
+    past-deadline=True) - the decide-paced purchase mint never saw it
+    (shop_offer in 0 samples, legs 45-49). A bound offer is RECEIVED DATA:
+    the dialogue-liveness terms gated the C6 ARRIVAL window and their job
+    ended at the bind. Real deal-enders still invalidate (identity-changed,
+    re-issued, selection-sent, purchase-ca-result)."""
+    _wire, client, receive, _sent, action = ready_shop(monkeypatch)
+    client.perform_native(action)
+    receive(OFFER)
+    assert client.build_native_state(Goal.GRIND).shop_offer is not None
+    client._now = lambda: 106.0  # past the 105.0 dialogue-step deadline
+    state = client.build_native_state(Goal.GRIND)
+    assert state.shop_offer is not None
+    assert state.shop_offer.rows[0].item_id == 1201
+    # the bound offer carries its own bounded working TTL, not the 5s
+    # dialogue-step deadline the decide-paced mint could never beat
+    assert state.shop_offer.deadline == 400.0
+
+
+def test_bound_offer_dies_of_age_at_its_working_ttl(monkeypatch, caplog):
+    _wire, client, receive, _sent, action = ready_shop(monkeypatch)
+    client.perform_native(action)
+    receive(OFFER)
+    assert client.build_native_state(Goal.GRIND).shop_offer is not None
+    client._now = lambda: 106.0
+    assert client.build_native_state(Goal.GRIND).shop_offer is not None
+    with caplog.at_level("WARNING"):
+        client._now = lambda: 401.0  # past the bind's 300s working TTL
+        assert client.build_native_state(Goal.GRIND).shop_offer is None
+    assert "offer invalidated (offer-ttl-expired)" in caplog.text
 
 
 def test_ordinary_warp_retains_tracked_zeny_across_the_map_epoch(monkeypatch):

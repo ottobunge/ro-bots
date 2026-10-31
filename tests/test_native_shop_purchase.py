@@ -285,7 +285,22 @@ def test_issued_continuity_loss_never_acquires_or_retries(monkeypatch, boundary)
     elif boundary == "deletion":
         receive(struct.pack("<HHh", 0xAF, 9, 1))
     else:
+        # e2e-49: the clock alone is NOT a deal-ender for a bound offer - the
+        # post-C6 resting stage is 'blocked', the dialogue budget expires
+        # (_npc.failed) and the deadline passes while the deal is alive, so
+        # the offer stays spendable inside its TTL and the server's receipt
+        # (the ca) is ATTRIBUTED: status 'acquired' (refusing to account a
+        # purchase the server completed invites the retry double-spend). The
+        # anti-retry asserts below still hold: the ca-result invalidates the
+        # offer, so the re-mint returns None and no second send happens.
         client._now = lambda: 105.0
+        before = len(sent)
+        receive(acquisition(), struct.pack("<HB", 0xCA, 0))
+        assert client.shop_purchase_progress().status == "acquired"
+        client.perform_native(action)
+        assert client.npc_shop_purchase(maximum_zeny=61) is None
+        assert len(sent) == before
+        return
     before = len(sent)
     receive(acquisition(), struct.pack("<HB", 0xCA, 0))
     assert client.shop_purchase_progress().status == "incomplete"

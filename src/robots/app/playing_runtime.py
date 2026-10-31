@@ -1397,7 +1397,29 @@ class PlayingClient:
                 and self._npc.view.map_name == self._planning_npc_map_identity(view),
             )
         )
-        self._shop_context.check(self._npc.view, ready, now)
+        # e2e-49: the BOUND-offer lifetime uses a NARROWER predicate than the
+        # in-flight `ready` conjunction: identity + self-readiness ONLY, with
+        # the exchange-failure and cancel-uncertainty terms (and the clock)
+        # excluded. Measured constituents (leg 49 diagnosis): the post-C6
+        # resting stage is 'blocked' (the deal waits at a send-less dialogue
+        # stage while the shop list is open), the dialogue retry budget then
+        # expires -> _npc.failed, and the clock passes the dialogue deadline -
+        # ALL while the deal is alive. Killing a bound offer for those terms
+        # made the decide-paced mint unreachable (live tap: "C6 BOUND
+        # (seq=71 rows=19)" then "offer invalidated (not-ready=True
+        # dialog-none=False past-deadline=True)"; the identical signature
+        # fires on the motion/sit boundaries via _npc_self_ready, so the
+        # conjunction alone cannot discriminate). Self-activity and identity
+        # still kill it: they are the real deal-enders.
+        context_ok = all(
+            (
+                _finite_npc_time(now),
+                self._npc_self_ready(view, self._epoch_character, self._epoch),
+                self._npc.view is not None
+                and self._npc.view.map_name == self._planning_npc_map_identity(view),
+            )
+        )
+        self._shop_context.check(self._npc.view, ready, now, context_ok=context_ok)
 
     def _shop_dialogue(self, now: float) -> NpcDialogue | None:
         if not all(

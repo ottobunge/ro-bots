@@ -9,6 +9,13 @@ from robots.domain.shop import ReceivedShopOffer, ReceivedShopRow, ReceivedZeny
 
 logger = logging.getLogger(__name__)
 
+# e2e-49: a BOUND offer's working lifetime. The dialogue-step deadline (~5s)
+# gates only the C6 ARRIVAL window (_consume_offer); a decide-paced purchase
+# mint can never run inside it, so an offer bound to that deadline was
+# structurally unspendable (legs 45-49: shop_offer in 0 samples). The TTL
+# mirrors _qualify_knife_facts' valid_until bound (now + 300.0).
+_SHOP_OFFER_TTL = 300.0
+
 
 class NativeShopContext:
     def __init__(self) -> None:
@@ -75,7 +82,26 @@ class NativeShopContext:
         self._after, self._sent_at, self._deadline = after, sent_at, deadline
         self._consumed = False
 
-    def check(self, dialog: NpcDialogue | None, ready: bool, now: float) -> None:
+    def check(
+        self,
+        dialog: NpcDialogue | None,
+        ready: bool,
+        now: float,
+        context_ok: bool | None = None,
+    ) -> None:
+        # e2e-49 lifecycle-tap verdict: a BOUND offer is received data. The
+        # dialogue-liveness terms (not-ready/dialog-none) and the dialogue-step
+        # deadline gated the C6 ARRIVAL window and ended at the bind - reusing
+        # them here killed the freshly bound offer one snapshot later
+        # (leg 49 live tap: "C6 BOUND (seq=71 rows=19)" then "offer invalidated
+        # (not-ready=True dialog-none=False past-deadline=True)"), so the mint
+        # never saw shop_offer. A bound offer dies of AGE at its own TTL;
+        # every real deal-ender still invalidates (identity-changed bind,
+        # re-issued, selection-sent, purchase-ca-result, guard-failed while
+        # still in flight).
+        if self.offer is not None:
+            self._check_bound_offer(dialog, context_ok, now)
+            return
         action = self._issued
         if action is None:
             return
@@ -106,6 +132,45 @@ class NativeShopContext:
                 f"/{action.opened_sequence} map={dialog.map_name == action.map_name}"
                 f" epoch={dialog.epoch == action.epoch} npc={dialog.npc_id == action.npc_id}"
             )
+
+    def _check_bound_offer(
+        self, dialog: NpcDialogue | None, context_ok: bool | None, now: float
+    ) -> None:
+        """e2e-49 lifecycle-tap verdict: a BOUND offer is received data.
+
+        The dialogue-liveness terms (not-ready/_npc.failed), the
+        cancel-uncertainty term and the dialogue-step deadline gated the C6
+        ARRIVAL window and ended at the bind - reusing them here killed the
+        freshly bound offer one snapshot later (leg 49 live tap: "C6 BOUND
+        (seq=71 rows=19)" then "offer invalidated (not-ready=True
+        dialog-none=False past-deadline=True)"), so the decide-paced purchase
+        mint never saw shop_offer (0 samples, legs 45-49). A bound offer dies
+        on: the received exchange GONE (dialog None), lost identity or
+        self-readiness (context_ok), a NEW exchange round (the repeat-C4
+        sequence/opened_sequence/identity terms), AGE at its own bounded TTL,
+        and every real deal-ender elsewhere (identity-changed bind,
+        re-issued, selection-sent, purchase-ca-result)."""
+        offer = self.offer
+        if offer is None:  # unreachable from check(); the explicit owner guard
+            return
+        if dialog is None or not context_ok:
+            self.invalidate_offer(
+                f"bound-deal-lost dialog-none={dialog is None} context-ok={bool(context_ok)}"
+            )
+            return
+        moved_on = any(
+            (
+                dialog.sequence != offer.prompt_sequence,
+                dialog.opened_sequence != offer.opened_sequence,
+                dialog.epoch != offer.epoch,
+                dialog.map_name != offer.map_name,
+                dialog.npc_id != offer.npc_id,
+            )
+        )
+        if moved_on:
+            self.invalidate_offer("bound-deal-lost moved-on=True")
+        elif now >= offer.deadline:
+            self.invalidate_offer("offer-ttl-expired")
 
     def consume(self, frame: tuple[int, float, int, bytes], epoch: int) -> None:
         self._consume_currency(frame, epoch)
@@ -179,5 +244,5 @@ class NativeShopContext:
             prompt_sequence=action.prompt_sequence,
             receipt_sequence=seq,
             observed_at=at,
-            deadline=self._deadline,
+            deadline=at + _SHOP_OFFER_TTL,
         )
