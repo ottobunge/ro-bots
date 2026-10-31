@@ -8278,3 +8278,54 @@ a close-only gate cannot save the offer, because the tick-path retry's
 first begin precedes the close by ~19s. RED test: bind in the context,
 leave state.shop_offer=None, tick past the dialogue timeout, assert no
 begin, no close, and no empty-ACTIVE engage while bound.
+
+
+## 2026-10-31 ~20:20 — context-gate landed: the tick-path dialogue retry now holds while a bound offer exists; the state-surfacing gap verdict: the pass-through is honest, the offer died young (extends 4b1d4d05, named by b99e047f)
+
+The leg-54 slice (feat/context-gate-offer, worktree wt-context-gate). Site (2)
+first, because the receipt's own taps name it: `_retry_blocked_dialogue_on_tick`
+(playing_runtime.py) carried NO bound-offer hold and re-began the dialogue
+INSIDE the bound window - the c0f99258 hold now mirrored on the tick path
+(same placement: after the deny-origin/budget gates, before the cadence wait;
+the barrier owns the dispatch until the offer dies on its own terms). RED
+test drove the tick path against a C6-bound client: the begin fired, the view
+was replaced (opened 10->12, stage 'opening'), and the next build's moved-on
+check killed the offer - the exact leg-54 kill chain offline.
+
+Site (1) VERDICT - the three suspects are exonerated, with evidence: the
+surfacing at build_native_state (playing_runtime.py:711,
+`shop_offer=self._shop_context.offer`) is a LIVE attribute read; offline
+probes prove the bound offer surfaces on EVERY build in all three live
+post-bind shapes - the 'waiting' stage, the expired/blocked resting stage
+(failed=True, deny_origin 'timeout' - the e2e-49 narrowed predicate holding
+as built), and the repeat-C4 re-marker (the leg-46 no-raw-sequence law
+holding). The brief's RED test (bind in the context, build, assert
+state.shop_offer) PASSES on the pre-fix code - the state-surfacing gap was
+NOT a stage condition, a wrong source field, or a stale copy: the offer was
+ALREADY DEAD at every sampled build. The receipt's 0/180 is a sampling
+artifact: `_consume_offer`'s issue-window guard
+(`_sent_at <= at < min(_npc.deadline, absolute_deadline)`) forces the C6
+bind inside ~[16:15:10.2, 16:15:15.2) - the receipt's "~16:15:28" bind
+timestamp was the log-line estimate, not the bind - so the bound window was
+~16s (bind ~16:15:12-15 -> moved-on death ~16:15:28.x), and the 30s receipt
+samples (16:15:08.5, 16:15:38.5) straddled it. The death at bind+~13s
+matches the receipt's "~+13s": the tick-path begin at 16:15:28.255 replaced
+the view (opened 69->72, stage 'opening') and the next check read moved-on.
+From that instant state.shop_offer was legitimately None - the close at
+16:15:47 and the two later begins were all post-mortem. With the tick-path
+hold landed the offer lives its 300s TTL, every build surfaces it, and the
+state-gated arms (e593544d's close hold, 5c71a9e4's engage hold) finally
+see it; a model-ordered NpcClose while bound is additionally swallowed by
+the action-path retry gate perform_native already carries. No
+context-layer duplication of the close/engage arms (per the slice brief).
+
+Tests: tests/test_context_gate_bound_offer.py - the tick-path hold (RED ->
+GREEN) plus its no-offer control (the re-begin still fires unheld), and
+three surfacing pins (every-build, blocked-stage, re-marker). Scoped
+neighbors green: test_npc_retry, test_recovery_holds_bound_offer,
+test_native_shop_context, test_buy_mint_seeded_wallet, test_shop_sell_loop,
+test_decide_starvation_blocked_dialogue, test_merchant_drive,
+test_native_shop_selection, test_brain. Pre-lint (black/ruff/mypy/xenon)
+green before the gate; full `task check` GATE GREEN: 6687 passed,
+65 subtests passed, coverage 95.34% (all eight chain phases: black,
+vulture, pylint-dup, xenon, bandit, ruff, mypy, pytest).
