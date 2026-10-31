@@ -8329,3 +8329,70 @@ test_native_shop_selection, test_brain. Pre-lint (black/ruff/mypy/xenon)
 green before the gate; full `task check` GATE GREEN: 6687 passed,
 65 subtests passed, coverage 95.34% (all eight chain phases: black,
 vulture, pylint-dup, xenon, bandit, ruff, mypy, pytest).
+
+
+## 2026-10-31 ~23:05 — receipt: leg 55 - THE ECONOMY DID NOT CLOSE (fifth window); THE FIX UNDER TEST WORKED: the bound offer survived its FULL 300s TTL for the first time in the series - and starved: the mint's own precondition (`_shop_loop_action`'s `_npc.failed` term) is the sixth arm, consumer-side
+
+Launched 21:24 from 10471d3b (a038bcbc in). Window 21:45-22:45 Madrid (day
+index 5 == weekday() Saturday; CLOCK (5, 21.4) at t=0; SCHED windows all
+(5, 21.75, 22.75)). The pump's doc-shaped brief rewritten to the bare
+mapping and committed (10471d3b, bbf3403e precedent). Seed refreshed from
+the 21:24 char readback (unchanged bytes; fixture intact: zeny_wing 150z,
+no 1201) and verified live (first state_tick zeny=150 at 20:45:08 UTC).
+
+THE CHAIN THE FIX TARGETED, LIVE: zeny_wing logged in ON the dealer cell
+(prt_in 172,129): TalkToNpc 20:45:08 -> NpcShopBuySelection 20:45:10 ->
+C6 BOUND ~20:45:10 (seq=71, rows=19, npc=110001762). Then NO moved-on, NO
+re-begin, NO close inside the bound span - all five hold arms held
+(bf93474a clock terms, c0f99258 action-path re-begin, e593544d close drive,
+75054047 moved-on raw-sequence, a038bcbc tick-path retry). The closes fired
+only at 20:50:11/29/47, AFTER the offer's own death. ONE TalkToNpc total
+(the re-click arm never fired, again). The offer died to AGE at exactly its
+300s TTL - the first offer in the series to reach its own terms. Verbatim
+taps:
+
+    shop-debug: C6 seen (seq=71 issued=True after=70 consumed=False rows=213)
+    shop-debug: C6 BOUND (seq=71 rows=19 npc=110001762)
+    shop-debug: offer invalidated (offer-ttl-expired) had_issued=True had_offer=True
+
+THE REMAINING DROP, NAMED: the decide-paced mint never ran. Nine heartbeat
+decides inside the bound span (20:45:52-20:49:55, all next_action=None,
+zeny=150 visible on every tick, dealer adjacent under the agent) minted
+NOTHING. The consumer-side gate `_shop_loop_action`
+(src/robots/app/playing_runtime.py:1219) - `if state.alive is not True or
+self._npc.failed or self._npc.cancel_uncertain: return None` - is the sixth
+arm: the C6 is NOT in NPC_RECEIVE_IDS, so it never refreshes the dialogue
+deadline; `_expire` fires ~15s after the bind into `_deny('timeout')`
+(failed=True, stage 'blocked', the leg-49 measured resting shape); from the
+first heartbeat decide onward the mint precondition returns None on every
+call, and the intact offer starves to its TTL with all hold arms keeping
+everything else away from it. The leg-49 healing (offer check immune to the
+clock terms) fixed the OFFER's survival; the MINT's precondition still
+reads the same clock terms and was never held. The mint path carries NO
+taps - zero tap lines with the failure present is the finding that the
+drop sits in a guard upstream of every tap.
+
+DB: zeny_wing 150->150, no 1201 (the economy did not close). Kills landed:
+6/7 field chars gained exp (base xXLunasongXx 90->112, NyxSong 105->118,
+PoringMuffin14 56->68, PipinWalker 50->60, RinceNyan 82->87, YuffieFy81
+8->10; 145 Attacks, 62 dmg_taken, 9854 MoveTos, one Loot). Socials replayed
+with zero new rows (FoundGuild x2, GuildInvite x6 x2, InviteToParty x4 -
+NyxSongGuard/PipinWalkerGuard and both parties predate this window, leg
+53's rows). zeny_wing parked at the dealer cell all window (79 decides, the
+one-at-bat shape again - re-arm cadence is the gap AFTER the mint works).
+xXLunasongXx logged out on prontera (153,156) - next leg logs in there.
+7/7 online all window, 21499 steps, 0 step_errors, 0 TRANSPORT DOWN.
+Receipt run/plain_host_receipts/population-receipt-55-1793478281.json
+(launch 2026-10-31 20:24:41 UTC).
+
+NEXT SLICE (the consumer-side sixth arm): hold `_shop_loop_action`'s
+`self._npc.failed or self._npc.cancel_uncertain` terms off the mint while
+`self._shop_context.offer is not None` (gate on the CONTEXT, not the state
+mirror - the visibility law). RED test: bind an offer in the context,
+expire the dialogue into deny('timeout') (failed=True, stage 'blocked'),
+fire a heartbeat decide, assert NpcShopPurchase mints from the intact
+offer; plus the no-offer control (a failed dialogue with no offer must
+still gate). Add mint-path taps while there (announce affordable-weapon
+verdict, admission, qualification, purchase-action build) so any FURTHER
+drop (affordability row match, knife qualification, admission) names itself
+next leg instead of re-derivation.
