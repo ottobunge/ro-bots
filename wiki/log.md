@@ -8120,3 +8120,18 @@ Leg 52 mid-window: C6 BOUND then bound-deal-lost moved-on=True AGAIN with
 75054047 live — so the firing term is NOT the sequence (dropped); it is
 opened_sequence (a re-click/re-begin) or the stage leaving the deal set. The
 tap now names the term values at every moved-on invalidation. Leg 53 reads it.
+
+## 2026-10-31 ~15:1x — the blocked-stage close holds while a shop offer is bound (the leg-51 receipt verdict)
+
+The leg-51 receipt (5349321a) named the killer precisely: the blocked-stage
+CLOSE DRIVE — ungated by c0f99258 (which held only the re-begin arm) — minted
+NpcClose at +16s INSIDE the bound window; the close terminates the deal
+server-side and the shop context reads bound-deal-lost moved-on=True before
+the decide-paced mint ever saw shop_offer. The guard (the mirror of the
+re-begin hold): _dialogue_clear_drive's blocked-stage close returns None when
+state.shop_offer is not None — the deal is alive server-side; the close waits
+until the offer dies on its own terms. The RED test pins both arms (the hold
+with a bound offer, the close without). The chain's guards are now COMPLETE:
+the clock (bf93474a), the recovery re-begin (c0f99258), the repeat-C4
+re-marker (75054047), and the close drive (this slice). Gate 6,681+65. Leg 53
+= the buy attempt with every arm held.

@@ -370,8 +370,30 @@ def test_blocked_dialogue_gets_one_close_drive() -> None:
     )
     state = make_state(goal=Goal.GRIND, npc_dialogue=dialog)
     assert state.npc_dialogue is not None  # the divert path's precondition
-    first = brain._dialogue_clear_drive(dialog)
+    first = brain._dialogue_clear_drive(state, dialog)
     assert isinstance(first, NpcClose)
     assert first.npc_id == 110000883
     # once per stage: the second review mints nothing (no spam)
-    assert brain._dialogue_clear_drive(dialog) is None
+    assert brain._dialogue_clear_drive(state, dialog) is None
+
+
+def test_blocked_close_drive_holds_while_a_shop_offer_is_bound() -> None:
+    """Leg 51: the blocked-stage close drive minted NpcClose at +16s INSIDE
+    the bound window — the close terminates the deal server-side and the shop
+    context reads bound-deal-lost moved-on=True before the decide-paced mint
+    ever saw shop_offer. A bound offer is a RECEIVED exchange: the close
+    holds until the offer dies on its own terms (the mirror of the recovery
+    re-begin hold in playing_runtime)."""
+    brain = make_brain()
+    dialog = NpcDialogue(
+        npc_id=110001762,
+        epoch=1,
+        map_name="prontera",
+        opened_sequence=7,
+        sequence=9,
+        stage="blocked",
+    )
+    bound = make_state(goal=Goal.GRIND, npc_dialogue=dialog, shop_offer=object())
+    assert brain._dialogue_clear_drive(bound, dialog) is None  # the hold
+    free = make_state(goal=Goal.GRIND, npc_dialogue=dialog)
+    assert isinstance(brain._dialogue_clear_drive(free, dialog), NpcClose)

@@ -774,7 +774,7 @@ class EventDrivenBrain:
         the one bounded drive has already fired for this received stage."""
         if not self._grind_dialogue_block_expired(state, dialog):
             return self._npc_step(state)
-        drive = self._dialogue_clear_drive(dialog)
+        drive = self._dialogue_clear_drive(state, dialog)
         if drive is not None:
             return ScriptOutcome((drive,), ScriptStatus.ACTIVE)
         if dialog.stage not in self._dialogue_cleared_stages:
@@ -797,7 +797,7 @@ class EventDrivenBrain:
         self._dialogue_block_steps += 1
         return self._dialogue_block_steps > GRIND_DIALOGUE_BLOCK_BUDGET
 
-    def _dialogue_clear_drive(self, dialog: NpcDialogue) -> GameAction | None:
+    def _dialogue_clear_drive(self, state: BotState, dialog: NpcDialogue) -> GameAction | None:
         """The one reviewed terminal/cancel drive per received stage of a
         session, through the existing dispatch contract: NpcNext advances a
         next prompt, NpcClose closes close/unsupported_input/string_input,
@@ -820,6 +820,13 @@ class EventDrivenBrain:
             # state through deny_origin 'timeout' (the retryable origin)
             # once the retry budget exhausted; the close is the one send
             # that terminates it server-side and releases the goal script.
+            # LEG 51: a BOUND shop offer means the deal is alive server-side
+            # — the close would terminate it and the shop context would read
+            # bound-deal-lost before the decide-paced mint saw the offer
+            # (the mirror of the recovery re-begin hold). The close waits
+            # until the offer dies on its own terms.
+            if state.shop_offer is not None:
+                return None
             drive = NpcClose(dialog.npc_id)
         if drive is None:
             return None
