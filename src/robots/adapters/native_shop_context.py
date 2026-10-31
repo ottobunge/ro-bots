@@ -160,11 +160,21 @@ class NativeShopContext:
             return
         moved_on = any(
             (
-                dialog.sequence != offer.prompt_sequence,
+                # the raw prompt_sequence compare is deliberately absent: the
+                # dealer's repeat C4 dealtype marker (leg 46, confirmed live
+                # again in leg 50's bound-deal-lost moved-on=True) re-bumps
+                # dialog.sequence without changing any prompt semantics — the
+                # SAME prompt, not a new round. A REAL new round changes the
+                # opened dialogue (a fresh click) or leaves the deal stages
+                # (a menu/text prompt), both guarded below.
                 dialog.opened_sequence != offer.opened_sequence,
                 dialog.epoch != offer.epoch,
                 dialog.map_name != offer.map_name,
                 dialog.npc_id != offer.npc_id,
+                # the deal lives in waiting (post-C5), the C4 marker stage
+                # (the re-marker mid-deal), or blocked (the dialogue clock
+                # expired while the deal lives - leg 49/50's resting stage)
+                dialog.stage not in ("waiting", "unsupported_shop", "blocked"),
             )
         )
         if moved_on:
@@ -188,6 +198,17 @@ class NativeShopContext:
                     self.currency = ReceivedZeny(received.balance, epoch, seq, at)
             self._currency_after = seq
 
+    def _consume_offer_gate(self, seq: int, pid: int) -> bool:
+        """True = the frame is not a consumable new offer (skip _consume_offer).
+
+        The stale-duplicate rule (e2e-51): a C6 at or before the bound offer's
+        own receipt sequence is a replay of the already-bound exchange; a
+        NEWER in-window C6 re-binds (the latest list wins).
+        """
+        if pid != 0xC6 or self._issued is None or seq <= self._after:
+            return True
+        return self._consumed and self.offer is not None and seq <= self.offer.receipt_sequence
+
     def _consume_offer(self, frame: tuple[int, float, int, bytes]) -> None:
         seq, at, pid, raw = frame
         action = self._issued
@@ -203,7 +224,7 @@ class NativeShopContext:
                 self._consumed,
                 len(raw),
             )
-        if pid != 0xC6 or action is None or seq <= self._after or self._consumed:
+        if self._consume_offer_gate(seq, pid) or action is None:
             return
         self._consumed = True
         if not self._sent_at <= at < self._deadline:

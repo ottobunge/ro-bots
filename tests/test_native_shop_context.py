@@ -64,7 +64,16 @@ def test_selected_offer_is_detached_once_and_not_purchase(monkeypatch, during_se
     assert json.loads(json.dumps(asdict(state)))["shop_offer"]["rows"][0]["price"] == 73
     receive(struct.pack("<HHIIBH", 0xC6, 15, 999, 999, 4, 1201))
     assert not client.drain_native_events()
-    assert client.build_native_state(Goal.GRIND).shop_offer is offer
+    # e2e-51: a NEWER in-window C6 RE-BINDS (the latest list wins - the
+    # server's own refresh of the same deal; the leg-50 killer was the offer
+    # dying, not the rows refreshing). The OLD offer object is untouched (the
+    # detached-once law: the caller's copy is stale, never mutated).
+    rebound = client.build_native_state(Goal.GRIND).shop_offer
+    assert rebound is not None
+    assert rebound is not offer
+    assert (rebound.rows[0].price, rebound.rows[0].discount_price) == (999, 999)
+    assert rebound.receipt_sequence > offer.receipt_sequence
+    assert offer.rows[0].price == 73  # the detached copy unmutated
     assert state.inventory == inventory
     assert not state.npc_instructions_received
     assert client._npc.deadline == 105.0
@@ -123,6 +132,13 @@ def test_offer_loses_current_context_without_revival(monkeypatch, boundary):
         with pytest.raises(NativeTelemetryUnavailable):
             client.build_native_state(Goal.GRIND)
         assert client._shop_context.offer is None
+    elif boundary == "new_c4":
+        # e2e-51: a repeat C4 + a fresh offer frame RE-BINDS (the marker is
+        # the same prompt; the newer list wins) - the historical copy stays
+        state_after = client.build_native_state(Goal.GRIND)
+        rebound = state_after.shop_offer
+        assert rebound is not None
+        assert rebound is not historical
     else:
         assert client.build_native_state(Goal.GRIND).shop_offer is None
     assert historical.rows[0].price == 73

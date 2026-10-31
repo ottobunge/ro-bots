@@ -64,10 +64,45 @@ def test_repeat_dealtype_marker_does_not_invalidate_the_issued_binding() -> None
     assert dialogue.view is not None
     assert dialogue.view.sequence == 42
     # the C5's send moves the dialogue to "waiting" (the _commit_request flow)
-    waiting = replace(dialogue.view, stage="waiting")
+    view_mid = dialogue.view
+    assert view_mid is not None
+    waiting = replace(view_mid, stage="waiting")
     context.check(waiting, True, NOW + 2.5)
     # Law A: the binding SURVIVES the re-marker...
     context.consume(_c6(43), 1)
     assert context.offer is not None
     rows = context.offer.rows
     assert len(rows) == 1
+
+
+def test_repeat_dealtype_marker_does_not_kill_a_bound_offer(monkeypatch) -> None:
+    """Leg 50: bf93474a's moved-on terms reintroduced the repeat-C4 misread -
+    the re-marker bumps dialog.sequence, check() read a NEW exchange round,
+    and the bound offer died (bound-deal-lost moved-on=True) before the
+    decide-paced mint ever saw shop_offer. The marker is the SAME prompt: the
+    offer must survive it; a REAL new prompt (a menu stage) must still die."""
+    dialogue = NativeNpcDialogue()
+    dialogue.begin(NPC, 1, "prontera", 10, NOW)
+    dialogue.consume((_c4(41),), NOW + 1.0)
+    context = NativeShopContext()
+    context.issued(_action(41), after=41, sent_at=NOW + 1.5, deadline=NOW + 200.0)
+    dialogue.consume((_c4(42),), NOW + 2.0)  # the vendor re-sends the marker
+    view_bound = dialogue.view
+    assert view_bound is not None
+    waiting = replace(view_bound, stage="waiting")
+    context.check(waiting, True, NOW + 2.5)
+    context.consume(_c6(43), 1)
+    assert context.offer is not None  # bound (the leg-49 law)
+    # the marker arrives AGAIN post-bind (leg 50's live shape)
+    dialogue.consume((_c4(44),), NOW + 3.0)
+    view_after = dialogue.view
+    assert view_after is not None
+    waiting2 = replace(view_after, stage="waiting")
+    context.check(waiting2, True, NOW + 3.5, context_ok=True)
+    assert context.offer is not None  # the re-marker must NOT kill the deal
+    # a REAL new prompt (a menu) still ends it
+    view_late = dialogue.view
+    assert view_late is not None
+    menu = replace(view_late, stage="menu")
+    context.check(menu, True, NOW + 4.0, context_ok=True)
+    assert context.offer is None

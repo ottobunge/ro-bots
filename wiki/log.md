@@ -8030,3 +8030,21 @@ opened_sequence 12 vs the blocked 10 while the offer was bound); the retry
 stubs gain a no-offer shop context so the cadence still runs unbound. Gate
 6,679+65. Leg 51: the full chain to the C8 — the offer binds and SURVIVES,
 the admission mints, the purchase fires, the economy closes.
+
+## 2026-10-31 ~12:4x — the repeat-C4 tolerance + the newer-C6 re-bind (the leg-51 tap verdict)
+
+Leg 51's tap (mid-window): C6 BOUND then "bound-deal-lost moved-on=True"
+AGAIN — bf93474a's moved-on terms reintroduced the leg-46 misread: the raw
+`dialog.sequence != offer.prompt_sequence` counts the vendor's repeat C4
+re-marker as a NEW exchange round. Two changes, both dictated by the live
+evidence:
+(1) moved_on drops the raw sequence term; the deal lives in waiting / the C4
+marker stage / blocked (the resting stage) and dies on a fresh click
+(opened_sequence), identity loss, or a stage that leaves the deal set
+(menu/text) — the drift law holds at the offer level.
+(2) a NEWER in-window C6 RE-BINDS (the latest list wins — the server's own
+refresh of the same deal); only a stale duplicate (seq <= the bound
+receipt_sequence) is dropped. The detached-once law holds: the old offer
+object is never mutated. The [new_c4]/detached contracts reconciled to the
+same-prompt + latest-list laws. Gate 6,680+65. Leg 52 = the buy attempt on
+the complete chain (bind survives clock + recovery + re-marker).
