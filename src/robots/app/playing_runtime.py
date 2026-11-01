@@ -61,6 +61,7 @@ from robots.app.npc_planning_execution import LocalNpcDispatch, NpcHostBinding, 
 from robots.app.party_roster import guild_candidate_aid
 from robots.app.planning_execution import RestObservation
 from robots.app.scripts import (
+    MELEE_RANGE,
     NOVICE_STAT_TARGETS,
     needs_npc_preparation,
     novice_weapon_index,
@@ -209,6 +210,20 @@ _LOOT_MOVE_RADIUS = 4
 """Direct walks sent at a grid-unreachable target before the patrol fails
 (leg 28: the warp cell NoRoute silence — the server path-finds its own
 side, so a direct send is the only way a clientless unit ever warps)."""
+# Otto's directive (leg 63): the pickup fires only when no enemy is an
+# active real threat - an attackable monster within this Chebyshev range
+# of the bot's cell defers the loot walk/pickup (the item may despawn;
+# safety over loot). The melee engagement distance +2 is the precedent
+# (brain._attackable_in_melee_range gates on MELEE_RANGE).
+ACTIVE_THREAT_RANGE = MELEE_RANGE + 2
+# The loot-walk re-author clock (leg 62: the one-shot move memo burned a
+# drop's only walk on a pre-empting script MoveTo / an await_pending gate,
+# and the drop despawned at the server's ~60s floor TTL). A loot walk
+# re-authors ONCE per item after this many seconds - a bounded faster
+# pacing constant inside the pending-walk lifecycle's own 1s no-progress
+# release, never unbounded spam; the per-item pickup memo still governs
+# the pickup attempt.
+LOOT_WALK_REAUTH_S = 1.0
 
 
 def _pending_guild_invite(wire: Any) -> str | None:
@@ -1690,6 +1705,11 @@ class PlayingClient:
         tracker = self._tracker
         if tracker is None or state.alive is not True:
             return
+        if self._nearest_active_threat(state) is not None:
+            # Otto's directive at the send seam: a pickup under an active
+            # threat is refused (fail-closed) and the attempt memo is NOT
+            # consumed - the item stays lootable once the threat leaves.
+            return
         floor_items = tracker.view.floor_items
         self._refresh_loot_memo(floor_items)
         items = self._loot_candidates(state, floor_items)
@@ -2050,8 +2070,13 @@ class PlayingClient:
         decisions seam that owns the buy mint). Within the server's pickup
         radius (Chebyshev<=1 of the item's cell) it mints the Loot dispatch;
         outside it mints the walk toward the drop's cell (walkability-aware,
-        one move per item). One pickup attempt per item - the memo clears
-        when the item leaves the floor view. An authored Attack (an in-melee
+        re-authored ONCE per item on the bounded LOOT_WALK_REAUTH_S clock -
+        leg 62: the one-shot memo burned a drop's only walk on a
+        pre-empting gate and the ~60s floor TTL ate the drop). One pickup
+        attempt per item - the memo clears when the item leaves the floor
+        view. Otto's directive: when an attackable monster stands within
+        ACTIVE_THREAT_RANGE the whole loot path defers (the item may
+        despawn; safety over loot). An authored Attack (an in-melee
         exchange, the leg-61 guard) and an authored Loot (the decider's
         alternative trigger already owning the tick through ``_loot``) are
         never interrupted."""
@@ -2062,25 +2087,16 @@ class PlayingClient:
             return None
         floor_items = tracker.view.floor_items
         self._refresh_loot_memo(floor_items)
+        threat = self._nearest_active_threat(state)
+        if threat is not None:
+            self._note_loot_threat_defer(state, floor_items, threat)
+            return None
         for item in self._loot_candidates(state, floor_items):
             if self._floor_item_distance(state, item) > _LOOT_PICKUP_RANGE:
-                if item.floor_item_id in self._loot_move_minted:
-                    continue
-                target = self._loot_move_target(state, item)
-                if target is None:
-                    continue
-                self._loot_move_minted.add(item.floor_item_id)
-                logger.warning(
-                    "loot-debug: move toward floor item (fid=%s nameid=%s"
-                    " cell=(%s,%s) target=(%s,%s))",
-                    item.floor_item_id,
-                    item.item_id,
-                    item.position.x,
-                    item.position.y,
-                    target[0],
-                    target[1],
-                )
-                return (MoveTo(*target),)
+                move = self._loot_walk_mint(state, item)
+                if move is not None:
+                    return (move,)
+                continue
             if item.floor_item_id in self._loot_pickup_tried:
                 continue
             logger.warning(
@@ -2092,6 +2108,33 @@ class PlayingClient:
             )
             return (Loot(),)
         return None
+
+    def _loot_walk_mint(self, state: BotState, item: Any) -> MoveTo | None:
+        """The out-of-range limb: the walkability-aware MoveTo toward the
+        drop, re-authored ONCE per item on the bounded LOOT_WALK_REAUTH_S
+        clock (leg 62: the one-shot memo burned a drop's only walk on a
+        pre-empting gate); None while this item's walk cannot mint."""
+        if item.floor_item_id in self._loot_move_minted and not self._loot_walk_reauth_due(
+            item.floor_item_id
+        ):
+            return None
+        target = self._loot_move_target(state, item)
+        if target is None:
+            return None
+        reauth = self._loot_walk_mark_mint(item.floor_item_id)
+        self._loot_move_minted.add(item.floor_item_id)
+        logger.warning(
+            "loot-debug: move toward floor item (fid=%s nameid=%s"
+            " cell=(%s,%s) target=(%s,%s) reauth=%d)",
+            item.floor_item_id,
+            item.item_id,
+            item.position.x,
+            item.position.y,
+            target[0],
+            target[1],
+            1 if reauth else 0,
+        )
+        return MoveTo(*target)
 
     def _loot_candidates(self, state: BotState, floor_items: Iterable[Any]) -> tuple[Any, ...]:
         """Floor items nearest-first under the pickup metric (Chebyshev),
@@ -2118,9 +2161,70 @@ class PlayingClient:
         if getattr(self, "_loot_pickup_tried", None) is None:
             self._loot_pickup_tried: set[int] = set()
             self._loot_move_minted: set[int] = set()
+            self._loot_move_reauth: set[int] = set()
+            self._loot_move_minted_at: dict[int, float] = {}
+            self._loot_defer_tapped: set[int] = set()
         current = {item.floor_item_id for item in floor_items}
         self._loot_pickup_tried &= current
         self._loot_move_minted &= current
+        self._loot_move_reauth &= current
+        self._loot_defer_tapped &= current
+        self._loot_move_minted_at = {
+            key: value for key, value in self._loot_move_minted_at.items() if key in current
+        }
+
+    def _nearest_active_threat(self, state: BotState) -> int | None:
+        """The Chebyshev distance of the nearest attackable monster within
+        ACTIVE_THREAT_RANGE of the bot's cell, or None when the surroundings
+        are safe (Otto's directive: the pickup fires only when no enemy is
+        an active real threat). Unpositioned actors cannot be range-checked
+        and are skipped - the native nearby view carries monster cells."""
+        nearest: int | None = None
+        for actor in state.nearby_monsters:
+            if actor.x is None or actor.y is None:
+                continue
+            distance = max(abs(actor.x - state.x), abs(actor.y - state.y))
+            if distance <= ACTIVE_THREAT_RANGE and (nearest is None or distance < nearest):
+                nearest = distance
+        return nearest
+
+    def _note_loot_threat_defer(
+        self, state: BotState, floor_items: Iterable[Any], threat: int
+    ) -> None:
+        """The threat gate's defer tap, once per item while the threat
+        stands (presence-keyed like the loot memos - no per-tick spam),
+        naming the nearest threat distance: leg 63's log proves the gate
+        live."""
+        for item in self._loot_candidates(state, floor_items):
+            fid = item.floor_item_id
+            if fid in self._loot_defer_tapped:
+                continue
+            self._loot_defer_tapped.add(fid)
+            logger.warning(
+                "loot-debug: pickup deferred (threat) (fid=%s nearest=%d)",
+                fid,
+                threat,
+            )
+
+    def _loot_walk_reauth_due(self, fid: int) -> bool:
+        """True when the item's ONE bounded walk re-author is due: the walk
+        mint is older than LOOT_WALK_REAUTH_S and the re-author is unused
+        (leg 62: a pre-empting script MoveTo or an await_pending gate
+        burned the drop's only walk)."""
+        if fid in self._loot_move_reauth:
+            return False
+        minted_at = self._loot_move_minted_at.get(fid)
+        return minted_at is not None and self._now() - minted_at >= LOOT_WALK_REAUTH_S
+
+    def _loot_walk_mark_mint(self, fid: int) -> bool:
+        """Record a loot-walk mint; True when this mint IS the item's
+        bounded re-author (consuming it). The re-auth clock anchors at the
+        FIRST mint."""
+        if fid in self._loot_move_minted:
+            self._loot_move_reauth.add(fid)
+            return True
+        self._loot_move_minted_at[fid] = self._now()
+        return False
 
     def _loot_move_target(self, state: BotState, item: Any) -> tuple[int, int] | None:
         """The walk target for a drop out of pickup range: the item's own
