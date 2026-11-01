@@ -9018,3 +9018,51 @@ the farm script off `tracker.view.floor_items` (the runtime `_loot`
 already walks-then-picks within 2 cells and taps the send). Then re-test
 the sell arm on real stock: derived sellables -> merchant trip -> C7 ->
 zeny GAIN.
+
+## 2026-11-01 (leg-62 slice) — THE MECHANICAL LOOT PATH: a floor item dispatches the pickup without a decide (feat/mechanical-loot)
+
+Leg 61 named the dead hop: the pickup wiring was code-complete but its
+TRIGGER (a won loot choice) starved under the argmax rule (0 loot choices /
+518 decides while 39 ItemDrop events surfaced). The fix is a loot win the
+argmax cannot lose: the runtime's mechanical layer (the seam that owns the
+buy mint, `playing_runtime.py`) now owns the pickup outright.
+
+WHAT LANDED (`_loot_mechanical`, called from `mechanical_actions` between
+the npc layer and the legacy path):
+
+- In pickup range (Chebyshev<=1 of the drop's cell, the server's radius):
+  mints `Loot()`; the dispatch goes through the shared `_loot`, which now
+  memoizes the send per floor item (one CZ_ITEM_PICKUP attempt while the
+  item is on the floor view — the decider's loot choice lands on the same
+  memo, so neither path can spam). New tap:
+  `loot-debug: mechanical pickup dispatched (fid=... nameid=... cell=(x,y))`.
+- Out of range: mints `MoveTo` toward the drop's cell, one move per item —
+  walkability-aware (the drop's own cell when the grid walks it, else
+  `nearest_walkable` radius 4; no walkable alt names `loot_target_unwalkable`,
+  no map cache names `loot_no_map_cache`). New tap:
+  `loot-debug: move toward floor item (fid=... nameid=... cell=(x,y) target=(x,y))`.
+- The leg-61 guard carries over: an authored Attack (an in-melee exchange)
+  is never interrupted, and an authored Loot stands the mechanical step
+  down — the decider's 43b5cc2e choice remains the alternative trigger and
+  keeps working where a plan owns the stream (the mechanical layer is
+  bypassed there).
+- The memo clears when the item leaves the floor view (presence-keyed; a
+  reused aid is a real new drop).
+- `_loot`'s send gate tightened from hypot<=2 to the server's Chebyshev<=1
+  radius (the looser gate burned the one attempt on silent out-of-range
+  rejects); its out-of-range walk leg and send tap unchanged. The old
+  `_loot_first` injection folded into `_loot_mechanical` — one loot owner
+  in the mechanical layer instead of two.
+
+TESTS: `tests/test_loot_priority.py` rewritten to the mechanical contract
+(7 tests: in-range one-send, the two-step move-then-pickup, the melee
+guard, the spam memo, the presence clear, the walkability reroute, the
+taps) — all RED before the implementation (the out-of-range tick authored
+`Loot()` instead of the move; no memo; no taps). Full gate green:
+`nix develop -c task --dir . check` — 6711 passed, 65 subtests passed,
+coverage 95.33%.
+
+NEXT (leg 62 live window): the receipt should show, per surfaced drop,
+either a `move toward floor item` then a `mechanical pickup dispatched`
+pair, or a direct dispatch when the kill lands adjacent; the sell arm then
+re-tests on real stock (derived sellables -> merchant trip -> C7 -> zeny).

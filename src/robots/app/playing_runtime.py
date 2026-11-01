@@ -201,6 +201,11 @@ def _received_stats(stats: tuple[int, ...] | None) -> tuple[int, ...] | None:
 NPC_RETRY_BUDGET = 3
 NPC_RETRY_CADENCE_S = 5.0
 NO_ROUTE_DIRECT_SENDS = 5
+# The server's pickup radius: a CZ_ITEM_PICKUP lands when the bot stands
+# within Chebyshev<=1 of the drop's cell (leg 61 design brief).
+_LOOT_PICKUP_RANGE = 1
+# Bounded reroute search when a drop's own cell is unwalkable in the grid.
+_LOOT_MOVE_RADIUS = 4
 """Direct walks sent at a grid-unreachable target before the patrol fails
 (leg 28: the warp cell NoRoute silence — the server path-finds its own
 side, so a direct send is the only way a clientless unit ever warps)."""
@@ -1677,28 +1682,40 @@ class PlayingClient:
             self.wire.guild_reply(self.wire.guild_invite_gid, True)
 
     def _loot(self, state: BotState) -> None:
+        """The shared pickup dispatch (the mechanical path's Loot and the
+        decider's loot choice both land here): the CZ_ITEM_PICKUP send is
+        memoized per floor item - one attempt while the item is on the
+        floor view - inside the server's pickup radius (Chebyshev<=1; the
+        looser hypot gate burned attempts on silent out-of-range rejects)."""
         tracker = self._tracker
         if tracker is None or state.alive is not True:
             return
-        items = sorted(
-            tracker.view.floor_items,
-            key=lambda item: math.hypot(item.position.x - state.x, item.position.y - state.y),
-        )
-        if items:
-            item = items[0]
-            if math.hypot(item.position.x - state.x, item.position.y - state.y) <= 2:
-                # The loot seam's dispatch tap: the CZ_ITEM_PICKUP send that
-                # the leg-61 log greps for (paired with the surfaced line).
-                logger.warning(
-                    "loot-debug: pickup dispatched (fid=%s nameid=%s cell=(%s,%s))",
-                    item.floor_item_id,
-                    item.item_id,
-                    item.position.x,
-                    item.position.y,
-                )
-                self.wire._send(pickup(item.floor_item_id))
-            else:
-                self._move(state, (item.position.x, item.position.y))
+        floor_items = tracker.view.floor_items
+        self._refresh_loot_memo(floor_items)
+        items = self._loot_candidates(state, floor_items)
+        if not items:
+            return
+        if self._floor_item_distance(state, items[0]) > _LOOT_PICKUP_RANGE:
+            # out of the server's pickup radius: walk toward the drop (the
+            # mechanical path's memo governs its own move authoring; this
+            # leg stays paced by the pending-walk lifecycle)
+            self._move(state, (items[0].position.x, items[0].position.y))
+            return
+        for item in items:
+            if item.floor_item_id in self._loot_pickup_tried:
+                continue
+            self._loot_pickup_tried.add(item.floor_item_id)
+            # The loot seam's dispatch tap: the CZ_ITEM_PICKUP send that
+            # the leg-61 log greps for (paired with the surfaced line).
+            logger.warning(
+                "loot-debug: pickup dispatched (fid=%s nameid=%s cell=(%s,%s))",
+                item.floor_item_id,
+                item.item_id,
+                item.position.x,
+                item.position.y,
+            )
+            self.wire._send(pickup(item.floor_item_id))
+            return
 
     def _rest(self, state: BotState) -> None:
         """pc_setsit stops walk/attack; cancel intent, never invent arrival."""
@@ -2017,27 +2034,126 @@ class PlayingClient:
         if shop_actions is not None:
             return shop_actions
         npc_actions = self._npc_mechanical(state, actions)
-        return npc_actions if npc_actions is not None else self._legacy_mechanical(state, actions)
+        if npc_actions is not None:
+            return npc_actions
+        loot_actions = self._loot_mechanical(state, actions)
+        if loot_actions is not None:
+            return loot_actions
+        return self._legacy_mechanical(state, actions)
 
-    def _loot_first(self, actions: tuple[GameAction, ...]) -> bool:
-        """Loot priority over STARTING a new approach (window-24 finding: on
-        the dense field the scripts always author an engagement, so the
-        empty-actions injection never fired and drops rotted on the ground).
-        An authored Attack (in-melee exchange) is never interrupted."""
+    def _loot_mechanical(
+        self, state: BotState, actions: tuple[GameAction, ...]
+    ) -> tuple[GameAction, ...] | None:
+        """The mechanical loot path: a floor item dispatches the pickup
+        without a decide (leg 61: 39 ItemDrop events surfaced but 0 loot
+        choices / 518 decides starved the pickups - the same mechanics-not-
+        decisions seam that owns the buy mint). Within the server's pickup
+        radius (Chebyshev<=1 of the item's cell) it mints the Loot dispatch;
+        outside it mints the walk toward the drop's cell (walkability-aware,
+        one move per item). One pickup attempt per item - the memo clears
+        when the item leaves the floor view. An authored Attack (an in-melee
+        exchange, the leg-61 guard) and an authored Loot (the decider's
+        alternative trigger already owning the tick through ``_loot``) are
+        never interrupted."""
+        if any(isinstance(action, (Attack, Loot)) for action in actions):
+            return None
         tracker = self._tracker
-        return (
-            tracker is not None
-            and bool(tracker.view.floor_items)
-            and not any(isinstance(action, Attack) for action in actions)
+        if tracker is None or state.alive is not True:
+            return None
+        floor_items = tracker.view.floor_items
+        self._refresh_loot_memo(floor_items)
+        for item in self._loot_candidates(state, floor_items):
+            if self._floor_item_distance(state, item) > _LOOT_PICKUP_RANGE:
+                if item.floor_item_id in self._loot_move_minted:
+                    continue
+                target = self._loot_move_target(state, item)
+                if target is None:
+                    continue
+                self._loot_move_minted.add(item.floor_item_id)
+                logger.warning(
+                    "loot-debug: move toward floor item (fid=%s nameid=%s"
+                    " cell=(%s,%s) target=(%s,%s))",
+                    item.floor_item_id,
+                    item.item_id,
+                    item.position.x,
+                    item.position.y,
+                    target[0],
+                    target[1],
+                )
+                return (MoveTo(*target),)
+            if item.floor_item_id in self._loot_pickup_tried:
+                continue
+            logger.warning(
+                "loot-debug: mechanical pickup dispatched (fid=%s nameid=%s cell=(%s,%s))",
+                item.floor_item_id,
+                item.item_id,
+                item.position.x,
+                item.position.y,
+            )
+            return (Loot(),)
+        return None
+
+    def _loot_candidates(self, state: BotState, floor_items: Iterable[Any]) -> tuple[Any, ...]:
+        """Floor items nearest-first under the pickup metric (Chebyshev),
+        the floor-item aid as the deterministic tie-break."""
+        return tuple(
+            sorted(
+                floor_items,
+                key=lambda item: (self._floor_item_distance(state, item), item.floor_item_id),
+            )
         )
+
+    @staticmethod
+    def _floor_item_distance(state: BotState, item: Any) -> int:
+        """Chebyshev distance to the drop - the pickup metric."""
+        return int(max(abs(item.position.x - state.x), abs(item.position.y - state.y)))
+
+    def _refresh_loot_memo(self, floor_items: Iterable[Any]) -> None:
+        """The mechanical loot memo (leg 61): one pickup attempt per floor
+        item and one move mint per item, presence-keyed - an aid whose item
+        left the floor view is free again (a reused aid is a real new
+        drop). The sets are per-instance from the first refresh (the
+        ``_attack_gate_reasons`` lazy pattern; ``__init__`` sits at the
+        statement cap)."""
+        if getattr(self, "_loot_pickup_tried", None) is None:
+            self._loot_pickup_tried: set[int] = set()
+            self._loot_move_minted: set[int] = set()
+        current = {item.floor_item_id for item in floor_items}
+        self._loot_pickup_tried &= current
+        self._loot_move_minted &= current
+
+    def _loot_move_target(self, state: BotState, item: Any) -> tuple[int, int] | None:
+        """The walk target for a drop out of pickup range: the item's own
+        cell when the grid walks it, else the nearest walkable cell
+        (bounded radius); never an unwalkable endpoint."""
+        target = (item.position.x, item.position.y)
+        if self.cache is None:
+            self._note_move_gate("loot_no_map_cache")
+            return None
+        try:
+            grid = self.cache.get(state.map_name)
+        except NoRoute:
+            # no grid authority for this map: aim at the drop's cell and
+            # let _move's direct-send fallback cover the leg
+            return target
+        if grid.walkable(target):
+            return target
+        alt = nearest_walkable(
+            grid,
+            target,
+            radius=_LOOT_MOVE_RADIUS,
+            exclude=((state.x, state.y), target),
+        )
+        if alt is None:
+            self._note_move_gate("loot_target_unwalkable")
+            return None
+        return alt
 
     def _legacy_mechanical(
         self, state: BotState, actions: tuple[GameAction, ...]
     ) -> tuple[GameAction, ...]:
         if state.goal not in (Goal.GRIND, Goal.FARM_ITEM) or self.cache is None:
             return actions
-        if self._loot_first(actions):
-            return (Loot(),)
         if actions:
             return actions
         if state.nearby_monsters or state.alive is False:
