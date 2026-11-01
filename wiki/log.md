@@ -9066,3 +9066,43 @@ NEXT (leg 62 live window): the receipt should show, per surfaced drop,
 either a `move toward floor item` then a `mechanical pickup dispatched`
 pair, or a direct dispatch when the kill lands adjacent; the sell arm then
 re-tests on real stock (derived sellables -> merchant trip -> C7 -> zeny).
+
+## Leg 62 (Sun 2026-11-01 20:15-21:30 Madrid = 19:15-20:30 UTC) — the pickup readout with the mechanical loot path (79a66511)
+
+Runner: duration 6000s from 20:05:21, receipt `population-receipt-62-1793559921.json`. 7/7 online
+149/200 samples, ZERO TRANSPORT DOWN, 23,894 steps, no step/rx/dispatch errors. Decides 110-387,
+10,516 executed actions in-window, real displacement on six agents (s00: 16 distinct cells, the
+known pay_fild04 pocket). attack_gates census {pending_walk 2123, resting 836, target_not_visible 85};
+move_gates {await_pending 9207, no_route_direct 832, not_standing 2}.
+
+THE FIX UNDER TEST (the mechanical loot path) — first two rungs LIVE, the dispatch rung dead:
+- Hop 1 PROVEN: 21 `loot-debug: floor item surfaced` taps (~6 unique fids 311-317; species 909/938/705/713),
+  all off real kills (6/7 agents gained exp: +1..+10 base, e.g. xXLunasongXx 156->166/90->94).
+- Hop 2a PROVEN: 5 `loot-debug: move toward floor item` mints, verbatim:
+  `loot-debug: move toward floor item (fid=313 nameid=909 cell=(181,370) target=(181,370))`
+  (also fid=314 nameid=938 (182,369), fid=315 nameid=705 (172,363)).
+- Hop 2b DEAD: ZERO `loot-debug: mechanical pickup dispatched` lines, ZERO inventory gains
+  (DB inventory unchanged: 7x worn knife 1201 equip=2), ZERO zeny movement (all seven +0).
+  THE FULL LOOP DID NOT CLOSE. Mechanism: the drops live ~60s server-side; the kill burst ran
+  20:17-20:34 and the walk mints went out 20:26-20:41 — by adjacency the item was already gone
+  from the tracked view (PoringMuffin14 STOOD at (180,370), adjacent to fid 313's (181,370),
+  with no pickup tap and no view row left), the grind's Attack-authored steps leave few quiet
+  steps inside the TTL, and the per-item move memo gives each drop exactly ONE walk attempt
+  (a script MoveTo pre-empting the loot walk burns it).
+
+THE CRASH (pre-existing, NOT introduced by 4bbb108a — leg 61's log carries 22 identical failures):
+every ItemDrop/ItemSeen/Arrived delivery raised `TypeError: TraceLog.log() got multiple values for
+keyword argument 'x'` in `_trace_event` (agent context x/y vs the event payload's x/y) — the tick
+died BEFORE `brain.handle_event`, 18 lost ticks this leg, and the traces contain ZERO ItemDrop rows
+while the producer taps fired. CONSEQUENCE: leg 61's "the decider's argmax starved the pickup"
+verdict was incomplete — the decider never saw ONE ItemDrop; the event trigger was structurally
+dead, not out-argmaxed. FIXED at fe963891 (mid-window commit; cannot affect this leg — modules
+bind at launch): `_trace_event` merges the payload with colliding keys suffixed `_event`, RED test
+delivers ItemDrop/Arrived/ItemSeen through `deliver_event`, gate green (6712 passed).
+
+NEXT (leg 63, with fe963891 in): the pickup must win the race against the ~60s floor lifetime —
+evaluate minting the walk AT the surfaced tap (not the first quiet step), re-minting instead of the
+one-shot memo (a pre-empted walk currently burns the drop), and the immediate dispatch when the
+killer stands adjacent at death time (drops land ON the kill cell). Then the sell arm re-tests on
+real stock (derived sellables -> merchant trip -> C7 -> zeny). Also verify leg 63's traces now carry
+ItemDrop world_event rows (the repaired delivery) — a zero there means the fix did not participate.
