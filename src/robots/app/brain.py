@@ -34,7 +34,9 @@ from robots.app.trace_log import TraceLog
 from robots.domain.actions import (
     AcceptGuildInvite,
     AcceptInvite,
+    Attack,
     GameAction,
+    Loot,
     MoveTo,
     NpcClose,
     NpcNext,
@@ -336,9 +338,30 @@ class EventDrivenBrain:
             case _:
                 pass
 
+        pickup_choice = self._loot_choice_action(answers, actions)
+        if pickup_choice is not None:
+            actions.append(pickup_choice)
+            notes.append("next_action loot -> Loot pickup dispatch")
         return TickResult(
             actions=tuple(actions), answers=answers, escalated=escalated, notes=tuple(notes)
         )
+
+    def _loot_choice_action(
+        self, answers: dict[str, Any], actions: list[GameAction]
+    ) -> Loot | None:
+        """The decider's loot choice gets a REAL pickup behind it.
+
+        The runtime's ``_loot`` dispatches the CZ_ITEM_PICKUP send against
+        the tracked floor item (leg 60: 16 loot choices, zero pickup
+        actions — the answer existed only in the schema). An authored
+        Attack (an in-melee exchange) is never interrupted, and a second
+        Loot is never stacked.
+        """
+        if self._choice(answers, "next_action", "") != "loot":
+            return None
+        if any(isinstance(action, (Attack, Loot)) for action in actions):
+            return None
+        return Loot()
 
     def _remember_npc(self, state: BotState) -> None:
         dialog = state.npc_dialogue

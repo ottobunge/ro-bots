@@ -10,8 +10,11 @@ packets_struct.hpp (uint16 itemId branch, since MAIN_NUM 20180704 <
     uint16 x; uint16 y; uint16 amount; uint8 subX; uint8 subY;
 
 Without the 0x009D branch tracker.view.floor_items stays empty live and the
-loot leg can never dispatch 0x0362 (window-22: floor_items 0 across 900 s
-despite mob contact).
+loot leg has nothing to pick (window-22: floor_items 0 across 900 s
+despite mob contact). The pickup send itself was separately broken until
+the loot-seam leg: the encode sent 0x0362, which the 20120418+ table
+registers as clif_parse_DropItem — the pinned-era TakeItem is 0x07E4
+(clif_packetdb.hpp:1560/1561).
 """
 
 import struct

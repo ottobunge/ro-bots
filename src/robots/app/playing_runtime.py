@@ -95,6 +95,7 @@ from robots.domain.actions import (
 from robots.domain.events import (
     DamageTaken,
     InviteReceived,
+    ItemDrop,
     MonsterSpotted,
     NpcDialogueReceived,
     WorldEvent,
@@ -290,6 +291,7 @@ class PlayingClient:
         self._retry_talk: int | None = None
         self._event_cursor = self._party_obs_cursor = 0
         self._seen_actors: set[int] = set()
+        self._seen_floor: set[int] = set()
         self._invite = 0
         self._rng = random.Random(wire.char_name)
         self.mob_db = mob_db or ObservedMobDatabase()
@@ -1685,6 +1687,15 @@ class PlayingClient:
         if items:
             item = items[0]
             if math.hypot(item.position.x - state.x, item.position.y - state.y) <= 2:
+                # The loot seam's dispatch tap: the CZ_ITEM_PICKUP send that
+                # the leg-61 log greps for (paired with the surfaced line).
+                logger.warning(
+                    "loot-debug: pickup dispatched (fid=%s nameid=%s cell=(%s,%s))",
+                    item.floor_item_id,
+                    item.item_id,
+                    item.position.x,
+                    item.position.y,
+                )
                 self.wire._send(pickup(item.floor_item_id))
             else:
                 self._move(state, (item.position.x, item.position.y))
@@ -2072,6 +2083,38 @@ class PlayingClient:
                 return (MoveTo(*point),)
         return ()
 
+    def _floor_item_events(self, view: Any, state: BotState) -> tuple[ItemDrop, ...]:
+        """The loot seam's surfacing hop: received drops become real world
+        events, once per presence (leg 60 starved the sell arm with zero
+        ItemDrop-class events). One tap line per surfaced item so the next
+        leg's log proves the ingest -> event hop live."""
+        events: list[ItemDrop] = []
+        current: set[int] = set()
+        for item in view.floor_items:
+            current.add(item.floor_item_id)
+            if item.floor_item_id in self._seen_floor:
+                continue
+            logger.warning(
+                "loot-debug: floor item surfaced (nameid=%s cell=(%s,%s) amount=%s fid=%s)",
+                item.item_id,
+                item.position.x,
+                item.position.y,
+                item.amount,
+                item.floor_item_id,
+            )
+            events.append(
+                ItemDrop(
+                    nameid=item.item_id,
+                    x=item.position.x,
+                    y=item.position.y,
+                    amount=item.amount,
+                    map_name=view.map_name or state.map_name,
+                    floor_item_id=item.floor_item_id,
+                )
+            )
+        self._seen_floor = current
+        return tuple(events)
+
     def drain_native_events(self) -> tuple[WorldEvent, ...]:
         state = self.build_native_state(Goal.GRIND)
         self._keepalive()
@@ -2100,6 +2143,7 @@ class PlayingClient:
         )
         self._seen_actors = visible
         events.extend(self._damage_events(tracker.view))
+        events.extend(self._floor_item_events(tracker.view, state))
         self._event_cursor = self._metadata_cursor
         if self.wire.party_invite_pid and self.wire.party_invite_pid != self._invite:
             events.append(InviteReceived(state.pending_invites[0]))

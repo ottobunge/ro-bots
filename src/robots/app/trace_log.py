@@ -41,6 +41,7 @@ from robots.domain.events import (
     DamageTaken,
     Heartbeat,
     InviteReceived,
+    ItemDrop,
     ItemSeen,
     MonsterSpotted,
     NpcDialogueReceived,
@@ -95,6 +96,17 @@ def _item_payload(event: Any) -> dict[str, Any]:
     return {"item": event.item, "x": event.x, "y": event.y}
 
 
+def _item_drop_payload(event: Any) -> dict[str, Any]:
+    return {
+        "nameid": event.nameid,
+        "x": event.x,
+        "y": event.y,
+        "amount": event.amount,
+        "map": event.map_name,
+        "floor_item_id": event.floor_item_id,
+    }
+
+
 def _arrived_payload(event: Any) -> dict[str, Any]:
     return {"x": event.x, "y": event.y}
 
@@ -125,6 +137,7 @@ _PAYLOAD_HANDLERS = {
     ChatHeard: _chat_payload,
     InviteReceived: _invite_payload,
     ItemSeen: _item_payload,
+    ItemDrop: _item_drop_payload,
     Arrived: _arrived_payload,
     ScriptFailed: _script_failed_payload,
     Heartbeat: _heartbeat_payload,

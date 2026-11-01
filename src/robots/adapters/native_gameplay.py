@@ -139,7 +139,19 @@ def attack(target_id: int, *, continuous: bool = False) -> bytes:
 
 
 def pickup(floor_item_id: int) -> bytes:
-    return struct.pack("<HI", 0x0362, _uint32(floor_item_id))
+    """CZ_ITEM_PICKUP 0x07E4 (clif_parse_TakeItem), pinned MAIN 20180704.
+
+    ``<packetType>.W <AID>.L`` = 6 bytes: clif_packetdb.hpp:1560 registers
+    ``parseable_packet(0x07E4,6,clif_parse_TakeItem,2)`` and clif.cpp:12006
+    reads the floor-item AID at offset 2. The 20120418+ block RE-REGISTERS
+    0x0362 as clif_parse_DropItem (clif_packetdb.hpp:1561); the later
+    registration wins in the compiled packetdb, so the older 2010-era
+    TakeItem row (0x0362, line 1384) is dead — a 0x0362 send is a DROP
+    request (index.W/amount.W carved from the AID dword) that the server
+    rejects silently (leg 60: 16 loot choices, zero pickups, zero
+    inventory delta).
+    """
+    return struct.pack("<HI", 0x07E4, _uint32(floor_item_id))
 
 
 def respawn() -> bytes:
