@@ -8768,3 +8768,72 @@ checks as the named predicates `_allowance_received`/`_acquisition_bound`).
 NEXT (leg 59): dispatch the window — the two named terms are gone; if the
 economy still does not close, the next starving term names itself in one
 grep of the same verdict tap.
+
+## Leg 59 — Sun 2026-11-01 10:45-11:45 CET — THE ECONOMY CLOSED END TO END (the buy arm, every verdict term True)
+
+HEAD at launch a8a9e0f5 (the fix-under-test b8edef4e merged below it).
+Receipt `run/plain_host_receipts/population-receipt-59-1793525736.json`
+(launch 10:35:36 CET, duration 5700s): steps 22707, step_errors 0, 0
+TRANSPORT DOWN, 7/7 online through the window. Seed refreshed from the
+pre-launch char-table readback (zeny_wing 150z, no 1201 — byte-identical
+to the committed file); schedule verified committed as the bare mapping
+`{persona: [[6, 10.75, 11.75]]}` x7.
+
+The fixture agent `pop_0003_g00m02` (char 300002, zeny_wing) opened the
+deal 12 seconds into the window (traces 09:45:08-09:45:12 UTC:
+TalkToNpc -> NpcShopBuySelection -> **NpcShopPurchase** -> NpcClose),
+and the server closed it: **the C8 went out, the 0xCA came back, zeny
+150 -> 100 (-50, the received price) and 1201 amount=1 equip=0 appeared
+in the inventory table. THE ECONOMY CLOSES END TO END.** The verbatim
+verdict line (ONE line in the log, quoted wrapped):
+
+    shop-debug: mint verdict owner=True(len 7/7) offer=True(receipt=70)
+    f_src=True(rathena-item-db-pin-2018) f_acct=True(2200002/2200002)
+    f_char=True(300002/300002) f_epoch=True(1/1)
+    f_npc=True(110001762/110001762) f_map=True(prt_in/prt_in)
+    f_item=True(1201/1201) f_client=True(1201/1201) f_ordinary=True(True)
+    f_nonstack=True(True) f_price=True(50) f_disc=True(50)
+    f_valid=True(until=1078636.72 now=1078336.72) deadline=True(...)
+    row=True((50,50,5) v (50,50) rows=1) budget=True(budget=150 price=50)
+    balance=True(balance=150 price=50) currency=True(epoch 1/1 age=0.0s)
+    epoch=True(1/1) acct=True(2200002/2200002) char=True(300002/300002)
+    cap_held=True(w_age=4.8s max_age=4.8s window=5.0s) ints=True(weight=0
+    max=22700) loaded_int=True(loaded=400) loaded_w=True(0+400<=22700)
+    inv_seq=True(receipt=36 changed=None) slots_free=True(0/None)
+    rows_int=True(0 rows) no_knife_dup=True(knife rows=0)
+    eligible=True(verdict)
+
+The two laws under test fired exactly as landed: `row=True((50,50,5) v
+(50,50) rows=1)` — the received-row law comparing the C6 row against
+itself, identity-by-nameid only, never demanding template==row on the
+volatile third field (live wire said 5; a db-pin 4 would have starved
+all 146 leg-58 mints again) — and `slots_free=True(0/None)` — the
+slots-unknown law passing on None. `cap_held=True` shows the
+facts-seam freshness hold keying on the bound offer (w_age 4.8s inside
+the 5s window at mint time). One mint verdict line in the whole log;
+one purchase; the drive then re-armed ONE at-bat (second
+NpcShopBuySelection, C6 BOUND seq=78) and stopped — honest, the agent
+now OWNS a knife (`no_knife_dup` would read False; the drive's goal is
+satisfied), not a re-arm defect.
+
+Rest of the roster: six roamers at 90-108 distinct sampled cells,
+decides 77-157, attacks 37 total; kills by DB exp delta = five killers
+(NyxSong +8/+3 = Poring+Lunatic, PipinWalker +8/+3, xXLunasongXx
++18/+6, PoringMuffin14 +14/+6, YuffieFy81 +4/+3 — 52 base exp total);
+zero sells (no zeny gain anywhere; the sell arm did not engage — no
+agent carried derived sellable stock this window). g00m02's npc_stage
+samples read blocked/opening (the known post-C6 resting shape, hold
+proven); its shop_offer never appears in the 30s-cadence samples — the
+context held it for ~16s, shorter than the cadence (the corollary:
+zero-sample is not a surfacing gap). s00 pocket-escalated 8x
+(`escalated_target_dead`) yet still farmed pay_fild04 (5 cells, +4 exp)
+— the escalator honest-stopping, not frozen. RinceNyan roamed only 23
+cells with 306 actions and 0 exp (6 attacks all pending_walk) — low
+engagement, no gate anomaly; watch next leg, no defect class named.
+
+NEXT (leg 60): the SELL arm close — loot -> dealer -> C7 sell list ->
+sell -> a zeny GAIN in the DB (the remaining half of the loop; derive
+the sellable set from the field's actual drops). Fixture policy: the
+buy arm is proven; a re-run needs the fixture re-applied (DELETE the
+1201 row, re-grant the 150z) or it will honestly refuse on
+no_knife_dup.
