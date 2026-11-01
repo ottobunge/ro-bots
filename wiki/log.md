@@ -8971,3 +8971,50 @@ NEXT (leg 61 window): the wire proof — one window should show surfaced
 lines off real kills, dispatched pickups, 0x0A37 acks, inventory deltas,
 and then the sell arm's own seam (the derived sellable set -> merchant
 trip -> C7) engaging on real stock.
+
+## Leg 61 — Sun 2026-11-01 16:45-18:00 CET (day 6) — the loot->sell readout with the seam repaired (43b5cc2e)
+
+Launch 16:27:47 CET (receipt `population-receipt-61-1793546826.json`), 7/7
+online the whole window, `DONE: steps 23901, errors 0`, zero TRANSPORT DOWN.
+Schedule was the bare mapping committed at a04979c9 (verified
+`[[6, 16.75, 18.0]]` x7); seed-zeny refreshed from a fresh char-table readback
+and committed pre-launch (acebeecb).
+
+THE FIX'S HOPS, LIVE VERDICT:
+
+- Hop 1 (ingest->event) LIVE: 39 `loot-debug: floor item surfaced` taps off
+  real kills, e.g. `loot-debug: floor item surfaced (nameid=915
+  cell=(267,330) amount=1 fid=288)` (16:53). Repeats per fid are the
+  once-per-presence set resetting when an item leaves/re-enters the view.
+- Hop 2 (event->brain) wired and working on the prior: ItemDrop rides
+  `_drain_events`->`handle_event`; the loot probability rose through the
+  window (mean ~0.02-0.03 early -> 0.13-0.29 late; loot was top-2 in 167/518
+  decides).
+- Hop 3 (choice->CZ_ITEM_PICKUP) NEVER EXERCISED: zero `pickup dispatched`
+  taps, zero Loot actions in 4,471 executed actions (4,267 MoveTo, 114
+  Attack, 0 Loot), zero loot choices in 518 decides. THE MECHANISM, FROM THE
+  TRACES: `choice == argmax(probabilities)` in 518/518 decides, and loot
+  never outranked grind (loot max 0.2865 vs grind >= 0.42). The pickup
+  wiring is code-complete; its TRIGGER (a won loot choice) is starved by the
+  argmax rule. That is the remaining dead hop — the decider's draw, not the
+  seam's wiring.
+
+DB ground truth (same readback before 16:26 / after 18:02): kills = exp
+deltas on five agents (PipinWalker +10/+10, RinceNyan +9/+9, xXLunasongXx
++10/+4, zeny_wing +5/+4, YuffieFy81 +2/+1); zeny +0 on all seven; inventory
+GAINED=[] on all seven (only the worn 1201 knife). No pickup -> no sellable
+stock -> no merchant trip -> no C7 -> no zeny gain, exactly through the
+named seam.
+
+Secondary: PipinWalker sealed at prt_fild08 (270,329) ~65 min after his
+kills (decides 180, position flat, `await_pending` gates); PoringMuffin14
+(merchant-economy) parked at (87,305) the whole window again (165 decides,
+26 actions, 2 script_steps); NyxSong zero kills. No new guild/party rows.
+
+NEXT (leg 62): give the loot choice a win it cannot lose — either a
+floor-item-contingent override (a tracked floor item within pickup range
+makes loot outrank grind in the decide answer) or author Loot directly in
+the farm script off `tracker.view.floor_items` (the runtime `_loot`
+already walks-then-picks within 2 cells and taps the send). Then re-test
+the sell arm on real stock: derived sellables -> merchant trip -> C7 ->
+zeny GAIN.
