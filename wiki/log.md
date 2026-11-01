@@ -8436,3 +8436,78 @@ dispatches): the live window - zeny_wing re-armed at the dealer with the hold
 active; the mint-path tap line names the next gate if the economy still does
 not close (candidates: the re-arm cadence, the admission/facts window after
 the 300s TTL death).
+
+## 2026-11-01 ~02:45 — receipt: leg 56 - THE ECONOMY DID NOT CLOSE (sixth window): the sixth arm WORKED (the precondition held, zero mint-skip taps) and the mint still never fired - the remaining gate is the 5-second capacity freshness on the login-stamped weight pair (`_capacity_fits`'s `_fresh(weight.observed_at, now)`)
+
+Launch 01:05 CET (runner t=0 ~01:09 after nix activation), window
+01:15-02:15 (day 6 ✓, `CLOCK: (6, 1.133)`, `SCHED: ... configured: True`),
+duration 5700s, `DONE: steps 22712, errors 0`, receipt
+`population-receipt-56-1793491738.json`. Seed verified delivered: the first
+state_tick read `zeny=150` (the fresh char-table readback matched the
+committed seed byte-for-byte; fixture intact: 150z, no 1201, knife worn on
+the other six). Transport: zero `TRANSPORT DOWN`; 7/7 online from the open.
+
+The one at-bat (all times UTC, traces + runner log agreed once t=0 was
+anchored on the receipt epoch): 00:15:08 login -> the drive clicked the
+dealer (`TalkToNpc`, npc=110001762 = `Weapon Dealer#prt`, prt_in 172,130 —
+the agent logged in at its `last_map` cell 172,129, adjacent) -> 00:15:10
+C4 `unsupported_shop` -> `NpcShopBuySelection` -> `shop-debug: C6 seen
+(seq=70 issued=True after=69 consumed=False rows=213)` -> `shop-debug: C6
+BOUND (seq=70 rows=19 npc=110001762)` — 19 rows = the dealer's exact
+shop list (`npc/merchants/shops.txt:255`, includes the 1201 Knife at the
+received 73z <= 150z budget, so `shop_affordable_weapon` and
+`_qualify_knife_facts` (exactly one 1201 row) both pass). Then SEVEN
+heartbeat decides inside the bound span (00:15:50, 00:15:51, 00:16:10,
+00:17:23, 00:18:22, 00:19:13, 00:20:04), every `next_action=null`, and
+ZERO `mint skipped by ...` lines — the sixth arm engaged exactly as built:
+with `npc.failed=True` (the innocent post-C6 `_deny('timeout')`),
+`deny_origin='timeout'`, and the CONTEXT's offer bound,
+`_mint_skip_term` returned None on every consult and the tap (which fires
+only on a SKIP) stayed silent. The offer died at its own terms:
+`shop-debug: offer invalidated (offer-ttl-expired) had_issued=True
+had_offer=True` at 00:20:10 (the full 300s TTL, no killer touched it —
+the four holds plus the mint hold all did their jobs), the blocked-stage
+close drive correctly released only after the death (three `NpcClose`
+00:20:10-00:20:46), and the agent never re-armed (worldfeed: goal
+`farm_item`, script `GrindScript`, `plan: ""` — the one-at-bat shape).
+
+THE REMAINING GATE, named from code + the live timeline because the drop
+sits DOWNSTREAM of the only mint tap (tap-before-fix debt: the sixth-arm
+commit tapped the precondition only): `npc_shop_purchase` ->
+`NativePurchase.mint` -> `_eligible` -> `_resources_fit` ->
+`_capacity_fits` requires `_fresh(weight.observed_at, now) and
+_fresh(maximum.observed_at, now)` = `0 <= now - at < 5.0`
+(native_purchase.py), and `NativeCapacityContext._consume` stamps the
+weight/max-weight `ReceivedCapacityValue` with the FRAME ARRIVAL time `at`
+(native_capacity.py `_consume`, the 0x00B0 param-24/25 branch). The weight
+pair arrives ONCE at login (00:15:08); the first post-bind decide is
+00:15:50 (42s stale) and an agent standing idle at a dealer never receives
+another weight frame — the 5s window is unsatisfiable BY CONSTRUCTION on
+every decide, the leg-39 "trigger waits on evidence the broken state
+prevents from existing" law, now in the economy mint. This is the leg-47
+zeny-staleness defect class: the wallet-parity seed (2743782a) fixed it
+for CURRENCY (the seed path in `_purchase_snapshot` stamps
+`observed_at=now`, fresh), but nobody applied the parity fix to CAPACITY.
+Acceptance: DB zeny_wing 150 -> 150, inventory still has no 1201 — RED;
+no verbatim mint-skip line exists to quote (the log is silent exactly
+where the drop sits).
+
+Rest of the window (window-filtered action census): 70 attacks / 5812
+MoveTos; kills by exp delta (RinceNyan 87->102 base +68->75 job,
+PipinWalker 60->69/+7, xXLunasongXx 112->116); zero zeny moves anywhere
+(no sell trips — nobody's loot triggered one); socials ran (2 FoundGuild,
+12 GuildInvite, 4 InviteToParty, 15 PartyChat); attack_gates all
+`pending_walk` (sums 2/10/8/1/1/2 + s00 resting:3), s00
+`no_position_or_dead: 5` samples (one transient latch, kept acting — 184
+actions), nothing else stalled.
+
+NEXT SLICE (leg 57, the coordinator dispatches): (a) extend the mint-path
+taps to cover the WHOLE `_buy_mint_attempt` guard chain — the affordable
+verdict, each admission build (`None` vs built), the facts bind, and each
+`_eligible` term with its values — so the next drop names itself instead
+of being re-derived offline; (b) the capacity-parity arm (the seventh
+arm): stamp the capacity receipt's observations fresh the way 2743782a
+seeded zeny, or hold the `_fresh` capacity terms while the CONTEXT's
+offer is bound (the same hold doctrine, consumer-side); RED-test at the
+exact leg-56 shape (login-stamped weight pair + a 45s-old bound offer +
+one heartbeat decide -> assert NpcShopPurchase mints).
