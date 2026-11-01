@@ -290,6 +290,20 @@ def _resources_fit(context: PurchaseAdmission, facts: QualifiedShopItem, budget:
     return all(term.passed for term in _resources_checked(context, facts, budget))
 
 
+def _acquisition_bound(slots: int | None) -> int:
+    """The acquisition-index bound: slots+1 when the allowance is received
+    (the wire overrides when it speaks), the absolute 100-slot pin cap
+    (indices 2..101) while it is unknown — never a zero free-slot read."""
+    return 101 if slots is None else slots + 1
+
+
+def _allowance_received(slots: int | None) -> bool:
+    """The slots-unknown law (leg 58): an absent allowance (None) is UNKNOWN
+    and passes; a RECEIVED value must be a real slot count (fail-closed on
+    received-bad data, never a zero free-slot read)."""
+    return slots is None or _integer(slots, 1, 100)
+
+
 def _stock_rows_integer(stock: Stock) -> bool:
     return all(
         _integer(index, 2, 101) and _integer(item) and _integer(count)
@@ -303,12 +317,14 @@ def _stock_knife_unique(stock: Stock) -> bool:
 
 def _stock_checked(context: PurchaseAdmission) -> tuple[_Term, ...]:
     stock, slots = context.stock, context.slots
-    if stock is None or not _integer(slots, 1, 100):
+    # The slots-unknown law (leg 58): the allowance facts gate nothing until
+    # they exist (the wire overrides when it speaks); stock=True alone passes.
+    if stock is None or not _allowance_received(slots):
         return (_Term("stock", False, f"stock={stock is not None} slots={slots}"),)
     return (
         _Term(
             "slots_free",
-            type(slots) is int and len(stock) < slots,
+            slots is None or len(stock) < slots,
             f"{len(stock)}/{slots}",
         ),
         _Term("rows_int", _stock_rows_integer(stock), f"{len(stock)} rows"),
@@ -325,8 +341,12 @@ def _stock_fits(context: PurchaseAdmission) -> bool:
 
 
 def _row_values(rows: tuple[ReceivedShopRow, ...], facts: QualifiedShopItem) -> str:
+    # The received-row law (leg 58): the row's volatile third field is the
+    # exchange's own value, rendered for evidence only — the template supplies
+    # IDENTITY and takes price/discount FROM the received row, so the seam
+    # never re-checks the template's db-pin type against the row.
     received = f"({rows[0].price},{rows[0].discount_price},{rows[0].item_type})" if rows else "none"
-    return f"{received} v ({facts.stable_price},{facts.stable_discount_price},4) rows={len(rows)}"
+    return f"{received} v ({facts.stable_price},{facts.stable_discount_price}) rows={len(rows)}"
 
 
 class NativePurchase:
@@ -400,11 +420,15 @@ class NativePurchase:
                 finite_capacity_time(context.now) and context.now < context.offer.deadline,
                 f"now={context.now} deadline={context.offer.deadline}",
             ),
+            # The received-row law (leg 58): identity by nameid (the filtered
+            # 1201 rows), price/discount re-checked against the row-derived
+            # facts; the row's volatile third field is the exchange's own and
+            # is never demanded equal to the template's db-pin (4).
             _Term(
                 "row",
                 len(rows) == 1
-                and (rows[0].price, rows[0].discount_price, rows[0].item_type)
-                == (facts.stable_price, facts.stable_discount_price, 4),
+                and (rows[0].price, rows[0].discount_price)
+                == (facts.stable_price, facts.stable_discount_price),
                 _row_values(rows, facts),
             ),
             *_resources_checked(context, facts, budget),
@@ -453,12 +477,12 @@ class NativePurchase:
             context is None
             or context.stock is None
             or context.currency is None
-            or context.slots is None
+            or not _allowance_received(context.slots)
             or self._facts is None
         ):
             return None
         self._stock = context.stock
-        self._last_index = context.slots + 1
+        self._last_index = _acquisition_bound(context.slots)
         self._expected_balance = context.currency.balance - self._facts.stable_discount_price
         self._sent_at = context.now
         return encode_purchase((PurchaseEntry(1201, 1),))

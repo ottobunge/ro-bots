@@ -8707,3 +8707,64 @@ while identity matches must pass `_facts_match`. (2) the stock arm treats
 slots=None as unknown (pass) or decodes it from the received frame; RED
 test: stock=True with slots=None must not veto. Then the next leg closes
 the economy or names the next term in one grep.
+
+## 2026-11-01 ~10:25 — the two named terms landed (feat/received-row-law): the received-row law extends to the C6 row's volatile third field and slots=None is unknown-not-zero
+
+Leg 58's readout named exactly two starving terms in 146 verdict lines; both
+laws are now landed in `native_purchase.py` with the tests-first receipts:
+
+- ROW LAW EXTENDED: the seam's row term compared
+  `(price, discount, item_type)` against the template with the item-db
+  weapon pin (4) hardcoded — the received C6 row carries the exchange's own
+  third field (5 live). The template already takes price/discount FROM the
+  received row (the seeded-wallet law: identity from the pin, price from the
+  received row); the same law now covers the volatile third field. The row
+  term compares the RECEIVED row against itself: identity by nameid (the
+  filtered 1201 rows, exactly one), price/discount re-checked against the
+  row-derived facts, and the type NEVER demanded equal to the db-pin. The
+  qualify step (`_qualify_knife_facts`) is unchanged — the pin stays
+  available there, the consumption seam just no longer re-checks it.
+  `_row_values` renders the received row's own type as evidence
+  (`row=True((73,61,5) v (73,61) rows=1)`).
+- SLOTS UNKNOWN-NOT-ZERO: `_stock_checked` read `slots=None` through
+  `_integer(slots, 1, 100)` as a veto; the allowance facts are ABSENCE of
+  information, not zero free slots. The stock check now passes on
+  stock=True alone (`_allowance_received`: None passes, a RECEIVED value
+  must still be a real slot count — fail-closed on received-bad data,
+  unknown on absent data). The one downstream slots consumer (`prepare`)
+  guards on its own None: `_acquisition_bound` uses the absolute 100-slot
+  pin cap (indices 2..101) while the allowance is unknown, slots+1 when the
+  wire speaks. The denial-suite's old 'slots' case flipped to the new law
+  (commented at the parametrize); the tap's golden verdict line reconciled.
+
+RED receipts (exact leg-58 shapes, `tests/test_buy_mint_seeded_wallet.py`):
+`row=False((73,61,5) v (73,61,4) rows=1)` and `stock=False(stock=True
+slots=None)` reproduced before the fix; the absent-stock negative still
+refuses. The golden-shape test (exchange type 5 + slots unknown + seeded
+wallet) pins the FULL verdict line all-True with `eligible=True(verdict)` —
+the line leg 59's brief can quote:
+
+    shop-debug: mint verdict owner=True(len 7/7) offer=True(receipt=12)
+    f_src=True(rathena-item-db-pin-2018) f_acct=True(999/999)
+    f_char=True(77/77) f_epoch=True(1/1) f_npc=True(123/123)
+    f_map=True(prontera/prontera) f_item=True(1201/1201)
+    f_client=True(1201/1201) f_ordinary=True(True) f_nonstack=True(True)
+    f_price=True(73) f_disc=True(61) f_valid=True(until=400.0 now=100.0)
+    deadline=True(now=100.0 deadline=400.0) row=True((73,61,5) v (73,61)
+    rows=1) budget=True(budget=80 price=61) balance=True(balance=80 price=61)
+    currency=True(epoch 1/1 age=0.0s) epoch=True(1/1) acct=True(999/999)
+    char=True(77/77) cap_held=True(w_age=0.0s max_age=0.0s window=5.0s)
+    ints=True(weight=400 max=2000) loaded_int=True(loaded=400)
+    loaded_w=True(400+400<=2000) inv_seq=True(receipt=13 changed=None)
+    slots_free=True(1/None) rows_int=True(1 rows) no_knife_dup=True(knife
+    rows=1) eligible=True(verdict)
+
+(the log renders it as ONE line; the deciding terms are
+`row=True((73,61,5) v (73,61) rows=1)` and `slots_free=True(1/None)`).
+
+Gate: full `task check` green on the worktree — 6702 passed + 65 subtests,
+coverage 95.36% (pre-lint: black/ruff/mypy/xenon clean; xenon took the new
+checks as the named predicates `_allowance_received`/`_acquisition_bound`).
+NEXT (leg 59): dispatch the window — the two named terms are gone; if the
+economy still does not close, the next starving term names itself in one
+grep of the same verdict tap.

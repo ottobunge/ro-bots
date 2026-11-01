@@ -144,7 +144,11 @@ def test_mint_verdict_golden_line_names_every_term(caplog: Any) -> None:
             "f_disc=True(61)",
             "f_valid=True(until=150.0 now=100.0)",
             "deadline=True(now=100.0 deadline=200.0)",
-            "row=True((73,61,4) v (73,61,4) rows=1)",
+            # The received-row law (leg 58): the seam no longer re-checks the
+            # template's db-pin type against the row, so the template side of
+            # the rendering carries price/discount only; the received row keeps
+            # its own volatile third field as evidence.
+            "row=True((73,61,4) v (73,61) rows=1)",
             "budget=True(budget=61 price=61)",
             "balance=True(balance=1000 price=61)",
             "currency=True(epoch 1/1 age=0.0s)",

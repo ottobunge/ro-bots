@@ -19,11 +19,22 @@ pair reads stale past the 5s window and the capacity gate refused. While the
 shop CONTEXT carries a BOUND offer (received data with its own bounded TTL,
 the C6 row re-proving the item's identity), the login-stamped pair stays
 valid; without a bound offer the honest stale path stands.
+
+Leg 58 named the last two terms of the seam (146 mint attempts, every verdict
+line naming the same two): the row term demanded template==row on the C6 row's
+volatile third field (the exchange's own item type, 5 live, vs the item-db
+weapon pin 4), and the stock term read slots=None as zero free slots when the
+allowance facts are ABSENT, not zero. The received-row law extends to the
+third field: the template supplies IDENTITY and takes price/discount FROM the
+received row, so the seam compares the row against itself (identity by
+nameid). The slots facts gate nothing until they exist - the stock check
+passes on stock=True alone (the wire overrides when it speaks).
 """
 
 from __future__ import annotations
 
 import logging
+import re
 import struct
 from typing import Any
 
@@ -130,3 +141,98 @@ def test_freshness_refusal_tap_names_age_and_window(monkeypatch, caplog) -> None
     assert "max_age=20.0s" in caplog.text
     assert "window=5.0s" in caplog.text
     assert "held_by_bound_offer=True" in caplog.text
+
+
+def test_received_row_third_field_mints_the_purchase(monkeypatch) -> None:
+    """RED (leg 58): the received C6 row's volatile third field (5) is the
+    exchange's own item type, not the template's item-db weapon pin (4). The
+    row term compared (price, discount, TYPE) against the template and starved
+    146 live mints; the seam compares the RECEIVED row against itself
+    (identity by nameid, price/discount re-checked against the row-derived
+    facts) and never demands template==row on the volatile field."""
+    wire, client, receive, _sent, selection = ready_shop(monkeypatch)
+    client.perform_native(selection)
+    # the C6 answers with the exchange's own type byte (5); the weight pair
+    # arrives; NO B1/20 zeny - the wallet is the runner-side seed alone
+    receive(
+        struct.pack("<HHIIBH", 0xC6, 15, 73, 61, 5, 1201),
+        struct.pack("<HHi", 0xB0, 24, 400),
+        struct.pack("<HHi", 0xB0, 25, 2000),
+    )
+    assert bind(client, proof_for(wire))
+    client._zeny_seed = 80  # affords the fixture's received full price (73)
+    state = client.build_native_state(Goal.GRIND)
+    assert state.shop_offer is not None
+    actions = client.mechanical_actions(state, ())
+    assert len(actions) == 1
+    assert isinstance(actions[0], NpcShopPurchase)
+
+
+def test_unknown_slots_mint_the_purchase(monkeypatch) -> None:
+    """RED (leg 58): the allowance facts are ABSENT (slots=None), not zero.
+    The stock term refused `stock=True slots=None`; the slots facts gate
+    nothing until they exist - the stock check passes on stock=True alone
+    (the wire overrides when it speaks)."""
+    wire, client, receive, _sent, selection = ready_shop(monkeypatch)
+    client.perform_native(selection)
+    receive(
+        struct.pack("<HHIIBH", 0xC6, 15, 73, 61, 4, 1201),
+        struct.pack("<HHi", 0xB0, 24, 400),
+        struct.pack("<HHi", 0xB0, 25, 2000),
+    )
+    assert bind(client, proof_for(wire))
+    client._invalidate_self_slots()  # the allowance unknown, not zero
+    client._zeny_seed = 80
+    state = client.build_native_state(Goal.GRIND)
+    assert state.inventory_slots is None  # absence, not a zero allowance
+    actions = client.mechanical_actions(state, ())
+    assert len(actions) == 1
+    assert isinstance(actions[0], NpcShopPurchase)
+
+
+def test_absent_stock_still_refuses(monkeypatch) -> None:
+    """The honest negative stands: with NO inventory facts (stock=None) the
+    stock term refuses - unknown slots never revive absent stock."""
+    wire, client, receive, _sent, selection = ready_shop(monkeypatch)
+    client.perform_native(selection)
+    receive(
+        struct.pack("<HHIIBH", 0xC6, 15, 73, 61, 4, 1201),
+        struct.pack("<HHi", 0xB0, 24, 400),
+        struct.pack("<HHi", 0xB0, 25, 2000),
+    )
+    assert bind(client, proof_for(wire))
+    tracker = client._tracker
+    assert tracker is not None
+    tracker._inventory_known = False  # the stock facts absent
+    client._zeny_seed = 80
+    state = client.build_native_state(Goal.GRIND)
+    actions = client.mechanical_actions(state, ())
+    assert not any(isinstance(a, NpcShopPurchase) for a in actions)
+
+
+def test_golden_verdict_line_all_true_on_leg58_shape(monkeypatch, caplog) -> None:
+    """The leg-58 golden shape (exchange type 5, slots unknown, seeded wallet)
+    must log EVERY seam term True with eligible=True - no starving term left
+    behind the two the readout named."""
+    wire, client, receive, _sent, selection = ready_shop(monkeypatch)
+    client.perform_native(selection)
+    receive(
+        struct.pack("<HHIIBH", 0xC6, 15, 73, 61, 5, 1201),
+        struct.pack("<HHi", 0xB0, 24, 400),
+        struct.pack("<HHi", 0xB0, 25, 2000),
+    )
+    assert bind(client, proof_for(wire))
+    client._invalidate_self_slots()
+    client._zeny_seed = 80
+    state = client.build_native_state(Goal.GRIND)
+    with caplog.at_level(logging.WARNING, logger="robots.adapters.native_purchase"):
+        actions = client.mechanical_actions(state, ())
+    assert len(actions) == 1
+    assert isinstance(actions[0], NpcShopPurchase)
+    lines = [r.getMessage() for r in caplog.records if "mint verdict" in r.getMessage()]
+    assert len(lines) == 1
+    verdicts = re.findall(r"([A-Za-z_]+)=(True|False)", lines[0])
+    assert verdicts, f"no verdict terms parsed: {lines[0]}"
+    failing = [name for name, verdict in verdicts if verdict == "False"]
+    assert failing == [], f"unexpected failing terms {failing}: {lines[0]}"
+    assert "eligible=True(verdict)" in lines[0]
