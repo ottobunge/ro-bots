@@ -321,9 +321,11 @@ def test_malformed_mutated_minted_intent_never_sends(monkeypatch, field):
     assert client.shop_purchase_progress().status == "incomplete"
 
 
-@pytest.mark.parametrize(
-    "case", ["budget", "zeny", "weight", "slots", "price", "canonical", "ordinary"]
-)
+# The 'slots' case left the denial set (leg 58): slots=None is UNKNOWN, not
+# zero - the allowance facts gate nothing until they exist, so the absent
+# allowance MINTS on stock=True alone (pinned in
+# tests/test_buy_mint_seeded_wallet.py::test_unknown_slots_mint_the_purchase).
+@pytest.mark.parametrize("case", ["budget", "zeny", "weight", "price", "canonical", "ordinary"])
 def test_resource_or_qualification_unknown_denies_mint(monkeypatch, case):
     wire, client, receive, sent = offered(monkeypatch)
     changes = {}
@@ -331,8 +333,6 @@ def test_resource_or_qualification_unknown_denies_mint(monkeypatch, case):
         receive(struct.pack("<HHi", 0xB1, 20, 60))
     elif case == "weight":
         receive(struct.pack("<HHi", 0xB0, 25, 799))
-    elif case == "slots":
-        client._invalidate_self_slots()
     elif case == "price":
         changes["stable_discount_price"] = 60
     elif case == "canonical":
