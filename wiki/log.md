@@ -8552,3 +8552,61 @@ no offer -> no mint; the guard that keeps the hold from being a global
 relaxation), `test_freshness_refusal_tap_names_age_and_window` (the tap
 line names both ages vs the window). Full gate GREEN before the commit (nix develop -c task check: 6693
 passed + 65 subtests, 0 failed; black/mypy/ruff phases clean).
+
+
+## Leg 57 window — the seventh arm's hold ENGAGED and the mint still starved: the remaining gate is a second, untapped term in the same consumption seam
+
+Sunday 04:45-05:45 Madrid (03:45-04:45 UTC, day 6), launch 04:35:15 local
+(receipt epoch 1793504122, duration 5700 s). 7/7 online the whole window,
+steps 22706, 0 errors, 0 TRANSPORT DOWN, logins staggered clean.
+
+THE VERDICT: the economy did not close (seventh window). zeny_wing
+(300002) ended zeny 150 (delta 0), exp 28/27 (delta 0), no 1201 in
+inventory - and the fixture is INTACT for the next arm (150z >= the
+received price, knife still absent).
+
+The tap delivered exactly what it was built to deliver, and it EXONERATES
+the seventh arm's own term: the single at-bat ran TalkToNpc x1 ->
+NpcShopBuySelection x1 -> `C6 seen (seq=70 issued=True after=69
+consumed=False rows=213)` -> `C6 BOUND (seq=70 rows=19 npc=110001762)` ->
+144 capacity-freshness taps, EVERY ONE reading `held_by_bound_offer=True`
+(ages 6.9 s -> 301.6 s) -> `offer invalidated (offer-ttl-expired)
+had_issued=True had_offer=True` -> NpcClose x3. NO NpcShopPurchase, no C8,
+no 0xCA. Since the hold term is `fresh or context.offer is not None` and
+the tap prints `context.offer is not None`, the freshness term PASSED on
+all 144 mint attempts - the refusal is real but its CAUSE is a different
+term of the same seam, still silent. Note the tap's wording is misleading
+when held=True ("capacity freshness gate refused" logs whenever !fresh
+even though the hold covers that term); the tuple in `_resources_fit`'s
+`all(...)` is fully evaluated, so `_capacity_fits` runs and taps even when
+an upstream currency/budget term is the actual killer. One at-bat again:
+no re-arm after the closes (the known cadence gap), npc_stage resting in
+{None, blocked}, `shop_offer` non-null in 10 receipt samples (the state
+mirror DID surface the ~5 min bind this window).
+
+THE NAMED NEXT SLICE (the eighth rung): term-level verdict taps across
+the CONSUMPTION seam, each naming the FAILING TERM with both values per
+the tap ladder's top-rung law - `_resources_fit`'s four terms (budget >=
+stable_discount_price, currency.balance >= price,
+`currency.epoch == context.offer.epoch and _fresh(currency.observed_at,
+...)`, `_capacity_fits`) and `_capacity_fits`' remaining terms
+(`capacity.epoch == context.offer.epoch`, account/character identity, the
+integer/value checks, `weight.value + facts.loaded_weight <=
+maximum.value`, and `inventory_changed_sequence is None or
+weight.receipt_sequence >= capacity.inventory_changed_sequence`), plus a
+final verdict line for the whole admission (minted vs denied-at-term).
+Ranked suspects: the inventory-sequence term (any of the five
+inventory-ish packet ids arriving after the login weight pair kills it
+forever), the two epoch-match terms, and the budget term. Fix the tap
+wording in the same slice so a held freshness reads as COVERED, not
+"refused".
+
+Field side: 49 attacks over four agents; kills landed in the DB
+(NyxSong 118->124/73->77, RinceNyan 102->112/75->83, PipinWalker
+69->73/40->42, PoringMuffin14 68->78/41->45); zeny delta 0 for all (no
+sellable stock in any inventory - the sell arm had nothing to fire on).
+Social arms exercised: FoundGuild x2, GuildInvite x12, InviteToParty x4,
+PartyChat x25. zeny_wing zero attacks (dealer park all window) and s00
+zero attacks (town patrol; its exp delta 0). Receipt:
+`run/plain_host_receipts/population-receipt-57-1793504122.json`; log
+`/tmp/population_leg57.log`.
