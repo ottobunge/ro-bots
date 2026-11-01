@@ -8837,3 +8837,82 @@ the sellable set from the field's actual drops). Fixture policy: the
 buy arm is proven; a re-run needs the fixture re-applied (DELETE the
 1201 row, re-grant the 150z) or it will honestly refuse on
 no_knife_dup.
+
+## Leg 60 — Sun 2026-11-01 13:15-14:30 CET — THE SELL ARM DID NOT CLOSE (zero zeny movement; the loot seam named)
+
+HEAD at launch 8ff5f3c0 (schedule fdd499b4 + seed refresh; code untouched
+at the leg-59 binary a43f91e5).
+Receipt `run/plain_host_receipts/population-receipt-60-1793534223.json`
+(launch 12:58:23 CET, duration 6000s, the 75-minute window): steps 23906,
+step_errors 0, 0 TRANSPORT DOWN, **7/7 online through the window** (149
+consecutive all-seven samples t=1111.5->5559.6, i.e. ~13:17-14:31 CET;
+0 online before login, 0 after the 14.5 close). Schedule verified
+committed as the bare mapping `{persona: [[6, 13.25, 14.5]]}` x7; seed
+refreshed from the pre-launch char-table readback and byte-matched to
+the `char` table (zeny_wing 100z post-buy; NyxSong 8, RinceNyan 31,
+PipinWalker 7, xXLunasongXx 0, PoringMuffin14 4, YuffieFy81 0).
+
+DB READBACK, baseline vs end (post-close `char`+`inventory` probe):
+
+    persona            zeny0  zeny1   d   inv0 inv1 dinv
+    NyxSong                8      8   0      1    1    0
+    RinceNyan             31     31   0      1    1    0
+    zeny_wing            100    100   0      1    1    0
+    PipinWalker            7      7   0      1    1    0
+    xXLunasongXx           0      0   0      1    1    0
+    PoringMuffin14         4      4   0      1    1    0
+    YuffieFy81             0      0   0      1    1    0
+
+**ANY_ZENY_GAIN: False.** No inventory delta anywhere (per-item diff
+empty for all seven). The sell chain did NOT close on the sustained
+repeat — this is the honest second branch of the acceptance: the
+verbatim trace lines naming where the arm failed to engage.
+
+THE SELL TRACE CHAIN, and the starving term:
+
+1. The decider's choice set has NO sell option at all. Verbatim first
+   window decide_response (pop_0003_g00m00 12:15:01 UTC):
+
+       {"type": "choice", "choice": "grind", "probabilities":
+       {"chat": 0.011592735377335638, "go_town": 0.016950380848342717,
+       "grind": 0.8549057339855622, "idle": 0.017487722374160613,
+       "loot": 0.05047873538978764, "quest": 0.010726922518529703,
+       "rest": 0.02459496075765234, "travel": 0.013262808748629047}}
+
+   go_town sat at 2-6% and was picked 0 times in 1133 window picks
+   (grind 1113, loot 16, travel 4); `sell` is not even in the support.
+
+2. When loot WAS chosen, it landed in the farm scripts with no pickup
+   behind it. Verbatim pair (pop_0003_g01m02 13:18:17 UTC):
+
+       decide_response: {"type": "choice", "choice": "loot",
+        "probabilities": {..., "loot": 0.4209152586019135, ...}}
+       script_step:     {"script": "GrindScript", "status": "ACTIVE",
+                         "actions": ["MoveTo"], "nearest_monster_d": 11.2}
+
+   Zero pickup-class actions executed all window (full action
+   histogram: MoveTo, Attack, Rest, Say, PartyChat, GuildInvite,
+   InviteToParty, FoundGuild — no Loot/Pickup/GetItem).
+
+3. No drop ever surfaced to loot. Window world_event vocabulary:
+   Heartbeat 622, MonsterSpotted 425, DamageTaken 63, ChatHeard 16 —
+   zero ItemDrop/MonsterDied-class events. The field's drops never
+   reach the agents' event stream, so the derived sellable set is
+   EMPTY BY CONSTRUCTION: no loot -> no stock -> the merchant trip
+   never armed -> the C7 never went out (0 shop-debug/mint/NpcShop
+   lines in the whole runner log — the leg-59 sell tap never fired).
+
+Roster activity: 345 attacks (g01m02 207, g01m01 75, g01m00 34,
+g00m01 9, g00m02 9, g00m00 8, s00 3); s00 authored 98 plans yet held
+pay_fild04 (198,178) all window — the escalator again honest-stopping
+on its own cell, not frozen. Killer deltas not claimed this leg: the
+pre-launch readback seeded zeny+inventory baselines but no exp
+baseline (exp columns at close: 136/118/31/89/146/94/16).
+
+NEXT (leg 61): the loot seam is the named starving term — surface the
+field's drops to the agents (ItemDrop-class world events off the kill)
+and give the loot choice a real pickup action; only then can the
+derived sellable set be non-empty and the C7 sell arm engage. The buy
+arm remains proven (leg 59) and the fixture policy stands: a re-run of
+the buy needs the fixture re-applied (DELETE the 1201 row, re-grant
+the zeny) or it will honestly refuse on no_knife_dup.
