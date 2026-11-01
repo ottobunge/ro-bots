@@ -9149,3 +9149,50 @@ move tap then the dispatch, with `reauth=1` naming any second mint; the
 `pickup deferred (threat)` lines should pair with the grind's combat windows
 and vanish when the mob leaves. Zero `deferred (threat)` lines in a leg with
 real mob contact means the gate did not participate.
+
+## Leg 63 — Sun 2026-11-01 23:15 → Mon 00:30 CET (midnight-crossing, both fragments) — EVERY PICKUP KILLS ITS OWN SESSION: the pace+gate taps proved (surfaced→dispatched ×4), and the served 0x07E4 packetdb row is named as the remaining dead hop
+
+Window ran clean: launched 23:05:21 (6000s), window-1 opened t=631 (23:15:32), the day-6→day-0
+rollover passed with continuous 1s flags (t=3275.9 → 3306.0, no midnight stall), window-2 closed
+t=5079 (00:30:19) with all flags dropping on schedule, runner DONE steps 23905 / errors 0, receipt
+`population-receipt-63-1793570735.json`. Server-side the window is exactly one login cycle (7 logins
+~23:15, no 00:00 relogin, clean logoffs at 00:30 for the survivors).
+
+THE FIX UNDER TEST (5a0fb61b) at its taps: 12 loot-debug lines — 8 `floor item surfaced`
+(909/512/938/705, fids 319–323) and 4 `pickup dispatched` (fid=319/321/322/323), every drop surfaced
+with the killer already inside the pickup radius so the dispatches all went through the shared `_loot`
+seam. The new-code taps stayed silent *correctly*: 0 `mechanical pickup dispatched` / 0 `move toward
+floor item` (the mechanical limb never needed to mint — nobody was out of range) and 0 `pickup
+deferred (threat)` (no mob ever closed within `ACTIVE_THREAT_RANGE`, so the gate never participated —
+the leg-63 slice's NEXT note called this: silence with no contact is expected, not failure).
+
+THE DEAD HOP, server-side verbatim (docker logs e2e map-server):
+`[Warning]: clif_parse: Received packet 0x07e4 with expected packet length 319, but only 6 bytes remaining, disconnecting session #9.` —
+and the same for 321/#12, 322/#8, 323/#11 — followed by `Character 'RinceNyan'/'xXLunasongXx'/'NyxSong'/'PipinWalker' logged off.`:
+EXACTLY the four agents that dispatched pickups, and the "expected packet length" values ARE the fids.
+The served binary (rathena-playable:20180704-e985006171d2) parses 0x07E4 as VARIABLE-LENGTH — it reads
+the declared length at offset 2, which is the fid — while the builder (`native_gameplay.py:141`,
+`struct.pack("<HI", 0x07E4, fid)`) pins the fixed-6 TakeItem row (clif_packetdb.hpp:1560). The bot's 6
+bytes are correct FOR a TakeItem,6 server; the served packetdb row is the 20090818
+`ItemListWindowSelected,-1` row instead. Both rows exist at identical lines in the repo tree and the
+callback-qualified snapshot, and `packetdb_addpacket` overwrites in source order (the 20120418 block
+SHOULD win) — so the served image's build/init diverges from the tree. Bisect next leg: (a) the image
+builds from a divergent/stale source pin, (b) its init order differs, (c)
+docker/rathena.Dockerfile's PACKETVER sed targets src/common/mmo.hpp which has no such define (the
+operative one lives in src/config/packets.hpp; the recovery recipes compile with
+`-DPACKETVER=20180704 -DPRERE`) — a silent no-op sed on the container path.
+
+Economy truth at close: picklog EMPTY, zenylog 0, inventory 8 rows (7 starter Knives 1201 + fixture
+714) — zero loot rows anywhere, zeny byte-identical to seed (8/31/100/7/0/4/0, no gain on any char),
+sell arm never armed. FULL LOOP STILL OPEN, one hop from proven: the pickup send never reaches
+`clif_parse_TakeItem`.
+
+Resilience finding for the runner: only the FIRST server EOF printed `TRANSPORT DOWN` (g00m01 t~650);
+the other three EOFs surfaced only as `action X failed: native playing transport unavailable` with
+frozen counters (decides 6/17/10/85 for exactly the four dead agents; receipt `rx_error` carries EOF
+for those four and nothing else) while SCHED kept reporting them online at frozen positions all
+window. An EOF'd wire should be flagged offline (or relogged), not reported online.
+
+NEXT (leg 64): make the served 0x07E4 row TakeItem,6 (rebuild/re-pin the rathena image; verify with a
+6-byte pickup probe — expect NO disconnect and a picklog P row), and harden the runner's EOF handling.
+Then inventory gains → sell arm → C7 → zeny is the same chain leg 62/63 already mapped.
