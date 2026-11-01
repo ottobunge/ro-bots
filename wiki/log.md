@@ -8916,3 +8916,58 @@ derived sellable set be non-empty and the C7 sell arm engage. The buy
 arm remains proven (leg 59) and the fixture policy stands: a re-run of
 the buy needs the fixture re-applied (DELETE the 1201 row, re-grant
 the zeny) or it will honestly refuse on no_knife_dup.
+
+## 2026-11-01 (leg-61 slice) — THE LOOT SEAM REPAIRED: two broken hops found and fixed, taps in (feat/loot-seam)
+
+The leg-60 receipt named the starving term; this slice traced the seam hop by
+hop and found TWO breaks, not one:
+
+1. THE PICKUP ENCODE WAS A DROP REQUEST (the deeper break).
+   `native_gameplay.pickup()` sent `0x0362` — the 2010-era TakeItem row. At
+   the pinned MAIN 20180704 the 20120418+ block RE-REGISTERS `0x0362` as
+   `clif_parse_DropItem` (clif_packetdb.hpp:1561) and moves TakeItem to
+   `0x07E4` (line 1560); the later registration wins in the compiled
+   packetdb. Every loot pickup this codebase ever "sent" was a DropItem
+   request (index.W/amount.W carved from the floor-item AID dword) that the
+   server rejects silently — the same shape as the party-invite silent drop.
+   Fixed: `pickup()` now packs `0x07E4` (6B, AID at offset 2, clif.cpp:12006
+   `clif_parse_TakeItem`). The two byte pins that asserted `620341010000`
+   (tests/test_native_gameplay.py, tests/test_playing_runtime.py) are
+   reconciled to `e40741010000` with the registration cited.
+
+2. THE WORLD-EVENT PRODUCER NEVER SURFACED DROPS.
+   `PlayingClient.drain_native_events` minted MonsterSpotted/damage/dialogue/
+   invite but NOTHING off `tracker.view.floor_items` — `ItemSeen` existed in
+   the domain and was minted nowhere; zero ItemDrop-class events all window
+   (the receipt's term 3). Fixed: `_floor_item_events` (new helper) mints one
+   `ItemDrop` (nameid/x/y/amount/map/floor_item_id) per newly present floor
+   item, once per presence (a set-diff cursor mirroring `_seen_actors`; aid
+   reuse after a 0x00A1 disappear re-mints honestly). Registered in the
+   `event_summary` table (raw dict lookup — unregistered classes crash the
+   brain) and in trace_log's `_PAYLOAD_HANDLERS`.
+
+3. THE DECIDER'S LOOT CHOICE GOT A REAL ACTION BEHIND IT.
+   `next_action=loot` (16 picks in leg 60) was consumed NOWHERE — `_review_goal`
+   reads only `change_goal`; the answer existed only in the schema. Fixed:
+   `EventDrivenBrain._loot_choice_action` authors `Loot()` on an explicit loot
+   answer (fail-closed: nothing on grind/travel/rest; an authored Attack is
+   never interrupted; no stacked Loot), and the runtime's `perform_native`
+   dispatches it against the tracked floor item (walks to it when far —
+   `test_distant_loot_walks_using_public_geometry` already pinned that half).
+
+TAPS (the leg-61 log greps): `loot-debug: floor item surfaced (nameid=%s
+cell=(%s,%s) amount=%s fid=%s)` at the mint, `loot-debug: pickup dispatched
+(fid=%s nameid=%s cell=(%s,%s))` at the wire send — shop-debug-style
+logger.warning lines, one per surfaced drop / one per dispatched pickup.
+
+Offline evidence: tests/test_loot_seam.py (5 contracts — encode pin, mint
+once-per-presence + aid-reuse re-mint, both taps, loot-choice authoring +
+the non-loot fail-closed guard); RED was captured per hop before the fix
+(ImportError ItemDrop / `620341010000` != `e40741010000` / zero actions on a
+loot answer). spikes/ untouched; no runner leg dispatched (the coordinator
+merges and dispatches leg 61).
+
+NEXT (leg 61 window): the wire proof — one window should show surfaced
+lines off real kills, dispatched pickups, 0x0A37 acks, inventory deltas,
+and then the sell arm's own seam (the derived sellable set -> merchant
+trip -> C7) engaging on real stock.

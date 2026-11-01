@@ -41,6 +41,24 @@ class ItemSeen:
 
 
 @dataclass(frozen=True, slots=True)
+class ItemDrop:
+    """A floor item surfaced off the received drop frames (0x009D/0x0ADD).
+
+    Map/cell/nameid are received facts only. The pickup itself stays owned
+    by the runtime's ``_loot`` (the CZ_ITEM_PICKUP dispatch against the
+    tracked floor item) — this event surfaces the drop to the brain and
+    the trace (leg 60: zero ItemDrop-class events starved the sell arm).
+    """
+
+    nameid: int
+    x: int
+    y: int
+    amount: int
+    map_name: str | None = None
+    floor_item_id: int = 0
+
+
+@dataclass(frozen=True, slots=True)
 class InviteReceived:
     invite: PartyInvite
 
@@ -91,6 +109,7 @@ WorldEvent = Union[  # noqa: UP007
     DamageTaken,
     ChatHeard,
     ItemSeen,
+    ItemDrop,
     InviteReceived,
     Arrived,
     ScriptFailed,
@@ -119,6 +138,11 @@ def _summary_chat(event: ChatHeard) -> str:
 
 def _summary_item(event: ItemSeen) -> str:
     return f"item {event.item} dropped at ({event.x},{event.y})"
+
+
+def _summary_itemdrop(event: ItemDrop) -> str:
+    where = f" on {event.map_name}" if event.map_name else ""
+    return f"item {event.nameid} x{event.amount} dropped at ({event.x},{event.y}){where}"
 
 
 def _summary_invite(event: InviteReceived) -> str:
@@ -156,6 +180,7 @@ _SUMMARY_BY_KIND: dict[type[Any], Callable[[Any], str]] = {
     DamageTaken: _summary_damage,
     ChatHeard: _summary_chat,
     ItemSeen: _summary_item,
+    ItemDrop: _summary_itemdrop,
     InviteReceived: _summary_invite,
     Arrived: _summary_arrived,
     ScriptFailed: _summary_failed,

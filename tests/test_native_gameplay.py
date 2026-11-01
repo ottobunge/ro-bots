@@ -112,7 +112,10 @@ def test_floor_pickup_vertical():
     tracker = gameplay.NativeGameplayTracker(999)
     tracker.ingest(1, 1.0, 0x0ADD, floor())
     assert tracker.view.floor_items[0].floor_item_id == 321
-    assert gameplay.pickup(321) == bytes.fromhex("620341010000")
+    # CZ_ITEM_PICKUP is 0x07E4 at the pinned era (clif_packetdb.hpp:1560);
+    # 0x0362 is clif_parse_DropItem there (line 1561), so the old 0x0362
+    # hex pin asserted a guaranteed-rejected drop request, not a pickup.
+    assert gameplay.pickup(321) == bytes.fromhex("e40741010000")
     tracker.ingest(2, 2.0, 0x0A37, pickup_ack())
     assert tracker.view.acquired_counts == ((501, 3),)
     assert tracker.view.inventory_counts is None
