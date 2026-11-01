@@ -8610,3 +8610,41 @@ PartyChat x25. zeny_wing zero attacks (dealer park all window) and s00
 zero attacks (town patrol; its exp delta 0). Receipt:
 `run/plain_host_receipts/population-receipt-57-1793504122.json`; log
 `/tmp/population_leg57.log`.
+
+feat/term-verdict-taps (this commit): term-level verdict taps across the
+purchase seam - the seventh arm held 144/144 and the mint still starved, so
+the failing term is now NAMED per attempt instead of guessed. Every seam
+predicate is evaluated as a named `(label, verdict, values)` term
+(`_Term` in native_purchase.py); `_facts_match`, `_resources_fit`,
+`_capacity_fits` and `_stock_fits` route their EXISTING terms through the
+builders unchanged in membership and order (the flattened conjunction is
+boolean-identical to the nested `all(...)` sets - the whole purchase suite
+passes untouched, 161 scoped tests), and `NativePurchase._eligible` is now
+`all()` over the same composed terms. `mint()` logs ONE shop-debug WARNING
+per consumed mint attempt while the shop CONTEXT carries a bound offer:
+
+`shop-debug: mint verdict owner=True(...) offer=True(receipt=7) f_src=...
+f_acct=True(7/7) f_char=True(8/8) f_epoch=True(1/1) f_npc=True(123/123)
+f_map=True(prontera/prontera) f_item=True(1201/1201) f_client=True(1201/1201)
+f_ordinary=True(True) f_nonstack=True(True) f_price=True(73) f_disc=True(61)
+f_valid=True(until=150.0 now=100.0) deadline=True(now=100.0 deadline=200.0)
+row=True((73,61,4) v (73,61,4) rows=1) budget=True(budget=61 price=61)
+balance=True(balance=1000 price=61) currency=True(epoch 1/1 age=0.0s)
+epoch=True(1/1) acct=True(7/7) char=True(8/8) cap_held=True(w_age=0.0s
+max_age=0.0s window=5.0s) ints=True(weight=400 max=2000)
+loaded_int=True(loaded=400) loaded_w=True(400+400<=2000) inv_seq=True(receipt=5
+changed=None) slots_free=True(0/100) rows_int=True(0 rows)
+no_knife_dup=True(knife rows=0) eligible=True(verdict)`
+
+- format `label=<verdict>(<both values>)`, one `=False(...)` grep names the
+  starving term; the aged-pair shape reads `cap_held=True(w_age=20.0s ...)
+  eligible=True` (the hold covering the stale login stamp), a missing pair
+  reads `capacity=False(weight=False max=True)`, unbound facts read
+  `verdict=False(facts=False context=True)`.
+- the capacity freshness refusal tap is now BOUND to once per offer identity
+  (`_FRESHNESS_TAPPED` keyed on account/character/epoch/npc/map/opened/receipt
+  - it fired 144 identical lines at ~2s cadence in leg 57); a genuinely newer
+  C6 receipt re-arms it. Tests: tests/test_mint_verdict_tap.py (golden line,
+  failing-term rendering, one-line-per-attempt + no-context bound, once-per-
+  offer memo) and a memo-clearing autouse fixture in the seeded-wallet file;
+  the tap is instrumentation only - no gate term, value or early return moved.
