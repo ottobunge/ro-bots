@@ -5,6 +5,7 @@ loaded-shop facts. CA0 can follow debit and a failed add; never call that acquir
 No retries, refunds, invented ACKs or hidden-world readers.
 """
 
+import logging
 from dataclasses import dataclass, replace
 
 from robots.adapters.native_capacity import finite_capacity_time
@@ -20,6 +21,12 @@ from robots.domain.shop import (
 
 Stock = tuple[tuple[int, int, int], ...]
 Owner = tuple[object, ...]
+
+logger = logging.getLogger(__name__)
+
+# The login-stamped wallet facts' freshness window (the 0xB0 24/25 pair and
+# the SP_ZENY receipt share it); the capacity gate names it in its refusal tap.
+_FRESH_WINDOW = 5.0
 
 
 def _integer(value: object, low: int = 1, high: int = 0x7FFFFFFF) -> bool:
@@ -65,7 +72,7 @@ def _facts_match(facts: QualifiedShopItem, context: PurchaseAdmission) -> bool:
 
 
 def _fresh(at: float, now: float) -> bool:
-    return finite_capacity_time(at) and 0 <= now - at < 5.0
+    return finite_capacity_time(at) and 0 <= now - at < _FRESH_WINDOW
 
 
 def _resources_fit(context: PurchaseAdmission, facts: QualifiedShopItem, budget: int) -> bool:
@@ -88,12 +95,34 @@ def _capacity_fits(
     if capacity.weight is None or capacity.max_weight is None:
         return False
     weight, maximum = capacity.weight, capacity.max_weight
+    fresh = _fresh(weight.observed_at, context.now) and _fresh(maximum.observed_at, context.now)
+    if not fresh:
+        # Tap-before-fix doctrine: name the raw login-stamp refusal with the
+        # observed ages, whether or not the bound-offer hold below keeps the
+        # mint alive. Fails open, bounded, never behavior.
+        logger.warning(
+            "shop-debug: capacity freshness gate refused the login-stamped pair"
+            " (weight_age=%.1fs max_age=%.1fs window=%.1fs) held_by_bound_offer=%s",
+            context.now - weight.observed_at,
+            context.now - maximum.observed_at,
+            _FRESH_WINDOW,
+            context.offer is not None,
+        )
+    # A BOUND offer is RECEIVED DATA (the e2e-49 law): a live server-side
+    # exchange whose C6 row re-proves the item's identity. The 0xB0 24/25 pair
+    # is login-truth delivered ONCE (the wire delivers SP_WEIGHT on changes
+    # only, pc.cpp:5810/5844), so its login arrival stamp reads stale by the
+    # decide-paced mint while the server-side weight cannot have moved without
+    # a wire update arriving. While the CONTEXT carries the bound offer the
+    # pair stays valid for the offer's own bounded lifetime; real weight
+    # movers still gate through inventory_changed_sequence below, and the
+    # honest stale path (no bound offer -> no admission) keeps the window.
     return all(
         (
             capacity.epoch == context.offer.epoch,
             capacity.account_id == context.account_id
             and capacity.character_id == context.character_id,
-            _fresh(weight.observed_at, context.now) and _fresh(maximum.observed_at, context.now),
+            fresh or context.offer is not None,
             _integer(weight.value, 0) and _integer(maximum.value, 0),
             _integer(facts.loaded_weight, 0),
             type(facts.loaded_weight) is int

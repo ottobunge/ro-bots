@@ -8511,3 +8511,44 @@ seeded zeny, or hold the `_fresh` capacity terms while the CONTEXT's
 offer is bound (the same hold doctrine, consumer-side); RED-test at the
 exact leg-56 shape (login-stamped weight pair + a 45s-old bound offer +
 one heartbeat decide -> assert NpcShopPurchase mints).
+
+## Leg 57 slice (feat/capacity-freshness-receipt): the seventh arm — the capacity
+freshness hold landed; the economy's last named gate is open
+
+The leg-56 receipt named the remaining gate precisely and this slice landed it.
+WHERE THE GATE LIVED: `src/robots/adapters/native_purchase.py` —
+`_capacity_fits`'s freshness term (`_fresh(weight.observed_at, now) and
+_fresh(maximum.observed_at, now)`, the `_fresh` helper at the old line 67,
+consumed at the old line 96): the 0xB0 param-24/25 pair is stamped with the
+FRAME ARRIVAL time by `NativeCapacityContext._consume` (native_capacity.py),
+which on this pin is LOGIN — the pair arrives once at login and a
+decide-paced mint runs 15s+ later, so `0 <= now - at < 5.0` was
+unsatisfiable by construction exactly as the receipt derived.
+
+THE FIX (the receipt's option (b), the seventh arm, consumer-side hold):
+while the shop CONTEXT carries a BOUND offer, the login-stamped pair stays
+valid — a bound offer is RECEIVED DATA (the e2e-49 law) whose C6 row
+re-proves the item's identity, and the server-side weight cannot have
+changed without a wire update arriving (SP_WEIGHT rides on changes only,
+pc.cpp:5810/5844). Real weight movers still gate through the untouched
+`inventory_changed_sequence` term (0x0A37/0x00AF/0x07FA/0x0991/0x0A0D), and
+the honest stale path is preserved: with NO bound offer the admission never
+forms and the aged pair mints nothing (pinned). The `_fresh` window itself
+is unchanged and now named `_FRESH_WINDOW = 5.0`.
+
+THE TAP (tap-before-fix, the receipt's option (a) narrowed to this gate):
+when the raw login-stamp freshness refuses on a mint-capable state,
+`_capacity_fits` logs one shop-debug WARNING naming
+`weight_age=..s max_age=..s window=5.0s held_by_bound_offer=..` — so the
+next leg reads the hold's load-bearing role straight from the log.
+
+TESTS (tests/test_buy_mint_seeded_wallet.py, the ready_shop harness, RED
+verified before the fix — 2 failed / 2 passed on the pre-fix tree):
+`test_aged_login_weight_pair_mints_while_offer_is_bound` (20s-old pair +
+bound offer -> NpcShopPurchase mints; RED pre-fix at exactly the leg-56
+shape: C6 BOUND, offer alive, zero actions),
+`test_aged_login_weight_pair_without_bound_offer_still_refused` (same age,
+no offer -> no mint; the guard that keeps the hold from being a global
+relaxation), `test_freshness_refusal_tap_names_age_and_window` (the tap
+line names both ages vs the window). Full gate GREEN before the commit (nix develop -c task check: 6693
+passed + 65 subtests, 0 failed; black/mypy/ruff phases clean).
