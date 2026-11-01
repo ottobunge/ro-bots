@@ -8648,3 +8648,62 @@ no_knife_dup=True(knife rows=0) eligible=True(verdict)`
   failing-term rendering, one-line-per-attempt + no-context bound, once-per-
   offer memo) and a memo-clearing autouse fixture in the seeded-wallet file;
   the tap is instrumentation only - no gate term, value or early return moved.
+
+## 2026-11-01 ~09:50 — receipt: leg 58 - THE NAMED-TERM READOUT: the verdict taps (80c25b5f) fired and the failing term names itself in one grep — `row=False((50,50,5) v (50,50,4) rows=1)` with `stock=False(stock=True slots=None)` behind it; the economy did not close (eighth window)
+
+Window 08:15-09:15 Madrid (07:15-08:15 UTC), Sunday day 6, runner up
+08:05:23-09:40:23 (5700s), steps 22728, errors 0, zero TRANSPORT DOWN,
+7/7 online, decides 78-140. Seed-zeny refreshed pre-launch from a fresh
+char-table readback (zeny_wing 150z, no 1201 - the buy fixture armed).
+
+zeny_wing ran the dealer trip in one at-bat: TalkToNpc ->
+NpcShopBuySelection -> C6 BOUND at receipt=70, then the decide/tick-paced
+mint consumed **146 attempts across the offer's FULL 300s TTL** (10
+shop_offer non-null samples at the 30s cadence - the state surfacing and
+the CONTEXT agreed; npc_stage rested at 'blocked' 170 samples, the leg-49
+shape). Every prior arm verified engaged: no mint-skip taps (the sixth
+arm's precondition held), and `cap_held=True(w_age=... max_age=301.8s
+window=5.0s)` - the seventh arm held the login-stamped freshness pair the
+whole way. The mint still returned False on every attempt, and the taps
+named the terms:
+
+    row=False((50,50,5) v (50,50,4) rows=1)
+    stock=False(stock=True slots=None)
+    eligible=False(verdict)
+
+(one representative line of 146; all identical modulo timestamps -
+owner/offer/f_src..f_valid/deadline/budget/balance/currency/epoch/acct/
+char/ints/loaded_int/loaded_w/inv_seq all True; f_price=True(50),
+f_disc=True(50) - this dealer's knife row is 50z/50z, not the golden
+fixture's 73z/61z).
+
+Reading the row term: the received exchange row (50,50,5) agrees with the
+qualification (50,50,4) on price and discount but differs in the THIRD
+field - 5 received vs 4 pinned. Identity is confirmed both sides
+(f_item=True(1201/1201), f_client=True), so this is the row's volatile
+third field carrying the RECEIVED wire value (5) where the qualification
+pins the item-db value (4) - the exact class the price already moved for
+(take the volatile fields from the RECEIVED row, bind only identity from
+the pin). The golden test line passed because its fixture row carried the
+pinned value on both sides (`row=True((73,61,4) v (73,61,4))`) - the live
+dealer's row is where they diverge. SECOND gate behind it: the stock arm
+reads `stock=False(stock=True slots=None)` - stock itself is True but the
+slots term is None on this offer and the predicate vetoes; None must be
+treated as unknown-not-zero (decode it or pass it), or the row fix alone
+still leaves the mint starved.
+
+DB ground truth (pre vs post, same baseline file): zeny_wing UNCHANGED
+(exp 28/27, zeny 150, no 1201 in inventory) - no buy. Zero zeny moves
+anywhere (no sells). Kill exp moved slightly: NyxSong +2 base, RinceNyan
++4/+2 (2 Porings), xXLunasongXx +2/+4, YuffieFy81 +2/+1; PipinWalker and
+PoringMuffin14 patrolled prontera with zero exp. zeny_wing never re-armed
+after the TTL (one at-bat per window again): parked at the dealer cell
+(172,129), 79 decides, no further TalkToNpc.
+
+NEXT SLICE: (1) the row match takes the received row's volatile fields
+(price/discount/third-field) as the comparison source - identity stays
+pinned; RED test: a received row whose third field differs from the pin
+while identity matches must pass `_facts_match`. (2) the stock arm treats
+slots=None as unknown (pass) or decodes it from the received frame; RED
+test: stock=True with slots=None must not veto. Then the next leg closes
+the economy or names the next term in one grep.
