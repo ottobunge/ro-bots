@@ -7,14 +7,16 @@ No retries, refunds, invented ACKs or hidden-world readers.
 
 import logging
 from dataclasses import dataclass, replace
+from typing import NamedTuple
 
 from robots.adapters.native_capacity import finite_capacity_time
 from robots.adapters.native_shop import PurchaseEntry, decode_purchase_result, encode_purchase
 from robots.domain.actions import NpcShopPurchase
-from robots.domain.capacity import ReceivedCapacity
+from robots.domain.capacity import ReceivedCapacity, ReceivedCapacityValue
 from robots.domain.shop import (
     QualifiedShopItem,
     ReceivedShopOffer,
+    ReceivedShopRow,
     ReceivedZeny,
     ShopPurchaseProgress,
 )
@@ -27,6 +29,19 @@ logger = logging.getLogger(__name__)
 # The login-stamped wallet facts' freshness window (the 0xB0 24/25 pair and
 # the SP_ZENY receipt share it); the capacity gate names it in its refusal tap.
 _FRESH_WINDOW = 5.0
+
+
+class _Term(NamedTuple):
+    """One gate predicate: its label, its verdict and the compared values."""
+
+    label: str
+    passed: bool
+    values: str
+
+
+def _render_terms(terms: tuple[_Term, ...]) -> str:
+    """Join term verdicts into the one-line `label=verdict(values)` shape."""
+    return " ".join(f"{term.label}={term.passed}({term.values})" for term in terms)
 
 
 def _integer(value: object, low: int = 1, high: int = 0x7FFFFFFF) -> bool:
@@ -50,103 +65,268 @@ class PurchaseAdmission:
     now: float
 
 
-def _facts_match(facts: QualifiedShopItem, context: PurchaseAdmission) -> bool:
+# Once-per-bound-offer memo for the freshness refusal tap: the same
+# login-stamped refusal reads identically on every ~2s decide tick (144
+# identical lines in leg 57), so one line per distinct offer identity (the
+# owner's account/character plus the exchange epoch/npc/map/opening and the
+# C6 receipt sequence) is enough. Offer receipts arrive rarely; the set stays
+# a handful of small tuples for a process lifetime.
+_FRESHNESS_TAPPED: set[tuple[object, ...]] = set()
+
+
+def _offer_identity(context: PurchaseAdmission) -> tuple[object, ...]:
     offer = context.offer
-    return all(
-        (
-            type(facts.source_id) is str and 0 < len(facts.source_id) <= 128,
-            _integer(facts.account_id) and facts.account_id == context.account_id,
-            _integer(facts.character_id) and facts.character_id == context.character_id,
-            _integer(facts.epoch) and facts.epoch == offer.epoch,
-            _integer(facts.npc_id) and facts.npc_id == offer.npc_id,
-            type(facts.map_name) is str and facts.map_name == offer.map_name,
-            _integer(facts.actual_item_id) and facts.actual_item_id == 1201,
-            _integer(facts.client_item_id) and facts.client_item_id == 1201,
-            facts.ordinary_shop is True,
-            facts.nonstackable is True,
-            _integer(facts.stable_price),
-            _integer(facts.stable_discount_price),
-            finite_capacity_time(facts.valid_until) and context.now < facts.valid_until,
-        )
+    return (
+        context.account_id,
+        context.character_id,
+        offer.epoch,
+        offer.npc_id,
+        offer.map_name,
+        offer.opened_sequence,
+        offer.receipt_sequence,
     )
+
+
+def _tap_capacity_freshness(
+    context: PurchaseAdmission, weight: ReceivedCapacityValue, maximum: ReceivedCapacityValue
+) -> None:
+    identity = _offer_identity(context)
+    if identity in _FRESHNESS_TAPPED:
+        return
+    _FRESHNESS_TAPPED.add(identity)
+    # Tap-before-fix doctrine: name the raw login-stamp refusal with the
+    # observed ages, whether or not the bound-offer hold below keeps the
+    # mint alive. Fails open, bounded, never behavior.
+    logger.warning(
+        "shop-debug: capacity freshness gate refused the login-stamped pair"
+        " (weight_age=%.1fs max_age=%.1fs window=%.1fs) held_by_bound_offer=%s",
+        context.now - weight.observed_at,
+        context.now - maximum.observed_at,
+        _FRESH_WINDOW,
+        context.offer is not None,
+    )
+
+
+def _facts_terms(facts: QualifiedShopItem, context: PurchaseAdmission) -> tuple[_Term, ...]:
+    offer = context.offer
+    return (
+        _Term(
+            "f_src",
+            type(facts.source_id) is str and 0 < len(facts.source_id) <= 128,
+            facts.source_id[:24],
+        ),
+        _Term(
+            "f_acct",
+            _integer(facts.account_id) and facts.account_id == context.account_id,
+            f"{facts.account_id}/{context.account_id}",
+        ),
+        _Term(
+            "f_char",
+            _integer(facts.character_id) and facts.character_id == context.character_id,
+            f"{facts.character_id}/{context.character_id}",
+        ),
+        _Term(
+            "f_epoch",
+            _integer(facts.epoch) and facts.epoch == offer.epoch,
+            f"{facts.epoch}/{offer.epoch}",
+        ),
+        _Term(
+            "f_npc",
+            _integer(facts.npc_id) and facts.npc_id == offer.npc_id,
+            f"{facts.npc_id}/{offer.npc_id}",
+        ),
+        _Term(
+            "f_map",
+            type(facts.map_name) is str and facts.map_name == offer.map_name,
+            f"{facts.map_name}/{offer.map_name}",
+        ),
+        _Term(
+            "f_item",
+            _integer(facts.actual_item_id) and facts.actual_item_id == 1201,
+            f"{facts.actual_item_id}/1201",
+        ),
+        _Term(
+            "f_client",
+            _integer(facts.client_item_id) and facts.client_item_id == 1201,
+            f"{facts.client_item_id}/1201",
+        ),
+        _Term("f_ordinary", facts.ordinary_shop is True, f"{facts.ordinary_shop}"),
+        _Term("f_nonstack", facts.nonstackable is True, f"{facts.nonstackable}"),
+        _Term("f_price", _integer(facts.stable_price), f"{facts.stable_price}"),
+        _Term("f_disc", _integer(facts.stable_discount_price), f"{facts.stable_discount_price}"),
+        _Term(
+            "f_valid",
+            finite_capacity_time(facts.valid_until) and context.now < facts.valid_until,
+            f"until={facts.valid_until} now={context.now}",
+        ),
+    )
+
+
+def _facts_match(facts: QualifiedShopItem, context: PurchaseAdmission) -> bool:
+    return all(term.passed for term in _facts_terms(facts, context))
 
 
 def _fresh(at: float, now: float) -> bool:
     return finite_capacity_time(at) and 0 <= now - at < _FRESH_WINDOW
 
 
-def _resources_fit(context: PurchaseAdmission, facts: QualifiedShopItem, budget: int) -> bool:
-    currency, capacity = context.currency, context.capacity
-    if currency is None or capacity is None:
-        return False
-    return all(
-        (
+def _resources_terms(
+    currency: ReceivedZeny, context: PurchaseAdmission, facts: QualifiedShopItem, budget: int
+) -> tuple[_Term, ...]:
+    offer = context.offer
+    return (
+        _Term(
+            "budget",
             _integer(budget) and facts.stable_discount_price <= budget,
+            f"budget={budget} price={facts.stable_discount_price}",
+        ),
+        _Term(
+            "balance",
             _integer(currency.balance, 0) and currency.balance >= facts.stable_discount_price,
-            currency.epoch == context.offer.epoch and _fresh(currency.observed_at, context.now),
-            _capacity_fits(capacity, context, facts),
-        )
+            f"balance={currency.balance} price={facts.stable_discount_price}",
+        ),
+        _Term(
+            "currency",
+            currency.epoch == offer.epoch and _fresh(currency.observed_at, context.now),
+            f"epoch {currency.epoch}/{offer.epoch} age={context.now - currency.observed_at:.1f}s",
+        ),
     )
+
+
+def _capacity_terms(
+    capacity: ReceivedCapacity,
+    context: PurchaseAdmission,
+    facts: QualifiedShopItem,
+    weight: ReceivedCapacityValue,
+    maximum: ReceivedCapacityValue,
+) -> tuple[_Term, ...]:
+    fresh = _fresh(weight.observed_at, context.now) and _fresh(maximum.observed_at, context.now)
+    return (
+        _Term(
+            "epoch",
+            capacity.epoch == context.offer.epoch,
+            f"{capacity.epoch}/{context.offer.epoch}",
+        ),
+        _Term(
+            "acct",
+            capacity.account_id == context.account_id,
+            f"{capacity.account_id}/{context.account_id}",
+        ),
+        _Term(
+            "char",
+            capacity.character_id == context.character_id,
+            f"{capacity.character_id}/{context.character_id}",
+        ),
+        _Term(
+            "cap_held",
+            fresh or context.offer is not None,
+            f"w_age={context.now - weight.observed_at:.1f}s"
+            f" max_age={context.now - maximum.observed_at:.1f}s window={_FRESH_WINDOW}s",
+        ),
+        _Term(
+            "ints",
+            _integer(weight.value, 0) and _integer(maximum.value, 0),
+            f"weight={weight.value} max={maximum.value}",
+        ),
+        _Term("loaded_int", _integer(facts.loaded_weight, 0), f"loaded={facts.loaded_weight}"),
+        _Term(
+            "loaded_w",
+            type(facts.loaded_weight) is int
+            and weight.value + facts.loaded_weight <= maximum.value,
+            f"{weight.value}+{facts.loaded_weight}<={maximum.value}",
+        ),
+        _Term(
+            "inv_seq",
+            capacity.inventory_changed_sequence is None
+            or weight.receipt_sequence >= capacity.inventory_changed_sequence,
+            f"receipt={weight.receipt_sequence} changed={capacity.inventory_changed_sequence}",
+        ),
+    )
+
+
+def _capacity_checked(
+    capacity: ReceivedCapacity, context: PurchaseAdmission, facts: QualifiedShopItem
+) -> tuple[_Term, ...]:
+    if capacity.weight is None or capacity.max_weight is None:
+        return (
+            _Term(
+                "capacity",
+                False,
+                f"weight={capacity.weight is not None} max={capacity.max_weight is not None}",
+            ),
+        )
+    weight, maximum = capacity.weight, capacity.max_weight
+    fresh = _fresh(weight.observed_at, context.now) and _fresh(maximum.observed_at, context.now)
+    if not fresh:
+        _tap_capacity_freshness(context, weight, maximum)
+    return _capacity_terms(capacity, context, facts, weight, maximum)
 
 
 def _capacity_fits(
     capacity: ReceivedCapacity, context: PurchaseAdmission, facts: QualifiedShopItem
 ) -> bool:
-    if capacity.weight is None or capacity.max_weight is None:
-        return False
-    weight, maximum = capacity.weight, capacity.max_weight
-    fresh = _fresh(weight.observed_at, context.now) and _fresh(maximum.observed_at, context.now)
-    if not fresh:
-        # Tap-before-fix doctrine: name the raw login-stamp refusal with the
-        # observed ages, whether or not the bound-offer hold below keeps the
-        # mint alive. Fails open, bounded, never behavior.
-        logger.warning(
-            "shop-debug: capacity freshness gate refused the login-stamped pair"
-            " (weight_age=%.1fs max_age=%.1fs window=%.1fs) held_by_bound_offer=%s",
-            context.now - weight.observed_at,
-            context.now - maximum.observed_at,
-            _FRESH_WINDOW,
-            context.offer is not None,
+    return all(term.passed for term in _capacity_checked(capacity, context, facts))
+
+
+def _resources_checked(
+    context: PurchaseAdmission, facts: QualifiedShopItem, budget: int
+) -> tuple[_Term, ...]:
+    currency, capacity = context.currency, context.capacity
+    if currency is None or capacity is None:
+        return (
+            _Term(
+                "resources",
+                False,
+                f"currency={currency is not None} capacity={capacity is not None}",
+            ),
         )
-    # A BOUND offer is RECEIVED DATA (the e2e-49 law): a live server-side
-    # exchange whose C6 row re-proves the item's identity. The 0xB0 24/25 pair
-    # is login-truth delivered ONCE (the wire delivers SP_WEIGHT on changes
-    # only, pc.cpp:5810/5844), so its login arrival stamp reads stale by the
-    # decide-paced mint while the server-side weight cannot have moved without
-    # a wire update arriving. While the CONTEXT carries the bound offer the
-    # pair stays valid for the offer's own bounded lifetime; real weight
-    # movers still gate through inventory_changed_sequence below, and the
-    # honest stale path (no bound offer -> no admission) keeps the window.
+    return (
+        *_resources_terms(currency, context, facts, budget),
+        *_capacity_checked(capacity, context, facts),
+    )
+
+
+def _resources_fit(context: PurchaseAdmission, facts: QualifiedShopItem, budget: int) -> bool:
+    return all(term.passed for term in _resources_checked(context, facts, budget))
+
+
+def _stock_rows_integer(stock: Stock) -> bool:
     return all(
-        (
-            capacity.epoch == context.offer.epoch,
-            capacity.account_id == context.account_id
-            and capacity.character_id == context.character_id,
-            fresh or context.offer is not None,
-            _integer(weight.value, 0) and _integer(maximum.value, 0),
-            _integer(facts.loaded_weight, 0),
-            type(facts.loaded_weight) is int
-            and weight.value + facts.loaded_weight <= maximum.value,
-            capacity.inventory_changed_sequence is None
-            or weight.receipt_sequence >= capacity.inventory_changed_sequence,
-        )
+        _integer(index, 2, 101) and _integer(item) and _integer(count)
+        for index, item, count in stock
+    )
+
+
+def _stock_knife_unique(stock: Stock) -> bool:
+    return all(item != 1201 or count == 1 for _, item, count in stock)
+
+
+def _stock_checked(context: PurchaseAdmission) -> tuple[_Term, ...]:
+    stock, slots = context.stock, context.slots
+    if stock is None or not _integer(slots, 1, 100):
+        return (_Term("stock", False, f"stock={stock is not None} slots={slots}"),)
+    return (
+        _Term(
+            "slots_free",
+            type(slots) is int and len(stock) < slots,
+            f"{len(stock)}/{slots}",
+        ),
+        _Term("rows_int", _stock_rows_integer(stock), f"{len(stock)} rows"),
+        _Term(
+            "no_knife_dup",
+            _stock_knife_unique(stock),
+            f"knife rows={sum(1 for _, item, _ in stock if item == 1201)}",
+        ),
     )
 
 
 def _stock_fits(context: PurchaseAdmission) -> bool:
-    stock, slots = context.stock, context.slots
-    if stock is None or not _integer(slots, 1, 100):
-        return False
-    return all(
-        (
-            type(slots) is int and len(stock) < slots,
-            all(
-                _integer(index, 2, 101) and _integer(item) and _integer(count)
-                for index, item, count in stock
-            ),
-            all(item != 1201 or count == 1 for _, item, count in stock),
-        )
-    )
+    return all(term.passed for term in _stock_checked(context))
+
+
+def _row_values(rows: tuple[ReceivedShopRow, ...], facts: QualifiedShopItem) -> str:
+    received = f"({rows[0].price},{rows[0].discount_price},{rows[0].item_type})" if rows else "none"
+    return f"{received} v ({facts.stable_price},{facts.stable_discount_price},4) rows={len(rows)}"
 
 
 class NativePurchase:
@@ -184,27 +364,68 @@ class NativePurchase:
         self._owner, self._offer = context.owner, context.offer
         return True
 
-    def _eligible(self, context: PurchaseAdmission | None, budget: int) -> bool:
+    def _verdict(self, context: PurchaseAdmission | None, budget: int) -> tuple[_Term, ...]:
+        """Every consumption-seam predicate as a named term, in gate order.
+
+        The `all(...)` over the returned terms is exactly the gate's historic
+        conjunction: each term is the identical expression the gates used, the
+        nested _resources_fit/_capacity_fits sets are flattened (a flattened
+        conjunction equals the nested one) and every element of the tuple is
+        evaluated regardless of the verdict, so the freshness tap still fires.
+        """
         facts = self._facts
         if facts is None or context is None:
-            return False
+            return (
+                _Term(
+                    "verdict",
+                    False,
+                    f"facts={facts is not None} context={context is not None}",
+                ),
+            )
         rows = tuple(row for row in context.offer.rows if row.item_id == 1201)
-        return all(
-            (
+        terms = (
+            _Term(
+                "owner",
                 _same_owner(self._owner, context.owner),
+                f"len {len(self._owner)}/{len(context.owner)}",
+            ),
+            _Term(
+                "offer",
                 self._offer is context.offer,
-                _facts_match(facts, context),
+                f"receipt={context.offer.receipt_sequence}",
+            ),
+            *_facts_terms(facts, context),
+            _Term(
+                "deadline",
                 finite_capacity_time(context.now) and context.now < context.offer.deadline,
+                f"now={context.now} deadline={context.offer.deadline}",
+            ),
+            _Term(
+                "row",
                 len(rows) == 1
                 and (rows[0].price, rows[0].discount_price, rows[0].item_type)
                 == (facts.stable_price, facts.stable_discount_price, 4),
-                _resources_fit(context, facts, budget),
-                _stock_fits(context),
-            )
+                _row_values(rows, facts),
+            ),
+            *_resources_checked(context, facts, budget),
+            *_stock_checked(context),
         )
+        return (*terms, _Term("eligible", all(term.passed for term in terms), "verdict"))
+
+    def _eligible(self, context: PurchaseAdmission | None, budget: int) -> bool:
+        return all(term.passed for term in self._verdict(context, budget))
 
     def mint(self, context: PurchaseAdmission | None, maximum_zeny: int) -> NpcShopPurchase | None:
-        if self._consumed or not self._eligible(context, maximum_zeny) or context is None:
+        if self._consumed or context is None:
+            return None
+        terms = self._verdict(context, maximum_zeny)
+        if context.offer is not None:
+            # Term-level verdict tap (tap-before-fix doctrine): one bounded
+            # line per consumed mint attempt while the shop CONTEXT carries a
+            # bound offer, naming EVERY seam predicate's verdict with both
+            # values, so one grep names the starving term. Never behavior.
+            logger.warning("shop-debug: mint verdict %s", _render_terms(terms))
+        if not all(term.passed for term in terms):
             return None
         if self._minted is not None:
             return self._minted
@@ -369,7 +590,10 @@ class NativePurchase:
         result = decode_purchase_result(raw).result
         if result in (1, 2, 3):
             self.progress = replace(
-                progress, status="rejected", reason="server rejection", ca_result=result
+                progress,
+                status="rejected",
+                reason="server rejection",
+                ca_result=result,
             )
             return
         if result == 0 and self._index is not None:

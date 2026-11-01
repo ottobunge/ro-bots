@@ -29,11 +29,20 @@ from typing import Any
 
 import pytest
 
+from robots.adapters import native_purchase
 from robots.app.playing_runtime import PlayingClient
 from robots.domain.actions import NpcShopPurchase
 from robots.domain.model import Goal
 from tests.test_native_self_metadata_context import bind, proof_for
 from tests.test_native_shop_selection import ready_shop
+
+
+@pytest.fixture(autouse=True)
+def _fresh_tap_memo() -> Any:
+    """The freshness tap memo is module state; isolate it per test."""
+    native_purchase._FRESHNESS_TAPPED.clear()
+    yield
+    native_purchase._FRESHNESS_TAPPED.clear()
 
 
 def _aged_login_pair_flow(monkeypatch: pytest.MonkeyPatch) -> tuple[Any, PlayingClient]:
