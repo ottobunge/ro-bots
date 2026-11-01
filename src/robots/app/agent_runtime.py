@@ -1304,17 +1304,27 @@ class ScheduledAgent:
         trace = self._trace
         if trace is None:
             return
-        context = {"map": state.map_name, "x": state.x, "y": state.y}
-        trace.log(
-            "world_event",
-            **context,
-            adjacent_monsters=len(state.nearby_monsters),
-            **event_payload(event),
-        )
+        # The agent context (map/x/y) and the event's own payload may both
+        # name position keys (ItemDrop/ItemSeen/Arrived carry x/y). A raw
+        # kwarg splat collides (leg 62 live: the TypeError killed the tick
+        # BEFORE brain.handle_event, so every ItemDrop delivery was lost);
+        # merge instead - a colliding payload key is suffixed _event so the
+        # row keeps BOTH the agent's position and the event's own facts.
+        merged: dict[str, Any] = {
+            "map": state.map_name,
+            "x": state.x,
+            "y": state.y,
+            "adjacent_monsters": len(state.nearby_monsters),
+        }
+        for key, value in event_payload(event).items():
+            merged[f"{key}_event" if key in merged else key] = value
+        trace.log("world_event", **merged)
         if isinstance(event, ChatHeard):
             trace.log(
                 "chat_heard",
-                **context,
+                map=state.map_name,
+                x=state.x,
+                y=state.y,
                 speaker=event.line.sender,
                 message=event.line.text,
                 channel=event.line.channel,

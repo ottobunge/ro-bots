@@ -32,8 +32,11 @@ from robots.app.trace_log import (
 )
 from robots.domain.actions import MoveTo, PartyChat, Say, WhisperTo
 from robots.domain.events import (
+    Arrived,
     DamageTaken,
     Heartbeat,
+    ItemDrop,
+    ItemSeen,
     MonsterSpotted,
 )
 from robots.domain.farm import MobInfo
@@ -605,3 +608,43 @@ def test_runners_expose_trace_dir_flag(runner: str) -> None:
     )
     assert proc.returncode == 0, proc.stderr
     assert "--trace-dir" in proc.stdout
+
+
+def test_positioned_events_trace_without_kwarg_collision(tmp_path: Path) -> None:
+    """Events carrying their own x/y (ItemDrop, ItemSeen, Arrived) must not
+    collide with _trace_event's agent-context x/y kwargs.
+
+    Leg 62 live signature (and leg 61's 22 identical failures): the
+    TypeError killed the tick BEFORE brain.handle_event, so every ItemDrop
+    delivery was lost - the decider's loot-choice trigger never saw one.
+    The row must carry BOTH the agent's position (x/y, the standing
+    world_event context) AND the event's own cell (suffixed _event)."""
+    trace = TraceLog(tmp_path / "traces", "Doramir-01")
+    agent, _client, _clock = make_agent(trace, tmp_path)
+    agent.brain = None  # the seam under test is _trace_event, ahead of the brain
+    state = agent.build_state()
+    agent.deliver_event(
+        state,
+        ItemDrop(
+            nameid=909,
+            x=state.x + 3,
+            y=state.y + 1,
+            amount=1,
+            map_name=state.map_name,
+            floor_item_id=313,
+        ),
+    )
+    agent.deliver_event(state, Arrived(x=state.x, y=state.y + 2))
+    agent.deliver_event(state, ItemSeen(item="jellopy", x=state.x + 1, y=state.y))
+    trace.close()
+    lines = read_lines(tmp_path / "traces", "Doramir-01")
+    rows = {row["event"]: row for row in lines if row.get("kind") == "world_event"}
+    assert set(rows) == {"ItemDrop", "Arrived", "ItemSeen"}
+    drop = rows["ItemDrop"]
+    assert drop["x"] == state.x
+    assert drop["y"] == state.y
+    assert drop["x_event"] == state.x + 3
+    assert drop["y_event"] == state.y + 1
+    assert rows["Arrived"]["x_event"] == state.x
+    assert rows["Arrived"]["y_event"] == state.y + 2
+    assert rows["ItemSeen"]["x_event"] == state.x + 1
