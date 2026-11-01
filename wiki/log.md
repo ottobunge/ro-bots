@@ -9106,3 +9106,46 @@ one-shot memo (a pre-empted walk currently burns the drop), and the immediate di
 killer stands adjacent at death time (drops land ON the kill cell). Then the sell arm re-tests on
 real stock (derived sellables -> merchant trip -> C7 -> zeny). Also verify leg 63's traces now carry
 ItemDrop world_event rows (the repaired delivery) — a zero there means the fix did not participate.
+
+## Leg 63 slice (pre-window, branch `feat/loot-pace-safety`) — the loot pace + the safety gate (Otto's directive)
+
+Two fixes to the mechanical loot path, both named by leg 62's receipt:
+
+THE LOOT PACE — a floor-item MoveTo now re-authors ONCE per item on a bounded
+faster clock (`LOOT_WALK_REAUTH_S = 1.0` in playing_runtime, inside the
+pending-walk lifecycle's own 1s no-progress release, never spam): leg 62's
+one-shot move memo gave each drop exactly ONE walk attempt and a pre-empting
+script MoveTo or an `await_pending` gate (9207 in the receipt) burned it
+before any cell was sent. The re-auth clock anchors at the FIRST mint
+(`_loot_walk_reauth_due` / `_loot_walk_mark_mint`, presence-keyed memos in
+`_refresh_loot_memo`); the re-authored mint carries `reauth=1` in the
+`loot-debug: move toward floor item` tap so the window log proves the pace
+live. The per-item pickup memo (4bbb108a) still governs the pickup attempt —
+one CZ_ITEM_PICKUP per item, unchanged.
+
+THE THREAT GATE (Otto: LOOT ONLY WHEN SAFE) — `ACTIVE_THREAT_RANGE =
+MELEE_RANGE + 2` (Chebyshev, the brain's `_attackable_in_melee_range`
+precedent): `_nearest_active_threat` reads the state's nearby attackables and
+when one stands within range the WHOLE loot path defers — no walk mint, no
+Loot authored, and the send seam (`_loot`) refuses the decider's authored
+Loot too, WITHOUT consuming the pickup memo (the item stays lootable once
+the threat leaves). The in-flight-Attack guard (43b5cc2e) carries untouched.
+Tap: `loot-debug: pickup deferred (threat) (fid=... nearest=...)`, once per
+item while the threat stands (`_loot_defer_tapped`, presence-keyed — no
+per-tick spam). When threatened the item may despawn: safety over loot.
+
+Tests: tests/test_loot_priority.py grows 7 (RED first): the re-author
+clock (paced on the client's injected monotonic — the constant asserted,
+never sleeps), the safe-pickup control, the threat defer + tap + bounded
+re-tap, the boundary (Chebyshev 3 defers, 4 fires), the in-flight-Attack
+carry, and the threat-walks-away recovery (a 0x09FD move entry moves the
+mob's tracked destination out of range; the pickup then fires). Scoped:
+loot_priority+loot_seam+playing_runtime+shop_sell_loop 152 passed; full
+gate `nix develop -c task --dir . check` green before commit.
+
+NEXT (leg 63 window): the receipt should show, per surfaced drop, either the
+direct `mechanical pickup dispatched` (killer adjacent at death time), or the
+move tap then the dispatch, with `reauth=1` naming any second mint; the
+`pickup deferred (threat)` lines should pair with the grind's combat windows
+and vanish when the mob leaves. Zero `deferred (threat)` lines in a leg with
+real mob contact means the gate did not participate.
