@@ -27,6 +27,7 @@ from robots.app.scripts import (
     NpcGuidanceScript,
     ScriptOutcome,
     ScriptStatus,
+    _merchant_step,
     needs_npc_preparation,
     script_for,
 )
@@ -750,27 +751,71 @@ class EventDrivenBrain:
             # An authored farm plan is the planner's standing instruction
             # (ADR-021): execute it instead of re-entering novice guidance.
             return NpcGuidanceScript().step(state)
+        rearm = self._sell_drive_rearm(state)
+        if rearm is not None:
+            # Leg 70: the armed trip outranks the goal script under ANY goal.
+            return rearm
         if self._script is None:
             self._script = self._goal_script(state.goal, state)
         outcome: ScriptOutcome = self._script.step(state)
         self._trace_script_step(state, outcome)
-        # the widen streak sync: the streak survives the plan re-authoring
-        if isinstance(self._script, FarmScript) and self._plan is not None:
-            key = (frozenset(self._plan.target_mobs), self._plan.map_name)
-            streaks = getattr(self, "_widen_streaks", {})
-            self._widen_streaks = {**streaks, key: self._script._starved}
+        self._sync_widen_streak()
         if any(isinstance(action, Rest) for action in outcome.actions):
             self._recovering = True
         if outcome.status in (ScriptStatus.DONE, ScriptStatus.FAILED):
             self._script = None
         return outcome
 
-    def _trace_script_step(self, state: BotState, outcome: ScriptOutcome) -> None:
+    def _sync_widen_streak(self) -> None:
+        """The widen streak sync (leg 34): the streak survives the plan
+        re-authoring, keyed by (target set, map)."""
+        if isinstance(self._script, FarmScript) and self._plan is not None:
+            key = (frozenset(self._plan.target_mobs), self._plan.map_name)
+            streaks = getattr(self, "_widen_streaks", {})
+            self._widen_streaks = {**streaks, key: self._script._starved}
+
+    def _sell_drive_rearm(self, state: BotState) -> ScriptOutcome | None:
+        """The sell-drive re-arm (leg 70): the want-driven dealer trip is
+        evaluated EVERY tick, ahead of whichever goal script is active.
+
+        The drive lives inside ``FarmScript``/``GrindScript.step`` only, so
+        leg 70's goal flip (grind->social replaced the drive-bearing script
+        with IdleTownScript) orphaned s00's ADMITTED trip mid-route: the
+        walk advanced 213,325->188,315 on accepted sends and then the far
+        authoring stopped forever -- no TalkToNpc, no sell, zeny 0. The
+        re-arm has NO state of its own: an admitted, INCOMPLETE trip (the
+        sellable stock is still held) keeps authoring its route walk under
+        any goal script until the trip COMPLETES (the stock sells, the
+        admission turns off) or the admission names a refusal (terminal for
+        the trip: ``not_novice`` / ``map_not_on_merchant_route``; the
+        transient terms re-arm as soon as the fact clears), at which point
+        None hands the tick back to the goal script -- farming interleaves
+        unchanged and is never starved by a sold-out drive. The same
+        resolver/reachable wiring the farm scripts receive drives the walk
+        (``_merchant_step`` owns the engage, the talk latch and the return
+        leg exactly as inside the scripts). getattr defaults: a brain built
+        without the ctor (the trace-telemetry twin) simply has no wiring."""
+        rearm = _merchant_step(
+            state,
+            getattr(self, "_travel_resolver", None),
+            getattr(self, "_merchant_reachable", None),
+        )
+        if rearm is not None:
+            # The trip walk must never read as the idle script's jitter in
+            # the sampled telemetry (leg 70's readout used exactly that row).
+            self._trace_script_step(state, rearm, script_name="MerchantDrive")
+        return rearm
+
+    def _trace_script_step(
+        self, state: BotState, outcome: ScriptOutcome, *, script_name: str | None = None
+    ) -> None:
         """Sampled script_step telemetry: the decision context per step.
 
         Leg 17 recorded 5,209 moves and 7 attacks with no way to tell WHY the
         approaches never converged; the sampled line carries the script, the
-        status, the emitted action kinds and the nearest-monster distance."""
+        status, the emitted action kinds and the nearest-monster distance.
+        ``script_name`` names a non-script author (the sell-drive re-arm)
+        so the readout never misattributes a trip walk to the idle script."""
         trace = self._trace
         if trace is None:
             return
@@ -783,7 +828,7 @@ class EventDrivenBrain:
         nearest = min(distances) if distances else None
         trace.log(
             "script_step",
-            script=type(self._script).__name__,
+            script=script_name or type(self._script).__name__,
             status=outcome.status.name,
             actions=[type(action).__name__ for action in outcome.actions[:4]],
             nearest_monster_d=round(nearest, 1) if nearest is not None else None,
