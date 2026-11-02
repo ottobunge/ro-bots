@@ -851,6 +851,31 @@ PACKET_DB.update({0x07E4: -1})
 # served binary obeys the -1 row - the same separate-authorities shadow as
 # 0x2C4/0x0168, recorded so self_test stays true.
 _NATIVE_REGISTRATION_SHADOWS.update({0x07E4: (6, -1)})
+_NATIVE_REGISTRATION_SHADOWS.update({0x07E4: (6, -1)})
+
+
+# Leg 65 (2026-11-02): the REAL CZ_ITEM_PICKUP id on the pinned image is
+# 0x0362, fixed 6. packetdb_readdb (clif.cpp:25845-25847) memsets the table
+# then includes clif_packetdb.hpp and clif_shuffle.hpp IN ORDER, and
+# packetdb_addpacket (clif.cpp:25808-25834) is a plain last-write-wins
+# assignment, so the compiled 20180704-PRERE profile (rathena/config.log:749
+# -DPACKETVER=20180704 -DPRERE) ends at the shuffle's "#elif
+# PACKETVER > 20180307" final rows, verbatim:
+#   parseable_packet(0x0362,6,clif_parse_TakeItem,2);
+#   parseable_packet(0x07E4,-1,clif_parse_ItemListWindowSelected,2,4,8,12);
+# (confirmed by preprocessing both headers with the exact compiled flags:
+# the last active rows are packetdb_addpacket(0x0362,6,clif_parse_TakeItem,
+# 2,0) and packetdb_addpacket(0x07E4,-1,clif_parse_ItemListWindowSelected,
+# 2,4,8,12,0)). The leg-61 plain-table reading ("0x0362 = DropItem, 20120418
+# block") and the leg-64 var-len 0x07E4 send (parsed as a harmless window
+# selection, zero inventory) are both overridden by the shuffle's final
+# block. The production builder (src/robots/adapters/native_gameplay.py
+# pickup()) now emits the FIXED type.W + AID.L shape - fixed-size C->S rows
+# carry no len.W. 0x07E4 stays registered -1 above: the window-selection
+# row leg 64 proved parses safely. The numeric section already carried
+# 0x0362: 6; this explicit update names the audited registration the sends
+# depend on.
+PACKET_DB.update({0x0362: 6})
 
 
 def parse_stream(buf: bytes) -> tuple[list[tuple[int, bytes]], bytes]:

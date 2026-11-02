@@ -112,13 +112,16 @@ def test_floor_pickup_vertical():
     tracker = gameplay.NativeGameplayTracker(999)
     tracker.ingest(1, 1.0, 0x0ADD, floor())
     assert tracker.view.floor_items[0].floor_item_id == 321
-    # CZ_ITEM_PICKUP is 0x07E4 and the SERVED packetdb declares it var-len
-    # (clif_packetdb.hpp:1268 -1 row; the tree's TakeItem,6 row at line 1560
-    # is not what the pinned image obeys - leg 63): type.W + len.W(8) + AID.L.
-    # (The pre-leg-61 0x0362 hex pin asserted a guaranteed-rejected drop
-    # request, not a pickup; the pre-leg-64 e40741010000 pin was the fixed
-    # frame the served var-len parser read as "expected length 321".)
-    assert gameplay.pickup(321) == bytes.fromhex("e407080041010000")
+    # CZ_ITEM_PICKUP is 0x0362 per the COMPILED 20180704 table: packetdb_readdb
+    # (clif.cpp:25845-25847) includes clif_shuffle.hpp after the plain table and
+    # packetdb_addpacket is last-write-wins, so 20180704 ends at the shuffle's
+    # "#elif PACKETVER > 20180307" final rows - 0x0362,6,clif_parse_TakeItem,2
+    # and 0x07E4,-1,ItemListWindowSelected. The frame is the FIXED type.W +
+    # AID.L, no len.W (leg 65; the leg-64 e4070800 var-len pin rode the served
+    # image's window-selection row and moved no inventory; the pre-leg-61
+    # 0x0362 pin was a plain-table reading, and e40741010000 was the fixed
+    # frame the -1 parser read as "expected length 321" - leg 63).
+    assert gameplay.pickup(321) == bytes.fromhex("620341010000")
     tracker.ingest(2, 2.0, 0x0A37, pickup_ack())
     assert tracker.view.acquired_counts == ((501, 3),)
     assert tracker.view.inventory_counts is None

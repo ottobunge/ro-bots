@@ -385,6 +385,11 @@ def validate_exact_addition(table: dict[int, int], raw: bytes) -> None:
         # shadow block appended after the 0x014e block (the leg-63 session
         # killer; the era chain carries prior_911 = prior_910 | {0x07E4: -1})
         "ed25cb8b37516be92c75dfa94c281a7f26662d0c3fb39332510fbcbce6f6ade3",
+        # leg 65: the REAL TakeItem id - the 0x0362:6 explicit registration +
+        # its compiled-table comment appended after the 0x07E4 shadow block
+        # (the shuffle's final rows: 0x0362 TakeItem fixed 6; 0x07E4 stays
+        # the ItemListWindowSelected window selection)
+        "23282dc17842c327b8478aa9338b84ee9448a6678d145e055207b6d03378fbfb",
     )
 
 

@@ -248,9 +248,10 @@ def test_loot_uses_visible_floor_id_without_claiming_inventory():
     wire.add(struct.pack("<HIHHBhhBBh", 0x0ADD, 321, 501, 0, 1, 42, 37, 0, 0, 3) + bytes(3))
     client = runtime.PlayingClient(wire)
     client.perform_native(Loot())
-    # CZ_ITEM_PICKUP is 0x07E4 and the SERVED packetdb declares it var-len
-    # (clif_packetdb.hpp:1268 -1 row; leg 63): type.W + len.W(8) + AID.L.
-    assert wire.sent == [bytes.fromhex("e407080041010000")]
+    # CZ_ITEM_PICKUP is 0x0362 per the COMPILED 20180704 table (the shuffle's
+    # final row 0x0362,6,clif_parse_TakeItem,2 - last-write-wins over the
+    # plain table; leg 65): the FIXED type.W + AID.L, no len.W.
+    assert wire.sent == [bytes.fromhex("620341010000")]
     assert not client.build_native_state(Goal.GRIND).inventory_known
 
 

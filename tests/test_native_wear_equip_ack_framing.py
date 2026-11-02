@@ -108,6 +108,11 @@ def test_packethash_stays_pinned_to_the_equipped_item_block() -> None:
     assert hashlib.sha256(stripped).hexdigest() in (
         "827ccf459694ba6de9243c96b36abafcd0d3ab2777914ad35acebba6b38e5374",
         "23d53c4c22a7e3639e25abf01e4c670e5ae8511cd6cac5c374106cffc8a4b448",
+        # leg 65: the REAL TakeItem id - the 0x0362:6 explicit registration +
+        # its compiled-table comment appended after the 0x07E4 shadow block
+        # (the shuffle's final rows: 0x0362 TakeItem fixed 6; 0x07E4 stays
+        # the ItemListWindowSelected window selection)
+        "656f1bcc348abbeb58babfe7f87c80618d743413e2cb71221fd20e88aa1aaaf8",
     )
 
 
@@ -157,6 +162,11 @@ def test_charstat_block_stays_pinned_to_the_equipped_item_block() -> None:
     assert hashlib.sha256(stripped).hexdigest() in (
         "827ccf459694ba6de9243c96b36abafcd0d3ab2777914ad35acebba6b38e5374",
         "23d53c4c22a7e3639e25abf01e4c670e5ae8511cd6cac5c374106cffc8a4b448",
+        # leg 65: the REAL TakeItem id - the 0x0362:6 explicit registration +
+        # its compiled-table comment appended after the 0x07E4 shadow block
+        # (the shuffle's final rows: 0x0362 TakeItem fixed 6; 0x07E4 stays
+        # the ItemListWindowSelected window selection)
+        "656f1bcc348abbeb58babfe7f87c80618d743413e2cb71221fd20e88aa1aaaf8",
     )
 
 
@@ -261,6 +271,11 @@ def test_the_three_guild_frames_are_all_pinned_together() -> None:
     assert hashlib.sha256(stripped).hexdigest() in (
         "79b338c838b4362b76461e6028f8fae951ae694f815ecebc755469eac14870ea",
         "a312ffb93f4e0379d07e9eb0f8afbc49f807dee78a467b87ccb66fd6480c25d8",
+        # leg 65: the REAL TakeItem id - the 0x0362:6 explicit registration +
+        # its compiled-table comment appended after the 0x07E4 shadow block
+        # (the shuffle's final rows: 0x0362 TakeItem fixed 6; 0x07E4 stays
+        # the ItemListWindowSelected window selection)
+        "910c70e7b94ece71b65aa4f5a219ed32f1093462b5e081c3a58fa0fb1100a401",
     )
 
 

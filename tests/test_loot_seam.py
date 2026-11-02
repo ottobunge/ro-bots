@@ -3,10 +3,14 @@
 Leg 60 starved the sell arm because (a) the world-event producer minted
 nothing off ``tracker.view.floor_items`` (zero ItemDrop-class events) and
 (b) the pickup encode sent ``0x0362``, which the pinned MAIN 20180704
-registers as ``clif_parse_DropItem`` (clif_packetdb.hpp:1561) — the real
-CZ_ITEM_PICKUP is ``0x07E4`` (clif_packetdb.hpp:1560, clif.cpp:12006
-``clif_parse_TakeItem`` reads the floor-item AID at offset 2), so every
-loot choice's send was a silently-rejected drop request. These contracts
+registers as ``clif_parse_DropItem`` (clif_packetdb.hpp:1561) — the leg-61
+rewrite then moved the send to ``0x07E4``, which the served image parses as
+ItemListWindowSelected (leg 63: -1 length-word disconnect; leg 64: harmless
+window selections, zero inventory). Leg 65 read the COMPILED table:
+packetdb_readdb (clif.cpp:25845-25847) includes clif_shuffle.hpp after the
+plain table and packetdb_addpacket is last-write-wins, so 20180704 ends at
+the shuffle's final rows -- ``0x0362,6,clif_parse_TakeItem,2`` and
+``0x07E4,-1,clif_parse_ItemListWindowSelected,2,4,8,12``. These contracts
 pin each hop of the repaired seam offline; no native sessions.
 """
 
@@ -32,18 +36,22 @@ def item_entry(aid: int = 321, nameid: int = 501, at: tuple[int, int] = (44, 40)
     return struct.pack("<HIHBHHHBB", 0x009D, aid, nameid, 1, x, y, 3, 0, 0)
 
 
-def test_pickup_encode_is_takeitem_07e4() -> None:
-    """The pickup send is the pinned-era CZ_ITEM_PICKUP, not a drop request.
+def test_pickup_encode_is_takeitem_0362() -> None:
+    """The pickup send is the pinned-era CZ_ITEM_PICKUP 0x0362, fixed 6.
 
-    The 20120418+ block re-registers 0x0362 as clif_parse_DropItem
-    (clif_packetdb.hpp:1561) and moves TakeItem to 0x07E4 (line 1560) —
-    the later registration wins in the compiled packetdb, so the old
-    0x0362 pin asserted a guaranteed-rejected drop (leg 60: 16 loot
-    choices, zero pickups, zero inventory delta). Leg 64: the SERVED
-    packetdb declares 0x07E4 var-len (clif_packetdb.hpp:1268 -1 row; the
-    leg-63 session killer), so the frame is type.W + len.W(8) + AID.L.
+    The leg-61 "0x0362 is DropItem" reading was a PLAIN-TABLE reading: the
+    clif_packetdb.hpp 20120418 block does re-register 0x0362 as DropItem
+    (line 1561), but packetdb_readdb (clif.cpp:25845-25847) includes
+    clif_shuffle.hpp AFTER the plain table and packetdb_addpacket is
+    last-write-wins, so the compiled 20180704-PRERE table ends at the
+    shuffle's ``#elif PACKETVER > 20180307`` final row:
+    ``parseable_packet(0x0362,6,clif_parse_TakeItem,2)``. The leg-61
+    rewrite to 0x07E4 landed on the served image's ItemListWindowSelected
+    row (leg 63: the -1 length-word disconnect; leg 64: harmless no-op
+    window selections, zero inventory). The REAL frame is type.W + AID.L,
+    6 bytes, no len.W (fixed-size C->S rows carry no length word).
     """
-    assert pickup(321) == bytes.fromhex("e407080041010000")
+    assert pickup(321) == bytes.fromhex("620341010000")
 
 
 def test_item_drop_events_mint_off_received_009d() -> None:
@@ -84,7 +92,7 @@ def test_loot_taps_surface_and_dispatch(caplog: pytest.LogCaptureFixture) -> Non
         assert "nameid=501" in surfaced[0]
         assert "cell=(43,38)" in surfaced[0]
         client.perform_native(Loot())
-    assert wire.sent == [bytes.fromhex("e407080041010000")]
+    assert wire.sent == [bytes.fromhex("620341010000")]  # 0x0362 + AID 321 (fixed 6)
     dispatched = [r.getMessage() for r in caplog.records if "pickup dispatched" in r.getMessage()]
     assert len(dispatched) == 1
     assert "fid=321" in dispatched[0]
