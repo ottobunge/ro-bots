@@ -5,6 +5,7 @@ in charge until the world produces an event (see robots.domain.events) or it
 completes/fails. No decision-model calls happen inside a script.
 """
 
+import logging
 import random
 from collections.abc import Sequence
 from enum import Enum, auto
@@ -16,6 +17,9 @@ from robots.domain.model import ActorRef, Goal
 
 if TYPE_CHECKING:
     from robots.domain.model import BotState
+
+
+logger = logging.getLogger(__name__)
 
 
 class ScriptStatus(Enum):
@@ -424,6 +428,154 @@ npc actor counts as the dealer candidate; farther or position-less npcs are
 never guessed — the step keeps walking instead (fail-closed)."""
 
 
+# Two reasons to walk to the dealer: affordable purchase (zeny >= 50) or
+# sellable stock (start_zeny is 0 in the owned world - the first trip
+# EARNS the zeny by selling; window-28 finding). The stock set is the
+# pinned mob_db drops of the prt_fild08 field species (all non-equipment
+# loot is dealer stock; leg 39: RinceNyan carried 713+1002 and no trip
+# engaged because the set only knew 909/915):
+#   Pupa 1008 -> Chrysalis 915, Sticky_Mucus 938, Iron_Ore 1002
+#   Drops 1113 -> Jellopy 909, Empty_Bottle 713
+#   Lunatic 1063 -> Clover 705, Feather 949
+#   Poring 1009 -> Talon 917;  Fabre 1007 -> Fluff 914
+# (rathena db/pre-re/mob_db.yml + item_db_etc.yml, pinned e985006171d2)
+DRIVE_SELLABLES = {
+    # The SAME ids SELLABLE_ITEM_IDS carries (the leg-46 twin-set law):
+    # the prt_fild08 species (window-28/leg-41) plus the leg-67
+    # pay_fild04 derivation (spawn file payon.txt:63-70 -> served
+    # mob_db.yml Drops -> pre-re item dbs; see SELLABLE_ITEM_IDS).
+    "909",
+    "915",
+    "938",
+    "1002",
+    "713",
+    "705",
+    "949",
+    "917",
+    "914",
+    "509",
+    "510",
+    "511",
+    "512",
+    "514",
+    "529",
+    "531",
+    "603",
+    "604",
+    "610",
+    "619",
+    "620",
+    "694",
+    "695",
+    "700",
+    "714",
+    "720",
+    "722",
+    "910",
+    "912",
+    "983",
+    "1039",
+    "1059",
+    "1207",
+    "1602",
+    "2116",
+    "2254",
+    "2255",
+    "2257",
+    "2274",
+    "2282",
+    "2324",
+    "2336",
+    "4001",
+    "4004",
+    "4033",
+    "4047",
+    "4054",
+    "4174",
+    "4196",
+    "4197",
+    "5035",
+    "7023",
+}
+"""The drive's stock set: the SAME ids SELLABLE_ITEM_IDS carries (the
+leg-46 twin-set law - extend both together); the leg-67 pay_fild04
+derivation rides the SELLABLE_ITEM_IDS docstring. Extracted to module
+level by the leg-68 admission tap so ``merchant_admission_refusal`` reads
+the same set the drive admits on."""
+
+
+_MERCHANT_DRIVE_TAPPED: dict[str, str] = {}
+"""bot -> last tapped admission verdict (change-only cadence). A verdict
+line fires on the FIRST evaluation of a presence and on every term change
+thereafter; steady-state refusals stay silent so a whole window logs
+bounded lines while still proving the drive was reached (the leg-68
+instrument gap: ZERO lines could not tell "evaluated and refused" from
+"never evaluated" - now any evaluation logs at least once)."""
+
+
+def _tap_merchant_drive(bot: str, term: str, detail: str) -> None:
+    """One merchant-drive line per (bot, verdict term) change (leg 68
+    defect 1): the admission's refusals name themselves instead of leaving
+    a zero-line receipt that reads as "never evaluated"."""
+    if _MERCHANT_DRIVE_TAPPED.get(bot) == term:
+        return
+    _MERCHANT_DRIVE_TAPPED[bot] = term
+    logger.warning("merchant-drive: sell arm %s (%s)", term, detail)
+
+
+def merchant_admission_refusal(state: BotState) -> tuple[str, str] | None:
+    """The named-term verdict of the sell-arm admission (leg 68 defect 1).
+
+    ``merchant_drive_cell``'s silent ``return None`` gates, decomposed:
+    ``not_novice`` / ``inventory_unknown`` (the precondition pair),
+    ``no_stock_below_zeny_floor`` (the combined affordable-or-stock gate -
+    the detail names which sub-fact failed), ``weapon_release`` (the leg-40
+    wanted-weapon hold) and ``map_not_on_merchant_route`` (the pinned route
+    lookup). ``(term, detail)`` with the detail carrying the full guard
+    state; None when the drive admits. Verdicts only - the behavior
+    authority stays in ``merchant_drive_cell``.
+    """
+    refusal = _precondition_refusal(state)
+    affordable = type(state.zeny) is int and state.zeny >= MERCHANT_ZENY_MIN
+    has_stock = any(str(item) in DRIVE_SELLABLES for item in state.inventory)
+    if refusal is None:
+        refusal = _want_refusal(state, affordable, has_stock)
+    if refusal is not None:
+        return refusal, _admission_detail(state, affordable, has_stock)
+    return None
+
+
+def _admission_detail(state: BotState, affordable: bool, has_stock: bool) -> str:
+    """The full guard state one admission tap line carries."""
+    stock = sum(count for item, count in state.inventory.items() if item in DRIVE_SELLABLES)
+    return (
+        f"map={state.map_name} zeny={state.zeny} floor={MERCHANT_ZENY_MIN} "
+        f"job={state.job} inv_known={state.inventory_known} "
+        f"stock={stock} has_stock={has_stock} affordable={affordable}"
+    )
+
+
+def _precondition_refusal(state: BotState) -> str | None:
+    """The sell-arm admission's precondition pair, named."""
+    if state.job != "Novice":
+        return "not_novice"
+    if not state.inventory_known:
+        return "inventory_unknown"
+    return None
+
+
+def _want_refusal(state: BotState, affordable: bool, has_stock: bool) -> str | None:
+    """The want terms, named: the combined stock/zeny gate, the leg-40
+    weapon hold, the route map."""
+    if not (affordable or has_stock):
+        return "no_stock_below_zeny_floor"
+    if not has_stock and any(str(item) in state.inventory for item in NOVICE_WANTED_WEAPONS):
+        return "weapon_release"
+    if MERCHANT_ROUTE.get(state.map_name) is None:
+        return "map_not_on_merchant_route"
+    return None
+
+
 def merchant_drive_cell(state: BotState) -> tuple[int, int] | None:
     """Engage cell of the want-driven dealer trip, else None (window-29).
 
@@ -434,90 +586,19 @@ def merchant_drive_cell(state: BotState) -> tuple[int, int] | None:
     KNOWN inventory and a pinned route map; anything else returns None and
     the field behavior is unchanged.
     """
-    if state.job != "Novice" or not state.inventory_known:
+    refusal = merchant_admission_refusal(state)
+    if refusal is not None:
+        term, detail = refusal
+        _tap_merchant_drive(state.name, term, detail)
         return None
-    # Two reasons to walk to the dealer: affordable purchase (zeny >= 50) or
-    # sellable stock (start_zeny is 0 in the owned world - the first trip
-    # EARNS the zeny by selling; window-28 finding). The stock set is the
-    # pinned mob_db drops of the prt_fild08 field species (all non-equipment
-    # loot is dealer stock; leg 39: RinceNyan carried 713+1002 and no trip
-    # engaged because the set only knew 909/915):
-    #   Pupa 1008 -> Chrysalis 915, Sticky_Mucus 938, Iron_Ore 1002
-    #   Drops 1113 -> Jellopy 909, Empty_Bottle 713
-    #   Lunatic 1063 -> Clover 705, Feather 949
-    #   Poring 1009 -> Talon 917;  Fabre 1007 -> Fluff 914
-    # (rathena db/pre-re/mob_db.yml + item_db_etc.yml, pinned e985006171d2)
-    sellables = {
-        # The SAME ids SELLABLE_ITEM_IDS carries (the leg-46 twin-set law):
-        # the prt_fild08 species (window-28/leg-41) plus the leg-67
-        # pay_fild04 derivation (spawn file payon.txt:63-70 -> served
-        # mob_db.yml Drops -> pre-re item dbs; see SELLABLE_ITEM_IDS).
-        "909",
-        "915",
-        "938",
-        "1002",
-        "713",
-        "705",
-        "949",
-        "917",
-        "914",
-        "509",
-        "510",
-        "511",
-        "512",
-        "514",
-        "529",
-        "531",
-        "603",
-        "604",
-        "610",
-        "619",
-        "620",
-        "694",
-        "695",
-        "700",
-        "714",
-        "720",
-        "722",
-        "910",
-        "912",
-        "983",
-        "1039",
-        "1059",
-        "1207",
-        "1602",
-        "2116",
-        "2254",
-        "2255",
-        "2257",
-        "2274",
-        "2282",
-        "2324",
-        "2336",
-        "4001",
-        "4004",
-        "4033",
-        "4047",
-        "4054",
-        "4174",
-        "4196",
-        "4197",
-        "5035",
-        "7023",
-    }
-    affordable = type(state.zeny) is int and state.zeny >= MERCHANT_ZENY_MIN
-    has_stock = any(str(item) in sellables for item in state.inventory)
-    if not (affordable or has_stock):
-        return None
-    # Leg 40: the wanted-weapon release gates only the BUY arm (the knife
-    # want is satisfied and there is nothing to buy). A weapon holder with
-    # SELLABLE STOCK still walks the trip - the fixture knife (1201) sat in
-    # every inventory since 2b0f249e and the stock-set fix alone never fired
-    # the drive because this release ran first.
-    has_weapon = any(str(item) in state.inventory for item in NOVICE_WANTED_WEAPONS)
-    if has_weapon and not has_stock:
-        return None
-    return MERCHANT_ROUTE.get(state.map_name)
+    destination = MERCHANT_ROUTE.get(state.map_name)
+    stock = sum(count for item, count in state.inventory.items() if item in DRIVE_SELLABLES)
+    _tap_merchant_drive(
+        state.name,
+        "admitted",
+        f"map={state.map_name} dest={destination} zeny={state.zeny} stock={stock}",
+    )
+    return destination
 
 
 def merchant_return_cell(state: BotState) -> tuple[int, int] | None:
@@ -570,6 +651,11 @@ def _merchant_step(
             for leg_map, leg_x, leg_y in plan:
                 if leg_map == state.map_name and (leg_x, leg_y) != (state.x, state.y):
                     return ScriptOutcome((MoveTo(x=leg_x, y=leg_y),), ScriptStatus.ACTIVE)
+            _tap_merchant_drive(
+                state.name,
+                "merchant_route_unresolved",
+                f"map={state.map_name} dest={destination}",
+            )
         return _merchant_engage(state, destination)
     home = merchant_return_cell(state)
     if home is None:
