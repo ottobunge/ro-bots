@@ -1006,7 +1006,11 @@ def test_sealed_pocket_escalates_once_to_a_far_walkable_cell():
     """leg 39: s00's pocket is sealed at radius 2 but walkable cells exist
     ~7 cells away (34/289 in the roam box). The SECOND sealed verdict at
     the same own position escalates to radius 12 and direct-sends the far
-    walkable cell once; a third authoring is the honest stop."""
+    walkable cell once; a third authoring never re-ESCALATES (the latch).
+    leg 69: the latched verdict is no longer a permanent dead-end - after
+    ESCALATED_DEAD_DIRECT_BOUND dead verdicts the server-reposition seam
+    releases a bounded direct send at the nearest client-side walkable
+    cell."""
 
     size = 16
     tiles = bytearray([1]) * (size * size)
@@ -1036,6 +1040,19 @@ def test_sealed_pocket_escalates_once_to_a_far_walkable_cell():
     client.perform_native(MoveTo(5, 5))  # the same position never re-escalates
     assert len(wire.moves) == sent
     assert any(reason == "escalated_target_dead" for _, reason in client._move_gate_reasons)
+    # leg 69: the latch holds against re-escalation, but the verdict hands
+    # to the server-reposition seam after the dead-verdict bound - the
+    # bounded direct send at the nearest client-side walkable cell (the
+    # fixture's one walkable cell), capped per position (see
+    # tests/test_server_reposition_seam.py for the full bound/cap/re-arm
+    # contract).
+    for _ in range(runtime.ESCALATED_DEAD_DIRECT_BOUND - 1):
+        client.perform_native(MoveTo(5, 5))
+        client._pending = None
+    assert len(wire.moves) == sent  # the rest of the bound stays silent
+    client.perform_native(MoveTo(5, 5))
+    assert wire.moves[-1] == (10, 10)
+    assert any(reason == "server_reposition_direct" for _, reason in client._move_gate_reasons)
 
 
 def test_seed_zeny_reports_until_the_wire_delivers_the_balance() -> None:

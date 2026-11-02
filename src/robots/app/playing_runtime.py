@@ -204,6 +204,18 @@ NPC_RETRY_CADENCE_S = 5.0
 NO_ROUTE_DIRECT_SENDS = 5
 # The server's pickup radius: a CZ_ITEM_PICKUP lands when the bot stands
 # within Chebyshev<=1 of the drop's cell (leg 61 design brief).
+# leg 69: the once-per-position escalation latch (leg 39) left s00 dead-
+# verdicting x944 at pay_fild04 (213,325) while the server still accepted
+# walks out of the pocket (it had walked the char 226,317 -> 213,325 on
+# the leg-28 direct sends). After ESCALATED_DEAD_DIRECT_BOUND consecutive
+# escalated_target_dead verdicts at the same position, the runtime
+# releases a SERVER-REPOSITION direct send at the nearest client-side
+# walkable cell around the own position (no_route_direct semantics: the
+# server path-finds its own side). ESCALATED_DEAD_REPOSITIONS caps the
+# repositions per position; a server-confirmed position advance re-arms
+# both budgets.
+ESCALATED_DEAD_DIRECT_BOUND = 3
+ESCALATED_DEAD_REPOSITIONS = 3
 _LOOT_PICKUP_RANGE = 1
 # Bounded reroute search when a drop's own cell is unwalkable in the grid.
 _LOOT_MOVE_RADIUS = 4
@@ -266,6 +278,13 @@ class PlayingClient:
     _rerolled_moves_memo: dict[tuple[str, tuple[int, int]], tuple[int, int]] | None = None
     # own positions whose sealed-pocket escalation already fired (leg 39)
     _deadlock_cells_memo: set[tuple[str, tuple[int, int]]] | None = None
+    # leg 69 server-reposition budgets: consecutive escalated-dead verdicts,
+    # the position they count at, and the reposition direct sends already
+    # fired there (class defaults; instance shadow on first use - a
+    # server-confirmed position advance re-arms all three)
+    _escalated_dead_count = 0
+    _escalated_dead_pos: tuple[int, int] | None = None
+    _reposition_sends = 0
 
     @property
     def _deadlock_cells(self) -> set[tuple[str, tuple[int, int]]]:
@@ -2033,10 +2052,10 @@ class PlayingClient:
             # holds walkable cells ~7 cells away (34/289). Escalate ONCE per
             # own position to radius 12 and let the server path-find its own
             # side (the leg-28 rule); a second sealed verdict at the same
-            # position is the honest stop.
+            # position hands the verdict to the leg-69 server-reposition
+            # seam (_escalated_dead_release), not to a silent stop.
             if (state.map_name, (state.x, state.y)) in self._deadlock_cells:
-                self._note_move_gate("escalated_target_dead")
-                self._fail_patrol(target)
+                self._escalated_dead_release(state, target, pos)
                 return
             alt = nearest_walkable(
                 self.cache.get(state.map_name),
@@ -2059,6 +2078,61 @@ class PlayingClient:
         self.wire.move(*alt)
         self._pending_origin = "rerolled"
         self._pending = (alt, pos.seq, self._now(), 0)
+
+    def _escalated_dead_release(
+        self,
+        state: BotState,
+        target: tuple[int, int],
+        pos: Any,
+    ) -> None:
+        """The server-reposition seam (leg 69).
+
+        The leg-39 latch stops the radius-12 escalation from re-firing at
+        the same position - honest for the ESCALATION, but leg 69 turned
+        the latched position into a silent dead-end: s00 sat at pay_fild04
+        (213,325) burning x944 escalated_target_dead verdicts while the
+        server still accepted walks out of the pocket. The doctrine is
+        unchanged - the agent must be able to WALK OUT of a blocked pocket
+        and the server path-finds its own side - so after
+        ESCALATED_DEAD_DIRECT_BOUND consecutive dead verdicts at the same
+        position, the runtime picks the nearest client-side walkable cell
+        around the OWN position (nearest_walkable, radius 12) and sends
+        the walk DIRECTLY at it (no_route_direct semantics; pending
+        origin ``repositioned``, gate ``server_reposition_direct``).
+        ESCALATED_DEAD_REPOSITIONS caps the sends per position; a
+        server-confirmed position advance re-arms the budgets, and a
+        truly sealed pocket (no walkable cell in range) stays an honest
+        escalated_target_dead stop."""
+        if self._escalated_dead_pos != (state.x, state.y):
+            self._escalated_dead_pos = (state.x, state.y)
+            self._escalated_dead_count = 0
+            self._reposition_sends = 0
+        self._escalated_dead_count += 1
+        if (
+            self._escalated_dead_count > ESCALATED_DEAD_DIRECT_BOUND
+            and self._reposition_sends < ESCALATED_DEAD_REPOSITIONS
+        ):
+            cache = self.cache
+            if cache is None:
+                # the caller checked a moment ago; drift here is upstream
+                self._note_move_gate("no_map_cache")
+                self._fail_patrol(target)
+                return
+            alt = nearest_walkable(
+                cache.get(state.map_name),
+                (state.x, state.y),
+                radius=12,
+                exclude=((state.x, state.y),),
+            )
+            if alt is not None:
+                self._reposition_sends += 1
+                self._note_move_gate("server_reposition_direct")
+                self.wire.move(*alt)
+                self._pending_origin = "repositioned"
+                self._pending = (alt, pos.seq, self._now(), 0)
+                return
+        self._note_move_gate("escalated_target_dead")
+        self._fail_patrol(target)
 
     def mechanical_actions(
         self, state: BotState, actions: tuple[GameAction, ...]
