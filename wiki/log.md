@@ -9412,3 +9412,57 @@ Remaining (named, unchanged order): (b) the dealer sell-MINT — an agent arrive
 **The interleave:** with the gate ahead of the script step, a trip in progress HOLDS the goal script's moves (leg-70 item (b): IdleTownScript's 271 consecutive jitter moves can no longer fight the trip walk for the wire), and a sold-out drive never starves farming — the refusal returns None and the farm/grind engage/roam applies exactly as before (pinned both ways). Telemetry stays honest: the sampled script_step row names the re-arm author `MerchantDrive` (`_trace_script_step` gained the `script_name` override), so a trip walk can never read as the idle script's jitter again (the leg-70 readout used exactly that row). The widen-streak sync moved into `_sync_widen_streak` unchanged (xenon statement budget on `_step_goal_script`).
 
 Remaining (named, unchanged order): the per-segment route pacing (185 `walk_released_no_progress(direct)` — the far MoveTo re-send is unchanged drive behavior, now merely uninterrupted), the dealer sell-MINT for arrived agents (leg-69 item b), and the zero-combat grind (s00/zeny_wing author zero Attacks).
+
+## Leg 71 (2026-11-03 00:48 CET close) — the sell-drive re-arm (c9fbea6d) live verdict: RE-ARM PROVEN, s00 completion fails on ROUTE LENGTH
+
+Window Mon 23:15-00:30 Madrid (day 0 + the post-midnight fragment), seed b6b39967
+(NyxSong 17z, RinceNyan 87z, zeny_wing 103z, PipinWalker 48z, xXLunasongXx 47z,
+PoringMuffin14 17z, YuffieFy81 0z on pay_fild04 217,325 holding 511x2/905x3/906x1).
+SCHEDULE FIX AT LAUNCH (017f5f3f): the committed single fragment `[0, 23.25, 24.5]`
+NEVER WRAPS — `Schedule.is_online` takes the `start <= end` simple branch, so the
+window would have closed silently at local midnight and cut the readout span in
+half. The correct runner-format encoding is BOTH day fragments in one persona list:
+`[[0, 23.25, 24.0], [1, 0.0, 0.5]]`. Proven live: all seven stayed online=1 through
+the 00:00 day flip; the flip caused no stall.
+
+THE FIX UNDER TEST IS PROVEN: the admitted incomplete trip re-arms EVERY TICK under
+any goal script, for the WHOLE window. s00's MerchantDrive authored 327 script_step
+rows, first `22:15:22 ACTIVE ['MoveTo']`, last `23:29:55 ACTIVE ['MoveTo']` (5s
+before close), zero authoring gaps — the leg-70 mid-route stop shape did not recur.
+xXLunasongXx ran the same shape (MerchantDrive n=222, 22:51:10→23:29:55). Four
+agents ran MerchantDrive this window (leg 70: effectively one arm, one admission).
+
+The loop REPEATED vs baseline: 3 DB-verified sells (NyxSong 17→22, PipinWalker
+48→51, PoringMuffin14 17→20), exp gains on 4 agents (kills), one new pickup
+(xXLunasongXx +512x1 equip=0), steps 24599, step_errors 0, TRANSPORT DOWN 0, 7/7
+online all window. PipinWalker's drive COMPLETED (the fix's completion half):
+MerchantDrive's last row IS the talk — `23:07:43 ACTIVE ['TalkToNpc']` →
+NpcShopSellOpen 23:07:48 → NpcShopSell 23:07:50 → NpcClose x4 — a full
+admit→walk→talk→sell trip under the re-arm.
+
+ACCEPTANCE: YuffieFy81 zeny = 0 (FAILS on completion, NOT on re-arm). The trip
+walked pay_fild04 217,325→(32,175) in 41 min on accepted sends, took the WEST edge
+warp into moc_fild01 (22:57), toured it SW, warped into prt_fild08 NORTH edge
+(23:15, at (233,29)), and was walking south along x=233 at ~12 cells/min toward the
+town warp (170,378) when the close cut it at (233,203) — ~180 cells short. THE TRIP
+IS NOW TOO LONG, NOT UNAUTHORED: from a deep pay_fild04 spawn the pinned route is a
+3-field odyssey a 75-min window cannot cover. Frontier (a): pin the CORRECT
+pay_fild04→town exit (the (17,165) west edge leads to moc_fild01, not town) or route
+the odyssey knowingly with the walk budget for it, and pace far route legs faster
+than ~1 cell per re-send.
+
+Frontier (b) — the arrival→talk gate, named by a counter-example inside the same
+window: xXLunasongXx crossed prt_fild08→prontera→prt_in and from ~23:05 UTC parked
+at (173-174,128-130) — Chebyshev 2 from the dealer cell (172,129, held all window by
+the stationary zeny_wing) — authoring MoveTo every tick and NEVER TalkToNpc (npc
+rows: []). PipinWalker sold FROM (173,129), Chebyshev 1; PoringMuffin14 from
+(173,130), also adjacent. The talk fires at dealer-adjacency and (174,128)/(173,128)
+never qualified. Measure the talk's true acceptance radius once against the live
+dealer (the loot range law) and gate the arrival test with it, or re-roll the
+parking cell among the dealer-adjacent set when the dest cell is occupied.
+
+Also named (minor): s00 authored 13 Loot actions with zero DB inventory gain — the
+pickups fired but nothing landed; read the pickup-dispatch taps before touching loot
+code. Receipt: run/plain_host_receipts/population-receipt-71-1793657128.json.
+Next slice: the route-coverage/talk-radius pair above; observation cadence complete,
+fix slices unblocked.
