@@ -42,6 +42,12 @@ Leg = tuple[str, int, int]
 ONWARD: dict[str, tuple[Leg, ...]] = {
     "prt_in": (("prontera", 156, 22), ("prt_fild08", 170, 375)),
     "prontera": (("prt_fild08", 170, 375),),
+    "pay_fild04": (
+        ("moc_fild01", 239, 382),
+        ("prt_fild08", 170, 378),
+        ("prontera", 177, 221),
+        ("prt_in", 172, 130),
+    ),
 }
 """The route that follows an exit of each map (pinned public warp bytes).
 
@@ -49,7 +55,12 @@ ONWARD: dict[str, tuple[Leg, ...]] = {
   ``npc/warps/cities/prontera.txt:24``;
 - ``prt_in``'s doors all lead to prontera, and prontera's field warp leads
   to the field - the same two legs the merchant return cites
-  (prontera.txt:24 and :40).
+  (prontera.txt:24 and :40);
+- ``pay_fild04``'s exit (payf002, ``npc/pre-re/warps/fields/payon_fild.txt:30``)
+  delivers onto moc_fild01 at (376,162), whose mocf006 warp
+  (``fields/morroc_fild.txt:24``) lands ON prt_fild08 (233,20) - from there
+  the proven field->prontera->prt_in dealer legs carry the sell trip
+  (leg 67's field-to-town arc).
 """
 
 

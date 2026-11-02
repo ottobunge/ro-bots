@@ -82,15 +82,31 @@ TRAVEL_ROUTES: dict[str, tuple[tuple[str, int, int], ...]] = {
         ("prontera", 156, 22),
         ("prt_fild08", 170, 375),
     ),
+    "pay_fild04": (
+        ("pay_fild04", 17, 165),
+        ("moc_fild01", 239, 382),
+        ("prt_fild08", 170, 378),
+        ("prontera", 177, 221),
+        ("prt_in", 172, 130),
+    ),
 }
 """The seeded route per map: the ordered warp legs from that map to the
 field. ``prt_in``'s first leg is the prt05 interior's door - the seeded
 default for the interior the merchant trip leaves an agent in. The live
 route RESOLVES the door by reachability (see ``robots.app.travel_routing``)
-and falls back to this table when no grid is available."""
+and falls back to this table when no grid is available.
+
+Leg 67: ``pay_fild04``'s legs run the other direction - the field-to-town
+arc the field agent's sell trip walks (out the payf002 warp, over
+moc_fild01's mocf006 warp onto prt_fild08, then the proven
+field->prontera->prt_in dealer legs). Every leg is pinned public warp
+bytes: payon_fild.txt:30 (payf002), morroc_fild.txt:24 (mocf006),
+prontera_fild.txt:65 (prtf004), cities/prontera.txt:25 (prt05),
+shops.txt:255 (the dealer cell)."""
 
 EXIT_CELLS: dict[str, tuple[tuple[int, int], ...]] = {
     "prontera": ((156, 22),),
+    "pay_fild04": ((17, 165),),
     "prt_in": (
         (135, 71),
         (168, 124),
@@ -111,7 +127,11 @@ EXIT_CELLS: dict[str, tuple[tuple[int, int], ...]] = {
 }
 """Per map: the exit cells the agent can walk to. A map with several exits
 (prt_in's building interiors) has one per interior; the reachable one is
-the exit of the interior the agent stands in."""
+the exit of the interior the agent stands in. ``pay_fild04`` cites ONE
+exit — the dealer-bound payf002 warp (payon_fild.txt:30) — so it resolves
+unconditionally; the map's other pinned exit (payon_fild.txt:31, the
+moc_fild02 desert chain) is deliberately NOT cited: the static ONWARD
+chain is per map, and it is the dealer arc."""
 
 INTERNAL_WARPS: dict[str, tuple[tuple[tuple[int, int], tuple[int, int]], ...]] = {
     "prt_in": (
