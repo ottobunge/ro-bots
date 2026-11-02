@@ -1704,14 +1704,19 @@ class PlayingClient:
         looser hypot gate burned attempts on silent out-of-range rejects)."""
         tracker = self._tracker
         if tracker is None or state.alive is not True:
-            return
-        if self._nearest_active_threat(state) is not None:
-            # Otto's directive at the send seam: a pickup under an active
-            # threat is refused (fail-closed) and the attempt memo is NOT
-            # consumed - the item stays lootable once the threat leaves.
+            self._note_loot_unavailable(tracker)
             return
         floor_items = tracker.view.floor_items
         self._refresh_loot_memo(floor_items)
+        threat = self._nearest_active_threat(state)
+        if threat is not None:
+            # Otto's directive at the send seam: a pickup under an active
+            # threat is refused (fail-closed) and the attempt memo is NOT
+            # consumed - the item stays lootable once the threat leaves.
+            # Leg 67: the refusal is NAMED (the same per-item defer tap the
+            # mechanical path carries - the twin gate must not be silent).
+            self._note_loot_threat_defer(state, floor_items, threat)
+            return
         items = self._loot_candidates(state, floor_items)
         if not items:
             return
@@ -1723,6 +1728,7 @@ class PlayingClient:
             return
         for item in items:
             if item.floor_item_id in self._loot_pickup_tried:
+                self._note_loot_pickup_held(item.floor_item_id)
                 continue
             self._loot_pickup_tried.add(item.floor_item_id)
             # The loot seam's dispatch tap: the CZ_ITEM_PICKUP send that
@@ -2081,9 +2087,11 @@ class PlayingClient:
         alternative trigger already owning the tick through ``_loot``) are
         never interrupted."""
         if any(isinstance(action, (Attack, Loot)) for action in actions):
+            self._note_loot_authored_defer(state, actions)
             return None
         tracker = self._tracker
         if tracker is None or state.alive is not True:
+            self._note_loot_unavailable(tracker)
             return None
         floor_items = tracker.view.floor_items
         self._refresh_loot_memo(floor_items)
@@ -2098,6 +2106,7 @@ class PlayingClient:
                     return (move,)
                 continue
             if item.floor_item_id in self._loot_pickup_tried:
+                self._note_loot_pickup_held(item.floor_item_id)
                 continue
             logger.warning(
                 "loot-debug: mechanical pickup dispatched (fid=%s nameid=%s cell=(%s,%s))",
@@ -2117,6 +2126,7 @@ class PlayingClient:
         if item.floor_item_id in self._loot_move_minted and not self._loot_walk_reauth_due(
             item.floor_item_id
         ):
+            self._note_loot_walk_held(item.floor_item_id)
             return None
         target = self._loot_move_target(state, item)
         if target is None:
@@ -2151,6 +2161,21 @@ class PlayingClient:
         """Chebyshev distance to the drop - the pickup metric."""
         return int(max(abs(item.position.x - state.x), abs(item.position.y - state.y)))
 
+    def _ensure_loot_memos(self) -> None:
+        """The loot memo/tap sets, created once (the ``_attack_gate_reasons``
+        lazy pattern; ``__init__`` sits at the statement cap)."""
+        if getattr(self, "_loot_pickup_tried", None) is not None:
+            return
+        self._loot_pickup_tried: set[int] = set()
+        self._loot_move_minted: set[int] = set()
+        self._loot_move_reauth: set[int] = set()
+        self._loot_move_minted_at: dict[int, float] = {}
+        self._loot_defer_tapped: set[int] = set()
+        self._loot_authored_tapped: set[int] = set()
+        self._loot_walk_held_tapped: set[int] = set()
+        self._loot_pickup_held_tapped: set[int] = set()
+        self._loot_unavailable_reason: str | None = None
+
     def _refresh_loot_memo(self, floor_items: Iterable[Any]) -> None:
         """The mechanical loot memo (leg 61): one pickup attempt per floor
         item and one move mint per item, presence-keyed - an aid whose item
@@ -2158,17 +2183,18 @@ class PlayingClient:
         drop). The sets are per-instance from the first refresh (the
         ``_attack_gate_reasons`` lazy pattern; ``__init__`` sits at the
         statement cap)."""
-        if getattr(self, "_loot_pickup_tried", None) is None:
-            self._loot_pickup_tried: set[int] = set()
-            self._loot_move_minted: set[int] = set()
-            self._loot_move_reauth: set[int] = set()
-            self._loot_move_minted_at: dict[int, float] = {}
-            self._loot_defer_tapped: set[int] = set()
+        self._ensure_loot_memos()
         current = {item.floor_item_id for item in floor_items}
         self._loot_pickup_tried &= current
         self._loot_move_minted &= current
         self._loot_move_reauth &= current
         self._loot_defer_tapped &= current
+        self._loot_authored_tapped &= current
+        self._loot_walk_held_tapped &= current
+        self._loot_pickup_held_tapped &= current
+        # a healthy tick re-arms the unavailable tap: a LATER stall names
+        # itself again (both dispatch paths pass through here)
+        self._loot_unavailable_reason = None
         self._loot_move_minted_at = {
             key: value for key, value in self._loot_move_minted_at.items() if key in current
         }
@@ -2205,6 +2231,62 @@ class PlayingClient:
                 fid,
                 threat,
             )
+
+    def _note_loot_authored_defer(self, state: BotState, actions: tuple[GameAction, ...]) -> None:
+        """The authored-Action stand-down's tap, once per item while it
+        stays on the floor view: leg 67's pair-mates died here untapped (an
+        authored Attack exchange or the decider's own Loot owned the tick
+        while the mate sat on the floor)."""
+        tracker = self._tracker
+        if tracker is None or tracker.view is None:
+            return
+        floor_items = tracker.view.floor_items
+        self._refresh_loot_memo(floor_items)
+        kinds = ",".join(
+            sorted(
+                type(action).__name__ for action in actions if isinstance(action, (Attack, Loot))
+            )
+        )
+        for item in self._loot_candidates(state, floor_items):
+            fid = item.floor_item_id
+            if fid in self._loot_authored_tapped:
+                continue
+            self._loot_authored_tapped.add(fid)
+            logger.warning(
+                "loot-debug: pickup deferred (authored-action) (fid=%s kinds=%s)",
+                fid,
+                kinds,
+            )
+
+    def _note_loot_unavailable(self, tracker: Any) -> None:
+        """The tracker/alive gate's tap, on BOTH dispatch paths: once per
+        reason - a later stall after a healthy tick names itself again."""
+        self._ensure_loot_memos()
+        reason = "tracker-missing" if tracker is None else "agent-not-alive"
+        if self._loot_unavailable_reason == reason:
+            return
+        self._loot_unavailable_reason = reason
+        logger.warning("loot-debug: loot unavailable (%s)", reason)
+
+    def _note_loot_walk_held(self, fid: int) -> None:
+        """The move-memo hold inside ``_loot_walk_mint``, once per item
+        while it stays on the floor view (leg 67: the pair-mate whose only
+        walk a pre-empting gate burned was invisible)."""
+        self._ensure_loot_memos()
+        if fid in self._loot_walk_held_tapped:
+            return
+        self._loot_walk_held_tapped.add(fid)
+        logger.warning("loot-debug: walk suppressed (reauth pending) (fid=%s)", fid)
+
+    def _note_loot_pickup_held(self, fid: int) -> None:
+        """The once-per-presence pickup memo's continue, shared by the
+        mechanical loop and the send seam: one line per item per presence
+        whichever path hit the gate."""
+        self._ensure_loot_memos()
+        if fid in self._loot_pickup_held_tapped:
+            return
+        self._loot_pickup_held_tapped.add(fid)
+        logger.warning("loot-debug: pickup suppressed (already tried) (fid=%s)", fid)
 
     def _loot_walk_reauth_due(self, fid: int) -> bool:
         """True when the item's ONE bounded walk re-author is due: the walk

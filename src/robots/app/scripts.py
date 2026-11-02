@@ -227,16 +227,88 @@ def novice_weapon_index(
     return None
 
 
-SELLABLE_ITEM_IDS = (705, 713, 909, 914, 915, 917, 938, 949, 1002)
+SELLABLE_ITEM_IDS = (
+    509,
+    510,
+    511,
+    512,
+    514,
+    529,
+    531,
+    603,
+    604,
+    610,
+    619,
+    620,
+    694,
+    695,
+    700,
+    705,
+    713,
+    714,
+    720,
+    722,
+    909,
+    910,
+    912,
+    914,
+    915,
+    917,
+    938,
+    949,
+    983,
+    1002,
+    1039,
+    1059,
+    1207,
+    1602,
+    2116,
+    2254,
+    2255,
+    2257,
+    2274,
+    2282,
+    2324,
+    2336,
+    4001,
+    4004,
+    4033,
+    4047,
+    4054,
+    4174,
+    4196,
+    4197,
+    5035,
+    7023,
+)
 """Looted drop species this slice sells to a merchant NPC: Clover 705,
 Jellopy 909, Fluff 914, Chrysalis 915, Talon 917, Sticky Mucus 938, Feather
 949 (window-26/27 Poring-field loots) plus Empty Bottle 713 and Iron Ore 1002
 (leg 41: RinceNyan carried exactly these, held the trip at the dealer, and
 its sell never opened because this constant lacked them — the drive fires on
 merchant_drive_cell's sellables set but the shop loop filters the sale here).
-The constant only decides whether a sell leg is worth opening; sellability
-and prices always come from the received ZC_PC_SELL_ITEMLIST rows
-(clif.cpp:2265-2280), never from here."""
+Leg 67 re-derives the set from pay_fild04's pinned spawn declarations
+(npc/pre-re/mobs/fields/payon.txt:63-70: Poring 1002, Drops 1113, Poporing
+1031, Marin 1242, Ghostring 1120, Mastering 1090, Angeling 1096, Deviling
+1582) through their served db/pre-re/mob_db.yml Drops rows resolved against
+the pre-re item dbs: White_Herb 509, Blue_Herb 510, Green_Herb 511, Apple
+512, Grape 514, Candy 529, Apple_Juice 531, Old_Blue_Box 603,
+Branch_Of_Dead_Tree 604, Leaf_Of_Yggdrasil 610, Unripe_Apple 619,
+Orange_Juice 620, Ghost scrolls 694/695, Cold_Scroll 700, Emperium 714,
+jewels 720/722, Black_Dyestuffs 983, Petite wing 1039, Transparent_Cloth
+1059, looted dagger/rod 1207/1602, garments 2116/2254/2255/2257/2274/2282/
+2324/2336, Poring_Hat 5035, cards 4001/4004/4033/4047/4054/4174/4196/4197
+and Blade_Lost_In_Darkness 7023 (s00 held 511x2 the whole leg — the drive
+never armed). The drop KNIFE_ 1202 is deliberately EXCLUDED: it is a
+NOVICE_WANTED_WEAPONS member the setup phase WEARS, and a worn weapon
+stays in received inventory — inside the set it would read as sellable
+stock on every equipped Novice and false-arm the sell arm forever (the
+leg-40 weapon release pins tests/test_merchant_drive.py).
+The constant only decides whether a sell leg is worth opening;
+sellability and prices always come from the received ZC_PC_SELL_ITEMLIST
+rows (clif.cpp:2265-2280), never from here. The drive's sellables set in
+merchant_drive_cell MUST carry the same ids — extend both together (the
+leg-46 twin-set law)."""
 
 
 def shop_sellable_stock(
@@ -292,15 +364,30 @@ MERCHANT_ZENY_MIN = 50
 """Known zeny balance below which the Novice keeps farming (window-28 gap).
 The Weapon Dealer's Knife (1201) is the wanted item this budget buys; the
 balance itself always comes from received 0x00B1 param-20 receipts
-(BotState.zeny) — an unknown balance never drives (fail-closed)."""
+(BotState.zeny) — an unknown balance never drives (fail-closed).
+Leg 67 reading: this floor is the BUY arm's travel-cost guard ONLY (the
+spending trip needs the budget it will spend). The SELL arm is admitted by
+sellable stock through the ``affordable or has_stock`` gate at zeny 0 —
+the sell trip EARNS the zeny, so the floor must never grow back into the
+sell arm's admission (pinned by tests/test_s00_sell_trip_route.py)."""
 
 MERCHANT_ROUTE: dict[str, tuple[int, int]] = {
+    "pay_fild04": (17, 165),
+    "moc_fild01": (239, 382),
     "prt_fild08": (170, 378),
     "prontera": (177, 221),
     "prt_in": (172, 130),
 }
 """Per-map engage cells of the dealer trip (window-29 merchant driver),
 each pinned public rathena e985006171d2 bytes:
+- ``npc/pre-re/warps/fields/payon_fild.txt:30``: ``pay_fild04,17,165,0
+  warp payf002 2,8,moc_fild01,376,162`` — leg 67: the Archer-village
+  field's dealer-bound way out (its other exit, payon_fild.txt:31, leads
+  into the moc_fild02 desert chain, not toward the dealer map set); s00's
+  field-side sell trip walks INTO this warp;
+- ``npc/pre-re/warps/fields/morroc_fild.txt:24``: ``moc_fild01,239,382,0
+  warp mocf006 12,1,prt_fild08,233,20`` — the mid-chain leg that lands ON
+  prt_fild08, joining the proven field->town arc;
 - ``npc/pre-re/warps/fields/prontera_fild.txt:65``: ``prt_fild08,170,378,0
   warp prtf004 3,2,prontera,156,26`` — the field leg walks into the return
   warp (arrival prontera,156,26);
@@ -361,6 +448,10 @@ def merchant_drive_cell(state: BotState) -> tuple[int, int] | None:
     #   Poring 1009 -> Talon 917;  Fabre 1007 -> Fluff 914
     # (rathena db/pre-re/mob_db.yml + item_db_etc.yml, pinned e985006171d2)
     sellables = {
+        # The SAME ids SELLABLE_ITEM_IDS carries (the leg-46 twin-set law):
+        # the prt_fild08 species (window-28/leg-41) plus the leg-67
+        # pay_fild04 derivation (spawn file payon.txt:63-70 -> served
+        # mob_db.yml Drops -> pre-re item dbs; see SELLABLE_ITEM_IDS).
         "909",
         "915",
         "938",
@@ -370,6 +461,49 @@ def merchant_drive_cell(state: BotState) -> tuple[int, int] | None:
         "949",
         "917",
         "914",
+        "509",
+        "510",
+        "511",
+        "512",
+        "514",
+        "529",
+        "531",
+        "603",
+        "604",
+        "610",
+        "619",
+        "620",
+        "694",
+        "695",
+        "700",
+        "714",
+        "720",
+        "722",
+        "910",
+        "912",
+        "983",
+        "1039",
+        "1059",
+        "1207",
+        "1602",
+        "2116",
+        "2254",
+        "2255",
+        "2257",
+        "2274",
+        "2282",
+        "2324",
+        "2336",
+        "4001",
+        "4004",
+        "4033",
+        "4047",
+        "4054",
+        "4174",
+        "4196",
+        "4197",
+        "5035",
+        "7023",
     }
     affordable = type(state.zeny) is int and state.zeny >= MERCHANT_ZENY_MIN
     has_stock = any(str(item) in sellables for item in state.inventory)

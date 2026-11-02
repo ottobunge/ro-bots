@@ -324,3 +324,185 @@ def test_pickup_fires_once_the_threat_walks_away() -> None:
     assert client.mechanical_actions(state, ()) == (Loot(),)
     client.perform_native(Loot())
     assert client.wire.sent == [PICKUP]
+
+
+# ---------------------------------------------------------------------
+# The leg-67 slice: EVERY silent dispatch exit is named. The receipt's
+# pair-mate verdict - fid 359/363 surfaced, never dispatched, ZERO taps -
+# came from exits that returned untapped: the authored-Action stand-down
+# (the :2083 gate), the tracker/alive gate, the move-memo hold inside
+# _loot_walk_mint, and the once-per-presence pickup memo. The send-seam
+# twin (_loot, the decider's dispatch) carries the same gates silently -
+# a tap set that watches only one path goes quiet exactly when the break
+# moves to the twin. Tap-before-fix: name every exit, read the next
+# leg's log, then fix.
+
+
+def test_authored_action_stands_down_with_a_named_tap(
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """The :2083 exit (an authored Attack/Loot owns the tick) names itself
+    once per item while the item stays on the floor view - leg 67's
+    pair-mates died exactly here."""
+    client = _client_with_floor_at(43, 38)
+    state = client.build_native_state(Goal.GRIND)
+    authored = (Attack(target_id=555),)
+    with caplog.at_level(logging.WARNING):
+        assert client.mechanical_actions(state, authored) == authored
+        stood_down = [
+            record.getMessage()
+            for record in caplog.records
+            if "pickup deferred (authored-action)" in record.getMessage()
+        ]
+        assert len(stood_down) == 1
+        assert "fid=321" in stood_down[0]
+        assert "kinds=Attack" in stood_down[0]
+    # bounded: the next owned tick taps nothing new (presence-keyed memo)
+    caplog.clear()
+    state = client.build_native_state(Goal.GRIND)
+    with caplog.at_level(logging.WARNING):
+        assert client.mechanical_actions(state, authored) == authored
+        assert not [
+            record
+            for record in caplog.records
+            if "pickup deferred (authored-action)" in record.getMessage()
+        ]
+
+
+def test_authored_loot_names_itself_as_the_owning_kind(
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """The far-agent half of the leg-67 verdict: the decider's authored
+    Loot is the owning kind - the tap names it so the log separates an
+    in-melee exchange from the decider's own out-of-range pickup."""
+    client = _client_with_floor_at(43, 38)
+    state = client.build_native_state(Goal.GRIND)
+    authored = (Loot(),)
+    with caplog.at_level(logging.WARNING):
+        assert client.mechanical_actions(state, authored) == authored
+        stood_down = [
+            record.getMessage()
+            for record in caplog.records
+            if "pickup deferred (authored-action)" in record.getMessage()
+        ]
+        assert len(stood_down) == 1
+        assert "kinds=Loot" in stood_down[0]
+
+
+def test_loot_unavailable_names_the_gate_once_per_reason(
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """The tracker/alive exit ran silently on both dispatch paths; with the
+    loot path unavailable the log names why - once per reason, not per
+    tick."""
+    client = _client_with_floor_at(43, 38)
+    state = client.build_native_state(Goal.GRIND)
+    # AFTER the build: build_native_state (re)binds self._tracker, so
+    # nulling it first is silently overwritten (the stale-ref class)
+    client._tracker = None
+    with caplog.at_level(logging.WARNING):
+        assert client.mechanical_actions(state, ()) == ()
+        unavailable = [
+            record.getMessage()
+            for record in caplog.records
+            if "loot unavailable" in record.getMessage()
+        ]
+        assert len(unavailable) == 1
+        assert "tracker-missing" in unavailable[0]
+    # bounded: the next unavailable tick taps nothing new
+    caplog.clear()
+    with caplog.at_level(logging.WARNING):
+        assert client.mechanical_actions(state, ()) == ()
+        assert not [
+            record for record in caplog.records if "loot unavailable" in record.getMessage()
+        ]
+
+
+def test_send_seam_threat_refusal_is_tapped(caplog: pytest.LogCaptureFixture) -> None:
+    """The send seam's threat return (the decider's dispatch) stayed
+    silent while the mechanical path tapped - the twin now carries the
+    same defer tap, once per item."""
+    client = _client_with_floor_at(43, 38)
+    client.wire.add(monster(kind=5, aid=560, at=(43, 38)))  # Chebyshev 1
+    with caplog.at_level(logging.WARNING):
+        client.perform_native(Loot())
+        assert client.wire.sent == []
+        deferred = [
+            record.getMessage()
+            for record in caplog.records
+            if "pickup deferred (threat)" in record.getMessage()
+        ]
+        assert len(deferred) == 1
+        assert "fid=321" in deferred[0]
+
+
+def test_send_seam_tried_pickup_is_tapped(caplog: pytest.LogCaptureFixture) -> None:
+    """The send seam's once-per-presence continue is named by the same
+    tap as the mechanical loop's - one line per item per presence no
+    matter which path hit the gate."""
+    client = _client_with_floor_at(43, 38)
+    state = client.build_native_state(Goal.GRIND)
+    assert client.mechanical_actions(state, ()) == (Loot(),)
+    client.perform_native(Loot())  # dispatch marks the memo at the mint site
+    caplog.clear()
+    with caplog.at_level(logging.WARNING):
+        client.perform_native(Loot())  # the decider fires again at the seam
+        suppressed = [
+            record.getMessage()
+            for record in caplog.records
+            if "pickup suppressed (already tried)" in record.getMessage()
+        ]
+        assert len(suppressed) == 1
+        assert "fid=321" in suppressed[0]
+
+
+def test_move_memo_hold_names_the_suppressed_walk(caplog: pytest.LogCaptureFixture) -> None:
+    """The _loot_walk_mint memo gate (leg 67's :2117 exit) names the held
+    walk once per item - the pair-mate whose only walk was pre-empted is
+    visible in the log."""
+    client, now = _clocked_client_with_floor_at(44, 40)
+    state = client.build_native_state(Goal.GRIND)
+    assert client.mechanical_actions(state, ()) == (MoveTo(x=44, y=40),)
+    caplog.clear()
+    with caplog.at_level(logging.WARNING):
+        now[0] += runtime.LOOT_WALK_REAUTH_S - 0.1
+        state = client.build_native_state(Goal.GRIND)
+        assert client.mechanical_actions(state, ()) == ()
+        held = [
+            record.getMessage()
+            for record in caplog.records
+            if "walk suppressed (reauth pending)" in record.getMessage()
+        ]
+        assert len(held) == 1
+        assert "fid=321" in held[0]
+    # bounded: the next held tick taps nothing new
+    caplog.clear()
+    with caplog.at_level(logging.WARNING):
+        now[0] += 0.05
+        state = client.build_native_state(Goal.GRIND)
+        assert client.mechanical_actions(state, ()) == ()
+        assert not [
+            record
+            for record in caplog.records
+            if "walk suppressed (reauth pending)" in record.getMessage()
+        ]
+
+
+def test_mechanical_tried_pickup_is_tapped(caplog: pytest.LogCaptureFixture) -> None:
+    """The mechanical loop's once-per-presence continue (leg 67's :2100
+    exit) names the item whose pickup attempt is already spent."""
+    client = _client_with_floor_at(43, 38)
+    state = client.build_native_state(Goal.GRIND)
+    assert client.mechanical_actions(state, ()) == (Loot(),)
+    client.perform_native(Loot())
+    caplog.clear()
+    with caplog.at_level(logging.WARNING):
+        state = client.build_native_state(Goal.GRIND)
+        assert client.mechanical_actions(state, ()) == ()
+        suppressed = [
+            record.getMessage()
+            for record in caplog.records
+            if "pickup suppressed (already tried)" in record.getMessage()
+        ]
+        assert len(suppressed) == 1
+        assert "fid=321" in suppressed[0]
