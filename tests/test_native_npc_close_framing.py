@@ -294,6 +294,11 @@ def test_all_889_mappings_macros_and_parser_preserved_bitexact() -> None:
         # shadow block appended after the 0x014e block (the leg-63 session
         # killer: the served db read the AID word as the declared length)
         "3808ad62b05e31eee315423b73110f0a224bdfd12776165eaa32956fd1a4e595",
+        # leg 65: the REAL TakeItem id - the 0x0362:6 explicit registration +
+        # its compiled-table comment appended after the 0x07E4 shadow block
+        # (the shuffle's final rows: 0x0362 TakeItem fixed 6; 0x07E4 stays
+        # the ItemListWindowSelected window selection)
+        "62cf3228fab1d3542bd829259722594ac294ad140fcd80b070388d9c5f80d36a",
     )
     token = b", 0x00B6: 6"
     assert raw.count(token) == 1
@@ -320,6 +325,10 @@ def test_all_889_mappings_macros_and_parser_preserved_bitexact() -> None:
         # block ALSO present (the PACKET_DB.update + shadow append after
         # the 0x014e block; the leg-63 session killer)
         "76d99e9748192b18ed20182c7912b00c8d9cf072ff85f166cc535f0a1c20bb3e",
+        # leg 65: the same file with the 0x0362:6 TakeItem registration
+        # appended after the leg-64 block (the compiled shuffle's final
+        # rows name 0x0362 TakeItem fixed 6)
+        "07a4acdeac08e7fe204fc935b43efe4a3ff9aa3b38bd329ea64ef536e8c98044",
     )
 
 

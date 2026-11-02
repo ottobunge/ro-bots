@@ -1,4 +1,4 @@
-"""The served 0x07E4 declaration is VARIABLE-LENGTH: client side aligns with it.
+"""The 0x07E4 window-selection registration and the leg-63/64 history.
 
 Leg 63 killed every session that picked up: the served binary
 (rathena-playable:20180704-e985006171d2) parses CZ_ITEM_PICKUP 0x07E4 with the
@@ -7,12 +7,18 @@ clif_parse_ItemListWindowSelected,2,4,8,12)`` (clif_packetdb.hpp:1268) -- so it
 reads the declared length at offset 2. The builder's fixed 6-byte TakeItem
 frame put the floor-item AID in that word: the server read "expected packet
 length 319, but only 6 bytes remaining" (the AID 321 read as a length) and
-disconnected each of the four pickup agents. The tree's later TakeItem,6 row
-(clif_packetdb.hpp:1560) is not what the served image obeys.
+disconnected each of the four pickup agents. Leg 64 re-aimed the builder at
+the var-len 0x07E4 shape: every send survived, parsed harmlessly as a window
+selection, and zero inventory moved -- 0x07E4 is NOT the pickup hop at all.
 
-The fix aligns the CLIENT side with the SERVED declaration: the builder
-prepends the length word (the 0xC6/0xC7 var-len precedent, pdb.pack) and the
-framer's table registers 0x07E4 as variable-length (-1).
+Leg 65 (tests/test_pickup_frame_takeitem_0362.py) read the REAL TakeItem id
+from the compiled packet DB: the clif_shuffle.hpp ``> 20180307`` final block
+registers ``0x0362,6,clif_parse_TakeItem,2`` (last-write-wins over the plain
+packetdb.hpp rows; 0x07E4 ends as the -1 ItemListWindowSelected row). This
+file now pins what survives of the 0x07E4 story: the framer table keeps the
+var-len window-selection registration (leg 64 proved it parses safely), the
+leg-63 disconnect signature stays named, and the builder never emits the dead
+0x07E4 hop again.
 """
 
 import importlib.util
@@ -42,13 +48,17 @@ def _packetdb() -> Any:
     return module
 
 
-# The served var-len frame for floor-item AID 321: type.W(0x07E4) + len.W(8)
-# + AID.L -- exactly pdb.pack's var-len shape (the 0xC6/0xC7 precedent).
+# The 2009-era var-len frame for floor-item AID 321, as the 0x07E4
+# ItemListWindowSelected row frames it: type.W(0x07E4) + len.W(8) + AID.L.
+# Historical bytes: the leg-64 builder emitted exactly this (pdb.pack's
+# var-len shape, the 0xC6/0xC7 precedent) and the send parsed as a window
+# selection -- no inventory ever moved.
 SERVED_PICKUP_321 = bytes.fromhex("e407080041010000")
 
-# The leg-63 killer (historical): the fixed 6-byte TakeItem frame. The served
-# var-len parser read the AID word at offset 2 as the length (321 > 6 bytes
-# remaining) and disconnected the session.
+# The leg-63 killer (historical): the fixed 6-byte TakeItem frame ON THE
+# 0x07E4 ID. The served var-len parser read the AID word at offset 2 as the
+# length (321 > 6 bytes remaining) and disconnected the session. The same
+# fixed shape is CORRECT on the real 0x0362 row (leg 65).
 LEG63_FIXED_FRAME = bytes.fromhex("e40741010000")
 
 CLOCK = struct.pack("<HI", 0x007F, 123)
@@ -74,51 +84,46 @@ def served_declared_length(frame: bytes) -> int:
     return declared
 
 
-def test_pickup_builder_emits_the_served_varlen_frame() -> None:
-    """The builder prepends the length word the served db expects."""
+def test_builder_no_longer_emits_the_dead_window_selection_hop() -> None:
+    """Regression guard on the leg-64 finding: 0x07E4 is the served image's
+    ItemListWindowSelected row -- the var-len frame parsed harmlessly as a
+    window selection and moved no inventory. The pickup builder rides the
+    real 0x0362 TakeItem row instead (tests/test_pickup_frame_takeitem_0362.py)."""
     frame = gameplay.pickup(321)
-    assert frame == SERVED_PICKUP_321
-    declared = struct.unpack_from("<H", frame, 2)[0]
-    assert declared == len(frame)
-    assert declared == 8
-    assert struct.unpack_from("<I", frame, 4)[0] == 321
+    assert frame != SERVED_PICKUP_321
+    assert struct.unpack_from("<H", frame, 0)[0] != 0x07E4
 
 
-def test_builder_matches_the_framer_varlen_pack_shape() -> None:
-    """The 0xC6/0xC7 precedent: pdb.pack prepends the total length for a -1
-    row; the production builder emits the identical bytes."""
+def test_framer_varlen_row_still_packs_the_historical_frame() -> None:
+    """The 0x07E4 row is unchanged: pdb.pack still prepends the length word
+    for the -1 registration (the 0xC6/0xC7 precedent) -- the historical
+    leg-64 frame is reproducible from the table alone."""
     packetdb = _packetdb()
-    assert packetdb.pack(0x07E4, struct.pack("<I", 321)) == gameplay.pickup(321)
-    assert gameplay.pickup(0) == struct.pack("<HHI", 0x07E4, 8, 0)
-    assert gameplay.pickup(0xFFFFFFFF) == struct.pack("<HHI", 0x07E4, 8, 0xFFFFFFFF)
-    with pytest.raises(ValueError, match="uint32"):
-        gameplay.pickup(-1)
-    with pytest.raises(ValueError, match="uint32"):
-        gameplay.pickup(2**32)
+    assert packetdb.pack(0x07E4, struct.pack("<I", 321)) == SERVED_PICKUP_321
 
 
 def test_framer_table_registers_07e4_variable_length() -> None:
-    """The framer's packet table carries the served -1 declaration."""
+    """The framer's packet table carries the served -1 declaration (leg 64
+    proved the row parses safely; it stays)."""
     packetdb = _packetdb()
     assert packetdb.PACKET_DB[0x07E4] == packetdb.VAR
     assert packetdb.is_variable(0x07E4)
 
 
-def test_served_parser_accepts_the_new_frame_desync_free() -> None:
-    """Golden byte test: the served length gate passes and both framers
-    (client framer and the served dispatcher) consume exactly the frame."""
+def test_07e4_row_frames_the_historical_varlen_frame_desync_free() -> None:
+    """History pin: the var-len window-selection row consumes exactly the
+    leg-64 frame and keeps the stream aligned."""
     packetdb = _packetdb()
-    frame = gameplay.pickup(321)
-    assert served_declared_length(frame) == len(frame) == 8
-    packets, rest = packetdb.parse_stream(frame + CLOCK)
-    assert packets == [(0x07E4, frame), (0x007F, CLOCK)]
+    assert served_declared_length(SERVED_PICKUP_321) == len(SERVED_PICKUP_321) == 8
+    packets, rest = packetdb.parse_stream(SERVED_PICKUP_321 + CLOCK)
+    assert packets == [(0x07E4, SERVED_PICKUP_321), (0x007F, CLOCK)]
     assert rest == b""
 
 
 @pytest.mark.parametrize("split", range(len(SERVED_PICKUP_321 + CLOCK) + 1))
 def test_coalesced_stream_fragments_reassemble(split: int) -> None:
     """No desync at any fragment boundary: the var-len row reassembles the
-    pickup and the following frame intact."""
+    0x07E4 frame and the following frame intact."""
     packetdb = _packetdb()
     stream = SERVED_PICKUP_321 + CLOCK
     assert isinstance(split, int)
@@ -129,9 +134,10 @@ def test_coalesced_stream_fragments_reassemble(split: int) -> None:
 
 
 def test_leg63_fixed_frame_is_the_disconnect_signature() -> None:
-    """The historical 6-byte frame IS the leg-63 session killer under the
-    served declaration: the AID word reads as a length nothing can satisfy.
-    Pinned as historical bytes so the regression stays named."""
+    """The historical 6-byte frame WAS the leg-63 session killer on the 0x07E4
+    id: the AID word reads as a length nothing can satisfy. Pinned as
+    historical bytes so the regression stays named (the same fixed shape is
+    the CORRECT frame on the real 0x0362 row)."""
     declared = struct.unpack_from("<H", LEG63_FIXED_FRAME, 2)[0]
     assert declared == 321  # the floor-item AID misread as the length
     with pytest.raises(pytest.fail.Exception, match="disconnect"):

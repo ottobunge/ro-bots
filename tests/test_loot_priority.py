@@ -36,11 +36,12 @@ from tests.test_playing_runtime import (  # noqa: E402
 )
 from tests.test_zc_item_entry_floor import zc_item_entry  # noqa: E402
 
-# CZ_ITEM_PICKUP 0x07E4 for floor item aid 321: the SERVED packetdb declares
-# it var-len (clif_packetdb.hpp:1268 -1 row; the leg-63 session killer), so
-# the frame is type(2) + len.W(total=8) + floor-item AID(4) - the 0xC6/0xC7
-# var-len precedent.
-PICKUP = bytes.fromhex("e407080041010000")
+# CZ_ITEM_PICKUP 0x0362 for floor item aid 321: the COMPILED 20180704 table
+# ends at the shuffle's final row ``0x0362,6,clif_parse_TakeItem,2`` (the
+# plain-table 0x07E4 row the leg-64 era shipped parsed as ItemListWindowSelected
+# and moved no inventory), so the frame is the FIXED type(2) + AID(4), no
+# len.W (tests/test_pickup_frame_takeitem_0362.py pins the row).
+PICKUP = bytes.fromhex("620341010000")
 
 
 def walk_ack(start: tuple[int, int], end: tuple[int, int]) -> bytes:
