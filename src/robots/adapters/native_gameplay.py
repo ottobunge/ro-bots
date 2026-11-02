@@ -139,19 +139,31 @@ def attack(target_id: int, *, continuous: bool = False) -> bytes:
 
 
 def pickup(floor_item_id: int) -> bytes:
-    """CZ_ITEM_PICKUP 0x07E4 (clif_parse_TakeItem), pinned MAIN 20180704.
+    """CZ_ITEM_PICKUP 0x07E4 as the SERVED packetdb declares it: var-len.
 
-    ``<packetType>.W <AID>.L`` = 6 bytes: clif_packetdb.hpp:1560 registers
-    ``parseable_packet(0x07E4,6,clif_parse_TakeItem,2)`` and clif.cpp:12006
-    reads the floor-item AID at offset 2. The 20120418+ block RE-REGISTERS
-    0x0362 as clif_parse_DropItem (clif_packetdb.hpp:1561); the later
-    registration wins in the compiled packetdb, so the older 2010-era
-    TakeItem row (0x0362, line 1384) is dead — a 0x0362 send is a DROP
-    request (index.W/amount.W carved from the AID dword) that the server
-    rejects silently (leg 60: 16 loot choices, zero pickups, zero
-    inventory delta).
+    The pinned image (rathena-playable:20180704-e985006171d2) parses 0x07E4
+    with the 20090818 ItemListWindowSelected row —
+    ``parseable_packet(0x07e4,-1,clif_parse_ItemListWindowSelected,2,4,8,12)``
+    (clif_packetdb.hpp:1268) — and reads the declared length at offset 2: a
+    6-byte TakeItem send made it read the AID word as the length ("expected
+    packet length 319, but only 6 bytes remaining, disconnecting session #N";
+    leg 63: all four pickup agents died). The tree's later
+    ``parseable_packet(0x07E4,6,clif_parse_TakeItem,2)`` row (line 1560) is
+    not what the served binary obeys, so the client side aligns with the
+    SERVED declaration: type.W + len.W(total=8) + AID.L — the 0xC6/0xC7
+    var-len precedent (pdb.pack prepends 4 + len(payload)). The served
+    length gate (clif.cpp:25757-25776: 4 <= declared <= 32768 and
+    RFIFOREST >= declared) then consumes exactly the frame; the
+    ItemListWindowSelected handler itself no-ops for a bot with no
+    menuskill (clif_menuskill_clear + return), so the session survives
+    until the image's row is rebuilt (the leg-64 bisect note). The older
+    history stands: the 20120418+ block re-registers 0x0362 as
+    clif_parse_DropItem (line 1561), so the pre-leg-61 0x0362 sends were
+    drop requests (index.W/amount.W carved from the AID dword) that the
+    server rejected silently (leg 60: 16 loot choices, zero pickups).
     """
-    return struct.pack("<HI", 0x07E4, _uint32(floor_item_id))
+    payload = struct.pack("<I", _uint32(floor_item_id))
+    return struct.pack("<HH", 0x07E4, 4 + len(payload)) + payload
 
 
 def respawn() -> bytes:

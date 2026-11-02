@@ -112,10 +112,13 @@ def test_floor_pickup_vertical():
     tracker = gameplay.NativeGameplayTracker(999)
     tracker.ingest(1, 1.0, 0x0ADD, floor())
     assert tracker.view.floor_items[0].floor_item_id == 321
-    # CZ_ITEM_PICKUP is 0x07E4 at the pinned era (clif_packetdb.hpp:1560);
-    # 0x0362 is clif_parse_DropItem there (line 1561), so the old 0x0362
-    # hex pin asserted a guaranteed-rejected drop request, not a pickup.
-    assert gameplay.pickup(321) == bytes.fromhex("e40741010000")
+    # CZ_ITEM_PICKUP is 0x07E4 and the SERVED packetdb declares it var-len
+    # (clif_packetdb.hpp:1268 -1 row; the tree's TakeItem,6 row at line 1560
+    # is not what the pinned image obeys - leg 63): type.W + len.W(8) + AID.L.
+    # (The pre-leg-61 0x0362 hex pin asserted a guaranteed-rejected drop
+    # request, not a pickup; the pre-leg-64 e40741010000 pin was the fixed
+    # frame the served var-len parser read as "expected length 321".)
+    assert gameplay.pickup(321) == bytes.fromhex("e407080041010000")
     tracker.ingest(2, 2.0, 0x0A37, pickup_ack())
     assert tracker.view.acquired_counts == ((501, 3),)
     assert tracker.view.inventory_counts is None

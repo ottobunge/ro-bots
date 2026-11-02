@@ -36,9 +36,11 @@ from tests.test_playing_runtime import (  # noqa: E402
 )
 from tests.test_zc_item_entry_floor import zc_item_entry  # noqa: E402
 
-# CZ_ITEM_PICKUP 0x07E4 for floor item aid 321 (clif_parse_TakeItem, pinned
-# MAIN 20180704): type(2) + floor-item AID(4), no len.W (fixed-size frame).
-PICKUP = bytes.fromhex("e40741010000")
+# CZ_ITEM_PICKUP 0x07E4 for floor item aid 321: the SERVED packetdb declares
+# it var-len (clif_packetdb.hpp:1268 -1 row; the leg-63 session killer), so
+# the frame is type(2) + len.W(total=8) + floor-item AID(4) - the 0xC6/0xC7
+# var-len precedent.
+PICKUP = bytes.fromhex("e407080041010000")
 
 
 def walk_ack(start: tuple[int, int], end: tuple[int, int]) -> bytes:

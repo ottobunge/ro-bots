@@ -113,6 +113,10 @@ def test_every_legacy_mapping_is_preserved() -> None:
     # the equip progression's CZ_REQ_WEAR_EQUIP (0x0998). Without it the
     # framer raised "unknown packet 0x0999" and every agent froze.
     wear_ack = {0x0999: 11, 0x01F2: 20, 0x01EB: 10, 0x014E: 6}
+    # Leg 64: CZ_ITEM_PICKUP 0x07E4 re-declared var-len - the SERVED
+    # packetdb row (clif_packetdb.hpp:1268 -1; the leg-63 session killer);
+    # a value override of the baseline's TakeItem,6 entry, not an addition.
+    pickup_varlen = {0x07E4: -1}
     assert (
         prior_891
         | additions
@@ -123,6 +127,7 @@ def test_every_legacy_mapping_is_preserved() -> None:
         | guild_reply
         | guild_invite
         | wear_ack
+        | pickup_varlen
         == packetdb.PACKET_DB
     )
     assert len(packetdb.PACKET_DB) == 910

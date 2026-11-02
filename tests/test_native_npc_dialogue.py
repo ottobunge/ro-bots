@@ -163,8 +163,13 @@ def test_existing_890_registrations_preserved_and_unknown_stays_strict():
         (root / "run/reviews/native-manifest-migration-baseline.json").read_text()
     )["current_final_PACKET_DB"]
     old = {int(key, 16): value for key, value in baseline.items()} | {0xB6: 6, 0xC0: 7}
-    assert len(old) == 890  # the dialogue-era table; 0x00BC arrives later
+    # Leg 64: the SERVED packetdb declares CZ_ITEM_PICKUP 0x07E4 var-len
+    # (clif_packetdb.hpp:1268 -1 row; the leg-63 session killer) - the one
+    # acknowledged VALUE override in this era chain, compared separately.
+    del old[0x07E4]
+    assert len(old) == 889  # the dialogue-era table; 0x00BC arrives later
     assert all(module.PACKET_DB[key] == value for key, value in old.items())
+    assert module.PACKET_DB[0x07E4] == -1  # the served var-len declaration
     assert module.PACKET_DB[0x01B3] == 67
     assert set(module.PACKET_DB) - old.keys() == {
         0xB4,
@@ -196,6 +201,9 @@ def test_existing_890_registrations_preserved_and_unknown_stays_strict():
         # Leg 38 (2026-10-29): ZC_ACK_GUILD_MENUINTERFACE 0x014e (6B) - the
         # guild menu bitmap ack, fired by the persisted guilds on login.
         0x014E,
+        # Leg 64: CZ_ITEM_PICKUP 0x07E4 re-declared var-len (the SERVED
+        # packetdb row; the 6->-1 override removed it from `old` above).
+        0x07E4,
     }
     assert len(module.PACKET_DB) == 910
     with pytest.raises(ValueError, match="unknown packet 0xfafa"):

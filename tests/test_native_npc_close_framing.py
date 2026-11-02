@@ -122,13 +122,23 @@ def test_existing_bad_variable_length_remains_strict(size: int) -> None:
         packet_module().parse_stream(CLOSE + struct.pack("<HH", 0x008E, size))
 
 
+# Leg 64: CZ_ITEM_PICKUP 0x07E4 re-declared var-len - the SERVED packetdb row
+# (clif_packetdb.hpp:1268 -1; the leg-63 session killer); a value override of
+# the baseline's TakeItem,6 entry, not an addition.
+PICKUP_VARLEN = {0x07E4: -1}
+
+
 def test_all_889_mappings_macros_and_parser_preserved_bitexact() -> None:
     module = packet_module()
     baseline = json.loads(
         (ROOT / "run/reviews/native-manifest-migration-baseline.json").read_text()
     )["current_final_PACKET_DB"]
     old = {int(key, 16): value for key, value in baseline.items()} | {0x00C0: 7}
-    assert len(old) == 889
+    # Leg 64: the served 0x07E4 var-len override (the leg-63 session killer)
+    # removes the baseline's TakeItem,6 entry from this era's `old` set; the
+    # re-declared row is compared separately as PICKUP_VARLEN below.
+    del old[0x07E4]
+    assert len(old) == 888
     assert 0x00B6 not in old
     additions = {0x00B4: -1, 0x00B5: 6, 0x00B7: -1, 0x00C4: 6, 0x0142: 6, 0x01D4: 6}
     manifest = json.loads((ROOT / "protocol/main-20180704-pre-re-npc-dialogue.json").read_text())
@@ -163,9 +173,10 @@ def test_all_889_mappings_macros_and_parser_preserved_bitexact() -> None:
         and key not in guild_reply
         and key not in guild_invite
         and key not in wear_ack
+        and key not in PICKUP_VARLEN
     }
     assert old | {0x00B6: 6, 0x00BC: 6} == prior_891
-    assert len(prior_891) == 891
+    assert len(prior_891) == 890  # 891 minus the overridden 0x07E4 row
     assert not additions.keys() & prior_891.keys()
     assert not char_page.keys() & prior_891.keys()
     assert (
@@ -178,6 +189,7 @@ def test_all_889_mappings_macros_and_parser_preserved_bitexact() -> None:
         | guild_reply
         | guild_invite
         | wear_ack
+        | PICKUP_VARLEN
         == module.PACKET_DB
     )
     assert len(module.PACKET_DB) == 910
@@ -278,6 +290,10 @@ def test_all_889_mappings_macros_and_parser_preserved_bitexact() -> None:
         # block appended after the 0x01EB block (the persisted guilds fire
         # it on login; the leg-38 TRANSPORT DOWN line)
         "a4eba8ae4614238a94a3b53c5fd3c06c77ce7b501f74ef950db20287d251c05e",
+        # leg 64: the served 0x07E4 var-len override - the PACKET_DB.update +
+        # shadow block appended after the 0x014e block (the leg-63 session
+        # killer: the served db read the AID word as the declared length)
+        "3808ad62b05e31eee315423b73110f0a224bdfd12776165eaa32956fd1a4e595",
     )
     token = b", 0x00B6: 6"
     assert raw.count(token) == 1
@@ -300,6 +316,10 @@ def test_all_889_mappings_macros_and_parser_preserved_bitexact() -> None:
         "a2516d00f0e9a31b637a7ca3c6d4fcde7ddf7dec67871c879d82d988c1a2c4e8",
         # leg 38: the guild-menu ack 0x014e (6B) block + its doubled separators
         "9dad1baad8828e738caea01766b1bafc9513cf0e408493697fd888e925d2bdf0",
+        # leg 64: the same file with the served 0x07E4 var-len override
+        # block ALSO present (the PACKET_DB.update + shadow append after
+        # the 0x014e block; the leg-63 session killer)
+        "76d99e9748192b18ed20182c7912b00c8d9cf072ff85f166cc535f0a1c20bb3e",
     )
 
 

@@ -248,10 +248,9 @@ def test_loot_uses_visible_floor_id_without_claiming_inventory():
     wire.add(struct.pack("<HIHHBhhBBh", 0x0ADD, 321, 501, 0, 1, 42, 37, 0, 0, 3) + bytes(3))
     client = runtime.PlayingClient(wire)
     client.perform_native(Loot())
-    # CZ_ITEM_PICKUP is 0x07E4 at the pinned era (clif_packetdb.hpp:1560);
-    # 0x0362 is clif_parse_DropItem there (line 1561), so the old 0x0362
-    # hex pin asserted a guaranteed-rejected drop request, not a pickup.
-    assert wire.sent == [bytes.fromhex("e40741010000")]
+    # CZ_ITEM_PICKUP is 0x07E4 and the SERVED packetdb declares it var-len
+    # (clif_packetdb.hpp:1268 -1 row; leg 63): type.W + len.W(8) + AID.L.
+    assert wire.sent == [bytes.fromhex("e407080041010000")]
     assert not client.build_native_state(Goal.GRIND).inventory_known
 
 
