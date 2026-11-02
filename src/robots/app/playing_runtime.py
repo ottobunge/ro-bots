@@ -496,6 +496,10 @@ class PlayingClient:
         self._keepalive_failed = False
         return result
 
+    _pending_origin: str = "step"
+    """Which walk class the current pending came from (the leg-68 release
+    tap reads it); every send site re-tags it before arming a pending."""
+
     def __getattr__(self, name: str) -> Any:
         return getattr(self.wire, name)
 
@@ -1984,11 +1988,13 @@ class PlayingClient:
                 return
             self._note_move_gate("no_route_direct")
             self.wire.move(*target)
+            self._pending_origin = "direct"
             self._pending = (target, pos.seq, self._now(), 0)
             return
         if len(path) > 1:
             point = path[1]
             self.wire.move(*point)
+            self._pending_origin = "step"
             self._pending = (point, pos.seq, self._now(), 0)
         else:
             self._note_move_gate("single_cell_path")
@@ -2045,11 +2051,13 @@ class PlayingClient:
             self._deadlock_cells.add((state.map_name, (state.x, state.y)))
             self._note_move_gate("target_unwalkable_escalated")
             self.wire.move(*alt)
+            self._pending_origin = "escalated"
             self._pending = (alt, pos.seq, self._now(), 0)
             return
         self._rerolled_moves[key] = alt
         self._note_move_gate("target_unwalkable_rerolled")
         self.wire.move(*alt)
+        self._pending_origin = "rerolled"
         self._pending = (alt, pos.seq, self._now(), 0)
 
     def mechanical_actions(
@@ -2669,6 +2677,11 @@ class PlayingClient:
                 # walk finished silently, was blocked, or the ack was lost.
                 # Release for a fresh approach from the current position —
                 # the re-send to the stale point did not converge (w57).
+                # Leg 68: this release is where a server-refused walk goes
+                # silent (the (226,317) pocket inferred its refusals from a
+                # zero-note receipt) - the note names the release WITH the
+                # walk class so the next receipt reads which walks died.
+                self._note_move_gate(f"walk_released_no_progress({self._pending_origin})")
                 self._pending = None
                 return False
             else:
