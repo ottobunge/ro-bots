@@ -9241,3 +9241,23 @@ receipt's NEXT note stays open for the coordinator):
   in test_native_npc_dialogue.py (0x07E4 excluded from `old`, compared as the
   served -1 row). New packetdb.py digests were read from the pytest failures
   and appended with comments, never hand-computed.
+
+## Leg 64 (Mon 2026-11-02 03:15-04:30 CET, day 0) — THE PICKUP SURVIVAL READOUT: the served-dialect 0x07E4 holds every session; the served image's 0x07E4 row is the remaining dead hop
+
+Fix under test c9f00fa4 (ded48f5a): CZ_ITEM_PICKUP rebuilt as the SERVED packet_db declares it — var-len `type.W + len.W(8) + AID.L` against the pinned image's 20090818 row `parseable_packet(0x07e4,-1,clif_parse_ItemListWindowSelected,2,4,8,12)` (clif_packetdb.hpp:1268; the 0xC6/0xC7 precedent), not the tree's later `parseable_packet(0x07E4,6,clif_parse_TakeItem,2)` row (line 1560, not what the binary obeys).
+
+**VERDICT: THE SESSIONS SURVIVE — 4/4 dispatched pickups, 4/4 sessions alive after the send.** The leg-63 killer (the fixed 6-byte TakeItem frame made the served parser read the AID word as a length word -> "expected packet length 319, but only 6 bytes remaining, disconnecting session #N") did not fire once. 0 TRANSPORT DOWN, 0 Traceback, 0 step/rx/dispatch errors across 23,498 steps; 7/7 online=1 through the whole window; clean logoff at the 04:30 close (t=5112, on the dot).
+
+**The full loop did NOT close — and that is the shim's designed outcome, not a regression.** Zero inventory gains, zeny unchanged on all 7 (8/31/100/7/0/4/0), no C7. The served dialect parses our frame with the ItemListWindowSelected handler, which no-ops for a bot with no menuskill (clif_menuskill_clear + return): the send is consumed harmlessly and never reaches clif_parse_TakeItem, so the item stays on the floor and the pickup never lands. **THE REMAINING DEAD HOP: the SERVED IMAGE'S 0x07E4 row itself** — the leg-64 bisect note the pickup() docstring carries. Next slice: rebuild the image's packet_db row (0x07E4 -> clif_parse_TakeItem, 6) or otherwise reach TakeItem at the served offsets, then re-run this window unchanged client-side — inventory gains become reachable with the wire shape already proven safe.
+
+Verbatim taps (four surfaced -> four dispatched; /tmp/population_leg64.log):
+- `loot-debug: floor item surfaced (nameid=909 cell=(225,173) amount=1 fid=324)` -> `loot-debug: pickup dispatched (fid=324 nameid=909 cell=(225,173))` (Jellopy, YuffieFy81, pay_fild04)
+- `loot-debug: floor item surfaced (nameid=713 cell=(232,372) amount=1 fid=325)` -> `loot-debug: pickup dispatched (fid=325 nameid=713 cell=(232,372))` (Empty Bottle, NyxSong)
+- `loot-debug: floor item surfaced (nameid=705 cell=(204,342) amount=1 fid=326)` -> `loot-debug: pickup dispatched (fid=326 nameid=705 cell=(204,342))` (Clover, xXLunasongXx)
+- `loot-debug: floor item surfaced (nameid=949 cell=(205,341) amount=1 fid=327)` -> `loot-debug: pickup dispatched (fid=327 nameid=949 cell=(205,341))` (Feather, xXLunasongXx)
+
+In-range proof from the traces: the Loot rows executed ADJACENT to the drops — NyxSong at (231,373) vs (232,372) = Chebyshev 1 at 02:55:16 UTC, xXLunasongXx at (203,343) vs (204,342)/(205,341) = Chebyshev 1/2 at 03:04:26/27 UTC — and every action stream ran on for minutes after the send (the `_loot` send seam: the dispatched tap sits immediately before `wire._send(pickup(fid))`).
+
+Death-stall recurrences (the standing open defect, fresh data): RinceNyan (g00m01) action stream dead since 02:28:30 UTC, tracker frozen at (235,344) through 140 decides; YuffieFy81 (s00) dead since 02:27:51 UTC, frozen at (233,176) through 135 decides; both DB rows fell back to EXACT save cells at readback (prontera 150,143 / pay_fild04 206,175 — the respawn fingerprint). The 0x0091 latch-clear did not release either. Both deaths land ~02:27-02:28 UTC, ~12 min into the window, on different maps.
+
+Receipt `run/plain_host_receipts/population-receipt-64-1793585142.json` (launch 03:05:42 CET, duration 5900s): 11,732 executed actions (MoveTo 11569, Say 55, PartyChat 41, Attack 41, Loot 6 rows / 4 sends, GuildInvite 12, FoundGuild 2, InviteToParty 4, Rest 2), 794 decide_responses (95-140 per agent), move_gates await_pending 9554 / no_route_direct 203 / no_position_or_dead 151 / rerolled 3 / escalated 2, attack_gates pending_walk 662 / resting 152. DB exp deltas: NyxSong +4/+2, RinceNyan +4/+5 (frozen at death), xXLunasongXx +2/+1, YuffieFy81 +2/+1 (frozen at death). Schedule `run/reviews/population-live-schedule-leg64.json` held the bare mapping; seed-zeny refreshed pre-launch (15adb284, values unchanged).
