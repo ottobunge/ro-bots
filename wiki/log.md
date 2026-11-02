@@ -9196,3 +9196,48 @@ window. An EOF'd wire should be flagged offline (or relogged), not reported onli
 NEXT (leg 64): make the served 0x07E4 row TakeItem,6 (rebuild/re-pin the rathena image; verify with a
 6-byte pickup probe — expect NO disconnect and a picklog P row), and harden the runner's EOF handling.
 Then inventory gains → sell arm → C7 → zeny is the same chain leg 62/63 already mapped.
+
+## 2026-11-02 (leg-64 slice, branch `feat/pickup-frame-varlen`) — THE PICKUP SPEAKS THE SERVED DIALECT: the 0x07E4 builder + framer table align with the served packetdb's var-len declaration (the leg-63 session killer)
+
+Leg 63 proved every pickup disconnected its own session: the served binary
+(rathena-playable:20180704-e985006171d2) parses CZ_ITEM_PICKUP 0x07E4 as
+VARIABLE-LENGTH — it reads the declared length at offset 2, which was the
+floor-item AID in the builder's fixed 6-byte TakeItem frame ("expected packet
+length 319, but only 6 bytes remaining"). This slice takes the CLIENT-side
+half of the fix (the brief's choice; the image-row bisect/rebuild of the
+receipt's NEXT note stays open for the coordinator):
+
+- THE SERVED ROW: `parseable_packet(0x07e4,-1,clif_parse_ItemListWindowSelected,2,4,8,12)`
+  (clif_packetdb.hpp:1268, the 20090818 block) — not the tree's
+  `parseable_packet(0x07E4,6,clif_parse_TakeItem,2)` (line 1560). The served
+  length gate (clif.cpp:25757-25776) reads the length word at offset 2,
+  requires `4 <= declared <= 32768` and RFIFOREST >= declared, then consumes
+  exactly `declared` bytes.
+- THE FRAME: `native_gameplay.pickup()` now emits type.W + len.W(total=8) +
+  AID.L — 8 bytes, e.g. `e407080041010000` for fid 321 — the 0xC6/0xC7
+  var-len precedent (pdb.pack prepends 4 + len(payload)). The declared length
+  matches the frame, so the served parser consumes it cleanly; the
+  ItemListWindowSelected handler then no-ops for a bot with no menuskill
+  (clif_menuskill_clear + return), so the SESSION SURVIVES. Honest boundary:
+  the pickup still does not reach clif_parse_TakeItem until the served row is
+  TakeItem,6 — no picklog P row is claimed by this slice.
+- THE FRAMER TABLE: spikes/003-clientless-limbs/packetdb.py gains the
+  append-only block `PACKET_DB.update({0x07E4: -1})` +
+  `_NATIVE_REGISTRATION_SHADOWS.update({0x07E4: (6, -1)})` (the tree-derived
+  table says TakeItem,6 by later-wins; the served binary obeys the -1 row —
+  the same separate-authorities shadow as 0x2C4/0x0168, recorded so
+  packetdb.self_test stays true). The table count stays 910 (a value
+  override, not an addition).
+- TESTS: new tests/test_pickup_frame_varlen.py pins the builder's golden
+  bytes + length field, the framer's -1 registration, the served-parser
+  desync harness (golden byte test + fragment reassembly at every split),
+  the historical leg-63 fixed-frame disconnect signature, and the shadow/
+  self-test contract. Reconciled to the new contract: the pickup byte pins
+  in test_native_gameplay.py / test_playing_runtime.py / test_loot_priority.py
+  (PICKUP fixture) / test_loot_seam.py, the era chains + stripped-digest
+  chains in test_native_emotion_framing.py / test_native_npc_close_framing.py /
+  test_native_npc_cutin_framing.py / test_native_wear_equip_ack_framing.py,
+  and the dialogue-era baseline comparison
+  in test_native_npc_dialogue.py (0x07E4 excluded from `old`, compared as the
+  served -1 row). New packetdb.py digests were read from the pytest failures
+  and appended with comments, never hand-computed.

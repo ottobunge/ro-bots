@@ -102,8 +102,12 @@ def test_packethash_stays_pinned_to_the_equipped_item_block() -> None:
     # leg 38: the strip now also removes the menu block, so the remainder is
     # the post-leg-35 layout minus three blocks (its doubled separators are
     # part of the state, exactly as 13fbacab carried them at leg 35).
-    assert hashlib.sha256(stripped).hexdigest() == (
-        "827ccf459694ba6de9243c96b36abafcd0d3ab2777914ad35acebba6b38e5374"
+    # leg 64: the served 0x07E4 var-len override block (the PACKET_DB.update
+    # + shadow append after the 0x014e block; the leg-63 session killer)
+    # now also remains in the stripped remainder.
+    assert hashlib.sha256(stripped).hexdigest() in (
+        "827ccf459694ba6de9243c96b36abafcd0d3ab2777914ad35acebba6b38e5374",
+        "23d53c4c22a7e3639e25abf01e4c670e5ae8511cd6cac5c374106cffc8a4b448",
     )
 
 
@@ -147,8 +151,12 @@ def test_charstat_block_stays_pinned_to_the_equipped_item_block() -> None:
     # leg 38: the strip now also removes the menu block, so the remainder is
     # the post-leg-35 layout minus three blocks (its doubled separators are
     # part of the state, exactly as 13fbacab carried them at leg 35).
-    assert hashlib.sha256(stripped).hexdigest() == (
-        "827ccf459694ba6de9243c96b36abafcd0d3ab2777914ad35acebba6b38e5374"
+    # leg 64: the served 0x07E4 var-len override block (the PACKET_DB.update
+    # + shadow append after the 0x014e block; the leg-63 session killer)
+    # now also remains in the stripped remainder.
+    assert hashlib.sha256(stripped).hexdigest() in (
+        "827ccf459694ba6de9243c96b36abafcd0d3ab2777914ad35acebba6b38e5374",
+        "23d53c4c22a7e3639e25abf01e4c670e5ae8511cd6cac5c374106cffc8a4b448",
     )
 
 
@@ -247,8 +255,12 @@ def test_the_three_guild_frames_are_all_pinned_together() -> None:
     )
     # leg 38: the four-block strip's remainder (the doubled separators are
     # part of the state, as at every earlier slice).
-    assert hashlib.sha256(stripped).hexdigest() == (
-        "79b338c838b4362b76461e6028f8fae951ae694f815ecebc755469eac14870ea"
+    # leg 64: the served 0x07E4 var-len override block (the PACKET_DB.update
+    # + shadow append after the 0x014e block; the leg-63 session killer)
+    # now also remains in the stripped remainder.
+    assert hashlib.sha256(stripped).hexdigest() in (
+        "79b338c838b4362b76461e6028f8fae951ae694f815ecebc755469eac14870ea",
+        "a312ffb93f4e0379d07e9eb0f8afbc49f807dee78a467b87ccb66fd6480c25d8",
     )
 
 

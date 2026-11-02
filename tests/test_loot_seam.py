@@ -39,9 +39,11 @@ def test_pickup_encode_is_takeitem_07e4() -> None:
     (clif_packetdb.hpp:1561) and moves TakeItem to 0x07E4 (line 1560) —
     the later registration wins in the compiled packetdb, so the old
     0x0362 pin asserted a guaranteed-rejected drop (leg 60: 16 loot
-    choices, zero pickups, zero inventory delta).
+    choices, zero pickups, zero inventory delta). Leg 64: the SERVED
+    packetdb declares 0x07E4 var-len (clif_packetdb.hpp:1268 -1 row; the
+    leg-63 session killer), so the frame is type.W + len.W(8) + AID.L.
     """
-    assert pickup(321) == bytes.fromhex("e40741010000")
+    assert pickup(321) == bytes.fromhex("e407080041010000")
 
 
 def test_item_drop_events_mint_off_received_009d() -> None:
@@ -82,7 +84,7 @@ def test_loot_taps_surface_and_dispatch(caplog: pytest.LogCaptureFixture) -> Non
         assert "nameid=501" in surfaced[0]
         assert "cell=(43,38)" in surfaced[0]
         client.perform_native(Loot())
-    assert wire.sent == [bytes.fromhex("e40741010000")]
+    assert wire.sent == [bytes.fromhex("e407080041010000")]
     dispatched = [r.getMessage() for r in caplog.records if "pickup dispatched" in r.getMessage()]
     assert len(dispatched) == 1
     assert "fid=321" in dispatched[0]

@@ -326,8 +326,14 @@ def validate_exact_addition(table: dict[int, int], raw: bytes) -> None:
     # flag>.L, packets.hpp:842, clif.cpp:8755-8768) - the guild menu bitmap
     # the server answers when a persisted guild's member asks for it.
     prior_910 = prior_909 | {0x014E: 6}
+    # Leg 64 (2026-11-02): CZ_ITEM_PICKUP 0x07E4 re-declared var-len - the
+    # SERVED packetdb row (clif_packetdb.hpp:1268 -1 ItemListWindowSelected;
+    # the leg-63 session killer: the image read the AID word as the length
+    # and disconnected every pickup). A value override of the baseline's
+    # TakeItem,6 entry (line 1560), so the table count stays 910.
+    prior_911 = prior_910 | {0x07E4: -1}
     assert len(table) == 910
-    assert table == prior_910
+    assert table == prior_911
     assert raw.count(CUTIN_BLOCK) == 1
     assert raw.count(CHAR_PAGE_BLOCK) == 1
     assert raw.count(STAT_CHANGE_BLOCK) == 1
@@ -375,6 +381,10 @@ def validate_exact_addition(table: dict[int, int], raw: bytes) -> None:
         # block appended after the 0x01EB block (the persisted guilds fire
         # it on login; the leg-38 TRANSPORT DOWN line)
         "1ce88b7b837c46fe86b84cd845c2256b538de5c9a1ed62a545d0f4ac6289627e",
+        # leg 64: the served 0x07E4 var-len override - the PACKET_DB.update +
+        # shadow block appended after the 0x014e block (the leg-63 session
+        # killer; the era chain carries prior_911 = prior_910 | {0x07E4: -1})
+        "ed25cb8b37516be92c75dfa94c281a7f26662d0c3fb39332510fbcbce6f6ade3",
     )
 
 

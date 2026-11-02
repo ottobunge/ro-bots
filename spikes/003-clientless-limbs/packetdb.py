@@ -831,6 +831,28 @@ PACKET_DB.update({0x01EB: 10})
 PACKET_DB.update({0x014E: 6})
 
 
+# Leg 64 (2026-11-02): the SERVED packetdb parses CZ_ITEM_PICKUP 0x07E4 as
+# VARIABLE-LENGTH. The pinned image (rathena-playable:20180704-e985006171d2)
+# answered every 6-byte TakeItem send with "clif_parse: Received packet
+# 0x07e4 with expected packet length <the AID>, but only 6 bytes remaining,
+# disconnecting session #N" (the leg-63 receipt: all four pickup agents
+# died) - it reads the declared length at offset 2, i.e. the 20090818
+# ItemListWindowSelected row (clif_packetdb.hpp:1268 parseable_packet(
+# 0x07e4,-1,clif_parse_ItemListWindowSelected,2,4,8,12)), not the tree's
+# later TakeItem,6 row (line 1560). The client side aligns with the SERVED
+# declaration: -1 here and the production builder
+# (src/robots/adapters/native_gameplay.py pickup()) prepends the length
+# word like the 0xC6/0xC7 var-len precedent. The served length gate
+# (clif.cpp:25757-25776) consumes exactly the frame; ItemListWindowSelected
+# then no-ops for a bot with no menuskill, so the session survives until
+# the image rebuild settles the row (the leg-64 bisect note).
+PACKET_DB.update({0x07E4: -1})
+# The tree-derived table (later registration wins) says TakeItem,6; the
+# served binary obeys the -1 row - the same separate-authorities shadow as
+# 0x2C4/0x0168, recorded so self_test stays true.
+_NATIVE_REGISTRATION_SHADOWS.update({0x07E4: (6, -1)})
+
+
 def parse_stream(buf: bytes) -> tuple[list[tuple[int, bytes]], bytes]:
     """
     Split a byte stream into complete (pid, raw) packets.
