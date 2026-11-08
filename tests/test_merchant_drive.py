@@ -211,18 +211,29 @@ def test_dealer_talk_when_npc_at_dealer_cell() -> None:
 
 
 def test_dealer_walks_when_no_npc_visible() -> None:
+    """leg-71 frontier b: the walk-to-dealer targets the APPROACH CELL (the
+    dealer's neighbouring cell nearest the agent), never the dealer's own
+    cell — the shop npc holds that cell, so the old direct target stopped
+    the server walk 2 cells out and the adjacency-gated talk never fired."""
     state = _state(map_name="prt_in", x=168, y=128, zeny=60)
     outcome = GrindScript().step(state)
-    assert outcome.actions == (MoveTo(x=172, y=130),)
+    assert outcome.actions == (MoveTo(x=171, y=129),)
 
 
 def test_dealer_talk_ignores_positionless_npc() -> None:
+    """The positionless npc is never a candidate; the walk resumes. leg-71
+    frontier b: the walk target is the approach cell — the agent is ALREADY
+    dealer-adjacent here, so the nearest neighbour of the cited cell is its
+    own cell (Chebyshev 0) and the drive holds position."""
     state = _state(map_name="prt_in", x=172, y=129, zeny=60, nearby=(_dealer(x=None, y=None),))
     outcome = GrindScript().step(state)
-    assert outcome.actions == (MoveTo(x=172, y=130),)
+    assert outcome.actions == (MoveTo(x=172, y=129),)
 
 
 def test_dealer_talk_ignores_far_npc() -> None:
+    """A far npc at a non-cited cell is never a candidate; the walk resumes
+    on the approach cell (leg-71 frontier b) — already dealer-adjacent, the
+    drive holds its position instead of stepping onto the held shop cell."""
     state = _state(
         map_name="prt_in",
         x=172,
@@ -231,7 +242,7 @@ def test_dealer_talk_ignores_far_npc() -> None:
         nearby=(_dealer(id=77, x=150, y=110),),
     )
     outcome = GrindScript().step(state)
-    assert outcome.actions == (MoveTo(x=172, y=130),)
+    assert outcome.actions == (MoveTo(x=172, y=129),)
 
 
 # --- sellable-stock drive (window-28 finding: start_zeny is 0) ---

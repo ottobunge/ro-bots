@@ -79,13 +79,17 @@ def test_same_component_merchant_keeps_the_dealer_leg() -> None:
     assert outcome is not None
     (action,) = outcome.actions
     assert isinstance(action, MoveTo)
-    assert (action.x, action.y) == (172, 130)
+    # leg-71 frontier b: the dealer leg targets the APPROACH CELL (the
+    # dealer's neighbouring cell nearest the agent), not the held shop cell.
+    assert (action.x, action.y) == (171, 131)
 
 
 def test_no_reachable_authority_keeps_the_pinned_leg() -> None:
-    """Without the authority (no router wired) the pinned leg is unchanged."""
+    """Without the authority (no router wired) the pinned leg is unchanged —
+    the drive still walks the dealer leg's approach cell (leg-71 frontier
+    b): from (44,102) the dealer's nearest neighbouring cell is (171,129)."""
     outcome = _merchant_step(_outbound_state())
     assert outcome is not None
     (action,) = outcome.actions
     assert isinstance(action, MoveTo)
-    assert (action.x, action.y) == (172, 130)
+    assert (action.x, action.y) == (171, 129)

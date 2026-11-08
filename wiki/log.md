@@ -9466,3 +9466,53 @@ pickups fired but nothing landed; read the pickup-dispatch taps before touching 
 code. Receipt: run/plain_host_receipts/population-receipt-71-1793657128.json.
 Next slice: the route-coverage/talk-radius pair above; observation cadence complete,
 fix slices unblocked.
+
+## Slice: the dealer approach cell (branch feat/dealer-approach-cell, no runner leg)
+
+**LEG-71 FRONTIER (b) LANDED OFFLINE: the sell drive's walk-to-dealer now closes the last
+cells — the approach cell (the dealer's neighbouring cell nearest the agent, the proven
+`_approach_cell` intercept from the attack scripts) — and TalkToNpc still fires ONLY at
+dealer-adjacency (Chebyshev <= 1), so the range-2 silent park can never recur.** Worktree
+/tmp/wt-talk-radius off ad3f3850; TDD: 4 RED in tests/test_dealer_approach_cell.py before any
+fix — the parked-at-2 leg-71 shape reproduced exactly (agent (174,128), dealer received at
+the cited (172,130), drive authored MoveTo(172,130), the shop's own held cell) — then GREEN,
+plus two companion pins (the adjacency-gated talk PipinWalker proved live; the field warp
+legs keep the warp cell, since a neighbouring cell never fires a warp). Full gate
+`nix develop -c task --dir . check` green before commit.
+
+**The defect, from the receipt's verbatim lines:** xXLunasongXx crossed prt_fild08 ->
+prontera -> prt_in and from ~23:05 UTC parked at (173-174,128-130) — Chebyshev 2 from the
+dealer cell — authoring MoveTo every tick and NEVER TalkToNpc (npc rows: []), while
+PipinWalker sold FROM (173,129) and PoringMuffin14 from (173,130), both adjacent. The
+drive's walk-to-dealer targeted the DEALER'S OWN cell; that cell is held by the shop npc,
+so the server stopped the walk 2 cells out, `_dealer_talk`'s agent-range gate then refused
+every talk, and the drive re-authored the same doomed MoveTo forever — silent at range 2.
+
+**The fix as landed (`_merchant_engage` + `_dealer_talk` in src/robots/app/scripts.py):**
+on the prt_in interior leg the outbound walk targets `_approach_cell(dest, state)` — the
+deterministic nearest neighbour of the cited dealer cell — which is enterable, so the walk
+COMPLETES and lands the agent inside the talk ring (every leg-71 park cell converges in one
+approach: (174,128)->(173,129), Chebyshev 1). The tap-before-fix: when a dealer npc IS
+received at the cited cell but the talk cannot fire, `_tap_dealer_range` emits
+`merchant-drive: sell arm dealer_talk_out_of_range (agent=(..) dealer=(..) chebyshev=N)` —
+its own DETAIL-keyed memo (the shared per-term memo would flip-flop with the per-tick
+`admitted` line and log every tick), so a steady park logs ONE bounded line and a real
+change of position re-names itself; if the defect still fires, the log names the distance.
+One incidental correction the drive legitimately needs: `_approach_cell`'s sentinel
+initial best (`(99, 99, ...)`) silently returned `(tx+1, ty)` unexamined for targets more
+than 99 cells away — unreachable for melee approaches (mobs in view are <= ~14 cells) but
+wrong for the drive's far approach; the init is now a real first-candidate seed with a
+drift-guard return. Old-contract pins reconciled, not deleted: the three
+`MoveTo(172,130)`-cell asserts in test_merchant_drive.py, the two dealer-leg cells in
+test_merchant_route_reachability.py — each now pins its approach cell with a comment
+naming the new behavior; the pinned route table itself is unchanged (prt_in still cites
+the dealer cell (172,130) — the approach cell is derived from it per tick).
+
+**SECONDARY (frontier a, NOT fixed here — coordinator decision after the next leg):**
+s00's completion still fails on ROUTE LENGTH: from a deep pay_fild04 spawn the pinned
+route is a 3-field odyssey (pay_fild04 -> moc_fild01 -> prt_fild08 -> prontera -> prt_in)
+a 75-min window cannot cover — the trip needs route coverage (the correct pay_fild04 ->
+town exit; the (17,165) west edge leads into moc_fild01, not town), or a knowingly-routed
+odyssey with the walk budget for it (paced faster than ~1 cell per re-send), or a
+persisted in-progress trip that survives the window close. Named in the leg-71 receipt;
+untouched on this branch.

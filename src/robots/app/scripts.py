@@ -175,10 +175,18 @@ _DEALER_TALKED: dict[str, int] = {}
 """Per-bot npc id of the last dealer TalkToNpc (one talk per contact; the
 entry is replaced when a different dealer npc becomes the candidate)."""
 
+_DEALER_RANGE_TAPPED: dict[str, str] = {}
+"""Per-bot detail of the last ``dealer_talk_out_of_range`` tap (leg-71
+frontier b): the memo is keyed on the FULL detail (agent cell, dealer cell,
+distance) so a steady out-of-range park logs one bounded line while a real
+change of position re-names itself — unlike the shared verdict-term memo,
+whose per-term dedupe would flip-flop fire every drive tick here."""
+
 
 def reset_merchant_talk() -> None:
     """Forget per-bot dealer contacts (new session epoch / test isolation)."""
     _DEALER_TALKED.clear()
+    _DEALER_RANGE_TAPPED.clear()
 
 
 """Per-bot-name commitment registry; one entry per agent in the process."""
@@ -696,40 +704,94 @@ def _merchant_engage(state: BotState, destination: tuple[int, int]) -> ScriptOut
                 return ScriptOutcome((), ScriptStatus.ACTIVE)
             _DEALER_TALKED[bot] = npc_id
             return ScriptOutcome((talk,), ScriptStatus.ACTIVE)
+        # leg-71 frontier b: the walk-to-dealer targets the APPROACH CELL
+        # (the dealer's neighbouring cell nearest the agent, the proven
+        # ``_approach_cell`` intercept from the attack scripts). The dealer's
+        # own cell can never be entered (the shop npc holds it), so the old
+        # direct target stopped the server walk 2 cells out and the
+        # adjacency-gated talk silently never fired (xXLunasongXx parked at
+        # Chebyshev 2, MoveTo every tick, npc rows []). Field/town legs are
+        # untouched: a warp must be ENTERED, so those keep the pinned cell.
+        walk_cell = _approach_cell(destination[0], destination[1], state)
+        return ScriptOutcome((MoveTo(x=walk_cell[0], y=walk_cell[1]),), ScriptStatus.ACTIVE)
     return ScriptOutcome((MoveTo(x=destination[0], y=destination[1]),), ScriptStatus.ACTIVE)
 
 
 def _dealer_talk(state: BotState, dealer_cell: tuple[int, int]) -> TalkToNpc | None:
     """The received dealer npc AT the cited cell, else None.
 
-    The match must be tight (Chebyshev <= 1): the shop interior holds the
-    Item Guide 2 cells from the cited Weapon Dealer cell, and a loose
-    range-2 match talks to the guide — the latch then holds on a dialog
-    that never opens (the w79 empty-actions hold)."""
-    candidates = [
-        actor
-        for actor in state.nearby
-        if actor.kind == "npc"
+    The match must be tight (Chebyshev <= 1, both against the cited cell
+    and against the agent): a loose radius captures whatever other npc
+    stands near the cited cell, and a talk at range never lands. With the
+    dealer received but the agent beyond the click range, the range tap
+    names the distance (leg-71 frontier b) and the step keeps walking."""
+    at_cell = [actor for actor in state.nearby if _received_dealer_at_cell(actor, dealer_cell)]
+    if not at_cell:
+        return None
+    candidates = [actor for actor in at_cell if _within_talk_range(actor, state)]
+    if not candidates:
+        _tap_dealer_range(state, at_cell)
+        return None
+    return TalkToNpc(min(candidates, key=lambda actor: actor.distance).id)
+
+
+def _received_dealer_at_cell(actor: ActorRef, dealer_cell: tuple[int, int]) -> bool:
+    """A name-matched Weapon Dealer npc with a tracked position within
+    ``DEALER_TALK_RANGE`` of the cited cell (the w79/w80 tight match: the
+    Item Guide 2 cells away is never the dealer; position-less npcs are
+    never guessed — fail closed)."""
+    return (
+        actor.kind == "npc"
         and getattr(actor, "name", "").startswith("Weapon Dealer")
         and getattr(actor, "x", None) is not None
         and getattr(actor, "y", None) is not None
-        # The talk must be ADJACENT to the agent: rAthena's npc_click range
-        # check silently rejects clicks from 2+ cells and the latch would
-        # hold on a shop that never opens (the w81 null-offer trace).
-        and max(
-            abs(actor.x - state.x),  # type: ignore[operator]
-            abs(actor.y - state.y),  # type: ignore[operator]
-        )
-        <= DEALER_TALK_RANGE
         and max(
             abs(actor.x - dealer_cell[0]),  # type: ignore[operator]
             abs(actor.y - dealer_cell[1]),  # type: ignore[operator]
         )
         <= DEALER_TALK_RANGE
-    ]
-    if not candidates:
-        return None
-    return TalkToNpc(min(candidates, key=lambda actor: actor.distance).id)
+    )
+
+
+def _within_talk_range(actor: ActorRef, state: BotState) -> bool:
+    """The agent stands within ``DEALER_TALK_RANGE`` (Chebyshev) of the
+    actor: rAthena's npc_click range check silently rejects clicks from 2+
+    cells and the latch would hold on a shop that never opens (the w81
+    null-offer trace)."""
+    return (
+        max(
+            abs(actor.x - state.x),  # type: ignore[operator]
+            abs(actor.y - state.y),  # type: ignore[operator]
+        )
+        <= DEALER_TALK_RANGE
+    )
+
+
+def _tap_dealer_range(state: BotState, at_cell: list[ActorRef]) -> None:
+    """Tap-before-fix (leg-71 frontier b): the dealer is received at the
+    cited cell but the talk cannot fire — the agent stands beyond the click
+    range. Name the distance so a residual range-2 park (the xXLunasongXx
+    shape: MoveTo every tick, npc rows [], zeny never moved) shows up in the
+    window log instead of reading as a silent no-op."""
+    nearest = min(
+        at_cell,
+        key=lambda actor: max(
+            abs(actor.x - state.x),  # type: ignore[operator]
+            abs(actor.y - state.y),  # type: ignore[operator]
+        ),
+    )
+    distance = max(
+        abs(nearest.x - state.x),  # type: ignore[operator]
+        abs(nearest.y - state.y),  # type: ignore[operator]
+    )
+    detail = f"agent=({state.x},{state.y}) dealer=({nearest.x},{nearest.y}) chebyshev={distance}"
+    if _DEALER_RANGE_TAPPED.get(state.name) == detail:
+        return
+    _DEALER_RANGE_TAPPED[state.name] = detail
+    # The merchant-drive tap line with a DETAIL-keyed memo of its own: the
+    # shared per-term memo would flip-flop with the per-tick ``admitted``
+    # line and log every drive tick.
+    logger.warning("merchant-drive: sell arm %s (%s)", "dealer_talk_out_of_range", detail)
 
 
 def _engage(state: BotState, candidates: list[ActorRef], window: int) -> ScriptOutcome:
@@ -761,8 +823,8 @@ def _approach_cell(tx: int, ty: int, state: BotState) -> tuple[int, int]:
     (leg 18: 31 near samples, zero adjacent). A one-cell mob shift from an
     adjacent-cell walk still ends in melee range. Deterministic tie-break on
     the cell coordinates."""
-    best = (tx + 1, ty)
-    best_key = (99, 99, 99 * 1000 + 99)
+    best: tuple[int, int] | None = None
+    best_key: tuple[int, int, int] | None = None
     for dx in (-1, 0, 1):
         for dy in (-1, 0, 1):
             if dx == 0 and dy == 0:
@@ -771,9 +833,12 @@ def _approach_cell(tx: int, ty: int, state: BotState) -> tuple[int, int]:
             cheb = max(abs(cell[0] - state.x), abs(cell[1] - state.y))
             euclid = (cell[0] - state.x) ** 2 + (cell[1] - state.y) ** 2
             key = (cheb, euclid, cell[0] * 1000 + cell[1])
-            if key < best_key:
+            if best_key is None or key < best_key:
                 best_key = key
                 best = cell
+    if best is None:  # drift-guard: 8 candidates always run; the old
+        # sentinel default (tx+1, ty) re-introduced the >99-cell artifact
+        return (tx + 1, ty)
     return best
 
 
