@@ -28,6 +28,8 @@ for candidate in (str(REPO / "src"), str(REPO), str(REPO / "tests")):
     if candidate not in sys.path:
         sys.path.insert(0, candidate)
 
+import pytest  # noqa: E402
+
 from robots.app import scripts  # noqa: E402
 from robots.app.scripts import (  # noqa: E402
     _DEALER_TALKED,
@@ -46,6 +48,13 @@ from robots.domain.actions import Attack, MoveTo, Rest, TalkToNpc  # noqa: E402
 from robots.domain.farm import FarmPlan  # noqa: E402
 from robots.domain.model import ActorRef, BotState, Goal  # noqa: E402
 from robots.domain.shop import ReceivedShopOffer, ReceivedShopRow  # noqa: E402
+
+
+@pytest.fixture(autouse=True)
+def _fresh_merchant_memo():
+    scripts.reset_merchant_talk()
+    yield
+    scripts.reset_merchant_talk()
 
 
 def _state(**over: object) -> BotState:
