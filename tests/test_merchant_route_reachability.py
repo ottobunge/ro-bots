@@ -12,7 +12,7 @@ of the route takes over from there).
 from __future__ import annotations
 
 from robots.adapters.native_navigation import MapCache, WalkMap
-from robots.app.scripts import _merchant_step
+from robots.app.scripts import ScriptStatus, _merchant_step
 from robots.app.travel_routing import TravelRouter
 from robots.domain.actions import MoveTo
 from tests.conftest import make_state
@@ -93,3 +93,25 @@ def test_no_reachable_authority_keeps_the_pinned_leg() -> None:
     (action,) = outcome.actions
     assert isinstance(action, MoveTo)
     assert (action.x, action.y) == (171, 129)
+
+
+def test_approach_skips_a_free_cell_vetoed_by_reachability_authority() -> None:
+    outcome = _merchant_step(
+        _outbound_state(x=174, y=128),
+        reachable=lambda _map, _from, cell: cell != (173, 129),
+    )
+    assert outcome is not None
+    assert outcome.actions == (MoveTo(x=172, y=129),)
+
+
+def test_no_reachable_free_cell_holds_until_authority_allows_one(caplog) -> None:
+    state = _outbound_state(x=174, y=128)
+    outcome = _merchant_step(state, reachable=lambda _map, _from, cell: cell == (172, 130))
+    assert outcome is not None
+    assert outcome.status == ScriptStatus.ACTIVE
+    assert outcome.actions == ()
+    assert any("hold dealer_occupied" in r.getMessage() for r in caplog.records)
+    assert any("reachable=0/8" in r.getMessage() for r in caplog.records)
+    released = _merchant_step(state, reachable=lambda _map, _from, _cell: None)
+    assert released is not None
+    assert released.actions == (MoveTo(x=173, y=129),)

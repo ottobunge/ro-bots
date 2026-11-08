@@ -9603,3 +9603,77 @@ BONUS: first social actions live in traces — FoundGuild x2, GuildInvite x12,
 InviteToParty x4; chat 101 chat_sent + 60 Say + 41 PartyChat.
 
 Code base: 24283f9d (no code change this leg). Commit: receipt + this entry.
+
+## 2026-11-08 leg 74 prep — dealer approach allocation from local perception
+
+Leg-73 evidence: `run/plain_host_receipts/population-receipt-73-1794124259.json`,
+`.work/runtime/population-live/traces/` (08:00–09:15 UTC), and
+`/tmp/population_leg73.log:709–802`. The log contains exactly 10 detail-keyed
+`dealer_talk_out_of_range` taps: five at the door (168,128), then one each at
+(170,128), (169,127), (169,128), (171,128), (169,129). Five sellers parked
+Chebyshev 2–4 from (172,130), `rerolled_target_dead: 8` per agent, zero shop
+offers and zero zeny delta. Leg 72's solo sale from (173,129) remains the
+single-agent proof; this change has no new live-run evidence.
+
+`scripts.py` now filters the dealer's eight neighbouring cells using only
+located OTHER `player` actors in the handed-in `state.nearby` (bots use the
+player kind), plus received body cells in `state.occupied_cells`. It keeps the
+original deterministic ordering: Chebyshev distance, squared Euclidean distance,
+then `x * 1000 + y`. Positionless players and non-player rows in `nearby` do
+not reserve cells. A free candidate is skipped only when
+the existing injected reachability authority explicitly returns False; absent
+or unknown authority keeps the original choice. No grid is read in scripts.
+The original geometric ordering remains the melee intercept, without dealer
+occupancy filtering; field/town warp targets and adjacent dealer talk are unchanged.
+
+When no eligible neighbour remains, the sell arm stays ACTIVE with no actions.
+It re-evaluates the received occupancy every tick and resumes walking as soon
+as a cell becomes available. A separate per-bot diagnostic memo bounds
+`sell arm hold dealer_occupied (free=…/8 occupied=…/8 reachable=0/8 …)` independently
+of the admission/range tap memos, so steady admission cannot make it log every
+tick. This memo records diagnostics only; allocation never reads another
+agent's state or writes a shared reservation. Shared queues/reservations,
+walkability logic in scripts, and changes to runtime movement/reroll were rejected.
+
+TDD: nine new cases; RED was 7 failed / 64 passed before implementation, GREEN
+was 71 passed across dealer approach, merchant drive, merchant route reachability,
+and approach intercept. Coverage includes the next-free tie-break from east and
+west, one remaining slot independent of actor ordering, a bounded 20-tick hold,
+vacancy → walk → adjacent talk, positionless/non-player exclusions, crowded
+adjacent talk, and explicit reachability veto/unknown-authority release.
+
+While tracing perception, found that native `PlayingClient._nearby` projects
+NPCs and attackable monsters only, not player actors. The coordinator explicitly
+answered the implementation question with option 2: add a separate occupied-cell
+perception signal while preserving the type-0 classification contract. The
+additive `BotState.occupied_cells` tuple is now built by
+`PlayingClient._occupied_cells` and passed through `build_native_state` to the
+script picker. It contains at most the nearest 64 unique type-0 body cells,
+ordered by Chebyshev distance, squared Euclidean distance, then coordinates.
+Self AID and its negated/disguised alias are excluded. PC-sprite mobs/NPCs may
+also occupy these cells: this is conservative body perception, never an identity
+claim. `_nearby` and `test_unproven_actor_is_not_player_or_monster` stay unchanged.
+No packetdb edits, new packet ids, or SHA-pin changes were needed; existing
+registered actor frames and tracker movement/vanish/map-reset handling supply
+the signal. Runtime movement/reroll is unchanged.
+
+Native wiring TDD: RED was 9 failed / 4 classification cases passed before the
+new field/projection. Native tests cover type filtering, unchanged identity refusal, self/alias
+exclusion, nearest-64 truncation with duplicate body cells, native frames → full
+dealer hold → received move/vanish → freed-cell MoveTo, and map-change expiry.
+No required native seam remains unwired. Simultaneously approaching agents do
+not reserve future cells, and bodies beyond the nearest-64 cap are omitted;
+allocation re-evaluates the next received view. A live leg is still needed to
+establish that this closes the leg-73 congestion shape.
+
+Gate setup needed the rAthena submodule initialized at the pinned e985006171d2
+revision and its ignored `config.log` symlink. The supplied canonical iRO Wiki
+database path was a self-referential symlink, so the gate uses the existing
+database at `/home/otto/dev/wt-mobpos/run/knowledge/iro-wiki/iro-wiki.db` locally.
+That environment-only symlink override is excluded from this commit.
+
+Final GREEN: `nix develop -c task --dir . check` exited 0 before commit:
+**6827 passed, 65 subtests passed, 4 warnings; coverage 95.39%** (85% required),
+including all formatting/static gates and the unchanged classification tests.
+Gate transcript: `/tmp/dealer-congestion-check-final.log`. No runners or probes
+launched, no heavengraph access, no `spikes/` edits, no merge to main.
