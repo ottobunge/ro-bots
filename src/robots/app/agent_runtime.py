@@ -1519,6 +1519,11 @@ class ScheduledAgent:
             return ()
         events: list[WorldEvent] = []
         native = getattr(client, "drain_native_events", None)
+        if isinstance(client, PlayingClient):
+            # Typed plans retain their existing passive boundary contract.
+            client.mechanical_recovery_allowed = getattr(
+                self.brain, "mechanical_fallback_allowed", True
+            )
         if native is not None:
             events.extend(native())
         events.extend(_public_chat_events(self, client))

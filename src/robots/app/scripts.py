@@ -637,12 +637,13 @@ def merchant_return_cell(state: BotState) -> tuple[int, int] | None:
     beyond the field. Anything else returns None: the field behavior and the
     drive stay unchanged; unknown maps fail closed.
 
-    A runtime buy give-up also releases the return while inventory is unknown
-    or a fixture weapon is present. Moving home does not authorize a trade.
+    A runtime buy give-up, validated sale, or honest timeout close also
+    releases the return while inventory is unknown or a fixture weapon is
+    present. A still-admitted trade keeps priority. Moving home authorizes no trade.
     """
     if state.job != "Novice":
         return None
-    if not state.merchant_buy_suspended and (
+    if not (state.merchant_buy_suspended or state.merchant_returning) and (
         not state.inventory_known
         or any(str(item) in state.inventory for item in NOVICE_WANTED_WEAPONS)
     ):

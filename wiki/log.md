@@ -10116,3 +10116,133 @@ condition must include the BLOCKED-dialogue path (barrier pre-offer), and a
 post-sale agent must return to its farm_item goal instead of camping the
 ring — the 90-minute dealer occupation is what starved the one genuinely
 queued seller. Traces (UTC window): `.work/runtime/population-live/traces/`.
+
+## 2026-11-08 leg 78 prep — recover the post-sale dialogue freeze and release the dealer ring
+
+Implementation only, based on main `a99c5846`; branch
+`fix/leg78-post-sale-dialogue`. Leg-77 evidence:
+`run/plain_host_receipts/population-receipt-77-1794167425.json`,
+`.work/runtime/population-live/traces/pop_0003_*.jsonl`, and
+`/tmp/population_leg77.log`. No runner/probe, live-world, Docker, heavengraph,
+or `spikes/` edits. No merge.
+
+**Evidence correction and limits.** The rows matching the receipt's three
+sales and final positions are **20:00–21:30 UTC**, not the supplied
+19:00–20:30 UTC window. The trace records authored actions and received UI
+stages, not raw outgoing packets. The exchanges below are reconstructed
+from those rows and the pinned dispatch/FSM; an `action_executed NpcClose`
+is NOT evidence that 0146 was sent. Receipt `wire_sent=0` is also not such
+evidence: its sampler counts a test-double-style `wire.sent` list, which
+the live wire does not expose.
+
+| Seller | Last NPC exchange and final stage | Why recovery did not recover |
+| --- | --- | --- |
+| NyxSong / g00m00, prt_in (173,129) | Sold at 20:00:10.074755: C5 type 1 / C7 / C9 / successful CB. Post-sale retries reconstruct 0090 clicks at about 20:00:27, 20:00:43, and 20:01:02.216912. The last C4 was observed at 20:01:04.218318 (UI sequence 152, `unsupported_shop`); deadline expiry made it `blocked`. The later authored close at 20:01:20.253022 was swallowed by the spent-budget retry guard; no 0146. | All three attempts spent after the sale. Farm/grind's bounded dialogue drive subsequently yielded MoveTo actions, but the native barrier filtered them. Chat/guild actions explain the later 20:31:19 last action; movement was already held. |
+| PoringMuffin14 / g01m02, prt_in (172,129) | Initial 0090 at 20:00:20.997035 expired unanswered; the first retry was observed `opening` at 20:00:39.670202. C4 arrived 20:00:42.462866, then C5 type 1 / C7 / C9 at 20:00:44.464571 / successful CB. Two post-sale retries used the authored closes at 20:00:58.477380 and 20:01:16.524493. Last C4: 20:01:18.540720, sequence 134, `unsupported_shop` -> timeout `blocked`. The 20:01:34.660054 close was swallowed, not sent. | One retry spent before the sale, two after. Inventory became unknown after deletion, so admission refused, but the UI and return barriers still held. Last chat action at 20:22:13 did not move it. |
+| YuffieFy81 / s00, prt_in (173,130) | C4 at 20:56:48.068221; C5 type 1 / C7 / C9 at 20:56:50.073557 / successful CB. No further authored actions. Host-pump retries produced opening/C4 pairs at 20:57:20/23, 20:57:41/43, and 20:58:01/04. Last C4: 20:58:04.959420, sequence 3309, `unsupported_shop` -> timeout `blocked`. | All three post-sale retries ran on the tick seam. The retained social goal uses strict dialogue routing and never authors farm/grind's bounded close. Budget exhaustion therefore held forever without even a close intent. |
+
+All three have the **timeout-origin / exhausted one-session budget** shape,
+not a demonstrated malformed poison and not a missing tick seam. No buy C5
+or C6 is recorded for these final rounds, so received-offer buy give-up
+cannot arm. Three distinct retry schedules and brain routes produced the
+same native hold.
+
+**The CB release existed but missed the live map spelling.** The trace sale
+intents carry `map_name='prt_in.gat'`; their dialogue carries `prt_in`.
+`_consume_sell_result` compared those literals, rejected the otherwise valid
+CB, and retained the old UI until it timed out. "No double sell" alone did
+not prove that release ran. The offline replay with a real MapCache, raw
+`.gat` map receipt, inventory deletion, and CB reproduces the miss; the
+same map-normalization authority used elsewhere now qualifies the
+comparison. Owner/epoch/NPC/round/prompt/poison/cancel guards remain.
+
+**zeny_wing is a fourth shape, with a diary correction.** Its final trace
+and receipt position is **prt_fild08 (186,322)**, not prontera. The last
+authored action is MoveTo(186,326) at 20:38:41.975048 after repeated Lunatic
+damage (last logged DamageTaken at 20:38:41.173367). Thereafter 191 decides
+continue, no NPC UI exists, the pose is None, and goal-script traces stop.
+The runtime path that clears an already-established pose to None here is
+received SELF vanish/death (0080, reason 1); `_received_death` then returns
+an empty outcome before script telemetry. The displayed HP 43 is stale
+presentation, not life authority. The retained JSONL does not include the
+raw death frame/time, so this is a source-supported reconstruction rather
+than a packet capture. `respawn()` already encoded B2 type 0, but no runtime
+caller existed: the dead body had no recovery request. This is not a
+merchant-drive ownership hold.
+
+**Implementation and fail-closed boundaries.**
+
+- `playing_runtime.py::_consume_sell_result` compares the verified map
+  identity and records a released merchant visit only after successful CB.
+- `_dispatch_timeout_close` admits a close for an already-denied timeout
+  before the retry interceptor. It does not change fresh-expiry dispatch
+  timing or the absolute 120-second/page/request budgets. The raw 0146 send
+  must succeed before local release; a failed send keeps permanent poison.
+- `_retry_timeout_dialogue` is shared by dispatch and tick: three attempts
+  per **300-second** epoch, minimum **5 seconds** apart, no catch-up burst.
+  An admitted trader can get fresh attempts in later epochs. Live offers,
+  cancel uncertainty, and non-timeout denials still prevent re-begin.
+- The host pump closes a refused, received, adjacent Weapon Dealer at the
+  existing prt_in dealer cell even without authored actions. It reuses
+  `_dealer_talk` and `merchant_admission_refusal`; unrelated/absent NPCs,
+  admitted business, planner holds, dead/sitting bodies, and pending walks
+  do not gain a close. `merchant_returning` records the actual released
+  visit, enabling `merchant_return_cell` through unknown inventory or a
+  fixture weapon without inventing inventory or suspending a buy. Fresh
+  admission still wins, and reaching the field clears the visit marker.
+- `_recover_dead_self` sends the existing B2 type 0 only for received dead
+  SELF, at most once per **30 seconds**, retaining pose/life barriers until
+  received warp/resurrection and SELF standing. Poison/cancel holds survive.
+  `agent_runtime.py::_drain_events` applies the host's existing
+  `mechanical_fallback_allowed` ownership law, preserving typed planner
+  boundary passivity for both new autonomous recovery paths.
+- `native_npc_dialogue.py::_expire` cannot overwrite a prior denial with
+  timeout. `_send_npc` explicitly records `send_failure` while retaining the
+  failed request's existing stage and exact exception. Poison therefore
+  cannot age into a retryable timeout.
+
+**Verification.** Initial TDD RED before implementation: **13 failed, 4
+passed**, `/tmp/leg78-red.log`. Expanded 29-case suite replayed against an
+isolated copy of baseline source: **21 failed, 8 passed**,
+`/tmp/leg78-final-suite-red.log`; current new suite GREEN: **29 passed**.
+It covers raw/canonical sale completion, expired sale completion, honest
+close and send failure, all goal routes, paced horizon renewal, deep-time
+poison, queue vacancy through C4/C5/C7/C9/CB convergence, self-death recovery,
+and ownership/identity/offer/cancel/pose/walk guards. No existing test
+assertions were edited, including malformed-cancel. Focused existing plus
+new dealer/recovery/latch/backoff/planner tests: **692 passed**,
+`/tmp/leg78-focused-final.log`.
+
+The first full gate caught compatibility regressions (16 failed, 6864 passed
+plus 65 subtests): observing before the ordinary retry seam advanced fresh
+expiry in the same dispatch, forcing failed requests to `blocked` rewrote
+retained request stages, and autonomous respawn violated a typed planner's
+passive death boundary. Those were fixed without altering existing test
+expectations. An intermediate gate was stopped after the final deadline
+compatibility correction; the final gate runs on the completed source.
+
+Gate inputs: only this worktree's pinned rAthena checkout and requested
+config/knowledge symlinks. The canonical iro-wiki symlink points to itself;
+tests use the existing wt-mobpos iro-wiki fallback as in leg-77 prep, then
+restore the requested original link. No corpus contents were edited.
+The README's full gate is `nix develop -c task check`; the separately run
+`task audit` is outside that gate and reports 17 existing findings in four
+unchanged locked packages (black, certifi, filelock, opentelemetry-api),
+`/tmp/leg78-audit.log`. Dependency manifests/lockfile remain unchanged.
+
+Rejected: disabling the NPC barrier, reclassifying poison as timeout,
+clearing a live offer to make progress, optimistic stock/life/pose,
+instant/unbounded re-click loops, a new buy-stock policy before any C6,
+rewriting typed planner ownership, treating an authored close as a wire
+receipt, world/NPC/SQL/Docker changes, runner/probe validation, and unrelated
+dependency upgrades. Unit/gate evidence does not claim a new live sale or
+leg-78 population convergence.
+
+Final full gate **GREEN before commit**: `nix --option auto-optimise-store
+false develop -c task --dir . check` exited **0**; **6892 passed, 65 subtests
+passed, 4 warnings, coverage 95.48%** (85% required), in **256.35 seconds**.
+Black, ruff, strict mypy (364 files), vulture, xenon, duplicate-code, and
+bandit all passed. Transcript: `/tmp/leg78-check-final.log`. The completed
+queue-sale assertions also passed in the final 29-case focused run
+(`/tmp/leg78-core-final.log`). The requested iro-wiki link was restored after
+verification, and no gate inputs are included in the commit.
