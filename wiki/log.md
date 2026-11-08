@@ -9806,3 +9806,42 @@ Final GREEN before commit: `nix develop -c task --dir . check` exited 0;
 **6840 passed, 65 subtests passed, 4 warnings; coverage 95.40%** (85% required).
 All formatting and static gates passed. Transcript:
 `/tmp/dealer-leg75-check.log`; RED: `/tmp/dealer-leg75-red.log`.
+
+## 2026-11-08 leg 75 — the walkability-veto era sold three live; the last three agents' walks never land; s00 talked at window close
+
+Launch followed the shepherd brief: pre-launch readback matched the seed exactly
+(22/97/103/51/54/20/0; stock holders NyxSong 909x1, zeny_wing 705x1, s00
+511x2/905x3/906x1, RinceNyan at the dealer row (172,129)), no stale runner, both
+heavengraph backends healthy. Runner detached under `leg75-runner`
+(systemd-run --user), 6000 s, window [6, 15.0, 16.25], four staggered playing
+groups; **23,916 steps, 0 step_errors, all 7 agents online, 0 TRANSPORT DOWN,
+0 PlayingBackendError**. Receipt:
+`run/plain_host_receipts/population-receipt-75-1794145508.json`.
+
+SALES (three, within 40 s of window open, TalkToNpc -> NpcShopSell -> zeny, all
+DB-verified): NyxSong 22 -> 25 (talk 14:00:07 UTC), PoringMuffin14 20 -> 25
+(14:00:21), PipinWalker 51 -> 58 (14:00:31). Each emptied its stock on the first
+sale and closed its dialogue with clean NpcClose actions; `rerolled_target_dead`
+was **0 for all seven agents** — the walkability veto never had to kill a dealer
+target, and the hold path (`hold dealer_occupied ... walkable_free=N/8`) never
+fired because the block never saturated.
+
+THE REMAINING GAP is a new signature, named "ghost walks": zeny_wing,
+xXLunasongXx, and s00 never converged. Each tapped the dealer from chebyshev=2
+(**1307 `dealer_talk_out_of_range` events**) while re-authoring MoveTo to the
+same south-row cells ((173,131) / (172,131)) every ~2 s — 553+ authored walks
+each — without ever arriving. The target cells pass the walkability veto (rtd=0
+proves the target check, not the route), so the suspect is NoRoute around the
+shop counter between the y=128 row and the y=131 row, or the 2 s re-author
+cadence cancelling in-flight walks; receipt move_gates show only tiny
+`await_pending` / `walk_released_no_progress(step)` counts (1-4 per agent).
+Path-level route validation (not just target-cell walkability) is the next fix.
+
+LATCH: not exercised — every seller emptied its stock on sale one, so no agent
+had a second sale opportunity in-window; no blocked re-begin loop appeared and
+the sellers' post-sale NpcClose chains ran clean, so nothing contradicts the
+release. s00's odyssey-to-sale arc is still open: it walked to (172,129)
+(chebyshev=1) by window end and TalkToNpc fired at 16:15:04 Madrid — 26 s before
+window close — but the sale did not complete (zeny stayed 0, stock intact in the
+DB readback). Decision cadence was healthy (91-148 decides per agent; no
+decide-latency bursts).
