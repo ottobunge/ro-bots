@@ -119,6 +119,8 @@ from robots.domain.skills import ReceivedSkillContextReadOnly
 # e985 socket.cpp235,396,1016-1022; conf/packet_athena.conf22: inbound
 # inactivity closes client sessions after >60s. Leave two intervals of slack.
 KEEPALIVE_INTERVAL_S = 20.0
+OCCUPIED_CELL_LIMIT = 64
+"""Nearest unique received type-0 body cells; presentation never proves identity."""
 
 
 def _finite_npc_time(value: float) -> bool:
@@ -745,6 +747,7 @@ class PlayingClient:
             goal=goal,
             in_party=self._in_party(),
             nearby=tuple(nearby),
+            occupied_cells=self._occupied_cells(view, pos),
             inventory={str(key): count for key, count in (view.inventory_counts or ())},
             pending_invites=invites,
             pending_guild_invite=_pending_guild_invite(wire),
@@ -2689,6 +2692,31 @@ class PlayingClient:
         if view.alive_known:
             return view.alive
         return True if self._authenticated_baseline else None
+
+    def _occupied_cells(
+        self, view: NativeGameplayView, pos: ObservedPosition
+    ) -> tuple[tuple[int, int], ...]:
+        """Perception only: type-0 bodies can be PCs, mobs or NPCs.
+
+        Rebuilt from the tracker each tick, so received movement, vanish,
+        map change and epoch reset release old cells without a shared queue.
+        """
+        own_ids = (self.wire.aid, (-self.wire.aid) & 0xFFFFFFFF)
+        cells = {
+            (actor.position.x, actor.position.y)
+            for actor in view.actors
+            if actor.objecttype == 0 and actor.actor_id not in own_ids
+        }
+        return tuple(
+            sorted(
+                cells,
+                key=lambda cell: (
+                    max(abs(cell[0] - pos.x), abs(cell[1] - pos.y)),
+                    (cell[0] - pos.x) ** 2 + (cell[1] - pos.y) ** 2,
+                    cell,
+                ),
+            )[:OCCUPIED_CELL_LIMIT]
+        )
 
     def _nearby(
         self, view: NativeGameplayView, pos: ObservedPosition, map_name: str

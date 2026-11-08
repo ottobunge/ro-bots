@@ -29,6 +29,7 @@ for candidate in (str(REPO / "src"), str(REPO), str(REPO / "tests")):
         sys.path.insert(0, candidate)
 
 import logging  # noqa: E402
+from dataclasses import replace  # noqa: E402
 
 import pytest  # noqa: E402
 
@@ -167,3 +168,80 @@ def test_field_warp_legs_keep_the_warp_cell_target() -> None:
     (action,) = outcome.actions
     assert isinstance(action, MoveTo)
     assert (action.x, action.y) == (170, 378)
+
+
+def _crowd(*, except_cell: tuple[int, int] | None = None) -> tuple[ActorRef, ...]:
+    return tuple(
+        ActorRef(id=100 + i, name=f"seller_{i}", kind="player", distance=2.0, x=x, y=y)
+        for i, (x, y) in enumerate(
+            (x, y) for x in (171, 172, 173) for y in (129, 130, 131) if (x, y) != DEALER_CELL
+        )
+        if (x, y) != except_cell
+    )
+
+
+@pytest.mark.parametrize(
+    ("position", "occupied", "expected"),
+    [((174, 128), (173, 129), (172, 129)), ((169, 127), (171, 129), (171, 130))],
+)
+def test_visible_seller_takes_the_best_cell_so_next_free_cell_is_selected(
+    position: tuple[int, int], occupied: tuple[int, int], expected: tuple[int, int]
+) -> None:
+    seller = ActorRef(
+        id=99, name="other_bot", kind="player", distance=1.0, x=occupied[0], y=occupied[1]
+    )
+    state = _state(x=position[0], y=position[1], nearby=(_dealer(), seller))
+    assert _approach_cell(*DEALER_CELL, state) == expected
+    assert GrindScript().step(state).actions == (MoveTo(x=expected[0], y=expected[1]),)
+
+
+def test_only_free_cell_is_chosen_independently_of_actor_order() -> None:
+    crowd = _crowd(except_cell=(173, 131))
+    for actors in (crowd, tuple(reversed(crowd))):
+        state = _state(nearby=(_dealer(), *actors))
+        assert GrindScript().step(state).actions == (MoveTo(x=173, y=131),)
+
+
+def test_fully_occupied_dealer_holds_active_and_taps_once_through_drive(
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    state = _state(nearby=(_dealer(), *_crowd()))
+    script = GrindScript()
+    with caplog.at_level(logging.WARNING, logger="robots.app.scripts"):
+        for _ in range(20):
+            outcome = script.step(state)
+            assert outcome.status == ScriptStatus.ACTIVE
+            assert outcome.actions == ()
+    assert _approach_cell(*DEALER_CELL, state) is None
+    taps = [r.getMessage() for r in caplog.records if "hold dealer_occupied" in r.getMessage()]
+    assert len(taps) == 1, "admission/range taps must not make the hold tap alternate every tick"
+    assert "free=0/8" in taps[0]
+    assert "occupied=8/8" in taps[0]
+
+
+def test_hold_releases_on_next_perception_when_a_seller_vacates() -> None:
+    script = GrindScript()
+    blocked = _state(nearby=(_dealer(), *_crowd()))
+    assert script.step(blocked).actions == ()
+    freed = replace(blocked, nearby=(_dealer(), *_crowd(except_cell=(172, 131))))
+    outcome = script.step(freed)
+    assert outcome.status == ScriptStatus.ACTIVE
+    assert outcome.actions == (MoveTo(x=172, y=131),)
+    arrived = replace(freed, x=172, y=131)
+    assert script.step(arrived).actions == (TalkToNpc(npc_id=110001762),)
+
+
+def test_unlocated_players_and_other_actor_kinds_do_not_take_cells() -> None:
+    nearby = (
+        _dealer(),
+        ActorRef(id=10, name="unlocated", kind="player", distance=1.0, x=173),
+        ActorRef(id=11, name="unlocated", kind="player", distance=1.0, y=129),
+        ActorRef(id=12, name="Poring", kind="monster", distance=1.0, x=173, y=129),
+        ActorRef(id=13, name="Guide", kind="npc", distance=1.0, x=173, y=129),
+    )
+    assert GrindScript().step(_state(nearby=nearby)).actions == (MoveTo(x=173, y=129),)
+
+
+def test_dealer_adjacent_agent_still_talks_among_other_sellers() -> None:
+    state = _state(x=173, y=129, nearby=(_dealer(), *_crowd(except_cell=(173, 129))))
+    assert GrindScript().step(state).actions == (TalkToNpc(npc_id=110001762),)

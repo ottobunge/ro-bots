@@ -123,6 +123,8 @@ class BotState:
     inventory_slots: int | None = None
     server_self_slots: ServerSelfSlots | None = None
     received_stats: tuple[int, ...] | None = None  # 0x00BD: str agi vit int dex luk
+    # Bounded received type-0 body cells, independent of player identity.
+    occupied_cells: tuple[tuple[int, int], ...] = ()
 
     @property
     def hp_ratio(self) -> float:

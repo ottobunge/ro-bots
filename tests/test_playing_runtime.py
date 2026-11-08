@@ -21,7 +21,7 @@ from robots.app import agent_runtime
 from robots.app import playing_runtime as runtime
 from robots.app.agent_runtime import AgentHost, ManifestEntry, PersonaClock, ScheduledAgent
 from robots.app.brain import EventDrivenBrain
-from robots.app.scripts import GrindScript
+from robots.app.scripts import GrindScript, ScriptStatus, _merchant_engage
 from robots.domain.actions import Attack, Loot, MoveTo, PartyChat, Rest, Say
 from robots.domain.decisions import build_decision_request
 from robots.domain.events import DamageTaken, MonsterSpotted
@@ -211,6 +211,71 @@ def test_unproven_actor_is_not_player_or_monster(kind):
         assert (actor.id, actor.name, actor.kind, actor.distance) == (123, "NPC#123", "npc", 5.0)
     else:
         assert state.nearby == ()
+
+
+@pytest.mark.parametrize("kind", [0, 5, 6, 12, 255])
+def test_occupied_cells_observe_type_zero_bodies_without_identity_claims(kind):
+    wire = Wire()
+    wire.frames = []
+    wire.add(entry(), map_frame(), monster(kind))
+    state = runtime.PlayingClient(wire).build_native_state(Goal.GRIND)
+    assert state.occupied_cells == (((45, 41),) if kind == 0 else ())
+    assert state.nearby_players == ()
+
+
+def test_occupied_cells_exclude_self_and_disguised_self_alias():
+    wire = Wire()
+    wire.add(
+        monster(0, aid=wire.aid, at=(43, 37)),
+        monster(0, aid=(-wire.aid) & 0xFFFFFFFF, at=(44, 37)),
+        monster(0, aid=1001, at=(45, 37)),
+    )
+    state = runtime.PlayingClient(wire).build_native_state(Goal.GRIND)
+    assert state.occupied_cells == ((45, 37),)
+
+
+def test_occupied_cells_are_unique_nearest_first_and_bounded():
+    wire = Wire()
+    for offset in reversed(range(1, 81)):
+        wire.add(monster(0, aid=1000 + offset, at=(42 + offset, 37)))
+    wire.add(monster(0, aid=2000, at=(43, 37)))  # duplicate body cell takes one slot
+    state = runtime.PlayingClient(wire).build_native_state(Goal.GRIND)
+    assert state.occupied_cells == tuple((42 + offset, 37) for offset in range(1, 65))
+
+
+@pytest.mark.parametrize("vacancy", ["vanish", "move"])
+def test_native_body_occupancy_holds_dealer_then_releases_on_received_update(vacancy):
+    wire = Wire()
+    wire.frames = []
+    wire.add(entry(), struct.pack("<H16sHH", 0x0091, b"prt_in", 174, 128))
+    cells = [(x, y) for x in (171, 172, 173) for y in (129, 130, 131) if (x, y) != (172, 130)]
+    for aid, cell in enumerate(cells, 1000):
+        wire.add(monster(0, aid=aid, at=cell))
+    client = runtime.PlayingClient(wire)
+    state = client.build_native_state(Goal.GRIND)
+    assert state.nearby_players == ()  # the classification contract is still fail-closed
+    held = _merchant_engage(state, (172, 130))
+    assert held.status == ScriptStatus.ACTIVE
+    assert held.actions == ()
+    vacant_id = 1000 + cells.index((173, 129))
+    if vacancy == "vanish":
+        wire.add(struct.pack("<HIB", 0x0080, vacant_id, 0))
+    else:
+        wire.add(monster(0, aid=vacant_id, at=(174, 129)))
+    released = client.build_native_state(Goal.GRIND)
+    assert (173, 129) not in released.occupied_cells
+    if vacancy == "move":
+        assert (174, 129) in released.occupied_cells
+    assert _merchant_engage(released, (172, 130)).actions == (MoveTo(x=173, y=129),)
+
+
+def test_received_map_change_discards_old_occupied_cells():
+    wire = Wire()
+    wire.add(monster(0, aid=1000))
+    client = runtime.PlayingClient(wire)
+    assert client.build_native_state(Goal.GRIND).occupied_cells == ((45, 41),)
+    wire.add(struct.pack("<H16sHH", 0x0091, b"prt_in", 174, 128))
+    assert client.build_native_state(Goal.GRIND).occupied_cells == ()
 
 
 def test_native_attack_bytes_and_death_denial():

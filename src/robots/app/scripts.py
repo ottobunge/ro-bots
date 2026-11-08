@@ -182,11 +182,16 @@ distance) so a steady out-of-range park logs one bounded line while a real
 change of position re-names itself — unlike the shared verdict-term memo,
 whose per-term dedupe would flip-flop fire every drive tick here."""
 
+_DEALER_OCCUPANCY_TAPPED: dict[str, str] = {}
+"""Per-bot hold detail, independent of the per-tick admission/range taps.
+Diagnostic only: no agent reads another agent's entry to allocate a cell."""
+
 
 def reset_merchant_talk() -> None:
     """Forget per-bot dealer contacts (new session epoch / test isolation)."""
     _DEALER_TALKED.clear()
     _DEALER_RANGE_TAPPED.clear()
+    _DEALER_OCCUPANCY_TAPPED.clear()
 
 
 """Per-bot-name commitment registry; one entry per agent in the process."""
@@ -664,7 +669,7 @@ def _merchant_step(
                 "merchant_route_unresolved",
                 f"map={state.map_name} dest={destination}",
             )
-        return _merchant_engage(state, destination)
+        return _merchant_engage(state, destination, reachable)
     home = merchant_return_cell(state)
     if home is None:
         return None
@@ -675,7 +680,11 @@ def _merchant_step(
     return ScriptOutcome((MoveTo(x=home[0], y=home[1]),), ScriptStatus.ACTIVE)
 
 
-def _merchant_engage(state: BotState, destination: tuple[int, int]) -> ScriptOutcome:
+def _merchant_engage(
+    state: BotState,
+    destination: tuple[int, int],
+    reachable: MerchantReachable | None = None,
+) -> ScriptOutcome:
     """The outbound dealer engagement (window-29): walk the leg, or talk
     once at the dealer and hold for the dealtype."""
     if state.map_name == "prt_in":
@@ -684,6 +693,7 @@ def _merchant_engage(state: BotState, destination: tuple[int, int]) -> ScriptOut
         # new round that kills the bound offer (moved-on) before the
         # decide-paced mint ever sees it. Hold the click; author nothing.
         if state.shop_offer is not None:
+            _DEALER_OCCUPANCY_TAPPED.pop(state.name, None)
             return ScriptOutcome((), ScriptStatus.ACTIVE)
         talk = _dealer_talk(state, destination)
         if talk is None and _DEALER_TALKED.get(state.name) is not None:
@@ -692,6 +702,7 @@ def _merchant_engage(state: BotState, destination: tuple[int, int]) -> ScriptOut
             # the walk resumes and a fresh contact can talk again (w76).
             _DEALER_TALKED.pop(state.name, None)
         if talk is not None:
+            _DEALER_OCCUPANCY_TAPPED.pop(state.name, None)
             # One talk per (bot, npc) contact: re-sending resets the server's
             # npc_shopid before the 0xC4 dealtype can be answered (window-29:
             # 2254 TalkToNpc resets). The hold lets the dialog stage machine
@@ -712,9 +723,28 @@ def _merchant_engage(state: BotState, destination: tuple[int, int]) -> ScriptOut
         # adjacency-gated talk silently never fired (xXLunasongXx parked at
         # Chebyshev 2, MoveTo every tick, npc rows []). Field/town legs are
         # untouched: a warp must be ENTERED, so those keep the pinned cell.
-        walk_cell = _approach_cell(destination[0], destination[1], state)
-        return ScriptOutcome((MoveTo(x=walk_cell[0], y=walk_cell[1]),), ScriptStatus.ACTIVE)
+        return _merchant_approach(state, destination, reachable)
+    _DEALER_OCCUPANCY_TAPPED.pop(state.name, None)
     return ScriptOutcome((MoveTo(x=destination[0], y=destination[1]),), ScriptStatus.ACTIVE)
+
+
+def _merchant_approach(
+    state: BotState, destination: tuple[int, int], reachable: MerchantReachable | None
+) -> ScriptOutcome:
+    """Local-perception allocation; a full dealer block waits for a vacancy."""
+    walk_cell = _approach_cell(*destination, state, reachable=reachable)
+    if walk_cell is not None:
+        _DEALER_OCCUPANCY_TAPPED.pop(state.name, None)
+        return ScriptOutcome((MoveTo(x=walk_cell[0], y=walk_cell[1]),), ScriptStatus.ACTIVE)
+    free = len(_free_approach_cells(*destination, state))
+    detail = (
+        f"free={free}/8 occupied={8 - free}/8 reachable=0/8 "
+        f"agent=({state.x},{state.y}) dealer=({destination[0]},{destination[1]})"
+    )
+    if _DEALER_OCCUPANCY_TAPPED.get(state.name) != detail:
+        _DEALER_OCCUPANCY_TAPPED[state.name] = detail
+        logger.warning("merchant-drive: sell arm hold dealer_occupied (%s)", detail)
+    return ScriptOutcome((), ScriptStatus.ACTIVE)
 
 
 def _dealer_talk(state: BotState, dealer_cell: tuple[int, int]) -> TalkToNpc | None:
@@ -816,30 +846,54 @@ def _engage(state: BotState, candidates: list[ActorRef], window: int) -> ScriptO
     return ScriptOutcome((action,), ScriptStatus.ACTIVE)
 
 
-def _approach_cell(tx: int, ty: int, state: BotState) -> tuple[int, int]:
-    """The neighbouring cell of the target nearest the bot (the intercept).
+def _approach_cells(tx: int, ty: int, state: BotState) -> list[tuple[int, int]]:
+    """The target's neighbours in the original intercept preference order.
 
     Walking to the target's own cell lands the bot where a wandering mob WAS
     (leg 18: 31 near samples, zero adjacent). A one-cell mob shift from an
     adjacent-cell walk still ends in melee range. Deterministic tie-break on
     the cell coordinates."""
-    best: tuple[int, int] | None = None
-    best_key: tuple[int, int, int] | None = None
-    for dx in (-1, 0, 1):
-        for dy in (-1, 0, 1):
-            if dx == 0 and dy == 0:
-                continue
-            cell = (tx + dx, ty + dy)
-            cheb = max(abs(cell[0] - state.x), abs(cell[1] - state.y))
-            euclid = (cell[0] - state.x) ** 2 + (cell[1] - state.y) ** 2
-            key = (cheb, euclid, cell[0] * 1000 + cell[1])
-            if best_key is None or key < best_key:
-                best_key = key
-                best = cell
-    if best is None:  # drift-guard: 8 candidates always run; the old
-        # sentinel default (tx+1, ty) re-introduced the >99-cell artifact
-        return (tx + 1, ty)
-    return best
+    cells = [(tx + dx, ty + dy) for dx in (-1, 0, 1) for dy in (-1, 0, 1) if (dx, dy) != (0, 0)]
+    return sorted(
+        cells,
+        key=lambda cell: (
+            max(abs(cell[0] - state.x), abs(cell[1] - state.y)),
+            (cell[0] - state.x) ** 2 + (cell[1] - state.y) ** 2,
+            cell[0] * 1000 + cell[1],
+        ),
+    )
+
+
+def _free_approach_cells(tx: int, ty: int, state: BotState) -> list[tuple[int, int]]:
+    """Received body/player cells only; no identity inference/reservations/grid."""
+    occupied = {
+        (actor.x, actor.y)
+        for actor in getattr(state, "nearby", ())
+        if actor.kind == "player"
+        and actor.name != state.name
+        and actor.x is not None
+        and actor.y is not None
+    }
+    occupied.update(getattr(state, "occupied_cells", ()))
+    return [cell for cell in _approach_cells(tx, ty, state) if cell not in occupied]
+
+
+def _approach_cell(
+    tx: int, ty: int, state: BotState, *, reachable: MerchantReachable | None = None
+) -> tuple[int, int] | None:
+    """Nearest free neighbour, or None to hold and re-evaluate next tick.
+
+    Only the injected authority can veto reachability; no authority/unknown
+    keeps the original choice. The script never consults a walkability grid.
+    """
+    return next(
+        (
+            cell
+            for cell in _free_approach_cells(tx, ty, state)
+            if reachable is None or reachable(state.map_name, (state.x, state.y), cell) is not False
+        ),
+        None,
+    )
 
 
 def _melee_action(target: ActorRef, state: BotState) -> GameAction:
@@ -857,7 +911,8 @@ def _melee_action(target: ActorRef, state: BotState) -> GameAction:
         return Attack(target_id=target.id)
     if max(abs(x - state.x), abs(y - state.y)) <= MELEE_RANGE:
         return Attack(target_id=target.id)
-    cell = _approach_cell(x, y, state)
+    # Dealer occupancy allocation must not alter the proven melee intercept.
+    cell = _approach_cells(x, y, state)[0]
     return MoveTo(x=cell[0], y=cell[1])
 
 
