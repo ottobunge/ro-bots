@@ -115,6 +115,7 @@ class BotState:
     received_skills: ReceivedSkillContextReadOnly | None = None
     public_skill_knowledge: PublicSkillKnowledge | None = None
     shop_offer: ReceivedShopOffer | None = None
+    merchant_buy_suspended: bool = False
     zeny: int | None = None
     zeny_receipt: ReceivedZeny | None = None
     weight: int | None = None
