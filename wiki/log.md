@@ -9553,3 +9553,53 @@ verdict + sustain + the s00 odyssey. Positions moved: NyxSong prontera (158,223)
 PipinWalker prontera (157,222); PoringMuffin14 prontera (153,156); RinceNyan
 prt_fild08 (213,351); s00 pay_fild08 (231,308) still walking, 0z; xXLunasongXx
 prt_in (173,129) at 54z.
+
+## 2026-11-08 leg 73 — full window survived detached; zeny flat; THE DEALER CONGESTION DEADLOCK named
+
+Launch 08:51 under `systemd-run --user --unit=leg73-runner` (detached per the leg-72
+lesson); the shepherd stayed alive polling to completion inside its turn. The full
+6000 s survived: clean DONE 10:31, steps 23898, errors 0, receipt
+run/plain_host_receipts/population-receipt-73-1794124259.json; the unit journal
+carries the whole lifecycle (a future killer NAMES itself — leg 72's gap closed).
+Window [6, 9.0, 10.25]: all 7 online 09:00–10:15, clean open and close, decides
+99–153/agent (857 total), full cadence, 0 TRANSPORT DOWN all leg.
+
+VERDICTS:
+
+(a) TALK-RADIUS SUSTAIN: NOT PROVEN. xXLunasongXx never returned to the dealer —
+   goal locked on farm_item (94 goal_reviews), stood prt_fild08 (179,370) resting
+   (10 Rest actions, attack gates resting:5); 0 TalkToNpc / NpcShopSellOpen /
+   NpcShopSell events ALL leg; zeny 54 unchanged. Leg 72's 7-minute +7z mechanism
+   proof stands; the full-window farm→return→sell arc did not re-fire.
+
+(b) ECONOMY SUSTAIN: NOT CLOSED — zeny 22/87/103/51/54/20/0 = exactly the seed
+   baseline, 0 delta all seven (DB ground truth). The loot leg DID close live:
+   59 attacks, 12 Loots dispatched, 3 pickups DB-verified (NyxSong +909 Jellopy,
+   PipinWalker +512 Carrot, PoringMuffin14 +705 Clover).
+
+(c) s00 ODEYSSEY: the WALK closed — YuffieFy81 pay_fild08 (231,308) crossed maps to
+   prt_in (169,127), standing by the dealer at close (DB last_map prt_in) — but 0z
+   stands: parked Chebyshev 3, never talked, inventory unchanged
+   (511x2 / 905x3 / 906x1 + knife).
+
+(d) SIGNATURES: the leg-72 transport-death-at-open did NOT recur (0 TRANSPORT DOWN
+   all leg); the leg-72 silent kill did NOT recur (full 6000 s detached, journal
+   clean).
+
+NEW DEFECT — THE DEALER CONGESTION DEADLOCK: five agents (NyxSong, RinceNyan,
+PipinWalker, PoringMuffin14, s00) entered prt_in and parked Chebyshev 2–4 off the
+dealer (172,130) for the window's last ~60 min on cells (169,127–129 / 170,128 /
+171,128); each tapped dealer_talk_out_of_range at the door (168,128) and at its
+best cell — 10 detail-keyed taps total (168,128 x5 / 170,128 / 169,127 / 169,128 /
+171,128 / 169,129); move gate rerolled_target_dead: 8 on each; NO agent ever
+reached Chebyshev ≤1; receipt npc_stage/shop_offer null for ALL agents all leg.
+The leg-72 proof ran alone; five agents on one dealer block each other's approach
+cells. Single-agent mechanism proven; the multi-agent sell arm needs approach-cell
+allocation or sell-arm queueing. ALSO: xXLunasongXx's sell arm never re-entered
+(goal stayed farm_item) — re-entering the sell arm after a sell, when restocked
+loot exists, is the unwired leg of the sustain arc.
+
+BONUS: first social actions live in traces — FoundGuild x2, GuildInvite x12,
+InviteToParty x4; chat 101 chat_sent + 60 Say + 41 PartyChat.
+
+Code base: 24283f9d (no code change this leg). Commit: receipt + this entry.
