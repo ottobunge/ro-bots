@@ -44,7 +44,7 @@ class TravelResolver(Protocol):
 
 
 class MerchantReachable(Protocol):
-    """Whether a pinned leg's cell is walkable from the agent's own region.
+    """Whether a pinned leg or approach cell is walkable from the agent's region.
 
     ``(map_name, position, cell) -> True | False | None`` — None when the
     grid carries no authority for the map (the caller keeps its pinned leg;
@@ -738,7 +738,7 @@ def _merchant_approach(
         return ScriptOutcome((MoveTo(x=walk_cell[0], y=walk_cell[1]),), ScriptStatus.ACTIVE)
     free = len(_free_approach_cells(*destination, state))
     detail = (
-        f"free={free}/8 occupied={8 - free}/8 reachable=0/8 "
+        f"free={free}/8 occupied={8 - free}/8 reachable=0/8 walkable_free=0/8 "
         f"agent=({state.x},{state.y}) dealer=({destination[0]},{destination[1]})"
     )
     if _DEALER_OCCUPANCY_TAPPED.get(state.name) != detail:

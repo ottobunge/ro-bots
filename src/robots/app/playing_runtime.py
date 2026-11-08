@@ -69,6 +69,7 @@ from robots.app.scripts import (
     shop_sell_entries,
     shop_sellable_stock,
 )
+from robots.app.travel_routing import TravelRouter
 from robots.domain.actions import (
     AcceptGuildInvite,
     AcceptInvite,
@@ -309,6 +310,7 @@ class PlayingClient:
     _stat_unacked: int
     _stat_acks_seen: int
     _stat_failed: set[int]
+    _merchant_router: TravelRouter | None = None
 
     def __init__(
         self,
@@ -388,6 +390,7 @@ class PlayingClient:
         self._sell_sent: deque[int] = deque(maxlen=16)
         self._sell_open_mint: tuple[NpcShopSellOpen, tuple[object, ...]] | None = None
         self._sell_mint: tuple[NpcShopSell, tuple[object, ...]] | None = None
+        self._sell_pending: tuple[NpcShopSell, NpcDialogue, int] | None = None
 
     def bind_server_self_slots(
         self,
@@ -682,6 +685,7 @@ class PlayingClient:
             self._npc.consume(received, now)
             self._check_shop_context(tracker.view, now)
             self._shop_context.consume(frame, epoch)
+            self._consume_sell_result(frame)
             self._consume_purchase_frame(frame, tracker, now)
         return True
 
@@ -821,6 +825,24 @@ class PlayingClient:
             message = "received map has no public cache identity"
             raise NativeTelemetryUnavailable(message)
         return key
+
+    def merchant_reachable(
+        self, map_name: str, position: tuple[int, int], cell: tuple[int, int]
+    ) -> bool | None:
+        """Runtime authority for dealer approaches: walkable AND same region.
+
+        A free counter tile is still a dead walk target (leg 74). Unknown
+        geometry keeps the script's existing fail-open choice.
+        """
+        if self.cache is None:
+            return None
+        if map_name not in self.cache.maps:
+            return None
+        if not self.cache.get(map_name).walkable(cell):
+            return False
+        if self._merchant_router is None:
+            self._merchant_router = TravelRouter(self.cache)
+        return self._merchant_router.reachable(map_name, position, cell)
 
     def _dispatch_shop_action(self, action: GameAction) -> bool:
         """The shop actions; True = dispatched."""
@@ -1466,7 +1488,42 @@ class PlayingClient:
             return
         self._npc.requests += 1
         self._sell_sent.append(action.sell_sequence)
+        dialog = self._npc.view
+        _, base, frames = self.wire.native_frame_snapshot()
+        after = frames[-1][0] if frames else base
         self._send_npc(sell(action.sales))
+        if dialog is not None:
+            self._sell_pending = (action, dialog, after)
+
+    def _consume_sell_result(self, frame: tuple[int, float, int, bytes]) -> None:
+        """Only a successful, sent sale in the current round releases its UI.
+
+        C7 is an offer and C9 is a request; neither proves completion. The
+        validated CB result does, even if the dialogue clock expired while
+        it was in flight. Poison/cancel barriers and newer rounds still hold.
+        """
+        pending = self._sell_pending
+        seq, _, pid, raw = frame
+        if pid != 0x00CB or pending is None or seq <= pending[2]:
+            return
+        self._sell_pending = None
+        action, sent_dialog, _ = pending
+        dialog = self._npc.view
+        if dialog is None:
+            return
+        if all(
+            (
+                raw[2] == 0,
+                dialog.epoch == action.epoch,
+                dialog.map_name == action.map_name,
+                dialog.npc_id == sent_dialog.npc_id,
+                dialog.opened_sequence == sent_dialog.opened_sequence,
+                dialog.sequence == sent_dialog.sequence,
+                not self._npc.cancel_uncertain,
+                not self._npc.failed or self._npc.deny_origin == "timeout",
+            )
+        ):
+            self._npc.complete_shop()
 
     def _sell_request_target(self, action: NpcShopSell, tracker: NativeGameplayTracker) -> bool:
         """All local guards for one bounded 0xc9 against the received receipt."""

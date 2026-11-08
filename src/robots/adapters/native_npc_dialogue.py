@@ -100,6 +100,13 @@ class NativeNpcDialogue:
     def invalidate(self) -> None:
         self.view = None
 
+    def complete_shop(self) -> None:
+        """Release a runtime-verified successful exchange, including its timeout."""
+        self.view = None
+        self.failed = False
+        self.deny_origin = None
+        self.cancel_uncertain = False
+
     def begin(self, npc_id: int, epoch: int, map_name: str, sequence: int, now: float) -> bytes:
         self.view = NpcDialogue(npc_id, epoch, map_name, sequence, sequence, "opening")
         self.cursor = sequence

@@ -12,6 +12,8 @@ import struct
 import sys
 from pathlib import Path
 
+import pytest
+
 REPO = Path(__file__).resolve().parents[1]
 for candidate in (str(REPO / "src"), str(REPO), str(REPO / "tests")):
     if candidate not in sys.path:
@@ -458,3 +460,103 @@ def test_empty_bottle_and_iron_ore_are_sellable_stock() -> None:
     assert scripts.shop_sellable_stock(((713, 1), (1002, 1))) == 2
     # the full prt_fild08 drop set (rathena db/pre-re/mob_db.yml drops)
     assert scripts.shop_sellable_stock(((705, 1), (914, 1), (917, 1), (938, 1), (949, 1))) == 5
+
+
+def _sent_sale() -> runtime.PlayingClient:
+    client = _client_with(_dealer((43, 37)), _inv(((6, 909, 5),)), _weight())
+    client.build_native_state(Goal.GRIND)
+    _armed(client)
+    client.wire.add(_c4(DEALER), _c7(((6, 12, 12),)))
+    state = client.build_native_state(Goal.GRIND)
+    (action,) = [a for a in client.mechanical_actions(state, ()) if isinstance(a, NpcShopSell)]
+    client.perform_native(action)
+    return client
+
+
+@pytest.mark.parametrize("expired", [False, True])
+def test_successful_sale_releases_latch_and_next_sell_rearms(expired: bool) -> None:
+    client = _sent_sale()
+    if expired:
+        client._npc._expire(client._now() + 30)
+        assert client._npc.failed
+        assert client._npc.deny_origin == "timeout"
+    client.wire.add(_cb(0))
+    client.build_native_state(Goal.GRIND)
+    assert client._npc.view is None
+    assert not client._npc.failed
+    assert client._npc.deny_origin is None
+    assert not client._npc.actuation_blocked
+    assert client._retry_blocked_dialogue() is False
+    state = client.build_native_state(Goal.GRIND)
+    assert not any(isinstance(a, NpcShopSell) for a in client.mechanical_actions(state, ()))
+    # A fresh click/C4/C7 round can sell new stock; the old C7 cannot replay.
+    cursor = client._npc.cursor
+    client._npc.begin(DEALER, 1, "prontera", cursor, client._now())
+    client.wire.add(_c4(DEALER), _c7(((6, 12, 12),)))
+    state = client.build_native_state(Goal.GRIND)
+    (action,) = [a for a in client.mechanical_actions(state, ()) if isinstance(a, NpcShopSell)]
+    client.perform_native(action)
+    assert sum(f[:2] == b"\xc9\x00" for f in client.wire.sent) == 2
+
+
+def test_sale_send_alone_and_rejected_result_keep_timeout_barrier() -> None:
+    client = _sent_sale()
+    client._npc._expire(client._now() + 30)
+    client.wire.add(_cb(1))
+    client.build_native_state(Goal.GRIND)
+    assert client._npc.view is not None
+    assert client._npc.view.stage == "blocked"
+    assert client._npc.failed
+    assert client._npc.deny_origin == "timeout"
+    assert client._npc.actuation_blocked
+
+
+def test_unsolicited_success_cannot_release_a_timeout_barrier() -> None:
+    client = _sent_sale()
+    # The first request belongs to the previous click; a fresh one has no sale.
+    cursor = client._npc.cursor
+    client._npc.begin(DEALER, 1, "prontera", cursor, client._now())
+    client._npc._expire(client._now() + 30)
+    client.wire.add(_cb(0))
+    client.build_native_state(Goal.GRIND)
+    assert client._npc.failed
+    assert client._npc.actuation_blocked
+
+
+def test_success_does_not_release_a_poisoned_dialogue() -> None:
+    client = _sent_sale()
+    client._npc._deny("poison")
+    client.wire.add(_cb(0))
+    client.build_native_state(Goal.GRIND)
+    assert client._npc.failed
+    assert client._npc.deny_origin == "poison"
+    assert client._npc.actuation_blocked
+
+
+def test_success_cannot_release_cancel_uncertainty() -> None:
+    client = _sent_sale()
+    client._npc.cancel_uncertain = True
+    client.wire.add(_cb(0))
+    client.build_native_state(Goal.GRIND)
+    assert client._npc.cancel_uncertain
+    assert client._npc.actuation_blocked
+
+
+def test_success_cannot_release_a_newer_prompt_in_the_same_round() -> None:
+    client = _sent_sale()
+    client.wire.add(_c4(DEALER), _cb(0))
+    client.build_native_state(Goal.GRIND)
+    assert client._npc.view is not None
+    assert client._npc.view.stage == "unsupported_shop"
+    assert client._npc.actuation_blocked
+
+
+def test_success_without_a_sent_sale_keeps_the_barrier() -> None:
+    client = _client_with(_dealer((43, 37)), _inv(((6, 909, 5),)), _weight())
+    client.build_native_state(Goal.GRIND)
+    _armed(client)
+    client._npc._expire(client._now() + 30)
+    client.wire.add(_cb(0))
+    client.build_native_state(Goal.GRIND)
+    assert client._npc.failed
+    assert client._npc.actuation_blocked
