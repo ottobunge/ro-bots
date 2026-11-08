@@ -9751,3 +9751,58 @@ field pickup and it walked home but never converged); knives (1201) are fixture
 grants, not purchases.
 
 Code base: 049d8862 (no code change this leg). Commit: receipt + this entry.
+
+## 2026-11-08 leg 75 prep — runtime walkability veto and completed-sale dialogue release
+
+Implementation branch `fix/dealer-convergence-leg75`, based on main `439250fa`.
+Evidence: leg-74 receipt
+`run/plain_host_receipts/population-receipt-74-1794134973.json`, population traces
+under `.work/runtime/population-live/traces/` (11:00–12:15 UTC), and the leg-74
+entry above. RinceNyan's DB-verified +10z sale was the unobstructed first mover;
+it did not prove contested convergence. Five other stock holders stayed 2–3
+cells from `(172,130)`, with receipt-only `rerolled_target_dead=8` each. s00 at
+`(169,127)` retained 511x2 / 905x3 / 906x1 and made no sale.
+
+Fix 1: the script's existing `MerchantReachable` veto was available but the
+production host supplied only `travel_resolver`, leaving the veto unwired.
+`ScheduledAgent._start_brain` now binds the current `PlayingClient` authority
+before scripts are constructed. `PlayingClient.merchant_reachable` rejects
+individual unwalkable cells using its own `self.cache`, then checks the agent's
+route region. The script stays grid-free and still permits unknown geometry.
+An occupied walkable neighbour plus seven free counter tiles now produces a
+hold for s00, with `free=7/8`, `reachable=0/8`, and `walkable_free=0/8` in the
+`dealer_occupied` tap; freeing the walkable cell releases the hold. The veto is
+before MoveTo authoring, consistent with the 2026-10-20 blocked-cell precedent.
+The melee intercept remains unchanged.
+
+Fix 2: a sent C9 now retains the current dialogue round and received-stream
+cursor. A validated successful CB (0x00CB, result 0) after that send completes
+the C7/C9 exchange and releases the dialogue view, failed flag, and deny origin,
+including an intervening innocent timeout. Sending C9 alone or receiving a
+failed CB does not release it. Unsolicited success, replies from older rounds,
+newer UI prompts, poison denials, and cancellation uncertainty retain the
+fail-closed barrier. Existing timeout-origin retry cadence is unchanged. A new
+click/C4/C7 round can mint and send the next sale without replaying the old C7.
+
+TDD RED: **6 failed, 29 passed** before implementation (blocked-cell authority,
+production session wiring for both goal scripts, and successful-sale latch).
+Focused dealer/route/recovery GREEN: **60 passed**; further completion/barrier
+regressions were added for normal success, cancellation, unsolicited success,
+and a newer prompt in the same round. Final full gate recorded below.
+
+Defect 3 remains report-only: leg 74 observed a heavengraph decide-latency burst,
+`PlayingBackendError` x27 from about 12:44 (~1/min), while the runner survived
+and :8091 health stayed OK. No backend code or service changes were made.
+
+Gate environment: initialized the pinned rAthena e985006171d2 submodule and used
+the supplied config.log symlink. The canonical wiki DB symlink is still
+self-referential; the worktree gate uses the existing
+`/home/otto/dev/wt-mobpos/run/knowledge/iro-wiki/iro-wiki.db` fallback already
+documented above. This local symlink override is excluded from the commit.
+No runners/probes launched, no heavengraph access, no `spikes/` changes, and no
+merge. Live leg-75 contention/sales remain to be demonstrated by the coordinator.
+
+Final GREEN before commit: `nix develop -c task --dir . check` exited 0;
+**6840 passed, 65 subtests passed, 4 warnings; coverage 95.40%** (85% required).
+All formatting and static gates passed. Transcript:
+`/tmp/dealer-leg75-check.log`; RED: `/tmp/dealer-leg75-red.log`.
