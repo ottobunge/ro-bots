@@ -9905,3 +9905,55 @@ Restored the worktree's original iro-wiki symlink after verification; local
 gate inputs are excluded from the commit.
 Transcripts: `/tmp/ghost-walk-red.log`, `/tmp/ghost-walk-focused.log`,
 `/tmp/ghost-walk-check.log`, `/tmp/ghost-walk-audit.log`.
+
+## 2026-11-08 leg 76 — the odyssey-to-sale frontier closed: s00 logged in at the dealer and sold in 26 seconds; the veto-approach sells 4/4 at true adjacency, but the sell-arm taps from a full ring
+
+Window Sunday [6, 18.0, 19.5] = 18:00-19:30 Madrid (90 min). Runner detached under
+`systemd-run --user --unit=leg76-runner` 17:47:31-19:48, duration 7200s:
+**28,681 steps, step_errors 0, TRANSPORT DOWN 0, PlayingBackendError 0,
+walkable_free holds 0.** Receipt
+`run/plain_host_receipts/population-receipt-76-1794156469.json`.
+Pre-launch DB readback matched the seed exactly (zeny 25/97/103/58/54/25/0;
+s00=YuffieFy81 300006 parked dealer-adjacent prt_in 172,129 with 511x2/905x3/906x1
+at 0z; zeny_wing 705x1; xXLunasongXx 909x1) — no seed fix needed. All 7 agents
+online 178-179/240 samples, decides 104-159 each at heartbeat cadence, clean
+logoff at 19:30. heavengraph :8091/:8092 untouched.
+
+**(b) FRONTIER (a) CLOSED — odyssey-to-sale.** s00's first window arc:
+18:00:22 TalkToNpc (22 s after window open; leg-75 missed close by 26 s) →
+18:00:24 NpcShopSellOpen → 18:00:26 NpcShopSell → 18:00:28 NpcShopBuySelection.
+DB ground truth: char 300006 zeny **0 → 113**, staged 511/905/906 all gone from
+its inventory. Four sells total, all at true adjacency: zeny_wing 18:00:16
+(+5z, 103→108, 705 gone), xXLunasongXx 18:00:24 (+3z, 54→57, 909 gone), s00
+18:00:26 (+113z), RinceNyan 18:36:55 (+3z, 97→100, field loot carried back).
+
+**(a) ghost-walk fix verdict: path authority PROVEN, tap-count bar failed.**
+4/4 sells executed at real adjacency with zero server-side misfires;
+`rerolled_target_dead` 0; s00 authored 0 MoveTo and 0 plan re-authors during its
+90-minute dealer hold — the 5-tick walk-author patience holds. But
+`dealer_talk_out_of_range` reached **422** (first 3 in the opening minute, burst
+from 18:36 as fielders returned; sources cluster on the y=128 row at chebyshev
+2-4). These are PRE-SEND vetoes (fail-closed, never wire-sent) — not ghost
+walks — but the sell-arm's retry cadence from a blocked cell is unbounded, so
+the "tens, not hundreds" bar is not met.
+
+**(c) repeat-sell latch NOT proven:** all four sellers sold exactly once
+in-window; no farm→return→sell-twice cycle occurred. The 0x00CB release proof
+stays open for a future leg.
+
+**(d) new signatures.** (1) Knife-buy stock-block: 147 shop-debug mint
+verdicts, ALL fail-closed on `stock=False` — the dealer's offer (receipt=89)
+carries no knife slots, so the zeny→knife purchase hop is structurally blocked
+until dealer stock is staged seed-zeny-style. All six chars already hold fixture
+knives (2b0f249e), so equipment is satisfied; s00's 113z sits unspent. (2)
+Dealer-congestion residue: post-sale agents hold the adjacency ring while
+retrying the stock-blocked buy (`npc_stage='blocked'` at close for
+g00m01/g00m02/g01m01); arrivals park one row short and tap every ~10 s.
+PoringMuffin14 looted a fresh 909 (Jellopy) and queued ~60 min without
+converging. Named follow-up: approach-cell allocation/queueing (leg-73 item) +
+buy-attempt backoff/give-up.
+
+Socials continued: FoundGuild x2 (one per group leader), GuildInvite x12,
+InviteToParty x4, 36 chat emissions across the roster. Leg-76 ran on main as it
+stood at 8655e5ff; coordinator commit b461e135 (dashboard compose) landed
+mid-leg without touching leg files.
