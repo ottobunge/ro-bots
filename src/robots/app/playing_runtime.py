@@ -57,6 +57,7 @@ from robots.adapters.native_session_progression import (
 from robots.adapters.native_shop_context import NativeShopContext
 from robots.adapters.native_skills import NativeSkillContext
 from robots.adapters.native_vitals import NativeTelemetryUnavailable, require_native_vitals
+from robots.app.merchant_buy_backoff import MerchantBuyBackoff
 from robots.app.npc_planning_execution import LocalNpcDispatch, NpcHostBinding, NpcUiObservation
 from robots.app.party_roster import guild_candidate_aid
 from robots.app.planning_execution import RestObservation
@@ -112,7 +113,12 @@ from robots.domain.planning import (
     npc_intent_matches,
 )
 from robots.domain.self_metadata import ServerSelfSlots
-from robots.domain.shop import QualifiedShopItem, ReceivedZeny, ShopPurchaseProgress
+from robots.domain.shop import (
+    QualifiedShopItem,
+    ReceivedShopOffer,
+    ReceivedZeny,
+    ShopPurchaseProgress,
+)
 from robots.domain.skill_knowledge import PublicSkillKnowledge
 from robots.domain.skills import ReceivedSkillContextReadOnly
 
@@ -383,6 +389,7 @@ class PlayingClient:
 
     def _reset_shop_seam(self) -> None:
         """Fresh shop-loop state; binding identity invalidates stale mints anyway."""
+        self._buy_backoff = MerchantBuyBackoff()
         self._sell_open_issued: tuple[int, int] | None = None
         self._buy_open_issued: tuple[int, int] | None = None
         self._sell_sent: deque[int] = deque(maxlen=16)
@@ -735,6 +742,9 @@ class PlayingClient:
         map_name = self._map_identity(view.map_name or wire.map_name)
         nearby = self._nearby(view, pos, map_name)
         self._validate_npc_context(view, map_name, pos)
+        offer = self._current_buy_offer()
+        if offer is not None:
+            self._buy_backoff.observe(offer, tracker.indexed_inventory is not None)
         invites = (PartyInvite(wire.party_invite_from, pos.at),) if wire.party_invite_pid else ()
         state = BotState(
             name=wire.char_name,
@@ -760,6 +770,7 @@ class PlayingClient:
             received_skills=self.received_skills,
             public_skill_knowledge=self.public_skill_knowledge,
             shop_offer=self._shop_context.offer,
+            merchant_buy_suspended=self._buy_backoff.suspended,
             # The tracked SP_ZENY balance (0x00B1 param 20, pinned rathena
             # src/map/map.hpp:501) is the authority; the shop-context balance
             # is the fallback inside the shop loop and the runner-side seed
@@ -1300,10 +1311,44 @@ class PlayingClient:
         sell_action = self._pending_sell(tracker)
         if sell_action is not None:
             return sell_action
+        if self._give_up_stock_blocked_buy(tracker):
+            return None
         purchase = self._buy_mint_attempt(tracker)
         if purchase is not None:
             return purchase[0]
         return self._sell_open_action(tracker) or self._buy_open_action()
+
+    def _current_buy_offer(self) -> ReceivedShopOffer | None:
+        offer = self._shop_context.offer
+        if offer is None or not self._buy_backoff.current(offer, self._npc.view, self._epoch):
+            return None
+        return offer
+
+    def _give_up_stock_blocked_buy(self, tracker: NativeGameplayTracker) -> bool:
+        offer = self._current_buy_offer()
+        if offer is None:
+            return False
+        refusal = self._buy_backoff.evaluate(offer, tracker.indexed_inventory is not None)
+        if refusal is None:
+            return False
+        reason, first = refusal
+        if first:
+            logger.warning(
+                "merchant-drive: buy give-up %s (map=%s dealer=%s item=1201 offer_item_ids=%s)",
+                reason,
+                offer.map_name,
+                offer.npc_id,
+                [row.item_id for row in offer.rows[:8]],
+            )
+        # The pinned close is CZ_CLOSE_DIALOG 0146, as in NativeNpcDialogue's
+        # close request encoder. Send first: a failed close must keep the barrier.
+        self._send_npc(struct.pack("<HI", 0x146, offer.npc_id))
+        tracker.clear_npc_dialog()
+        self._shop_context.invalidate_offer("buy-give-up")
+        self._npc.complete_shop()
+        self._retry_talk = None
+        self._shop_selection = None
+        return True
 
     def _mint_skip_term(self, state: BotState) -> str | None:
         """The mint precondition's failing term, named for the tap. Leg 55:

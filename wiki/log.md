@@ -9957,3 +9957,107 @@ Socials continued: FoundGuild x2 (one per group leader), GuildInvite x12,
 InviteToParty x4, 36 chat emissions across the roster. Leg-76 ran on main as it
 stood at 8655e5ff; coordinator commit b461e135 (dashboard compose) landed
 mid-leg without touching leg files.
+
+## 2026-11-08 leg 77 prep — bounded buy stock refusals, sell-queue patience, and the corrected knife diagnosis
+
+Base `b7f29351`; evidence is leg 76,
+`run/plain_host_receipts/population-receipt-76-1794156469.json` (four sales,
+s00 0→113z in 26 seconds), plus its existing offline transcript
+`/tmp/population_leg76.log`. No new runner, probe, or live-world access.
+
+The runtime now gives up after **three consecutive stock-blocked buy
+evaluations per (map, dealer, item 1201) in a session/window epoch**.
+`MerchantBuyBackoff` keeps the counter owner-local; only an offer bound to the
+current epoch, NPC, map, and dialogue-open cursor can contribute. A fresh offer
+containing Knife clears the missing-offer refusal; a known indexed inventory
+also clears the separate inventory-unknown refusal. A new session resets both.
+Changed offers that still omit Knife do not pretend the stock block resolved.
+
+The third evaluation emits one truthful `buy give-up no stock in offer` tap,
+including `offer_item_ids` truncated to eight IDs. The leg-76 inventory-unknown
+shape instead says `buy give-up inventory stock unknown`, never claiming the
+dealer lacks Knife. The runtime sends the pinned `CZ_CLOSE_DIALOG` **0x0146**
+(`<HI>`, matching `native_npc_dialogue.py`'s close encoder and
+`rathena/src/map/clif.cpp:13406`), then clears the received dialogue marker,
+invalidates the offer, and completes the local shop controller. A failed send
+retains the fail-closed barrier. Later stockless dialogues in the same window
+close without another give-up tap. Poison/cancellation/dead-state gates still
+own their exchanges; no purchase admission term is relaxed.
+
+The detached `merchant_buy_suspended` verdict prevents the script's BUY-only
+trip from immediately re-arming. Fresh sellable inventory still admits the
+SELL arm. Existing return legs can move a suspended buyer away even if the
+inventory snapshot is unknown or a fixture weapon is already present. Scripts
+do not parse offers, count market refusals, or query grids.
+
+A vetoed approach keeps its grid-free patience memo across goal-script
+recreation: unchanged perception rechecks on the **fifth elapsed evaluation**
+(evaluations 1, 6, 11, ...), holding ACTIVE with no walk or talk in between.
+This includes the runtime authority's all-free-cells-unreachable verdict,
+preserving `reachable=0/8 walkable_free=0/8`. A changed perceived vacancy,
+position, destination, session, or injected authority rechecks immediately.
+Contact, a bound offer, route/return transitions, and session reset release
+the queue wait. Existing
+hold/range tap deduplication and the pre-send adjacency veto remain intact.
+
+**Knife diagnosis: runtime inventory-admission block; neither a C6 item-list
+parse bug nor world-side missing dealer stock.** The requested binary verdict
+would misstate the available evidence:
+
+- Pinned rAthena `e985006171d2eb320ee512a653f4c83aea3d81b6`,
+  `npc/merchants/shops.txt:255`: `Weapon Dealer#prt` at `prt_in,172,130`
+  lists **`1201:-1`** among 19 items. This is an ordinary `shop`, not a
+  finite-stock market requiring a stock seed.
+- `rathena/src/map/clif.cpp:2235` specifies C6's complete 11-byte
+  `<price.L discount.L type.B nameid.W>` rows; `clif_buylist` emits every shop
+  item. `src/robots/adapters/native_shop.py:122` uses
+  `struct.iter_unpack("<IIBH", raw[4:])` over all rows (64-row engineering cap,
+  not a prefix slice). `native_shop_context.py:270` copies every decoded item ID
+  into `ReceivedShopOffer`; `playing_runtime.py::_buy_mint_attempt` checks these
+  rows. Only the diagnostic list in the new tap is truncated.
+- C7 is the sellable **inventory-index** list, not dealer item IDs:
+  `rathena/src/map/clif.cpp:2265` and
+  `src/robots/adapters/native_gameplay.py:742` (`<HII>` rows). It must not be
+  interpreted as an offer missing Knife.
+- The saved leg-76 transcript line 41 binds **19 C6 rows** at receipt 89
+  (213 bytes = 4 + 19×11); line 43 proves
+  `f_item=True(1201/1201)` and `row=True((50,50,5) v (50,50) rows=1)`.
+  All **147** mint verdicts instead say
+  **`stock=False(stock=False slots=None)`**. That `stock` is
+  `PurchaseAdmission.stock`, sourced from `tracker.indexed_inventory` in
+  `playing_runtime.py::_purchase_snapshot`, not the offer's rows.
+- `native_purchase.py:318` refuses unknown player inventory;
+  `native_gameplay.py:412` returns None when it is unknown, and
+  `native_gameplay.py:671` deliberately invalidates it on 0x00AF/0x07FA
+  sell/delete receipts. Reconstructing current inventory after deletions is a
+  separate adapter-accounting task; this slice bounds the resulting hold
+  without fabricating current stock or reopening purchase authority.
+
+**Coordinator staging change: none.** Do not add a duplicate `1201:-1` or seed
+shop stock: Knife is already declared and was received. Rejected: the leg-76
+diary's inference that `stock=False` meant missing dealer stock, a false
+`WORLD-SIDE MISSING STOCK`/`RUNTIME PARSE BUG` label, inventing bag contents,
+fail-open buys/walks, and changing live NPC scripts, SQL, Docker, or `spikes/`.
+
+TDD RED: **9 failed, 5 passed** before implementation
+(`/tmp/buy-queue-red.log`). Expanded new-suite GREEN: **16 passed**; final focused
+merchant/dealer/route/recovery suite GREEN: **235 passed**.
+The first full gate exposed the authority-replacement compatibility case:
+**1 failed, 6862 passed + 65 subtests, coverage 95.45%**
+(`/tmp/buy-queue-check-first.log`). Including the injected authority in the
+wait's context preserves the existing immediate recheck when an authority is
+replaced, without weakening patience for a steady authority. No existing test
+assertions were changed.
+Gate inputs: initialized only the worktree's pinned rAthena checkout and used
+the requested config.log / iro-db links. The canonical iro-wiki link points to
+itself, so verification uses the existing
+`/home/otto/dev/wt-mobpos/run/knowledge/iro-wiki/iro-wiki.db` fallback, as in the
+prior implementation entry; the original worktree link is restored afterward.
+No corpus contents, live world, heavengraph, runners, probes, or `spikes/` edits.
+Final full gate GREEN before commit: `nix --option auto-optimise-store false
+develop -c task --dir . check` exited **0**; **6863 passed, 65 subtests passed,
+4 warnings, coverage 95.45%** (85% required), in 268.43 seconds. Formatting,
+ruff, strict mypy (363 files), vulture, xenon, duplicate-code, and bandit all
+passed. Transcript: `/tmp/buy-queue-check.log`. The original iro-wiki symlink
+was restored after verification; gate inputs are excluded from the commit.
+Committed/pushed on `t3/buy-arm-sell-queue-patience`; no merge.

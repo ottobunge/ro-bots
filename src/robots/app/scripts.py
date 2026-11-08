@@ -191,6 +191,9 @@ _DEALER_APPROACH_WALKS: dict[str, tuple[str, tuple[int, int], int]] = {}
 """Per-bot last authored map/cell and evaluations since that author.
 Give an in-flight walk time to progress, including across script recreation."""
 
+_DEALER_QUEUE_WAITS: dict[str, tuple[tuple[object, ...], int]] = {}
+"""Unchanged vetoed approaches re-evaluate on the fifth elapsed evaluation."""
+
 
 def reset_merchant_talk() -> None:
     """Forget per-bot dealer contacts (new session epoch / test isolation)."""
@@ -198,6 +201,7 @@ def reset_merchant_talk() -> None:
     _DEALER_RANGE_TAPPED.clear()
     _DEALER_OCCUPANCY_TAPPED.clear()
     _DEALER_APPROACH_WALKS.clear()
+    _DEALER_QUEUE_WAITS.clear()
 
 
 """Per-bot-name commitment registry; one entry per agent in the process."""
@@ -559,6 +563,8 @@ def merchant_admission_refusal(state: BotState) -> tuple[str, str] | None:
     has_stock = any(str(item) in DRIVE_SELLABLES for item in state.inventory)
     if refusal is None:
         refusal = _want_refusal(state, affordable, has_stock)
+    if refusal is None and not has_stock and state.merchant_buy_suspended:
+        refusal = "buy_suspended"
     if refusal is not None:
         return refusal, _admission_detail(state, affordable, has_stock)
     return None
@@ -630,10 +636,16 @@ def merchant_return_cell(state: BotState) -> tuple[int, int] | None:
     (the drive owns the engagement while it holds), and a pinned return map
     beyond the field. Anything else returns None: the field behavior and the
     drive stay unchanged; unknown maps fail closed.
+
+    A runtime buy give-up also releases the return while inventory is unknown
+    or a fixture weapon is present. Moving home does not authorize a trade.
     """
-    if state.job != "Novice" or not state.inventory_known:
+    if state.job != "Novice":
         return None
-    if any(str(item) in state.inventory for item in NOVICE_WANTED_WEAPONS):
+    if not state.merchant_buy_suspended and (
+        not state.inventory_known
+        or any(str(item) in state.inventory for item in NOVICE_WANTED_WEAPONS)
+    ):
         return None
     if merchant_drive_cell(state) is not None:
         return None
@@ -678,6 +690,7 @@ def _merchant_step(
             )
         return _merchant_engage(state, destination, reachable)
     _DEALER_APPROACH_WALKS.pop(state.name, None)
+    _DEALER_QUEUE_WAITS.pop(state.name, None)
     home = merchant_return_cell(state)
     if home is None:
         return None
@@ -703,6 +716,9 @@ def _merchant_engage(
         if state.shop_offer is not None:
             _DEALER_OCCUPANCY_TAPPED.pop(state.name, None)
             _DEALER_APPROACH_WALKS.pop(state.name, None)
+            _DEALER_QUEUE_WAITS.pop(state.name, None)
+            return ScriptOutcome((), ScriptStatus.ACTIVE)
+        if _wait_dealer_queue(state, destination, reachable):
             return ScriptOutcome((), ScriptStatus.ACTIVE)
         talk = _dealer_talk(state, destination)
         if talk is None and _DEALER_TALKED.get(state.name) is not None:
@@ -713,6 +729,7 @@ def _merchant_engage(
         if talk is not None:
             _DEALER_OCCUPANCY_TAPPED.pop(state.name, None)
             _DEALER_APPROACH_WALKS.pop(state.name, None)
+            _DEALER_QUEUE_WAITS.pop(state.name, None)
             # One talk per (bot, npc) contact: re-sending resets the server's
             # npc_shopid before the 0xC4 dealtype can be answered (window-29:
             # 2254 TalkToNpc resets). The hold lets the dialog stage machine
@@ -736,7 +753,38 @@ def _merchant_engage(
         return _merchant_approach(state, destination, reachable)
     _DEALER_OCCUPANCY_TAPPED.pop(state.name, None)
     _DEALER_APPROACH_WALKS.pop(state.name, None)
+    _DEALER_QUEUE_WAITS.pop(state.name, None)
     return ScriptOutcome((MoveTo(x=destination[0], y=destination[1]),), ScriptStatus.ACTIVE)
+
+
+def _dealer_queue_context(
+    state: BotState, destination: tuple[int, int], reachable: MerchantReachable | None
+) -> tuple[object, ...]:
+    """Perceived geometry only; scripts never query a grid or another bot's memo."""
+    return (
+        state.map_name,
+        state.native_epoch,
+        state.x,
+        state.y,
+        destination,
+        reachable,
+        tuple(_free_approach_cells(*destination, state)),
+    )
+
+
+def _wait_dealer_queue(
+    state: BotState, destination: tuple[int, int], reachable: MerchantReachable | None
+) -> bool:
+    previous = _DEALER_QUEUE_WAITS.get(state.name)
+    if previous is None:
+        return False
+    context, elapsed = previous
+    if context != _dealer_queue_context(state, destination, reachable):
+        _DEALER_QUEUE_WAITS.pop(state.name, None)
+        return False
+    elapsed += 1
+    _DEALER_QUEUE_WAITS[state.name] = (context, elapsed)
+    return elapsed < _DEALER_APPROACH_REAFFIRM_TICKS
 
 
 def _merchant_approach(
@@ -746,8 +794,10 @@ def _merchant_approach(
     walk_cell = _approach_cell(*destination, state, reachable=reachable)
     if walk_cell is not None:
         _DEALER_OCCUPANCY_TAPPED.pop(state.name, None)
+        _DEALER_QUEUE_WAITS.pop(state.name, None)
         return _author_dealer_approach(state, walk_cell)
     _DEALER_APPROACH_WALKS.pop(state.name, None)
+    _DEALER_QUEUE_WAITS[state.name] = (_dealer_queue_context(state, destination, reachable), 0)
     free = len(_free_approach_cells(*destination, state))
     detail = (
         f"free={free}/8 occupied={8 - free}/8 reachable=0/8 walkable_free=0/8 "
