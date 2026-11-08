@@ -9677,3 +9677,77 @@ Final GREEN: `nix develop -c task --dir . check` exited 0 before commit:
 including all formatting/static gates and the unchanged classification tests.
 Gate transcript: `/tmp/dealer-congestion-check-final.log`. No runners or probes
 launched, no heavengraph access, no `spikes/` edits, no merge to main.
+
+## 2026-11-08 leg 74 — the allocation fix moved exactly ONE agent to the dealer; the hold path never fired
+
+Launch 11:50 under `systemd-run --user --unit=leg74-runner` (detached; the shepherd
+stayed alive polling to completion inside its turn). Clean DONE 13:29 (t=6000, unit
+Result=success): steps 22596, step_errors 0, **0 TRANSPORT DOWN** all leg. Receipt
+run/plain_host_receipts/population-receipt-74-1794134973.json. Pre-launch gate green:
+fresh readback matched seed exactly (zeny 22/87/103/51/54/20/0), staged positions
+confirmed, all offline; seed-zeny.json unchanged (no drift fix needed). Window
+[6, 12.0, 13.25]: all 7 online 12:00–13:15, clean open and close.
+
+VERDICTS:
+
+(a) DEALER CONGESTION FIX: NOT PROVEN. Exactly ONE sell closed — RinceNyan walked
+   170,128 → 172,129 (adjacent) and sold at window open (traces: TalkToNpc 11:00:16Z
+   → NpcShopSellOpen 11:00:21Z → NpcShopSell 11:00:23Z; zeny 87→97, DB-verified,
+   909 Jellopy gone from inventory). But RinceNyan's approach exercised the OLD
+   unobstructed path, not the fix: it was the first mover and met no contention.
+   The other four stock holders (NyxSong 171,128 / PipinWalker 170,128 /
+   PoringMuffin14 171,128 / zeny_wing 169,128) plus s00 (169,127) parked
+   Chebyshev 2–3 for the WHOLE window; `sell arm admitted` fired for all six,
+   9 dealer_talk_out_of_range taps (verbatim:
+   `merchant-drive: sell arm dealer_talk_out_of_range (agent=(171,128) dealer=(172,130) chebyshev=2)`
+   and the same shape for chebyshev 2/3/4 at (169,127)/(170,128)/(168,128)/(169,128)),
+   and the `sell arm hold dealer_occupied` tap NEVER fired (0 — the block never
+   formed because no second agent ever converged), so the hold→release path the
+   fix added was never exercised live. rerolled_target_dead is NOT ~0: the receipt
+   move_gates show **8 per parked agent** on all five (note: this gate counter is
+   receipt-only — the log greps 0, the mid-window instrument was looking in the
+   wrong place).
+
+(b) s00 (YuffieFy81): FAILED — 0z stands. Parked (169,127) all window, 659 decides,
+   rerolled_target_dead 8, stock (511x2 / 905x3 / 906x1) still in bag (DB). The
+   odyssey-to-sale arc did not close.
+
+(c) xXLunasongXx: NOT TRIGGERED — farmed prt_fild08 (195,329) all window (156
+   decides, 90 goal_reviews, 80 plan_authored), acquired no sellable stock, never
+   returned; zeny 54. weapon_release had already freed it pre-window (zeny 54 ≥
+   floor 50, affordable, stock 0) but the weapon purchase did not happen either.
+
+(d) NEW SIGNATURES:
+   1. The approach allocation still loses to dead targets: rerolled_target_dead 8x
+      per parked agent despite the 4dcebb2c allocation. The allocator picks
+      next-free cells from agent OCCUPANCY only; the 2026-10-20 precedent (roam
+      targets dying in shortest_path on unwalkable cells) suggests shop-interior
+      counter tiles around the dealer are agent-free but UNWALKABLE, and the
+      reroll fires each time the approach re-targets one. RinceNyan only succeeded
+      from a cell (172,129) it reached by the plain goal walk.
+   2. RinceNyan npc_stage latched 'blocked' AFTER its successful sale
+      (`sell arm inventory_unknown (map=prt_in zeny=97 ...)`) — the sell-side
+      release and the dialogue barrier disagree post-sale.
+   3. PlayingBackendError x27 (`real inference request failed (details redacted)`,
+      ~1/min from ~12:44 onward, growing to window close); 0 step_errors, the
+      runner survived all 27 (heavengraph :8091 health stayed ok), but the decide
+      failures degrade the back half of any window.
+   4. Sell-arm vs goal-layer tension: admitted stock holders spent the window on
+      the decide layer's social choices instead of completing the approach —
+      NyxSong founded guild 'NyxSongGuard' (guild_id 2, master NyxSong) with
+      GuildInvite x6 + InviteToParty x2, PipinWalker founded 'PipinWalkerGuard'
+      (guild_id 3) with GuildInvite x6 + InviteToParty x2; BOTH foundings persisted
+      in the DB (char.guild_id set), though no invitee joined a guild.
+
+BONUS — SOCIALS LIVE AND PERSISTING: FoundGuild x2 (DB-persisted guilds 2 and 3),
+GuildInvite x12, InviteToParty x4, PartyChat x43, Say x914, chat_sent x957 across
+the seven agents; parties 2/3/4 held (char.party_id set: 2 = PipinWalker +
+xXLunasongXx + PoringMuffin14, 3 = NyxSong + zeny_wing, 4 = RinceNyan).
+
+Economy ground truth at close: zeny 22/97/103/51/54/20/0 (one +10 delta total;
+RinceNyan sold 1 Jellopy batch); zeny_wing holds 705 Clover x1 unsold (its
+`sell arm admitted (map=prt_fild08 dest=(170, 378) zeny=103 stock=1)` fired on the
+field pickup and it walked home but never converged); knives (1201) are fixture
+grants, not purchases.
+
+Code base: 049d8862 (no code change this leg). Commit: receipt + this entry.
