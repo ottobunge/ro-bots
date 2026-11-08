@@ -10061,3 +10061,58 @@ ruff, strict mypy (363 files), vulture, xenon, duplicate-code, and bandit all
 passed. Transcript: `/tmp/buy-queue-check.log`. The original iro-wiki symlink
 was restored after verification; gate inputs are excluded from the commit.
 Committed/pushed on `t3/buy-arm-sell-queue-patience`; no merge.
+
+## 2026-11-08 leg 77 — three sells landed (909 gone, PoringMuffin14 25→28z) but the buy give-up never armed: the post-sale blocked-dialogue freeze held the dealer ring instead
+
+Launch 20:50:12 Madrid under `systemd-run --unit=leg77-runner`, window
+`[6, 21.0, 22.5]`, backends heavengraph :8091/:8092 (read-only health probes
+only). Pre-launch seed verified against a fresh DB readback: 25/100/108/58/57/
+25/113 exact, no seed fix needed. Runner exit 22:50: **28,685 steps,
+0 step_errors, 0 TRANSPORT DOWN, 0 PlayingBackendError**; decides 120-191 per
+agent at full cadence; positions seeded for all seven; no stale-gate noise.
+Receipt: `run/plain_host_receipts/population-receipt-77-1794167425.json`.
+
+**Sells (trace timestamps, DB-verified zeny):** NyxSong 21:00:10 (+35z → 60),
+PoringMuffin14 21:00:44 (+3z → 28), s00/YuffieFy81 21:56:50 (+3z → 116).
+PoringMuffin14's 909 is GONE from `inventory` (only the 1201 knife remains) —
+the queued-seller target converged 44 seconds after window open. Honest caveat:
+it logged in already dealer-adjacent (position persisted from leg 76), so this
+was not a queue traversal. Each seller sold EXACTLY once — no repeat-sell
+latch anywhere in-window.
+
+**(a) BUY GIVE-UP: NOT EXERCISED — 0 `merchant-drive: buy give-up` lines.**
+The precondition never armed: `_give_up_stock_blocked_buy` needs a received
+offer (`_current_buy_offer()`), and every frozen agent's final sample shows
+`shop_offer=None` with `npc_stage="blocked"` — the fail-closed dialogue
+barrier sits BEFORE the C6 offer, so the 3-refusal counter never starts.
+What did NOT reproduce is leg 76's residue shape: the buy-retry ring storm
+(422 pre-send vetoes, ~60 min of hold-the-ring retries) is gone — the sellers
+each sent 1 TalkToNpc + 3 NpcClose and sold in seconds.
+
+**THE NEW DOMINANT DEFECT — post-sale blocked-dialogue freeze.** The three
+sellers stopped authoring actions 21-56 minutes into the window and stood at
+their dealer cells until close: NyxSong last action 21:31:19 Madrid (after
+`FoundGuild 'NyxSongGuard'` + 6 GuildInvites @ 21:01:51 — the guild frontier
+fired live), PoringMuffin14 last 21:22:13, s00's last action IS its sell
+21:56:50. Decides kept flowing at full cadence; `npc_stage=blocked`
+(Weapon Dealer 110001762); 1-3 move gates total per agent. Ring cells
+therefore stayed occupied ~90 min and the queue starved behind them.
+
+**QUEUE PATIENCE (bounded taps):** RinceNyan queued the whole window at
+Chebyshev 2 — 110 `dealer_talk_out_of_range` taps, ~16 s cadence, one agent
+(vs 422 in leg 76). Bounded, never converged: no ring cell freed. It farmed
+instead (12 Attacks, 2 Loots, carries Clover 705x1 as `stock=1` sell-arm
+admission at 22:06) — the farm-while-queued fallback works.
+
+**Soft signature:** zeny_wing went action-silent for the last 52 min standing
+in prontera (191 decides, `npc_stage=None`) — the decide→dispatch dead-link
+shape, weaker evidence than the three hard freezes.
+
+**(c) REPEAT-SELL LATCH: PASS** — 3 sells, 3 agents, one each; no 0x00CB
+release stress appeared.
+
+NEXT: the freeze, not the buy, is the frontier. The give-up's arming
+condition must include the BLOCKED-dialogue path (barrier pre-offer), and a
+post-sale agent must return to its farm_item goal instead of camping the
+ring — the 90-minute dealer occupation is what starved the one genuinely
+queued seller. Traces (UTC window): `.work/runtime/population-live/traces/`.
