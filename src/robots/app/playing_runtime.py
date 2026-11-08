@@ -69,7 +69,6 @@ from robots.app.scripts import (
     shop_sell_entries,
     shop_sellable_stock,
 )
-from robots.app.travel_routing import TravelRouter
 from robots.domain.actions import (
     AcceptGuildInvite,
     AcceptInvite,
@@ -310,7 +309,6 @@ class PlayingClient:
     _stat_unacked: int
     _stat_acks_seen: int
     _stat_failed: set[int]
-    _merchant_router: TravelRouter | None = None
 
     def __init__(
         self,
@@ -323,8 +321,8 @@ class PlayingClient:
         keepalive_interval_s: float | None = None,
         seed_zeny: int | None = None,
     ) -> None:
-        self.wire = wire
-        self.cache = cache
+        self.wire, self.cache = wire, cache
+        self._merchant_paths: dict[tuple[str, tuple[int, int], tuple[int, int]], bool] = {}
         self.public_skill_knowledge = public_skill_knowledge
         self._now = monotonic
         # the runner-side balance seed (e2e-43): the wire delivers SP_ZENY on
@@ -718,6 +716,7 @@ class PlayingClient:
         return self._last_built_state
 
     def build_native_state(self, goal: Goal) -> BotState:
+        self._merchant_paths.clear()
         tracker = self._observe()
         wire, view = self.wire, tracker.view
 
@@ -829,20 +828,28 @@ class PlayingClient:
     def merchant_reachable(
         self, map_name: str, position: tuple[int, int], cell: tuple[int, int]
     ) -> bool | None:
-        """Runtime authority for dealer approaches: walkable AND same region.
+        """Runtime authority for dealer approaches: a walkable cell WITH a path.
 
-        A free counter tile is still a dead walk target (leg 74). Unknown
+        Use the move primitive's no-corner-cutting path contract, memoized
+        for this native-state tick. Known NoRoute vetoes authoring; absent
         geometry keeps the script's existing fail-open choice.
         """
         if self.cache is None:
             return None
         if map_name not in self.cache.maps:
             return None
-        if not self.cache.get(map_name).walkable(cell):
+        grid = self.cache.get(map_name)
+        if not grid.walkable(cell):
             return False
-        if self._merchant_router is None:
-            self._merchant_router = TravelRouter(self.cache)
-        return self._merchant_router.reachable(map_name, position, cell)
+        key = (map_name, position, cell)
+        if key not in self._merchant_paths:
+            try:
+                shortest_path(grid, position, cell)
+            except NoRoute:
+                self._merchant_paths[key] = False
+            else:
+                self._merchant_paths[key] = True
+        return self._merchant_paths[key]
 
     def _dispatch_shop_action(self, action: GameAction) -> bool:
         """The shop actions; True = dispatched."""

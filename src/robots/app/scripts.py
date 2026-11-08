@@ -186,12 +186,18 @@ _DEALER_OCCUPANCY_TAPPED: dict[str, str] = {}
 """Per-bot hold detail, independent of the per-tick admission/range taps.
 Diagnostic only: no agent reads another agent's entry to allocate a cell."""
 
+_DEALER_APPROACH_REAFFIRM_TICKS = 5
+_DEALER_APPROACH_WALKS: dict[str, tuple[str, tuple[int, int], int]] = {}
+"""Per-bot last authored map/cell and evaluations since that author.
+Give an in-flight walk time to progress, including across script recreation."""
+
 
 def reset_merchant_talk() -> None:
     """Forget per-bot dealer contacts (new session epoch / test isolation)."""
     _DEALER_TALKED.clear()
     _DEALER_RANGE_TAPPED.clear()
     _DEALER_OCCUPANCY_TAPPED.clear()
+    _DEALER_APPROACH_WALKS.clear()
 
 
 """Per-bot-name commitment registry; one entry per agent in the process."""
@@ -663,6 +669,7 @@ def _merchant_step(
             plan = resolver(state.map_name, state.x, state.y) or ()
             for leg_map, leg_x, leg_y in plan:
                 if leg_map == state.map_name and (leg_x, leg_y) != (state.x, state.y):
+                    _DEALER_APPROACH_WALKS.pop(state.name, None)
                     return ScriptOutcome((MoveTo(x=leg_x, y=leg_y),), ScriptStatus.ACTIVE)
             _tap_merchant_drive(
                 state.name,
@@ -670,6 +677,7 @@ def _merchant_step(
                 f"map={state.map_name} dest={destination}",
             )
         return _merchant_engage(state, destination, reachable)
+    _DEALER_APPROACH_WALKS.pop(state.name, None)
     home = merchant_return_cell(state)
     if home is None:
         return None
@@ -694,6 +702,7 @@ def _merchant_engage(
         # decide-paced mint ever sees it. Hold the click; author nothing.
         if state.shop_offer is not None:
             _DEALER_OCCUPANCY_TAPPED.pop(state.name, None)
+            _DEALER_APPROACH_WALKS.pop(state.name, None)
             return ScriptOutcome((), ScriptStatus.ACTIVE)
         talk = _dealer_talk(state, destination)
         if talk is None and _DEALER_TALKED.get(state.name) is not None:
@@ -703,6 +712,7 @@ def _merchant_engage(
             _DEALER_TALKED.pop(state.name, None)
         if talk is not None:
             _DEALER_OCCUPANCY_TAPPED.pop(state.name, None)
+            _DEALER_APPROACH_WALKS.pop(state.name, None)
             # One talk per (bot, npc) contact: re-sending resets the server's
             # npc_shopid before the 0xC4 dealtype can be answered (window-29:
             # 2254 TalkToNpc resets). The hold lets the dialog stage machine
@@ -725,6 +735,7 @@ def _merchant_engage(
         # untouched: a warp must be ENTERED, so those keep the pinned cell.
         return _merchant_approach(state, destination, reachable)
     _DEALER_OCCUPANCY_TAPPED.pop(state.name, None)
+    _DEALER_APPROACH_WALKS.pop(state.name, None)
     return ScriptOutcome((MoveTo(x=destination[0], y=destination[1]),), ScriptStatus.ACTIVE)
 
 
@@ -735,7 +746,8 @@ def _merchant_approach(
     walk_cell = _approach_cell(*destination, state, reachable=reachable)
     if walk_cell is not None:
         _DEALER_OCCUPANCY_TAPPED.pop(state.name, None)
-        return ScriptOutcome((MoveTo(x=walk_cell[0], y=walk_cell[1]),), ScriptStatus.ACTIVE)
+        return _author_dealer_approach(state, walk_cell)
+    _DEALER_APPROACH_WALKS.pop(state.name, None)
     free = len(_free_approach_cells(*destination, state))
     detail = (
         f"free={free}/8 occupied={8 - free}/8 reachable=0/8 walkable_free=0/8 "
@@ -745,6 +757,18 @@ def _merchant_approach(
         _DEALER_OCCUPANCY_TAPPED[state.name] = detail
         logger.warning("merchant-drive: sell arm hold dealer_occupied (%s)", detail)
     return ScriptOutcome((), ScriptStatus.ACTIVE)
+
+
+def _author_dealer_approach(state: BotState, cell: tuple[int, int]) -> ScriptOutcome:
+    """Grid-free author patience: changed targets now, same target every five ticks."""
+    previous = _DEALER_APPROACH_WALKS.get(state.name)
+    if previous is not None and previous[:2] == (state.map_name, cell):
+        elapsed = previous[2] + 1
+        if elapsed < _DEALER_APPROACH_REAFFIRM_TICKS:
+            _DEALER_APPROACH_WALKS[state.name] = (state.map_name, cell, elapsed)
+            return ScriptOutcome((), ScriptStatus.ACTIVE)
+    _DEALER_APPROACH_WALKS[state.name] = (state.map_name, cell, 0)
+    return ScriptOutcome((MoveTo(x=cell[0], y=cell[1]),), ScriptStatus.ACTIVE)
 
 
 def _dealer_talk(state: BotState, dealer_cell: tuple[int, int]) -> TalkToNpc | None:

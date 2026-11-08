@@ -9845,3 +9845,63 @@ release. s00's odyssey-to-sale arc is still open: it walked to (172,129)
 window close — but the sale did not complete (zeny stayed 0, stock intact in the
 DB readback). Decision cadence was healthy (91-148 decides per agent; no
 decide-latency bursts).
+
+## 2026-11-08 leg 76 prep — veto path-blocked dealer cells and give approach walks time
+
+Implementation on `t3/fix-merchant-ghost-walk`, based on `main` at `ee112388`.
+Leg 75's 1,307 out-of-range taps / repeated south-row targets motivate two
+guards; this is unit/gate evidence, not a claim of live arrival or sales.
+
+`PlayingClient.merchant_reachable` now runs the same `shortest_path` primitive
+as `_move`, after the cell walkability check. **NoRoute returns False**: a known
+path-blocked neighbour must not be authored just because its cell is walkable.
+No cache / unknown map still returns None (the existing fail-open contract).
+Both successful and rejected paths are memoized per `(map, position, cell)` and
+cleared at the next `build_native_state` tick. This replaces the merchant's
+region-only verdict; other travel routing and movement recovery are unchanged.
+
+The grid-free script approach memoizes the last authored `(map, cell)` per bot,
+including across goal-script recreation. The first evaluation authors; four
+evaluations hold ACTIVE without a MoveTo; the fifth elapsed evaluation
+re-affirms the same target (authors at 1, 6, 11, ...). Changed targets and other
+bots author immediately. Dealer contact, bound offers, route/return transitions,
+loss of the merchant drive, a fully vetoed/occupied approach, and the existing
+session/test reset clear patience so a fresh approach can start immediately.
+This is bounded author patience; scripts do not infer wire progress or arrival.
+
+When every free neighbour is rejected by the authority, s00 holds ACTIVE with
+no MoveTo and the existing deduplicated `hold dealer_occupied` detail:
+`free=8/8 ... reachable=0/8 walkable_free=0/8`. Here `walkable_free` counts free
+neighbours admitted by the combined cell/path authority, not raw grid cells.
+Rejected alternatives: fail-open on known NoRoute (would repeat the ghost
+target), removing the retry bound (could strand a lost action), and consulting
+the grid from scripts. Live leg-76 arrival/sale proof remains for the coordinator.
+
+TDD RED before implementation: **6 failed, 19 passed**; fake walkable geometry
+with NoRoute exposed the path veto and s00 hold, positive/negative caching
+exposed the missing path calls, and repeated-author tests exposed the cadence.
+Focused dealer/route/recovery/rearm GREEN: **101 passed**. Existing actor-order
+allocation tests now reset the author memo between independent scenarios;
+merchant-drive tests isolate their session memo between tests.
+
+Gate environment: initialized the pinned rAthena submodule and supplied
+config.log / iro-db links. The supplied canonical iro-wiki link is still
+self-referential; used the existing `wt-mobpos` wiki DB fallback documented in
+the previous implementation entry, only for local verification. No database
+content was changed. No runners/probes or heavengraph access, no `spikes/`
+changes, and no merge.
+
+The additional `task audit` failed on **17 existing vulnerabilities in four
+packages** (black, certifi, filelock, opentelemetry-api). `uv.lock`,
+`pyproject.toml`, and `Taskfile.yml` are identical to the base; dependency upgrades
+were left outside this movement fix. This audit is separate from the full
+`task check` gate documented in README.md. Its generated requirements file was
+removed after the failed audit.
+
+Final GREEN before commit: `nix --option auto-optimise-store false develop -c
+task --dir . check` exited 0; **6847 passed, 65 subtests passed, 4 warnings;
+coverage 95.41%** (85% required). All formatting and static gates passed.
+Restored the worktree's original iro-wiki symlink after verification; local
+gate inputs are excluded from the commit.
+Transcripts: `/tmp/ghost-walk-red.log`, `/tmp/ghost-walk-focused.log`,
+`/tmp/ghost-walk-check.log`, `/tmp/ghost-walk-audit.log`.

@@ -198,8 +198,37 @@ def test_visible_seller_takes_the_best_cell_so_next_free_cell_is_selected(
 def test_only_free_cell_is_chosen_independently_of_actor_order() -> None:
     crowd = _crowd(except_cell=(173, 131))
     for actors in (crowd, tuple(reversed(crowd))):
+        scripts.reset_merchant_talk()
         state = _state(nearby=(_dealer(), *actors))
         assert GrindScript().step(state).actions == (MoveTo(x=173, y=131),)
+
+
+def test_same_approach_authored_once_then_reaffirmed_after_five_evaluations() -> None:
+    state = _state(nearby=(_dealer(),))
+    for tick in range(16):
+        # Goal scripts can be recreated between evaluations; patience belongs to the bot.
+        outcome = GrindScript().step(state)
+        assert outcome.status == ScriptStatus.ACTIVE
+        assert outcome.actions == ((MoveTo(x=173, y=129),) if tick % 5 == 0 else ())
+
+
+def test_changed_approach_and_other_bot_author_immediately() -> None:
+    state = _state(nearby=(_dealer(),))
+    assert GrindScript().step(state).actions == (MoveTo(x=173, y=129),)
+    assert GrindScript().step(state).actions == ()
+    assert GrindScript().step(replace(state, name="other_bot")).actions == (MoveTo(173, 129),)
+    crowded = replace(state, occupied_cells=((173, 129),))
+    assert GrindScript().step(crowded).actions == (MoveTo(x=172, y=129),)
+
+
+def test_approach_patience_clears_on_hold_and_new_session() -> None:
+    state = _state(nearby=(_dealer(),))
+    script = GrindScript()
+    assert script.step(state).actions == (MoveTo(173, 129),)
+    assert script.step(replace(state, nearby=(_dealer(), *_crowd()))).actions == ()
+    assert script.step(state).actions == (MoveTo(173, 129),)
+    scripts.reset_merchant_talk()
+    assert script.step(state).actions == (MoveTo(173, 129),)
 
 
 def test_fully_occupied_dealer_holds_active_and_taps_once_through_drive(

@@ -4,7 +4,9 @@ from dataclasses import replace
 
 import pytest
 
-from robots.adapters.native_navigation import MapCache, WalkMap
+from robots.adapters.native_navigation import MapCache, NoRoute, WalkMap
+from robots.app import playing_runtime as runtime
+from robots.app import scripts
 from robots.app.agent_runtime import ManifestEntry, ScheduledAgent
 from robots.app.playing_runtime import PlayingClient
 from robots.app.scripts import ScriptStatus, _merchant_step
@@ -19,6 +21,13 @@ DEALER = (172, 130)
 NEIGHBOURS = tuple(
     (172 + dx, 130 + dy) for dx in (-1, 0, 1) for dy in (-1, 0, 1) if (dx, dy) != (0, 0)
 )
+
+
+@pytest.fixture(autouse=True)
+def _fresh_merchant_memo():
+    scripts.reset_merchant_talk()
+    yield
+    scripts.reset_merchant_talk()
 
 
 def _client(blocked: tuple[tuple[int, int], ...] = ()) -> PlayingClient:
@@ -78,6 +87,69 @@ def test_runtime_preserves_unknown_authority_and_cross_region_veto() -> None:
     assert PlayingClient(Wire()).merchant_reachable("prt_in", (169, 127), (171, 129)) is None
     # Even an unknown source region must not author a known blocked target.
     assert client.merchant_reachable("prt_in", (170, 127), (170, 129)) is False
+
+
+def test_walkable_cell_is_vetoed_when_move_pathfinder_reports_no_route(monkeypatch) -> None:
+    client = _client()
+    calls = []
+
+    def no_route(grid, position, cell):
+        assert grid.walkable(position)
+        assert grid.walkable(cell)
+        calls.append((position, cell))
+        message = "shop counter blocks the path"
+        raise NoRoute(message)
+
+    monkeypatch.setattr(runtime, "shortest_path", no_route)
+    assert client.merchant_reachable("prt_in", (169, 127), (171, 129)) is False
+    assert calls == [((169, 127), (171, 129))]
+
+
+def test_s00_holds_when_all_free_walkable_neighbours_have_no_path(monkeypatch, caplog) -> None:
+    client = _client()
+
+    def no_route(grid, position, cell):
+        assert grid.walkable(cell)
+        message = "shop counter blocks the path"
+        raise NoRoute(message)
+
+    monkeypatch.setattr(runtime, "shortest_path", no_route)
+    outcome = _merchant_step(_stock_holder(), reachable=client.merchant_reachable)
+    assert outcome is not None
+    assert outcome.status == ScriptStatus.ACTIVE
+    assert outcome.actions == ()
+    taps = [r.getMessage() for r in caplog.records if "hold dealer_occupied" in r.getMessage()]
+    assert len(taps) == 1
+    assert "free=8/8" in taps[0]
+    assert "reachable=0/8 walkable_free=0/8" in taps[0]
+
+
+@pytest.mark.parametrize("has_path", [True, False])
+def test_path_verdict_is_cached_per_map_position_cell_and_native_tick(
+    monkeypatch, has_path
+) -> None:
+    client = _client()
+    calls = []
+
+    def path(grid, position, cell):
+        calls.append((position, cell))
+        if not has_path:
+            message = "no path"
+            raise NoRoute(message)
+        return (position, cell)
+
+    monkeypatch.setattr(runtime, "shortest_path", path)
+    query = ("prt_in", (169, 127), (171, 129))
+    assert client.merchant_reachable(*query) is has_path
+    assert client.merchant_reachable(*query) is has_path
+    assert len(calls) == 1
+    assert client.merchant_reachable("prt_in", (168, 127), (171, 129)) is has_path
+    assert client.merchant_reachable("prt_in", (169, 127), (171, 130)) is has_path
+    assert len(calls) == 3
+    monkeypatch.setattr(client, "_map_identity", lambda _name: "prt_in")
+    client.build_native_state(Goal.GRIND)
+    assert client.merchant_reachable(*query) is has_path
+    assert len(calls) == 4
 
 
 @pytest.mark.parametrize("goal", [Goal.GRIND, Goal.FARM_ITEM])
