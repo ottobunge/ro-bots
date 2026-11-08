@@ -37,6 +37,7 @@ from robots.adapters.native_gameplay import (
     npc_close,
     party_chat,
     pickup,
+    respawn,
     sell,
     sell_open,
 )
@@ -63,7 +64,11 @@ from robots.app.party_roster import guild_candidate_aid
 from robots.app.planning_execution import RestObservation
 from robots.app.scripts import (
     MELEE_RANGE,
+    MERCHANT_ROUTE,
+    MERCHANT_ROUTE_RETURN,
     NOVICE_STAT_TARGETS,
+    _dealer_talk,
+    merchant_admission_refusal,
     needs_npc_preparation,
     novice_weapon_index,
     shop_affordable_weapon,
@@ -209,6 +214,8 @@ def _received_stats(stats: tuple[int, ...] | None) -> tuple[int, ...] | None:
 
 NPC_RETRY_BUDGET = 3
 NPC_RETRY_CADENCE_S = 5.0
+NPC_RETRY_EPOCH_S = 300.0
+RESPAWN_RETRY_CADENCE_S = 30.0
 NO_ROUTE_DIRECT_SENDS = 5
 # The server's pickup radius: a CZ_ITEM_PICKUP lands when the bot stands
 # within Chebyshev<=1 of the drop's cell (leg 61 design brief).
@@ -276,6 +283,10 @@ class PlayingClient:
 
     # the pending planner owns NPC recovery while a decide is in flight
     npc_recovery_hold = False
+    mechanical_recovery_allowed = True
+    _npc_retry_epoch_at: float | None = None
+    _merchant_returning = False
+    _respawn_retry_at = 0.0
     # consecutive NoRoute direct-walk sends (class default; instance shadow
     # on first use — a successful walk anywhere resets it to 0)
     _no_route_attempts = 0
@@ -771,6 +782,7 @@ class PlayingClient:
             public_skill_knowledge=self.public_skill_knowledge,
             shop_offer=self._shop_context.offer,
             merchant_buy_suspended=self._buy_backoff.suspended,
+            merchant_returning=self._merchant_departure(map_name),
             # The tracked SP_ZENY balance (0x00B1 param 20, pinned rathena
             # src/map/map.hpp:501) is the authority; the shop-context balance
             # is the fallback inside the shop loop and the runner-side seed
@@ -836,6 +848,12 @@ class PlayingClient:
             raise NativeTelemetryUnavailable(message)
         return key
 
+    def _merchant_departure(self, map_name: str) -> bool:
+        """Retain the released visit through its return route, then forget it."""
+        if map_name not in MERCHANT_ROUTE_RETURN:
+            self._merchant_returning = False
+        return self._merchant_returning
+
     def merchant_reachable(
         self, map_name: str, position: tuple[int, int], cell: tuple[int, int]
     ) -> bool | None:
@@ -885,6 +903,8 @@ class PlayingClient:
         shop = self._dispatch_shop_action(action)
         if shop:
             return
+        if self._dispatch_timeout_close(action):
+            return
         if self._retry_blocked_dialogue():
             return
         state = self.build_native_state(Goal.GRIND)
@@ -926,32 +946,76 @@ class PlayingClient:
         self.wire._send(npc_close(dialog.npc_id))
         tracker.clear_npc_dialog()
 
-    def _retry_blocked_dialogue(self) -> bool:
-        """The fail-closed barrier holds, but the runtime schedules the fresh
-        begin so the bot never freezes for whole windows (leg 23: 598 ticks).
+    def _dispatch_timeout_close(self, action: GameAction) -> bool:
+        if not isinstance(action, NpcClose) or not self._npc.failed:
+            return False
+        return self._close_timeout_dialogue(self.build_native_state(Goal.GRIND), action)
 
-        True = the barrier/retry owns this dispatch (the caller returns)."""
+    def _close_timeout_dialogue(self, state: BotState, action: GameAction) -> bool:
+        """One honest close before retry interception; poison and live offers hold."""
+        dialog = self._npc.view
+        if not (
+            isinstance(action, NpcClose)
+            and dialog is not None
+            and action.npc_id == dialog.npc_id
+            and self._timeout_close_ready(state)
+        ):
+            return False
+        self._send_npc(struct.pack("<HI", 0x146, dialog.npc_id))
+        if self._tracker is not None:
+            self._tracker.clear_npc_dialog()
+        self._shop_context.invalidate_offer("timeout-close")
+        self._npc.complete_shop()
+        self._retry_talk = None
+        self._shop_selection = None
+        self._merchant_returning = merchant_admission_refusal(state) is not None
+        return True
+
+    def _timeout_close_ready(self, state: BotState) -> bool:
+        return all(
+            (
+                self._npc.failed,
+                self._npc.deny_origin == "timeout",
+                not self._npc.cancel_uncertain,
+                self._shop_context.offer is None,
+                state.alive is True,
+                self._standing is True,
+                self._pending is None,
+            )
+        )
+
+    def _retry_blocked_dialogue(self) -> bool:
+        """A denied dialogue owns dispatch; only timeout may start a fresh round."""
         if not self._npc.failed or self._npc.view is None:
             return False
-        if self._npc.deny_origin != "timeout":
-            return True  # the poisoned barrier holds (the malformed/the send failure)
-        if self._npc_retries <= 0:
-            return True  # the budget spent: the barrier holds for the epoch
-        if self._shop_context.offer is not None:
-            # leg 50: the recovery's OWN re-begin killed a BOUND offer —
-            # a fresh begin replaces the view and the shop context reads a
-            # NEW exchange round (bound-deal-lost moved-on=True). The deal
-            # is alive server-side even though the dialogue clock expired:
-            # the barrier holds and the re-begin waits until the offer dies
-            # on its own terms (the exchange gone / identity loss / a real
-            # new click / the 300s TTL).
-            return True
-        now = self._now()
-        if now < self._npc_retry_at:
-            return True  # the cadence wait
+        self._retry_timeout_dialogue(self._now())
+        return True
+
+    def _retry_timeout_dialogue(self, now: float) -> None:
+        """Three paced attempts per five-minute epoch, shared by both paths.
+
+        A bound offer survives its dialogue timeout. Poison/cancel uncertainty
+        never spends or rearms a retry, regardless of elapsed time.
+        """
+        view = self._npc.view
+        if (
+            view is None
+            or not self._npc.failed
+            or self._npc.deny_origin != "timeout"
+            or self._npc.cancel_uncertain
+            or self._shop_context.offer is not None
+        ):
+            return
+        started = self._npc_retry_epoch_at
+        if started is None:
+            self._npc_retry_epoch_at = now
+        elif now >= started + NPC_RETRY_EPOCH_S:
+            self._npc_retry_epoch_at = now
+            self._npc_retries = NPC_RETRY_BUDGET
+        if self._npc_retries <= 0 or now < self._npc_retry_at:
+            return
         self._npc_retries -= 1
         self._npc_retry_at = now + NPC_RETRY_CADENCE_S
-        view = self._npc.view
         raw = self._npc.begin(
             view.npc_id,
             self.wire.native_epoch,
@@ -960,7 +1024,6 @@ class PlayingClient:
             now,
         )
         self._send_npc(raw)
-        return True
 
     def _note_attack_gate(self, reason: str) -> None:
         """Bounded gate-reason telemetry: WHY an authored Attack sent nothing.
@@ -1567,7 +1630,7 @@ class PlayingClient:
             (
                 raw[2] == 0,
                 dialog.epoch == action.epoch,
-                dialog.map_name == action.map_name,
+                dialog.map_name == self._map_identity(action.map_name),
                 dialog.npc_id == sent_dialog.npc_id,
                 dialog.opened_sequence == sent_dialog.opened_sequence,
                 dialog.sequence == sent_dialog.sequence,
@@ -1576,6 +1639,7 @@ class PlayingClient:
             )
         ):
             self._npc.complete_shop()
+            self._merchant_returning = True
 
     def _sell_request_target(self, action: NpcShopSell, tracker: NativeGameplayTracker) -> bool:
         """All local guards for one bounded 0xc9 against the received receipt."""
@@ -1751,6 +1815,7 @@ class PlayingClient:
             self.wire._send(raw)
         except BaseException:
             self._npc.failed = True
+            self._npc.deny_origin = "send_failure"
             raise
 
     def _social_chat(self, state: BotState, action: GameAction) -> bool:
@@ -2613,7 +2678,7 @@ class PlayingClient:
 
     def drain_native_events(self) -> tuple[WorldEvent, ...]:
         state = self.build_native_state(Goal.GRIND)
-        self._keepalive()
+        self._pump_recovery(state)
         tracker = self._tracker
         if tracker is None:
             return ()
@@ -2646,39 +2711,41 @@ class PlayingClient:
         self._invite = self.wire.party_invite_pid
         return tuple(events)
 
+    def _pump_recovery(self, state: BotState) -> None:
+        if self.mechanical_recovery_allowed:
+            self._recover_idle_merchant(state)
+            self._recover_dead_self(state)
+        self._keepalive()
+
+    def _recover_idle_merchant(self, state: BotState) -> None:
+        """A refused dealer trip closes on the host pump, even under social goals."""
+        if self.npc_recovery_hold or state.map_name != "prt_in":
+            return
+        dialog = self._npc.view
+        if dialog is None or merchant_admission_refusal(state) is None:
+            return
+        talk = _dealer_talk(state, MERCHANT_ROUTE["prt_in"])
+        if talk is not None and talk.npc_id == dialog.npc_id:
+            self._close_timeout_dialogue(state, NpcClose(dialog.npc_id))
+
+    def _recover_dead_self(self, state: BotState) -> None:
+        """Only received self-death admits B2; its send never claims life or pose."""
+        if state.alive is not False:
+            self._respawn_retry_at = 0.0
+            return
+        if self._npc.actuation_blocked or self._npc.failed:
+            return
+        now = self._now()
+        if now < self._respawn_retry_at:
+            return
+        # Pace before the fallible send, and preserve exact send-failure ownership.
+        self._respawn_retry_at = now + RESPAWN_RETRY_CADENCE_S
+        self._send_npc(respawn())
+
     def _retry_blocked_dialogue_on_tick(self, now: float) -> None:
-        """The leg-24 gap: a dead-decide agent never dispatches actions, so the
-        action-path retry starved - the blocked dialogue self-heals on the tick."""
-        if self.npc_recovery_hold:
-            return  # the pending planner owns the recovery (the passive keepalive)
-        if not self._npc.failed or self._npc.view is None:
-            return
-        if self._npc.deny_origin != "timeout" or self._npc_retries <= 0:
-            return
-        if self._shop_context.offer is not None:
-            # leg 54: the tick-path twin of the action-path hold (c0f99258) —
-            # the tick retry re-began INSIDE the bound window (+13s past the
-            # C6 bind), the fresh begin replaced the view with a NEW exchange
-            # round (opened 69->72, stage 'opening') and the next check read
-            # moved-on, killing a received deal before the decide-paced mint's
-            # first tick. The deal is alive server-side even though the
-            # dialogue clock expired: the barrier holds and the re-begin
-            # waits until the offer dies on its own terms (the exchange
-            # gone / identity loss / a real new click / the 300s TTL).
-            return
-        if now < self._npc_retry_at:
-            return
-        self._npc_retries -= 1
-        self._npc_retry_at = now + NPC_RETRY_CADENCE_S
-        view = self._npc.view
-        raw = self._npc.begin(
-            view.npc_id,
-            self.wire.native_epoch,
-            view.map_name,
-            self._metadata_cursor,
-            now,
-        )
-        self._send_npc(raw)
+        """The host keepalive can recover timeout even without authored actions."""
+        if not self.npc_recovery_hold:
+            self._retry_timeout_dialogue(now)
 
     def _keepalive(self) -> None:
         """Pump before host cognition; getters/state projection never send.
@@ -3087,6 +3154,10 @@ class PlayingClient:
         if type(epoch) is int and 0 < epoch <= 0x7FFFFFFFFFFFFFFF:
             self._skills = NativeSkillContext(epoch, base)
         self._npc = NativeNpcDialogue()
+        self._npc_retries, self._npc_retry_at = NPC_RETRY_BUDGET, 0.0
+        self._npc_retry_epoch_at = None
+        self._merchant_returning = False
+        self._respawn_retry_at = 0.0
         self._shop_context = NativeShopContext()
         self._reset_shop_seam()
         self._npc_event_sequence = 0

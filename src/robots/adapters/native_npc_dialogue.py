@@ -135,7 +135,7 @@ class NativeNpcDialogue:
                 self._receive(seq, pid, raw, now)
 
     def _expire(self, now: float) -> None:
-        if self.active and now >= min(self.deadline, self.absolute_deadline):
+        if not self.failed and self.active and now >= min(self.deadline, self.absolute_deadline):
             if self.cancel_uncertain and not self.failed and self.view is not None:
                 # Local policy terminal only: the server may still be running prompt().
                 self.view = replace(self.view, stage="cancel_abandoned", options=())
