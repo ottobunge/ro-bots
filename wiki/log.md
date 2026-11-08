@@ -9516,3 +9516,40 @@ town exit; the (17,165) west edge leads into moc_fild01, not town), or a knowing
 odyssey with the walk budget for it (paced faster than ~1 cell per re-send), or a
 persisted in-progress trip that survives the window close. Named in the leg-71 receipt;
 untouched on this branch.
+
+## 2026-11-08 leg 72 — runner killed 06:37:45; the talk-radius fix SOLD live anyway
+
+Launch 06:06 (schedule `[6, 6.5, 7.75]` = 06:30–07:45 Madrid; weekday 6 verified). The
+runner was SILENTLY KILLED at 06:37:45 (t=1892 s, 7m45s into the window): log frozen
+mid-sample, NO traceback, NO receipt, no OOM in the kernel log, e2e world healthy
+throughout. Killer unnamed — not a Python exception; a signal from outside the process.
+
+TWO defects named by the incident:
+
+1. THE SHEPHERD PATTERN BROKE: the T3 shepherd child COMPLETED ITS TURN at ~06:06,
+   right after posting the launch update — its planned 07:00 timer and the whole
+   readout never ran; the runner outlived it as an orphan until the 06:37:45 kill.
+   LESSON: a shepherd must STAY ALIVE polling to completion inside its turn (sleep
+   loops in tool calls), never schedule a timer and exit; and the runner itself must
+   launch DETACHED (systemd-run --user) so no agent process tree can carry it down.
+
+2. THE 06:37:45 SILENT KILL is a new, unnamed killer class (nothing in dmesg/journal,
+   mid-window, log frozen). Leg 73 launches under systemd-run --user — if it dies the
+   same way, the unit journal names the signal.
+
+PARTIAL EVIDENCE (the window's 7m45s, all DB-grounded): xXLunasongXx zeny 47→54 (+7)
+at prt_in (173,129) — Chebyshev 1 off the dealer cell (172,130). The dealer
+approach-cell fix (50e8a283, merged e9f507c7) walked the APPROACH CELL, talked, and
+SOLD — the exact leg-71 failure shape (parked Chebyshev 2, MoveTo every tick, npc rows
+[]) is GONE live. 4 bounded dealer_talk_out_of_range details early (transient approach
+ticks, detail-keyed memo, no spam), 1 pickup dispatched (fid=382 nameid=909), 0
+TRANSPORT DOWN at the cut. A separate transport death at window open
+(NativeTelemetryUnavailableError: native keepalive send failed, ~06:31) recovered via
+relogin — distinct from the runner kill; watch it in leg 73.
+
+VERDICT: leg 72 INVALID for the full readout (no receipt), but the talk-radius
+mechanism is LIVE-PROVEN by the DB zeny delta. Leg 73 re-runs for the complete
+verdict + sustain + the s00 odyssey. Positions moved: NyxSong prontera (158,223);
+PipinWalker prontera (157,222); PoringMuffin14 prontera (153,156); RinceNyan
+prt_fild08 (213,351); s00 pay_fild08 (231,308) still walking, 0z; xXLunasongXx
+prt_in (173,129) at 54z.
