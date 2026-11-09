@@ -1253,16 +1253,19 @@ class ScheduledAgent:
         if actions:
             self._last_action_monotonic = self._tick_clock.monotonic()
         for action in actions:
+            error = None
             self._trace_action(action)
             try:
                 self._perform(action)
             except Exception as exc:
+                error = type(exc).__name__
                 logger.warning(
                     "agent %s: action %s failed: %s",
                     self.persona.persona_id,
                     type(action).__name__,
                     exc,
                 )
+            self._trace_move_perform(action, error)
 
     # ------------------------------------------------------------- tracing
     def _trace_context(self) -> dict[str, Any]:
@@ -1332,6 +1335,24 @@ class ScheduledAgent:
                 message=event.line.text,
                 channel=event.line.channel,
             )
+
+    def _trace_move_perform(self, action: GameAction, error: str | None) -> None:
+        """A sibling to authored intent, lifted after perform from cached facts only."""
+        if self._trace is None or not isinstance(action, MoveTo):
+            return
+        detail = getattr(self.client, "last_move_outcome", None) or {
+            "outcome": "unavailable",
+            "reason": "legacy_client",
+        }
+        if error is not None:
+            detail = {"outcome": "refused", "reason": "perform_error", "error": error}
+        self._trace.log(
+            "move_performed",
+            **self._trace_context(),
+            action="MoveTo",
+            params=action_params(action),
+            **detail,
+        )
 
     def _trace_action(self, action: GameAction) -> None:
         """Every executed action; Say/PartyChat/WhisperTo also alias chat_sent."""

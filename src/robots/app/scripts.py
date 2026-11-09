@@ -199,7 +199,9 @@ _DEALER_OCCUPANCY_TAPPED: dict[str, str] = {}
 Diagnostic only: no agent reads another agent's entry to allocate a cell."""
 
 _DEALER_APPROACH_REAFFIRM_TICKS = 5
-_DEALER_APPROACH_WALKS: dict[str, tuple[str, tuple[int, int], int]] = {}
+_WalkMemo = dict[str, tuple[str, int | None, tuple[int, int], int]]
+_DEALER_APPROACH_WALKS: _WalkMemo = {}
+_MERCHANT_TRAVEL_WALKS: _WalkMemo = {}
 """Per-bot last authored map/cell and evaluations since that author.
 Give an in-flight walk time to progress, including across script recreation."""
 
@@ -213,6 +215,7 @@ def reset_merchant_talk() -> None:
     _DEALER_RANGE_TAPPED.clear()
     _DEALER_OCCUPANCY_TAPPED.clear()
     _DEALER_APPROACH_WALKS.clear()
+    _MERCHANT_TRAVEL_WALKS.clear()
     _DEALER_QUEUE_WAITS.clear()
 
 
@@ -679,8 +682,8 @@ def _merchant_step(
     caller's field behavior applies unchanged); otherwise one engagement
     toward the current route leg — outbound: a TalkToNpc once the dealer npc
     is received at the cited cell (the window-28 shop loop owns the
-    exchange), return: the walk back to the field, one MoveTo per
-    evaluation; warp map changes re-derive the next leg.
+    exchange), return: the walk back to the field, reaffirmed every five
+    evaluations; warp map changes re-derive the next leg.
 
     leg 37's merchant half: when the reachability authority says the pinned
     leg sits in ANOTHER interior component, the walk starts with the agent's
@@ -700,6 +703,7 @@ def _merchant_step(
     _DEALER_QUEUE_WAITS.pop(state.name, None)
     home = merchant_return_cell(state)
     if home is None:
+        _MERCHANT_TRAVEL_WALKS.pop(state.name, None)
         return None
     # Heading home ends the dealer contact: the next outbound visit is a
     # fresh (bot, npc) contact and may talk again, so the sell-and-buy
@@ -740,8 +744,10 @@ def _merchant_travel_step(
         if travel_target is None
         else travel_target(state.map_name, (state.x, state.y), destination)
     )
-    actions = () if target is None else (MoveTo(x=target[0], y=target[1]),)
-    return ScriptOutcome(actions, ScriptStatus.ACTIVE)
+    if target is None:
+        _MERCHANT_TRAVEL_WALKS.pop(state.name, None)
+        return ScriptOutcome((), ScriptStatus.ACTIVE)
+    return _author_merchant_walk(state, target, _MERCHANT_TRAVEL_WALKS)
 
 
 def _merchant_engage(
@@ -753,6 +759,7 @@ def _merchant_engage(
     """The outbound dealer engagement (window-29): walk the leg, or talk
     once at the dealer and hold for the dealtype."""
     if state.map_name == "prt_in":
+        _MERCHANT_TRAVEL_WALKS.pop(state.name, None)
         # LEG 53: a BOUND offer means the exchange is in flight — the
         # mechanical purchase path owns it and any fresh click here opens a
         # new round that kills the bound offer (moved-on) before the
@@ -854,14 +861,21 @@ def _merchant_approach(
 
 
 def _author_dealer_approach(state: BotState, cell: tuple[int, int]) -> ScriptOutcome:
-    """Grid-free author patience: changed targets now, same target every five ticks."""
-    previous = _DEALER_APPROACH_WALKS.get(state.name)
-    if previous is not None and previous[:2] == (state.map_name, cell):
-        elapsed = previous[2] + 1
+    return _author_merchant_walk(state, cell, _DEALER_APPROACH_WALKS)
+
+
+def _author_merchant_walk(
+    state: BotState, cell: tuple[int, int], walks: _WalkMemo
+) -> ScriptOutcome:
+    """Grid-free patience across script recreation; new map/epoch/target goes now."""
+    context = (state.map_name, state.native_epoch, cell)
+    previous = walks.get(state.name)
+    if previous is not None and previous[:3] == context:
+        elapsed = previous[3] + 1
         if elapsed < _DEALER_APPROACH_REAFFIRM_TICKS:
-            _DEALER_APPROACH_WALKS[state.name] = (state.map_name, cell, elapsed)
+            walks[state.name] = (*context, elapsed)
             return ScriptOutcome((), ScriptStatus.ACTIVE)
-    _DEALER_APPROACH_WALKS[state.name] = (state.map_name, cell, 0)
+    walks[state.name] = (*context, 0)
     return ScriptOutcome((MoveTo(x=cell[0], y=cell[1]),), ScriptStatus.ACTIVE)
 
 
