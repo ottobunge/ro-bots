@@ -11100,3 +11100,83 @@ merchant-drive lines, none for zeny_wing); DB readback char 300000-300006
 zeny/positions/inventory via the e2e mariadb container. No gate run for
 this window commit (no code change); the standing gate figure is
 unchanged from the leg-83 seed commit `91af0c6a`.
+
+
+## 2026-11-10 leg 84 — admitted stripped buyers outrank novice preparation; guidance excludes received warp sprites
+
+Implementation-only slice from main `8cc7e821`. Leg 83 evidence:
+`run/plain_host_receipts/population-receipt-83-1794257145.json` (28,678
+steps, zero step errors). Its saved analysis records zeny_wing at 115z,
+empty known inventory and prontera (156,25): the preparation gate intercepted
+the affordable buyer before merchant admission, then repeatedly talked to
+warp prtf004/110010229 instead of taking the dealer route. This slice runs
+no population runner, probe, live world or Docker operation and claims no
+new live purchase evidence.
+
+The shared `needs_npc_preparation` predicate now evaluates
+`merchant_admission_refusal(state)` before allowing preparation to divert
+the tick. All three consumers share that precedence: the brain's
+`_step_goal_script`, the `script_for` factory and `PlayingClient._npc_mechanical`.
+An admitted buyer passes through to the brain's existing merchant re-arm,
+under every goal, including its empty patience ticks. A refusal retains
+novice guidance and emits the existing bounded, change-only named admission
+tap. The original native/Novice/known-empty/no-instruction/not-returning
+conditions remain intact, as do recovery and active dialogue barriers.
+The goal script remains the chosen goal's script, so completing a trade
+releases the retained social behavior correctly.
+
+`ActorRef.npc_sprite` carries the already-received actor presentation from
+the runtime's owner-local metadata, with no hidden NPC lookup. Pinned
+rAthena `npc.hpp` identifies `JT_WARPNPC=45` and
+`JT_HIDDEN_WARP_NPC=139`; both are excluded by the shared
+`is_guidance_npc` candidate predicate in guidance and the exploration gate.
+Object presentation 12 remains an ordinary monster-sprite NPC presentation,
+not a warp classification. A warp-only/no-guide view returns FAILED with
+the named debug reason `no_non_warp_guidance_npc`, emits no TalkToNpc,
+and permits the existing bounded public-map exploration.
+
+TDD RED: **23 failed, 2 passed** (`/tmp/leg84-red.log`). Focused GREEN:
+**142 passed** (`/tmp/leg84-focused-final.log`). Contracts cover the 115z known-empty
+prontera buyer under all five goals, factory/runtime preparation precedence,
+zero-zeny and unknown-route novice guidance, named zeny/route/buy-suspension
+refusals, both warp sprites with all three received entry layouts, a farther
+valid guide, warp-only exploration, fresh sprite replacement, patient drive
+ownership and returning to retained social behavior after buying. Existing
+merchant admission and guidance/recovery contracts remain part of the focused
+suite.
+
+Rejected: an unconditional merchant re-arm before preparation (its return
+arm could steal a refused novice's guidance), replacing every admitted
+agent's retained goal script with GrindScript (the existing sell-completion
+contracts catch that behavior change), using objecttype 12 as a warp marker,
+weakening admission guards or claiming offline tests prove a live purchase.
+No spikes formatting, thresholds, exclusions, packet bytes, dependency pins,
+corpus contents or live-world files change.
+
+Gate setup uses the requested config.log and knowledge symlinks and a private
+checkout of the pinned rAthena `e985006171d2`. The canonical iro-wiki DB
+symlink loops to itself, as documented in earlier implementation entries;
+verification temporarily uses the existing
+`/home/otto/dev/wt-mobpos/run/knowledge/iro-wiki/iro-wiki.db` corpus and restores
+the exact requested canonical link before commit. No gate input or submodule
+change is included in the commit.
+
+
+**Full gate GREEN before commit.**
+`nix develop -c task --dir . check` (with process-local
+`NIX_CONFIG='auto-optimise-store = false'` to avoid the host's store
+hard-link limit) exited 0: **7,005 passed, 65 subtests passed, 4 warnings,
+95.52% coverage** (85% required), **257.98 s**. Black, ruff, strict mypy
+(**370 files**), vulture, xenon, duplicate-code and bandit passed. Final
+transcript: `/tmp/leg84-full-gate-final.log`. The preliminary gate transcript
+`/tmp/leg84-full-gate.log` records an intentional interruption after 3,369
+passing tests to strengthen the moving-entry regression fixture; the fresh
+final gate above ran to completion on the final implementation and tests.
+
+Final preparation sites: `src/robots/app/brain.py:753`,
+`src/robots/app/scripts.py:1311` (`script_for`) and
+`src/robots/app/playing_runtime.py:2806` (`_npc_mechanical`), all through
+`src/robots/app/scripts.py:1284` (`needs_npc_preparation`). Warp candidate
+selection is `src/robots/app/scripts.py:1266`; received sprite projection
+is `src/robots/app/playing_runtime.py:3097`. Canonical knowledge links were
+restored before commit. The implementation branch is pushed without merging.

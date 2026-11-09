@@ -1263,8 +1263,13 @@ class NpcGuidanceScript:
             return ScriptOutcome((Rest(),), status)
         if state.npc_dialogue is not None:
             return ScriptOutcome((), status)
-        npcs = sorted((a for a in state.nearby if a.kind == "npc"), key=lambda a: a.distance)
-        return ScriptOutcome((TalkToNpc(npcs[0].id),) if npcs else (), ScriptStatus.ACTIVE)
+        npcs = sorted((a for a in state.nearby if a.is_guidance_npc), key=lambda a: a.distance)
+        if not npcs:
+            logger.debug(
+                "npc-guidance: no_non_warp_guidance_npc (bot=%s map=%s)", state.name, state.map_name
+            )
+            return ScriptOutcome((), ScriptStatus.FAILED)
+        return ScriptOutcome((TalkToNpc(npcs[0].id),), ScriptStatus.ACTIVE)
 
     @staticmethod
     def _dialog_status(state: BotState) -> ScriptStatus:
@@ -1277,8 +1282,14 @@ class NpcGuidanceScript:
 
 
 def needs_npc_preparation(state: BotState) -> bool:
+    """Preparation owns only novices the merchant drive actually refuses.
+
+    Leg 83's weapon strip made an affordable buyer look unprepared. Consult
+    the same named admission before any of the three preparation gates can
+    divert it; keep refused novices on guidance and surface the reason.
+    """
     received_instruction = state.npc_instructions_received
-    return (
+    unprepared = (
         state.native_epoch is not None
         and state.job == "Novice"
         and state.inventory_known
@@ -1286,6 +1297,13 @@ def needs_npc_preparation(state: BotState) -> bool:
         and not state.merchant_returning
         and not received_instruction
     )
+    if not unprepared:
+        return False
+    refusal = merchant_admission_refusal(state)
+    if refusal is None:
+        return False
+    _tap_merchant_drive(state.name, *refusal)
+    return True
 
 
 def script_for(goal: Goal, state: BotState) -> BehaviorScript:

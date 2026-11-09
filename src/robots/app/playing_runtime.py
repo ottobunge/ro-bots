@@ -2806,7 +2806,7 @@ class PlayingClient:
         if needs_npc_preparation(state):
             return (
                 actions
-                if any(a.kind == "npc" for a in state.nearby)
+                if any(a.is_guidance_npc for a in state.nearby)
                 else self._explore_npcs(state, actions)
             )
         return None
@@ -3094,6 +3094,7 @@ class PlayingClient:
                         math.hypot(actor.position.x - pos.x, actor.position.y - pos.y),
                         cell[0],
                         cell[1],
+                        npc_sprite=self._species.get(actor.actor_id),
                     )
                 )
             if actor.attackable:
