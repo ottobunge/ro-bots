@@ -10617,3 +10617,69 @@ ignores or gate weakening were added. The audit temporary export was
 removed. The requested canonical iro-wiki symlink was restored before
 commit. The source, tests and log entry are committed and pushed for
 review only; no merge or deployment.
+
+## 2026-11-09 leg 80 — the occupied-cell fix is proven live (65 sparse named refusals, zero frozen-author spam; s00 ran the complete field→warp→prt_in→dealer→sell chain: TalkToNpc 14:10:59 at chebyshev 1, NpcShopSell 14:11:06, 120→125z DB-verified; two popgen guilds formed) but xXLunasongXx's third traversal died on a NEW blocker: four MerchantDrive agents staging-congested the prontera south-gate tiles for the whole window
+
+Runner: systemd unit `leg80-runner`, launched 14:10:47 Madrid Monday, 7200 s,
+DONE at 16:11 with **28,265 steps, 0 errors, 0 TRANSPORT DOWN, 0
+PlayingBackendError, 0 tracebacks**. Receipt
+`run/plain_host_receipts/population-receipt-80-1794229859.json` (its
+`passed` field is None — the runner sets no leg verdict; the verdict below
+is the shepherd's). Window [0, 14.5, 16.0] opened on schedule, all seven
+agents logged in with the staggered pairs, all logged off cleanly at 16:00.
+
+**(a) OCCUPIED-CELL REROUTE: PASS.** xXLunasongXx left the leg-79 frozen cell
+(176,374) within 30 s of window open ((175,373)→(172,373)→warp) — the
+2,191-same-cell re-author shape is gone. Refusal telemetry is named and
+sparse: **65 refused across ~11.4k authored moves population-wide**
+(`occupied_west_no_route` = the explicit no-safe-alternative refusal,
+`no_position_or_dead`, `perform_error`), vs 8,123 dispatched / 5,527
+pending. The `occupied_*_rerouted` reroute outcome never fired — the field
+path this leg never needed it; every named occupation refusal was
+prontera-side (see (d)1).
+
+**(b) FIELD-SELLER TRAVERSAL: xXLunasongXx FAILED, the chain itself PROVEN.**
+xXLunasongXx crossed the leg-79 Bard-blocked leg into prontera by 13:38 UTC,
+then never left the south-gate staging cluster: no prt_in row, no shop
+action, **705x2 + 909x1 still held, zeny 57** — third attempt stopped by the
+staging congestion, not by the Bard. The full trip shape was proven by s00
+instead: Loot (Clover) 13:31:39 on prt_fild08 (175,364) → warp → prontera
+walk north → prt_in 14:10:16 → walked the y=128 row east to (172,129),
+**chebyshev 1 from Weapon Dealer (172,130)** → TalkToNpc 14:10:59 →
+NpcShopSellOpen 14:11:04 → **NpcShopSell 14:11:06** → walked out by 14:12:10.
+Zeny 120→125 and the sellable gone from inventory, both DB-verified. This is
+the first complete field→warp→dealer→sell run of the population era, and the
+merged talk-radius fix converged on true adjacency first try.
+
+**(c) SUSTAINED REPEAT: s00 only.** One sell this window (s00 +5z). s00 has
+now sold in a third consecutive selling window (per the leg-79 seed note);
+RinceNyan did not repeat (110z unchanged); nobody else sold.
+
+**(d) NEW SIGNATURES.** (1) **Prontera south-gate staging congestion**: four
+MerchantDrive agents (NyxSong, PipinWalker, xXLunasongXx, PoringMuffin14)
+churned the (154-157, 24-28) tile cluster for 50-90 min, mutually occupying
+the first steps toward the dealer target (177,221) — the leg-73
+dealer-congestion shape, now at the staging tiles; the named
+`occupied_west_no_route` refusals are its telemetry. Only s00, which hit the
+prontera side before the cluster formed, routed cleanly north. Next fix
+shape: staging-tile approach-cell allocation/queueing. (2) **Warp ping-pong**
+(NyxSong): dozens of prontera↔prt_fild08 crossings without dealer progress —
+same congestion family. (3) **First popgen guild formations live**: NyxSong
+founded `NyxSongGuard` (guild_id 2) and PipinWalker founded
+`PipinWalkerGuard` (guild_id 3); FoundGuild + GuildInvite actions executed
+in-window, both persisted in the DB; invitees did not join within the
+window. (4) Farming stayed healthy: RinceNyan 67 / zeny_wing 33 / NyxSong 18
+Attacks from the field agents that escaped or stayed east.
+
+Seeds verified pre-launch: all seven zeny matched `seed-zeny.json` exactly
+(60/110/111/58/57/28/120); no seed fix was needed. Heavygraph backends
+:8091/:8092 health-checked before launch and untouched after; the DB secret
+expanded only inside the mariadb container.
+
+Rejected: crediting xXLunasongXx's crossing as a traversal pass (the sell
+gate is zeny/inventory, not map changes); attributing the staging stall to
+the occupied-cell fix (the fix produced the honest refusal telemetry that
+NAMED the stall); reading s00's +5z as a Clover-at-4z mismatch (sell price
+includes the overcharge column; the DB delta is the ground truth); touching
+the dealer-ring code (nothing in this leg's evidence points at the ring —
+every blocked agent was pre-dealer).
