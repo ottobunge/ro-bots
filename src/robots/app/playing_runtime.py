@@ -339,7 +339,7 @@ class PlayingClient:
         seed_zeny: int | None = None,
     ) -> None:
         self.wire, self.cache = wire, cache
-        self._merchant_paths: dict[tuple[str, tuple[int, int], tuple[int, int]], bool] = {}
+        self._init_merchant_navigation()
         self.public_skill_knowledge = public_skill_knowledge
         self._now = monotonic
         # the runner-side balance seed (e2e-43): the wire delivers SP_ZENY on
@@ -854,6 +854,13 @@ class PlayingClient:
             self._merchant_returning = False
         return self._merchant_returning
 
+    def _init_merchant_navigation(self) -> None:
+        self._merchant_paths: dict[tuple[str, tuple[int, int], tuple[int, int]], bool] = {}
+        self._merchant_travel_rerolls: dict[tuple[str, tuple[int, int]], tuple[int, int] | None] = (
+            {}
+        )
+        self._merchant_travel_holds: set[tuple[str, tuple[int, int]]] = set()
+
     def merchant_reachable(
         self, map_name: str, position: tuple[int, int], cell: tuple[int, int]
     ) -> bool | None:
@@ -879,6 +886,55 @@ class PlayingClient:
             else:
                 self._merchant_paths[key] = True
         return self._merchant_paths[key]
+
+    def merchant_travel_target(
+        self, map_name: str, position: tuple[int, int], cell: tuple[int, int]
+    ) -> tuple[int, int] | None:
+        """Validate each authored merchant travel leg before movement (leg 79).
+
+        Like _move_reroll, search the nearest walkable neighbors ONCE per
+        (map, destination), but require the counter's shortest_path authority
+        too. Memoize failure as well as success; native-state ticks and walks
+        must not re-arm a dead destination. Missing geometry retains the
+        script's existing choice. No grid cells are invented or corrected.
+        """
+        key = (map_name, cell)
+        if key not in self._merchant_travel_rerolls:
+            if self.merchant_reachable(map_name, position, cell) is not False:
+                return cell
+            self._merchant_travel_rerolls[key] = self._merchant_travel_neighbor(
+                map_name, position, cell
+            )
+        target = self._merchant_travel_rerolls[key]
+        if target is not None and self.merchant_reachable(map_name, position, target) is True:
+            return target
+        if key not in self._merchant_travel_holds:
+            self._merchant_travel_holds.add(key)
+            reason = (
+                "unwalkable"
+                if self.cache is not None and not self.cache.get(map_name).walkable(cell)
+                else "unreachable"
+            )
+            logger.warning(
+                "merchant-drive: hold travel dest %s (%s,%s) map=%s; no reachable neighbor",
+                reason,
+                *cell,
+                map_name,
+            )
+        return None
+
+    def _merchant_travel_neighbor(
+        self, map_name: str, position: tuple[int, int], cell: tuple[int, int]
+    ) -> tuple[int, int] | None:
+        if self.cache is None:
+            return None
+        grid = self.cache.get(map_name)
+        excluded = {position, cell}
+        while (candidate := nearest_walkable(grid, cell, exclude=excluded)) is not None:
+            if self.merchant_reachable(map_name, position, candidate) is True:
+                return candidate
+            excluded.add(candidate)
+        return None
 
     def _dispatch_shop_action(self, action: GameAction) -> bool:
         """The shop actions; True = dispatched."""

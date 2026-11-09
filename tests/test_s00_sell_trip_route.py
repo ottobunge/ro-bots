@@ -72,7 +72,7 @@ MOC_FILD01_LEG = (239, 382)
 PAY_FILD04_PLAN = (
     ("pay_fild04", 17, 165),
     ("moc_fild01", 239, 382),
-    ("prt_fild08", 170, 378),
+    ("prt_fild08", 169, 377),
     ("prontera", 177, 221),
     ("prt_in", 172, 130),
 )

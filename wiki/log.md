@@ -10311,3 +10311,96 @@ bandit all passed. Transcript: `/tmp/leg78-check-final.log`. The completed
 queue-sale assertions also passed in the final 29-case focused run
 (`/tmp/leg78-core-final.log`). The requested iro-wiki link was restored after
 verification, and no gate inputs are included in the commit.
+
+## 2026-11-09 leg 79 prep — validate MerchantDrive travel destinations before authoring
+
+Leg-78 evidence: `run/plain_host_receipts/population-receipt-78-1794203505.json`
+and the leg-78 diary above report xXLunasongXx admitted with Clover x2 at
+window open, then 1,144 authored MoveTo(170,378) actions from prt_fild08
+(176,374), with no sale or field departure. The counter approach already
+used the runtime path authority; the travel destination bypassed it.
+
+`PlayingClient.merchant_travel_target` now validates each outbound and
+return travel cell with `merchant_reachable`, hence the SAME
+`shortest_path` no-corner-cutting contract as dealer approaches. A known
+unwalkable or path-blocked destination searches `nearest_walkable`'s
+radius-2 neighborhood in deterministic order, skipping candidates without
+a path from the received position. The runtime memoizes success AND failure
+once per (map, original destination), separately per client. Ordinary
+native-state ticks and successful movement do not clear that memo. A
+memoized replacement is revalidated from the current received position;
+failure holds without authoring a MoveTo and logs one destination-naming
+tap per key, e.g. `travel dest unwalkable (170,378)`. Walkable but unreachable
+destinations are named `unreachable`. Absent geometry retains the existing
+no-authority behavior. The script layer only consumes the injected target
+or hold; it imports no grid/navigation implementation.
+
+The authority is wired at session start through brain-level MerchantDrive
+re-arm, FarmScript, and plan-less GrindScript, including field maps without
+a seeded farming travel route. NPC preparation and dealer approach/queue
+ownership remain intact. Field/town path failure no longer sends an
+outbound seller along the farming resolver's homeward leg. The existing
+foreign-interior own-door resolution is retained, and its authored exit is
+validated too. Field travel still clears previous dealer approach/queue
+memos. Startup no longer paints all route cells walkable: a citation is
+not permission to overwrite the client-grid veto.
+
+**Full route audit**, raw common + pre-re client grids from pinned rAthena
+`e985006171d2eb320ee512a653f4c83aea3d81b6`, before any ground correction:
+
+| Direction | Map | Original cell | Raw walkable | Final cell | Raw walkable |
+| --- | --- | --- | --- | --- | --- |
+| outbound | pay_fild04 | (17,165) | yes | (17,165) | yes |
+| outbound | moc_fild01 | (239,382) | yes | (239,382) | yes |
+| outbound | prt_fild08 | (170,378) | **no** | **(169,377)** | **yes** |
+| outbound | prontera | (177,221) | yes | (177,221) | yes |
+| outbound | prt_in | (172,130) | yes | (172,130) | yes |
+| return | prt_in | (168,124) | yes | (168,124) | yes |
+| return | prontera | (156,22) | yes | (156,22) | yes |
+
+No other unwalkable merchant waypoint was found. Corrected the field cell
+in MERCHANT_ROUTE and the duplicated TRAVEL_ROUTES/ONWARD knowledge. The
+replacement lies inside prtf004's inclusive trigger rectangle
+(167..173,376..380), pinned by
+`npc/pre-re/warps/fields/prontera_fild.txt:65`; both the field arrival
+(170,375) and leg-78 received origin (176,374) have raw-grid paths to it.
+The audit regression checks every table entry against the unmodified
+public grids; the warp-trigger regression also pins the corrected cell's
+reachability and the knowledge-table copy.
+
+**TDD and verification.** Initial RED before implementation: 18 failed,
+6 passed (`/tmp/leg79-red.log`). The dealer-memo cleanup regression then
+failed before its correction (`/tmp/leg79-latches-red.log`). The final new
+suite has 25 cases, including nearest reachable selection, disconnected
+nearest candidate, walkable-but-path-blocked destination, memo persistence
+through received 0x0087 movement and native-state cache resets, one-time
+honest hold, every travel waypoint, absent geometry, client isolation,
+foreign interiors, and session-to-brain/script wiring under grind,
+farm_item, and social goals. Focused new + existing merchant/dealer/
+approach/route/re-arm/admission tests: **136 passed**
+(`/tmp/leg79-focused.log`). Existing coordinate expectations were updated
+only to the corrected route DATA, retaining their behavior assertions.
+
+Gate inputs use this worktree's pinned local rAthena checkout and requested
+config/knowledge links. As in leg-78 prep, the canonical iro-wiki link points
+to itself, so verification temporarily uses the existing wt-mobpos corpus
+fallback; the requested canonical link is restored afterward. No corpus
+contents or gate inputs are committed. The first full gate was deliberately
+interrupted for the dealer-memo compatibility regression; the final full
+gate runs on the completed source.
+
+Rejected: per-tick neighbor re-rolls; blind re-sends at the dead center;
+redirecting field sellers home on path failure; painting route walls
+walkable; putting geometry in scripts; changing general movement budgets,
+dealer ownership, or admission policy. No runners/probes, live-world,
+Docker, or heavengraph access; no spikes/ formatting. This is unit/public-
+grid evidence, not a new live sale or leg-79 population claim. The branch
+is committed and pushed for review only; no merge or deployment.
+
+Final full gate **GREEN before commit**: `nix --option auto-optimise-store
+false develop -c task --dir . check` exited **0**; **6917 passed, 65 subtests
+passed, 4 warnings, coverage 95.49%** (85% required), in **263.78 seconds**.
+Black, ruff, strict mypy (365 files), vulture, xenon, duplicate-code, and
+bandit all passed. Transcript: `/tmp/leg79-check-final.log`. The requested
+iro-wiki link was restored after verification. No gate input changes are
+included in the commit.

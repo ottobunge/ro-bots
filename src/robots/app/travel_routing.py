@@ -44,7 +44,7 @@ ONWARD: dict[str, tuple[Leg, ...]] = {
     "prontera": (("prt_fild08", 170, 375),),
     "pay_fild04": (
         ("moc_fild01", 239, 382),
-        ("prt_fild08", 170, 378),
+        ("prt_fild08", 169, 377),
         ("prontera", 177, 221),
         ("prt_in", 172, 130),
     ),
@@ -60,7 +60,8 @@ ONWARD: dict[str, tuple[Leg, ...]] = {
   delivers onto moc_fild01 at (376,162), whose mocf006 warp
   (``fields/morroc_fild.txt:24``) lands ON prt_fild08 (233,20) - from there
   the proven field->prontera->prt_in dealer legs carry the sell trip
-  (leg 67's field-to-town arc).
+  (leg 67's field-to-town arc). Leg 79 targets walkable (169,377) within
+  prtf004's trigger area, not its unwalkable center (170,378).
 """
 
 

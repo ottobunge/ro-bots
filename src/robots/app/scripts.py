@@ -57,6 +57,18 @@ class MerchantReachable(Protocol):
     ) -> bool | None: ...
 
 
+class MerchantTravelTarget(Protocol):
+    """Runtime-approved travel cell, or an honest hold when none is reachable.
+
+    The runtime owns geometry and the per-(map, destination) re-roll memo;
+    the script only authors the returned destination.
+    """
+
+    def __call__(
+        self, map_name: str, position: tuple[int, int], cell: tuple[int, int]
+    ) -> tuple[int, int] | None: ...
+
+
 class BehaviorScript(Protocol):
     """Anything that can run as a bot's autopilot between events."""
 
@@ -401,7 +413,7 @@ sell arm's admission (pinned by tests/test_s00_sell_trip_route.py)."""
 MERCHANT_ROUTE: dict[str, tuple[int, int]] = {
     "pay_fild04": (17, 165),
     "moc_fild01": (239, 382),
-    "prt_fild08": (170, 378),
+    "prt_fild08": (169, 377),
     "prontera": (177, 221),
     "prt_in": (172, 130),
 }
@@ -417,7 +429,9 @@ each pinned public rathena e985006171d2 bytes:
   prt_fild08, joining the proven field->town arc;
 - ``npc/pre-re/warps/fields/prontera_fild.txt:65``: ``prt_fild08,170,378,0
   warp prtf004 3,2,prontera,156,26`` — the field leg walks into the return
-  warp (arrival prontera,156,26);
+  warp (arrival prontera,156,26). Leg 79: target the raw-grid walkable
+  (169,377) inside its inclusive trigger rectangle (167..173,376..380),
+  rather than its unwalkable center (170,378);
 - ``npc/warps/cities/prontera.txt:25``: ``prontera,177,221,0 warp prt05
   2,2,prt_in,168,128`` — the town leg walks into the prt_in entry;
 - ``npc/merchants/shops.txt:255``: ``prt_in,172,130,0 shop Weapon
@@ -437,7 +451,7 @@ same file that carries the outbound legs):
   arrives prontera,174,218;
 - ``:24`` ``prontera,156,22,0 warp prt001 3,2,prt_fild08,170,375`` — the
   field warp; walking into it arrives prt_fild08,170,375, beside the cited
-  outbound field leg (170,378), where the farm behavior resumes.
+  outbound field leg (169,377), where the farm behavior resumes.
 The field itself is absent: prt_fild08 behavior never changes, and unknown
 maps stay absent (fail-closed)."""
 
@@ -657,6 +671,7 @@ def _merchant_step(
     state: BotState,
     resolver: TravelResolver | None = None,
     reachable: MerchantReachable | None = None,
+    travel_target: MerchantTravelTarget | None = None,
 ) -> ScriptOutcome | None:
     """The goal-level merchant interruption (windows 29-30), rest/loot class.
 
@@ -674,22 +689,13 @@ def _merchant_step(
     """
     destination = merchant_drive_cell(state)
     if destination is not None:
-        if (
-            reachable is not None
-            and resolver is not None
-            and reachable(state.map_name, (state.x, state.y), destination) is False
-        ):
-            plan = resolver(state.map_name, state.x, state.y) or ()
-            for leg_map, leg_x, leg_y in plan:
-                if leg_map == state.map_name and (leg_x, leg_y) != (state.x, state.y):
-                    _DEALER_APPROACH_WALKS.pop(state.name, None)
-                    return ScriptOutcome((MoveTo(x=leg_x, y=leg_y),), ScriptStatus.ACTIVE)
-            _tap_merchant_drive(
-                state.name,
-                "merchant_route_unresolved",
-                f"map={state.map_name} dest={destination}",
-            )
-        return _merchant_engage(state, destination, reachable)
+        # A field/town failure re-rolls locally, never follows the farming
+        # resolver back home. prt_in still needs its OWN interior door.
+        if state.map_name == "prt_in" or travel_target is None:
+            leg = _merchant_route_leg(state, destination, resolver, reachable)
+            if leg is not None:
+                return _merchant_travel_step(state, leg, travel_target)
+        return _merchant_engage(state, destination, reachable, travel_target)
     _DEALER_APPROACH_WALKS.pop(state.name, None)
     _DEALER_QUEUE_WAITS.pop(state.name, None)
     home = merchant_return_cell(state)
@@ -699,13 +705,50 @@ def _merchant_step(
     # fresh (bot, npc) contact and may talk again, so the sell-and-buy
     # cycle can repeat across trips (window-30 return legs).
     _DEALER_TALKED.pop(state.name, None)
-    return ScriptOutcome((MoveTo(x=home[0], y=home[1]),), ScriptStatus.ACTIVE)
+    return _merchant_travel_step(state, home, travel_target)
+
+
+def _merchant_route_leg(
+    state: BotState,
+    destination: tuple[int, int],
+    resolver: TravelResolver | None,
+    reachable: MerchantReachable | None,
+) -> tuple[int, int] | None:
+    """The agent's own exit when the dealer is in another interior."""
+    if (
+        reachable is None
+        or resolver is None
+        or reachable(state.map_name, (state.x, state.y), destination) is not False
+    ):
+        return None
+    plan = resolver(state.map_name, state.x, state.y) or ()
+    for leg_map, leg_x, leg_y in plan:
+        if leg_map == state.map_name and (leg_x, leg_y) != (state.x, state.y):
+            _DEALER_APPROACH_WALKS.pop(state.name, None)
+            return (leg_x, leg_y)
+    _tap_merchant_drive(
+        state.name, "merchant_route_unresolved", f"map={state.map_name} dest={destination}"
+    )
+    return None
+
+
+def _merchant_travel_step(
+    state: BotState, destination: tuple[int, int], travel_target: MerchantTravelTarget | None
+) -> ScriptOutcome:
+    target = (
+        destination
+        if travel_target is None
+        else travel_target(state.map_name, (state.x, state.y), destination)
+    )
+    actions = () if target is None else (MoveTo(x=target[0], y=target[1]),)
+    return ScriptOutcome(actions, ScriptStatus.ACTIVE)
 
 
 def _merchant_engage(
     state: BotState,
     destination: tuple[int, int],
     reachable: MerchantReachable | None = None,
+    travel_target: MerchantTravelTarget | None = None,
 ) -> ScriptOutcome:
     """The outbound dealer engagement (window-29): walk the leg, or talk
     once at the dealer and hold for the dealtype."""
@@ -750,12 +793,12 @@ def _merchant_engage(
         # direct target stopped the server walk 2 cells out and the
         # adjacency-gated talk silently never fired (xXLunasongXx parked at
         # Chebyshev 2, MoveTo every tick, npc rows []). Field/town legs are
-        # untouched: a warp must be ENTERED, so those keep the pinned cell.
+        # validated separately: a warp's trigger area must be ENTERED.
         return _merchant_approach(state, destination, reachable)
     _DEALER_OCCUPANCY_TAPPED.pop(state.name, None)
     _DEALER_APPROACH_WALKS.pop(state.name, None)
     _DEALER_QUEUE_WAITS.pop(state.name, None)
-    return ScriptOutcome((MoveTo(x=destination[0], y=destination[1]),), ScriptStatus.ACTIVE)
+    return _merchant_travel_step(state, destination, travel_target)
 
 
 def _dealer_queue_context(
@@ -1023,19 +1066,22 @@ class GrindScript:
         travel_plan: tuple[tuple[str, int, int], ...] = (),
         travel_resolver: TravelResolver | None = None,
         merchant_reachable: MerchantReachable | None = None,
+        *,
+        merchant_travel_target: MerchantTravelTarget | None = None,
     ) -> None:
         self._hp_rest_below = hp_rest_below
         self._commit_window = commit_window
         self._travel_plan = travel_plan
         self._travel_resolver = travel_resolver
         self._merchant_reachable = merchant_reachable
+        self._merchant_travel_target = merchant_travel_target
 
     def step(self, state: BotState) -> ScriptOutcome:
         if state.hp_ratio < self._hp_rest_below:
             _release_commitment(state, self._commit_window)
             return ScriptOutcome((Rest(),), ScriptStatus.ACTIVE)
         merchant = _merchant_step(
-            state, self._travel_resolver, self._merchant_reachable
+            state, self._travel_resolver, self._merchant_reachable, self._merchant_travel_target
         )  # window-29: want-driven dealer trip
         if merchant is not None:
             return merchant
@@ -1139,6 +1185,7 @@ class FarmScript:
         *,
         travel_resolver: TravelResolver | None = None,
         merchant_reachable: MerchantReachable | None = None,
+        merchant_travel_target: MerchantTravelTarget | None = None,
     ) -> None:
         self.plan = plan
         self._hp_rest_below = hp_rest_below
@@ -1148,13 +1195,14 @@ class FarmScript:
         self._roam_rng = random.Random(f"roam-{plan.plan_id}-{plan.map_name}")
         self._travel_resolver = travel_resolver
         self._merchant_reachable = merchant_reachable
+        self._merchant_travel_target = merchant_travel_target
 
     def step(self, state: BotState) -> ScriptOutcome:
         if state.hp_ratio < self._hp_rest_below:
             _release_commitment(state, self._commit_window)
             return ScriptOutcome((Rest(),), ScriptStatus.ACTIVE)
         merchant = _merchant_step(
-            state, self._travel_resolver, self._merchant_reachable
+            state, self._travel_resolver, self._merchant_reachable, self._merchant_travel_target
         )  # window-29: want-driven dealer trip
         if merchant is not None:
             return merchant
