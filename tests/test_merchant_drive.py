@@ -98,7 +98,7 @@ def _plan() -> FarmPlan:
 
 
 def test_route_cites_field_warp_cell() -> None:
-    assert MERCHANT_ROUTE["prt_fild08"] == (170, 378)
+    assert MERCHANT_ROUTE["prt_fild08"] == (169, 377)
     assert MERCHANT_ROUTE["prontera"] == (177, 221)
     assert MERCHANT_ROUTE["prt_in"] == (172, 130)
 
@@ -111,11 +111,11 @@ def test_zeny_threshold_is_50() -> None:
 
 
 def test_drive_engages_on_field_leg() -> None:
-    assert merchant_drive_cell(_state(zeny=60)) == (170, 378)
+    assert merchant_drive_cell(_state(zeny=60)) == (169, 377)
 
 
 def test_drive_engages_at_exact_threshold() -> None:
-    assert merchant_drive_cell(_state(zeny=50)) == (170, 378)
+    assert merchant_drive_cell(_state(zeny=50)) == (169, 377)
 
 
 def test_drive_engages_on_town_leg() -> None:
@@ -170,13 +170,13 @@ def test_grind_script_engages_dealer_instead_of_attacking() -> None:
     state = _state(zeny=60, nearby=(_poring(),))
     outcome = GrindScript().step(state)
     assert outcome.status == ScriptStatus.ACTIVE
-    assert outcome.actions == (MoveTo(x=170, y=378),)
+    assert outcome.actions == (MoveTo(x=169, y=377),)
 
 
 def test_farm_script_engages_dealer_instead_of_attacking() -> None:
     state = _state(zeny=60, nearby=(_poring(),))
     outcome = FarmScript(_plan()).step(state)
-    assert outcome.actions == (MoveTo(x=170, y=378),)
+    assert outcome.actions == (MoveTo(x=169, y=377),)
 
 
 def test_grind_script_field_unchanged_when_zeny_unknown() -> None:
@@ -189,7 +189,7 @@ def test_drive_releases_once_weapon_is_known() -> None:
     state = _state(zeny=60, inventory={"1201": 1}, nearby=(_poring(),))
     outcome = GrindScript().step(state)
     assert any(isinstance(a, Attack) for a in outcome.actions)
-    assert not any(isinstance(a, MoveTo) and (a.x, a.y) == (170, 378) for a in outcome.actions)
+    assert not any(isinstance(a, MoveTo) and (a.x, a.y) == (169, 377) for a in outcome.actions)
 
 
 def test_rest_still_precedes_the_drive() -> None:
@@ -202,8 +202,8 @@ def test_farm_script_drive_ignores_loot_idle() -> None:
     # No mobs, empty inventory: legacy outcome is keep-farming-active; with
     # the want active the step must move toward the dealer instead.
     state = _state(zeny=60)
-    assert FarmScript(_plan()).step(state).actions == (MoveTo(x=170, y=378),)
-    assert GrindScript().step(state).actions == (MoveTo(x=170, y=378),)
+    assert FarmScript(_plan()).step(state).actions == (MoveTo(x=169, y=377),)
+    assert GrindScript().step(state).actions == (MoveTo(x=169, y=377),)
 
 
 # --- dealer contact on prt_in ---
@@ -262,9 +262,9 @@ def test_drive_engages_with_sellables_below_zeny_threshold() -> None:
     Chrysalis 915, the pinned Poring/Pupa drops) fires the drive even with
     zero balance (the owned world pins start_zeny 0)."""
     state = _state(zeny=0, inventory={"909": 3})
-    assert merchant_drive_cell(state) == (170, 378)
+    assert merchant_drive_cell(state) == (169, 377)
     state = _state(zeny=0, inventory={"915": 1})
-    assert merchant_drive_cell(state) == (170, 378)
+    assert merchant_drive_cell(state) == (169, 377)
 
 
 def test_no_stock_and_no_zeny_stays_farming() -> None:

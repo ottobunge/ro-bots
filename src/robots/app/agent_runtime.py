@@ -787,6 +787,7 @@ class ScheduledAgent:
             return TickResult((), {})
         if isinstance(brain, EventDrivenBrain) and isinstance(self.client, PlayingClient):
             brain._merchant_reachable = self.client.merchant_reachable
+            brain._merchant_travel_target = self.client.merchant_travel_target
         if isinstance(brain, PlannedBrain):
             pose_reader = (
                 self.client.planning_rest_observation

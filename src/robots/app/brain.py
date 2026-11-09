@@ -133,6 +133,7 @@ class EventDrivenBrain:
         spawn_species: Any | None = None,
         travel_resolver: Any | None = None,
         merchant_reachable: Any | None = None,
+        merchant_travel_target: Any | None = None,
         memory: Memory | None = None,
         recovery_hp_ratio: float = 0.75,
         social_view: Callable[[], Sequence[str]] | None = None,
@@ -183,6 +184,7 @@ class EventDrivenBrain:
         self._spawn_species = spawn_species
         self._travel_resolver = travel_resolver
         self._merchant_reachable = merchant_reachable
+        self._merchant_travel_target = merchant_travel_target
         self._npc_menu_seen: tuple[int, int, int] | None = None
         self._npc_memory_session: tuple[int, str, int, int] | None = None
         self._npc_memory_pages = 0
@@ -529,6 +531,7 @@ class EventDrivenBrain:
                 initial_starved=streak,
                 travel_resolver=self._travel_resolver,
                 merchant_reachable=self._merchant_reachable,
+                merchant_travel_target=self._merchant_travel_target,
             )
         else:
             self._script = self._goal_script(goal, state)
@@ -799,6 +802,7 @@ class EventDrivenBrain:
             state,
             getattr(self, "_travel_resolver", None),
             getattr(self, "_merchant_reachable", None),
+            getattr(self, "_merchant_travel_target", None),
         )
         if rearm is not None:
             # The trip walk must never read as the idle script's jitter in
@@ -1110,14 +1114,19 @@ class EventDrivenBrain:
         farm_item goal on a town map had neither a plan (_setup_farm_plan
         returns None where no spawns are declared) nor a route and patrolled
         forever - 6 of 7 agents never reached a field. Any farming goal
-        gets the route."""
-        if self._wants_farming(goal) and state.map_name in TRAVEL_ROUTES:
+        gets the route. Leg 79 also carries merchant destination authority
+        into plan-less field scripts, preserving NPC preparation there."""
+        script = script_for(goal, state)
+        if self._wants_farming(goal) and (
+            state.map_name in TRAVEL_ROUTES or isinstance(script, GrindScript)
+        ):
             return GrindScript(
-                travel_plan=TRAVEL_ROUTES[state.map_name],
+                travel_plan=TRAVEL_ROUTES.get(state.map_name, ()),
                 travel_resolver=self._travel_resolver,
                 merchant_reachable=self._merchant_reachable,
+                merchant_travel_target=self._merchant_travel_target,
             )
-        return script_for(goal, state)
+        return script
 
     def _setup_farm_plan(
         self, state: BotState, answers: dict[str, Any], notes: list[str]

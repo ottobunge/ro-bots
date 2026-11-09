@@ -85,7 +85,7 @@ TRAVEL_ROUTES: dict[str, tuple[tuple[str, int, int], ...]] = {
     "pay_fild04": (
         ("pay_fild04", 17, 165),
         ("moc_fild01", 239, 382),
-        ("prt_fild08", 170, 378),
+        ("prt_fild08", 169, 377),
         ("prontera", 177, 221),
         ("prt_in", 172, 130),
     ),
@@ -102,7 +102,9 @@ moc_fild01's mocf006 warp onto prt_fild08, then the proven
 field->prontera->prt_in dealer legs). Every leg is pinned public warp
 bytes: payon_fild.txt:30 (payf002), morroc_fild.txt:24 (mocf006),
 prontera_fild.txt:65 (prtf004), cities/prontera.txt:25 (prt05),
-shops.txt:255 (the dealer cell)."""
+shops.txt:255 (the dealer cell). Leg 79 uses the raw-grid walkable
+prt_fild08 (169,377) inside prtf004's trigger rectangle instead of its
+unwalkable center (170,378)."""
 
 EXIT_CELLS: dict[str, tuple[tuple[int, int], ...]] = {
     "prontera": ((156, 22),),
