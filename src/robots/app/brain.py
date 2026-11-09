@@ -751,6 +751,8 @@ class EventDrivenBrain:
         if recovery is not None:
             return recovery
         if needs_npc_preparation(state) and self._plan is None:
+            # The shared gate checks merchant admission first (leg 84):
+            # an admitted stripped buyer reaches the re-arm below.
             # An authored farm plan is the planner's standing instruction
             # (ADR-021): execute it instead of re-entering novice guidance.
             return NpcGuidanceScript().step(state)

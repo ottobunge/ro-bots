@@ -63,6 +63,13 @@ class ActorRef:
     distance: float
     x: int | None = None
     y: int | None = None
+    # Received presentation only; a warp sprite cannot provide instructions.
+    npc_sprite: int | None = None
+
+    @property
+    def is_guidance_npc(self) -> bool:
+        # Pinned rAthena npc.hpp: JT_WARPNPC=45, JT_HIDDEN_WARP_NPC=139.
+        return self.kind == "npc" and self.npc_sprite not in (45, 139)
 
 
 @dataclass(frozen=True, slots=True)
