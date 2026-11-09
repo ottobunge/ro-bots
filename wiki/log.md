@@ -10785,3 +10785,45 @@ passed. Transcript: `/tmp/leg81-gate-first.log`. The earlier focused run was
 canonical iro-wiki symlink was restored before commit. Source, tests,
 passive receipt field and this log entry are committed and pushed on the
 implementation branch for review only; no PR, merge or deployment.
+
+## 2026-11-09 leg 81 — the staging allocation is proven live: five sellers traversed and xXLunasongXx's traversal finally closed (57→70z DB-verified); merchant warp crossings fell from 385 (one agent, leg 80) to 9 (all agents)
+
+**Launch and health.** `systemd-run --user --unit=leg81-runner`, main
+`d9cf3a25`, 16:38–18:28 Madrid, duration 6600 s. **26,167 steps, 0 step
+errors, 0 TRANSPORT DOWN, 0 PlayingBackendError**; all seven agents online
+~149–150 of 220 samples (the full 17:00–18:15 window). Pre-launch readback
+matched the seed exactly (60/110/111/58/57/28/125; xXLunasongXx 57 at
+prontera (156,26) holding 705x2 + 909x1 + 1201), so no seed fix was needed.
+
+**Sell timeline (UTC).** 16:35:26 PipinWalker sales=[[3,1]] at (172,129)
+(+3z); 16:35:38 **xXLunasongXx sales=[[3,2],[4,1]] at (172,129)** (+13z);
+16:36:00 PoringMuffin14 sales=[[3,1]] at (173,129) (+7z); 16:36:38 NyxSong
+sales=[[3,1]] at (172,129) (+4z); 16:47:45 zeny_wing sales=[[3,1]] at
+(172,129) (+4z) — after release-on-vacate re-allocated it from an
+out-of-range cell to chebyshev 1. Four sellers completed inside 74 seconds
+of each other on distinct ring cells; the fifth sold once its predecessor
+vacated. DB deltas: NyxSong 60→64, zeny_wing 111→115, PipinWalker 58→61,
+**xXLunasongXx 57→70 (705 gone from inventory)**, PoringMuffin14 28→35;
+RinceNyan 110→110 (grounded all window) and s00 125→125 (idle in town)
+unchanged.
+
+**Verdicts.** (a) STAGING **PASS** — no 50–90 min mutual occupation: four
+sellers held distinct cells and sold within 74 s; holds honest (22 sparse
+named `dealer_talk_out_of_range` refusals across 5 cells, ~5 each, no
+frozen-author spam). (b) TRAVERSAL **PASS** — xXLunasongXx: logged in at
+the staging block, MerchantDrive walk toward (176,220) by 17:15, dealer
+ring, TalkToNpc 16:35:31Z at chebyshev 1, NpcShopSellOpen 16:35:36Z,
+NpcShopSell 16:35:38Z, zeny 57→70 DB-verified, then returned to the field
+and ground for the rest of the window (GrindScript ACTIVE, 145 moves +
+3 attacks, 3–4 mobs nearby). (c) PING-PONG **PASS** —
+`merchant_warp_crossings` 1/2/3/1/1/1/0 = **9 total** (leg 80: 385
+transitions for NyxSong alone). (d) New signatures: the allocation can
+hand out ring cells at chebyshev 2–4 from the dealer (the talk radius
+rejects those with named refusals; release-on-vacate resolved it live for
+zeny_wing — a chebyshev ≤1 pre-filter is the cheap hardening if it
+recurs); receipt-sample `pos` froze for two field agents (g00m00 at
+(159,346), g01m01 at (173,368)) while their traces show continued
+moves/attacks/loots to window close — a host-sampling artifact to watch.
+
+Receipt: `run/plain_host_receipts/population-receipt-81-1794238714.json`.
+Traces: `.work/runtime/population-live/traces/` (leg window UTC 16:00+).
