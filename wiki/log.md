@@ -10956,3 +10956,69 @@ are byte-identical to base/main `56303e42`; these findings are inherited,
 not introduced here. Unrelated dependency upgrades and audit suppressions
 are rejected from these two economy slices. This entry does not claim
 `task quality` or the additional dependency audit passed.
+
+## 2026-11-09 leg 82 — four sells live, all talks from the chebyshev-1 cell (172,129); post-sell inventory reconciliation proven; the buy arm never admits because every seed persona holds the fixture knife (the leg-40 weapon_release hold) — the spend side needs a weaponless affordable Novice in the roster to fire
+
+**Launch and health.** `systemd-run --user --unit=leg82-runner`, main
+`719b9fe6`, 19:18–21:18 Madrid, duration 7200 s. **28,641 steps, 0 step
+errors, 0 TRANSPORT DOWN, 0 PlayingBackendError**; all seven agents online
+179–180 of 240 samples (the full 19:30–21:00 window; online at open,
+offline at close). Three early keepalive-send transients on zeny_wing
+(g00m02) recovered via the connect backoff. Pre-launch readback matched
+the seed exactly (64/110/115/61/70/35/125), so no seed fix. Launch-line
+correction recorded for future briefs: `--runtime-root` is the DB root
+(`.work/runtime/population-live`, the parent of `db/`) and `--memory-root`
+the journal directory (`.work/runtime/population-live/memory`) — both are
+required by the runner's argparse; a one-flag line fails startup.
+
+**Sell timeline (UTC; all four sales `[[3,1]]` at prt_in npc 110001762
+from the chebyshev-1 cell (172,129)).** 19:05:30 xXLunasongXx (+3z
+70→73); 19:09:04 NyxSong (+3z 64→67); 19:14:13 RinceNyan (looted stock,
++3z 110→113); 19:43:17 PoringMuffin14 (looted stock, +5z 35→40 — a
+non-Jellopy sellable, most plausibly 713 Empty Bottle at 5z; the item id
+was not snapshotted pre-sale). DB deltas are the ground truth:
+64/110/115/61/70/35/125 → 67/113/115/61/73/40/125. Post-sale
+re-admissions: NyxSong looted a 713 (zeny=67 stock=1 at 20:45) and
+xXLunasongXx a second 909 (zeny=73 stock=1 at 20:50); the window closed
+before either sold. Merchant warp crossings per agent 2–3 (14 total = 7
+round trips: 4 sell trips, 2 re-admission trips, zeny_wing's early field
+trip).
+
+**Verdicts.** (a) RING **PASS** — every dealer selection landed on a
+chebyshev≤1 approach cell: zero `dealer_outer_fallback`, zero
+`staging_occupied`, zero bypass taps; all four TalkToNpc calls fired from
+(172,129); the 20 `dealer_talk_out_of_range` taps are exactly four named
+approaches (168→172 along y=128, chebyshev 4→3→2→2→2) each converging to
+the talk cell; no 2–4 cell parking (saturation never occurred — four
+sellers sequenced through the single adjacent cell). (b) SPEND **NOT MET —
+NOT ARMED, BY THE LEG-40 HOLD**: the buy arm (C5→C6→knife) admits only a
+weaponless affordable Novice (`_want_refusal` returns `weapon_release`
+when `not has_stock and any wanted weapon in inventory`;
+`NOVICE_WANTED_WEAPONS = (1201, 1202, 1204)`, scripts.py:237); all seven
+seed personas hold the fixture knife 1201, so every affordable agent was
+`weapon_release`d (zeny_wing 115z included — its goal stayed `farm_item`
+through 64 heartbeat reviews). No `NpcShopBuySelection` was minted by any
+agent. To exercise the spend live the seed roster needs a weaponless
+affordable Novice (fixture SQL without 1201, zeny ≥ 50). (c) SELL
+**PASS** — all residual named stock sold (both 909 holders) plus two
+looted stocks; the drive handled sell→return→re-admit across trips.
+(d) SIGNATURES — the inventory delete-receipt reconciliation (0x00AF/0x07FA
+against the received baseline, `native_gameplay._inventory_delete`) is
+proven live: all four sells left `inv_known=True` (post-sale
+`weapon_release` taps carry `inv_known=True`; the leg-76
+sell→unknown-inventory→purchase-refused chain is broken), and the
+fail-closed purchase guard never triggered (no inconsistent receipt).
+Socials live: two new guilds founded (guild table rows 2 `NyxSongGuard`
+master NyxSong and 3 `PipinWalkerGuard` master PipinWalker; `FxGuard`
+row 1 pre-existing), party invites/chat active. New signature: all four
+sells chose the prt_in interior dealer (npc 110001762) rather than a
+street approach.
+
+**Evidence.** Receipt
+`run/plain_host_receipts/population-receipt-82-1794248282.json`; traces
+`.work/runtime/population-live/traces/pop_0003_*.jsonl` (UTC; `NpcShopSell`
+rows at 19:05/19:09/19:14/19:43); runner transcript
+`/tmp/population_leg82.log`; DB readback via the e2e mariadb container
+(`/tmp/leg82_final.sql`). No gate run for this window commit (no code
+change); the standing gate figure 6,975+65/95.52% is from the
+economy-slices merge `34980fd4`.
