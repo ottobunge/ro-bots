@@ -69,6 +69,7 @@ from robots.app.scripts import (
     MERCHANT_ROUTE,
     MERCHANT_ROUTE_RETURN,
     NOVICE_STAT_TARGETS,
+    _approach_cell,
     _dealer_talk,
     merchant_admission_refusal,
     needs_npc_preparation,
@@ -912,7 +913,10 @@ class PlayingClient:
         must not re-arm a dead destination. Missing geometry retains the
         script's existing choice. No grid cells are invented or corrected.
         """
-        if (map_name, cell) == ("prontera", MERCHANT_ROUTE["prontera"]):
+        if (map_name, cell) in (
+            ("prontera", MERCHANT_ROUTE["prontera"]),
+            ("prt_in", MERCHANT_ROUTE["prt_in"]),
+        ):
             return self._staging_travel_target(map_name, position, cell)
         self._merchant_staging.release()
         return self._validated_travel_target(map_name, position, cell)
@@ -927,7 +931,16 @@ class PlayingClient:
             and self.cache is not None
             and map_name in self.cache.maps
         ):
-            return self._merchant_staging.target(self.cache.get(map_name), state, self._now())
+            grid = self.cache.get(map_name)
+            if map_name == "prt_in":
+                return self._merchant_staging.dealer_target(grid, state)
+            return self._merchant_staging.target(grid, state, self._now())
+        if map_name == "prt_in":
+            return (
+                _approach_cell(*cell, state, reachable=self.merchant_reachable)
+                if state is not None and (state.map_name, state.x, state.y) == (map_name, *position)
+                else None
+            )
         return self._validated_travel_target(map_name, position, cell)
 
     def _validated_travel_target(

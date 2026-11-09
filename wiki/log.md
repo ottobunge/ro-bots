@@ -10827,3 +10827,132 @@ moves/attacks/loots to window close — a host-sampling artifact to watch.
 
 Receipt: `run/plain_host_receipts/population-receipt-81-1794238714.json`.
 Traces: `.work/runtime/population-live/traces/` (leg window UTC 16:00+).
+
+## 2026-11-09 leg 82 prep — prefer dealer talk-range cells and reconcile received inventory deletions
+
+Base `56303e42`; implementation branch `fix/leg82-economy-slices`. Evidence:
+`run/plain_host_receipts/population-receipt-81-1794238714.json` and
+`run/plain_host_receipts/population-receipt-80-1794229859.json`, their existing
+`.work/runtime/population-live/traces/` files, and the saved
+`/tmp/population_leg80.log`, `/tmp/population_leg81.log` transcripts. No
+runner/probe launch, live-world/Docker edit, heavengraph access, packetdb
+edit, `spikes/` formatting, PR or merge.
+
+**Dealer allocation.** `MerchantStaging.dealer_target` is wired through the
+runtime travel-target seam into `_merchant_approach`. It checks the eight
+Chebyshev-1 neighbours first, using received local occupancy and a walkable,
+no-corner-cutting path. Only when none is available does it select a
+reachable free cell at radius 2–4, naming `dealer_outer_fallback`, the cell,
+its Chebyshev distance, and `preferred_chebyshev<=1=unavailable`. The outer
+cell is a queue position, never permission to talk out of range. A new
+inner vacancy is preferred immediately; unchanged selections retain the
+existing five-evaluation author patience. A sealed block holds with the
+same named preference. No cross-agent reservation or other bot's memo is
+read. Prontera staging and its bounded entry hold retain their contracts.
+
+**Evidence correction for signature d1.** The existing script helper already
+constructs only the eight immediate dealer neighbours. In zeny_wing's leg-81
+trace, lines 140068–140093 (16:46:53–16:47:36 UTC) repeatedly author
+`MoveTo(172,129)`, which is Chebyshev 1; wire targets progress through
+`(169,128)`, `(170,128)`, `(171,128)`, `(172,128)`, then `(172,129)`.
+The range-2–4 taps describe intermediate *agent positions*, not proof that
+the allocator handed out outer destinations. The new runtime contract makes
+the requested preference and named saturation fallback explicit without
+claiming that the saved trace proves a bad final target.
+
+**Knife-guard verdict: missing delete accounting, not missing login ingest
+or lazy construction.** `NativeGameplayTracker.indexed_inventory` directly
+projects its complete received baseline. Both inventory-list packet IDs
+(0x0991, 0x0A0D) were already ingested; 0x00AF and 0x07FA were already in
+`spikes/003-clientless-limbs/packetdb.py`. The old `_other` handler discarded
+the inventory-known latch on *every* delete, including successful sales,
+and disarmed the initial inventory/WEIGHT barrier. Subsequent WEIGHT or map
+packets could not restore it. No additional packet registration is needed.
+
+Concrete traces: s00/YuffieFy81 sells index 3 at
+**2026-11-09 14:11:06.941388 UTC**, leg 80, trace line 234835. The prior
+14:11:01 state contains 705×1 and 1201×1; the 14:11:25 decision (line
+234843) reports `inventory=unknown`, inventory change sequence **1166**,
+then WEIGHT sequence **1167** with value 400. zeny_wing sells index 3 at
+**16:47:45.157581 UTC**, leg 81, line 140100. Its prior 16:46:53 state
+contains 915×1 and 1201×1; the 16:48:25 decision (line 140115) reports
+unknown inventory, change sequence **1151**, then WEIGHT **1152**, value
+400. The respective saved runtime logs name `inventory_unknown` at 125z
+and 115z. These are received baseline → sale → unknown transitions.
+
+**C6 evidence limit.** Neither leg-80/81 saved transcript has a C6 bind, and
+neither receipt samples a bound offer for these two agents. They cannot
+supply the requested moment of a valid C6 simultaneously with unknown
+inventory. The existing leg-76 transcript does: `/tmp/population_leg76.log`
+lines 40–43 show C6 receipt **89**, **19 rows**, a valid **1201** row at
+50z, and `stock=False(stock=False slots=None)`. It belongs to s00/account
+2200006, with change sequence **83** preceding WEIGHT **84**. This supports
+the same accounting diagnosis; it is not relabelled as leg-80/81 evidence.
+Both recent agents already held a Knife, so their unspent balance does not
+prove an unmet buy goal. The duplicate-weapon travel guard remains intact.
+
+**Fix and fail-closed boundary.** `_inventory_delete` decodes the registered
+00AF index/count and 07FA reason/index/count layouts (pinned
+`rathena/src/map/clif.cpp:2894–2930`). Against a complete real received
+baseline, it subtracts the exact quantity, removes exhausted indices and
+stale worn entries, and preserves the indexed view before the shop context
+reads it. Unknown baseline, absent index, zero quantity or overdraw still
+invalidate inventory; WEIGHT alone cannot repair it. Deletes before the
+LoadEnd barrier retain the previous conservative refusal. Acquisition
+history never substitutes for current stock, and no item is fabricated.
+
+TDD RED: **7 failed, 11 passed** (`/tmp/leg82-red.log`). Focused GREEN:
+**206 passed** (`/tmp/leg82-focused.log`), including all existing staging,
+dealer approach, gameplay, repair, purchase and buy-backoff contracts. New
+contracts cover distinct perceived free inner cells, walkability, named
+outer saturation and immediate vacancy release, a sealed hold, partial/full
+received deletions for both packet IDs, replay safety, invalid-delta refusal,
+a real inventory plus Knife offer authorizing the normal purchase send,
+unknown-stock refusal, and retaining a received Knife after selling loot
+and changing maps. The existing three-evaluation give-up remains bounded.
+
+Gate inputs are the requested knowledge/config symlinks and a private
+checkout of pinned rAthena `e985006171d2`. As documented in leg-81 prep,
+the canonical iro-wiki symlink loops to itself; verification temporarily
+uses `/home/otto/dev/wt-mobpos/run/knowledge/iro-wiki/iro-wiki.db` and restores
+the requested canonical link afterward. No input or submodule changes are
+part of this commit. Rejected: inventing a C6 event in recent traces,
+calling transient wire waypoints allocated dealer cells, seeding dealer
+stock, treating unknown inventory as empty, relaxing guard/backoff rules,
+and unrelated world/protocol changes.
+
+The first full gate exposed **8 failures** (6,967 passed + 65 subtests,
+268.11 s; `/tmp/leg82-full-gate.log`). Two session-wiring contracts pass an
+explicit script state without populating the runtime's cached state. The
+script now always selects a valid free inner cell with its existing
+reachability authority first; only saturation invokes the runtime's outer
+allocator. This preserves the existing script/authority contract and never
+uses stale runtime state to bypass a hold. Five post-sale contracts exposed
+a second interaction: a now-known empty bag restarted novice guidance
+before the validated sale/timeout return. `needs_npc_preparation` now honours
+`merchant_returning`, preserving the existing received return ownership.
+The existing post-sale, poisoned-dialogue and novice-guidance tests all
+remain intact. The capacity-freshness test's old assertion that an exact
+received deletion makes inventory unknown was updated to require the now
+known empty view; its receipt/freshness assertions are unchanged.
+
+**Full documented gate GREEN before commit.** On the completed source,
+`nix --option auto-optimise-store false develop -c task --dir . check`
+(the first command of the final `check && audit` invocation) succeeded:
+**6,975 passed, 65 subtests passed, 4 warnings, 95.52% coverage** (85%
+required), **262.60 s**. Black, ruff, strict mypy (**369 files**), vulture,
+xenon, duplicate-code and bandit passed. Final focused suite: **361 passed**
+(`/tmp/leg82-focused-final.log`). Transcript:
+`/tmp/leg82-full-gate-final.log`. Canonical knowledge links are restored
+before commit. No thresholds, exclusions, packetdb bytes or SHA pins changed.
+
+**Additional audit is not green.** After the successful documented check,
+`task audit` reports **17 known vulnerabilities in four unchanged packages**:
+black 26.10.0 (CVE-2026-114134), certifi 2026.7.22
+(PYSEC-2026-4320, reported twice), filelock 4.0.11 (13 CVEs), and
+opentelemetry-api 1.45.0 (CVE-2026-114603). The combined shell command
+therefore exits 201 at audit. `pyproject.toml`, `uv.lock` and `Taskfile.yml`
+are byte-identical to base/main `56303e42`; these findings are inherited,
+not introduced here. Unrelated dependency upgrades and audit suppressions
+are rejected from these two economy slices. This entry does not claim
+`task quality` or the additional dependency audit passed.

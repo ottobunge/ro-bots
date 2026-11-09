@@ -670,10 +670,7 @@ class NativeGameplayTracker:
 
     def _other(self, seq: int, at: float, pid: int, raw: bytes) -> None:
         if pid in (0x00AF, 0x07FA):
-            # pc_checkitem can delete between inventorylist and SP_WEIGHT.
-            # Historical rows remain observable, but cannot become current stock.
-            self._inventory_initial = False
-            self._inventory_known = False
+            self._inventory_delete(pid, raw)
         elif pid in (0x02EB, 0x0091, 0x0087):
             self._self_position(seq, at, pid, raw)
         elif pid in (0x00B4, 0x00B5, 0x00B7):
@@ -690,6 +687,23 @@ class NativeGameplayTracker:
             self._combat_observation(seq, at, pid, raw)
         elif pid == 0x0999:
             self._equip_ack(seq, at, raw)
+
+    def _inventory_delete(self, pid: int, raw: bytes) -> None:
+        # clif.cpp:2894-2930: AF index/count; 07FA reason/index/count.
+        # Only reconcile a complete received baseline. In particular, a delete
+        # during LoadEnd must still disarm the inventory/WEIGHT barrier.
+        index, amount = struct.unpack_from("<HH", raw, 2 if pid == 0x00AF else 4)
+        previous = self._inventory.get(index)
+        if not self._inventory_known or previous is None or not 0 < amount <= previous[1]:
+            self._inventory_initial = False
+            self._inventory_known = False
+            return
+        item, count = previous
+        if amount == count:
+            del self._inventory[index]
+            self._worn.pop(index, None)
+        else:
+            self._inventory[index] = (item, count - amount)
 
     def _combat_observation(self, seq: int, at: float, pid: int, raw: bytes) -> None:
         """The two combat presentations: damage (0x08C8) and skill use (0x09CB)."""

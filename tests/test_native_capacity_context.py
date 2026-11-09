@@ -221,7 +221,7 @@ def test_warp_preserves_history_and_inventory_change_marks_freshness(monkeypatch
     assert wire.native_epoch == 1
     receive(struct.pack("<HHH", 0xAF, 9, 1), struct.pack("<HHi", 0xB0, 24, 0))
     state = client.build_native_state(Goal.GRIND)
-    assert not state.inventory_known
+    assert state.inventory_known  # Exact received deletion preserves the complete baseline.
     assert state.inventory == {}
     assert state.weight == 0
     assert state.max_weight == 20000

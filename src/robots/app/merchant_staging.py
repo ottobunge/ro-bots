@@ -19,7 +19,8 @@ def _staging_blockers(grid: WalkMap, state: BotState) -> tuple[Point, ...]:
         if actor.name != state.name and actor.x is not None and actor.y is not None
     )
     # prontera.txt:24: prt001's inclusive 3x2 field-return trigger.
-    occupied.update((x, y) for x in range(153, 160) for y in range(20, 25))
+    if state.map_name == "prontera":
+        occupied.update((x, y) for x in range(153, 160) for y in range(20, 25))
     occupied.discard((state.x, state.y))
     return tuple(sorted(point for point in occupied if grid.contains(point)))
 
@@ -48,6 +49,7 @@ class MerchantStaging:
         self._bypass_tapped = False
         self._path_context: tuple[object, ...] = ()
         self._paths: dict[Point, tuple[Point, ...] | None] = {}
+        self._dealer_selection: Point | None = None
 
     def observe(self, state: BotState) -> None:
         identity = (state.name, state.map_name, state.native_epoch)
@@ -60,6 +62,7 @@ class MerchantStaging:
         self._bypass_tapped = False
         self._path_context = ()
         self._paths.clear()
+        self._dealer_selection = None
 
     def path(self, grid: WalkMap, state: BotState, cell: Point) -> tuple[Point, ...] | None:
         """Avoid received bodies AND the field-return trigger on an outbound walk."""
@@ -103,6 +106,44 @@ class MerchantStaging:
         if now - self._hold_since < STAGING_HOLD_SECONDS:
             return None
         return self._direct_dealer_entry(grid, state, destination)
+
+    def dealer_target(self, grid: WalkMap, state: BotState) -> Point | None:
+        """Prefer talk-range cells; outer cells are an honest congestion queue."""
+        self.observe(state)
+        x, y = MERCHANT_ROUTE["prt_in"]
+
+        def reachable(map_name: str, position: Point, cell: Point) -> bool:
+            del map_name, position
+            return self.path(grid, state, cell) is not None
+
+        cell = _approach_cell(x, y, state, reachable=reachable)
+        if cell is not None:
+            self._dealer_selection = None
+            return cell
+        cells = [
+            (x + dx, y + dy)
+            for dx in range(-4, 5)
+            for dy in range(-4, 5)
+            if max(abs(dx), abs(dy)) >= 2
+        ]
+        cells.sort(
+            key=lambda p: (
+                max(abs(p[0] - x), abs(p[1] - y)),
+                max(abs(p[0] - state.x), abs(p[1] - state.y)),
+                p,
+            )
+        )
+        cell = next((p for p in cells if self.path(grid, state, p) is not None), None)
+        if cell is not None and cell != self._dealer_selection:
+            logger.warning(
+                "merchant-drive: dealer_outer_fallback "
+                "(bot=%s cell=%s chebyshev=%s preferred_chebyshev<=1=unavailable)",
+                state.name,
+                cell,
+                max(abs(cell[0] - x), abs(cell[1] - y)),
+            )
+        self._dealer_selection = cell
+        return cell
 
     def _direct_dealer_entry(
         self, grid: WalkMap, state: BotState, destination: Point
