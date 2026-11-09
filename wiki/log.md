@@ -10117,6 +10117,71 @@ post-sale agent must return to its farm_item goal instead of camping the
 ring — the 90-minute dealer occupation is what starved the one genuinely
 queued seller. Traces (UTC window): `.work/runtime/population-live/traces/`.
 
+## 2026-11-09 leg 78 — the post-sale freeze is dead: zero blocked npc stages all window, both sellers left the ring, RinceNyan traversed the queue and sold 8 seconds after open; new signature — MerchantDrive travel dest (170,378) is unwalkable and pinned the field-side seller
+
+Launch 06:51:39 Madrid Monday under `systemd-run --user
+--unit=leg78-runner`, window `[0, 6.85, 8.35]` = 06:51-08:21 same day (no
+midnight crossing), main 1a2d94a7 (post-sale-freeze fix 55efa277 merged).
+Backends heavengraph :8091/:8092, health-verified pre-launch, read-only
+probes only. Pre-launch seed verified against a fresh DB readback:
+60/100/108/58/57/28/116 exact (YuffieFy81=s00 116), no seed fix; RinceNyan
+held Clover 705x1 as the queue-traversal target. Runner exit 08:51: **28,681
+steps, 0 step_errors, 0 TRANSPORT DOWN, 0 rx/dispatch errors**; decides
+309-609 per agent; online 178-179/240 samples for every agent. One transient:
+40 PlayingBackendError from heavengraph :8091 in a ~07:08-08:0x Madrid
+cluster — all caught by the narrow handler, sessions kept, decides recovered
+(backend `/health` ok throughout; no starvation; max action gap stayed
+104-196s). Receipt:
+`run/plain_host_receipts/population-receipt-78-1794203505.json`.
+
+**(a) POST-SALE FREEZE: FIXED — the leg-77 shape did not recur.** npc_stage
+is EMPTY for all seven agents across all 240 receipt samples: zero `blocked`
+stages, zero shop_offer=None holds, max blocked+shopNone streak 0. No agent
+froze (decides>0 with actions>0 everywhere; no >10 min action gap). Both
+sellers LEFT the ring after their sales: RinceNyan was farming prt_fild08
+(166,365) 11 minutes post-sale and finished offline at (191,365) on the
+field; zeny_wing was walking out of prt_in at close, offline at (162,119),
+10+ cells west of the dealer.
+
+**(b) QUEUE TRAVERSAL: PASS — RinceNyan sold through the still-congested
+ring 8 seconds after window open.** Chain 06:51:51 TalkToNpc → 06:51:56
+NpcShopSellOpen → 06:51:58 NpcShopSell (Madrid; sales [[3,...]]), zeny
+100→105 DB-verified, and its inventory was EMPTY at the 07:11 DB check —
+the Clover it carried since leg 77 is gone. Leg 77 shape disproved: the
+same agent waited the whole window at Chebyshev 2 then; this time the
+queue released it. Second traversal: zeny_wing farmed a jellopy (909x1),
+traveled prontera→prt_in, sold 08:11:40 Madrid (Talk 08:11:33 → Open
+08:11:38 → Sell 08:11:40), +3z → 111 DB-verified, 909 gone. Repeat-sell
+latch still clean: one sale per stock item, no double-sell.
+
+**(c) DEATH RECOVERY: NOT EXERCISED** — zero deaths (hp_min 43 zeny_wing,
+48 PipinWalker, never 0); the respawn path never armed.
+
+**Farm/combat/socials healthy:** 326 attacks (PipinWalker 316, hp_min 48,
+6239 resting gates — real grind with rest discipline), exp grew for all
+seven (PipinWalker 168/95 base/job, RinceNyan 172/131); 93-219 chat
+actions per agent; RinceNyan farmed a NEW Clover 705x1 after its sale
+(present in the final DB readback — the 705-gone evidence is the 07:11
+mid-window check, not the final one).
+
+**(d) NEW SIGNATURE — MerchantDrive field-side travel dest unwalkable.**
+The sell arm's travel leg for field sellers targets (170,378), a known
+UNWALKABLE prt_fild08 cell (the walkability veto covers roam/candidate
+cells but not this dest): xXLunasongXx (admitted stock=2 at window open,
+dest=(170,378)) re-sent MoveTo(170,378) **1,144 times over the whole
+window** from (176,374), never departed the field, never attacked, and
+finished with Clover 705x2 unsold. zeny_wing hit the same dest 43x
+(07:48-07:54 Madrid) but escaped once its wanderings left the field and
+the drive re-targeted on prontera. s00's receipt gates show the machinery
+CAN reroll/escalate unwalkable targets (`target_unwalkable_rerolled` /
+`_escalated`) — the MerchantDrive travel dest simply does not go through
+that veto. NEXT: apply the same walkability veto (reroll to nearest
+walkable) to the MerchantDrive travel dest; leg 79 then reads xXLunasongXx's
+sell plus the first repeat-sell of freshly farmed stock (RinceNyan already
+carries one). Traces (UTC window 05:51-07:21):
+`.work/runtime/population-live/traces/pop_0003_*.jsonl` (append-only across
+legs — timestamp-filter, never cumulative greps).
+
 ## 2026-11-08 leg 78 prep — recover the post-sale dialogue freeze and release the dealer ring
 
 Implementation only, based on main `a99c5846`; branch
