@@ -10404,3 +10404,40 @@ Black, ruff, strict mypy (365 files), vulture, xenon, duplicate-code, and
 bandit all passed. Transcript: `/tmp/leg79-check-final.log`. The requested
 iro-wiki link was restored after verification. No gate input changes are
 included in the commit.
+
+## 2026-11-09 leg 79 — the dead waypoint is gone (0 spams of (170,378)), repeat-sells are now sustained (RinceNyan and s00 sold in consecutive windows), but the field-seller traversal still stalls: 2,191 MoveTo((169,377)) authored from (176,374), zero movement — the travel leg lacks author patience / its perform phase is unnamed
+
+Launch 10:10:32 Madrid Monday under `systemd-run --user --unit=leg79-runner`,
+window `[0, 10.25, 11.5]` = 10:15-11:30, main d0559aa3 (travel-dest
+walkability merge b3f4bee4). Pre-launch seed verified exact
+(60/105/111/58/57/28/116). Runner exit clean ~12:10: **28,685 steps, 0
+step_errors, 0 TRANSPORT DOWN, 0 PlayingBackendError** (the leg-78 decide
+burst did not recur). Receipt:
+`run/plain_host_receipts/population-receipt-79-1794215351.json`.
+
+**(a) TRAVEL-DEST FIX: the data correction holds.** Zero re-sends of the old
+unwalkable (170,378) all window; the travel leg now authors the corrected
+(169,377) (reachable per the path authority). The leg-78 signature is dead.
+
+**(b) FIELD-SELLER TRAVERSAL: NOT COMPLETED — and the evidence is exact.**
+xXLunasongXx (stock 705x2) authored **2,191 MoveTo to (169,377)** on
+prt_fild08 across the whole window (~10s cadence, no author patience on the
+travel leg) from a frozen (176,374) — seven cells away, walkable and
+reachable per the authority — and never moved: no walks landed server-side
+or each re-author cancelled the in-flight one (the ghost-walk cancel shape
+reborn on a path the 5-tick reaffirm memo does not cover; the receipt's
+per-agent gate fields are null so the perform-phase gate is unnamed).
+Diagnosis target: travel-leg author patience + perform-phase instrumentation
+for the merchant travel MoveTo.
+
+**(c) REPEAT-SELL: SUSTAINED.** RinceNyan sold in consecutive windows
+(105->110, its 705 gone) and s00 in consecutive windows (116->120). The
+0x00CB release + fresh-farm-and-return cycle now repeats across legs.
+
+**(d) No new signatures**: 0 freezes, 0 blocked stages, 0 deaths; chat and
+guild chains continued. Final zeny 60/110/111/58/57/28/120.
+
+Evidence: traces `.work/runtime/population-live/traces/pop_0003_g01m01.jsonl`
+(UTC 09:15-10:30: 2,191 MoveTo((169,377)) action_executed rows), DB readback
+in-container. The shepherd's turn ended mid-readout; the coordinator parsed
+the receipt + traces and wrote this entry.
