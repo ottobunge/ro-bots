@@ -135,6 +135,9 @@ def test_unwalkable_field_seller_rerolls_once_and_sends_a_path_step(monkeypatch)
         received = client.build_native_state(Goal.GRIND)
         assert (received.x, received.y) == (168, 375)
         advanced = replace(state, x=168, y=375)
+        assert _step(client, advanced, resolver).actions == ()
+        for _ in range(3):
+            assert _step(client, advanced, resolver).actions == ()
         assert _step(client, advanced, resolver).actions == (MoveTo(*SAFE_DEST),)
         assert nearest.call_count == 1
     assert client.cache is not None
@@ -220,7 +223,7 @@ def test_unknown_grid_keeps_the_script_destination():
 def test_field_travel_still_releases_previous_dealer_approach_memos():
     state = _seller()
     scripts._DEALER_OCCUPANCY_TAPPED[state.name] = "previous hold"
-    scripts._DEALER_APPROACH_WALKS[state.name] = ("prt_in", (171, 129), 3)
+    scripts._DEALER_APPROACH_WALKS[state.name] = ("prt_in", state.native_epoch, (171, 129), 3)
     scripts._DEALER_QUEUE_WAITS[state.name] = ((), 3)
     _step(_client(), state)
     assert state.name not in scripts._DEALER_OCCUPANCY_TAPPED
@@ -256,11 +259,11 @@ def test_session_binds_target_authority_for_scripts_and_brain_rearm(monkeypatch,
     rearm = brain._sell_drive_rearm(state)
     assert rearm is not None
     assert rearm.actions == (MoveTo(*SAFE_DEST),)
-    assert brain._goal_script(Goal.GRIND, state).step(state).actions == (MoveTo(*SAFE_DEST),)
+    assert brain._goal_script(Goal.GRIND, state).step(state).actions == ()
     monkeypatch.setattr(brain, "_setup_farm_plan", lambda *_args: _plan())
     brain._run_review(state, _answers("grind"), [])
     assert isinstance(brain._script, scripts.FarmScript)
-    assert brain._script.step(state).actions == (MoveTo(*SAFE_DEST),)
+    assert brain._script.step(state).actions == ()
 
 
 def test_foreign_interior_exit_is_validated_before_authoring():

@@ -13,7 +13,8 @@ goal flip orphans an armed-but-unfinished trip.
 
 The contract under test: the sell drive is re-armed EVERY tick at the brain
 level, ahead of whichever goal script is active. An admitted, incomplete
-trip (sellable stock held, drive admits) keeps authoring its route walk
+trip (sellable stock held, drive admits) keeps owning its route walk
+(reaffirming every fifth evaluation, including across goal flips)
 under ANY goal script until (a) the trip COMPLETES -- the stock sells, the
 admission turns off, the goal script resumes -- or (b) the admission names
 a refusal (terminal for the trip: the map is off ``MERCHANT_ROUTE``), in
@@ -40,7 +41,6 @@ from robots.adapters.decision.stub import ScriptedDecisionModel  # noqa: E402
 from robots.app import scripts  # noqa: E402
 from robots.app.brain import EventDrivenBrain  # noqa: E402
 from robots.app.scripts import (  # noqa: E402
-    _DEALER_TALKED,
     MERCHANT_ROUTE,
     GrindScript,
     ScriptStatus,
@@ -123,10 +123,10 @@ def _clear_merchant_latches():
     """The admission tap and the dealer-talk latch are module-level; keep
     tests isolated from each other's verdict history."""
     scripts._MERCHANT_DRIVE_TAPPED.clear()
-    _DEALER_TALKED.clear()
+    scripts.reset_merchant_talk()
     yield
     scripts._MERCHANT_DRIVE_TAPPED.clear()
-    _DEALER_TALKED.clear()
+    scripts.reset_merchant_talk()
 
 
 def test_goal_flip_to_social_does_not_orphan_the_armed_trip() -> None:
@@ -147,23 +147,25 @@ def test_goal_flip_to_social_does_not_orphan_the_armed_trip() -> None:
     assert type(brain._script).__name__ == "IdleTownScript"
     state = dataclasses.replace(state, goal=Goal.SOCIAL)
 
-    # The re-arm: the armed-but-unfinished trip keeps authoring its walk.
-    outcome = brain.step_script(state)
-    assert _move(outcome.actions) == MoveTo(x=PAY_FILD04_EXIT[0], y=PAY_FILD04_EXIT[1])
-    assert outcome.status == ScriptStatus.ACTIVE
+    # The re-arm retains ownership AND patience through the goal flip.
+    for _ in range(4):
+        outcome = brain.step_script(state)
+        assert outcome.actions == ()
+        assert outcome.status == ScriptStatus.ACTIVE
+    assert _move(brain.step_script(state).actions) == MoveTo(*PAY_FILD04_EXIT)
 
 
-def test_rearm_repeats_every_tick_until_the_trip_completes() -> None:
-    """The re-arm is per-tick, not a one-shot: three consecutive steps under
-    the social goal all author the trip walk while the stock is carried."""
+def test_rearm_evaluates_every_tick_and_reaffirms_the_trip_per_cadence() -> None:
+    """The drive keeps ownership under social; its walk author stays patient."""
     brain = _s00_brain()
     state = _s00_state()
     brain._run_review(state, _answers("keep"), [])
     brain._run_review(state, _answers("social"), [])
     state = dataclasses.replace(state, goal=Goal.SOCIAL)
-    for _ in range(3):
+    for tick in range(11):
         outcome = brain.step_script(state)
-        assert _move(outcome.actions) == MoveTo(x=PAY_FILD04_EXIT[0], y=PAY_FILD04_EXIT[1])
+        assert outcome.status == ScriptStatus.ACTIVE
+        assert outcome.actions == ((MoveTo(*PAY_FILD04_EXIT),) if tick % 5 == 0 else ())
 
 
 def test_sold_stock_releases_the_trip_to_the_goal_script() -> None:

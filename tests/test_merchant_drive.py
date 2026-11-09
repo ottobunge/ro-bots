@@ -203,6 +203,8 @@ def test_farm_script_drive_ignores_loot_idle() -> None:
     # the want active the step must move toward the dealer instead.
     state = _state(zeny=60)
     assert FarmScript(_plan()).step(state).actions == (MoveTo(x=169, y=377),)
+    for _ in range(4):
+        assert GrindScript().step(state).actions == ()
     assert GrindScript().step(state).actions == (MoveTo(x=169, y=377),)
 
 
@@ -366,6 +368,8 @@ def test_trapped_bot_walks_home_from_the_dealer_interior() -> None:
 def test_trapped_bot_walks_the_town_field_warp_leg() -> None:
     state = _state(map_name="prontera", x=174, y=218, zeny=0)
     assert GrindScript().step(state).actions == (MoveTo(x=156, y=22),)
+    for _ in range(4):
+        assert FarmScript(_plan()).step(state).actions == ()
     assert FarmScript(_plan()).step(state).actions == (MoveTo(x=156, y=22),)
 
 

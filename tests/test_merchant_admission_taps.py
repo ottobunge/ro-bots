@@ -59,8 +59,10 @@ def _state(**over: object) -> BotState:
 
 @pytest.fixture(autouse=True)
 def _fresh_tap_memo():
+    scripts.reset_merchant_talk()
     _MERCHANT_DRIVE_TAPPED.clear()
     yield
+    scripts.reset_merchant_talk()
     _MERCHANT_DRIVE_TAPPED.clear()
 
 

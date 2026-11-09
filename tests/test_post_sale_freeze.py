@@ -19,6 +19,13 @@ from tests.test_shop_sell_loop import DEALER, _c4, _c7, _cb, _client_with, _inv,
 from tests.test_shop_sell_loop import _dealer as wire_dealer
 
 
+@pytest.fixture(autouse=True)
+def _fresh_merchant_walks():
+    scripts.reset_merchant_talk()
+    yield
+    scripts.reset_merchant_talk()
+
+
 def _sale_client() -> PlayingClient:
     client = _client_with(wire_dealer((43, 37)), _inv(((6, 909, 1),)), _weight())
     client.cache = MapCache((WalkMap("prt_in", 100, 100, bytes(10000)),))

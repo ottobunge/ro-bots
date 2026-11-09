@@ -10441,3 +10441,179 @@ Evidence: traces `.work/runtime/population-live/traces/pop_0003_g01m01.jsonl`
 (UTC 09:15-10:30: 2,191 MoveTo((169,377)) action_executed rows), DB readback
 in-container. The shepherd's turn ended mid-readout; the coordinator parsed
 the receipt + traces and wrote this entry.
+
+## 2026-11-09 leg 80 prep — merchant travel author patience and named MoveTo perform outcomes
+
+Implementation only, based on main `7715926c`; branch
+`t3/merchant-travel-patience`. Evidence receipt:
+`run/plain_host_receipts/population-receipt-79-1794215351.json`, with the
+append-only `.work/runtime/population-live/traces/pop_0003_*.jsonl`
+filtered to **2026-11-09 09:15–10:30 UTC**. No runner/probe, live-world,
+Docker, or heavengraph access; no `spikes/` formatting. Review branch only,
+no merge or deployment.
+
+**Differential evidence and corrections.** Line numbers below refer to the
+original trace files under `/home/otto/dev/ro-bots`, not copied fixtures.
+
+| Seller / trace | Actual leg-79 travel sequence | Transition / sale evidence |
+| --- | --- | --- |
+| xXLunasongXx / `pop_0003_g01m01.jsonl` | Lines **173424** (09:15:15.080412) through **176597** (10:30:00.693950): **2,191** authored MoveTo(169,377), all from prt_fild08 **(176,374)**. Line **173425** is the next identical author at 09:15:17.082710. Median interval **2.0068015s**, minimum 2.002298s, maximum 4.862252s. | No map transition or changed received coordinate in this window. No sale. |
+| RinceNyan / `pop_0003_g00m01.jsonl` | Lines **160824** (09:15:06.472264), **160825**, **160827**: MoveTo(169,377) from **(191,365)**, then (190,365), then (189,365). **43** travel authors, median interval **2.0071225s**; line **160884** (09:16:32.308016) is from **(171,375)**. | **160885** (09:16:34.502789): prontera (156,26). **161433** (09:30:41.419843): prt_in (168,128). **161454** (09:31:31.032904): NpcShopSell at (172,129). |
+| s00 / `pop_0003_s00.jsonl` | Lines **231161** (09:21:12.546709), **231163**: MoveTo(169,377) from **(194,356)**, then **(193,356)**. **48** authors in the completed outbound burst; **231230** (09:22:50.920123) is from **(171,375)**. Ordinary intervals are about 2s. Two later MoveTo(169,377) authors after the return bring the window total to 50. | **231232** (09:22:53.106409): prontera (156,26). **231778** (09:36:58.553018): prt_in (168,128). **231798** (09:37:48.255148): NpcShopSell at (172,129). |
+
+The completed sellers used the SAME corrected destination and essentially
+the SAME author cadence. They received advancing positions; xXLunasongXx
+did not. The historical entry's “~10s” cadence is not what these rows show:
+**~2s** is the old author cadence, **~10s** is the new five-evaluation
+cadence at this tick rate. The supplied (180,350)/(174,355) coordinates are
+useful differential test origins, but are not the starts of these actual
+leg-79 sell bursts. RinceNyan's leg-78 sale began at the dealer after its
+prior queue wait (see the leg-78 entry); its completed leg-79 trip above
+is the direct same-destination comparison.
+
+**Offline geometry.** The unmodified common + pre-re map caches from
+pinned public rAthena `e985006171d2eb320ee512a653f4c83aea3d81b6`
+(`/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source/db/`) give an
+8-step no-corner-cutting path:
+`(176,374) -> (175,374) -> (174,374) -> (173,374) -> (172,374) ->
+(171,374) -> (171,375) -> (170,376) -> (169,377)`.
+Both endpoints and all path cells are client-walkable. Runtime
+`merchant_reachable` agrees. The supplied comparison origins have paths
+of **27** and **22** steps respectively; the actual leg-79 burst origins
+(191,365)/(194,356) have **23**/**26** steps. A shorter origin-distance
+claim cannot explain the freeze.
+
+**Perform diagnosis: occupied one-cell-west rejection.** The supplied
+“move_gates are null” premise describes startup samples, not active ones.
+The receipt's `samples[13]` (t=390.5s), lines **2184–2207**, reports
+xXLunasongXx online, **standing=true**, position (176,374), npc_stage=null,
+and **walk_released_no_progress(step): 8**. ALL **227** active samples
+have the same standing and eight release notes. `wire_sent=0`/`moves=0`
+are list-counter artifacts of this live wire, not absence-of-send proof.
+The release notes establish `_move` reached its step-send/pending path
+and repeatedly released it. This was neither a standing block nor a
+pending slot that never released.
+
+The raw-grid path's FIRST dispatch is **(175,374)**, exactly one cell west
+of the frozen origin. Pinned `npc/quests/seals/brisingamen_seal.txt:25`
+places **Bard#brising** on that cell; `npc/scripts_athena.conf:218` loads
+that NPC. Trace **173418**, 09:15:14.391326, independently receives
+`Bard#brising(npc, d=1)`, actor **110005545**, immediately before the first
+corrected travel author. The decisive pinned server rule is
+`src/map/clif.cpp:11401–11405`, `clif_parse_WalkToXY`: with
+`official_cell_stack_limit > 0`, a move exactly **one cell west** is
+silently rejected if `map_count_oncell(..., BL_CHAR|BL_NPC, 1)` is nonzero.
+The pinned default is **1** (`conf/battle/misc.conf:103`,
+`src/map/battle.cpp:8478`). A GAT-walkable NPC cell therefore does not make
+this particular one-cell-west command dispatchable. `_move` ignored the
+received occupancy and repeatedly chose that same refused first step.
+The stall clock correctly released it; static `merchant_reachable` kept
+correctly approving the FAR destination, so neither memo could break the
+loop. RinceNyan/s00 approached from other cells and did not enter this
+exact occupied-west send trap. Author patience alone would only slow it.
+
+`action_executed` still precedes `_perform`, so an individual author row
+alone remains insufficient proof of a wire send. There are **zero Arrived
+world_event rows for all three sellers** in leg 79: this runtime does not
+translate its 0x0087 stream into Arrived events, and raw packets were not
+recorded in those JSONL files. Thus the traces cannot independently count
+raw walk-end frames. The receipt's repeated no-progress releases and
+unchanged position, together with the pinned silent-rejection branch,
+explain why no progressing walk landed. The old “each re-author cancels an
+in-flight walk” hypothesis is unnecessary for this failure.
+
+**Changes.** Runtime dispatch now detects the exact occupied-west command
+from this bot's RECEIVED `nearby` actor coordinates or `occupied_cells`.
+When the path's first step hits it, the runtime recomputes the path with
+that cell as a received blocker and dispatches its safe first step, naming
+**occupied_west_rerouted**. A missing alternative is an explicit
+**occupied_west_no_route** refusal: it never falls through to blind direct
+sends at the blocked command. Received vanish/movement immediately releases
+the detour. No grid tile is rewritten or occupancy inferred from another
+bot or a private world. The general move seam enforces the server rule,
+including merchant travel; scripts remain grid-free.
+
+The travel leg now shares the grid-free five-evaluation walk
+author helper with dealer approaches, using separate per-bot memos. It
+authors immediately on a changed map, native epoch, or validated target;
+otherwise it holds four evaluations and reaffirms on the fifth. Script
+recreation and goal flips retain patience. A vetoed target, departure from
+the drive, dealer engagement, and explicit contact reset clear the travel
+memo so a fresh trip does not inherit a stale hold. Runtime geometry
+validation remains in the injected target authority.
+
+`PlayingClient` now records the actual per-MoveTo result. Every native move
+branch returns an explicit result, including direct/reroll/escalation
+sends and exhausted refusals. `ScheduledAgent` writes a **move_performed**
+sibling AFTER each authored MoveTo, with its params and cached map/x/y:
+`outcome=dispatched` with `wire_target` and origin (`step`, `direct`,
+`rerolled`, `escalated`, `repositioned`); `standing-blocked` with
+`reason=not_standing`; `pending` with `reason=await_pending`; or `refused`
+with the actual gate. NPC interception resets any prior dispatch result;
+perform exceptions explicitly name `perform_error`. Legacy clients are
+honestly `unavailable`, rather than guessed dispatched. Telemetry never
+re-observes native state.
+
+The stall clock retains **pending_outcome=pending-cancelled**,
+`pending_reason=no_progress(<origin>)`, and the old pending target until
+the next MoveTo perform. This also covers a release during event draining
+while the patient author holds. Map/epoch changes clear that evidence.
+The existing stall algorithm is preserved: a lost walk releases and the
+next patient reaffirm dispatches again; a real moving walk with no final
+walk-end can likewise progress after its stall-clock release. The
+standing barrier remains fail-closed until received SELF standing.
+
+**TDD and verification.** Initial RED: **16 failed** before implementation
+(`/tmp/leg80-red.log`). A second RED for the diagnosed occupied-west seam
+was **3 failed, 18 passed** (`/tmp/leg80-occupancy-red.log`). The completed
+new suite has **21** cases covering
+all outbound/return travel legs, context changes, three sellers on raw
+public geometry with the received Bard at (175,374), a dropped first walk
+then received progress, fail-closed blocked alternatives, NPC vanish,
+release during event draining, named standing/pending/dispatch/refusal/stall
+telemetry, NPC interception, send failure, and no observing trace read.
+Updated compatibility assertions preserve drive ownership and enforce the
+new bounded author cadence across goal/script changes. Focused merchant,
+dealer, route, travel, re-arm, runtime, trace and post-sale tests: **340
+passed** (`/tmp/leg80-focused.log`). Ruff and strict mypy (366 files) passed. The first full gate exposed four
+post-sale fixture-isolation failures (new per-bot travel memos persisted
+between parametrized cases); its tests now explicitly reset contacts, as
+the other merchant fixtures do. No production behavior was changed for
+that isolation correction.
+
+The supplied worktree started at an unrelated initial commit; its clean
+task branch was moved to the requested local main commit `7715926c` before
+implementation. Its rAthena submodule is pinned to the requested revision,
+with the requested config/knowledge links. The canonical iro-wiki link
+still points to itself, as recorded in leg-79 prep; gate verification uses
+the existing wt-mobpos corpus fallback, then restores the requested link.
+No corpus, submodule, or gate-input changes are included in the commit.
+
+Rejected: treating startup-null receipt gates as active-window evidence;
+inventing a retrospective perform cause from intent-only traces; treating
+absence of Arrived rows as absence of raw walk frames;
+assuming the successful sellers were closer or authored more patiently;
+putting grids in scripts; weakening received standing; changing global
+movement timeouts or retry budgets; runners/probes, live-world edits,
+Docker, heavengraph, and `spikes/` formatting. These are offline synthetic
+contracts plus existing trace evidence, not a new live traversal claim.
+
+**Final full gate GREEN before commit.** The README's documented full gate,
+`nix --option auto-optimise-store false develop -c task --dir . check`,
+passed on the completed source: **6938 passed, 65 subtests passed, 4
+warnings**, **95.49% coverage** (85% required), **253.17 seconds**. Black,
+ruff, strict mypy (366 files), vulture, xenon, duplicate-code and bandit
+passed. Transcript: `/tmp/leg80-gate-final.log`. It ran as the first half of
+`task --dir . check && task --dir . audit`; reaching audit establishes the
+check task's successful exit.
+
+The EXTRA dependency audit is **not green**: pip-audit reported **17
+findings in 4 packages** already pinned by main's unchanged `uv.lock`:
+black 26.10.0 (fix 26.10.1), certifi 2026.7.22 (fix 2026.10.18), filelock
+4.0.11 (fix 4.2.1), and opentelemetry-api 1.45.0 (fix 1.45.1). Its failure
+made the combined command exit 201 after the full check passed. Rejected
+expanding this merchant runtime slice into a dependency upgrade; no audit
+ignores or gate weakening were added. The audit temporary export was
+removed. The requested canonical iro-wiki symlink was restored before
+commit. The source, tests and log entry are committed and pushed for
+review only; no merge or deployment.

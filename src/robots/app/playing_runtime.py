@@ -44,6 +44,7 @@ from robots.adapters.native_gameplay import (
 from robots.adapters.native_navigation import (
     MapCache,
     NoRoute,
+    WalkMap,
     nearest_walkable,
     shortest_path,
     starter_route,
@@ -855,6 +856,8 @@ class PlayingClient:
         return self._merchant_returning
 
     def _init_merchant_navigation(self) -> None:
+        self.last_move_outcome: dict[str, object] = {}
+        self._move_pending_release: dict[str, object] = {}
         self._merchant_paths: dict[tuple[str, tuple[int, int], tuple[int, int]], bool] = {}
         self._merchant_travel_rerolls: dict[tuple[str, tuple[int, int]], tuple[int, int] | None] = (
             {}
@@ -956,6 +959,9 @@ class PlayingClient:
         return False
 
     def perform_native(self, action: GameAction) -> None:
+        if isinstance(action, MoveTo):
+            # Reset BEFORE the dialogue intercepts: never reuse a prior dispatch.
+            self.last_move_outcome = {"outcome": "refused", "reason": "npc_intercepted"}
         shop = self._dispatch_shop_action(action)
         if shop:
             return
@@ -978,7 +984,7 @@ class PlayingClient:
                 # a deal is open are ignored by the server (fx0's shop trap).
                 # Movement-only scope: NPC-interaction actions keep their deals.
                 self._close_open_npc_dialog(state)
-                self._move(state, (x, y))
+                self._perform_move(state, (x, y))
             case _:
                 self._social(state, action)
 
@@ -2191,7 +2197,6 @@ class PlayingClient:
             return "no_position_or_dead"
         pos = view.position
         if not self._require_standing():
-            self._note_move_gate("not_standing")
             return "not_standing"
         if self._await_pending(view, pos):
             return "await_pending"
@@ -2199,17 +2204,33 @@ class PlayingClient:
             return "no_map_cache"
         return None
 
-    def _move(self, state: BotState, target: tuple[int, int]) -> None:
+    def _perform_move(self, state: BotState, target: tuple[int, int]) -> None:
+        """Name the actual limb result, without treating author intent as a send."""
+        reason = self._move(state, target)
+        outcome = {"not_standing": "standing-blocked", "await_pending": "pending"}.get(
+            reason, "refused"
+        )
+        detail: dict[str, object] = {"outcome": outcome, "reason": reason}
+        if reason in ("dispatched", "occupied_west_rerouted") and self._pending is not None:
+            detail.update(
+                outcome="dispatched",
+                reason=self._pending_origin if reason == "dispatched" else reason,
+                wire_target=self._pending[0],
+            )
+        self.last_move_outcome = detail | self._move_pending_release
+        self._move_pending_release = {}
+
+    def _move(self, state: BotState, target: tuple[int, int]) -> str:
         gate = self._move_gate(state, target)
         if gate is not None:
             self._note_move_gate(gate)
-            return
+            return gate
         tracker = self._tracker
         cache = self.cache
         if tracker is None or cache is None or tracker.view.position is None:
             # The gate passed a moment ago; drift here is a bug upstream.
             self._note_move_gate("gate_state_drift")
-            return
+            return "gate_state_drift"
         pos = tracker.view.position
         grid = cache.get(state.map_name)
         # leg 38: the tracked position comes ONLY from the received
@@ -2225,38 +2246,73 @@ class PlayingClient:
             path = shortest_path(cache.get(state.map_name), (state.x, state.y), target)
             self._no_route_attempts = 0
         except NoRoute:
-            # leg 28: the field warp cell (170,378) is unwalkable in the
-            # client grid, so the route died here and NO walk was ever sent —
-            # the server never moved the unit, the warp never fired, and the
-            # script re-authored the same MoveTo 97 times. The server
-            # path-finds its own side: send the walk DIRECTLY at the target
-            # (the spike clients always worked this way), paced on the same
-            # pending-walk lifecycle, capped on CONSECUTIVE no-route sends so
-            # a cell unreachable on both sides cannot be retried forever (a
-            # successful walk elsewhere resets the budget).
-            self._no_route_attempts += 1
-            if self._no_route_attempts > NO_ROUTE_DIRECT_SENDS:
-                self._move_reroll(state, target, pos)
-                return
-            self._note_move_gate("no_route_direct")
-            self.wire.move(*target)
-            self._pending_origin = "direct"
-            self._pending = (target, pos.seq, self._now(), 0)
-            return
+            return self._move_no_route(state, target, pos)
         if len(path) > 1:
+            return self._dispatch_path_step(state, target, path[1], grid, pos)
+        self._note_move_gate("single_cell_path")
+        return "single_cell_path"
+
+    def _move_no_route(
+        self, state: BotState, target: tuple[int, int], pos: ObservedPosition
+    ) -> str:
+        if self._occupied_west(state, target):
+            self._note_move_gate("occupied_west_no_route")
+            return "occupied_west_no_route"
+        # leg 28: the field warp cell (170,378) is unwalkable in the
+        # client grid, so the route died here and NO walk was ever sent —
+        # the server never moved the unit, the warp never fired, and the
+        # script re-authored the same MoveTo 97 times. The server
+        # path-finds its own side: send the walk DIRECTLY at the target
+        # (the spike clients always worked this way), paced on the same
+        # pending-walk lifecycle, capped on CONSECUTIVE no-route sends so
+        # a cell unreachable on both sides cannot be retried forever (a
+        # successful walk elsewhere resets the budget).
+        self._no_route_attempts += 1
+        if self._no_route_attempts > NO_ROUTE_DIRECT_SENDS:
+            return self._move_reroll(state, target, pos)
+        self._note_move_gate("no_route_direct")
+        self.wire.move(*target)
+        self._pending_origin = "direct"
+        self._pending = (target, pos.seq, self._now(), 0)
+        return "dispatched"
+
+    @staticmethod
+    def _occupied_west(state: BotState, point: tuple[int, int]) -> bool:
+        """Pinned clif.cpp rejects exactly one cell west onto a received body."""
+        return point == (state.x - 1, state.y) and (
+            point in state.occupied_cells
+            or any((actor.x, actor.y) == point for actor in state.nearby)
+        )
+
+    def _dispatch_path_step(
+        self,
+        state: BotState,
+        target: tuple[int, int],
+        point: tuple[int, int],
+        grid: WalkMap,
+        pos: ObservedPosition,
+    ) -> str:
+        reason = "dispatched"
+        if self._occupied_west(state, point):
+            try:
+                path = shortest_path(grid, (state.x, state.y), target, blocked_visible=(point,))
+            except NoRoute:
+                self._note_move_gate("occupied_west_no_route")
+                return "occupied_west_no_route"
             point = path[1]
-            self.wire.move(*point)
-            self._pending_origin = "step"
-            self._pending = (point, pos.seq, self._now(), 0)
-        else:
-            self._note_move_gate("single_cell_path")
+            reason = "occupied_west_rerouted"
+            self._note_move_gate(reason)
+        self.wire.move(*point)
+        self._pending_origin = "step"
+        self._pending = (point, pos.seq, self._now(), 0)
+        return reason
 
     def _move_reroll(
         self,
         state: BotState,
         target: tuple[int, int],
         pos: Any,
-    ) -> None:
+    ) -> str:
         """The exhausted target gets ONE walkable re-roll (leg 37 defect 2).
 
         The scripts author targets; the client grid is the walkability
@@ -2269,12 +2325,12 @@ class PlayingClient:
         if self.cache is None:
             self._note_move_gate("no_map_cache")
             self._fail_patrol(target)
-            return
+            return "no_map_cache"
         key = (state.map_name, target)
         if key in self._rerolled_moves:
             self._note_move_gate("rerolled_target_dead")
             self._fail_patrol(target)
-            return
+            return "rerolled_target_dead"
         alt = nearest_walkable(
             self.cache.get(state.map_name),
             target,
@@ -2288,8 +2344,7 @@ class PlayingClient:
             # position hands the verdict to the leg-69 server-reposition
             # seam (_escalated_dead_release), not to a silent stop.
             if (state.map_name, (state.x, state.y)) in self._deadlock_cells:
-                self._escalated_dead_release(state, target, pos)
-                return
+                return self._escalated_dead_release(state, target, pos)
             alt = nearest_walkable(
                 self.cache.get(state.map_name),
                 target,
@@ -2299,25 +2354,26 @@ class PlayingClient:
             if alt is None:
                 self._note_move_gate("target_unwalkable")
                 self._fail_patrol(target)
-                return
+                return "target_unwalkable"
             self._deadlock_cells.add((state.map_name, (state.x, state.y)))
             self._note_move_gate("target_unwalkable_escalated")
             self.wire.move(*alt)
             self._pending_origin = "escalated"
             self._pending = (alt, pos.seq, self._now(), 0)
-            return
+            return "dispatched"
         self._rerolled_moves[key] = alt
         self._note_move_gate("target_unwalkable_rerolled")
         self.wire.move(*alt)
         self._pending_origin = "rerolled"
         self._pending = (alt, pos.seq, self._now(), 0)
+        return "dispatched"
 
     def _escalated_dead_release(
         self,
         state: BotState,
         target: tuple[int, int],
         pos: Any,
-    ) -> None:
+    ) -> str:
         """The server-reposition seam (leg 69).
 
         The leg-39 latch stops the radius-12 escalation from re-firing at
@@ -2350,7 +2406,7 @@ class PlayingClient:
                 # the caller checked a moment ago; drift here is upstream
                 self._note_move_gate("no_map_cache")
                 self._fail_patrol(target)
-                return
+                return "no_map_cache"
             alt = nearest_walkable(
                 cache.get(state.map_name),
                 (state.x, state.y),
@@ -2363,9 +2419,10 @@ class PlayingClient:
                 self.wire.move(*alt)
                 self._pending_origin = "repositioned"
                 self._pending = (alt, pos.seq, self._now(), 0)
-                return
+                return "dispatched"
         self._note_move_gate("escalated_target_dead")
         self._fail_patrol(target)
+        return "escalated_target_dead"
 
     def mechanical_actions(
         self, state: BotState, actions: tuple[GameAction, ...]
@@ -3016,6 +3073,13 @@ class PlayingClient:
                 # zero-note receipt) - the note names the release WITH the
                 # walk class so the next receipt reads which walks died.
                 self._note_move_gate(f"walk_released_no_progress({self._pending_origin})")
+                # Retain until the next MoveTo perform: event draining can
+                # release this walk while the patient author is holding.
+                self._move_pending_release = {
+                    "pending_outcome": "pending-cancelled",
+                    "pending_reason": f"no_progress({self._pending_origin})",
+                    "pending_target": point,
+                }
                 self._pending = None
                 return False
             else:
@@ -3239,6 +3303,7 @@ class PlayingClient:
         self._npc_names.clear()
         self._metadata_cursor = base
         self._authenticated_baseline = False
+        self._move_pending_release = {}
         self._pending = None
         self._standing = None
         self._stand_pending = None
@@ -3292,6 +3357,7 @@ class PlayingClient:
         """Invalidate received map-scoped NPC, patrol and motion metadata."""
         self._npc.invalidate()
         self._npc_names.clear()
+        self._move_pending_release = {}
         self._patrol = None
         self._species.clear()
         self._pending = None
