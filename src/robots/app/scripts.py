@@ -801,7 +801,7 @@ def _merchant_engage(
         # adjacency-gated talk silently never fired (xXLunasongXx parked at
         # Chebyshev 2, MoveTo every tick, npc rows []). Field/town legs are
         # validated separately: a warp's trigger area must be ENTERED.
-        return _merchant_approach(state, destination, reachable)
+        return _merchant_approach(state, destination, reachable, travel_target)
     _DEALER_OCCUPANCY_TAPPED.pop(state.name, None)
     _DEALER_APPROACH_WALKS.pop(state.name, None)
     _DEALER_QUEUE_WAITS.pop(state.name, None)
@@ -839,10 +839,15 @@ def _wait_dealer_queue(
 
 
 def _merchant_approach(
-    state: BotState, destination: tuple[int, int], reachable: MerchantReachable | None
+    state: BotState,
+    destination: tuple[int, int],
+    reachable: MerchantReachable | None,
+    travel_target: MerchantTravelTarget | None = None,
 ) -> ScriptOutcome:
     """Local-perception allocation; a full dealer block waits for a vacancy."""
     walk_cell = _approach_cell(*destination, state, reachable=reachable)
+    if walk_cell is None and travel_target is not None:
+        walk_cell = travel_target(state.map_name, (state.x, state.y), destination)
     if walk_cell is not None:
         _DEALER_OCCUPANCY_TAPPED.pop(state.name, None)
         _DEALER_QUEUE_WAITS.pop(state.name, None)
@@ -852,6 +857,7 @@ def _merchant_approach(
     free = len(_free_approach_cells(*destination, state))
     detail = (
         f"free={free}/8 occupied={8 - free}/8 reachable=0/8 walkable_free=0/8 "
+        f"preferred_chebyshev<=1=unavailable "
         f"agent=({state.x},{state.y}) dealer=({destination[0]},{destination[1]})"
     )
     if _DEALER_OCCUPANCY_TAPPED.get(state.name) != detail:
@@ -1277,6 +1283,7 @@ def needs_npc_preparation(state: BotState) -> bool:
         and state.job == "Novice"
         and state.inventory_known
         and not state.inventory
+        and not state.merchant_returning
         and not received_instruction
     )
 
