@@ -60,6 +60,7 @@ from robots.adapters.native_shop_context import NativeShopContext
 from robots.adapters.native_skills import NativeSkillContext
 from robots.adapters.native_vitals import NativeTelemetryUnavailable, require_native_vitals
 from robots.app.merchant_buy_backoff import MerchantBuyBackoff
+from robots.app.merchant_staging import MerchantStaging, MerchantWarpCrossings, dealer_entry_cell
 from robots.app.npc_planning_execution import LocalNpcDispatch, NpcHostBinding, NpcUiObservation
 from robots.app.party_roster import guild_candidate_aid
 from robots.app.planning_execution import RestObservation
@@ -500,6 +501,8 @@ class PlayingClient:
 
     def connect(self, *args: Any, **kwargs: Any) -> Any:
         self._stop_keepalive_thread()
+        self._merchant_staging.release()
+        self._merchant_crossings = MerchantWarpCrossings()
         self._invalidate_self_slots()
         self._planning_session = object()
         self._capacity.invalidate()
@@ -805,6 +808,8 @@ class PlayingClient:
             recent_encounters=self._encounters.records if self._encounters is not None else (),
         )
         self._last_built_state = state
+        self._merchant_staging.observe(state)
+        self._merchant_crossings.observe(map_name, state.name)
         self._drain_retry_talk(state)
         return state
 
@@ -856,6 +861,8 @@ class PlayingClient:
         return self._merchant_returning
 
     def _init_merchant_navigation(self) -> None:
+        self._merchant_staging = MerchantStaging()
+        self._merchant_crossings = MerchantWarpCrossings()
         self.last_move_outcome: dict[str, object] = {}
         self._move_pending_release: dict[str, object] = {}
         self._merchant_paths: dict[tuple[str, tuple[int, int], tuple[int, int]], bool] = {}
@@ -863,6 +870,10 @@ class PlayingClient:
             {}
         )
         self._merchant_travel_holds: set[tuple[str, tuple[int, int]]] = set()
+
+    @property
+    def merchant_warp_crossings(self) -> int:
+        return self._merchant_crossings.count
 
     def merchant_reachable(
         self, map_name: str, position: tuple[int, int], cell: tuple[int, int]
@@ -901,6 +912,27 @@ class PlayingClient:
         must not re-arm a dead destination. Missing geometry retains the
         script's existing choice. No grid cells are invented or corrected.
         """
+        if (map_name, cell) == ("prontera", MERCHANT_ROUTE["prontera"]):
+            return self._staging_travel_target(map_name, position, cell)
+        self._merchant_staging.release()
+        return self._validated_travel_target(map_name, position, cell)
+
+    def _staging_travel_target(
+        self, map_name: str, position: tuple[int, int], cell: tuple[int, int]
+    ) -> tuple[int, int] | None:
+        state = self.last_built_state
+        if (
+            state is not None
+            and (state.map_name, state.x, state.y) == (map_name, *position)
+            and self.cache is not None
+            and map_name in self.cache.maps
+        ):
+            return self._merchant_staging.target(self.cache.get(map_name), state, self._now())
+        return self._validated_travel_target(map_name, position, cell)
+
+    def _validated_travel_target(
+        self, map_name: str, position: tuple[int, int], cell: tuple[int, int]
+    ) -> tuple[int, int] | None:
         key = (map_name, cell)
         if key not in self._merchant_travel_rerolls:
             if self.merchant_reachable(map_name, position, cell) is not False:
@@ -2242,11 +2274,33 @@ class PlayingClient:
         if not grid.walkable((state.x, state.y)):
             cache.mark_walkable(state.map_name, (state.x, state.y))
             self._note_move_gate("ground_corrected_own_cell")
+        if dealer_entry_cell(state.map_name, target):
+            return self._move_staging(state, target, grid, pos)
         try:
-            path = shortest_path(cache.get(state.map_name), (state.x, state.y), target)
+            path = shortest_path(grid, (state.x, state.y), target)
             self._no_route_attempts = 0
         except NoRoute:
             return self._move_no_route(state, target, pos)
+        return self._move_path(state, target, path, grid, pos)
+
+    def _move_staging(
+        self, state: BotState, target: tuple[int, int], grid: WalkMap, pos: ObservedPosition
+    ) -> str:
+        path = self._merchant_staging.path(grid, state, target)
+        if path is None:
+            self._note_move_gate("staging_occupied")
+            return "staging_occupied"
+        self._no_route_attempts = 0
+        return self._move_path(state, target, path, grid, pos)
+
+    def _move_path(
+        self,
+        state: BotState,
+        target: tuple[int, int],
+        path: tuple[tuple[int, int], ...],
+        grid: WalkMap,
+        pos: ObservedPosition,
+    ) -> str:
         if len(path) > 1:
             return self._dispatch_path_step(state, target, path[1], grid, pos)
         self._note_move_gate("single_cell_path")
@@ -2434,6 +2488,10 @@ class PlayingClient:
         npc_actions = self._npc_mechanical(state, actions)
         if npc_actions is not None:
             return npc_actions
+        # Empty MerchantDrive patience/queue ticks still own the outbound
+        # town leg. The old field-return fallback walked them into prt001.
+        if state.map_name == "prontera" and merchant_admission_refusal(state) is None:
+            return actions
         loot_actions = self._loot_mechanical(state, actions)
         if loot_actions is not None:
             return loot_actions

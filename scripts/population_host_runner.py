@@ -210,6 +210,7 @@ def main(argv: list[str] | None = None) -> int:
                     # the move-gate telemetry (w58, leg 38: the unwalkable
                     # deadlock + the ground correction must name themselves)
                     "move_gates": _reason_summary(getattr(client, "_move_gate_reasons", None)),
+                    "merchant_warp_crossings": getattr(client, "merchant_warp_crossings", None),
                     # The transport's own failure reason (leg 35: all seven
                     # agents froze because the rx thread died on an unknown
                     # packet - "unknown packet 0x0999" - and NOTHING in the

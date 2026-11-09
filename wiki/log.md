@@ -10683,3 +10683,105 @@ NAMED the stall); reading s00's +5z as a Clover-at-4z mismatch (sell price
 includes the overcharge column; the DB delta is the ground truth); touching
 the dealer-ring code (nothing in this leg's evidence points at the ring —
 every blocked agent was pre-dealer).
+
+## 2026-11-09 leg 81 prep — staging approach allocation, bounded dealer-entry bypass and named warp crossings
+
+**Evidence and scope.** Based on main `3f5f430f` and the leg-80 receipt
+`run/plain_host_receipts/population-receipt-80-1794229859.json` (see the
+leg-80 entry above). The live field→warp→prt_in→dealer→sell chain is already
+proven by s00; this change addresses the new south-gate congestion and
+NyxSong bounce without claiming another live traversal. Implementation branch:
+`leg81-staging-approach`. No merge, runner/probe launch, live-world edit,
+Docker action, heavengraph access, or `spikes/` formatting.
+
+**Allocation.** `MerchantStaging` reuses the existing dealer `_approach_cell`
+and `_free_approach_cells` helpers at the runtime travel-target seam for
+prontera `(177,221)`. It selects a free neighbour from this agent's received
+player/body cells, with a walkable, no-corner-cutting path on public geometry.
+The path also avoids received local blockers near the south gate, rather
+than validating only the distant endpoint. The runtime dispatch checks the
+same constraints again against its fresh received state; a newly sealed
+path names `staging_occupied` and sends nothing, with no blind fallback.
+Path memoization changes with position and occupancy. Vacancy releases a
+hold immediately; map, native epoch and session changes clear the hold.
+Allocation reads no other bot's memo and creates no shared reservations.
+Scripts retain their existing grid-free five-evaluation travel author
+patience, including across goal changes and script recreation.
+
+**Honest bounded hold.** A full or unreachable neighbour block returns an
+ACTIVE empty outcome and taps `hold staging_occupied` once per hold episode.
+After **900 monotonic seconds**, the agent may enter the dealer route through
+another independently reachable cell of the existing `prt05` trigger,
+naming `staging_hold_expired_direct_dealer` once. This is source-backed:
+`npc/warps/cities/prontera.txt:25` defines `(177,221)` as the actual entrance
+warp with inclusive radii `(2,2)` delivering to `prt_in (168,128)`. Its outer
+trigger cells can be free even while the eight immediate neighbours are
+occupied. There is no valid same-map MoveTo directly to the dealer's
+`prt_in (172,130)` coordinates from prontera. A sealed local cage still
+holds after expiry: time alone never authorizes an unreachable bypass.
+
+**Ping-pong diagnosis, not a cooldown hypothesis.** Read-only analysis of
+`.work/runtime/population-live/traces/pop_0003_g00m00.jsonl` from leg 80,
+13:30–15:00 UTC, found **385 trace map transitions**: 193 field→town and
+192 town→field, with no prt_in visit. These are observed trace transitions,
+not a retrospective count of raw wire warp packets. The goal reviews were
+96 farm_item→farm_item, one grind→grind and one grind→farm_item; repeated
+goal flips do not explain the bounce. There were 465 sampled MerchantDrive
+rows. At 13:35:50 UTC the admitted drive authored `(177,221)` from
+`(157,27)`; at 13:35:52 its empty patience tick was followed by a local
+`(156,26)` walk; at 13:35:56 `(154,24)` dispatched from `(155,25)`, followed
+by a received field row at 13:35:58 and town again at 13:36:00. The public
+`prt001` return trigger is x=153..159, y=20..24.
+
+The runtime's legacy mechanical fallback was treating the drive's empty
+patience/queue outcome as permission to walk home. A separate RED contract
+reproduced exactly that loss of ownership: without the guard, the empty
+merchant tick produced a field-return MoveTo. The runtime now preserves the
+admitted town drive through those empty ticks, and outbound staging paths
+avoid the public field-return trigger. Congestion and this competing return
+walk explain the observed bounce; changing a global cooldown is unwarranted.
+A passive **merchant_warp_crossings** receipt field counts only received
+prontera↔prt_fild08 edges on each agent's client/window, ignores repeated
+observations and unrelated map edges, and resets at connect. Four crossings
+name **merchant_warp_ping_pong** once so any residual recurrence is visible.
+No extra observe or send is performed for telemetry. The runner change is
+only the additive passive sample field; the runner was not launched.
+
+**TDD.** Initial RED: **13 failed, 2 passed**, `/tmp/leg81-red.log`.
+The strengthened mechanical-ownership RED is **1 failed**,
+`/tmp/leg81-mechanical-red.log`. Contracts cover distinct free choices for
+two agents, walkability, received player/body occupancy, saturation tap
+cadence, immediate vacancy release, five-evaluation author patience, expiry
+and independent dealer-entry reachability, sealed-block refusal, map/epoch
+and new-window reset, the public south-gate geometry, dispatch-time
+saturation, mechanical ownership/release, crossing counts, and the passive
+receipt field. Static checks include strict mypy on 368 files and xenon;
+no thresholds or exclusions were weakened.
+
+**Gate inputs.** The supplied worktree began at an unrelated initial commit;
+the clean task branch was based on the requested local main before edits.
+The rAthena checkout is the pinned `e985006171d2`, and the requested
+knowledge/config links were installed. The canonical iro-wiki link still
+points to itself (the existing leg-80 prep fact), so verification temporarily
+uses `/home/otto/dev/wt-mobpos/run/knowledge/iro-wiki/iro-wiki.db` and restores
+the requested canonical link afterward. No gate input or submodule change
+is included in the commit.
+
+Rejected: treating `(177,221)` as a mandatory separate destination; inventing
+a cross-map coordinate shortcut; hidden cross-agent reservations; blind
+sends after a staging veto; interpreting every empty merchant tick as idle;
+a hardcoded warp cooldown; attributing the bounce to repeated goal flips;
+claiming a new live sell; and unrelated dependency/live-world changes.
+
+**Full gate GREEN before commit.** The documented non-mutating gate,
+`nix --option auto-optimise-store false develop -c task --dir . check`,
+exited **0** on the completed source: **6,955 passed, 65 subtests passed,
+4 warnings, 95.52% coverage** (85% required), **270.00 seconds**. All **17**
+new staging/crossing contracts passed, together with all existing dealer,
+merchant, staging/travel/approach, runtime and post-sale contracts. Black,
+ruff, strict mypy (368 files), vulture, xenon, duplicate-code and bandit all
+passed. Transcript: `/tmp/leg81-gate-first.log`. The earlier focused run was
+152 passed before the two final window/completion tests were added. The
+canonical iro-wiki symlink was restored before commit. Source, tests,
+passive receipt field and this log entry are committed and pushed on the
+implementation branch for review only; no PR, merge or deployment.
