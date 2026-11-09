@@ -11022,3 +11022,81 @@ rows at 19:05/19:09/19:14/19:43); runner transcript
 (`/tmp/leg82_final.sql`). No gate run for this window commit (no code
 change); the standing gate figure 6,975+65/95.52% is from the
 economy-slices merge `34980fd4`.
+
+## 2026-11-09 leg 83 — the spend test failed at a NEW gate one layer ABOVE the weapon guard: the knife strip emptied zeny_wing's inventory and `needs_npc_preparation` (scripts.py:1279) held it in novice guidance all window — 218 TalkToNpc to the spawn-cell warp npc 110010229 (which can never deliver `instructions_received`), 0 MoveTo, 0 buy actions; sells continued (xXLunasongXx 73→76z, NyxSong 67→70z, both chebyshev-1 at the prt_in dealer, then correctly weapon_release-held)
+
+**Pre-window state (21:42-21:46).** Baseline verified against the seed
+before launch: char 300000-300006 zeny 67/113/115/61/73/40/125 — exact
+match, no seed fix needed. THE STRIP: `DELETE FROM inventory WHERE
+char_id=300002 AND nameid=1201` (zeny_wing's fixture knife, equip=2);
+verified the inventory EMPTY and zeny 115. Clean logless launch under
+`systemd-run --user --unit=leg83-runner` at 21:45:46 (duration 7200s),
+window Mon [22.0, 23.25] = 22:00-23:15 Madrid.
+
+**THE MECHANISM (why the spend never armed).** The strip achieved its
+direct purpose — zeny_wing holds no wanted weapon, so the leg-40
+`weapon_release` guard is out of its picture (no merchant line for it
+names that term) — but an empty inventory is ALSO the first clause of
+`needs_npc_preparation` (scripts.py:1279: Novice + `inventory_known` +
+`not state.inventory` + no instruction received + not returning). In
+`brain._step_goal_script` (brain.py:753-756) that gate returns
+`NpcGuidanceScript().step(state)` BEFORE `_sell_drive_rearm` (:758) is
+ever consulted, and `self._plan is None` in prontera (no spawns declared,
+no mobs observed — `_setup_farm_plan` authors nothing in a city). So the
+merchant drive's admission — which WOULD have admitted zeny_wing (Novice,
+`inv_known=True`, stock=0, no wanted weapon, zeny 115 ≥ floor 50,
+prontera on MERCHANT_ROUTE dest (177,221)) — was never even evaluated:
+no merchant-drive line for zeny_wing exists anywhere in the runner
+transcript. The loop then cannot self-clear: `NpcGuidanceScript.step`
+(scripts.py:1267) talks to `npcs[0]` — the NEAREST npc-kind actor, which
+at its spawn cell (156,25) is the warp `prtf004` (npc 110010229) at
+(156,26), Chebyshev 1 — and a warp never delivers
+`npc_instructions_received`, so `needs_npc_preparation` stays true
+forever. The NPC-close discipline closes each dialog (NpcClose x217) and
+the gate re-fires TalkToNpc x218, first action 21:00:08 UTC, last action
+22:14:52 UTC — the loop ran the entire 75-minute window. Receipt
+corroboration: npc_stage `opening` x45 and `blocked` x156 of 240 samples,
+71 decides, pos frozen at (156,25), 0 MoveTo.
+
+**VERDICTS.** (a) SPEND **FAIL** — zero hops past the guard fired:
+weapon_release GONE (the strip worked), but the drive admission never ran
+(held by `needs_npc_preparation` via brain.py:753), NpcShopBuySelection 0,
+MerchantDrive 0 (MoveTo 0 all window), dealer talk 0, C5 type 0 / C6 buy
+list / 0xCA purchase 0; DB truth: zeny 115→115, inventory stays empty, no
+1201 purchased. The full economy loop remains open at exactly this gate.
+(b) SELL **PASS** — two chebyshev-1 sells at the prt_in interior dealer:
+xXLunasongXx NpcShopSellOpen 21:23:43 → NpcShopSell 21:23:45 UTC (73→76z),
+NyxSong 21:25:22 → 21:25:24 (67→70z); both approaches converged live
+(out_of_range taps chebyshev 4→3→2→1 across (168,128)→(172,128)), and
+both sellers were then weapon_release-held in prt_in — the leg-40 guard
+working as designed on agents that still hold the fixture knife.
+PipinWalker (61z), RinceNyan (113z), PoringMuffin14 (40z, below floor),
+s00/YuffieFy81 (125z) unchanged. (c) RUN HEALTH **PASS** — 28,678 steps,
+0 step_errors, 0 TRANSPORT DOWN, 7/7 online through the window (150/150
+window samples each), clean staggered logoff at 23:15, runner exit clean
+at 7200s with the receipt written. Socials stayed live (NyxSong
+FoundGuild x1, GuildInvite x6, InviteToParty x2). (d) NEW SIGNATURE —
+the strip-guidance collision: `needs_npc_preparation`'s `not
+state.inventory` clause makes the weaponless-affordable state (the buy
+arm's exact precondition) indistinguishable from the un-prepared novice
+state, and in a town the gate is unresolvable because the nearest
+npc-kind actor is a warp that can never instruct. Leg-84 slice (TDD):
+exempt merchant-drive-admitted agents from the preparation gate — either
+consult `merchant_admission_refusal(state) is None` inside
+`needs_npc_preparation`, or move `_sell_drive_rearm` ABOVE the
+preparation return in brain.py:753 — and make NpcGuidanceScript never
+target warp-kind npcs (they can never deliver instructions). Note the
+same gate shape exists in `script_for` (scripts.py:1291) and
+`playing_runtime._npc_mechanical` (:2806) — fix all three consistently or
+name why not.
+
+**Evidence.** Receipt
+`run/plain_host_receipts/population-receipt-83-1794257145.json`; traces
+`.work/runtime/population-live/traces/pop_0003_*.jsonl` (UTC; zeny_wing
+window rows 1048 with TalkToNpc x218 / NpcClose x217 / MoveTo x0 and
+dialogue npc 110010229 x225; seller NpcShopSell rows 21:23:45 and
+21:25:24); runner transcript `/tmp/population_leg83.log` (8 distinct
+merchant-drive lines, none for zeny_wing); DB readback char 300000-300006
+zeny/positions/inventory via the e2e mariadb container. No gate run for
+this window commit (no code change); the standing gate figure is
+unchanged from the leg-83 seed commit `91af0c6a`.
