@@ -11428,3 +11428,65 @@ attempts but no inventory rows — loot success rate is the next refinement.
 a live field (kills/agent should scale from 1 to tens once attack authoring
 fires at field density), then loot-success rate and the s00 travel block.
 No code change this leg; no gate run (receipt + log only).
+
+## LEG-87 implementation — consecutive farm starvation and approach contracts (2026-11-10)
+
+Baseline: main `1bb04abf`, evidence
+`run/plain_host_receipts/population-receipt-86-1794294871.json` (30 attacks
+across six armed agents in 90 minutes; 1,598–2,631 MoveTos per agent).
+This is an offline implementation slice; no new population window, runner,
+probe, live-world or Docker operation was performed. No claim of increased
+live attack volume follows from these tests.
+
+**The proposed missing readback is already fixed at this baseline.**
+`_run_review` already passes the persisted `(frozenset(target_mobs), map)`
+streak to `FarmScript(initial_starved=...)`, and the leg-34 nonzero-injection
+test already passes. Do not reapply that historical fix or diagnose the
+leg-86 volume loss as proof that the readback is absent.
+
+**The remaining reset bug reproduced RED, then passed GREEN.** The old
+dictionary retained historical keys: target A → B → A (or map A → B → A)
+resurrected A's old streak even though the evaluations were no longer
+consecutive. Leaving farming, plan expiry and a new native session could
+also resurrect it. `_inherit_widen_streak` now checks the immediately
+previous plan before replacement; only the same target set and map inherit.
+`_sync_widen_streak` keeps only the current key. Intermediate plans reset
+even without a script step. Target ordering and new plan IDs do not reset;
+seeing the preferred species does. A new session's own legitimate new
+evaluations still accumulate.
+
+`tests/test_farm_reauthor_cadence.py` adds 18 offline cases. Against the
+unchanged baseline: **10 failed / 8 passed** (all failures are stale-streak
+resurrection); after the fix: **18 passed**. Heartbeat re-authoring every
+1, 5 or 19 steps reaches the widening threshold on evaluation 20. The
+9- and 14-cell approach cases use the real native runtime's incremental
+route sends, received walk acknowledgements and repeated heartbeat plans:
+the script reaches an adjacent cell, an in-flight walk names `pending_walk`
+and sends no swing, then a received stationary arrival releases the gate
+and sends the expected attack. No goal-script walkability filters, modes,
+targeting shortcuts or attack decision bypasses were added.
+
+**Loot-success refinement deferred: acknowledgement/refusal attribution.**
+The own-attack → received target death → received drop fixtures verify that
+both mechanical and explicitly authored pickups name an active threat
+(`pickup deferred (threat)`, floor item ID and nearest distance), and do not
+consume the pickup memo. They do not prove live drop ownership. At pinned
+rAthena `e985006171d2`, `clif_parse_TakeItem` (`src/map/clif.cpp:12006`)
+accepts shuffled `0x0362`; `pc_takeitem` (`src/map/pc.cpp:6197`) checks
+distance **2**, pickup permission and ownership/party priority, then awards
+inventory. Standing ON the drop is therefore not a server requirement;
+the current runtime's range 1 is already conservative. `0x009D` is floor
+appearance, not inventory confirmation. `clif_additem`
+(`src/map/clif.cpp:2838`) emits the pinned `0x0A37` pickup acknowledgement;
+`NativeGameplayTracker._pickup` consumes successful results into inventory
+and currently discards nonzero result codes. A follow-up slice should
+attribute those received refusals/absent acknowledgements to attempted
+pickups before changing range, retry or ownership policy. The leg-86
+own-kill inventory gap remains unexplained by this offline slice.
+
+**Pre-commit full gate GREEN:** `nix develop -c task --dir . check` —
+Black and mypy checked 372 files; Ruff, vulture, xenon, duplicate-code and
+Bandit passed. Pytest: **7,036 passed, 1 skipped, 65 subtests passed**, four
+warnings, **95.54% total coverage** (85% minimum), 263.75 seconds. Only
+`src/robots/app/brain.py`, the new regression module and this log changed;
+`spikes/` and the rAthena gitlink are unchanged.

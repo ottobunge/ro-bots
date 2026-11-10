@@ -515,17 +515,10 @@ class EventDrivenBrain:
         if self.is_recovering and self._choice(answers, "change_goal", "") == "keep":
             return [*reports, *self._coordination_review(state, answers, notes)]
         plan = self._setup_farm_plan(state, answers, notes) if self._wants_farming(goal) else None
+        streak = self._inherit_widen_streak(plan)
         self._plan = plan
         self._trace_plan(goal, plan, trigger)
         if plan is not None:
-            # Leg 34 (3776019f): the persistence half was orphaned — the
-            # streak was WRITTEN per (targets, map) but never READ back, so
-            # every re-author reset _starved to 0 and the widen threshold
-            # could never accumulate. Inject the recorded streak for the
-            # same key; a target change is a different key and resets
-            # honestly.
-            streak_key = (frozenset(plan.target_mobs), plan.map_name)
-            streak = int(getattr(self, "_widen_streaks", {}).get(streak_key, 0))
             self._script = FarmScript(
                 plan,
                 initial_starved=streak,
@@ -546,6 +539,25 @@ class EventDrivenBrain:
         review_actions.extend(self._coordination_review(state, answers, notes))
         self._accept_guild_policy(state, review_actions)
         return review_actions
+
+    def _inherit_widen_streak(self, plan: FarmPlan | None) -> int:
+        """Carry leg 34's streak only across consecutive same-target/map plans.
+
+        LEG-87: an old dictionary entry is not a consecutive streak after a
+        target/map change, a non-farming review, expiry or session reset.
+        Discard it even if the intermediate plan never gets a script step.
+        """
+        previous = self._plan
+        if (
+            plan is None
+            or previous is None
+            or frozenset(plan.target_mobs) != frozenset(previous.target_mobs)
+            or plan.map_name != previous.map_name
+        ):
+            self._widen_streaks: dict[tuple[frozenset[str], str], int] = {}
+            return 0
+        key = (frozenset(plan.target_mobs), plan.map_name)
+        return int(getattr(self, "_widen_streaks", {}).get(key, 0))
 
     def _accept_guild_policy(self, state: BotState, actions: list[GameAction]) -> None:
         """The guild invite accept rides the same group policy as the party
@@ -772,12 +784,10 @@ class EventDrivenBrain:
         return outcome
 
     def _sync_widen_streak(self) -> None:
-        """The widen streak sync (leg 34): the streak survives the plan
-        re-authoring, keyed by (target set, map)."""
+        """Persist the current consecutive streak, keyed by (target set, map)."""
         if isinstance(self._script, FarmScript) and self._plan is not None:
             key = (frozenset(self._plan.target_mobs), self._plan.map_name)
-            streaks = getattr(self, "_widen_streaks", {})
-            self._widen_streaks = {**streaks, key: self._script._starved}
+            self._widen_streaks = {key: self._script._starved}
 
     def _sell_drive_rearm(self, state: BotState) -> ScriptOutcome | None:
         """The sell-drive re-arm (leg 70): the want-driven dealer trip is
