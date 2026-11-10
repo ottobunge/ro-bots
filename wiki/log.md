@@ -11325,3 +11325,51 @@ transcript: `/tmp/leg85-full-gate-final.log`. The earlier
 statement-count and complexity findings were fixed before the complete
 final run. Canonical knowledge links were restored before commit. The
 implementation branch is pushed without merging.
+
+## Leg 85 — the spend re-test landed: the full economy loop is live population-wide (2026-11-10)
+
+Window Tue [1, 3.0, 4.25] = 03:00-04:15 Madrid, runner `leg85-runner` (systemd-run
+--user, 7200 s) on main 147409e3 with the buy-open adjacency merge (235669a7).
+Receipt: `run/plain_host_receipts/population-receipt-85-1794274225.json` —
+**28,562 steps, 0 step_errors, 0 rx_error, 0 dispatch_errors, 0 TRANSPORT DOWN**;
+all 7 agents online for the entire 149-sample window (03:00-04:15), decisions
+84-142 per agent. Seed staged exactly (fresh readback pre-launch matched
+70/113/115/64/76/40/125); zeny_wing logged out AT the dealer (prt_in 172,129).
+
+**THE SPEND LANDED — zeny_wing's decisive arc, 12 seconds login-to-purchase**
+(trace `pop_0003_g00m02.jsonl`, UTC): 02:00:08 `TalkToNpc 110001762`;
+02:00:10 ZC_SELECT_DEALTYPE (stage `unsupported_shop`) → **`NpcShopBuySelection`
+minted** (C5, epoch 1, prompt_sequence 69, opened_sequence 68) — the leg-84 gate
+is gone; the buy-open rides received adjacency like the sell-open; 02:00:12
+`NpcShopPurchase {item_id 1201, quantity 1, maximum_zeny 115}`; the 02:01:09
+state_tick reads **zeny 65** — exactly the Knife's 50 z. DB ground truth: char
+300002 zeny 115→65 mid-window, inventory row `1201, amount 1, equip=2`
+(EQP_HAND_R per pinned rathena mmo.hpp:340) — bought AND equipped.
+
+**Beyond the test subject: all six merchant-drive agents closed sell→buy→equip
+this window.** Sell arms landed live at the dealer corner: PipinWalker 64→71 z
+(02:18:28, prt_in 169,127), PoringMuffin14 40→43 z (02:17:40, prt_in 171,128),
+more sales behind `weapon_release` taps (zeny 79/91/116/70 ≥ floor 50,
+affordable=True). Final DB readback: every one of the six holds
+`1201, 1, equip=2`; zeny NyxSong 70→91, RinceNyan 113→116, zeny_wing 115→70
+(re-sold after the buy), PipinWalker 64→74, xXLunasongXx 76→79, PoringMuffin14
+40→46 — every merchant agent net-positive: sold loot, bought the weapon, kept
+the change. YuffieFy81 (s00) holds a knife that predates the window: seed zeny
+125 unchanged, 0 merchant_warp_crossings, no merchant arm rows — no in-window
+spend was possible (fixture knife INSERT 2b0f249e armed all 7 live chars on
+Oct 28; the solo's row survives while the six merchants demonstrably lacked
+weapons at window open — their buy arcs and zeny math prove absence).
+
+**Named taps observed live (no silent gates anywhere in the arc):**
+`dealer_talk_out_of_range` (chebyshev 2-4, agent/dealer cells named),
+`buy-open held by stage` (stage=opening/waiting, offer_bound=False —
+double-open prevention), `offer invalidated (purchase-ca-result)`
+(had_issued=True, had_offer=True), `weapon_release` (sell→buy handoff),
+`sell arm admitted` (map/dest/zeny/stock).
+
+**Verdict: the full economy loop — farm → loot → sell → BUY → equip — is
+closed and DB-verified for the whole merchant population.** Next leg: kills
+WITH the weapons (attack authoring at 1-cell melee range, the leg-34 limiters
+widen/approach), the loop then re-arms with weapon-accelerated farming; s00's
+idle-with-knife behavior in prontera (84 decides, no merchant arm) is worth a
+glance. No code change this leg; no gate run (receipt + log only).
