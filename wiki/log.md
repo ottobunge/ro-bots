@@ -11373,3 +11373,58 @@ WITH the weapons (attack authoring at 1-cell melee range, the leg-34 limiters
 widen/approach), the loop then re-arms with weapon-accelerated farming; s00's
 idle-with-knife behavior in prontera (84 decides, no merchant arm) is worth a
 glance. No code change this leg; no gate run (receipt + log only).
+
+## Leg 86 — ARMED KILLS LAND: three agents convert knife attacks to DB-verified kills (2026-11-10)
+
+Window Tue [1, 8.5, 10.0] = 08:30-10:00 Madrid (90 min), runner `leg86-runner`
+(systemd-run --user, 7800 s) on main 3900b297, seed staged exactly (fresh
+readback pre-launch matched 91/116/70/74/79/46/125 — no drift, no SQL).
+Receipt: `run/plain_host_receipts/population-receipt-86-1794294871.json` —
+**31,082 steps, 0 step_errors, 0 TRANSPORT DOWN, 0 PlayingBackendError**; all
+7 agents online the full window, decisions 99-157 each at full cadence.
+
+**(a) ARMED KILLS: YES — the loop repeats armed.** Exp deltas vs the pre-launch
+baseline decode EXACTLY against the pinned pre-re mob_db at 1x rates:
+PipinWalker +2/+1 = one Poring (BaseExp 2/JobExp 1), RinceNyan +2/+1 = one
+Poring, zeny_wing +2/+4 = one Drops (2/4) — three kills, one per agent,
+species-verified (no Lunatic 28/15 or Pupa 66/108 deltas present). The full
+chain is trace-verified for PipinWalker: 4 swings at gid 110183671
+(07:50:18-25 UTC, (181,356) prt_fild08) → kill → ItemDrop 909 Jellopy
+(07:50:27) + 512 Apple (07:50:29) → Loot attempts (07:50:29/31). 4 swings to
+kill a 50-HP Poring with the knife is the expected armed math. Field drops
+seen this window: 909 Jellopy, 512 Apple, 935 Clover (real drop tables;
+no 713/1002 rolled). Looted inventory ground truth: NyxSong holds 935 Clover
+x1, RinceNyan 909 Jellopy x1.
+
+**The hop to name is ATTACK AUTHORING VOLUME: 30 attacks / 6 armed agents /
+90 min** (leg 85 same-filter: 114; per-agent 1/5/20/4/0/0). Kill conversion
+when attacks fire is high (~1 kill per 5-10 knife swings), but the agents
+spend the window roaming — MoveTos 1,598-2,631 per agent (leg 85: 799-1,141)
+— and rarely reach the adjacent-cell attack state. The leg-34 widen/approach
+limiters remain the binding constraint, not the weapon.
+
+**(b) SUSTAINED: YES — the second economy cycle in one day.** xXLunasongXx
+79→82 z (sold its Jellopy 909; inventory clean after), PoringMuffin14 46→49 z
+(looted fresh stock mid-window — `sell arm admitted` 08:50 with stock=1 —
+then sold it). Two agents bank unsold stock for the next cycle (NyxSong 935,
+RinceNyan 909).
+
+**(c) run health: clean** (above). Every merchant tap named, no silent gates:
+`weapon_release` (s00 08:30: zeny=125 stock=0 has_stock=False), `sell arm
+admitted` (08:50), `dealer_talk_out_of_range` (09:27, chebyshev 2, agent
+(170,128) vs dealer (172,130) — recovered; the sale landed).
+
+**(d) new signatures:** (1) xXLunasongXx: 0 attacks / 40 Loot actions / 0
+MonsterSpotted — it roamed 174→248 x looting drops from the other agents'
+kills, almost all failed (inventory ended clean): opportunistic loot without
+ever spotting a mob. (2) s00 YuffieFy81: ~2,450 MoveTos toward the field
+travel target (156,22) while its position only jittered ±3 cells around
+prontera (284,223) — the travel never progressed, same stuck shape as leg 85;
+the solo never farmed (0 attacks, 0 exp, zeny 125 unchanged). (3) Pickup
+failure: PipinWalker's own-kill drops at adjacent cells produced Loot
+attempts but no inventory rows — loot success rate is the next refinement.
+
+**Next leg: attack authoring at density** — the widen/approach stack against
+a live field (kills/agent should scale from 1 to tens once attack authoring
+fires at field density), then loot-success rate and the s00 travel block.
+No code change this leg; no gate run (receipt + log only).
