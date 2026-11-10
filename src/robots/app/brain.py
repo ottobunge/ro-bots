@@ -18,6 +18,7 @@ from robots.adapters.chat_prompt import (
     should_send_chat,
 )
 from robots.app.escalation import EscalationPolicy
+from robots.app.field_travel import FieldTravel
 from robots.app.scripts import (
     MELEE_RANGE,
     REST_BREAK_HP_FLOOR,
@@ -131,6 +132,7 @@ class EventDrivenBrain:
         policy: EscalationPolicy | None = None,
         mob_db: MobDatabase | None = None,
         spawn_species: Any | None = None,
+        field_travel: FieldTravel | None = None,
         travel_resolver: Any | None = None,
         merchant_reachable: Any | None = None,
         merchant_travel_target: Any | None = None,
@@ -182,6 +184,7 @@ class EventDrivenBrain:
         self._plan_seq = 0
         self._mob_db: MobDatabase | None = mob_db
         self._spawn_species = spawn_species
+        self._field_travel = field_travel
         self._travel_resolver = travel_resolver
         self._merchant_reachable = merchant_reachable
         self._merchant_travel_target = merchant_travel_target
@@ -522,6 +525,7 @@ class EventDrivenBrain:
             self._script = FarmScript(
                 plan,
                 initial_starved=streak,
+                field_travel=self._field_travel,
                 travel_resolver=self._travel_resolver,
                 merchant_reachable=self._merchant_reachable,
                 merchant_travel_target=self._merchant_travel_target,
@@ -1137,6 +1141,8 @@ class EventDrivenBrain:
                 travel_resolver=self._travel_resolver,
                 merchant_reachable=self._merchant_reachable,
                 merchant_travel_target=self._merchant_travel_target,
+                allow_roam=self._field_travel is None
+                or bool(self._spawn_species and self._spawn_species(state.map_name)),
             )
         return script
 
@@ -1150,19 +1156,21 @@ class EventDrivenBrain:
             FARM_DURATION_S[1],
         )
         target = self._choice(answers, "farm_target", "")
-        mobs = list(self._mob_db.mobs_on_map(state.map_name)) if self._mob_db else []
-        targets = [target] if target in {m.name for m in mobs} else [m.name for m in mobs[:2]]
-        if not targets and self._spawn_species is not None:
-            # Criterion-10 knowledge: the declared species for this map are
-            # known BEFORE any observation. A mobless login patch must not
-            # leave the plan unauthored (the stand-and-wait deadlock, w59).
-            known = tuple(self._spawn_species(state.map_name))
-            targets = [target] if target in known else list(known[:2])
+        map_name = state.map_name
+        targets = self._farm_targets(map_name, target)
+        if not targets and not state.nearby_monsters:
+            destination = self._farm_destination(state)
+            if destination is not None:
+                map_name = destination
+                targets = self._farm_targets(map_name, target)
+                notes.append(f"travel: {state.map_name}->{map_name}")
         if not targets:
             return None
         plan = FarmPlan(
             plan_id=self._plan_seq,
-            map_name=self._coordination_map() or state.map_name,
+            map_name=(
+                map_name if map_name != state.map_name else self._coordination_map() or map_name
+            ),
             target_mobs=tuple(targets),
             duration_s=duration,
             interrupt_level_above=state.base_level,
@@ -1171,6 +1179,27 @@ class EventDrivenBrain:
             f"plan#{plan.plan_id}: farm {plan.target_mobs} for {plan.duration_s / 60:.0f}min"
         )
         return plan
+
+    def _farm_targets(self, map_name: str, target: str) -> list[str]:
+        """Observed species first, then declared spawns before any observation."""
+        mobs = list(self._mob_db.mobs_on_map(map_name)) if self._mob_db else []
+        known = [m.name for m in mobs]
+        if not known and self._spawn_species is not None:
+            known = list(self._spawn_species(map_name))
+        return [target] if target in known else known[:2]
+
+    def _farm_destination(self, state: BotState) -> str | None:
+        """Keep an underway destination stable; otherwise choose the nearest field."""
+        if self._field_travel is None:
+            return None
+        previous = self._plan
+        if (
+            previous is not None
+            and previous.map_name != state.map_name
+            and self._field_travel.route(state.map_name, state.x, state.y, previous.map_name)
+        ):
+            return previous.map_name
+        return self._field_travel.nearest(state.map_name, state.x, state.y)
 
     def _review_goal(
         self, state: BotState, answers: dict[str, Any], notes: list[str], *, actions_since: int = 0
