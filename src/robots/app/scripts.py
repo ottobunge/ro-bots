@@ -11,6 +11,7 @@ from collections.abc import Sequence
 from enum import Enum, auto
 from typing import TYPE_CHECKING, Protocol, assert_never, final
 
+from robots.app.field_travel import FieldTravel
 from robots.domain.actions import Attack, GameAction, MoveTo, Rest, TalkToNpc
 from robots.domain.farm import FarmPlan
 from robots.domain.model import ActorRef, Goal
@@ -1094,7 +1095,9 @@ class GrindScript:
         merchant_reachable: MerchantReachable | None = None,
         *,
         merchant_travel_target: MerchantTravelTarget | None = None,
+        allow_roam: bool = True,
     ) -> None:
+        self._allow_roam = allow_roam
         self._hp_rest_below = hp_rest_below
         self._commit_window = commit_window
         self._travel_plan = travel_plan
@@ -1123,6 +1126,8 @@ class GrindScript:
             leg = self._travel_leg(state, plan)
             if leg is not None:
                 return ScriptOutcome((MoveTo(x=leg[0], y=leg[1]),), ScriptStatus.ACTIVE)
+        if not self._allow_roam:
+            return ScriptOutcome((), ScriptStatus.ACTIVE)
         # w65-69 roam leg (mirrors FarmScript): an empty view must not
         # complete as DONE — the goal-grind agent would churn DONE forever
         # standing in a mobless patch. Patrol a bounded step instead.
@@ -1209,11 +1214,13 @@ class FarmScript:
         commit_window: int = KILL_COMMIT_WINDOW,
         initial_starved: int = 0,
         *,
+        field_travel: FieldTravel | None = None,
         travel_resolver: TravelResolver | None = None,
         merchant_reachable: MerchantReachable | None = None,
         merchant_travel_target: MerchantTravelTarget | None = None,
     ) -> None:
         self.plan = plan
+        self._field_travel = field_travel
         self._hp_rest_below = hp_rest_below
         self._widen_steps = widen_steps
         self._commit_window = commit_window
@@ -1232,6 +1239,20 @@ class FarmScript:
         )  # window-29: want-driven dealer trip
         if merchant is not None:
             return merchant
+        travel = self._travel_step(state)
+        if travel is not None:
+            return travel
+        return self._farm_step(state)
+
+    def _travel_step(self, state: BotState) -> ScriptOutcome | None:
+        """Travel without consuming starvation evaluations; hold if no route is known."""
+        if self._field_travel is None or state.map_name == self.plan.map_name:
+            return None
+        route = self._field_travel.route(state.map_name, state.x, state.y, self.plan.map_name)
+        actions = (MoveTo(route[0][1], route[0][2]),) if route else ()
+        return ScriptOutcome(actions, ScriptStatus.ACTIVE)
+
+    def _farm_step(self, state: BotState) -> ScriptOutcome:
         monsters = sorted(state.nearby_monsters, key=lambda a: a.distance)
         targets = [m for m in monsters if m.name in self.plan.target_mobs]
         if targets:

@@ -11539,3 +11539,52 @@ plan level. Operational notes: dealer-adjacency refusals named correctly by the
 `dealer_talk_out_of_range` tap (chebyshev=2) with re-approach; `sell arm admitted`
 and `weapon_release` taps fired; merchant congestion (leg-73 defect) did not recur
 with the six field agents. NO gate (receipt + log only; no code change).
+
+## LEG-88 implementation — leave a spawn-empty city for the nearest known field (2026-11-10)
+
+Baseline: main `848be8d5`; signature (d) in
+`run/plain_host_receipts/population-receipt-87-1794316483.json`: solo s00
+(YuffieFy81) remained in Prontera for 2,446 MoveTos, with zero attacks or
+experience. This slice is offline implementation and verification; it does
+not claim a new live traversal or increased live attack volume.
+
+The brain now authors the destination farm plan before travelling when both
+local target knowledge and observed monsters are absent. The public spawn
+index supplies candidate fields and target species; the structured local
+warp declarations (the same source as `route_hint`) supply their routes.
+Dijkstra ranks routes by summed Chebyshev walking distance plus one per
+warp, an explicit knowledge-level cost estimate rather than a server path
+length. The existing TravelRouter rejects doors in disconnected interiors;
+unknown geometry retains its existing fail-open semantics. There is no
+hard-coded destination: the nearest exit from east-central Prontera can
+lead to prt_fild06, while the southern test position selects prt_fild08.
+
+FarmScript follows the selected warp chain through the existing MoveTo
+runtime seam, after the merchant drive's existing priority. It resolves the
+next leg from each received position, keeps an underway destination stable
+across heartbeat reviews, and starts farming immediately on reaching the
+field without waiting for another decision or a first mob observation.
+Travel preserves the destination species and widen streak without counting
+travel steps as starvation evaluations. A city objective cannot overwrite
+the selected field and restore city roaming. Known fields retain their
+local ±8/±5 patrol steps; a missing field route holds instead of falling
+back to city roaming. Script code performs no grid queries, and
+playing_runtime's walkability veto and nearest-walkable re-roll are unchanged.
+The planner shares immutable public knowledge and geometry caches only;
+agent destinations remain in each brain's own plan, with no out-of-game
+coordination or census.
+
+TDD RED: four failures and one passing known-field regression before the
+implementation. GREEN contracts cover both farming goals, nearest route
+cost (including a cheaper multi-hop route), disconnected interiors,
+unknown/missing routes, observed monsters, destination stability, unchanged
+field roaming, immediate arrival farming, nonzero widen-streak carry,
+actual host composition, and the pinned spawn/warp/map-cache declarations.
+No runner/probe, live-world/Docker edit, heavengraph operation, or spikes/
+formatting was performed. The rAthena gitlink remains at the pinned revision.
+
+**Pre-commit full gate GREEN:** `nix develop -c task --dir . check` —
+Black and mypy checked 374 files; Ruff, vulture, xenon, duplicate-code and
+Bandit passed. Pytest: **7,050 passed, 1 skipped, 65 subtests passed**, four
+warnings, **95.57% total coverage** (85% minimum), 255.03 seconds. All 14
+LEG-88 regression cases pass. No unresolved gate or review rejection remains.

@@ -257,12 +257,17 @@ def mob_spawns(mob: str | int, *, limit: int = DEFAULT_ROWS) -> tuple[str, ...]:
     )
 
 
+def warp_edges() -> tuple[tuple[str, int, int, str, str, int, int], ...]:
+    """Structured local warp knowledge for travel planning (same source as hints)."""
+    return _warp_edges(str(rathena_path()))
+
+
 def route_hint(map_name: str, *, origin: str = "prontera") -> tuple[str, ...]:
     """One prontera-centered navigation line for a map, or () when unknown."""
     target = map_name.strip()
     if not target:
         return ()
-    edges = _warp_edges(str(rathena_path()))
+    edges = warp_edges()
     if not edges:
         return ()
     if target == origin:

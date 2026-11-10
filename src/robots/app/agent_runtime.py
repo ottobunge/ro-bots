@@ -55,6 +55,7 @@ from robots.adapters.native_vitals import (
 from robots.adapters.playing_backends import PlayingBackendError
 from robots.adapters.worldfeed_server import create_app
 from robots.app.brain import EventDrivenBrain, TickResult
+from robots.app.field_travel import FieldTravel
 from robots.app.host_commands import ChatRequest, HostChatCommands
 from robots.app.host_memory_factory import validate_summary_cache
 from robots.app.npc_planning_execution import NpcHostBinding
@@ -1642,6 +1643,7 @@ class AgentHost:
         client_factory: Any | None = None,
         mob_db_factory: Any | None = None,
         spawn_species_factory: Any | None = None,
+        field_travel: FieldTravel | None = None,
         travel_plan_factory: Any | None = None,
         world_state: WorldState | None = None,
         memory_root: Path | None = None,
@@ -1667,6 +1669,7 @@ class AgentHost:
         self.client_factory = client_factory
         self._mob_db_factory = mob_db_factory
         self._spawn_species_factory = spawn_species_factory
+        self._field_travel = field_travel
         self._travel_plan_factory = travel_plan_factory
         # Per-persona balance seeds (e2e-43: the login zeny is never sent);
         # resolved per agent in _build_agent (the ctor's complexity cap).
@@ -1806,6 +1809,7 @@ class AgentHost:
                             else None
                         ),
                         spawn_species=self._spawn_species_factory,
+                        field_travel=self._field_travel,
                         travel_resolver=self._travel_plan_factory,
                         wants=wants,
                         social_view=social_view,
