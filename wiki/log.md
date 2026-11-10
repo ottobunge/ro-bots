@@ -11180,3 +11180,67 @@ Final preparation sites: `src/robots/app/brain.py:753`,
 selection is `src/robots/app/scripts.py:1266`; received sprite projection
 is `src/robots/app/playing_runtime.py:3097`. Canonical knowledge links were
 restored before commit. The implementation branch is pushed without merging.
+
+
+## 2026-11-10 leg 84 window — the strip-guidance merge verified live through the dealtype; the buy open never minted (the C4→C5 hop is the remaining hold); the sell side closed again (PipinWalker 61→64z)
+
+Shepherd run of the strip re-test on the e2e world, launch 00:08 Madrid,
+systemd unit `leg84-runner`, window [1, 0.5, 2.0] with the leg-83 zeny
+baseline 70/113/115/61/76/40/125 (read back identical pre-launch; zeny_wing
+300002 still weaponless — no seed fix needed). Receipt:
+`run/plain_host_receipts/population-receipt-84-1794265660.json` — 28,691
+steps, 0 step errors, 0 TRANSPORT DOWN, 7/7 online at the staggered window
+open, 1,207 decides total (223/213/113/138/200/222/98), routine move gates
+only, no rx_error. `passed` is None (this receipt schema carries no
+engagement-floor verdict); health is read from the counters above.
+
+(a) SPEND: **FAILED — zeny_wing did not buy the knife** (final DB: no 1201
+row, zeny 115 flat, parked prt_in 172,129). The holding hop is now exactly
+named: the admitted buyer walked prontera (156,25)→the inn-door staging leg
+(`MERCHANT_ROUTE["prontera"]` 177,221, validated target 176,220, ~35 min at
+5.9 cells/min), warped prt_in 00:03:21 UTC, approached the dealer 110001762
+to Chebyshev 1, and **TalkToNpc 00:04:04 → ZC_SELECT_DEALTYPE received
+00:04:09 (stage `unsupported_shop`)** — the leg-83 guidance collision is
+gone and every hop up to the dealtype fired. The hold: **the C5 buy-open
+never minted** — `_shop_loop_mechanical` ran with no shop action already
+present, no `merchant-drive: buy give-up` and no `shop-debug: mint skipped`
+tap fired (that tap only logs with a bound offer, so the pre-offer silence
+is a blind spot), so `_buy_open_action` → `npc_shop_buy_selection` →
+`_shop_dialogue(now)` returned None every tick. `_shop_dialogue`'s conjunct
+set (`_npc_self_ready` standing/stand-pending/rest, `_npc.failed`,
+`cancel_uncertain`, requests<32, map identity) is the gate; the exact
+failing conjunct needs a next-leg instrument (a per-conjunct buy-open tap
+mirroring `_note_mint_skip` but firing before any offer exists). The
+dialogue then closed (`NpcClose` 00:04:25, 16 s after the C4, no reviewed
+`unsupported_shop` drive exists in `_dialogue_clear_drive`, and the
+admission tap never flipped to a refusal, so neither the buy give-up nor
+`_recover_idle_merchant` accounts for it — second open question), and the
+one-talk-per-contact latch (`_DEALER_TALKED`, cleared only when the dealer
+npc leaves view) kept the drive parked with empty actions for the rest of
+the window (113 decides, 0 further actions).
+
+(b) Guidance exclusion: **PASSED** — zero TalkToNpc-to-warp rows fleet-wide
+this window (leg 83: 218 by zeny_wing alone); zeny_wing's only npc contact
+was the dealer itself. The admission taps named the verdict for every
+agent: `admitted` (zeny_wing, buy arm), `weapon_release` (NyxSong,
+RinceNyan, xXLunasongXx, YuffieFy81 — each already holds the equipped
+fixture knife), `no_stock_below_zeny_floor` (PoringMuffin14, 40z), and the
+sell arm admitted PipinWalker (stock=1).
+
+(c) SELL side: **CLOSED again** — PipinWalker ran the full mechanical sell
+chain (TalkToNpc 00:16:52 → `NpcShopSellOpen` 00:16:57 → `NpcShopSell`
+00:16:59) for +3 z (61→64), DB-verified. Notably its sell-open minted fine
+while zeny_wing's buy-open did not 12 minutes earlier: `_sell_open_action`
+gates on stage+stock only, `_buy_open_action` additionally passes
+`_shop_dialogue` — the divergence confirms the gate sits in the buy path's
+dialogue-readiness read, not in the shared stage machine.
+
+(d) Fleet state: 6/7 chars hold the equipped 1201 (fixture knives;
+zeny_wing is the sole stripped buyer — the roster is now exactly the one
+weaponless affordable Novice the spend side needs); zeny flat elsewhere;
+field legs ground and traveled normally (PoringMuffin14/NyxSong/RinceNyan
+roamed prt_fild08; YuffieFy81 stayed idle-town at 282,214 under a refused
+drive). New signature for the next leg: the post-C4 dealer park (empty
+actions at Chebyshev 1 with stage `unsupported_shop`, no C5, no offer, no
+give-up tap) — instrument `_shop_dialogue` per conjunct, then re-run the
+spend test with the same roster.
