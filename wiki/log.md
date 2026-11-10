@@ -11588,3 +11588,58 @@ Black and mypy checked 374 files; Ruff, vulture, xenon, duplicate-code and
 Bandit passed. Pytest: **7,050 passed, 1 skipped, 65 subtests passed**, four
 warnings, **95.57% total coverage** (85% minimum), 255.03 seconds. All 14
 LEG-88 regression cases pass. No unresolved gate or review rejection remains.
+
+## Leg 88 (2026-11-10, window Tue 19:30-21:00 Madrid) — travel-from-knowledge-empty validated live: the s00 odyssey; the dealer sell-churn named
+
+Receipt: `run/plain_host_receipts/population-receipt-88-1794334610.json` (31,096 steps,
+0 errors, 0 TRANSPORT DOWN, 260 samples, decide cadence full: 94-245/agent, ~904 total,
+heavengraph :8091/:8092 healthy the whole window; runner `leg88-runner`, launched 19:16
+CET under `systemd-run --user`, exit 21:26 CET). Pre-launch: seed verified exactly vs a
+fresh DB readback (103/119/76/74/82/52/125 — no drift, no fix), no runner resident,
+backends healthy, real-shape decide probe 0.48s.
+
+**(a) TRAVEL — PASS for the solo, partial for the fleet.** s00 (YuffieFy81) executed the
+first full travel-from-knowledge-empty odyssey: farm_item plans targeting prt_fild06
+(the route-nearest known field) authored from spawn-knowledge-empty prontera at
+18:30:22; walked to the west exit; crossed prontera→prt_fild06 at 18:31:17 (27,193);
+walked across prt_fild06 for ~25 minutes; crossed prt_fild06→pay_fild04 at 18:56:57
+(206,175); farmed there immediately (131 attacks through 19:21, ≥1 kill: +2 base/+1
+job); kept walking east to (253,194) at close. 1,448 MoveTos, all real travel — the
+leg-87 ±1-cell jitter trap (2,446 no-op MoveTos) did not recur anywhere in the fleet.
+NyxSong's knowledge side also worked (farm_item plans targeting prt_fild08 authored
+continuously from 18:30:02, route walk 156,32→166,201), but at 19:02:11 the merchant
+drive diverted it into prt_in before the crossing (it holds one sellable Jellopy) and
+the dealer churn absorbed the rest of its window.
+
+**(b) FARMING — attacks hold in volume, collapse in distribution.** 232 attacks total
+(leg-87: 220): s00 131, PoringMuffin14 85, xXLunasongXx 9, PipinWalker 5, zeny_wing 2.
+All volume landed 18:31-19:33; after that every field agent stopped attacking — the
+driver is the loot leg: each field-side agent picked up exactly one sellable and the
+merchant drive took over, walking it to town. Kills DB-verified in five agents
+(fleet +14 base/+8 job): xXLunasongXx +5/+3, PoringMuffin14 +4/+2, PipinWalker +2/+1,
+s00 +2/+1, zeny_wing +1/+1. NyxSong and RinceNyan never attacked.
+
+**(c) ECONOMY — FAIL: zero sells, no fourth cycle.** All seven zeny ended exactly at
+seed (103/119/76/74/82/52/125). Five agents stood at the Weapon Dealer for the tail of
+the window; npc_stage repeatedly reached `unsupported_shop` (and cycled
+`opening`/`blocked`), but `shop_offer` never became non-null for any agent — the C7
+sell list never landed, so no sell chain step beyond the dialog stage executed. The
+leg-84/85-proven chain did not fire under this window's conditions.
+
+**(d) New signatures.** (1) DEALER SELL-CHURN: TalkToNpc→NpcClose epochs ~5 minutes
+apart (the bounded retry-epoch re-arm), e.g. RinceNyan 32 talks / 32 closes from
+18:37 to close, zeny flat throughout; the break sits between the C4 dealtype dialog
+and the C7 offer. (2) DEALER CONGESTION RECURRED (leg-73 defect): five agents parked
+around the dealer simultaneously and 359 named `dealer_talk_out_of_range` rejections
+(chebyshev=2) accumulated; the approach-cell allocation/queueing gap is now the
+binding constraint whenever several agents hold sellables. (3) MERCHANT-DRIVE
+DIVERSION: the sell arm outranks the travel arc — an agent mid-crossing to a known
+field abandons the crossing to attempt selling one item (NyxSong). Whether that
+precedence is right is a design decision for the next slice.
+
+Inventory ground truth (char DB): all seven hold the equipped knife (1201, equip=2);
+unsold sellables: 909 x1 on NyxSong/zeny_wing/xXLunasongXx, 705 x1 on RinceNyan, 512
+x1 on PipinWalker (a leg-85 leftover purchase). Final maps: five logged out in prt_in
+(dealer churn), PoringMuffin14 on prt_fild08 (66,302), s00 on pay_fild04 (253,194).
+Frontier: dealer approach-cell allocation/queueing, then the C4→C7 break diagnosis.
+NO gate (receipt + log only; no code change).
