@@ -11751,3 +11751,45 @@ duplicate-code and Bandit passed. Pytest: **7,061 passed, 1 skipped, 65 subtests
 passed**, four warnings, **95.58% total coverage** (85% minimum), 284.96 seconds.
 All eleven LEG-89 cases pass; final code was frozen throughout this gate.
 Gate transcript: `/tmp/leg89-final-gate.log`. No outstanding gate rejection.
+
+## Leg 89 (2026-11-10, window Tue 22:45-24:00 Madrid) — SELLS RESUME UNDER RETAINED PLANS: the dealer-ring persistence merge validated live
+
+Launch: systemd-run --user unit `leg89-runner`, duration 7200s, decision
+`http://192.168.1.156:8091/v1/systemone`, chat `:8092/v1/chat/completions`,
+schedule `[1, 22.75, 24.0]`, seed-zeny baseline 103/119/76/74/82/52/125
+verified against a fresh pre-launch DB readback (exact match, no seed fix
+needed). Runner exited DONE at t=7200 (~00:17 Wed): steps 28,219,
+step_errors 0, receipt `run/plain_host_receipts/population-receipt-89-1794345264.json`.
+
+**(a) SELL CHAIN: PASS.** All five dealer-staged sellers executed the complete
+chain in the first 20 seconds of the window (21:45:01-21:45:19 UTC): one
+`TalkToNpc` each -> next-tick `NpcShopSellOpen` (minted under the retained
+farm plan) -> `NpcShopSell`. Trace census across the whole window: exactly 5
+`TalkToNpc`, 5 `NpcShopSell`, zero dialogue churn rows, zero ~5min epochs —
+the leg-88 churn (retained-plan shop-loop starvation) is gone. DB zeny deltas
+vs baseline: NyxSong 103->106 (+3), RinceNyan 119->124 (+5), zeny_wing
+76->79 (+3), PipinWalker 74->84 (+10), xXLunasongXx 82->85 (+5); total +26z.
+
+**(b) DEALER RING: PASS.** The five sellers held distinct allocated cells at
+login (172,128 / 170,128 / 173,129 / 174,128 / 171,128 — dealer at 172,130),
+each chain completed in 2-6s with no chebyshev=2 parking storms and no
+collisions; zero retries (one talk per seller).
+
+**(c) FARMING: CONTINUED.** The two field-staged agents farmed the window:
+g01m02 (PoringMuffin14) dispatched 7 attacks and gained exp (+8 base/+3 job),
+s00 (YuffieFy81) dispatched 23 attacks on pay_fild04 (0 exp this leg; its
+attack_gates show `resting: 60` samples — it spent ~15 min in the rest
+latch). The five sellers traveled prontera->prt_fild08 after selling
+(`merchant_warp_crossings` 1-2 each) and reached the field cluster by ~23:50,
+so their farming time was short. Kills (exp deltas) landed in 4 agents:
+RinceNyan +1/+1, PipinWalker +4/+6, xXLunasongXx +3/+3, PoringMuffin14 +8/+3.
+
+**(d) RUN HEALTH: CLEAN.** All 7 agents online for every in-window sample
+(149/149), decides 161-440 per agent (2,743 total), clean logoffs at 24:00,
+window closed on schedule. Backend signature: 10 isolated single-tick
+`PlayingBackendError`s against :8091 (~22:53-23:05 burst, then none for the
+final hour) — the connect-resilience held (sessions kept, agents stepped
+through). Move-gate telemetry small (await_pending / walk_released 2-8 per
+agent) and not starving. Next-leg staging note: seed-zeny baseline for
+leg 90 should be 106/124/79/84/85/52/125 (this leg's final DB state);
+window Thu [3, ...] per the next shepherd's schedule.
