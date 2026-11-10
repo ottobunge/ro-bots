@@ -1092,12 +1092,15 @@ class ScheduledAgent:
     ) -> tuple[GameAction, ...]:
         if getattr(self.brain, "mechanical_fallback_allowed", True) is False:
             return actions
-        if getattr(self.brain, "current_plan", None) is not None:
-            # An authored plan owns the action stream; client-side mechanical
-            # fallbacks (novice exploration) must not override its actions.
-            return actions
         if getattr(self.brain, "is_recovering", False):
             return actions
+        if getattr(self.brain, "current_plan", None) is not None:
+            # MerchantDrive interrupts farming, so its receipt-bound exchange
+            # must still execute while that farm plan is retained. Skipping
+            # this limb left C4 unanswered until timeout closed/reopened it.
+            shop = getattr(self.client, "shop_actions", None)
+            exchange = shop(state, actions) if shop is not None else None
+            return cast(tuple[GameAction, ...], exchange) if exchange is not None else actions
         mechanical = getattr(self.client, "mechanical_actions", None)
         return (
             cast(tuple[GameAction, ...], mechanical(state, actions))

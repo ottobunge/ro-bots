@@ -8,7 +8,16 @@ from robots.domain.model import BotState
 
 logger = logging.getLogger(__name__)
 Point = tuple[int, int]
+Body = tuple[int, Point]
 STAGING_HOLD_SECONDS = 15 * 60
+
+
+def _ring_reachable(grid: WalkMap, origin: Point, cell: Point, blocked: set[Point]) -> bool:
+    try:
+        shortest_path(grid, origin, cell, blocked_visible=blocked - {origin})
+    except NoRoute:
+        return False
+    return True
 
 
 def _staging_blockers(grid: WalkMap, state: BotState) -> tuple[Point, ...]:
@@ -18,11 +27,59 @@ def _staging_blockers(grid: WalkMap, state: BotState) -> tuple[Point, ...]:
         for actor in state.nearby_players
         if actor.name != state.name and actor.x is not None and actor.y is not None
     )
-    # prontera.txt:24: prt001's inclusive 3x2 field-return trigger.
-    if state.map_name == "prontera":
-        occupied.update((x, y) for x in range(153, 160) for y in range(20, 25))
+    occupied.update(_static_blockers(state.map_name))
     occupied.discard((state.x, state.y))
     return tuple(sorted(point for point in occupied if grid.contains(point)))
+
+
+def _static_blockers(map_name: str) -> tuple[Point, ...]:
+    if map_name == "prontera":
+        # prontera.txt:24: prt001's inclusive 3x2 field-return trigger.
+        return tuple((x, y) for x in range(153, 160) for y in range(20, 25))
+    if map_name == "prt_in":
+        return (MERCHANT_ROUTE["prt_in"],)
+    return ()
+
+
+def _queue_cell(point: Point) -> bool:
+    x, y = MERCHANT_ROUTE["prt_in"]
+    return 2 <= max(abs(point[0] - x), abs(point[1] - y)) <= 4
+
+
+def _queue_origins(
+    position: Point, blocked: set[Point], own_id: int | None, bodies: tuple[Body, ...]
+) -> tuple[tuple[Point, bool], ...]:
+    if own_id is not None and bodies:
+        origins = {aid: p for aid, p in bodies if _queue_cell(p) or p == position}
+        origins[own_id] = position
+        return tuple((p, aid == own_id) for aid, p in sorted(origins.items()))
+    cells = {p for p in blocked if _queue_cell(p)} | {position}
+    return tuple((p, p == position) for p in sorted(cells))
+
+
+def _ring_allocation(
+    grid: WalkMap,
+    position: Point,
+    cells: set[Point],
+    blocked: set[Point],
+    origins: tuple[tuple[Point, bool], ...],
+) -> Point | None:
+    blocked.add(position)
+    for origin, is_self in origins:
+        candidates = sorted(
+            cells,
+            key=lambda p: (
+                max(abs(p[0] - origin[0]), abs(p[1] - origin[1])),
+                (p[0] - origin[0]) ** 2 + (p[1] - origin[1]) ** 2,
+                p,
+            ),
+        )
+        chosen = next((p for p in candidates if _ring_reachable(grid, origin, p, blocked)), None)
+        if is_self:
+            return chosen
+        if chosen is not None:
+            cells.remove(chosen)
+    return None
 
 
 def dealer_entry_cell(map_name: str, cell: Point) -> bool:
@@ -50,6 +107,7 @@ class MerchantStaging:
         self._path_context: tuple[object, ...] = ()
         self._paths: dict[Point, tuple[Point, ...] | None] = {}
         self._dealer_selection: Point | None = None
+        self._dealer_saturation: tuple[object, ...] | None = None
 
     def observe(self, state: BotState) -> None:
         identity = (state.name, state.map_name, state.native_epoch)
@@ -63,6 +121,7 @@ class MerchantStaging:
         self._path_context = ()
         self._paths.clear()
         self._dealer_selection = None
+        self._dealer_saturation = None
 
     def path(self, grid: WalkMap, state: BotState, cell: Point) -> tuple[Point, ...] | None:
         """Avoid received bodies AND the field-return trigger on an outbound walk."""
@@ -107,19 +166,23 @@ class MerchantStaging:
             return None
         return self._direct_dealer_entry(grid, state, destination)
 
-    def dealer_target(self, grid: WalkMap, state: BotState) -> Point | None:
+    def dealer_target(
+        self,
+        grid: WalkMap,
+        state: BotState,
+        *,
+        own_id: int | None = None,
+        bodies: tuple[Body, ...] = (),
+    ) -> Point | None:
         """Prefer talk-range cells; outer cells are an honest congestion queue."""
         self.observe(state)
         x, y = MERCHANT_ROUTE["prt_in"]
-
-        def reachable(map_name: str, position: Point, cell: Point) -> bool:
-            del map_name, position
-            return self.path(grid, state, cell) is not None
-
-        cell = _approach_cell(x, y, state, reachable=reachable)
+        cell = self._dealer_ring_target(grid, state, own_id, bodies)
         if cell is not None:
             self._dealer_selection = None
+            self._dealer_saturation = None
             return cell
+        self._note_ring_saturation(grid, state)
         cells = [
             (x + dx, y + dy)
             for dx in range(-4, 5)
@@ -144,6 +207,46 @@ class MerchantStaging:
             )
         self._dealer_selection = cell
         return cell
+
+    def _dealer_ring_target(
+        self, grid: WalkMap, state: BotState, own_id: int | None, bodies: tuple[Body, ...]
+    ) -> Point | None:
+        """Allocate from received bodies, never another client's private intent.
+
+        A body already in the ring owns that cell until received movement or
+        vanish releases it. Outside bodies within the approach area share a
+        deterministic cell matching, so two approaching sellers do not both
+        pick the nearest entrance. Type-0 bodies need no inferred identity,
+        inventory or out-of-game reservations. Received actor IDs break ties
+        even for overlapping bodies. Geometry remains runtime-owned.
+        """
+        x, y = MERCHANT_ROUTE["prt_in"]
+        position = (state.x, state.y)
+        blocked = set(_staging_blockers(grid, state))
+        cells = {cell for cell in _free_approach_cells(x, y, state) if grid.walkable(cell)}
+        # Own received presence is the stable allocation throughout dialogue.
+        if position in cells:
+            return position
+        origins = _queue_origins(position, blocked, own_id, bodies)
+        return _ring_allocation(grid, position, cells, blocked, origins)
+
+    def _note_ring_saturation(self, grid: WalkMap, state: BotState) -> None:
+        destination = MERCHANT_ROUTE["prt_in"]
+        free = _free_approach_cells(*destination, state)
+        detail = (tuple(sorted(free)), tuple(_staging_blockers(grid, state)))
+        if detail == self._dealer_saturation:
+            return
+        self._dealer_saturation = detail
+        logger.warning(
+            "merchant-drive: hold dealer_ring_saturated "
+            "(bot=%s free=%s/8 walkable_free=%s/8 "
+            "preferred_chebyshev<=1=unavailable agent=(%s,%s))",
+            state.name,
+            len(free),
+            sum(grid.walkable(cell) for cell in free),
+            state.x,
+            state.y,
+        )
 
     def _direct_dealer_entry(
         self, grid: WalkMap, state: BotState, destination: Point

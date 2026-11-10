@@ -11643,3 +11643,111 @@ x1 on PipinWalker (a leg-85 leftover purchase). Final maps: five logged out in p
 (dealer churn), PoringMuffin14 on prt_fild08 (66,302), s00 on pay_fild04 (253,194).
 Frontier: dealer approach-cell allocation/queueing, then the C4→C7 break diagnosis.
 NO gate (receipt + log only; no code change).
+
+## 2026-11-10 LEG-89 prep — dealer ring allocation and retained-plan shop-loop starvation
+
+Base `7703a9da`; implementation branch `t3/dealer-ring-dialogue-persistence`.
+Evidence: `run/plain_host_receipts/population-receipt-88-1794334610.json`,
+`.work/runtime/population-live/traces/pop_0003_*.jsonl` (18:30–20:00 UTC on
+2026-11-10), and the existing `/tmp/population_leg88.log`. Offline implementation
+only: no runner/probe, live-world/Docker edit, heavengraph access, `spikes/`
+formatting, PR or merge. Worktree knowledge DBs and `rathena/config.log` use the
+requested symlinks to the main checkout's inputs.
+
+**Named mechanism: retained-plan shop-loop starvation.** MerchantDrive can
+interrupt an authored farm plan, but `ScheduledAgent._script_actions` returned
+early whenever `brain.current_plan` existed. That skipped the *entire*
+`PlayingClient.mechanical_actions`, including the receipt-bound shop loop.
+Consequently the first valid C4 reached `unsupported_shop` while no C5 sell-open
+was ever minted. The dialogue's ordinary response deadline then expired;
+`EventDrivenBrain._dialogue_clear_drive` authored NpcClose for `blocked`, the
+runtime verified an honest timeout close, and `_rearm_closed_merchant` released
+the contact using the existing three-retry/five-minute-epoch budget. The re-arm
+reopened an unanswered exchange; it did not close a live exchange to re-path.
+
+Specific received/action evidence (line numbers in the existing trace files):
+
+- **RinceNyan, g00m01, (172,129):** line 204230 TalkToNpc at 18:36:45.513820;
+  204231 `opening` at 18:36:47.515013; 204234 `unsupported_shop` at
+  18:36:50.225681; 204236 NpcClose at 18:37:06.235812; 204238 TalkToNpc at
+  18:37:08.238022. The next C4 at 18:37:10 closes at 18:37:26, again without
+  any cell change. Line 204214 authored the retained 900-second `farm_item`
+  plan for `prt_fild06` at 18:36:03.481594.
+- **NyxSong, g00m00, (173,129):** line 183034 TalkToNpc at 19:02:56.139544;
+  183035 `opening` at 19:02:58.142159; 183038 `unsupported_shop` at
+  19:03:00.990633; 183039 NpcClose at 19:03:17.004317; 183041 TalkToNpc at
+  19:03:19.006369. Again the same received cell throughout C4 and close.
+  Line 183018 authored its retained 900-second `farm_item` plan for
+  `prt_fild08` at 19:02:22.091913.
+- **PipinWalker, g01m00, (173,130):** lines 241325–241333 show the same
+  TalkToNpc/opening/C4/timeout-close/re-talk sequence at
+  19:11:38/19:11:40/19:11:43/19:11:59/19:12:01 UTC.
+- **zeny_wing, g00m02:** no TalkToNpc, NpcClose or NpcDialogueReceived in this
+  window. It reaches (174,128), Chebyshev 2, with retained `prt_fild08` plans
+  (e.g. state_tick line 166843 at 19:59:42.725086). It is an approach-congestion
+  case, not a seller already holding C4. No NpcShopSellOpen or NpcShopSell
+  action appears for these agents in this window.
+
+The saved evidence rejects the proposed adjacency-loss / dropped-C5 /
+merchant-repath-close explanations for the stationary C4 sellers. Also,
+`BotState.shop_offer` reports the C6 **buy** offer; its null value alone cannot
+prove that a C7 sell list was absent. Here the unanswered C4, absent C5 actions,
+and the host guard together identify the missing sell-list request.
+
+**Fix sites.** `agent_runtime.py:1090` lets only the receipt-bound shop limb
+execute under a retained farm plan, via `PlayingClient.shop_actions` at
+`playing_runtime.py:2573`. Exploration/loot/patrol fallback ownership, opt-in
+planner exclusion, and recovery barriers retain their existing behavior. The
+same owner-bound mints and dispatch guards still require real C4/C7/C6 receipts;
+a plan, allocation or attempted open grants no sale or purchase authority.
+
+`scripts.py:850` now uses the injected runtime dealer target first instead of
+bypassing it whenever the pure nearest-neighbour helper found a candidate.
+`merchant_staging.py:60` matches locally received approach bodies to distinct
+walkable, free, reachable ring cells. Native type-0 bodies supply the allocation
+input even without named nearby players; no other bot's state/memo, inventory,
+identity inference or hidden reservation is consulted. Received actor IDs
+(`playing_runtime.py:3150`) break ties for overlapping native bodies without
+classifying them as sellers or querying their inventory. Existing bodies in the
+ring keep their own received cell (`merchant_staging.py:211`) until movement or
+vanish releases it. The dealer's occupied centre is excluded from paths.
+Saturation names `dealer_ring_saturated`, free/walkable counts and the
+Chebyshev-1 preference, then holds at an independently reachable outer cell.
+Received vacancies are reconsidered immediately. Allocation is local to each
+client's received visibility, not a claim of reservations for unseen actors.
+
+**TDD.** RED: four failures and three passes in the initial seven cases
+(`/tmp/leg89-red.log`): duplicate seller targets, absent named saturation, and
+two real-host retained-plan C4 failures. GREEN expands to eleven cases, including
+both named-player and native unnamed-body allocation, stable owned cells,
+saturation/vacancy handoff, and the actual ScheduledAgent path with a retained
+farm plan: one talk → C4 → next-tick C5 type 1 → real C7 → one C9 → successful CB,
+without a close or second talk. With C7 deliberately withheld, the same host
+path makes real C5 attempts, closes on genuine timeout, exhausts the existing
+retry budget, and holds for the remainder of its epoch. Existing leg-84/85
+contracts and fail-closed tests remain in the full gate. The cached-state setup
+in the older dealer-walkability wiring fixture now matches production's runtime
+snapshot contract. The wider merchant regression selection passed 159 cases.
+Two further overlap regressions first failed separately
+(`/tmp/leg89-overlap-red.log`, `/tmp/leg89-identity-red.log`), then passed:
+an already adjacent seller must own its runtime-allocated cell before its first
+talk, and two sellers overlapping on one received cell must receive distinct
+recovery targets. Received IDs resolve that tie; plain adjacency cannot bypass
+the runtime allocation. The 59-case allocation/staging selection is GREEN after
+these changes.
+
+Initial full-gate rejections (test typing, complexity and import formatting)
+were corrected without weakening the gate or changing its configuration.
+The first complete pytest run also rejected the uninitialized worktree rAthena
+submodule (37 missing-source failures and four native-layout fixture errors).
+Initialized a separate local checkout from the existing main checkout at the
+unchanged gitlink `e985006171d2eb320ee512a653f4c83aea3d81b6`, then restored the
+requested config-log symlink. No source substitution, test skip or live-world
+change was used to address the missing offline inputs.
+
+**Pre-commit final full gate GREEN:** `nix develop -c task --dir . check` —
+Black left 375 files unchanged; Ruff, strict mypy (375 files), vulture, xenon,
+duplicate-code and Bandit passed. Pytest: **7,061 passed, 1 skipped, 65 subtests
+passed**, four warnings, **95.58% total coverage** (85% minimum), 284.96 seconds.
+All eleven LEG-89 cases pass; final code was frozen throughout this gate.
+Gate transcript: `/tmp/leg89-final-gate.log`. No outstanding gate rejection.
