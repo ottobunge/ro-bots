@@ -74,6 +74,7 @@ from robots.app.scripts import (
     merchant_admission_refusal,
     needs_npc_preparation,
     novice_weapon_index,
+    release_merchant_talk,
     shop_affordable_weapon,
     shop_sell_entries,
     shop_sellable_stock,
@@ -288,6 +289,7 @@ class PlayingClient:
     npc_recovery_hold = False
     mechanical_recovery_allowed = True
     _npc_retry_epoch_at: float | None = None
+    _merchant_reopen: int | None = None
     _merchant_returning = False
     _respawn_retry_at = 0.0
     # consecutive NoRoute direct-walk sends (class default; instance shadow
@@ -1076,6 +1078,8 @@ class PlayingClient:
         self._retry_talk = None
         self._shop_selection = None
         self._merchant_returning = merchant_admission_refusal(state) is not None
+        if not self._merchant_returning:
+            self._merchant_reopen = dialog.npc_id
         return True
 
     def _timeout_close_ready(self, state: BotState) -> bool:
@@ -1113,16 +1117,8 @@ class PlayingClient:
             or self._shop_context.offer is not None
         ):
             return
-        started = self._npc_retry_epoch_at
-        if started is None:
-            self._npc_retry_epoch_at = now
-        elif now >= started + NPC_RETRY_EPOCH_S:
-            self._npc_retry_epoch_at = now
-            self._npc_retries = NPC_RETRY_BUDGET
-        if self._npc_retries <= 0 or now < self._npc_retry_at:
+        if not self._take_npc_retry(now):
             return
-        self._npc_retries -= 1
-        self._npc_retry_at = now + NPC_RETRY_CADENCE_S
         raw = self._npc.begin(
             view.npc_id,
             self.wire.native_epoch,
@@ -1131,6 +1127,22 @@ class PlayingClient:
             now,
         )
         self._send_npc(raw)
+
+    def _take_npc_retry(self, now: float) -> bool:
+        """Share pacing and epoch limits across timeout retries and closed contacts."""
+        if not _finite_npc_time(now):
+            return False
+        started = self._npc_retry_epoch_at
+        if started is None:
+            self._npc_retry_epoch_at = now
+        elif now >= started + NPC_RETRY_EPOCH_S:
+            self._npc_retry_epoch_at = now
+            self._npc_retries = NPC_RETRY_BUDGET
+        if self._npc_retries <= 0 or now < self._npc_retry_at:
+            return False
+        self._npc_retries -= 1
+        self._npc_retry_at = now + NPC_RETRY_CADENCE_S
+        return True
 
     def _note_attack_gate(self, reason: str) -> None:
         """Bounded gate-reason telemetry: WHY an authored Attack sent nothing.
@@ -1551,6 +1563,8 @@ class PlayingClient:
         any remaining gate. Bounded to the mint window (a bound offer -
         without one no mint was pending); fails open, never behavior."""
         if self._shop_context.offer is None:
+            if self._npc.view is not None:
+                self._note_buy_open_hold(term)
             return
         logger.warning(
             "shop-debug: mint skipped by %s (alive=%r npc_failed=%s"
@@ -1612,7 +1626,10 @@ class PlayingClient:
         dialog = self._npc.view
         if dialog is None or dialog.stage != "unsupported_shop":
             return None
-        if self._sell_open_issued == (dialog.opened_sequence, dialog.sequence):
+        if (dialog.opened_sequence, dialog.sequence) in (
+            self._sell_open_issued,
+            self._buy_open_issued,
+        ):
             return None
         if shop_sellable_stock(tracker.view.inventory_counts) <= 0:
             return None
@@ -1631,9 +1648,16 @@ class PlayingClient:
 
     def _buy_open_action(self) -> NpcShopBuySelection | None:
         dialog = self._npc.view
-        if dialog is None or dialog.stage != "unsupported_shop":
+        if dialog is None:
             return None
-        if self._buy_open_issued == (dialog.opened_sequence, dialog.sequence):
+        if dialog.stage != "unsupported_shop":
+            self._note_buy_open_hold("stage")
+            return None
+        if (dialog.opened_sequence, dialog.sequence) in (
+            self._buy_open_issued,
+            self._sell_open_issued,
+        ):
+            self._note_buy_open_hold("open_issued")
             return None
         selection = self.npc_shop_buy_selection()
         if selection is not None:
@@ -1804,29 +1828,63 @@ class PlayingClient:
         self._shop_context.check(self._npc.view, ready, now, context_ok=context_ok)
 
     def _shop_dialogue(self, now: float) -> NpcDialogue | None:
-        if not all(
-            _finite_npc_time(v) for v in (now, self._npc.deadline, self._npc.absolute_deadline)
-        ):
-            return None
+        clocks = (
+            ("now", now),
+            ("deadline", self._npc.deadline),
+            ("absolute_deadline", self._npc.absolute_deadline),
+        )
+        for term, value in clocks:
+            if not _finite_npc_time(value):
+                self._note_buy_open_hold(term)
+                return None
         try:
             view = self._planning_npc_view(now)
         except NativeTelemetryUnavailable:
+            self._note_buy_open_hold("native_telemetry")
             return None
         dialog = self._npc.view
-        if dialog is None or not self._npc_self_ready(view, self._epoch_character, self._epoch):
+        if dialog is None:
+            self._note_buy_open_hold("dialogue")
             return None
-        return (
-            dialog
-            if all(
-                (
-                    dialog.stage == "unsupported_shop",
-                    not self._npc.failed,
-                    not self._npc.cancel_uncertain,
-                    self._npc.requests < 32,
-                    dialog.map_name == self._planning_npc_map_identity(view),
-                )
-            )
-            else None
+        refusal = self._buy_open_refusal(view, dialog)
+        if refusal is not None:
+            self._note_buy_open_hold(refusal)
+            return None
+        return dialog
+
+    def _buy_open_refusal(self, view: NativeGameplayView, dialog: NpcDialogue) -> str | None:
+        # C4 precedes C5 and C6: opening needs the current talk and the same
+        # received adjacency as sell-open, never an offer or walk-arrival proof.
+        # Keep the purchase's stricter received-offer admission unchanged.
+        terms = (
+            ("character", self.wire.char_name == self._epoch_character),
+            ("epoch", self.wire.native_epoch == self._epoch == dialog.epoch),
+            ("alive", self._life(view) is True),
+            ("standing", self._standing is True),
+            ("stand_pending", self._stand_pending is None),
+            ("rest", self._rest_seq is None),
+            ("pending_walk", self._pending is None),
+            ("npc_failed", not self._npc.failed),
+            ("cancel_uncertain", not self._npc.cancel_uncertain),
+            ("requests", self._npc.requests < 32),
+            ("stage", dialog.stage == "unsupported_shop"),
+            ("map_identity", dialog.map_name == self._planning_npc_map_identity(view)),
+            (
+                "dealer_adjacent",
+                self._tracker is not None and self._dealer_adjacent(self._tracker, dialog.npc_id),
+            ),
+        )
+        return next((name for name, ready in terms if not ready), None)
+
+    def _note_buy_open_hold(self, term: str) -> None:
+        dialog = self._npc.view
+        logger.warning(
+            "shop-debug: buy-open held by %s (stage=%s dealer=%s requests=%s offer_bound=%s)",
+            term,
+            dialog.stage if dialog is not None else None,
+            dialog.npc_id if dialog is not None else None,
+            self._npc.requests,
+            self._shop_context.offer is not None,
         )
 
     def _respond_npc(self, action: NpcRespond) -> None:
@@ -2898,8 +2956,32 @@ class PlayingClient:
     def _pump_recovery(self, state: BotState) -> None:
         if self.mechanical_recovery_allowed:
             self._recover_idle_merchant(state)
+            self._rearm_closed_merchant(state)
             self._recover_dead_self(state)
         self._keepalive()
+
+    def _rearm_closed_merchant(self, state: BotState) -> None:
+        """A verified timeout close releases one contact per shared retry token."""
+        npc_id = self._merchant_reopen
+        if npc_id is None or self.npc_recovery_hold:
+            return
+        if merchant_admission_refusal(state) is not None:
+            self._merchant_reopen = None
+            return
+        if not all(
+            (
+                self._npc.view is None,
+                not self._npc.failed,
+                not self._npc.cancel_uncertain,
+                self._shop_context.offer is None,
+                self._tracker is not None and self._sell_actuation_ready(self._tracker.view),
+                self._pending is None,
+            )
+        ):
+            return
+        if self._take_npc_retry(self._now()):
+            self._merchant_reopen = None
+            release_merchant_talk(state.name, npc_id)
 
     def _recover_idle_merchant(self, state: BotState) -> None:
         """A refused dealer trip closes on the host pump, even under social goals."""
@@ -3348,6 +3430,7 @@ class PlayingClient:
         self._npc = NativeNpcDialogue()
         self._npc_retries, self._npc_retry_at = NPC_RETRY_BUDGET, 0.0
         self._npc_retry_epoch_at = None
+        self._merchant_reopen = None
         self._merchant_returning = False
         self._respawn_retry_at = 0.0
         self._shop_context = NativeShopContext()
