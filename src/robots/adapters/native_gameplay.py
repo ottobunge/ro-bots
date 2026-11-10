@@ -223,6 +223,19 @@ class ObservedPickup:
 
 
 @dataclass(frozen=True)
+class ObservedPickupAck:
+    """Raw ZC_ITEM_PICKUP_ACK verdict; failures need not contain an item."""
+
+    seq: int
+    at: float
+    inventory_index: int
+    item_id: int
+    amount: int
+    raw_result: int
+    success: bool
+
+
+@dataclass(frozen=True)
 class ObservedDamage:
     seq: int
     at: float
@@ -355,6 +368,7 @@ class NativeGameplayView:
     stat_acks: tuple[ObservedStatAck, ...]
     skill_uses: tuple[ObservedSkillUse, ...] = ()
     zeny: int | None = None
+    pickup_acks: tuple[ObservedPickupAck, ...] = ()
 
 
 def _position(raw: bytes, offset: int, seq: int, at: float) -> ObservedPosition:
@@ -377,6 +391,7 @@ class NativeGameplayTracker:
         self._inventory: dict[int, tuple[int, int]] = {}
         self._acquired: dict[int, int] = {}
         self._pickups: deque[ObservedPickup] = deque(maxlen=MAX_EVENTS)
+        self._pickup_acks: deque[ObservedPickupAck] = deque(maxlen=MAX_EVENTS)
         self._position: ObservedPosition | None = None
         self._map_name: str | None = None
         self._arrival = False
@@ -459,6 +474,7 @@ class NativeGameplayTracker:
             tuple(self._stat_acks),
             tuple(self._skill_uses),
             self._zeny,
+            tuple(self._pickup_acks),
         )
 
     def consume_snapshot(
@@ -603,9 +619,10 @@ class NativeGameplayTracker:
         )
 
     def _pickup(self, seq: int, at: float, raw: bytes) -> None:
-        if raw[24] != 0:
-            return
         index, amount, item = struct.unpack_from("<HhH", raw, 2)
+        if raw[24] != 0:
+            self._pickup_ack(seq, at, index, item, amount, result=raw[24])
+            return
         error = "Successful pickup requires positive signed amount"
         previous = self._inventory.get(index, (item, 0))
         if amount <= 0 or previous[0] != item:
@@ -617,6 +634,14 @@ class NativeGameplayTracker:
         self._inventory[index] = (item, previous[1] + amount)
         self._acquired[item] = self._acquired.get(item, 0) + amount
         self._pickups.append(ObservedPickup(seq, at, index, item, amount))
+        self._pickup_ack(seq, at, index, item, amount, result=0)
+
+    def _pickup_ack(
+        self, seq: int, at: float, index: int, item: int, amount: int, *, result: int
+    ) -> None:
+        self._pickup_acks.append(
+            ObservedPickupAck(seq, at, index, item, amount, result, result == 0)
+        )
 
     def _actor(self, seq: int, at: float, raw: bytes) -> None:
         p = parse_actor_presentation(raw)

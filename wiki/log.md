@@ -11793,3 +11793,82 @@ through). Move-gate telemetry small (await_pending / walk_released 2-8 per
 agent) and not starving. Next-leg staging note: seed-zeny baseline for
 leg 90 should be 106/124/79/84/85/52/125 (this leg's final DB state);
 window Thu [3, ...] per the next shepherd's schedule.
+
+## LEG-90 implementation (2026-11-11) — loot success attribution and standing pickup barrier
+
+Evidence pointers: `run/plain_host_receipts/population-receipt-88-1794334610.json`
+(the looting evidence window: 31,096 steps, zero step errors), and
+`run/plain_host_receipts/population-receipt-89-1794345264.json` (28,219 steps,
+zero step errors; the retained-plan sell-chain fix is already landed).
+The earlier windows establish received drops and dispatched Loot intents without
+matching inventory conversion; this slice adds the missing per-attempt verdict.
+It is offline implementation evidence, not a new live-world success claim.
+
+**Dominant code-path cause:** premature pickup against the tracked walk
+**destination**, before the agent has a standing cell there. The tracker correctly
+keeps moving 0x0087 destinations for navigation, but the old `_loot` send seam
+skipped the pending-walk/standing barrier used by attacks and irreversibly spent
+the drop's attempt memo. A second bug checked range only for the first candidate;
+after skipping that already-tried item the loop could send for a farther drop
+without checking its distance. Failed 0x0A37 frames were discarded by the tracker,
+so neither failure was attributable in the receipt. The pinned server permits
+radius 2 (`pc.cpp:6197`); walking itself is not a unique server refusal reason.
+`clif_parse_TakeItem` (`clif.cpp:12006-12034`) returns generic reason 6 for stale
+IDs, wrong map, inability to act, and `pc_takeitem` failures, including range and
+loot protection. Historical reason-6 causes cannot be separated retrospectively.
+
+**Fix:** `_loot_mechanical` remains the runtime priority owner (the former
+`_loot_first` was already folded into it), with `_loot` the shared mechanical and
+decider send seam. Both require standing, no rest latch/pending walk, a fresh
+received standing cell, and Chebyshev distance <=2 for the selected drop.
+Normal walk completion has no terminal ack (`unit.cpp:749` passes sendMove=false),
+so passive waiting for a zero-length walkok was rejected: after pending release,
+the runtime requests its received allocated cell, eliciting the server's
+same-cell confirmation (`unit.cpp:187-192`). At most two confirmation requests
+per drop presence use the existing pending-walk pacing; missing confirmation
+fails closed. All actual movement sends invalidate loot's standing-cell barrier.
+Named deferrals include pending_walk, walking, awaiting_walk_arrival,
+not_standing, resting, out_of_range, awaiting_pickup_ack, and
+arrival_confirmation_exhausted. A vanished target names no_floor_item.
+
+The tracker retains a bounded 0x0A37 tail with success and the unmodified result
+byte, without turning a failed ack into acquired inventory. `LootAttribution`
+records attempted/succeeded/refused-by-server rows with floor ID, received drop
+sequence, item, attempt number, ack sequence/time, result code and send context.
+The ack has no floor ID: one outstanding pickup is allowed, and success must
+match the expected item and amount. Unsolicited or mismatched acquisitions do
+not confirm loot. One pickup attempt is allowed per received drop-presence
+epoch; failures cannot retry even after a long clock advance. New received
+presence sequences handle ID reuse even when vanish and re-entry share one
+snapshot. Map/session boundaries clear attempts and mark an outstanding request
+unconfirmed. A missing pickup ack conservatively holds the attribution lane
+until such a boundary. JSONL loot_performed rows drain cached receipts after
+perform and on ticks independently of state_tick throttling; no observing read
+is added by tracing. Runtime telemetry retains a detached bounded receipt tail.
+Scripts remain grid-free and unchanged; coordination uses only this client's
+received in-game state. The 0x0362 fixed-six encoder and packetdb are unchanged.
+
+**TDD:** initial RED: 19 failed / 1 passed (`/tmp/leg90-red.log`); two additional
+self-review regressions were RED (`/tmp/leg90-review-red.log`): rest-latch
+confirmation movement and unnamed vanished-drop intent. Final focused GREEN:
+52 passed, including all 27 new LEG-90 cases (`/tmp/leg90-final-selection.log`).
+The broader native gameplay/rest/trace selection passed 183 cases before the
+additional boundary regressions. Existing walking-arrival fixtures now supply
+an actual zero-length receipt; the reused-ID fixture includes the prior server
+verdict so it does not overlap outstanding uncorrelated requests.
+Initial gate rejection: xenon found `_loot_ready` at rank C; split the motion
+and received-arrival checks without changing gate settings. Fixture errors
+(wrong synthetic ack amount/index and a fake wire crossing its keepalive
+interval) were corrected. No runners/probes, live-world/Docker edits,
+heavengraph access, or spikes/ formatting were performed. Offline rAthena inputs
+use a separate local checkout of the unchanged pinned gitlink e985006171d2;
+knowledge DBs and config.log use the requested symlinks.
+
+**Pre-commit final full gate GREEN:** `nix develop -c task --dir . check` —
+Black checked 377 files; Ruff, strict mypy (377 files), vulture, xenon,
+duplicate-code and Bandit passed. Pytest: **7,088 passed, 1 skipped,
+65 subtests passed**, four warnings, **95.84% total coverage** (85% minimum),
+288.61 seconds. Final runtime/test code stayed frozen throughout this gate;
+only this results paragraph was appended afterwards. Gate transcript:
+`/tmp/leg90-final-gate.log`. No outstanding gate rejection. Branch:
+`t3/loot-success-attribution`, based on main `9b7a3f2fa2b0`.

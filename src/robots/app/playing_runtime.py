@@ -29,6 +29,7 @@ from robots.adapters.native_gameplay import (
     NativeGameplayTracker,
     NativeGameplayView,
     ObservedDamage,
+    ObservedFloorItem,
     ObservedPosition,
     ObservedSkillUse,
     ObservedXP,
@@ -59,6 +60,7 @@ from robots.adapters.native_session_progression import (
 from robots.adapters.native_shop_context import NativeShopContext
 from robots.adapters.native_skills import NativeSkillContext
 from robots.adapters.native_vitals import NativeTelemetryUnavailable, require_native_vitals
+from robots.app.loot_attribution import LootAttribution
 from robots.app.merchant_buy_backoff import MerchantBuyBackoff
 from robots.app.merchant_staging import MerchantStaging, MerchantWarpCrossings, dealer_entry_cell
 from robots.app.npc_planning_execution import LocalNpcDispatch, NpcHostBinding, NpcUiObservation
@@ -222,7 +224,7 @@ NPC_RETRY_EPOCH_S = 300.0
 RESPAWN_RETRY_CADENCE_S = 30.0
 NO_ROUTE_DIRECT_SENDS = 5
 # The server's pickup radius: a CZ_ITEM_PICKUP lands when the bot stands
-# within Chebyshev<=1 of the drop's cell (leg 61 design brief).
+# within Chebyshev<=2 of the drop (pinned pc.cpp:6197).
 # leg 69: the once-per-position escalation latch (leg 39) left s00 dead-
 # verdicting x944 at pay_fild04 (213,325) while the server still accepted
 # walks out of the pocket (it had walked the char 226,317 -> 213,325 on
@@ -235,7 +237,7 @@ NO_ROUTE_DIRECT_SENDS = 5
 # both budgets.
 ESCALATED_DEAD_DIRECT_BOUND = 3
 ESCALATED_DEAD_REPOSITIONS = 3
-_LOOT_PICKUP_RANGE = 1
+_LOOT_PICKUP_RANGE = 2
 # Bounded reroute search when a drop's own cell is unwalkable in the grid.
 _LOOT_MOVE_RADIUS = 4
 """Direct walks sent at a grid-unreachable target before the patrol fails
@@ -331,6 +333,7 @@ class PlayingClient:
     _stat_unacked: int
     _stat_acks_seen: int
     _stat_failed: set[int]
+    _loot_ack_cursor: int
 
     def __init__(
         self,
@@ -697,6 +700,8 @@ class PlayingClient:
             received = (frame,)
             if not tracker.consume_snapshot(epoch, base, received):
                 return False
+            if frame[2] == 0x0A37:
+                self._observe_loot_acks(tracker.view)
             if inventory_replaced:
                 # Retained auth must not rearm a pre-boundary inventory/WEIGHT barrier.
                 tracker._inventory_known = False
@@ -2067,7 +2072,7 @@ class PlayingClient:
         """The shared pickup dispatch (the mechanical path's Loot and the
         decider's loot choice both land here): the CZ_ITEM_PICKUP send is
         memoized per floor item - one attempt while the item is on the
-        floor view - inside the server's pickup radius (Chebyshev<=1; the
+        floor view - inside the server's pickup radius (Chebyshev<=2; the
         looser hypot gate burned attempts on silent out-of-range rejects)."""
         tracker = self._tracker
         if tracker is None or state.alive is not True:
@@ -2086,20 +2091,32 @@ class PlayingClient:
             return
         items = self._loot_candidates(state, floor_items)
         if not items:
-            return
-        if self._floor_item_distance(state, items[0]) > _LOOT_PICKUP_RANGE:
-            # out of the server's pickup radius: walk toward the drop (the
-            # mechanical path's memo governs its own move authoring; this
-            # leg stays paced by the pending-walk lifecycle)
-            self._move(state, (items[0].position.x, items[0].position.y))
+            self._loot_receipt.missing()
             return
         for item in items:
             if item.floor_item_id in self._loot_pickup_tried:
                 self._note_loot_pickup_held(item.floor_item_id)
                 continue
+            if self._floor_item_distance(state, item) > _LOOT_PICKUP_RANGE:
+                self._loot_receipt.defer(item, "out_of_range")
+                target = self._loot_move_target(state, item)
+                if target is not None:
+                    self._move(state, target)
+                return
+            if not self._loot_ready(item):
+                return
+            self.wire._send(pickup(item.floor_item_id))
             self._loot_pickup_tried.add(item.floor_item_id)
-            # The loot seam's dispatch tap: the CZ_ITEM_PICKUP send that
-            # the leg-61 log greps for (paired with the surfaced line).
+            self._loot_receipt.attempted(
+                item,
+                self._metadata_cursor,
+                context={
+                    "map": state.map_name,
+                    "native_epoch": state.native_epoch,
+                    "x": state.x,
+                    "y": state.y,
+                },
+            )
             logger.warning(
                 "loot-debug: pickup dispatched (fid=%s nameid=%s cell=(%s,%s))",
                 item.floor_item_id,
@@ -2107,8 +2124,89 @@ class PlayingClient:
                 item.position.x,
                 item.position.y,
             )
-            self.wire._send(pickup(item.floor_item_id))
             return
+
+    def _loot_ready(self, item: ObservedFloorItem) -> bool:
+        """Stop-and-swing barrier, plus received arrival and a single ack lane."""
+        reason = "resting" if self._rest_seq is not None else None
+        if reason is None and not self._require_standing():
+            reason = "not_standing"
+        if reason is None:
+            reason = self._loot_motion_refusal(item)
+        if reason is None and self._loot_receipt.pending is not None:
+            reason = "awaiting_pickup_ack"
+        if reason is not None:
+            self._loot_receipt.defer(item, reason)
+            return False
+        return True
+
+    def _loot_motion_refusal(self, item: ObservedFloorItem) -> str | None:
+        view = self._tracker.view if self._tracker is not None else None
+        self._loot_release_arrival(view)
+        if self._pending is not None:
+            return "pending_walk"
+        if view is None or not view.arrival_confirmed:
+            return self._loot_confirm_arrival(item, view)
+        if view.position is None or view.position.seq <= self._loot_motion_seq:
+            return "awaiting_walk_arrival"
+        return None
+
+    def _loot_release_arrival(self, view: NativeGameplayView | None) -> None:
+        if view is None or view.position is None:
+            return
+        if (
+            self._pending is not None
+            and view.arrival_confirmed
+            and view.position.seq > self._pending[1]
+        ):
+            self._await_pending(view, view.position)
+
+    def _loot_confirm_arrival(
+        self, item: ObservedFloorItem, view: NativeGameplayView | None
+    ) -> str:
+        """Normal walks have no terminal ack: request the received allocated cell.
+
+        Pinned unit.cpp:187-192 answers an already-reached target with a
+        zero-length walkok. Two requests per drop presence, paced by the
+        existing pending-walk lifecycle; silence never authorizes pickup.
+        """
+        if view is None or view.position is None or self._standing is not True:
+            return "walking"
+        fid = item.floor_item_id
+        attempts = self._loot_settle_attempts.get(fid, 0)
+        if attempts >= 2:
+            return "arrival_confirmation_exhausted"
+        pos = view.position
+        point = (pos.x, pos.y)
+        self._send_walk(point, pos.seq)
+        self._loot_settle_attempts[fid] = attempts + 1
+        self._pending_origin = "loot_arrival_confirmation"
+        self._pending = (point, pos.seq, self._now(), 0)
+        return "walking"
+
+    @property
+    def loot_telemetry(self) -> tuple[dict[str, object], ...]:
+        """Detached cached receipts; never advances wire observation."""
+        self._ensure_loot_memos()
+        return self._loot_receipt.rows
+
+    def drain_loot_telemetry(self) -> tuple[dict[str, object], ...]:
+        self._ensure_loot_memos()
+        return self._loot_receipt.drain()
+
+    def _observe_loot_acks(self, view: NativeGameplayView) -> None:
+        self._ensure_loot_memos()
+        for ack in view.pickup_acks:
+            if ack.seq > self._loot_ack_cursor:
+                self._loot_receipt.consume(ack)
+                self._loot_ack_cursor = ack.seq
+
+    def _reset_loot_epoch(self, reason: str) -> None:
+        self._ensure_loot_memos()
+        self._loot_receipt.boundary(reason)
+        self._refresh_loot_memo(())
+        self._loot_ack_cursor = 0
+        self._loot_motion_seq = -1
 
     def _rest(self, state: BotState) -> None:
         """pc_setsit stops walk/attack; cancel intent, never invent arrival."""
@@ -2379,6 +2477,11 @@ class PlayingClient:
         self._note_move_gate("single_cell_path")
         return "single_cell_path"
 
+    def _send_walk(self, point: tuple[int, int], after_seq: int) -> None:
+        self.wire.move(*point)
+        self._ensure_loot_memos()
+        self._loot_motion_seq = after_seq
+
     def _move_no_route(
         self, state: BotState, target: tuple[int, int], pos: ObservedPosition
     ) -> str:
@@ -2398,7 +2501,7 @@ class PlayingClient:
         if self._no_route_attempts > NO_ROUTE_DIRECT_SENDS:
             return self._move_reroll(state, target, pos)
         self._note_move_gate("no_route_direct")
-        self.wire.move(*target)
+        self._send_walk(target, pos.seq)
         self._pending_origin = "direct"
         self._pending = (target, pos.seq, self._now(), 0)
         return "dispatched"
@@ -2429,7 +2532,7 @@ class PlayingClient:
             point = path[1]
             reason = "occupied_west_rerouted"
             self._note_move_gate(reason)
-        self.wire.move(*point)
+        self._send_walk(point, pos.seq)
         self._pending_origin = "step"
         self._pending = (point, pos.seq, self._now(), 0)
         return reason
@@ -2484,13 +2587,13 @@ class PlayingClient:
                 return "target_unwalkable"
             self._deadlock_cells.add((state.map_name, (state.x, state.y)))
             self._note_move_gate("target_unwalkable_escalated")
-            self.wire.move(*alt)
+            self._send_walk(alt, pos.seq)
             self._pending_origin = "escalated"
             self._pending = (alt, pos.seq, self._now(), 0)
             return "dispatched"
         self._rerolled_moves[key] = alt
         self._note_move_gate("target_unwalkable_rerolled")
-        self.wire.move(*alt)
+        self._send_walk(alt, pos.seq)
         self._pending_origin = "rerolled"
         self._pending = (alt, pos.seq, self._now(), 0)
         return "dispatched"
@@ -2543,7 +2646,7 @@ class PlayingClient:
             if alt is not None:
                 self._reposition_sends += 1
                 self._note_move_gate("server_reposition_direct")
-                self.wire.move(*alt)
+                self._send_walk(alt, pos.seq)
                 self._pending_origin = "repositioned"
                 self._pending = (alt, pos.seq, self._now(), 0)
                 return "dispatched"
@@ -2587,7 +2690,7 @@ class PlayingClient:
         without a decide (leg 61: 39 ItemDrop events surfaced but 0 loot
         choices / 518 decides starved the pickups - the same mechanics-not-
         decisions seam that owns the buy mint). Within the server's pickup
-        radius (Chebyshev<=1 of the item's cell) it mints the Loot dispatch;
+        radius (Chebyshev<=2 of the item's cell) it mints the Loot dispatch;
         outside it mints the walk toward the drop's cell (walkability-aware,
         re-authored ONCE per item on the bounded LOOT_WALK_REAUTH_S clock -
         leg 62: the one-shot memo burned a drop's only walk on a
@@ -2621,15 +2724,20 @@ class PlayingClient:
             if item.floor_item_id in self._loot_pickup_tried:
                 self._note_loot_pickup_held(item.floor_item_id)
                 continue
-            logger.warning(
-                "loot-debug: mechanical pickup dispatched (fid=%s nameid=%s cell=(%s,%s))",
-                item.floor_item_id,
-                item.item_id,
-                item.position.x,
-                item.position.y,
-            )
-            return (Loot(),)
+            return self._loot_pickup_mint(item)
         return None
+
+    def _loot_pickup_mint(self, item: ObservedFloorItem) -> tuple[GameAction, ...]:
+        if not self._loot_ready(item):
+            return ()
+        logger.warning(
+            "loot-debug: mechanical pickup dispatched (fid=%s nameid=%s cell=(%s,%s))",
+            item.floor_item_id,
+            item.item_id,
+            item.position.x,
+            item.position.y,
+        )
+        return (Loot(),)
 
     def _loot_walk_mint(self, state: BotState, item: Any) -> MoveTo | None:
         """The out-of-range limb: the walkability-aware MoveTo toward the
@@ -2679,6 +2787,11 @@ class PlayingClient:
         lazy pattern; ``__init__`` sits at the statement cap)."""
         if getattr(self, "_loot_pickup_tried", None) is not None:
             return
+        self._loot_receipt = LootAttribution()
+        self._loot_ack_cursor = 0
+        self._loot_motion_seq = -1
+        self._loot_presence: dict[int, int] = {}
+        self._loot_settle_attempts: dict[int, int] = {}
         self._loot_pickup_tried: set[int] = set()
         self._loot_move_minted: set[int] = set()
         self._loot_move_reauth: set[int] = set()
@@ -2697,7 +2810,13 @@ class PlayingClient:
         ``_attack_gate_reasons`` lazy pattern; ``__init__`` sits at the
         statement cap)."""
         self._ensure_loot_memos()
-        current = {item.floor_item_id for item in floor_items}
+        presence = {item.floor_item_id: item.position.seq for item in floor_items}
+        current = {fid for fid, seq in presence.items() if self._loot_presence.get(fid, seq) == seq}
+        self._loot_presence = presence
+        self._loot_receipt.refresh(current)
+        self._loot_settle_attempts = {
+            fid: attempts for fid, attempts in self._loot_settle_attempts.items() if fid in current
+        }
         self._loot_pickup_tried &= current
         self._loot_move_minted &= current
         self._loot_move_reauth &= current
@@ -3445,6 +3564,7 @@ class PlayingClient:
             self._skills.invalidate()
 
     def _reset_epoch(self, epoch: int, base: int) -> None:
+        self._reset_loot_epoch("session_changed")
         self._invalidate_self_slots()
         self._skills = None
         self._skill_wire = self.wire
@@ -3533,6 +3653,7 @@ class PlayingClient:
 
     def _receive_map_metadata(self) -> None:
         """Invalidate received map-scoped NPC, patrol and motion metadata."""
+        self._reset_loot_epoch("map_changed")
         self._npc.invalidate()
         self._npc_names.clear()
         self._move_pending_release = {}
