@@ -935,7 +935,9 @@ class PlayingClient:
         ):
             grid = self.cache.get(map_name)
             if map_name == "prt_in":
-                return self._merchant_staging.dealer_target(grid, state)
+                return self._merchant_staging.dealer_target(
+                    grid, state, own_id=self.wire.aid, bodies=self._dealer_bodies()
+                )
             return self._merchant_staging.target(grid, state, self._now())
         if map_name == "prt_in":
             return (
@@ -2568,6 +2570,16 @@ class PlayingClient:
             return loot_actions
         return self._legacy_mechanical(state, actions)
 
+    def shop_actions(
+        self, state: BotState, actions: tuple[GameAction, ...]
+    ) -> tuple[GameAction, ...] | None:
+        """Receipt-bound exchange execution also runs under an authored farm plan.
+
+        This seam grants no exploration, loot or patrol fallback. The same
+        owner mints, real offer rows and dispatch guards own every shop send.
+        """
+        return self._shop_loop_mechanical(state, actions)
+
     def _loot_mechanical(
         self, state: BotState, actions: tuple[GameAction, ...]
     ) -> tuple[GameAction, ...] | None:
@@ -3134,6 +3146,17 @@ class PlayingClient:
         if view.alive_known:
             return view.alive
         return True if self._authenticated_baseline else None
+
+    def _dealer_bodies(self) -> tuple[tuple[int, tuple[int, int]], ...]:
+        """Received identities preserve distinct allocation for overlapping bodies."""
+        if self._tracker is None:
+            return ()
+        own_ids = (self.wire.aid, (-self.wire.aid) & 0xFFFFFFFF)
+        return tuple(
+            (actor.actor_id, (actor.position.x, actor.position.y))
+            for actor in self._tracker.view.actors
+            if actor.objecttype == 0 and actor.actor_id not in own_ids
+        )
 
     def _occupied_cells(
         self, view: NativeGameplayView, pos: ObservedPosition

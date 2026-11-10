@@ -167,5 +167,7 @@ def test_session_binds_runtime_authority_before_brain_creates_scripts(monkeypatc
     monkeypatch.setattr(agent, "_wait_for_telemetry", lambda: None)
     monkeypatch.setattr(agent, "build_state", _stock_holder)
     agent._start_brain()
+    # Production builds cache this exact received state before script authoring.
+    client._last_built_state = _stock_holder()
     script = brain._goal_script(goal, _stock_holder())
     assert script.step(_stock_holder()).actions == (MoveTo(x=171, y=130),)

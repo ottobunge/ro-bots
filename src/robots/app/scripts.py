@@ -784,6 +784,10 @@ def _merchant_engage(
             # npc actor expired / the relog closed the dialog). Clear it so
             # the walk resumes and a fresh contact can talk again (w76).
             _DEALER_TALKED.pop(state.name, None)
+        if travel_target is not None:
+            walk_cell = travel_target(state.map_name, (state.x, state.y), destination)
+            if walk_cell != (state.x, state.y):
+                return _allocated_dealer_approach(state, destination, reachable, walk_cell)
         if talk is not None:
             _DEALER_OCCUPANCY_TAPPED.pop(state.name, None)
             _DEALER_APPROACH_WALKS.pop(state.name, None)
@@ -794,12 +798,10 @@ def _merchant_engage(
             # and the shop-loop mechanical own the exchange.
             bot = state.name
             npc_id = talk.npc_id
-            if _DEALER_TALKED.get(bot) == npc_id:
-                # One talk per (bot, npc) contact; the shop-loop mechanical
-                # owns the exchange while the dealer npc stays received.
-                return ScriptOutcome((), ScriptStatus.ACTIVE)
+            # The shop loop owns a contact already clicked at this dealer.
+            actions = () if _DEALER_TALKED.get(bot) == npc_id else (talk,)
             _DEALER_TALKED[bot] = npc_id
-            return ScriptOutcome((talk,), ScriptStatus.ACTIVE)
+            return ScriptOutcome(actions, ScriptStatus.ACTIVE)
         # leg-71 frontier b: the walk-to-dealer targets the APPROACH CELL
         # (the dealer's neighbouring cell nearest the agent, the proven
         # ``_approach_cell`` intercept from the attack scripts). The dealer's
@@ -852,9 +854,21 @@ def _merchant_approach(
     travel_target: MerchantTravelTarget | None = None,
 ) -> ScriptOutcome:
     """Local-perception allocation; a full dealer block waits for a vacancy."""
-    walk_cell = _approach_cell(*destination, state, reachable=reachable)
-    if walk_cell is None and travel_target is not None:
-        walk_cell = travel_target(state.map_name, (state.x, state.y), destination)
+    walk_cell = (
+        travel_target(state.map_name, (state.x, state.y), destination)
+        if travel_target is not None
+        else _approach_cell(*destination, state, reachable=reachable)
+    )
+    return _allocated_dealer_approach(state, destination, reachable, walk_cell)
+
+
+def _allocated_dealer_approach(
+    state: BotState,
+    destination: tuple[int, int],
+    reachable: MerchantReachable | None,
+    walk_cell: tuple[int, int] | None,
+) -> ScriptOutcome:
+    """Author only the authority's selected cell, including an honest hold."""
     if walk_cell is not None:
         _DEALER_OCCUPANCY_TAPPED.pop(state.name, None)
         _DEALER_QUEUE_WAITS.pop(state.name, None)
