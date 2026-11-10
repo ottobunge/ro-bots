@@ -11490,3 +11490,52 @@ Bandit passed. Pytest: **7,036 passed, 1 skipped, 65 subtests passed**, four
 warnings, **95.54% total coverage** (85% minimum), 263.75 seconds. Only
 `src/robots/app/brain.py`, the new regression module and this log changed;
 `spikes/` and the rAthena gitlink are unchanged.
+
+## Leg 87 (2026-11-10, window Tue 14:30-16:00 Madrid) — attack-volume validation: the widen-streak persistence fix is live
+
+Receipt: `run/plain_host_receipts/population-receipt-87-1794316483.json` (31,060 steps,
+0 errors, 0 TRANSPORT DOWN, 260 samples, decide cadence full: 96-177/agent, ~954 total,
+heavengraph :8091/:8092 healthy the whole window; runner `leg87-runner`, launched
+14:23 CET under `systemd-run --user`, exit 16:28 CET).
+
+**(a) ATTACK VOLUME — PASS, 7.3x.** 220 attacks vs leg-86's 30 (per-agent avg 31.4 vs
+4.3). Six of seven agents attacked (leg-86: 30 attacks concentrated in two agents).
+Top attackers: PipinWalker 117, xXLunasongXx 48, RinceNyan 21. **Widen events: 17
+target-set growth events** across all six field agents (e.g. `('Lunatic',)` →
+`('Lunatic','Pupa')` after sustained starvation; g01m01 x6, g00m01 x5, g01m00 x4,
+g00m00 x2) — the streak now survives heartbeat re-authors and widens at threshold,
+with honest narrowing on species change. Stop-and-swing discipline: 100% of attacks
+fired from a standing position (zero same-second move+attack rows), and 100% had
+monsters in the decide context (Pupa/Lunatic/Poring/Drops).
+
+**(b) LOOT — attempts up, conversion partial.** 33 Loot attempts (leg-86: ~52 with
+only 4 kept rows). Post-window inventory ground truth: NyxSong holds Jellopy(909) x1,
+RinceNyan holds Clover(705) x1; everything else in-window picked up was sold. Four
+agents closed the sell chain (NpcShopSellOpen+Sell x4); fleet zeny +24 net (seed
+91/116/70/74/82/49/125 → 103/119/76/74/82/52/125). No purchases: all seven already
+hold the equipped knife (1201 equip=2, `char.weapon=1`) from leg 85, so zeny deltas
+are pure sell income; the one buy-open attempt held at stage `opening`
+(`offer_bound=False`) — buy path unexercised by necessity. The 0x0A37
+attempt-vs-acknowledgement attribution remains the deferred refinement.
+
+**(c) SUSTAINED — PASS: third economy cycle in one day** (leg 85 yesterday evening,
+leg 86 this morning 08:14-10:24, leg 87 this afternoon). Kills: 6/7 agents gained
+base exp (+29 fleet base, +15 job): NyxSong +8/+3, RinceNyan +5/+1, zeny_wing
++10/+7, PipinWalker +1/+1, xXLunasongXx +2/+1, PoringMuffin14 +3/+2. Species-per-kill
+attribution stays blocked by the picklog silent-fail (0 rows again; known since the
+w63-era, cosmetic repair queued) and party even-share exp splitting — per-kill
+values at 7.5x from the pinned `mob_db.yml` (Poring 15/7, Pupa 15/30, Lunatic 45/15,
+Drops 30/22) exceed every observed per-agent delta, consistent with shared credit;
+exp deltas remain the server-side kill record.
+
+**(d) New signature: the solo-in-city roam trap.** s00 (YuffieFy81) logged into
+prontera, whose map has no spawn-species entries → no farm plan authored →
+GrindScript roam targets (±8/±5) land on unwalkable city cells and the
+nearest-walkable re-roll collapses each move to ±1 cell: 2,446 MoveTos, position
+jitter only, 0 attacks, 0 exp, decides repeatedly choosing `party_join` with no
+invite in existence. Fix direction (queued): when the current map has no spawn
+knowledge and `next_action=grind`, author travel to a known field map at the
+plan level. Operational notes: dealer-adjacency refusals named correctly by the
+`dealer_talk_out_of_range` tap (chebyshev=2) with re-approach; `sell arm admitted`
+and `weapon_release` taps fired; merchant congestion (leg-73 defect) did not recur
+with the six field agents. NO gate (receipt + log only; no code change).
