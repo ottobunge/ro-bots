@@ -4,7 +4,7 @@ Leg 61: hop 1 was live (39 ItemDrop world events surfaced) but the
 decider's argmax starved the pickup (0 loot choices / 518 decides). The
 fix is a loot win the argmax cannot lose: the runtime's mechanical layer
 (the seam that owns the buy mint) authors the walk toward the drop when
-it sits outside the server's pickup radius (Chebyshev>1 of the item's
+it sits outside the server's pickup radius (Chebyshev>2 of the item's
 cell) and dispatches the CZ_ITEM_PICKUP when within it - one attempt per
 floor item (the memo clears when the item leaves the floor view), while
 an in-melee Attack exchange is never interrupted. The decider's loot
@@ -28,6 +28,7 @@ from robots.app import playing_runtime as runtime  # noqa: E402
 from robots.app.scripts import MELEE_RANGE  # noqa: E402
 from robots.domain.actions import Attack, Loot, MoveTo  # noqa: E402
 from robots.domain.model import Goal  # noqa: E402
+from tests.test_native_gameplay import pickup_ack  # noqa: E402
 from tests.test_playing_runtime import (  # noqa: E402
     Wire,
     entry_at,
@@ -72,7 +73,7 @@ def _client_with_floor_at(
 
 
 def test_floor_item_in_range_dispatches_one_pickup_mechanically() -> None:
-    """Chebyshev<=1 of the item's cell: the pickup mints with no decide."""
+    """Chebyshev<=2 of the item's cell: the pickup mints with no decide."""
     client = _client_with_floor_at(43, 38)
     state = client.build_native_state(Goal.GRIND)
     assert client.mechanical_actions(state, ()) == (Loot(),)
@@ -83,7 +84,7 @@ def test_floor_item_in_range_dispatches_one_pickup_mechanically() -> None:
 def test_floor_item_out_of_range_mints_move_then_pickup_on_arrival() -> None:
     """Two-step: the mechanical layer authors the walk toward the drop
     once, and the pickup mints when the tracked cell is within the
-    server's pickup radius (Chebyshev<=1)."""
+    server's pickup radius (Chebyshev<=2)."""
     client = _client_with_floor_at(44, 40)
     state = client.build_native_state(Goal.GRIND)
     assert client.mechanical_actions(state, ()) == (MoveTo(x=44, y=40),)
@@ -94,7 +95,7 @@ def test_floor_item_out_of_range_mints_move_then_pickup_on_arrival() -> None:
     assert not any(isinstance(a, Loot) for a in client.mechanical_actions(state, ()))
     # the walk ends adjacent to the drop (the tracked cell is the walk
     # destination) and the pickup mints
-    client.wire.add(walk_ack((42, 37), (44, 39)))
+    client.wire.add(walk_ack((44, 39), (44, 39)))
     state = client.build_native_state(Goal.GRIND)
     assert client.mechanical_actions(state, ()) == (Loot(),)
     client.perform_native(Loot())
@@ -132,7 +133,7 @@ def test_memo_clears_when_the_item_leaves_the_floor_view() -> None:
     assert client.mechanical_actions(state, ()) == (Loot(),)
     client.perform_native(Loot())
     # the item leaves (0x00A1) and the absence is observed on a tick
-    client.wire.add(struct.pack("<HI", 0x00A1, 321))
+    client.wire.add(pickup_ack(result=6), struct.pack("<HI", 0x00A1, 321))
     state = client.build_native_state(Goal.GRIND)
     assert not any(isinstance(a, Loot) for a in client.mechanical_actions(state, ()))
     # the aid is reused by a real new drop: it loots again
@@ -173,7 +174,7 @@ def test_mechanical_loot_taps_name_the_dispatch_and_move(
         assert "fid=321" in moved[0]
         assert "nameid=909" in moved[0]
         assert "cell=(44,40)" in moved[0]
-    client.wire.add(walk_ack((42, 37), (44, 39)))
+    client.wire.add(walk_ack((44, 39), (44, 39)))
     state = client.build_native_state(Goal.GRIND)
     caplog.clear()
     with caplog.at_level(logging.WARNING):

@@ -1270,6 +1270,7 @@ class ScheduledAgent:
                     exc,
                 )
             self._trace_move_perform(action, error)
+            self._trace_loot_receipts()
 
     # ------------------------------------------------------------- tracing
     def _trace_context(self) -> dict[str, Any]:
@@ -1285,6 +1286,7 @@ class ScheduledAgent:
 
     def _trace_state_tick(self, state: BotState) -> None:
         """The bounded periodic snapshot (about one per interval of ticks)."""
+        self._trace_loot_receipts()
         trace = self._trace
         if trace is None:
             return
@@ -1339,6 +1341,14 @@ class ScheduledAgent:
                 message=event.line.text,
                 channel=event.line.channel,
             )
+
+    def _trace_loot_receipts(self) -> None:
+        """Drain cached pickup receipts even when periodic state logging is held."""
+        drain = getattr(self.client, "drain_loot_telemetry", None)
+        if self._trace is None or not callable(drain):
+            return
+        for row in drain():
+            self._trace.log("loot_performed", **(self._trace_context() | row))
 
     def _trace_move_perform(self, action: GameAction, error: str | None) -> None:
         """A sibling to authored intent, lifted after perform from cached facts only."""
