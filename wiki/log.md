@@ -11244,3 +11244,84 @@ drive). New signature for the next leg: the post-C4 dealer park (empty
 actions at Chebyshev 1 with stage `unsupported_shop`, no C5, no offer, no
 give-up tap) — instrument `_shop_dialogue` per conjunct, then re-run the
 spend test with the same roster.
+
+
+## 2026-11-10 LEG-85 — buy-open uses received dealer adjacency; timeout close rearms a bounded contact
+
+Implementation branch `leg-85-buy-open-dialogue`, based on main `eb348b35`.
+Evidence: `run/plain_host_receipts/population-receipt-84-1794265660.json`:
+zeny_wing reached the dealer, received C4 at 00:04:09, never minted C5,
+closed at 00:04:25, then held the one-talk latch. PipinWalker's sell-open
+minted in the same window. This change is offline implementation evidence;
+no runner, probe, world, Docker or heavengraph operation was performed.
+
+The exact reproducible failed conjunct is `_shop_dialogue` ->
+`_npc_self_ready` -> `_npc_motion_ready()` ->
+`tracker.view.arrival_confirmed`. A nonzero walk leaves that flag false
+even when the received position is adjacent and the pending walk is gone.
+In the synthetic post-walk, post-C4/pre-C6 replay, finite clocks, validated
+native telemetry, the dialogue, selected character/session, life, standing,
+stand/rest barriers, failed/cancel flags, request budget and map identity
+all pass; only the extra arrival proof fails. Sell-open and the corrected
+dealer click already use received adjacency. The proposed C6 circular
+dependency is absent: `_shop_dialogue` reads neither offer rows nor an
+inventory snapshot.
+
+`src/robots/app/playing_runtime.py:1830` (`_shop_dialogue`) now names each
+refusal; `:1855` (`_buy_open_refusal`) uses the current talk, received
+dealer adjacency and real actuation/identity prerequisites, retaining the
+outstanding-walk barrier without requiring the stale arrival flag.
+`:1879` emits `shop-debug: buy-open held by <conjunct>` on every refusal,
+including pre-offer failure/cancel refusals at the outer shop-loop gate.
+The buy and sell open latches also exclude each other for the same prompt:
+waiting for a minted sell-open cannot fall through to a buy-open next tick.
+Owner-bound dispatch, current prompt checks, finite clocks, request limits,
+and the real C6 purchase authority remain in place. Purchase admission and
+offer-lifetime predicates are unchanged.
+
+A successfully sent timeout close with no bound offer queues the admitted
+contact for rearm. The next host recovery pump releases just that bot/NPC
+latch through `scripts.release_merchant_talk` (`scripts.py:222`), allowing
+the next script tick to talk again. `_rearm_closed_merchant`
+(`playing_runtime.py:2963`) shares `_take_npc_retry` (`:1131`) with existing
+timeout recovery: three attempts, at least five seconds apart, per
+five-minute epoch. Exhaustion keeps the contact latched until the next
+epoch; poison, cancellation uncertainty, active dialogues, bound offers,
+and unready actuation cannot release it. Session reset discards the pending
+rearm. The existing stockless-buy give-up path remains terminal for its
+exchange and is not turned into a new click loop.
+
+TDD RED: `/tmp/leg85-red.log` records **11 failures and 1 pass**: the buy
+open, named taps and closed-contact rearm failed; the same sell-open replay
+passed. `/tmp/leg85-outer-red.log` records two additional outer-gate tap
+failures before their fix. Focused GREEN: **122 tests**, including the new
+14 cases, existing buy-selection ownership/drift tests, sell-completion
+tests, timeout recovery and bound-offer mint guards
+(`/tmp/leg85-green-final.log`). The movement guard regression now supplies
+an actual outstanding walk; the stale arrival flag alone is the defect
+being removed. Repeated ticks mint/send one open only; the close/reopen
+regression consumes exactly three tokens, remains quiet through repeated
+ticks, then rearms once in the next epoch.
+
+Rejected: fabricating a C6 or inventory snapshot, removing shared
+`_npc_self_ready` guards globally, relaxing purchase admission, resetting
+the entire fleet's contact registry, changing retry limits, or touching
+spikes. No claim of a live purchase is made.
+
+Gate preparation uses the requested canonical knowledge/config links and
+a private checkout of pinned rAthena `e985006171d2`. As recorded in leg 84,
+the canonical iro-wiki link loops to itself. Verification temporarily uses
+the existing `/home/otto/dev/wt-mobpos/run/knowledge/iro-wiki/iro-wiki.db`
+corpus; the exact requested link is restored before commit. No gate input,
+dependency, threshold, exclusion, submodule or live-world edit is committed.
+
+**Full gate GREEN before commit:** `nix develop -c task --dir . check`,
+with process-local `NIX_CONFIG='auto-optimise-store = false'` for the host's
+store hard-link limit, exited 0: **7,019 passed, 65 subtests passed,
+4 warnings, 95.53% coverage**, **280.03 s**. Black, ruff, strict mypy
+(**371 files**), vulture, xenon, duplicate-code and bandit passed. Final
+transcript: `/tmp/leg85-full-gate-final.log`. The earlier
+`/tmp/leg85-full-gate.log` stopped at static analysis; its typing,
+statement-count and complexity findings were fixed before the complete
+final run. Canonical knowledge links were restored before commit. The
+implementation branch is pushed without merging.

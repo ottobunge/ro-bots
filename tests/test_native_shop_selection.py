@@ -135,7 +135,7 @@ def test_equivalent_foreign_wrapper_cannot_dispatch(monkeypatch):
         "entry",
         "death",
         "sit",
-        "motion",
+        "pending_walk",
         "transport",
         "gap",
         "far",
@@ -168,8 +168,11 @@ def test_current_received_guards_deny_before_send(monkeypatch, boundary):
         struct.pack_into("<HII", raw, 0, 0x8C8, wire.aid, 0)
         raw[29] = 2
         receive(bytes(raw))
-    elif boundary == "motion":
+    elif boundary == "pending_walk":
         receive(walk_ack((42, 37), (43, 37)))
+        # A real outstanding walk still blocks. The stale arrival flag alone
+        # cannot: it remains false after the completed dealer approach (leg 85).
+        client._pending = ((43, 37), client._metadata_cursor, 100.0, 0)
     elif boundary == "transport":
         wire.running = False
     elif boundary == "gap":
