@@ -2099,32 +2099,70 @@ class PlayingClient:
                 continue
             if self._floor_item_distance(state, item) > _LOOT_PICKUP_RANGE:
                 self._loot_receipt.defer(item, "out_of_range")
-                target = self._loot_move_target(state, item)
-                if target is not None:
-                    self._move(state, target)
+                self._loot_approach(state, item)
                 return
-            if not self._loot_ready(item):
-                return
-            self.wire._send(pickup(item.floor_item_id))
-            self._loot_pickup_tried.add(item.floor_item_id)
-            self._loot_receipt.attempted(
-                item,
-                self._metadata_cursor,
-                context={
-                    "map": state.map_name,
-                    "native_epoch": state.native_epoch,
-                    "x": state.x,
-                    "y": state.y,
-                },
-            )
-            logger.warning(
-                "loot-debug: pickup dispatched (fid=%s nameid=%s cell=(%s,%s))",
-                item.floor_item_id,
-                item.item_id,
-                item.position.x,
-                item.position.y,
-            )
+            self._loot_attempt(state, item)
             return
+
+    def _loot_attempt(self, state: BotState, item: ObservedFloorItem) -> None:
+        if not self._loot_ready(item):
+            return
+        self.wire._send(pickup(item.floor_item_id))
+        self._loot_pickup_tried.add(item.floor_item_id)
+        self._loot_receipt.attempted(
+            item,
+            self._metadata_cursor,
+            context={
+                "map": state.map_name,
+                "native_epoch": state.native_epoch,
+                "x": state.x,
+                "y": state.y,
+            },
+        )
+        logger.warning(
+            "loot-debug: pickup dispatched (fid=%s nameid=%s cell=(%s,%s))",
+            item.floor_item_id,
+            item.item_id,
+            item.position.x,
+            item.position.y,
+        )
+
+    def _loot_resume(self, state: BotState) -> None:
+        """Continue unattempted intent on received ticks, including retained plans.
+
+        Each approach step needs a fresh received position. Silence cannot
+        create unlimited walks; arrival proof still owns the pickup barrier.
+        """
+        if self._tracker is None:
+            return
+        self._refresh_loot_memo(self._tracker.view.floor_items)
+        if (
+            state.alive is not True
+            or self._rest_seq is not None
+            or self._nearest_active_threat(state) is not None
+        ):
+            return
+        items = self._loot_candidates(state, self._loot_receipt.deferred)
+        if not items:
+            return
+        item = items[0]
+        if self._floor_item_distance(state, item) > _LOOT_PICKUP_RANGE:
+            self._loot_approach(state, item)
+        else:
+            self._loot_attempt(state, item)
+
+    def _loot_approach(self, state: BotState, item: ObservedFloorItem) -> None:
+        if self._rest_seq is not None or self._pending is not None or self._tracker is None:
+            return
+        pos = self._tracker.view.position
+        if pos is None or pos.seq <= self._loot_approach_seq.get(item.floor_item_id, -1):
+            return
+        target = self._loot_move_target(state, item)
+        if target is not None and self._move(state, target) in (
+            "dispatched",
+            "occupied_west_rerouted",
+        ):
+            self._loot_approach_seq[item.floor_item_id] = pos.seq
 
     def _loot_ready(self, item: ObservedFloorItem) -> bool:
         """Stop-and-swing barrier, plus received arrival and a single ack lane."""
@@ -2716,13 +2754,13 @@ class PlayingClient:
             self._note_loot_threat_defer(state, floor_items, threat)
             return None
         for item in self._loot_candidates(state, floor_items):
+            if item.floor_item_id in self._loot_pickup_tried:
+                self._note_loot_pickup_held(item.floor_item_id)
+                continue
             if self._floor_item_distance(state, item) > _LOOT_PICKUP_RANGE:
                 move = self._loot_walk_mint(state, item)
                 if move is not None:
                     return (move,)
-                continue
-            if item.floor_item_id in self._loot_pickup_tried:
-                self._note_loot_pickup_held(item.floor_item_id)
                 continue
             return self._loot_pickup_mint(item)
         return None
@@ -2754,6 +2792,7 @@ class PlayingClient:
             return None
         reauth = self._loot_walk_mark_mint(item.floor_item_id)
         self._loot_move_minted.add(item.floor_item_id)
+        self._loot_receipt.defer(item, "out_of_range")
         logger.warning(
             "loot-debug: move toward floor item (fid=%s nameid=%s"
             " cell=(%s,%s) target=(%s,%s) reauth=%d)",
@@ -2792,6 +2831,7 @@ class PlayingClient:
         self._loot_motion_seq = -1
         self._loot_presence: dict[int, int] = {}
         self._loot_settle_attempts: dict[int, int] = {}
+        self._loot_approach_seq: dict[int, int] = {}
         self._loot_pickup_tried: set[int] = set()
         self._loot_move_minted: set[int] = set()
         self._loot_move_reauth: set[int] = set()
@@ -2816,6 +2856,9 @@ class PlayingClient:
         self._loot_receipt.refresh(current)
         self._loot_settle_attempts = {
             fid: attempts for fid, attempts in self._loot_settle_attempts.items() if fid in current
+        }
+        self._loot_approach_seq = {
+            fid: seq for fid, seq in self._loot_approach_seq.items() if fid in current
         }
         self._loot_pickup_tried &= current
         self._loot_move_minted &= current
@@ -3064,6 +3107,7 @@ class PlayingClient:
             # never fired and the single pending slot blocked every later
             # send. Same budget, pacing and exhaustion semantics as dispatch.
             self._await_pending(tracker.view, pos)
+        self._loot_resume(state)
         events: list[WorldEvent] = []
         dialog = self._npc.view
         if dialog is not None and dialog.sequence > self._npc_event_sequence:
