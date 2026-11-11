@@ -1,0 +1,72 @@
+{
+  "leg": 91,
+  "kind": "loot-convergence-verdict",
+  "date": "2026-11-11",
+  "window": "[2, 15.0, 16.5] = 15:00-16:30 Madrid",
+  "launch": {
+    "time_local": "14:44",
+    "main_sha": "7f5bacfd",
+    "loot_convergence_merge_on_main_at_launch": true,
+    "loot_convergence_merge_sha": "172a525c",
+    "note": "The t3/loot-approach-convergence slice merged to origin/main during the hold (first seen ~11:44). Local main fast-forwarded before launch, so the window ran WITH the deferred-pickup re-fire fix.",
+    "unit": "leg91-runner (systemd --user)",
+    "duration_s": 7200,
+    "receipt": "run/plain_host_receipts/population-receipt-91-1794404577.json"
+  },
+  "run_health": {
+    "steps": 28508,
+    "step_errors": 0,
+    "transport_down": 0,
+    "backend_errors": 0,
+    "logins": "all 7 agents online across the window; logoffs at 16:30 window close",
+    "runner_exit": "clean DONE at ~16:44"
+  },
+  "seed_baseline": {
+    "zeny": [106, 127, 79, 84, 85, 52, 125],
+    "verified_vs_db_at_preflight": true,
+    "drift": "none; no seed fix or commit needed"
+  },
+  "loot_census": {
+    "source": "per-agent traces, UTC >= 14:00 (the whole window), kind=loot_performed",
+    "outcomes": {"deferred": 13, "refired": 7, "attempted": 7, "unconfirmed": 1, "refused": 3, "expired": 5, "succeeded": 4},
+    "deferral_reasons": {"walking": 9, "pending_walk": 1, "out_of_range": 3},
+    "refires_named": "loot_refired_after_walk x7 (telemetry names the re-fire and the original deferred reason)",
+    "named_successes": [
+      {"agent": "pop_0003_g00m00", "t": "14:03:16Z", "item": 909, "floor_item": 485, "pos": [59, 371], "reason_code": 0, "ack_seq": 207},
+      {"agent": "pop_0003_g00m01", "t": "14:04:48Z", "item": 915, "floor_item": 487, "pos": [170, 358], "reason_code": 0, "ack_seq": 547},
+      {"agent": "pop_0003_g00m02", "t": "14:06:53Z", "item": 909, "floor_item": 488, "pos": [193, 333], "reason_code": 0, "ack_seq": 422},
+      {"agent": "pop_0003_g01m01", "t": "14:07:39Z", "item": 909, "floor_item": 489, "pos": [151, 361], "reason_code": 0, "ack_seq": 750}
+    ],
+    "per_agent": {
+      "pop_0003_g00m00": {"deferred": 1, "refired": 1, "attempted": 1, "succeeded": 1},
+      "pop_0003_g00m01": {"deferred": 1, "refired": 1, "attempted": 1, "succeeded": 1},
+      "pop_0003_g00m02": {"deferred": 3, "refired": 1, "attempted": 1, "succeeded": 1, "refused": 1, "expired": 1},
+      "pop_0003_g01m00": {"deferred": 3, "expired": 2, "refired": 1, "attempted": 1},
+      "pop_0003_g01m01": {"deferred": 4, "expired": 2, "refired": 2, "attempted": 2, "succeeded": 1},
+      "pop_0003_g01m02": {"deferred": 1, "refired": 1, "attempted": 1, "unconfirmed": 1, "refused": 1},
+      "pop_0003_s00": {"refused": 1}
+    }
+  },
+  "db_ground_truth": {
+    "zeny_delta_vs_seed": {"NyxSong": 3, "RinceNyan": 4, "zeny_wing": 3, "PipinWalker": 3, "xXLunasongXx": 3, "PoringMuffin14": 0, "YuffieFy81_s00": 0},
+    "sell_cycles": "5 of 6 merchant-drive agents closed a sell trip (+16z total); sixth sell cycle population-wide",
+    "inventory_rows_field_species": [
+      {"agent": "PipinWalker", "nameid": 909, "qty": 1},
+      {"agent": "xXLunasongXx", "nameid": 705, "qty": 1}
+    ],
+    "reconciliation": "NyxSong/RinceNyan/zeny_wing/xXLunasongXx sold their named pickups (inventories empty, zeny up). xXLunasongXx additionally holds 705x1 and PipinWalker holds 909x1 beyond named successes: two server-side conversions whose acks were not attributed as succeeded rows (attempt rows exist; server accepted). True DB-verified conversions = 6.",
+    "exp_delta": "base/job up in 6 of 7 agents (e.g. xXLunasongXx +8/+4, PoringMuffin14 +6/+6); s00 flat at 42/27 = zero kills on pay_fild04 (walked, 218 decides, no kill)"
+  },
+  "verdict": {
+    "a_loot_conversion_volume": "PASS. 7 attempts (leg 90: 1), 4 named successes (leg 90: 1), 7 re-fires after approach walks named in telemetry (leg 90: 0 - all 15 deferrals expired), 6 DB-verified conversions. Attempt->success 4/7 named (57%), materially above 1/23.",
+    "b_economy": "PASS. Sixth sell cycle: five agents closed sell trips for +3/+4/+3/+3/+3 zeny; picked-and-sold loop repeats population-wide.",
+    "c_farming": "PASS with one honest gap. Attacks landed (windowed Attack actions 85 by mid-window; kills in 6 of 7 agents via exp deltas). s00 farmed pay_fild04 all window with zero kills (exp flat) - pay_fild04 spawn density/engagement for s00 is the open farming question, not a regression.",
+    "d_run_health": "CLEAN. 28,508 steps, 0 errors, 0 TRANSPORT DOWN, both backends healthy all window.",
+    "new_signatures": [
+      "unattributed pickup acks: server accepts a pickup but the tracker logs no succeeded row (PipinWalker 909x1, xXLunasongXx 705x1 in DB without named success rows) - next-slice candidate: ack attribution for the second-attempt path",
+      "merchant_warp_ping_pong (bot=xXLunasongXx crossings=4) - warp ping-pong between field and town during sell drive; bounded, self-recovered",
+      "one honest post-attempt expiry (fid=491 nameid=705, attempt 2 then presence_epoch_expired)"
+    ]
+  },
+  "next": "ack-attribution slice for unattributed pickups; s00 pay_fild04 engagement; keep the convergence stack as-is"
+}

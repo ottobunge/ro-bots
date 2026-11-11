@@ -11985,3 +11985,52 @@ Pytest: **7,099 passed, 65 subtests passed**, four warnings,
 Transcript: `/tmp/loot-convergence-full-gate.log`. Runtime and test code
 remained frozen during the gate; only this results paragraph was appended
 afterwards. No outstanding gate failures. Commit/push only; no merge to main.
+
+## Leg 91 — LOOT CONVERGENCE PROVEN AT VOLUME (2026-11-11, 7f5bacfd+receipt)
+
+Window [2, 15.0, 16.5] (15:00-16:30 Madrid), 7 agents, `systemd --user
+leg91-runner`, 7200s. **Main carried the loot-approach-convergence merge at
+launch** (7f5bacfd with 172a525c; it landed on origin/main during the morning
+hold and was fast-forwarded before the 14:44 launch).
+
+**Verdict (a) LOOT CONVERSION VOLUME: PASS.** Leg 90's limiter is closed at
+volume. Trace census (kind=loot_performed, whole window): 13 deferred
+(walking 9, pending_walk 1, out_of_range 3) -> **7 refired
+`loot_refired_after_walk`** -> 7 attempted -> **4 succeeded** with named acks
+(reason_code 0; ack_seq 207/547/422/750; items 909 x3 + 915; all standing
+adjacent, all attempt 1) + 1 unconfirmed; 5 expiries (honest: never approached
+or post-attempt epoch end), 3 refusals. vs leg 90: 1 attempt / 1 success / 23
+events with 15 deferrals expiring. Attempt->success 4/7 named (57%); **6
+DB-verified conversions** (see below).
+
+**Verdict (b) ECONOMY: PASS.** Sixth sell cycle population-wide — five agents
+closed sell trips in prontera: NyxSong +3, RinceNyan +4, zeny_wing +3,
+PipinWalker +3, xXLunasongXx +3 (= +16z vs seed 106/127/79/84/85/52/125).
+Picked-and-sold repeats: the four named-success agents' inventories are empty
+and their zeny is up.
+
+**Verdict (c) FARMING: PASS with one honest gap.** Exp deltas in 6/7 agents
+(xXLunasongXx +8/+4 base/job, PoringMuffin14 +6/+6, zeny_wing +4/+5...);
+attacks flowing mid-window (85 windowed Attack actions by 15:25).
+**s00 farmed pay_fild04 the whole window with ZERO kills** (exp flat 42/27,
+218 decides, 1 loot refusal) — pay_fild04 spawn density/engagement for s00 is
+the open farming question, not a regression.
+
+**Verdict (d) RUN HEALTH: CLEAN.** 28,508 steps, 0 errors, 0 TRANSPORT DOWN,
+both heavengraph backends healthy all window, clean logoffs at window close.
+
+**New signature — unattributed pickup acks (next-slice candidate).** DB shows
+two conversions the traces never named as succeeded: PipinWalker holds 909x1
+(1 attempt row, no success row) and xXLunasongXx holds 705x1 beyond its named
+909 success (2 attempts). The server accepted both pickups; the tracker's ack
+attribution missed them (likely the second-attempt ack path). One honest
+post-attempt expiry also observed (fid=491 nameid=705, attempt 2 then
+presence_epoch_expired) and one bounded `merchant_warp_ping_pong`
+(xXLunasongXx, crossings=4, self-recovered).
+
+**Evidence:** `run/plain_host_receipts/population-receipt-91-1794404577.json`,
+`run/plain_host_receipts/population-receipt-91-analysis.json` (full census,
+per-agent table, DB deltas, verdicts), traces
+`.work/runtime/population-live/traces/*.jsonl` (UTC >= 14:00 filter), runner
+log `/tmp/population_leg91.log`. No SQL changes; seed verified vs fresh DB
+readback at preflight (no drift, no fix). No gate run (no code change).
