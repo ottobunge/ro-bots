@@ -2489,7 +2489,9 @@ class PlayingClient:
         if not grid.walkable((state.x, state.y)):
             cache.mark_walkable(state.map_name, (state.x, state.y))
             self._note_move_gate("ground_corrected_own_cell")
-        if dealer_entry_cell(state.map_name, target):
+        # Allocation and dispatch must agree about received corridor blockers,
+        # including the path home after a sale releases the counter.
+        if dealer_entry_cell(state.map_name, target) or state.map_name == "prt_in":
             return self._move_staging(state, target, grid, pos)
         try:
             path = shortest_path(grid, (state.x, state.y), target)
