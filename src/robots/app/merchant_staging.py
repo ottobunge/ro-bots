@@ -3,7 +3,12 @@
 import logging
 
 from robots.adapters.native_navigation import NoRoute, WalkMap, shortest_path
-from robots.app.scripts import MERCHANT_ROUTE, _approach_cell, _free_approach_cells
+from robots.app.scripts import (
+    MERCHANT_ROUTE,
+    MERCHANT_ROUTE_RETURN,
+    _approach_cell,
+    _free_approach_cells,
+)
 from robots.domain.model import BotState
 
 logger = logging.getLogger(__name__)
@@ -44,6 +49,30 @@ def _static_blockers(map_name: str) -> tuple[Point, ...]:
 def _queue_cell(point: Point) -> bool:
     x, y = MERCHANT_ROUTE["prt_in"]
     return 2 <= max(abs(point[0] - x), abs(point[1] - y)) <= 4
+
+
+def _dealer_exit_lane(grid: WalkMap) -> set[Point]:
+    """Public paths out of the counter must stay clear of fallback parking.
+
+    A received body in the narrow entrance may be leaving after a sale.
+    Never infer its inventory or intent: give every counter cell an exit.
+    """
+    x, y = MERCHANT_ROUTE["prt_in"]
+    lane: set[Point] = set()
+    for dx in (-1, 0, 1):
+        for dy in (-1, 0, 1):
+            cell = (x + dx, y + dy)
+            if cell == (x, y) or not grid.walkable(cell):
+                continue
+            try:
+                lane.update(
+                    shortest_path(
+                        grid, cell, MERCHANT_ROUTE_RETURN["prt_in"], blocked_visible=((x, y),)
+                    )
+                )
+            except NoRoute:
+                continue
+    return lane
 
 
 def _queue_origins(
@@ -176,37 +205,62 @@ class MerchantStaging:
     ) -> Point | None:
         """Prefer talk-range cells; outer cells are an honest congestion queue."""
         self.observe(state)
-        x, y = MERCHANT_ROUTE["prt_in"]
         cell = self._dealer_ring_target(grid, state, own_id, bodies)
         if cell is not None:
+            if self._dealer_saturation is not None:
+                logger.warning(
+                    "merchant-drive: dealer_ring_handover (bot=%s agent=(%s,%s) cell=%s)",
+                    state.name,
+                    state.x,
+                    state.y,
+                    cell,
+                )
             self._dealer_selection = None
             self._dealer_saturation = None
             return cell
         self._note_ring_saturation(grid, state)
+        return self._dealer_queue_target(grid, state)
+
+    def _dealer_queue_target(self, grid: WalkMap, state: BotState) -> Point | None:
+        x, y = MERCHANT_ROUTE["prt_in"]
+        lane = _dealer_exit_lane(grid)
         cells = [
             (x + dx, y + dy)
             for dx in range(-4, 5)
             for dy in range(-4, 5)
-            if max(abs(dx), abs(dy)) >= 2
+            if max(abs(dx), abs(dy)) >= 2 and (x + dx, y + dy) not in lane
         ]
         cells.sort(
             key=lambda p: (
-                max(abs(p[0] - x), abs(p[1] - y)),
                 max(abs(p[0] - state.x), abs(p[1] - state.y)),
+                max(abs(p[0] - x), abs(p[1] - y)),
                 p,
             )
         )
         cell = next((p for p in cells if self.path(grid, state, p) is not None), None)
-        if cell is not None and cell != self._dealer_selection:
-            logger.warning(
-                "merchant-drive: dealer_outer_fallback "
-                "(bot=%s cell=%s chebyshev=%s preferred_chebyshev<=1=unavailable)",
-                state.name,
-                cell,
-                max(abs(cell[0] - x), abs(cell[1] - y)),
-            )
+        self._note_dealer_queue(state, cell, lane)
         self._dealer_selection = cell
         return cell
+
+    def _note_dealer_queue(self, state: BotState, cell: Point | None, lane: set[Point]) -> None:
+        if cell is None or cell == self._dealer_selection:
+            return
+        x, y = MERCHANT_ROUTE["prt_in"]
+        logger.warning(
+            "merchant-drive: dealer_outer_fallback "
+            "(bot=%s cell=%s chebyshev=%s preferred_chebyshev<=1=unavailable)",
+            state.name,
+            cell,
+            max(abs(cell[0] - x), abs(cell[1] - y)),
+        )
+        if (state.x, state.y) in lane and cell != (state.x, state.y):
+            logger.warning(
+                "merchant-drive: dealer_queue_yield (bot=%s agent=(%s,%s) cell=%s)",
+                state.name,
+                state.x,
+                state.y,
+                cell,
+            )
 
     def _dealer_ring_target(
         self, grid: WalkMap, state: BotState, own_id: int | None, bodies: tuple[Body, ...]

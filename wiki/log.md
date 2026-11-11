@@ -12151,3 +12151,73 @@ hits-vs-swings instrument. Leg-93 seed: [109, 131, 82, 87, 93, 52, 125].
 
 Receipt: `run/plain_host_receipts/population-receipt-92-1794421332.json`;
 analysis: `run/plain_host_receipts/population-receipt-92-analysis.json`.
+
+## [2026-11-11] Dealer queue handover — clear the post-sale exit corridor (SOL slice)
+
+Evidence: leg-92 receipt `run/plain_host_receipts/population-receipt-92-1794421332.json`
+and `population-receipt-92-analysis.json` (receipt commit `6396e3b8`); implementation
+base `243aa2c9`. Read the existing per-agent JSONL rows for 18:30–20:00 UTC;
+no population runner was started. These traces name actions `action_executed`
+(the requested `agent_action` census), alongside `script_step`, `move_performed`,
+`loot_performed`, `state_tick`, and goal reviews.
+
+**Named root cause: self-parking in the dealer exit corridor.** All three loot
+holders entered `MerchantDrive`; stock admission and deferred-loot action-slot
+ownership were not holding them. zeny_wing (705) stayed at `(169,127)` from its
+first prt_in state tick at 19:14:51Z through 19:59:41Z; PipinWalker (909) stayed
+at `(170,128)` from 19:09:56Z through 19:59:55Z; PoringMuffin14 (909) stayed at
+`(169,128)` from 19:38:23Z through 19:59:50Z. Their interior actions repeatedly
+requested their own cells and received `single_cell_path`, without a dealer
+click. xXLunasongXx actually clicked at `(172,129)` at 19:08:55Z, opened sell at
+19:09:00Z, and sold at 19:09:02Z; it then moved to `(171,128)` and repeatedly
+requested home `(168,124)`. `(171,128)` is Chebyshev **2**, not 1, from the
+received dealer `(172,130)`; the ring had already been vacated.
+
+The pinned map reproduces the exact gates: `_dealer_ring_target` finds no
+body-free path through `(170,128)`/`(171,128)`; `dealer_target`'s outer fallback
+selects each waiter's current corridor cell, so `_move_path` refuses the
+single-cell walk. The departing seller's next west step is occupied, and
+`_dispatch_path_step`'s required occupied-west reroute returns
+`occupied_west_no_route`. Received ring vacancy alone cannot free this corridor.
+The outer fallback introduced in `ce522d8`, combined with `224c3fd`'s body-aware
+ring allocation, lacked a rule for keeping the exit clear. The sell-open,
+inventory reconciliation, retained-plan exchange, loot-resume, and goal-review
+paths were read; the traces show authoring continued under the retained drive.
+The offline reproduction emits the existing `admitted`,
+`dealer_talk_out_of_range`, `dealer_ring_saturated`, and `dealer_outer_fallback`
+taps with this geometry; original process warning logs were not available from
+the retained journal, so those taps are reproduction evidence, not live receipts.
+
+**Fix:** staging derives exit-lane cells from public, walkable ring-to-home
+paths. A saturated waiter parks at its nearest reachable cell outside that lane,
+keeping a safe existing parking cell until ring access changes. Local received
+bodies still determine allocation; nobody reads another agent's stock, intent,
+or private runtime. `dealer_queue_yield` names a lane-clearing target and
+`dealer_ring_handover` names renewed ring allocation after saturation. Both are
+target telemetry, not claims of arrived movement or a completed sale. Runtime
+prt_in dispatch now uses the same fresh body-aware staging path, including the
+post-sale return, preserving the walkability veto and never walking through the
+dealer or a newly received blocker. No new shared reservations or timers.
+
+**RED → GREEN:** `tests/test_dealer_queue_handover.py` replays all four exact
+post-sale positions on pinned rAthena map-cache geometry using separate clients
+and received body/movement/inventory-delete/vanish frames. Unchanged main fails
+both tests: no waiter arrives in 300 simulated seconds, no seller departs, and a
+newly blocked approach incorrectly dispatches. With the fix, PoringMuffin14,
+PipinWalker, and zeny_wing reach ring cells at **74 / 118 / 244 simulated seconds**,
+respectively, keeping the existing five-evaluation walk cadence. The first sold
+owner departs; all three waiters arrive within the five-minute test bound.
+Completed shop exchange is modeled by received stock deletion; existing C4/C7
+exchange tests supply the independent trade-authority coverage. The dispatch
+test rejects a newly blocked corridor without a wire send and resumes on its
+next clear perception. Focused suite: **50 passed**. This is offline proof;
+a future population leg must establish live queue turnover.
+
+Full gate **GREEN**: `nix develop -c task --dir . check` exited 0; **7,119 passed,
+1 skipped, 65 subtests passed, 95.63% coverage** (268.58s), with Black, Ruff,
+mypy, vulture, xenon, duplicate-code, and security checks passing. Fresh-worktree
+setup included the pinned `rathena` submodule plus ignored links to main's two
+knowledge DBs and `rathena/config.log`; no tracked fixture changes. Final gate
+receipt and local RED/GREEN logs are in `.work/dealer-queue-handover/`.
+No population runner, Docker/heavengraph operation, or `spikes/` edit. Commit
+and push this branch for review; leave main unmerged.
