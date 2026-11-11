@@ -158,3 +158,51 @@ def test_offline_host_traces_arrival_refire_without_a_new_decision(tmp_path):
     rows = [row for row in read_lines(tmp_path, "Doramir-01") if row["kind"] == "loot_performed"]
     assert [row["outcome"] for row in rows] == ["deferred", "refired", "attempted"]
     assert rows[-2]["reason"] == "loot_refired_after_walk"
+
+
+def test_host_trace_names_both_conversions_when_second_refire_loses_pending(tmp_path):
+    trace = TraceLog(tmp_path, "Doramir-01")
+    agent, _, _ = make_agent(trace, tmp_path)
+    client, _ = _clocked_client_with_floor_at(43, 38)
+    agent.client = client
+    client.perform_native(Loot())
+    client.wire.add(zc_item_entry(aid=322, item=705, x=43, y=38))
+    client.perform_native(Loot())  # second drop defers behind the first ack
+    client.wire.add(struct.pack("<HI", 0x00A1, 321), ack())
+    client.drain_native_events()
+    assert len(client.wire.sent) == 2
+    assert client.loot_telemetry[-2]["reason"] == "loot_refired_after_ack"
+    client._loot_receipt._pending.clear()  # lost lane, retained per-attempt context
+    client.wire.add(ack(item=705, index=3))
+    agent._trace_state_tick(client.build_native_state(Goal.GRIND))
+    agent._trace_state_tick(client.build_native_state(Goal.GRIND))
+    trace.close()
+    rows = [r for r in read_lines(tmp_path, "Doramir-01") if r["kind"] == "loot_performed"]
+    successes = [r for r in rows if r["outcome"] == "succeeded"]
+    assert [r["attempt"] for r in successes] == [1, 2]
+    assert [r["floor_item_id"] for r in successes] == [321, 322]
+    assert [r["received_item_id"] for r in successes] == [909, 705]
+    assert successes[-1]["reason"] == "attributed_by_item"
+    assert len(client.wire.sent) == 2
+
+
+def test_boundary_does_not_replay_an_already_consumed_ack():
+    client, _ = _clocked_client_with_floor_at(43, 38)
+    client.perform_native(Loot())
+    client.wire.add(ack())
+    client.build_native_state(Goal.GRIND)
+    client.wire.add(struct.pack("<H16sHH", 0x0091, b"prontera", 42, 37), ack(6))
+    client.build_native_state(Goal.GRIND)
+    rows = [r for r in client.loot_telemetry if "ack_seq" in r]
+    assert len(rows) == 2
+    assert rows[-1]["outcome"] == "unattributed_ack"
+    assert len({r["ack_seq"] for r in rows}) == 2
+
+
+def test_runtime_item_fallback_expires_before_ack_after_same_snapshot_id_reuse():
+    client, _ = _clocked_client_with_floor_at(43, 38)
+    client.perform_native(Loot())
+    client._loot_receipt._pending.clear()
+    client.wire.add(struct.pack("<HI", 0x00A1, 321), zc_item_entry(aid=321, x=43, y=38), ack())
+    client.build_native_state(Goal.GRIND)
+    assert client.loot_telemetry[-1]["outcome"] == "unattributed_ack"

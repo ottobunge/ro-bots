@@ -128,6 +128,7 @@ def test_unsolicited_success_is_not_attributed_to_floor_loot():
     client.wire.add(ack())
     client.build_native_state(Goal.GRIND)
     assert not [r for r in client.loot_telemetry if r["outcome"] == "succeeded"]
+    assert client.loot_telemetry[-1]["outcome"] == "unattributed_ack"
 
 
 def test_loot_priority_still_preempts_move_and_preserves_attack():
@@ -207,7 +208,7 @@ def test_map_boundary_does_not_attribute_old_pending_ack_to_new_drop():
     client.perform_native(Loot())
     assert client.wire.sent == [PICKUP, PICKUP]
     outcomes = [r["outcome"] for r in client.loot_telemetry]
-    assert outcomes == ["attempted", "unconfirmed", "attempted"]
+    assert outcomes == ["attempted", "unconfirmed", "unattributed_ack", "attempted"]
 
 
 def test_unrelated_success_does_not_confirm_pending_loot():

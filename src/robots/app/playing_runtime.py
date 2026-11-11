@@ -2234,6 +2234,9 @@ class PlayingClient:
 
     def _observe_loot_acks(self, view: NativeGameplayView) -> None:
         self._ensure_loot_memos()
+        # Expire item fallback before ingesting this ack, including floor ID
+        # replacement earlier in the same received snapshot.
+        self._refresh_loot_memo(view.floor_items)
         for ack in view.pickup_acks:
             if ack.seq > self._loot_ack_cursor:
                 self._loot_receipt.consume(ack)
@@ -2243,7 +2246,10 @@ class PlayingClient:
         self._ensure_loot_memos()
         self._loot_receipt.boundary(reason)
         self._refresh_loot_memo(())
-        self._loot_ack_cursor = 0
+        # Map changes retain the tracker's ack tail. Only a new session
+        # replaces that tracker and may restart the received sequence.
+        if reason == "session_changed":
+            self._loot_ack_cursor = 0
         self._loot_motion_seq = -1
 
     def _rest(self, state: BotState) -> None:
