@@ -12096,3 +12096,58 @@ and all static checks passed (379 files checked by strict mypy). Pytest:
 `/tmp/loot-ack-ledger-full-gate.log`. Runtime/test files remained frozen during
 the gate; only this results paragraph was appended afterwards. The temporary
 tracked fixture link is restored before commit. No outstanding gate failures.
+
+## Leg 92 — ACK ATTRIBUTION PROVEN LIVE; VOLUME DIP NAMED (2026-11-11, 783ee66c+receipt)
+
+Window [2, 19.5, 21.0] (19:30-21:00 Madrid), 7 agents, `systemd --user
+leg92-runner`, 7200s. **Main carried the ack-attribution merge at launch**
+(783ee66c with 8fa78224, gate 7,118+65/95.63%; it landed on origin/main during
+the hold at 17:02 and local main was already fast-forwarded before the 19:22
+launch). Seed 109/131/82/87/88/52/125 verified against a fresh DB readback at
+pre-launch — zero drift, no seed commit needed.
+
+**Verdict (a) SUSTAINING: FAIL on the count, healthy on quality.** 2
+DB-verified conversions vs leg-91's 6. Named cause: drop supply collapsed to 4
+ItemDrops (leg 91: 18) — the kill mass concentrated in two agents. Conversion
+quality itself improved: 2 deferrals (walking) → 2 refires → 2 attempts → **2/2
+named successes (100%)**, zero expiries, zero unconfirmed, zero refire
+failures. The machinery is healthy; the window was drop-poor.
+
+**Verdict (b) ATTRIBUTION: PASS — the leg-91 signature is closed.** Both
+successes carry the new attribution fields and match the DB slot exactly:
+zeny_wing 705x1 inv_idx 3 (ack 733, 18:38:44Z) and PoringMuffin14 909x1 inv_idx
+3 (ack 774, 18:49:53Z), both reason_code 0, attempt 1, standing after
+`loot_refired_after_walk`. Zero `unattributed_ack`; the `attributed_by_item`
+fallback was never needed — both acks settled by identity/sent-seq. Bonus:
+xXLunasongXx sold its leg-91 unattributed 705 this window (+5z) — that item was
+server-real all along and is now economically closed.
+
+**Verdict (c) FARMING: PARTIAL.** Attacks held (143 vs leg-91's 161 windowed)
+but kills in only 2/7 agents (zeny_wing +8/+6, PoringMuffin14 +6/+9). s00's
+pay_fild04 engagement is now sharply named: **162 MonsterSpotted, 657 MoveTos,
+242 decides, 14 Loot actions — and ZERO Attack actions** all window (exp flat
+42/27, third consecutive leg). Not perception- or mobility-starved: the
+attack-authoring path itself never fires for s00. Second new shape: NyxSong
+took 11 damage and swung 62 times for ZERO kills (exp flat) — swing-to-kill
+efficiency needs a hits-vs-swings instrument.
+
+**Verdict (d) RUN HEALTH: CLEAN.** 28,634 steps, 0 errors, 0 TRANSPORT DOWN,
+both backends healthy all window, clean logoffs at close, clean DONE at ~21:22.
+
+**New: FIRST AUTONOMOUS GUILD CREATIONS in a population leg.** FoundGuild x2
+authored, both landed server-side: guild 2 `NyxSongGuard` (master NyxSong) and
+guild 3 `PipinWalkerGuard` (master PipinWalker); GuildInvite x12 authored
+(RinceNyan invited, guild_id still 0 at close). Parties held (party 2 =
+PipinWalker/xXLunasongXx/PoringMuffin14, party 3 = NyxSong/zeny_wing).
+
+**New signature — DEALER QUEUE DEADLOCK (now the direct blocker on
+conversion→zeny).** Three agents holding sellable loot (zeny_wing 705,
+PipinWalker 909, PoringMuffin14 909) stood 2-3 cells off the prt_in dealer
+(169-170,127-128) for ~80 minutes; only the already-adjacent xXLunasongXx
+(171,128, Chebyshev 1) sold. Same shape the leg-73 finding named: approach-cell
+allocation/queueing at the dealer is the missing piece. Next slices: dealer
+queueing (closes 3 held conversions at once), s00 attack-authoring, the
+hits-vs-swings instrument. Leg-93 seed: [109, 131, 82, 87, 93, 52, 125].
+
+Receipt: `run/plain_host_receipts/population-receipt-92-1794421332.json`;
+analysis: `run/plain_host_receipts/population-receipt-92-analysis.json`.

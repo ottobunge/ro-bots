@@ -1,0 +1,93 @@
+{
+  "leg": 92,
+  "kind": "ack-attribution-verdict",
+  "date": "2026-11-11",
+  "window": "[2, 19.5, 21.0] = 19:30-21:00 Madrid",
+  "launch": {
+    "time_local": "19:22",
+    "main_sha": "783ee66c",
+    "ack_attribution_merge_on_main_at_launch": true,
+    "ack_attribution_merge_sha": "783ee66c",
+    "note": "The sol/loot-ack-attribution slice (8fa78224, gate 7,118+65/95.63%) merged to origin/main during the hold at 17:02. Local main was already fast-forwarded, so the window ran WITH the per-attempt ack ledger and the attributed_by_item/unattributed_ack verdict paths.",
+    "unit": "leg92-runner (systemd --user)",
+    "duration_s": 7200,
+    "receipt": "run/plain_host_receipts/population-receipt-92-1794421332.json"
+  },
+  "run_health": {
+    "steps": 28634,
+    "step_errors": 0,
+    "transport_down": 0,
+    "backend_errors": 0,
+    "logins": "all 7 agents online within ~30s of the 19:30 window open; clean logoffs at 21:00 close",
+    "runner_exit": "clean DONE at ~21:22 (steps 28634, errors 0)"
+  },
+  "seed_baseline": {
+    "zeny": [109, 131, 82, 87, 88, 52, 125],
+    "verified_vs_db_at_preflight": true,
+    "drift": "none; no seed fix or commit needed",
+    "post_leg92_finals_for_next_seed": [109, 131, 82, 87, 93, 52, 125]
+  },
+  "loot_census": {
+    "source": "per-agent traces, UTC >= 18:30 (whole window), kind=loot_performed",
+    "outcomes": {"deferred": 2, "refired": 2, "attempted": 2, "succeeded": 2, "refused": 3, "expired": 0, "unconfirmed": 0, "unattributed_ack": 0, "attributed_by_item": 0},
+    "deferral_reasons": {"walking": 2},
+    "attribution": "2/2 successes carry ack_seq + inventory_index + received_item_id/amount (the new attribution fields); zero unattributed_ack emitted; zero attributed_by_item fallback needed - both acks settled their own attempt by identity/sent-seq",
+    "named_successes": [
+      {"agent": "pop_0003_g00m02", "t": "18:38:44Z", "item": 705, "floor_item": 493, "pos": [173, 363], "reason_code": 0, "ack_seq": 733, "inventory_index": 3, "attempt": 1},
+      {"agent": "pop_0003_g01m02", "t": "18:49:53Z", "item": 909, "floor_item": 495, "pos": [92, 309], "reason_code": 0, "ack_seq": 774, "inventory_index": 3, "attempt": 1}
+    ],
+    "refusals": [
+      {"agent": "pop_0003_s00", "t": "18:30:24Z", "reason": "no_floor_item"},
+      {"agent": "pop_0003_g00m00", "t": "18:56:01Z", "reason": "no_floor_item"},
+      {"agent": "pop_0003_g01m02", "t": "19:00:08Z", "reason": "no_floor_item"}
+    ],
+    "per_agent": {
+      "pop_0003_g00m00": {"refused": 1},
+      "pop_0003_g00m02": {"deferred": 1, "refired": 1, "attempted": 1, "succeeded": 1},
+      "pop_0003_g01m02": {"deferred": 1, "refired": 1, "attempted": 1, "succeeded": 1, "refused": 1},
+      "pop_0003_s00": {"refused": 1}
+    },
+    "drop_supply": "4 ItemDrops all window (leg 91: 18) - g00m02 one drop (705 fid 493), g01m02 three drops in 11s (915/909/915 fid 494/495/496). Both drops that were loot-attemptable converted; the unlooted 915s were never attemptable before despawn."
+  },
+  "db_ground_truth": {
+    "zeny_delta_vs_seed": {"NyxSong": 0, "RinceNyan": 0, "zeny_wing": 0, "PipinWalker": 0, "xXLunasongXx": 5, "PoringMuffin14": 0, "YuffieFy81_s00": 0},
+    "sell_cycles": "xXLunasongXx closed the window's only sell trip (+5z, NpcShopSellOpen->NpcShopSell inside prt_in at 19:09Z) - the sell cycle continues (seventh population-wide). Its sale was the leg-91 leftover 705 (Clover): the leg-91 unattributed pickup is now economically closed - the item was server-real and converted to zeny.",
+    "inventory_fresh_conversions": [
+      {"agent": "zeny_wing (char 300002)", "nameid": 705, "qty": 1, "inventory_index": 3, "named_success": "18:38:44Z ack 733", "match": true},
+      {"agent": "PoringMuffin14 (char 300005)", "nameid": 909, "qty": 1, "inventory_index": 3, "named_success": "18:49:53Z ack 774", "match": true}
+    ],
+    "inventory_pre_existing": [
+      {"agent": "PipinWalker (char 300003)", "nameid": 909, "qty": 1, "note": "leg-91 unattributed pickup, unchanged this window - not a leg-92 conversion"},
+      {"agent": "YuffieFy81/s00 (char 300006)", "nameid": 511, "qty": 1, "note": "pre-existing, origin unknown (no leg-92 trace for it; not counted as a leg-92 conversion) - flag for the next inventory census"}
+    ],
+    "attribution_test": "EVERY server-side conversion this window has a named success row (2/2, inventory_index matches DB slot). Zero fresh inventory rows without a named success. Test (b) PASSES.",
+    "exp_delta": "base/job up only in the two converting agents: zeny_wing +8/+6, PoringMuffin14 +6/+9 (kills happened on prt_fild08). NyxSong 207/130 flat despite 62 attacks; s00 flat at 42/27 (zero kills, third consecutive leg)."
+  },
+  "socials": {
+    "guilds_formed": [
+      {"guild_id": 2, "name": "NyxSongGuard", "master": "NyxSong (char 300000)"},
+      {"guild_id": 3, "name": "PipinWalkerGuard", "master": "PipinWalker (char 300003)"}
+    ],
+    "note": "FIRST autonomous guild creation inside a population leg (FoundGuild x2 authored, both landed server-side; GuildInvite x12 authored, RinceNyan invited but guild_id still 0 at close). Prior guild proofs were two-client probes.",
+    "parties": "party 2 = PipinWalker/xXLunasongXx/PoringMuffin14; party 3 = NyxSong/zeny_wing; RinceNyan solo party 4; s00 no party",
+    "chats": 48
+  },
+  "verdict": {
+    "a_sustaining": "FAIL on the stated count: 2 DB conversions vs leg-91's 6. Named cause: drop supply collapsed (4 ItemDrops vs leg-91's 18; the kill mass concentrated in 2 agents). Conversion QUALITY improved: attempt->success 2/2 named (100% vs leg-91 4/7), zero expiries, zero unconfirmed, zero refire failures. The machinery is healthy; the window was drop-poor.",
+    "b_attribution": "PASS. Both DB conversions carry named success rows with ack_seq + inventory_index matching the DB slot (705/zeny_wing ack 733, 909/PoringMuffin14 ack 774). Zero unattributed_ack. The ack-attribution merge WAS on main at launch. Bonus: xXLunasongXx's leg-91 unattributed 705 was sold this window (+5z) - the leg-91 signature item proved economically real.",
+    "c_farming": "PARTIAL. Attacks held (143 vs leg-91's 161 windowed), kills in only 2/7 agents (leg-91: 6/7). s00 pay_fild04 engagement now SHARPLY named: 162 MonsterSpotted events, 657 MoveTos, 242 decides, 14 Loot actions - and ZERO Attack actions all window. Not perception- or mobility-starved: the attack-authoring path itself never fires for s00. New second signature: NyxSong fought (11 DamageTaken) and swung 62 times for ZERO kills (exp flat) - swing-to-kill efficiency on its engagement never converged.",
+    "d_run_health": "CLEAN. 28,634 steps, 0 errors, 0 TRANSPORT DOWN, both backends healthy at launch and all window, clean DONE exit. Plus a first: two autonomous guilds formed live (NyxSongGuard, PipinWalkerGuard).",
+    "new_signatures": [
+      "DEALER QUEUE DEADLOCK (now the direct blocker on conversion->zeny closure): 3 agents holding sellable loot (zeny_wing 705, PipinWalker 909, PoringMuffin14 909) stood 2-3 cells off the prt_in dealer (169-170,127-128) for ~80 minutes; only the already-adjacent xXLunasongXx (171,128, Chebyshev 1) sold. Same shape as the leg-73 finding - approach-cell allocation/queueing at the dealer is the missing piece.",
+      "s00 zero-attack signature sharpened: 162 sightings + 657 moves + 14 Loot actions + 0 Attack actions - the attack-authoring path never fires on pay_fild04 despite full perception and mobility.",
+      "NyxSong 62 swings / 0 kills / 11 DamageTaken: swing-to-kill efficiency needs a hits-vs-swings instrument.",
+      "First autonomous GUILD CREATIONS in a population leg (2 landed server-side)."
+    ]
+  },
+  "next": [
+    "dealer approach-cell allocation/queueing so queued sellers reach Chebyshev<=1 and convert held loot to zeny (directly closes zeny_wing 705 + PoringMuffin14 909 + the leg-91 PipinWalker 909)",
+    "s00 pay_fild04 attack-authoring (the decide->attack path never fires despite sightings; leg 91 and 92 both zero)",
+    "swing-efficiency instrument (hits vs swings) for the NyxSong 62/0 shape",
+    "leg-93 seed = [109, 131, 82, 87, 93, 52, 125]"
+  ]
+}
