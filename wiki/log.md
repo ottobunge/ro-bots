@@ -12034,3 +12034,65 @@ per-agent table, DB deltas, verdicts), traces
 `.work/runtime/population-live/traces/*.jsonl` (UTC >= 14:00 filter), runner
 log `/tmp/population_leg91.log`. No SQL changes; seed verified vs fresh DB
 readback at preflight (no drift, no fix). No gate run (no code change).
+
+## [2026-11-11] Loot ack attribution survives second attempts
+
+**Basis:** main `6e8fbc00`; read the first-parent diffs of loot convergence
+`7f5bacfd` and attribution `2ebf478b`. Leg-91 receipts
+`run/plain_host_receipts/population-receipt-91-1794404577.json` and
+`run/plain_host_receipts/population-receipt-91-analysis.json` report six
+DB-verified conversions but four named successes. PipinWalker (909 x1) and
+xXLunasongXx (705 x1) are the missing attributions; traces are
+`.work/runtime/population-live/traces/*.jsonl`, UTC >= 14:00. This change is
+validated offline; it does not claim a new live population result.
+
+**Contract:** the bounded receipt ledger retains each attempt's floor ID,
+item ID/amount, drop sequence, attempt number, sent-after sequence and copied
+map/session/position context. A later attempt cannot overwrite an earlier
+attempt's verdict identity. Successful acks settle matching item/amount
+attempts after their send cursor; raw refusals retain FIFO handling because
+their item fields are not reliable. Identical item/amount attempts also use
+FIFO: 0x0A37 contains no floor ID or client attempt identifier.
+
+If pending bookkeeping has no match, an item-bearing ack can settle an
+unsettled attempt from the current floor presence epoch, with the explicit
+`reason=attributed_by_item`. This fallback requires an ack after the observed
+drop sequence, rejects settled attempts and expired/replaced presences, and
+is cleared on map/session boundaries. An ack that still cannot be matched
+emits `outcome=unattributed_ack`, floor ID null, with the complete raw verdict,
+ack sequence, item/amount and inventory index; it never invents a success.
+Attempt history and receipt tails are bounded at 128 entries; eviction names
+an unsettled attempt `unconfirmed/attribution_capacity` before discarding it.
+
+Runtime refreshes floor presence before ack settlement, including same-snapshot
+ID replacement. Map changes preserve the ack cursor because the tracker
+retains its ack tail; resetting it replayed already-consumed acks. New
+sessions still reset the cursor. The single dispatch barrier, bounded walk
+confirmation/backoff, once-per-presence send latch and refused-retry rules
+are unchanged. Normal pending acks still settle after floor disappearance.
+
+**TDD:** initial RED: 11 failed (`/tmp/loot-ack-ledger-red.log`). Runtime
+boundary RED: 2 failed / 11 passed
+(`/tmp/loot-ack-ledger-runtime-red.log`), proving stale fallback across ID reuse
+and old-ack replay across maps. Final focused GREEN: **76 passed**, all static
+checks passed, strict mypy checked 379 files
+(`/tmp/loot-ack-ledger-focused.log`). Tests include interleaved attempts on the
+same floor item and different drops, reversed distinguishable acks, missed
+send-cursor matching, dropped pending entries, raw refusals, named unmatched
+acks, epoch expiry, bounded history, and an offline host trace with both
+conversions after an ack-deferred second re-fire loses its pending entry.
+
+**Environment:** own worktree/branch `sol/loot-ack-attribution`; pinned rAthena
+is a local shared clone with main's ignored config.log symlink. The iro-db
+fixture links to main. Main's tracked iro-wiki DB link is self-referential;
+the gate temporarily uses the existing optreview fixture, with the tracked
+link restored before commit. No population runner, Docker, heavengraph,
+spikes/, SQL, or live-world operations were run. Commit and push only; no merge.
+
+**Pre-commit full gate GREEN:** `nix develop -c task --dir . check` — Black
+and all static checks passed (379 files checked by strict mypy). Pytest:
+**7,118 passed, 65 subtests passed**, four warnings, **95.63% total coverage**
+(85% minimum), 264.81 seconds. Transcript:
+`/tmp/loot-ack-ledger-full-gate.log`. Runtime/test files remained frozen during
+the gate; only this results paragraph was appended afterwards. The temporary
+tracked fixture link is restored before commit. No outstanding gate failures.
