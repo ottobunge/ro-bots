@@ -11872,3 +11872,55 @@ duplicate-code and Bandit passed. Pytest: **7,088 passed, 1 skipped,
 only this results paragraph was appended afterwards. Gate transcript:
 `/tmp/leg90-final-gate.log`. No outstanding gate rejection. Branch:
 `t3/loot-success-attribution`, based on main `9b7a3f2fa2b0`.
+
+## Leg 90 (2026-11-11, window Wed 08:30-10:00 Madrid) — LOOT CONVERSION: the standing-radius pickup merge converts its first own-kill drop end to end; volume now named by the gate reasons
+
+Launch: systemd-run --user unit `leg90-runner`, duration 7800s, decision
+`http://192.168.1.156:8091/v1/systemone`, chat `:8092/v1/chat/completions`,
+schedule `[2, 8.5, 10.0]`, seed-zeny baseline 106/124/79/84/85/52/125
+verified against fresh pre-launch readbacks at 07:01 and 08:20 (exact match
+both times, no seed fix needed; no stale runner; :8091/:8092 health ok).
+Runner exited DONE at ~10:22: steps 31,039, step_errors 0, receipt
+`run/plain_host_receipts/population-receipt-90-1794381240.json`.
+
+**(a) LOOT CONVERSION: MECHANISM PASS, VOLUME GATE-LIMITED.** The merge
+2ebf478b chain closed end to end on s00 (YuffieFy81, pay_fild04) at
+07:37:12Z: drop 511 (Green Herb) surfaced at (243,199) -> `loot_performed`
+deferred/pending_walk while a walk was in flight -> `attempted` standing
+adjacent at (244,200) (native_epoch 1, sent_after_seq 384) -> `succeeded`
+reason_code 0, ack_seq 385 -> **DB inventory row 511x1 verified**. That is
+the leg's target hop: an own-kill drop became an inventory row, with the ack
+naming the verdict per attempt. Window census across all agents: 23
+loot events = 15 deferred (walking 8, resting 3, out_of_range 3,
+pending_walk 1), 6 refused (no_floor_item), 1 attempted, 1 succeeded —
+attempt->success 1/1 at the wire layer, but only one event reached a
+standing attempt. 72 Loot actions were dispatched (s00 22, g01m01 24,
+g00m02 14, g00m00 6, g01m00 4, g01m02 2); the radius-2 standing gate held
+the rest with named reasons and zero blind pickups at walk destinations
+(the leg-86-88 failure shape is gone). The remaining limiter is approach
+convergence: most deferrals never re-fire within the drop's presence epoch
+(walking/resting dominates the reasons). Next lever: make the deferred
+loot re-attempt after the walk completes instead of expiring with the
+presence epoch, and bias roam toward the drop cell.
+
+**(b) ECONOMY: FIFTH CYCLE LIVE.** RinceNyan (g00m01) ran
+TalkToNpc -> NpcShopSellOpen -> NpcShopSell at 08:05Z (09:05 local), zeny
+124->127 (+3z); no other sellers staged this window. End-state zeny
+106/127/79/84/85/52/125.
+
+**(c) FARMING: HELD.** 140 Attack actions (g00m00 49, g00m02 37, s00 18,
+g01m02 30, g01m00 4, g01m01 2), ~1,100 MoveTos per field agent, kills in 5
+agents by exp delta: NyxSong +4/+2, zeny_wing +17/+12, PoringMuffin14
++6/+6, YuffieFy81 +4/+3, xXLunasongXx +1/+1.
+
+**(d) RUN HEALTH: CLEAN + GUILD ARC ADVANCES.** 31,039 steps, 0 step
+errors, 0 TRANSPORT DOWN, 7/7 online at every in-window sample, clean
+logoff at 10:00. One isolated keepalive send failure at 08:39 named itself
+(`MoveTo failed: native keepalive send failed; transport release
+required`) and the release/reconnect machinery absorbed it (no TRANSPORT
+DOWN). NEW SIGNATURE: both group leaders founded guilds autonomously —
+guild rows `NyxSongGuard` (master NyxSong) and `PipinWalkerGuard` (master
+PipinWalker), 6 `GuildInvite`s + 2 `InviteToParty`s each; chat busy (84
+chat_sent, 40+ PartyChat). Traces: `.work/runtime/population-live/traces/`
+(rows 07:30-08:10Z); receipt above. Next-leg staging note: seed-zeny
+baseline for leg 91 should be 106/127/79/84/85/52/125.
