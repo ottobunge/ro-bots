@@ -23,6 +23,11 @@ class LootAttribution:
         self._attempt = 0
         self._missing = False
         self._attempt_context: dict[str, object] = {}
+        self._deferred: dict[int, tuple[ObservedFloorItem, str]] = {}
+
+    @property
+    def deferred(self) -> tuple[ObservedFloorItem, ...]:
+        return tuple(item for item, _ in self._deferred.values())
 
     @property
     def rows(self) -> tuple[dict[str, object], ...]:
@@ -34,6 +39,10 @@ class LootAttribution:
         return rows
 
     def refresh(self, present: set[int]) -> None:
+        for fid in tuple(self._deferred):
+            if fid not in present:
+                item, _ = self._deferred.pop(fid)
+                self.note(item, "expired", reason="presence_epoch_expired")
         if present:
             self._missing = False
         self._held = {key for key in self._held if key[0] in present}
@@ -42,10 +51,14 @@ class LootAttribution:
         if self.pending is not None:
             self.note(self.pending[0], "unconfirmed", reason=reason)
         self.pending = None
+        for item, _ in self._deferred.values():
+            self.note(item, "expired", reason=reason)
+        self._deferred.clear()
         self._held.clear()
         self._missing = False
 
     def defer(self, item: ObservedFloorItem, reason: str) -> None:
+        self._deferred.setdefault(item.floor_item_id, (item, reason))
         key = (item.floor_item_id, reason)
         if key not in self._held:
             self._held.add(key)
@@ -60,6 +73,14 @@ class LootAttribution:
         self, item: ObservedFloorItem, after_seq: int, *, context: dict[str, object]
     ) -> None:
         self._attempt += 1
+        deferred = self._deferred.pop(item.floor_item_id, None)
+        if deferred is not None:
+            reason = {
+                "resting": "after_rest",
+                "not_standing": "after_rest",
+                "awaiting_pickup_ack": "after_ack",
+            }.get(deferred[1], "after_walk")
+            self.note(item, "refired", reason=f"loot_refired_{reason}", deferred_reason=deferred[1])
         self.pending = (item, after_seq)
         self._attempt_context = dict(context)
         self.note(item, "attempted", sent_after_seq=after_seq)

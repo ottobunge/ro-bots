@@ -11924,3 +11924,64 @@ PipinWalker), 6 `GuildInvite`s + 2 `InviteToParty`s each; chat busy (84
 chat_sent, 40+ PartyChat). Traces: `.work/runtime/population-live/traces/`
 (rows 07:30-08:10Z); receipt above. Next-leg staging note: seed-zeny
 baseline for leg 91 should be 106/127/79/84/85/52/125.
+
+## Loot approach convergence (2026-11-11) — deferred intent resumes on received arrival
+
+**Evidence:** leg-90 receipt
+`run/plain_host_receipts/population-receipt-90-1794381240.json` (bc87223a),
+and `.work/runtime/population-live/traces/*.jsonl`: 15 of 23 loot events
+deferred, only one standing pickup attempt, after standing-radius merge
+2ebf478b. This slice starts at main 4492a1b1 on branch
+`t3/loot-approach-convergence` in an isolated T3 worktree.
+
+**Contract:** deferring never burns a pickup attempt. The attribution owner
+now retains the unattempted item and its received presence sequence.
+`drain_native_events` resumes that intent after evaluating the pending walk,
+so it also works while a retained farm plan bypasses mechanical fallback;
+it needs no second Loot decision. Within Chebyshev distance 2 it uses the
+existing standing, rest, received-arrival and single-ack-lane gates. A moving
+walkok destination never authorizes pickup; silent completion still needs
+the existing bounded same-cell confirmation. The recovery owner must release
+the rest latch. Threats continue to hold both approach and pickup.
+
+Outside pickup range, the deferred approach computes a fresh target from
+the same drop's cell (or the existing walkable alternative) and continues
+the normal path one step at a time. Each continuation consumes a newer
+received position sequence, so the old two-mint authoring limit cannot
+strand a progressing approach and silence cannot generate unlimited walks.
+Mechanical out-of-range mints retain the same intent. Tried items are
+excluded before authoring an approach. The actual pickup send removes the
+deferred intent and consumes the existing once-per-presence attempt latch;
+server refusals and missing acknowledgements keep their fail-closed behavior.
+
+**Telemetry:** actual resumed sends emit `outcome=refired` with
+`loot_refired_after_walk`, `loot_refired_after_rest`, or
+`loot_refired_after_ack`, plus the original deferred reason and drop sequence.
+Attempt and server verdict receipts are unchanged. Drop disappearance or
+same-ID replacement emits one `expired/presence_epoch_expired` receipt for
+the old deferred presence; map/session boundaries name their boundary reason.
+Short presence epochs on moving mobs can still expire honestly before the
+approach lands. Neither expiry nor ID reuse transfers old intent to a new drop.
+
+**TDD:** `/tmp/loot-convergence-red.log`: 6 failed / 1 passed before runtime
+changes. A further mechanical-approach regression failed before registering
+mechanical out-of-range intent (`/tmp/loot-convergence-review-red.log`).
+Final focused GREEN: 57 passed, including 10 new offline wire/host twin cases
+and unchanged server-refusal/standing/attribution tests
+(`/tmp/loot-convergence-final-focused.log`). The host twin retains a farm
+plan, drains received arrival, and verifies re-fire/attempt trace rows with
+zero new decisions. Static lint passed before the full gate.
+
+**Environment:** pinned rAthena e985006171d2 is a local shared clone; config.log
+and knowledge DB inputs are fixture symlinks. Main's tracked iro-wiki DB link
+is self-referential, so the gate temporarily uses the existing optreview DB;
+that tracked link is restored before commit. No population runner, Docker,
+heavengraph or spikes/ changes were made. No live-world or SQL work was run.
+
+**Pre-commit full gate GREEN:** `nix develop -c task --dir . check` —
+Black and all static checks passed (378 files checked by strict mypy).
+Pytest: **7,099 passed, 65 subtests passed**, four warnings,
+**95.61% total coverage** (85% minimum), 263.68 seconds.
+Transcript: `/tmp/loot-convergence-full-gate.log`. Runtime and test code
+remained frozen during the gate; only this results paragraph was appended
+afterwards. No outstanding gate failures. Commit/push only; no merge to main.
