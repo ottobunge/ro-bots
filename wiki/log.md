@@ -12588,3 +12588,59 @@ found exactly the two old single-unit field fixtures described above;
 those fixtures were corrected and the complete gate rerun green before
 commit. Live attack/exp recovery remains unmeasured; no population run
 was authorized or performed in this implementation slice.
+
+## Leg 96 — MERCHANTDRIVE-SLOT TEST PASSED: s00's slot FREE, 1,704 attacks, exp plateau broken; 4 sell cycles; zero release telemetry (2026-11-12, receipt 1794507933)
+
+Window Thursday 19:30-21:00 Madrid (day index 3), runner launched 19:25,
+duration 9000 closed 21:55. **35,792 steps, 0 errors, 0 TRANSPORT DOWN**,
+7/7 agents online for the full window (179-180/300 samples each),
+decisions 119-315/agent. Receipt
+`run/plain_host_receipts/population-receipt-96-1794507933.json` +
+`population-receipt-96-analysis.json`; traces
+`.work/runtime/population-live/traces/` (window 18:30-20:00 UTC).
+
+**Validation target 1 - s00 slot/attacks/exp: PASS.** Leg 95 held the
+slot with 488 MerchantDrive ACTIVE steps and zero attacks; leg 96 s00 ran
+**zero MerchantDrive steps** (GrindScript 271 + FarmScript 241) and
+authored **1,704 Attack actions**, first at 19:36 Madrid, continuous to
+21:00 (28/min early, ~57/min in the last 9 min). The six-leg exp plateau
+BROKE in the DB: base 42->**46**, job 27->**29**. Its decide state showed
+inventory `1201x1, 511x1` (knife + ONE Red Potion), so the
+two-positive-units admission correctly refused a field-sale trip and the
+decides chose `grind` throughout - the release machinery was never even
+needed.
+
+**Validation target 2 - PipinWalker route: PASS (signature gone; prtf002
+hop not exercised).** `map_not_on_merchant_route` = **0 hits fleet-wide**
+(leg 95's named defect). PipinWalker started on prt_fild08 (not stranded
+on prt_fild05 this time) and completed a full sell cycle via
+prontera/prt_in (+3z, 1 merchant warp crossing). The prtf002 hop itself
+saw no traffic this window - no stranding occurred to exercise it.
+
+**Validation target 3 - tenth sell cycle + release telemetry: PASS.**
+Four agents closed full sell cycles (TalkToNpc -> NpcShopSellOpen ->
+NpcShopSell -> zeny): RinceNyan **137->172** (+35), zeny_wing 97->**102**
+(+5), PipinWalker 90->**93** (+3), PoringMuffin14 65->**103** (+38).
+`merchant_stock_below_trip_minimum` fired **6 times** (zeny_wing's
+1-unit stock), `merchant_trip_released_no_progress` = **0**,
+`merchant_trip_retry` = **0** - no trip ever armed on a sub-minimum
+stock, so nothing needed the 60s release. Zero releases is the designed
+outcome of the admission fix. 8 merchant warp crossings across 5 agents.
+
+**Validation target 4 - run health: PASS.** 6/7 agents gained base+job
+exp (all but zeny_wing, who sold and idled in prontera). Fleet-wide
+1,754 attacks, 91 loot actions executed (98 loot-debug events, every
+refusal reason named: no_floor_item 9, loot_refired_after_walk 7,
+presence_epoch_expired 5, rest 3, out_of_range 3...). Socials live:
+g01m00 FoundGuild 1 + GuildInvite 6 + InviteToParty 2 + PartyChat 3.
+All 7 agents retain the knife (1201, equip=2).
+
+**DB ground truth (chars 300000-300006):** zeny 115/172/102/93/99/103/125,
+end maps prt_fild08/prontera/prontera/prt_fild08/prontera/prt_fild08/
+pay_fild04. **Seed-zeny refreshed to the closing values for leg-97.**
+
+**Next dominant signature:** s00 farmed pay_fild04 from (245,183) all
+window - slot free and attacks authored, but 1,704 swings produced only
++4/+2 exp and no pickups beyond its single starting potion. The conversion
+question is now s00's per-attack hit/kill/loot rate on pay_fild04
+(species choice, out-of-range swing share, missed loot opportunities).

@@ -1,0 +1,61 @@
+{
+  "leg": 96,
+  "receipt": "run/plain_host_receipts/population-receipt-96-1794507933.json",
+  "window": "2026-11-12 19:30-21:00 Madrid (Thursday, day index 3)",
+  "runner": {"steps": 35792, "step_errors": 0, "transport_down": 0, "samples": 300, "launch": "19:25 Madrid", "close": "21:55 Madrid (duration 9000)"},
+  "verdict": "PASS",
+  "validation_targets": {
+    "1_s00_slot_free_attacks_exp": {
+      "status": "PASS",
+      "merchantdrive_steps": 0,
+      "script_steps": {"GrindScript": 271, "FarmScript": 241},
+      "attack_actions": 1704,
+      "attack_first": "2026-11-12T18:36:09+00:00",
+      "attack_last": "2026-11-12T19:59:59+00:00",
+      "attack_cadence": "28/min early, ~57/min in the last 9 min",
+      "exp_delta_db": {"base": "42->46 (+4)", "job": "27->29 (+2)"},
+      "note": "leg-95 held the slot with 488 MerchantDrive ACTIVE steps and zero attacks; leg 96 ran grind/farm the whole window and attacks converted to the first s00 exp gain in six legs."
+    },
+    "2_pipinwalker_route": {
+      "status": "PASS (defect signature gone; prtf002 hop not exercised)",
+      "map_not_on_merchant_route_hits_fleetwide": 0,
+      "pipinwalker_sell": {"zeny": "90->93 (+3)", "cycle": "TalkToNpc -> NpcShopSellOpen -> NpcShopSell", "merchant_warp_crossings": 1},
+      "note": "PipinWalker started on prt_fild08 (not stranded on prt_fild05 as in leg 95) and completed the full sell cycle via prontera/prt_in without touching prt_fild05. The defect telemetry is gone fleet-wide; the prtf002 hop itself was not exercised this window."
+    },
+    "3_tenth_sell_cycle_release_telemetry": {
+      "status": "PASS",
+      "sell_cycles": [
+        {"agent": "g00m01 RinceNyan", "zeny": "137->172 (+35)"},
+        {"agent": "g00m02 zeny_wing", "zeny": "97->102 (+5)"},
+        {"agent": "g01m00 PipinWalker", "zeny": "90->93 (+3)"},
+        {"agent": "g01m02 PoringMuffin14", "zeny": "65->103 (+38)"}
+        ],
+      "merchant_stock_below_trip_minimum": 6,
+      "merchant_trip_released_no_progress": 0,
+      "merchant_trip_retry": 0,
+      "note": "the two-positive-units admission refused every 1-unit field-sale trip (6 named refusals), so no trip ever armed badly enough to need the 60s no-progress release. Zero releases and zero retries is the designed outcome for this fix."
+    },
+    "4_run_health": {
+      "status": "PASS",
+      "agents_online_fraction": "179-180 / 300 samples each (full window)",
+      "decisions_per_agent": {"g00m00": 136, "g00m01": 192, "g00m02": 133, "g01m00": 119, "g01m01": 151, "g01m02": 130, "s00": 315},
+      "exp_gains": "6/7 agents gained base+job exp (all but zeny_wing, who sold and idled in prontera)",
+      "socials": "g01m00 FoundGuild 1 + GuildInvite 6 + InviteToParty 2 + PartyChat 3",
+      "attacks_fleetwide": 1754,
+      "loot_actions_executed_fleetwide": 91,
+      "loot_debug_named_reasons": {"no_floor_item": 9, "loot_refired_after_walk": 7, "presence_epoch_expired": 5, "others": "all named in the runner log"}
+    }
+  },
+  "db_ground_truth": {
+    "300000 NyxSong": {"zeny": 115, "base_exp": 228, "job_exp": 145, "last_map": "prt_fild08"},
+    "300001 RinceNyan": {"zeny": 172, "base_exp": 226, "job_exp": 166, "last_map": "prontera"},
+    "300002 zeny_wing": {"zeny": 102, "base_exp": 119, "job_exp": 99, "last_map": "prontera"},
+    "300003 PipinWalker": {"zeny": 93, "base_exp": 202, "job_exp": 123, "last_map": "prt_fild08"},
+    "300004 xXLunasongXx": {"zeny": 99, "base_exp": 265, "job_exp": 159, "last_map": "prontera"},
+    "300005 PoringMuffin14": {"zeny": 103, "base_exp": 170, "job_exp": 109, "last_map": "prt_fild08"},
+    "300006 YuffieFy81 (s00)": {"zeny": 125, "base_exp": 46, "job_exp": 29, "last_map": "pay_fild04"}
+  },
+  "seed_zeny_handoff_leg97": {"pop_0003_g00m00": 115, "pop_0003_g00m01": 172, "pop_0003_g00m02": 102, "pop_0003_g01m00": 93, "pop_0003_g01m01": 99, "pop_0003_g01m02": 103, "pop_0003_s00": 125},
+  "next_dominant_signature": "s00 farmed pay_fild04 from (245,183) the whole window: decide state showed inventory '1201x1, 511x1' (knife + ONE Red Potion), so the two-positive-units admission correctly refused a field-sale trip and the decides chose grind throughout. The slot target passed, but 1704 attacks produced only +4/+2 exp and zero loot pickups beyond that single potion - the next signature to name is s00's per-attack hit/kill/loot conversion on pay_fild04 (species choice? out-of-range swing share? loot opportunities missed?).",
+  "traces": ".work/runtime/population-live/traces/pop_0003_*.jsonl (window 18:30-20:00 UTC)"
+}
