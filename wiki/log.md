@@ -12330,3 +12330,57 @@ passing. Local diagnosis and RED/GREEN/gate receipts are under
 rAthena submodule and linked main's ignored knowledge DBs/config.log.
 No population runner, Docker/heavengraph operation, or `spikes/` edit.
 Commit/push for review only; leave main unmerged.
+
+## Leg 94 — REST-DOMINANCE ELIMINATED LIVE; s00's GATE MOVED UPSTREAM TO GOAL SELECTION (2026-11-12, cd722087+receipt)
+
+Staged launch held from 07:00 per brief; pre-launch 08:44 all green (seed
+109/134/87/90/93/55/125 verified vs fresh DB exact — no drift, no fix;
+pgrep 0; :8091/:8092 health ok). Launched 08:50 under
+`systemd-run --user --unit=leg94-runner`, duration 7200s, window
+[3, 9.0, 10.5] = 09:00-10:30 Madrid. Clean DONE at ~10:50: **28,518 steps,
+0 errors, 0 TRANSPORT DOWN, 0 backend errors**, all 7 online through the
+window, clean logoff at the close.
+
+**(a) Rest-dominance SPLIT — elimination CONFIRMED, attack-shift NOT achieved.**
+The cd722087 fix is confirmed live: s00 logged **0 Rests, 0 rest_decision
+rows, 0.0% rest share** (leg 93: 694 Rests = 71% of its action mass); the
+whole fleet rested 9 times (~0.09%), every one behind a named legitimate
+gate — 5× `damage/suppress/attackable_in_range`, 10× `damage/rest/injured`,
+2× `damage/suppress/received_death`, 1× `recovery/break/hp_recovered`. The
+damage-event re-sit loop (625 sits at 43/86 HP in leg 93) is gone. But s00
+still logged **0 Attacks and exp stayed flat 42/27** — and the
+rest_decision rows are EMPTY for s00, which is itself the evidence: rest
+never engaged, so rest is no longer the gate. The decide tail names the
+actual gate: goal=social held the script slot and `next_action` chose
+**party_join 90/157 decides (57%) vs grind 55 (35%)**; MerchantDrive
+consumed the early window for its 1-stock sell trip; the
+Drops/pay_fild04 farm plan authored on every heartbeat and never received
+the slot.
+
+**(b) Economy PASS — eighth sell cycle sustained.** Four named sell
+triples (TalkToNpc → NpcShopSellOpen → NpcShopSell) at dealer 110001762:
+NyxSong 08:22 (109→112), PoringMuffin14 08:43 (55→62), RinceNyan 08:50
+(134→137), zeny_wing 08:51 (87→90) — the ring turned over 3 trips in
+28 minutes with `dealer_ring_handover` named; `weapon_release` admissions
+followed each trip (affordable vs the 50z knife floor); **knife (1201) now
+in ALL 7 inventories**. +16z minted. Watch: PipinWalker holds stock on
+prt_fild05 (`sell arm map_not_on_merchant_route`) — its trip never armed.
+NEW benign signature: `merchant_warp_ping_pong (PoringMuffin14
+crossings=4)`.
+
+**(c) Farming PASS/UP.** Fleet attacks **404** (xXLunasongXx 334 — fight
+leader; g01m02 31, g01m00 25), loot 32 pickups, and the **first
+population-era exp movement on the char table: 6 of 7 chars gained**
+(base +2/+2/+4/+4/+16/+7, s00 the only flat). Drop supply → sell cycle →
+zeny: the closed loop ran fleet-wide.
+
+**(d) Run health PASS.** 28,518 steps error-free; the ack-identity gap did
+NOT recur (all 4 conversions carry named per-agent rows).
+
+DB finals for the next seed: **112/137/90/90/93/62/125** (s00 125 flat,
+exp 42/27). Receipt
+`run/plain_host_receipts/population-receipt-94-1794469816.json`; analysis
+`population-receipt-94-analysis.json`; runner log /tmp/population_leg94.log.
+Next slice: the s00 blocker is decision-layer goal preference (solo agent
+preferring party_join while no invite comes) — rest is no longer on the
+critical path. No code change this leg; no gate run.
