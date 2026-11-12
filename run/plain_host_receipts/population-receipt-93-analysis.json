@@ -1,0 +1,199 @@
+{
+  "leg": 93,
+  "kind": "dealer-queue-verdict",
+  "date": "2026-11-12",
+  "window": "[3, 3.75, 5.25] = 03:45-05:15 Madrid",
+  "launch": {
+    "time_local": "03:33 (Otto launch-now directive; re-staged from Thu 08:30)",
+    "main_sha": "4e03b350",
+    "merges_on_main_at_launch": [
+      "21e01d0b dealer-queue handover (fallback parking no longer blocks the sold seller's exit; queue targets exclude the public exit lane; telemetry dealer_ring_handover/dealer_queue_yield)",
+      "783ee66c ack-attribution"
+    ],
+    "unit": "leg93-runner (systemd --user)",
+    "duration_s": 7800,
+    "receipt": "run/plain_host_receipts/population-receipt-93-1794450634.json"
+  },
+  "run_health": {
+    "steps": 30963,
+    "step_errors": 0,
+    "transport_down": 0,
+    "backend_errors": 0,
+    "tracebacks": 0,
+    "logins": "all 7 agents online by t=901 (~03:48, minutes after the 03:45 window open, staggered logins); clean logoff at the 05:15 close",
+    "runner_exit": "clean DONE at ~05:43 (steps 30963, errors 0, exit status 0)"
+  },
+  "seed_baseline": {
+    "zeny": [109, 131, 82, 87, 93, 52, 125],
+    "verified_vs_db_at_preflight": true,
+    "drift": "none; no seed fix or commit needed",
+    "post_leg93_finals_for_next_seed": [109, 134, 87, 90, 93, 55, 125]
+  },
+  "dealer_queue_census": {
+    "source": "per-agent traces (UTC >= 02:45 window open) + runner-log telemetry rows",
+    "sell_timeline_utc": [
+      {"agent": "pop_0003_g01m00 PipinWalker", "talk": "02:45:37", "sell_open": "02:45:42", "sell": "02:45:44"},
+      {"agent": "pop_0003_g01m02 PoringMuffin14", "talk": "02:46:51", "sell_open": "02:46:56", "sell": "02:46:58"},
+      {"agent": "pop_0003_g00m02 zeny_wing", "talk": "02:48:46", "sell_open": "02:48:51", "sell": "02:48:53"},
+      {"agent": "pop_0003_g00m01 RinceNyan", "talk": "03:27:34", "sell_open": "03:27:39", "sell": "03:27:41"}
+    ],
+    "turnover": "three sellers cycled the ring within 3m09s (02:45:44 -> 02:48:53); each completed TalkToNpc -> NpcShopSellOpen -> NpcShopSell; RinceNyan's later trip also minutes-short",
+    "telemetry_rows": [
+      "merchant-drive: dealer_queue_yield (bot=zeny_wing agent=(169,128) cell=(169,129))",
+      "merchant-drive: dealer_queue_yield (bot=PoringMuffin14 agent=(169,128) cell=(168,127))",
+      "merchant-drive: dealer_ring_handover (bot=PoringMuffin14 agent=(168,127) cell=(173,129))",
+      "merchant-drive: dealer_ring_handover (bot=zeny_wing agent=(169,129) cell=(172,129))"
+    ],
+    "dealer_dwell_spans_min": {
+      "pop_0003_g00m01": 1.9,
+      "pop_0003_g00m02": 4.8,
+      "pop_0003_g01m00": 2.5,
+      "pop_0003_g01m01": 0.3,
+      "pop_0003_g01m02": 3.0
+    },
+    "holds_over_80min": 0,
+    "did_not_join_arm": {
+      "agent": "pop_0003_g01m01 xXLunasongXx",
+      "note": "held loot (2 Loot actions) but never joined the sell arm: no queue rows, no TalkToNpc, only a 0.3-min transit through the dealer zone at 02:45:15-02:45:35; zeny flat 93. Goal-arm watch-item, NOT a handover failure - the queue never saturated this window."
+    }
+  },
+  "sell_cycle": {
+    "trips": 4,
+    "cycle_number_population_wide": "7th",
+    "zeny_deltas_vs_seed": {
+      "NyxSong": 0,
+      "RinceNyan": 3,
+      "zeny_wing": 5,
+      "PipinWalker": 3,
+      "xXLunasongXx": 0,
+      "PoringMuffin14": 3,
+      "YuffieFy81_s00": 0
+    },
+    "total_zeny_minted": 14,
+    "item_histories_closed": [
+      "PipinWalker's leg-91 909 (unattributed pickup) sold 02:45:44 (+3z) - economically closed",
+      "PoringMuffin14's leg-92 909 sold 02:46:58 (+3z)",
+      "zeny_wing's leg-92 705 sold 02:48:53 (+5z)",
+      "RinceNyan's leg-93 909 (fresh named loot at 02:46:46) sold 03:27:41 (+3z) - full drop->pickup->sell->zeny loop inside one window"
+    ]
+  },
+  "loot_census": {
+    "source": "per-agent traces, UTC >= 02:45, kind=loot_performed",
+    "outcomes": {
+      "deferred": 6,
+      "refired": 2,
+      "attempted": 2,
+      "succeeded": 1,
+      "refused": 2,
+      "expired": 1,
+      "unconfirmed": 0,
+      "unattributed_ack": 1,
+      "attributed_by_item": 0
+    },
+    "deferral_reasons": "walking (chain: deferred -> refired -> attempted for both real attempts)",
+    "named_successes": [
+      {
+        "agent": "pop_0003_g00m01 RinceNyan",
+        "t": "02:46:46Z",
+        "item": 909,
+        "floor_item": 498,
+        "drop_seq": 205,
+        "pos": [201, 338],
+        "reason_code": 0,
+        "ack_seq": 210,
+        "inventory_index": 3,
+        "attempt": 1,
+        "then_sold": "03:27:41 (+3z)"
+      }
+    ],
+    "unattributed_ack": {
+      "agent": "pop_0003_g00m00 NyxSong",
+      "t": "03:51:27Z",
+      "ack_seq": 1875,
+      "reason_code": 0,
+      "pos": [232, 307],
+      "db_item": {"nameid": 909, "inventory_id": 113, "amount": 1},
+      "note": "the ack carried no identity fields so the ledger could not settle it (attributed_by_item fallback also empty), but the item IS in the DB - server-side conversion real, ledger attribution missed 1/2"
+    },
+    "refusals": [
+      {"agent": "pop_0003_g00m00", "t": "03:57:50Z", "reason": "no_floor_item"},
+      {"agent": "pop_0003_s00", "t": "02:45:29Z", "reason": "no_floor_item"}
+    ],
+    "expired": [
+      {"agent": "pop_0003_g00m02", "t": "03:54:44Z", "item": 909, "floor_item": 511, "note": "deferred 4x over 52s then expired"}
+    ],
+    "attempted_no_terminal": [
+      {"agent": "pop_0003_g00m02", "t": "03:51:26Z", "item": 909, "floor_item": 510, "note": "deferred -> refired -> attempted, no terminal outcome row; no inventory row landed (DB confirms)"}
+    ],
+    "drop_supply": "8 ItemDrop world events vs leg 92's 4 (doubled; 4 agents saw drops vs 2: g00m00 x1, g00m01 x3, g00m02 x2, g01m01 x2)",
+    "attribution_test": "DB conversions 2/2 (RinceNyan 909 named + sold; NyxSong 909 unattributed-but-DB-real). Ledger attribution 1/2 - one ack (1875) arrived without identity fields and the fallback did not claim it."
+  },
+  "farming": {
+    "attacks_by_agent": {
+      "pop_0003_g00m00 NyxSong": 17,
+      "pop_0003_g00m01 RinceNyan": 10,
+      "pop_0003_g00m02 zeny_wing": 13,
+      "pop_0003_g01m01 xXLunasongXx": 481,
+      "pop_0003_g01m00 PipinWalker": 0,
+      "pop_0003_g01m02 PoringMuffin14": 0,
+      "pop_0003_s00 YuffieFy81": 0
+    },
+    "attacks_total": 521,
+    "note_vs_leg92": "143 attacks in leg 92 -> 521 here, driven by xXLunasongXx (481). But the swings->exp conversion stays thin: xXLunasongXx 231/136 at 04:15 -> 233/140 final (+2/+4 late-window); NyxSong 207/130 (leg-92 final) -> 209/131 (+2/+1 whole-window, its first exp in >=2 legs). The hits-vs-swings instrument (leg-92 NEXT item) is still needed to split authored swings from landed hits.",
+    "exp_snapshot_caveat": "no pre-launch exp snapshot was taken (only zeny was verified at 03:28); exp deltas quoted vs leg-92 finals where recorded, else vs the 04:15 early readback"
+  },
+  "s00_signature": {
+    "agent": "pop_0003_s00 YuffieFy81 (pay_fild04)",
+    "decides": 976,
+    "move_tos": 1202,
+    "rests": 694,
+    "monster_spotted": 134,
+    "attacks": 0,
+    "loot": "1 action, refused (no_floor_item at 02:45:29)",
+    "exp": "42/27 flat - third consecutive zero-attack leg (91, 92, 93)",
+    "note": "not perception- or mobility-starved (134 sightings, 1202 moves); the attack-authoring path still never fires for s00. New sub-signature: 694 Rest actions = 71% of its 976 action mass is rest."
+  },
+  "socials": {
+    "guilds_founded": 2,
+    "guild_invites": 12,
+    "party_invites": 4,
+    "party_chats": 43,
+    "says": 53,
+    "chat_heard": 107,
+    "note": "g00m00 and g01m00 each ran FoundGuild + 6 GuildInvites; chat traffic dense and in-game only"
+  },
+  "db_ground_truth": {
+    "source": "docker exec ro-bots-e2e-mariadb-1 (secret expanded inside the container), char+inventory tables, ~05:50",
+    "zeny_finals": {
+      "NyxSong": 109, "RinceNyan": 134, "zeny_wing": 87, "PipinWalker": 90,
+      "xXLunasongXx": 93, "PoringMuffin14": 55, "YuffieFy81": 125
+    },
+    "exp_finals_base_job": {
+      "NyxSong": [209, 131], "RinceNyan": [200, 151], "zeny_wing": [113, 95],
+      "PipinWalker": [192, 116], "xXLunasongXx": [233, 140],
+      "PoringMuffin14": [159, 100], "YuffieFy81": [42, 27]
+    },
+    "inventory_finals": [
+      {"char": "NyxSong", "rows": [{"nameid": 1201, "amount": 1}, {"nameid": 909, "amount": 1, "id": 113, "fresh_this_leg": true}]},
+      {"char": "RinceNyan", "rows": [{"nameid": 1201, "amount": 1}], "note": "its leg-93 909 was sold (+3z)"},
+      {"char": "zeny_wing", "rows": [{"nameid": 1201, "amount": 1}], "note": "leg-92 705 sold; both leg-93 909 loots failed to land (1 no-terminal, 1 expired)"},
+      {"char": "PipinWalker", "rows": [{"nameid": 1201, "amount": 1}], "note": "leg-91 909 sold"},
+      {"char": "xXLunasongXx", "rows": [{"nameid": 1201, "amount": 1}], "note": "481 attacks, 2 Loot actions with zero loot_performed rows, nothing unconverted"},
+      {"char": "PoringMuffin14", "rows": [{"nameid": 1201, "amount": 1}], "note": "leg-92 909 sold"},
+      {"char": "YuffieFy81", "rows": [{"nameid": 1201, "amount": 1}, {"nameid": 511, "amount": 1}], "note": "511 pre-existing, unchanged"}
+    ]
+  },
+  "verdict": {
+    "a_dealer_queue": "PASS. Every seller that joined the sell arm reached the ring within minutes: 4 complete trips, 3 of them cycled inside 3m09s (02:45:44 -> 02:48:53); named handovers x2 (PoringMuffin14 -> ring cell (173,129); zeny_wing -> ring cell (172,129)) and yields x2 (zeny_wing (169,129); PoringMuffin14 (168,127)); dealer dwell 0.3-4.8 min; ZERO 80-minute holds (leg 92 had 3 sellers held ~80 min). The 21e01d0b handover merge is validated live. xXLunasongXx held loot but never joined the arm - a goal-arm watch-item, not a queue defect.",
+    "b_sell_cycle": "PASS. Seventh population-wide cycle, now 4 trips in ONE window (leg 92: 1). +14z minted across 4 agents; three prior legs' held items closed out (leg-91 909, leg-92 705 and 909) and RinceNyan ran the full drop->loot->sell->zeny loop inside the window.",
+    "c_loot_and_farming": "PARTIAL. Drop supply recovered (8 ItemDrops vs 4); attacks 521 vs 143 but concentrated in one agent (xXLunasongXx 481) with thin exp conversion - hits-vs-swings instrument still open. Loot quality: 2 real attempt chains, 1 named success (sold same window), 1 unattributed ack whose item is DB-real (ledger identity gap), 1 expired after 4 deferrals, 1 attempted with no terminal row. DB conversions 2/2; ledger attribution 1/2.",
+    "d_run_health": "PASS. 30,963 steps, 0 errors, 0 TRANSPORT DOWN, 0 tracebacks, staggered logins all online by t=901, clean 05:15 close, exit 0. Watch-items carried: s00 zero-attack (3rd leg) now with 694 rests = 71% of its action mass; xXLunasongXx loot-actions-without-perform; 1 unattributed_ack with a DB-real item."
+  },
+  "next": [
+    "s00 pay_fild04 attack-authoring: 3rd consecutive zero-attack leg; 694 Rests dominate its action mass - inspect the rest/farm balance and the decide->attack path for the solo schedule",
+    "hits-vs-swings instrument: 481 authored attacks with thin exp - split authored swings from landed hits/kills to judge engagement quality",
+    "attribution ledger: ack 1875 arrived without identity fields and attributed_by_item did not claim it (NyxSong 909 is DB-real) - close the identity gap so ledger attribution matches DB truth 2/2",
+    "xXLunasongXx goal-arm: held loot, 0.3-min dealer transit, never joined the sell arm - check its goal_review path before the next leg",
+    "leg-94 seed = [109, 134, 87, 90, 93, 55, 125]"
+  ]
+}

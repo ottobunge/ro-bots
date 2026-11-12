@@ -12221,3 +12221,54 @@ knowledge DBs and `rathena/config.log`; no tracked fixture changes. Final gate
 receipt and local RED/GREEN logs are in `.work/dealer-queue-handover/`.
 No population runner, Docker/heavengraph operation, or `spikes/` edit. Commit
 and push this branch for review; leave main unmerged.
+
+## Leg 93 — DEALER QUEUE TURNS OVER LIVE: 4 SELL TRIPS, ZERO 80-MIN HOLDS (2026-11-12, 4e03b350+receipt)
+
+Window `[3, 3.75, 5.25]` = 03:45-05:15 Madrid, launched 03:33 on Otto's
+launch-now directive (re-staged from Thu 08:30), main at 4e03b350 carrying the
+dealer-queue handover merge (21e01d0b) and the ack-attribution merge (783ee66c).
+Unit `leg93-runner`, 7800 s, seed 109/131/82/87/93/52/125 verified vs DB at
+03:28. Receipt
+`run/plain_host_receipts/population-receipt-93-1794450634.json`; analysis and
+census in `population-receipt-93-analysis.json`.
+
+**Run health:** 30,963 steps, 0 step errors, 0 TRANSPORT DOWN, 0 tracebacks;
+all 7 agents online by t=901 (minutes after the window open, staggered logins),
+clean logoff at 05:15, clean DONE exit 0.
+
+**(a) Dealer queue PASS — the leg-92 deadlock is gone.** Four complete sell
+trips (TalkToNpc → NpcShopSellOpen → NpcShopSell): PipinWalker 02:45:44Z,
+PoringMuffin14 02:46:58Z, zeny_wing 02:48:53Z — three sellers cycled the ring
+inside 3m09s — and RinceNyan 03:27:41Z. Dealer dwell spans 0.3-4.8 min. The
+new telemetry fired and named itself: `dealer_ring_handover` x2
+(PoringMuffin14 → ring cell (173,129); zeny_wing → ring cell (172,129)) and
+`dealer_queue_yield` x2 (zeny_wing (169,129); PoringMuffin14 (168,127)).
+ZERO 80-minute holds (leg 92: 3 sellers held ~80 min). xXLunasongXx held loot
+but never joined the sell arm (no queue rows, no talk, 0.3-min transit) — a
+goal-arm watch-item, not a queue defect.
+
+**(b) Sell cycle PASS — seventh population-wide cycle, 4 trips in one window**
+(leg 92: 1). +14z minted: PipinWalker +3 (its leg-91 unattributed 909 now
+economically closed), PoringMuffin14 +3 (leg-92 909), zeny_wing +5 (leg-92
+705), RinceNyan +3 — RinceNyan's 909 was looted THIS window at 02:46:46Z with
+a fully named success (ack 210, inventory slot 3) and sold at 03:27:41Z: the
+complete drop → loot → sell → zeny loop inside a single window.
+
+**(c) Loot+farming PARTIAL.** Drop supply recovered: 8 ItemDrops vs leg 92's 4,
+spread over 4 agents. Attacks 521 vs 143 — but 481 of them are xXLunasongXx,
+whose exp moved only +2/+4 late-window (231/136 → 233/140): the
+swings-vs-hits instrument (leg-92 NEXT) is still needed to split authored
+swings from landed hits. Loot ledger: 2 real attempt chains; 1 named success
+(RinceNyan 909, sold same window); 1 `unattributed_ack` (NyxSong ack 1875,
+no identity fields, attributed_by_item also empty) whose item IS DB-real
+(909, inventory id 113) — DB conversions 2/2, ledger attribution 1/2; 1
+expired after 4 deferrals (zeny_wing 909/floor 511); 1 attempted with no
+terminal row and no inventory landing. Next seed:
+[109, 134, 87, 90, 93, 55, 125].
+
+**(d) s00 signature deepens.** Third consecutive zero-attack leg
+(pay_fild04): 976 decides, 1202 MoveTos, 134 MonsterSpotted, 1 refused Loot,
+0 Attacks, exp 42/27 flat — and a new sub-signature: 694 Rest actions = 71%
+of its action mass. The attack-authoring path still never fires for the solo.
+Socials stayed dense and in-game only (2 guilds founded, 12 guild invites,
+43 party chats, 107 heard lines).
