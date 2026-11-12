@@ -406,6 +406,16 @@ class GroupCoordinator:
         mine = self._ledger.group_of(self._persona_id)
         return mine is not None and self._ledger.group_of(other) == mine
 
+    def has_online_group_peer(self, online_members: Sequence[str]) -> bool:
+        """An invite path from MY seeded roster and existing online knowledge.
+
+        Unlike formation_suggestion, this also covers followers and groups
+        with a live objective. No other agent's objective book is consulted.
+        """
+        return any(
+            member != self._persona_id and self.same_group(member) for member in online_members
+        )
+
     # -- the leader's side -----------------------------------------------------
 
     def formation_suggestion(self, online_members: Sequence[str]) -> FormationSuggestion | None:
@@ -716,6 +726,10 @@ class BoundCoordinator:
     def same_group(self, display_name: str) -> bool:
         """The bound passthrough: the group-policy accept check."""
         return self._coordinator.same_group(display_name)
+
+    def has_online_group_peer(self) -> bool:
+        """Whether the existing online evidence includes one of MY group peers."""
+        return self._coordinator.has_online_group_peer(self._online())
 
     def guild_formation_actions(self, online_members: Sequence[str]) -> tuple[GameAction, ...]:
         """The founder's guild packets once the party objective is formed.

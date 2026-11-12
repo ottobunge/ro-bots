@@ -12384,3 +12384,68 @@ exp 42/27). Receipt
 Next slice: the s00 blocker is decision-layer goal preference (solo agent
 preferring party_join while no invite comes) — rest is no longer on the
 critical path. No code change this leg; no gate run.
+
+## 2026-11-12 - SOLO GOAL-PREFERENCE: drop party_join without an invite path
+
+Leg-94 evidence (`fad94e78`, main seed `6911905c`):
+`run/plain_host_receipts/population-receipt-94-1794469816.json` and
+`run/plain_host_receipts/population-receipt-94-analysis.json`; s00
+`YuffieFy81` (char 300006, seed-3 SOLO, pay_fild04) selected `party_join`
+90/157 decides (57%) versus 55 grind picks. It had no party, pending
+invite, or online same-group peer. Rest dominance was already gone
+(0 Rests), but social held the script slot: 0 Attacks, exp flat 42/27
+for the fourth leg. The early merchant trip was a separate diversion.
+
+**Named root cause: infeasible party seeking survived the moot-option
+filter and monopolised social goal preference.** The leg-16 filter only
+recognised membership as a reason to drop `party_join`; partylessness alone
+was treated as sufficient opportunity to join. Movement/chat could reset
+the leg-31 idle streak without creating an invite path, so waiting for an
+idle bounce was insufficient.
+
+**Feasibility rule:** for an agent with coordination evidence, joining is
+viable only while partyless and either a received pending invite exists
+or the agent's own seeded roster includes another same-group member in
+the coordinator's existing online view. Self and online outsiders do not
+count. Followers and groups with an existing objective still count;
+leader-only formation suggestions are deliberately not the feasibility
+test. No other agent's objective book, new shared mutable state, SQL, or
+out-of-game coordination messages are read. Missing coordination remains
+unknown and preserves legacy behaviour.
+
+`society/objectives.py` exposes that roster/online predicate through
+`BoundCoordinator`. `domain/decisions.py` combines it with received invite
+and membership facts, exposes `party_join_feasible`, and drops the moot
+option. `app/brain.py` supplies this evidence for every normal decision
+and yields a selected social goal to GRIND immediately when no invite
+path exists, before farm-plan/script selection. The note
+`goal social->grind (no invite path)` updates the runtime goal through
+the existing goal-note path; existing goal-review/plan traces capture
+the selected farming goal. This applies even when an old/stub answer
+still says `party_join`, or `change_goal=keep` and `next_action=grind`
+would otherwise retain the social script. Current party members keep
+their social goal, pending invites keep their acceptance path, and the
+existing affinity-gated solo join-call reply remains available while
+farming. Explicit town goals and active group-objective alignment retain
+their existing policy.
+
+**TDD:** the initial offline regression was RED with 5 failures / 3 passes:
+four s00-shaped reviews retained IdleTownScript and a fifth retained
+`party_join` after its only peer went offline. GREEN targeted suite:
+199 passed, including wants, explicit/recorded goal preference, existing
+party/guild coordination, and the new schema/slot regressions. The expanded
+regression covers solo and temporarily isolated group members, excluding
+self/online outsiders; `keep` with both stale `party_join` and feasible
+`grind` answers; a new explicit social selection; a Drops farm plan and
+authored melee Attack; pending invites; online friends; already-partied
+agents; and refreshed evidence when a friend logs off.
+
+**Full gate GREEN:** `nix develop -c task --dir . check` — **7,149 passed,
+65 subtests passed, 95.64% coverage**, 248.88s; formatting, all static
+analysis (including strict mypy over 381 files), and coverage passed.
+The fresh worktree needed the pinned rAthena submodule initialised as
+well as local config.log and knowledge corpora; those test dependencies
+and the temporary local corpus pointer are not included in the change.
+No population runner was run; live attack/exp recovery remains to be
+measured in the next authorised population leg. Implementation branch
+`fix/solo-party-join-moot`; no merge to main.
