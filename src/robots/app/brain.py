@@ -441,6 +441,7 @@ class EventDrivenBrain:
             state,
             self.memory.view() if self.memory is not None else None,
             knowledge_lines=decide_knowledge_lines(state),
+            party_join_feasible=self._has_invite_path(state),
         )
         request["state"] = {**request["state"], "event": event_summary(event)}
         self._augment_request_for_event(event, request)
@@ -510,9 +511,14 @@ class EventDrivenBrain:
         """Heartbeat: goal review, farm-plan authoring, optional announcement."""
         actions_since = self._actions_since_review
         self._actions_since_review = 0
-        goal = self._aligned_goal(
-            self._review_goal(state, answers, notes, actions_since=actions_since), notes
-        )
+        goal = self._review_goal(state, answers, notes, actions_since=actions_since)
+        if goal is Goal.SOCIAL and not self._has_invite_path(state):
+            # Leg 94: walking/chat can keep the idle streak at zero while an
+            # impossible party_join holds the script slot every heartbeat.
+            # Farm while listening for the existing affinity-gated join calls.
+            notes.append("goal social->grind (no invite path)")
+            goal = Goal.GRIND
+        goal = self._aligned_goal(goal, notes)
         self._trace_review(state, goal, trigger)
         reports = self._human_report_announce(state)
         if self.is_recovering and self._choice(answers, "change_goal", "") == "keep":
@@ -655,6 +661,20 @@ class EventDrivenBrain:
             f"(goal {goal.value}->{aligned.value})"
         )
         return aligned
+
+    def _has_invite_path(self, state: BotState) -> bool:
+        """Own party/invite perception plus existing roster/online knowledge.
+
+        An unbound coordinator means unknown, rather than evidence of absence.
+        Current party members keep their social goal; the schema separately
+        drops their already-satisfied party_join option.
+        """
+        return (
+            state.in_party
+            or bool(state.pending_invites)
+            or self._coordination is None
+            or self._coordination.has_online_group_peer()
+        )
 
     def _coordination_review(
         self, state: BotState, answers: dict[str, Any], notes: list[str]

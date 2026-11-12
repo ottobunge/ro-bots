@@ -41,16 +41,21 @@ def _goal_criterion(goal: Goal) -> str:
     }[goal]
 
 
-def _drop_moot_options(questions: dict[str, Any], state: BotState) -> None:
+def _drop_moot_options(
+    questions: dict[str, Any], state: BotState, *, party_join_feasible: bool
+) -> None:
     """The facts gate the options: party_join is moot for a member of a
     persisted party (leg 16: 339 party_join picks starved grinding to zero
     attacks), so the schema drops what the state makes impossible. Leg 31's
     starvation is the same shape one hop over: a partied agent with no
     nearby outsider kept choosing party_invite (p=0.45 every heartbeat) and
     the social action path dispatched nothing for two hours — an inviter
-    needs a candidate, so without one the option is moot too."""
-    if state.in_party:
+    needs a candidate, so without one the option is moot too. Leg 94 extends
+    the join gate to known absence of an invite path: no pending invitation
+    and no online same-group peer in this agent's coordination knowledge."""
+    if not party_join_feasible:
         del questions["next_action"]["criteria"]["party_join"]
+    if state.in_party:
         nearby_players = [
             a
             for a in state.nearby
@@ -60,11 +65,17 @@ def _drop_moot_options(questions: dict[str, Any], state: BotState) -> None:
             del questions["next_action"]["criteria"]["party_invite"]
 
 
+def _can_join_party(state: BotState, invite_path: bool) -> bool:
+    """Membership overrides paths; a received invite overrides peer absence."""
+    return not state.in_party and (bool(state.pending_invites) or invite_path)
+
+
 def build_decision_request(
     state: BotState,
     memory_lines: list[str] | None = None,
     *,
     knowledge_lines: list[str] | None = None,
+    party_join_feasible: bool = True,
 ) -> dict[str, Any]:
     """Build the SystemOne question schema for one tick of a bot's brain.
 
@@ -77,7 +88,13 @@ def build_decision_request(
     ``robots.knowledge.game_context``; injected as ``state['game_knowledge']``
     (capped, keeping the decide payload under its token budget). Absent key
     otherwise.
+
+    ``party_join_feasible``: the caller's own coordination evidence of an
+    invite path. Without a coordinator, preserve the unknown/legacy case.
+    A received pending invite always supplies a path; membership makes
+    joining moot regardless of the supplied evidence.
     """
+    party_join_feasible = _can_join_party(state, party_join_feasible)
     nearby_desc = ", ".join(f"{a.name}({a.kind}, d={a.distance:.0f})" for a in state.nearby[:10])
     chat_desc = " | ".join(f"[{c.channel}] {c.sender}: {c.text}" for c in state.recent_chat[-3:])
     invites = ", ".join(i.from_name for i in state.pending_invites) or "none"
@@ -107,6 +124,7 @@ def build_decision_request(
         "inventory": inv_items,
         "inventory_capacity": inventory_capacity_facts(state),
         "pending_party_invites": invites,
+        "party_join_feasible": party_join_feasible,
         "recent_chat": chat_desc,
     }
     _add_encounters(json_state, state)
@@ -180,7 +198,7 @@ def build_decision_request(
         },
     }
 
-    _drop_moot_options(questions, state)
+    _drop_moot_options(questions, state, party_join_feasible=party_join_feasible)
 
     return {
         "model": "clef",
