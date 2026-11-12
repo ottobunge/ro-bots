@@ -12449,3 +12449,60 @@ and the temporary local corpus pointer are not included in the change.
 No population runner was run; live attack/exp recovery remains to be
 measured in the next authorised population leg. Implementation branch
 `fix/solo-party-join-moot`; no merge to main.
+
+## Leg 95 — SOLO GOAL PREFERENCE CONFIRMED LIVE; s00's GATE MOVED DOWNSTREAM TO MERCHANTDRIVE SLOT RELEASE (2026-11-12, 15707b29+receipt)
+
+Window `[3, 14.5, 16.0]` = 14:30-16:00 Madrid, 90 minutes, runner
+`leg95-runner` under `systemd --user` (launched 14:13:53 after a staged
+hold; pre-launch seed-vs-DB readback exact: 112/137/90/90/93/62/125, no
+drift, backends :8091/:8092 both healthy, e2e world up, runner pgrep 0).
+Receipt `population-receipt-95-1794489235.json`: 28,550 steps, 0 errors,
+0 TRANSPORT DOWN, all 7 online 179/240 samples, clean logoff at 16:00,
+clean exit 16:13:53. Analysis: `population-receipt-95-analysis.json`.
+
+**Verdict (a) GOAL PREFERENCE — SPLIT.** The 15707b29 merge works live:
+s00's `next_action` party share collapsed from 57% (leg 94) to **0/219
+decides** (grind 215/219 = 98%, loot 4), goal reviews `grind` 101/101,
+zero LLM escalations — the decide layer is exonerated. But the attack
+shift did not land: s00 authored **0 Attacks** and exp stayed **42/27
+FLAT (fifth consecutive flat leg)**. The gate moved downstream and is
+named: **MerchantDrive held s00's script slot for the entire window**
+(488 ACTIVE steps 14:30:22→14:59:59, 346 of them emitting NO action).
+s00 (a thief) was admitted to the sell arm at open (stock=1 Red Potion
+511, zeny=125) and never released: the travel leg walked it across THREE
+maps (pay_fild04 → moc_fild01 → prt_fild08, 490 MoveTos) without ever
+reaching the prontera dealer (zero TalkToNpc dispatched all window);
+inventory {511×1, 1201×1} and zeny stayed flat. Farm plans authored
+continuously per map (Poring/Drops/Marin; Baby Desert Wolf/Ant Egg;
+Lunatic/Pupa) but never received the script slot — the SAME starvation
+mechanism as leg 94 with a different starver. Next slice: (1) the sell
+arm must release the slot when it cannot progress (bounded-trip
+admission); (2) question why a non-merchant persona gets MerchantDrive
+at all; (3) verify the field→prontera route graph leg from pay_fild04
+before another leg depends on that walk.
+
+**Verdict (b) ECONOMY — PASS: ninth sell cycle landed** (+19z fleet).
+Four full sell triples (TalkToNpc → NpcShopSellOpen → NpcShopSell):
+NyxSong 112→115, zeny_wing 90→97, xXLunasongXx 93→99, PoringMuffin14
+62→65. Ring trace: 6 admissions; at open NyxSong was already in town
+while 4 agents weapon_release'd (stock=0) and PipinWalker was DENIED
+(`map_not_on_merchant_route`, prt_fild05) — the denial forced the walk;
+PipinWalker reached the dealer cell (172,129), talked ONCE, no sale,
+under the leg-73 dealer congestion shape (agents parked chebyshev 2-4 at
+(168-172,128-129)); its stranded stock (909 Jellopy ×1) remains. s00
+never reached town.
+
+**Verdict (c) FARMING — PASS: exp moved on 4/7 chars** (fleet +20 base /
++9 job): RinceNyan +6/+2, zeny_wing +2/+1, xXLunasongXx +10/+5,
+PoringMuffin14 +2/+1. Fleet 44 attacks (xXLunasongXx 21, RinceNyan 12),
+16 ItemDrop events, 5 loot successes — drop supply held.
+
+**Verdict (d) HEALTH — PASS.** ack-identity watch clean (no tracebacks,
+no error rows); PipinWalker prt_fild05 stranded-stock watch: it LEFT the
+map (route denial forced the trip), watch continues; guild arc live
+(NyxSong + PipinWalker each FoundGuild + 6 GuildInvites); socials
+strictly in-game (59 fleet chat_sent, no out-of-band channel).
+
+**Seed handoff:** `seed-zeny.json` refreshed to the leg-95 closing values
+(115/137/97/90/99/65/125) in this commit so leg-96 staging starts clean.
+No SQL was written to the world DB. No gate run (no code change).

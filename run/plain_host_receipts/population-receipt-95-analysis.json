@@ -1,0 +1,103 @@
+{
+ "leg": 95,
+ "kind": "solo-goal-preference-verdict",
+ "date": "2026-11-12",
+ "window": "[3, 14.5, 16.0] = 14:30-16:00 Madrid (90 min)",
+ "launch": {
+  "time_local": "14:13:53 (held from ~13:33 per staged-launch brief; pre-launch checks green at 14:13:35)",
+  "main_sha": "15707b29",
+  "merges_on_main_at_launch": [
+   "15707b29 merge: fix/solo-party-join-moot - infeasible party_join drops from next_action when the agent's own coordination evidence has no invite path (leg-94 fix under test)"
+  ],
+  "unit": "leg95-runner (systemd --user)",
+  "duration_s": 7200,
+  "receipt": "run/plain_host_receipts/population-receipt-95-1794489235.json"
+ },
+ "pre_launch": {
+  "seed_verified_vs_db": true,
+  "seed_zeny": [112, 137, 90, 90, 93, 62, 125],
+  "db_zeny_at_preflight": [112, 137, 90, 90, 93, 62, 125],
+  "drift": "none; no seed fix or commit needed at staging",
+  "runner_pgrep": 0,
+  "backends": { "decision_8091": "ok", "chat_8092": "ok" },
+  "e2e_containers": "mariadb/login/char/map all Up",
+  "worldfeed_8402": "free at launch"
+ },
+ "run_health": {
+  "steps": 28550,
+  "step_errors": 0,
+  "transport_down": 0,
+  "tracebacks": 0,
+  "logins": "all 7 online within ~3 min of the 14:30 open (s00 first moves on pay_fild04 at 14:33); clean logoff at the 16:00 close, all standing=True",
+  "online_samples": "179/240 per agent (7/7)",
+  "decides_per_agent": "108-219 (s00 highest at 219)",
+  "runner_exit": "clean DONE at 16:13:53 (steps 28550, errors 0, ExecMainStatus=0)"
+ },
+ "verdict_a_goal_preference": {
+  "verdict": "SPLIT: solo goal preference CONFIRMED live (the direct 15707b29 claim works); s00 attack-shift NOT achieved, gate moved downstream and is named",
+  "party_share_collapsed": {
+   "s00_next_action": "party_join/party_invite 0/219 decides (0.0%) vs leg-94 57%; grind 215/219 (98%), loot 4 (2%)",
+   "s00_goal_reviews": "grind 101/101 (leg 94: social held the slot)",
+   "s00_llm_escalations": 0,
+   "mechanism": "the moot-filter + goal->grind yield worked exactly as merged: no invite path, no party_hold"
+  },
+  "attack_shift": {
+   "attacks": 0,
+   "exp": "42/27 FLAT (FIFTH consecutive flat leg; the 'exp MUST move' sub-criterion NOT met)",
+   "script_slot": "MerchantDrive ACTIVE 14:30:22 -> 14:59:59 (488 steps = the whole window); 142 steps emitted MoveTo, 346 emitted NOTHING - the slot-holder idled while holding"
+  },
+  "gate_named": "MerchantDrive admission stuck-on. s00 (THIEF, evasive/lethal) was admitted to the sell arm at window open (stock=1 Red Potion 511, zeny=125, log line 'sell arm admitted (map=pay_fild04 dest=(17, 165) zeny=125 stock=1)') and never released: the travel leg walked it across THREE maps (pay_fild04 44 state ticks -> moc_fild01 41 -> prt_fild08 4; 490 MoveTos) without ever reaching the prontera dealer (zero TalkToNpc dispatched all window); inventory {511x1, 1201x1} and zeny 125 stayed byte-flat all window. Farm plans authored continuously per current map (pay_fild04 Poring/Drops/Marin; moc_fild01 Baby Desert Wolf/Ant Egg/Peco Peco Egg; prt_fild08 Lunatic/Pupa) but never received the script slot. SAME starvation mechanism as leg 94 (a slot-holder that never terminates blocks the goal script), different starver: the sell arm instead of the social script.",
+  "decide_layer_exonerated": "decide rows are clean (grind 98%); the gate is script-slot admission/release, upstream of nothing and downstream of the merge under test"
+ },
+ "verdict_b_economy": {
+  "verdict": "PASS: ninth sell cycle landed (+19z fleet, 4 completed sales); ring turning but degraded (heavy out-of-range circling)",
+  "db_zeny_deltas": {
+   "300000 NyxSong": "112 -> 115 (+3, sold)",
+   "300001 RinceNyan": "137 -> 137 (no trip; stayed grinding)",
+   "300002 zeny_wing": "90 -> 97 (+7, sold)",
+   "300003 PipinWalker": "90 -> 90 (talked, no sale)",
+   "300004 xXLunasongXx": "93 -> 99 (+6, sold)",
+   "300005 PoringMuffin14": "62 -> 65 (+3, sold)",
+   "300006 YuffieFy81": "125 -> 125 (never reached town)"
+  },
+  "ring_trace": {
+   "admissions": 6,
+   "at_open": "NyxSong admitted already in prontera; 4 agents weapon_release (stock=0); PipinWalker DENIED at open ('sell arm map_not_on_merchant_route (map=prt_fild05 ...)') - the route denial forced the walk",
+   "completed_sales": "NyxSong, zeny_wing, xXLunasongXx, PoringMuffin14 each TalkToNpc -> NpcShopSellOpen -> NpcShopSell (4 full sell triples)",
+   "pipinwalker": "reached prontera dealer cell (172,129), ONE TalkToNpc, no NpcShopSell - dealer_talk_out_of_range chebyshev 2-4 congestion across agents parked at (168-172,128-129); 0z; stranded stock (909 Jellopy x1) remains",
+   "dealer_congestion": "leg-73 open item persists: approach-cell allocation/queueing at the dealer still needed; 4/6 admissions converted"
+  }
+ },
+ "verdict_c_farming": {
+  "verdict": "PASS: exp moved on 4/7 chars; fleet 44 attacks, 16 ItemDrop events, 5 loot successes - drop supply held",
+  "exp_deltas_db": {
+   "300001 RinceNyan": "+6 base / +2 job (202->208, 152->154)",
+   "300002 zeny_wing": "+2 / +1 (117->119, 98->99)",
+   "300004 xXLunasongXx": "+10 / +5 (249->259, 148->153)",
+   "300005 PoringMuffin14": "+2 / +1 (166->168, 107->108)",
+   "fleet_total": "+20 base / +9 job (leg 94: first population-era movement on 6/7)"
+  },
+  "attacks_by_agent": { "g00m01 RinceNyan": 12, "g00m02 zeny_wing": 2, "g01m00 PipinWalker": 4, "g01m01 xXLunasongXx": 21, "g01m02 PoringMuffin14": 5, "g00m00 NyxSong": 0, "s00": 0 },
+  "zero_attack_agents": "NyxSong (guild arc + sell trip consumed its window), PipinWalker (travel + dealer talk), s00 (MerchantDrive slot starvation)"
+ },
+ "verdict_d_health": {
+  "verdict": "PASS",
+  "ack_identity_watch": "clean - no tracebacks, no error lines in the runner log, no anomalous ack rows",
+  "pipinwalker_prt_fild05_watch": "it LEFT prt_fild05 (route denial at open forced the trip), crossed to prontera, talked, no sale; stock remains; watch continues",
+  "new_signature": "s00 MerchantDrive slot-starvation (verdict a) - THE headline gate for the next slice",
+  "guild_arc": "NyxSong and PipinWalker each FoundGuild + 6 GuildInvites live; socials strictly in-game (PartyChat/Say/InviteToParty; 59 fleet chat_sent)",
+  "s00_wander_note": "s00 crossed pay_fild04 -> moc_fild01 -> prt_fild08 chasing its farm plans while nominally owned by the sell arm - the route graph leg (pay_fild04 exit set toward prontera) should be verified before another leg depends on the field->town walk"
+ },
+ "seed_handoff": {
+  "closing_zeny_db": [115, 137, 97, 90, 99, 65, 125],
+  "seed_zeny_updated_for_leg96": true,
+  "note": "seed-zeny.json refreshed to the leg-95 closing values in this commit so leg-96 staging starts clean"
+ },
+ "evidence": {
+  "receipt": "run/plain_host_receipts/population-receipt-95-1794489235.json",
+  "analysis": "run/plain_host_receipts/population-receipt-95-analysis.json",
+  "traces": ".work/runtime/population-live/traces/pop_0003_*.jsonl (UTC 13:30-15:14)",
+  "runner_log": "/tmp/population_leg95.log",
+  "db_readback": "this file's db_zeny_deltas / exp_deltas_db (docker exec ro-bots-e2e-mariadb-1, char+inventory 300000-300007)"
+ }
+}
