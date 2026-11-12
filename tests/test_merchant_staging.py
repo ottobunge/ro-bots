@@ -147,7 +147,17 @@ def test_map_or_epoch_change_starts_a_fresh_hold_window():
     assert _step(client, state) == ()
     now[0] = 900.0
     assert _step(client, state) == ()
-    _step(client, replace(state, map_name="prt_fild08", x=170, y=375, occupied_cells=()))
+    _step(
+        client,
+        replace(
+            state,
+            map_name="prt_fild08",
+            x=170,
+            y=375,
+            occupied_cells=(),
+            inventory={"915": 2},
+        ),
+    )
     now[0] = 1800.0
     assert _step(client, state) == ()
 

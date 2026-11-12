@@ -40,14 +40,7 @@ Point = tuple[int, int]
 Leg = tuple[str, int, int]
 
 ONWARD: dict[str, tuple[Leg, ...]] = {
-    "prt_in": (("prontera", 156, 22), ("prt_fild08", 170, 375)),
-    "prontera": (("prt_fild08", 170, 375),),
-    "pay_fild04": (
-        ("moc_fild01", 239, 382),
-        ("prt_fild08", 169, 377),
-        ("prontera", 177, 221),
-        ("prt_in", 172, 130),
-    ),
+    map_name: legs[1:] for map_name, legs in TRAVEL_ROUTES.items()
 }
 """The route that follows an exit of each map (pinned public warp bytes).
 

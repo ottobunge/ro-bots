@@ -9,12 +9,15 @@ import logging
 import random
 from collections.abc import Sequence
 from enum import Enum, auto
+from time import monotonic as _merchant_now
 from typing import TYPE_CHECKING, Protocol, assert_never, final
 
 from robots.app.field_travel import FieldTravel
+from robots.app.merchant_trip import MerchantTrip
 from robots.domain.actions import Attack, GameAction, MoveTo, Rest, TalkToNpc
 from robots.domain.farm import FarmPlan
 from robots.domain.model import ActorRef, Goal
+from robots.knowledge.travel_routes import MERCHANT_TRAVEL_ROUTES
 
 if TYPE_CHECKING:
     from robots.domain.model import BotState
@@ -203,6 +206,7 @@ _DEALER_APPROACH_REAFFIRM_TICKS = 5
 _WalkMemo = dict[str, tuple[str, int | None, tuple[int, int], int]]
 _DEALER_APPROACH_WALKS: _WalkMemo = {}
 _MERCHANT_TRAVEL_WALKS: _WalkMemo = {}
+_MERCHANT_TRIPS: dict[str, MerchantTrip] = {}
 """Per-bot last authored map/cell and evaluations since that author.
 Give an in-flight walk time to progress, including across script recreation."""
 
@@ -217,6 +221,7 @@ def reset_merchant_talk() -> None:
     _DEALER_OCCUPANCY_TAPPED.clear()
     _DEALER_APPROACH_WALKS.clear()
     _MERCHANT_TRAVEL_WALKS.clear()
+    _MERCHANT_TRIPS.clear()
     _DEALER_QUEUE_WAITS.clear()
 
 
@@ -421,11 +426,7 @@ the sell trip EARNS the zeny, so the floor must never grow back into the
 sell arm's admission (pinned by tests/test_s00_sell_trip_route.py)."""
 
 MERCHANT_ROUTE: dict[str, tuple[int, int]] = {
-    "pay_fild04": (17, 165),
-    "moc_fild01": (239, 382),
-    "prt_fild08": (169, 377),
-    "prontera": (177, 221),
-    "prt_in": (172, 130),
+    map_name: legs[0][1:] for map_name, legs in MERCHANT_TRAVEL_ROUTES.items()
 }
 """Per-map engage cells of the dealer trip (window-29 merchant driver),
 each pinned public rathena e985006171d2 bytes:
@@ -447,6 +448,8 @@ each pinned public rathena e985006171d2 bytes:
 - ``npc/merchants/shops.txt:255``: ``prt_in,172,130,0 shop Weapon
   Dealer#prt 54,...,1201:-1,1204:-1`` — the dealer cell (wanted ids on the
   received offer are the only purchase authority, window-28 loop).
+Leg 95 adds prt_fild05 (373,205), prtf002 -> prontera (26,203),
+prontera_fild.txt:51. The full suffixes live in MERCHANT_TRAVEL_ROUTES.
 Unknown maps are absent: the drive never engages there (fail-closed)."""
 
 MERCHANT_ROUTE_RETURN: dict[str, tuple[int, int]] = {
@@ -551,6 +554,13 @@ level by the leg-68 admission tap so ``merchant_admission_refusal`` reads
 the same set the drive admits on."""
 
 
+MERCHANT_FIELD_BATCH_MIN = 2
+"""Minimum positive sellable units for a field-side trip. Town/interior
+sales can clear a single unit. This is an admission batch rule, never a
+price or sellability authority: the received shop rows still own the sale.
+"""
+
+
 _MERCHANT_DRIVE_TAPPED: dict[str, str] = {}
 """bot -> last tapped admission verdict (change-only cadence). A verdict
 line fires on the FIRST evaluation of a presence and on every term change
@@ -577,16 +587,19 @@ def merchant_admission_refusal(state: BotState) -> tuple[str, str] | None:
     ``not_novice`` / ``inventory_unknown`` (the precondition pair),
     ``no_stock_below_zeny_floor`` (the combined affordable-or-stock gate -
     the detail names which sub-fact failed), ``weapon_release`` (the leg-40
-    wanted-weapon hold) and ``map_not_on_merchant_route`` (the pinned route
-    lookup). ``(term, detail)`` with the detail carrying the full guard
-    state; None when the drive admits. Verdicts only - the behavior
+    wanted-weapon hold), ``merchant_stock_below_trip_minimum`` (the field
+    batch rule), ``merchant_trip_retry_cooldown`` (a released trip), and
+    ``map_not_on_merchant_route`` (the pinned route lookup). ``(term, detail)``
+    carries the full guard state; None when the drive admits. Verdicts only - the behavior
     authority stays in ``merchant_drive_cell``.
     """
     refusal = _precondition_refusal(state)
     affordable = type(state.zeny) is int and state.zeny >= MERCHANT_ZENY_MIN
-    has_stock = any(str(item) in DRIVE_SELLABLES for item in state.inventory)
+    has_stock = _merchant_stock(state) > 0
     if refusal is None:
         refusal = _want_refusal(state, affordable, has_stock)
+    if refusal is None and _merchant_trip_cooling_down(state.name):
+        refusal = "merchant_trip_retry_cooldown"
     if refusal is None and not has_stock and state.merchant_buy_suspended:
         refusal = "buy_suspended"
     if refusal is not None:
@@ -596,12 +609,28 @@ def merchant_admission_refusal(state: BotState) -> tuple[str, str] | None:
 
 def _admission_detail(state: BotState, affordable: bool, has_stock: bool) -> str:
     """The full guard state one admission tap line carries."""
-    stock = sum(count for item, count in state.inventory.items() if item in DRIVE_SELLABLES)
+    stock = _merchant_stock(state)
     return (
         f"map={state.map_name} zeny={state.zeny} floor={MERCHANT_ZENY_MIN} "
         f"job={state.job} inv_known={state.inventory_known} "
-        f"stock={stock} has_stock={has_stock} affordable={affordable}"
+        f"stock={stock} has_stock={has_stock} affordable={affordable} "
+        f"trip_min={_merchant_batch_min(state)}"
     )
+
+
+def _merchant_stock(state: BotState) -> int:
+    return sum(
+        max(0, count) for item, count in state.inventory.items() if str(item) in DRIVE_SELLABLES
+    )
+
+
+def _merchant_batch_min(state: BotState) -> int:
+    return 1 if state.map_name in ("prontera", "prt_in") else MERCHANT_FIELD_BATCH_MIN
+
+
+def _merchant_trip_cooling_down(bot: str) -> bool:
+    trip = _MERCHANT_TRIPS.get(bot)
+    return trip is not None and trip.cooling_down(_merchant_now())
 
 
 def _precondition_refusal(state: BotState) -> str | None:
@@ -616,13 +645,23 @@ def _precondition_refusal(state: BotState) -> str | None:
 def _want_refusal(state: BotState, affordable: bool, has_stock: bool) -> str | None:
     """The want terms, named: the combined stock/zeny gate, the leg-40
     weapon hold, the route map."""
+    wanted_weapon = any(str(item) in state.inventory for item in NOVICE_WANTED_WEAPONS)
+    if has_stock and _merchant_small_batch_only(state, affordable, wanted_weapon):
+        return "merchant_stock_below_trip_minimum"
     if not (affordable or has_stock):
         return "no_stock_below_zeny_floor"
-    if not has_stock and any(str(item) in state.inventory for item in NOVICE_WANTED_WEAPONS):
+    if not has_stock and wanted_weapon:
         return "weapon_release"
     if MERCHANT_ROUTE.get(state.map_name) is None:
         return "map_not_on_merchant_route"
     return None
+
+
+def _merchant_small_batch_only(state: BotState, affordable: bool, wanted_weapon: bool) -> bool:
+    """An undersized sale must not borrow admission from a nonexistent buy want."""
+    below_min = _merchant_stock(state) < _merchant_batch_min(state)
+    cannot_buy = wanted_weapon or not affordable or state.merchant_buy_suspended
+    return below_min and cannot_buy
 
 
 def merchant_drive_cell(state: BotState) -> tuple[int, int] | None:
@@ -630,8 +669,9 @@ def merchant_drive_cell(state: BotState) -> tuple[int, int] | None:
 
     Two arms: the BUY arm (a Novice with no wanted weapon and a KNOWN zeny
     >= MERCHANT_ZENY_MIN) and the SELL arm (a Novice holding sellable
-    stock, weapon or not — leg 40: the fixture knife in every inventory
-    kept the old single release from ever firing the trip). Both need a
+    stock, weapon or not). Field-side sales require at least two positive
+    sellable units; town/interior sales can clear a single unit. A genuine
+    affordable weapon purchase can still travel with a small bag. Both need a
     KNOWN inventory and a pinned route map; anything else returns None and
     the field behavior is unchanged.
     """
@@ -641,11 +681,13 @@ def merchant_drive_cell(state: BotState) -> tuple[int, int] | None:
         _tap_merchant_drive(state.name, term, detail)
         return None
     destination = MERCHANT_ROUTE.get(state.map_name)
-    stock = sum(count for item, count in state.inventory.items() if item in DRIVE_SELLABLES)
+    stock = _merchant_stock(state)
     _tap_merchant_drive(
         state.name,
         "admitted",
-        f"map={state.map_name} dest={destination} zeny={state.zeny} stock={stock}",
+        f"map={state.map_name} dest={destination} zeny={state.zeny} stock={stock} "
+        f"trip_min={_merchant_batch_min(state)} "
+        f"arm={'sell_batch' if stock >= _merchant_batch_min(state) else 'buy_budget'}",
     )
     return destination
 
@@ -699,6 +741,8 @@ def _merchant_step(
     """
     destination = merchant_drive_cell(state)
     if destination is not None:
+        if not _merchant_trip_allows(state, destination):
+            return None
         # A field/town failure re-rolls locally, never follows the farming
         # resolver back home. prt_in still needs its OWN interior door.
         if state.map_name == "prt_in" or travel_target is None:
@@ -706,6 +750,9 @@ def _merchant_step(
             if leg is not None:
                 return _merchant_travel_step(state, leg, travel_target)
         return _merchant_engage(state, destination, reachable, travel_target)
+    if _merchant_trip_cooling_down(state.name):
+        return None
+    _MERCHANT_TRIPS.pop(state.name, None)
     _DEALER_APPROACH_WALKS.pop(state.name, None)
     _DEALER_QUEUE_WAITS.pop(state.name, None)
     home = merchant_return_cell(state)
@@ -717,6 +764,29 @@ def _merchant_step(
     # cycle can repeat across trips (window-30 return legs).
     _DEALER_TALKED.pop(state.name, None)
     return _merchant_travel_step(state, home, travel_target)
+
+
+def _merchant_trip_allows(state: BotState, destination: tuple[int, int]) -> bool:
+    """Goal-independent lease; only received position/map progress renews it.
+
+    A contacted dealer remains owned by the existing shop/ring machinery.
+    Returning None during cooldown lets BOTH the brain re-arm and the farm
+    script's own merchant seam yield, without altering inventory or plans.
+    """
+    if state.map_name == "prt_in" and (
+        state.shop_offer is not None or state.name in _DEALER_TALKED
+    ):
+        _MERCHANT_TRIPS.pop(state.name, None)
+        return True
+    now = _merchant_now()
+    remaining = len(MERCHANT_TRAVEL_ROUTES[state.map_name])
+    distance = max(abs(state.x - destination[0]), abs(state.y - destination[1]))
+    trip = _MERCHANT_TRIPS.setdefault(state.name, MerchantTrip(remaining, distance, now))
+    allowed = trip.advance(state.name, remaining, distance, now)
+    if not allowed:
+        _MERCHANT_TRAVEL_WALKS.pop(state.name, None)
+        _DEALER_APPROACH_WALKS.pop(state.name, None)
+    return allowed
 
 
 def _merchant_route_leg(

@@ -72,6 +72,46 @@ The internal prt_in hops (source cell -> the cell the hop delivers):
 
 from __future__ import annotations
 
+MERCHANT_TRAVEL_ROUTES: dict[str, tuple[tuple[str, int, int], ...]] = {
+    "prt_in": (("prt_in", 172, 130),),
+    "prontera": (("prontera", 177, 221), ("prt_in", 172, 130)),
+    "prt_fild08": (
+        ("prt_fild08", 169, 377),
+        ("prontera", 177, 221),
+        ("prt_in", 172, 130),
+    ),
+    "prt_fild05": (
+        ("prt_fild05", 373, 205),
+        ("prontera", 177, 221),
+        ("prt_in", 172, 130),
+    ),
+    "moc_fild01": (
+        ("moc_fild01", 239, 382),
+        ("prt_fild08", 169, 377),
+        ("prontera", 177, 221),
+        ("prt_in", 172, 130),
+    ),
+    "pay_fild04": (
+        ("pay_fild04", 17, 165),
+        ("moc_fild01", 239, 382),
+        ("prt_fild08", 169, 377),
+        ("prontera", 177, 221),
+        ("prt_in", 172, 130),
+    ),
+}
+"""Dealer-bound suffixes, separate from town-to-farm return routes.
+
+Pinned e985006171d2 pre-re warp declarations: payon_fild.txt:30
+(payf002), morroc_fild.txt:24 (mocf006), prontera_fild.txt:65
+(prtf004), cities/prontera.txt:25 (prt05); shops.txt:255 is the dealer.
+There is NO pay_fild04 -> prontera border. Leg 95's three-map chain
+already matched these declarations. The missing merchant map was
+prt_fild05: prontera_fild.txt:51 (prtf002) leads from (373,205) directly
+to prontera (26,203). Keep every intermediate suffix available so a
+resolver can continue after a map change or login, rather than needing
+the original pay_fild04 starting key.
+"""
+
 TRAVEL_ROUTES: dict[str, tuple[tuple[str, int, int], ...]] = {
     "prontera": (
         ("prontera", 156, 22),
@@ -82,13 +122,7 @@ TRAVEL_ROUTES: dict[str, tuple[tuple[str, int, int], ...]] = {
         ("prontera", 156, 22),
         ("prt_fild08", 170, 375),
     ),
-    "pay_fild04": (
-        ("pay_fild04", 17, 165),
-        ("moc_fild01", 239, 382),
-        ("prt_fild08", 169, 377),
-        ("prontera", 177, 221),
-        ("prt_in", 172, 130),
-    ),
+    **{name: MERCHANT_TRAVEL_ROUTES[name] for name in ("pay_fild04", "moc_fild01", "prt_fild05")},
 }
 """The seeded route per map: the ordered warp legs from that map to the
 field. ``prt_in``'s first leg is the prt05 interior's door - the seeded
@@ -109,6 +143,8 @@ unwalkable center (170,378)."""
 EXIT_CELLS: dict[str, tuple[tuple[int, int], ...]] = {
     "prontera": ((156, 22),),
     "pay_fild04": ((17, 165),),
+    "moc_fild01": ((239, 382),),
+    "prt_fild05": ((373, 205),),
     "prt_in": (
         (135, 71),
         (168, 124),

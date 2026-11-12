@@ -163,7 +163,7 @@ def test_field_warp_legs_keep_the_warp_cell_target() -> None:
     legs enter their warp trigger areas. Leg 79's walkable (169,377) is
     inside the cited field warp's trigger rectangle."""
     scripts.reset_merchant_talk()
-    state = _state(map_name="prt_fild08", x=180, y=320, nearby=())
+    state = _state(map_name="prt_fild08", x=180, y=320, nearby=(), inventory={"915": 2})
     outcome = GrindScript().step(state)
     (action,) = outcome.actions
     assert isinstance(action, MoveTo)
