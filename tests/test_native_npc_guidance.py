@@ -482,7 +482,7 @@ def test_preparation_preserves_existing_recovery_pose_barrier():
     model = ScriptedDecisionModel({"react_damage": {"choice": "rest"}})
     brain = EventDrivenBrain(model, StaticChatGenerator())
     state = client.build_native_state(Goal.GRIND)
-    brain.handle_event(state, DamageTaken(5, 123))
+    brain.handle_event(replace(state, hp=19), DamageTaken(5, 123))
     assert brain.step_script(state, can_resume=False).actions == ()
     assert brain.is_recovering
 

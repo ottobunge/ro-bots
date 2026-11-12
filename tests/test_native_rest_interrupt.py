@@ -67,6 +67,18 @@ def test_damage_rest_suspends_same_and_next_tick_attack():
     assert brain.step_script(agent.build_state()).actions == (Rest(),)
 
 
+def test_leg93_repeated_damage_rest_reviews_allow_native_attack():
+    wire, _, _, _, brain, agent = replay()
+    wire.status_params.update({5: 43, 6: 86})
+    wire.add(monster(at=(42, 38)))
+    for _ in range(3):
+        damage(wire)
+        agent.tick()
+    assert "sit" not in wire.sent
+    assert bytes.fromhex("37047b00000000") in wire.sent
+    assert not brain.is_recovering
+
+
 def test_script_rest_latches_through_rebound_until_received_health_boundary():
     wire, _, _, _, brain, agent = replay()
     wire.status_params.update({5: 19, 6: 86})
