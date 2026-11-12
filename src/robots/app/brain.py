@@ -227,13 +227,23 @@ class EventDrivenBrain:
         if self._escape is not None and (state.x, state.y) != self._escape:
             return False
         return self.is_recovering and (
-            not self._recovering or state.hp_ratio >= self._recovery_hp_ratio
+            not self._recovering
+            or state.hp_ratio >= self._recovery_hp_ratio
+            or self._rest_break_reason(state) in ("hp_full", "attackable_in_range")
         )
 
     @property
     def required_recovery_hp_ratio(self) -> float:
-        """Engineering hysteresis policy; pure escape needs only motion/pose."""
+        """Configured health hysteresis for recovery without a melee break."""
         return self._recovery_hp_ratio if self._recovering else 0.0
+
+    def recovery_hp_floor(self, state: BotState) -> float:
+        """Share the brain's melee rest-break admission with the native barrier."""
+        if not self._recovering:
+            return 0.0
+        if self._rest_break_reason(state) == "attackable_in_range":
+            return REST_BREAK_HP_FLOOR
+        return self._recovery_hp_ratio
 
     def should_interrupt(self, event: MonsterSpotted) -> bool:
         """FarmPlan customizes the interrupt system: while farming, only

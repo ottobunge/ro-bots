@@ -450,3 +450,48 @@ def test_in_range_attackable_breaks_rest_above_rest_floor():
 # breaks at hp >= REST_BREAK_HP_FLOOR with an attackable in range
 # (test_in_range_attackable_breaks_rest_above_rest_floor). The pacing tests
 # stage no monster: they pin pure recovery pacing, which needs none.
+
+
+def test_leg96_melee_rest_break_waits_for_native_release_and_resumes_hits():
+    wire, client, _, _, brain, agent = replay()
+    wire.status_params.update({5: 18, 6: 86})
+    wire.add(monster(at=(42, 38)))
+    damage(wire)
+    agent.tick()
+    wire.add(pose())
+    wire.status_params[5] = 43  # Damage reaction/rebound: above 25%, below 75%.
+    agent.tick()
+    assert wire.sent[-1] == "stand"
+    assert bool(brain.is_recovering)
+    assert client._rest_seq is not None
+    wire.add(pose(kind=3))
+    agent.tick()
+    assert not bool(brain.is_recovering)
+    assert vars(client)["_rest_seq"] is None
+    assert wire.sent[-1] == bytes.fromhex("37047b00000000")
+    assert any(row["event"] == "rest_released" for row in client.drain_swing_telemetry())
+
+
+def test_leg96_death_cancels_native_rest_without_authorizing_respawn_swing():
+    wire, client, _, _, brain, agent = replay()
+    wire.status_params.update({5: 18, 6: 86})
+    wire.add(monster(at=(42, 38)))
+    damage(wire)
+    agent.tick()
+    wire.add(pose(), struct.pack("<HIB", 0x0080, 999, 1))
+    wire.status_params[5] = 1
+    agent.tick()
+    assert not bool(brain.is_recovering)
+    assert vars(client)["_rest_seq"] is None
+    assert any(
+        row["reason"] == "received_self_death"
+        for row in client.drain_swing_telemetry()
+        if row["event"] == "rest_released"
+    )
+    wire.add(struct.pack("<HIH", 0x0148, 999, 0))
+    wire.status_params[5] = 43
+    agent.tick()
+    assert wire.sent[-1] == "stand"
+    wire.add(pose(kind=3))
+    agent.tick()
+    assert wire.sent[-1] == bytes.fromhex("37047b00000000")

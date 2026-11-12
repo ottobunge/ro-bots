@@ -20,6 +20,7 @@ from __future__ import annotations
 import argparse
 import json
 import time
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
@@ -115,6 +116,7 @@ def main(argv: list[str] | None = None) -> int:
     args.planning_world = None
 
     from robots import playing  # noqa: PLC0415 (heavy import kept out of --help)
+    from robots.app.swing_funnel import summarize_swing_traces
 
     host = playing.build_host(args)
     host.start_worldfeed()
@@ -257,6 +259,12 @@ def main(argv: list[str] | None = None) -> int:
         "samples": samples,
         "passed": None,  # the operator asserts separately from the DB
     }
+    if args.trace_dir:
+        receipt["swing_conversion"] = summarize_swing_traces(
+            sorted(args.trace_dir.glob("pop_*.jsonl")),
+            start=datetime.fromtimestamp(started, UTC).isoformat(),
+            end=datetime.fromtimestamp(time.time(), UTC).isoformat(),
+        )
     receipt_path.write_text(json.dumps(receipt, indent=2))
     print(
         f"POPULATION-RUNNER[{args.leg}] DONE: steps {steps}, errors {errors}, "

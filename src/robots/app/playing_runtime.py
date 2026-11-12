@@ -81,6 +81,7 @@ from robots.app.scripts import (
     shop_sell_entries,
     shop_sellable_stock,
 )
+from robots.app.swing_telemetry import SwingTelemetry
 from robots.domain.actions import (
     AcceptGuildInvite,
     AcceptInvite,
@@ -361,9 +362,7 @@ class PlayingClient:
         self._invite = 0
         self._rng = random.Random(wire.char_name)
         self.mob_db = mob_db or ObservedMobDatabase()
-        self._tracker: NativeGameplayTracker | None = None
-        self._encounters: NativeEncounterStream | None = None
-        self._skills: NativeSkillContext | None = None
+        self._init_gameplay_observation()
         self._skill_wire = wire
         self._epoch: int | None = None
         self._epoch_character = wire.char_name
@@ -415,6 +414,12 @@ class PlayingClient:
         self._sell_open_mint: tuple[NpcShopSellOpen, tuple[object, ...]] | None = None
         self._sell_mint: tuple[NpcShopSell, tuple[object, ...]] | None = None
         self._sell_pending: tuple[NpcShopSell, NpcDialogue, int] | None = None
+
+    def _init_gameplay_observation(self) -> None:
+        self._tracker: NativeGameplayTracker | None = None
+        self._encounters: NativeEncounterStream | None = None
+        self._swing_telemetry = SwingTelemetry()
+        self._skills: NativeSkillContext | None = None
 
     def bind_server_self_slots(
         self,
@@ -708,6 +713,7 @@ class PlayingClient:
                 tracker._inventory_initial = False
             if self._skills is not None:
                 self._skills.consume(frame)
+            self._capture_swing_frame(frame, tracker.view, epoch)
             self._consume_metadata(received)
             self._validate_received_npc_context(tracker.view)
             self._npc.consume(received, now)
@@ -716,6 +722,17 @@ class PlayingClient:
             self._consume_sell_result(frame)
             self._consume_purchase_frame(frame, tracker, now)
         return True
+
+    def _capture_swing_frame(
+        self, frame: tuple[int, float, int, bytes], view: NativeGameplayView, epoch: int
+    ) -> None:
+        if frame[2] not in (0x08C8, 0x0080, 0x00B0, 0x00B1, 0x0ACB):
+            return
+        names = {
+            aid: self.mob_db.catalog[sid].name if sid in self.mob_db.catalog else f"monster#{sid}"
+            for aid, sid in self._species.items()
+        }
+        self._swing_telemetry.receive(frame, view, epoch=epoch, own_id=self.wire.aid, species=names)
 
     def _consume_purchase_frame(
         self, frame: tuple[int, float, int, bytes], tracker: NativeGameplayTracker, now: float
@@ -1151,7 +1168,7 @@ class PlayingClient:
         self._npc_retry_at = now + NPC_RETRY_CADENCE_S
         return True
 
-    def _note_attack_gate(self, reason: str) -> None:
+    def _note_attack_gate(self, reason: str, target: int) -> None:
         """Bounded gate-reason telemetry: WHY an authored Attack sent nothing.
 
         Leg 33: 516 approaches produced 6 swings and the receipt could not
@@ -1163,24 +1180,42 @@ class PlayingClient:
             reasons = deque(maxlen=64)
             self._attack_gate_reasons = reasons
         reasons.append((self._now(), reason))
+        self._swing_tap().note("attack_refused", reason=reason, target_id=target, at=self._now())
+
+    def _swing_tap(self) -> SwingTelemetry:
+        telemetry = self.__dict__.get("_swing_telemetry")
+        if telemetry is None:
+            telemetry = SwingTelemetry()
+            self._swing_telemetry = telemetry
+        return telemetry
+
+    def drain_swing_telemetry(self) -> tuple[dict[str, Any], ...]:
+        """Drain cached wire observations without advancing any receive cursor."""
+        return self._swing_tap().drain()
 
     def _attack(self, state: BotState, target: int) -> None:
         if state.alive is not True:
-            self._note_attack_gate("dead")
+            self._note_attack_gate("dead", target)
             return
         if self._pending is not None:
-            self._note_attack_gate("pending_walk")
+            self._note_attack_gate("pending_walk", target)
             return
         if not any(actor.id == target for actor in state.nearby_monsters):
-            self._note_attack_gate("target_not_visible")
+            self._note_attack_gate("target_not_visible", target)
             return
         if self._rest_seq is not None:
-            self._note_attack_gate("resting")
+            self._note_attack_gate("resting", target)
             return
         if not self._attack_ready():
-            self._note_attack_gate("cooldown")
+            self._note_attack_gate("cooldown", target)
             return
         self.wire._send(attack(target))
+        self._swing_tap().note(
+            "swing",
+            target_id=target,
+            at=self._now(),
+            species=next(actor.name for actor in state.nearby_monsters if actor.id == target),
+        )
 
     def _equip_progression(self, state: BotState) -> None:
         """Wear an owned wanted weapon once per epoch (equip progression rule).
@@ -2403,9 +2438,14 @@ class PlayingClient:
             or not self._attack_ready(after_seq=self._rest_seq)
         ):
             return False
+        self._release_rest("received_health_and_stand")
+        return True
+
+    def _release_rest(self, reason: str) -> None:
+        if self._rest_seq is not None:
+            self._swing_tap().note("rest_released", reason=reason)
         self._rest_at = None
         self._rest_seq = None
-        return True
 
     def _attack_ready(self, *, after_seq: int | None = None) -> bool:
         tracker = self._tracker
@@ -3748,6 +3788,7 @@ class PlayingClient:
         ):
             self._standing = None
             self._stand_pending = None
+            self._release_rest("received_self_death")
 
     def _receive_npc_name(self, raw: bytes) -> None:
         received = received_npc_name(raw)

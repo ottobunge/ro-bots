@@ -1083,7 +1083,7 @@ class ScheduledAgent:
         ready = getattr(self.client, "recovery_ready", None)
         can_resume = True
         if ready is not None and brain.recovery_health_ready(state):
-            can_resume = bool(ready(hp_ratio=brain.required_recovery_hp_ratio))
+            can_resume = bool(ready(hp_ratio=brain.recovery_hp_floor(state)))
         outcome = brain.step_script(state, can_resume=can_resume)
         self.execute_actions(self._script_actions(state, outcome.actions))
 
@@ -1258,6 +1258,7 @@ class ScheduledAgent:
             self._last_action_monotonic = self._tick_clock.monotonic()
         for action in actions:
             error = None
+            self._trace_swing_receipts()
             self._trace_action(action)
             try:
                 self._perform(action)
@@ -1269,6 +1270,8 @@ class ScheduledAgent:
                     type(action).__name__,
                     exc,
                 )
+            if not isinstance(action, MoveTo):
+                self._trace_swing_receipts()
             self._trace_move_perform(action, error)
             self._trace_loot_receipts()
 
@@ -1286,6 +1289,7 @@ class ScheduledAgent:
 
     def _trace_state_tick(self, state: BotState) -> None:
         """The bounded periodic snapshot (about one per interval of ticks)."""
+        self._trace_swing_receipts()
         self._trace_loot_receipts()
         trace = self._trace
         if trace is None:
@@ -1349,6 +1353,12 @@ class ScheduledAgent:
             return
         for row in drain():
             self._trace.log("loot_performed", **(self._trace_context() | row))
+
+    def _trace_swing_receipts(self) -> None:
+        drain = getattr(self.client, "drain_swing_telemetry", None)
+        if self._trace is not None and callable(drain):
+            for row in drain():
+                self._trace.log("swing_observation", **(self._trace_context() | row))
 
     def _trace_move_perform(self, action: GameAction, error: str | None) -> None:
         """A sibling to authored intent, lifted after perform from cached facts only."""
