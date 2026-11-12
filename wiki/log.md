@@ -12506,3 +12506,85 @@ strictly in-game (59 fleet chat_sent, no out-of-band channel).
 **Seed handoff:** `seed-zeny.json` refreshed to the leg-95 closing values
 (115/137/97/90/99/65/125) in this commit so leg-96 staging starts clean.
 No SQL was written to the world DB. No gate run (no code change).
+
+
+## MERCHANTDRIVE SLOT HOLD — bounded travel release, field batch admission, pinned route audit (2026-11-12)
+
+Leg-95 evidence: `population-receipt-95-1794489235.json` and
+`population-receipt-95-analysis.json` (evidence commit `1eb2d0af`),
+`.work/runtime/population-live/traces/pop_0003_s00*.jsonl` UTC >=13:30.
+The goal-preference merge had already shifted s00 to grind (215/219
+decides), but MerchantDrive preempted every farm step: 488 ACTIVE sampled
+steps, 346 empty, 490 MoveTos across pay_fild04 -> moc_fild01 ->
+prt_fild08, no TalkToNpc, unchanged {511x1,1201x1}/125z, exp 42/27 flat.
+Implementation branch `sol/merchant-trip-release`, based on `e5cc7ea1`.
+
+**Slot root cause:** brain `_sell_drive_rearm` runs before the retained
+farm script and `_merchant_step` returned ACTIVE indefinitely while the
+stock-based admission stayed true. Walk patience, empty actions, vetoed
+walks, and map wandering had no trip-level release. The shared merchant
+seam now tracks a per-bot high-water mark: fewer remaining dealer-route
+legs, then a smaller received Chebyshev distance to that leg's known cell.
+Only that received progress renews a **60-second no-progress deadline**.
+Jitter, backward map changes, authored MoveTos, script recreation, and
+repeated evaluations cannot renew it. Expiry returns None through both
+the brain re-arm and the farm script seam, emits
+`merchant_trip_released_no_progress`, and leaves the existing farm plan
+and inventory intact. `merchant_trip_retry_cooldown` prevents immediate
+re-admission for **120 seconds**, then `merchant_trip_retry` starts a new
+attempt. Dealer contact/bound offers remain with the existing shop and
+ring machinery; the walkability veto remains in PlayingClient.
+
+**Admission root cause:** any sellable ID in the bag admitted the sell
+arm, regardless of quantity or trip economics; the 50z floor guards only
+the separate BUY arm. Field-side sales now require a batch of **at least
+two positive sellable units**, with
+`merchant_stock_below_trip_minimum` / `stock` / `trip_min` telemetry.
+Town/interior sales still admit one unit. The admitted telemetry names
+`arm=sell_batch` or `arm=buy_budget`; an actual affordable weapon purchase
+can still travel with a small bag, while a held wanted weapon cannot
+lend its unused buy budget to an undersized sale. Nonpositive inventory
+rows no longer count as stock. This is an admission batch policy, not a
+price/sellability claim: received shop rows remain the trade authority.
+The receipt calls s00 a thief and item 511 a Red Potion. In the runtime,
+BotState.job comes from validated session progression, currently raw job
+ID 0 -> Novice, rather than the `thief-stealth-lethal` build / evasive-lethal persona. A received Thief
+still refuses as `not_novice`. Pinned `item_db_usable.yml` identifies 511
+as Green Herb (Buy 10), while Red Potion is 501 (Buy 50, not a drive
+sellable). Regressions cover both IDs and both classes.
+
+**Route finding:** there is no direct pay_fild04 -> prontera border, but
+the existing chain was CORRECT in pinned rAthena `e985006171d2`:
+payon_fild.txt:30 payf002 (17,165) -> moc_fild01 (376,162),
+morroc_fild.txt:24 mocf006 (239,382) -> prt_fild08 (233,20),
+prontera_fild.txt:65 prtf004 (169,377 inside the trigger) -> prontera
+(156,26), cities/prontera.txt:25 prt05 (177,221) -> prt_in (168,128),
+then shops.txt:255 Weapon Dealer (172,130). No missing pay_fild04 hop
+was found; offline paths reach every waypoint from the actual previous
+warp arrival. The named table gaps were prt_fild05's merchant hop and
+generic resolver continuations from intermediate maps. Added prt_fild05
+(373,205) -> prontera (26,203), pinned prontera_fild.txt:51 prtf002;
+centralized dealer suffixes in knowledge and derived merchant cells from
+them, with moc_fild01/prt_fild05 resolver exits and onward suffixes.
+The regression checks every route edge against actual pinned warp
+trigger rectangles and walks the raw cache between warp arrivals.
+
+**TDD:** initial new-regression RED **8 failed / 7 passed**; initial GREEN
+**15 passed**. Focused merchant/route compatibility suite **151 passed**,
+including one updated legacy assertion that explicitly required a
+single-unit field sale. Two additional waypoint/staging tests now provide
+a two-unit field batch instead of one unit; their unchanged movement
+contracts pass **33/33**. Full gate results recorded below after completion.
+Fresh worktree initialized the pinned rAthena submodule and linked the
+ignored main-worktree config.log and knowledge DB corpora; those local
+test prerequisites are excluded from the commit. No population runner,
+world database mutation, dealer-ring edits, or main merge performed.
+
+**Final full gate GREEN:** `nix develop -c task --dir . check` exited 0:
+**7,166 passed, 1 skipped, 65 subtests passed, 95.66% coverage**, 252.93s
+(4 existing warnings). Black check, ruff, strict mypy (383 files), vulture,
+xenon, duplicate-code and security lint all passed. The first full run
+found exactly the two old single-unit field fixtures described above;
+those fixtures were corrected and the complete gate rerun green before
+commit. Live attack/exp recovery remains unmeasured; no population run
+was authorized or performed in this implementation slice.

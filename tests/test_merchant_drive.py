@@ -265,8 +265,10 @@ def test_drive_engages_with_sellables_below_zeny_threshold() -> None:
     zero balance (the owned world pins start_zeny 0)."""
     state = _state(zeny=0, inventory={"909": 3})
     assert merchant_drive_cell(state) == (169, 377)
-    state = _state(zeny=0, inventory={"915": 1})
+    state = _state(zeny=0, inventory={"915": 2})
     assert merchant_drive_cell(state) == (169, 377)
+    # Leg 95: a single unit no longer justifies a field-side trip.
+    assert merchant_drive_cell(_state(zeny=0, inventory={"915": 1})) is None
 
 
 def test_no_stock_and_no_zeny_stays_farming() -> None:
