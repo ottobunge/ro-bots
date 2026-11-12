@@ -1,0 +1,176 @@
+{
+  "schema": "swing_conversion_v1",
+  "start": "2026-11-12T18:30:00+00:00",
+  "end": "2026-11-12T20:00:00+00:00",
+  "agents": {
+    "pop_0003_s00": {
+      "totals": {
+        "attacks_authored": 1956,
+        "swings_sent": null,
+        "damage_events_dealt": 5,
+        "damage_dealt": 128,
+        "kill_credits": null,
+        "base_exp_delta": null,
+        "job_exp_delta": null,
+        "drops_seen": 6,
+        "pickup_attempts": 0,
+        "pickup_success": 0,
+        "unattributed_exp_events": 0
+      },
+      "species": {
+        "Poring": {
+          "attacks_authored": 10,
+          "swings_sent": null,
+          "damage_events_dealt": 5,
+          "damage_dealt": 128,
+          "kill_credits": null,
+          "base_exp_delta": null,
+          "job_exp_delta": null,
+          "drops_seen": 0,
+          "pickup_attempts": 0,
+          "pickup_success": 0,
+          "unattributed_exp_events": 0
+        },
+        "unknown": {
+          "attacks_authored": 0,
+          "swings_sent": null,
+          "damage_events_dealt": 0,
+          "damage_dealt": 0,
+          "kill_credits": null,
+          "base_exp_delta": null,
+          "job_exp_delta": null,
+          "drops_seen": 6,
+          "pickup_attempts": 0,
+          "pickup_success": 0,
+          "unattributed_exp_events": 0
+        },
+        "Green Plant": {
+          "attacks_authored": 1946,
+          "swings_sent": null,
+          "damage_events_dealt": 0,
+          "damage_dealt": 0,
+          "kill_credits": null,
+          "base_exp_delta": null,
+          "job_exp_delta": null,
+          "drops_seen": 0,
+          "pickup_attempts": 0,
+          "pickup_success": 0,
+          "unattributed_exp_events": 0
+        }
+      },
+      "attack_refusals": {},
+      "coverage": "legacy_partial",
+      "telemetry_dropped": 0
+    }
+  },
+  "leg96_evidence": {
+    "receipt": "population-receipt-96-1794507933.json",
+    "prior_analysis": "population-receipt-96-analysis.json",
+    "db_exp_delta_from_existing_analysis": {
+      "base": 4,
+      "job": 2
+    },
+    "authored_by_target": {
+      "110220909": 3,
+      "110220864": 6,
+      "110220926": 1,
+      "110221127": 1946
+    },
+    "green_plant_target": {
+      "t": "2026-11-12T18:49:15.285884+00:00",
+      "persona": "pop_0003_s00",
+      "kind": "world_event",
+      "map": "pay_fild04",
+      "x": 230,
+      "y": 173,
+      "adjacent_monsters": 2,
+      "event": "MonsterSpotted",
+      "monster": "Green Plant",
+      "monster_id": 110221127,
+      "monster_x": 244,
+      "monster_y": 182,
+      "distance": 16.64331697709324,
+      "aggressive": null
+    },
+    "green_plant_attack_first": "2026-11-12T18:51:30.029807+00:00",
+    "green_plant_attack_last": "2026-11-12T19:59:59.559827+00:00",
+    "resting_64_samples": 243,
+    "first_resting_64_runner_t": 1717.0,
+    "last_resting_64_runner_t": 8992.1,
+    "nearby_drops": [
+      {
+        "t": "2026-11-12T18:36:16.596769+00:00",
+        "floor_item_id": 540,
+        "nameid": 909,
+        "x": 242,
+        "y": 59,
+        "x_event": 243,
+        "y_event": 60,
+        "map": "prt_fild08"
+      },
+      {
+        "t": "2026-11-12T18:36:17.342722+00:00",
+        "floor_item_id": 541,
+        "nameid": 713,
+        "x": 242,
+        "y": 59,
+        "x_event": 244,
+        "y_event": 59,
+        "map": "prt_fild08"
+      },
+      {
+        "t": "2026-11-12T18:36:56.210775+00:00",
+        "floor_item_id": 543,
+        "nameid": 909,
+        "x": 241,
+        "y": 59,
+        "x_event": 242,
+        "y_event": 58,
+        "map": "prt_fild08"
+      },
+      {
+        "t": "2026-11-12T18:36:56.986557+00:00",
+        "floor_item_id": 544,
+        "nameid": 938,
+        "x": 241,
+        "y": 59,
+        "x_event": 243,
+        "y_event": 57,
+        "map": "prt_fild08"
+      },
+      {
+        "t": "2026-11-12T18:36:57.774775+00:00",
+        "floor_item_id": 545,
+        "nameid": 909,
+        "x": 241,
+        "y": 59,
+        "x_event": 242,
+        "y_event": 59,
+        "map": "prt_fild08"
+      },
+      {
+        "t": "2026-11-12T18:36:58.550084+00:00",
+        "floor_item_id": 546,
+        "nameid": 713,
+        "x": 241,
+        "y": 59,
+        "x_event": 243,
+        "y_event": 57,
+        "map": "prt_fild08"
+      }
+    ],
+    "limitations": [
+      "Legacy traces record authored Attack before perform, not successful CZ_REQUEST_ACT sends.",
+      "Retained recent_encounters are positive own-AID-filtered, bounded damage facts; hit count is an observed lower bound.",
+      "No death/exp rows in legacy JSONL, and receipt xp_total is null; exact kill credits and sent swings are unavailable.",
+      "Attack-gate receipt samples are bounded rolling tails, not cumulative counters; never sum the repeated resting:64 snapshots.",
+      "The prior 1704 Attack total does not match the supplied JSONL window; recomputed 1956."
+    ],
+    "resting_64_online_samples": 132,
+    "dominant_leak": "pre-send resting gate: native rest latch outlives brain recovery",
+    "reproduced_client_defects": [
+      "Received self death cancels brain recovery but formerly retained native rest intent.",
+      "25% melee rest break bypassed native release because readiness was only consulted at 75% HP."
+    ]
+  }
+}

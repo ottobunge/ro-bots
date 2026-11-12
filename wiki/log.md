@@ -12644,3 +12644,146 @@ window - slot free and attacks authored, but 1,704 swings produced only
 +4/+2 exp and no pickups beyond its single starting potion. The conversion
 question is now s00's per-attack hit/kill/loot rate on pay_fild04
 (species choice, out-of-range swing share, missed loot opportunities).
+
+## HITS-VS-SWINGS — leg-96 conversion instrument and native rest-release fix (2026-11-12)
+
+Implementation branch `sol/hits-vs-swings`, based on main `7090cab7` in an
+isolated worktree. Offline evidence only: no population runner, live probe,
+DB connection, container change, or main merge. Original receipts
+`population-receipt-96-1794507933.json` and `population-receipt-96-analysis.json`
+are preserved. Recomputed evidence is
+`run/plain_host_receipts/population-receipt-96-swing-conversion.json`.
+
+**Dominant leak: authored combat blocked by a stale native rest latch.** The
+supplied s00 JSONL, filtered inclusively from 2026-11-12 18:30 UTC to exclusively
+20:00 UTC (19:30–21:00 Madrid), contains **1,956 authored Attack actions**, not
+the prior analysis's 1,704. Of these, **1,946 (99.49%)** target Green Plant
+AID **110221127**, first attacked at 18:51:30.029807 UTC and last at
+19:59:59.559827. It was observed at (244,182); s00 settles at (245,183),
+Chebyshev distance **1**. The remaining **10** authored attacks target three
+Porings on prt_fild08 (AIDs 110220909: 3; 110220864: 6; 110220926: 1).
+
+The measured legacy funnel is:
+
+| Stage | Leg-96 s00 evidence |
+| --- | --- |
+| Authored Attacks | **1,956** (Poring 10, Green Plant 1,946) |
+| `swings_sent` | **unknown**: legacy JSONL has no send receipts; authored is not sent |
+| `damage_events_dealt` | **5 observed own-AID hits**, all Poring, **128 damage** (25,25,28,24,26); bounded retained history makes this a lower bound |
+| `kill_credits` | **unknown**: legacy JSONL has no death/exp observations; existing DB receipt confirms **+4 base / +2 job XP** |
+| `drops_seen` | **6** near self (Chebyshev <=2), all prt_fild08; broadcast drops do not identify their killer/species |
+| `pickup_attempts` / `pickup_success` | **0 / 0**; the one Loot refusal says `no_floor_item` |
+
+Do not replace unknown kill credits with XP divided by a full mob reward:
+co-attacked mobs award partial XP. Do not count incoming `DamageTaken` as own
+damage. Item **511 is Green Herb**, not Red Potion: the earlier analysis's
+inventory label was wrong. Inventory stayed one 511 plus Knife 1201.
+
+The receipt's attack-gate tail reaches **`resting: 64`** at runner t=1717s,
+and **132 online samples** carry that same tail (243 including the
+post-disconnect carryover). These are bounded rolling snapshots, **not
+132×64 independent refusals**. They support a pre-send rest-gate diagnosis, not 1,946 measured
+out-of-range wire swings. There are **zero observed Green Plant hit facts**
+and **zero pay_fild04 drop events**. The requested range-versus-damage-versus-
+loot trichotomy misses this earlier stage: the dominant authored actions
+never pass the native resting gate. Exact historical send counts cannot be
+reconstructed from these files; the instrument returns JSON null for them.
+
+**Root cause and fix: two recovery exits can orphan the native latch.** At
+18:37:17 UTC s00 rests at **18/86 HP**; subsequent reviews show 12/86, then
+**43/86** at 18:37:23, followed by the pay_fild04 map transition. No recovery
+`break` telemetry appears in this window. That half-HP rebound/map change is
+consistent with death/respawn, but the legacy JSONL omits the death frames,
+so the exact live cancellation sequence cannot be proved retrospectively.
+The receipt does directly establish the persistent native `resting` gate.
+
+The first reproduced exit is **received self death**: the brain deliberately
+clears recovery on death, while PlayingClient previously cleared pose but
+left `_rest_seq` set. Respawning and walking could therefore resume with the
+brain no longer recovering, yet every Attack remained refused as `resting`.
+The fix cancels native rest on the same authoritative self-death packet,
+emitting **`rest_released` / `received_self_death`**. This cancels intent; it
+does not authorize a swing. The alive and fresh self-standing barriers must
+still pass after resurrection.
+
+The second reproduced exit is the **25% melee break versus 75% native
+hysteresis** mismatch. The brain admits an attackable in melee above 25%, but
+`ScheduledAgent._advance_script` formerly consulted native `recovery_ready`
+only above 75%; below that it passed `can_resume=True` directly. The brain
+could release while the native rest latch stayed set. The host now consults
+native readiness for the same melee/full-HP admission as the brain, with the
+matching 25% melee floor, and holds recovery until a **fresh received
+self-standing acknowledgement** releases the native latch. This emits
+**`rest_released` / `received_health_and_stand`**. Exact `attack_refused` /
+`resting` counts and actual `swing` sends make either recurrence measurable.
+
+Existing pending-walk, health, death, unknown-vitals and pose barriers remain.
+This is a **client defect fix**, not a Novice damage limiter: observed Poring
+hits already deal 24–28 damage, so the old ~1-damage assumption cannot explain
+the stationary plant stream. No species-selection or server-chase change is
+justified by this evidence. Live recovery remains to be measured in an
+authorized leg.
+
+**Instrument contract.** `robots.app.swing_funnel.summarize_swing_traces`
+reads chronological non-overlapping JSONL shards and returns a
+`swing_conversion_v1` block per persona and target species. Its offline CLI:
+
+```sh
+uv run python scripts/swing_funnel.py \
+  /home/otto/dev/ro-bots/.work/runtime/population-live/traces/pop_0003_s00.jsonl \
+  --start 2026-11-12T18:30:00+00:00 --end 2026-11-12T20:00:00+00:00
+```
+
+The runner receipt gains `swing_conversion` when traces are enabled. New
+`swing_observation` rows are drained from cached, already validated native
+observations; logging never re-observes the socket or advances receive/event
+cursors. Raw combat uses the existing damage parser: source AID must equal
+self, target AID determines species, SP damage/pose/zero-damage misses do not
+count as damage dealt. Own-damaged target death plus an unambiguous positive
+parameter **1/2** XP delta within **two seconds either side** counts one
+credited kill participation; base/job updates never count the same death
+twice, and actual split XP amounts are retained. Multiple candidate deaths
+leave XP unassigned, never guessed. Kill participations are per agent and
+must not be summed as unique fleet kills. Parameter **5 is HP**, never XP.
+Nearby broadcast drops and their pickup receipts stay in species `unknown`
+because those packets do not identify a killer. Pickup attempts and success
+use the existing exact dispatch/ack-attribution receipts (`attempted` /
+`succeeded`), not authored Loot. Session IDs prevent process-restart sequence
+collisions; legacy hit snapshots deduplicate by epoch/sequence with received
+capacity-sequence rollback detecting restarts. Queue overflow is named
+`telemetry_gap` and coverage becomes `wire_partial`.
+
+**TDD evidence.** Instrument RED: the four initial synthetic counting fixtures
+failed collection with missing `robots.app.swing_funnel`; GREEN: those four
+passed. Native fix RED: the exact 18/86 -> sit -> 43/86 melee replay failed
+because the last send was `sit`, not `stand`. GREEN: it now waits for the
+self-standing receipt, clears both recovery holds, emits `rest_released`,
+and sends `0x0437`. A second RED replay records `_rest_seq == 5` after a
+received self death while the brain has already dropped recovery. GREEN
+clears that native intent, emits `received_self_death`, and still requires a
+fresh standing acknowledgement before a post-resurrection attack.
+Additional synthetic cases cover exp-before-death,
+ambiguous/co-attacked deaths, duplicate decision snapshots, reused IDs across
+agents/processes, real parser -> cached trace -> offline funnel integration,
+and named telemetry overflow. Full gate results follow below.
+
+Validation setup: initialized only the pinned rAthena submodule from the
+existing local shallow checkout, and linked its ignored `config.log` and the
+iro-db corpus. Main's iro-wiki pointer is a self-referencing symlink, so this
+worktree uses the existing `/home/otto/dev/wt-mobpos` corpus copy locally;
+that test-data link adjustment is excluded from the implementation commit.
+The first full test run exposed missing rAthena source plus four old
+constructor-bypassing fixtures and one exact action/move trace-order fixture.
+Telemetry now initializes lazily at those narrow seams and preserves the
+existing adjacent authored-action/move-receipt ordering. Their targeted
+replay is green before the final full run.
+
+**Final full gate GREEN:** `nix develop -c task --dir . check` exited 0 after
+both recovery-exit fixes: **7,180 passed, 65 subtests passed, 95.67% coverage**,
+266.77s (4 existing warnings). Black check, ruff, strict mypy (386 files),
+vulture, xenon, duplicate-code and security lint all passed. The previous
+complete run before the additional self-death regression was also green
+(7,179 tests / 95.66%); the full gate was rerun after that final code change.
+The saved leg-96 funnel was rechecked against the final offline instrument.
+The implementation is committed/pushed on its isolated branch; main is not
+merged and no population runner was executed.
