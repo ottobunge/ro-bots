@@ -64,7 +64,8 @@ class FakeGameClient:
     def __init__(self, entry: ManifestEntry) -> None:
         self.entry = entry
         self.char_name = entry.char_name
-        self.status_params: dict[int, int] = {5: 1, 6: 1, 7: 1, 8: 1}
+        # A healthy baseline must be above the absolute 1-HP safety floor.
+        self.status_params: dict[int, int] = {5: 100, 6: 100, 7: 1, 8: 1}
         self.gid = 150000
         self.connected = False
         self.x = 120

@@ -924,6 +924,10 @@ class EventDrivenBrain:
     def _npc_step(self, state: BotState) -> ScriptOutcome:
         dialog = state.npc_dialogue
         actions: tuple[GameAction, ...] = ()
+        if not self._known_hp(state):
+            self._recovering = True
+            self._trace_rest_decision(state, "npc", "hold", "unknown_hp")
+            return ScriptOutcome((), ScriptStatus.ACTIVE)
         if dialog is not None and dialog.stage == "cancel_abandoned":
             return NpcGuidanceScript().step(state)
         if state.hp_ratio < 0.25:
@@ -959,6 +963,14 @@ class EventDrivenBrain:
             self._recovering = False
             self._escape = None
             return ScriptOutcome((), ScriptStatus.ACTIVE)
+        if not self._known_hp(state):
+            # max_hp=0 is missing evidence, not a measured zero ratio. Keep
+            # the host fallback suspended without inventing rest or combat.
+            self._recovering = True
+            self._trace_rest_decision(state, "recovery", "hold", "unknown_hp")
+            return ScriptOutcome((), ScriptStatus.ACTIVE)
+        if state.hp <= 1:
+            self._recovering = True
         if self._escape is not None:
             if (state.x, state.y) != self._escape:
                 return ScriptOutcome((MoveTo(*self._escape),), ScriptStatus.ACTIVE)
@@ -966,17 +978,59 @@ class EventDrivenBrain:
                 return ScriptOutcome((), ScriptStatus.ACTIVE)
             self._escape = None
         if self._recovering:
-            if self._attackable_in_melee_range(state) and state.hp_ratio >= REST_BREAK_HP_FLOOR:
-                # Hurt but able, and the fight is here: hand the step back to
-                # the goal script instead of resting through the engagement.
-                self._recovering = False
-            elif state.hp_ratio < self._recovery_hp_ratio:
-                return ScriptOutcome((Rest(),), ScriptStatus.ACTIVE)
-            elif not can_resume:
-                return ScriptOutcome((), ScriptStatus.ACTIVE)
-            else:
-                self._recovering = False
+            return self._step_rest(state, can_resume=can_resume)
         return None
+
+    @staticmethod
+    def _known_hp(state: BotState) -> bool:
+        return (
+            type(state.hp) is int
+            and type(state.max_hp) is int
+            and state.max_hp > 0
+            and 0 <= state.hp <= state.max_hp
+        )
+
+    def _rest_break_reason(self, state: BotState) -> str | None:
+        """Same HP admission for a new damage reaction and a retained rest."""
+        if self._received_death(state):
+            return "received_death"
+        if not self._known_hp(state):
+            return "unknown_hp"
+        if state.hp <= 1:
+            return None
+        if state.hp == state.max_hp:
+            return "hp_full"
+        if state.hp_ratio >= REST_BREAK_HP_FLOOR and self._attackable_in_melee_range(state):
+            return "attackable_in_range"
+        return None
+
+    def _step_rest(self, state: BotState, *, can_resume: bool) -> ScriptOutcome | None:
+        reason = self._rest_break_reason(state)
+        if reason is None and (state.hp <= 1 or state.hp_ratio < self._recovery_hp_ratio):
+            return ScriptOutcome((Rest(),), ScriptStatus.ACTIVE)
+        if not can_resume:
+            return ScriptOutcome((), ScriptStatus.ACTIVE)
+        self._recovering = False
+        self._trace_rest_decision(state, "recovery", "break", reason or "hp_recovered")
+        return None
+
+    def _trace_rest_decision(
+        self, state: BotState, source: str, decision: str, reason: str
+    ) -> None:
+        if self._trace is not None:
+            self._trace.log(
+                "rest_decision",
+                source=source,
+                decision=decision,
+                reason=reason,
+                map=state.map_name,
+                x=state.x,
+                y=state.y,
+                hp=state.hp,
+                max_hp=state.max_hp,
+                hp_ratio=state.hp_ratio if self._known_hp(state) else None,
+                attackable_in_melee=self._attackable_in_melee_range(state),
+            )
 
     # -- event reactions ----------------------------------------------------
 
@@ -1000,7 +1054,15 @@ class EventDrivenBrain:
     def _react_damage(self, state: BotState, answers: dict[str, Any]) -> list[GameAction]:
         match self._choice(answers, "react_damage", "keep"):
             case "rest":
+                reason = self._rest_break_reason(state)
+                if reason is not None:
+                    # Leg 93: event actions dispatch BEFORE _step_recovery.
+                    # Repeated damage reviews must not re-sit an agent whose
+                    # HP and in-range monster would immediately break rest.
+                    self._trace_rest_decision(state, "damage", "suppress", reason)
+                    return []
                 self._recovering = True
+                self._trace_rest_decision(state, "damage", "rest", "injured")
                 return [] if self._escape is not None else [Rest()]
             case "flee":
                 return self._flee(state)

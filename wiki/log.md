@@ -12272,3 +12272,61 @@ terminal row and no inventory landing. Next seed:
 of its action mass. The attack-authoring path still never fires for the solo.
 Socials stayed dense and in-game only (2 guilds founded, 12 guild invites,
 43 party chats, 107 heard lines).
+
+
+## s00 REST-DOMINANCE — gate damage-event Rest before dispatch (2026-11-12)
+
+Branch `fix/s00-rest-dominance`, based on main `fe18c353`. Evidence:
+`run/plain_host_receipts/population-receipt-93-1794450634.json` and
+`population-receipt-93-analysis.json` (leg-93 record `86fc083c`), plus
+`.work/runtime/population-live/traces/pop_0003_s00.jsonl`, UTC >= 02:45 on
+2026-11-12. No new population run was used.
+
+**Named root cause: damage-event Rest bypassed recovery admission.** All 694
+Rest actions followed `react_damage=rest`; `_react_damage` unconditionally
+latched recovery and returned `Rest()` for immediate dispatch, BEFORE the
+script's `_step_recovery` could apply its existing in-range/25%-HP break.
+There were 743 DamageTaken events. The first Rest at 02:51:03.143649Z followed
+167 reported damage with received self-stats **43/86 HP, ratio 0.5**, full SP,
+several monsters at rounded distance 1, and `next_action=grind`. Of the 694
+Rests, 625 used 43/86 HP, 37 used 44/86, 15 used 45/86, 7 each used 32/86
+and 46/86, and 3 used 47/86; 658 had a monster at rounded distance 0 or 1.
+The 976 decide requests had 708 samples at 43/86, 78 at 86/86, and no
+1-HP/unknown-HP samples. All 88 state_ticks also had positive HP and max=86.
+This evidence rules out a death latch or a zero/division-error ratio as the
+cause of this Rest stream; it does not establish why received HP stayed at
+43 so often. The cited 71% is 694/976 decides; Rest was 694/1898 (36.6%) of
+all executed action rows, alongside 1202 MoveTos, one Loot, and one Say.
+
+Damage reactions now share the recovery rest-break predicate: full HP or an
+in-range monster at >=25% HP suppresses Rest; invalid/missing HP suppresses
+Rest and holds the script/host fallback without combat. Genuine low HP
+still rests, including an absolute 1-HP safeguard even with max_hp=1.
+Existing suspended scripts/plans and explicit escape remain intact. Named
+`rest_decision` trace rows carry source, decision, reason (`hp_full`,
+`attackable_in_range`, `unknown_hp`, `received_death`, `injured`,
+`hp_recovered`), HP/max/ratio, map/cell, and the melee-range fact.
+
+RED: eight failures reproduced unconditional reaction Rest, unknown-HP Rest,
+absolute-1-HP combat, absent telemetry, and native sit-before-attack. GREEN:
+99 focused tests passed after adding NPC-unknown/dead-event guards (both
+RED before their fixes). Two older fixtures now supply actual HP evidence:
+the host uses 100/100 instead of a 1/1 healthy placeholder; the NPC recovery
+pose-barrier test first receives low HP before checking recovered HP.
+The replay exercises repeated damage reviews at
+43/86 and full HP beside a monster, with both the recorded Knife/Green Herb
+inventory and without sell stock, plus unknown/low HP, retained script,
+telemetry, and the native wire attack path. Native combat proceeds without
+sit when eligible. The recorded inventory still admits the independent
+dealer trip: all 151 sampled leg-93 script steps were MerchantDrive (21
+MoveTo, 130 empty). This change removes the Rest admission defect; it does
+not prove live attack/kill recovery or change merchant-trip priority.
+
+Full gate **GREEN**: `nix develop -c task --dir . check` exited 0;
+**7,135 passed, 1 skipped, 65 subtests passed, 95.64% coverage** (290.02s),
+with Black, Ruff, mypy, vulture, xenon, duplicate-code, and security checks
+passing. Local diagnosis and RED/GREEN/gate receipts are under
+`.work/s00-rest-dominance/`. Fresh-worktree setup initialized the pinned
+rAthena submodule and linked main's ignored knowledge DBs/config.log.
+No population runner, Docker/heavengraph operation, or `spikes/` edit.
+Commit/push for review only; leave main unmerged.
