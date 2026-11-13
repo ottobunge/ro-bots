@@ -140,6 +140,9 @@ class BotState:
     # Recent received peak damage per species; runtime owns bounded expiry.
     recent_species_damage: tuple[tuple[str, int], ...] = ()
 
+    # Runtime public-grid distance, bound to the merchant destination (x, y, cells).
+    merchant_route_distance: tuple[int, int, int] | None = None
+
     @property
     def hp_ratio(self) -> float:
         return self.hp / self.max_hp if self.max_hp > 0 else 0.0

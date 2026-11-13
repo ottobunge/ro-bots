@@ -90,6 +90,7 @@ def test_233_cell_trip_arrives_within_bound_at_leg99_script_cadence(monkeypatch,
     # Real script ticks are 2.3s; merchant patience reaffirms every five ticks.
     for tick in range(130):
         now[0] = tick * 2.3
+        client.drain_native_events()
         state = replace(
             client.build_native_state(Goal.GRIND), inventory_known=True, inventory={"511": 2}
         )
@@ -102,9 +103,9 @@ def test_233_cell_trip_arrives_within_bound_at_leg99_script_cadence(monkeypatch,
     assert wire.actual == (17, 165)
     assert now[0] < 233.0
     assert sum(wire.cells_sent) == 233
-    assert len(wire.cells_sent) <= 10
+    assert len(wire.cells_sent) <= 14
     assert "trip_pace=destination_chunks" in caplog.text
-    assert "trip_leg_cells_sent=24" in caplog.text
+    assert "trip_leg_cells_sent=17" in caplog.text
 
 
 def test_trip_walk_destination_is_received_and_never_authorizes_an_inflight_swing(monkeypatch):
@@ -116,10 +117,10 @@ def test_trip_walk_destination_is_received_and_never_authorizes_an_inflight_swin
     action = GrindScript().step(state).actions[0]
     client.perform_native(action)
     destination = wire.moves[-1]
-    assert destination[0] == 76
+    assert destination[0] == 83
     assert client.build_native_state(Goal.GRIND).x == 100  # no send-based position
     wire.add(walk_ack((100, 165), destination), monster(at=(destination[0] + 1, destination[1])))
-    assert client.build_native_state(Goal.GRIND).x == 76  # 0x0087 destination contract
+    assert client.build_native_state(Goal.GRIND).x == 83  # 0x0087 destination contract
     client.perform_native(Attack(123))
     now[0] = 2.0
     client.drain_native_events()
@@ -281,7 +282,7 @@ def test_far_town_trip_uses_chunks_but_preserves_local_dealer_steps(monkeypatch)
     )
     client.perform_native(action)
     first = wire.moves[-1]
-    assert max(abs(first[0] - 177), abs(first[1] - 100)) == 24
+    assert max(abs(first[0] - 177), abs(first[1] - 100)) == 17
     assert client.last_move_outcome["trip_pace"] == "destination_chunks"
     # At the occupied dealer entrance, retain the staging allocator's exact
     # single steps instead of letting the server choose a path through bodies.

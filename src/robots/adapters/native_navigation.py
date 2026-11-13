@@ -230,6 +230,25 @@ def shortest_path(
     raise NoRoute(msg)
 
 
+def route_distances(grid: WalkMap, target: Point) -> dict[Point, int]:
+    """Remaining cell count from each reachable cell to a fixed destination.
+
+    Reverse BFS uses the same symmetric no-corner-cutting edges as shortest_path.
+    A trip may increase its straight-line distance while decreasing this distance.
+    """
+    if not grid.walkable(target):
+        return {}
+    distances = {target: 0}
+    frontier = deque((target,))
+    while frontier:
+        point = frontier.popleft()
+        for neighbor in _neighbors(grid, point, frozenset()):
+            if neighbor not in distances:
+                distances[neighbor] = distances[point] + 1
+                frontier.append(neighbor)
+    return distances
+
+
 def nearest_walkable(
     grid: WalkMap,
     point: Point,
