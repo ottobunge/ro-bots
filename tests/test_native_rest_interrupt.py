@@ -214,6 +214,8 @@ def test_new_session_epoch_clears_old_brain_hold_and_native_pacing():
     agent.tick()
     wire.native_epoch = wire.selection_epoch = wire.map_epoch = 2
     wire.frames = []
+    # New session clears recovery; received HP must still admit a new fight.
+    wire.status_params[5] = 40
     wire.add(entry(), map_frame(), monster(at=(42, 38)))
     agent.tick()
     assert not brain.is_recovering

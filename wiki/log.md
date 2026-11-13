@@ -13081,3 +13081,68 @@ lost (novice class).
 verified vs DB close). NEXT dominant signature: s00 merchant-trip walk
 pacing; secondary: engage-without-survive and loot deferral under trip
 suppression.
+
+## 2026-11-13 SOL — merchant trip destination chunks and survivability admission
+
+Implemented on isolated branch `sol/trip-pacing-survivability`, based on
+`f736fdb4`. Evidence: leg-99 `2e904146`,
+`run/plain_host_receipts/population-receipt-99-1794576324.json` and its
+`-analysis.json`, plus `.work/runtime/population-live/traces/` in the
+13:30–15:00 UTC Friday window. The five scaled releases and s00's 233-cell
+trips isolated one-cell dispatch as the remaining limiter; the 64-damage
+Deviling spike and twelve fleet self-deaths motivated conservative engagement.
+
+The pinned client `move(x, y)` packs **one destination**, not a path array:
+`CZ_REQUEST_MOVE` 0x035f is five bytes (opcode plus three-byte PosDir), with
+position at offset 2 in the final packet table. Pinned rAthena
+`clif_parse_WalkToXY` passes that destination to `unit_walktoxy`; server
+`path.hpp` limits `MAX_WALKPATH` to 32. Active admitted trip legs now request
+up to **24 cells along the runtime-approved path** per packet. Longer routes
+use successive chunks, preserving script patience, lease bounds, received
+0x0087 destination tracking, and the normal pending-walk lane. Distant Prontera
+approaches also use chunks, ending outside the eight-cell dealer area; any
+staging detour that differs from unrestricted routing retains single steps.
+Local dealer entry allocation and `prt_in` keep occupancy-aware single steps.
+Logs and `move_performed` outcomes name `trip_pace=destination_chunks` and
+`trip_leg_cells_sent`. After a chunk, combat also requires fresh received
+arrival; silence or expiry of pending intent cannot authorize a swing.
+Normal walks have no terminal ack, so a combat attempt can request the received
+destination and wait for its zero-length walkok, paced by the pending lane.
+
+Farm/Grind filter unsafe species before selecting or retaining a target;
+the wire attack seam applies the same check to other authored attacks. Refuse
+when current HP is below 40% of max HP, or a received positive HP hit from
+that species in the last 120 seconds exceeded 30% of **current** HP. The
+bounded per-client evidence joins received source species at hit time, ignores
+SP/miss/peer-target events, survives warps/respawns, expires without refresh
+on snapshot reads, and clears at a new session. No catalogue combat stats
+enter the decision. Fresh unknown species remain eligible; confirmed zero-EXP
+resources stay exempt. `attack_refused` names `reason=no_survivability`, with
+script log/trace detail `low_hp` or `recent_species_hit`. Rest/recovery policy
+is unchanged; its new-session test supplies HP at the new engagement floor.
+
+RED→GREEN: six core regressions failed on the baseline before passing with
+the implementation; a further respawn regression failed before preserving
+recent species evidence across maps. A town-approach regression also failed
+before enabling distant staging chunks without bypassing local allocation.
+The simulated wire completes all 233
+cells within the existing 233-second bound using ten destination requests,
+with finite walk duration, the server path cap, and no invented terminal ack.
+Additional checks cover held-target reselection, current-HP threshold edges,
+expiry/session reset, unknown species, resource exemption, ordinary movement,
+lost walks, and standing swings.
+
+Loot fallback was not changed. Leg-99 remains the live baseline: six pickups,
+48 deferrals, including 18 walking and 11 pending-walk deferrals. Reduced trip
+time should reduce that suppression cost; no new live throughput is claimed.
+No population runner, server/container/provider changes, merge, or edits to
+spikes were performed. Fresh-worktree setup materialized the pinned rAthena
+submodule and linked the existing ignored knowledge/config artifacts.
+
+Final validation: `nix develop -c task --dir . check` **GREEN** — **7,260
+passed, 65 subtests passed, 95.70% coverage**, one existing optional iro-wiki
+real-corpus skip. Black, Ruff, strict mypy, vulture, xenon, duplicate-code and
+security checks passed. The focused integration run passed 356 tests plus
+65 subtests before the final town extension; the final dealer/queue/route
+protection run passed 82 tests, including all 21 new regressions. No source
+or test changes followed the final full gate.

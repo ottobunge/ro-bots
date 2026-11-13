@@ -60,6 +60,7 @@ from robots.adapters.native_session_progression import (
 from robots.adapters.native_shop_context import NativeShopContext
 from robots.adapters.native_skills import NativeSkillContext
 from robots.adapters.native_vitals import NativeTelemetryUnavailable, require_native_vitals
+from robots.app.combat_survival import SpeciesDamage, survivability_refusal
 from robots.app.expless_roam import ExplessRoam
 from robots.app.loot_attribution import LootAttribution
 from robots.app.merchant_buy_backoff import MerchantBuyBackoff
@@ -424,6 +425,9 @@ class PlayingClient:
         self._tracker: NativeGameplayTracker | None = None
         self._encounters: NativeEncounterStream | None = None
         self._swing_telemetry = SwingTelemetry()
+        self._species_damage = SpeciesDamage()
+        self._trip_walk_seq: int | None = None
+        self._trip_leg_cells_sent = 0
         self._skills: NativeSkillContext | None = None
 
     def bind_server_self_slots(
@@ -739,6 +743,9 @@ class PlayingClient:
         }
         self._swing_telemetry.receive(frame, view, epoch=epoch, own_id=self.wire.aid, species=names)
         self._expless_roam.receive(frame, view, self.wire.aid, names, self.mob_db)
+        for hit in view.damage:
+            if hit.seq == frame[0]:
+                self._species_damage.receive(hit, self.wire.aid, names, self._now())
 
     def _consume_purchase_frame(
         self, frame: tuple[int, float, int, bytes], tracker: NativeGameplayTracker, now: float
@@ -837,6 +844,7 @@ class PlayingClient:
             native_epoch=wire.native_epoch,
             progression_source=progression.base_source,
             recent_encounters=self._encounters.records if self._encounters is not None else (),
+            recent_species_damage=self._species_damage.snapshot(self._now()),
         )
         state = replace(
             state,
@@ -1212,8 +1220,13 @@ class PlayingClient:
         if self._pending is not None:
             self._note_attack_gate("pending_walk", target)
             return
-        if not any(actor.id == target for actor in state.nearby_monsters):
+        actor = next((actor for actor in state.nearby_monsters if actor.id == target), None)
+        if actor is None:
             self._note_attack_gate("target_not_visible", target)
+            return
+        species = str(actor.name)
+        if survivability_refusal(state, species, self.mob_db) is not None:
+            self._note_attack_gate("no_survivability", target)
             return
         if self._rest_seq is not None:
             self._note_attack_gate("resting", target)
@@ -1226,7 +1239,7 @@ class PlayingClient:
             "swing",
             target_id=target,
             at=self._now(),
-            species=next(actor.name for actor in state.nearby_monsters if actor.id == target),
+            species=species,
         )
 
     def _equip_progression(self, state: BotState) -> None:
@@ -2467,7 +2480,26 @@ class PlayingClient:
             or not self._require_standing(after_seq=after_seq)
         ):
             return False
-        return not self._await_pending(tracker.view, tracker.view.position)
+        return not self._await_pending(tracker.view, tracker.view.position) and self._trip_stopped()
+
+    def _trip_stopped(self) -> bool:
+        """A chunk's projected destination cannot authorize a standing swing.
+
+        Normal walks have no terminal ack. Probe the received destination via
+        the existing pending lane; only a fresh zero-length walkok releases
+        this combat barrier, including after a trip lease expires.
+        """
+        seq, tracker = self._trip_walk_seq, self._tracker
+        if seq is None or tracker is None or tracker.view.position is None:
+            return seq is None
+        view, pos = tracker.view, tracker.view.position
+        if view.arrival_confirmed and pos.seq > seq:
+            self._trip_walk_seq = None
+            return True
+        self._send_walk((pos.x, pos.y), pos.seq)
+        self._pending_origin = "trip_arrival_confirmation"
+        self._pending = ((pos.x, pos.y), pos.seq, self._now(), 0)
+        return False
 
     def _note_move_gate(self, reason: str) -> None:
         """Bounded gate-reason telemetry: WHY a scripted MoveTo sent nothing.
@@ -2505,6 +2537,7 @@ class PlayingClient:
 
     def _perform_move(self, state: BotState, target: tuple[int, int]) -> None:
         """Name the actual limb result, without treating author intent as a send."""
+        self._trip_leg_cells_sent = 0
         reason = self._move(state, target)
         outcome = {"not_standing": "standing-blocked", "await_pending": "pending"}.get(
             reason, "refused"
@@ -2516,6 +2549,10 @@ class PlayingClient:
                 reason=self._pending_origin if reason == "dispatched" else reason,
                 wire_target=self._pending[0],
             )
+            if self._trip_leg_cells_sent:
+                detail.update(
+                    trip_pace="destination_chunks", trip_leg_cells_sent=self._trip_leg_cells_sent
+                )
         self.last_move_outcome = detail | self._move_pending_release
         self._move_pending_release = {}
 
@@ -2571,9 +2608,75 @@ class PlayingClient:
         pos: ObservedPosition,
     ) -> str:
         if len(path) > 1:
+            cells = self._trip_path_cells(state, target, path, grid)
+            if cells > 1:
+                return self._dispatch_trip_leg(state, path[: cells + 1], pos)
             return self._dispatch_path_step(state, target, path[1], grid, pos)
         self._note_move_gate("single_cell_path")
         return "single_cell_path"
+
+    def _trip_path_cells(
+        self,
+        state: BotState,
+        target: tuple[int, int],
+        path: tuple[tuple[int, int], ...],
+        grid: WalkMap,
+    ) -> int:
+        if not merchant_trip_active(state.name) or state.map_name == "prt_in":
+            return 1
+        cells = min(24, len(path) - 1)
+        if dealer_entry_cell(state.map_name, target):
+            return self._town_trip_cells(path, cells, grid)
+        return cells
+
+    @staticmethod
+    def _town_trip_cells(path: tuple[tuple[int, int], ...], cells: int, grid: WalkMap) -> int:
+        """Stop chunks outside the dealer area; never bypass staging detours.
+
+        A destination packet cannot transmit the allocator's avoidance path.
+        Only chunk when unrestricted routing to that endpoint agrees with the
+        validated staging prefix. Otherwise preserve its original single step.
+        """
+        x, y = MERCHANT_ROUTE["prontera"]
+        local = next(
+            (
+                index
+                for index, (px, py) in enumerate(path[1 : cells + 1], 1)
+                if max(abs(px - x), abs(py - y)) <= 8
+            ),
+            cells + 1,
+        )
+        cells = max(1, local - 1)
+        return cells if shortest_path(grid, path[0], path[cells]) == path[: cells + 1] else 1
+
+    def _dispatch_trip_leg(
+        self, state: BotState, path: tuple[tuple[int, int], ...], pos: ObservedPosition
+    ) -> str:
+        """CZ_REQUEST_MOVE carries one destination; the server expands its path.
+
+        Pinned client.move packs 0x035f + 3B PosDir, not a path array.
+        rAthena path.hpp caps MAX_WALKPATH at 32; use <=24 local path cells
+        per request, retaining the normal pending and received-position lane.
+        Local dealer allocation keeps its original single steps.
+        """
+        cells = min(24, len(path) - 1)
+        point = path[cells]
+        if self._occupied_west(state, point):
+            self._note_move_gate("occupied_west_no_route")
+            return "occupied_west_no_route"
+        self._send_walk(point, pos.seq)
+        self._pending_origin = "trip_leg"
+        self._pending = (point, pos.seq, self._now(), 0)
+        self._trip_walk_seq = pos.seq
+        self._trip_leg_cells_sent = cells
+        logger.warning(
+            "trip_pace=destination_chunks trip_leg_cells_sent=%s bot=%s map=%s target=%s",
+            cells,
+            state.name,
+            state.map_name,
+            point,
+        )
+        return "dispatched"
 
     def _send_walk(self, point: tuple[int, int], after_seq: int) -> None:
         self.wire.move(*point)
@@ -3704,6 +3807,8 @@ class PlayingClient:
         self._epoch = epoch
         self._epoch_character = self.wire.char_name
         self._expless_roam.reset()
+        self._species_damage.clear()
+        self._trip_walk_seq = None
         self._species.clear()
         self._npc_names.clear()
         self._metadata_cursor = base
@@ -3766,6 +3871,7 @@ class PlayingClient:
         self._move_pending_release = {}
         self._patrol = None
         self._expless_roam.reset()
+        self._trip_walk_seq = None
         self._species.clear()
         self._pending = None
 

@@ -12,6 +12,7 @@ from enum import Enum, auto
 from time import monotonic as _merchant_now
 from typing import TYPE_CHECKING, Protocol, assert_never, final
 
+from robots.app.combat_survival import survivable_targets
 from robots.app.field_travel import FieldTravel
 from robots.app.merchant_trip import MerchantTrip
 from robots.app.target_species import species_score, trace_expless_skips
@@ -1074,7 +1075,11 @@ def _engage(
     A landed attack (in melee range) arms/rearms the commitment; an approach
     MoveTo consumes one window evaluation.
     """
+    candidates = survivable_targets(state, candidates, mob_db, trace)
     commitment = _kill_commitment(state.name, window)
+    if not candidates:
+        commitment.release()
+        return ScriptOutcome((), ScriptStatus.ACTIVE)
     target = commitment.hold(candidates)
     if target is None:
         target = min(
