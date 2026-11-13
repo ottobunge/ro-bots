@@ -13146,3 +13146,55 @@ security checks passed. The focused integration run passed 356 tests plus
 65 subtests before the final town extension; the final dealer/queue/route
 protection run passed 82 tests, including all 21 new regressions. No source
 or test changes followed the final full gate.
+
+## 2026-11-13 SHEPHERD — leg-100 live: chunk pacing sent, sell route still never converges
+
+Leg-100 ran the full 9000 s under `systemd-run --user --unit=leg100-runner`
+on the e2e world at main `a3f08359`, window Friday [4, 19.5, 21.0] =
+19:30-21:00 CET, opened and closed on schedule. Runner: 35,817 steps,
+**0 step errors, 0 TRANSPORT DOWN**, 7/7 agents online through the whole
+window (decides 124-325 per agent at close). Receipt
+`run/plain_host_receipts/population-receipt-100-1794594272.json` + this
+leg's `-analysis.json`.
+
+**Target 1 (s00 first sell + trip completion): NOT ACHIEVED.** The new
+telemetry is live (51 `trip_pace=destination_chunks` legs, 24-cell chunks
+sent), and the walks do execute — but **no trip ever completed and zeny
+never moved**: DB close is exactly the seed 166/195/109/121/114/120/125,
+all seven flat. s00 (YuffieFy81) spent the entire window inside a
+~47x16-cell box (pay_fild04 x 194-241, y 167-183; 2635 position samples)
+while its dest, the cited west warp `pay_fild04,17,165 ->
+moc_fild01,376,162` (scripts.py:432ff, payon_fild.txt:30), lies ~180 cells
+west. The chunk endpoints (`path[24]`) observed in the telemetry
+(218,172)...(242,199) landed **east/south-east of the bot at issue time** —
+the client grid's `shortest_path` detours instead of marching west — and
+the straight-line release rule (`route_distance_scaled`,
+best_distance == full route every cycle) killed each trip at its ~200 s
+bound: **50 releases, 44 retries, 0 completions**. NEXT SLICE: dump
+`cache.get('pay_fild04')` walkability, run `shortest_path` offline from
+(204,176) to (17,165), diff against the server-known field, fix the grid
+or re-path around the bad region; then re-measure chunk convergence.
+
+**Target 2 (survivability): gate live, deaths continue.** 8
+`no_survivability` refusals in-window (`low_hp`, `recent_species_hit` —
+the new gate fires as designed) yet **10 fleet self-deaths** (leg-99: 12 —
+marginal). RinceNyan both attacked 38 times AND died 5 times in the same
+window: refusal alone does not withdraw a bot from a killing zone; the
+gate needs a disengage behavior, not only refusal.
+
+**Target 3 (pickups + sell cycle): recovered, cycle stalled.** 24 Loot
+actions in-window (leg-99: 6, leg-98: 24), receipt-side 20 drops seen /
+4 pickups succeeded; 16 kill credits, 1,459 damage dealt, 0 unattributed
+exp events. The **14th sell cycle never started** — fleet sells remain the
+leg-99 four; s00 has never sold. s00's inventory closed IDENTICAL to
+leg-99 (511x19, 905x5, 909x1, 1201 knife) — zero pickups for s00 this leg.
+
+**Target 4 (run health): healthy run, failed milestone.** s00 earned its
+FIRST exp since leg-98 (+2/+1, 56/35 -> 58/36; 11 attacks authored, 1 kill
+credit, 1 self-death); expless-roam skipped 140 expless targets. Fleet exp
+moved where combat happened (RinceNyan +16/+6, zeny_wing +18/+9;
+NyxSong flat 0/0 with 0 attacks despite roaming).
+
+**Seed handoff leg-101: unchanged** — zeny flat fleet-wide, so
+`run/worlds/population-live/seed-zeny.json` already equals the closing
+values (166/195/109/121/114/120/125; verified vs DB close).

@@ -1,0 +1,87 @@
+{
+  "leg": 100,
+  "window": {
+    "madrid": "2026-11-13 19:30-21:00 CET",
+    "utc": "2026-11-13 18:30-20:00",
+    "schedule": "[4, 19.5, 21.0] (Friday, Python weekday Mon=0)",
+    "opened_on_schedule": true,
+    "closed_on_schedule": true
+  },
+  "runner": {
+    "unit": "leg100-runner",
+    "base": "a3f08359 (trip-pacing-survivability 073704c6)",
+    "steps": 35817,
+    "step_errors": 0,
+    "transport_down_events": 0,
+    "receipt": "run/plain_host_receipts/population-receipt-100-1794594272.json",
+    "launched": "19:24:32 CET",
+    "exited": "21:54:33 UTC+01 (9000s full duration)"
+  },
+  "targets": {
+    "1_s00_first_sell_and_trip_completion": {
+      "verdict": "NOT ACHIEVED",
+      "zeny": "125 -> 125 (flat forever; the DB never moved)",
+      "trip_pacing_telemetry_live": true,
+      "trip_legs_sent_fleet": 51,
+      "trip_released_no_progress": 50,
+      "trip_retries": 44,
+      "trip_completions": 0,
+      "s00_box": "pay_fild04 x 194-241, y 167-183 for the WHOLE window (2635 position samples); west portal dest (17,165) is ~180 cells west and was never approached",
+      "chunk_targets": "path[24] endpoints (218,172)...(242,199) landed EAST/SOUTH-EAST of the bot at issue time while the dest lies west — the client grid's shortest_path detours instead of marching west; the straight-line release rule (route_distance_scaled, best_distance == full route every cycle) then kills each trip at its ~200s bound and the cycle repeats",
+      "s00_window": "11 attacks authored / 4 swings / 3 damage events / 68 dealt / 1 kill credit / exp +2/+1 (56/35 -> 58/36, FIRST exp movement for s00; leg-99 was flat 0/0) / 1 self-death / 1 monster death / stock unchanged (511x19, 905x5, 909x1, 1201 knife)"
+    },
+    "2_survivability": {
+      "verdict": "GATE LIVE BUT DEATHS CONTINUE",
+      "no_survivability_refusals": 8,
+      "refusal_detail": "low_hp (RinceNyan vs Thief Bug), recent_species_hit (YuffieFy81 vs Marin, RinceNyan vs Thief Bug)",
+      "fleet_self_deaths": 10,
+      "leg99_self_deaths": 12,
+      "per_agent": {"g00m00": 0, "g00m01": 5, "g00m02": 3, "g01m00": 0, "g01m01": 1, "g01m02": 0, "s00": 1},
+      "note": "deaths occur DESPITE refusals — the gate refuses authored engagements but does not withdraw the bot from an area where it is being attacked (RinceNyan: 38 attacks AND 5 deaths in the same window)"
+    },
+    "3_pickups_and_sell_cycle": {
+      "verdict": "PICKUPS RECOVERED; 14TH SELL CYCLE NOT REACHED",
+      "loot_actions_window": 24,
+      "leg99_loot": 6,
+      "leg98_loot": 24,
+      "pickup_receipt_side": {"attempts": 6, "success": 4, "drops_seen": 20},
+      "sell_cycles_this_window": 0,
+      "fleet_sells_ever": "still only the leg-99 four (nyx/rince/pipin/zeny_wing era); s00 has never sold"
+    },
+    "4_run_health": {
+      "verdict": "HEALTHY RUN, FAILED MILESTONE",
+      "online_during_window": "7/7 (sampler online=1 every mid-window line; 0/0/None never appeared)",
+      "final_decides": {"g00m00": 162, "g00m01": 227, "g00m02": 325, "g01m00": 135, "g01m01": 172, "g01m02": 153, "s00": 124},
+      "window_engagement": "116 attack actions authored in-window fleet-wide (trace action_executed), 127 authored per receipt-side counters",
+      "expless_roam": "s00 logged 140 target_species_skipped_expless events in-window (machinery active)"
+    }
+  },
+  "db_ground_truth": {
+    "zeny_close": {"NyxSong": 166, "RinceNyan": 195, "zeny_wing": 109, "PipinWalker": 121, "xXLunasongXx": 114, "PoringMuffin14": 120, "YuffieFy81": 125},
+    "zeny_deltas_leg100": [0, 0, 0, 0, 0, 0, 0],
+    "exp_close_base_job": {"NyxSong": [244, 153], "RinceNyan": [265, 184], "zeny_wing": [166, 127], "PipinWalker": [239, 144], "xXLunasongXx": [302, 183], "PoringMuffin14": [177, 114], "YuffieFy81": [58, 36]},
+    "exp_deltas_leg100_base_job": {"NyxSong": [0, 0], "RinceNyan": [16, 6], "zeny_wing": [18, 9], "PipinWalker": [1, 1], "xXLunasongXx": [4, 6], "PoringMuffin14": [6, 4], "YuffieFy81": [2, 1]},
+    "s00_inventory_close": {"511": 19, "905": 5, "909": 1, "1201": 1},
+    "s00_inventory_note": "IDENTICAL to the leg-99 close — zero pickups for s00 and zero sells; fleet inventory deltas include xXLunasongXx +705 Clover, PipinWalker 512+909x2, zeny_wing 906+915 (in-window loot)"
+  },
+  "swing_conversion_summary": {
+    "attacks_authored_fleet": 127,
+    "swings_sent_fleet": 84,
+    "damage_dealt_fleet": 1459,
+    "kill_credits_fleet": 16,
+    "unattributed_exp_events": 0
+  },
+  "next_dominant_signature": "TRIP GRID DETOUR: s00's sell route never leaves a ~47x16 spawn box on pay_fild04 — shortest_path's grid routes the (204,176)->(17,165) walk via east/south-east detours (chunk endpoints path[24] observed east of the bot), the straight-line release rule fires at the bound every cycle (50 releases, 0 completions), so no trip ever reaches the west warp (pay_fild04,17,165 -> moc_fild01, the cited MERCHANT_ROUTE first hop, scripts.py:432ff). NEXT SLICE: dump cache.get('pay_fild04') walkability + run shortest_path offline from (204,176)->(17,165) and diff the returned path against the server-known field; fix the grid (or re-path around the bad region) and re-measure chunk convergence. Secondary: the survivability gate refuses engagements (8) but 10 self-deaths still occur — the gate needs a withdraw/disengage behavior, not only refusal.",
+  "seed_handoff_leg101": {
+    "values": {"pop_0003_g00m00": 166, "pop_0003_g00m01": 195, "pop_0003_g00m02": 109, "pop_0003_g01m00": 121, "pop_0003_g01m01": 114, "pop_0003_g01m02": 120, "pop_0003_s00": 125},
+    "changed": false,
+    "note": "zeny flat fleet-wide — run/worlds/population-live/seed-zeny.json already equals the closing values; no refresh needed"
+  },
+  "evidence": {
+    "receipt": "run/plain_host_receipts/population-receipt-100-1794594272.json",
+    "runner_log": "/tmp/population_leg100.log",
+    "traces": ".work/runtime/population-live/traces/pop_0003_*.jsonl (window-bounded 2026-11-13T18:30-20:00 UTC)",
+    "db_readback": "/tmp/q100.sql via ro-bots-e2e-mariadb-1 (chars 300000-300006 + inventory)",
+    "merchant_route_citation": "src/robots/app/scripts.py:432ff (pay_fild04 west warp npc/pre-re/warps/fields/payon_fild.txt:30)"
+  }
+}
