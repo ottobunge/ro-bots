@@ -12953,3 +12953,66 @@ not accepted (invitees guild_id=0), parties carried over, s00 solo.
 
 Seed handoff for leg 99: 128/187/109/108/114/113/125 (committed refresh of
 `run/worlds/population-live/seed-zeny.json`).
+
+## S00 PAY_FILD04 LOOP — outward roam + trip priority/bound (2026-11-13)
+
+Implemented on isolated branch `sol/roam-trip-priority`, based on main
+`c186e099`; no merge or population run. Evidence: leg-98 commit `0d0daa46`,
+`run/plain_host_receipts/population-receipt-98-1794556515.json` and
+`population-receipt-98-1794556515-analysis.json`, traces
+`.work/runtime/population-live/traces/` (08:00-09:30 UTC). The prt_fild08
+cohort's species scoring worked (zero Green-Plant swings), but s00 authored
+364/374 attacks at plants, landed 325 zero-EXP swings, and repeatedly lost
+merchant leases at 60 seconds with best distances 233-242 cells.
+
+**Widening rule:** instead of adding a hidden spawn catalogue, count only
+received own positive HP-damage events against species whose public base
+and job EXP are both known zero. After 20 such landed hits without a
+received death among struck actors, author a runtime-approved outward
+24-cell patrol leg before either farm/grind combat or local roaming.
+`roam_anchor_widened_expless` names bot/map, landed-hit count, radius,
+target and `rule=sustained_zero_exp_hits`. A rewarding or unknown-reward
+landed hit, relevant death, map refresh, or native epoch resets the streak.
+The memory belongs to one PlayingClient, survives script recreation, and
+never reads other clients. Runtime checks reachability; scripts only use
+the injected target in BotState and remain grid-free. Received arrival
+clears the leg; a 60-second stall rotates the next deterministic direction.
+Existing actor commitments are retained during this temporary patrol;
+rest/recovery admission, 1-HP protection and target-filter widening remain
+unchanged. Merchant travel still precedes the outward leg.
+
+**Trip priority:** existing script merchant preemption already held empty
+patience ticks, but the runtime protected those ticks from fallback patrol
+only on prontera. An active, still-admitted merchant lease now suppresses
+runtime loot/patrol fallback on every route map. Released/cooling-down
+leases yield to farming as before. This uses the existing trip registry;
+no shared coordination state or new admission rule was added.
+
+**Trip bound:** MerchantTrip retains its release/retry/high-water machinery;
+only the no-progress bound becomes `clamp(best_distance * 1s, 60s, 300s)`.
+Thus the observed 233-242-cell legs receive 233-242 seconds, while short
+legs retain the 60-second floor and any fully stalled leg releases within
+300 seconds of its last actual progress. Backtracking/jitter cannot inflate
+this bound. Release telemetry adds `rule=route_distance_scaled`; the
+120-second retry cooldown and route-leg progress renewal remain intact.
+
+**TDD:** initial regression RED **13 failed / 4 passed**; a separate runtime
+priority reproduction RED **2 failed / 2 passed**, showing an empty merchant
+tick replaced by `MoveTo(201,200)` on prt_fild08. Targeted GREEN **303 passed**,
+including 23 new received-frame/distance-bound regressions plus merchant,
+patrol, species preference, commitment and rest/recovery coverage. Existing
+release tests now evaluate their original invariants at the scaled deadline.
+Strict mypy (390 source files), ruff and xenon also passed. Local RED/GREEN
+and full-gate logs: `.work/roam-trip-priority/`.
+
+Fresh-worktree fixtures: local shared clone of pinned rAthena `e985006171d2`
+plus main's ignored `config.log` and iro-db symlinks. The existing optional
+wiki-corpus skip is expected because main's iro-wiki symlink points to itself.
+
+**Full gate GREEN:** `nix develop -c task --dir . check` exited 0:
+**7,239 passed, 65 subtests passed, 1 skipped, 95.69% coverage**, 294.15s
+(4 existing warnings). Black, ruff, strict mypy (390 source files), vulture,
+xenon, duplicate-code and security checks passed. The sole skip is the
+expected optional iro-wiki real-corpus environment artifact described above.
+No source changes followed this gate. No population runner, docker,
+heavengraph or spikes work was performed; main remains `c186e099`.

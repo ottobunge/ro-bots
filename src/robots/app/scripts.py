@@ -631,6 +631,12 @@ def _merchant_batch_min(state: BotState) -> int:
     return 1 if state.map_name in ("prontera", "prt_in") else MERCHANT_FIELD_BATCH_MIN
 
 
+def merchant_trip_active(bot: str) -> bool:
+    """An admitted travel lease that has not been released for retry."""
+    trip = _MERCHANT_TRIPS.get(bot)
+    return trip is not None and trip.retry_at == 0.0
+
+
 def _merchant_trip_cooling_down(bot: str) -> bool:
     trip = _MERCHANT_TRIPS.get(bot)
     return trip is not None and trip.cooling_down(_merchant_now())
@@ -1220,6 +1226,8 @@ class GrindScript:
         )  # window-29: want-driven dealer trip
         if merchant is not None:
             return merchant
+        if state.roam_escape_target is not None:
+            return ScriptOutcome((MoveTo(*state.roam_escape_target),), ScriptStatus.ACTIVE)
         monsters = sorted(state.nearby_monsters, key=lambda m: m.distance)
         if monsters:
             return _engage(state, monsters, self._commit_window, self._mob_db, self._trace)
@@ -1232,6 +1240,9 @@ class GrindScript:
             leg = self._travel_leg(state, plan)
             if leg is not None:
                 return ScriptOutcome((MoveTo(x=leg[0], y=leg[1]),), ScriptStatus.ACTIVE)
+        return self._roam_step(state)
+
+    def _roam_step(self, state: BotState) -> ScriptOutcome:
         if not self._allow_roam:
             return ScriptOutcome((), ScriptStatus.ACTIVE)
         # w65-69 roam leg (mirrors FarmScript): an empty view must not
@@ -1349,6 +1360,8 @@ class FarmScript:
         )  # window-29: want-driven dealer trip
         if merchant is not None:
             return merchant
+        if state.roam_escape_target is not None:
+            return ScriptOutcome((MoveTo(*state.roam_escape_target),), ScriptStatus.ACTIVE)
         travel = self._travel_step(state)
         if travel is not None:
             return travel
