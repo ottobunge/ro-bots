@@ -89,19 +89,16 @@ def test_three_sellers_release_a_lost_walk_then_progress(public_cache, name, sta
     path = shortest_path(public_cache.get("prt_fild08"), start, SAFE_DEST)
     assert path[0] == start
     assert path[-1] == SAFE_DEST
-    if start == (176, 374):
-        assert path[1] == (175, 374)  # pinned Bard: occupied one-cell-west rejection
-        path = shortest_path(
-            public_cache.get("prt_fild08"), start, SAFE_DEST, blocked_visible=((175, 374),)
-        )
+    # A multi-cell destination bypasses the server's special rejection of
+    # requests ending exactly one cell west; dealer allocation is unchanged.
+    first = path[min(24, len(path) - 1)]
     client, now = _field_client(public_cache, start, name, bard=True)
     state = _seller(name=name, x=start[0], y=start[1])
     assert client.merchant_reachable(state.map_name, start, SAFE_DEST) is True
     client.perform_native(_step(client, state).actions[0])
-    assert client.wire.moves == [path[1]]
-    assert client.last_move_outcome["reason"] == (
-        "occupied_west_rerouted" if start == (176, 374) else "step"
-    )
+    assert client.wire.moves == [first]
+    assert client.last_move_outcome["reason"] == "trip_leg"
+    assert client.last_move_outcome["trip_leg_cells_sent"] == min(24, len(path) - 1)
     # No walkok arrives for the first dispatch. Holding the author must not
     # leave that pending walk latched forever, even without an arrival frame.
     for tick in range(1, 5):
@@ -111,21 +108,22 @@ def test_three_sellers_release_a_lost_walk_then_progress(public_cache, name, sta
     assert client._pending is None
     now[0] = 10.0
     client.perform_native(_step(client, state).actions[0])
-    assert client.wire.moves == [path[1], path[1]]
+    assert client.wire.moves == [first, first]
     assert client.last_move_outcome["outcome"] == "dispatched"
     assert client.last_move_outcome["pending_outcome"] == "pending-cancelled"
-    assert client.last_move_outcome["pending_reason"] == "no_progress(step)"
+    assert client.last_move_outcome["pending_reason"] == "no_progress(trip_leg)"
     # The retry's received walkok advances the SAME client grid position.
-    client.wire.add(walk_ack(start, path[1]))
+    client.wire.add(walk_ack(start, first))
     received = client.build_native_state(Goal.GRIND)
-    assert (received.x, received.y) == path[1] != start
+    assert (received.x, received.y) == first != start
     # Progress without a zero-length walk-end still expires on the stall clock.
     now[0] = 12.0
     client.perform_native(MoveTo(*SAFE_DEST))
     assert dict(client.last_move_outcome)["outcome"] == "pending"
     now[0] = 14.0
     client.perform_native(MoveTo(*SAFE_DEST))
-    assert client.wire.moves[-1] == path[2]
+    assert client.wire.moves[-1] == SAFE_DEST
+    assert len(client.wire.moves) == (3 if first != SAFE_DEST else 2)
 
 
 def _pose(wire, kind) -> None:

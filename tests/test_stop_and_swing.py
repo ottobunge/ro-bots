@@ -10,7 +10,7 @@ from the real adjacency."""
 
 from __future__ import annotations
 
-from robots.app.playing_runtime import PlayingClient
+from robots.app.playing_runtime import ObservedMobDatabase, PlayingClient
 from robots.domain.model import ActorRef, BotState
 from tests.conftest import make_state
 
@@ -32,6 +32,7 @@ def _runtime(pending: object) -> tuple[PlayingClient, _RecordingWire]:
     runtime._now = lambda: 0.0
     runtime._pending = pending  # type: ignore[assignment]
     runtime._rest_seq = None
+    runtime.mob_db = ObservedMobDatabase()
     runtime._attack_ready = lambda *_a, **_k: True  # type: ignore[method-assign]
     return runtime, wire
 
