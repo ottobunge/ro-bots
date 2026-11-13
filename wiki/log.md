@@ -12899,3 +12899,57 @@ confirmed **7 passed / 1 skipped** across the real-corpus/sidecar smokes;
 the provisioned iro-db and rAthena source/config fixtures worked. No source
 changes were made after the full gate. RED, targeted GREEN and full-gate
 logs are saved locally under `.work/species-selection/`.
+
+## Leg 98 (2026-11-13, population leg, e2e world)
+
+Window `[4, 9.0, 10.5]` (Friday 09:00-10:30 Madrid, day index 4) ran on main
+`ee0ac967` (species-selection merge `7c567f65` + hits-vs-swings instrument
+`48e865f1`). Seed zeny 128/181/102/98/104/113/125 (chars 300000-300006).
+Runner `systemd-run --user --unit=leg98-runner`, duration 9000 s:
+**35,727 steps, 0 step errors, 0 TRANSPORT DOWN**; window opened and closed on
+schedule with 7/7 online at the 09:45 mid-window check and full decide cadence
+(991 decides: 139/114/140/135/112/137/214 per agent). Three single
+`keepalive send failed` blips (g00m00, g01m01, g01m02) each recovered
+in-session via transport release; no relogin needed.
+
+Receipt `run/plain_host_receipts/population-receipt-98-1794556515.json`
+(+) `-analysis.json`; traces `.work/runtime/population-live/traces/`
+(window 08:00-09:30 UTC); DB readback chars 300000-300006.
+
+**Target 1 (species preference + exp yield): SPLIT.** The prt_fild08 cohort is
+fixed: **0 Green-Plant swings** (leg-97: 157) - all 38 cohort swings went to
+exp-yielding species (Pupa 18, Poring 10, Lunatic 6, Drops 4) for 7 kill
+credits and +22 base/+13 job exp. But the signature MOVED rather than died:
+s00 (YuffieFy81) on pay_fild04 authored **364 of its 374 attacks at Green
+Plant** (325 swings, ~1 dmg each, 0 kills, 0 exp), and fleet-wide GP swings
+went 157 -> 325. The preference machinery itself is verified: when a Poring
+was reachable s00 took it (10 authored -> 6 swings, 126 dmg, 2 kills). The
+limiter is pay_fild04's local plant density around s00's roam cluster.
+**Next dominant signature: s00's roam/target clustering on pay_fild04 and its
+never-completing cross-map merchant trip.**
+
+**Target 2 (twelfth sell cycle + admission/release): LANDED for the field
+cohort.** 4 of 6 field agents sold this window (RinceNyan +6, zeny_wing +7,
+PipinWalker +10, xXLunasongXx +10 = **+33 zeny, DB-verified**; xXLunasongXx
+was a pure merchant trip: +10 zeny, 0 exp). The `weapon_release` arm fired
+live (zeny_wing on prt_in, zeny 109, stock 0 -> correct abstain from buying).
+s00's trip was admitted 5+ times (`arm=sell_batch`, dest pay_fild04
+(17,165), trip_min=2) and **every attempt hit
+`merchant_trip_released_no_progress`** (bound_s=60, best_distance 233-242
+cells): a 2-warp-hop trip cannot complete inside the 60 s bound while the
+agent keeps roaming its plant patch.
+
+**Target 3 (pickups): SUSTAINED** - 24 success / 26 attempts (leg-97: 13);
+s00 alone 18/18 (36 drops seen).
+
+**Target 4 (run health): GREEN** as above.
+
+DB ground truth: fleet exp +26 base (485 -> 511) / +15 job (800 -> 815),
+wire and DB agree; all seven hold the fixture knife 1201 (equip=2); sellers
+hold knife only, s00 still carries loot (511 x18, 905 x5, 909 x1).
+Socials live: two new guilds founded (**NyxSongGuard** guild_id=2 master
+NyxSong, **PipinWalkerGuard** guild_id=3 master PipinWalker), 6 guild invites
+not accepted (invitees guild_id=0), parties carried over, s00 solo.
+
+Seed handoff for leg 99: 128/187/109/108/114/113/125 (committed refresh of
+`run/worlds/population-live/seed-zeny.json`).
