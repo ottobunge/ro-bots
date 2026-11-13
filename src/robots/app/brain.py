@@ -32,6 +32,7 @@ from robots.app.scripts import (
     needs_npc_preparation,
     script_for,
 )
+from robots.app.target_species import species_score, trace_expless_skips
 from robots.app.trace_log import TraceLog
 from robots.domain.actions import (
     AcceptGuildInvite,
@@ -540,6 +541,8 @@ class EventDrivenBrain:
         if plan is not None:
             self._script = FarmScript(
                 plan,
+                mob_db=self._mob_db,
+                trace=self._trace,
                 initial_starved=streak,
                 field_travel=self._field_travel,
                 travel_resolver=self._travel_resolver,
@@ -1071,7 +1074,7 @@ class EventDrivenBrain:
             case "attack":
                 if self.is_recovering:
                     return []
-                self._script = GrindScript()
+                self._script = GrindScript(mob_db=self._mob_db, trace=self._trace)
                 notes.append("script->grind")
                 return []
             case "flee":
@@ -1229,6 +1232,8 @@ class EventDrivenBrain:
             state.map_name in TRAVEL_ROUTES or isinstance(script, GrindScript)
         ):
             return GrindScript(
+                mob_db=self._mob_db,
+                trace=self._trace,
                 travel_plan=TRAVEL_ROUTES.get(state.map_name, ()),
                 travel_resolver=self._travel_resolver,
                 merchant_reachable=self._merchant_reachable,
@@ -1273,12 +1278,25 @@ class EventDrivenBrain:
         return plan
 
     def _farm_targets(self, map_name: str, target: str) -> list[str]:
-        """Observed species first, then declared spawns before any observation."""
+        """Prefer EXP when authoring; an installed plan keeps its species."""
         mobs = list(self._mob_db.mobs_on_map(map_name)) if self._mob_db else []
         known = [m.name for m in mobs]
         if not known and self._spawn_species is not None:
             known = list(self._spawn_species(map_name))
-        return [target] if target in known else known[:2]
+        if not known:
+            return []
+        known.sort(key=lambda name: (species_score(name, self._mob_db), name != target))
+        best = species_score(known[0], self._mob_db)
+        preferred = [name for name in known if species_score(name, self._mob_db) == best]
+        trace_expless_skips(
+            known,
+            preferred[0],
+            self._mob_db,
+            self._trace,
+            source="farm_plan",
+            map_name=map_name,
+        )
+        return [target] if target in preferred else preferred[:2]
 
     def _farm_destination(self, state: BotState) -> str | None:
         """Keep an underway destination stable; otherwise choose the nearest field."""

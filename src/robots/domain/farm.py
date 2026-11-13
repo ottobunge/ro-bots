@@ -18,6 +18,8 @@ class MobInfo:
     name: str
     level: int
     is_mvp: bool = False
+    base_exp: int | None = None
+    job_exp: int | None = None
 
 
 @dataclass(frozen=True, slots=True)

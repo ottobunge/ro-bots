@@ -12843,3 +12843,59 @@ payoff gate.
 128/181/102/98/104/113/125, exp close 230/146, 242/174, 138/111,
 216/132, 279/164, 170/109, 52/33. **Seed-zeny refreshed to the closing
 values for leg-98.**
+
+## SPECIES-SELECTION — prefer exp-yielding attack targets (2026-11-13)
+
+Implemented on isolated branch `sol/species-selection`, based on main
+`a17a2c82`. Motivation: leg-97 receipts
+`run/plain_host_receipts/population-receipt-97-1794526824.json` and
+`run/plain_host_receipts/population-receipt-97-analysis.json` (evidence commit
+`29ab0103`): conversion worked (297 sent / 285 own-dealt hits / 20 kill
+credits / +71/+39 EXP / 13 pickups), but Green Plant absorbed 157 sent
+swings for 156 one-damage hits, zero kills and zero EXP; Thief Bug Egg
+paid 16 base EXP. This slice changes species preference, not the swing gate.
+
+`ObservedMobDatabase.load` now retains public `BaseExp`/`JobExp` in
+`MobInfo`, applying the pinned YAML's documented zero defaults. Missing
+species or reward data stay unknown (`None`), rather than becoming known
+zero-EXP mobs. One shared, stateless scoring function orders new picks by
+`(confirmed_zero_base_and_job_exp, -(base_exp + job_exp))` ascending:
+yielding species first (greatest total reward first), unknown species next
+(no reward bonus), confirmed zero-EXP species last. This applies to all
+catalogue species, with no plant-name denylist. Script picks retain pinned
+HP then distance as tie-breakers. New farm plans choose only the best-scored
+species, keeping the model's choice when tied and the existing at-most-two
+fallback when it is not among the best-scored species.
+
+FarmScript and GrindScript receive the agent's read-only mob DB and trace
+through all brain construction paths, including monster reactions and
+plan-less grind. Existing actor commitments still win before scoring;
+installed FarmPlans retain their species filter. Widening still counts
+absent-plan-species evaluations and resets when a plan species returns.
+Plant-only views still attack immediately when eligible, or after the same
+bounded widening when the committed plan species is absent. No new shared
+state, actor discovery, hidden spawn membership, grid access or walkability
+policy was added; the runtime remains the movement authority.
+
+Named telemetry `target_species_skipped_expless` records `species`,
+`reason=zero_base_and_job_exp`, `selected_species`, `source` (`farm_plan` or
+`attack_target`) and map in the persona JSONL trace and the application log.
+Held actors and plant-only picks do not emit misleading skip events.
+
+TDD RED: the initial new regression suite produced **29 failed / 2 passed**,
+including behavioral failures selecting/attacking Green Plant from the brain.
+Targeted GREEN after implementation and additional tie-break/wiring checks:
+**227 passed**, including **37 species-preference cases** plus the existing
+commitment, widening, reauthoring, brain and runtime tests. Offline work only;
+no population runner, main merge, Docker/heavengraph changes or spike edits.
+
+**Full gate GREEN:** `nix develop -c task --dir . check` exited 0:
+**7,216 passed, 65 subtests passed, 1 skipped, 95.67% coverage**, 266.43s
+(4 existing warnings). Black, ruff, strict mypy (388 source files), vulture,
+xenon, duplicate-code and security checks passed. The skip is the existing
+optional iro-wiki real-corpus smoke: main's checked-in `iro-wiki.db` symlink
+points to itself and cannot provide that corpus. A focused fixture check
+confirmed **7 passed / 1 skipped** across the real-corpus/sidecar smokes;
+the provisioned iro-db and rAthena source/config fixtures worked. No source
+changes were made after the full gate. RED, targeted GREEN and full-gate
+logs are saved locally under `.work/species-selection/`.
