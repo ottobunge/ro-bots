@@ -791,6 +791,9 @@ def _merchant_trip_allows(state: BotState, destination: tuple[int, int]) -> bool
     now = _merchant_now()
     remaining = len(MERCHANT_TRAVEL_ROUTES[state.map_name])
     distance = max(abs(state.x - destination[0]), abs(state.y - destination[1]))
+    measured = state.merchant_route_distance
+    if measured is not None and measured[:2] == destination:
+        distance = measured[2]
     trip = _MERCHANT_TRIPS.setdefault(state.name, MerchantTrip(remaining, distance, now))
     allowed = trip.advance(state.name, remaining, distance, now)
     if not allowed:

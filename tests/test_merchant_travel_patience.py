@@ -91,14 +91,14 @@ def test_three_sellers_release_a_lost_walk_then_progress(public_cache, name, sta
     assert path[-1] == SAFE_DEST
     # A multi-cell destination bypasses the server's special rejection of
     # requests ending exactly one cell west; dealer allocation is unchanged.
-    first = path[min(24, len(path) - 1)]
+    first = path[min(17, len(path) - 1)]
     client, now = _field_client(public_cache, start, name, bard=True)
     state = _seller(name=name, x=start[0], y=start[1])
     assert client.merchant_reachable(state.map_name, start, SAFE_DEST) is True
     client.perform_native(_step(client, state).actions[0])
     assert client.wire.moves == [first]
     assert client.last_move_outcome["reason"] == "trip_leg"
-    assert client.last_move_outcome["trip_leg_cells_sent"] == min(24, len(path) - 1)
+    assert client.last_move_outcome["trip_leg_cells_sent"] == min(17, len(path) - 1)
     # No walkok arrives for the first dispatch. Holding the author must not
     # leave that pending walk latched forever, even without an arrival frame.
     for tick in range(1, 5):

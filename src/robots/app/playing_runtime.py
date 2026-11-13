@@ -60,6 +60,7 @@ from robots.adapters.native_session_progression import (
 from robots.adapters.native_shop_context import NativeShopContext
 from robots.adapters.native_skills import NativeSkillContext
 from robots.adapters.native_vitals import NativeTelemetryUnavailable, require_native_vitals
+from robots.app.combat_disengage import CombatDisengage, disengage_step
 from robots.app.combat_survival import SpeciesDamage, survivability_refusal
 from robots.app.expless_roam import ExplessRoam
 from robots.app.loot_attribution import LootAttribution
@@ -85,6 +86,7 @@ from robots.app.scripts import (
     shop_sellable_stock,
 )
 from robots.app.swing_telemetry import SwingTelemetry
+from robots.app.trip_navigation import TripNavigation, trip_chunk_cells
 from robots.domain.actions import (
     AcceptGuildInvite,
     AcceptInvite,
@@ -426,6 +428,7 @@ class PlayingClient:
         self._encounters: NativeEncounterStream | None = None
         self._swing_telemetry = SwingTelemetry()
         self._species_damage = SpeciesDamage()
+        self._disengage = CombatDisengage()
         self._trip_walk_seq: int | None = None
         self._trip_leg_cells_sent = 0
         self._skills: NativeSkillContext | None = None
@@ -848,6 +851,7 @@ class PlayingClient:
         )
         state = replace(
             state,
+            merchant_route_distance=self._merchant_route_distance(state),
             roam_escape_target=self._expless_roam.target(
                 state, self._now(), self.merchant_reachable
             ),
@@ -857,6 +861,17 @@ class PlayingClient:
         self._merchant_crossings.observe(map_name, state.name)
         self._drain_retry_talk(state)
         return state
+
+    def _merchant_route_distance(self, state: BotState) -> tuple[int, int, int] | None:
+        if merchant_admission_refusal(state) is not None:
+            return None
+        target = MERCHANT_ROUTE.get(state.map_name)
+        if target is None or self.cache is None or state.map_name not in self.cache.maps:
+            return None
+        distance = self._trip_navigation.distance(
+            self.cache.get(state.map_name), (state.x, state.y), target
+        )
+        return (*target, distance) if distance is not None else None
 
     def _drain_retry_talk(self, state: BotState) -> None:
         """One deferred click: the walk-end tail dropped the first, so the
@@ -907,6 +922,7 @@ class PlayingClient:
 
     def _init_merchant_navigation(self) -> None:
         self._merchant_staging = MerchantStaging()
+        self._trip_navigation = TripNavigation()
         self._merchant_crossings = MerchantWarpCrossings()
         self.last_move_outcome: dict[str, object] = {}
         self._move_pending_release: dict[str, object] = {}
@@ -1061,6 +1077,8 @@ class PlayingClient:
         if self._retry_blocked_dialogue():
             return
         state = self.build_native_state(Goal.GRIND)
+        if self._disengage_action(state, action):
+            return
         if self._npc_action(state, action):
             return
         self._equip_progression(state)
@@ -1235,12 +1253,41 @@ class PlayingClient:
             self._note_attack_gate("cooldown", target)
             return
         self.wire._send(attack(target))
+        self._disengage.engage(actor, self._now())
         self._swing_tap().note(
             "swing",
             target_id=target,
             at=self._now(),
             species=species,
         )
+
+    def _resume_loot_unless_disengaging(self, state: BotState) -> None:
+        if not self._perform_disengage(state):
+            self._loot_resume(state)
+
+    def _disengage_action(self, state: BotState, action: GameAction) -> bool:
+        if not isinstance(action, (Attack, MoveTo, Loot)) or not self._perform_disengage(state):
+            return False
+        if isinstance(action, Attack):
+            self._note_attack_gate("disengage_active", action.target_id)
+        return True
+
+    def _perform_disengage(self, state: BotState) -> bool:
+        # Existing recovery owns a latched rest and the absolute 1-HP state.
+        if self._rest_seq is not None:
+            self._disengage.reset()
+            return False
+        source = self._disengage.source(state, self.mob_db, self._now())
+        if source is None:
+            return False
+        if self._npc.actuation_blocked or self.cache is None:
+            return True
+        grid = self.cache.maps.get(state.map_name)
+        if grid is not None:
+            point = disengage_step(grid, state, source)
+            if point is not None:
+                self._perform_move(state, point)
+        return True
 
     def _equip_progression(self, state: BotState) -> None:
         """Wear an owned wanted weapon once per epoch (equip progression rule).
@@ -2624,7 +2671,7 @@ class PlayingClient:
     ) -> int:
         if not merchant_trip_active(state.name) or state.map_name == "prt_in":
             return 1
-        cells = min(24, len(path) - 1)
+        cells = trip_chunk_cells(grid, path)
         if dealer_entry_cell(state.map_name, target):
             return self._town_trip_cells(path, cells, grid)
         return cells
@@ -2655,11 +2702,11 @@ class PlayingClient:
         """CZ_REQUEST_MOVE carries one destination; the server expands its path.
 
         Pinned client.move packs 0x035f + 3B PosDir, not a path array.
-        rAthena path.hpp caps MAX_WALKPATH at 32; use <=24 local path cells
+        rAthena max_walk_path is 17, with a 14-cell obstacle limit; use bounded cells
         per request, retaining the normal pending and received-position lane.
         Local dealer allocation keeps its original single steps.
         """
-        cells = min(24, len(path) - 1)
+        cells = len(path) - 1
         point = path[cells]
         if self._occupied_west(state, point):
             self._note_move_gate("occupied_west_no_route")
@@ -3272,7 +3319,7 @@ class PlayingClient:
             # never fired and the single pending slot blocked every later
             # send. Same budget, pacing and exhaustion semantics as dispatch.
             self._await_pending(tracker.view, pos)
-        self._loot_resume(state)
+        self._resume_loot_unless_disengaging(state)
         events: list[WorldEvent] = []
         dialog = self._npc.view
         if dialog is not None and dialog.sequence > self._npc_event_sequence:
@@ -3808,6 +3855,7 @@ class PlayingClient:
         self._epoch_character = self.wire.char_name
         self._expless_roam.reset()
         self._species_damage.clear()
+        self._disengage.reset()
         self._trip_walk_seq = None
         self._species.clear()
         self._npc_names.clear()
@@ -3871,6 +3919,7 @@ class PlayingClient:
         self._move_pending_release = {}
         self._patrol = None
         self._expless_roam.reset()
+        self._disengage.reset()
         self._trip_walk_seq = None
         self._species.clear()
         self._pending = None
@@ -3902,6 +3951,7 @@ class PlayingClient:
 
     def _receive_actor_vanish(self, raw: bytes) -> None:
         """Forget actor metadata; only received SELF death clears pose."""
+        self._disengage.vanish(int.from_bytes(raw[2:6], "little"))
         self._npc_names.pop(int.from_bytes(raw[2:6], "little"), None)
         self._species.pop(int.from_bytes(raw[2:6], "little"), None)
         if (

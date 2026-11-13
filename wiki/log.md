@@ -13198,3 +13198,108 @@ NyxSong flat 0/0 with 0 attacks despite roaming).
 **Seed handoff leg-101: unchanged** — zeny flat fleet-wide, so
 `run/worlds/population-live/seed-zeny.json` already equals the closing
 values (166/195/109/121/114/120/125; verified vs DB close).
+
+## 2026-11-13 — TRIP GRID DETOUR + DISENGAGE (offline SOL slice)
+
+**Baseline/evidence:** main `55ef74d3`, leg-100 evidence commit `15043d7d`;
+`run/plain_host_receipts/population-receipt-100-1794594272.json` and
+`population-receipt-100-1794594272-analysis.json`. Historical traces only:
+`.work/runtime/population-live/traces/pop_0003_s00.jsonl`, Fri Nov 13
+18:30–20:00 UTC. No login, live probe, population runner, DB query, or world
+mutation was used. Work is isolated on `sol/trip-grid-disengage`; no merge.
+
+**Offline grid finding: the east/north detour is real, not bad client data.**
+Run `uv run python scripts/diagnose_trip_grid.py` from the repository root.
+The complete 400×400 GAT dump is
+[`evidence/trip-grid-100/grid.txt`](evidence/trip-grid-100/grid.txt); decoded
+cell hashes, source comparisons, corridor samples and every coordinate of
+both requested paths (plus the trace's `(194,172)` start) are in
+[`evidence/trip-grid-100/diagnosis.json`](evidence/trip-grid-100/diagnosis.json).
+The committed runtime cache, public-source cache and pinned rAthena
+`e985006171d2` common+pre-re caches have **zero differing cells**, with
+SHA256 `007763bf7128951bcbff84a6b863599f8deb203fbfd40e5bae1eebaf5d5e6a71`.
+Counts: 46,819 walkable GAT-0 cells, 112,430 blocked GAT-1 cells and 751
+blocked/shootable GAT-5 cells. A read-only hash of the saved leg-100
+client caches at `/home/otto/dev/ro-bots/.work/runtime/population-live/db`
+also gives this exact decoded SHA256. The decoder's row-major addressing and flags
+agree with rAthena `src/map/map.cpp:3280` (`map_gat2cell`) and
+`:3672` (`map_readfromcache`, `x + y * xs`).
+
+At y=176 the west corridor is blocked at x=126–181 (GAT 1), x=185 (GAT 1)
+and x=186–193 (GAT 5); the thin x=182–184 walkable strip does not connect
+straight west. `shortest_path((204,176),(17,165))` is **435 cells**,
+`path[24]=(228,177)`, with x=17–248/y=165–338. From `(244,200)` it is
+**388 cells**, `path[24]=(248,224)`, with the same extrema. The path goes
+east along the southern pocket, north around the central blocked region,
+west via y≈313–338, then southwest down the western side to the warp.
+Increasing y is NORTH in the server coordinates: the earlier "south-east"
+label was a screen-coordinate inference. BFS has no heuristic and returns
+the shortest legal cell-count path. Altering cells or asserting monotonic
+westward x from `(204,176)` would contradict the committed server grid.
+The regression therefore pins **monotonically decreasing remaining route
+cells and eventual west-warp arrival**, explicitly preserving the initial
+east/north detour. A west-only acceptance assertion is not supportable by
+the required offline facts.
+
+**Actual movement root cause: 24-cell requests exceed server admission.**
+`CZ_REQUEST_MOVE` contains ONE destination, not the client's path array.
+rAthena `clif.cpp:11379` calls `unit_walktoxy(...,4)`; `unit.cpp:841`
+path-finds to it, checks `battle_config.max_walk_path`, then follows the
+server path. Both committed `runtime/conf/battle/client.conf:42` and
+`rathena/conf/battle/client.conf:42` set **max_walk_path: 17**;
+`battle.cpp:8684` also defaults it to 17. `path.hpp`'s 32-cell array is
+NOT the admission limit. Additionally `src/config/core.hpp:26` enables
+`OFFICIAL_WALKPATH`: paths longer than **14** cells are rejected when
+`path_search_long(...,CELL_CHKNOPASS)` finds an intervening obstacle
+(`unit.cpp:862` and `:270`). This explains even the clear straight request
+in the trace: at 18:30:24, 18:30:36 and 18:30:47 UTC s00 repeatedly sent
+`(194,172)->(218,172)` (24 cells), retained `(194,172)`, then named
+`no_progress(trip_leg)`. "dispatched" proved a wire send, not execution.
+There is no endpoint coordinate transposition or straight-line walker bug;
+the server routes the packet and may refuse it before starting a walk.
+
+**Trip fixes:** cap clear chunks at 17 cells, obstructed chunks at 14, using
+the pinned server's integer line test. Preserve staging single steps,
+occupied-west admission, native pending and stop-before-swing contracts.
+Give the merchant lease a destination-bound public-grid remaining distance,
+from a cached reverse BFS field, instead of the previous Chebyshev distance.
+The existing high-water bound, retry/cooldown and no-progress release remain;
+actual detour progress can now renew them. No grid patch or speculative
+server-direct walk across blocked west cells was introduced. The older
+233-cell straight-corridor replay was corrected to drain native events at
+the host cadence and now expects the server-admissible 17-cell chunks.
+
+**Disengage:** a successful native swing remembers that exact target. A
+survivability refusal of that engagement, or received HP dropping below the
+same 40% floor without another Attack, starts `disengage_low_hp` or
+`disengage_recent_species_hit` for at most **8 seconds**. Walk only to a
+reachable adjacent cell pointing away from that target's latest received
+position; keep its last known position if it leaves view during withdrawal.
+Hold attacks/loot during this finite retreat; no refusal of an unengaged
+actor can start it. No new swing means no renewal. An unused engagement
+expires after 30 seconds and a vanished unengaged target clears it. Map/
+session boundaries, received death, unknown/absolute 1-HP state and latched
+rest preserve their existing recovery authority. A sealed retreat holds
+instead of routing through the target; zero-EXP resource exemption remains.
+
+**TDD / validation:** initial new regression RED: **5 failed, 6 passed**
+(real-grid chunk admission/convergence plus engaged refusal, HP-floor and
+changed-position withdrawal). Final targeted GREEN: **61 passed**, including
+all **14 new regressions**, existing trip patience/pacing and stop-and-swing.
+The stop-and-swing unit fixture bypasses `__init__` and now initializes the
+new per-client disengage state; its standing/pending assertions are unchanged.
+**Full gate GREEN before commit:** `nix develop -c task --dir . check`
+(exit 0): **7,274 passed + 65 subtests, 1 existing optional corpus skip,
+95.70% coverage**, test phase 328.24 seconds; formatting, Ruff, mypy,
+vulture, xenon, duplicate-code and security gates passed.
+No population acceptance is claimed.
+
+
+Files changed in this slice:
+
+- `src/robots/adapters/native_navigation.py`
+- `src/robots/app/trip_navigation.py`, `combat_disengage.py`, `playing_runtime.py`, `scripts.py`
+- `src/robots/domain/model.py`
+- `tests/test_trip_grid_disengage.py`, `test_trip_pacing_survival.py`, `test_merchant_travel_patience.py`, `test_stop_and_swing.py`
+- `scripts/diagnose_trip_grid.py`
+- `wiki/log.md`, `wiki/evidence/trip-grid-100/grid.txt`, `wiki/evidence/trip-grid-100/diagnosis.json`
