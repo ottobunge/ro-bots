@@ -1,0 +1,43 @@
+{
+  "leg": 97,
+  "window": "Friday [4, 0.75, 2.25] = 00:45-02:15 Madrid (2026-11-13)",
+  "receipt": "run/plain_host_receipts/population-receipt-97-1794526824.json",
+  "run_health": {
+    "steps": 35687,
+    "errors": 0,
+    "transport_down": 0,
+    "tracebacks": 0,
+    "window_samples_online": "7/7 agents online in all 178 window samples",
+    "decides_per_agent": "1->261 (NyxSong 117, RinceNyan 261, zeny_wing 170, PipinWalker 184, xXLunasongXx 152, PoringMuffin14 116, s00 207)",
+    "sample_errors": "none (rx_error/dispatch_errors all null)"
+  },
+  "target_1_swing_conversion": {
+    "verdict": "PASS",
+    "leg96_baseline": {"attacks_authored": 1956, "own_dealt_hits": 5, "damage": 128, "drops_seen": 6, "pickups": 0},
+    "leg97_fleet": {"attacks_authored": 370, "swings_sent": 297, "own_dealt_hits": 285, "damage": 3047, "kill_credits": 20, "exp_delta": "+71 base / +39 job", "drops_seen": 48, "pickup_attempts": 16, "pickup_success": 13},
+    "sent_to_hit_conversion": "285/297 = 96% fleet-wide (leg-96: 5 hits off 1,956 authored)",
+    "s00_pay_fild04": {"authored": 192, "sent": 151, "hits": 144, "damage": 416, "kills": 2, "exp": "+6/+4", "drops": 24, "pickup_attempts": 5, "pickup_success": 5},
+    "trace_vs_db_agreement": "receipt exp deltas match char-table deltas exactly for all 7 agents (+2/+1, +16/+8, +19/+12, +14/+9, +14/+5, 0/0, +6/+4)"
+  },
+  "target_2_rest_latch_telemetry": {
+    "verdict": "PASS",
+    "rest_released": 7,
+    "attack_refused": {"pending_walk": 72, "dead": 1},
+    "reading": "leg-96's dominant leak (1,946 attacks blocked by stale native rest intent) is gone: refusal reasons are now transient pending_walk deferrals plus one post-resurrection dead gate; the orphaned-latch exits fire and name themselves (rest_released x7)"
+  },
+  "target_3_sell_cycles_eleventh": {
+    "verdict": "PASS (5 completed, 1 admitted-but-unclosed)",
+    "completed": {"NyxSong": "+13z (115->128, starting Carrot sold)", "RinceNyan": "+9z (172->181)", "PipinWalker": "+5z (93->98)", "xXLunasongXx": "+5z (99->104)", "PoringMuffin14": "+10z (103->113)"},
+    "fleet_zeny_delta": "+42z",
+    "admission_telemetry": "19 sell-arm admissions; merchant_stock_below_trip_minimum fired on s00 early window (stock=1 < trip_min=2); merchant_trip_released_no_progress x12 + merchant_trip_retry x11 (bounded release/retry machinery active, zero 80-min holds); dealer_ring_handover x1, dealer_outer_fallback x1 (congestion light)",
+    "s00_payon_trip": "sell arm admitted at 02:14 (stock=6, dest payon dealer 17,165) one minute before window close - trip never completed (zeny 125 flat)"
+  },
+  "target_4_run_health": "PASS - see run_health",
+  "db_ground_truth": {
+    "zeny_close": {"pop_0003_g00m00": 128, "pop_0003_g00m01": 181, "pop_0003_g00m02": 102, "pop_0003_g01m00": 98, "pop_0003_g01m01": 104, "pop_0003_g01m02": 113, "pop_0003_s00": 125},
+    "exp_close": {"NyxSong": "230/146", "RinceNyan": "242/174", "zeny_wing": "138/111", "PipinWalker": "216/132", "xXLunasongXx": "279/164", "PoringMuffin14": "170/109", "YuffieFy81": "52/33"},
+    "inventory_notes": "all 7 retain knife 1201 equip=2; pickup deltas: zeny_wing +909 Jellopy, xXLunasongXx +512 +909, s00 511 x1->x6 (5 picked), PipinWalker 705 x1->x2; NyxSong's starting Carrot 515 sold"
+  },
+  "next_dominant_signature": "Green-Plant targeting: fleet-wide 157 swings sent into Green Plant for 156 one-damage hits, 0 kills, 0 exp (s00 alone: 126 hits = 82% of its sent swings; RinceNyan 30 more). The swing conversion now works, but target selection still authors attacks on no-exp weapon-immune plants; the payoff gate is species filtering toward exp-yielding targets (Thief Bug Egg paid 16 base for g00m01 this window).",
+  "seed_handoff": "run/worlds/population-live/seed-zeny.json refreshed to closing values 128/181/102/98/104/113/125 for leg-98"
+}

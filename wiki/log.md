@@ -12787,3 +12787,59 @@ complete run before the additional self-death regression was also green
 The saved leg-96 funnel was rechecked against the final offline instrument.
 The implementation is committed/pushed on its isolated branch; main is not
 merged and no population runner was executed.
+
+## Leg 97 — HITS-VS-SWINGS CONVERTS: 96% sent-to-hit, 285 hits / 20 kills / 13 first pickups; 5 sell cycles +42z; stale-rest latch released live (2026-11-13, receipt 1794526824)
+
+Window Friday 00:45-02:15 Madrid (day index 4), runner launched 00:40,
+duration 9000 closed 03:10. **35,687 steps, 0 errors, 0 TRANSPORT DOWN,
+0 Tracebacks**, 7/7 agents online in all 178 window samples (staggered
+logins clean), decisions 1->261/agent, rx/dispatch sample errors none.
+Receipt `run/plain_host_receipts/population-receipt-97-1794526824.json` +
+`population-receipt-97-analysis.json`; traces
+`.work/runtime/population-live/traces/` (window 23:40-02:10 UTC).
+
+**Validation target 1 - swing conversion: PASS, decisively.** Leg-96
+baseline: 1,956 authored, 5 own-dealt hits, 128 damage, 6 drops, 0
+pickups. Leg-97 fleet: **370 authored, 297 swings sent, 285 own-dealt
+hits (96% of sent), 3,047 damage, 20 kill credits, +71/+39 exp, 48
+drops seen, 16 pickup attempts, 13 pickups** (leg-96: 0). s00 on
+pay_fild04: 192 authored / 151 sent / 144 hits / 416 damage / 2 kills /
++6/+4 exp / 24 drops / 5-for-5 pickups. Trace exp deltas match the char
+table exactly for all 7 agents (+2/+1, +16/+8, +19/+12, +14/+9, +14/+5,
+0/0, +6/+4) - the funnel is byte-honest against DB ground truth.
+
+**Validation target 2 - stale-rest-latch fix: PASS.** `rest_released`
+fired **x7** fleet-wide; `attack_refused` = 72 `pending_walk` + 1
+`dead` (post-resurrection gate, by design). The leg-96 shape (attacks
+blocked pre-send by orphaned native rest intent, refusals silent) is
+gone: every refusal is now a named transient deferral and the latch
+exits name themselves.
+
+**Validation target 3 - eleventh sell cycle: PASS (5 completed, 1
+admitted unclosed).** Zeny DB: NyxSong 115->**128** (+13, starting
+Carrot sold), RinceNyan 172->**181** (+9), PipinWalker 93->**98** (+5),
+xXLunasongXx 99->**104** (+5), PoringMuffin14 103->**113** (+10) = fleet
++42z. Admission telemetry: 19 sell-arm admissions, the
+`merchant_stock_below_trip_minimum` floor fired on s00's 1-unit stock
+early window; `merchant_trip_released_no_progress` x12 +
+`merchant_trip_retry` x11 (bounded release/retry active, zero 80-min
+holds); `dealer_ring_handover` x1 + `dealer_outer_fallback` x1
+(congestion light). s00's payon trip ADMITTED at 02:14 with stock=6 -
+one minute before close - and never completed (zeny flat 125).
+
+**Validation target 4 - run health: PASS.** All 7 retain the knife
+(1201 equip=2). Pickup inventory deltas: zeny_wing +909 Jellopy,
+xXLunasongXx +512/+909, s00 511 x1->x6, PipinWalker 705 x1->x2.
+
+**Next dominant signature - Green-Plant targeting:** fleet-wide 157
+swings sent into Green Plant for 156 one-damage hits, **0 kills, 0
+exp** (s00: 126 = 82% of its sent swings; RinceNyan 30 more). Conversion
+now works; target selection still burns 43% of s00's authored attacks on
+no-exp weapon-immune plants. Thief Bug Egg paid 16 base exp for g00m01
+this window - species filtering toward exp-yielding targets is the
+payoff gate.
+
+**DB ground truth (chars 300000-300006):** zeny close
+128/181/102/98/104/113/125, exp close 230/146, 242/174, 138/111,
+216/132, 279/164, 170/109, 52/33. **Seed-zeny refreshed to the closing
+values for leg-98.**
