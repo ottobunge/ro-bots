@@ -13016,3 +13016,68 @@ xenon, duplicate-code and security checks passed. The sole skip is the
 expected optional iro-wiki real-corpus environment artifact described above.
 No source changes followed this gate. No population runner, docker,
 heavengraph or spikes work was performed; main remains `c186e099`.
+
+## 2026-11-13 LEG-99 — the scaled trip bound is live and correct; the s00 signature moved from plant-grind to trip pacing and first-retaliation deaths
+
+Window Friday [4, 14.5, 16.0] = 14:30-16:00 Madrid on the e2e world, runner
+`leg99-runner` (systemd-run, 9000s), main `bde4278c` (carries the
+roam-trip-priority merge). 35,752 steps, 0 errors, 0 TRANSPORT DOWN, two
+keepalive blips both recovered (zeny_wing t=1325, PipinWalker t=4727);
+window opened and closed on schedule, 7/7 online at mid-window, decides
+113-234 per agent at full cadence. Receipt
+`run/plain_host_receipts/population-receipt-99-1794576324.json` (+analysis),
+traces `.work/runtime/population-live/traces/` (13:30-15:05Z), DB readback
+chars 300000-300006.
+
+**Target 1, plant-patch escape (s00): PARTIAL.** The expless-skip bias now
+intercepts s00 at TARGET SELECTION: 98 skips (Green Plant 49, Shining Plant
+49), every one re-selecting Deviling; Green-Plant swings collapsed 325 ->
+11 sent / 12 authored. `roam_anchor_widened_expless` never fired (0 rows) -
+the 20-landed-hit counter never reaches 20 when the bias skips before
+swinging, so the outward patrol stayed a dormant second line. That is the
+designed upstream path. But s00 banked ZERO exp this leg: it landed exactly
+one swing each on Poporing (13 dmg) and Drops (21 dmg), killed nothing, and
+the DB exp stayed 56/35 -> 56/35 flat (leg-98 already closed at 56/35; the
+46/29 figure in the leg-99 brief was stale). s00 also DIED TWICE on its
+first-ever exp-yield engagements: a 64-damage spike at 14:15:47Z then death,
+and eight ~10-11 chip hits 14:19:53-14:20:05Z then death - engage without
+survive, naked novice vs retaliation.
+
+**Target 2, trip priority + bound: the scaling fix VERIFIED LIVE, trips
+still not completing for s00.** All 5 no-progress releases carry
+`rule=route_distance_scaled` at `bound_s=best_distance` (233x3, 150, 189)
+vs leg-98's 5 flat-60s releases at best_distance 233-242: each long trip
+got ~4x its old window and still released, so the bound is no longer the
+limiter. s00 was admitted 6x (pay_fild04 dest=(17,165), stock 19-20) and
+completed none; zeny 125 -> 125 flat, the first-sell milestone not reached.
+The trace names the residual limiter: the trip walk paces ~1 cell per
+~11.5s (one-cell MoveTo per script step), so a 233-cell route covers ~20
+cells inside even a 233s window; with the 120s retry cooldown a 90-min leg
+cannot close it. Cumulative trip progress across windows, faster trip-leg
+pacing, or a nearer sell target is the next lever. Short-route trips are
+fine: all 3 prontera-dest admissions from the prt_fild08 cohort completed.
+
+**Target 3, sell cycles + pickups: 4/6 sold, +66 zeny DB-verified (NyxSong
+128->166, RinceNyan 187->195, PipinWalker 108->121, PoringMuffin14
+113->120); two correctly gated out** (zeny_wing stock=0, xXLunasongXx
+stock=1 below trip_min=2). Pickups: send-stage success healthy (6/8) but
+throughput collapsed 24 -> 6 - 91 loot rows, 48 deferred with
+movement-state deferrals dominating (walking 18, pending_walk 11), 10
+expired, 8 refused no_floor_item; active merchant trips suppress loot
+fallback by design (the leg-98 merge's own change) and this trip-heavy leg
+surfaced that cost. 22 drops seen fleet-wide.
+
+**Target 4, run health: GREEN.** Fleet combat: 164 attacks authored, 128
+swings, 2,420 damage, 19 monster kills, +51/+30 exp (trace credits match
+the DB deltas exactly - the cross-check passes). Combat standouts:
+xXLunasongXx 47 swings / 1,135 dmg / 6 kills (+19/+13), PipinWalker 29
+swings / 4 kills (+16/+9), zeny_wing moved to prt_fild06 where the bias
+fired 131x (Thief Bug x88 plans) and it still sent 10 residual Green-Plant
+swings. Fleet self-deaths 12 (zeny_wing 6) - new-visible: engaging
+exp-yield mobs draws lethal retaliation for unarmed novices; exp is not
+lost (novice class).
+
+**Seed handoff leg-100:** 166/195/109/121/114/120/125 (chars 300000-300006,
+verified vs DB close). NEXT dominant signature: s00 merchant-trip walk
+pacing; secondary: engage-without-survive and loot deferral under trip
+suppression.

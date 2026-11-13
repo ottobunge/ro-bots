@@ -1,0 +1,260 @@
+{
+  "leg": 99,
+  "window": {
+    "madrid": "2026-11-13 14:30-16:00 CET",
+    "utc": "2026-11-13 13:30-15:00",
+    "schedule": "[4, 14.5, 16.0] (Friday, Python weekday Mon=0)",
+    "opened_on_schedule": true,
+    "closed_on_schedule": true
+  },
+  "runner": {
+    "steps": 35752,
+    "step_errors": 0,
+    "transport_down_lines": 0,
+    "keepalive_blips_recovered": [
+      "pop_0003_g00m02 (t=1325)",
+      "pop_0003_g01m00 (t=4727)"
+    ],
+    "decides_per_agent": {
+      "pop_0003_g00m00": 113,
+      "pop_0003_g00m01": 139,
+      "pop_0003_g00m02": 234,
+      "pop_0003_g01m00": 171,
+      "pop_0003_g01m01": 173,
+      "pop_0003_g01m02": 135,
+      "pop_0003_s00": 203
+    },
+    "mid_window_online": "7/7 at 15:16 Madrid",
+    "receipt": "run/plain_host_receipts/population-receipt-99-1794576324.json"
+  },
+  "targets": {
+    "1_plant_patch_escape_s00": {
+      "verdict": "PARTIAL: species bias collapsed the plant grind (Green-Plant swings 325 -> 11 sent, 12 authored; leg-98 fleet 325), but s00 banked ZERO exp this leg (DB 56/35 -> 56/35 flat; leg-98 already closed at 56/35) and died twice on first retaliation.",
+      "expless_skips": {
+        "Green Plant": 49,
+        "Shining Plant": 49,
+        "selected_species_all": "Deviling"
+      },
+      "plan_targets": {
+        "Deviling": 49,
+        "Drops": 13,
+        "Marin": 11,
+        "Poring": 8,
+        "Poporing": 7,
+        "Green Plant": 7
+      },
+      "exp_yield_engagement": {
+        "Poporing": "1 swing, 13 dmg",
+        "Drops": "1 swing, 21 dmg",
+        "kills": 0
+      },
+      "green_plant": {
+        "attacks_authored": 12,
+        "swings_sent": 11,
+        "damage_events": 10,
+        "kill_credits": 0
+      },
+      "exp_db": {
+        "base": [
+          56,
+          56
+        ],
+        "job": [
+          35,
+          35
+        ]
+      },
+      "self_deaths": 2,
+      "retaliation": "64-dmg spike at 14:15:47Z then death; 8x ~10-11 chip 14:19:53-14:20:05Z then death (novice HP vs engage retaliation)",
+      "roam_anchor_widened_expless_rows": 0,
+      "escape_telemetry_note": "the 20-landed-hit outward-patrol escape never fired: the expless-skip bias intercepts at TARGET SELECTION (98 skips) so the landed-hit counter never reached 20 - the designed upstream path, escape remained a dormant second line"
+    },
+    "2_trip_priority_and_bound": {
+      "verdict": "BOUND SCALING LIVE AND CORRECT: all 5 releases carry rule=route_distance_scaled at bound_s=best_distance (233x3, 150, 189) vs leg-98's flat 60s releases at best_distance 233-242 - each long trip got ~4x its old window and still released, so the bound is no longer the limiter.",
+      "admissions": {
+        "s00_pay_fild04_dest_17_165": 6,
+        "short_route_completed": [
+          "NyxSong zeny=128 stock=2 -> 166 (+38)",
+          "RinceNyan zeny=187 stock=2 -> 195 (+8)",
+          "PipinWalker zeny=108 stock=1 -> 121 (+13)",
+          "PoringMuffin14 zeny=113 stock=1 -> 120 (+7)"
+        ]
+      },
+      "releases": {
+        "count": 5,
+        "all_s00": true,
+        "bounds": {
+          "233": 3,
+          "150": 1,
+          "189": 1
+        },
+        "rule": "route_distance_scaled"
+      },
+      "s00_zeny": {
+        "seed": 125,
+        "close_db": 125,
+        "delta": 0,
+        "first_sell_milestone": "NOT reached"
+      },
+      "next_signature": "s00 walk paces ~1 cell/11.5s (one-cell MoveTo per script step), so a 233-cell route covers only ~20 cells per 233s window; a 90-min leg with 120s retry cooldowns cannot close the trip. Cumulative trip progress across windows, faster trip-leg pacing, or a nearer sell target is the next lever."
+    },
+    "3_sell_cycle_and_pickups": {
+      "verdict": "SELL CYCLES 4/6 COMPLETED (fleet +66 zeny DB-verified, the field cohort repeating leg-98's shape); 2 correctly gated out (zeny_wing stock=0, xXLunasongXx stock=1 < trip_min=2). Pickups: send-stage success healthy (6/8) but THROUGHPUT collapsed 24 -> 6 - 91 loot rows, 48 deferred (walking 18 + pending_walk 11 = 29 movement-state deferrals), 10 expired, 8 refused no_floor_item; active merchant trips suppress loot fallback by design (the leg-98 merge's own change), and this trip-heavy leg surfaced the cost.",
+      "sellers": {
+        "pop_0003_g00m00": 166,
+        "pop_0003_g00m01": 195,
+        "pop_0003_g01m00": 121,
+        "pop_0003_g01m02": 120
+      },
+      "gated_out": {
+        "pop_0003_g00m02": "stock=0",
+        "pop_0003_g01m01": "stock=1 below trip_min=2"
+      },
+      "pickup_attempts": 8,
+      "pickup_success": 6,
+      "drops_seen": 22,
+      "loot_rows": {
+        "total": 91,
+        "deferred": 48,
+        "deferred_movement_state": 29,
+        "expired": 10,
+        "refused_no_floor_item": 8,
+        "succeeded": 6
+      }
+    },
+    "4_run_health": {
+      "verdict": "GREEN: 35,752 steps, 0 errors, 0 TRANSPORT DOWN, 2 keepalive blips both recovered, window opened+closed on schedule, 7/7 online at mid-window with full decide cadence.",
+      "fleet_combat": {
+        "attacks_authored": 164,
+        "swings_sent": 128,
+        "damage_dealt": 2420,
+        "monster_kills": 19,
+        "self_deaths": 12,
+        "base_exp_delta": 51,
+        "job_exp_delta": 30
+      },
+      "exp_cross_check": "trace kill/exp credits match DB deltas exactly (+51/+30)",
+      "combat_standouts": {
+        "pop_0003_g01m01": "47 swings, 1135 dmg, 6 kills (+19/+13)",
+        "pop_0003_g01m00": "29 swings, 687 dmg, 4 kills (+16/+9)",
+        "pop_0003_g00m02": "28 swings, 353 dmg, moved to prt_fild06, bias fired 131x (Thief Bug x88 plan), 10 residual GP swings"
+      },
+      "self_deaths_note": "12 self-deaths fleet-wide (zeny_wing 6, s00 2, PipinWalker 2, xXLunasongXx 1, PoringMuffin14 1) - new-visible: engaging exp-yield mobs draws lethal retaliation for naked novices; exp not lost (novice class)"
+    }
+  },
+  "db_ground_truth": {
+    "zeny": {
+      "NyxSong": [
+        128,
+        166
+      ],
+      "RinceNyan": [
+        187,
+        195
+      ],
+      "zeny_wing": [
+        109,
+        109
+      ],
+      "PipinWalker": [
+        108,
+        121
+      ],
+      "xXLunasongXx": [
+        114,
+        114
+      ],
+      "PoringMuffin14": [
+        113,
+        120
+      ],
+      "YuffieFy81": [
+        125,
+        125
+      ]
+    },
+    "exp_db_close": {
+      "NyxSong": [
+        244,
+        153
+      ],
+      "RinceNyan": [
+        249,
+        178
+      ],
+      "zeny_wing": [
+        148,
+        118
+      ],
+      "PipinWalker": [
+        238,
+        143
+      ],
+      "xXLunasongXx": [
+        298,
+        177
+      ],
+      "PoringMuffin14": [
+        171,
+        110
+      ],
+      "YuffieFy81": [
+        56,
+        35
+      ]
+    },
+    "exp_deltas_leg99": {
+      "NyxSong": [
+        3,
+        2
+      ],
+      "RinceNyan": [
+        4,
+        2
+      ],
+      "zeny_wing": [
+        8,
+        3
+      ],
+      "PipinWalker": [
+        16,
+        9
+      ],
+      "xXLunasongXx": [
+        19,
+        13
+      ],
+      "PoringMuffin14": [
+        1,
+        1
+      ],
+      "YuffieFy81": [
+        0,
+        0
+      ]
+    },
+    "s00_inventory_close": {
+      "511 Green Herb": 19,
+      "905 Jellopy": 5,
+      "909 Fluff": 1,
+      "1201 Knife": 1
+    },
+    "note": "s00 exp flat this leg: leg-98 already closed at 56/35 (base 52->56, job 33->35); the brief's 46/29 reference was stale"
+  },
+  "seed_handoff_leg100": {
+    "pop_0003_g00m00": 166,
+    "pop_0003_g00m01": 195,
+    "pop_0003_g00m02": 109,
+    "pop_0003_g01m00": 121,
+    "pop_0003_g01m01": 114,
+    "pop_0003_g01m02": 120,
+    "pop_0003_s00": 125
+  },
+  "next_dominant_signature": "s00 merchant-trip walk pacing (~1 cell/11.5s one-cell steps) makes a 233-cell sell route infeasible inside any bound <=300s; secondary: engage-without-survive (12 fleet self-deaths) and loot deferral under trip suppression (throughput 24 -> 6).",
+  "evidence": {
+    "receipt": "run/plain_host_receipts/population-receipt-99-1794576324.json",
+    "runner_log": "/tmp/population_leg99.log",
+    "traces": ".work/runtime/population-live/traces/ (2026-11-13T13:30-15:05Z)",
+    "sql": "/tmp/q99.sql"
+  }
+}
