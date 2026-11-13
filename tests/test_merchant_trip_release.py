@@ -39,14 +39,15 @@ def test_no_progress_releases_retained_farm_script_and_retries_later(monkeypatch
     farm = FarmScript(_plan())
     brain._script = farm
     assert not any(isinstance(a, Attack) for a in brain.step_script(state).actions)
-    now[0] = 60.0
+    bound = scripts._MERCHANT_TRIPS[state.name].no_progress_bound
+    now[0] = bound
     assert any(isinstance(a, Attack) for a in brain.step_script(state).actions)
     assert brain._script is farm
     assert state.inventory == {"511": 2, "1201": 1}
     assert "merchant_trip_released_no_progress" in caplog.text
-    for now[0] in (61.0, 100.0, 179.0):
+    for now[0] in (bound + 1.0, bound + 40.0, bound + 119.0):
         assert any(isinstance(a, Attack) for a in brain.step_script(state).actions)
-    now[0] = 180.0
+    now[0] = bound + 120.0
     assert not any(isinstance(a, Attack) for a in brain.step_script(state).actions)
     assert "merchant_trip_retry" in caplog.text
 
@@ -75,7 +76,8 @@ def test_only_received_progress_toward_dealer_extends_deadline(monkeypatch, prog
     monkeypatch.setattr(scripts, "_merchant_now", lambda: now[0], raising=False)
     state = _state(map_name="pay_fild04", x=200, y=200, inventory={"511": 2})
     assert scripts._merchant_step(state) is not None
-    now[0] = 59.0
+    bound = scripts._MERCHANT_TRIPS[state.name].no_progress_bound
+    now[0] = bound - 1.0
     target = None
     if progress == "toward":
         state = replace(state, x=150)
@@ -93,11 +95,12 @@ def test_only_received_progress_toward_dealer_extends_deadline(monkeypatch, prog
     assert scripts._merchant_step(state, travel_target=target) is not None
     if progress == "map_backtrack":
         state = replace(state, map_name="pay_fild04", x=200, y=200)
-        now[0] = 100.0
+        now[0] = bound + 40.0
         assert scripts._merchant_step(state) is not None
-        now[0] = 119.0
+        trip = scripts._MERCHANT_TRIPS[state.name]
+        now[0] = trip.progress_at + trip.no_progress_bound
     else:
-        now[0] = 60.0
+        now[0] = bound
     outcome = scripts._merchant_step(state, travel_target=target)
     assert (outcome is not None) == (progress in ("toward", "map_advance"))
 

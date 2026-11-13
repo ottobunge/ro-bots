@@ -135,6 +135,8 @@ class BotState:
     received_stats: tuple[int, ...] | None = None  # 0x00BD: str agi vit int dex luk
     # Bounded received type-0 body cells, independent of player identity.
     occupied_cells: tuple[tuple[int, int], ...] = ()
+    # Runtime-approved outward patrol after sustained received zero-EXP hits.
+    roam_escape_target: tuple[int, int] | None = None
 
     @property
     def hp_ratio(self) -> float:

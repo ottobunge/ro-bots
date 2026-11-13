@@ -14,7 +14,7 @@ import threading
 import time
 from collections import deque
 from collections.abc import Callable, Iterable
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from pathlib import Path
 from typing import Any
 
@@ -60,6 +60,7 @@ from robots.adapters.native_session_progression import (
 from robots.adapters.native_shop_context import NativeShopContext
 from robots.adapters.native_skills import NativeSkillContext
 from robots.adapters.native_vitals import NativeTelemetryUnavailable, require_native_vitals
+from robots.app.expless_roam import ExplessRoam
 from robots.app.loot_attribution import LootAttribution
 from robots.app.merchant_buy_backoff import MerchantBuyBackoff
 from robots.app.merchant_staging import MerchantStaging, MerchantWarpCrossings, dealer_entry_cell
@@ -74,6 +75,7 @@ from robots.app.scripts import (
     _approach_cell,
     _dealer_talk,
     merchant_admission_refusal,
+    merchant_trip_active,
     needs_npc_preparation,
     novice_weapon_index,
     release_merchant_talk,
@@ -377,6 +379,7 @@ class PlayingClient:
         self._stand_pending: tuple[int, float, float, int] | None = None
         self._npc_retries, self._npc_retry_at = NPC_RETRY_BUDGET, 0.0
         self._patrol: _FieldPatrol | None = None
+        self._expless_roam = ExplessRoam()
         self._keepalive_at: float | None = None
         self._keepalive_failed = False
         self._init_keepalive_pump(keepalive_interval_s)
@@ -735,6 +738,7 @@ class PlayingClient:
             for aid, sid in self._species.items()
         }
         self._swing_telemetry.receive(frame, view, epoch=epoch, own_id=self.wire.aid, species=names)
+        self._expless_roam.receive(frame, view, self.wire.aid, names, self.mob_db)
 
     def _consume_purchase_frame(
         self, frame: tuple[int, float, int, bytes], tracker: NativeGameplayTracker, now: float
@@ -833,6 +837,12 @@ class PlayingClient:
             native_epoch=wire.native_epoch,
             progression_source=progression.base_source,
             recent_encounters=self._encounters.records if self._encounters is not None else (),
+        )
+        state = replace(
+            state,
+            roam_escape_target=self._expless_roam.target(
+                state, self._now(), self.merchant_reachable
+            ),
         )
         self._last_built_state = state
         self._merchant_staging.observe(state)
@@ -2752,9 +2762,11 @@ class PlayingClient:
         npc_actions = self._npc_mechanical(state, actions)
         if npc_actions is not None:
             return npc_actions
-        # Empty MerchantDrive patience/queue ticks still own the outbound
-        # town leg. The old field-return fallback walked them into prt001.
-        if state.map_name == "prontera" and merchant_admission_refusal(state) is None:
+        # Empty MerchantDrive patience/queue ticks own every route map.
+        # Neither loot approaches nor field patrols may replace its travel.
+        if (state.map_name == "prontera" or merchant_trip_active(state.name)) and (
+            merchant_admission_refusal(state) is None
+        ):
             return actions
         loot_actions = self._loot_mechanical(state, actions)
         if loot_actions is not None:
@@ -3691,6 +3703,7 @@ class PlayingClient:
         self._stat_failed: set[int] = set()
         self._epoch = epoch
         self._epoch_character = self.wire.char_name
+        self._expless_roam.reset()
         self._species.clear()
         self._npc_names.clear()
         self._metadata_cursor = base
@@ -3752,6 +3765,7 @@ class PlayingClient:
         self._npc_names.clear()
         self._move_pending_release = {}
         self._patrol = None
+        self._expless_roam.reset()
         self._species.clear()
         self._pending = None
 
