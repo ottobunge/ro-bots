@@ -14,13 +14,16 @@ from typing import TYPE_CHECKING, Protocol, assert_never, final
 
 from robots.app.field_travel import FieldTravel
 from robots.app.merchant_trip import MerchantTrip
+from robots.app.target_species import species_score, trace_expless_skips
 from robots.domain.actions import Attack, GameAction, MoveTo, Rest, TalkToNpc
 from robots.domain.farm import FarmPlan
 from robots.domain.model import ActorRef, Goal
 from robots.knowledge.travel_routes import MERCHANT_TRAVEL_ROUTES
 
 if TYPE_CHECKING:
+    from robots.app.trace_log import TraceLog
     from robots.domain.model import BotState
+    from robots.ports import MobDatabase
 
 
 logger = logging.getLogger(__name__)
@@ -122,8 +125,8 @@ KILL_COMMIT_WINDOW = 30
 
 # Pinned mob HP (rathena e985006171d2 db/pre-re/mob_db.yml): a Novice deals
 # ~1 damage per hit, so kills only close on the lowest-HP species. The
-# unheld commitment pick prefers these values before distance; unknown
-# species sort after all known ones (fail-closed: closest-pick among them).
+# unheld commitment pick uses these values after the species EXP score and
+# before distance; unknown HP sorts after pinned HP (closest-pick among ties).
 _PINNED_MOB_HP: dict[str, int] = {
     "Poring": 50,  # 1002, mob_db.yml Hp: 50
     "Lunatic": 60,  # 1063
@@ -1053,8 +1056,14 @@ def _tap_dealer_range(state: BotState, at_cell: list[ActorRef]) -> None:
     logger.warning("merchant-drive: sell arm %s (%s)", "dealer_talk_out_of_range", detail)
 
 
-def _engage(state: BotState, candidates: list[ActorRef], window: int) -> ScriptOutcome:
-    """Keep hitting the committed candidate; closest-pick when unheld.
+def _engage(
+    state: BotState,
+    candidates: list[ActorRef],
+    window: int,
+    mob_db: MobDatabase | None,
+    trace: TraceLog | None,
+) -> ScriptOutcome:
+    """Keep hitting the committed candidate; prefer EXP when unheld.
 
     A landed attack (in melee range) arms/rearms the commitment; an approach
     MoveTo consumes one window evaluation.
@@ -1065,9 +1074,18 @@ def _engage(state: BotState, candidates: list[ActorRef], window: int) -> ScriptO
         target = min(
             candidates,
             key=lambda mob: (
+                *species_score(str(mob.name), mob_db),
                 _PINNED_MOB_HP.get(str(mob.name), _UNKNOWN_MOB_HP),
                 mob.distance,
             ),
+        )
+        trace_expless_skips(
+            (str(mob.name) for mob in candidates),
+            str(target.name),
+            mob_db,
+            trace,
+            source="attack_target",
+            map_name=state.map_name,
         )
     action = _melee_action(target, state)
     if isinstance(action, Attack):
@@ -1163,7 +1181,7 @@ class TravelScript:
 
 @final
 class GrindScript:
-    """Attack the closest monster, loot after kills, rest when hurt.
+    """Prefer exp-yielding monsters, loot after kills, rest when hurt.
 
     Within ``commit_window`` script evaluations the most recently attacked,
     still-visible target keeps the hits (KILL_COMMIT_WINDOW) so a low-damage
@@ -1180,7 +1198,11 @@ class GrindScript:
         *,
         merchant_travel_target: MerchantTravelTarget | None = None,
         allow_roam: bool = True,
+        mob_db: MobDatabase | None = None,
+        trace: TraceLog | None = None,
     ) -> None:
+        self._mob_db = mob_db
+        self._trace = trace
         self._allow_roam = allow_roam
         self._hp_rest_below = hp_rest_below
         self._commit_window = commit_window
@@ -1200,7 +1222,7 @@ class GrindScript:
             return merchant
         monsters = sorted(state.nearby_monsters, key=lambda m: m.distance)
         if monsters:
-            return _engage(state, monsters, self._commit_window)
+            return _engage(state, monsters, self._commit_window, self._mob_db, self._trace)
         _release_commitment(state, self._commit_window)
         # the travel leg (leg 20): a grind goal on a mobless map walks the
         # route toward the known field instead of patrolling the town (the
@@ -1302,8 +1324,12 @@ class FarmScript:
         travel_resolver: TravelResolver | None = None,
         merchant_reachable: MerchantReachable | None = None,
         merchant_travel_target: MerchantTravelTarget | None = None,
+        mob_db: MobDatabase | None = None,
+        trace: TraceLog | None = None,
     ) -> None:
         self.plan = plan
+        self._mob_db = mob_db
+        self._trace = trace
         self._field_travel = field_travel
         self._hp_rest_below = hp_rest_below
         self._widen_steps = widen_steps
@@ -1351,7 +1377,7 @@ class FarmScript:
             if self._starved >= self._widen_steps:
                 targets = monsters
         if targets:
-            return _engage(state, targets, self._commit_window)
+            return _engage(state, targets, self._commit_window, self._mob_db, self._trace)
         _release_commitment(state, self._commit_window)
         # w59/w60 roam leg: an empty view must not stand still. Emit a bounded
         # patrol step near the current cell so the agent walks to find its

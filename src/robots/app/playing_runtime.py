@@ -178,6 +178,8 @@ class ObservedMobDatabase:
                 row["Name"],
                 row.get("Level", 1),
                 bool(row.get("MvpExp", 0) or row.get("MvpDrops")),
+                base_exp=row.get("BaseExp", 0),
+                job_exp=row.get("JobExp", 0),
             )
             for row in data["Body"]
         )
