@@ -77,8 +77,9 @@ from robots.app.scripts import (
     MERCHANT_ROUTE,
     MERCHANT_ROUTE_RETURN,
     NOVICE_STAT_TARGETS,
-    _approach_cell,
+    NOVICE_WANTED_WEAPONS,
     _dealer_talk,
+    _merchant_step,
     merchant_admission_refusal,
     merchant_pickup_required,
     merchant_trip_active,
@@ -424,6 +425,7 @@ class PlayingClient:
         self._buy_backoff = MerchantBuyBackoff()
         self._sell_open_issued: tuple[int, int] | None = None
         self._buy_open_issued: tuple[int, int] | None = None
+        self._buy_arm_tapped: tuple[object, ...] | None = None
         self._sell_sent: deque[int] = deque(maxlen=16)
         self._sell_open_mint: tuple[NpcShopSellOpen, tuple[object, ...]] | None = None
         self._sell_mint: tuple[NpcShopSell, tuple[object, ...]] | None = None
@@ -1017,11 +1019,15 @@ class PlayingClient:
                 )
             return self._merchant_staging.target(grid, state, self._now())
         if map_name == "prt_in":
-            return (
-                _approach_cell(*cell, state, reachable=self.merchant_reachable)
-                if state is not None and (state.map_name, state.x, state.y) == (map_name, *position)
-                else None
-            )
+            key = (map_name, cell)
+            if key not in self._merchant_travel_holds:
+                self._merchant_travel_holds.add(key)
+                logger.warning(
+                    "merchant-drive: hold dealer_ring_grid_unavailable (map=%s agent=%s)",
+                    map_name,
+                    position,
+                )
+            return None
         return self._validated_travel_target(map_name, position, cell)
 
     def _validated_travel_target(
@@ -1608,12 +1614,53 @@ class PlayingClient:
             return None
         action = self._shop_loop_action(state, actions, tracker)
         if action is None:
-            return None
+            return self._buy_arm_actions(state, actions)
         if isinstance(action, NpcShopSell):
             self._sell_mint = (action, self._sell_binding())
         elif isinstance(action, NpcShopSellOpen):
             self._sell_open_mint = (action, self._sell_binding())
         return (action,)
+
+    def _buy_arm_actions(
+        self, state: BotState, actions: tuple[GameAction, ...]
+    ) -> tuple[GameAction, ...] | None:
+        """Author the pre-C4 buy approach even while an idle plan owns the tick.
+
+        Admission alone never opens a shop. Reuse the script's bounded contact
+        and runtime grid seams; the received C4 still owns selection authoring.
+        """
+        if not self._buy_arm_ready(state, actions):
+            self._buy_arm_tapped = None
+            return None
+        context = (state.name, state.map_name, state.native_epoch)
+        if context != self._buy_arm_tapped:
+            self._buy_arm_tapped = context
+            logger.warning(
+                "merchant-drive: buy_armed (bot=%s map=%s zeny=%s)",
+                state.name,
+                state.map_name,
+                state.zeny,
+            )
+        outcome = _merchant_step(
+            state, reachable=self.merchant_reachable, travel_target=self.merchant_travel_target
+        )
+        return None if outcome is None else outcome.actions
+
+    def _buy_arm_ready(self, state: BotState, actions: tuple[GameAction, ...]) -> bool:
+        return all(
+            (
+                not actions,
+                state.map_name == "prt_in",
+                state.alive is True,
+                self._npc.view is None,
+                not self._npc.actuation_blocked,
+                self._mint_skip_term(state) is None,
+                state.shop_offer is None,
+                not any(str(k) in DRIVE_SELLABLES and n > 0 for k, n in state.inventory.items()),
+                not any(str(item) in state.inventory for item in NOVICE_WANTED_WEAPONS),
+                merchant_admission_refusal(state) is None,
+            )
+        )
 
     def _counter_yield_actions(self, state: BotState) -> tuple[GameAction, ...] | None:
         """Shared sell/buy handover, including retained plans and bound-offer holds."""
@@ -1849,6 +1896,11 @@ class PlayingClient:
         selection = self.npc_shop_buy_selection()
         if selection is not None:
             self._buy_open_issued = (dialog.opened_sequence, dialog.sequence)
+            logger.warning(
+                "merchant-drive: buy_authored (action=NpcShopBuySelection dealer=%s epoch=%s)",
+                selection.npc_id,
+                selection.epoch,
+            )
         return selection
 
     def _dealer_adjacent(self, tracker: NativeGameplayTracker, npc_id: int) -> bool:

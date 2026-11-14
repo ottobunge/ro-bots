@@ -785,6 +785,7 @@ class ScheduledAgent:
         self.transport_error: BaseException | None = None
         self.transport_rebuilding = False
         self.rebuild_attempts = 0
+        self.rebuild_failures = 0
         self.rebuild_exhausted = False
 
     def prepare_transport_rebuild(self, error: BaseException) -> None:
@@ -2103,8 +2104,9 @@ class AgentHost:
             logger.warning("agent %s: transport down; rebuild scheduled (%s)", persona_id, failure)
         if not scheduled:
             agent.rebuild_attempts = 0
+            agent.rebuild_failures = 0
             agent.rebuild_exhausted = False
-        if agent.transport_rebuilding and agent.rebuild_attempts >= self.MAX_TRANSPORT_REBUILDS:
+        if agent.transport_rebuilding and agent.rebuild_failures >= self.MAX_TRANSPORT_REBUILDS:
             agent.rebuild_exhausted = True
 
     def _connect_scheduled(self, persona_id: str, agent: ScheduledAgent, tick: float) -> None:
@@ -2139,11 +2141,16 @@ class AgentHost:
         self.login_stagger.record(persona_id, finished)
         if connected:
             agent.transport_rebuilding = False
+            # Successful recovery re-arms the failure budget. A fourth later
+            # transport death must not strand a healthy, deciding session for
+            # the rest of its window. Keep total attempts for receipt history.
+            agent.rebuild_failures = 0
             gate.record_success()
         else:
             gate.record_failure(finished)
             if agent.transport_rebuilding:
-                agent.rebuild_exhausted = agent.rebuild_attempts >= self.MAX_TRANSPORT_REBUILDS
+                agent.rebuild_failures += 1
+                agent.rebuild_exhausted = agent.rebuild_failures >= self.MAX_TRANSPORT_REBUILDS
 
     def run(self, poll_seconds: float = 5.0) -> None:
         """Schedule forever (until :meth:`stop`); one last pass when stopped."""

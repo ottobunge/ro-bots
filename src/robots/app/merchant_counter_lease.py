@@ -1,6 +1,6 @@
 """Bounded ownership of one's own received counter presence; no peer leases."""
 
-from robots.app.scripts import MERCHANT_ROUTE
+from robots.app.merchant_staging import _dealer_cell
 from robots.domain.model import BotState
 
 COUNTER_LEASE_SECONDS = 180.0
@@ -8,7 +8,7 @@ COUNTER_REJOIN_SECONDS = 30.0
 
 
 def at_counter(state: BotState) -> bool:
-    x, y = MERCHANT_ROUTE["prt_in"]
+    x, y = _dealer_cell(state)
     return state.map_name == "prt_in" and max(abs(state.x - x), abs(state.y - y)) <= 1
 
 
