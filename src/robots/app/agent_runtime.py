@@ -1560,6 +1560,9 @@ class ScheduledAgent:
             raise RuntimeError(msg)
         native = getattr(client, "build_native_state", None)
         if native is not None:
+            if isinstance(client, PlayingClient):
+                plan = self.brain.current_plan if self.brain is not None else None
+                client.farm_map = plan.map_name if plan is not None else None
             return cast(BotState, native(self.goal))
         return self._legacy_state()
 

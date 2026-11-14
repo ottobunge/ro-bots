@@ -13762,3 +13762,81 @@ ring unavailability. Files: `src/robots/app/merchant_staging.py`,
 `src/robots/app/merchant_counter_lease.py`, `src/robots/app/playing_runtime.py`,
 `tests/test_dealer_ring_convergence.py`, `wiki/log.md`. Commit/push the branch
 for review; leave main unmerged and live acceptance for a separately authorized leg.
+
+## TRIP-MINIMUM COUNTS IN-FLIGHT LOOT (2026-11-14)
+
+**Evidence and root cause (offline):** based on main `6c6d6b5a`, branch
+`sol/trip-inflight-loot`. The leg-102 receipt
+`run/plain_host_receipts/population-receipt-102-1794652369.json` and its
+`c9bb2f67` log entry report 3/7 selling agents and four named
+`merchant_stock_below_trip_minimum` holds (`stock=1`, `trip_min=2`).
+`scripts.py` admission summed received inventory only. `playing_runtime.py`
+also protected admitted travel against mechanical loot, and a retained farm
+plan bypasses mechanical fallback. Merely adding optimistic stock would
+therefore let dealer travel consume the pickup leg it depended on.
+
+Read the loot attribution/convergence contracts and the saved leg-102 log
+and per-agent `loot_performed` traces. In the scheduled 08:00-09:30 UTC
+window: 17 walking, 11 pending-walk, 9 arrival-confirmation-exhausted,
+5 awaiting-ack and 1 resting deferrals; 7 attempts, 3 successes, 1 server
+refusal and 11 presence expiries. These are historical receipts, not an
+admission authority. For example g00m02 floor 713/item 915/drop sequence
+632 deferred at 08:12:58, attempted at 08:13:00 and succeeded at 08:13:02;
+floor 714/item 909/drop sequence 1072 expired at 08:22:55. Neither a
+deferred telemetry row nor an unacknowledged attempt proves future stock.
+
+**Contract:** runtime projects credit from this client's received current-map
+floor view and refreshed presence-keyed deferred-intent set. The host binds
+only its own retained farm plan's map; a planless GRIND farms its current
+field. Other visible maps receive no floor credit, while an explicit live
+deferred commitment remains eligible. Pending and visible parts are disjoint,
+use positive received amounts for existing drive-sellable IDs, and together
+cap at the two-unit field threshold. Tried/refused pickups, a busy ack lane,
+exhausted arrival-confirmation budgets, dead agents, active threats and
+unreachable approaches receive no credit. An out-of-range target must have
+a public-grid path to a cell within pickup radius. Disappearance, same-ID
+replacement and map/session boundaries reuse the existing expiry rules;
+there is no extra cache, peer inventory, central floor feed or reservation.
+
+Admission compares bagged stock plus that credit. An admitted small bag
+authors `Loot` before dealer travel, including under retained farm plans.
+The shared dispatcher prioritizes the credited drop and preserves its
+standing, threat, walk, presence-attempt and acknowledgement barriers.
+The dealer travel lease starts only when received bagged stock reaches the
+batch minimum. An outstanding attempt itself gets no speculative credit;
+the next received inventory owns actual stock. Telemetry names `stock`,
+`inflight`, `pending` and `visible` on admission and refusal.
+
+**Town clarification:** existing town/interior admission already accepts one
+bagged unit (`trip_min=1`). Field intent expires on leaving that map, so a
+town agent cannot honestly retain live credit for an old field drop. This
+change preserves immediate one-unit town sales and tests them explicitly;
+it does not invent an off-map pickup itinerary or resurrect expired intent.
+
+**RED -> GREEN:** original focused regressions: 7 failed / 7 passed before
+production changes. After fixture corrections and implementation: 14 passed.
+Self-review added a nearer-unrelated-loot diversion regression: 1 failed /
+15 passed, then 16 passed after dispatcher priority was fixed. The broader
+merchant/loot suite passed 189 cases before the final five regression
+additions. Replaying the final 19 regressions against an archived, unchanged
+base production tree gives **12 failed / 7 passed** (`red-final.log`).
+Final cases also cover same-ID replacement, independent clients,
+two live units with an empty bag, own-plan map binding and retained-plan
+pickup execution. Local logs are in `.work/trip-inflight-loot/`.
+
+Worktree fixtures use a local shared clone of the index-pinned rAthena,
+main's ignored iRO DB/config log and optreview's physical iRO wiki DB
+(main's tracked wiki link loops to itself). The temporary tracked
+wiki link is restored before commit and excluded from the patch.
+No runner, live probe, Docker/heavengraph operation,
+`spikes/` edit, hand-written SHA pin or merge was performed.
+
+**Final full gate GREEN before commit/push:**
+`nix develop -c task --dir . check` exited **0**: **7,342 passed + 65
+subtests**, **95.80% coverage**, four warnings, 332.35 seconds in the test
+phase. Black (400 files), Ruff, mypy (400 source files), vulture, xenon,
+duplicate-code and security checks passed. The final dedicated suite is
+**19 passed** (`green.log`); the complete gate log is `full-gate.log`.
+Files: `src/robots/app/agent_runtime.py`, `src/robots/app/playing_runtime.py`,
+`src/robots/app/scripts.py`, `src/robots/domain/model.py`,
+`tests/test_merchant_inflight_loot.py`, `wiki/log.md`.

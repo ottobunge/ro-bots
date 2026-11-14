@@ -142,6 +142,11 @@ class BotState:
 
     # Runtime public-grid distance, bound to the merchant destination (x, y, cells).
     merchant_route_distance: tuple[int, int, int] | None = None
+    # Runtime credit from this client's live, collectible floor presences.
+    # Deferred and other visible units are disjoint and capped at trip_min.
+    merchant_inflight_pending: int = 0
+    merchant_inflight_visible: int = 0
+    merchant_pickup_target: tuple[int, int] | None = None
 
     @property
     def hp_ratio(self) -> float:

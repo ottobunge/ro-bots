@@ -71,13 +71,16 @@ from robots.app.npc_planning_execution import LocalNpcDispatch, NpcHostBinding, 
 from robots.app.party_roster import guild_candidate_aid
 from robots.app.planning_execution import RestObservation
 from robots.app.scripts import (
+    DRIVE_SELLABLES,
     MELEE_RANGE,
+    MERCHANT_FIELD_BATCH_MIN,
     MERCHANT_ROUTE,
     MERCHANT_ROUTE_RETURN,
     NOVICE_STAT_TARGETS,
     _approach_cell,
     _dealer_talk,
     merchant_admission_refusal,
+    merchant_pickup_required,
     merchant_trip_active,
     needs_npc_preparation,
     novice_weapon_index,
@@ -296,6 +299,8 @@ logger = logging.getLogger(__name__)
 
 class PlayingClient:
 
+    # Local farm intent, bound by the host from this agent's retained plan.
+    farm_map: str | None = None
     # the pending planner owns NPC recovery while a decide is in flight
     npc_recovery_hold = False
     mechanical_recovery_allowed = True
@@ -860,6 +865,7 @@ class PlayingClient:
             recent_encounters=self._encounters.records if self._encounters is not None else (),
             recent_species_damage=self._species_damage.snapshot(self._now()),
         )
+        state = self._merchant_loot_state(state)
         state = replace(
             state,
             merchant_route_distance=self._merchant_route_distance(state),
@@ -875,7 +881,7 @@ class PlayingClient:
         return state
 
     def _merchant_route_distance(self, state: BotState) -> tuple[int, int, int] | None:
-        if merchant_admission_refusal(state) is not None:
+        if merchant_pickup_required(state) or merchant_admission_refusal(state) is not None:
             return None
         target = MERCHANT_ROUTE.get(state.map_name)
         if target is None or self.cache is None or state.map_name not in self.cache.maps:
@@ -2997,14 +3003,87 @@ class PlayingClient:
             return npc_actions
         # Empty MerchantDrive patience/queue ticks own every route map.
         # Neither loot approaches nor field patrols may replace its travel.
-        if (state.map_name == "prontera" or merchant_trip_active(state.name)) and (
-            merchant_admission_refusal(state) is None
-        ):
+        if self._merchant_owns_travel(state):
             return actions
         loot_actions = self._loot_mechanical(state, actions)
         if loot_actions is not None:
             return loot_actions
         return self._legacy_mechanical(state, actions)
+
+    @staticmethod
+    def _merchant_owns_travel(state: BotState) -> bool:
+        return (
+            (state.map_name == "prontera" or merchant_trip_active(state.name))
+            and not merchant_pickup_required(state)
+            and merchant_admission_refusal(state) is None
+        )
+
+    def _merchant_loot_state(self, state: BotState) -> BotState:
+        """Bound disjoint credit to our own live, unattempted pickup machinery.
+
+        No ack-pending attempts or remembered off-map drops fund admission.
+        Deferred commitments take precedence over other floor visibility.
+        """
+        if self._tracker is None:
+            return state
+        items = self._tracker.view.floor_items
+        self._refresh_loot_memo(items)
+        deferred = {item.floor_item_id for item in self._loot_receipt.deferred}
+        eligible = self._merchant_loot_candidates(state, items, deferred)
+        pending = visible = 0
+        target = None
+        for item in sorted(eligible, key=lambda item: item.floor_item_id not in deferred):
+            if not self._merchant_collectible_loot(state, item):
+                continue
+            units = min(item.amount, MERCHANT_FIELD_BATCH_MIN - pending - visible)
+            if item.floor_item_id in deferred:
+                pending += units
+            else:
+                visible += units
+            target = target or (item.position.x, item.position.y)
+            if pending + visible == MERCHANT_FIELD_BATCH_MIN:
+                break
+        return replace(
+            state,
+            merchant_inflight_pending=pending,
+            merchant_inflight_visible=visible,
+            merchant_pickup_target=target,
+        )
+
+    def _merchant_loot_candidates(
+        self, state: BotState, items: Iterable[ObservedFloorItem], deferred: set[int]
+    ) -> tuple[ObservedFloorItem, ...]:
+        if state.alive is not True or self._loot_receipt.pending is not None:
+            return ()
+        if self._nearest_active_threat(state) is not None:
+            return ()
+        farming = state.map_name == self.farm_map or (
+            self.farm_map is None
+            and state.goal == Goal.GRIND
+            and state.map_name not in ("prontera", "prt_in")
+        )
+        return tuple(
+            item
+            for item in self._loot_candidates(state, items)
+            if farming or item.floor_item_id in deferred
+        )
+
+    def _merchant_collectible_loot(self, state: BotState, item: ObservedFloorItem) -> bool:
+        fid = item.floor_item_id
+        if str(item.item_id) not in DRIVE_SELLABLES or item.amount <= 0:
+            return False
+        if fid in self._loot_pickup_tried or self._loot_settle_attempts.get(fid, 0) >= 2:
+            return False
+        if self._floor_item_distance(state, item) <= _LOOT_PICKUP_RANGE:
+            return True
+        target = self._loot_move_target(state, item)
+        if (
+            target is None
+            or max(abs(target[0] - item.position.x), abs(target[1] - item.position.y))
+            > _LOOT_PICKUP_RANGE
+        ):
+            return False
+        return self.merchant_reachable(state.map_name, (state.x, state.y), target) is True
 
     def shop_actions(
         self, state: BotState, actions: tuple[GameAction, ...]
@@ -3103,11 +3182,18 @@ class PlayingClient:
 
     def _loot_candidates(self, state: BotState, floor_items: Iterable[Any]) -> tuple[Any, ...]:
         """Floor items nearest-first under the pickup metric (Chebyshev),
-        the floor-item aid as the deterministic tie-break."""
+        the floor-item aid as the deterministic tie-break. A credited
+        merchant pickup owns the first approach before dealer travel."""
+        pickup_target = state.merchant_pickup_target if merchant_pickup_required(state) else None
         return tuple(
             sorted(
                 floor_items,
-                key=lambda item: (self._floor_item_distance(state, item), item.floor_item_id),
+                key=lambda item: (
+                    pickup_target is not None
+                    and (item.position.x, item.position.y) != pickup_target,
+                    self._floor_item_distance(state, item),
+                    item.floor_item_id,
+                ),
             )
         )
 
