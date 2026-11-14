@@ -13593,3 +13593,73 @@ final run. All 46 missing-submodule failures/setup errors first passed the
 isolated fixture recheck (46 passed, 10 deselected). Full output:
 `.work/transport-down-rebuild/full-gate.log`. The local wiki DB symlink is
 restored to its tracked target before commit. No live acceptance is claimed.
+
+## Leg 102 — C6 buy-bind UNEXERCISED live: approach stalls at Chebyshev 2; sell 3/7; one transport death with a post-reconnect decide stall (2026-11-14)
+
+Window Saturday [5, 9.0, 10.5] = 09:00-10:30 Madrid on the e2e world
+(`systemd-run --user --unit=leg102-runner`, RuntimeMaxSec 9000 s,
+heavengraph :8091 decide / :8092 chat, main `30aa9408` carrying the C6
+buy-bind merge). 7/7 agents online at every sample, 179 in-window samples,
+0 step errors, 0 PlayingBackendError.
+
+**Receipt anomaly (provenance):** the runner receipt was NEVER written.
+systemd's RuntimeMaxSec=9000 fired at 11:25:36, exactly racing the runner's
+own `--duration 9000` deadline (last sample t=8987.1); the SIGTERM arrived
+before the loop exited, so the DONE/receipt path
+(`population_host_runner.py` L256-290) never ran. The shepherd rebuilt
+`population-receipt-102-1794652369.json` from the log's 30 s sample lines
+(slot-positional pid mapping) + traces + DB; the per-sample in-memory fields
+(npc_stage, shop_offer, gate reasons, rx_error) are lost with the process.
+Next legs: give the systemd unit head-room over the runner duration (e.g.
+RuntimeMaxSec = duration + 300 s) so the runner can exit and write.
+
+**Target 1 — a buy binds live: FAIL (unexercised).** Zero
+`NpcShopBuySelection` / `NpcShopPurchase` trace-verified in-window; the
+buy-open kept the leg-101 hold signature 3x (`stage=opening dealer=110001762
+requests=1 offer_bound=False`) and never bound. The chain never reached
+dispatch because the approach to the dealer did not converge for the BUY
+arm: `dealer_talk_out_of_range` 16x with agents parked at (172,128)/(173,128)
+= **Chebyshev 2** from the dealer (172,130) — the arm correctly fails
+closed, and no agent ever took the final cell into (172,129). s00's
+post-sell leave attempts FROM (172,129) were refused `staging_occupied`
+repeatedly (08:07:48+), i.e. the single adjacency cell has staging
+contention: one agent holds it, the rest queue one cell short forever
+(the leg-73 dealer-congestion shape, now the top signature). s00 (346z)
+and g00m01 (201z) did re-arm `weapon_release` in prt_in with
+`has_stock=False affordable=True`. The C6 bind fix itself was never
+adjacency-qualified live; inventory Knife rows (1201, equip=2, all seven)
+remain the Oct-28 fixture grant (2b0f249e), not purchases.
+
+**Target 2 — sell cycles sustain: PARTIAL (3/7).** g00m00 08:01:04 UTC
+sales [[3,1],[4,1],[5,1]] (+14), s00 08:07:46 sales [[3,2]] (+8),
+g00m01 08:08:41 sales [[3,1]] (+3), all trace-verified at the dealer via
+clean cell-by-cell approaches (168,128)->(172,129)/(173,129) with
+TalkToNpc -> SellOpen -> Sell. The other four held at
+`merchant_stock_below_trip_minimum` (stock=1 < trip_min=2) — named, not
+silent. s00's zeny moved UP 338 -> 346 on the second trip (clause met).
+Down from 7/7 because leg 101 emptied inventories and 90 minutes of
+farming re-accumulated only 1-3 sellables.
+
+**Target 3 — deaths / disengage: PASS.** 0 death signatures, 3 bounded
+disengage rows, no rest latch.
+
+**Target 4 — run health: FAIL.** One TRANSPORT DOWN:
+`pop_0003_g01m01: ValueError: unknown packet 0x019b at 112` at 09:27:56 —
+a packet-table gap (0x019b unregistered in the clientless table) killed
+the rx thread mid-window. The socket reconnect returned online=true, but
+**decisions froze at 82 and the persona trace went silent for the final
+62 minutes of the window**: the post-reconnect decide loop never resumed,
+so only 6/7 agents decided through the window. The 0x019b frame is in the
+runner log tail (hex preserved) for the packetdb slice.
+
+DB ground truth zeny (seed -> closing): 174->188 / 198->201 / 153->153 /
+134->134 / 119->119 / 127->127 / 338->346.
+Seed handoff to leg 103: **188/201/153/134/119/127/346**.
+
+Next dominant signatures, in order: (1) dealer adjacency-cell approach for
+the buy arm — walk the last cell into (172,129) (or an alternate adjacency
+cell) instead of parking at Chebyshev 2, and clear the staging_occupied
+friction; (2) register 0x019b in the packet table (rx death) and resume the
+decide loop after a rebuild (the rebuild seam exists; the brain-side resume
+is the gap); (3) sell-cycle sustenance needs the trip minimum to count
+in-flight loot or a lower threshold when the agent is already in town.
