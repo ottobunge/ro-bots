@@ -126,6 +126,8 @@ def test_existing_bad_variable_length_remains_strict(size: int) -> None:
 # (clif_packetdb.hpp:1268 -1; the leg-63 session killer); a value override of
 # the baseline's TakeItem,6 entry, not an addition.
 PICKUP_VARLEN = {0x07E4: -1}
+# Leg 102: visual-only level-up effect, clif.cpp:4367, map/packets.hpp:1120-1125.
+NOTIFY_EFFECT = {0x019B: 10}
 
 
 def test_all_889_mappings_macros_and_parser_preserved_bitexact() -> None:
@@ -173,6 +175,7 @@ def test_all_889_mappings_macros_and_parser_preserved_bitexact() -> None:
         and key not in guild_reply
         and key not in guild_invite
         and key not in wear_ack
+        and key not in NOTIFY_EFFECT
         and key not in PICKUP_VARLEN
     }
     assert old | {0x00B6: 6, 0x00BC: 6} == prior_891
@@ -189,10 +192,11 @@ def test_all_889_mappings_macros_and_parser_preserved_bitexact() -> None:
         | guild_reply
         | guild_invite
         | wear_ack
+        | NOTIFY_EFFECT
         | PICKUP_VARLEN
         == module.PACKET_DB
     )
-    assert len(module.PACKET_DB) == 910
+    assert len(module.PACKET_DB) == 911
     raw = (ROOT / "spikes/003-clientless-limbs/packetdb.py").read_bytes()
     cutin_block = (
         b"# Source/compiler-measured cut-in presentation only; no NPC/gameplay authority.\n"
@@ -299,6 +303,8 @@ def test_all_889_mappings_macros_and_parser_preserved_bitexact() -> None:
         # (the shuffle's final rows: 0x0362 TakeItem fixed 6; 0x07E4 stays
         # the ItemListWindowSelected window selection)
         "62cf3228fab1d3542bd829259722594ac294ad140fcd80b070388d9c5f80d36a",
+        # Leg 102: append the source-proven ZC_NOTIFY_EFFECT 10B registration.
+        "09ef854a8a1121c41acfd326f2187bbf5762cb1c6ec75cbe41421ffe05e39154",
     )
     token = b", 0x00B6: 6"
     assert raw.count(token) == 1
@@ -329,6 +335,8 @@ def test_all_889_mappings_macros_and_parser_preserved_bitexact() -> None:
         # appended after the leg-64 block (the compiled shuffle's final
         # rows name 0x0362 TakeItem fixed 6)
         "07a4acdeac08e7fe204fc935b43efe4a3ff9aa3b38bd329ea64ef536e8c98044",
+        # Leg 102: the same addition with the 0x00B6 token also removed.
+        "8b633603c7034ae5b56f6109d7f73385d2f1285733ab8fb6336b60613432149c",
     )
 
 

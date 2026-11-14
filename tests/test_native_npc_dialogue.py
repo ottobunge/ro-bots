@@ -204,7 +204,8 @@ def test_existing_890_registrations_preserved_and_unknown_stays_strict():
         # Leg 64: CZ_ITEM_PICKUP 0x07E4 re-declared var-len (the SERVED
         # packetdb row; the 6->-1 override removed it from `old` above).
         0x07E4,
+        0x019B,  # Leg 102: ZC_NOTIFY_EFFECT, fixed 10B visual notification.
     }
-    assert len(module.PACKET_DB) == 910
+    assert len(module.PACKET_DB) == 911
     with pytest.raises(ValueError, match="unknown packet 0xfafa"):
         module.parse_stream(dialog(0xB4, "guide") + b"\xfa\xfa")
