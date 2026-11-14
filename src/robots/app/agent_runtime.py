@@ -650,6 +650,7 @@ class ScheduledAgent:
         self._wants_was_alive = True
         self.goal: Goal = Goal.GRIND
         self.online = False
+        self._init_transport_rebuild()
         self._client_cleanup_pending = False
         self._startup_cleanup_uncertain = False
         self._producer_start_pending = False
@@ -674,11 +675,9 @@ class ScheduledAgent:
             return True
         try:
             self._invalidate_planning_binding()
-            self._consume_pending_switch()
-            if self.client is None:
-                self.client = self._new_client()
+            client = self._prepare_connect_client()
             self._client_cleanup_pending = True
-            self.client.connect()
+            client.connect()
             self.stop_flag = False
             self._session_ticks = 0
             self._chat_seen = 0
@@ -772,7 +771,36 @@ class ScheduledAgent:
             self._producer_start_pending
             or self._startup_cleanup_uncertain
             or not self._planning_reconnect_ready()
+            or (self.transport_rebuilding and self._client_cleanup_pending)
         )
+
+    @property
+    def transport_failure(self) -> BaseException | None:
+        if isinstance(self.client, PlayingClient):
+            return self.client.transport_failure
+        error: BaseException | None = getattr(self.client, "rx_error", None)
+        return error
+
+    def _init_transport_rebuild(self) -> None:
+        self.transport_error: BaseException | None = None
+        self.transport_rebuilding = False
+        self.rebuild_attempts = 0
+        self.rebuild_exhausted = False
+
+    def prepare_transport_rebuild(self, error: BaseException) -> None:
+        """Stop/release the failed producer without a clean-session roster switch."""
+        self.transport_error = error
+        self.transport_rebuilding = True
+        self.online = False
+        self.stop_flag = True
+        self._pending_switch = False
+        try:
+            self.disconnect()
+        except Exception:
+            # Unconfirmed release must never authorize a replacement producer.
+            self.rebuild_exhausted = True
+            logger.exception("agent %s: transport cleanup failed", self.persona.persona_id)
+        self._publish()
 
     def _planning_reconnect_ready(self) -> bool:
         return not isinstance(self.brain, PlannedBrain) or self.brain.reconnect_ready
@@ -899,6 +927,16 @@ class ScheduledAgent:
         fresh client for the selected character."""
         if self._pending_switch and self._advance_roster():
             self.client = None
+
+    def _prepare_connect_client(self) -> Any:
+        self._consume_pending_switch()
+        if self.transport_rebuilding and not isinstance(self.transport_error, OSError):
+            # A framer/client death is not safe to reuse. Socket failures
+            # reconnect the same client/character; neither rotates the roster.
+            self.client = None
+        if self.client is None:
+            self.client = self._new_client()
+        return self.client
 
     def _new_client(self) -> Any:
         """A fresh wire for the CURRENT roster character (``self.entry``).
@@ -1647,6 +1685,8 @@ def _format_hhmm(hour: float) -> str:
 class AgentHost:
     """Orchestrates N scheduled agents against the live server + WorldFeed."""
 
+    MAX_TRANSPORT_REBUILDS = 3
+
     def __init__(
         self,
         roster: SocietyRoster,
@@ -2030,15 +2070,15 @@ class AgentHost:
             if self._stop:
                 return
             now = self.clock.local_now()
-            tick = time.monotonic()
             for persona_id, agent in self.agents.items():
                 scheduled = self._scheduled_on(persona_id, now)
-                self._step_agent(persona_id, agent, scheduled, tick)
+                self._step_agent(persona_id, agent, scheduled, time.monotonic())
 
     def _step_agent(
         self, persona_id: str, agent: ScheduledAgent, scheduled: bool, tick: float
     ) -> None:
         """One agent's scheduling pass: itch switch, window open, window close."""
+        self._step_transport(persona_id, agent, scheduled)
         if scheduled and agent.online and agent.pending_switch:
             logger.info(
                 "character switch due: logging out %s as %s", persona_id, agent.entry.char_name
@@ -2050,9 +2090,25 @@ class AgentHost:
             logger.info("schedule window closed: disconnecting %s", persona_id)
             agent.disconnect()
 
+    def _step_transport(self, persona_id: str, agent: ScheduledAgent, scheduled: bool) -> None:
+        """Turn reader death into the offline state the connect arm requires."""
+        if agent.online and (failure := agent.transport_failure) is not None:
+            agent.prepare_transport_rebuild(failure)
+            self._connect_gates.setdefault(persona_id, ConnectBackoff()).record_failure(
+                time.monotonic()
+            )
+            logger.warning("agent %s: transport down; rebuild scheduled (%s)", persona_id, failure)
+        if not scheduled:
+            agent.rebuild_attempts = 0
+            agent.rebuild_exhausted = False
+        if agent.transport_rebuilding and agent.rebuild_attempts >= self.MAX_TRANSPORT_REBUILDS:
+            agent.rebuild_exhausted = True
+
     def _connect_scheduled(self, persona_id: str, agent: ScheduledAgent, tick: float) -> None:
         """Open a scheduled session; a pending switch bypasses the failure backoff
         (a deliberate character switch is not a retry storm)."""
+        if agent.rebuild_exhausted:
+            return
         gate = self._connect_gates.setdefault(persona_id, ConnectBackoff())
         if not gate.ready(tick) and not agent.pending_switch:
             return
@@ -2066,12 +2122,25 @@ class AgentHost:
         if not agent.pending_switch and not self.login_stagger.ready(persona_id, tick):
             return
         gate.record_attempt(tick)
+        # Failed logins hit connect_check too: reserve the shared slot BEFORE
+        # the fallible login, not only when it succeeds.
+        self.login_stagger.record(persona_id, tick)
+        if agent.transport_rebuilding:
+            agent.rebuild_attempts += 1
+            logger.info("agent %s: rebuild attempt %s", persona_id, agent.rebuild_attempts)
         logger.info("schedule window open: connecting %s", persona_id)
-        if agent.connect():
+        connected = agent.connect()
+        finished = time.monotonic()
+        # Include a slow handshake in shared spacing; its last login socket
+        # can open well after this scheduling pass began.
+        self.login_stagger.record(persona_id, finished)
+        if connected:
+            agent.transport_rebuilding = False
             gate.record_success()
-            self.login_stagger.record(persona_id, tick)
         else:
-            gate.record_failure(tick)
+            gate.record_failure(finished)
+            if agent.transport_rebuilding:
+                agent.rebuild_exhausted = agent.rebuild_attempts >= self.MAX_TRANSPORT_REBUILDS
 
     def run(self, poll_seconds: float = 5.0) -> None:
         """Schedule forever (until :meth:`stop`); one last pass when stopped."""

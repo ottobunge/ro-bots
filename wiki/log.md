@@ -13508,3 +13508,88 @@ smoke also ran with the physical local fixture; no skipped tests in this
 run. Full output: `.work/packet-019b/full-gate.log`. The corpus symlink
 adjustment is restored to its original tracked value before commit.
 No merge or live acceptance is claimed.
+
+## [2026-11-14] TRANSPORT-DOWN REBUILD — recover the dead agent inside its window
+
+**Evidence (offline only):** `/tmp/population_leg102.log:851` reports
+`POPULATION-RUNNER[102] TRANSPORT DOWN pid=pop_0003_g01m01: ValueError:
+unknown packet 0x019b at 112` at approximately t=1927.8. The preceding
+heartbeat is t=1927.6; all **84** subsequent heartbeats, t=1957.8 through
+**4452.3** (including t=3641.4), repeat `1/82/(226, 361)` for that agent.
+There are **zero** reconnect/backoff/rebuild lines after the failure, while
+the other six agents' counters advance. The online bit was cosmetic. Main
+`5f455e1d` already registers packet 019B; that protocol fix does not provide
+recovery from the next reader failure.
+
+**Root cause at base 5f455e1d:** the receive loop stores the framer exception
+in `rx_error` and exits (`spikes/003-clientless-limbs/client.py:745`).
+`PlayingClient._health()` rejects the dead transport
+(`src/robots/app/playing_runtime.py:612`), but `ScheduledAgent.tick()` catches
+`NativeTelemetryUnavailable` and returns without clearing online
+(`src/robots/app/agent_runtime.py:1035`). Host scheduling reconnects only
+`scheduled and not agent.online` (`agent_runtime.py:2047`), so that arm never
+fires. The runner's TRANSPORT DOWN print (`scripts/population_host_runner.py:241`)
+is passive sampling, **not** an exception catch or recovery arm; the runner's
+separate `host.step()` catch at line 160 never sees the reader exception.
+
+**Change:** each host scheduling pass now checks transport liveness without
+observing/draining native frames. Failure immediately marks the agent offline,
+stops and joins its producer, releases the client/planning binding, cancels
+queued commands, and schedules the existing connect path. Recovery preserves
+the persona, brain, memory and selected character; a pending character itch
+cannot bypass its backoff or rotate it. Socket/EOF (`OSError`) failures reuse
+the released client for a same-character authenticated reconnect. A framer or
+other unrecoverable client failure constructs a fresh client before login.
+The existing decision-backend resilience contract remains: `PlayingBackendError`
+keeps the authenticated session and does not trigger transport rebuilding.
+
+The initial transport failure enters `ConnectBackoff` (5s); failed rebuilds
+then wait 10s, 20s, etc., with the existing 240s cap. The wait starts after the
+failed handshake returns, so a slow handshake cannot consume its own backoff.
+Every login attempt, including failed attempts, reserves the roster's shared
+3.5s `LoginStagger`; spacing also covers handshake completion. Scheduling uses
+a fresh monotonic tick per agent. There are at most **three** rebuild attempts
+per observed schedule window, including successes followed by another death;
+exhaustion leaves the agent offline until a subsequent window. Unconfirmed
+cleanup fails closed without discarding client ownership or starting a replacement.
+Other agents' producer threads continue during both backoff and a blocked login.
+
+Runner heartbeat samples now report transport-aware online, actual live brain
+and tick counters, rebuild attempts/exhaustion, current-client `rx_error`, and
+separate `last_transport_error` history. TRANSPORT DOWN remains loud, deduped
+per persona/reason even after client replacement. The final receipt explicitly
+names `offline_agents` and per-persona `transport_recovery` attempts,
+exhaustion and last error, including failures between heartbeat samples.
+
+**TDD:** initial RED **11 failed** reproduces the missing rebuild/receipt and
+health seam. Added edge REDs reproduce a pending itch bypassing backoff and a
+slow failed handshake immediately retrying. Focused GREEN **82 passed** covers
+fresh-client rebuild, same-client EOF reconnect, resumed decisions/ticks,
+truthful down/recovered receipt rows, exhaustion, shared failed-login spacing,
+cleanup ownership, repeated deaths/window renewal, backend-session preservation,
+and another agent's real tick thread advancing while synthetic login is blocked.
+All clients/clocks in these tests are offline doubles. Local evidence:
+`.work/transport-down-rebuild/{red,edges-red,slow-red,green,full-gate}.log`.
+
+Worktree `/tmp/wt-transport-down-rebuild`, branch `sol/transport-down-rebuild`,
+based on main `5f455e1d`. The pinned rAthena submodule is populated at
+`e985006171d2` from the existing local checkout (no fetch). The first full gate
+exposed that a fresh parent worktree does not populate this source: 42 failures
+and 4 setup errors referenced missing rAthena files. No code fix was needed for
+those fixture failures. Local ignored iRO DB and rAthena config fixtures point
+to the main checkout. Main's tracked iRO wiki DB symlink loops to itself;
+offline checks use the existing physical corpus in `/home/otto/dev/wt-mobpos`,
+and that temporary symlink adjustment is excluded from the commit.
+Files: `src/robots/app/agent_runtime.py`, `src/robots/app/playing_runtime.py`,
+`scripts/population_host_runner.py`, `tests/test_transport_rebuild.py`, `wiki/log.md`.
+No runner execution, live probes, Docker/heavengraph operations, changes to
+`spikes/`, or merge into main.
+
+**Full gate GREEN before commit/push:** `nix develop -c task --dir . check`
+(exit 0): **7,306 passed + 65 subtests, 95.74% coverage**, test phase
+363.22 seconds. Black (397 files), Ruff, mypy (397 source files), vulture,
+xenon, duplicate-code and security checks passed. No skipped tests in the
+final run. All 46 missing-submodule failures/setup errors first passed the
+isolated fixture recheck (46 passed, 10 deselected). Full output:
+`.work/transport-down-rebuild/full-gate.log`. The local wiki DB symlink is
+restored to its tracked target before commit. No live acceptance is claimed.

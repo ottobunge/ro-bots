@@ -130,7 +130,7 @@ def main(argv: list[str] | None = None) -> int:
     samples: list[dict[str, object]] = []
     # The distinct transport-failure reasons already reported (leg 35: a
     # dead transport must be loud in the log, once per distinct reason).
-    reported_rx_errors: set[str] = set()
+    reported_rx_errors: set[tuple[str, str]] = set()
     steps = 0
     errors = 0
     next_sample = 0.0
@@ -176,7 +176,10 @@ def main(argv: list[str] | None = None) -> int:
                 wire = getattr(client, "wire", None)
                 state = getattr(client, "last_built_state", None)
                 entry_sample = {
-                    "online": bool(getattr(agent, "online", False)),
+                    "online": bool(getattr(agent, "online", False))
+                    and getattr(agent, "transport_failure", None) is None,
+                    "rebuild_attempts": getattr(agent, "rebuild_attempts", 0),
+                    "rebuild_exhausted": getattr(agent, "rebuild_exhausted", False),
                     "decides": getattr(brain, "decision_count", None),
                     "ticks": getattr(agent, "tick_count", None),
                     "standing": getattr(client, "_standing", None),
@@ -221,6 +224,7 @@ def main(argv: list[str] | None = None) -> int:
                     # forever, so a whole window died silently. The receipt
                     # must carry the reason the transport went down.
                     "rx_error": _error_text(getattr(client, "rx_error", None)),
+                    "last_transport_error": _error_text(getattr(agent, "transport_error", None)),
                     "dispatch_errors": _dispatch_error_summary(
                         getattr(client, "dispatch_errors", None)
                     ),
@@ -234,9 +238,9 @@ def main(argv: list[str] | None = None) -> int:
                 # (leg 35: the whole window froze on "unknown packet 0x0999"
                 # and the log never said so). Print it the first time each
                 # distinct reason appears.
-                reason = entry_sample["rx_error"]
-                if reason is not None and reason not in reported_rx_errors:
-                    reported_rx_errors.add(reason)
+                reason = entry_sample["rx_error"] or entry_sample["last_transport_error"]
+                if reason is not None and (pid, reason) not in reported_rx_errors:
+                    reported_rx_errors.add((pid, reason))
                     print(
                         f"POPULATION-RUNNER[{args.leg}] TRANSPORT DOWN "
                         f"pid={pid}: {reason}",
@@ -257,6 +261,19 @@ def main(argv: list[str] | None = None) -> int:
         "step_errors": errors,
         "trace_dir": str(args.trace_dir) if args.trace_dir else None,
         "samples": samples,
+        "offline_agents": [
+            pid for pid, agent in host.agents.items()
+            if not agent.online or agent.transport_failure is not None
+        ],
+        "transport_recovery": {
+            pid: {
+                "attempts": agent.rebuild_attempts,
+                "exhausted": agent.rebuild_exhausted,
+                "last_error": _error_text(agent.transport_error),
+            }
+            for pid, agent in host.agents.items()
+            if agent.transport_error is not None
+        },
         "passed": None,  # the operator asserts separately from the DB
     }
     if args.trace_dir:

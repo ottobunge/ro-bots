@@ -626,6 +626,16 @@ class PlayingClient:
         # shop-interior maps carry one; w43-48 own_pos 0 with a live reader).
         # They stay visible in the client's packet counters for the receipts.
 
+    @property
+    def transport_failure(self) -> BaseException | None:
+        """Passive liveness only: never drain frames or build a second state."""
+        try:
+            self._health()
+        except NativeTelemetryUnavailable as exc:
+            error: BaseException = self.wire.rx_error or exc
+            return error
+        return None
+
     def _observe(self, *, now: float | None = None) -> NativeGameplayTracker:
         try:
             self._health()
