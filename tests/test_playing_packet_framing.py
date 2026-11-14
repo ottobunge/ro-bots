@@ -66,6 +66,46 @@ def test_literal_pickup_ack_reaches_actual_framer() -> None:
     assert packetdb().parse_stream(raw) == ([(0x0A37, raw)], b"")
 
 
+@pytest.mark.parametrize("stat_count", [0, 14])
+def test_leg102_levelup_live_tail_preserves_successor_boundaries(stat_count: int) -> None:
+    # /tmp/population_leg102.log:851, t=1927.6, pop_0003_g01m01.
+    # The tail is verbatim; reconstructed B0 frames reproduce the failure's
+    # offset 112 without inventing the unavailable preceding status values.
+    tail = bytes.fromhex(
+        "9b01c491210000000000cb0a0200c100000000000000"
+        "cc0ac4912100020000000000000001000000"
+        "cc0ac4912100000000000000000002000000"
+    )
+    stat = bytes.fromhex("b000180000000000")
+    prefix = stat * stat_count
+    expected = [(0x00B0, stat)] * stat_count + [
+        (0x019B, tail[:10]),
+        (0x0ACB, tail[10:22]),
+        (0x0ACC, tail[22:40]),
+        (0x0ACC, tail[40:58]),
+    ]
+    assert len(tail) == 58
+    # Visual-only base-level-up effect: actor 2200004, effect 0. Level/EXP
+    # authority stays with the separate status packets, not this animation.
+    assert int.from_bytes(tail[2:6], "little") == 2200004
+    assert int.from_bytes(tail[6:10], "little") == 0
+    db = packetdb()
+    stream = prefix + tail
+    assert db.parse_stream(stream) == (expected, b"")
+    for cut in range(len(stream) + 1):
+        first, pending = db.parse_stream(stream[:cut])
+        second, remaining = db.parse_stream(pending + stream[cut:])
+        assert first + second == expected
+        assert remaining == b""
+    frames = []
+    pending = b""
+    for byte in stream:
+        complete, pending = db.parse_stream(pending + bytes([byte]))
+        frames.extend(complete)
+    assert frames == expected
+    assert pending == b""
+
+
 def test_primary_compiled_six_frame_layouts(tmp_path: Path) -> None:
     source = Path("/nix/store/9fnslka6gqn93qwrwzvj07i929fmhv68-source/src")
     structs = (source / "map/packets_struct.hpp").read_text()
@@ -120,3 +160,40 @@ def test_primary_compiled_six_frame_layouts(tmp_path: Path) -> None:
     )
     result = subprocess.run([str(binary)], check=True, capture_output=True, text=True)
     assert result.stdout == "59 4 24 6 8 6 8"
+
+
+def test_notify_effect_pinned_compiler_layout(tmp_path: Path) -> None:
+    source = ROOT / "rathena/src"
+    packets = (source / "map/packets.hpp").read_text()
+    declaration = re.search(
+        r"struct PACKET_ZC_NOTIFY_EFFECT \{.*?DEFINE_PACKET_HEADER\(ZC_NOTIFY_EFFECT, 0x19b\);",
+        packets,
+        re.S,
+    )
+    assert declaration is not None
+    cpp = tmp_path / "notify-effect.cpp"
+    cpp.write_text(
+        "#include <common/packets.hpp>\n#include <cstdio>\n#include <cstddef>\n"
+        + declaration[0]
+        + "\nstatic_assert(PACKETVER_MAIN_NUM == 20180704);\n"
+        + 'int main(){printf("%x %zu %zu %zu", HEADER_ZC_NOTIFY_EFFECT,\n'
+        + "sizeof(PACKET_ZC_NOTIFY_EFFECT), offsetof(PACKET_ZC_NOTIFY_EFFECT, aid),\n"
+        + "offsetof(PACKET_ZC_NOTIFY_EFFECT, effectId));}\n"
+    )
+    binary = tmp_path / "notify-effect"
+    subprocess.run(
+        [
+            "g++",
+            "-DPACKETVER=20180704",
+            "-DPRERE",
+            "-I" + str(source),
+            "-I" + str(ROOT / "rathena/3rdparty/libconfig"),
+            str(cpp),
+            "-o",
+            str(binary),
+        ],
+        check=True,
+        capture_output=True,
+    )
+    result = subprocess.run([str(binary)], check=True, capture_output=True, text=True)
+    assert result.stdout == "19b 10 2 6"

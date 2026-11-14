@@ -113,6 +113,8 @@ def test_packethash_stays_pinned_to_the_equipped_item_block() -> None:
         # (the shuffle's final rows: 0x0362 TakeItem fixed 6; 0x07E4 stays
         # the ItemListWindowSelected window selection)
         "656f1bcc348abbeb58babfe7f87c80618d743413e2cb71221fd20e88aa1aaaf8",
+        # Leg 102: source-proven ZC_NOTIFY_EFFECT registration remains in the remainder.
+        "2d9fe171a0438d0eb46d68a8956782217228ac26f166f8d3c63e83021ee420c2",
     )
 
 
@@ -167,6 +169,8 @@ def test_charstat_block_stays_pinned_to_the_equipped_item_block() -> None:
         # (the shuffle's final rows: 0x0362 TakeItem fixed 6; 0x07E4 stays
         # the ItemListWindowSelected window selection)
         "656f1bcc348abbeb58babfe7f87c80618d743413e2cb71221fd20e88aa1aaaf8",
+        # Leg 102: source-proven ZC_NOTIFY_EFFECT registration remains in the remainder.
+        "2d9fe171a0438d0eb46d68a8956782217228ac26f166f8d3c63e83021ee420c2",
     )
 
 
@@ -276,6 +280,8 @@ def test_the_three_guild_frames_are_all_pinned_together() -> None:
         # (the shuffle's final rows: 0x0362 TakeItem fixed 6; 0x07E4 stays
         # the ItemListWindowSelected window selection)
         "910c70e7b94ece71b65aa4f5a219ed32f1093462b5e081c3a58fa0fb1100a401",
+        # Leg 102: source-proven ZC_NOTIFY_EFFECT registration remains in the remainder.
+        "9b7b7e2282ccd912a65fe3b45eb4ddfc46bc65389da017dc3ed7a24630637ddf",
     )
 
 

@@ -878,6 +878,17 @@ _NATIVE_REGISTRATION_SHADOWS.update({0x07E4: (6, -1)})
 PACKET_DB.update({0x0362: 6})
 
 
+# Leg 102 (2026-11-14): ZC_NOTIFY_EFFECT, visual-only and ignorable once framed.
+# Pinned e985006171d2 clif.cpp:4367-4375 clif_misceffect sends sizeof(packet)
+# to AREA; map/packets.hpp:1120-1125 defines packed id.W + aid.L + effectId.L
+# (10B, no version gate; common/packets.hpp:19 defines DEFINE_PACKET_HEADER).
+# pc.cpp:8272-8292 sends status updates, recalculates/heals, then effect 0
+# (base level up). /tmp/population_leg102.log:851 contains that exact 10B
+# effect followed by 0x0ACB/0x0ACC; framing must preserve their boundaries.
+# Keep level/EXP authority in the existing status packets, not this animation.
+PACKET_DB.update({0x019B: 10})
+
+
 def parse_stream(buf: bytes) -> tuple[list[tuple[int, bytes]], bytes]:
     """
     Split a byte stream into complete (pid, raw) packets.

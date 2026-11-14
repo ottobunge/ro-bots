@@ -13422,3 +13422,89 @@ format. Full output: `.work/c6-buy-list-bind/full-gate.log`.
 Files: `src/robots/app/playing_runtime.py`,
 `src/robots/adapters/native_purchase.py`, `tests/test_c6_buy_list_bind.py`,
 `wiki/log.md`. No merge to main or live economy acceptance is claimed.
+
+## [2026-11-14] fix | Leg 102 frame ZC_NOTIFY_EFFECT 0x019B
+
+**Evidence:** `/tmp/population_leg102.log:851`, t≈1927.6,
+`pop_0003_g01m01`, lost transport on `unknown packet 0x019b at 112` after
+three `0x00B0` status frames. The exact saved tail is:
+
+```text
+9b01c491210000000000cb0a0200c100000000000000cc0ac4912100020000000000000001000000cc0ac4912100000000000000000002000000
+```
+
+**Pinned source:** rAthena `e985006171d2eb320ee512a653f4c83aea3d81b6`,
+MAIN `PACKETVER=20180704`/pre-re. `clif_misceffect`,
+`rathena/src/map/clif.cpp:4367-4375`, sends `PACKET_ZC_NOTIFY_EFFECT` to
+`AREA` with `sizeof(packet)`. `rathena/src/map/packets.hpp:1120-1125`
+defines the unconditional packed layout: `int16 packetType`, `uint32 aid`,
+`uint32 effectId`, header `0x019b`; fixed **10 bytes**, payload offsets 2/6.
+`src/common/packets.hpp:19` supplies `DEFINE_PACKET_HEADER`; there is no
+competing common-header definition. An offline C++ oracle using the pinned
+common header and exact map declaration under the native defines confirms
+header `19b`, size `10`, offsets `2 6`.
+
+**Trigger:** effect 0 is the base-level-up animation (`clif.cpp:4354-4366`,
+`clif.hpp:805-807`), not fame, ranking, rental or achievement state.
+`pc_gainexp` (`pc.cpp:8510-8529`) checks base level, then job EXP, then
+sends the EXP display notices. `pc_checkbaselevelup` (`pc.cpp:8244-8293`)
+updates status points/base level/EXP, forces `status_calc_pc`, heals HP/SP,
+then calls `clif_misceffect(..., NOTIFYEFFECT_BASE_LEVEL_UP)` at line 8292.
+The status sender is `clif_par_change` (`clif.cpp:3549-3557`, `0x00B0`),
+used for base level, points and HP/SP (`clif.cpp:3649-3695`), explaining the
+status burst immediately before this effect. This is an explicit level-up
+notification after recalculation, not a generic player SP/status-recalc hook;
+the call in `status.cpp:3096` is specifically a pet-level-change animation.
+The sender also supports job
+level-up, refinement and crafting effects; any effect value uses the same
+10-byte framing. The saved payload decodes to actor **2200004**
+(`0x002191c4`), effect **0**. The following `0x0ACB` is a 12-byte status
+update (job EXP 193), not an AID packet; both 18-byte `0x0ACC` notices do
+carry that AID (base gain 2, job gain 0). These bytes are consistent with
+the source's base-level-up path; no live action was reproduced.
+
+**Change:** append a source-cited `PACKET_DB.update({0x019B: 10})` block.
+The visual notification is explicitly ignorable once framed; identity,
+levels and EXP remain sourced from their existing authoritative packets.
+Update all affected era-chain unions/filters and counts **910 → 911**.
+Append the close-framing preservation digests read programmatically from
+actual pytest failures in two sequential iterations, then the cut-in and
+wear/guild digests read from their own actual pytest failures. The historical migration baseline JSON remains
+unchanged: the existing discipline compares its original mappings and
+accounts for later additions through the era chain. No parser body or
+prior registration changes, and no formatting of `spikes/`.
+
+**TDD:** RED **2 failed** with the exact unknown-packet error, including
+reconstructed status prefix reproducing offset 112. GREEN **153 passed +
+65 subtests**, including the pinned C++ oracle, original strict rejection,
+packetdb checks and preservation tests. The verbatim 58-byte live tail is
+framed at offsets **0/10/22/40/58** as `019B/0ACB/0ACC/0ACC`, both alone
+and after a synthetic 112-byte B0 prefix, at every two-chunk split and one
+byte at a time. The first full test run exposed eight further stale
+era/count/digest assertions; after appending this registration to those
+historical chains, the complete focused set is **722 passed + 65 subtests**.
+Local evidence: `.work/packet-019b/`.
+
+Worktree `/home/otto/dev/wt-packet-019b`, branch `sol/register-packet-019b`,
+based on main `30aa9408`. The main checkout's wiki DB symlink loops to
+itself, so offline checks use the existing physical corpus from
+`/home/otto/dev/wt-mobpos`; that local test-fixture adjustment is excluded
+from the commit. No runners, live probes, Docker or heavengraph operations.
+
+Files: `spikes/003-clientless-limbs/packetdb.py`,
+`tests/test_playing_packet_framing.py`,
+`tests/test_native_emotion_framing.py`,
+`tests/test_native_npc_close_framing.py`,
+`tests/test_native_npc_cutin_framing.py`,
+`tests/test_native_npc_dialogue.py`, `tests/test_native_shop.py`,
+`tests/test_native_skill_context.py`,
+`tests/test_native_wear_equip_ack_framing.py`, `wiki/log.md`.
+
+**Full gate GREEN before commit/push:** `nix develop -c task --dir . check`
+(exit 0): **7,290 passed + 65 subtests, 95.71% coverage**, test phase
+355.80 seconds. Black, Ruff, mypy (396 source files), vulture, xenon,
+duplicate-code and security checks passed. The optional real wiki-corpus
+smoke also ran with the physical local fixture; no skipped tests in this
+run. Full output: `.work/packet-019b/full-gate.log`. The corpus symlink
+adjustment is restored to its original tracked value before commit.
+No merge or live acceptance is claimed.

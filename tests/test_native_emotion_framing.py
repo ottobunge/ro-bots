@@ -128,6 +128,7 @@ def test_every_legacy_mapping_is_preserved() -> None:
         | guild_invite
         | wear_ack
         | pickup_varlen
+        | {0x019B: 10}  # Leg 102: ZC_NOTIFY_EFFECT, visual-only level-up animation.
         == packetdb.PACKET_DB
     )
-    assert len(packetdb.PACKET_DB) == 910
+    assert len(packetdb.PACKET_DB) == 911

@@ -332,8 +332,10 @@ def validate_exact_addition(table: dict[int, int], raw: bytes) -> None:
     # and disconnected every pickup). A value override of the baseline's
     # TakeItem,6 entry (line 1560), so the table count stays 910.
     prior_911 = prior_910 | {0x07E4: -1}
-    assert len(table) == 910
-    assert table == prior_911
+    # Leg 102: ZC_NOTIFY_EFFECT, fixed 10B (map/packets.hpp:1120-1125).
+    prior_912 = prior_911 | {0x019B: 10}
+    assert len(table) == 911
+    assert table == prior_912
     assert raw.count(CUTIN_BLOCK) == 1
     assert raw.count(CHAR_PAGE_BLOCK) == 1
     assert raw.count(STAT_CHANGE_BLOCK) == 1
@@ -390,6 +392,8 @@ def validate_exact_addition(table: dict[int, int], raw: bytes) -> None:
         # (the shuffle's final rows: 0x0362 TakeItem fixed 6; 0x07E4 stays
         # the ItemListWindowSelected window selection)
         "23282dc17842c327b8478aa9338b84ee9448a6678d145e055207b6d03378fbfb",
+        # Leg 102: source-proven ZC_NOTIFY_EFFECT 10B registration remains after stripping.
+        "bc15d6d56a9f3fadeba443367d014e018aaa7cd3a13de1ed5eb2317d6390ef0a",
     )
 
 
