@@ -13840,3 +13840,69 @@ duplicate-code and security checks passed. The final dedicated suite is
 Files: `src/robots/app/agent_runtime.py`, `src/robots/app/playing_runtime.py`,
 `src/robots/app/scripts.py`, `src/robots/domain/model.py`,
 `tests/test_merchant_inflight_loot.py`, `wiki/log.md`.
+
+## LEG 103 — Saturday 2026-11-14 19:30-21:00 Madrid window (shepherd live-readout)
+
+Runner: `systemd-run --user --unit=leg103-runner`, plain production host,
+`--duration 9300` (expired by its own duration at 21:25, `DONE: steps 36802,
+errors 0`), receipt `run/plain_host_receipts/population-receipt-103-1794678631.json`
+(complete — the leg-102 SIGTERM race did not repeat). Schedule [5, 19.5, 21.0]
+verified Saturday (weekday 5) at launch; 7/7 agents online and deciding at the
+19:35 launch verification; clean schedule-window logouts at 21:00.
+
+**DB ground truth vs seed 188/201/153/134/119/127/346:** NyxSong 188 (0),
+RinceNyan 201 (0), zeny_wing **157 (+4)**, PipinWalker **140 (+6)**,
+xXLunasongXx **129 (+10)**, PoringMuffin14 127 (0), YuffieFy81 346 (0).
+Trace-level sell chain confirmed for exactly the three earners — each ran
+`NpcShopSellOpen` -> `NpcShopSell` (19:50 / 20:45 / 20:47 Madrid), two of them
+during the backend-death period (the merchant chain is decide-independent).
+seed-zeny.json refreshed to closing values.
+
+**T1 dealer ring — FAIL (partial):** 394 `dealer_talk_out_of_range`
+(chebyshev=2 dominant, ~150x — the leg-102 park-at-2 signature recurred at
+scale), 1,062 `dealer_outer_fallback`, 51 `dealer_ring_saturated` naming the
+real blocker: `free=8/8 walkable_free=5/8 preferred_chebyshev<=1=unavailable`
+— the ring cells around (172,130) are mostly UNWALKABLE (shop-counter
+geometry), not contended, so `merchant_counter_lease` never fired (0x all
+window). Three agents still achieved adjacency and completed sells; the
+convergence machinery stays agent-dependent. YuffieFy81 (s00) reached prt_in
+with stock=2 armed (`merchant_trip_retry_cooldown`, `affordable=True
+trip_min=1`) but never opened the shop: 7 `TalkToNpc`, 0 `NpcShopSell`, and
+the 60s `merchant_trip_released_no_progress` bound (`best_distance=2
+rule=route_distance_scaled`) expires before the 180s lease can matter.
+
+**T2 C6 buy bind — FAIL:** 0 `NpcShopBuy`/purchase actions across all 7
+traces; no negative zeny. Buy admission FIRED — post-sell `weapon_release
+(map=prt_in zeny=140/129 floor=50 affordable=True)` — and no
+`NpcShopBuySelection` was ever authored. Exact signature for the next slice:
+weapon_release armed in prt_in, affordable, no buy action.
+
+**T3 sell cycles — PARTIAL 3/7:** trip-min in-flight admission live (stock=2
+agents armed in prt_in with `inflight=0` shown in the arm lines); 3/7
+completed sell chains with DB-confirmed zeny deltas; s00 did not sustain a
+third trip (transport churn + retry cooldowns + ring geometry).
+
+**T4 transport resilience — HELD under extreme churn, with two ends offline:**
+23 `rebuild scheduled` events across ALL SEVEN agents (g00m02/g01m02/s00 x4
+each); receipt `transport_recovery` shows `attempts=0 exhausted=false` for all
+(no rebuild budget exhausted) and decides are monotonic per-agent across all
+310 samples (final 104/97/106/111/121/64/87). Caveats: g01m02 froze at 64
+decides from 20:08 (offline ~35 min, no further rebuild scheduled after its
+4th cycle) and s00 froze at 87 from 20:29 — the re-engage-after-repeated-
+cycles path needs a look. At ~20:43 heavengraph **:8091 (decide backend) died
+hard (connection refused; :8092 stayed up)** — infra, not the runner; PBE
+reached 194+ and all decide counts froze fleet-wide until window close. No
+heavengraph remediation was performed (read-only probes only, per brief).
+
+**T5 run health — MIXED:** `steps 36802, errors 0` (`step_errors=0` in the
+receipt), disengages bounded (walk_released_no_progress 4-8/agent), combat
+loop healthy: 41 attacks authored, 17 swings->damage chains, **7 kill
+credits**, 3/5 pickup successes (swing_conversion in the receipt). Fail:
+194+ PlayingBackendError from the :8091 infra death.
+
+Next-slice targets: (1) buy-arm action authoring after weapon_release
+(T2 signature above); (2) dealer-ring geometry — approach must route to a
+WALKABLE chebyshev<=1 cell (walkable_free=5/8), the lease is not the lever;
+(3) rebuild re-engage after repeated transport cycles (g01m02/s00 end-of-window
+freezes); (4) heavengraph :8091 died mid-window — needs an owner-side restart
+(not shepherd-permitted).
