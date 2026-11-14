@@ -93,6 +93,17 @@ def _ring_allocation(
     blocked: set[Point],
     origins: tuple[tuple[Point, bool], ...],
 ) -> Point | None:
+    # Physical proximity precedes actor ID: a stationary low-ID body farther
+    # back must not reserve the last free step ahead of a received near waiter.
+    origins = tuple(
+        sorted(
+            origins,
+            key=lambda entry: min(
+                ((p[0] - entry[0][0]) ** 2 + (p[1] - entry[0][1]) ** 2 for p in cells),
+                default=float("inf"),
+            ),
+        )
+    )
     blocked.add(position)
     for origin, is_self in origins:
         candidates = sorted(
@@ -221,14 +232,21 @@ class MerchantStaging:
         self._note_ring_saturation(grid, state)
         return self._dealer_queue_target(grid, state)
 
-    def _dealer_queue_target(self, grid: WalkMap, state: BotState) -> Point | None:
+    def yield_target(self, grid: WalkMap, state: BotState) -> Point | None:
+        """Vacate one's own expired counter lease without taking another ring cell."""
+        self.observe(state)
+        return self._dealer_queue_target(grid, state, minimum=5, radius=6)
+
+    def _dealer_queue_target(
+        self, grid: WalkMap, state: BotState, *, minimum: int = 2, radius: int = 4
+    ) -> Point | None:
         x, y = MERCHANT_ROUTE["prt_in"]
         lane = _dealer_exit_lane(grid)
         cells = [
             (x + dx, y + dy)
-            for dx in range(-4, 5)
-            for dy in range(-4, 5)
-            if max(abs(dx), abs(dy)) >= 2 and (x + dx, y + dy) not in lane
+            for dx in range(-radius, radius + 1)
+            for dy in range(-radius, radius + 1)
+            if max(abs(dx), abs(dy)) >= minimum and (x + dx, y + dy) not in lane
         ]
         cells.sort(
             key=lambda p: (
@@ -238,20 +256,23 @@ class MerchantStaging:
             )
         )
         cell = next((p for p in cells if self.path(grid, state, p) is not None), None)
-        self._note_dealer_queue(state, cell, lane)
+        self._note_dealer_queue(state, cell, lane, released=minimum > 2)
         self._dealer_selection = cell
         return cell
 
-    def _note_dealer_queue(self, state: BotState, cell: Point | None, lane: set[Point]) -> None:
+    def _note_dealer_queue(
+        self, state: BotState, cell: Point | None, lane: set[Point], *, released: bool = False
+    ) -> None:
         if cell is None or cell == self._dealer_selection:
             return
         x, y = MERCHANT_ROUTE["prt_in"]
         logger.warning(
             "merchant-drive: dealer_outer_fallback "
-            "(bot=%s cell=%s chebyshev=%s preferred_chebyshev<=1=unavailable)",
+            "(bot=%s cell=%s chebyshev=%s preferred_chebyshev<=1=%s)",
             state.name,
             cell,
             max(abs(cell[0] - x), abs(cell[1] - y)),
+            "released" if released else "unavailable",
         )
         if (state.x, state.y) in lane and cell != (state.x, state.y):
             logger.warning(
@@ -267,8 +288,9 @@ class MerchantStaging:
     ) -> Point | None:
         """Allocate from received bodies, never another client's private intent.
 
-        A body already in the ring owns that cell until received movement or
-        vanish releases it. Outside bodies within the approach area share a
+        A body in the ring blocks that cell until received movement or vanish.
+        Its own client bounds the visit with MerchantCounterLease. Outside bodies
+        within the approach area share a
         deterministic cell matching, so two approaching sellers do not both
         pick the nearest entrance. Type-0 bodies need no inferred identity,
         inventory or out-of-game reservations. Received actor IDs break ties

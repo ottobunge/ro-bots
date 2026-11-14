@@ -65,6 +65,7 @@ from robots.app.combat_survival import SpeciesDamage, survivability_refusal
 from robots.app.expless_roam import ExplessRoam
 from robots.app.loot_attribution import LootAttribution
 from robots.app.merchant_buy_backoff import MerchantBuyBackoff
+from robots.app.merchant_counter_lease import MerchantCounterLease
 from robots.app.merchant_staging import MerchantStaging, MerchantWarpCrossings, dealer_entry_cell
 from robots.app.npc_planning_execution import LocalNpcDispatch, NpcHostBinding, NpcUiObservation
 from robots.app.party_roster import guild_candidate_aid
@@ -868,6 +869,7 @@ class PlayingClient:
         )
         self._last_built_state = state
         self._merchant_staging.observe(state)
+        self._counter_lease.observe(state, self._now())
         self._merchant_crossings.observe(map_name, state.name)
         self._drain_retry_talk(state)
         return state
@@ -932,6 +934,7 @@ class PlayingClient:
 
     def _init_merchant_navigation(self) -> None:
         self._merchant_staging = MerchantStaging()
+        self._counter_lease = MerchantCounterLease()
         self._trip_navigation = TripNavigation()
         self._merchant_crossings = MerchantWarpCrossings()
         self.last_move_outcome: dict[str, object] = {}
@@ -1147,6 +1150,7 @@ class PlayingClient:
             self._tracker.clear_npc_dialog()
         self._shop_context.invalidate_offer("timeout-close")
         self._npc.complete_shop()
+        self._counter_lease.retrying()
         self._retry_talk = None
         self._shop_selection = None
         self._merchant_returning = merchant_admission_refusal(state) is not None
@@ -1590,6 +1594,9 @@ class PlayingClient:
         12333-12361). Without a shop context this returns None and the prior
         behavior applies unchanged.
         """
+        counter_yield = self._counter_yield_actions(state)
+        if counter_yield is not None:
+            return counter_yield
         tracker = self._tracker
         if tracker is None:
             return None
@@ -1601,6 +1608,56 @@ class PlayingClient:
         elif isinstance(action, NpcShopSellOpen):
             self._sell_open_mint = (action, self._sell_binding())
         return (action,)
+
+    def _counter_yield_actions(self, state: BotState) -> tuple[GameAction, ...] | None:
+        """Shared sell/buy handover, including retained plans and bound-offer holds."""
+        self._counter_lease.observe(state, self._now())
+        if self._counter_lease.reason is None:
+            return None
+        grid = self._counter_yield_grid(state)
+        if grid is None:
+            return ()
+        cell = self._merchant_staging.yield_target(grid, state)
+        if cell is None:
+            return ()
+        if cell == (state.x, state.y) and self._counter_lease.parked(self._now()):
+            return None
+        self._release_counter_contact(state)
+        return () if cell == (state.x, state.y) else (MoveTo(*cell),)
+
+    def _counter_yield_grid(self, state: BotState) -> WalkMap | None:
+        if self._npc.cancel_uncertain or (self._npc.failed and self._npc.deny_origin != "timeout"):
+            return None
+        if self.cache is None or state.map_name not in self.cache.maps:
+            return None
+        return self.cache.get(state.map_name)
+
+    def _release_counter_contact(self, state: BotState) -> None:
+        dialog = self._npc.view
+        if dialog is None:
+            npc_id = self._counter_lease.npc_id or self._retry_talk or self._merchant_reopen
+            if npc_id is not None:
+                release_merchant_talk(state.name, npc_id)
+            self._retry_talk = None
+            self._merchant_reopen = None
+            return
+        # Explicitly close our own shop; expiry never fabricates a trade result.
+        self._send_npc(struct.pack("<HI", 0x146, dialog.npc_id))
+        if self._tracker is not None:
+            self._tracker.clear_npc_dialog()
+        self._shop_context.invalidate_offer("counter-lease-yield")
+        self._npc.complete_shop()
+        self._retry_talk = None
+        self._merchant_reopen = None
+        self._shop_selection = None
+        release_merchant_talk(state.name, dialog.npc_id)
+        logger.warning(
+            "merchant-drive: dealer_counter_yield (bot=%s reason=%s agent=(%s,%s))",
+            state.name,
+            self._counter_lease.reason,
+            state.x,
+            state.y,
+        )
 
     def _shop_loop_action(
         self, state: BotState, actions: tuple[GameAction, ...], tracker: NativeGameplayTracker
