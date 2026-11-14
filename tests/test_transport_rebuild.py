@@ -301,22 +301,21 @@ def test_pending_character_itch_cannot_bypass_rebuild_backoff(
     host.stop()
 
 
-def test_budget_is_per_window_and_includes_repeated_deaths_after_success(
+def test_budget_bounds_consecutive_failed_logins_and_resets_next_window(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     host, now = rebuild_host(tmp_path, monkeypatch)
     agent = next(iter(host.agents.values()))
-    for _ in range(host.MAX_TRANSPORT_REBUILDS):
-        agent.client.rx_error = ValueError("bad frame")
-        now[0] += 1
-        host.step()
-        now[0] += 5
-        host.step()
-        assert agent.online
-    agent.client.rx_error = ValueError("bad frame again")
+    agent._client_factory = lambda entry: TransportClient(entry, fail=True)
+    agent.client.rx_error = ValueError("bad frame")
     now[0] += 1
     host.step()
+    gate = host._connect_gates[agent.persona.persona_id]
+    for _ in range(host.MAX_TRANSPORT_REBUILDS):
+        now[0] += gate.delay()
+        host.step()
+        assert not agent.online
     now[0] += 1000
     host.step()
     assert not agent.online
@@ -324,6 +323,7 @@ def test_budget_is_per_window_and_includes_repeated_deaths_after_success(
     assert agent.rebuild_attempts == host.MAX_TRANSPORT_REBUILDS
     monkeypatch.setattr(host, "_scheduled_on", lambda *_: False)
     host.step()
+    agent._client_factory = TransportClient
     monkeypatch.setattr(host, "_scheduled_on", lambda *_: True)
     host.step()
     assert agent.online
@@ -428,3 +428,31 @@ def test_other_agent_thread_keeps_ticking_during_blocked_relogin(
         host.stop()
     assert not scheduler.is_alive()
     assert agent.client.connected is False  # host.stop owns final release
+
+
+@pytest.mark.parametrize("error_type", [ValueError, ConnectionError])
+def test_six_successful_rebuild_cycles_each_resume_real_decisions(
+    tmp_path, monkeypatch, error_type
+):
+    host, now = rebuild_host(tmp_path, monkeypatch)
+    agent = next(iter(host.agents.values()))
+    try:
+        for cycle in range(6):
+            decisions = agent.brain.decision_count
+            ticks = agent.tick_count
+            agent.client.rx_error = error_type("synthetic recurring transport death")
+            now[0] += 1
+            host.step()
+            assert not agent.online
+            # Detection must retain the existing backoff instead of tight looping.
+            host.step()
+            assert not agent.online
+            now[0] += 5
+            host.step()
+            assert agent.online, f"rebuild cycle {cycle + 1} failed to re-engage"
+            assert not agent.rebuild_exhausted
+            assert agent.brain.decision_count > decisions
+            agent.tick()
+            assert agent.tick_count > ticks
+    finally:
+        host.stop()

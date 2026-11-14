@@ -13906,3 +13906,90 @@ WALKABLE chebyshev<=1 cell (walkable_free=5/8), the lease is not the lever;
 (3) rebuild re-engage after repeated transport cycles (g01m02/s00 end-of-window
 freezes); (4) heavengraph :8091 died mid-window — needs an owner-side restart
 (not shepherd-permitted).
+
+## 2026-11-14 — Walkable dealer ring, eligible buy authoring, rebuild re-engage (SOL)
+
+Branch `sol/walkable-dealer-ring`, isolated from `main` at `b9dd8e5a`.
+Evidence: leg-103 receipt
+`run/plain_host_receipts/population-receipt-103-1794678631.json`, saved
+`.work/runtime/population-live/traces/`, and the `15e2402f` readout above.
+No runner or live probe was executed for this implementation.
+
+**Dealer geometry:** the old runtime filtered the script's eight route-hint
+neighbours for walkability, then ranked waiters/cells by straight-line
+proximity. That inventory was not derived from the grid around the received
+NPC, and proximity across counter walls could reserve a remaining cell for
+an agent with a much longer route. An empty/unreachable ring also fell into
+outer parking, including a current-cell MoveTo at Chebyshev two. The script
+layer has NO walkability filter; that user correction remains intact.
+`merchant_staging.py` now inventories bounded client-grid cells within one
+of the received, name-matched dealer (the pinned route remains the hint),
+excludes received occupancy before matching, and ranks by actual
+no-corner-cutting route distance. Unwalkable cells never reach matching.
+`dealer_ring_unwalkable`, `dealer_ring_unreachable`, and runtime
+`dealer_ring_grid_unavailable` name geometry refusals. Congested rings retain
+the existing body-aware off-lane queue and bounded counter lease.
+
+**Buy authoring and evidence correction:** `scripts.py:_want_refusal`'s
+`weapon_release` means a wanted dagger is already in received inventory; it
+is NOT an affirmative buy arm. The saved PipinWalker/xXLunasongXx/s00
+state/decision traces contain Knife `1201`. Buying duplicates to force a
+leg-103 purchase would violate the established want. Separately, the
+runtime shop continuation only authored actions after a shop context
+existed; an eligible idle/retained plan could have admission without the
+pre-C4 click. `PlayingClient._buy_arm_actions` now authors that approach/
+click through the existing script contact latch and runtime grid authority
+when the Novice has known inventory, no wanted weapon or sellable stock,
+and an admitted wallet. `buy_armed` names that continuation;
+`buy_authored action=NpcShopBuySelection` names the received-C4 owner mint.
+No C4 means no selection, and all existing send/offer/purchase guards remain.
+The owned-weapon and insufficient-wallet refusals are explicitly tested.
+
+**Rebuild root cause:** the per-window three-attempt cap counted successful
+recoveries, so the fourth later transport death could never reconnect.
+The receipt proves this: g01m02 is offline at sample `t=4725.1`, decides 64,
+attempts 3, exhausted true; s00 at `t=6139.5`, decides 87, has the same flags.
+At `t=7796.9` window close clears those flags, explaining the misleading
+final `attempts=0 exhausted=false` summary. `AgentHost` now caps consecutive
+failed rebuild logins with `rebuild_failures`, resets that budget after
+success, and preserves cumulative `rebuild_attempts` for receipt history.
+Existing login backoff/stagger, three-failure bound and uncertain-cleanup
+barriers remain. Six-cycle regressions check an advancing decision counter
+and subsequent ticks after every successful recovery for both fresh-client
+parse failures and reused-client socket failures.
+
+**TDD:** before production edits, the corrected initial offline regressions
+were **6 failed / 3 passed** (`.work/walkable-dealer-ring/red-final.log`),
+including the real fourth-cycle failure. Additional tests cover missing grid
+and disconnected geometry; the existing budget test now pins three
+consecutive failed logins and next-window reset. Broader focused validation
+initially passed **117 tests** before the second six-cycle transport case.
+The full gate result and final focused count are recorded below.
+
+Local test fixtures: a shared local clone checked out at the rAthena index
+revision, main's ignored iRO DB/config log, and the physical iRO wiki DB in
+`/home/otto/dev/wt-mobpos` (main's tracked wiki symlink loops to itself).
+The temporary wiki link is restored before commit and is excluded from the
+patch. No Docker/heavengraph operation, merge, `spikes/` edit, or hand-written
+SHA pin was performed. Validation logs stay in `.work/walkable-dealer-ring/`.
+
+Review added **2 failing regressions** (`red-review.log`) for a named player
+sharing one's cell and for lease expiry on a received dealer ring shifted
+within the accepted route hint. The runtime now shares received-body cell
+exclusion between paths and allocation, and `MerchantCounterLease` uses the
+same received dealer center. After those fixes the complete focused
+merchant/transport suite is **120 passed** (`green.log`).
+
+**Final full gate GREEN before commit/push:**
+`nix develop -c task --dir . check` exited **0** on the complete patch:
+**7,356 passed + 65 subtests**, **95.79% coverage**, four warnings,
+332.82 seconds in the test phase. Black (401 files), Ruff, strict mypy
+(401 source files), vulture, xenon, duplicate-code and security checks passed.
+The dedicated new-regression selection is **14 passed** (`focused-final.log`);
+the broader merchant/transport suite is **120 passed** (`green.log`).
+Final gate evidence: `.work/walkable-dealer-ring/full-gate.log`.
+Files: `src/robots/app/agent_runtime.py`,
+`src/robots/app/merchant_counter_lease.py`,
+`src/robots/app/merchant_staging.py`, `src/robots/app/playing_runtime.py`,
+`tests/test_transport_rebuild.py`, `tests/test_walkable_dealer_ring.py`,
+`wiki/log.md`.
