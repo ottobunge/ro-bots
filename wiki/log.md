@@ -13663,3 +13663,102 @@ friction; (2) register 0x019b in the packet table (rx death) and resume the
 decide loop after a rebuild (the rebuild seam exists; the brain-side resume
 is the gap); (3) sell-cycle sustenance needs the trip minimum to count
 in-flight loot or a lower threshold when the agent is already in town.
+
+## [2026-11-14] Dealer-ring convergence and bounded counter ownership (SOL slice)
+
+Evidence: `run/plain_host_receipts/population-receipt-102-1794652369.json`,
+leg-102 wiki entry in `c9bb2f67`, and the existing
+`.work/runtime/population-live/traces/pop_0003_{s00,g00m01,g00m00}.jsonl`
+on main. Implementation starts from main `2feebb12`, in the isolated worktree
+`/home/otto/dev/wt-dealer-ring-convergence`, branch `sol/dealer-ring-convergence`.
+All diagnosis and replay are offline.
+
+**Evidence correction:** the retained action traces do not establish an
+indefinite single-cell lock or a buy-specific allocation bypass. s00 sends the
+final step `(172,128)->(172,129)` at **08:07:37.212 UTC**, clicks at
+08:07:39.217 and sells at 08:07:46.251. Its four `staging_occupied` departure
+refusals run from 08:07:48.255 through 08:08:19.496; departure dispatch resumes
+at **08:08:29.520**. g00m01 advances `(172,128)->(173,128)` at 08:08:21.304,
+then **`(173,128)->(173,129)` at 08:08:32.348**, clicks at 08:08:34.350 and
+sells at 08:08:41.366. Thus both cited adjacency cells are used, and the
+leg-93 corridor handover law still turns over in these received traces.
+The zero-buy receipt stands; these agents carry the fixture Knife and later
+emit `weapon_release`, which is a refusal, not evidence of admitted buying.
+The reconstructed receipt lost the original per-sample shop/gate fields, so
+the 16 range warnings cannot prove that one particular body permanently held
+one cell. No live C6 acceptance is claimed by this slice.
+
+**Offline root causes:** before this change, `merchant_staging.py:78-84`
+ordered queue origins by actor ID, and `_ring_allocation` at **89-110**
+removed a candidate for each earlier origin even when that body had not
+moved. A farther, stationary low-ID body could therefore reserve the sole
+reachable adjacency cell ahead of an agent already one step away. That
+near waiter receives an outer queue target instead of its final-cell walk.
+The regression reproduces `(173,128)` being sent to `(174,128)` while
+`(173,129)` is free. This is an allocation starvation reproduction, not a
+claim that the missing leg-102 perception snapshots prove that exact ordering.
+
+The unbounded ownership rule was explicit in `_dealer_ring_target` at
+**265-285**: one's current ring cell was returned without a clock or
+completion condition; peers correctly kept received bodies blocked until
+movement/vanish. `scripts.py:857-861` also holds before allocation for a
+bound offer. The existing handover/yield machinery rechecks vacancies and
+clears the exit corridor; it did not expire the holder's own visit. **Buy and
+sell already shared the approach** (`scripts.py:_merchant_engage` and
+`PlayingClient._staging_travel_target`), rather than having separate sell-only
+queues. A failed dialogue could additionally intercept movement; extending
+only the allocator would leave that UI barrier untouched.
+
+**Fix:** allocate the existing free, walkable, body-reachable eight-neighbor
+candidate set by physical proximity before the stable actor-ID tie-break.
+Alternate `(172,129)` / `(173,129)` targets and fresh vacancies remain immediate;
+Chebyshev > 1 never authorizes a dealer click. `MerchantCounterLease` tracks
+only this client's name/map/epoch, received counter presence, own dialogue
+and monotonic clock. Completion yields immediately, or occupancy expires at
+**180 seconds**, including a bound offer or repeated timeout/reopen rounds.
+An explicit timeout retry does not masquerade as completed trade and does
+not renew the occupancy deadline.
+
+The common shop execution seam handles lease release before buy/sell minting,
+including retained farm plans and script-level bound-offer holds. It sends one
+honest close for its own dialogue, invalidates that offer and releases its own
+talk latch. Movement still uses the normal stance/pending/path/body guards;
+poison, send-failure and uncertain-cancellation barriers remain fail-closed.
+A yielding holder parks at a reachable off-exit-lane cell **5-6 cells** from
+the dealer, beyond the radius-4 allocation-origin set, so its parked body
+cannot immediately reserve the counter again. Rejoin starts only after
+received parking and a **30-second** cooldown. No peer body is erased by a
+timer; the next client enters only after received movement frees the cell.
+No allocator reads peer inventory, private intent, another client or shared
+reservations. Existing prontera staging timeout and warp geometry remain intact.
+
+**RED -> GREEN:** final regressions against unchanged base production files:
+**15 failed, 2 passed**; implementation: **17 passed**. Focused dealer,
+queue, walkability, buy-open, stock-backoff and C6-bind suite: **97 passed**.
+Coverage includes the last-cell reservation failure for both buy and sell,
+real pinned-map alternate/vacancy selection, independent-client stalled-holder
+handover for both execution seams, completion with a still-admitted next buy,
+bound-offer expiry, completed/deferred talk-latch release, epoch reset,
+received-parking cooldown, and the preserved
+uncertain-dialogue barriers. The former leg-92 multi-client replay and real
+C4/C5/C6 regressions remain green. Local receipts:
+`.work/dealer-ring-convergence/{red-final,green,green-extra,full-gate}.log`.
+
+Ignored fixtures use the locally available pinned rAthena submodule, main's
+iRO DB and config log, and the physical iRO wiki corpus from `wt-mobpos`
+(main's tracked wiki DB link loops to itself). The temporary corpus link is
+restored before commit and excluded from the patch. No runner or live probe,
+Docker/heavengraph operation, `spikes/` edit, hand-written SHA pin or main merge.
+
+**Final full gate GREEN before commit/push:** `nix develop -c task --dir . check`
+exited **0**: **7,323 passed + 65 subtests**, **95.77% coverage**, four warnings,
+321.13 seconds in the test phase. Black (399 files), Ruff, mypy (399 source
+files), vulture, xenon, duplicate-code and security checks passed. The final
+snapshot includes the completed/deferred contact-latch regressions; the focused
+suite passes 97 tests. Earlier test-only typing/lint findings were corrected;
+there are no outstanding gate failures. Lease-driven outer targets report
+`preferred_chebyshev<=1=released`, distinguishing voluntary release from actual
+ring unavailability. Files: `src/robots/app/merchant_staging.py`,
+`src/robots/app/merchant_counter_lease.py`, `src/robots/app/playing_runtime.py`,
+`tests/test_dealer_ring_convergence.py`, `wiki/log.md`. Commit/push the branch
+for review; leave main unmerged and live acceptance for a separately authorized leg.
