@@ -107,6 +107,14 @@ def _tap_capacity_freshness(
     )
 
 
+def _prices_consistent(facts: QualifiedShopItem) -> bool:
+    return (
+        _integer(facts.stable_price)
+        and _integer(facts.stable_discount_price)
+        and facts.stable_discount_price <= facts.stable_price
+    )
+
+
 def _facts_terms(facts: QualifiedShopItem, context: PurchaseAdmission) -> tuple[_Term, ...]:
     offer = context.offer
     return (
@@ -153,7 +161,11 @@ def _facts_terms(facts: QualifiedShopItem, context: PurchaseAdmission) -> tuple[
         _Term("f_ordinary", facts.ordinary_shop is True, f"{facts.ordinary_shop}"),
         _Term("f_nonstack", facts.nonstackable is True, f"{facts.nonstackable}"),
         _Term("f_price", _integer(facts.stable_price), f"{facts.stable_price}"),
-        _Term("f_disc", _integer(facts.stable_discount_price), f"{facts.stable_discount_price}"),
+        _Term(
+            "f_disc",
+            _prices_consistent(facts),
+            f"{facts.stable_discount_price}",
+        ),
         _Term(
             "f_valid",
             finite_capacity_time(facts.valid_until) and context.now < facts.valid_until,
@@ -182,7 +194,7 @@ def _resources_terms(
         ),
         _Term(
             "balance",
-            _integer(currency.balance, 0) and currency.balance >= facts.stable_discount_price,
+            _integer(currency.balance, 50) and currency.balance >= facts.stable_discount_price,
             f"balance={currency.balance} price={facts.stable_discount_price}",
         ),
         _Term(

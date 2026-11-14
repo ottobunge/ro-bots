@@ -1441,7 +1441,7 @@ class PlayingClient:
             view = self._planning_npc_view(now)
         except NativeTelemetryUnavailable:
             return None
-        if not self._npc_self_ready(view, self._epoch_character, self._epoch):
+        if not self._shop_self_ready(view):
             return None
         return self._purchase_snapshot(now, self._tracker)
 
@@ -1906,15 +1906,39 @@ class PlayingClient:
             return False
         return shop_sell_entries(lists[-1].rows, stock) == action.sales
 
+    def _shop_self_ready(self, view: NativeGameplayView) -> bool:
+        """Use received dealer adjacency after a real approach, like sell-open.
+
+        A nonzero walk leaves arrival_confirmed false. Requiring it here
+        discarded the issued C5 before C6 could bind, then denied purchases
+        even if an offer survived. Outstanding motion and identity/pose loss
+        still fail closed throughout binding and purchase dispatch.
+        """
+        dialog = self._npc.view
+        if dialog is None or self._tracker is None:
+            return False
+        return all(
+            (
+                self.wire.char_name == self._epoch_character,
+                self.wire.native_epoch == self._epoch == dialog.epoch,
+                self._sell_actuation_ready(view),
+                self._pending is None,
+                # Keep new received motion as a deal-ender. Only the walk
+                # that predates the dealer's prompt may lack arrival proof.
+                view.arrival_confirmed
+                or (view.position is not None and view.position.seq <= dialog.sequence),
+                dialog.map_name == self._planning_npc_map_identity(view),
+                self._dealer_adjacent(self._tracker, dialog.npc_id),
+            )
+        )
+
     def _check_shop_context(self, view: NativeGameplayView, now: float) -> None:
+        context_ok = _finite_npc_time(now) and self._shop_self_ready(view)
         ready = all(
             (
-                _finite_npc_time(now),
-                self._npc_self_ready(view, self._epoch_character, self._epoch),
+                context_ok,
                 not self._npc.failed,
                 not self._npc.cancel_uncertain,
-                self._npc.view is not None
-                and self._npc.view.map_name == self._planning_npc_map_identity(view),
             )
         )
         # e2e-49: the BOUND-offer lifetime uses a NARROWER predicate than the
@@ -1928,17 +1952,9 @@ class PlayingClient:
         # made the decide-paced mint unreachable (live tap: "C6 BOUND
         # (seq=71 rows=19)" then "offer invalidated (not-ready=True
         # dialog-none=False past-deadline=True)"; the identical signature
-        # fires on the motion/sit boundaries via _npc_self_ready, so the
+        # fires on the motion/sit boundaries via self-readiness, so the
         # conjunction alone cannot discriminate). Self-activity and identity
         # still kill it: they are the real deal-enders.
-        context_ok = all(
-            (
-                _finite_npc_time(now),
-                self._npc_self_ready(view, self._epoch_character, self._epoch),
-                self._npc.view is not None
-                and self._npc.view.map_name == self._planning_npc_map_identity(view),
-            )
-        )
         self._shop_context.check(self._npc.view, ready, now, context_ok=context_ok)
 
     def _shop_dialogue(self, now: float) -> NpcDialogue | None:

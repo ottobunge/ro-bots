@@ -13355,3 +13355,70 @@ Seed handoff to leg 102: 174/198/153/134/119/127/338.
 Next dominant signature: **buy-open offer never binds (stage=opening,
 offer_bound=False)** — the C6 buy-list path needs the same
 framer/tracker treatment the C7 sell path got.
+
+## C6 BUY-LIST BIND — preserve the buy exchange after a real dealer approach (2026-11-14)
+
+**Baseline / evidence:** isolated branch `sol/c6-buy-list-bind`, based on
+`c93c13c2`. Leg-101 receipt
+`run/plain_host_receipts/population-receipt-101-1794617719.json` (evidence
+commit `af9f8a3e`) records s00's first sale, +213 zeny, seven completed sell
+cycles, and zero `NpcShopBuySelection`; the saved traces under
+`.work/runtime/population-live/traces/` cover the 01:00–02:30 UTC window.
+The recurring `opening / requests=1 / offer_bound=False` signature motivates
+this slice; it does not prove that a C6 was received in that live window.
+All diagnosis and validation here are offline; no population runner or live
+probe was started, and no character baseline changed.
+
+**Source verification / root cause:** pinned rAthena `e985006171d2`,
+`packets_struct.hpp:3065–3080`, defines MAIN20180704 C6 rows as
+`<IIBH>` (price, discounted price, item type, 16-bit item ID), eleven bytes.
+C7 in `packets.hpp:742–753` is `<HII>` (inventory index, price, overcharge),
+ten bytes with no item ID. `npc.cpp:2411–2414` maps C5 type zero to C6 and
+type one to C7. `clif.cpp:12297–12300` confirms **C8 sends a purchase;
+CA is the received purchase result**, not a request. The existing append-only
+packetdb registration already frames C6/C7 as variable-length packets; no
+packetdb/spikes change is needed.
+
+The synthetic byte-exact C6 `c6000f00320000003200000004b104` passes the actual
+client framer and retained ring, and the tracker does not route it through
+`_sell_list`. The break is in `PlayingClient._check_shop_context`: after a
+nonzero approach, C4 permits buy-open/C5, but the next observation checks
+`_npc_self_ready` -> `_npc_motion_ready` -> stale `arrival_confirmed=False`.
+That invalidates `NativeShopContext._issued` before `_consume_offer` sees
+C6 (`C6 seen ... issued=False`), leaving `state.shop_offer` empty. The same
+stale arrival requirement in `_purchase_admission` independently prevented a
+purchase even if binding survived. This is an offline reproduced defect;
+the live absence of C4/C5 in an `opening` exchange is not claimed resolved
+from synthetic receipts.
+
+**Change:** both receive binding and purchase admission now share shop-specific
+self-readiness using current session/map identity, alive/standing/rest guards,
+no pending walk and received dealer adjacency, matching sell-open's spatial
+contract. A newer received walk after the dealer prompt still kills the deal;
+only the earlier approach may retain a false arrival flag. Existing offer
+TTL, owner/cursor binding, malformed-frame, uncertain-send and price/quantity
+checks remain enforced. Purchases additionally require at least **50 zeny**
+and a positive discount price no greater than the base price; unknown items,
+ambiguous rows and inconsistent offers cannot authorize spending.
+
+**TDD / validation:** final regression file against the unchanged baseline:
+**RED 1 failed, 11 passed**; failure explicitly shows the issued binding dying
+before C6. Separate RED cases exposed a cheap purchase below the 50-zeny
+floor and a discount above base price with enough wallet balance. Focused
+GREEN: **195 passed**, covering twelve new regressions plus existing buy,
+sell, binding, recovery, timeout and golden telemetry suites. Synthetic traffic covers
+opening -> C4 -> `NpcShopBuySelection`/C5 -> C6 -> `state.shop_offer` ->
+`NpcShopPurchase`/C8 exactly once, as well as C7-shaped C6, zero/unknown IDs,
+duplicated rows, inconsistent prices, low balance, new/pending walks, sitting,
+vanish and distance boundaries. Local RED/GREEN logs are under
+`.work/c6-buy-list-bind/`.
+
+**Full gate GREEN before commit/push:** `nix develop -c task --dir . check`
+(exit 0): **7,286 passed + 65 subtests, 1 existing optional corpus skip,
+95.71% coverage**, test phase 328.42 seconds. Black, Ruff, mypy (396
+source files), vulture, xenon, duplicate-code and security checks passed.
+The stricter price validation preserves the existing golden telemetry
+format. Full output: `.work/c6-buy-list-bind/full-gate.log`.
+Files: `src/robots/app/playing_runtime.py`,
+`src/robots/adapters/native_purchase.py`, `tests/test_c6_buy_list_bind.py`,
+`wiki/log.md`. No merge to main or live economy acceptance is claimed.
