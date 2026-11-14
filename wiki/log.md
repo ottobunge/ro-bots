@@ -13303,3 +13303,55 @@ Files changed in this slice:
 - `tests/test_trip_grid_disengage.py`, `test_trip_pacing_survival.py`, `test_merchant_travel_patience.py`, `test_stop_and_swing.py`
 - `scripts/diagnose_trip_grid.py`
 - `wiki/log.md`, `wiki/evidence/trip-grid-100/grid.txt`, `wiki/evidence/trip-grid-100/diagnosis.json`
+
+
+## Leg 101 — trip convergence closed live; first s00 sell; armed kills fleet-wide (2026-11-14)
+
+Window Saturday [5, 2.0, 3.5] = 02:00-03:30 Madrid on the e2e world
+(`systemd-run --user --unit=leg101-runner`, 9000 s duration, heavengraph
+:8091 decide / :8092 chat). Runner DONE: **35,490 steps, 0 errors**,
+0 TRANSPORT DOWN all leg, 7/7 agents online and deciding every mid-window
+sample (window totals 140-226 decides per agent).
+
+**Target 1 — trip convergence + s00 first sell: PASS.** The 17/14-cell
+chunk fix (da924eb9) carried live traffic: **171 trip legs sent at
+destination_chunks pace, 41 fleet map crossings**, no chunk drops.
+s00 (YuffieFy81) completed the full town round trip leg-100 could never
+start: pay_fild04 (201,176) -> moc_fild01 01:12 -> prt_fild08 01:15 ->
+prontera 01:20 -> **prt_in (dealer 110001762) 01:24** -> **NpcShopSell
+01:25:42 UTC, sales [[3,19],[4,1],[5,5]]** -> prontera -> back to
+prt_fild08 farm 02:04. DB ground truth: **s00 zeny 125 -> 338 (+213) —
+the flat-forever seed moved.** Leg-100's box-in (s00 pinned at pay_fild04
+x194-241, 50 releases / 44 retries / 0 completions) is closed; this
+receipt shape counts chunk legs (171) instead of release/retry pairs.
+
+**Target 2 — disengage + deaths: PASS (bounded evidence).** Fleet
+attack_refusals: `pending_walk` 23, `disengage_active` 1 — the bounded
+8 s disengage fired and no engagement ran away. No death counters in this
+receipt shape (swing_conversion_v1) and no death/latch signatures in the
+runner log; fleet damage_taken 82 events, all agents kept farming.
+Leg-100's 10 self-deaths not comparable against this shape.
+
+**Target 3 — pickups + sell cycles fleet-wide: PASS.** Swing conversion
+(swing_conversion_v1, 01:55-04:25 UTC capture): **135 attacks authored ->
+111 swings -> 104 damage events -> 2,582 damage -> 15 kill credits ->
+base_exp +37 / job_exp +33 -> 18 drops seen -> 9 pickup attempts / 8
+pickup successes.** All seven agents completed an NpcShopSell cycle
+(one each in-window; g00m02 two), trace-verified at the prt_in dealer;
+DB zeny deltas: +8/+3/+44/+13/+5/+7/+213 (166/195/109/121/114/120/125 ->
+174/198/153/134/119/127/338). The inventory Knife rows (1201, equip=2,
+all seven) are the Oct-28 fixture grant (2b0f249e), NOT this leg's
+purchases: **0 NpcShopBuySelection in-window** and the buy-open stayed
+`held by stage (opening ... offer_bound=False)` — the C7 buy-offer
+binding is the remaining gap. Armed kills now precede the economy leg,
+so the buy leg is the next frontier, not a prerequisite of farming.
+
+**Target 4 — run health: PASS.** 0 step errors, 0 TRANSPORT DOWN,
+worldfeed :8402 clean, decide/chat backends answered all leg,
+s00 damage 877 (30 events) + 1 kill credit after equipping.
+
+Receipt: `run/plain_host_receipts/population-receipt-101-1794617719.json`.
+Seed handoff to leg 102: 174/198/153/134/119/127/338.
+Next dominant signature: **buy-open offer never binds (stage=opening,
+offer_bound=False)** — the C6 buy-list path needs the same
+framer/tracker treatment the C7 sell path got.
