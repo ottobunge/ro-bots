@@ -14030,3 +14030,50 @@ Combat proof (swing_conversion): 6/7 agents attacked, 14 kill credits, 17
 drops seen, 5 pickups; g01m01 1,157 damage / 5 kills / 2 pickups. Seed
 handoff: `seed-zeny.json` refreshed to the closing DB values (only delta:
 g01m01 129→133).
+
+## Leg 105 — 29-agent scale test (2026-11-16, window 14:00-15:30 Madrid)
+
+Runner: systemd-run leg105-runner, 14:07:34-16:37, duration 9000 s, DONE:
+26,287 steps, 0 step errors, receipt
+`run/plain_host_receipts/population-receipt-105-1794834432.json`.
+
+Pre-launch bundle bugs (fixed before/during launch, data-only, no src edits):
+(1) the merged seed-105 `population.json` spec concatenated the two bundles'
+`friends_per_group` rows (`[2,3]+[3,4]` -> `[2,3,3,4]`), which failed
+`load_population`'s 2-tuple unpack — normalized to `[2,4]`; (2) `seed` was the
+provenance string `\"3+105x22\"` where the loader requires int — set to 105;
+(3) the runner's `--manifest` (.work host-manifest, oct 22) held only the
+original 7 identities while the 22 new ones lived in the committed
+`pop105/manifest.json` — merged into the .work manifest, and pop105's
+`login_port` 16900 corrected to the e2e world's 26900. Persona rows (world
+truth) untouched; neither `.spec` nor `.seed` is consumed anywhere (verified).
+
+Window facts: all 29 agents online by t=480; decides 5,307 total = 75-305 per
+agent (median 233), inside the leg-104 band (149-309); movement 29/29 (1-56
+position changes); social heavy (131 GuildInvite, 9 FoundGuild, 19
+InviteToParty, 43 PartyChat, 2,640 Say, 33 Attack, 7 Loot, 6 TalkToNpc).
+
+Backend load: the 16-slot Q4 backend sat saturated — decide p50 9.8 s (vs
+0.65 s solo), ~10% of decide attempts hit the 90 s timeout (~1,785
+PlayingBackendError, evenly spread ~8/agent, startup burst + sustained
+~19/min); cadence held to window close, no queue collapse, transport churn 14
+drops all rebuilt (exhausted=false).
+
+Verdicts: T1 BUY FAIL — 0 NpcShop actions leg-wide, knife_300002 still 0,
+zeny_wing 157 unchanged. T2 SELL CADENCE FAIL — 0 sell cycles (zeny flat for
+all 6 merchant agents); the lease machinery ran (68 leases, 32 dealer_queue
+yields, 40 dealer_talk_out_of_range, 19 leased_no_progress) but no agent
+converted a lease into a shop open — binder named: dealer adjacency never
+reached under decide saturation + yield discipline (only 6 TalkToNpc all leg).
+T3 SCALE PASS with degradation (cadence in band, saturation bounded). T4
+NEW-AGENT HEALTH PASS — 22/22 online, decided, moved; zero first-login defects
+once identities were merged. T5 HEALTH PASS — 0 step errors; 0 transport
+exhaustions.
+
+DB ground truth: zeny flat vs seed for 28/29; only delta pop_0003_s00
+(YuffieFy81) 346->353 (+7, no shop action in traces — unattributed, flagged).
+Seed handoff: `seed-zeny.json` refreshed (single delta 346->353).
+
+Next leg: the merchant chain needs the shop open under saturation — either a
+decision-independent approach (adjacency walk on the keepalive pump, not the
+decide path) or a lower agent count / higher backend slots for merchant legs.
