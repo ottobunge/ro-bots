@@ -13993,3 +13993,40 @@ Files: `src/robots/app/agent_runtime.py`,
 `src/robots/app/merchant_staging.py`, `src/robots/app/playing_runtime.py`,
 `tests/test_transport_rebuild.py`, `tests/test_walkable_dealer_ring.py`,
 `wiki/log.md`.
+
+## Leg 104 — walkable-ring validation window (2026-11-16 09:00–10:30 Madrid)
+
+Shepherded launch 08:49:30 CET under `systemd-run --unit=leg104-runner` after a
+two-probe preflight (health 200/200 on both heavengraph servers; real-shape
+decide 0.59 s / 10 answers against the freshly restored :8091). Window
+[0, 9.0, 10.5] opened and closed exactly on schedule; the runner completed its
+full 9300 s: DONE **36,521 steps, 0 step errors**, receipt
+`run/plain_host_receipts/population-receipt-104-1794815372.json`.
+
+Target verdicts (T1–T5):
+
+- **T1 walkable ring PASS.** All six prt_in visitors occupied Chebyshev-1
+  dealer cells in-window (43–105 samples each; dealer 172,130), and the shop
+  chain fired from inside the ring — g01m01 sold from (173,129). No park-at-2
+  blocked any shop action.
+- **T2 buy bind FAIL.** `NpcShopBuySelection` (present in
+  `src/robots/domain/actions.py`, `native_npc_dialogue.py`,
+  `native_shop_context.py`) was authored 0 times in-window; 0 buy mentions in
+  any decide_response/goal_review across all 7 agents; no agent's zeny
+  decreased. The buy arm never engaged this leg.
+- **T3 sells FAIL (1/7 vs the 3/7 threshold).** Single completed sell cycle:
+  g01m01 `NpcShopSellOpen` 09:10:14 → `NpcShopSell` 09:10:16, sales=[[3,1]] →
+  +4 zeny, DB-verified (129→133). s00 made no trip (0 sells, 0 attacks,
+  346z flat) and remains the frontier.
+- **T4 rebuild re-engage PASS.** 7 TRANSPORT DOWN events (native keepalive
+  send failed), every one rebuilt with decisions resuming monotonic;
+  `transport_recovery` exhausted=false ×7; no agent stuck offline — the
+  failed-login-counting fix (ff096992) held.
+- **T5 health PASS.** 0 step errors; decides 149–309 per agent at full cadence
+  (2,470–2,602 ticks each); 0 PlayingBackendError across the window; bounded
+  disengages only.
+
+Combat proof (swing_conversion): 6/7 agents attacked, 14 kill credits, 17
+drops seen, 5 pickups; g01m01 1,157 damage / 5 kills / 2 pickups. Seed
+handoff: `seed-zeny.json` refreshed to the closing DB values (only delta:
+g01m01 129→133).
