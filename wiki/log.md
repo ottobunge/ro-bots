@@ -14077,3 +14077,69 @@ Seed handoff: `seed-zeny.json` refreshed (single delta 346->353).
 Next leg: the merchant chain needs the shop open under saturation — either a
 decision-independent approach (adjacency walk on the keepalive pump, not the
 decide path) or a lower agent count / higher backend slots for merchant legs.
+
+## Merchant approach on the keepalive pump (2026-11-16, SOL implementation)
+
+Leg 105's receipt `population-receipt-105-1794834432.json` at `30fda817`
+showed the remaining decision-dependent gap: 68 merchant-counter leases,
+32 dealer-queue yields and 40 out-of-range dealer talks produced only six
+TalkToNpc actions and no shop actions under decide saturation. The received
+shop chain already survives a dead backend once adjacent (leg 103).
+
+`PlayingClient._keepalive` now advances outbound merchant walks on every
+readiness-gated host pump invocation, independently of decide completion and
+of the transport keepalive's 20-second cadence. The daemon thread remains
+transport-only. State projection remains free of new movement sends.
+
+Admission reuses `merchant_drive_cell` and `_merchant_trip_allows`: the
+existing known-inventory, novice, stock/buy-budget, trip minimum, route and
+retry-cooldown rules retain authority. Credited in-flight loot still requires
+pickup before travel. A bagged field batch can start its trip without a
+script evaluation; town staging toward the (177,221) entry warp and each
+subsequent route leg use `merchant_travel_target`. The runtime retains sole
+walkability/reroll authority, including the grid-derived walkable ring around
+the received Weapon Dealer; no script walkability filter was added.
+
+The pump invokes the ordinary `_perform_move` machinery. `_await_pending`
+holds an in-flight walk, refreshes its clock on received position progress,
+and releases a silent walk after one second without progress. Completed or
+released walks can advance on the next host tick without waiting five script
+evaluations or a decide. Clear/obstructed route chunks retain the server's
+17/14-cell limits; prt_in retains its existing local path stepping and body
+avoidance. Session/map changes still release the old pending slot. Standing,
+rest, absolute 1-HP, active combat withdrawal, passive typed-plan and NPC
+actuation barriers remain in force.
+
+An in-flight decide's `npc_recovery_hold` does not block walking. The pump
+does not evaluate `_merchant_step`, consume its talk-once latch, click an NPC,
+close a shop, or author a shop selection. When allocation retains the agent's
+adjacent cell, or a dialog/offer/counter-yield owns the visit, the pump yields
+to the existing TalkToNpc / NpcShopSellOpen / NpcShopBuySelection chain.
+
+TDD: `tests/test_keepalive_merchant_approach.py` first failed three approach
+regressions against the unchanged runtime (no pump walks). Its 17 final cases
+cover decision-held convergence and unchanged C4/C7 selling, progress-clock
+pacing, no replacement of an in-flight walk, admission/pose/grid/ring/cooldown
+barriers, field batch receipt, 17/14-cell limits, map changes, and bounded
+trip release/retry. Existing walkable-ring and merchant-travel-patience
+contracts require no changes. All validation is offline; no runner, live
+probe, Docker or heavengraph infrastructure operation was used.
+
+Gate reconciliation also initializes the existing minimal NPC-retry stub
+with no gameplay state, so its keepalive-only test remains isolated from
+approach walking. The first full run exposed a pre-existing leg-105 artifact
+mismatch: the population loader test still expected seven agents against
+the committed 29-agent population. It now checks 24 grouped agents in seven
+groups plus five solos, and verifies names against both committed manifests
+(the original seven and the 22-agent expansion); population data is unchanged.
+The real-grid trip simulation now acknowledges walks issued during native
+event draining as well as script dispatch. Previously its acknowledgement
+capture began after draining, so the new pump's real sends were ignored and
+the fake server simulated a permanent stall. Its route-distance convergence,
+17/14-cell server-limit and trip-deadline assertions remain intact.
+
+Final validation: `nix develop -c task --dir . check` GREEN — all static
+checks passed; **7,372 passed, 1 skipped, 65 subtests passed**, 95.80% coverage
+(85% required), in 520.66 seconds. Focused merchant/retry/artifact checks:
+56 passed; the corrected real-grid convergence pair: 2 passed. The branch
+is for coordinator diff review and merge; this implementation does not merge.

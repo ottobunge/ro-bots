@@ -80,7 +80,9 @@ from robots.app.scripts import (
     NOVICE_WANTED_WEAPONS,
     _dealer_talk,
     _merchant_step,
+    _merchant_trip_allows,
     merchant_admission_refusal,
+    merchant_drive_cell,
     merchant_pickup_required,
     merchant_trip_active,
     needs_npc_preparation,
@@ -3621,6 +3623,47 @@ class PlayingClient:
         if not self.npc_recovery_hold:
             self._retry_timeout_dialogue(now)
 
+    def _advance_merchant_approach_on_tick(self) -> None:
+        """Walk admitted trips on the host pump, independently of pending decides.
+
+        Never evaluate the shop script here: even discarding its TalkToNpc
+        would consume the contact latch. Runtime geometry selects the leg;
+        the ordinary move gate owns progress-clock release and wire pacing.
+        Once allocation retains our adjacent cell, the existing contact and
+        received-shop chain take over without any pump-authored NPC action.
+        """
+        state, tracker = self.last_built_state, self._tracker
+        if state is None or tracker is None or not self._merchant_approach_ready(state):
+            return
+        destination = merchant_drive_cell(state)
+        if destination is None or not _merchant_trip_allows(state, destination):
+            return
+        pos = tracker.view.position
+        if pos is None or self._await_pending(tracker.view, pos):
+            return
+        target = self.merchant_travel_target(state.map_name, (state.x, state.y), destination)
+        if target is not None and target != (state.x, state.y):
+            self._perform_move(state, target)
+
+    def _merchant_approach_ready(self, state: BotState) -> bool:
+        tracker = self._tracker
+        return all(
+            (
+                self.mechanical_recovery_allowed,
+                state.hp > 1,
+                self._disengage.source(state, self.mob_db, self._now()) is None,
+                self.cache is not None,
+                tracker is not None and self._sell_actuation_ready(tracker.view),
+                tracker is not None and tracker.npc_dialog_open is None,
+                self._npc.view is None,
+                not self._npc.actuation_blocked,
+                not self._npc.failed,
+                state.shop_offer is None,
+                self._counter_lease.reason is None,
+                not merchant_pickup_required(state),
+            )
+        )
+
     def _keepalive(self) -> None:
         """Pump before host cognition; getters/state projection never send.
 
@@ -3659,6 +3702,7 @@ class PlayingClient:
                 self._keepalive_failed = False
                 self._keepalive_at = now
                 self._retry_blocked_dialogue_on_tick(now)
+            self._advance_merchant_approach_on_tick()
             self._ensure_keepalive_thread()
 
     def _ensure_keepalive_thread(self) -> None:

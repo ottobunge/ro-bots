@@ -86,6 +86,7 @@ def test_real_grid_trip_chunks_converge_under_official_server_limits(field, star
     last_position = None
     for tick in range(200):
         now[0] = tick * 2.3
+        before = len(wire.moves)
         client.drain_native_events()
         state = client.build_native_state(Goal.GRIND)
         assert state.inventory_known
@@ -96,7 +97,6 @@ def test_real_grid_trip_chunks_converge_under_official_server_limits(field, star
             last_position = position
         if position == (17, 165):
             break
-        before = len(wire.moves)
         for action in farm.step(state).actions:
             client.perform_native(action)
         if len(wire.moves) != before:
@@ -106,7 +106,8 @@ def test_real_grid_trip_chunks_converge_under_official_server_limits(field, star
             assert cells <= 14 or server_clear(field, position, endpoint)
             assert cells <= 17
             sent.append(endpoint)
-            # Each author tick is 11.5s apart; all <=17-cell legs finish first.
+            # Acknowledge walks from either the host pump or the script limb.
+            # The progress clock, rather than script patience, paces the next leg.
             wire.add(walk_ack(position, endpoint))
     assert position == (17, 165)
     assert distances == sorted(set(distances), reverse=True)

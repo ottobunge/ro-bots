@@ -28,6 +28,9 @@ def _runtime(now: list[float], budget: int = 3) -> PlayingClient:
     client.wire = _RecordingWire()
     client._npc = NativeNpcDialogue()
     client._metadata_cursor = 50
+    # This focused retry stub has no received gameplay state for approach walking.
+    client._last_built_state = None
+    client._tracker = None
     client._now = lambda: now[0]
     client._npc_retries = budget
     client._npc_retry_at = 0.0
