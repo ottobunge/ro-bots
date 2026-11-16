@@ -4,7 +4,7 @@ from typing import Any
 
 import httpx
 
-SYSTEMONE_TIMEOUT_S = 30.0
+SYSTEMONE_TIMEOUT_S = 60.0
 
 
 class SystemOneError(RuntimeError):
