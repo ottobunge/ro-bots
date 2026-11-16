@@ -434,13 +434,16 @@ def test_load_population_reads_the_checked_in_live_artifact() -> None:
     loaded = load_population(path)
     grouped = [p for p in loaded.personas if p.group_id is not None]
     solos = [p for p in loaded.personas if p.group_id is None]
-    assert len(grouped) == 6
-    assert len({p.group_id for p in grouped}) == 2
-    assert len(solos) == 1
+    # Leg 105 expanded the live artifact from the original seven to 29 agents.
+    assert len(grouped) == 24
+    assert len({p.group_id for p in grouped}) == 7
+    assert len(solos) == 5
     # The loaded names are the world's character names (the manifest match).
     manifest = json.loads((REPO / "run/worlds/population-live/manifest.json").read_text())
+    expansion = json.loads((REPO / "run/worlds/population-live/pop105/manifest.json").read_text())
     assert {p.persona_id: p.name for p in loaded.personas} == {
-        row["persona_id"]: row["char_name"] for row in manifest["accounts"]
+        row["persona_id"]: row["char_name"]
+        for row in (*manifest["accounts"], *expansion["accounts"])
     }
     # Every grouped persona carries a derivable rendezvous window.
     for persona in loaded.personas:
