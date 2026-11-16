@@ -25,14 +25,23 @@ class RandomTimer:
         max_s: float,
         clock: TickClock,
         rng: random.Random | None = None,
+        *,
+        first_delay_s: float | None = None,
     ) -> None:
+        if first_delay_s is not None and not min_s <= first_delay_s <= max_s:
+            msg = "first timer delay must be within [min_s, max_s]"
+            raise ValueError(msg)
         self.name = name
         self.min_s = min_s
         self.max_s = max_s
         self._clock = clock
         self._rng = rng or random.Random()
         self.seq = 0
-        self._fire_at = self._next_fire_at(self._clock.monotonic())
+        self._fire_at = (
+            self._next_fire_at(self._clock.monotonic())
+            if first_delay_s is None
+            else self._clock.monotonic() + first_delay_s
+        )
 
     def _next_fire_at(self, now: float) -> float:
         return now + self._rng.uniform(self.min_s, self.max_s)
@@ -78,8 +87,11 @@ class TimerSet:
         self._periodic: dict[str, RandomTimer] = {}
         self._once: dict[str, OnceTimer] = {}
 
-    def add_periodic(self, name: str, min_s: float, max_s: float) -> RandomTimer:
-        timer = RandomTimer(name, min_s, max_s, self._clock, self._rng)
+    def add_periodic(
+        self, name: str, min_s: float, max_s: float, *, first_delay_s: float | None = None
+    ) -> RandomTimer:
+        """Optionally phase the first firing; subsequent delays stay randomized."""
+        timer = RandomTimer(name, min_s, max_s, self._clock, self._rng, first_delay_s=first_delay_s)
         self._periodic[name] = timer
         return timer
 

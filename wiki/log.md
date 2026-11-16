@@ -14182,3 +14182,46 @@ Side evidence: combat stayed live population-wide — 94 attacks authored,
 65 swings, 1,074 damage, 10 kill credits. pop_0069 agents (300100-300121) hold
 fixture knives from popgen 2b0f249e at 0z; only seed-3 fixtures show economic
 movement this leg. seed-zeny.json refreshed to the 29 DB closing values.
+
+## HEARTBEAT ANTI-PHASE JITTER (2026-11-16)
+
+Leg-106 evidence: `run/plain_host_receipts/population-receipt-106-1794853409.json`
+and the entry above. With 29 agents on the 32-slot Q4 backend, decide p50 was
+2.24s but roughly 12% still reached the 90s timeout in burst waves;
+PlayingBackendError remained 829. This change addresses heartbeat alignment;
+live tail-latency improvement is not yet measured.
+
+The offset lives in `src/robots/app/agent_runtime.py`, rather than the runner:
+`AgentHost._populate_agents` sorts the hosted persona IDs by SHA-256 and assigns
+each the midpoint of one of N equal phase slots. `max_agents` is applied before
+assigning slots. The same persona set therefore retains its offsets across
+runner restarts, manifest reordering and host RNG seeds; changing the hosted
+persona set redistributes the slots. Standalone `ScheduledAgent`s derive a
+stable phase from their persona ID instead.
+
+`ScheduledAgent._start_heartbeat` arms after `brain.start()` finishes, including
+its backend-failure recovery path: a slow startup decide must not consume the
+phase before the loop starts. The initial delay is
+`heartbeat_min_s + phase * (heartbeat_max_s - heartbeat_min_s)`, so the runner's
+existing `--heartbeat-min-s 30 --heartbeat-max-s 75` plumbing spans the 45s
+window without adding delay beyond 75s. Equal bounds remain fixed. Subsequent
+intervals retain uniform jitter within the same min/max, using a separate,
+persona-seeded heartbeat RNG; gameplay draws cannot rephase the timer. Every
+reconnect restores the initial phase and jitter stream.
+
+`src/robots/app/timers.py` accepts an optional bounded `first_delay_s` for a
+periodic timer; existing timer callers retain their randomized first firing.
+New offline regressions in `tests/test_heartbeat_antiphase.py` cover 1/7/29/128
+personas, sliding 2s startup windows capped at ceil(N * 0.10), restart/reconnect
+determinism, slow startup, fixed bounds, and hosted-population limits. A 9,000s
+timer simulation with 29 personas caps each 2s tick at ceil(N * 0.25), while
+checking every rescheduled interval stays within 30-75s. The simulation is a
+regression check, not a hard queue-admission bound under arbitrary stalls.
+
+TDD: the new suite against the unmodified runtime produced **11 failures,
+2 passes**; the implementation plus focused host/timer/backend-start and
+native transport/vitals tests produced **113 passes**. Full gate
+`nix develop -c task --dir . check` exited 0: **7,385 passed + 65 subtests,
+1 skipped, 95.82% coverage**. The gate's static checks also passed.
+No population runner, Docker operation, service operation or live probe was
+performed; no merge was performed. `spikes/` was untouched.

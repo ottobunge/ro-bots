@@ -24,6 +24,7 @@ brain (ADR-002), and the dashboard world (ADR-007/008/010):
 
 from __future__ import annotations
 
+import hashlib
 import ipaddress
 import json
 import logging
@@ -601,6 +602,7 @@ class ScheduledAgent:
         tick_seconds: float = DEFAULT_TICK_SECONDS,
         heartbeat_min_s: float = HEARTBEAT_MIN_S,
         heartbeat_max_s: float = HEARTBEAT_MAX_S,
+        heartbeat_phase: float | None = None,
         rng: random.Random | None = None,
         threaded: bool = True,
         telemetry_wait_s: float = 5.0,
@@ -640,6 +642,11 @@ class ScheduledAgent:
         self.tick_seconds = tick_seconds
         self._heartbeat_min_s = heartbeat_min_s
         self._heartbeat_max_s = heartbeat_max_s
+        self._heartbeat_phase = (
+            heartbeat_phase
+            if heartbeat_phase is not None
+            else random.Random(f"heartbeat-phase:{entry.persona_id}").random()
+        )
         self.rng = rng or random.Random()
         self._threaded = threaded
         self.wants = wants
@@ -682,8 +689,6 @@ class ScheduledAgent:
             self._session_ticks = 0
             self._chat_seen = 0
             self._party_chat_seen = 0
-            self.timers = TimerSet(self._tick_clock, self.rng)
-            self.timers.add_periodic("idle_review", self._heartbeat_min_s, self._heartbeat_max_s)
             if self.brain is not None:
                 try:
                     result = self._start_brain()
@@ -701,6 +706,7 @@ class ScheduledAgent:
                     result = TickResult((), {})
                 self._apply_goal_notes(getattr(result, "notes", ()))
                 self.execute_actions(result.actions)
+            self._start_heartbeat()
             self.online = True
             self._publish()
             self.world_note("connected")
@@ -722,6 +728,24 @@ class ScheduledAgent:
             return False
         logger.info("agent %s online as %s", self.persona.persona_id, self.entry.char_name)
         return True
+
+    def _start_heartbeat(self) -> None:
+        """Stable persona phase on every connect; independent per-tick drift.
+
+        Arm after brain.start so a slow startup decide cannot consume the
+        stagger before the loop starts. The offset is inside the configured
+        window, never an extra delay beyond its upper bound.
+        """
+        self.timers = TimerSet(
+            self._tick_clock, random.Random(f"heartbeat:{self.persona.persona_id}")
+        )
+        self.timers.add_periodic(
+            "idle_review",
+            self._heartbeat_min_s,
+            self._heartbeat_max_s,
+            first_delay_s=self._heartbeat_min_s
+            + self._heartbeat_phase * (self._heartbeat_max_s - self._heartbeat_min_s),
+        )
 
     def disconnect(self) -> None:
         """Gracefully end the session; the session is a memory (ADR-004)."""
@@ -1787,6 +1811,13 @@ class AgentHost:
         persona_ids = sorted(pid for pid in self.manifest if pid in self.roster.personas)
         if max_agents > 0:
             persona_ids = persona_ids[:max_agents]
+        # Hash order avoids grouping friends or sequential persona IDs into
+        # adjacent phases. Stratify rather than drawing N random offsets:
+        # even a small population covers the full heartbeat window evenly.
+        phased_ids = sorted(persona_ids, key=lambda pid: hashlib.sha256(pid.encode()).digest())
+        self._heartbeat_phases = {
+            pid: (rank + 0.5) / len(phased_ids) for rank, pid in enumerate(phased_ids)
+        }
         try:
             for persona_id in persona_ids:
                 self.agents[persona_id] = self._build_agent(self.roster.personas[persona_id])
@@ -1892,6 +1923,7 @@ class AgentHost:
                 tick_seconds=self.tick_seconds,
                 heartbeat_min_s=self._heartbeat_range[0],
                 heartbeat_max_s=self._heartbeat_range[1],
+                heartbeat_phase=self._heartbeat_phases[persona.persona_id],
                 rng=random.Random(self.rng.getrandbits(64)),
                 wants=wants,
                 human_observer=human_observer,
