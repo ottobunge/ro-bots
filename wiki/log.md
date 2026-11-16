@@ -14143,3 +14143,42 @@ checks passed; **7,372 passed, 1 skipped, 65 subtests passed**, 95.80% coverage
 (85% required), in 520.66 seconds. Focused merchant/retry/artifact checks:
 56 passed; the corrected real-grid convergence pair: 2 passed. The branch
 is for coordinator diff review and merge; this implementation does not merge.
+
+## Leg 106 — buy-close + pump validation (2026-11-16, window 19:30-21:00 Madrid, 29 agents)
+
+Preflight green at 19:16: heavengraph :8091 health 200, real-shape decide probe 0.68s /
+10 answers, :8092 health 200. Runner launched 19:24 via systemd-run leg106-runner,
+`--duration 9000`, log /tmp/population_leg106.log. DONE at 21:53: steps 23,172,
+step_errors 0, receipt `run/plain_host_receipts/population-receipt-106-1794853409.json`.
+
+Targets:
+
+- **T1 BUY CLOSE: MET.** zeny_wing (300002) dispatched `NpcShopBuySelection` at
+  20:00:10Z on prt_in (172,129), npc 110001762; the mint verdict printed every
+  conjunct True (offer receipt=214, price 50, balance 157, `no_knife_dup` knife
+  rows=0 pre-buy, eligible=True). DB ground truth: holds nameid=1201 x1,
+  zeny 157 -> 114 (+7 sells, -50 knife). First population-wide buy close.
+- **T2 SELL CADENCE: MET, 5/7 >= 3/7.** `NpcShopSellOpen` x5 by five distinct
+  seed-3 agents (g00m01 +3z, g00m02 +7z, g01m00 +11z, g01m01 +5z, g01m02 +1257z
+  closing zeny), each with a positive DB zeny delta — leg-105's 68-lease /
+  0-conversion binder is gone. Dealer telemetry: 522 dealer_outer_fallback,
+  243 dealer_ring_saturated holds, 212 dealer_queue_yield, 18 ring handovers,
+  15 counter yields, 29 trip released_no_progress, 27 trip retries. Non-sellers:
+  g00m00 (188 flat), s00 (353 flat).
+- **T3 SATURATION: PARTIAL — big drop, not cured.** PlayingBackendError 829 vs
+  leg-105's 1,785 (-54%). Decides 6,796, p50 2.24s, but p90 ~90s (the timeout
+  ceiling): ~12% of decides still burn the full timeout, all from
+  playing_backends decide — burst waves saturate the tail while the median
+  stays fast. Cadence mean 188/agent (min 89, max 367): 27/29 inside the
+  75-305 band, 2 above it, none below.
+- **T4 PUMP EVIDENCE: MET.** TalkToNpc 88 vs leg-105's 6 (14.7x); the
+  decision-independent keepalive pump advanced merchant approaches all window
+  (outer_fallback walk legs, handovers, counter yields with named reasons).
+- **T5 HEALTH: MET.** step_errors 0, transport_recovery 26 tracked / 0
+  exhausted / 0 attempts outstanding, 34 TRANSPORT DOWN all rebuilt and
+  recovered, all 29 agents offline cleanly at window close.
+
+Side evidence: combat stayed live population-wide — 94 attacks authored,
+65 swings, 1,074 damage, 10 kill credits. pop_0069 agents (300100-300121) hold
+fixture knives from popgen 2b0f249e at 0z; only seed-3 fixtures show economic
+movement this leg. seed-zeny.json refreshed to the 29 DB closing values.
