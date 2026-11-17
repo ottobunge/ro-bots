@@ -14402,3 +14402,19 @@ log_db_db/log_db_id/log_db_pw to the world's values, or create the schema).
 
 HEALTH: 28,129 steps, 0 step errors, 29/29 clean offline, 0 exhausted
 rebuilds (19 TRANSPORT DOWN events, all first-attempt recoveries).
+
+CORRECTION + RESOLUTION (coordinator, post-verdict 2026-11-17 ~16:45): the
+picklog root shape above was wrong in one detail and is now FIXED. The staged
+`inter_athena.conf` DOES set `log_db_db: ragnarok` + `log_db_id/pw` (lines
+107-111), and the map server's fresh startup console proves the Log Database
+connects: "[SQL]: Connecting to the Log Database ragnarok At mariadb..." ->
+"Successfully 'connected' to Database 'ragnarok'". The actual mechanism: the
+conf was armed ON DISK (before leg-108) while the map-server process had been
+running ~2 weeks since its last startup with `sql_logs: no` in memory —
+conf-on-disk does not affect a running rAthena process. RESOLUTION: a map-only
+container restart (16:40, no window live) re-read the armed conf; startup
+shows the Log DB connection to ragnarok succeeding and "Map Server is now
+online". The next window's first kill/drop must produce picklog rows (type
+M/P); 0 rows after confirmed kills in leg-109 would be a NEW defect (log
+insert schema drift, not connection). Note: "Using SQL dbs: no" in the startup
+banner is `db_use_sql` (SQL-backed item/mob DBs), unrelated to logging.
