@@ -14351,3 +14351,54 @@ recorded submodule revision and copying the ignored iro-db corpus and
 `rathena/config.log` from the parent checkout into this worktree. The 44
 initial failures/setup errors all passed after those inputs were restored;
 no test or source changes were needed for them.
+
+## 2026-11-17 — Leg 108: decide-cap validation + prt_in release proof (29 agents, Tue 14:00-15:30 Madrid)
+
+First live validation of the 15 s private-decide cap (818c3420) and the first
+in-window proof of the per-interior door resolution (02657775). Head 75636122,
+window [[1,14.0,15.5]] day index 1, runner `leg108-runner.service` launched
+13:47:42 CET, receipt `run/plain_host_receipts/population-receipt-108-1794919672.json`.
+
+DECIDE-CAP VERDICT: **MET, with a heavy hang wave surfaced.** 9,901 decide
+attempts across 29 agents in-window. Attempt distribution p50 5.87 s / p90
+15.03 s / p99 15.09 s / max 15.52 s — nothing exceeds the cap boundary;
+`>20 s` = 0, `>60 s` = 0 (leg-107 p90 ~90 s). Success-only distribution p50
+1.99 s / p90 5.69 s / p99 12.99 s / max 15.03 s — answered requests are as
+fast as ever (leg-107 p50 2.4 s). The other side: 4,426 attempts (44.7%)
+capped at 15 s and surfaced as PlayingBackendError (4,424 PBEs — large by
+design, not the health metric), vs leg-107's 13.1% per-request hang rate:
+the server-side hang wave worsened and the cap bounds its cost at
+4,426 x 15 s = 66,390 s = **1,106.5 agent-minutes lost** (~38 min per agent
+over the 92-min window). The dominant residual is the heavengraph-side
+per-request hang, unchanged by this leg's client-side fix.
+
+PRT_IN RELEASE VERDICT: **RELEASED.** xXLunasongXx (300004, reset to
+prt_in 44,102) logged in at the trapped interior at 14:00:20 CET, was in
+prontera (132,188) by 14:01:20 (own door, <=60 s), crossed prontera west to
+prt_fild05 by 14:10, made a second prontera round trip, and ended the window
+roaming prt_fild05 — DB final `prt_fild05 (354,215)`, matching the last
+trace tick. 1,985 move_performed, 2,058 action_executed, 87 swing
+observations for this agent. No NoRoute/exit-resolution failure telemetry.
+
+ECONOMY: 4 sellers this window — RinceSong 0->10 (first zeny), NyxNyan18
+38->42, misu_drop 0->3 (first zeny), PipinWalker 151->154. zeny_wing holds
+118 z (unchanged). PoringMuffin14 holds 1384 z. Unsold loot remains held
+(RinceNyan 909 Jellopy, PipinWalker 705 Clover, YuffieFy81 511/906/909,
+xXDoramrinXx 705). seed-zeny.json refreshed to the 29 DB closing values
+(4 entries changed). Combat: 16 kill credits across 12 agents (leg-107: 19
+across 11), 1,766 damage dealt, 15 drops seen, 10 pickup attempts / 6
+successes; 718 swing observations carried damage roster-wide.
+
+NEW DEFECT NAMED — picklog write path: picklog AND zenylog are 0 rows after
+16 DB-verified kill credits + 15 drops + 6 pickups + sell zeny deltas, while
+`log_athena.conf` is armed (sql_logs: yes, enable_logs: 0xFFF) and
+login/char-server log tables write fine (loginlog 1155, charlog 1132). Root
+shape: `rathena/src/map/map.cpp:101` defaults the map server's LOG SQL
+handle to `log_db_db = "log"`, the staged `inter_athena.conf` sets no
+`log_db_db:` key, and this mariadb has only the `ragnarok` schema — every
+map-server-side log insert targets a nonexistent schema while the gameplay
+connection works. Fix belongs to the coordinator's next slice (set
+log_db_db/log_db_id/log_db_pw to the world's values, or create the schema).
+
+HEALTH: 28,129 steps, 0 step errors, 29/29 clean offline, 0 exhausted
+rebuilds (19 TRANSPORT DOWN events, all first-attempt recoveries).
