@@ -14418,3 +14418,57 @@ online". The next window's first kill/drop must produce picklog rows (type
 M/P); 0 rows after confirmed kills in leg-109 would be a NEW defect (log
 insert schema drift, not connection). Note: "Using SQL dbs: no" in the startup
 banner is `db_use_sql` (SQL-backed item/mob DBs), unrelated to logging.
+
+## LEG 109 — PICKLOG PROOF WINDOW (Tue 2026-11-17 18:00-19:30 CET, 29 agents, day 1)
+
+PICKLOG VERDICT: **NEW DEFECT CONFIRMED AND FULLY ROOT-CAUSED (not schema drift, not
+connection).** The fresh map process (restarted 16:26 CET, StartedAt 2026-11-17T15:26:23Z,
+Log DB "ragnarok" connected per startup banner) wrote **0 picklog rows** against 18
+receipt-side kill credits (wire observations), +53 base/+21 job exp, 20 drops seen, 4
+pickup successes, and confirmed in-window sells (6 zeny deltas). zenylog also 0. No
+[Error] lines, no SqlStmt_ShowDebug output — the inserts were never attempted.
+
+Mechanism (all cites = repo rathena submodule @ e985006171d2 = the image build): the
+armed conf sets `sql_logs: yes` + `enable_logs: 0xFFF` but OMITS `log_filter`.
+log_set_defaults() memsets log_config (log.cpp:574), so `filter` defaults to 0;
+should_log_item() (log.cpp:147) returns false for EVERY item when no filter bit is set,
+and log_pick() returns BEFORE the SQL insert (log.cpp:214) — silent. Upstream stock conf
+ships `log_filter: 1` = "logs ANY items" (conf/log_athena.conf:74); our staged file lost
+that key. Same shape for zeny: `log_zeny` absent -> log_config.zeny=0 -> log_zeny()
+returns at log.cpp:279. The startup banner "Logging item transactions to table ..."
+(log.cpp:679) requires `enable_logs && filter` — its absence in the console was the
+visible symptom. The banner "Connecting to the Log Database ragnarok" is unconditional
+handle init and proves nothing about logging state.
+
+FIX STAGED (in the volume conf, mid-window-safe — rAthena reads conf only at startup):
+/world/runtime/conf/log_athena.conf now carries sql_logs: yes / enable_logs: 0xFFF /
+**log_filter: 1** / **log_zeny: yes** (docker cp, 644). Next PRE-WINDOW map-only restart
+arms it; the following window's first kill/drop/sell must produce picklog (M/P) + zenylog
+rows. Do not restart mid-window again.
+
+DECIDE CADENCE + CAP HEALTH: 10,139 decide attempts roster-wide, p50 6.14 s / p90
+15.03 s / max 15.53 s — cap boundary held. Capped at >=14.9 s: 4,642 (**45.8%**; leg-108:
+44.7%) — the :8091 hang wave plateaued, marginally worse, NOT dramatically climbing. A
+preflight real-shape decide at 17:31 was 0.65-0.74 s warm (backend answers fast when
+probed, hangs under sustained window load). Decisions/agent 102-584, median 309 — ran
+hot (14/29 agents above the historical 74-343 band top). The targeted :8091 relaunch
+remains OTTO'S CALL (~32 h uptime now).
+
+ECONOMY: 6 sellers — NyxSong 191->199, RinceNyan 204->207, zeny_wing 118->121,
+PipinWalker 154->164, YuffieFy81 353->395 (+42), and FluffWing (pop_0069_g00m03) 0->10
+as a THIRD first-zeny agent (after RinceSong/misu_drop). zeny_wing held 121 z and
+authored NO buy (no Buy action in the traces) — the 1202/1204 purchase still never
+fires; buy-authoring is the remaining economy gap. seed-zeny.json refreshed to the 29
+DB closing values (6 changed). Combat: 149 attacks authored / 82 swings / 75 damage
+events / 1,492 damage / 18 kill credits across 11 agents (leg-108: 16 across 12); 45
+ItemDrop wire events (leg-108: 15); loot 8 attempts / 4 successes (losses: 11
+out_of_range, 13 presence_epoch_expired, 13 walking).
+
+HEALTH + SOCIALS: 29,360 steps, 0 step errors, 29/29 clean offline, 24 TRANSPORT DOWN
+events all first-attempt recovered (0 exhausted). Socials hot: 229 GuildInvites, 10
+FoundGuild, 21 InviteToParty, 87 PartyChat, 2,075 Say. xXLunasongXx (300004) RELEASED
+AND PRODUCTIVE: roamed/farmed prt_fild05 all window (end 358,171), leveled base 10->11
+(first pop level-up), zeny unchanged (never re-entered the sell arm).
+
+Dominant residual: the picklog/log_filter one-key conf gap (fix staged, needs one
+pre-window map restart) + the :8091 hang plateau (45.8%, Otto's relaunch call).
