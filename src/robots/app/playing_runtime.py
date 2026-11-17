@@ -76,8 +76,8 @@ from robots.app.scripts import (
     MERCHANT_FIELD_BATCH_MIN,
     MERCHANT_ROUTE,
     MERCHANT_ROUTE_RETURN,
+    MERCHANT_ZENY_MIN,
     NOVICE_STAT_TARGETS,
-    NOVICE_WANTED_WEAPONS,
     _dealer_talk,
     _merchant_step,
     _merchant_trip_allows,
@@ -89,6 +89,7 @@ from robots.app.scripts import (
     novice_weapon_index,
     release_merchant_talk,
     shop_affordable_weapon,
+    shop_missing_weapons,
     shop_sell_entries,
     shop_sellable_stock,
 )
@@ -138,6 +139,7 @@ from robots.domain.planning import (
 )
 from robots.domain.self_metadata import ServerSelfSlots
 from robots.domain.shop import (
+    NOVICE_WEAPON_WEIGHTS,
     QualifiedShopItem,
     ReceivedShopOffer,
     ReceivedZeny,
@@ -425,6 +427,7 @@ class PlayingClient:
     def _reset_shop_seam(self) -> None:
         """Fresh shop-loop state; binding identity invalidates stale mints anyway."""
         self._buy_backoff = MerchantBuyBackoff()
+        self._buy_visit_map: str | None = None
         self._sell_open_issued: tuple[int, int] | None = None
         self._buy_open_issued: tuple[int, int] | None = None
         self._buy_arm_tapped: tuple[object, ...] | None = None
@@ -773,11 +776,15 @@ class PlayingClient:
     def _consume_purchase_frame(
         self, frame: tuple[int, float, int, bytes], tracker: NativeGameplayTracker, now: float
     ) -> None:
+        previous = self._purchase.progress
         self._purchase.check(self._purchase_snapshot(now, tracker))
         self._purchase.consume(frame, tracker.indexed_inventory)
         progress = self._purchase.progress
-        if progress is not None and progress.ca_result is not None:
+        if progress is not None and progress is not previous and progress.ca_result is not None:
             self._shop_context.invalidate_offer("purchase-ca-result")
+            if progress.status == "acquired" and self._buy_visit_map is not None:
+                self._npc.complete_shop()
+                self._merchant_returning = True
 
     def _validate_received_npc_context(self, view: NativeGameplayView) -> None:
         if self._npc.view is None:
@@ -817,10 +824,15 @@ class PlayingClient:
             raise NativeTelemetryUnavailable(message)
         map_name = self._map_identity(view.map_name or wire.map_name)
         nearby = self._nearby(view, pos, map_name)
+        returning = self._merchant_departure(map_name)
         self._validate_npc_context(view, map_name, pos)
         offer = self._current_buy_offer()
         if offer is not None:
-            self._buy_backoff.observe(offer, tracker.indexed_inventory is not None)
+            self._buy_backoff.observe(
+                offer,
+                tracker.indexed_inventory is not None,
+                shop_missing_weapons(tracker.view.inventory_counts),
+            )
         invites = (PartyInvite(wire.party_invite_from, pos.at),) if wire.party_invite_pid else ()
         state = BotState(
             name=wire.char_name,
@@ -846,8 +858,8 @@ class PlayingClient:
             received_skills=self.received_skills,
             public_skill_knowledge=self.public_skill_knowledge,
             shop_offer=self._shop_context.offer,
-            merchant_buy_suspended=self._buy_backoff.suspended,
-            merchant_returning=self._merchant_departure(map_name),
+            merchant_buy_suspended=self._merchant_buy_suspended(),
+            merchant_returning=returning,
             # The tracked SP_ZENY balance (0x00B1 param 20, pinned rathena
             # src/map/map.hpp:501) is the authority; the shop-context balance
             # is the fallback inside the shop loop and the runner-side seed
@@ -936,8 +948,14 @@ class PlayingClient:
             raise NativeTelemetryUnavailable(message)
         return key
 
+    def _merchant_buy_suspended(self) -> bool:
+        return self._buy_backoff.suspended or self._buy_visit_map is not None
+
     def _merchant_departure(self, map_name: str) -> bool:
         """Retain the released visit through its return route, then forget it."""
+        if self._buy_visit_map is not None and map_name != self._buy_visit_map:
+            self._buy_visit_map = None
+            self._purchase = NativePurchase()
         if map_name not in MERCHANT_ROUTE_RETURN:
             self._merchant_returning = False
         return self._merchant_returning
@@ -1412,14 +1430,23 @@ class PlayingClient:
         """Explicit trusted injection only; no loader or live fact inference."""
         return self._purchase.bind(facts, self._purchase_admission(self._now()))
 
+    @staticmethod
+    def _buy_wanted_item(context: PurchaseAdmission) -> int | None:
+        stock = context.stock
+        if stock is None:
+            return None
+        return shop_affordable_weapon(
+            tuple((r.price, r.discount_price, r.item_type, r.item_id) for r in context.offer.rows),
+            context.currency.balance if context.currency is not None else None,
+            owned=tuple(item for _index, item, count in stock if count > 0),
+        )
+
     def _qualify_knife_facts(self, context: PurchaseAdmission) -> QualifiedShopItem | None:
-        """The operator's item-level facts for the pinned novice knife, bound to
-        the CURRENT received exchange.
+        """Qualify the first affordable, unowned wanted weapon in this exchange.
 
         The operator template supplies what the wire cannot carry reliably:
-        the item identity (1201, the pinned rathena
-        db/pre-re/item_db_equip.yml:2262-2265 Knife, ordinary non-stackable
-        weapon, Weight 400). The price/discount qualify FROM THE RECEIVED
+        the pinned pre-re ordinary non-stackable weapon identity and weight
+        (domain.shop.NOVICE_WEAPON_WEIGHTS). The price/discount qualify FROM THE RECEIVED
         exchange's own row — the C6 is the trusted bound offer, and
         native_purchase._eligible re-checks the facts against that same row,
         so a template price would have to equal it anyway (leg 47: the dealer's
@@ -1430,19 +1457,20 @@ class PlayingClient:
         now = context.now
         if offer is None or not _finite_npc_time(now):
             return None
-        rows = tuple(r for r in offer.rows if r.item_id == 1201)
-        if len(rows) != 1:
+        item_id = self._buy_wanted_item(context)
+        rows = tuple(r for r in offer.rows if r.item_id == item_id)
+        if item_id is None or len(rows) != 1:
             return None
         return QualifiedShopItem(
-            source_id="rathena-item-db-pin-20180704:1201",
+            source_id=f"rathena-item-db-pin-20180704:{item_id}",
             account_id=context.account_id,
             character_id=context.character_id,
             epoch=offer.epoch,
             npc_id=offer.npc_id,
             map_name=offer.map_name,
-            actual_item_id=1201,
-            client_item_id=1201,
-            loaded_weight=400,
+            actual_item_id=item_id,
+            client_item_id=item_id,
+            loaded_weight=NOVICE_WEAPON_WEIGHTS[item_id],
             ordinary_shop=True,
             nonstackable=True,
             stable_price=rows[0].price,
@@ -1507,6 +1535,7 @@ class PlayingClient:
         raw = self._purchase.prepare(action, self._purchase_admission(self._now()))
         if raw is None:
             return
+        self._buy_visit_map = action.map_name
         _, base, frames = self.wire.native_frame_snapshot()
         after = frames[-1][0] if frames else base
         self._purchase.sending(after)
@@ -1659,7 +1688,6 @@ class PlayingClient:
                 self._mint_skip_term(state) is None,
                 state.shop_offer is None,
                 not any(str(k) in DRIVE_SELLABLES and n > 0 for k, n in state.inventory.items()),
-                not any(str(item) in state.inventory for item in NOVICE_WANTED_WEAPONS),
                 merchant_admission_refusal(state) is None,
             )
         )
@@ -1746,16 +1774,21 @@ class PlayingClient:
         offer = self._current_buy_offer()
         if offer is None:
             return False
-        refusal = self._buy_backoff.evaluate(offer, tracker.indexed_inventory is not None)
+        refusal = self._buy_backoff.evaluate(
+            offer,
+            tracker.indexed_inventory is not None,
+            shop_missing_weapons(tracker.view.inventory_counts),
+        )
         if refusal is None:
             return False
         reason, first = refusal
         if first:
             logger.warning(
-                "merchant-drive: buy give-up %s (map=%s dealer=%s item=1201 offer_item_ids=%s)",
+                "merchant-drive: buy give-up %s (map=%s dealer=%s wanted=%s offer_item_ids=%s)",
                 reason,
                 offer.map_name,
                 offer.npc_id,
+                shop_missing_weapons(tracker.view.inventory_counts),
                 [row.item_id for row in offer.rows[:8]],
             )
         # The pinned close is CZ_CLOSE_DIALOG 0146, as in NativeNpcDialogue's
@@ -1844,18 +1877,19 @@ class PlayingClient:
         # starved the mint on a fresh login (the wire delivers SP_ZENY on
         # changes only — leg 47: the C6 bound, the purchase never minted).
         zeny = self._zeny_balance(tracker.view)
-        rows = tuple((r.price, r.discount_price, r.item_type, r.item_id) for r in offer.rows)
-        if shop_affordable_weapon(rows, zeny) is None:
+        admission = self._purchase_admission(self._now())
+        if self._buy_visit_map is not None or admission is None:
+            return None
+        if self._buy_wanted_item(admission) is None:
             return None
         # the purchase machine's facts: the first live qualification binds the
         # operator's knife template to the CURRENT exchange (native_purchase
         # refuses to mint on unbound facts — the trusted-injection law)
-        admission = self._purchase_admission(self._now())
-        if admission is not None and not self._purchase.has_facts:
+        if not self._purchase.has_facts:
             facts = self._qualify_knife_facts(admission)
             if facts is not None:
                 self.bind_shop_purchase_facts(facts)
-        action = self.npc_shop_purchase(maximum_zeny=zeny if zeny is not None else 0)
+        action = self._purchase.mint(admission, zeny if zeny is not None else 0, unowned_only=True)
         return None if action is None else (action,)
 
     def _sell_open_action(self, tracker: NativeGameplayTracker) -> NpcShopSellOpen | None:
@@ -1882,9 +1916,18 @@ class PlayingClient:
             dialog.opened_sequence,
         )
 
+    def _buy_open_wanted(self, tracker: NativeGameplayTracker) -> bool:
+        missing = shop_missing_weapons(tracker.view.inventory_counts)
+        zeny = self._zeny_balance(tracker.view)
+        # Selection spends nothing; an unknown wallet may request prices.
+        return bool(missing) and (zeny is None or zeny >= MERCHANT_ZENY_MIN)
+
     def _buy_open_action(self) -> NpcShopBuySelection | None:
         dialog = self._npc.view
-        if dialog is None:
+        tracker = self._tracker
+        if dialog is None or tracker is None or self._buy_visit_map is not None:
+            return None
+        if not self._buy_open_wanted(tracker):
             return None
         if dialog.stage != "unsupported_shop":
             self._note_buy_open_hold("stage")

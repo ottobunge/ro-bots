@@ -7,7 +7,7 @@ from typing import Any
 import pytest
 
 from robots.app.playing_runtime import PlayingClient
-from robots.domain.actions import NpcShopBuySelection, NpcShopPurchase, TalkToNpc
+from robots.domain.actions import GameAction, NpcShopBuySelection, NpcShopPurchase, TalkToNpc
 from robots.domain.model import Goal
 from tests.test_native_self_metadata_context import bind, proof_for
 from tests.test_native_shop_selection import actual_clients
@@ -24,6 +24,8 @@ def _approached_buyer(
     wire, client, receive, sent = actual_clients(monkeypatch)
     client._npc.invalidate()  # Discard the shared fixture's initial click.
     receive(
+        struct.pack("<HHHH", 0x7FA, 6, 9, 1),
+        struct.pack("<HHi", 0xB0, 24, 0),
         walk_ack((42, 37), (43, 37)),
         struct.pack("<HHi", 0xB1, 20, balance),
         struct.pack("<HHi", 0xB0, 25, 2000),
@@ -39,7 +41,13 @@ def _approached_buyer(
     assert client._tracker is not None
     assert not client._tracker.view.arrival_confirmed
     assert client._pending is None
-    (selection,) = client.mechanical_actions(state, ())
+    # A low-level zero-spend selection lets the 49z regression exercise
+    # the purchase floor even though autonomous authoring now refuses it.
+    selection: GameAction | None
+    if balance < 50:
+        selection = client.npc_shop_buy_selection()
+    else:
+        (selection,) = client.mechanical_actions(state, ())
     assert isinstance(selection, NpcShopBuySelection)
     client.perform_native(selection)
     assert sent[-1] == bytes.fromhex("c5007b00000000")

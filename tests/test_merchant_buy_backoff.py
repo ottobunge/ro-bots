@@ -25,6 +25,7 @@ def _shop(
     monkeypatch: pytest.MonkeyPatch, ids: tuple[int, ...] = (1750, 1751, 1701)
 ) -> tuple[Any, PlayingClient, Callable[..., None], list[bytes]]:
     wire, client, receive, sent, selection = ready_shop(monkeypatch)
+    receive(struct.pack("<HHHH", 0x7FA, 6, 9, 1), struct.pack("<HHi", 0xB0, 24, 0))
     client.perform_native(selection)
     receive(_offer(ids))
     assert bind(client, proof_for(wire))

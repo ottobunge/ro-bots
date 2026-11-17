@@ -14,6 +14,7 @@ from robots.adapters.native_shop import PurchaseEntry, decode_purchase_result, e
 from robots.domain.actions import NpcShopPurchase
 from robots.domain.capacity import ReceivedCapacity, ReceivedCapacityValue
 from robots.domain.shop import (
+    NOVICE_WEAPON_WEIGHTS,
     QualifiedShopItem,
     ReceivedShopOffer,
     ReceivedShopRow,
@@ -150,13 +151,13 @@ def _facts_terms(facts: QualifiedShopItem, context: PurchaseAdmission) -> tuple[
         ),
         _Term(
             "f_item",
-            _integer(facts.actual_item_id) and facts.actual_item_id == 1201,
-            f"{facts.actual_item_id}/1201",
+            _integer(facts.actual_item_id) and facts.actual_item_id in NOVICE_WEAPON_WEIGHTS,
+            f"{facts.actual_item_id}/{tuple(NOVICE_WEAPON_WEIGHTS)}",
         ),
         _Term(
             "f_client",
-            _integer(facts.client_item_id) and facts.client_item_id == 1201,
-            f"{facts.client_item_id}/1201",
+            _integer(facts.client_item_id) and facts.client_item_id == facts.actual_item_id,
+            f"{facts.client_item_id}/{facts.actual_item_id}",
         ),
         _Term("f_ordinary", facts.ordinary_shop is True, f"{facts.ordinary_shop}"),
         _Term("f_nonstack", facts.nonstackable is True, f"{facts.nonstackable}"),
@@ -323,6 +324,10 @@ def _stock_rows_integer(stock: Stock) -> bool:
     )
 
 
+def _item_unowned(stock: Stock | None, item_id: int) -> bool:
+    return stock is not None and all(item != item_id for _, item, count in stock if count > 0)
+
+
 def _stock_knife_unique(stock: Stock) -> bool:
     return all(item != 1201 or count == 1 for _, item, count in stock)
 
@@ -379,6 +384,7 @@ class NativePurchase:
         self._index: int | None = None
         self._expected_balance: int | None = None
         self._successful_send = False
+        self._unowned_only = False
 
     @property
     def has_facts(self) -> bool:
@@ -414,7 +420,7 @@ class NativePurchase:
                     f"facts={facts is not None} context={context is not None}",
                 ),
             )
-        rows = tuple(row for row in context.offer.rows if row.item_id == 1201)
+        rows = tuple(row for row in context.offer.rows if row.item_id == facts.actual_item_id)
         terms = (
             _Term(
                 "owner",
@@ -445,15 +451,23 @@ class NativePurchase:
             ),
             *_resources_checked(context, facts, budget),
             *_stock_checked(context),
+            _Term(
+                "unowned",
+                not self._unowned_only or _item_unowned(context.stock, facts.actual_item_id),
+                f"item={facts.actual_item_id} policy={self._unowned_only}",
+            ),
         )
         return (*terms, _Term("eligible", all(term.passed for term in terms), "verdict"))
 
     def _eligible(self, context: PurchaseAdmission | None, budget: int) -> bool:
         return all(term.passed for term in self._verdict(context, budget))
 
-    def mint(self, context: PurchaseAdmission | None, maximum_zeny: int) -> NpcShopPurchase | None:
+    def mint(
+        self, context: PurchaseAdmission | None, maximum_zeny: int, *, unowned_only: bool = False
+    ) -> NpcShopPurchase | None:
         if self._consumed or context is None:
             return None
+        self._unowned_only = self._unowned_only or unowned_only
         terms = self._verdict(context, maximum_zeny)
         if context.offer is not None:
             # Term-level verdict tap (tap-before-fix doctrine): one bounded
@@ -474,6 +488,7 @@ class NativePurchase:
             offer.opened_sequence,
             offer.receipt_sequence,
             maximum_zeny,
+            item_id=self._facts.actual_item_id if self._facts is not None else 1201,
         )
         self._expected = replace(self._minted)
         return self._minted
@@ -497,7 +512,7 @@ class NativePurchase:
         self._last_index = _acquisition_bound(context.slots)
         self._expected_balance = context.currency.balance - self._facts.stable_discount_price
         self._sent_at = context.now
-        return encode_purchase((PurchaseEntry(1201, 1),))
+        return encode_purchase((PurchaseEntry(action.item_id, 1),))
 
     def _valid_action(self, action: NpcShopPurchase) -> bool:
         return all(
@@ -516,7 +531,9 @@ class NativePurchase:
                         action.quantity,
                     )
                 ),
-                action.item_id == 1201 and action.quantity == 1,
+                self._facts is not None
+                and action.item_id == self._facts.actual_item_id
+                and action.quantity == 1,
             )
         )
 
@@ -600,13 +617,16 @@ class NativePurchase:
 
     def _acquisition(self, raw: bytes, stock: Stock | None) -> None:
         index = int.from_bytes(raw[2:4], "little")
-        addition = (index, 1201, 1)
+        if self._expected is None:
+            return
+        item_id = self._expected.item_id
+        addition = (index, item_id, 1)
         expected = tuple(sorted((*self._stock, addition)))
         valid = all(
             (
                 len(raw) == 59 and raw[24] == 0 and raw[25] == 4,
                 int.from_bytes(raw[4:6], "little", signed=True) == 1,
-                int.from_bytes(raw[6:8], "little") == 1201,
+                int.from_bytes(raw[6:8], "little") == item_id,
                 _integer(index, 2, self._last_index),
                 index not in {row[0] for row in self._stock},
                 self._index is None and stock == expected,
@@ -632,8 +652,8 @@ class NativePurchase:
                 ca_result=result,
             )
             return
-        if result == 0 and self._index is not None:
-            expected = tuple(sorted((*self._stock, (self._index, 1201, 1))))
+        if result == 0 and self._index is not None and self._expected is not None:
+            expected = tuple(sorted((*self._stock, (self._index, self._expected.item_id, 1))))
             if stock == expected:
                 self.progress = replace(
                     progress,

@@ -180,7 +180,7 @@ def test_buy_completion_keeps_the_retained_social_goal_script():
     brain._script = brain._goal_script(state.goal, state)
     assert isinstance(brain._script, IdleTownScript)
     assert brain.step_script(state).actions == (MoveTo(*MERCHANT_ROUTE["prontera"]),)
-    state = replace(state, inventory={"1201": 1})
+    state = replace(state, inventory={"1201": 1, "1202": 1, "1204": 1})
     assert brain.step_script(state).actions == (MoveTo(state.x, state.y + 1),)
 
 

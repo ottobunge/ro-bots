@@ -92,9 +92,10 @@ def test_no_stock_below_zeny_floor_names_itself() -> None:
 
 
 def test_weapon_release_names_itself() -> None:
-    """Funded but stockless with the wanted weapon carried: the stock gate
-    passes on zeny, then the leg-40 weapon hold names itself."""
-    verdict = merchant_admission_refusal(_state(zeny=60, inventory={"1201": 1}))
+    """Funded but stockless with the whole wanted set: completion releases."""
+    verdict = merchant_admission_refusal(
+        _state(zeny=60, inventory={"1201": 1, "1202": 1, "1204": 1})
+    )
     assert verdict is not None
     assert verdict[0] == "weapon_release"
 

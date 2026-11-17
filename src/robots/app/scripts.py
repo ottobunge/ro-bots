@@ -19,6 +19,7 @@ from robots.app.target_species import species_score, trace_expless_skips
 from robots.domain.actions import Attack, GameAction, Loot, MoveTo, Rest, TalkToNpc
 from robots.domain.farm import FarmPlan
 from robots.domain.model import ActorRef, Goal
+from robots.domain.shop import NOVICE_WEAPON_WEIGHTS
 from robots.knowledge.travel_routes import MERCHANT_TRAVEL_ROUTES
 
 if TYPE_CHECKING:
@@ -250,7 +251,7 @@ def _release_commitment(state: BotState, window: int) -> None:
     _kill_commitment(state.name, window).release()
 
 
-NOVICE_WANTED_WEAPONS = (1201, 1202, 1204)
+NOVICE_WANTED_WEAPONS = tuple(NOVICE_WEAPON_WEIGHTS)
 """Pinned pre-re daggers the Novice build wears on first pickup. 1201 Knife
 (Atk 17, Slots 3) and 1204 Cutter (Atk 30) at rathena db/pre-re/
 item_db_equip.yml:2262/2366, and 1202 (AegisName ``Knife_``, Atk 17,
@@ -379,10 +380,22 @@ def shop_sellable_stock(
     return sum(count for item, count in inventory_counts if item in sellable_ids)
 
 
+def shop_missing_weapons(
+    inventory_counts: tuple[tuple[int, int], ...] | None,
+) -> tuple[int, ...]:
+    """Wanted order minus positive stock; unknown stock proves no ownership."""
+    if inventory_counts is None:
+        return NOVICE_WANTED_WEAPONS
+    owned = {item for item, count in inventory_counts if count > 0}
+    return tuple(item for item in NOVICE_WANTED_WEAPONS if item not in owned)
+
+
 def shop_affordable_weapon(
     offer_rows: tuple[tuple[int, int, int, int], ...],
     zeny: int | None,
     wanted: tuple[int, ...] = NOVICE_WANTED_WEAPONS,
+    *,
+    owned: tuple[int, ...] = (),
 ) -> int | None:
     """First wanted weapon whose RECEIVED price fits the received zeny balance.
 
@@ -393,8 +406,9 @@ def shop_affordable_weapon(
     """
     if type(zeny) is not int or zeny < 0:
         return None
-    for price, _discount, _item_type, item_id in offer_rows:
-        if item_id in wanted and price <= zeny:
+    for item_id in wanted:
+        rows = tuple(row for row in offer_rows if row[3] == item_id)
+        if item_id not in owned and len(rows) == 1 and 0 < rows[0][1] <= min(rows[0][0], zeny):
             return item_id
     return None
 
@@ -671,7 +685,7 @@ def _precondition_refusal(state: BotState) -> str | None:
 def _want_refusal(state: BotState, affordable: bool, has_stock: bool) -> str | None:
     """The want terms, named: the combined stock/zeny gate, the leg-40
     weapon hold, the route map."""
-    wanted_weapon = any(str(item) in state.inventory for item in NOVICE_WANTED_WEAPONS)
+    wanted_weapon = all(state.inventory.get(str(item), 0) > 0 for item in NOVICE_WANTED_WEAPONS)
     if has_stock and _merchant_small_batch_only(state, affordable, wanted_weapon):
         return "merchant_stock_below_trip_minimum"
     if not (affordable or has_stock):
@@ -693,7 +707,7 @@ def _merchant_small_batch_only(state: BotState, affordable: bool, wanted_weapon:
 def merchant_drive_cell(state: BotState) -> tuple[int, int] | None:
     """Engage cell of the want-driven dealer trip, else None (window-29).
 
-    Two arms: the BUY arm (a Novice with no wanted weapon and a KNOWN zeny
+    Two arms: the BUY arm (a Novice missing a wanted weapon and a KNOWN zeny
     >= MERCHANT_ZENY_MIN) and the SELL arm (a Novice holding sellable
     stock, weapon or not). Field-side admission requires at least two
     bagged or collectible in-flight sellable units, with pickup before
