@@ -1,6 +1,7 @@
 """Offline provider contracts; no network or native game connections."""
 
 import importlib
+import time
 from typing import Any
 
 import httpx
@@ -132,6 +133,72 @@ def test_private_decision_requires_explicit_plain_endpoint(monkeypatch):
     assert provider.decide({}) == {"answers": {"action": {"choice": "rest"}}}
     with pytest.raises(ValueError, match=r"required|must"):
         backend.make_private_decision("https://example.com/v1/systemone")
+
+
+@pytest.mark.parametrize("duration_s", [2.0, 9.0, 14.9])
+def test_private_decision_default_allows_healthy_slow_answers(monkeypatch, duration_s):
+    calls = []
+
+    def post(url, **kwargs):
+        calls.append(kwargs)
+        request = httpx.Request("POST", url)
+        if duration_s > kwargs["timeout"]:
+            msg = "simulated slow decide"
+            raise httpx.ReadTimeout(msg, request=request)
+        return httpx.Response(200, json={"answers": {"safe": True}}, request=request)
+
+    monkeypatch.setattr(httpx, "post", post)
+    provider = backend.make_private_decision("http://192.168.1.156:8091/v1/systemone")
+    assert provider.decide({"state": {}}) == {"answers": {"safe": True}}
+    assert len(calls) == 1
+    assert calls[0]["timeout"] == 15.0
+
+
+def test_private_decision_caps_timeout_and_next_call_has_no_retry_backoff(monkeypatch):
+    now = [0.0]
+    attempts = []
+
+    def sleep(seconds):
+        now[0] += seconds
+
+    def post(url, **kwargs):
+        attempts.append((now[0], kwargs["timeout"]))
+        request = httpx.Request("POST", url)
+        if len(attempts) == 1:
+            now[0] += kwargs["timeout"]
+            msg = "simulated stalled decide"
+            raise httpx.ReadTimeout(msg, request=request)
+        now[0] += 2.0
+        return httpx.Response(200, json={"answers": {"safe": True}}, request=request)
+
+    monkeypatch.setattr(time, "sleep", sleep)
+    monkeypatch.setattr(time, "monotonic", lambda: now[0])
+    monkeypatch.setattr(httpx, "post", post)
+    provider = backend.make_private_decision("http://192.168.1.156:8091/v1/systemone")
+    with pytest.raises(backend.PlayingBackendError, match="real inference request failed"):
+        provider.decide({"state": {}})
+    assert len(attempts) == 1, "a failed decide must not issue an internal duplicate"
+    failed_at = now[0]
+    assert failed_at == 15.0
+
+    assert provider.decide({"state": {}}) == {"answers": {"safe": True}}
+    assert len(attempts) == 2
+    assert attempts[1][0] - failed_at <= 1.0
+    assert attempts[1][1] == 15.0
+    assert now[0] <= 20.0
+
+
+def test_private_decision_preserves_explicit_slow_backend_timeout(monkeypatch):
+    calls = []
+
+    def post(url, **kwargs):
+        calls.append(kwargs)
+        return httpx.Response(200, json={"answers": {}}, request=httpx.Request("POST", url))
+
+    monkeypatch.setattr(httpx, "post", post)
+    provider = backend.make_private_decision("http://192.168.1.156:8091/v1/systemone", timeout=35.0)
+    assert provider.decide({}) == {"answers": {}}
+    assert calls[0]["timeout"] == 35.0
 
 
 def test_workers_flash_url_matches_model_and_unwraps_answers(monkeypatch):
