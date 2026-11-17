@@ -14225,3 +14225,66 @@ native transport/vitals tests produced **113 passes**. Full gate
 1 skipped, 95.82% coverage**. The gate's static checks also passed.
 No population runner, Docker operation, service operation or live probe was
 performed; no merge was performed. `spikes/` was untouched.
+
+## 2026-11-17 — leg 107: anti-phase validation window (29 agents, Tue 09:00-10:30)
+
+Preflight 08:45-08:50 CET: heavengraph :8091 health 200 and a real-shape
+`decide_probe.py` decide in 0.67 s with a 10-question envelope (no
+CPU-fallback signature); :8092 chat health 200; all four e2e containers up;
+`schedule-leg107.json` carried all 29 personas at `[[1, 9.0, 10.5]]` with the
+runner clock at day 1 (Tuesday). Launched 08:50:49 CET inside
+`systemd-run --user --unit=leg107-runner` (9000 s), log
+`/tmp/population_leg107.log`, receipt
+`run/plain_host_receipts/population-receipt-107-1794901856.json`.
+
+Outcome: **23,561 steps, 0 step errors, all 29 offline cleanly at close,
+0 failed transport rebuilds, 29 keepalive transport drops all rebuilt.**
+Mid-window the fleet held 29/29 online with decisions climbing from the first
+minutes. Window totals: **5,862 decides, mean 202.1/agent (band 74-343;
+25/29 inside the leg-106 75-305 band)** — cadence target met.
+
+**T1 anti-phase verdict: MISS.** Window decide p50 = 2.43 s but p90 = 90.09 s
+(p99 90.14, max 90.22) — **828/6,689 decides (12.4%) sat at the ~90 s timeout
+ceiling**, statistically identical to leg-106's ~12%. PlayingBackendError
+counted 819 vs leg-106's 829 (~1% better, not "well under"). No burst waves:
+per-minute PBE rates ran a smooth 4-19/min with clean minutes interspersed,
+and the ceiling hits spread evenly across agents (8.0-20.4% each, no
+concentration). The SHA-256 persona phase jitter (4d3777c7) did not move the
+timeout tail: with p50 at 2.43 s the backend serves ~88% of decides fast, so
+the residual is a backend-side capacity/stall signature under 29-agent load
+(slot queue or periodic server stall on the shared :8091), not client
+heartbeat alignment. Next slice belongs on the server side: correlate the
+ceiling hits with llama-server slot-queue depth / stall waves rather than
+re-phasing heartbeats.
+
+**T2 cadence: PASS** (mean 202.1 vs leg-106 mean 188; 25/29 in band).
+
+**T3 buy repeat: MISS.** No `NpcShopBuySelection` anywhere in the window;
+zeny_wing (300002) sold (+4 z -> 118) but never authored the second buy from
+its wanted set (1202/1204 remained affordable at 118 z).
+
+**T4 sell sustain: PARTIAL, with new evidence.** 4/29 agents sold in-window
+(`NpcShopSellOpen` + `NpcShopSell` pairs): NyxSong +3 z (188->191), zeny_wing
++4 z (114->118), and the **first-ever seed-105-cohort sells — NyxNyan18
+(300100) +38 z (0->38, the window's largest single gain) and SoraSama22
+(300104) +4 z (0->4)**. Seed-3 seller count was 2/7 vs leg-106's 5/7. The
+pop105 cohort also showed first loot pickups (FluffWing 300103 and misu_drop
+300105 inventory 1->2). misu_drop delivered the window's best combat line:
+4 kill credits.
+
+**T5 s00 trip sustain: MISS.** YuffieFy81 (300006) stayed on pay_fild04
+(353 z unchanged) — it farmed (49 attacks authored, 2 kill credits) but never
+trip-wired to the dealer. last_map pay_fild04 (210,178).
+
+**T6 health: PASS** — 0 step errors, 0 exhausted rebuild budgets, clean
+29/29 offline stagger. Watch item (not a defect): the receipt `passed` field
+is None; receipt-sample `pos` tuples persist after offline.
+
+Combat through the window: 240 attacks authored -> 162 swings sent -> 143
+damage events -> **19 kill credits across 11 agents** (56 base / 40 job exp),
+the first window at this population with armed-weapon kills.
+
+`seed-zeny.json` refreshed to the 29 DB closing values (4 entries changed:
+the four sellers). No live probes were run while the window was open; no
+heavengraph server was touched; `spikes/` untouched. This entry was written
+by the leg-107 shepherd; the receipt is the authoritative counter source.
