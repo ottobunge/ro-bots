@@ -14288,3 +14288,66 @@ the first window at this population with armed-weapon kills.
 the four sellers). No live probes were run while the window was open; no
 heavengraph server was touched; `spikes/` untouched. This entry was written
 by the leg-107 shepherd; the receipt is the authoritative counter source.
+
+## 2026-11-17 — leg-107 residual: cap private decide stalls at 15 seconds
+
+Analysis receipt: `run/reviews/leg107-stall-wave-analysis.json` (offline
+trace analysis). **90.09 s = the `make_private_decision` 90 s default firing;
+13.1% of decides hang server-side per-request while 84 other decides complete
+at ~2 s in the same interval.** Median occupancy at stall onset was 23/32;
+the ceiling rate stays roughly flat across 16-32 in-flight requests, and
+leg-105 at 16 slots had the same ~12.6% rate. This supersedes the preceding
+entry's queue-depth hypothesis: the evidence points to slot-specific
+llama.cpp request hangs, not fleet-wide saturation or heartbeat phase.
+
+Code attribution: `src/robots/playing.py` constructs
+`make_private_decision(args.decision_url)` without a timeout override.
+`AgentHost._build_agent` wires that model through `TracedDecisionModel` into
+`EventDrivenBrain`; `handle_event` calls `PlayingDecision.decide`, then
+`playing_backends._post` makes one `httpx.post` using that factory timeout.
+The trace proxy measures that single request, including its timeout.
+There is **no 60+30 composition and no internal retry/backoff layer**.
+`decision/_http.py`'s `SYSTEMONE_TIMEOUT_S = 60.0` belongs to the separate
+`ClefLocal`/`ClefRemote` path and is not used here. Other factory defaults
+are local decide 90 s, Workers decide 30 s, and playing chat 60 s; none
+compose with this private decide timeout. The former 90 s private default
+was the windows-50-53 accommodation for a slow local iGPU.
+
+Changed only `make_private_decision`'s default to **15.0 s**; explicit
+timeouts remain available for deliberately slower backends. Healthy decides
+under 10 s retain margin. No internal or parallel duplicate request was
+added. A timeout still surfaces as the sanitized `PlayingBackendError`;
+the adapter adds zero retry delay. `ScheduledAgent._run_loop` catches the
+failure and uses its existing `DEFAULT_TICK_SECONDS = 2.0` pacing before
+the next tick, matching the receipt's 2.03 s median failure-to-next-request
+gap. A typical successful next decide costs ~2 s, giving ~19 s for a
+15 s timeout + the next tick + successful response. Repeated stalls can
+still cause consecutive failures; this bounds each stalled attempt rather
+than promising eventual recovery within one budget.
+
+Projected failed-request time falls from **~1,242 agent-minutes per leg to
+~207 minutes**, plus false-abort retries: 253/5,862 previously successful
+decides (4.3%) exceeded 15 s. A successful retry normally costs ~2 s; the
+new default deliberately trades those extra failures for much less time
+lost to hung requests. **Leg-108 validation: decide p90 should collapse
+from ~90 s to <=20 s. PBE count may rise as capped stalls surface as
+timeout/next-tick retries; PBE count is no longer the health metric.
+Measure time lost to stalls and decide p90.** This is a projection pending
+the next live window, not a live validation claim.
+
+TDD: mocked-HTTP regressions first failed on the old 90 s default, then
+passed with 15 s. They pin the effective private-path default, successful
+2/9/14.9 s replies, one attempt per call, timeout propagation, immediate
+next-call eligibility (<=1 s adapter delay), a simulated timeout + 2 s
+successful retry within 20 s, and preservation of explicit slow-backend
+overrides. Existing adapter and startup-resilience contracts remain covered.
+No runner, Docker, heavengraph operation, or live probe was performed;
+`spikes/` and the parent checkout were not modified.
+
+Full gate: `nix develop -c task --dir . check` **PASS** — 7,390 passed,
+1 skipped, 65 subtests passed, 95.82% coverage; formatting and all static
+checks passed. Fresh-worktree setup required initializing rAthena at its
+recorded submodule revision and copying the ignored iro-db corpus and
+`rathena/config.log` from the parent checkout into this worktree. The 44
+initial failures/setup errors all passed after those inputs were restored;
+no test or source changes were needed for them.

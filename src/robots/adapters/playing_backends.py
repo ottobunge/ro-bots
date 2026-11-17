@@ -120,13 +120,12 @@ def make_local_decision(url: str, *, timeout: float = 90.0) -> PlayingDecision:
     return PlayingDecision(url, "", "clef-flash", timeout)
 
 
-def make_private_decision(url: str, *, timeout: float = 90.0) -> PlayingDecision:
+def make_private_decision(url: str, *, timeout: float = 15.0) -> PlayingDecision:
     """Explicit owned private-network Clef endpoint; does not start remote services.
 
-    90s default: a cold ~2.2k-token decide on the local iGPU costs 12-35s and
-    the brain's decide gates every tick — a 30s budget turned latency spikes
-    into total script starvation (windows 50-53). Fast backends (heavengraph
-    CUDA) are unaffected: the timeout is a ceiling, not a wait.
+    Bound per-request stalls on the playing path (leg 107); healthy decides
+    normally finish within 10s. Callers using a slower backend can explicitly
+    supply a longer timeout. The adapter makes one attempt, with no retry delay.
     """
     _validate_endpoint(url, "/v1/systemone", timeout)
     address = ip_address(urlsplit(url).hostname or "")
