@@ -60,6 +60,7 @@ def _aged_login_pair_flow(monkeypatch: pytest.MonkeyPatch) -> tuple[Any, Playing
     """The common leg-56 shape: C6 bound, login-stamped 400/2000 pair received,
     the seeded wallet, the client clock advanced 20s past the login stamp."""
     wire, client, receive, _sent, selection = ready_shop(monkeypatch)
+    receive(struct.pack("<HHHH", 0x7FA, 6, 9, 1), struct.pack("<HHi", 0xB0, 24, 0))
     client.perform_native(selection)
     # the C6 answers; the weight pair arrives; NO B1/20 zeny — the wallet is
     # the runner-side seed alone (the wire delivers SP_ZENY on changes only)
@@ -76,6 +77,7 @@ def _aged_login_pair_flow(monkeypatch: pytest.MonkeyPatch) -> tuple[Any, Playing
 
 def test_seeded_wallet_mints_the_affordable_purchase(monkeypatch) -> None:
     wire, client, receive, _sent, selection = ready_shop(monkeypatch)
+    receive(struct.pack("<HHHH", 0x7FA, 6, 9, 1), struct.pack("<HHi", 0xB0, 24, 0))
     client.perform_native(selection)
     # the C6 answers; the weight pair arrives; NO B1/20 zeny — the wallet is
     # the runner-side seed alone (the wire delivers SP_ZENY on changes only)
@@ -151,6 +153,7 @@ def test_received_row_third_field_mints_the_purchase(monkeypatch) -> None:
     (identity by nameid, price/discount re-checked against the row-derived
     facts) and never demands template==row on the volatile field."""
     wire, client, receive, _sent, selection = ready_shop(monkeypatch)
+    receive(struct.pack("<HHHH", 0x7FA, 6, 9, 1), struct.pack("<HHi", 0xB0, 24, 0))
     client.perform_native(selection)
     # the C6 answers with the exchange's own type byte (5); the weight pair
     # arrives; NO B1/20 zeny - the wallet is the runner-side seed alone
@@ -174,6 +177,7 @@ def test_unknown_slots_mint_the_purchase(monkeypatch) -> None:
     nothing until they exist - the stock check passes on stock=True alone
     (the wire overrides when it speaks)."""
     wire, client, receive, _sent, selection = ready_shop(monkeypatch)
+    receive(struct.pack("<HHHH", 0x7FA, 6, 9, 1), struct.pack("<HHi", 0xB0, 24, 0))
     client.perform_native(selection)
     receive(
         struct.pack("<HHIIBH", 0xC6, 15, 73, 61, 4, 1201),
@@ -194,6 +198,7 @@ def test_absent_stock_still_refuses(monkeypatch) -> None:
     """The honest negative stands: with NO inventory facts (stock=None) the
     stock term refuses - unknown slots never revive absent stock."""
     wire, client, receive, _sent, selection = ready_shop(monkeypatch)
+    receive(struct.pack("<HHHH", 0x7FA, 6, 9, 1), struct.pack("<HHi", 0xB0, 24, 0))
     client.perform_native(selection)
     receive(
         struct.pack("<HHIIBH", 0xC6, 15, 73, 61, 4, 1201),
@@ -215,6 +220,7 @@ def test_golden_verdict_line_all_true_on_leg58_shape(monkeypatch, caplog) -> Non
     must log EVERY seam term True with eligible=True - no starving term left
     behind the two the readout named."""
     wire, client, receive, _sent, selection = ready_shop(monkeypatch)
+    receive(struct.pack("<HHHH", 0x7FA, 6, 9, 1), struct.pack("<HHi", 0xB0, 24, 0))
     client.perform_native(selection)
     receive(
         struct.pack("<HHIIBH", 0xC6, 15, 73, 61, 5, 1201),

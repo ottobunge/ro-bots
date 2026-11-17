@@ -136,7 +136,7 @@ def test_mint_verdict_golden_line_names_every_term(caplog: Any) -> None:
             "f_epoch=True(1/1)",
             "f_npc=True(123/123)",
             "f_map=True(prontera/prontera)",
-            "f_item=True(1201/1201)",
+            "f_item=True(1201/(1201, 1202, 1204))",
             "f_client=True(1201/1201)",
             "f_ordinary=True(True)",
             "f_nonstack=True(True)",
@@ -163,6 +163,7 @@ def test_mint_verdict_golden_line_names_every_term(caplog: Any) -> None:
             "slots_free=True(0/100)",
             "rows_int=True(0 rows)",
             "no_knife_dup=True(knife rows=0)",
+            "unowned=True(item=1201 policy=False)",
             "eligible=True(verdict)",
         )
     )

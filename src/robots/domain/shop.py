@@ -5,6 +5,9 @@ from typing import Literal
 
 from robots.domain.actions import NpcShopPurchase
 
+# Pre-re item_db_equip.yml:2262,2297,2366; integer wire weight units.
+NOVICE_WEAPON_WEIGHTS = {1201: 400, 1202: 400, 1204: 500}
+
 
 @dataclass(frozen=True, slots=True)
 class ReceivedZeny:

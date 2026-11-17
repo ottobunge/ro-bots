@@ -55,7 +55,12 @@ def test_no_progress_releases_retained_farm_script_and_retries_later(monkeypatch
 @pytest.mark.parametrize("item", ["501", "511"])
 @pytest.mark.parametrize("job", ["Novice", "Thief"])
 def test_single_cheap_item_does_not_fund_a_cross_map_sell_trip(item, job, caplog):
-    state = _state(map_name="pay_fild04", job=job, inventory={item: 1, "1201": 1}, zeny=125)
+    state = _state(
+        map_name="pay_fild04",
+        job=job,
+        inventory={item: 1, "1201": 1, "1202": 1, "1204": 1},
+        zeny=125,
+    )
     assert merchant_drive_cell(state) is None
     assert merchant_admission_refusal(state) is not None
     assert "admitted" not in caplog.text
@@ -66,7 +71,7 @@ def test_single_cheap_item_does_not_fund_a_cross_map_sell_trip(item, job, caplog
 
 
 def test_nonpositive_stock_never_admits():
-    state = _state(inventory={"511": 0, "915": -1, "1201": 1}, zeny=125)
+    state = _state(inventory={"511": 0, "915": -1, "1201": 1, "1202": 1, "1204": 1}, zeny=125)
     assert merchant_drive_cell(state) is None
 
 

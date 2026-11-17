@@ -30,6 +30,7 @@ _TAP_LOGGER = "robots.app.playing_runtime"
 def _bound_shop(monkeypatch: pytest.MonkeyPatch) -> PlayingClient:
     """The seeded-wallet shape: C5 sent, C6 bound, self-slots and seed armed."""
     wire, client, receive, _sent, selection = ready_shop(monkeypatch)
+    receive(struct.pack("<HHHH", 0x7FA, 6, 9, 1), struct.pack("<HHi", 0xB0, 24, 0))
     client.perform_native(selection)
     # the C6 answers; the weight pair arrives; NO B1/20 zeny - the wallet is
     # the runner-side seed alone (the wire delivers SP_ZENY on changes only)

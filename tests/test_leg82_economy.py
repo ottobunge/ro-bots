@@ -143,7 +143,7 @@ def test_unknown_inventory_with_real_knife_offer_refuses_purchase(monkeypatch):
     assert len(sent) == 3
 
 
-def test_selling_received_loot_keeps_the_received_knife_and_weapon_release(monkeypatch):
+def test_selling_received_loot_keeps_the_received_knife_and_next_buy_want(monkeypatch):
     _wire, client, receive, _sent = offered(monkeypatch)
     receive(acquisition(index=3, item=915, amount=2), struct.pack("<HHi", 0xB0, 24, 420))
     state = client.build_native_state(Goal.GRIND)
@@ -152,7 +152,7 @@ def test_selling_received_loot_keeps_the_received_knife_and_weapon_release(monke
     state = client.build_native_state(Goal.GRIND)
     assert state.inventory_known
     assert state.inventory == {"1201": 1}
-    assert merchant_drive_cell(replace(state, map_name="prt_in")) is None
+    assert merchant_drive_cell(replace(state, map_name="prt_in")) == MERCHANT_ROUTE["prt_in"]
     # A map warp neither loses the complete baseline nor rearms unknown stock.
     receive(struct.pack("<H16sHH", 0x91, b"prt_in", 168, 128))
     state = client.build_native_state(Goal.GRIND)

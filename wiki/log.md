@@ -14527,3 +14527,85 @@ stat surplus once a build's targets are met (xXLunasongXx 21).
 
 Receipt: run/plain_host_receipts/population-receipt-110-1794942729.json.
 seed-zeny.json refreshed to the 29 closing values (9 changed = the 9 sellers).
+
+## LEG 110 RESIDUAL — BUY THE NEXT UNOWNED WANTED WEAPON (2026-11-17, offline TDD)
+
+The zero-Buy authoring gap was a policy/continuation gap. A funded Novice
+holding 1201 now keeps its buy want until the wanted set (1201, 1202, 1204)
+is complete. The dealer buys one affordable, unowned item per visit, in
+wanted-set order, using the received C6 discount price. A sent purchase
+consumes the visit; re-clicks and repeated offers cannot spend again. A
+received map departure permits a fresh purchase machine for the next visit.
+A matching acquisition plus CA0 completes the exchange and releases the UI.
+
+Hypotheses adjudicated against the task's origin/main base (citations in
+this paragraph refer to the code BEFORE this fix):
+
+- **H1 CONFIRMED:** `src/robots/app/scripts.py:674` used `any` wanted-id
+  membership and `:679` returned `weapon_release` for stockless holders.
+  Owning 1201 masked missing 1202/1204. Completion now requires positive
+  counts of ALL wanted ids (`src/robots/app/scripts.py:688`). The same
+  completion fact governs whether a small field sale may borrow a buy trip.
+- **H2 CONFIRMED in its inventory form:**
+  `src/robots/app/playing_runtime.py:1662` independently required NO wanted
+  weapon in `_buy_arm_ready`; there was no literal `weapon == 0` check.
+  That duplicate gate is removed. The goal path already re-evaluates
+  `_merchant_step` ahead of retained scripts (`src/robots/app/brain.py:829`);
+  the idle runtime arm now uses the same merchant admission.
+- **H3 RULED OUT:** `src/robots/domain/decisions.py:139` has no Buy choice
+  to drop; `_drop_moot_options` (`:44`) removes only party choices. Buy
+  selection/purchase are authored by the received-shop mechanical loop,
+  independently of a model picking Buy.
+- **H4 NOT THE PRE-C4 ROOT CAUSE:** prices cannot explain the membership
+  refusal before an offer exists. The existing 50z travel/spend floor and
+  received-wallet chain remain. A separate downstream 1201-only seam WAS
+  present: `src/robots/app/playing_runtime.py:1433` qualified only 1201,
+  and `src/robots/adapters/native_purchase.py:417`, `:500`, `:603` fixed
+  offer selection, C8 encoding and acquisition correlation to 1201. These
+  now follow the qualified wanted item. The former full-price helper
+  (`src/robots/app/scripts.py:397`) is aligned with the received discount
+  price that the purchase admission/debit already uses. No DB price is
+  fabricated: the pinned pre-re Cutter 1204 actually lists Buy 1250, not
+  50 (`rathena/db/pre-re/item_db_equip.yml:2371`); a cheap live 1204 requires
+  a cheap received C6 row.
+
+The shared item/weight allowlist lives in `src/robots/domain/shop.py:9`;
+1201/1202 weigh 400 wire units, 1204 weighs 500. Runtime qualification uses
+current positive inventory to exclude owned ids. Automatic mints latch an
+unowned-only policy that is rechecked at dispatch, including an acquisition
+arriving between mint and send; explicitly injected owner purchases retain
+their existing finite quantity-one API. Stock backoff now follows remaining
+wanted ids, so an offer containing only 1204 is usable when 1201/1202 are
+owned. Unknown inventory still cannot authorize spending.
+
+TDD: the new `tests/test_next_wanted_weapon_buy.py` first failed on all seven
+original regression cases. It now covers idle holder -> click -> received C4
+-> NpcShopBuySelection -> C6 -> exact C8 item -> matching acquisition/CA0,
+50z/147z boundaries, reversed offer order and discount affordability, no
+purchase when all wanted ids are owned or the wallet is insufficient,
+owned-only/expensive offers, an ownership change before dispatch, and two
+successive visits ending in set completion with exactly two purchases. Two
+further red-to-green regressions pin receipt matching to the private minted
+item even if the public action is mutated after send, and prevent a completed
+exchange from clearing a later dialogue on subsequent frames.
+Existing first-knife/C6/wallet/timeout/capacity regressions retain their
+assertions with an unowned first-knife fixture; former one-knife completion
+expectations now use the complete wanted set. The leg-38 navigation files
+and `_move_reroll` region are untouched.
+
+**LEG-111 VALIDATION SIGNAL (pending live validation):** zeny_wing (300002)
+or any weapon holder, at received zeny >= 50, authors NpcShopBuySelection
+at the dealer, then NpcShopPurchase for the first offered, affordable,
+unowned 1202/1204. The buy receipt must show that item, reconciled inventory
+addition and CA0, and zenylog must record the matching debit. After receipt,
+there must be no second purchase in that visit; a later visit can buy the
+remaining item, and owning all three must stop further buys. Live C6 prices
+remain decisive. No runner, container, server, SQL or live probe was used
+for this implementation.
+
+Validation: `nix develop -c task --dir . check` **PASS** — 7,403 tests passed,
+65 subtests passed, 95.81% total coverage (85% required), all static gates
+green. The fresh worktree used copied ignored iro-db/config.log fixtures;
+the tracked iro-wiki DB symlink was temporarily redirected to a worktree-local
+copy of the existing offline corpus because its parent target is a broken
+self-link, then restored unchanged. No fixture or symlink change is committed.

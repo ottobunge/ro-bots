@@ -101,7 +101,9 @@ def test_idle_eligible_buy_arm_authors_click_then_received_c4_selection(caplog):
     assert client.wire.sent[-1][-1] == 0
 
 
-@pytest.mark.parametrize(("inventory", "zeny"), [(((7, 1201, 1),), 140), ((), 49)])
+@pytest.mark.parametrize(
+    ("inventory", "zeny"), [(((7, 1201, 1), (8, 1202, 1), (9, 1204, 1)), 140), ((), 49)]
+)
 def test_buy_arm_keeps_weapon_release_and_wallet_refusals(inventory, zeny):
     client = _buyer(inventory, zeny)
     state = client.build_native_state(Goal.GRIND)

@@ -147,12 +147,8 @@ def test_non_novice_never_drives() -> None:
     assert merchant_drive_cell(_state(job="Swordsman", zeny=5000)) is None
 
 
-def test_wanted_weapon_in_inventory_releases() -> None:
-    # bought OR looted: a worn weapon stays in received inventory, so its
-    # presence is the honest received release signal.
-    assert merchant_drive_cell(_state(zeny=60, inventory={"1202": 1})) is None
-    assert merchant_drive_cell(_state(zeny=60, inventory={"1201": 1})) is None
-    assert merchant_drive_cell(_state(zeny=60, inventory={"1204": 1})) is None
+def test_complete_wanted_weapon_set_releases() -> None:
+    assert merchant_drive_cell(_state(zeny=60, inventory={"1201": 1, "1202": 1, "1204": 1})) is None
 
 
 def test_inventory_unknown_fails_closed() -> None:
@@ -185,8 +181,8 @@ def test_grind_script_field_unchanged_when_zeny_unknown() -> None:
     assert any(isinstance(a, Attack) for a in outcome.actions)
 
 
-def test_drive_releases_once_weapon_is_known() -> None:
-    state = _state(zeny=60, inventory={"1201": 1}, nearby=(_poring(),))
+def test_drive_releases_once_wanted_set_is_complete() -> None:
+    state = _state(zeny=60, inventory={"1201": 1, "1202": 1, "1204": 1}, nearby=(_poring(),))
     outcome = GrindScript().step(state)
     assert any(isinstance(a, Attack) for a in outcome.actions)
     assert not any(isinstance(a, MoveTo) and (a.x, a.y) == (169, 377) for a in outcome.actions)
