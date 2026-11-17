@@ -14472,3 +14472,58 @@ AND PRODUCTIVE: roamed/farmed prt_fild05 all window (end 358,171), leveled base 
 
 Dominant residual: the picklog/log_filter one-key conf gap (fix staged, needs one
 pre-window map restart) + the :8091 hang plateau (45.8%, Otto's relaunch call).
+
+## LEG 110 — PICKLOG FINAL PROOF (Tue 2026-11-17 21:00-22:30 CET, 29 agents, day 1)
+
+PICKLOG VERDICT: **PROVEN — first drops/pickups/sells in-window wrote rows from a 0
+baseline.** Final counts: picklog M=21 / P=13 / L=3 / S=16; zenylog 9 rows (all type
+S, 95z total). All rows fall inside the online window (DB UTC 20:00:42-21:26:33 =
+21:00-22:26 CET). Correlation: receipt pickup_success 13 = P rows 13 EXACT;
+NpcShopSell actions 9 = zenylog 9 EXACT = 9 distinct sellers whose char-DB zeny
+deltas match their zenylog sums exactly (NyxSong +4, RinceNyan +15, zeny_wing +26,
+xXLunasongXx +7, SoraSama22 +5, AeroSong25 +8, RinceSong +15, sora_sama +7,
+rune_walker +8); kill_credits 27 (wire) vs M rows 21 correlated (per-kill multi-item
+rolls and no-roll kills make 1:1 not expected).
+
+PRE-LAUNCH CATCH (the last conf gap): the staged e2e log_athena.conf carried
+sql_logs/0xFFF/log_filter/log_zeny but OMITTED the table-name keys — the startup
+banner printed "Logging item transactions to table ''". With sql_logs:yes the INSERT
+target is an empty identifier (log.cpp:225 formats log_config.log_pick directly) =
+the silent-failure shape the window was built to exclude. Fixed BEFORE launch via
+docker cp + map-only restart (the established piano): appended log_pick_db: picklog +
+log_zeny_db: zenylog; banner re-read "to table 'picklog'/'zenylog'"; Map Server
+online; baseline re-verified 0/0. NOTE: the e2e staged conf lives ONLY in the volume
+(no repo template under scripts/e2e/ or run/worlds/e2e/) — a full re-stage must
+re-add these two keys.
+
+WEDGE: CAPPED 0.0% (leg-109: 45.8%) — 10,097 decides roster-wide, p50 0.32 s / p90
+2.96 s / max 9.99 s, zero attempts at the 14.9 s cap, :8091 untouched all night. The
+hang wave did not recur this window. Cadence band 100-580 decides/agent (all >= 74;
+13/29 above the historical 343 top, same shape as leg-109 but with zero latency
+pressure).
+
+ECONOMY: 9 sellers (leg-109: 6). xXLunasongXx ENTERED THE SELL ARM for the first
+time (TalkToNpc -> NpcShopSellOpen -> NpcShopSell). zeny_wing 147z: Buy authored
+STILL 0 roster-wide — the 1202/1204 buy-authoring gap persists (it now holds enough
+zeny for the Knife). target_species_skipped_expless 693 (exp-table knowledge refusing
+expless targets is live telemetry).
+
+xXLunasongXx STATS (criterion-9): status_point 21 (16 + 5 from the leg-109 level-up),
+STR9/DEX9 — its plan targets are MET, so the +5 is planless and sat unspent; no
+StatusUp action in the traces (the allocator is runtime-side and silent; there is no
+status-spend telemetry kind — decide payloads carry status_point only as context).
+Contrast: YuffieFy81 sp6/STR13 — its build plan's higher STR target consumed its
+points (per-build allocation works; DB ground truth).
+
+HEALTH: 27,909 steps, 0 step errors, 29/29 clean offline, 29 TRANSPORT DOWN events
+(1/agent) all rebuilt with 0 recovery attempts and 0 exhausted. Socials: 170
+GuildInvite, 9 FoundGuild, 19 InviteToParty, 73 PartyChat, 1,922 Say. Combat: 226
+attacks authored / 166 swings / 149 damage events / 3,355 damage / 27 kill credits /
++84 base / +52 job exp; loot 13 attempts / 13 successes; attack_refused 12.
+
+Dominant residual: the zeny_wing buy-authoring gap (the sell chain is proven
+end-to-end; the BUY decision never fires despite affordable zeny) + the planless
+stat surplus once a build's targets are met (xXLunasongXx 21).
+
+Receipt: run/plain_host_receipts/population-receipt-110-1794942729.json.
+seed-zeny.json refreshed to the 29 closing values (9 changed = the 9 sellers).
