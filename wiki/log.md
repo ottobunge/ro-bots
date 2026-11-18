@@ -14609,3 +14609,60 @@ green. The fresh worktree used copied ignored iro-db/config.log fixtures;
 the tracked iro-wiki DB symlink was temporarily redirected to a worktree-local
 copy of the existing offline corpus because its parent target is a broken
 self-link, then restored unchanged. No fixture or symlink change is committed.
+
+## LEG-111 (2026-11-18, Wed 09:00-10:30 Madrid, 29 agents, systemd-run `leg111-runner`)
+
+**BUY VERDICT — mechanism VALIDATED end-to-end live.** PoringMuffin14
+(pop_0003_g01m02, char 300005) authored `NpcShopBuySelection` 09:46:04 Madrid,
+executed `NpcShopPurchase`, DB inventory gained **1204 x1**, zeny
+1384->134 (**-1250**), and zenylog row 10 records the matching debit
+(type S, -1250, prt_in, 09:46:06 — 2 s after authoring). zeny_wing authored
+`NpcShopBuySelection` 09:01:02 but purchased nothing, correctly: its wanted
+set (1201,1202,1204) leaves **1202 unstocked** at `Weapon Dealer#prt`
+(`rathena/npc/merchants/shops.txt:255` sells 1201/1204/1207/…, no 1202) and
+**1204 @ live 1250z > 147z held** — the affordability gate withheld. The
+leg-38 fixtures' ~50z price model does not match live dealer prices
+(1204 = 1250z live). YuffieFy81 authored 2 selections, no purchase
+(395z < 1250z). The LEG-111 validation signal above is ANSWERED: mint,
+receipt matching, reconciled inventory addition, zenylog debit and
+single-purchase discipline were all observed live on PoringMuffin14.
+
+**Picklog/zenylog continuity:** baseline M21/P13/L3/S16 + zenylog 9 ->
+closing M34/P20/L9/S17 + zenylog 10 (M+13, P+7, L+6, S+1). No regression.
+
+**Decide health (dominant residual):** 11,167 attempts, **5,835 capped at
+15 s (52.3%)**, 5,370 succeeded (48.1%); p50 15.01 s / p90 15.03 s vs
+leg-110's 0.0% capped / 0.32 s p50 — backend saturation under 29-agent
+concurrency at :8091. The 15 s cap kept the loop functional (0 step errors
+across 29,511 steps) at roughly half throughput. Chat leg healthy
+(2,266/2,266 llm request/response).
+
+**Cadence:** successful decides/agent 42-252; 28/29 inside the 74-343 band,
+`pop_0069_s01` below at 42, none above.
+
+**Economy:** no new sellers (every zeny matches seed except the buyer's
+debit); first-zeny count unchanged; PoringMuffin14 1384->134. Combat
+context: 156 Attack actions, 952 swing observations, 1 attack_refused,
+43 loot_performed; picklog M+13 confirms kills landed.
+
+**Health:** 0 step errors / 29,511 steps; TRANSPORT DOWN x27 all rebuilt
+(0 exhausted); 29/29 clean offline. Socials: GuildInvite 211, FoundGuild 11,
+InviteToParty 20, PartyChat 100, Say 2,273, WhisperTo 5.
+
+**Other:** xXLunasongXx's +5 stat surplus (sp 21, base 11) remains unspent
+(known secondary gap, persists). YuffieFy81 spent 10 stat points (16->6) —
+the stat-setup seam active on the odyssey char. seed-zeny refreshed to
+closing values (single change: pop_0003_g01m02 1384->134).
+
+Receipt: `run/plain_host_receipts/population-receipt-111-1794988084.json`.
+No live probes during the window; heavengraph servers only touched with
+read-only health/decide checks. Preflight decide probe 0.67 s; launch 08:48;
+window closed 10:30; receipt 11:18.
+
+**DOMINANT RESIDUAL for the coordinator:** decide backend saturation
+(:8091, 52.3% capped, p50 15.01 s vs leg-110 0.32 s / 0.0%) — check backend
+slot configuration/external load before the next population leg; the cap
+masks it but halves decide productivity. Secondary: the buy fixtures' ~50z
+wanted-weapon price model vs live 1250z (1204) and 1202 unstocked at the prt
+dealer — zeny_wing-class agents convert only with zeny >= 1250z or a dealer
+offer matching their wanted set.
