@@ -282,11 +282,14 @@ class MerchantStaging:
     ) -> Point | None:
         x, y = _dealer_cell(state)
         lane = _dealer_exit_lane(grid, (x, y))
+        occupied = _received_body_cells(state)
         cells = [
             (x + dx, y + dy)
             for dx in range(-radius, radius + 1)
             for dy in range(-radius, radius + 1)
-            if max(abs(dx), abs(dy)) >= minimum and (x + dx, y + dy) not in lane
+            if max(abs(dx), abs(dy)) >= minimum
+            and (x + dx, y + dy) not in lane
+            and (x + dx, y + dy) not in occupied
         ]
         cells.sort(
             key=lambda p: (

@@ -14885,3 +14885,101 @@ Decide saturation (57% capped) is the standing load residual; any next
 leg comparing sell conversions should read T2 beside T1, since capped
 decides directly throttle the merchant approach loop.
 
+
+## 2026-11-18 — LEG-113 merchant talk funnel and overlapping queue parking (SOL)
+
+Branch `t3/merchant-talk-funnel`, based on `88ccb459`. Offline evidence:
+`run/plain_host_receipts/population-receipt-113-1795027678.json`, population
+JSONL traces filtered to **19:00–20:30 UTC**, and the existing
+`/tmp/population_leg113.log`. No runner, world probe, Docker operation or
+heavengraph inference request was used.
+
+**Exact contact gate:** `ScheduledAgent.tick()` delivers every drained world
+and chat event before `_advance_script()`. A capped backend request raises
+`PlayingBackendError` through `deliver_event()` and exits that tick before
+`EventDrivenBrain.step_script()` / `_sell_drive_rearm()` can author the
+contact. Successful chat decisions earlier in the same batch can still emit
+Say. The leg log contains that exact traceback for `pop_0069_g03m00`.
+Its in-window trace has **122 Say, zero other authored actions, zero
+script_step records**, and 479 decide responses (276 error, 203 answered).
+The dealer-adjacent received position is (173,130) from 19:02:42 through
+19:46:48, with 713+909 stock; later decision requests explicitly report
+known inventory and `Weapon Dealer#prt(npc, d=1)` (for example at
+19:13:08 and 19:27:00). Its initial startup request says inventory unknown, so
+that initial request alone must not be used to claim admission.
+The host pump independently walks merchant trips but previously stopped
+at adjacency; `_buy_arm_actions()` also excludes sellers and requires
+empty actions, and lives behind script execution itself. Thus an adjacent
+seller still depended on an entire chat/decision batch completing. This is
+not a new sellability rule or a reason to weaken inventory admission.
+
+**Exact reproducible queue hold:** `_dealer_queue_target()` admitted the
+agent's origin even when another received player overlapped that cell.
+`_staging_blockers()` correctly removes one's own origin for pathfinding,
+but that also made the occupied origin eligible as a parking destination.
+The selected path has one cell, so `_move_path()` returns
+`single_cell_path`, with no dispatch and no active counter lease to expire.
+`pop_0069_g03m01` records precisely MoveTo(168,128) from (168,128),
+`refused/single_cell_path`, at 19:02:02.677 and 19:44:30.079. Receipt t=2115.3
+contains seven agents at (168,128), including this agent. The fake-wire
+regression supplies received overlapping bodies and a fully occupied
+walkable dealer ring; it fails on that exact self-target before the fix.
+
+**Correction to the leg-113 broad gridlock interpretation:** the raw traces
+do not support a fleet-wide MoveTo dispatch stop. Across the full window,
+`move_performed` contains 5,077 `step`, 4,737 `await_pending`, and only two
+`staging_occupied` reasons; standing-blocked and npc-intercepted do not
+appear. In successive ten-minute bins from 19:30 UTC, received state ticks
+show 9, 10, 10, 11, 9 and 8 agents changing position, and corresponding
+performed-dispatch counts are 647, 633, 655, 653, 458 and 276. Sixteen of
+29 change received position somewhere in that hour. Receipt `moves=0`
+counts an optional fake-wire-style list, not production wire dispatch;
+sample equality over a long interval also misses intermediate walks.
+The queue self-hold is real, but neither the JSONL nor this patch proves
+it explains every stationary agent. No global pending/standing gate or
+counter lease is relaxed on that unsupported premise.
+
+**Minimal runtime changes:** the existing merchant approach pump now starts
+one TalkToNpc for a received, admitted seller after runtime allocation
+retains its adjacent cell. It reuses `_merchant_step()` and its contact
+latch, and marks that exact new dialogue round for the existing C4 → C5
+sell-open → C7 → C9 continuation on subsequent owner-thread pumps.
+A click never grants sell-open, rows or sale success. A bounded
+`sell_contact_authored` tap identifies pump contacts in the next leg log
+(the host's action_executed trace only records host-dispatched actions).
+Buy-only admission remains on its existing path. The queue allocator now
+excludes all received peer cells from destinations, including an overlapped
+origin, while retaining that origin as the path's starting point. A lone
+agent may still wait honestly at its unoccupied off-lane queue cell.
+
+The validated df2709a2 recovery methods are unchanged. Counter expiry,
+completion, body-aware yield, received parking and the 30-second rejoin
+remain in force. Pending walks, standing/rest, HP, passive/planner ownership,
+poison, failed sends, uncertain cancel, unknown inventory, script trip
+budgets and runtime walkability continue to gate dispatch. Scripts and
+spikes are untouched; no SHA pin is changed.
+
+**TDD:** `/tmp/merchant-talk-red.log` records three defect failures (missing
+click/sale and overlapping-origin self-hold), with 11 admission/lease
+controls passing. Added coverage also drives the real host tick through a
+synthetic capped event after its pump, and checks fresh contact send-failure
+poison. Focused merchant, handover and recovery tests pass; full gate result
+is recorded below after completion.
+
+Gate prerequisites use parent-checkout iro-db/config.log links and an
+isolated local clone checked out from the repository's existing rAthena
+gitlink. As in the preceding recovery slice, the canonical iro-wiki link
+loops to itself; validation temporarily uses the existing wt-mobpos corpus
+and restores the canonical link before commit. The process-local
+`NIX_CONFIG='auto-optimise-store = false'` avoids the host store hard-link
+limit. No prerequisite or dependency change is included in the commit.
+
+**Full gate GREEN before commit:** `nix develop -c task --dir . check`
+(with the process-local Nix option above): **7,435 passed, 65 subtests
+passed, 4 warnings, 95.81% coverage**, 304.97 seconds. Black, ruff, strict
+mypy, vulture, xenon, duplicate-code and bandit passed. Transcript:
+`/tmp/merchant-talk-full-gate.log`. All 16 new funnel cases pass. Canonical
+wiki DB symlink restored before commit. Live conversion acceptance is left
+for the coordinator's next scheduled receipt. Fleet-memory retain was
+attempted but failed with a Hindsight backend index error; this entry is
+the durable source of truth.

@@ -3769,11 +3769,9 @@ class PlayingClient:
     def _advance_merchant_approach_on_tick(self) -> None:
         """Walk admitted trips on the host pump, independently of pending decides.
 
-        Never evaluate the shop script here: even discarding its TalkToNpc
-        would consume the contact latch. Runtime geometry selects the leg;
-        the ordinary move gate owns progress-clock release and wire pacing.
-        Once allocation retains our adjacent cell, the existing contact and
-        received-shop chain take over without any pump-authored NPC action.
+        Runtime geometry selects the leg; the ordinary move gate owns pacing.
+        Once allocation retains our adjacent cell, a seller starts its bounded
+        contact here too: chat decisions may fail before the host script runs.
         """
         state, tracker = self.last_built_state, self._tracker
         if state is None or tracker is None or not self._merchant_approach_ready(state):
@@ -3785,8 +3783,37 @@ class PlayingClient:
         if pos is None or self._await_pending(tracker.view, pos):
             return
         target = self.merchant_travel_target(state.map_name, (state.x, state.y), destination)
-        if target is not None and target != (state.x, state.y):
+        if target is None:
+            return
+        if target == (state.x, state.y):
+            self._start_merchant_sell_on_tick(state)
+        else:
             self._perform_move(state, target)
+
+    def _start_merchant_sell_on_tick(self, state: BotState) -> None:
+        """Use the existing one-contact latch and receipt-bound sell continuation."""
+        if (
+            self.npc_recovery_hold
+            or state.map_name != "prt_in"
+            or not any(str(k) in DRIVE_SELLABLES and n > 0 for k, n in state.inventory.items())
+            or _dealer_talk(state, MERCHANT_ROUTE["prt_in"]) is None
+        ):
+            return
+        outcome = _merchant_step(
+            state, reachable=self.merchant_reachable, travel_target=self.merchant_travel_target
+        )
+        if outcome is None:
+            return
+        for action in outcome.actions:
+            logger.warning(
+                "merchant-drive: sell_contact_authored (bot=%s action=%s)",
+                state.name,
+                type(action).__name__,
+            )
+            self.perform_native(action)
+        dialog = self._npc.view
+        if dialog is not None:
+            self._sell_recovery_round = (dialog.epoch, dialog.opened_sequence)
 
     def _merchant_approach_ready(self, state: BotState) -> bool:
         tracker = self._tracker
