@@ -14729,3 +14729,77 @@ shop offers all window but never completed a sale
 (`buy-open held by stage=blocked` x51 + 88 no-progress merchant trips) —
 the pickup->sell conversion is the economy frontier, and it is a
 client-side state-machine gap, not a backend one.
+
+## 2026-11-18 — LEG-112 sell conversion recovery on the host pump (SOL)
+
+Implementation branch `t3/sell-conversion-recovery`, based on `821caaee`.
+Offline diagnosis uses the leg-112 receipt and existing population traces,
+filtered to 13:00–14:30 UTC (14:00–15:30 Madrid). No runner or live probe.
+
+The exact observed block is **two timed-out buyer contacts occupying the
+counter**, starving queued sellers spatially. `pop_0003_g01m00` clicked at
+13:00:15.920 and selected buy at 13:00:17.922 from (172,129);
+`pop_0003_g00m01` clicked at 13:00:24.786 and selected buy at 13:00:26.790
+from (173,129). Both held only their existing 1201 in the sampled inventories.
+The filtered action trace contains two TalkToNpc and two buy selections,
+**zero sell-opens and zero sales**. Receipt online samples show 175 blocked
+stages: 17 with a bound 19-row offer, 158 without an offer. The same two
+contacts cycle opening/blocked after offer expiry and remain counter-adjacent.
+They still receive successful decides (289 and 266 respectively), so capped
+decides alone do not explain their failure to release the counter.
+
+This is spatial congestion (a), not a shared server NPC-dialogue lock. The
+runtime also has the (b)/(c) continuation gap: a bound offer suppresses the
+old timeout re-begin; an offerless re-begin only clicks, leaving fresh C4 →
+C5 → C7 → C9 work and counter-yield dispatch on the cognition path. The
+existing trace has no raw C4 receive records, so it cannot establish whether
+each unanswered re-click received a C4. Re-begin alone never supplies the
+received authorization required by sell-open.
+
+`PlayingClient` now advances timeout sell recovery on every owner-thread
+keepalive pump, independently of keepalive-frame cadence and decides. A
+current received C7 can sell through an innocent timeout. Otherwise a
+received, named, adjacent dealer contact explicitly closes its old exchange,
+invalidates the old offer, consumes one shared retry token, and re-begins.
+The recovery round then mints/sends one existing owner-bound sell action per
+pump: only a fresh C4 permits C5 type 1; only that round's C7 permits C9.
+There is no receive spin or fabricated offer. A sent sale has a bounded
+five-second result wait, including when C7 arrived under an already expired
+UI clock. Only the existing matched successful CB result completes the sale
+and replenishes the retry budget; a send, refused result or unsolicited CB
+does not. Three retries per five-minute epoch and five-second retry pacing
+remain unchanged; successful sales replenish tokens without resetting pacing.
+
+Exhaustion closes and releases the contact instead of leaving it blocked.
+Existing counter lease expiry/completion also runs on this pump, including
+bound buyers, so the runtime staging/path/body gates drive an off-counter
+walk and received parking controls re-queue. Extended sell recovery requires
+the received named dealer and preserves planner/passive-client boundaries.
+Poison, send failure and uncertain cancel retain their barriers; other NPCs
+keep their generic retry behavior and cadence. All walkability remains in the
+runtime; scripts and README are untouched.
+
+TDD RED: `/tmp/sell-recovery-red.log`, four defect assertions failed and
+three poison/cancel controls passed. Fake-wire GREEN covers the bound-offer
+sale, exhausted click and missing-C7 paths, all four recovery send failures,
+received-C7 continuation and delayed result, blocked buyer release, and 29
+independent clients completing real synthetic C9/CB/zeny exchanges without
+calling decisions or mechanical action authoring during recovery. The old
+admitted-timeout hold test is superseded by exhaustion-and-yield coverage;
+its planner/other-NPC/unseen-dealer controls remain.
+
+Gate setup: canonical parent links for iro-db and `rathena/config.log`, plus
+an isolated local clone at the repository's pinned rAthena gitlink. The
+canonical parent iro-wiki symlink loops to itself, as documented in leg 85;
+verification uses the existing `wt-mobpos` corpus temporarily and restores
+the canonical symlink before commit. No dependency, pin or exclusion change
+is committed. Process-local `NIX_CONFIG='auto-optimise-store = false'`
+avoids the host Nix store hard-link limit.
+
+**Full gate GREEN before commit:** `nix develop -c task --dir . check`,
+with the process-local Nix option above: **7,419 passed, 65 subtests passed,
+4 warnings, 95.81% coverage**, 299.88 seconds. Black, ruff, strict mypy,
+vulture, xenon, duplicate-code and bandit passed. Final transcript:
+`/tmp/sell-full-gate-verified.log`. All 17 focused recovery cases pass.
+The canonical wiki DB symlink was restored before commit. Validation is
+offline; live zeny conversion remains for the coordinator's next receipt.
