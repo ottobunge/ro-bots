@@ -14666,3 +14666,66 @@ masks it but halves decide productivity. Secondary: the buy fixtures' ~50z
 wanted-weapon price model vs live 1250z (1204) and 1202 unstocked at the prt
 dealer — zeny_wing-class agents convert only with zeny >= 1250z or a dealer
 offer matching their wanted set.
+
+## LEG-112 (2026-11-18, Wed 14:00-15:30 Madrid, 29 agents, systemd-run `leg112-runner`)
+
+Second sustained-population window today (roadmap-2 evidence). Preflight
+12:14 + re-verify 13:39: decide probe 0.65-0.66 s / 10 answers, :8091+:8092
+health 200, e2e containers Up, picklog baseline M34/P20/L9/S17 + zenylog 10
+confirmed, seed-zeny.json verified (PoringMuffin14=134, zeny_wing=147).
+Launched 13:45; window opened 14:00 (29/29 online by 14:05); closed 15:30;
+receipt 16:15. 30,729 steps, 0 step errors.
+
+**T1 sustained population: MET.** 29/29 online within ~5 min of open,
+sustained the full 90 min (two single-sample offline blips, self-recovered);
+TRANSPORT DOWN x14, transport_recovery 24 entries / 0 exhausted; 29/29 clean
+offline at close.
+
+**T2 decide health: saturation regime PERSISTED — the bimodal question
+resolves as LOAD-DEPENDENT, not a wedge.** Trace-derived (in-window,
+13:00-14:30Z): 9,872 attempts, 5,012 clean successes, 4,843 error responses,
+17 unpaired -> capped rate 49.1% (leg-111: 52.3%). Success durations p50
+2.08 s / p90 5.09 s / max 15.01 s (the healthy decides are fast; the cap
+eats the rest). Error rate per 15-min block rose monotonically
+640 -> 914 — saturation deepens with sustained 29-agent cadence rather than
+bimodally collapsing. Runner-side hard failures 4,906 `tick failed`
+(PlayingBackendError at the 15 s `make_private_decision` timeout, one
+attempt, no retry).
+
+**T3 economy: NO ZENY MOVEMENT population-wide — the loop stops at
+pickup->sell.** All 29 zeny == seed values (YuffieFy81 395 top;
+PoringMuffin14 still 134, zeny_wing 147); zenylog 10 unchanged; picklog
+S +0. But combat was real: 184 attacks authored by 16 agents -> 141 swings
+-> 134 damage events -> 2,857 dmg -> 19 kill credits across 12 agents
+(top: pop_0069_g00m02 5 kills / 1,056 dmg), +50 base / +38 job exp;
+picklog M+22 drop events, P+14 pickups, L+3. Loot sits in inventories
+unsold: merchant-drive logged sell-arm attempts all window
+(264 sell entries, 46 buy_armed, 2 buy_authored, 88
+merchant_trip_released_no_progress, 51 `buy-open held by stage=blocked`),
+most agents ended parked dealer-adjacent in prt_in. The 1250z buy class
+remains unreachable (nobody above 395z).
+
+**T4 cadence: PARTIAL.** 5,176 decides population-side; per-agent 49-292,
+p50 230; 22/29 inside the 75-305 band, 7 below (49-68:
+pop_0069_g02m00/g02m02/g03m02/g04m02/g04m03/s01/s02), none above.
+
+**T5 clean health: MET.** 0 step errors, all transports rebuilt, 29/29
+clean offline. Social state persisted: 23/29 partied, 2 guilded (DB).
+
+seed-zeny.json: NO refresh needed — zero zeny movement (DB readback equals
+the staged file value for every persona).
+
+Receipt: `run/plain_host_receipts/population-receipt-112-1795005588.json`.
+No live probes during the window; heavengraph servers only touched with
+read-only health/decide/chat checks. Decide-trace `decide_response` lines
+carry `error` on capped attempts — T2 percentages must split on that field
+(a first pass that ignored it misread capped-49% as success p50 10.9 s).
+
+**DOMINANT RESIDUAL for the coordinator:** unchanged from leg-111 — decide
+saturation at :8091 under 29-agent cadence (49.1% capped); the next lever is
+backend-side (slots/n_ctx per the leg-111 read-only findings: slot n_ctx
+4096, zero prompt-cache hits), Otto's call. Secondary: the sell arm bound
+shop offers all window but never completed a sale
+(`buy-open held by stage=blocked` x51 + 88 no-progress merchant trips) —
+the pickup->sell conversion is the economy frontier, and it is a
+client-side state-machine gap, not a backend one.
