@@ -14803,3 +14803,85 @@ vulture, xenon, duplicate-code and bandit passed. Final transcript:
 `/tmp/sell-full-gate-verified.log`. All 17 focused recovery cases pass.
 The canonical wiki DB symlink was restored before commit. Validation is
 offline; live zeny conversion remains for the coordinator's next receipt.
+
+## LEG-113 (2026-11-18, Wed 20:00-21:30 Madrid, 29 agents, systemd-run `leg113-runner`)
+
+Sell-conversion recovery validation (merged `df2709a2`, HEAD `b093a09d` at
+launch). Preflight 19:40 green (decide probe 0.75 s / 10 answers, health 200
+x2, containers 4/4 Up, picklog baseline M56/P34/L12/S17 + zenylog 10,
+seed-zeny.json verified 0-diff against a fresh char readback, manifest
+29/29, load_population OK). Launched 19:48 with `RuntimeMaxSec=9300`
+(duration + 300 s headroom per the leg-102 law; the brief's line omitted
+it). Window opened 20:00, 29/29 online by 20:05; closed 21:30; receipt 22:19:
+**30,873 steps, 0 step errors**. Receipt:
+`run/plain_host_receipts/population-receipt-113-1795027678.json`.
+
+**T1 HEADLINE sell conversion: FAIL — the fix was NEVER EXERCISED, and the
+leg-112 signature (loot arrives, zero zeny) repeated exactly.** 0/29 zeny
+changed vs seed (fleet sum 1522 == seed 1522, delta 0); zenylog +0 (10
+unchanged); picklog S +0; 0 NpcShopSellOpen, 0 NpcShopSell, 0 purchases
+fleet-wide; only 2 TalkToNpc all window — BOTH at 20:00:06-20:00:17, the
+same two buyers as leg-112 (`pop_0003_g00m01`, `pop_0003_g01m00`), both
+selecting a buy they cannot afford (1204 = 1250z vs 222z/164z). The new
+pump taps never armed: `sell_timeout_retry` 0, `retry_exhausted` 0 — there
+was never a timeout-origin SELL dialogue to recover, because no seller ever
+opened one. What the fix era DID deliver: the leg-112 close-state defect did
+not recur — npc_stage/shop_offer were None for all 29 at close (no blocked
+dialogues parked on the counter), the counter allocation ran (PipinWalker
+yielded (172,129) on lease expiry -> NyxSong granted -> re-grant cycle; 7
+yield/handover events), and one buyer walked itself out to prontera
+mid-window. The chain now dies UPSTREAM of the dialogue stage: 19+ agents
+converged into prt_in holding sellables (22/29 in prt_in at 20:22, three at
+Chebyshev 1), yet none ever authored a talk — the adjacent seller
+`pop_0069_g03m00` stood at (173,130), Chebyshev 1, holding 713+909, and
+authored ONLY Say actions for 15+ minutes (chat persona dominance); granted
+ring cells did not convert into talk authoring; the second half of the
+window was a staging gridlock (1,456 MoveTos/10 min authored, 0/29 agents
+changed position in any 10-minute span after ~20:30, with decides answering
+at usable cadence — an actuation/staging hold, not decide starvation).
+
+**T2 decide health: saturation DEEPENED — capped 57.0% (leg-111 52.3% ->
+leg-112 49.1% -> leg-113 57.0%, same trace-split method).** In-window
+19:00-20:30Z: 11,720 attempts, 5,016 answered, 6,681 error responses, 23
+unpaired; success p50 2.01 s / p90 4.23 s / max 14.99 s / 0 rows >60 s
+(leg-112: p50 2.08 / p90 5.09 — healthy decides equally fast, the cap eats
+the rest). Time lost to capped decides ~1,670 agent-minutes. The residual
+stays backend-side (leg-111 findings: slot n_ctx 4096, zero prompt-cache
+hits — Otto's call, read-only probes only).
+
+**T3 cadence: IMPROVED — 26/29 in the 75-305 band** (leg-112: 22/29),
+decides_sum 5230, per-agent 46-255, p50 207; below-band: `pop_0069_s01`
+(46), `pop_0069_g00m02` (66), `pop_0069_g02m00` (67); none above.
+
+**T4 clean health: MET.** 0 step errors, 30,873 steps, transport_recovery
+26 entries / 0 exhausted, two single-sample offline blips (28/29,
+self-recovered), 29/29 clean offline at close.
+
+**Economy-adjacent legs that DID move:** combat throughput rose — trace
+exp deltas +130 across 7 agents (leg-112: +88), top `pop_0069_g04m02` +61;
+169 swings, 442 damage events, 46 attack_refused, 10 self-deaths;
+picklog M+18 drop events, P+9 pickups, L+9; 7 agents gained inventory items
+(915/909/705/511/938 singles) — the farm->loot->pickup half of the loop
+works and its output PILED UP UNSOLD, exactly the leg-112 end-state. Social
+active: 78 GuildInvite / 3 FoundGuild authored, 30 PartyChat; DB close
+state 23/29 partied, 2 chars guilded (ids 2, 3) — NOTE: no pre-window
+guild/party baseline was captured, so new-tonight vs carried cannot be
+settled from this leg's artifacts.
+
+seed-zeny.json: NO refresh — zero zeny movement, every persona's closing
+value equals the staged file.
+
+**NEXT LEAD (for the coordinator):** the sell conversion blocker has moved
+UPSTREAM of the recovered seam — the open question is why an adjacent,
+stock-holding seller never authors TalkToNpc: (a) goal-layer chat dominance
+(g03m00 shape — read its decide shares vs its merchant-drive admission
+state), (b) granted-counter-cell -> talk-authoring gap (the ring grants
+cells but no granted agent ever talked), (c) the queue-column staging
+gridlock (six agents on the same fallback cell at 20:22; MoveTos authored
+without movement in the frozen half). The pump recovery itself remains
+live-validated only by its offline tests (17 focused cases) — it needs a
+window where a seller dialogue actually OPENS before its taps can fire.
+Decide saturation (57% capped) is the standing load residual; any next
+leg comparing sell conversions should read T2 beside T1, since capped
+decides directly throttle the merchant approach loop.
+
