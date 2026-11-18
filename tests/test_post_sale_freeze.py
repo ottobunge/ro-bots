@@ -299,11 +299,10 @@ def test_timeout_close_keeps_every_other_barrier(shape, monkeypatch):
     assert client.wire.sent == []
 
 
-@pytest.mark.parametrize("shape", ["admitted", "planner", "other_npc", "unseen_dealer"])
+@pytest.mark.parametrize("shape", ["planner", "other_npc", "unseen_dealer"])
 def test_pump_only_closes_the_refused_received_dealer(shape):
     client, _now = _blocked_client()
-    if shape != "admitted":
-        client.wire.add(struct.pack("<HHH", 0xAF, 6, 1), _weight())
+    client.wire.add(struct.pack("<HHH", 0xAF, 6, 1), _weight())
     if shape == "planner":
         client.npc_recovery_hold = True
     elif shape == "other_npc":

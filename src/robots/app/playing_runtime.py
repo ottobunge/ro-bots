@@ -435,6 +435,7 @@ class PlayingClient:
         self._sell_open_mint: tuple[NpcShopSellOpen, tuple[object, ...]] | None = None
         self._sell_mint: tuple[NpcShopSell, tuple[object, ...]] | None = None
         self._sell_pending: tuple[NpcShopSell, NpcDialogue, int] | None = None
+        self._sell_result_deadline = 0.0
 
     def _init_gameplay_observation(self) -> None:
         self._tracker: NativeGameplayTracker | None = None
@@ -963,6 +964,7 @@ class PlayingClient:
     def _init_merchant_navigation(self) -> None:
         self._merchant_staging = MerchantStaging()
         self._counter_lease = MerchantCounterLease()
+        self._sell_recovery_round: tuple[int, int] | None = None
         self._trip_navigation = TripNavigation()
         self._merchant_crossings = MerchantWarpCrossings()
         self.last_move_outcome: dict[str, object] = {}
@@ -1213,9 +1215,12 @@ class PlayingClient:
     def _retry_timeout_dialogue(self, now: float) -> None:
         """Three paced attempts per five-minute epoch, shared by both paths.
 
-        A bound offer survives its dialogue timeout. Poison/cancel uncertainty
-        never spends or rearms a retry, regardless of elapsed time.
+        A bound buy offer survives its dialogue timeout until explicit sell
+        recovery or counter yield closes it. Poison/cancel uncertainty never
+        spends or rearms a retry, regardless of elapsed time.
         """
+        if self._pump_shop_recovery(now):
+            return
         view = self._npc.view
         if (
             view is None
@@ -1235,6 +1240,89 @@ class PlayingClient:
             now,
         )
         self._send_npc(raw)
+
+    def _pump_shop_recovery(self, now: float) -> bool:
+        """Finish a timeout sell round or yield our counter, without a decide.
+
+        One received shop step per pump: a fresh click never authorizes C5,
+        and C5 never authorizes C9. Only new C4/C7 receipts do that. A bound
+        buy offer is closed explicitly before switching a timed-out seller.
+        """
+        if not _finite_npc_time(now):
+            return True
+        state, tracker = self.last_built_state, self._tracker
+        if state is None or tracker is None or state.map_name != "prt_in":
+            return False
+        if not self._shop_recovery_safe(state):
+            return False
+        yielding = self._counter_yield_actions(state)
+        if yielding is not None:
+            for action in yielding:
+                self.perform_native(action)
+            return True
+        return self._pump_sell_recovery(state, tracker, now)
+
+    def _shop_recovery_safe(self, state: BotState) -> bool:
+        dialog = self._npc.view
+        dealer = _dealer_talk(state, MERCHANT_ROUTE["prt_in"])
+        return all(
+            (
+                self.mechanical_recovery_allowed,
+                not self.npc_recovery_hold,
+                not self._npc.cancel_uncertain,
+                not self._npc.failed or self._npc.deny_origin == "timeout",
+                dialog is None or (dealer is not None and dealer.npc_id == dialog.npc_id),
+            )
+        )
+
+    def _pump_sell_recovery(
+        self, state: BotState, tracker: NativeGameplayTracker, now: float
+    ) -> bool:
+        dialog = self._npc.view
+        if dialog is None or not self._shop_self_ready(tracker.view):
+            return False
+        if all((self._sell_pending is not None, now < self._sell_result_deadline)):
+            return True
+        timeout = self._npc.failed and self._npc.deny_origin == "timeout"
+        recovering = self._sell_recovery_round == (dialog.epoch, dialog.opened_sequence)
+        if not any((timeout, recovering)):
+            return False
+        if shop_sellable_stock(tracker.view.inventory_counts) <= 0:
+            return False
+        action = self._pending_sell(tracker)
+        if action is not None:
+            self._sell_mint = (action, self._sell_binding())
+            self._send_sell(action)
+        elif timeout:
+            self._restart_sell_on_tick(state, now)
+        elif (opening := self._sell_open_action(tracker)) is not None:
+            self._sell_open_mint = (opening, self._sell_binding())
+            self._send_sell_open(opening)
+        return True
+
+    def _restart_sell_on_tick(self, state: BotState, now: float) -> None:
+        """Spend the shared retry token before close/re-click; exhaustion yields."""
+        dialog = self._npc.view
+        if dialog is None:
+            return
+        if not self._take_npc_retry(now):
+            if self._npc_retries == 0 and now >= self._npc_retry_at:
+                self._counter_lease.reason = "retry_exhausted"
+                self._release_counter_contact(state)
+                for action in self._counter_yield_actions(state) or ():
+                    self.perform_native(action)
+            return
+        self._release_counter_contact(state)
+        raw = self._npc.begin(
+            dialog.npc_id, self.wire.native_epoch, dialog.map_name, self._metadata_cursor, now
+        )
+        self._sell_recovery_round = (dialog.epoch, self._metadata_cursor)
+        self._send_npc(raw)
+        logger.warning(
+            "merchant-drive: sell_timeout_retry (dealer=%s retries_left=%s)",
+            dialog.npc_id,
+            self._npc_retries,
+        )
 
     def _take_npc_retry(self, now: float) -> bool:
         """Share pacing and epoch limits across timeout retries and closed contacts."""
@@ -1730,6 +1818,8 @@ class PlayingClient:
             self._tracker.clear_npc_dialog()
         self._shop_context.invalidate_offer("counter-lease-yield")
         self._npc.complete_shop()
+        self._sell_recovery_round = None
+        self._sell_pending = None
         self._retry_talk = None
         self._merchant_reopen = None
         self._shop_selection = None
@@ -2024,6 +2114,7 @@ class PlayingClient:
         self._send_npc(sell(action.sales))
         if dialog is not None:
             self._sell_pending = (action, dialog, after)
+            self._sell_result_deadline = self._now() + NPC_RETRY_CADENCE_S
 
     def _consume_sell_result(self, frame: tuple[int, float, int, bytes]) -> None:
         """Only a successful, sent sale in the current round releases its UI.
@@ -2054,6 +2145,8 @@ class PlayingClient:
             )
         ):
             self._npc.complete_shop()
+            self._sell_recovery_round = None
+            self._npc_retries = NPC_RETRY_BUDGET
             self._merchant_returning = True
 
     def _sell_request_target(self, action: NpcShopSell, tracker: NativeGameplayTracker) -> bool:
@@ -3666,6 +3759,13 @@ class PlayingClient:
         if not self.npc_recovery_hold:
             self._retry_timeout_dialogue(now)
 
+    def _pump_npc_recovery_on_tick(self, now: float, retry_due: bool) -> None:
+        """Shop continuations need each host tick; generic retries keep their cadence."""
+        if retry_due:
+            self._retry_blocked_dialogue_on_tick(now)
+        elif not self.npc_recovery_hold:
+            self._pump_shop_recovery(now)
+
     def _advance_merchant_approach_on_tick(self) -> None:
         """Walk admitted trips on the host pump, independently of pending decides.
 
@@ -3733,18 +3833,19 @@ class PlayingClient:
         with self._keepalive_lock:
             now = self._now()
             previous = self._keepalive_at
+            retry_due = previous is not None and now - previous >= self._keepalive_interval_s
             if not math.isfinite(now) or (previous is not None and now < previous):
                 message = "native keepalive clock unavailable"
                 raise NativeTelemetryUnavailable(message)
             if previous is None:
                 self._keepalive_at = now
-            elif now - previous >= self._keepalive_interval_s:
+            elif retry_due:
                 # Poison before the fallible send; retain exact exception/ownership.
                 self._keepalive_failed = True
                 self.wire.keepalive()
                 self._keepalive_failed = False
                 self._keepalive_at = now
-                self._retry_blocked_dialogue_on_tick(now)
+            self._pump_npc_recovery_on_tick(now, retry_due)
             self._advance_merchant_approach_on_tick()
             self._ensure_keepalive_thread()
 
@@ -4137,6 +4238,7 @@ class PlayingClient:
         self._npc = NativeNpcDialogue()
         self._npc_retries, self._npc_retry_at = NPC_RETRY_BUDGET, 0.0
         self._npc_retry_epoch_at = None
+        self._sell_recovery_round = None
         self._merchant_reopen = None
         self._merchant_returning = False
         self._respawn_retry_at = 0.0
@@ -4223,6 +4325,7 @@ class PlayingClient:
         """Invalidate received map-scoped NPC, patrol and motion metadata."""
         self._reset_loot_epoch("map_changed")
         self._npc.invalidate()
+        self._sell_recovery_round = None
         self._npc_names.clear()
         self._move_pending_release = {}
         self._patrol = None
