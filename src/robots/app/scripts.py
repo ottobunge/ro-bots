@@ -230,10 +230,15 @@ def reset_merchant_talk() -> None:
     _DEALER_QUEUE_WAITS.clear()
 
 
-def release_merchant_talk(bot: str, npc_id: int) -> None:
-    """Release only the closed contact; the host owns the bounded retry budget."""
-    if _DEALER_TALKED.get(bot) == npc_id:
-        _DEALER_TALKED.pop(bot)
+def merchant_talk_pending(bot: str, npc_id: int) -> bool:
+    """Whether this contact was already authored; not proof of a wire send."""
+    return _DEALER_TALKED.get(bot) == npc_id
+
+
+def release_merchant_talk(bot: str, npc_id: int | None = None) -> None:
+    """Release a closed contact, or the old session's latch on epoch replacement."""
+    if npc_id is None or merchant_talk_pending(bot, npc_id):
+        _DEALER_TALKED.pop(bot, None)
 
 
 """Per-bot-name commitment registry; one entry per agent in the process."""
