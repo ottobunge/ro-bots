@@ -15230,3 +15230,74 @@ a re-baseline. T4 PASS. Receipt
 `run/plain_host_receipts/population-receipt-116-1795114230.json`; stats
 `run/reviews/leg116-readout-stats.json`; verdict `run/reviews/leg116-verdict.md`.
 Seed-zeny unchanged (no refresh). Next: C4-opening probe, then the farm-input leg.
+
+## 2026-11-19 — Leg 116 dialogue opening: drain timely C4 before soft expiry
+
+Offline implementation on `t3/dialogue-opening-survival`, based on `7ff24d52`.
+Probe result: the proposed keepalive-loss correlation is **not supported for
+these openings**. In 19:00–20:30 UTC (20:00–21:30 CET), the existing
+`action_executed`/`state_tick`/`world_event` traces contain eight dealer-opening
+events for zeny_hunter (`pop_0069_g02m01`): four at 19:01:58–19:02:51 UTC and
+four at 19:29:27–19:30:19 UTC. They include the six pump retries around the two
+authored contacts. All eight five-second windows have no observed same-agent
+transport drop; none advances past opening. There are **zero observed openings
+with a drop in that window**, so that group's survival rate is unknown. The
+seller's only transport loss lies between the two rounds: receipt elapsed
+2181.1s is online, 2211.2s is offline, 2254.8s is rebuilt online; the second
+round's first opening sample is 2345.1s. The runner log independently places
+its sole transport-down line (61256) between the first round (1790–2929) and
+the second (66528–68679). All five sampled openings have unchanged rebuild
+attempts (0, 0, 1, 1, 1). Probe details and timestamps:
+`run/reviews/leg116-dialogue-opening-probe.json`.
+
+The old ingest order has an independently reproducible failure at the observed
+17–19s host cadence: click at 100s, C4 wire receipt at 100.1s, five-second
+opening deadline at 105s, host drain at 117s. The initial empty
+`NativeNpcDialogue.consume` expires the opening before its buffered C4 is
+consumed; `_receive` then ignores the reply because the dialogue has failed.
+These historical traces do not record raw C4 arrival timestamps, so this is
+an offline reproduction of the ingest defect, **not proof that a C4 arrived
+in the original live run**.
+
+Fix path (b): validate received context and consume buffered frames in sequence
+before settling the current host deadline. Only a current opening C4 may use
+its wire receipt time to precede soft expiry, and only inside the original
+five-second opening window and before the absolute conversation deadline.
+Other UI stages keep their host-clock expiry. A foreign, pre-click, expired,
+future, or malformed reply grants no sell authority. Poison and failed-send
+origins remain failed; an expired cancellation is not rearmed. The ordinary
+send seam already arms the opening **before** the fallible click send, and an
+immediate reply during that send is retained. Transport loss still invalidates
+old authority; a successful reconnect supplies fresh received identity and the
+existing host pump opens a fresh contact. No stale C4 crosses that boundary.
+The timeout recovery pump, shared per-epoch NPC retry budget, physical counter
+handover and FIFO rotation remain the recovery/ownership mechanisms.
+
+TDD: `/tmp/dialogue-opening-red.log` demonstrates buffered C4 becoming blocked
+and the timeout-retry twin sending another click instead of C5. Final fake-wire
+twins (`tests/test_dialogue_opening_survival.py`) cover delayed draining,
+immediate send-time replies, timeout -> re-click -> buffered C4 -> sell_open ->
+C7/C9/CB completion without decisions, reconnect during the opening window,
+exact expiry, absolute lifetime, poison/cancel, received death/map changes,
+foreign identity and malformed C4. All **15** twins pass; the earlier focused
+retry/planning/cancel/ring regression selection passed **136** cases before
+adding the final five context-boundary cases. Logs:
+`/tmp/dialogue-opening-twins.log`, `/tmp/dialogue-opening-focused.log`.
+
+Validation prerequisites: ignored parent iro-db and config.log symlinks plus a
+local rAthena clone at the existing gitlink. The canonical iro-wiki link loops
+to itself, as documented by the prior slice; validation temporarily uses the
+existing wt-mobpos corpus and restores the tracked link before delivery.
+`NIX_CONFIG='auto-optimise-store = false'` avoids the host Nix hard-link limit.
+No prerequisites, pins, spikes, runners, containers, live probes, farm-return
+logic, or heavengraph services are changed. Live sale acceptance remains for
+the coordinator's scheduled validation.
+
+Full gate GREEN: `nix develop -c task --dir . check`,
+`/tmp/dialogue-opening-full-gate.log`: **7,490 passed, 65 subtests passed,
+4 warnings, 95.81% coverage**, 316.31 seconds. Black, ruff, strict mypy,
+vulture, xenon, duplicate-code and bandit passed. The focused test harness's
+initial typing and missing-map-cache fixture issues were corrected before
+this final gate. Hindsight recall succeeded; retaining the durable lesson
+failed with an async-operations database index error, so the repository's
+probe and this log remain the durable record. No server repair was attempted.

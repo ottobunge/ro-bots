@@ -737,7 +737,6 @@ class PlayingClient:
         if not tracker.consume_snapshot(epoch, base, ()):
             return False
         now = self._now() if now is None else now
-        self._npc.consume((), now)
         self._check_shop_context(tracker.view, now)
         for frame in frames:
             if frame[0] <= self._metadata_cursor:
@@ -762,6 +761,10 @@ class PlayingClient:
             self._shop_context.consume(frame, epoch)
             self._consume_sell_result(frame)
             self._consume_purchase_frame(frame, tracker, now)
+        # Wire receipt order owns opening C4 acceptance. Expiring first loses
+        # a reply already buffered during a host tick longer than five seconds.
+        self._npc.consume((), now)
+        self._check_shop_context(tracker.view, now)
         return True
 
     def _capture_swing_frame(
