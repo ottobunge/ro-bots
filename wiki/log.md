@@ -15009,3 +15009,74 @@ head admitted at a time, bounded conversation slot).
 1250 z buy class (max 230). Combat context: ALL authored combat from pop_0069_g00m02
 (67 attacks, 59 swings, 1,548 dmg, 4 kills, +8/+13 exp, 3 drops — all monster-looted
 before any agent pickup; picklog M 74->77, L rows are mob gids, S 17->19 = the sale).
+
+## Dealer-counter adjacency rotation (SOL slice, 2026-11-19)
+
+Leg-114's full received TalkToNpc -> NpcShopSellOpen -> NpcShopSell chain
+proved conversion (+8z) only after the window drained. Its 743
+`dealer_ring_saturated` taps and distance-2 holds motivated serial admission
+of the adjacency band, rather than another talk or parking change. Evidence:
+`run/plain_host_receipts/population-receipt-114-1795074256.json` and the leg-114
+entry above. Window comparisons must convert UTC DB times to CET; picklog
+M/L rows identify mobs, not agent pickup.
+
+`MerchantCounterLease` now carries a local FIFO of received arrivals within
+Chebyshev 4. The native frame consumer observes every frame, so a batch that
+contains peer/self movements preserves their received arrival order. Moving
+inside the queue retains position; received departure/vanish, map change and
+native epoch replacement remove it. Actor ID orders simultaneous observations;
+no peer inventories, decisions, hidden population or shared reservations are
+consulted. Only the queue head allocates a counter cell, without virtual
+allocation of that cell to later, closer arrivals. A received body anywhere
+in the adjacency band holds the entire slot until it actually leaves.
+
+The existing 180-second physical conversation lease remains an absolute bound
+across timeout retries. Preexisting crowded bands shed extra holders by
+received actor-ID order; their own clients close and park through the existing
+body-aware yield path. Non-head queue paths and retained movement cannot cross
+the band, while a holder can traverse it to exit. Deferred/direct dealer clicks
+also check slot ownership and received adjacency. Poison/cancel barriers,
+timeout-origin-only recovery, shared retry cadence/epoch budgets, and
+counter-yield on exhaustion remain intact.
+
+A validated successful sale completes this visit immediately; a bound refusal
+releases it without treating refusal as timeout recovery. Completed/failed
+visits take the existing return leg, retaining their release until the visit
+ends instead of clearing it after the parking cooldown. Received presence at
+the return target holds without a same-cell walk. Expired/exhausted holders
+retain the existing received-parking plus 30-second rejoin rule.
+
+TDD: `/tmp/dealer-rotation-red.log` records all five initial defect tests
+failing against the baseline. Nine new fake-wire twins now cover ordered
+same-window conversions by two sellers, timeout/exhaustion handover,
+completion without requeue, refused-sale release, retained walk/talk barriers,
+whole-band ownership, batched arrival order and immediate crowded-band yield.
+The real frame tracker, receipt-bound shop mints, native host pump, walk
+acknowledgements and pinned dealer-room geometry run without decides.
+Existing concurrent-cell tests now assert serial admission; the distant
+low-ID regression asserts that a later arrival cannot reserve the head's only
+reachable cell. Focused gate: **83 passed**, transcript
+`/tmp/dealer-rotation-focused-final.log`.
+
+Gate prerequisites: parent iro-db/config.log links and an isolated shared
+rAthena clone checked out from the existing gitlink. The canonical tracked
+wiki DB link loops to itself, so validation temporarily uses the existing
+wt-mobpos corpus and restores the canonical link before commit. The
+process-local `NIX_CONFIG='auto-optimise-store = false'` avoids the host store's
+hard-link limit. No dependency or prerequisite changes are delivered. No live
+probes, runners, containers or heavengraph services were touched.
+
+The broader regression pass also caught an observer-boundary issue: a frame
+batch can contain the previous map before its later warp frame. Queue
+observation strips the wire suffix without imposing cache validation on that
+intermediate map; the existing state/navigation gates retain grid authority.
+The 113 affected buy, economy, inflight-loot, patrol and post-sale regression
+cases pass (`/tmp/dealer-rotation-regression-fixed.log`).
+
+**Full gate GREEN before commit:** `nix develop -c task --dir . check`
+(with the process-local Nix option above): **7,443 passed, 65 subtests passed,
+4 warnings, 95.81% coverage**, 305.25 seconds. Black, ruff, strict mypy,
+vulture, xenon, duplicate-code and bandit passed. Transcript:
+`/tmp/dealer-rotation-full-gate.log`. Canonical wiki DB link restored before
+commit. Live same-window conversion acceptance remains for the coordinator's
+scheduled receipt.

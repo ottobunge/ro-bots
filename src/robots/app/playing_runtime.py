@@ -65,7 +65,7 @@ from robots.app.combat_survival import SpeciesDamage, survivability_refusal
 from robots.app.expless_roam import ExplessRoam
 from robots.app.loot_attribution import LootAttribution
 from robots.app.merchant_buy_backoff import MerchantBuyBackoff
-from robots.app.merchant_counter_lease import MerchantCounterLease
+from robots.app.merchant_counter_lease import MerchantCounterLease, at_counter
 from robots.app.merchant_staging import MerchantStaging, MerchantWarpCrossings, dealer_entry_cell
 from robots.app.npc_planning_execution import LocalNpcDispatch, NpcHostBinding, NpcUiObservation
 from robots.app.party_roster import guild_candidate_aid
@@ -81,6 +81,7 @@ from robots.app.scripts import (
     _dealer_talk,
     _merchant_step,
     _merchant_trip_allows,
+    _received_dealer_at_cell,
     merchant_admission_refusal,
     merchant_drive_cell,
     merchant_pickup_required,
@@ -741,6 +742,7 @@ class PlayingClient:
             received = (frame,)
             if not tracker.consume_snapshot(epoch, base, received):
                 return False
+            self._observe_counter_queue(tracker.view, epoch)
             if frame[2] == 0x0A37:
                 self._observe_loot_acks(tracker.view)
             if inventory_replaced:
@@ -893,6 +895,7 @@ class PlayingClient:
         self._last_built_state = state
         self._merchant_staging.observe(state)
         self._counter_lease.observe(state, self._now())
+        self._counter_lease.rotate(state, self.wire.aid, self._dealer_bodies())
         self._merchant_crossings.observe(map_name, state.name)
         self._drain_retry_talk(state)
         return state
@@ -1036,9 +1039,7 @@ class PlayingClient:
         ):
             grid = self.cache.get(map_name)
             if map_name == "prt_in":
-                return self._merchant_staging.dealer_target(
-                    grid, state, own_id=self.wire.aid, bodies=self._dealer_bodies()
-                )
+                return self._dealer_counter_target(grid, state)
             return self._merchant_staging.target(grid, state, self._now())
         if map_name == "prt_in":
             key = (map_name, cell)
@@ -1051,6 +1052,28 @@ class PlayingClient:
                 )
             return None
         return self._validated_travel_target(map_name, position, cell)
+
+    def _dealer_counter_target(self, grid: WalkMap, state: BotState) -> tuple[int, int] | None:
+        if self._counter_lease.reason is not None:
+            return self._merchant_staging.yield_target(grid, state)
+        peers = dict(self._dealer_bodies()) | {
+            actor.id: (actor.x, actor.y)
+            for actor in state.nearby_players
+            if actor.name != state.name and actor.x is not None and actor.y is not None
+        }
+        self._counter_lease.queue.observe(
+            state.map_name,
+            self.wire.native_epoch,
+            self.wire.aid,
+            (state.x, state.y),
+            bodies=tuple(peers.items()),
+            center=MERCHANT_ROUTE["prt_in"],
+        )
+        return self._merchant_staging.dealer_target(
+            grid,
+            state,
+            counter_turn=at_counter(state) or self._counter_lease.queue.admits(self.wire.aid),
+        )
 
     def _validated_travel_target(
         self, map_name: str, position: tuple[int, int], cell: tuple[int, int]
@@ -1788,6 +1811,10 @@ class PlayingClient:
         grid = self._counter_yield_grid(state)
         if grid is None:
             return ()
+        if self._counter_lease.reason in ("completed", "failed"):
+            self._release_counter_contact(state)
+            home = MERCHANT_ROUTE_RETURN["prt_in"]
+            return () if home == (state.x, state.y) else (MoveTo(*home),)
         cell = self._merchant_staging.yield_target(grid, state)
         if cell is None:
             return ()
@@ -2134,7 +2161,6 @@ class PlayingClient:
             return
         if all(
             (
-                raw[2] == 0,
                 dialog.epoch == action.epoch,
                 dialog.map_name == self._map_identity(action.map_name),
                 dialog.npc_id == sent_dialog.npc_id,
@@ -2144,6 +2170,9 @@ class PlayingClient:
                 not self._npc.failed or self._npc.deny_origin == "timeout",
             )
         ):
+            if raw[2] != 0:
+                self._counter_lease.reason = "failed"
+                return
             self._npc.complete_shop()
             self._sell_recovery_round = None
             self._npc_retries = NPC_RETRY_BUDGET
@@ -2339,8 +2368,20 @@ class PlayingClient:
     def _npc_open_ready(self, state: BotState) -> bool:
         return state.alive is True and not self._npc.actuation_blocked and not self._npc.failed
 
+    def _counter_contact_ready(self, state: BotState, npc_id: int) -> bool:
+        dealer = any(
+            actor.id == npc_id and _received_dealer_at_cell(actor, MERCHANT_ROUTE["prt_in"])
+            for actor in state.nearby
+        )
+        if state.map_name != "prt_in" or not dealer:
+            return True
+        return at_counter(state) and self._counter_lease.admits(state, self.wire.aid)
+
     def _talk_npc(self, state: BotState, npc_id: int) -> None:
         tracker = self._tracker
+        if not self._counter_contact_ready(state, npc_id):
+            release_merchant_talk(state.name, npc_id)
+            return
         if tracker is None or not self._npc_open_ready(state):
             return
         actor = observed_npc(tracker.view, npc_id)
@@ -2918,7 +2959,8 @@ class PlayingClient:
     def _move_staging(
         self, state: BotState, target: tuple[int, int], grid: WalkMap, pos: ObservedPosition
     ) -> str:
-        path = self._merchant_staging.path(grid, state, target)
+        access = at_counter(state) or self._counter_lease.admits(state, self.wire.aid)
+        path = self._merchant_staging.path(grid, state, target, counter_access=access)
         if path is None:
             self._note_move_gate("staging_occupied")
             return "staging_occupied"
@@ -3969,6 +4011,21 @@ class PlayingClient:
             if actor.objecttype == 0 and actor.actor_id not in own_ids
         )
 
+    def _observe_counter_queue(self, view: NativeGameplayView, epoch: int) -> None:
+        pos = view.position
+        if pos is None:
+            return
+        self._counter_lease.queue.observe(
+            # Intermediate frames may still name the old map before a warp
+            # later in this snapshot. Queue observation never validates grids.
+            (view.map_name or self.wire.map_name).removesuffix(".gat"),
+            epoch,
+            self.wire.aid,
+            (pos.x, pos.y),
+            bodies=self._dealer_bodies(),
+            center=MERCHANT_ROUTE["prt_in"],
+        )
+
     def _occupied_cells(
         self, view: NativeGameplayView, pos: ObservedPosition
     ) -> tuple[tuple[int, int], ...]:
@@ -4262,7 +4319,7 @@ class PlayingClient:
         self._skill_wire = self.wire
         if type(epoch) is int and 0 < epoch <= 0x7FFFFFFFFFFFFFFF:
             self._skills = NativeSkillContext(epoch, base)
-        self._npc = NativeNpcDialogue()
+        self._npc, self._counter_lease = NativeNpcDialogue(), MerchantCounterLease()
         self._npc_retries, self._npc_retry_at = NPC_RETRY_BUDGET, 0.0
         self._npc_retry_epoch_at = None
         self._sell_recovery_round = None
