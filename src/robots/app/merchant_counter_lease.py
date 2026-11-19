@@ -69,13 +69,13 @@ class MerchantCounterLease:
             self.reason = "rotation"
 
     def admits(self, state: BotState, own_id: int) -> bool:
-        if self.reason is not None:
+        if self.reason is not None or not self.queue.admits(own_id):
             return False
         if at_counter(state):
             return True
         x, y = _dealer_cell(state)
         occupied = any(max(abs(p[0] - x), abs(p[1] - y)) <= 1 for p in _received_body_cells(state))
-        return self.queue.admits(own_id) and not occupied
+        return not occupied
 
     def parked(self, now: float) -> bool:
         """Call only for received presence at a body-free, off-lane queue cell."""

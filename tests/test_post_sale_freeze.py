@@ -300,7 +300,7 @@ def test_timeout_close_keeps_every_other_barrier(shape, monkeypatch):
 
 
 @pytest.mark.parametrize("shape", ["planner", "other_npc", "unseen_dealer"])
-def test_pump_only_closes_the_refused_received_dealer(shape):
+def test_counter_release_keeps_received_dealer_identity_but_outlives_planner_hold(shape):
     client, _now = _blocked_client()
     client.wire.add(struct.pack("<HHH", 0xAF, 6, 1), _weight())
     if shape == "planner":
@@ -310,8 +310,14 @@ def test_pump_only_closes_the_refused_received_dealer(shape):
     elif shape == "unseen_dealer":
         client.wire.add(struct.pack("<HIB", 0x80, DEALER, 0))
     client.drain_native_events()
-    assert client.wire.sent == []
-    assert client._npc.failed
+    if shape == "planner":
+        assert client.wire.sent == [struct.pack("<HI", 0x146, DEALER)]
+        assert client._counter_lease.reason == "no_sellables"
+        assert client._npc.view is None
+        assert client.wire.moves
+    else:
+        assert client.wire.sent == []
+        assert client._npc.failed
 
 
 def test_sale_release_does_not_veto_new_admitted_stock_and_expires_on_field():

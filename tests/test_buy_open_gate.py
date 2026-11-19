@@ -5,9 +5,8 @@ import struct
 import pytest
 
 from robots.app import scripts
-from robots.app.playing_runtime import NPC_RETRY_BUDGET, NPC_RETRY_EPOCH_S, PlayingClient
+from robots.app.playing_runtime import NPC_RETRY_BUDGET, NPC_RETRY_EPOCH_S
 from robots.domain.actions import (
-    GameAction,
     NpcClose,
     NpcShopBuySelection,
     NpcShopSellOpen,
@@ -110,41 +109,20 @@ def closed_buyer():
     scripts.reset_merchant_talk()
 
 
-def _close_and_tick(client: PlayingClient) -> tuple[GameAction, ...]:
+def test_closed_unpurchased_buyer_yields_instead_of_reopening_each_retry_epoch(closed_buyer):
+    client, now = closed_buyer
     client.perform_native(NpcClose(DEALER))
     assert client._npc.view is None
     client.drain_native_events()
-    state = client.build_native_state(Goal.GRIND)
-    outcome = scripts._merchant_step(state)
-    assert outcome is not None
-    return outcome.actions
-
-
-def test_closed_unpurchased_buyer_releases_talk_latch_with_shared_epoch_budget(closed_buyer):
-    client, now = closed_buyer
-    for attempt in range(NPC_RETRY_BUDGET):
-        assert _close_and_tick(client) == (TalkToNpc(DEALER),)
-        assert client._npc_retries == NPC_RETRY_BUDGET - attempt - 1
-        state = client.build_native_state(Goal.GRIND)
-        for _ in range(20):
-            outcome = scripts._merchant_step(state)
-            assert outcome is not None
-            assert outcome.actions == ()
-        client.perform_native(TalkToNpc(DEALER))
-        now[0] += 30.0
-        client.build_native_state(Goal.GRIND)
-
-    assert _close_and_tick(client) == ()
+    assert client._counter_lease.reason == "no_sellables"
+    assert client.wire.moves
+    assert not scripts.merchant_talk_pending(client.wire.char_name, DEALER)
+    remaining = client._npc_retries
     for _ in range(20):
+        client.perform_native(TalkToNpc(DEALER))
         client.drain_native_events()
-        outcome = scripts._merchant_step(client.build_native_state(Goal.GRIND))
-        assert outcome is not None
-        assert outcome.actions == ()
-    assert sum(raw[:2] == b"\x90\x00" for raw in client.wire.sent) == NPC_RETRY_BUDGET
     now[0] = 130.0 + NPC_RETRY_EPOCH_S
     client.drain_native_events()
-    state = client.build_native_state(Goal.GRIND)
-    outcome = scripts._merchant_step(state)
-    assert outcome is not None
-    assert outcome.actions == (TalkToNpc(DEALER),)
-    assert client._npc_retries == NPC_RETRY_BUDGET - 1
+    client.perform_native(TalkToNpc(DEALER))
+    assert not any(raw[:2] == b"\x90\x00" for raw in client.wire.sent)
+    assert client._npc_retries == remaining

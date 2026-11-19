@@ -15113,3 +15113,76 @@ cadence band 27/29 identical to leg-114. Receipt
 `run/plain_host_receipts/population-receipt-115-1795092137.json`; stats
 `run/reviews/leg115-readout-stats.json`; verdict
 `run/reviews/leg115-verdict.md`. Seed-zeny unchanged (no refresh).
+
+## 2026-11-19 — Counter handover refusal and contact-gate observability (SOL slice)
+
+Evidence: leg-115 at `1dc9170c`,
+`run/plain_host_receipts/population-receipt-115-1795092137.json` and
+`run/reviews/leg115-verdict.md`. The 6-second first contact opened the funnel,
+but a knife-only head stayed in the band and no sell contacts were authored.
+Receipt/trace times are UTC; the window was 14:00–15:30 CET (13:00–14:30 UTC).
+
+The offline gate analysis found four concrete paths:
+
+- `_start_merchant_sell_on_tick` refused known empty stock without ending the
+  physical lease. Drive admission can refuse even before reaching that guard.
+  The pump now marks a known empty counter holder `no_sellables` before drive
+  admission and uses the existing explicit close, body-aware `yield_target`,
+  received parking and rejoin cooldown. State construction never dispatches recovery.
+- `npc_recovery_hold` bypassed the entire shop-recovery pump and was also a
+  conjunct of `_shop_recovery_safe`, so a pending planner could extend an
+  expired physical lease indefinitely. It still holds fresh contacts and
+  exchange retries, but cannot extend a released counter lease. Poison,
+  cancellation, passive mode, dealer-dialogue identity and ordinary movement
+  barriers remain in force for yield.
+- `MerchantCounterLease.admits` returned True for any adjacent holder before
+  consulting FIFO. Allocation and direct clicks now use the same admission:
+  adjacency cannot bypass the queue. The crowded-band rotation refusal remains
+  intentional and is named `approach.counter_released:rotation`; a non-head
+  must not click merely because it stands next to the dealer.
+- The script's per-bot/NPC one-contact latch survived native session replacement.
+  A fresh session now releases only that bot's old latch with the shop seam;
+  the current session still authors a single contact. This is an offline
+  reproduction, not a claim that the old receipt proves which silent gate
+  stopped each live seller.
+
+Named `sell_contact_hold` taps cover approach readiness (including each self
+pose/life/rest check), drive admission, travel retry, motion, allocation,
+FIFO turn, empty stock, dealer adjacency, planner hold and contact latch.
+All refusing conjuncts in an evaluated gate are retained in a bounded deque;
+unchanged hold sets log once. The population receipt samples them as
+`merchant_contact_gates`, alongside the existing move/attack gates. Existing
+`sell_contact_authored` still identifies actual authored actions separately.
+
+TDD evidence: `/tmp/counter-handover-red.log` reproduced the empty-holder
+stall, adjacent non-head bypass and fresh-epoch contact hold;
+`/tmp/counter-handover-planner-red.log` reproduced three planner-held release
+failures. A further red twin caught inventory deletion arriving before a
+delayed CB result: an in-flight sale now retains its existing result ownership
+instead of being mistaken for an empty seller.
+`tests/test_counter_handover_gate.py` exercises these paths through fake wire
+frames, native state, the host pump and pinned dealer-room geometry. It also
+checks same-epoch single contact, named simultaneous refusals, bounded logging,
+retained safety barriers, and the next FIFO seller reaching the counter and
+converting within one 180-second lease, without any decisions.
+
+Focused gate: **74 passed**, `/tmp/counter-handover-focused.log`.
+The broader **56-case** retry/buy/ring/post-sale regression pass is green
+(`/tmp/counter-handover-regressions.log`). The old empty-buyer retry-epoch
+and blanket planner-hold assertions now check physical yield, as required by
+this contract. Generic NPC retry budgets remain covered. Staging retains its
+existing physical saturation/handover diagnostics; FIFO chooses its candidate
+without bypassing those checks. The gate tap also supports the existing
+minimal fake-wire retry twin through lazy buffer initialization.
+Full gate: `nix develop -c task --dir . check`,
+`/tmp/counter-handover-full-gate.log`: **7,475 passed, 65 subtests passed,
+4 warnings, 95.81% coverage**, 309.54 seconds. Black, ruff, strict mypy,
+vulture, xenon, duplicate-code and bandit all passed before commit.
+Prerequisites use parent iro-db/config.log symlinks and a local clone at the
+existing rAthena gitlink. As documented by the preceding slice, the canonical
+wiki database symlink loops to itself; validation temporarily uses the existing
+wt-mobpos corpus and restores the tracked link before commit. Process-local
+`NIX_CONFIG='auto-optimise-store = false'` avoids the host Nix hard-link limit.
+No prerequisite or SHA-pin changes are delivered. No runners, live probes,
+containers or heavengraph services were touched. Live conversion acceptance
+remains for the coordinator's next scheduled receipt.

@@ -85,6 +85,7 @@ from robots.app.scripts import (
     merchant_admission_refusal,
     merchant_drive_cell,
     merchant_pickup_required,
+    merchant_talk_pending,
     merchant_trip_active,
     needs_npc_preparation,
     novice_weapon_index,
@@ -427,6 +428,8 @@ class PlayingClient:
 
     def _reset_shop_seam(self) -> None:
         """Fresh shop-loop state; binding identity invalidates stale mints anyway."""
+        release_merchant_talk(self._epoch_character)
+        release_merchant_talk(self.wire.char_name)
         self._buy_backoff = MerchantBuyBackoff()
         self._buy_visit_map: str | None = None
         self._sell_open_issued: tuple[int, int] | None = None
@@ -977,6 +980,26 @@ class PlayingClient:
             {}
         )
         self._merchant_travel_holds: set[tuple[str, tuple[int, int]]] = set()
+        self._merchant_contact_gate_reasons: deque[tuple[float, str]] = deque(maxlen=64)
+        self._merchant_contact_holds: dict[str, tuple[str, ...]] = {}
+
+    def _merchant_gate_all(self, stage: str, gates: tuple[tuple[str, bool], ...]) -> bool:
+        """Name every refusing conjunct; log changed holds and retain receipt samples."""
+        if not hasattr(self, "_merchant_contact_gate_reasons"):
+            self._merchant_contact_gate_reasons = deque(maxlen=64)
+            self._merchant_contact_holds = {}
+        refused = tuple(reason for reason, allowed in gates if not allowed)
+        for reason in refused:
+            self._merchant_contact_gate_reasons.append((self._now(), f"{stage}.{reason}"))
+        if refused and refused != self._merchant_contact_holds.get(stage):
+            logger.warning(
+                "merchant-drive: sell_contact_hold (bot=%s stage=%s reasons=%s)",
+                self.wire.char_name,
+                stage,
+                ",".join(refused),
+            )
+        self._merchant_contact_holds[stage] = refused
+        return not refused
 
     @property
     def merchant_warp_crossings(self) -> int:
@@ -1069,11 +1092,11 @@ class PlayingClient:
             bodies=tuple(peers.items()),
             center=MERCHANT_ROUTE["prt_in"],
         )
-        return self._merchant_staging.dealer_target(
-            grid,
-            state,
-            counter_turn=at_counter(state) or self._counter_lease.queue.admits(self.wire.aid),
-        )
+        # FIFO chooses the candidate; staging still names physical saturation
+        # and selects a body-free cell. Contact/dispatch recheck the lease.
+        turn = self._counter_lease.queue.admits(self.wire.aid)
+        self._merchant_gate_all("counter", (("counter_turn", turn),))
+        return self._merchant_staging.dealer_target(grid, state, counter_turn=turn)
 
     def _validated_travel_target(
         self, map_name: str, position: tuple[int, int], cell: tuple[int, int]
@@ -1276,6 +1299,7 @@ class PlayingClient:
         state, tracker = self.last_built_state, self._tracker
         if state is None or tracker is None or state.map_name != "prt_in":
             return False
+        self._refuse_empty_counter(state)
         if not self._shop_recovery_safe(state):
             return False
         yielding = self._counter_yield_actions(state)
@@ -1285,17 +1309,42 @@ class PlayingClient:
             return True
         return self._pump_sell_recovery(state, tracker, now)
 
+    def _refuse_empty_counter(self, state: BotState) -> None:
+        """A known empty seller releases physically, before drive admission can veto.
+
+        State construction never dispatches recovery. The host pump owns this
+        refusal and reuses the explicit close, body-aware exit and parking cooldown.
+        """
+        if (
+            self._counter_lease.reason is None
+            and at_counter(state)
+            and state.inventory_known
+            and self._sell_pending is None
+            and not any(str(k) in DRIVE_SELLABLES and n > 0 for k, n in state.inventory.items())
+        ):
+            self._merchant_gate_all("contact", (("no_sellables", False),))
+            self._counter_lease.reason = "no_sellables"
+
     def _shop_recovery_safe(self, state: BotState) -> bool:
         dialog = self._npc.view
         dealer = _dealer_talk(state, MERCHANT_ROUTE["prt_in"])
-        return all(
+        return self._merchant_gate_all(
+            "shop_recovery",
             (
-                self.mechanical_recovery_allowed,
-                not self.npc_recovery_hold,
-                not self._npc.cancel_uncertain,
-                not self._npc.failed or self._npc.deny_origin == "timeout",
-                dialog is None or (dealer is not None and dealer.npc_id == dialog.npc_id),
-            )
+                ("mechanical_disabled", self.mechanical_recovery_allowed),
+                # Cognition may hold a shop retry/contact, never extend the
+                # physical lease. Closing/yielding still obeys wire safety.
+                (
+                    "planner_hold",
+                    self._counter_lease.reason is not None or not self.npc_recovery_hold,
+                ),
+                ("cancel_uncertain", not self._npc.cancel_uncertain),
+                ("npc_poisoned", not self._npc.failed or self._npc.deny_origin == "timeout"),
+                (
+                    "dialogue_not_dealer",
+                    dialog is None or (dealer is not None and dealer.npc_id == dialog.npc_id),
+                ),
+            ),
         )
 
     def _pump_sell_recovery(
@@ -3803,9 +3852,9 @@ class PlayingClient:
 
     def _pump_npc_recovery_on_tick(self, now: float, retry_due: bool) -> None:
         """Shop continuations need each host tick; generic retries keep their cadence."""
-        if retry_due:
+        if retry_due and not self.npc_recovery_hold:
             self._retry_blocked_dialogue_on_tick(now)
-        elif not self.npc_recovery_hold:
+        else:
             self._pump_shop_recovery(now)
 
     def _advance_merchant_approach_on_tick(self) -> None:
@@ -3816,15 +3865,33 @@ class PlayingClient:
         contact here too: chat decisions may fail before the host script runs.
         """
         state, tracker = self.last_built_state, self._tracker
-        if state is None or tracker is None or not self._merchant_approach_ready(state):
+        self._merchant_gate_all(
+            "context", (("no_state", state is not None), ("no_tracker", tracker is not None))
+        )
+        if state is None or tracker is None:
             return
-        destination = merchant_drive_cell(state)
-        if destination is None or not _merchant_trip_allows(state, destination):
+        if not self._merchant_approach_ready(state):
+            return
+        destination = self._merchant_pump_destination(state)
+        if destination is None:
             return
         pos = tracker.view.position
-        if pos is None or self._await_pending(tracker.view, pos):
+        if not self._merchant_gate_all(
+            "motion",
+            (
+                ("no_position", pos is not None),
+                ("pending_walk", pos is None or not self._await_pending(tracker.view, pos)),
+            ),
+        ):
             return
         target = self.merchant_travel_target(state.map_name, (state.x, state.y), destination)
+        self._merchant_gate_all(
+            "allocation",
+            (
+                ("no_target", target is not None),
+                ("counter_not_selected", target == (state.x, state.y)),
+            ),
+        )
         if target is None:
             return
         if target == (state.x, state.y):
@@ -3832,20 +3899,48 @@ class PlayingClient:
         else:
             self._perform_move(state, target)
 
+    def _merchant_pump_destination(self, state: BotState) -> tuple[int, int] | None:
+        destination = merchant_drive_cell(state)
+        refusal = merchant_admission_refusal(state) if destination is None else None
+        self._merchant_gate_all(
+            "admission", ((refusal[0] if refusal else "no_route", destination is not None),)
+        )
+        if destination is None:
+            return None
+        if not self._merchant_gate_all(
+            "trip", (("retry_cooldown", _merchant_trip_allows(state, destination)),)
+        ):
+            return None
+        return destination
+
     def _start_merchant_sell_on_tick(self, state: BotState) -> None:
         """Use the existing one-contact latch and receipt-bound sell continuation."""
-        if (
-            self.npc_recovery_hold
-            or state.map_name != "prt_in"
-            or not any(str(k) in DRIVE_SELLABLES and n > 0 for k, n in state.inventory.items())
-            or _dealer_talk(state, MERCHANT_ROUTE["prt_in"]) is None
+        talk = _dealer_talk(state, MERCHANT_ROUTE["prt_in"])
+        if not self._merchant_gate_all(
+            "contact",
+            (
+                ("planner_hold", not self.npc_recovery_hold),
+                ("wrong_map", state.map_name == "prt_in"),
+                (
+                    "no_sellables",
+                    any(str(k) in DRIVE_SELLABLES and n > 0 for k, n in state.inventory.items()),
+                ),
+                ("dealer_not_adjacent", talk is not None),
+                ("counter_turn", self._counter_lease.admits(state, self.wire.aid)),
+                (
+                    "contact_latched",
+                    talk is None or not merchant_talk_pending(state.name, talk.npc_id),
+                ),
+            ),
         ):
             return
         outcome = _merchant_step(
             state, reachable=self.merchant_reachable, travel_target=self.merchant_travel_target
         )
         if outcome is None:
+            self._merchant_gate_all("script", (("no_outcome", False),))
             return
+        self._merchant_gate_all("script", (("no_contact_action", bool(outcome.actions)),))
         for action in outcome.actions:
             logger.warning(
                 "merchant-drive: sell_contact_authored (bot=%s action=%s)",
@@ -3859,21 +3954,29 @@ class PlayingClient:
 
     def _merchant_approach_ready(self, state: BotState) -> bool:
         tracker = self._tracker
-        return all(
+        return self._merchant_gate_all(
+            "approach",
             (
-                self.mechanical_recovery_allowed,
-                state.hp > 1,
-                self._disengage.source(state, self.mob_db, self._now()) is None,
-                self.cache is not None,
-                tracker is not None and self._sell_actuation_ready(tracker.view),
-                tracker is not None and tracker.npc_dialog_open is None,
-                self._npc.view is None,
-                not self._npc.actuation_blocked,
-                not self._npc.failed,
-                state.shop_offer is None,
-                self._counter_lease.reason is None,
-                not merchant_pickup_required(state),
-            )
+                ("mechanical_disabled", self.mechanical_recovery_allowed),
+                ("hp_not_safe", state.hp > 1),
+                ("disengaging", self._disengage.source(state, self.mob_db, self._now()) is None),
+                ("no_map_cache", self.cache is not None),
+                ("no_tracker", tracker is not None),
+                ("not_alive", state.alive is True),
+                ("not_standing", self._standing is True),
+                ("stand_pending", self._stand_pending is None),
+                ("resting", self._rest_seq is None),
+                ("native_dialogue_open", tracker is not None and tracker.npc_dialog_open is None),
+                ("dialogue_open", self._npc.view is None),
+                ("actuation_blocked", not self._npc.actuation_blocked),
+                ("npc_failed", not self._npc.failed),
+                ("offer_bound", state.shop_offer is None),
+                (
+                    f"counter_released:{self._counter_lease.reason}",
+                    self._counter_lease.reason is None,
+                ),
+                ("pickup_required", not merchant_pickup_required(state)),
+            ),
         )
 
     def _keepalive(self) -> None:
