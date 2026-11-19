@@ -1,0 +1,94 @@
+{
+  "date": "2026-11-19",
+  "baseline": "7ff24d52",
+  "scope": "offline, existing leg-116 artifacts only",
+  "window_utc": [
+    "2026-11-19T19:00:00+00:00",
+    "2026-11-19T20:30:00+00:00"
+  ],
+  "sources": {
+    "trace_directory": ".work/runtime/population-live/traces/*.jsonl",
+    "trace_kinds": [
+      "action_executed",
+      "state_tick",
+      "world_event"
+    ],
+    "receipt": "run/plain_host_receipts/population-receipt-116-1795114230.json",
+    "runner_log": "/tmp/population_leg116.log"
+  },
+  "trace_kind_counts": {
+    "state_tick": 2177,
+    "world_event": 12737,
+    "action_executed": 6818
+  },
+  "receipt_npc_stage_counts": {
+    "opening": 5,
+    "blocked": 202
+  },
+  "seller": "pop_0069_g02m01",
+  "character": "zeny_hunter",
+  "opening_events_utc": [
+    "2026-11-19T19:01:58.602851+00:00",
+    "2026-11-19T19:02:15.677760+00:00",
+    "2026-11-19T19:02:34.877930+00:00",
+    "2026-11-19T19:02:51.921154+00:00",
+    "2026-11-19T19:29:27.037979+00:00",
+    "2026-11-19T19:29:44.101989+00:00",
+    "2026-11-19T19:30:01.173754+00:00",
+    "2026-11-19T19:30:19.958016+00:00"
+  ],
+  "five_second_windows": {
+    "without_observed_same_agent_drop": {
+      "openings": 8,
+      "observed_advances_past_opening": 0
+    },
+    "with_observed_same_agent_drop": {
+      "openings": 0,
+      "observed_advances_past_opening": null
+    }
+  },
+  "seller_transport_receipt": {
+    "last_online_before_drop_elapsed_s": 2181.1,
+    "first_offline_elapsed_s": 2211.2,
+    "first_rebuilt_online_elapsed_s": 2254.8,
+    "first_second_round_opening_sample_elapsed_s": 2345.1,
+    "attempts_at_all_five_opening_samples": [
+      0,
+      0,
+      1,
+      1,
+      1
+    ]
+  },
+  "runner_log_line_numbers": {
+    "authored_contacts": [
+      1790,
+      66528
+    ],
+    "timeout_retries": [
+      2128,
+      2531,
+      2929,
+      67243,
+      67904,
+      68679
+    ],
+    "seller_transport_down": 61256
+  },
+  "finding": "All eight observed openings occur outside the only seller transport rebuild interval. The first four precede it; the second four follow it. A fleet-wide keepalive failure count does not establish loss of these replies.",
+  "offline_reproduction": {
+    "click_at": 100.0,
+    "c4_wire_received_at": 100.1,
+    "opening_deadline": 105.0,
+    "host_drain_at": 117.0,
+    "before": "The initial empty consume expires the dialogue; the buffered C4 is ignored after timeout.",
+    "after": "Validate received context in sequence, accept the current opening C4 using its wire time, then settle the host deadline. The existing timeout recovery pump proceeds to C5/C7/C9."
+  },
+  "limits": [
+    "These traces expose NPC stages, not raw C4 receipt or wire-send timestamps.",
+    "Observed opening events include pump retries; only two contacts were authored by the script.",
+    "Blocked transitions can keep the same dialogue sequence and do not necessarily emit another world_event.",
+    "No observed drop-window openings exist, so their survival rate is unknown.",
+    "Raw C4 arrival in the original live run remains unproven; future scheduled validation belongs to the coordinator."
+  ]
+}

@@ -122,17 +122,42 @@ class NativeNpcDialogue:
         return struct.pack("<HIB", 0x0090, npc_id, 1)
 
     def consume(self, frames: tuple[tuple[int, float, int, bytes], ...], now: float) -> None:
+        """Ingest a validated snapshot before an empty call settles its deadline.
+
+        The wire timestamps C4 independently of the host tick. A timely reply
+        must beat the opening timeout even when the host drains it later.
+        Other UI stages retain their existing host-clock expiry policy.
+        """
         if type(now) not in (int, float) or not math.isfinite(now) or now < self._last_now:
             self._deny()
             return
         self._last_now = now
-        self._expire(now)
-        for seq, _, pid, raw in frames:
+        if not frames:
+            self._expire(now)
+        for seq, received_at, pid, raw in frames:
             if seq <= self.cursor:
                 continue
             self.cursor = seq
             if pid in NPC_RECEIVE_IDS and self.active:
-                self._receive(seq, pid, raw, now)
+                self._expire(self._opening_response_time(pid, received_at, now))
+                if self.active:
+                    self._receive(seq, pid, raw, now)
+
+    def _opening_response_time(self, pid: int, received_at: float, now: float) -> float:
+        """Only a current, timely opening C4 may precede local soft expiry."""
+        if self.view is None or self.view.stage != "opening" or pid != 0xC4:
+            return now
+        eligible = all(
+            (
+                not self.failed,
+                not self.cancel_uncertain,
+                now < self.absolute_deadline,
+                type(received_at) in (int, float),
+            )
+        )
+        if eligible and math.isfinite(received_at) and self.deadline - 5.0 <= received_at <= now:
+            return received_at
+        return now
 
     def _expire(self, now: float) -> None:
         if not self.failed and self.active and now >= min(self.deadline, self.absolute_deadline):
