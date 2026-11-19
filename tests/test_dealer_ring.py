@@ -17,7 +17,7 @@ from robots.domain.actions import (
     NpcShopSellOpen,
     TalkToNpc,
 )
-from robots.domain.model import ActorRef, BotState, Goal
+from robots.domain.model import BotState, Goal
 from robots.society.models import Attitude, Playstyle, SocietyPersona
 from tests.test_dealer_walkability import NEIGHBOURS
 from tests.test_merchant_drive import _plan
@@ -73,32 +73,31 @@ def _step(client: PlayingClient, state: BotState) -> tuple[GameAction, ...]:
     return outcome.actions
 
 
-@pytest.mark.parametrize("native_body", [False, True])
-def test_two_received_sellers_allocate_distinct_walkable_ring_cells(native_body):
+def test_received_arrivals_admit_one_counter_head():
+    from tests.test_dealer_queue_handover import _received_arrival  # noqa: PLC0415
+
     targets = []
-    for name, other, at, peer_at in (
-        ("a", "b", (169, 128), (170, 128)),
-        ("b", "a", (170, 128), (169, 128)),
+    for name, at, peer_at, own_id, peer_id in (
+        ("a", (169, 128), (170, 128), 100, 200),
+        ("b", (170, 128), (169, 128), 200, 100),
     ):
-        own_id, peer_id = (100, 200) if name == "a" else (200, 100)
-        client, _ = _client(name, at, blocked=((171, 129),), aid=own_id)
-        if native_body:
-            body = bytearray(_dealer(peer_at, npc_id=peer_id))
-            body[4] = 0
-            client.wire.add(bytes(body))
+        client, _ = _client(name, (168, 124), blocked=((171, 129),), aid=own_id)
+        if own_id == 100:
+            client.wire.add(_received_arrival(*at))
+        body = bytearray(_dealer(peer_at, npc_id=peer_id))
+        body[4] = 0
+        client.wire.add(bytes(body))
+        if own_id == 200:
+            client.wire.add(_received_arrival(*at))
         state = client.build_native_state(Goal.GRIND)
-        peer = ActorRef(id=99, name=other, kind="player", distance=1, x=peer_at[0], y=peer_at[1])
-        if not native_body:
-            state = replace(state, nearby=(*state.nearby, peer))
-        else:
-            assert peer_at in state.occupied_cells
+        assert peer_at in state.occupied_cells
         (move,) = _step(client, state)
         assert isinstance(move, MoveTo)
         target = (move.x, move.y)
-        assert target in NEIGHBOURS
         assert target != (171, 129)
         targets.append(target)
-    assert targets[0] != targets[1]
+    assert targets[0] in NEIGHBOURS
+    assert targets[1] not in NEIGHBOURS
 
 
 def test_runtime_selection_keeps_own_received_cell_despite_other_ring_vacancies():
@@ -119,7 +118,7 @@ def test_an_overlapping_received_body_requires_own_allocation_before_first_talk(
     assert (173, 129) in state.occupied_cells
     (move,) = _step(client, state)
     assert isinstance(move, MoveTo)
-    assert (move.x, move.y) in NEIGHBOURS
+    assert (move.x, move.y) not in NEIGHBOURS
     assert (move.x, move.y) != (173, 129)
 
 
@@ -150,7 +149,9 @@ def test_saturation_names_outward_hold_and_vacancy_is_handed_to_next_seller(capl
     assert "free=0/8" in taps[0]
     assert "preferred_chebyshev<=1=unavailable" in taps[0]
     freed = replace(state, occupied_cells=tuple(p for p in NEIGHBOURS if p != (171, 129)))
-    assert _step(client, freed) == (MoveTo(171, 129),)
+    # A spare cell no longer admits another simultaneous conversation.
+    assert not any(isinstance(a, TalkToNpc) for a in _step(client, freed))
+    assert _step(client, replace(state, occupied_cells=())) == (MoveTo(171, 129),)
 
 
 def test_received_owner_keeps_its_cell_until_vacate_then_waiter_takes_it():

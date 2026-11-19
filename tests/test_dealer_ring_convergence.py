@@ -24,10 +24,12 @@ def _fresh_contacts():
 
 
 @pytest.mark.parametrize("buy", [False, True])
-def test_last_cell_goes_to_nearest_received_waiter_instead_of_distant_low_aid(buy):
+def test_late_distant_low_aid_does_not_reserve_heads_only_reachable_cell(buy):
     client, _ = _client(
-        at=(173, 128), aid=200, blocked=tuple(p for p in NEIGHBOURS if p != (173, 129))
+        at=(168, 124), aid=200, blocked=tuple(p for p in NEIGHBOURS if p != (173, 129))
     )
+    client.wire.add(_received_arrival(173, 128))
+    client.build_native_state(Goal.GRIND)
     # The low-ID body can reach the counter via (172,128), but has not walked it.
     body = bytearray(_dealer((170, 128), npc_id=100))
     body[4] = 0
@@ -41,14 +43,14 @@ def test_last_cell_goes_to_nearest_received_waiter_instead_of_distant_low_aid(bu
 
 
 @pytest.mark.parametrize("buy", [False, True])
-def test_free_alternate_and_received_vacancy_both_close_the_last_cell(buy):
+def test_received_owner_holds_whole_band_until_vacancy(buy):
     client, _ = _client(at=(172, 128))
     client.cache = MapCache.load(SOURCE / "db/map_cache.dat", SOURCE / "db/pre-re/map_cache.dat")
     state = client.build_native_state(Goal.GRIND)
     if buy:
         state = replace(state, inventory={}, inventory_known=True, zeny=100)
     occupied = replace(state, occupied_cells=((172, 129),))
-    assert _step(client, occupied) == (MoveTo(173, 129),)
+    assert _step(client, occupied) == (MoveTo(173, 128),)
     # A full ring must not prevent immediate reallocation when perception changes.
     _step(client, replace(state, occupied_cells=NEIGHBOURS))
     assert _step(client, state) == (MoveTo(172, 129),)

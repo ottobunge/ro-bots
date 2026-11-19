@@ -75,11 +75,6 @@ def _static_blockers(map_name: str) -> tuple[Point, ...]:
     return ()
 
 
-def _queue_cell(point: Point) -> bool:
-    x, y = MERCHANT_ROUTE["prt_in"]
-    return 2 <= max(abs(point[0] - x), abs(point[1] - y)) <= 4
-
-
 def _dealer_exit_lane(grid: WalkMap, center: Point) -> set[Point]:
     """Public paths out of the counter must stay clear of fallback parking.
 
@@ -97,17 +92,6 @@ def _dealer_exit_lane(grid: WalkMap, center: Point) -> set[Point]:
         except NoRoute:
             continue
     return lane
-
-
-def _queue_origins(
-    position: Point, blocked: set[Point], own_id: int | None, bodies: tuple[Body, ...]
-) -> tuple[tuple[Point, bool], ...]:
-    if own_id is not None and bodies:
-        origins = {aid: p for aid, p in bodies if _queue_cell(p) or p == position}
-        origins[own_id] = position
-        return tuple((p, aid == own_id) for aid, p in sorted(origins.items()))
-    cells = {p for p in blocked if _queue_cell(p)} | {position}
-    return tuple((p, p == position) for p in sorted(cells))
 
 
 def _ring_allocation(
@@ -193,10 +177,15 @@ class MerchantStaging:
         self._dealer_selection = None
         self._dealer_saturation = None
 
-    def path(self, grid: WalkMap, state: BotState, cell: Point) -> tuple[Point, ...] | None:
+    def path(
+        self, grid: WalkMap, state: BotState, cell: Point, *, counter_access: bool = True
+    ) -> tuple[Point, ...] | None:
         """Avoid received bodies AND the field-return trigger on an outbound walk."""
         self.observe(state)
         blocked = _staging_blockers(grid, state)
+        if state.map_name == "prt_in" and not counter_access:
+            ring = _walkable_ring(grid, _dealer_cell(state)) - {(state.x, state.y)}
+            blocked = tuple(sorted(set(blocked) | ring))
         context = (id(grid), state.x, state.y, blocked)
         if self._path_context != context:
             self._paths.clear()
@@ -241,15 +230,16 @@ class MerchantStaging:
         grid: WalkMap,
         state: BotState,
         *,
-        own_id: int | None = None,
-        bodies: tuple[Body, ...] = (),
+        counter_turn: bool = True,
     ) -> Point | None:
         """Prefer talk-range cells; outer cells are an honest congestion queue."""
         self.observe(state)
+        if not counter_turn:
+            return self._dealer_queue_target(grid, state)
         if not _walkable_ring(grid, _dealer_cell(state)):
             self._note_ring_saturation(grid, state, reason="dealer_ring_unwalkable")
             return None
-        cell = self._dealer_ring_target(grid, state, own_id, bodies)
+        cell = self._dealer_ring_target(grid, state)
         if cell is not None:
             if self._dealer_saturation is not None:
                 logger.warning(
@@ -298,7 +288,11 @@ class MerchantStaging:
                 p,
             )
         )
-        cell = next((p for p in cells if self.path(grid, state, p) is not None), None)
+        exiting = max(abs(state.x - x), abs(state.y - y)) <= 1
+        cell = next(
+            (p for p in cells if self.path(grid, state, p, counter_access=exiting) is not None),
+            None,
+        )
         self._note_dealer_queue(state, cell, lane, released=minimum > 2)
         self._dealer_selection = cell
         return cell
@@ -326,20 +320,21 @@ class MerchantStaging:
                 cell,
             )
 
-    def _dealer_ring_target(
-        self, grid: WalkMap, state: BotState, own_id: int | None, bodies: tuple[Body, ...]
-    ) -> Point | None:
+    def _dealer_ring_target(self, grid: WalkMap, state: BotState) -> Point | None:
         """Allocate from received bodies, never another client's private intent.
 
         A body in the ring blocks that cell until received movement or vanish.
-        Its own client bounds the visit with MerchantCounterLease. Outside bodies
-        within the approach area share a
-        deterministic cell matching, so two approaching sellers do not both
-        pick the nearest entrance. Type-0 bodies need no inferred identity,
-        inventory or out-of-game reservations. Received actor IDs break ties
-        even for overlapping bodies. Geometry remains runtime-owned.
+        Its own client bounds the visit with MerchantCounterLease. Only the
+        received arrival-queue head reaches this allocation. A later, closer
+        body cannot virtually reserve its only reachable counter cell.
+        Geometry remains runtime-owned.
         """
         position = (state.x, state.y)
+        # The whole adjacency band is one conversation slot. Received peers
+        # keep it occupied until they actually walk out, even with cells free.
+        ring = _walkable_ring(grid, _dealer_cell(state))
+        if position not in ring and ring.intersection(_received_body_cells(state)):
+            return None
         blocked = set(_staging_blockers(grid, state))
         cells = _walkable_ring(grid, _dealer_cell(state)) - blocked
         # _staging_blockers permits one's own origin for pathfinding; overlapping
@@ -348,8 +343,7 @@ class MerchantStaging:
         # Own received presence is the stable allocation throughout dialogue.
         if position in cells:
             return position
-        origins = _queue_origins(position, blocked, own_id, bodies)
-        return _ring_allocation(grid, position, cells, blocked, origins)
+        return _ring_allocation(grid, position, cells, blocked, ((position, True),))
 
     def _note_ring_saturation(
         self, grid: WalkMap, state: BotState, *, reason: str = "dealer_ring_saturated"

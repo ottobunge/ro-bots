@@ -36,7 +36,7 @@ def _dealer_selection(client: PlayingClient, state: BotState) -> tuple[GameActio
     return result.actions
 
 
-def test_two_dealer_agents_keep_distinct_talk_range_cells():
+def test_received_counter_holder_keeps_second_agent_outside_talk_band():
     a, state_a, _ = _client(name="a")
     b, state_b, _ = _client(name="b")
     state_a = replace(state_a, map_name="prt_in", x=168, y=128)
@@ -50,7 +50,8 @@ def test_two_dealer_agents_keep_distinct_talk_range_cells():
     assert isinstance(second[0], MoveTo)
     assert first_cell != (second[0].x, second[0].y)
     assert first_cell in RING
-    assert (second[0].x, second[0].y) in RING
+    assert (second[0].x, second[0].y) not in RING
+    assert _dealer_selection(b, state_b) == (MoveTo(171, 129),)
 
 
 def test_dealer_saturation_falls_outward_with_named_selection_and_releases(caplog):
@@ -66,7 +67,8 @@ def test_dealer_saturation_falls_outward_with_named_selection_and_releases(caplo
     assert _dealer_selection(client, state) == ()
     assert caplog.text.count("dealer_outer_fallback") == 1
     freed = replace(state, occupied_cells=tuple(p for p in RING if p != (171, 129)))
-    assert _dealer_selection(client, freed) == (MoveTo(171, 129),)
+    assert _dealer_selection(client, freed) == ()
+    assert _dealer_selection(client, replace(state, occupied_cells=())) == (MoveTo(171, 129),)
 
 
 def test_dealer_inner_walkability_precedes_outward_selection(caplog):
