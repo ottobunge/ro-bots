@@ -15080,3 +15080,36 @@ vulture, xenon, duplicate-code and bandit passed. Transcript:
 `/tmp/dealer-rotation-full-gate.log`. Canonical wiki DB link restored before
 commit. Live same-window conversion acceptance remains for the coordinator's
 scheduled receipt.
+
+## 2026-11-19 — Leg 115 (14:00-15:30 CET, 29 personas): rotation validated as funnel-opener, sell conversion still zero
+
+Shepherded live window on the e2e world (HEAD 502f62f0, rotation fix 3a4569ad
+in). Preflight green (real-shape decide 0.65 s / 10 answers; :8091+:8092
+health 200; containers Up; baselines picklog M77/P43/L26/S19, zenylog 11,
+fleet 1530). Runner: 28,769 steps, 0 step errors, 24 transport drops all
+rebuilt, 29/29 clean offline.
+
+**T1 FAIL: 0 sells fleet-wide** (zeny 1530 == seed, zenylog/picklog flat).
+The rotation opened the funnel mouth — first head talked to the dealer 6 s
+into the window (C4 -> NpcShopBuySelection at 14:00:08, fastest contact of
+any leg) — and killed the leg-114 parking freeze (598 admissions, 552
+no-progress releases at the 60 s bound, 359 retries; dealer_ring_saturated
+743 -> 122). Two stacked defects hold conversion at zero:
+
+1. Non-seller head holds the counter all window: RinceNyan (knife only)
+   took the slot at 14:00:06, browsed the buy list, then never left (48
+   Say, 0 MoveTo, zero pump moves). Lease expiry (180 s) should walk it out
+   via yield_target — never fired. `admits` stays False for everyone else
+   while any body occupies the ring, so 19 sellable-holders cycled at
+   Chebyshev 2-5 for 90 min. The handover contract has no path for "head
+   admitted, contact refused by the no-sellables gate".
+2. Sellable-holders stood AT (172,129) early (g00m01 14:00:41 with
+   705+909; g02m01 14:02:16 with 938) and authored no TalkToNpc;
+   sell_contact_authored = 0 fleet-wide. The refusing conjunct is silent —
+   probe (shop_trace_probe / layer probe) before patching.
+
+Decide health steady (capped 58.8% vs 59.8; TRUE p50 1.95 s vs 1.96);
+cadence band 27/29 identical to leg-114. Receipt
+`run/plain_host_receipts/population-receipt-115-1795092137.json`; stats
+`run/reviews/leg115-readout-stats.json`; verdict
+`run/reviews/leg115-verdict.md`. Seed-zeny unchanged (no refresh).
