@@ -14983,3 +14983,29 @@ wiki DB symlink restored before commit. Live conversion acceptance is left
 for the coordinator's next scheduled receipt. Fleet-memory retain was
 attempted but failed with a Hindsight backend index error; this entry is
 the durable source of truth.
+
+## Leg 114 — merchant talk-funnel validation (2026-11-19, Thu 09:00-10:30 CET)
+
+Window [[3,9.0,10.5]], 29 personas, HEAD 37e7deae (funnel fix 59e8a631). 29,608 steps,
+0 step errors; 26 transport rebuilds 0 exhausted; 29/29 clean offline. Receipt
+`run/plain_host_receipts/population-receipt-114-1795074256.json`; verdict
+`run/reviews/leg114-verdict.md`; stats `run/reviews/leg114-readout-stats.json`.
+
+**T1 funnel: PARTIAL — first population sell landed.** pop_0069_s02 (HyuStar71) ran the
+complete chain TalkToNpc -> NpcShopSellOpen -> NpcShopSell at 09:32:14-18 UTC (+8 z,
+zenylog row 11; sold carried Clover + Jellopy from earlier legs' loot); fleet zeny
+1522 -> 1530; seed-zeny.json refreshed (pop_0069_s02 0 -> 8). `sell_contact_authored`
+fired exactly once (xXDoramrinXx) and did not convert. 3 agents authored TalkToNpc; only
+the one whose ring cleared completed. DOMINANT REMAINING WALL: dealer adjacency ring
+saturation — `dealer_ring_saturated` 743, release/retry 673 each, `chebyshev<=1
+unavailable` for hours at best_distance 2; HyuStar71 only sold AFTER close when the
+drain cleared the ring. Parking fix VERIFIED: 0 single_cell_path holds, movement
+progressed while queued (21 queue-yields). Next lever: adjacency rotation (one queue
+head admitted at a time, bounded conversation slot).
+
+**T2 decide health (split on error):** capped 59.8% (leg-113 57.0%), TRUE success p50
+1.96 s (2.01 s), max 14.92 s, 0 >60 s — admission-side saturation, latency-side healthy.
+**T3 cadence:** 27/29 in the 75-305 band (leg-113 26/29). **T5:** no agent near the
+1250 z buy class (max 230). Combat context: ALL authored combat from pop_0069_g00m02
+(67 attacks, 59 swings, 1,548 dmg, 4 kills, +8/+13 exp, 3 drops — all monster-looted
+before any agent pickup; picklog M 74->77, L rows are mob gids, S 17->19 = the sale).
