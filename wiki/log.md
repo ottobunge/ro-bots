@@ -15186,3 +15186,47 @@ wt-mobpos corpus and restores the tracked link before commit. Process-local
 No prerequisite or SHA-pin changes are delivered. No runners, live probes,
 containers or heavengraph services were touched. Live conversion acceptance
 remains for the coordinator's next scheduled receipt.
+
+## 2026-11-19 — Leg 116 (20:00-21:30 CET, 29 personas): counter handover observability proven, conversion still zero — the dialogue dies at opening
+
+Shepherded live window on the e2e world (HEAD b0394f17, handover gate cb76f27a in).
+Preflight green (real-shape decide 0.64 s / 10 answers; :8091+:8092 health 200; e2e
+containers Up; baselines picklog M77/P43/L26/S19, zenylog 11, fleet 1530, HyuStar71 8 —
+the brief's stated L21/S17 were stale; the DB said L26/S19 with latest row 09:32 UTC,
+taken as truth). Runner: 29,182 steps, 0 step errors, 27 transport rebuilds 0 exhausted,
+29/29 clean offline.
+
+**T1 FAIL: 0 sells fleet-wide** (zeny 1530 == seed, zenylog/picklog flat, NpcShopSell 0,
+`shop_offer` rows in 0 samples — the C7 sell list never arrived). The handover gate
+itself closed both leg-115 defects as designed: every refusal conjunct is NAMED
+(merchant_contact_gates: admission.merchant_trip_retry_cooldown 127,185;
+admission.no_stock_below_zeny_floor 45,512; contact.dealer_not_adjacent 45,063;
+contact.counter_turn 44,088; allocation.counter_not_selected 38,832;
+allocation.no_target 36,592; counter.counter_turn 20,399; contact.no_sellables 15,219;
+approach.actuation_blocked/dialogue_open/npc_failed 3.3k each), and the counter
+RELEASES on failure — zeny_hunter (the only admitted head, stock=1) authored
+TalkToNpc x2, each died and released (dealer_counter_yield x4 ending
+reason=retry_exhausted). The leg-115 head-holds-counter shape did not recur; the
+RinceNyan empty-head-at-counter scenario never got a live trial (no empty head was
+admitted).
+
+**The remaining defect, one hop upstream: the sell exchange dies at dialogue OPENING.**
+npc_stage samples: `blocked` 202, `opening` 5, nothing else — the dealer's C4 answer was
+never consumed, the 5 s opening deadline fails the dialogue, npc_failed releases the
+counter, retry_cooldown cycles. Prime suspect: 27/29 keepalive-send transport drops
+eating the in-flight C4 (0x0090 sent -> socket dead -> C4 lost). Probe the C4 exchange
+under load (shop_trace_probe / layer probe) before patching.
+
+**Secondary: the stock input is drained.** 3 Attack actions all window (vs Say 2,653 /
+MoveTo 4,019), zero picklog rows, no_stock_below_zeny_floor refusals 45.5k, 27/29 agents
+stood in prt_in the whole window (2 map transitions). Farm->loot->stock never engaged;
+the funnel cannot convert an empty warehouse. Guild/socials stayed active (GuildInvite
+79, FoundGuild 4).
+
+T2 steady (capped 60.4% vs 58.8; TRUE p50 1.92 s vs 1.95; attempts 12,813, 0 unpaired).
+T3 band FAIL 2/29 (leg-115 27/29): median decides/agent 463 (IQR 442-481), 27/29 over
+305 — inflated by capped-decide retries; the band needs an attempts-vs-success split or
+a re-baseline. T4 PASS. Receipt
+`run/plain_host_receipts/population-receipt-116-1795114230.json`; stats
+`run/reviews/leg116-readout-stats.json`; verdict `run/reviews/leg116-verdict.md`.
+Seed-zeny unchanged (no refresh). Next: C4-opening probe, then the farm-input leg.
