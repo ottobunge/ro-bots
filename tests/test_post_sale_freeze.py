@@ -320,18 +320,22 @@ def test_counter_release_keeps_received_dealer_identity_but_outlives_planner_hol
         assert client._npc.failed
 
 
-def test_sale_release_does_not_veto_new_admitted_stock_and_expires_on_field():
+def test_sale_release_keeps_return_ahead_of_stock_and_expires_on_field():
     client = _sale_client()
-    # CB does not claim the bag is empty. Without an inventory deletion, its
-    # received stock still owns admission even after the UI has completed.
+    # CB does not claim the bag is empty. Completion releases this visit
+    # toward farming even while the received bag still contains sale stock.
     client.wire.add(_cb(0))
     state = client.build_native_state(Goal.SOCIAL)
     assert not client._npc.actuation_blocked
     assert state.merchant_returning
-    assert scripts.merchant_admission_refusal(state) is None
-    assert scripts.merchant_return_cell(state) is None
+    refusal = scripts.merchant_admission_refusal(state)
+    assert refusal is not None
+    assert refusal[0] == "merchant_post_trip_return"
+    assert scripts.merchant_return_cell(state) == (168, 124)
     assert client._merchant_departure("prt_fild08") is False
     assert client._merchant_departure("prt_in") is False
+    # The old received stock can fund another visit after return has expired.
+    assert scripts.merchant_admission_refusal(client.build_native_state(Goal.SOCIAL)) is None
 
 
 def test_dead_respawn_send_failure_is_permanent_until_session_replacement(monkeypatch):

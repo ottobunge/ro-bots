@@ -19,6 +19,7 @@ class MerchantTrip:
     distance: int
     progress_at: float
     retry_at: float = 0.0
+    returning: bool = False
 
     @property
     def no_progress_bound(self) -> float:
@@ -41,6 +42,7 @@ class MerchantTrip:
         if self.retry_at:
             self.remaining, self.distance, self.progress_at = remaining, distance, now
             self.retry_at = 0.0
+            self.returning = False
             logger.warning("merchant-drive: merchant_trip_retry (bot=%s)", bot)
         if (remaining, distance) < (self.remaining, self.distance):
             self.remaining, self.distance, self.progress_at = remaining, distance, now
@@ -50,7 +52,7 @@ class MerchantTrip:
         logger.warning(
             "merchant-drive: merchant_trip_released_no_progress "
             "(bot=%s bound_s=%s elapsed_s=%s remaining=%s best_distance=%s retry_s=%s "
-            "rule=route_distance_scaled)",
+            "rule=route_distance_scaled farm_arm_rearmed_post_trip)",
             bot,
             self.no_progress_bound,
             now - self.progress_at,

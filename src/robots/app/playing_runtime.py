@@ -80,11 +80,13 @@ from robots.app.scripts import (
     NOVICE_STAT_TARGETS,
     _dealer_talk,
     _merchant_step,
+    _merchant_stock,
     _merchant_trip_allows,
     _received_dealer_at_cell,
     merchant_admission_refusal,
     merchant_arm_drained,
     merchant_drive_cell,
+    merchant_farm_returning,
     merchant_pickup_required,
     merchant_return_cell,
     merchant_talk_pending,
@@ -1867,6 +1869,7 @@ class PlayingClient:
             return ()
         if self._counter_lease.reason in ("completed", "failed") or merchant_arm_drained(state):
             self._release_counter_contact(state)
+            self._rearm_farm_after_trip(self._counter_lease.reason)
             home = MERCHANT_ROUTE_RETURN["prt_in"]
             return () if home == (state.x, state.y) else (MoveTo(*home),)
         cell = self._merchant_staging.yield_target(grid, state)
@@ -1876,6 +1879,15 @@ class PlayingClient:
             return None
         self._release_counter_contact(state)
         return () if cell == (state.x, state.y) else (MoveTo(*cell),)
+
+    def _rearm_farm_after_trip(self, reason: str | None) -> None:
+        if not self._merchant_returning:
+            logger.warning(
+                "merchant-drive: farm_arm_rearmed_post_trip (bot=%s reason=%s)",
+                self.wire.char_name,
+                reason,
+            )
+        self._merchant_returning = True
 
     def _counter_yield_grid(self, state: BotState) -> WalkMap | None:
         if self._npc.cancel_uncertain or (self._npc.failed and self._npc.deny_origin != "timeout"):
@@ -2230,7 +2242,7 @@ class PlayingClient:
             self._npc.complete_shop()
             self._sell_recovery_round = None
             self._npc_retries = NPC_RETRY_BUDGET
-            self._merchant_returning = True
+            self._rearm_farm_after_trip("completed")
 
     def _sell_request_target(self, action: NpcShopSell, tracker: NativeGameplayTracker) -> bool:
         """All local guards for one bounded 0xc9 against the received receipt."""
@@ -2549,12 +2561,27 @@ class PlayingClient:
         if getattr(self.wire, "guild_invite_gid", 0):
             self.wire.guild_reply(self.wire.guild_invite_gid, True)
 
+    def _loot_runtime_ready(self, state: BotState) -> bool:
+        return self._merchant_gate_all(
+            "loot_arm",
+            (
+                ("mechanical_disabled", self.mechanical_recovery_allowed),
+                ("hp_not_safe", state.hp > 1),
+                ("actuation_blocked", not self._npc.actuation_blocked),
+                ("npc_poisoned", not self._npc.failed or self._npc.deny_origin == "timeout"),
+                ("cancel_uncertain", not self._npc.cancel_uncertain),
+                ("dialogue_open", self._npc.view is None),
+            ),
+        )
+
     def _loot(self, state: BotState) -> None:
         """The shared pickup dispatch (the mechanical path's Loot and the
         decider's loot choice both land here): the CZ_ITEM_PICKUP send is
         memoized per floor item - one attempt while the item is on the
         floor view - inside the server's pickup radius (Chebyshev<=2; the
         looser hypot gate burned attempts on silent out-of-range rejects)."""
+        if not self._loot_runtime_ready(state):
+            return
         tracker = self._tracker
         if tracker is None or state.alive is not True:
             self._note_loot_unavailable(tracker)
@@ -2601,7 +2628,7 @@ class PlayingClient:
             },
         )
         logger.warning(
-            "loot-debug: pickup dispatched (fid=%s nameid=%s cell=(%s,%s))",
+            "loot-debug: pickup dispatched (fid=%s nameid=%s cell=(%s,%s) loot_arm_dispatched)",
             item.floor_item_id,
             item.item_id,
             item.position.x,
@@ -2617,6 +2644,8 @@ class PlayingClient:
         if self._tracker is None:
             return
         self._refresh_loot_memo(self._tracker.view.floor_items)
+        if not self._loot_receipt.deferred or not self._loot_runtime_ready(state):
+            return
         if (
             state.alive is not True
             or self._rest_seq is not None
@@ -3281,26 +3310,61 @@ class PlayingClient:
         self, state: BotState, actions: tuple[GameAction, ...]
     ) -> tuple[GameAction, ...]:
         self._sync_patrol_context(state)
-        shop_actions = self._shop_loop_mechanical(state, actions)
+        shop_actions = self._priority_shop_actions(state, actions)
         if shop_actions is not None:
             return shop_actions
         npc_actions = self._npc_mechanical(state, actions)
         if npc_actions is not None:
             return npc_actions
-        # Empty MerchantDrive patience/queue ticks own every route map.
-        # Neither loot approaches nor field patrols may replace its travel.
-        if self._merchant_owns_travel(state):
-            return actions
-        loot_actions = self._loot_mechanical(state, actions)
+        loot_actions = self._shared_loot_actions(state, actions)
         if loot_actions is not None:
             return loot_actions
         return self._legacy_mechanical(state, actions)
 
-    @staticmethod
-    def _merchant_owns_travel(state: BotState) -> bool:
+    def plan_actions(
+        self, state: BotState, actions: tuple[GameAction, ...]
+    ) -> tuple[GameAction, ...]:
+        """Retained plans share real loot/shop execution without a patrol fallback."""
+        self._sync_patrol_context(state)
+        owned = self._priority_shop_actions(state, actions)
+        if owned is None:
+            owned = self._shared_loot_actions(state, actions)
+        return actions if owned is None else owned
+
+    def _priority_shop_actions(
+        self, state: BotState, actions: tuple[GameAction, ...]
+    ) -> tuple[GameAction, ...] | None:
+        if merchant_pickup_required(state) or self._pickup_outranks_trip(state):
+            pickup_actions = self._loot_mechanical(state, actions)
+            if pickup_actions is not None:
+                return pickup_actions
+        return self._shop_loop_mechanical(state, actions)
+
+    def _shared_loot_actions(
+        self, state: BotState, actions: tuple[GameAction, ...]
+    ) -> tuple[GameAction, ...] | None:
+        # An active merchant lease keeps travel; a pickup opportunity can yield it.
+        if self._merchant_owns_travel(state):
+            return actions
+        return self._loot_mechanical(state, actions)
+
+    def _pickup_outranks_trip(self, state: BotState) -> bool:
+        if _merchant_stock(state) or self._tracker is None:
+            return False
+        if self._npc.view is not None or state.shop_offer is not None:
+            return False
+        self._refresh_loot_memo(self._tracker.view.floor_items)
+        return any(
+            self._floor_item_distance(state, item) <= _LOOT_PICKUP_RANGE
+            and item.floor_item_id not in self._loot_pickup_tried
+            for item in self._loot_candidates(state, self._tracker.view.floor_items)
+        )
+
+    def _merchant_owns_travel(self, state: BotState) -> bool:
         return (
             (state.map_name == "prontera" or merchant_trip_active(state.name))
             and not merchant_pickup_required(state)
+            and not self._pickup_outranks_trip(state)
             and merchant_admission_refusal(state) is None
         )
 
@@ -3400,6 +3464,8 @@ class PlayingClient:
         exchange, the leg-61 guard) and an authored Loot (the decider's
         alternative trigger already owning the tick through ``_loot``) are
         never interrupted."""
+        if not self._loot_runtime_ready(state):
+            return None
         if any(isinstance(action, (Attack, Loot)) for action in actions):
             self._note_loot_authored_defer(state, actions)
             return None
@@ -3413,6 +3479,11 @@ class PlayingClient:
         if threat is not None:
             self._note_loot_threat_defer(state, floor_items, threat)
             return None
+        return self._loot_mint(state, floor_items)
+
+    def _loot_mint(
+        self, state: BotState, floor_items: Iterable[ObservedFloorItem]
+    ) -> tuple[GameAction, ...] | None:
         for item in self._loot_candidates(state, floor_items):
             if item.floor_item_id in self._loot_pickup_tried:
                 self._note_loot_pickup_held(item.floor_item_id)
@@ -3473,7 +3544,7 @@ class PlayingClient:
         pickup_target = state.merchant_pickup_target if merchant_pickup_required(state) else None
         return tuple(
             sorted(
-                floor_items,
+                (item for item in floor_items if self._owns_floor_item(state, item)),
                 key=lambda item: (
                     pickup_target is not None
                     and (item.position.x, item.position.y) != pickup_target,
@@ -3482,6 +3553,15 @@ class PlayingClient:
                 ),
             )
         )
+
+    def _owns_floor_item(self, state: BotState, item: ObservedFloorItem) -> bool:
+        own = (self._floor_item_distance(state, item), self.wire.aid)
+        for peer_id, (x, y) in self._dealer_bodies():
+            distance = max(abs(x - item.position.x), abs(y - item.position.y))
+            if (distance, peer_id) < own:
+                self._loot_receipt.defer(item, "nearer_agent")
+                return False
+        return True
 
     @staticmethod
     def _floor_item_distance(state: BotState, item: Any) -> int:
@@ -3914,7 +3994,7 @@ class PlayingClient:
             # The farm-side return is mechanical too: slow/failed decides
             # must not strand a drained agent beside the dealer. It creates
             # no outbound lease and grants no shop/contact authority.
-            return merchant_return_cell(state) if merchant_arm_drained(state) else None
+            return merchant_return_cell(state)
         if not self._merchant_gate_all(
             "trip", (("retry_cooldown", _merchant_trip_allows(state, destination)),)
         ):
@@ -3981,9 +4061,14 @@ class PlayingClient:
                 ("offer_bound", state.shop_offer is None),
                 (
                     f"counter_released:{self._counter_lease.reason}",
-                    self._counter_lease.reason is None or merchant_arm_drained(state),
+                    self._counter_lease.reason is None
+                    or merchant_arm_drained(state)
+                    or merchant_farm_returning(state),
                 ),
-                ("pickup_required", not merchant_pickup_required(state)),
+                (
+                    "pickup_required",
+                    not (merchant_pickup_required(state) or self._pickup_outranks_trip(state)),
+                ),
             ),
         )
 
