@@ -113,7 +113,11 @@ def test_pump_preserves_admission_and_actuation_barriers(barrier, monkeypatch):
         now[0] += 301.0
         assert not scripts._merchant_trip_allows(state, scripts.MERCHANT_ROUTE["prt_in"])
     client.drain_native_events()
-    assert client.wire.moves == []
+    if barrier == "cooldown":
+        # The retry clock limits outbound trips, never the farm-side return.
+        assert client.wire.moves == [(168, 126)]
+    else:
+        assert client.wire.moves == []
     assert client.wire.sent == []
 
 
@@ -188,7 +192,7 @@ def test_map_change_releases_old_walk_and_resolves_the_next_merchant_leg():
     assert state.map_name == "prontera"
 
 
-def test_stalled_admitted_trip_yields_to_existing_retry_cooldown(monkeypatch):
+def test_stalled_admitted_trip_returns_during_and_beyond_retry_cooldown(monkeypatch):
     client, now = _client(at=(172, 128))
     monkeypatch.setattr(scripts, "_merchant_now", lambda: now[0])
     monkeypatch.setattr(client.wire, "keepalive", lambda: None, raising=False)
@@ -200,7 +204,9 @@ def test_stalled_admitted_trip_yields_to_existing_retry_cooldown(monkeypatch):
     assert not scripts.merchant_trip_active(client.wire.char_name)
     now[0] += 119.0
     client.drain_native_events()
-    assert len(client.wire.moves) == 1
+    assert len(client.wire.moves) == 2
+    assert client.wire.moves[-1][1] < 129
     now[0] += 1.0
     client.drain_native_events()
-    assert client.wire.moves == [(172, 129), (172, 129)]
+    assert all(y < 129 for _, y in client.wire.moves[1:])
+    assert not scripts.merchant_trip_active(client.wire.char_name)

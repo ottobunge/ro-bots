@@ -12,6 +12,7 @@ from enum import Enum, auto
 from time import monotonic as _merchant_now
 from typing import TYPE_CHECKING, Protocol, assert_never, final
 
+from robots.adapters.merchant_stock import MISC_SELLABLE_IDS, PUBLIC_STOCK_IDS
 from robots.app.combat_survival import survivable_targets
 from robots.app.field_travel import FieldTravel
 from robots.app.merchant_trip import MerchantTrip
@@ -291,7 +292,7 @@ def novice_weapon_index(
     return None
 
 
-SELLABLE_ITEM_IDS = (
+SELLABLE_ITEM_IDS: tuple[int, ...] = (
     509,
     510,
     511,
@@ -373,6 +374,11 @@ sellability and prices always come from the received ZC_PC_SELL_ITEMLIST
 rows (clif.cpp:2265-2280), never from here. The drive's sellables set in
 merchant_drive_cell MUST carry the same ids — extend both together (the
 leg-46 twin-set law)."""
+
+
+# Public misc/consumable classes extend field-drop candidates, including drops from
+# species outside the authored plan. This never includes the worn wanted knives.
+SELLABLE_ITEM_IDS = tuple(sorted(set(SELLABLE_ITEM_IDS) | PUBLIC_STOCK_IDS))
 
 
 def shop_sellable_stock(
@@ -501,80 +507,9 @@ npc actor counts as the dealer candidate; farther or position-less npcs are
 never guessed — the step keeps walking instead (fail-closed)."""
 
 
-# Two reasons to walk to the dealer: affordable purchase (zeny >= 50) or
-# sellable stock (start_zeny is 0 in the owned world - the first trip
-# EARNS the zeny by selling; window-28 finding). The stock set is the
-# pinned mob_db drops of the prt_fild08 field species (all non-equipment
-# loot is dealer stock; leg 39: RinceNyan carried 713+1002 and no trip
-# engaged because the set only knew 909/915):
-#   Pupa 1008 -> Chrysalis 915, Sticky_Mucus 938, Iron_Ore 1002
-#   Drops 1113 -> Jellopy 909, Empty_Bottle 713
-#   Lunatic 1063 -> Clover 705, Feather 949
-#   Poring 1009 -> Talon 917;  Fabre 1007 -> Fluff 914
-# (rathena db/pre-re/mob_db.yml + item_db_etc.yml, pinned e985006171d2)
-DRIVE_SELLABLES = {
-    # The SAME ids SELLABLE_ITEM_IDS carries (the leg-46 twin-set law):
-    # the prt_fild08 species (window-28/leg-41) plus the leg-67
-    # pay_fild04 derivation (spawn file payon.txt:63-70 -> served
-    # mob_db.yml Drops -> pre-re item dbs; see SELLABLE_ITEM_IDS).
-    "909",
-    "915",
-    "938",
-    "1002",
-    "713",
-    "705",
-    "949",
-    "917",
-    "914",
-    "509",
-    "510",
-    "511",
-    "512",
-    "514",
-    "529",
-    "531",
-    "603",
-    "604",
-    "610",
-    "619",
-    "620",
-    "694",
-    "695",
-    "700",
-    "714",
-    "720",
-    "722",
-    "910",
-    "912",
-    "983",
-    "1039",
-    "1059",
-    "1207",
-    "1602",
-    "2116",
-    "2254",
-    "2255",
-    "2257",
-    "2274",
-    "2282",
-    "2324",
-    "2336",
-    "4001",
-    "4004",
-    "4033",
-    "4047",
-    "4054",
-    "4174",
-    "4196",
-    "4197",
-    "5035",
-    "7023",
-}
-"""The drive's stock set: the SAME ids SELLABLE_ITEM_IDS carries (the
-leg-46 twin-set law - extend both together); the leg-67 pay_fild04
-derivation rides the SELLABLE_ITEM_IDS docstring. Extracted to module
-level by the leg-68 admission tap so ``merchant_admission_refusal`` reads
-the same set the drive admits on."""
+# Keep admission, recovery and C4 selection on the same public stock candidates.
+# C7 rows still decide instance sellability, amounts and all prices.
+DRIVE_SELLABLES = frozenset(str(item) for item in SELLABLE_ITEM_IDS)
 
 
 MERCHANT_FIELD_BATCH_MIN = 2
@@ -621,12 +556,20 @@ def merchant_admission_refusal(state: BotState) -> tuple[str, str] | None:
     has_stock = _merchant_stock(state) + _merchant_inflight(state) > 0
     if refusal is None:
         refusal = _want_refusal(state, affordable, has_stock)
-    if refusal is None and _merchant_trip_cooling_down(state.name):
-        refusal = "merchant_trip_retry_cooldown"
-    if refusal is None and not has_stock and state.merchant_buy_suspended:
-        refusal = "buy_suspended"
+    if refusal is None:
+        refusal = _merchant_return_refusal(state, has_stock)
     if refusal is not None:
         return refusal, _admission_detail(state, affordable, has_stock)
+    return None
+
+
+def _merchant_return_refusal(state: BotState, has_stock: bool) -> str | None:
+    if merchant_farm_returning(state):
+        return "merchant_post_trip_return"
+    if _merchant_trip_cooling_down(state.name):
+        return "merchant_trip_retry_cooldown"
+    if not has_stock and state.merchant_buy_suspended:
+        return "buy_suspended"
     return None
 
 
@@ -684,6 +627,14 @@ def merchant_trip_active(bot: str) -> bool:
     """An admitted travel lease that has not been released for retry."""
     trip = _MERCHANT_TRIPS.get(bot)
     return trip is not None and trip.retry_at == 0.0
+
+
+def merchant_farm_returning(state: BotState) -> bool:
+    """A released visit owns its route home until received field arrival."""
+    trip = _MERCHANT_TRIPS.get(state.name)
+    return state.map_name in MERCHANT_ROUTE_RETURN and (
+        state.merchant_returning or (trip is not None and trip.returning)
+    )
 
 
 def _merchant_trip_cooling_down(bot: str) -> bool:
@@ -748,6 +699,10 @@ def merchant_drive_cell(state: BotState) -> tuple[int, int] | None:
         return None
     destination = MERCHANT_ROUTE.get(state.map_name)
     stock = _merchant_stock(state)
+    misc = any(
+        item.isdecimal() and int(item) in MISC_SELLABLE_IDS and count > 0
+        for item, count in state.inventory.items()
+    )
     sell_batch = stock + _merchant_inflight(state) >= _merchant_batch_min(state)
     _tap_merchant_drive(
         state.name,
@@ -756,7 +711,8 @@ def merchant_drive_cell(state: BotState) -> tuple[int, int] | None:
         f"stock={stock} inflight={_merchant_inflight(state)} "
         f"pending={state.merchant_inflight_pending} visible={state.merchant_inflight_visible} "
         f"trip_min={_merchant_batch_min(state)} "
-        f"arm={'sell_batch' if sell_batch else 'buy_budget'}",
+        f"arm={'sell_batch' if sell_batch else 'buy_budget'} "
+        f"merchant_stock_sellable_misc={misc}",
     )
     return destination
 
@@ -776,7 +732,10 @@ def merchant_return_cell(state: BotState) -> tuple[int, int] | None:
     if state.job != "Novice":
         return None
     if not (
-        state.merchant_buy_suspended or state.merchant_returning or merchant_arm_drained(state)
+        state.merchant_buy_suspended
+        or merchant_farm_returning(state)
+        or _merchant_trip_cooling_down(state.name)
+        or merchant_arm_drained(state)
     ) and (
         not state.inventory_known
         or any(str(item) in state.inventory for item in NOVICE_WANTED_WEAPONS)
@@ -810,9 +769,8 @@ def _merchant_step(
     destination = merchant_drive_cell(state)
     if destination is not None:
         return _merchant_outbound_step(state, destination, resolver, reachable, travel_target)
-    if _merchant_trip_cooling_down(state.name):
-        return None
-    _MERCHANT_TRIPS.pop(state.name, None)
+    if state.name in _MERCHANT_TRIPS and not _MERCHANT_TRIPS[state.name].retry_at:
+        _MERCHANT_TRIPS.pop(state.name, None)
     _DEALER_APPROACH_WALKS.pop(state.name, None)
     _DEALER_QUEUE_WAITS.pop(state.name, None)
     home = merchant_return_cell(state)
@@ -868,6 +826,7 @@ def _merchant_trip_allows(state: BotState, destination: tuple[int, int]) -> bool
     trip = _MERCHANT_TRIPS.setdefault(state.name, MerchantTrip(remaining, distance, now))
     allowed = trip.advance(state.name, remaining, distance, now)
     if not allowed:
+        trip.returning = state.map_name in MERCHANT_ROUTE_RETURN
         _MERCHANT_TRAVEL_WALKS.pop(state.name, None)
         _DEALER_APPROACH_WALKS.pop(state.name, None)
     return allowed

@@ -15428,3 +15428,69 @@ the loot arm never owns the pickups, so no stock can ever exist to sell;
 (3) contact.no_sellables fired 66 times while agents hold sellable misc
 (Empty Bottle sellable 200z per the decide knowledge line) — check what the
 merchant-drive admission counts as a sellable.
+
+## [2026-11-20] LOOT-OWNERSHIP — received drops, misc stock, and post-trip farm return
+
+Offline implementation on `t3/loot-ownership`, based on `85a8dfda`; evidence:
+`run/plain_host_receipts/population-receipt-118-1795171741.json` and
+`run/reviews/leg118-verdict.md`. Inspected the saved population JSONL traces,
+not the live world. All five window ItemDrop observations were within one
+Chebyshev cell of the observer, with zero adjacent monsters: shared floor
+126/Jellopy at 13:28:34/36 UTC, floor 127/Chrysalis at 13:33:40 UTC,
+floor 128/Carrot at 14:31:00 UTC, and floor 129/Chrysalis at 14:33:49 UTC.
+The Jellopy observer `pop_0069_g00m02` retained FarmScript and resumed MoveTo
+after its failed decide, without authoring Loot. UTC trace times correspond
+to CET +1; no DB queries or credentials were used.
+
+Root causes and fixes:
+- The host's retained-plan seam called shop continuation only, bypassing
+  mechanical loot authoring. A new runtime `plan_actions` seam shares loot
+  and shop execution while leaving patrol and novice guidance to the plan.
+  In-range pickup with no sale stock yields the trip pump and its travel
+  hold; credited in-flight loot also keeps its approach before post-trip
+  return. Shared pickup dispatch still sends the existing fixed six-byte
+  CZ_ITEM_PICKUP `0x0362`, once per received floor presence. Nearest received
+  type-0 body owns the opportunity (actor-ID tie break); named `nearer_agent`
+  deferrals explain a yield. Existing threat, standing, arrival, pending
+  walk, acknowledgement, recovery, poison and cancel barriers still apply.
+  Actual sends emit `loot_arm_dispatched`; safety refusals name `loot_arm` gates.
+- Empty Bottle 713, Chrysalis 915 and Clover 705 were ALREADY in both legacy
+  sets, so the receipt alone does not establish their class as the cause of
+  the 66 no_sellables refusals. The fixed species allowlist nevertheless
+  omitted other public misc/consumables, including the observed Carrot 515.
+  Admission, C4 sell selection, recovery and in-flight credit now share the
+  pinned pre-re item-db misc/card/consumable candidates, excluding NoSell and
+  negative sell value. Wanted worn weapons remain excluded. The dealer's
+  weapon buy catalog (`npc/merchants/shops.txt:255`) does not constrain its
+  generic inventory sell list (`clif_selllist`, `pc_can_sell_item`). All
+  instance eligibility, amounts and prices still come from RECEIVED C7 rows;
+  the public candidates authorize opening a sell visit, never a C9 sale.
+  Change-only admission details include `merchant_stock_sellable_misc`.
+- A no-progress trip's cooldown previously suppressed the route home. It now
+  bounds outbound retries while releasing the farm-side return immediately;
+  a return latch prevents re-entry even after the retry deadline until a
+  received field arrival. Completed/failed counter visits likewise retain
+  their return intent across maps. `farm_arm_rearmed_post_trip` names both
+  validated sale completion and released trips. The drained-release gates,
+  decide-independent merchant pump, FIFO rotation/handover, timeout-only
+  recovery origins and runtime-only walkability authority remain intact.
+
+TDD: the initial fake-wire twins failed before implementation. New coverage
+checks the actual pickup bytes under a retained empty-bag plan, trip-pump
+pickup priority, nearest-body ownership, named refusal barriers, misc and
+Carrot C4/C7/C9/CB conversion followed by received field return and fresh-stock
+readmission, NoSell rejection, no-progress return beyond cooldown, completed
+and failed visit return, and preservation of a credited in-flight pickup leg.
+Updated the older cooldown-parking and retained-plan-bypass assertions to the
+new contract. New twins: 21 passed; final new/post-sale subset: 49 passed.
+
+Only offline tests ran. No runner launches, live probes, Docker or server
+operations, changes under spikes/, SHA-pin edits, or merge to main.
+
+Final full gate GREEN: `nix develop -c task --dir . check` (exit 0),
+`/tmp/loot-final-check.log`: **7,524 passed, 65 subtests passed, 1 skipped,
+4 warnings, 95.83% coverage**, 325.96 seconds. Black, ruff, strict mypy,
+vulture, xenon, duplicate-code and bandit passed. The optional real wiki-corpus
+smoke skipped because the parent checkout's iro-wiki.db is a self-referencing
+symlink; its tracked link is unchanged. Local iro-db/config prerequisites are
+symlinked from the parent and excluded from delivery.

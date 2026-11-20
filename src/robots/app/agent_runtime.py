@@ -1158,10 +1158,11 @@ class ScheduledAgent:
         if getattr(self.brain, "is_recovering", False):
             return actions
         if getattr(self.brain, "current_plan", None) is not None:
-            # MerchantDrive interrupts farming, so its receipt-bound exchange
-            # must still execute while that farm plan is retained. Skipping
-            # this limb left C4 unanswered until timeout closed/reopened it.
-            shop = getattr(self.client, "shop_actions", None)
+            # Retained plans share runtime loot and receipt-bound exchanges.
+            # This grants no patrol/guidance fallback; scripts never infer
+            # ground items from inventory.
+            planned = getattr(self.client, "plan_actions", None)
+            shop = planned or getattr(self.client, "shop_actions", None)
             exchange = shop(state, actions) if shop is not None else None
             return cast(tuple[GameAction, ...], exchange) if exchange is not None else actions
         mechanical = getattr(self.client, "mechanical_actions", None)

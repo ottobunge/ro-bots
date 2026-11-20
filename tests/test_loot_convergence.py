@@ -147,9 +147,10 @@ def test_offline_host_traces_arrival_refire_without_a_new_decision(tmp_path):
     agent.execute_actions((MoveTo(43, 38), Loot()))
     assert isinstance(agent.brain, EventDrivenBrain)
     agent.brain._plan = FarmPlan(1, "prontera", ("Poring",), 300, 20)
-    # Retained farm plans bypass mechanical loot authoring in the live host.
+    # Retained farm plans now share loot authoring. The pending-arrival
+    # barrier holds the plan's walk until this drop's pickup can dispatch.
     state = client.build_native_state(Goal.GRIND)
-    assert agent._script_actions(state, (MoveTo(80, 80),)) == (MoveTo(80, 80),)
+    assert agent._script_actions(state, (MoveTo(80, 80),)) == ()
     client.wire.add(walk_ack((43, 38), (43, 38)))
     agent._drain_events()
     agent._trace_state_tick(client.build_native_state(Goal.GRIND))
