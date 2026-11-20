@@ -83,8 +83,10 @@ from robots.app.scripts import (
     _merchant_trip_allows,
     _received_dealer_at_cell,
     merchant_admission_refusal,
+    merchant_arm_drained,
     merchant_drive_cell,
     merchant_pickup_required,
+    merchant_return_cell,
     merchant_talk_pending,
     merchant_trip_active,
     needs_npc_preparation,
@@ -1863,7 +1865,7 @@ class PlayingClient:
         grid = self._counter_yield_grid(state)
         if grid is None:
             return ()
-        if self._counter_lease.reason in ("completed", "failed"):
+        if self._counter_lease.reason in ("completed", "failed") or merchant_arm_drained(state):
             self._release_counter_contact(state)
             home = MERCHANT_ROUTE_RETURN["prt_in"]
             return () if home == (state.x, state.y) else (MoveTo(*home),)
@@ -3909,7 +3911,10 @@ class PlayingClient:
             "admission", ((refusal[0] if refusal else "no_route", destination is not None),)
         )
         if destination is None:
-            return None
+            # The farm-side return is mechanical too: slow/failed decides
+            # must not strand a drained agent beside the dealer. It creates
+            # no outbound lease and grants no shop/contact authority.
+            return merchant_return_cell(state) if merchant_arm_drained(state) else None
         if not self._merchant_gate_all(
             "trip", (("retry_cooldown", _merchant_trip_allows(state, destination)),)
         ):
@@ -3976,7 +3981,7 @@ class PlayingClient:
                 ("offer_bound", state.shop_offer is None),
                 (
                     f"counter_released:{self._counter_lease.reason}",
-                    self._counter_lease.reason is None,
+                    self._counter_lease.reason is None or merchant_arm_drained(state),
                 ),
                 ("pickup_required", not merchant_pickup_required(state)),
             ),

@@ -328,13 +328,13 @@ def test_return_never_fires_on_the_field() -> None:
     assert merchant_return_cell(_state(map_name="prt_fild08", zeny=0)) is None
 
 
-def test_return_released_by_wanted_weapon() -> None:
-    """A worn wanted weapon stays in received inventory: it releases the
-    drive AND the return."""
+def test_drained_return_is_not_held_by_wanted_weapon() -> None:
+    """Leg 117: a worn weapon cannot strand an empty farmer at the dealer."""
     state = _state(map_name="prt_in", x=172, y=130, zeny=0, inventory={"1201": 1})
-    assert merchant_return_cell(state) is None
+    assert merchant_drive_cell(state) is None
+    assert merchant_return_cell(state) == MERCHANT_ROUTE_RETURN["prt_in"]
     town = _state(map_name="prontera", x=174, y=218, zeny=0, inventory={"1202": 1})
-    assert merchant_return_cell(town) is None
+    assert merchant_return_cell(town) == MERCHANT_ROUTE_RETURN["prontera"]
 
 
 def test_return_fails_closed_on_unknown_map() -> None:

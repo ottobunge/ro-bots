@@ -50,6 +50,7 @@ def test_no_progress_releases_retained_farm_script_and_retries_later(monkeypatch
     now[0] = bound + 120.0
     assert not any(isinstance(a, Attack) for a in brain.step_script(state).actions)
     assert "merchant_trip_retry" in caplog.text
+    assert "merchant_arm_released_drained" not in caplog.text
 
 
 @pytest.mark.parametrize("item", ["501", "511"])

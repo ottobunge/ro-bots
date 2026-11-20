@@ -92,14 +92,10 @@ def test_pump_never_replaces_an_existing_decide_walk():
     assert client.wire.moves == [(168, 126)]
 
 
-@pytest.mark.parametrize(
-    "barrier", ["stock", "pose", "one_hp", "passive", "grid", "ring", "cooldown"]
-)
+@pytest.mark.parametrize("barrier", ["pose", "one_hp", "passive", "grid", "ring", "cooldown"])
 def test_pump_preserves_admission_and_actuation_barriers(barrier, monkeypatch):
     client, now = _client(at=(168, 127), blocked=NEIGHBOURS if barrier == "ring" else ())
-    if barrier == "stock":
-        client.wire.add(struct.pack("<HHH", 0x00AF, 6, 1))
-    elif barrier == "pose":
+    if barrier == "pose":
         raw = bytearray(34)
         struct.pack_into("<HI", raw, 0, 0x08C8, client.wire.aid)
         raw[29] = 2
@@ -118,6 +114,16 @@ def test_pump_preserves_admission_and_actuation_barriers(barrier, monkeypatch):
         assert not scripts._merchant_trip_allows(state, scripts.MERCHANT_ROUTE["prt_in"])
     client.drain_native_events()
     assert client.wire.moves == []
+    assert client.wire.sent == []
+
+
+def test_empty_stock_releases_outbound_pump_and_walks_toward_field():
+    client, _ = _client(at=(168, 127))
+    client.wire.add(struct.pack("<HHH", 0x00AF, 6, 1))
+    client.drain_native_events()
+    assert client.wire.moves
+    assert client.wire.moves[-1][1] < 127
+    assert not scripts.merchant_trip_active(client.wire.char_name)
     assert client.wire.sent == []
 
 

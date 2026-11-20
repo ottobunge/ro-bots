@@ -649,6 +649,19 @@ def _merchant_stock(state: BotState) -> int:
     )
 
 
+def merchant_arm_drained(state: BotState) -> bool:
+    """Known empty stock with no affordable buy want yields to field work.
+
+    Collectible in-flight stock still owns its pickup leg. Unknown inventory
+    cannot prove depletion, and an affordable buyer retains its existing arm.
+    """
+    return (
+        _precondition_refusal(state) is None
+        and not (type(state.zeny) is int and state.zeny >= MERCHANT_ZENY_MIN)
+        and _merchant_stock(state) + _merchant_inflight(state) == 0
+    )
+
+
 def _merchant_batch_min(state: BotState) -> int:
     return 1 if state.map_name in ("prontera", "prt_in") else MERCHANT_FIELD_BATCH_MIN
 
@@ -724,6 +737,13 @@ def merchant_drive_cell(state: BotState) -> tuple[int, int] | None:
     refusal = merchant_admission_refusal(state)
     if refusal is not None:
         term, detail = refusal
+        if term == "no_stock_below_zeny_floor":
+            # Depletion ends the old trip now; its retry clock must not own
+            # the return leg. Received new stock can admit a fresh trip.
+            _MERCHANT_TRIPS.pop(state.name, None)
+            _DEALER_APPROACH_WALKS.pop(state.name, None)
+            _DEALER_QUEUE_WAITS.pop(state.name, None)
+            detail = f"{detail} release=merchant_arm_released_drained"
         _tap_merchant_drive(state.name, term, detail)
         return None
     destination = MERCHANT_ROUTE.get(state.map_name)
@@ -744,13 +764,10 @@ def merchant_drive_cell(state: BotState) -> tuple[int, int] | None:
 def merchant_return_cell(state: BotState) -> tuple[int, int] | None:
     """Walk-home cell when the dealer want does not hold (window-30).
 
-    Fires for the farm/grind goal scripts (the only ``_merchant_step``
-    callers) when the received state shows all of: a Novice, KNOWN inventory
-    with no wanted weapon (a worn weapon stays in received inventory — its
-    presence releases the return exactly like the drive), no outbound want
-    (the drive owns the engagement while it holds), and a pinned return map
-    beyond the field. Anything else returns None: the field behavior and the
-    drive stay unchanged; unknown maps fail closed.
+    A Novice with known depleted stock and no affordable buy want returns
+    even with a worn weapon: equipment must not strand a drained farmer.
+    Otherwise the legacy known-inventory/no-wanted-weapon return applies.
+    An outbound want owns engagement while it holds; unknown maps fail closed.
 
     A runtime buy give-up, validated sale, or honest timeout close also
     releases the return while inventory is unknown or a fixture weapon is
@@ -758,7 +775,9 @@ def merchant_return_cell(state: BotState) -> tuple[int, int] | None:
     """
     if state.job != "Novice":
         return None
-    if not (state.merchant_buy_suspended or state.merchant_returning) and (
+    if not (
+        state.merchant_buy_suspended or state.merchant_returning or merchant_arm_drained(state)
+    ) and (
         not state.inventory_known
         or any(str(item) in state.inventory for item in NOVICE_WANTED_WEAPONS)
     ):

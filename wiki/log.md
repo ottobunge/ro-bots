@@ -15336,3 +15336,61 @@ at close. The farm->loot INPUT leg starved the sell half (28/29 authored zero at
 0), so after minute 3 the fleet had no fresh stock — no_stock_below_zeny_floor is partly a
 stock-input problem. Next leg: farm-arm admission (why 28/29 never attack) +
 merchant_trip_retry_cooldown semantics.
+
+## FARM-ARM ADMISSION — drained merchant release (2026-11-20)
+
+Branch `t3/farm-arm-admission`, based on the leg-117 verdict at `b571b00c`.
+Offline probe: `run/reviews/leg117-farm-arm-probe.md`, using leg-117 traces
+filtered to 08:00–09:30 UTC (09:00–10:30 Madrid) and the existing receipt.
+The evidence narrows the requested hypothesis: the drained sellers already
+have grind goals and successful grind decisions (zeny_hunter 193,
+RinceSong 190); no sell goal exists in traces or the domain enum. Empty-stock
+cooldown cycling also occurs for an agent with zeny 203, an affordable buyer,
+so the below-floor fix must preserve genuine buy-budget admission. No forced
+goal flip or new goal_review trigger is justified.
+
+Known zero bag plus collectible in-flight stock, with no affordable buy want,
+now clears the old travel lease immediately and emits the change-only named
+tap `merchant_arm_released_drained`. The existing return route can carry a
+drained farmer with a worn weapon. The host merchant pump advances that
+return without waiting for decisions and without allocating a new outbound
+lease. Released drained counters take the existing body-aware home exit
+rather than queue parking. Stocked sellers, credited pickups, affordable
+buyers, retained farm plans, FIFO/handover, timeout-only recovery origins,
+poison/cancel barriers and runtime-only walkability authority are preserved.
+New received stock can admit a fresh trip normally.
+
+TDD RED: six of nine initial twins failed on the old implementation
+(`/tmp/farm-arm-red.log`): retained depleted lease, missing worn-weapon return,
+and pump-only dealer parking. Fourteen final new twins include fake-wire
+inventory deletion/received movement and warps, unreleased, empty, completed
+and retry-exhausted counters,
+post-cooldown field combat, fresh-stock readmission and safety barriers.
+The old worn-weapon test now asserts the intended drained return in both
+dealer room and town. Focused GREEN: **179 passed** in 7.29 seconds
+(`/tmp/farm-arm-focused.log`). The broader gate exposed the old empty-stock
+pump expectation and the extra release log line; the former now asserts the
+field return, and the release marker rides the existing one-line-per-verdict
+admission tap. Regression GREEN: **45 passed** in 7.38 seconds
+(`/tmp/farm-arm-regressions.log`). Full-gate result follows below.
+
+Ignored prerequisites use the parent's iro-db/config.log and a local rAthena
+clone at the existing gitlink. The tracked iro-wiki link is self-referential;
+validation temporarily uses the existing wt-mobpos corpus and restores the
+tracked link before delivery. `NIX_CONFIG='auto-optimise-store = false'`
+avoids the documented host Nix hard-link limit. No pins, spikes, runner,
+Docker, live-world probes or heavengraph services were changed. This slice
+does not claim live combat recovery or resolve funded-buy/stocked queue
+congestion; scheduled live validation belongs to the coordinator.
+
+Fleet-memory recall succeeded. Retaining this lesson failed with the existing
+`idx_async_operations_pending_claim` database index error; no server repair
+or further memory write was attempted. The probe and this log are the durable
+record.
+
+Full gate GREEN: `nix develop -c task --dir . check`,
+`/tmp/farm-arm-full-gate.log`: **7,504 passed, 65 subtests passed,
+4 warnings, 95.81% coverage**, 311.61 seconds. Black, ruff, strict mypy,
+vulture, xenon, duplicate-code and bandit passed. The tracked wiki database
+link was restored before commit; prerequisite links and local test outputs
+are excluded from delivery.
