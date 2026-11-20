@@ -15301,3 +15301,38 @@ initial typing and missing-map-cache fixture issues were corrected before
 this final gate. Hindsight recall succeeded; retaining the durable lesson
 failed with an async-operations database index error, so the repository's
 probe and this log remain the durable record. No server repair was attempted.
+
+
+## LEG-117 (2026-11-20 Fri 09:00-10:30 CET) — T1 BAR MET: FIRST MULTI-SELLER WINDOW
+
+Head 69598221 (dialogue-opening survival). Runner `population-receipt-117-1795160588.json`:
+29,730 steps, 0 errors, 29/29 online the full window. Verdict `run/reviews/leg117-verdict.md`,
+stats `run/reviews/leg117-readout-stats.json`.
+
+**T1 PASS — 2 in-window sellers, the fix validated.** zeny_hunter 0->35 (+35, zenylog row 12,
+08:02:25 UTC / 09:02 CET, S @ prt_in) and RinceSong 25->40 (+15, row 13, 08:03:27 UTC, S @
+prt_in). Fleet 1530 -> 1580 (+50); seed-zeny.json refreshed for those two rows only. Leg-116's
+202 `opening->blocked` stages are gone: the buffered C4 was consumed and the first ring holders
+completed sells 2-3 minutes after window open. Sampler caveat: the 30 s sampler caught only
+1 `opening` + 1 `unsupported_shop` npc_stage sample — too sparse for the fast completions;
+the zenylog S rows are ground truth.
+
+T2 decide health: 60.5% capped (window rows 12,806), TRUE success p50 1.96 s / p90 3.46 s
+(runner span 13,338 rows, 59.7% capped, p50 1.97 s) — known load-dependent band, true latency
+stable. T3 cadence: 27/29 in the 75-305 band BY SUCCESS (159-224); by attempts only 2/29
+(451-511, retry-inflated — leg-116's split confirmed); outliers pop_0069_g00m02 (63/157,
+the sole combat agent) and pop_0069_s01 (42/101). T4 transport: 22 keepalive TRANSPORT DOWN,
+0 exhausted (receipt transport_recovery attempts=0 exhausted=false on every agent). T5 combat:
+one agent only (pop_0069_g00m02 alone in the field) — 8 attacks, 5 swings, 79 dmg, 1 kill,
++8/+4 exp, drops_seen 0; picklog M77/P43/L26/S21 vs leg-116's M77/P43/L26/S19 (S+2 = the
+sells), zenylog 11 -> 13.
+
+**NEXT SIGNATURE (named taps):** the ring converted its first holders, then nothing for
+87 minutes. Gate samples: `admission.merchant_trip_retry_cooldown` 120,642 (largest blocker),
+`admission.no_stock_below_zeny_floor` 53,140, `allocation.counter_not_selected` 42,236,
+`allocation.no_target` 39,722, `contact.dealer_not_adjacent` 36,512, `contact.counter_turn`
+35,321. Log: `sell_contact_authored` 2, `sell_contact_hold` 1,527; 24/29 parked dealer-adjacent
+at close. The farm->loot INPUT leg starved the sell half (28/29 authored zero attacks, drops_seen
+0), so after minute 3 the fleet had no fresh stock — no_stock_below_zeny_floor is partly a
+stock-input problem. Next leg: farm-arm admission (why 28/29 never attack) +
+merchant_trip_retry_cooldown semantics.
