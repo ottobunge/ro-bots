@@ -1,0 +1,92 @@
+{
+  "leg": 118,
+  "window": {
+    "schedule_cet": "2026-11-20 14:00-15:30",
+    "runner_cet": "2026-11-20 11:49-16:24",
+    "duration_s": 16500,
+    "runtime_max_sec": 16800,
+    "steps": 59311,
+    "step_errors": 0,
+    "note": "duration scaled from the template 9000 so the 14:00-15:30 window is fully covered (deadline is wall-clock from launch, receipt population-receipt-117 proved the shape)"
+  },
+  "t1_zeny": {
+    "fleet_now": 1580,
+    "fleet_seed": 1580,
+    "delta": 0,
+    "changed_personas": [],
+    "sells_in_window": 0,
+    "sell_contact_authored": 0,
+    "talknpc_actions_in_window": 0,
+    "verdict": "FAIL - zeny flat population-wide, zero sell contacts"
+  },
+  "t2_decide_health": {
+    "ok": 5284,
+    "capped": 7431,
+    "capped_pct": 58.4,
+    "true_success_p50_s": 2.01,
+    "true_success_p90_s": 3.92,
+    "method": "decide_response split on the error field (window 13:00-14:31 UTC)",
+    "context": "leg-112 49.1%, leg-113 57.0% - window-variable saturation continues, success latency stable"
+  },
+  "t3_cadence_band": {
+    "band": "75-305 successful decides per agent",
+    "in_band": 25,
+    "below": {"pop_0069_s01": 34, "pop_0069_g00m02": 47, "pop_0069_s02": 65, "pop_0069_g02m01": 55},
+    "below_note": "3 of the 4 below-band agents are the window's only attackers (combat-busy between decides), not starved",
+    "above": 0,
+    "attempts_split": {"ok_total": 5284, "capped_total": 7431, "per_agent_ok_min": 34, "per_agent_ok_max": 238}
+  },
+  "t4_transport": {
+    "drops": 23,
+    "rebuilds": 23,
+    "exhausted": 0,
+    "note": "every drop rebuilt (connect backoff held); churn elevated vs recent legs but zero agents lost"
+  },
+  "t5_combat_feed": {
+    "attacks_authored": 69,
+    "attacking_agents": 3,
+    "fleet_wide_bar": "NOT met (3/29; leg-117 was 1/29)",
+    "swings_sent": 60,
+    "damage_events_dealt": 58,
+    "damage_dealt": 1493,
+    "kill_credits": 6,
+    "base_exp_delta": 15,
+    "job_exp_delta": 16,
+    "drops_seen": 5,
+    "pickup_attempts": 0,
+    "pickup_success": 0,
+    "unattributed_exp_events": 2,
+    "per_attacker": {
+      "pop_0069_s02": {"attacks": 44, "swings": 40, "dmg_events": 38, "dmg": 959, "kills": 3, "base_exp": 9, "job_exp": 9, "drops_seen": 2},
+      "pop_0069_g00m02": {"attacks": 21, "swings": 18, "dmg_events": 18, "dmg": 490, "kills": 2, "base_exp": 3, "job_exp": 5, "drops_seen": 2},
+      "pop_0069_g02m01": {"attacks": 4, "swings": 2, "dmg_events": 2, "dmg": 44, "kills": 1, "base_exp": 3, "job_exp": 2, "drops_seen": 1}
+    }
+  },
+  "merchant_gates_last_sample_summed": {
+    "admission.merchant_trip_retry_cooldown": 568,
+    "trip.retry_cooldown": 95,
+    "admission.no_stock_below_zeny_floor": 283,
+    "contact.dealer_not_adjacent": 215,
+    "allocation.counter_not_selected": 172,
+    "allocation.no_target": 128,
+    "counter.counter_turn": 79,
+    "contact.no_sellables": 66,
+    "motion.pending_walk": 21,
+    "contact.counter_turn": 9,
+    "approach.pickup_required": 3,
+    "approach.not_alive": 1,
+    "approach.not_standing": 1
+  },
+  "farm_arm_release_tap": {
+    "merchant_arm_released_drained": 8,
+    "timeline": "5 by 14:05, 7 by 14:31, 8 by 14:37, flat 8 through window close",
+    "reading": "the release fired only early-window; after 14:37 the fleet cycled merchant trips (cooldown gates 663) and parked in prt_in (~75% of decide volume), re-releases never re-armed"
+  },
+  "npc_stage_at_close": "all clean (no held dialogues)",
+  "picklog_delta_vs_leg117_cumulative": {
+    "leg117": {"M": 77, "P": 43, "L": 26, "S": 21, "zenylog": 13},
+    "leg118_after": {"M": 81, "P": 43, "L": 27, "S": 21, "zenylog": 13},
+    "delta": {"M": 4, "P": 0, "L": 1, "S": 0, "zenylog": 0},
+    "reading": "M+4/L+1 match the 6 kill credits; P+0 matches pickup_attempts 0 (5 drops seen, none picked up); S/zenylog flat - no sales"
+  }
+}

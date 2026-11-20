@@ -15394,3 +15394,37 @@ Full gate GREEN: `nix develop -c task --dir . check`,
 vulture, xenon, duplicate-code and bandit passed. The tracked wiki database
 link was restored before commit; prerequisite links and local test outputs
 are excluded from delivery.
+
+## LEG-118 (2026-11-20 Fri 14:00-15:30 CET, 29 personas) — farm-arm release fires early then stops; zeny flat, drops unpicked
+
+Receipt `run/plain_host_receipts/population-receipt-118-1795171741.json`
+(59,311 steps, 0 errors); verdict `run/reviews/leg118-verdict.md`; stats
+`run/reviews/leg118-readout-stats.json`. Launch note: the shepherd launched at
+11:49 CET with duration 16500 / RuntimeMaxSec 16800 instead of the template
+9000/9300 — the runner deadline is wall-clock from launch, so 9000 s would have
+killed the run 17 minutes into the window (the leg-117 unit journal proves the
+shape: 08:43 launch, exit at its own 9000 s deadline). Window fully covered;
+runner self-exited 16:24 CET.
+
+Verdict: bar NOT met. T1 FAIL — fleet zeny 1580 == seed 1580, zero changed
+personas, sell_contact_authored 0, TalkToNpc 0, picklog S+0/zenylog+0. T2 —
+capped 58.4% (leg-112 49.1 → leg-113 57.0 → leg-118 58.4, window-variable
+saturation), TRUE success p50 2.01 s / p90 3.92 s stable. T3 — 25/29 in the
+75–305 band; the 4 below are the 3 attackers (combat-busy) + pop_0069_s01.
+T4 — 23 transport drops, 23 rebuilds, 0 exhausted. T5 PARTIAL — 69 attacks by
+3/29 agents (leg-117: 1/29), 60 swings, 1,493 damage, 6 kill credits, +15/+16
+exp; drops_seen 5 but pickup_attempts 0 (nothing looted); picklog M+4/L+1
+match the kills.
+
+The leg-118 release tap is mechanically live: merchant_arm_released_drained 8,
+all early-window (5 by 14:05, flat 8 after 14:37), and the released arms
+produced all the combat. After 14:37 the fleet re-parked in prt_in (~75% of
+decide volume) cycling merchant trips — 663 cooldown gates, 283
+no_stock_below_zeny_floor refusals — and the release never re-fired. Next hops
+named: (1) the drained release is one-shot, not a mode — the post-trip return
+re-enters the trip cooldown instead of re-arming the farm arm; (2) drops die on
+the floor (5 seen, 0 pickup attempts, approach.pickup_required fired 3 times) —
+the loot arm never owns the pickups, so no stock can ever exist to sell;
+(3) contact.no_sellables fired 66 times while agents hold sellable misc
+(Empty Bottle sellable 200z per the decide knowledge line) — check what the
+merchant-drive admission counts as a sellable.
