@@ -15494,3 +15494,12 @@ vulture, xenon, duplicate-code and bandit passed. The optional real wiki-corpus
 smoke skipped because the parent checkout's iro-wiki.db is a self-referencing
 symlink; its tracked link is unchanged. Local iro-db/config prerequisites are
 symlinked from the parent and excluded from delivery.
+
+## 2026-11-21 — heavengraph GPU-0 driver fault: decide backend down, leg-119 blocked (infra)
+
+- 08:45 dispatch check: real-shape preflight FAILED — :8091 connection refused (health 000).
+- Targeted relaunch (`/tmp/relaunch-8091.sh`, no pkill, :8092 untouched) died in seconds: `ggml_cuda_init: failed to initialize CUDA: unknown error` → the `-ot CUDA0` buffer override then failed argument parsing.
+- `nvidia-smi` cannot enumerate GPU 0: `Unable to determine the device handle for GPU0: 0000:05.00.0: Unknown Error`. GPU 1 healthy (24.9/49.2 GB — :8092 Qwen chat, unaffected).
+- Same fault family as the 2026-11-16 GPU-0 corruption fixed by Otto's reboot; root-side GPU/driver work is his alone. No launch without a green preflight (hard law) → no leg-119 shepherd.
+- Resume path: Otto reboots/resets GPU 0 on heavengraph → `ssh heavengraph 'bash /tmp/relaunch-8091.sh'` → `.venv/bin/python .work/engagement-diagnosis/decide_probe.py` green → dispatch leg-119 shepherd (schedule-leg119.json already staged at 4a66ae07; duration = launch→window-close + 300 s per the leg-118 correction).
+- State at commit: main eefb95c4 (loot-ownership merged, gate 7,524/65/95.83%); leg-117 T1 bar MET (first multi-seller window); leg-118 staged the loot triad.
