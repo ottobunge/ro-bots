@@ -15563,3 +15563,17 @@ Final required gate GREEN before commit: `nix develop -c task --dir . check`
 1 skipped, 4 warnings, 95.85% coverage**, 343.01 seconds. Black, ruff, strict
 mypy, vulture, xenon, duplicate-code and bandit passed. The optional real
 wiki-corpus smoke skipped for the inherited self-referencing main-checkout link.
+
+## leg-120 (Mon 2026-11-23 14:00-15:30 CET) — sell-contact authorship validated live
+
+All four f188bf46 headline bars MET: sell_contact_authored 4 (leg-119: 0), fleet zeny
+1580 -> 1741 (+161, 13/29 sellers, zenylog +13 S rows at prt_in), escalation ladder
+cycling (escalated 70 / released_farm 21, farm arm re-armed on release), pickups 2/2.
+Combat: 253 damage -> 5 kill credits (Drops x3, Poring x2); xXLunasongXx hit base 11.
+Decide regime: ok p50 1.34s at 27.5% capped — the leg-119 13.6s queue-latency regime
+gone. Runner detached under leg120-runner with the launch->close + 900s duration law;
+receipt population-receipt-120-1795432234.json written BEFORE natural unit exit
+(33,361 steps, 0 errors). Named next signature: dealer-ring approach convergence
+(pending_walk holds 1,968; ring reads walkable_free=0/8 while one peer holds the only
+walkable cell) + stockless-majority admission holds (no_stock_below_zeny_floor 654).
+Verdict: run/reviews/leg120-verdict.md. seed-zeny.json advanced to 1741 fleet.
