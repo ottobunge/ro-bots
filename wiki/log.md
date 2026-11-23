@@ -15632,3 +15632,18 @@ Final required gate GREEN before commit: `nix develop -c task --dir . check`
 1 skipped, 4 warnings, 95.85% coverage**, 402.19 seconds. Black, ruff, strict
 mypy, vulture, xenon, duplicate-code and bandit passed. The optional real
 wiki-corpus smoke skipped for the inherited self-referencing main-checkout link.
+
+## Leg 121 (Mon 2026-11-23 evening) — dealer-ring convergence validated; funnel now input-starved
+
+Window 20:00-21:30 Madrid on staged 572a2c9a (948f59cb ring-convergence fixes). 29/29 online,
+65,346 steps, 0 errors, receipt written before unit exit. Decide regime stable (ok p50 1.41s,
+27.6% capped). Verdict PARTIAL PASS (3/4 bars): adjacency gate held (0 out-of-range contacts;
+the single counter contact at Chebyshev 1), stockless trips END (72 terminations, 0 dealer
+parking at close — the leg-120 hold/park signatures are gone), zeny moved +5 (1741 -> 1746;
+AeroSong25 sold via the decide-driven chain, counter held ~24s, clean exit). ring_lease_released_idle
+0 all window — no idle-hold occurred, so the release path is undemonstrated-positive, not violated.
+
+The economy's remaining bottleneck moved UPSTREAM to loot supply: the fleet entered with sold-out
+bags, produced only ~6 kills / 6 drops in-window, so bag-first admission refused 72 unfunded trips.
+Named next signature: farm-side combat throughput (attacks->kills conversion; chat share in decides).
+Readout: run/reviews/leg121-verdict.md; receipt population-receipt-121-1795447364.json.
