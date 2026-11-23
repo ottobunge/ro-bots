@@ -15,7 +15,7 @@ from typing import TYPE_CHECKING, Protocol, assert_never, final
 from robots.adapters.merchant_stock import MISC_SELLABLE_IDS, PUBLIC_STOCK_IDS
 from robots.app.combat_survival import survivable_targets
 from robots.app.field_travel import FieldTravel
-from robots.app.merchant_trip import MerchantTrip
+from robots.app.merchant_trip import MERCHANT_RETRY_COOLDOWN_S, MerchantTrip
 from robots.app.target_species import species_score, trace_expless_skips
 from robots.domain.actions import Attack, GameAction, Loot, MoveTo, Rest, TalkToNpc
 from robots.domain.farm import FarmPlan
@@ -640,6 +640,47 @@ def merchant_farm_returning(state: BotState) -> bool:
 def _merchant_trip_cooling_down(bot: str) -> bool:
     trip = _MERCHANT_TRIPS.get(bot)
     return trip is not None and trip.cooling_down(_merchant_now())
+
+
+def merchant_reset_dealer_approach(bot: str) -> None:
+    """Forget this bot's dealer approach memos so the next allocation is fresh.
+
+    Part of the contact-walk escalation ladder (leg-119 named hop): a reroute
+    must not carry the stalled walk's reaffirmation patience or queue-wait
+    context into the fresh allocation.
+    """
+    _DEALER_APPROACH_WALKS.pop(bot, None)
+    _DEALER_QUEUE_WAITS.pop(bot, None)
+
+
+def merchant_renew_contact_walk(bot: str) -> None:
+    """Track the route lease on the contact ladder while its own bound runs.
+
+    Leg-119: the 60 s route bound released ring waits before any escalation
+    could run (30 whole-window releases, 0 contacts). While the contact
+    approach is inside its own wall-clock bound, each pump tick re-proves
+    liveness onto the trip's no-progress clock; a starved pump stops renewing
+    and the trip bound still releases - bounded like every other arm.
+    """
+    now = _merchant_now()
+    trip = _MERCHANT_TRIPS.get(bot)
+    if trip is not None and not trip.cooling_down(now):
+        trip.progress_at = now
+
+
+def merchant_release_contact_walk(bot: str) -> bool:
+    """Release an admitted trip after the contact-walk ladder exhausts.
+
+    The retry cooldown then owns the lease: the farm-side return proceeds and
+    a fresh trip re-admits after MERCHANT_RETRY_COOLDOWN_S - the arm is
+    released to farming, never parked (leg-117's lesson).
+    """
+    now = _merchant_now()
+    trip = _MERCHANT_TRIPS.get(bot)
+    if trip is None or trip.cooling_down(now):
+        return False
+    trip.retry_at = now + MERCHANT_RETRY_COOLDOWN_S
+    return True
 
 
 def _precondition_refusal(state: BotState) -> str | None:

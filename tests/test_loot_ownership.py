@@ -6,7 +6,7 @@ from dataclasses import replace
 
 import pytest
 
-from robots.adapters.merchant_stock import public_stock_ids
+from robots.adapters.merchant_stock import MISC_SELLABLE_IDS, public_stock_ids
 from robots.adapters.native_navigation import MapCache, WalkMap
 from robots.app import scripts
 from robots.app.brain import EventDrivenBrain
@@ -15,12 +15,13 @@ from robots.domain.actions import Attack, GameAction, Loot, MoveTo, NpcShopSell,
 from robots.domain.farm import FarmPlan
 from robots.domain.model import ActorRef, Goal
 from tests.test_dealer_ring import _client
+from tests.test_loot_attribution import ack
 from tests.test_loot_priority import PICKUP
 from tests.test_merchant_drive import _plan, _state
 from tests.test_merchant_inflight_loot import client_with_loot
 from tests.test_playing_runtime import monster
 from tests.test_sell_drive_rearm import _s00_brain
-from tests.test_shop_sell_loop import DEALER, _c4, _c7, _cb, _inv
+from tests.test_shop_sell_loop import DEALER, _c4, _c7, _cb, _inv, _weight
 from tests.test_trace_log import make_agent
 from tests.test_zc_item_entry_floor import zc_item_entry
 
@@ -232,3 +233,34 @@ def test_post_trip_return_keeps_collectible_inflight_pickup_leg():
     assert isinstance(actions[0], MoveTo)
     assert actions[0].y > state.y  # toward credited loot, away from the return door
     assert not client._merchant_returning
+
+
+@pytest.mark.parametrize("item", [909, 713])
+def test_pickup_receipt_admits_picked_misc_into_known_stock(item, caplog):
+    """Leg-119 named secondary, pinned on the exact receipt chain.
+
+    A successful ZC_ITEM_PICKUP_ACK (0x0A37, 100% conversion in leg-119) must
+    put the picked sellable misc into the sell arm's known-stock admission
+    set: ``no_stock_below_zeny_floor`` cannot hold while the agent holds the
+    item, and the drained release cannot fire under it. Window evidence: all
+    16 no_stock holds carried stock=0; this pins the guarantee against
+    regression on the public item-db class ground the loot-ownership merge
+    established (eefb95c4).
+    """
+    client = client_with_loot(item=item, x=43)  # within the server pickup radius
+    client.wire.add(_inv(((7, 1201, 1),)), _weight())
+    client._zeny_seed = 0
+    state = client.build_native_state(Goal.FARM_ITEM)
+    assert scripts._merchant_stock(state) == 0  # the drop is still on the floor
+    assert client.mechanical_actions(state, ()) == (Loot(),)
+    client.perform_native(Loot())
+    assert PICKUP in client.wire.sent  # the arming weight refresh may precede it
+    client.wire.add(ack(0, item=item))
+    client.drain_native_events()
+    state = client.build_native_state(Goal.FARM_ITEM)
+    assert state.inventory.get(str(item), 0) >= 1  # received stock, known
+    assert scripts._merchant_stock(state) >= 1  # inside the arm's known-stock set
+    refusal = scripts.merchant_admission_refusal(state)
+    assert refusal is None or refusal[0] != "no_stock_below_zeny_floor"
+    assert not scripts.merchant_arm_drained(state)
+    assert item in MISC_SELLABLE_IDS  # the pinned public misc class ground
