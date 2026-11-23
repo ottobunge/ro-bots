@@ -15702,3 +15702,30 @@ mypy (415 files), vulture, xenon, duplicate-code and bandit passed. The inherite
 optional real-wiki corpus smoke is the single skip. The independent daemon
 uses nonblocking gameplay-lock acquisition so close/reconnect can serialize
 state, revoke combat and join it without a waiting-work shutdown race.
+
+## 2026-11-23 — leg-122: farm combat throughput validated live, kills bar missed at 21/26 (PARTIAL)
+
+Window Mon 22:30:34-00:07:18 CET, 29/29 online, 11,079 steps, 0 errors, receipt written
+before unit exit (`run/plain_host_receipts/population-receipt-122-1795469434.json`). Preflight
+green (DECIDE-OK 0.60s); the shared :8091 saturated in-window (p50 true success 13.62s) but the
+capped share was the best recent window at 22.8% (leg-113: 57%).
+
+The 05a89151 combat-intent funnel WORKS: 124 attacks authored (leg-121: 34), 93 swings (20),
+83 damage events / 1,927 dealt, 21 kill_credits (~6), 54 base / 34 job exp, 20 drops seen,
+6 pickup attempts / 4 success, 0 unattributed exp events. Bars "taps fire and attribute" and
+"conversion lifts" MET; the kills bar (>= ~26 pro-rata) NOT MET at 21. Caveat: the literal
+tap strings never printed to the runner log — the attribution landed in the receipt's
+swing_conversion_v1 block (wire-observation coverage, all 29 agents, refusal reasons named:
+pending_walk 22, target_not_visible 5, cooldown 2, out_of_melee_range 2).
+
+Sell side flat: zeny 1746 == seed, zenylog 27 == baseline, 1 TalkToNpc, merchant arm drained
+on no_stock_below_zeny_floor with stock=0/has_stock=False while inventories hold sellables
+(909 x5, 915 x2) — loot->stock admission did not fire. Picklog deltas: M +18 (~= drops_seen 20),
+P +6 player pickups, L +14 (mob-GID rows, not agent looting), S +0.
+
+Named next signature (leg-123): (1) combat participation spread — 18/29 authored 0 attacks,
+pop_0003 + solos stayed in prontera/prt_in socializing all window (Say 7,415, GuildInvite 266,
+FoundGuild 14, PartyChat 170, InviteToParty 26): the goal layer never sent them to a field;
+(2) the loot->stock admission defect above. Suggested bar: >= 20/29 agents with >= 1 authored
+attack AND >= 1 sell conversion from in-window loot. Full verdict:
+`run/reviews/leg122-verdict.md`.
