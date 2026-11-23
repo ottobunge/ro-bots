@@ -281,6 +281,7 @@ def test_received_map_change_discards_old_occupied_cells():
 def test_native_attack_bytes_and_death_denial():
 
     wire = Wire()
+    wire.add(monster(at=(43, 37)))  # Keep this non-range contract in melee.
     client = runtime.PlayingClient(wire)
     client.perform_native(Attack(123))
     assert wire.sent == [bytes.fromhex("37047b00000000")]
@@ -324,6 +325,7 @@ def test_host_delegates_native_state_and_actions():
 
     persona = SocietyPersona("one", "one", Playstyle.MELEE, Attitude.GRINDER, 0.5, (99, 99))
     wire = Wire()
+    wire.add(monster(at=(43, 37)))  # Keep this non-range contract in melee.
     agent = ScheduledAgent(
         persona,
         ManifestEntry("one", "dummy", "dummy", "WireNovice"),
@@ -417,6 +419,7 @@ def test_drained_receipt_releases_pending_walk_without_new_dispatch():
     wire.add(walk_ack((44, 37), (44, 37)))
     client.drain_native_events()
     assert client.build_native_state(Goal.GRIND).x == 44
+    wire.add(monster(at=(45, 37)))  # Adjacent to the received arrival.
     client.perform_native(Attack(123))
     assert wire.sent == [bytes.fromhex("37047b00000000")]
 
@@ -613,6 +616,7 @@ def test_drain_paced_walk_releases_on_stall_without_stale_resend():
     client.drain_native_events()
     wire.add(walk_ack((43, 37), (43, 37)))
     client.drain_native_events()
+    wire.add(monster(at=(44, 37)))  # Adjacent to the received arrival.
     client.perform_native(Attack(123))
     assert wire.sent == [bytes.fromhex("37047b00000000")]
 
@@ -755,6 +759,7 @@ def test_cli_constructs_existing_host_with_real_providers(tmp_path, monkeypatch)
 def test_health_survives_historical_dispatch_errors():
     """One unparseable frame must not starve telemetry forever (fx0, w43-48)."""
     wire = Wire()
+    wire.add(monster(at=(43, 37)))  # Keep this non-range contract in melee.
     wire.dispatch_errors = [("0x09fd", "unexpected length")]
     client = runtime.PlayingClient(wire)
     client.perform_native(Attack(123))
@@ -809,7 +814,7 @@ def test_move_to_closes_open_npc_dialog_first():
 def test_only_type_five_is_combat_eligible(kind):
     wire = Wire()
     wire.frames = []
-    wire.add(entry(), map_frame(), monster(kind))
+    wire.add(entry(), map_frame(), monster(kind, at=(43, 37)))
     runtime.PlayingClient(wire).perform_native(Attack(123))
     assert bool(wire.sent) == (kind == 5)
 
@@ -839,13 +844,14 @@ def test_invalid_level_never_reverts_to_persona(level):
 @pytest.mark.parametrize("kind", ["death", "warp", "authless", "resurrection"])
 def test_life_authority_never_from_positive_hp(kind):
     wire = Wire()
+    wire.add(monster(at=(43, 37)))
     if kind == "authless":
         wire.frames = []
-        wire.add(map_frame(), monster())
+        wire.add(map_frame(), monster(at=(43, 37)))
     else:
         wire.add(struct.pack("<HIB", 0x0080, 999, 1))
         if kind == "warp":
-            wire.add(map_frame(), monster())
+            wire.add(map_frame(), monster(at=(43, 37)))
         if kind == "resurrection":
             wire.add(struct.pack("<HIH", 0x0148, 999, 0))
     client = runtime.PlayingClient(wire)

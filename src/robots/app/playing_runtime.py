@@ -63,6 +63,12 @@ from robots.adapters.native_vitals import NativeTelemetryUnavailable, require_na
 from robots.app.combat_disengage import CombatDisengage, disengage_step
 from robots.app.combat_survival import SpeciesDamage, survivability_refusal
 from robots.app.expless_roam import ExplessRoam
+from robots.app.farm_combat import (
+    COMBAT_INTENT_SECONDS,
+    COMBAT_PUMP_INTERVAL_S,
+    CombatIntent,
+    gameplay_serialized,
+)
 from robots.app.loot_attribution import LootAttribution
 from robots.app.merchant_buy_backoff import MerchantBuyBackoff
 from robots.app.merchant_counter_lease import MerchantCounterLease, at_counter
@@ -80,6 +86,7 @@ from robots.app.scripts import (
     MERCHANT_ZENY_MIN,
     NOVICE_STAT_TARGETS,
     _dealer_talk,
+    _melee_action,
     _merchant_step,
     _merchant_stock,
     _merchant_trip_allows,
@@ -129,6 +136,7 @@ from robots.domain.actions import (
     Rest,
     Say,
     TalkToNpc,
+    WhisperTo,
 )
 from robots.domain.events import (
     DamageTaken,
@@ -506,6 +514,8 @@ class PlayingClient:
         self._swing_telemetry = SwingTelemetry()
         self._species_damage = SpeciesDamage()
         self._disengage = CombatDisengage()
+        self._combat_intent: CombatIntent | None = None
+        self._combat_pump_at = float("-inf")
         self._trip_walk_seq: int | None = None
         self._trip_leg_cells_sent = 0
         self._skills: NativeSkillContext | None = None
@@ -599,6 +609,7 @@ class PlayingClient:
     def planning_session(self) -> object:
         return self._planning_session
 
+    @gameplay_serialized
     def connect(self, *args: Any, **kwargs: Any) -> Any:
         self._stop_keepalive_thread()
         self._merchant_staging.release()
@@ -619,6 +630,7 @@ class PlayingClient:
         self._keepalive_failed = False
         return result
 
+    @gameplay_serialized
     def close(self, *args: Any, **kwargs: Any) -> Any:
         self._stop_keepalive_thread()
         self._invalidate_self_slots()
@@ -633,6 +645,7 @@ class PlayingClient:
         self._rest_seq = None
         self._stand_pending = None
         self._pending = None
+        self._combat_intent = None
         self._epoch = None
         self._patrol = None
         self._keepalive_at = None
@@ -873,6 +886,7 @@ class PlayingClient:
         """
         return self._last_built_state
 
+    @gameplay_serialized
     def build_native_state(self, goal: Goal) -> BotState:
         self._merchant_paths.clear()
         tracker = self._observe()
@@ -1223,7 +1237,9 @@ class PlayingClient:
             return True
         return False
 
+    @gameplay_serialized
     def perform_native(self, action: GameAction) -> None:
+        self._revoke_combat_for(action)
         if isinstance(action, MoveTo):
             # Reset BEFORE the dialogue intercepts: never reuse a prior dispatch.
             self.last_move_outcome = {"outcome": "refused", "reason": "npc_intercepted"}
@@ -1233,11 +1249,14 @@ class PlayingClient:
         if self._dispatch_timeout_close(action):
             return
         if self._retry_blocked_dialogue():
+            self._note_attack_intercept(action, "npc_recovery")
             return
         state = self.build_native_state(Goal.GRIND)
+        self._combat_action_boundary(state, action)
         if self._disengage_action(state, action):
             return
         if self._npc_action(state, action):
+            self._note_attack_intercept(action, "npc_intercepted")
             return
         self._equip_progression(state)
         self._stat_progression(state)
@@ -1488,6 +1507,10 @@ class PlayingClient:
         self._npc_retry_at = now + NPC_RETRY_CADENCE_S
         return True
 
+    def _note_attack_intercept(self, action: GameAction, reason: str) -> None:
+        if isinstance(action, Attack):
+            self._note_attack_gate(reason, action.target_id)
+
     def _note_attack_gate(self, reason: str, target: int) -> None:
         """Bounded gate-reason telemetry: WHY an authored Attack sent nothing.
 
@@ -1500,7 +1523,13 @@ class PlayingClient:
             reasons = deque(maxlen=64)
             self._attack_gate_reasons = reasons
         reasons.append((self._now(), reason))
-        self._swing_tap().note("attack_refused", reason=reason, target_id=target, at=self._now())
+        self._swing_tap().note(
+            "attack_refused",
+            reason=reason,
+            tap=f"attack_gate_{reason}",
+            target_id=target,
+            at=self._now(),
+        )
 
     def _swing_tap(self) -> SwingTelemetry:
         telemetry = self.__dict__.get("_swing_telemetry")
@@ -1509,6 +1538,7 @@ class PlayingClient:
             self._swing_telemetry = telemetry
         return telemetry
 
+    @gameplay_serialized
     def drain_swing_telemetry(self) -> tuple[dict[str, Any], ...]:
         """Drain cached wire observations without advancing any receive cursor."""
         return self._swing_tap().drain()
@@ -1525,8 +1555,9 @@ class PlayingClient:
             self._note_attack_gate("target_not_visible", target)
             return
         species = str(actor.name)
-        if survivability_refusal(state, species, self.mob_db) is not None:
-            self._note_attack_gate("no_survivability", target)
+        reason = self._attack_target_refusal(state, actor)
+        if reason is not None:
+            self._note_attack_gate(reason, target)
             return
         if self._rest_seq is not None:
             self._note_attack_gate("resting", target)
@@ -1535,12 +1566,169 @@ class PlayingClient:
             self._note_attack_gate("cooldown", target)
             return
         self.wire._send(attack(target))
+        self._farm_swing_at = self._now()
         self._disengage.engage(actor, self._now())
+        tracker = self.__dict__.get("_tracker")
         self._swing_tap().note(
             "swing",
             target_id=target,
             at=self._now(),
             species=species,
+            weapon_worn=list(tracker.view.worn) if tracker is not None else None,
+            target_cell=[actor.x, actor.y],
+        )
+
+    def _attack_target_refusal(self, state: BotState, actor: ActorRef) -> str | None:
+        if self.__dict__.get("_combat_intent") is not None and self._now() < (
+            self.__dict__.get("_farm_swing_at", float("-inf")) + COMBAT_PUMP_INTERVAL_S
+        ):
+            return "cooldown"
+        if (
+            actor.x is not None
+            and actor.y is not None
+            and max(abs(actor.x - state.x), abs(actor.y - state.y)) > MELEE_RANGE
+        ):
+            return "out_of_melee_range"
+        if survivability_refusal(state, str(actor.name), self.mob_db) is not None:
+            return "no_survivability"
+        return None
+
+    @gameplay_serialized
+    def authorize_farm_actions(self, state: BotState, actions: tuple[GameAction, ...]) -> None:
+        """Only a farm/grind script can authorize an approach continuation.
+
+        Match the script's exact melee intercept, never infer a target from an
+        arbitrary patrol destination. Pump work does not renew the deadline.
+        """
+        self._combat_intent = None
+        for action in actions:
+            targets = [
+                actor for actor in state.nearby_monsters if _melee_action(actor, state) == action
+            ]
+            if len(targets) == 1:
+                target = targets[0]
+                self._combat_pump_at = self._now()
+                self._combat_intent = CombatIntent(
+                    target.id,
+                    state.native_epoch,
+                    state.map_name,
+                    self._now() + COMBAT_INTENT_SECONDS,
+                )
+                self._swing_tap().note(
+                    "combat_intent",
+                    tap="farm_target_authored",
+                    target_id=target.id,
+                    species=str(target.name),
+                    at=self._now(),
+                )
+                return
+
+    def _revoke_combat_for(self, action: GameAction) -> None:
+        if not isinstance(action, (Attack, MoveTo, Say, PartyChat, WhisperTo)):
+            self._combat_intent = None
+
+    def _combat_action_boundary(self, state: BotState, action: GameAction) -> None:
+        if isinstance(action, (Say, PartyChat, WhisperTo)):
+            return
+        intent = self._combat_intent
+        if intent is not None and not self._continues_combat(state, action, intent):
+            self._combat_intent = None
+
+    def _continues_combat(self, state: BotState, action: GameAction, intent: CombatIntent) -> bool:
+        if isinstance(action, Attack):
+            return action.target_id == intent.target_id
+        if isinstance(action, MoveTo):
+            return any(
+                actor.id == intent.target_id and _melee_action(actor, state) == action
+                for actor in state.nearby_monsters
+            )
+        return False
+
+    @gameplay_serialized
+    def _pump_farm_combat(self) -> None:
+        """Fresh received state, one finite authored target, ordinary dispatch gates."""
+        intent = self._combat_intent
+        now = self._now()
+        if intent is None:
+            return
+        if not math.isfinite(now) or now < intent.until - COMBAT_INTENT_SECONDS:
+            self._combat_intent = None
+            return
+        if now < self._combat_pump_at + COMBAT_PUMP_INTERVAL_S:
+            return
+        self._combat_pump_at = now
+        state = self.build_native_state(Goal.GRIND)
+        if not intent.valid(state, now):
+            self._combat_intent = None
+            self._swing_tap().note("combat_end", tap="farm_intent_expired", at=now)
+            return
+        if not self._combat_pump_ready(state):
+            self._combat_intent = None
+            self._swing_tap().note("combat_end", tap="farm_priority_yield", at=now)
+            return
+        self._continue_farm_target(state, intent)
+
+    def _combat_pump_ready(self, state: BotState) -> bool:
+        return (
+            self.mechanical_recovery_allowed
+            and state.alive is True
+            and state.hp > 1
+            and state.hp_ratio >= 0.25
+            and self._rest_seq is None
+            and self._npc.view is None
+            and not self._npc.actuation_blocked
+            and not self._merchant_owns_travel(state)
+            and not self._pickup_outranks_trip(state)
+        )
+
+    def _continue_farm_target(self, state: BotState, intent: CombatIntent) -> None:
+        actor = next((a for a in state.nearby_monsters if a.id == intent.target_id), None)
+        if actor is None:
+            self._combat_intent = None
+            self._swing_tap().note(
+                "combat_end",
+                tap="farm_target_not_visible",
+                target_id=intent.target_id,
+                at=self._now(),
+            )
+            return
+        tracker = self._tracker
+        if tracker is not None and tracker.view.position is not None:
+            self._await_pending(tracker.view, tracker.view.position)
+        action = _melee_action(actor, state)
+        if isinstance(action, MoveTo):
+            self._continue_farm_approach(state, actor, action)
+        elif isinstance(action, Attack):
+            self._swing_tap().note(
+                "attack_authored",
+                tap="farm_pump_attack_authored",
+                target_id=actor.id,
+                species=str(actor.name),
+                at=self._now(),
+            )
+            self.perform_native(action)
+
+    def _continue_farm_approach(self, state: BotState, actor: ActorRef, action: MoveTo) -> None:
+        if self._perform_disengage(state):
+            return
+        if survivability_refusal(state, str(actor.name), self.mob_db) is not None:
+            self._combat_intent = None
+            self._swing_tap().note(
+                "combat_end",
+                tap="farm_approach_no_survivability",
+                target_id=actor.id,
+                at=self._now(),
+            )
+            return
+        self._perform_move(state, (action.x, action.y))
+        self._swing_tap().note(
+            "combat_approach",
+            tap="farm_approach",
+            target_id=actor.id,
+            target_cell=[actor.x, actor.y],
+            destination=[action.x, action.y],
+            outcome=dict(self.last_move_outcome),
+            at=self._now(),
         )
 
     def _resume_loot_unless_disengaging(self, state: BotState) -> None:
@@ -3392,6 +3580,7 @@ class PlayingClient:
         self._fail_patrol(target)
         return "escalated_target_dead"
 
+    @gameplay_serialized
     def mechanical_actions(
         self, state: BotState, actions: tuple[GameAction, ...]
     ) -> tuple[GameAction, ...]:
@@ -3407,6 +3596,7 @@ class PlayingClient:
             return loot_actions
         return self._legacy_mechanical(state, actions)
 
+    @gameplay_serialized
     def plan_actions(
         self, state: BotState, actions: tuple[GameAction, ...]
     ) -> tuple[GameAction, ...]:
@@ -3925,6 +4115,7 @@ class PlayingClient:
         self._seen_floor = current
         return tuple(events)
 
+    @gameplay_serialized
     def drain_native_events(self) -> tuple[WorldEvent, ...]:
         state = self.build_native_state(Goal.GRIND)
         self._pump_recovery(state)
@@ -4324,8 +4515,10 @@ class PlayingClient:
         the kick and the reader dies with rx_error "EOF from map-server"
         (window 14, fixture_1: four keepalives in ~500s). An independent
         daemon pump thread (``_keepalive_loop``) therefore keeps its OWN
-        wall-time schedule — never the injected host clock — and shares only
-        the send critical-section and the poison flag below. The thread starts
+        wall-time keepalive schedule — never the injected host clock. Combat
+        continuations use the runtime monotonic clock and share a reentrant
+        gameplay lock with host state/dispatch; the send lock is released
+        before gameplay work. The thread starts
         only after the first successful strict post-readiness pump, so the
         "only after strict received state readiness" contract is unchanged.
         Keepalive frames are 6 bytes: a single send syscall under a normally
@@ -4376,11 +4569,12 @@ class PlayingClient:
         """
         wake = self._keepalive_wake
         last = time.monotonic()
-        while not wake.wait(timeout=self._keepalive_interval_s):
+        while not wake.wait(timeout=min(self._keepalive_interval_s, COMBAT_PUMP_INTERVAL_S)):
             if self._closed:
                 self._release_keepalive_slot()
                 return
             now = time.monotonic()
+            self._pump_farm_combat_safely()
             if now - last < self._keepalive_interval_s:
                 continue
             failed = False
@@ -4405,6 +4599,21 @@ class PlayingClient:
                 # Poison already recorded; stop the pump thread. No spin.
                 self._release_keepalive_slot()
                 return
+
+    def _pump_farm_combat_safely(self) -> None:
+        # Never wait on the host: close/connect own gameplay state while
+        # waking and joining this daemon. A busy host simply wins this beat.
+        lock = self.__dict__.get("_gameplay_lock")
+        if lock is None or not lock.acquire(blocking=False):
+            return
+        try:
+            self._pump_farm_combat()
+        except Exception:
+            self._combat_intent = None
+            self._swing_tap().note("combat_end", tap="farm_pump_failed", at=self._now())
+            logger.exception("farm_pump_failed: released combat intent")
+        finally:
+            lock.release()
 
     def _release_keepalive_slot(self) -> None:
         """Release this thread's slot under the lock; no automatic restart."""
@@ -4780,9 +4989,7 @@ class PlayingClient:
         self._stat_failed: set[int] = set()
         self._epoch = epoch
         self._epoch_character = self.wire.char_name
-        self._expless_roam.reset()
-        self._species_damage.clear()
-        self._disengage.reset()
+        self._reset_combat_epoch()
         self._trip_walk_seq = None
         self._species.clear()
         self._npc_names.clear()
@@ -4796,6 +5003,13 @@ class PlayingClient:
         self._seen_actors.clear()
         self._invite = 0
         self._reset_encounters(epoch, base)
+
+    def _reset_combat_epoch(self) -> None:
+        self._farm_swing_at = float("-inf")
+        self._combat_intent = None
+        self._expless_roam.reset()
+        self._species_damage.clear()
+        self._disengage.reset()
 
     def _reset_encounters(self, epoch: int, base: int) -> None:
         self._encounters = None

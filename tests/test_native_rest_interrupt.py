@@ -133,6 +133,7 @@ def test_recovery_waits_for_self_stand_and_low_health_resit_is_paced():
 
 def test_native_attack_requires_standing_for_eligible_live_target():
     wire, client, _ = setup()
+    wire.add(monster(at=(43, 37)))  # Legal melee geometry for the pose/walk gate.
     wire.add(pose())
     client.perform_native(Attack(321))
     assert not wire.sent  # Unseen target must not even request standing.
@@ -147,6 +148,7 @@ def test_native_attack_requires_standing_for_eligible_live_target():
 
 def test_attack_cannot_bypass_pending_movement_arrival():
     wire, client, now = setup()
+    wire.add(monster(at=(44, 37)))  # Legal melee geometry for the pose/walk gate.
     client.perform_native(MoveTo(43, 37))
     client.perform_native(Attack(123))
     assert not wire.sent
@@ -281,6 +283,7 @@ def test_empty_standing_recovery_never_becomes_floor_loot_or_patrol():
 @pytest.mark.parametrize("ack", [pose(123, 3), pose(999, 3, 999), pose(999, 0)])
 def test_attack_standing_retries_ignore_peer_and_nonpose_receipts(ack):
     wire, client, now = setup()
+    wire.add(monster(at=(43, 37)))  # Legal melee geometry for the pose/walk gate.
     wire.add(pose())
     client.perform_native(Attack(123))
     wire.add(ack)
@@ -376,6 +379,7 @@ def test_pause_keeps_real_heartbeat_clock_event_calls_not_per_tick(monkeypatch):
 
 def test_resurrection_does_not_authorize_attack_until_fresh_standing():
     wire, client, _ = setup()
+    wire.add(monster(at=(43, 37)))  # Legal melee geometry for the pose/walk gate.
     wire.add(struct.pack("<HIB", 0x0080, 999, 1), struct.pack("<HIH", 0x0148, 999, 0))
     client.perform_native(Attack(123))
     assert wire.sent == ["stand"]

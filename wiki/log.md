@@ -15647,3 +15647,58 @@ The economy's remaining bottleneck moved UPSTREAM to loot supply: the fleet ente
 bags, produced only ~6 kills / 6 drops in-window, so bag-first admission refused 72 unfunded trips.
 Named next signature: farm-side combat throughput (attacks->kills conversion; chat share in decides).
 Readout: run/reviews/leg121-verdict.md; receipt population-receipt-121-1795447364.json.
+
+## 2026-11-23 — Farm combat throughput: continue authored combat through decision waits
+
+Slice `t3/farm-combat-throughput`, based on `ae6e66ef`. Read leg-121's verdict
+first; reconstructed the requested 19:00–20:30 UTC window without live probes,
+Docker, database or service operations. Full per-agent choices, goal reviews,
+gate attribution, numeric census and reproduction command are in
+`run/reviews/leg121-farm-throughput.md` and `leg121-farm-census.json`.
+
+The dominant loss is **decision-blocked combat cadence**, not choosing chat as
+next_action: 5,451/6,050 successful choices are grind (90.1%), versus 349 chat
+(5.8%); 598/686 goal reviews are grind/farm (87.2%). Completed synchronous
+decides consumed 125,971.525 agent-seconds (80.44% of the scheduled budget),
+including 108,292.081 seconds on chat events. Those waits precede script steps.
+The exact downstream funnel is **34 authored → 20 swings → 18 positive own
+hits / 427 damage → 5 EXP-backed kill credits**; the verdict's independent DB
+readback recorded 6 mob drops. All 14 unsent attacks are named: 12 pending_walk,
+1 target_not_visible, 1 disengage_active. Positive damage is 19–27 per hit;
+the wanted Knife/Cutter equip path remains appropriate. Three Pupa hits for
+74 damage cannot finish its pinned 427 HP. Historical traces do not prove
+per-agent worn-ack state or unique approach conversion; neither is invented.
+
+Farm/grind scripts now authorize a single target for a **30-second monotonic
+lease**. The existing independent keepalive daemon advances its fresh melee
+intercept and follow-up hits every two seconds, through the ordinary received
+walk-end, standing, survival, disengagement, NPC and movement contracts.
+Gameplay state/dispatch and telemetry drains share a reentrant lock; model
+calls hold no runtime lock. Pump work cannot renew the lease or choose another
+target. New actions/goals, expiry, map/epoch changes, disappeared targets,
+recovery, merchant and pickup priority revoke/yield it. Known out-of-melee
+native attacks name their refusal. Existing pose/walk/death tests now place
+the target in legal melee geometry, preserving every prior assertion.
+
+Named taps cover decide_share_<choice>, farm_target_authored, farm_approach
+(with target/intercept and runtime movement outcome), farm_pump_attack_authored,
+attack_gate_<reason> and finite continuation endings. Swing records carry
+received worn indices/locations and target cells; absent worn evidence remains
+unknown. The receipt analyzer counts pump authorship once alongside host
+authorship and keeps own-source damage/death/EXP attribution unchanged.
+
+Offline regressions cover the actual daemon while the host waits, moving and
+vanishing targets, terminal walk truth, shared host/pump pacing, expiry and
+priority boundaries, runtime serialization, host authorization/revocation and
+receipt accounting. Live kill-rate improvement remains for the next leg.
+Fresh-checkout setup initializes the pinned rAthena submodule from the local
+main checkout and symlinks iro-db.db, iro-wiki.db and config.log from main;
+no source, spike formatting, live world or external service was changed.
+
+Final required gate **GREEN before commit**: `nix develop -c task --dir . check`
+(exit 0), `/tmp/farm-check-final.log`: **7,589 passed, 65 subtests passed,
+1 skipped, 4 warnings; 95.84% coverage**, 571.81 seconds. Black, ruff, strict
+mypy (415 files), vulture, xenon, duplicate-code and bandit passed. The inherited
+optional real-wiki corpus smoke is the single skip. The independent daemon
+uses nonblocking gameplay-lock acquisition so close/reconnect can serialize
+state, revoke combat and join it without a waiting-work shutdown race.
