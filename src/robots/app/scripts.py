@@ -732,13 +732,18 @@ def merchant_drive_cell(state: BotState) -> tuple[int, int] | None:
     refusal = merchant_admission_refusal(state)
     if refusal is not None:
         term, detail = refusal
-        if term == "no_stock_below_zeny_floor":
-            # Depletion ends the old trip now; its retry clock must not own
-            # the return leg. Received new stock can admit a fresh trip.
+        if term in ("no_stock_below_zeny_floor", "merchant_stock_below_trip_minimum"):
+            # An unfunded sale ends the old trip now; its retry clock must
+            # not own the return leg. Received new stock can admit afresh.
             _MERCHANT_TRIPS.pop(state.name, None)
             _DEALER_APPROACH_WALKS.pop(state.name, None)
             _DEALER_QUEUE_WAITS.pop(state.name, None)
-            detail = f"{detail} release=merchant_arm_released_drained"
+            release = (
+                "merchant_arm_released_drained"
+                if term == "no_stock_below_zeny_floor"
+                else "merchant_trip_unfunded_before_admission"
+            )
+            detail = f"{detail} release={release}"
         _tap_merchant_drive(state.name, term, detail)
         return None
     destination = MERCHANT_ROUTE.get(state.map_name)
@@ -856,6 +861,11 @@ def _merchant_trip_allows(state: BotState, destination: tuple[int, int]) -> bool
     Returning None during cooldown lets BOTH the brain re-arm and the farm
     script's own merchant seam yield, without altering inventory or plans.
     """
+    # This seam is shared by the pump and scripts. Recheck the received bag
+    # before creating/retrying a lease; collectible floor credit funds pickup,
+    # never dealer travel or its retry cooldown. Genuine buy wants still admit.
+    if merchant_drive_cell(state) is None or merchant_pickup_required(state):
+        return False
     if state.map_name == "prt_in" and (
         state.shop_offer is not None or state.name in _DEALER_TALKED
     ):

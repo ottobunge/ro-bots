@@ -1,9 +1,14 @@
 """Bounded ownership of one's own received counter presence; no peer leases."""
 
+import logging
+
 from robots.app.merchant_staging import Body, Point, _dealer_cell, _received_body_cells
 from robots.domain.model import BotState
 
+logger = logging.getLogger(__name__)
+
 COUNTER_LEASE_SECONDS = 180.0
+COUNTER_IDLE_SECONDS = 5.0
 COUNTER_REJOIN_SECONDS = 30.0
 
 
@@ -54,6 +59,27 @@ class MerchantCounterLease:
         self._had_dialogue = self._had_dialogue or state.npc_dialogue is not None
         if completed or now - self._entered >= COUNTER_LEASE_SECONDS:
             self.reason = "completed" if completed else "expired"
+
+    def release_idle(self, state: BotState, now: float, *, conversation_active: bool) -> None:
+        """Give a new arrival five seconds to start contact, then hand over.
+
+        The pump supplies the actual conversation state: a filtered planning
+        projection cannot prove that an outstanding shop exchange is idle.
+        Release changes only our lease; received bodies still block the ring
+        until the existing staging exit has physically cleared it.
+        """
+        if self.reason is not None or conversation_active or not at_counter(state):
+            return
+        if self._entered is None or now - self._entered < COUNTER_IDLE_SECONDS:
+            return
+        self.reason = "idle"
+        logger.warning(
+            "merchant-drive: ring_lease_released_idle (bot=%s held_s=%s agent=(%s,%s))",
+            state.name,
+            now - self._entered,
+            state.x,
+            state.y,
+        )
 
     def retrying(self) -> None:
         """An explicit timeout close is not a received completed exchange."""

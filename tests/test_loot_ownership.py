@@ -54,7 +54,7 @@ def test_retained_empty_bag_plan_dispatches_received_drop(tmp_path, caplog):
 
 def test_no_stock_pickup_beats_active_buy_trip_and_pump(caplog):
     client = client_with_loot(x=43, item=1201)
-    client.wire.add(_inv(()))
+    client.wire.add(_inv(()), _weight())
     client._zeny_seed = 80
     client._keepalive_thread = threading.current_thread()
     client.wire.keepalive = lambda: None
