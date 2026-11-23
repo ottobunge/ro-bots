@@ -1,11 +1,13 @@
 """Admitted merchant walks converge without script evaluations or decisions."""
 
+import logging
 import struct
 
 import pytest
 
 from robots.adapters.native_navigation import MapCache, WalkMap
 from robots.app import merchant_staging, scripts
+from robots.app.merchant_trip import MERCHANT_RETRY_COOLDOWN_S
 from robots.domain.actions import MoveTo, NpcShopSellOpen, TalkToNpc
 from robots.domain.model import Goal
 from tests.test_dealer_ring import _client
@@ -192,21 +194,297 @@ def test_map_change_releases_old_walk_and_resolves_the_next_merchant_leg():
     assert state.map_name == "prontera"
 
 
-def test_stalled_admitted_trip_returns_during_and_beyond_retry_cooldown(monkeypatch):
+def test_stalled_admitted_trip_escalates_then_returns_during_retry_cooldown(monkeypatch, caplog):
+    """A stalled dealer approach is re-routed, then released, then walks home.
+
+    Leg-119 reconciliation of the 60 s route release: on the dealer map the
+    contact ladder owns the lease (reroute -> counter-cell -> release), so
+    the route bound alone no longer returns the agent mid-approach; the
+    ladder's release lands in the same retry cooldown and the return leg.
+    """
+    caplog.set_level(logging.WARNING)
     client, now = _client(at=(172, 128))
     monkeypatch.setattr(scripts, "_merchant_now", lambda: now[0])
     monkeypatch.setattr(client.wire, "keepalive", lambda: None, raising=False)
+    bot = client.wire.char_name
     client.drain_native_events()
     assert client.wire.moves == [(172, 129)]
     now[0] += 60.0
     client.drain_native_events()
-    assert client.wire.moves == [(172, 129)]
-    assert not scripts.merchant_trip_active(client.wire.char_name)
-    now[0] += 119.0
+    assert scripts.merchant_trip_active(bot)  # inside the ladder bound: no release
+    assert "contact_walk_escalated" not in caplog.text
+    now[0] += 90.0
     client.drain_native_events()
-    assert len(client.wire.moves) == 2
-    assert client.wire.moves[-1][1] < 129
+    assert scripts.merchant_trip_active(bot)  # rerouted, not released
+    assert "step=reroute" in caplog.text
+    now[0] += 180.0
+    client.drain_native_events()
+    assert "step=counter_cell" in caplog.text  # second escalation window
+    assert scripts.merchant_trip_active(bot)  # the ladder still owns the lease
+    now[0] += 120.0
+    client.drain_native_events()
+    assert "merchant-drive: contact_walk_released_farm" in caplog.text
+    assert not scripts.merchant_trip_active(bot)  # ladder exhausted: released to farm
+    assert client.wire.moves[-1][1] < 129  # the pump walks home during the cooldown
+
+
+DEALER_CELL = (172, 130)
+
+
+def _dealer_chebyshev(cell: tuple[int, int]) -> int:
+    return max(abs(cell[0] - DEALER_CELL[0]), abs(cell[1] - DEALER_CELL[1]))
+
+
+def _quiet_keepalive(client) -> None:
+    """Minutes of pumped wall clock: the 6-byte keepalive send stays silent."""
+    client.wire.keepalive = lambda: None
+
+
+def _stall(client, now, until: float, step: float = 10.0) -> None:
+    """Advance the wall clock without any walk feedback: the approach stalls."""
+    while now[0] < until:
+        now[0] += step
+        client.drain_native_events()
+
+
+def test_stalled_contact_walk_escalates_reroute_at_bounded_timeout(caplog):
+    """Leg-119 named hop: the dealer approach is wall-clock bounded, never free.
+
+    pending_walk 2216 holds vs 0 authored contacts - the approach walked in
+    place all window. Inside the bound nothing escalates; past it the pump
+    names the escalation (contact_walk_escalated step=reroute) and clears the
+    approach memos so the next allocation is fresh.
+    """
+    caplog.set_level(logging.WARNING)
+    client, now = _client(at=(168, 126))
+    _quiet_keepalive(client)
+    client.drain_native_events()
+    assert client.wire.moves
+    assert scripts.merchant_trip_active(client.wire.char_name)
+    bound_t = now[0]
+    for _ in range(8):  # 80 s of stall: still inside the bound
+        now[0] += 10.0
+        client.drain_native_events()
+        assert "contact_walk_escalated" not in caplog.text
+    _stall(client, now, bound_t + 90.5)
+    assert "merchant-drive: contact_walk_escalated" in caplog.text
+    assert "step=reroute" in caplog.text
+
+
+def test_contact_walk_progress_renews_the_bound_instead_of_escalating(caplog):
+    """A converging approach never escalates: received progress re-arms the clock."""
+    caplog.set_level(logging.WARNING)
+    client, now = _client(at=(168, 127))
+    _quiet_keepalive(client)
+    client.drain_native_events()
+    for _ in range(8):
+        target = client.wire.moves[-1]
+        state = client.last_built_state
+        assert state is not None
+        client.wire.add(walk_ack((state.x, state.y), target), walk_ack(target, target))
+        now[0] += 15.0  # slower than the bound would allow a stalled walk
+        client.drain_native_events()
+        if target in NEIGHBOURS:
+            break
+    else:
+        pytest.fail("converging approach never acquired a ring cell")
+    assert "contact_walk_escalated" not in caplog.text
+
+
+def test_contact_ladder_falls_back_to_counter_cell_then_releases_to_farm(monkeypatch, caplog):
+    """The ladder is reroute -> counter-cell -> release; no permanent park.
+
+    A stalled approach is re-routed, then walks the staging's outer counter
+    cell, then the arm releases through the trip retry cooldown and the pump
+    walks the agent home. After the cooldown a fresh trip re-admits (leg-117's
+    lesson: a recovery must never end in a permanent parking lot).
+    """
+    caplog.set_level(logging.WARNING)
+    client, now = _client(at=(168, 126))
+    monkeypatch.setattr(scripts, "_merchant_now", lambda: now[0])
+    client._zeny_seed = 80  # the buy budget re-admits a fresh trip on the field
+    _quiet_keepalive(client)
+    client.drain_native_events()
+    bound_t = now[0]
+    _stall(client, now, bound_t + 90.5)
+    assert "step=reroute" in caplog.text
+    _stall(client, now, bound_t + 180.5)
+    assert "step=counter_cell" in caplog.text
+    # the fallback walk targeted the staging's OUTER counter cell, not the ring
+    wire_target = client.last_move_outcome.get("wire_target")
+    assert isinstance(wire_target, tuple)
+    assert _dealer_chebyshev(wire_target) >= 2
+    _stall(client, now, bound_t + 270.5)
+    assert "merchant-drive: contact_walk_released_farm" in caplog.text
+    bot = client.wire.char_name
+    assert not scripts.merchant_trip_active(bot)  # released through the retry cooldown
+    now[0] += 10.0
+    client.drain_native_events()
+    assert client.wire.moves[-1][1] < 126  # the pump walks home, no parking
+    assert client.wire.sent == []  # an escalation never authors a contact
+    # Received field arrival releases the return latch; past the cooldown the
+    # buy budget re-admits a fresh trip (leg-117: never a permanent release).
+    state = client.last_built_state
+    assert state is not None
+    while (state.x, state.y) != (168, 124):
+        target = client.wire.moves[-1]
+        client.wire.add(walk_ack((state.x, state.y), target), walk_ack(target, target))
+        now[0] += 1.0
+        client.drain_native_events()
+        state = client.last_built_state
+        assert state is not None
+    cache = client.cache
+    assert cache is not None
+    client.cache = MapCache((cache.get("prt_in"), WalkMap("prt_fild08", 400, 400, bytes(160000))))
+    client.wire.add(struct.pack("<H16sHH", 0x0091, b"prt_fild08", 169, 300))
+    now[0] += MERCHANT_RETRY_COOLDOWN_S
+    client.drain_native_events()
+    assert scripts.merchant_trip_active(bot)  # a fresh trip re-admits after cooldown
+
+
+def test_progress_after_reroute_preserves_the_spent_escalation_budget(monkeypatch, caplog):
+    client, now = _client(at=(168, 126))
+    monkeypatch.setattr(scripts, "_merchant_now", lambda: now[0])
+    _quiet_keepalive(client)
+    client.drain_native_events()
+    now[0] += 90.0
+    client.drain_native_events()
+    assert "step=reroute" in caplog.text
+    client.wire.add(walk_ack((168, 126), (169, 127)), walk_ack((169, 127), (169, 127)))
     now[0] += 1.0
     client.drain_native_events()
-    assert all(y < 129 for _, y in client.wire.moves[1:])
+    caplog.clear()
+    now[0] += 90.0
+    client.drain_native_events()
+    assert "step=counter_cell" in caplog.text
+    assert "step=reroute" not in caplog.text
+
+
+def test_contact_progress_at_deadline_renews_the_route_lease(monkeypatch, caplog):
+    client, now = _client(at=(168, 126))
+    monkeypatch.setattr(scripts, "_merchant_now", lambda: now[0])
+    _quiet_keepalive(client)
+    client.drain_native_events()
+    # Progress need not shorten the obstacle-aware route distance; it still
+    # renews the contact clock and must beat the generic trip timeout.
+    monkeypatch.setattr(client, "_merchant_route_distance", lambda _: (172, 130, 4))
+    client.wire.add(walk_ack((168, 126), (169, 127)), walk_ack((169, 127), (169, 127)))
+    now[0] += 90.0
+    client.drain_native_events()
+    assert scripts.merchant_trip_active(client.wire.char_name)
+    assert "merchant_trip_released_no_progress" not in caplog.text
+    assert "contact_walk_escalated" not in caplog.text
+
+
+def test_counter_fallback_remains_the_target_until_received_arrival(monkeypatch):
+    client, now = _client(at=(168, 126))
+    monkeypatch.setattr(scripts, "_merchant_now", lambda: now[0])
+    _quiet_keepalive(client)
+    targets = []
+    perform = client._perform_move
+
+    def record(state, target):
+        targets.append(target)
+        perform(state, target)
+
+    monkeypatch.setattr(client, "_perform_move", record)
+    client.drain_native_events()
+    for _ in range(2):
+        now[0] += 90.0
+        client.drain_native_events()
+    fallback = targets[-1]
+    assert _dealer_chebyshev(fallback) >= 2
+    now[0] += 2.0
+    client.drain_native_events()
+    assert targets[-1] == fallback
+    client.wire.add(walk_ack((168, 126), fallback), walk_ack(fallback, fallback))
+    now[0] += 1.0
+    client.drain_native_events()
+    assert targets[-1] in NEIGHBOURS
+
+
+def test_nonconverging_walk_frames_cannot_hold_the_pump_forever(monkeypatch, caplog):
+    client, now = _client(at=(168, 126))
+    monkeypatch.setattr(scripts, "_merchant_now", lambda: now[0])
+    _quiet_keepalive(client)
+    client.npc_recovery_hold = True  # pending cognition does not gate movement
+    client.drain_native_events()
+    first = client.wire.moves[-1]
+    client.wire.add(walk_ack((168, 126), first))
+    now[0] += 1.0
+    client.drain_native_events()
+    for _ in range(9):
+        # Fresh walk frames refresh the pending clock, but no received cell
+        # approaches the dealer. The contact timeout must still reroute.
+        client.wire.add(walk_ack((168, 126), first))
+        now[0] += 10.0
+        client.drain_native_events()
+        state = client.last_built_state
+        assert state is not None
+        client._perform_move(state, first)  # refused authorship cannot steal ownership
+    assert "step=reroute" in caplog.text
+    assert len(client.wire.moves) >= 2
+    for _ in range(19):
+        client.wire.add(walk_ack((168, 126), client.wire.moves[-1]))
+        now[0] += 10.0
+        client.drain_native_events()
+    assert "step=counter_cell" in caplog.text
+    assert "contact_walk_released_farm" in caplog.text
+    state = client.last_built_state
+    assert state is not None
+    now[0] += 1.0
+    client.drain_native_events()
+    assert client.wire.moves[-1][1] < state.y
     assert not scripts.merchant_trip_active(client.wire.char_name)
+    assert client.wire.sent == []
+
+
+def test_escalation_preserves_an_unrelated_authored_walk(monkeypatch, caplog):
+    client, now = _client(at=(168, 126))
+    monkeypatch.setattr(scripts, "_merchant_now", lambda: now[0])
+    _quiet_keepalive(client)
+    client.perform_native(MoveTo(168, 125))
+    point = client.wire.moves[-1]
+    client.wire.add(walk_ack((168, 126), point))
+    client.drain_native_events()
+    for _ in range(9):
+        now[0] += 10.0
+        client.wire.add(walk_ack((168, 126), point))
+        client.drain_native_events()
+    assert "step=reroute" in caplog.text
+    assert client.wire.moves == [point]
+
+
+def test_leaving_dealer_map_discards_contact_fallback(monkeypatch):
+    client, now = _client(at=(168, 126))
+    monkeypatch.setattr(scripts, "_merchant_now", lambda: now[0])
+    _quiet_keepalive(client)
+    client.drain_native_events()
+    for _ in range(2):
+        now[0] += 90.0
+        client.drain_native_events()
+    fallback = client._contact_fallback_target
+    assert fallback is not None
+    cache = client.cache
+    assert cache is not None
+    client.cache = MapCache((cache.get("prt_in"), WalkMap("prontera", 400, 400, bytes(160000))))
+    client.wire.add(struct.pack("<H16sHH", 0x0091, b"prontera", 177, 225))
+    client.drain_native_events()
+    assert client._contact_fallback_target is None
+    assert client._contact_approach.identity is None
+
+
+@pytest.mark.parametrize("cadence", [0.25, 13.6, 14.6, 91.0])
+def test_contact_escalation_is_paced_by_elapsed_seconds(cadence, monkeypatch, caplog):
+    client, now = _client(at=(168, 126))
+    monkeypatch.setattr(scripts, "_merchant_now", lambda: now[0])
+    _quiet_keepalive(client)
+    client.drain_native_events()
+    start = now[0]
+    while now[0] + cadence < start + 90.0:
+        now[0] += cadence
+        client.drain_native_events()
+        assert "contact_walk_escalated" not in caplog.text
+    now[0] = max(now[0] + cadence, start + 90.0)
+    client.drain_native_events()
+    assert "step=reroute" in caplog.text
