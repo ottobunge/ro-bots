@@ -157,7 +157,9 @@ class _AgentFunnel:
 
     def _simple(self, row: dict[str, Any], species: str) -> None:
         event = row["event"]
-        if event == "swing":
+        if event == "attack_authored":
+            self.add(species, "attacks_authored")
+        elif event == "swing":
             self.add(species, "swings_sent")
         elif event == "telemetry_gap":
             self.dropped += row["dropped"]

@@ -242,8 +242,15 @@ class TracedDecisionModel:
             )
             raise
         answers = response.get("answers") if isinstance(response, dict) else None
+        choice = (
+            answers.get("next_action", {}).get("choice", "missing")
+            if isinstance(answers, dict)
+            else "missing"
+        )
         self._trace.log(
             "decide_response",
+            tap=f"decide_share_{choice}",
+            goal=request.get("state", {}).get("bot", {}).get("goal"),
             answers=answers,
             duration_s=round(time.perf_counter() - started, 6),
         )

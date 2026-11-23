@@ -63,6 +63,7 @@ from robots.app.npc_planning_execution import NpcHostBinding
 from robots.app.party_roster import guild_candidate_aid
 from robots.app.planning_brain import PlannedBrain
 from robots.app.playing_runtime import PlayingClient
+from robots.app.scripts import FarmScript, GrindScript
 from robots.app.timers import TimerSet
 from robots.app.trace_log import (
     STATE_TICK_INTERVAL_S,
@@ -1153,6 +1154,7 @@ class ScheduledAgent:
     def _script_actions(
         self, state: BotState, actions: tuple[GameAction, ...]
     ) -> tuple[GameAction, ...]:
+        self._authorize_farm_actions(state, actions)
         if getattr(self.brain, "mechanical_fallback_allowed", True) is False:
             return actions
         if getattr(self.brain, "is_recovering", False):
@@ -1171,6 +1173,17 @@ class ScheduledAgent:
             if mechanical is not None
             else actions
         )
+
+    def _authorize_farm_actions(self, state: BotState, actions: tuple[GameAction, ...]) -> None:
+        if not isinstance(self.client, PlayingClient) or not isinstance(
+            self.brain, EventDrivenBrain
+        ):
+            return
+        eligible = (
+            isinstance(self.brain.current_script(), (FarmScript, GrindScript))
+            and not self.brain.is_recovering
+        )
+        self.client.authorize_farm_actions(state, actions if eligible else ())
 
     def _dispatch_chat(self, request: ChatRequest) -> None:
         commands = self.commands

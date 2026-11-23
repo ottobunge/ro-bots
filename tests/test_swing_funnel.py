@@ -11,6 +11,7 @@ from robots.app.trace_log import TraceLog
 from robots.domain.actions import Attack
 from tests.test_native_encounter_request import hit
 from tests.test_native_rest_interrupt import replay
+from tests.test_playing_runtime import monster
 
 
 def write_trace(tmp_path: Path, rows: list[dict]) -> Path:
@@ -178,6 +179,7 @@ def test_native_capture_uses_real_parsers_and_cached_agent_drain(tmp_path):
 
     wire, client, _, _, _, agent = replay()
     agent._trace = TraceLog(tmp_path, "solo")
+    wire.add(monster(at=(43, 37)))  # This capture exercises a legal melee swing.
     wire.add(struct.pack("<HHi", 0x00B0, 1, 42), struct.pack("<HHi", 0x00B0, 2, 27))
     agent.execute_actions((Attack(123),))
     wire.add(hit(amount=25), hit(source=888, amount=25))
@@ -247,3 +249,18 @@ def test_window_keeps_prior_own_damage_for_in_window_kill_credit(tmp_path):
     )["agents"]["solo"]["totals"]
     assert result["damage_events_dealt"] == 0
     assert result["kill_credits"] == 1
+
+
+def test_pump_authorship_is_counted_once_alongside_host_authorship(tmp_path):
+    rows = [
+        {"kind": "action_executed", "action": "Attack", "params": {"target_id": 20}},
+        event("swing", target_id=20, species="Poring"),
+        event("attack_authored", target_id=20, species="Poring"),
+        event("swing", target_id=20, species="Poring"),
+        event("attack_authored", target_id=20, species="Poring"),
+        event("attack_refused", target_id=20, reason="pending_walk"),
+    ]
+    result = summarize_swing_traces([write_trace(tmp_path, rows)])["agents"]["solo"]
+    assert result["totals"]["attacks_authored"] == 3
+    assert result["totals"]["swings_sent"] == 2
+    assert result["attack_refusals"] == {"pending_walk": 1}
