@@ -7,6 +7,7 @@ import pytest
 
 from robots.adapters.native_navigation import MapCache, WalkMap
 from robots.app import merchant_staging, scripts
+from robots.app.merchant_counter_lease import COUNTER_IDLE_SECONDS
 from robots.app.merchant_trip import MERCHANT_RETRY_COOLDOWN_S
 from robots.domain.actions import MoveTo, NpcShopSellOpen, TalkToNpc
 from robots.domain.model import Goal
@@ -40,11 +41,19 @@ def test_pump_walks_to_received_adjacency_with_a_decide_in_flight():
         pytest.fail("merchant approach never acquired a ring cell")
     client.drain_native_events()
     moves = list(client.wire.moves)
+    arrival = now[0]
     for _ in range(10):
-        now[0] += 1.0
+        now[0] += (COUNTER_IDLE_SECONDS - 0.1) / 10
         client.drain_native_events()
-    assert client.wire.moves == moves
-    assert client.wire.sent == []  # The pump never authors a click or shop selection.
+    assert client.wire.moves == moves  # New arrivals retain a bounded contact grace.
+    assert client.wire.sent == []  # The pending decide still holds the click.
+    now[0] = arrival + COUNTER_IDLE_SECONDS
+    client.drain_native_events()
+    assert client._counter_lease.reason == "idle"
+    assert len(client.wire.moves) > len(moves)  # An idle holder must vacate.
+    assert not any(isinstance(raw, bytes) and raw[:2] == b"\x90\x00" for raw in client.wire.sent)
+    # A fresh received visit still uses the existing script/C4/C7 chain.
+    client, now = _client(at=(172, 129))
     state = client.build_native_state(Goal.GRIND)
     outcome = scripts._merchant_step(
         state, reachable=client.merchant_reachable, travel_target=client.merchant_travel_target

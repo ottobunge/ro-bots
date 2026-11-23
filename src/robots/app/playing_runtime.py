@@ -84,6 +84,7 @@ from robots.app.scripts import (
     _merchant_stock,
     _merchant_trip_allows,
     _received_dealer_at_cell,
+    _within_talk_range,
     merchant_admission_refusal,
     merchant_arm_drained,
     merchant_drive_cell,
@@ -1364,6 +1365,17 @@ class PlayingClient:
         if state is None or tracker is None or state.map_name != "prt_in":
             return False
         self._refuse_empty_counter(state)
+        self._counter_lease.release_idle(
+            state,
+            now,
+            conversation_active=any(
+                (
+                    self._npc.active,
+                    self._shop_context.offer is not None,
+                    self._sell_pending is not None,
+                )
+            ),
+        )
         if not self._shop_recovery_safe(state):
             return False
         yielding = self._counter_yield_actions(state)
@@ -1956,7 +1968,13 @@ class PlayingClient:
     def _release_counter_contact(self, state: BotState) -> None:
         dialog = self._npc.view
         if dialog is None:
-            npc_id = self._counter_lease.npc_id or self._retry_talk or self._merchant_reopen
+            dealer = _dealer_talk(state, MERCHANT_ROUTE["prt_in"])
+            npc_id = (
+                self._counter_lease.npc_id
+                or self._retry_talk
+                or self._merchant_reopen
+                or (dealer.npc_id if dealer is not None else None)
+            )
             if npc_id is not None:
                 release_merchant_talk(state.name, npc_id)
             self._retry_talk = None
@@ -2492,13 +2510,23 @@ class PlayingClient:
         return state.alive is True and not self._npc.actuation_blocked and not self._npc.failed
 
     def _counter_contact_ready(self, state: BotState, npc_id: int) -> bool:
-        dealer = any(
-            actor.id == npc_id and _received_dealer_at_cell(actor, MERCHANT_ROUTE["prt_in"])
-            for actor in state.nearby
+        dealer = next(
+            (
+                actor
+                for actor in state.nearby
+                if actor.id == npc_id and _received_dealer_at_cell(actor, MERCHANT_ROUTE["prt_in"])
+            ),
+            None,
         )
-        if state.map_name != "prt_in" or not dealer:
+        if state.map_name != "prt_in" or dealer is None:
             return True
-        return at_counter(state) and self._counter_lease.admits(state, self.wire.aid)
+        return self._merchant_gate_all(
+            "contact",
+            (
+                ("received_dealer_adjacency", _within_talk_range(dealer, state)),
+                ("counter_turn", self._counter_lease.admits(state, self.wire.aid)),
+            ),
+        )
 
     def _talk_npc(self, state: BotState, npc_id: int) -> None:
         tracker = self._tracker
@@ -4222,7 +4250,7 @@ class PlayingClient:
                     "no_sellables",
                     any(str(k) in DRIVE_SELLABLES and n > 0 for k, n in state.inventory.items()),
                 ),
-                ("dealer_not_adjacent", talk is not None),
+                ("received_dealer_adjacency", talk is not None),
                 ("counter_turn", self._counter_lease.admits(state, self.wire.aid)),
                 (
                     "contact_latched",

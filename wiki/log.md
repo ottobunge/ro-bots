@@ -15577,3 +15577,58 @@ receipt population-receipt-120-1795432234.json written BEFORE natural unit exit
 (pending_walk holds 1,968; ring reads walkable_free=0/8 while one peer holds the only
 walkable cell) + stockless-majority admission holds (no_stock_below_zeny_floor 654).
 Verdict: run/reviews/leg120-verdict.md. seed-zeny.json advanced to 1741 fleet.
+
+
+## [2026-11-23] Dealer-ring idle handover, received contact range and bag-first trips (SOL)
+
+Ground: `run/reviews/leg120-verdict.md`, main `9c8c4da4`: 1,968 pending-walk
+holds behind the single walkable counter cell, 35 range refusals at Chebyshev
+3–4, and stockless/undersized seller admission holds.
+
+- The host pump now releases its own idle counter lease after a five-second
+  arrival/contact grace, including a stocked holder whose decide or undispatched
+  contact latch never starts a conversation. Every such release emits
+  `ring_lease_released_idle`. Existing active/opening dialogue, bound offers and
+  outstanding sales retain the bounded shop recovery machinery. The native
+  dialogue's `active` flag distinguishes a retained `close_requested` UI object
+  from an active conversation. Hard occupancy
+  expiry remains 180 seconds; received completion still releases immediately.
+- Idle release reuses `MerchantStaging.yield_target`, body-aware exit paths,
+  off-lane parking beyond the FIFO staging radius, and the existing 30-second
+  received-parking rejoin delay. It releases an unsent contact latch as well.
+  A peer's body continues to block the one conversation slot until received
+  vacancy; no remote lease, inventory or conversation state is inferred.
+- Contact authorship and retained dealer-primitive dispatch now name the
+  `received_dealer_adjacency` conjunct, using Chebyshev <= 1 against the actual
+  received dealer position. A shifted received dealer cannot borrow adjacency
+  from the route hint. The existing `dealer_talk_out_of_range` tap reports a
+  refused talk, so those telemetry rows alone are not evidence of authored or
+  sent out-of-range contacts. The dispatch guard now explicitly shares the
+  script's range law, alongside FIFO admission.
+- The shared trip seam rechecks known-stock admission before creating or
+  retrying a lease. Collectible floor credit still authorizes pickup, but cannot
+  spend dealer travel or a retry until the received bag meets the batch rule.
+  A depleted or undersized bag discards an old unfunded trip before it can
+  charge cooldown, so fresh stock can admit immediately. Public post-pickup
+  stock candidates, one-unit town sales and genuine affordable buy wants remain
+  governed by the existing admission. Walkability stays in the runtime seam.
+- Added offline regressions for a stocked idle holder and the next FIFO seller
+  sharing one walkable cell, state-construction/pump separation, received
+  parking and wall-clock rejoin, active/uncertain exchange and movement barriers,
+  received dealer offsets/ranges 1–4, and unfunded/floor-credit/depleted trips.
+  Reconciled the old ten-second idle-occupancy test with the five-second grace
+  while retaining its approach and full C4/C7 sale-chain assertions. The old
+  buy-trip/pickup-priority fixture now receives its missing weight frame so its
+  bag is known before admission; all its original behavioral assertions remain.
+
+Only offline fake-wire checks ran; no live probes, Docker/heavengraph operations,
+spikes/ edits, or merge. The isolated checkout initializes rathena from the local
+main checkout, and symlinks iro-db.db/config.log from it. The tracked iro-wiki.db
+link already targets main's self-referencing link; its optional corpus smoke can
+skip, as on the inherited baseline.
+
+Final required gate GREEN before commit: `nix develop -c task --dir . check`
+(exit 0), `/tmp/dealer-ring-check-final.log`: **7,567 passed, 65 subtests passed,
+1 skipped, 4 warnings, 95.85% coverage**, 402.19 seconds. Black, ruff, strict
+mypy, vulture, xenon, duplicate-code and bandit passed. The optional real
+wiki-corpus smoke skipped for the inherited self-referencing main-checkout link.

@@ -208,7 +208,7 @@ def test_fresh_native_epoch_releases_old_one_contact_latch(caplog):
         ("cancel", "approach.actuation_blocked"),
         ("lease", "approach.counter_released:expired"),
         ("planner", "contact.planner_hold"),
-        ("dealer", "contact.dealer_not_adjacent"),
+        ("dealer", "contact.received_dealer_adjacency"),
         ("pending", "motion.pending_walk"),
     ],
 )
