@@ -15511,3 +15511,55 @@ symlinked from the parent and excluded from delivery.
 - Decide regime inverted: 19.9% capped (49.1 → 57.0 → 58.4 → 19.9) but ok p50 ~13.6 s (was ~2 s) — the backend now queues instead of rejecting. Cadence 27/29 in band, median 276; transport 24 distinct down-reasons, nobody lost (28/29 online at the close sample); 0 host.step raises.
 - Named signature for leg-120: **the walk never completes** — pending_walk 2216 holds vs 0 authored contacts; the sell contact dies in motion and never reaches dealer adjacency (dealer_not_adjacent taps end by t≈2998). Also check admission's known-stock post-pickup: 16 no_stock_below_zeny_floor holds with sellable misc already in inventory.
 - State at commit: main 54181548 + receipt/verdict; runner log /tmp/population_leg119.log (last full sample t=8099.1: 28/29 online, 7,136 decides).
+
+## 2026-11-23 — Sell-contact walk escalation and received pickup stock (leg-119 continuation)
+
+Continued draft `3343e63f` on `t3/sell-contact-authorship`, against the named
+next hops in `run/reviews/leg119-verdict.md`: 2,216 pending-walk holds with no
+authored contact, plus the suspected stock-admission gap after three pickups.
+
+- The runtime pump owns the contact approach ladder: a wall-clock no-progress
+  window (2 seconds per best received Chebyshev cell, clamped to 90–300 seconds)
+  escalates to a fresh route, then a reachable outer counter cell, then releases
+  the trip to farming with the existing 120-second retry cooldown. Strictly
+  closer received cells renew the clock without replenishing spent escalations;
+  jitter and outward fallback movement cannot renew it. Each escalation emits
+  `contact_walk_escalated` with its step, bound, elapsed time and distance;
+  exhaustion emits `contact_walk_released_farm`.
+- Fixed draft defects: progress reset the whole budget; progress at the deadline
+  could lose to the generic 60-second trip timer; the fallback was abandoned on
+  the next pump tick; releasing the trip did not retain its return intent. Route
+  retry now also invalidates runtime staging paths. A timeout can cancel only a
+  walk dispatched by this pump, so repeated nonconverging walk frames cannot
+  keep its pending slot forever. Unrelated authored walks keep their motion
+  gate. Fallible or refused authored movement cannot claim a pump-owned walk.
+- Session/map/visit changes and received adjacency reset contact recovery.
+  Runtime geometry still validates all targets and dispatched steps. Existing
+  pose, safety, dialogue, pending-walk, FIFO and contact-authority gates remain.
+  No recovery depends on decide counts: fake-clock tests exercise 0.25, 13.6,
+  14.6 and 91-second pump intervals against the same 90-second threshold.
+- The stock suspicion did not reproduce against inherited `eefb95c4`: successful
+  `0x0A37` already updates the indexed inventory, native state projects those
+  counts, and `DRIVE_SELLABLES` already includes the pinned public misc/usable
+  classes. Kept that implementation and strengthened the exact pickup→receipt→
+  admission regressions for Jellopy, Empty Bottle, Sticky Mucus and Carrot;
+  none can report `no_stock_below_zeny_floor` or a drained arm after receipt.
+  Refused receipts cannot manufacture stock. Field batch minimum and C7 sale
+  authority remain unchanged; the verdict's fleet-wide holds alone do not prove
+  a per-agent stock-class defect.
+
+TDD: the draft's original 43 focused cases passed, then added regressions went
+RED for budget renewal, deadline lease renewal, fallback retention, and pending
+walk recovery. Finished focused suite: 57 passed; ruff and strict mypy green.
+The full required gate result is recorded below before commit.
+
+Only offline fake-wire tests ran. No live probes, Docker/heavengraph operations,
+changes under spikes/, or merge to main. Missing local iro-db/config.log inputs
+are symlinked from the main checkout. The inherited iro-wiki.db link targets the
+main checkout's self-referencing link, so its optional corpus smoke may skip.
+
+Final required gate GREEN before commit: `nix develop -c task --dir . check`
+(exit 0), `/tmp/sell-contact-check.log`: **7,543 passed, 65 subtests passed,
+1 skipped, 4 warnings, 95.85% coverage**, 343.01 seconds. Black, ruff, strict
+mypy, vulture, xenon, duplicate-code and bandit passed. The optional real
+wiki-corpus smoke skipped for the inherited self-referencing main-checkout link.

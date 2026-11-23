@@ -168,32 +168,27 @@ CONTACT_WALK_MAX_BOUND_S = 300.0
 """Wall-clock bound on the sell arm's dealer approach. Wall clock, never tick
 counts: leg-119's decide regime queued at ok p50 ~13.6 s (19.9% capped), so a
 bound calibrated in ticks paces wrong. Two seconds per best-known Chebyshev
-cell covers decide-paced leg dispatching with head room, clamped 90-300 s -
+cell with a 90 s floor tolerates transient motion stalls, clamped 90-300 s -
 the same distance-scaled shape as the trip arms' no-progress bound."""
 
 
 @dataclass
 class _ContactApproach:
-    """Bounded sell-arm dealer approach with a named escalation ladder.
+    """Contact no-progress clock and finite retry budget on received geometry.
 
-    Leg-119: pending_walk 2216 holds vs 0 authored contacts - the contact
-    walk never reached dealer adjacency and nothing bounded it once the
-    dealer_not_adjacent taps died (t≈2998). The trip arms' escalation shape
-    applied to the contact walk: a wall-clock no-progress bound (Chebyshev
-    high-water to the engage cell; moving away cannot renew it), then
-    reroute, then the outer counter cell, then the arm releases to farming.
-    ``identity`` re-arms the ladder on a new bot/map/destination and on
-    received adjacency, where the contact gates own authorship.
+    Strictly closer cells renew the clock without replenishing escalations.
+    Jitter and outward fallback walks cannot renew it. A new session, visit,
+    map or received adjacency resets the ladder; contact gates still own talk.
     """
 
-    identity: tuple[str, str, tuple[int, int]] | None = None
+    identity: tuple[str, str, int | None, tuple[int, int]] | None = None
     best: int = 0
     progress_at: float = 0.0
     escalations: int = 0
 
     def reset(
         self,
-        identity: tuple[str, str, tuple[int, int]] | None,
+        identity: tuple[str, str, int | None, tuple[int, int]] | None,
         best: int,
         now: float,
     ) -> None:
@@ -1049,7 +1044,7 @@ class PlayingClient:
         self._merchant_contact_gate_reasons: deque[tuple[float, str]] = deque(maxlen=64)
         self._merchant_contact_holds: dict[str, tuple[str, ...]] = {}
         self._contact_approach = _ContactApproach()
-        self._contact_approach_arm = False
+        self._contact_walk_owned = False
         self._contact_fallback_target: tuple[int, int] | None = None
 
     def _merchant_gate_all(self, stage: str, gates: tuple[tuple[str, bool], ...]) -> bool:
@@ -3192,6 +3187,7 @@ class PlayingClient:
         return "dispatched"
 
     def _send_walk(self, point: tuple[int, int], after_seq: int) -> None:
+        self._contact_walk_owned = False
         self.wire.move(*point)
         self._ensure_loot_memos()
         self._loot_motion_seq = after_seq
@@ -4050,7 +4046,19 @@ class PlayingClient:
         if target == (state.x, state.y):
             self._start_merchant_sell_on_tick(state)
             return
+        self._perform_contact_move(state, target)
+
+    def _perform_contact_move(self, state: BotState, target: tuple[int, int]) -> None:
+        pending = self._pending
         self._perform_move(state, target)
+        self._contact_walk_owned = self._pending is not None and self._pending is not pending
+
+    def _cancel_contact_walk(self) -> None:
+        """Only the pump owns this timed-out walk; ordinary authored walks keep their gate."""
+        if self._contact_walk_owned and self._pending is not None:
+            self._note_move_gate("contact_walk_cancelled_timeout")
+            self._pending = None
+        self._contact_walk_owned = False
 
     def _bound_contact_walk(self, state: BotState, destination: tuple[int, int]) -> None:
         """Bound the sell arm's dealer-adjacency approach by wall clock.
@@ -4063,28 +4071,26 @@ class PlayingClient:
         to farming through the trip retry cooldown. Never a permanent park
         (leg-117); never a contact authorship grant.
         """
-        if not self._contact_approach_arm:
-            return
         tracker = self._tracker
         if tracker is None or tracker.view.position is None:
             return
         now = self._now()
         approach = self._contact_approach
         chebyshev = max(abs(state.x - destination[0]), abs(state.y - destination[1]))
-        identity = (state.name, state.map_name, destination)
-        if (
-            approach.identity != identity
-            or chebyshev < approach.best
-            or chebyshev <= DEALER_TALK_RANGE
-        ):
+        identity = (state.name, state.map_name, state.native_epoch, destination)
+        if approach.identity != identity or chebyshev <= DEALER_TALK_RANGE:
             approach.reset(identity, chebyshev, now)
-            return
+            self._contact_fallback_target = None
+        elif chebyshev < approach.best:
+            approach.best, approach.progress_at = chebyshev, now
         if not approach.stalled(now):
             merchant_renew_contact_walk(state.name)
             return
         stall = now - approach.progress_at
         if approach.escalations < CONTACT_WALK_ESCALATION_BUDGET:
-            self._escalate_contact_walk(state, destination, approach, now, stall, chebyshev)
+            self._escalate_contact_walk(
+                state, destination, approach, now=now, stall=stall, chebyshev=chebyshev
+            )
             return
         self._release_contact_walk(state, approach, stall, chebyshev, now)
 
@@ -4093,11 +4099,13 @@ class PlayingClient:
         state: BotState,
         destination: tuple[int, int],
         approach: _ContactApproach,
+        *,
         now: float,
         stall: float,
         chebyshev: int,
     ) -> None:
         """One named ladder step: reroute the approach, then the outer cell."""
+        self._cancel_contact_walk()
         approach.escalations += 1
         approach.progress_at = now
         merchant_renew_contact_walk(state.name)  # the ladder owns the lease window
@@ -4116,6 +4124,7 @@ class PlayingClient:
             merchant_reset_dealer_approach(state.name)
             self._merchant_travel_rerolls.pop((state.map_name, destination), None)
             self._merchant_paths.clear()
+            self._merchant_staging.release()
             return
         grid = self.cache.get(state.map_name) if self.cache is not None else None
         cell = (
@@ -4139,6 +4148,8 @@ class PlayingClient:
         now: float,
     ) -> None:
         """The ladder is exhausted: the arm releases to farming, never parks."""
+        self._cancel_contact_walk()
+        self._contact_fallback_target = None
         released = merchant_release_contact_walk(state.name)
         bound = approach.bound
         best = approach.best
@@ -4157,16 +4168,18 @@ class PlayingClient:
         )
 
     def _dispatch_contact_fallback(self, state: BotState) -> bool:
-        """One walk slot for the ladder's counter-cell step (leg-119 named hop).
+        """Retain the counter-cell leg until arrival or the next timeout.
 
         The staging's outer cell, dispatched on the ordinary move gates - the
         escalation never bypasses a barrier, it only chooses the target.
         """
         fallback = self._contact_fallback_target
-        self._contact_fallback_target = None
         if fallback is None:
             return False
-        self._perform_move(state, fallback)
+        if fallback == (state.x, state.y):
+            self._contact_fallback_target = None
+            return False
+        self._perform_contact_move(state, fallback)
         return True
 
     def _merchant_pump_destination(self, state: BotState) -> tuple[int, int] | None:
@@ -4179,22 +4192,22 @@ class PlayingClient:
             # The farm-side return is mechanical too: slow/failed decides
             # must not strand a drained agent beside the dealer. It creates
             # no outbound lease and grants no shop/contact authority.
-            self._contact_approach_arm = False
+            self._contact_approach.reset(None, 0, self._now())
+            self._contact_fallback_target = None
             return merchant_return_cell(state)
-        self._contact_approach_arm = (
-            state.map_name == "prt_in" and destination == MERCHANT_ROUTE["prt_in"]
-        )
-        if self._contact_approach_arm:
+        if state.map_name == "prt_in" and destination == MERCHANT_ROUTE["prt_in"]:
             # Ahead of the trip gate: the ladder's renewal must protect the
             # lease on the same tick the route bound would fire (leg-119's
             # 60 s releases beat every escalation to the punch). A release
             # here lands in the gate below as the retry cooldown.
             self._bound_contact_walk(state, destination)
+        else:
+            self._contact_approach.reset(None, 0, self._now())
+            self._contact_fallback_target = None
         if not self._merchant_gate_all(
             "trip", (("retry_cooldown", _merchant_trip_allows(state, destination)),)
         ):
-            self._contact_approach_arm = False
-            return None
+            return merchant_return_cell(state)
         return destination
 
     def _start_merchant_sell_on_tick(self, state: BotState) -> None:

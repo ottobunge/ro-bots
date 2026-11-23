@@ -6,7 +6,7 @@ from dataclasses import replace
 
 import pytest
 
-from robots.adapters.merchant_stock import MISC_SELLABLE_IDS, public_stock_ids
+from robots.adapters.merchant_stock import MISC_SELLABLE_IDS, PUBLIC_STOCK_IDS, public_stock_ids
 from robots.adapters.native_navigation import MapCache, WalkMap
 from robots.app import scripts
 from robots.app.brain import EventDrivenBrain
@@ -235,7 +235,7 @@ def test_post_trip_return_keeps_collectible_inflight_pickup_leg():
     assert not client._merchant_returning
 
 
-@pytest.mark.parametrize("item", [909, 713])
+@pytest.mark.parametrize("item", [909, 713, 938, 512])
 def test_pickup_receipt_admits_picked_misc_into_known_stock(item, caplog):
     """Leg-119 named secondary, pinned on the exact receipt chain.
 
@@ -263,4 +263,22 @@ def test_pickup_receipt_admits_picked_misc_into_known_stock(item, caplog):
     refusal = scripts.merchant_admission_refusal(state)
     assert refusal is None or refusal[0] != "no_stock_below_zeny_floor"
     assert not scripts.merchant_arm_drained(state)
-    assert item in MISC_SELLABLE_IDS  # the pinned public misc class ground
+    assert item in PUBLIC_STOCK_IDS  # the pinned public stock class ground
+    if item != 512:  # Carrot is Healing; the others are Etc.
+        assert item in MISC_SELLABLE_IDS
+
+
+@pytest.mark.parametrize("result", [1, 6])
+def test_refused_pickup_cannot_manufacture_known_stock(result):
+    client = client_with_loot(item=713, x=43)
+    client.wire.add(_inv(((7, 1201, 1),)), _weight())
+    client._zeny_seed = 0
+    state = client.build_native_state(Goal.FARM_ITEM)
+    client.perform_native(Loot())
+    assert PICKUP in client.wire.sent
+    client.wire.add(ack(result, item=713))
+    client.drain_native_events()
+    state = client.build_native_state(Goal.FARM_ITEM)
+    assert state.inventory_known
+    assert scripts._merchant_stock(state) == 0
+    assert state.inventory.get("713", 0) == 0

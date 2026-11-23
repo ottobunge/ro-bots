@@ -680,6 +680,9 @@ def merchant_release_contact_walk(bot: str) -> bool:
     if trip is None or trip.cooling_down(now):
         return False
     trip.retry_at = now + MERCHANT_RETRY_COOLDOWN_S
+    trip.returning = True
+    merchant_reset_dealer_approach(bot)
+    _MERCHANT_TRAVEL_WALKS.pop(bot, None)
     return True
 
 
