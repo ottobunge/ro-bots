@@ -16115,3 +16115,49 @@ exec-only — `docker run` client sidecar on the compose network works).
 - Full required gate `nix develop -c task --dir . check` **GREEN**: black,
   all six static checks, **7,687 passed / 65 subtests passed / 1 existing skip /
   95.88% coverage** (366.32s). Implementation, tests and this log ship together.
+
+
+## [2026-11-24] leg | LEG-127 VERDICT — chat-budget gate VALIDATED; attackers 16/29, kills 25, fleet zeny 2500->2536
+- Window Tue 22:30-23:54 Madrid, 29 personas `[[1, 22.5, 23.9]]`, launched
+  22:22:25 CET after preflight DECIDE-OK 0.49 s answers=10 (:8092 curl skipped,
+  time-pressed per the brief). `leg127-runner` duration 6,155 s, RuntimeMaxSec
+  7,055. HEAD at launch `0981f73d` (validates the chat-budget gate merge
+  `a9f0f304`).
+- **Close-write MET**: `population-receipt-127-1795555351.json` on disk 23:54:37
+  CET while the unit was still active (ad3d2ce0 kill-safety held again).
+- **Bar 1 SPLIT — gate mechanism MET, participation bar NOT MET**: Say storms
+  COLLAPSED (fleet max 13/agent vs leg-126's 15-261; worst g02m00 245 -> 5);
+  **4,342 `chat_budget_gated` taps across all 29 agents** (84-203 each); the freed
+  decide budget went to movement (pop_0069 agents 1,991-2,288 MoveTos each vs
+  leg-126's 0-11). Attackers **16/29** (leg-126: 6) — tripled but under 20/29;
+  173 authored -> 120 swings -> 2,315 damage, engagement still concentrated
+  (RinceNyan 85 of 173 attacks, 113 of 210 fleet sightings).
+- **Bar 2 MET**: **25 kills** (leg-126: 15), 75/42 XP, drops 31, pickups 11/15.
+- **Bar 3 MET**: fleet zeny 2,500 -> **2,536** (+36 = the 5 in-window zenylog
+  S-rows exactly); 3 sellers (RinceNyan +27, ZenySong +6, PoringMuffin14 +3);
+  picklog S 66 -> 74; first pump-authored `sell_contact_authored` tap (1; 0 in
+  leg-126); no counter-parking (counter_not_selected 12).
+- Runner health: 18,944 steps, 0 step_errors; 29 one-shot transport transients
+  (5-6 attempts each, none exhausted), one end-transient offline at close
+  (pop_0003_g00m02, recovered mid-window). Decide health **3.0 % capped, true
+  p50 1.18 s** (leg-126: 28.5 % / 14.03 s) — healthiest window of the saturation
+  era, consistent with chat leaving the decide path; window-variable backend
+  load is not cured.
+- **pop_0069_s01 ground truth (corrects leg-126's secondary)**: DB pay_fild04
+  (163,177) = receipt = trace; its plans target the pay_fild04 declared set —
+  MAP-CONSISTENT, no cross-map confusion (matches the gate-lane audit's reading).
+  Its deficit is 0 sightings over 2,288 MoveTos — a mobless roam patch.
+- DB readback (docker run sidecar on ro-bots-e2e_default, secret inside container
+  only): zenylog 42 -> 47 (all S), picklog M 167 -> 188 / P 73 -> 87 / L 106 ->
+  128 / S 66 -> 74; 26/29 closed on prt_fild08 grounds, xXHyubladeXx prontera,
+  RinceNyan prt_fild06, xXHyupunchXx pay_fild04; PipinWalker/RinceNyan/
+  xXLunasongXx closed at base 11.
+- `seed-zeny.json` advanced to 2,536 (zeny CHANGED): exactly three personas moved,
+  the other 26 verified unchanged against the DB.
+- **Next signature: sighting->swing conversion for the roaming 13 (primary)** —
+  the 13 zero-attack agents roam mob-visible patches (12 of 13 saw 1-7 mobs) and
+  never swing: refusals pending_walk 70 + cooldown 64, `arrival_swing_minted` 0
+  taps (the 223827d2 seam never exercised). Author the swing within the sighting
+  or walk-release budget, then re-measure 20/29. Secondary: pop_0069_s01's pay_fild04
+  roam reach (0 sightings; extend toward declared spawn cells or route to
+  prt_fild08). Full readout: `run/reviews/leg127-verdict.md`.
