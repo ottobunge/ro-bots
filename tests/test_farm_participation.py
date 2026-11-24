@@ -9,7 +9,7 @@ from robots.adapters.native_gameplay import attack
 from robots.app import scripts
 from robots.app.agent_runtime import ScheduledAgent
 from robots.domain.actions import Loot, MoveTo, NpcShopSell, Say
-from robots.domain.farm import MobInfo
+from robots.domain.farm import FarmPlan, MobInfo
 from robots.domain.model import Goal
 from tests.test_city_field_travel import _brain
 from tests.test_dealer_ring import _client as dealer_client
@@ -111,6 +111,53 @@ def test_field_arrival_authors_attack_from_retained_plan_without_decide():
     client._pump_farm_combat_safely()
 
     assert attack(123) in wire.sent
+
+
+def test_field_arrival_pump_retargets_expless_plan_without_decide():
+    client, wire, now = _client()
+    state = client.build_native_state(Goal.GRIND)
+    brain = _brain()
+    planner = brain._field_travel
+    assert planner is not None
+    client.mob_db.catalog[1002] = MobInfo(1002, "Green Plant", 1, base_exp=0, job_exp=0)
+    client.mob_db.catalog[1003] = MobInfo(1003, "Poring", 1, base_exp=2, job_exp=1)
+    plan = FarmPlan(1, "prt_fild08", ("Green Plant",), 900, 1)
+    client.authorize_field_travel(state, (plan, planner))
+    poring = bytearray(monster(aid=456, at=(43, 37)))
+    struct.pack_into("<H", poring, 23, 1003)
+    wire.add(
+        struct.pack("<H16sHH", 0x91, b"prt_fild08", 42, 37),
+        monster(at=(43, 37)),
+        bytes(poring),
+    )
+    now[0] = 2
+    client._pump_farm_combat_safely()
+    assert attack(456) in wire.sent
+    assert attack(123) not in wire.sent
+
+
+def test_field_pump_retarget_approach_revokes_previous_plant_swings():
+    client, wire, now = _client()
+    state = client.build_native_state(Goal.GRIND)
+    planner = _brain()._field_travel
+    assert planner is not None
+    client.mob_db.catalog[1002] = MobInfo(1002, "Green Plant", 1, base_exp=0, job_exp=0)
+    client.mob_db.catalog[1003] = MobInfo(1003, "Poring", 1, base_exp=2, job_exp=1)
+    client.authorize_field_travel(
+        state, (FarmPlan(1, "prt_fild08", ("Green Plant",), 900, 1), planner)
+    )
+    wire.add(struct.pack("<H16sHH", 0x91, b"prt_fild08", 42, 37), monster(at=(43, 37)))
+    now[0] = 2
+    client._pump_farm_combat_safely()
+    assert wire.sent.count(attack(123)) == 1
+    poring = bytearray(monster(aid=456, at=(47, 37)))
+    struct.pack_into("<H", poring, 23, 1003)
+    wire.add(bytes(poring))
+    now[0] = 4
+    client._pump_farm_combat_safely()
+    assert wire.sent.count(attack(123)) == 1
+    assert client._combat_intent is not None
+    assert client._combat_intent.target_id == 456
 
 
 @pytest.mark.parametrize(

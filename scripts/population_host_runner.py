@@ -19,6 +19,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import time
 from datetime import UTC, datetime
 from pathlib import Path
@@ -77,6 +78,157 @@ def _memory_stats(memory_root: Path | None, persona_id: str) -> dict[str, int] |
     return {"lines": lines, "bytes": journal.stat().st_size, "last_len": len(last)}
 
 
+def _sample(
+    host: Any,
+    memory_root: Path,
+    started: float,
+    now: float,
+    reported_rx_errors: set[tuple[str, str]],
+    leg: str,
+) -> dict[str, object]:
+    """Cached, passive close sample: never drains producers or observes native state."""
+    row: dict[str, object] = {"t": round(now - started, 1)}
+    summary_parts: list[str] = []
+    for pid, agent in host.agents.items():
+        brain = getattr(agent, "brain", None)
+        client = getattr(agent, "client", None)
+        wire = getattr(client, "wire", None)
+        state = getattr(client, "last_built_state", None)
+        entry_sample = {
+            "online": bool(getattr(agent, "online", False))
+            and getattr(agent, "transport_failure", None) is None,
+            "rebuild_attempts": getattr(agent, "rebuild_attempts", 0),
+            "rebuild_exhausted": getattr(agent, "rebuild_exhausted", False),
+            "decides": getattr(brain, "decision_count", None),
+            "ticks": getattr(agent, "tick_count", None),
+            "standing": getattr(client, "_standing", None),
+            "wire_sent": len(getattr(wire, "sent", []) or []),
+            "moves": len(getattr(wire, "moves", []) or []),
+            "pos": (state.x, state.y) if state is not None else None,
+            "xp_total": getattr(state, "xp_total", None),
+            "nearby_n": len(state.nearby_monsters) if state is not None else None,
+            "memory": _memory_stats(memory_root, pid),
+            # the sell-chain state (leg 22: the shop-offer -> the sell
+            # submission hop needs the per-tick visibility)
+            "npc_stage": getattr(
+                getattr(
+                    getattr(getattr(client, "_npc", None), "view", None),
+                    "stage",
+                    None,
+                ),
+                "value",
+                getattr(
+                    getattr(getattr(client, "_npc", None), "view", None),
+                    "stage",
+                    None,
+                ),
+            ),
+            "shop_offer": (
+                "rows=%d" % len(getattr(state.shop_offer, "rows", []))
+                if state is not None and getattr(state, "shop_offer", None)
+                else None
+            ),
+            # the attack-gate telemetry (leg 33: 516 approaches, 6
+            # swings — the receipt must name the drop reason)
+            "attack_gates": _reason_summary(getattr(client, "_attack_gate_reasons", None)),
+            # the move-gate telemetry (w58, leg 38: the unwalkable
+            # deadlock + the ground correction must name themselves)
+            "move_gates": _reason_summary(getattr(client, "_move_gate_reasons", None)),
+            "merchant_contact_gates": _reason_summary(
+                getattr(client, "_merchant_contact_gate_reasons", None)
+            ),
+            "merchant_warp_crossings": getattr(client, "merchant_warp_crossings", None),
+            # The transport's own failure reason (leg 35: all seven
+            # agents froze because the rx thread died on an unknown
+            # packet - "unknown packet 0x0999" - and NOTHING in the
+            # receipt, the log or the trace named it. The agent's
+            # tick early-returned on NativeTelemetryUnavailable
+            # forever, so a whole window died silently. The receipt
+            # must carry the reason the transport went down.
+            "rx_error": _error_text(getattr(client, "rx_error", None)),
+            "last_transport_error": _error_text(getattr(agent, "transport_error", None)),
+            "dispatch_errors": _dispatch_error_summary(getattr(client, "dispatch_errors", None)),
+        }
+        row[pid] = entry_sample
+        summary_parts.append(
+            f"{pid[:14]}={int(entry_sample['online'])}/"
+            f"{entry_sample['decides']}/{entry_sample['pos']}"
+        )
+        # A transport that died must be LOUD, once, in the runner log
+        # (leg 35: the whole window froze on "unknown packet 0x0999"
+        # and the log never said so). Print it the first time each
+        # distinct reason appears.
+        reason = entry_sample["rx_error"] or entry_sample["last_transport_error"]
+        if reason is not None and (pid, reason) not in reported_rx_errors:
+            reported_rx_errors.add((pid, reason))
+            print(
+                f"POPULATION-RUNNER[{leg}] TRANSPORT DOWN " f"pid={pid}: {reason}",
+                flush=True,
+            )
+    print(
+        f"POPULATION-RUNNER[{leg}] t={row['t']}: {' '.join(summary_parts)}",
+        flush=True,
+    )
+    return row
+
+
+def _write_receipt(
+    args: Any,
+    host: Any,
+    receipt_path: Path,
+    started: float,
+    closed_at: float,
+    samples: list[dict[str, object]],
+    steps: int,
+    errors: int,
+) -> None:
+    """Seal verdict data before any post-window disconnect/join can block."""
+    from robots.app.swing_funnel import summarize_swing_traces
+
+    receipt = {
+        "runner": "population_host",
+        "leg": args.leg,
+        "duration_s": args.duration,
+        "steps": steps,
+        "step_errors": errors,
+        "trace_dir": str(args.trace_dir) if args.trace_dir else None,
+        "samples": samples,
+        "offline_agents": [
+            pid
+            for pid, agent in host.agents.items()
+            if not agent.online or agent.transport_failure is not None
+        ],
+        "transport_recovery": {
+            pid: {
+                "attempts": agent.rebuild_attempts,
+                "exhausted": agent.rebuild_exhausted,
+                "last_error": _error_text(agent.transport_error),
+            }
+            for pid, agent in host.agents.items()
+            if agent.transport_error is not None
+        },
+        "passed": None,  # the operator asserts separately from the DB
+    }
+    if args.trace_dir:
+        receipt["swing_conversion"] = summarize_swing_traces(
+            sorted(args.trace_dir.glob("pop_*.jsonl")),
+            start=datetime.fromtimestamp(started, UTC).isoformat(),
+            end=datetime.fromtimestamp(closed_at, UTC).isoformat(),
+            snapshot=True,
+        )
+    temporary = receipt_path.with_suffix(".json.tmp")
+    with temporary.open("w") as handle:
+        json.dump(receipt, handle, indent=2)
+        handle.flush()
+        os.fsync(handle.fileno())
+    temporary.replace(receipt_path)
+    directory = os.open(receipt_path.parent, os.O_RDONLY | os.O_DIRECTORY)
+    try:
+        os.fsync(directory)
+    finally:
+        os.close(directory)
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--manifest", required=True)
@@ -116,7 +268,6 @@ def main(argv: list[str] | None = None) -> int:
     args.planning_world = None
 
     from robots import playing  # noqa: PLC0415 (heavy import kept out of --help)
-    from robots.app.swing_funnel import summarize_swing_traces
 
     host = playing.build_host(args)
     host.start_worldfeed()
@@ -153,9 +304,23 @@ def main(argv: list[str] | None = None) -> int:
         (json.loads(args.schedule_file.read_text()) if args.schedule_file else None) is not None,
         flush=True,
     )
+    window_opened = False
+    receipt_written = False
+
+    def on_schedule_sample(scheduled: bool) -> None:
+        nonlocal window_opened, receipt_written
+        window_opened = window_opened or scheduled
+        now = time.time()
+        if not receipt_written and ((window_opened and not scheduled) or now >= deadline):
+            samples.append(
+                _sample(host, args.memory_root, started, now, reported_rx_errors, args.leg)
+            )
+            _write_receipt(args, host, receipt_path, started, now, samples, steps, errors)
+            receipt_written = True
+
     while time.time() < deadline:
         try:
-            host.step()
+            host.step(on_schedule_sample=on_schedule_sample)
             steps += 1
         except Exception as exc:  # recorded honestly, never silent
             errors += 1
@@ -166,126 +331,21 @@ def main(argv: list[str] | None = None) -> int:
                     flush=True,
                 )
         now = time.time()
-        if now >= next_sample:
+        if now >= next_sample and not receipt_written:
             next_sample = now + 30.0
-            row: dict[str, object] = {"t": round(now - started, 1)}
-            summary_parts: list[str] = []
-            for pid, agent in host.agents.items():
-                brain = getattr(agent, "brain", None)
-                client = getattr(agent, "client", None)
-                wire = getattr(client, "wire", None)
-                state = getattr(client, "last_built_state", None)
-                entry_sample = {
-                    "online": bool(getattr(agent, "online", False))
-                    and getattr(agent, "transport_failure", None) is None,
-                    "rebuild_attempts": getattr(agent, "rebuild_attempts", 0),
-                    "rebuild_exhausted": getattr(agent, "rebuild_exhausted", False),
-                    "decides": getattr(brain, "decision_count", None),
-                    "ticks": getattr(agent, "tick_count", None),
-                    "standing": getattr(client, "_standing", None),
-                    "wire_sent": len(getattr(wire, "sent", []) or []),
-                    "moves": len(getattr(wire, "moves", []) or []),
-                    "pos": (state.x, state.y) if state is not None else None,
-                    "xp_total": getattr(state, "xp_total", None),
-                    "nearby_n": len(state.nearby_monsters) if state is not None else None,
-                    "memory": _memory_stats(args.memory_root, pid),
-                    # the sell-chain state (leg 22: the shop-offer -> the sell
-                    # submission hop needs the per-tick visibility)
-                    "npc_stage": getattr(
-                        getattr(
-                            getattr(getattr(client, "_npc", None), "view", None),
-                            "stage",
-                            None,
-                        ),
-                        "value",
-                        getattr(
-                            getattr(getattr(client, "_npc", None), "view", None),
-                            "stage",
-                            None,
-                        ),
-                    ),
-                    "shop_offer": (
-                        "rows=%d" % len(getattr(state.shop_offer, "rows", []))
-                        if state is not None and getattr(state, "shop_offer", None)
-                        else None
-                    ),
-                    # the attack-gate telemetry (leg 33: 516 approaches, 6
-                    # swings — the receipt must name the drop reason)
-                    "attack_gates": _reason_summary(getattr(client, "_attack_gate_reasons", None)),
-                    # the move-gate telemetry (w58, leg 38: the unwalkable
-                    # deadlock + the ground correction must name themselves)
-                    "move_gates": _reason_summary(getattr(client, "_move_gate_reasons", None)),
-                    "merchant_contact_gates": _reason_summary(
-                        getattr(client, "_merchant_contact_gate_reasons", None)
-                    ),
-                    "merchant_warp_crossings": getattr(client, "merchant_warp_crossings", None),
-                    # The transport's own failure reason (leg 35: all seven
-                    # agents froze because the rx thread died on an unknown
-                    # packet - "unknown packet 0x0999" - and NOTHING in the
-                    # receipt, the log or the trace named it. The agent's
-                    # tick early-returned on NativeTelemetryUnavailable
-                    # forever, so a whole window died silently. The receipt
-                    # must carry the reason the transport went down.
-                    "rx_error": _error_text(getattr(client, "rx_error", None)),
-                    "last_transport_error": _error_text(getattr(agent, "transport_error", None)),
-                    "dispatch_errors": _dispatch_error_summary(
-                        getattr(client, "dispatch_errors", None)
-                    ),
-                }
-                row[pid] = entry_sample
-                summary_parts.append(
-                    f"{pid[:14]}={int(entry_sample['online'])}/"
-                    f"{entry_sample['decides']}/{entry_sample['pos']}"
-                )
-                # A transport that died must be LOUD, once, in the runner log
-                # (leg 35: the whole window froze on "unknown packet 0x0999"
-                # and the log never said so). Print it the first time each
-                # distinct reason appears.
-                reason = entry_sample["rx_error"] or entry_sample["last_transport_error"]
-                if reason is not None and (pid, reason) not in reported_rx_errors:
-                    reported_rx_errors.add((pid, reason))
-                    print(
-                        f"POPULATION-RUNNER[{args.leg}] TRANSPORT DOWN "
-                        f"pid={pid}: {reason}",
-                        flush=True,
-                    )
-            samples.append(row)
-            print(
-                f"POPULATION-RUNNER[{args.leg}] t={row['t']}: {' '.join(summary_parts)}",
-                flush=True,
+            samples.append(
+                _sample(host, args.memory_root, started, now, reported_rx_errors, args.leg)
             )
         time.sleep(0.25)
 
-    receipt = {
-        "runner": "population_host",
-        "leg": args.leg,
-        "duration_s": args.duration,
-        "steps": steps,
-        "step_errors": errors,
-        "trace_dir": str(args.trace_dir) if args.trace_dir else None,
-        "samples": samples,
-        "offline_agents": [
-            pid for pid, agent in host.agents.items()
-            if not agent.online or agent.transport_failure is not None
-        ],
-        "transport_recovery": {
-            pid: {
-                "attempts": agent.rebuild_attempts,
-                "exhausted": agent.rebuild_exhausted,
-                "last_error": _error_text(agent.transport_error),
-            }
-            for pid, agent in host.agents.items()
-            if agent.transport_error is not None
-        },
-        "passed": None,  # the operator asserts separately from the DB
-    }
-    if args.trace_dir:
-        receipt["swing_conversion"] = summarize_swing_traces(
-            sorted(args.trace_dir.glob("pop_*.jsonl")),
-            start=datetime.fromtimestamp(started, UTC).isoformat(),
-            end=datetime.fromtimestamp(time.time(), UTC).isoformat(),
+    if not receipt_written:
+        closed_at = time.time()
+        samples.append(
+            _sample(host, args.memory_root, started, closed_at, reported_rx_errors, args.leg)
         )
-    receipt_path.write_text(json.dumps(receipt, indent=2))
+        _write_receipt(args, host, receipt_path, started, closed_at, samples, steps, errors)
+    # The envelope may drain only after the complete close receipt is durable.
+    host.stop()
     print(
         f"POPULATION-RUNNER[{args.leg}] DONE: steps {steps}, errors {errors}, "
         f"receipt {receipt_path}",

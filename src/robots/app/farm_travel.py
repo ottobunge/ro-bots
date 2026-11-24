@@ -5,9 +5,23 @@ from dataclasses import dataclass
 from robots.app.field_travel import FieldTravel
 from robots.domain.actions import MoveTo
 from robots.domain.farm import FarmPlan
-from robots.domain.model import BotState
+from robots.domain.model import BotState, Goal
 
 FIELD_TRAVEL_SECONDS = 300.0
+FIELD_GOAL_PERSISTENCE_SECONDS = 600.0
+
+
+@dataclass(frozen=True)
+class FieldGoalPersistence:
+    goal: Goal
+    epoch: int | None
+    started: float
+
+    def valid(self, state: BotState, now: float) -> bool:
+        return (
+            state.native_epoch == self.epoch
+            and self.started <= now < self.started + FIELD_GOAL_PERSISTENCE_SECONDS
+        )
 
 
 @dataclass

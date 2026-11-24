@@ -4,6 +4,7 @@ Decision-model calls happen ONLY here — on world events or periodic heartbeats
 — never per tick. Between events, the active behavior script runs mechanically.
 """
 
+import logging
 import math
 import os
 import time
@@ -18,6 +19,7 @@ from robots.adapters.chat_prompt import (
     should_send_chat,
 )
 from robots.app.escalation import EscalationPolicy
+from robots.app.farm_travel import FieldGoalPersistence
 from robots.app.field_travel import FieldTravel
 from robots.app.scripts import (
     MELEE_RANGE,
@@ -82,6 +84,7 @@ if TYPE_CHECKING:
 REVIEW_BAD = 0.5
 URGENCY_TALK = 1.5
 SCRIPT_TRACE_PERIOD_S = 10.0
+logger = logging.getLogger(__name__)
 
 # The starved-social bounce (leg 31): after this many consecutive heartbeat
 # reviews with a social/idle goal and ZERO dispatched actions, the goal
@@ -182,6 +185,7 @@ class EventDrivenBrain:
         self._escape: tuple[int, int] | None = None
         self._recovery_epoch: int | None = None
         self._plan: FarmPlan | None = None
+        self._field_goal: FieldGoalPersistence | None = None
         self._plan_seq = 0
         self._mob_db: MobDatabase | None = mob_db
         self._spawn_species = spawn_species
@@ -272,6 +276,7 @@ class EventDrivenBrain:
         self._recovering = False
         self._escape = None
         self._recovery_epoch = state.native_epoch
+        self._field_goal = None
         return self.handle_event(state, Heartbeat(seq=0))
 
     def sync_context(self, state: BotState) -> None:
@@ -529,19 +534,23 @@ class EventDrivenBrain:
         """Heartbeat: goal review, farm-plan authoring, optional announcement."""
         actions_since = self._actions_since_review
         self._actions_since_review = 0
-        goal = self._review_goal(state, answers, notes, actions_since=actions_since)
+        goal_notes: list[str] = []
+        goal = self._review_goal(state, answers, goal_notes, actions_since=actions_since)
         if goal is Goal.SOCIAL and not self._has_invite_path(state):
             # Leg 94: walking/chat can keep the idle streak at zero while an
             # impossible party_join holds the script slot every heartbeat.
             # Farm while listening for the existing affinity-gated join calls.
-            notes.append("goal social->grind (no invite path)")
+            goal_notes.append("goal social->grind (no invite path)")
             goal = Goal.GRIND
-        goal = self._aligned_goal(goal, notes)
+        goal = self._aligned_goal(goal, goal_notes)
+        goal = self._persistent_review_goal(state, goal, goal_notes)
+        notes.extend(goal_notes)
         self._trace_review(state, goal, trigger)
         reports = self._human_report_announce(state)
         if self.is_recovering and self._choice(answers, "change_goal", "") == "keep":
             return [*reports, *self._coordination_review(state, answers, notes)]
         plan = self._setup_farm_plan(state, answers, notes) if self._wants_farming(goal) else None
+        self._arm_field_goal(state, goal, plan)
         streak = self._inherit_widen_streak(plan)
         self._plan = plan
         self._trace_plan(goal, plan, trigger)
@@ -569,6 +578,37 @@ class EventDrivenBrain:
         review_actions.extend(self._coordination_review(state, answers, notes))
         self._accept_guild_policy(state, review_actions)
         return review_actions
+
+    def _arm_field_goal(self, state: BotState, goal: Goal, plan: FarmPlan | None) -> None:
+        """Plan replacement alone cannot renew the original routing deadline."""
+        if (
+            plan is not None
+            and plan.map_name != state.map_name
+            and self._field_goal is None
+            and (self._plan is None or self._plan.map_name != plan.map_name)
+        ):
+            self._field_goal = FieldGoalPersistence(goal, state.native_epoch, time.monotonic())
+
+    def _persistent_review_goal(self, state: BotState, goal: Goal, notes: list[str]) -> Goal:
+        """A routed goal gets one finite wall-clock window against social reclaim."""
+        held = self._field_goal
+        if held is None:
+            return goal
+        if not held.valid(state, time.monotonic()):
+            self._field_goal = None
+            tap = "goal_persistence_expired"
+        elif goal in (Goal.SOCIAL, Goal.IDLE_TOWN):
+            notes.clear()  # Never publish a rejected goal change to ScheduledAgent.
+            if state.goal != held.goal:
+                notes.append(f"goal {state.goal}->{held.goal} (field persistence)")
+            goal = held.goal
+            tap = "goal_persistence_held"
+        else:
+            return goal
+        logger.warning("%s bot=%s goal=%s", tap, state.name, goal.value)
+        if self._trace is not None:
+            self._trace.log(tap, goal=goal.value, previous_goal=state.goal.value)
+        return goal
 
     def _inherit_widen_streak(self, plan: FarmPlan | None) -> int:
         """Carry leg 34's streak only across consecutive same-target/map plans.

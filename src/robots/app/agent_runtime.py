@@ -2121,7 +2121,7 @@ class AgentHost:
             return False
         return group.schedule.is_online(now)
 
-    def step(self) -> None:
+    def step(self, *, on_schedule_sample: Callable[[bool], None] | None = None) -> None:
         """One scheduling pass: open/close sessions per each persona's schedule.
 
         A pending character switch performs a clean logout through this same
@@ -2133,9 +2133,13 @@ class AgentHost:
             if self._stop:
                 return
             now = self.clock.local_now()
+            scheduled = {pid: self._scheduled_on(pid, now) for pid in self.agents}
+            # The receipt observer sees the same schedule snapshot as lifecycle
+            # work, before the first close can block joining an agent producer.
+            if on_schedule_sample is not None:
+                on_schedule_sample(any(scheduled.values()))
             for persona_id, agent in self.agents.items():
-                scheduled = self._scheduled_on(persona_id, now)
-                self._step_agent(persona_id, agent, scheduled, time.monotonic())
+                self._step_agent(persona_id, agent, scheduled[persona_id], time.monotonic())
 
     def _step_agent(
         self, persona_id: str, agent: ScheduledAgent, scheduled: bool, tick: float

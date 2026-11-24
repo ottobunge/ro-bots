@@ -165,11 +165,35 @@ def test_existing_plan_species_kept_and_only_plant_widens_without_deadlock(catal
     assert script.plan.target_mobs == ("Thief Bug Egg",)
 
 
-def test_existing_expless_plan_keeps_species(catalog):
+def test_existing_expless_plan_keeps_species_without_exp_candidate(catalog):
     script = FarmScript(plan("Green Plant"), mob_db=catalog)
-    state = make_state(nearby=(actor("Green Plant", 1), actor("Thief Bug Egg", 2)))
+    state = make_state(nearby=(actor("Green Plant", 1),))
     assert script.step(state).actions == (Attack(1),)
     assert script.plan.target_mobs == ("Green Plant",)
+
+
+def test_expless_plan_retargets_visible_exp_species_before_starvation(catalog):
+    script = FarmScript(plan("Green Plant"), mob_db=catalog)
+    state = make_state(nearby=(actor("Green Plant", 1), actor("Thief Bug Egg", 2)))
+    assert script.step(state).actions == (Attack(2),)
+    assert script.plan.target_mobs == ("Green Plant",)
+
+
+def test_expless_plan_releases_plant_commitment_when_exp_species_arrives(catalog):
+    script = FarmScript(plan("Green Plant"), mob_db=catalog)
+    plants = make_state(nearby=(actor("Green Plant", 1),))
+    assert script.step(plants).actions == (Attack(1),)
+    mixed = make_state(nearby=(*plants.nearby, actor("Thief Bug Egg", 2, 5)))
+    assert script.step(mixed).actions == (MoveTo(124, 74),)
+
+
+def test_expless_plan_never_retargets_to_lethal_exp_candidate(catalog):
+    script = FarmScript(plan("Green Plant"), mob_db=catalog)
+    state = make_state(
+        nearby=(actor("Green Plant", 1), actor("Thief Bug Egg", 2)),
+        recent_species_damage=(("Thief Bug Egg", 1000),),
+    )
+    assert script.step(state).actions == (Attack(1),)
 
 
 def test_new_brain_plan_overrides_expless_model_choice(catalog, tmp_path):

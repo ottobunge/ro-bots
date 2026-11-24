@@ -200,19 +200,20 @@ def _time(row: dict[str, Any]) -> float:
 
 
 def summarize_swing_traces(
-    paths: list[Path], *, start: str | None = None, end: str | None = None
+    paths: list[Path], *, start: str | None = None, end: str | None = None, snapshot: bool = False
 ) -> dict[str, Any]:
     """Stream chronological JSONL shards; start inclusive, end exclusive, ISO UTC.
 
     Read pre-window snapshots to prime deduplication; never count authored
     Attack as a send. No live client, DB, runner or network access.
     """
+    limits = {path: path.stat().st_size for path in paths} if snapshot else None
     agents: dict[str, _AgentFunnel] = defaultdict(_AgentFunnel)
     lower = datetime.fromisoformat(start).timestamp() if start else float("-inf")
     upper = datetime.fromisoformat(end).timestamp() if end else float("inf")
-    for persona in _wire_personas(paths, lower, upper):
+    for persona in _wire_personas(paths, lower, upper, limits):
         agents[persona].wire = True
-    for row in _trace_rows(paths):
+    for row in _trace_rows(paths, limits):
         at = datetime.fromisoformat(row["t"]).timestamp()
         if at < upper:
             agents[row["persona"]].consume(row, active=at >= lower)
@@ -224,23 +225,37 @@ def summarize_swing_traces(
     }
 
 
-def _trace_rows(paths: list[Path]) -> Iterator[dict[str, Any]]:
+def _trace_lines(paths: list[Path], limits: dict[Path, int] | None) -> Iterator[bytes]:
+    """A live close reads only complete rows within one immutable byte snapshot."""
     for path in paths:
-        with path.open() as source:
-            for line in source:
-                yield json.loads(line)
+        remaining = limits[path] if limits is not None else None
+        with path.open("rb") as source:
+            while remaining is None or remaining > 0:
+                line = source.readline(remaining if remaining is not None else -1)
+                if not line:
+                    break
+                if remaining is not None:
+                    remaining -= len(line)
+                    if not line.endswith(b"\n"):
+                        break  # An in-flight row is not yet a committed trace record.
+                yield line
 
 
-def _wire_personas(paths: list[Path], lower: float, upper: float) -> set[str]:
+def _trace_rows(paths: list[Path], limits: dict[Path, int] | None) -> Iterator[dict[str, Any]]:
+    for line in _trace_lines(paths, limits):
+        yield json.loads(line)
+
+
+def _wire_personas(
+    paths: list[Path], lower: float, upper: float, limits: dict[Path, int] | None
+) -> set[str]:
     # First pass avoids counting decision snapshots before that tick's drain.
     personas: set[str] = set()
-    for path in paths:
-        with path.open() as source:
-            for line in source:
-                if "swing_observation" not in line:
-                    continue
-                row = json.loads(line)
-                at = datetime.fromisoformat(row["t"]).timestamp()
-                if row.get("kind") == "swing_observation" and lower <= at < upper:
-                    personas.add(row["persona"])
+    for line in _trace_lines(paths, limits):
+        if b"swing_observation" not in line:
+            continue
+        row = json.loads(line)
+        at = datetime.fromisoformat(row["t"]).timestamp()
+        if row.get("kind") == "swing_observation" and lower <= at < upper:
+            personas.add(row["persona"])
     return personas
