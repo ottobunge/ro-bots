@@ -82,7 +82,8 @@ def test_reordered_target_set_keeps_the_nonzero_streak() -> None:
 @pytest.mark.parametrize("change", ["species", "map", "leave_farming", "epoch", "expiry"])
 @pytest.mark.parametrize("intervening_step", [False, True])
 def test_returning_to_old_plan_cannot_resurrect_its_starvation(change, intervening_step) -> None:
-    brain = make_brain(_answers(), spawn_species=lambda _map: ("Pupa", "Lunatic"))
+    species = ["Pupa"]
+    brain = make_brain(_answers(), spawn_species=lambda _map: tuple(species))
     state = make_state(name=f"leg87-reset-{change}-{intervening_step}", nearby=())
     brain.start(state)
     for _ in range(TARGET_WIDEN_STEPS - 1):
@@ -91,6 +92,7 @@ def test_returning_to_old_plan_cannot_resurrect_its_starvation(change, interveni
 
     changed_state = state
     if change == "species":
+        species[:] = ["Lunatic"]
         brain._run_review(state, _answers("Lunatic"), [])
     elif change == "expiry":
         brain.handle_event(state, PlanExpired(plan_id=_farm(brain).plan.plan_id))
@@ -105,6 +107,7 @@ def test_returning_to_old_plan_cannot_resurrect_its_starvation(change, interveni
     if intervening_step:
         brain.step_script(changed_state)
     # Epoch stays new: return to the same target/map in the new session.
+    species[:] = ["Pupa"]
     returned = replace(state, native_epoch=changed_state.native_epoch)
     brain.handle_event(returned, Heartbeat(seq=2))
     assert _farm(brain)._starved == int(change == "epoch" and intervening_step)
