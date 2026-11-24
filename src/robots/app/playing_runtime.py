@@ -69,6 +69,7 @@ from robots.app.farm_combat import (
     CombatIntent,
     gameplay_serialized,
 )
+from robots.app.farm_targets import visible_farm_targets
 from robots.app.farm_travel import FieldTravelIntent
 from robots.app.field_travel import FieldTravel
 from robots.app.loot_attribution import LootAttribution
@@ -1632,9 +1633,8 @@ class PlayingClient:
         if state.map_name == intent.plan.map_name:
             targets = [
                 actor
-                for actor in state.nearby_monsters
-                if actor.name in intent.plan.target_mobs
-                and survivability_refusal(state, str(actor.name), self.mob_db) is None
+                for actor in visible_farm_targets(state, intent.plan.target_mobs, self.mob_db)
+                if survivability_refusal(state, str(actor.name), self.mob_db) is None
             ]
             return (
                 (_melee_action(min(targets, key=lambda actor: actor.distance), state),)
@@ -1690,8 +1690,9 @@ class PlayingClient:
         if not actions:
             return
         action = actions[0]
-        if isinstance(action, Attack):
+        if self._field_intent is not None and state.map_name == self._field_intent.plan.map_name:
             self.authorize_farm_actions(state, actions)
+        if isinstance(action, Attack):
             self.perform_native(action)
             return
         if not isinstance(action, MoveTo):

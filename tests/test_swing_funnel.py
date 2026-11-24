@@ -5,6 +5,7 @@ import struct
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
 
+from robots.app import swing_funnel
 from robots.app.swing_funnel import summarize_swing_traces
 from robots.app.swing_telemetry import SwingTelemetry
 from robots.app.trace_log import TraceLog
@@ -264,3 +265,36 @@ def test_pump_authorship_is_counted_once_alongside_host_authorship(tmp_path):
     assert result["totals"]["attacks_authored"] == 3
     assert result["totals"]["swings_sent"] == 2
     assert result["attack_refusals"] == {"pending_walk": 1}
+
+
+def test_live_close_snapshot_ignores_an_inflight_partial_row(tmp_path):
+    path = tmp_path / "pop_live.jsonl"
+    row = {
+        "t": "2026-11-24T03:30:00+00:00",
+        "persona": "pop_live",
+        "kind": "action_executed",
+        "action": "Attack",
+        "params": {"target_id": 123},
+    }
+    path.write_text(json.dumps(row) + '\n{"kind":"swing_observation"')
+    result = summarize_swing_traces([path], snapshot=True)
+    assert result["agents"]["pop_live"]["totals"]["attacks_authored"] == 1
+
+
+def test_live_close_snapshot_cannot_chase_later_appends(tmp_path, monkeypatch):
+    path = write_trace(
+        tmp_path,
+        [{"kind": "action_executed", "action": "Attack", "params": {"target_id": 123}}],
+    )
+    first_pass = swing_funnel._wire_personas
+
+    def append_after_first_pass(paths, lower, upper, limits):
+        personas = first_pass(paths, lower, upper, limits)
+        row = path.read_text()
+        with path.open("a") as handle:
+            handle.write(row)
+        return personas
+
+    monkeypatch.setattr(swing_funnel, "_wire_personas", append_after_first_pass)
+    result = summarize_swing_traces([path], snapshot=True)
+    assert result["agents"]["solo"]["totals"]["attacks_authored"] == 1

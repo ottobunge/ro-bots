@@ -14,6 +14,7 @@ from typing import TYPE_CHECKING, Protocol, assert_never, final
 
 from robots.adapters.merchant_stock import MISC_SELLABLE_IDS, PUBLIC_STOCK_IDS
 from robots.app.combat_survival import survivable_targets
+from robots.app.farm_targets import visible_farm_targets
 from robots.app.field_travel import FieldTravel
 from robots.app.merchant_trip import MERCHANT_RETRY_COOLDOWN_S, MerchantTrip
 from robots.app.target_species import species_score, trace_expless_skips
@@ -1413,8 +1414,9 @@ class IdleTownScript:
 
 @final
 class FarmScript:
-    """Plan-driven variant of GrindScript: attack only the plan's target mobs,
-    ignore everything else (interrupts are the brain's/plan's business). The
+    """Plan-driven farming, with visible EXP alternatives for exp-less plans.
+
+    Interrupts are the brain's/plan's business. The
     target commitment (KILL_COMMIT_WINDOW) applies inside the CURRENT
     effective filter — strict plan targets, or the widened observed species
     after the bounded starvation streak — never an out-of-filter id."""
@@ -1473,7 +1475,7 @@ class FarmScript:
 
     def _farm_step(self, state: BotState) -> ScriptOutcome:
         monsters = sorted(state.nearby_monsters, key=lambda a: a.distance)
-        targets = [m for m in monsters if m.name in self.plan.target_mobs]
+        targets = visible_farm_targets(state, self.plan.target_mobs, self._mob_db, self._trace)
         if targets:
             self._starved = 0
         else:

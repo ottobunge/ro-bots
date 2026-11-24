@@ -15822,3 +15822,60 @@ re-target farm plans off expless species on expless-heavy maps. `seed-zeny.json`
 advanced to post-window fleet (1798) per the zeny-changed rule. DB access gotcha
 recorded: `docker exec` fails with crun `oom_score_adj` EACCES (user manager at 800;
 exec-only — `docker run` client sidecar on the compose network works).
+
+## 2026-11-24 — TOWN-SOCIALIZER FIELD GATE, close-receipt kill safety, and expless-plan retargeting
+
+- Read `run/reviews/leg123-verdict.md` before implementation; branch
+  `t3/socializer-field-gate` starts at main `a80171ee`, building on `205408c8`.
+  Leg-123's 16/29 authored attackers missed the 20/29 participation bar; chat
+  reclaimed routed goals and the post-close envelope lost the receipt again.
+- Field-goal persistence: a newly authored route out of town arms one 600-second
+  monotonic wall-clock window in the existing goal-review machinery. Social/town
+  reviews, including bad-review fallback and social objective alignment, cannot
+  replace the farming goal during that window. Rejected goal-change notes never
+  reach ScheduledAgent's goal parser. Plan reauthoring and field arrival do not
+  renew the deadline; short farm-plan expiry does not erase it. Expiry, session
+  replacement, or clock reversal releases the hold. Warning logs and trace taps
+  name `goal_persistence_held` and `goal_persistence_expired`. Chat packets remain
+  available while the existing independent keepalive/pump handles field travel.
+- Receipt safety: AgentHost exposes its exact schedule snapshot to a passive
+  observer before lifecycle work starts. The population runner seals the close
+  sample and complete receipt, including close-bounded swing conversion, before
+  any schedule-close disconnect/join. A duration close also seals before final
+  host teardown. File and directory fsync plus atomic replacement make the JSON
+  durable; drain activity never overwrites the sealed verdict. The envelope's
+  duration law is unchanged: continue carrying RuntimeMaxSec = duration + 900.
+- EXP retargeting: scripts and the field-arrival keepalive share a visible-target
+  selector. A confirmed all-zero-EXP plan can immediately select survivable,
+  received EXP-bearing alternatives, releasing any plant actor commitment in
+  the old effective filter. Unknown rewards, mixed/EXP plans, and plant-only
+  fallback remain supported. Plan metadata stays intact, and walkability remains
+  in native runtime dispatch. The existing species-retention test keeps both
+  assertions with a plant-only fixture; new mixed-view tests cover retargeting.
+- Offline TDD RED: 8 failures reproduced goal reclaim, missing close receipt, and
+  expless-plan target starvation (41 other cases passed). Initial GREEN: 49 cases;
+  broader reconciliation: 198 passed. Regression coverage includes 200 reviews
+  without lease extension, arrival/plan expiry, session/clock boundaries, actual
+  SIGKILL during both schedule and duration drains, schedule-observer ordering,
+  EXP retarget/commitment release, survivability, and arrival attack without a
+  decide. Full gate result is recorded below after completion.
+- Fresh-worktree prerequisites link the main checkout's two knowledge databases
+  and `rathena/config.log`; pinned rAthena source was initialized from the local
+  checkout. No `spikes/` changes, live probes, Docker or heavengraph operations.
+  The leg-124 >=20/29 authored-attacker bar remains for coordinator validation.
+- Close-reader follow-up RED→GREEN: reproducer failed before the snapshot API;
+  the swing reader now fixes per-file byte limits across both analysis passes,
+  ignores an uncommitted trailing row, and cannot chase concurrent appends.
+  Seventeen receipt/funnel cases pass, including a deterministic append between
+  passes. The earlier full run was intentionally interrupted after 4,675 passes
+  to include this close-path fix in a fresh complete gate.
+- Keepalive retarget follow-up RED→GREEN: a distant EXP alternative originally
+  left the previous plant CombatIntent installed. Arrival approaches now
+  authorize their new target before movement, so the combat pump follows the
+  EXP target instead of resuming stale plant swings after arrival. The new
+  offline regression failed on retained target 123 versus replacement 456.
+- Final pre-commit gate **GREEN**: `nix develop -c task --dir . check` passed
+  formatting and every static check; **7,627 tests + 65 subtests passed**, one
+  skipped, 95.84% coverage (413.49 seconds for the test phase). The affected
+  pump/receipt/funnel reconciliation also passed all 61 focused cases. The
+  participation bar remains unmeasured here because no live probe was run.
