@@ -219,7 +219,7 @@ def test_plan_authors_from_spawn_knowledge_when_observation_empty(state) -> None
     brain = make_brain(answers=answers, spawn_species=spawn_species)
     plan = brain._setup_farm_plan(state, answers, [])
     assert plan is not None
-    assert plan.target_mobs == ("Poring",)
+    assert plan.target_mobs == ("Poring", "Lunatic")
     assert seen_maps == [state.map_name]
 
 

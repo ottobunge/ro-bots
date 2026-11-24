@@ -15990,3 +15990,46 @@ exec-only — `docker run` client sidecar on the compose network works).
   ground truth (species overlap + distances, same construction as the
   group-0003 cluster); secondary, re-arm the eefb95c4-era loot-ownership
   admission before the in-window-loot sell link compounds.
+
+## [2026-11-24] fix | POP0069-PLAN-QUALITY — retain declared field alternatives
+- Read `run/reviews/leg125-verdict.md` and `leg124-verdict.md` before the audit.
+  Source: main checkout `.work/runtime/population-live/traces/pop_*.jsonl`,
+  filtered to 2026-11-24 13:00 <= UTC < 14:30 (`plan_authored`, `goal_review`,
+  received decision contexts, script steps and actions).
+- Premise correction: the selected species ARE declared on their plan maps.
+  pop_0069 authored 321 plans: prt_fild08 Lunatic 232 / Poring 12 / Drops 4 /
+  Pupa 3, and pay_fild04 Deviling 70. pop_0003 authored 259 plans, including
+  175 prt_fild06 Thief Bug and 64 prt_fild08 Lunatic. The pinned field source
+  is `rathena/npc/pre-re/mobs/fields/prontera.txt` (not prt_fild08.txt):
+  Lunatic 40 / Pupa 20 / Poring 70 / Drops 10.
+- Root cause in `EventDrivenBrain._farm_targets`: an empty per-agent observed
+  view falls back to the correctly wired spawn-species index, then greatest
+  total EXP is used as an exclusive species filter. This collapses prt_fild08
+  to Lunatic and pay_fild04 to the rare Deviling. A retained empty-view plan
+  excludes subsequently received common species until another review or 20
+  actual starvation evaluations. Spawn declarations establish map membership,
+  not presence or reachability; neither cross-map persona goal keys nor empty
+  iRO corpora explain this collapse. Both cohorts use the same script/runtime
+  targeting and walkability path.
+- Fix: declaration-backed plans retain all ranked non-zero/unknown-EXP species;
+  all-resource declarations remain viable. Received-view authoring retains its
+  existing narrow choice. The runtime continues to rank received candidates,
+  apply survivability, approach and determine walkability. No script/runtime
+  walkability changes, persona overrides or fabricated live targets.
+- TDD: initial RED 8 failures / 3 passes against pinned public declarations and
+  mob rewards (Poring/Pupa/Drops excluded; Deviling-only plan). GREEN adds 15
+  regressions covering delayed common-species arrival at melee and approach
+  distance, EXP preference, map isolation, resource/unknown fallback and actual
+  build_host destination-plan composition. Updated the cadence fixture to
+  change the actual species set, preserving its reset assertion.
+- Participation is NOT live-closed: pop_0069 also received 6,566 ChatHeard vs
+  40 MonsterSpotted events; g02m00 and s00 each ran only two script steps
+  while sending 246 and 241 chats respectively. The same Lunatic-only shape
+  appears on pop_0003, so plan quality alone cannot explain the cohort split.
+  That independent scheduling/chat signature needs coordinator follow-up;
+  secondary pickup work is deferred. No population run or main merge.
+- Validation: focused suite **120 passed**. Full required gate
+  `nix develop -c task --dir . check` **GREEN**: black, all six static checks,
+  **7,663 passed / 65 subtests passed / 1 existing skip / 95.86% coverage**
+  (377.15s). No `spikes/` changes. This log and implementation ship in the
+  same commit on `t3/pop0069-plan-quality`, based on main `2e5de5ea`.

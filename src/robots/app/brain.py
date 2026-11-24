@@ -1341,7 +1341,13 @@ class EventDrivenBrain:
         )
 
     def _farm_targets(self, map_name: str, target: str) -> list[str]:
-        """Prefer EXP when authoring; an installed plan keeps its species."""
+        """Rank EXP without turning spawn declarations into a rare-species lock.
+
+        An observed view can support a narrow choice. Declarations say what
+        lives on a map, not what is currently available: retain their viable
+        alternatives so later received mobs can engage before another review.
+        Runtime alone owns their reachability and engagement admission.
+        """
         mobs = list(self._mob_db.mobs_on_map(map_name)) if self._mob_db else []
         known = [m.name for m in mobs]
         if not known and self._spawn_species is not None:
@@ -1349,8 +1355,7 @@ class EventDrivenBrain:
         if not known:
             return []
         known.sort(key=lambda name: (species_score(name, self._mob_db), name != target))
-        best = species_score(known[0], self._mob_db)
-        preferred = [name for name in known if species_score(name, self._mob_db) == best]
+        preferred = self._preferred_farm_targets(known, target, observed=bool(mobs))
         trace_expless_skips(
             known,
             preferred[0],
@@ -1359,6 +1364,16 @@ class EventDrivenBrain:
             source="farm_plan",
             map_name=map_name,
         )
+        return preferred
+
+    def _preferred_farm_targets(
+        self, known: list[str], target: str, *, observed: bool
+    ) -> list[str]:
+        """A declaration's reward ordering is a preference, not an availability claim."""
+        if not observed:
+            return [name for name in known if not species_score(name, self._mob_db)[0]] or known
+        best = species_score(known[0], self._mob_db)
+        preferred = [name for name in known if species_score(name, self._mob_db) == best]
         return [target] if target in preferred else preferred[:2]
 
     def _farm_destination(self, state: BotState) -> str | None:
