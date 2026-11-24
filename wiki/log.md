@@ -15879,3 +15879,33 @@ exec-only — `docker run` client sidecar on the compose network works).
   skipped, 95.84% coverage (413.49 seconds for the test phase). The affected
   pump/receipt/funnel reconciliation also passed all 61 focused cases. The
   participation bar remains unmeasured here because no live probe was run.
+
+## 2026-11-24 — leg-124: receipt kill-safety PROVEN (close-write before drain); sell conversions continuing (3 sales +638z); attackers 8/29 — spread bar NOT MET (PARTIAL)
+
+- Window Tue 09:00-10:30 Madrid, 29 personas `[[1, 9.0, 10.5]]`, launched 08:42:45 detached
+  under `systemd-run --user --unit=leg124-runner` with duration 8,235 s (close + 1,800 s slack)
+  and RuntimeMaxSec 9,135 s = duration + 900 (CARRY LAW). Preflight DECIDE-OK 0.46 s / :8092 200.
+- **Bar 2 MET, PROVEN**: `population-receipt-124-1795506172.json` (4.1 MB) mtime 10:30 —
+  written exactly at window close while the unit was still active (envelope to 11:00/11:15).
+  Close-write preceded drain; the leg-121-123 era's 3 RuntimeMaxSec receipt losses are
+  eliminated by design and now live-proven.
+- **Bar 4 MET**: three in-window sell conversions (zenylog rows 34-36, DB UTC): PoringMuffin14
+  +630z, YuffieFy81 +4z, PipinWalker +4z. Fleet zeny 1,798 -> 2,436 (+638 = exact sales sum);
+  picklog M135/P65/L67/S59 all above baselines; both converting agents closed inside prt_in.
+- **Bar 1 NOT MET — 8/29 attackers** vs >=20/29 (263 authored, 128 swings, 2,267 damage,
+  16 kills, 108/38 XP, 12 drops, 3 pickups). The socializer field gate ROUTED fine
+  (2,090 `goal_field_routed` taps; 21+ agents ON field grounds at close in the DB) and chat
+  did not re-claim field goals (5 expirations only) — but attack authorship stayed
+  group-shaped: all six group-0003 members attacked, only 2/22 pop_0069 agents did.
+- **Bar 3 NOT EXERCISED**: `farm_retarget` taps 0 (no agent farmed into an expless target;
+  taps-at-zero = never-exercised, never a pass).
+- Decide health: 9,339 in-window decide_response rows, 22.1 % capped, true-success p50 13.78 s
+  (leg-123: 16.4 % / 13.01 s) — same load-dependent saturation band.
+- Runner health: 29/29 online all window, 13,569 steps, 0 step_errors, transport recovery
+  attempts (3 agents) none exhausted. DB readback via docker run client sidecar on
+  ro-bots-e2e_default (exec still broken; secret read inside the container only).
+- Next signature: the walk->swing seam for the non-attacking 21 — 373 `pending_walk` refusals
+  say arrivals land mid-walk and the deferred swing is rarely re-minted; author the arrival
+  swing in the same tick budget, then re-measure. Secondary: pop_0069 farm-plan target
+  quality (the 8/29 split is group-shaped, not distance-shaped).
+- seed-zeny.json refreshed to the post-leg-124 fleet baseline 2,436 (zeny CHANGED).
