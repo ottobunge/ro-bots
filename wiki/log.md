@@ -1,7 +1,7 @@
 ---
 title: Current implementation log
 created: 2026-10-05
-updated: 2026-10-06
+updated: 2026-11-24
 type: guide
 status: accepted
 tags: [ops, testing]
@@ -16070,3 +16070,48 @@ exec-only — `docker run` client sidecar on the compose network works).
   governor under an active farm plan (chat only after the script stepped, or a
   per-window Say budget) and re-measure participation. Secondary: pop_0069_s01's
   cross-map plan targets. Full readout: `run/reviews/leg126-verdict.md`.
+
+
+## [2026-11-24] fix | CHAT-BUDGET-GATE — protect active farm decisions from chat storms
+- Read `run/reviews/leg126-verdict.md` first. Leg-126's plan repair succeeded,
+  but attackers regressed 10/29 -> 6/29 while zero-authored agents spent their
+  decisions on Say storms (g02m00: 245 Say / 1 MoveTo / 0 Attack).
+- `EventDrivenBrain` now gives each live farm plan a rolling **120-second**
+  chat window: at most **3 ChatHeard decisions and 3 outgoing chat actions**.
+  Attempts count even when the generated reply is empty/repeated, so silent
+  chat cannot keep consuming the decide budget. Saturated ChatHeard events
+  return before Clef and the reply LLM; the script can continue to walk/attack.
+- The gate applies only to an unspent plan with targets (and, when spawn
+  knowledge is wired, an intersection with that plan map's declarations).
+  Initiative is disabled while that plan is live. Public, party and whisper
+  output, reactive premades, party events, human reports and coordination
+  chat share the message cap. Existing cooldown/repeat checks remain under
+  the cap, including on farming premades that previously bypassed them.
+- Heartbeat plan replacement cannot refill the rolling allowance. Plan expiry
+  events, the authored duration deadline, dropping the plan, terminal farm
+  scripts and session resets lift the gate. No-plan socials retain their
+  previous behavior. Incoming chat still enters private memory, interaction
+  ingestion and objective-offer observation; invites and other non-chat
+  coordination actions remain actionable. Coordination uses game socials.
+- `chat_budget_gated` traces identify `farm_decide_cap`, `farm_message_cap`
+  or `farm_plan_initiative`, plus source, plan ID, current/plan map, window,
+  limit and decision/message counts. No live participation closure is claimed;
+  the next population leg must measure script steps and attacker participation.
+- TDD: initial **RED 13 failed / 8 passed**, then **24 new regressions GREEN**;
+  expanded focused suite **140 passed**. Explicit initiative chance=1 coverage
+  avoids the import-time conftest initiative suppression. Regressions also pin
+  rolling boundaries, plan lifecycle, agent isolation, all outgoing channels,
+  cooldown/repeats, inbound objective acceptance and post-cap farm attacks.
+- Secondary audit: `_setup_farm_plan` already selects `_farm_targets` from
+  `state.map_name`, with declaration lookup keyed by that map. In the original
+  s01 JSONL for 2026-11-24 19:00 <= UTC < 20:30, 60/61 plan rows immediately
+  follow received world events reporting **pay_fild04**, and those plans are
+  also pay_fild04 (the first has no preceding in-window event). This differs
+  from the verdict's prt_fild08 premise; no speculative persona-map fix.
+- Work is isolated on `t3/chat-budget-gate` from main `4aea1e44`, with the main
+  checkout's knowledge DB and config.log links supplied. The existing optional
+  wiki-corpus skip remains (the main iro-wiki.db link is itself unresolved).
+  No `spikes/` edits, population launch or merge to main.
+- Full required gate `nix develop -c task --dir . check` **GREEN**: black,
+  all six static checks, **7,687 passed / 65 subtests passed / 1 existing skip /
+  95.88% coverage** (366.32s). Implementation, tests and this log ship together.

@@ -50,6 +50,7 @@ from robots.domain.actions import (
     PartyChat,
     Rest,
     Say,
+    WhisperTo,
 )
 from robots.domain.decisions import PREMADE_CHAT, build_decision_request
 from robots.domain.events import (
@@ -85,6 +86,8 @@ if TYPE_CHECKING:
 REVIEW_BAD = 0.5
 URGENCY_TALK = 1.5
 SCRIPT_TRACE_PERIOD_S = 10.0
+FARM_CHAT_WINDOW_S = 120.0
+FARM_CHAT_LIMIT = 3
 logger = logging.getLogger(__name__)
 
 # The starved-social bounce (leg 31): after this many consecutive heartbeat
@@ -186,6 +189,9 @@ class EventDrivenBrain:
         self._escape: tuple[int, int] | None = None
         self._recovery_epoch: int | None = None
         self._plan: FarmPlan | None = None
+        self._plan_chat_deadline = 0.0
+        self._farm_chat_decisions: list[float] = []
+        self._farm_chat_messages: list[float] = []
         self._field_goal: FieldGoalPersistence | None = None
         self._plan_seq = 0
         self._mob_db: MobDatabase | None = mob_db
@@ -314,6 +320,8 @@ class EventDrivenBrain:
             "blocked",
         ):
             return self._handle_npc_event(state, event)
+        if isinstance(event, ChatHeard) and self._gate_farm_chat_event(state, event):
+            return TickResult((), {}, notes=("farm chat budget gated",))
         return self._handle_world_event(state, event, trigger=trigger)
 
     def _invite_actions(
@@ -452,15 +460,8 @@ class EventDrivenBrain:
         return TickResult((NpcSelect(dialog.npc_id, index),), answers)
 
     def _decision_request(self, state: BotState, event: WorldEvent) -> dict[str, Any]:
-        if self.memory is not None and isinstance(event, ChatHeard):
-            self.memory.remember(
-                "chat",
-                f"heard [{event.line.channel}] {event.line.sender}: {event.line.text}",
-                ts=event.line.at,
-            )
-        if self._interaction_ingest is not None and isinstance(event, ChatHeard):
-            # the interaction layer classifies the premade categories itself
-            self._interaction_ingest(event.line)
+        if isinstance(event, ChatHeard):
+            self._remember_heard_chat(event)
         request = build_decision_request(
             state,
             self.memory.view() if self.memory is not None else None,
@@ -481,6 +482,17 @@ class EventDrivenBrain:
             self._satisfy_group_diff(self._pending_party_event)
             request["state"]["wants"] = self.wants.decide_block()
         return request
+
+    def _remember_heard_chat(self, event: ChatHeard) -> None:
+        """Listening survives the farming gate; no model call is needed."""
+        if self.memory is not None:
+            self.memory.remember(
+                "chat",
+                f"heard [{event.line.channel}] {event.line.sender}: {event.line.text}",
+                ts=event.line.at,
+            )
+        if self._interaction_ingest is not None:
+            self._interaction_ingest(event.line)
 
     def _observe_want_events(self, state: BotState, event: WorldEvent) -> None:
         """The brain-observable satisfactions (design section 5 item 2).
@@ -547,13 +559,16 @@ class EventDrivenBrain:
         goal = self._persistent_review_goal(state, goal, goal_notes)
         notes.extend(goal_notes)
         self._trace_review(state, goal, trigger)
-        reports = self._human_report_announce(state)
         if self.is_recovering and self._choice(answers, "change_goal", "") == "keep":
-            return [*reports, *self._coordination_review(state, answers, notes)]
+            return [
+                *self._human_report_announce(state),
+                *self._coordination_review(state, answers, notes),
+            ]
         plan = self._setup_farm_plan(state, answers, notes) if self._wants_farming(goal) else None
         self._arm_field_goal(state, goal, plan)
         streak = self._inherit_widen_streak(plan)
         self._plan = plan
+        self._plan_chat_deadline = time.monotonic() + plan.duration_s if plan else 0.0
         self._trace_plan(goal, plan, trigger)
         if plan is not None:
             self._script = FarmScript(
@@ -569,6 +584,7 @@ class EventDrivenBrain:
         else:
             self._script = self._goal_script(goal, state)
         notes.append(f"script->{type(self._script).__name__}")
+        reports = self._human_report_announce(state)
         review_actions: list[GameAction] = list(self._party_event_announce(state, answers, notes))
         if not review_actions:
             initiative = self._initiative_text(state)
@@ -647,6 +663,8 @@ class EventDrivenBrain:
         The leg-15 announce path was dead (URGENCY_TALK=1.5 above the 0-1
         chat_urgency range), so nobody ever spoke first; this paces the
         goal-keyed premade pool instead (CHAT_INITIATIVE_MIN_S/CHANCE)."""
+        if self._farm_chat_gated(state, "initiative"):
+            return None
         now_s = time.monotonic()
         last = self._last_initiative_monotonic
         min_s = self._initiative_min_s
@@ -657,16 +675,85 @@ class EventDrivenBrain:
         if premade_id not in PREMADE_CHAT:
             return None
         text = self._expand_premade(PREMADE_CHAT[premade_id], state)
-        if not should_send_chat(
+        if not self._admit_chat(state, text, governed=True):
+            return None
+        self._last_initiative_monotonic = now_s
+        return PartyChat(text) if state.in_party else Say(text)
+
+    def _gate_farm_chat_event(self, state: BotState, event: ChatHeard) -> bool:
+        if not self._farm_chat_active():
+            return False
+        if not self._farm_chat_gated(state, "chat_event"):
+            self._farm_chat_decisions.append(time.monotonic())
+            return False
+        self._remember_heard_chat(event)
+        self._coordination_outsider(event.line, state)
+        if self.wants is not None:
+            self._observe_want_events(state, event)
+        return True
+
+    def _farm_chat_active(self) -> bool:
+        """Only an unspent knowledge-backed farm commitment limits social time."""
+        plan = self._plan
+        if plan is None or not plan.target_mobs or time.monotonic() >= self._plan_chat_deadline:
+            return False
+        return self._spawn_species is None or bool(
+            set(plan.target_mobs).intersection(self._spawn_species(plan.map_name))
+        )
+
+    def _farm_chat_gated(self, state: BotState, source: str) -> bool:
+        """Bound both chat wakeups and packets, across heartbeat plan replacement."""
+        if not self._farm_chat_active():
+            return False
+        cutoff = time.monotonic() - FARM_CHAT_WINDOW_S
+        self._farm_chat_decisions = [t for t in self._farm_chat_decisions if t > cutoff]
+        self._farm_chat_messages = [t for t in self._farm_chat_messages if t > cutoff]
+        reason = self._farm_chat_reason(source)
+        if reason:
+            self._trace_farm_chat_gate(state, source, reason)
+        return bool(reason)
+
+    def _farm_chat_reason(self, source: str) -> str:
+        if source == "initiative":
+            return "farm_plan_initiative"
+        if source == "chat_event" and len(self._farm_chat_decisions) >= FARM_CHAT_LIMIT:
+            return "farm_decide_cap"
+        if len(self._farm_chat_messages) >= FARM_CHAT_LIMIT:
+            return "farm_message_cap"
+        return ""
+
+    def _trace_farm_chat_gate(self, state: BotState, source: str, reason: str) -> None:
+        plan = self._plan
+        if self._trace is not None and plan is not None:
+            self._trace.log(
+                "chat_budget_gated",
+                reason=reason,
+                source=source,
+                plan_id=plan.plan_id,
+                map=state.map_name,
+                plan_map=plan.map_name,
+                window_s=FARM_CHAT_WINDOW_S,
+                limit=FARM_CHAT_LIMIT,
+                chat_decisions=len(self._farm_chat_decisions),
+                chat_messages=len(self._farm_chat_messages),
+            )
+
+    def _admit_chat(self, state: BotState, text: str, *, governed: bool = False) -> bool:
+        """Keep legacy socials outside farming; retain cooldown/repeat below the cap."""
+        active = self._farm_chat_active()
+        if not active and not governed:
+            return True
+        if self._farm_chat_gated(state, "outgoing") or not should_send_chat(
             text,
             last_text=self._last_chat_text,
             since_s=self._since_last_chat(),
             cooldown_s=self._chat_cooldown_s,
         ):
-            return None
-        self._last_initiative_monotonic = now_s
+            return False
         self._record_chat(text)
-        return PartyChat(text) if state.in_party else Say(text)
+        if active:
+            self._farm_chat_messages.append(time.monotonic())
+        return True
 
     def _chat_cooldown_ok(self) -> bool:
         """The pre-generation rate gate: no escalation inside the cooldown."""
@@ -746,7 +833,17 @@ class EventDrivenBrain:
         formed = self._coordination.review_actions(state, answers)
         if formed:
             notes.append("objective coordination packets")
-        return list(formed)
+        return self._budget_chat_actions(state, formed)
+
+    def _budget_chat_actions(
+        self, state: BotState, actions: Sequence[GameAction]
+    ) -> list[GameAction]:
+        return [
+            action
+            for action in actions
+            if not isinstance(action, (Say, PartyChat, WhisperTo))
+            or self._admit_chat(state, action.text)
+        ]
 
     def _record_member_join(self, leader_name: str) -> None:
         """MY accept becomes MY objective record (the goal-alignment source)."""
@@ -777,6 +874,8 @@ class EventDrivenBrain:
             return []
         notes.append(f"party-event chat ({kind})")
         expanded = self._expand_premade(text, state)
+        if not self._admit_chat(state, expanded):
+            return []
         return [PartyChat(expanded) if state.in_party else Say(expanded)]
 
     def _human_report_announce(self, state: BotState) -> list[GameAction]:
@@ -791,14 +890,8 @@ class EventDrivenBrain:
         actions: list[GameAction] = []
         for report in self._human_reports():
             text = report.line
-            if not should_send_chat(
-                text,
-                last_text=self._last_chat_text,
-                since_s=self._since_last_chat(),
-                cooldown_s=self._chat_cooldown_s,
-            ):
+            if not self._admit_chat(state, text, governed=True):
                 continue
-            self._record_chat(text)
             actions.append(PartyChat(text) if state.in_party else Say(text))
         return actions
 
@@ -865,6 +958,8 @@ class EventDrivenBrain:
         if any(isinstance(action, Rest) for action in outcome.actions):
             self._recovering = True
         if outcome.status in (ScriptStatus.DONE, ScriptStatus.FAILED):
+            if isinstance(self._script, FarmScript):
+                self._plan = None
             self._script = None
         return outcome
 
@@ -1179,22 +1274,17 @@ class EventDrivenBrain:
                 style=self._chat_style,
             )
             reply = self._chat.generate_chat(prompt, system=system)
-            if not should_send_chat(
-                reply,
-                last_text=self._last_chat_text,
-                since_s=self._since_last_chat(),
-                cooldown_s=self._chat_cooldown_s,
-            ):
+            if not self._admit_chat(state, reply, governed=True):
                 return [], False
-            self._record_chat(reply)
             return [Say(reply)], True
         outsider = self._coordination_outsider(event.line, state)
         if outsider is not None:
-            return [outsider], False
+            return self._budget_chat_actions(state, [outsider]), False
         premade = self._premade_text(state, answers, min_urgency=None)
         if premade is not None:
             text, is_party = premade
-            return [PartyChat(text) if is_party else Say(text)], False
+            if self._admit_chat(state, text):
+                return [PartyChat(text) if is_party else Say(text)], False
         return [], False
 
     # -- helpers -------------------------------------------------------------
