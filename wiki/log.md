@@ -15957,3 +15957,36 @@ exec-only — `docker run` client sidecar on the compose network works).
   the rAthena submodule stayed at its pinned revision. The earlier full test
   run was interrupted to include the evidence-driven authoring fix in this
   fresh complete gate.
+
+## 2026-11-24 — leg-125 verdict: arrival swing works where engaged; pop_0069 target quality is the participation wall
+
+- Launch 13:39:22 CET (preflight DECIDE-OK 0.62s answers=10, :8092 health 200),
+  systemd-run unit `leg125-runner` (RuntimeMaxSec 8400), runner duration 7,500s,
+  window Tue 14:00-15:30 Madrid, HEAD `a99ef6bf`. Receipt
+  `population-receipt-125-1795523969.json` hit disk at 15:32:40 with the unit
+  still active — the ad3d2ce0 close-write kill-safety contract held again.
+- Runner health: 29/29 online all window, 16,568 steps, 0 step_errors; 2
+  transport rebuild attempts, none exhausted. Decide health: 9,546 in-window
+  `decide_response` rows, 26.7% capped, true-success p50 13.97s — the same
+  load-dependent saturation band (leg-124: 22.1% / 13.78s).
+- Bars: (1) attackers **10/29 vs >=20 — NOT MET** (leg-124: 8/29); (2) kills
+  **23 > 16** and drops_seen **18** — MET on kills+drops, but pickup_success
+  **0** over 2 attempts; (3) sell conversions **MET**: fleet 2,436 -> 2,457
+  (+21), zenylog 36 -> 39 (+3 S-rows), exactly 3 in-window conversions
+  (KafraMuffin52 +8, NyxNyan18 +6, xXLunasongXx +7), zero purchases;
+  (4) receipt close-write MET. `seed-zeny.json` advanced to 2,457 (zeny CHANGED).
+- Arrival-swing seam (223827d2) verdict: **works where engaged, did not widen
+  participation** — 290 authored -> 127 swings -> 119 damage events -> 2,102
+  damage -> 23 kill credits; `pending_walk` refusals 373 -> 212. Instrument
+  correction: `arrival_swing_*`/`drops_seen` taps are receipt-side
+  (`swing_conversion_v1` SwingTelemetry ring), NOT log lines; only
+  `sell_contact_authored` is a log line.
+- The 19 zero-attack agents are 17 pop_0069 (g02/g03/g04 entirely + all 4
+  solos) + pop_0003_g01m01 + pop_0069_g00m01 — zero AUTHORED, refusal-shaped
+  nothing: pop_0069 farm-plan target quality is now the DOMINANT limiter.
+  Second signature: pickup regression (leg-124 3 pickups -> 0/2 this window)
+  starves the 205408c8 in-window-loot sell link.
+- Named next: audit pop_0069 authored plans/spawn targets against prt_fild08
+  ground truth (species overlap + distances, same construction as the
+  group-0003 cluster); secondary, re-arm the eefb95c4-era loot-ownership
+  admission before the in-window-loot sell link compounds.
