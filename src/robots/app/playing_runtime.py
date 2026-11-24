@@ -67,6 +67,7 @@ from robots.app.farm_combat import (
     COMBAT_INTENT_SECONDS,
     COMBAT_PUMP_INTERVAL_S,
     CombatIntent,
+    FarmSightings,
     gameplay_serialized,
 )
 from robots.app.farm_targets import visible_farm_targets
@@ -437,8 +438,10 @@ class PlayingClient:
         monotonic: Callable[[], float] = time.monotonic,
         keepalive_interval_s: float | None = None,
         seed_zeny: int | None = None,
+        spawn_clusters: dict[str, tuple[tuple[int, int], ...]] | None = None,
     ) -> None:
         self.wire, self.cache = wire, cache
+        self._spawn_clusters = spawn_clusters or {}
         self._init_merchant_navigation()
         self.public_skill_knowledge = public_skill_knowledge
         self._now = monotonic
@@ -524,6 +527,8 @@ class PlayingClient:
         self._loot_stock = LootStock()
         self._combat_intent: CombatIntent | None = None
         self._arrival_intent: CombatIntent | None = None
+        self._farm_sightings: FarmSightings | None = None
+        self._sighting_intent: CombatIntent | None = None
         self._combat_pump_at = float("-inf")
         self._trip_walk_seq: int | None = None
         self._trip_leg_cells_sent = 0
@@ -656,6 +661,8 @@ class PlayingClient:
         self._pending = None
         self._combat_intent = None
         self._arrival_intent = None
+        self._farm_sightings = None
+        self._sighting_intent = None
         self._epoch = None
         self._patrol = None
         self._keepalive_at = None
@@ -981,6 +988,7 @@ class PlayingClient:
         state = replace(
             state,
             merchant_route_distance=self._merchant_route_distance(state),
+            farm_roam_target=self._spawn_roam_target(state),
             roam_escape_target=self._expless_roam.target(
                 state, self._now(), self.merchant_reachable
             ),
@@ -992,6 +1000,22 @@ class PlayingClient:
         self._merchant_crossings.observe(map_name, state.name)
         self._drain_retry_talk(state)
         return state
+
+    def _spawn_roam_target(self, state: BotState) -> tuple[int, int] | None:
+        clusters: tuple[tuple[int, int], ...] = self.__dict__.get("_spawn_clusters", {}).get(
+            state.map_name, ()
+        )
+        ordered = sorted(
+            clusters,
+            key=lambda cell: ((cell[0] - state.x) ** 2 + (cell[1] - state.y) ** 2, cell),
+        )
+        for cell in ordered:
+            if self.merchant_reachable(state.map_name, (state.x, state.y), cell) is False:
+                continue
+            # Once in the region, keep searching locally rather than parking
+            # on a declaration center (which is not a live target receipt).
+            return cell if max(abs(cell[0] - state.x), abs(cell[1] - state.y)) > 12 else None
+        return None
 
     def _merchant_route_distance(self, state: BotState) -> tuple[int, int, int] | None:
         if merchant_pickup_required(state) or merchant_admission_refusal(state) is not None:
@@ -1545,6 +1569,7 @@ class PlayingClient:
             at=self._now(),
         )
         self._note_arrival_deferred(reason, target)
+        self._note_sighting_deferred(reason, target)
 
     def _note_arrival_deferred(self, reason: str, target: int) -> None:
         arrival = self.__dict__.get("_arrival_intent")
@@ -1556,6 +1581,20 @@ class PlayingClient:
                 target_id=target,
                 at=self._now(),
             )
+
+    def _note_sighting_deferred(self, reason: str, target: int) -> None:
+        intent = self.__dict__.get("_sighting_intent")
+        if intent is not None and intent.target_id == target and intent is self._combat_intent:
+            self._sighting_tap("deferred", target, reason)
+
+    def _sighting_tap(self, outcome: str, target: int, reason: str) -> None:
+        self._swing_tap().note(
+            "sighting_swing",
+            tap=f"sighting_swing_{outcome}",
+            target_id=target,
+            reason=reason,
+            at=self._now(),
+        )
 
     def _swing_tap(self) -> SwingTelemetry:
         telemetry = self.__dict__.get("_swing_telemetry")
@@ -1618,6 +1657,46 @@ class PlayingClient:
         if survivability_refusal(state, str(actor.name), self.mob_db) is not None:
             return "no_survivability"
         return None
+
+    @gameplay_serialized
+    def authorize_farm_sightings(
+        self, state: BotState, plan: FarmPlan | None, *, remaining_s: float
+    ) -> None:
+        previous = self.__dict__.get("_farm_sightings")
+        if plan is None:
+            self._farm_sightings = None
+            if self._combat_intent is self.__dict__.get("_sighting_intent"):
+                self._combat_intent = self._arrival_intent = None
+            return
+        if previous is not None and (previous.plan, previous.epoch) == (plan, state.native_epoch):
+            return  # Host/script ticks cannot extend an already bound plan.
+        self._farm_sightings = FarmSightings(
+            plan, state.native_epoch, self._now(), self._now() + min(plan.duration_s, remaining_s)
+        )
+        if self._combat_intent is self.__dict__.get("_sighting_intent"):
+            self._combat_intent = self._arrival_intent = None
+
+    def _pump_farm_sightings(self, state: BotState) -> None:
+        authority = self.__dict__.get("_farm_sightings")
+        if authority is None or not authority.valid(state, self._now()):
+            return
+        targets = authority.fresh_targets(state)
+        if not targets or self._combat_intent is not None:
+            return
+        target = min(targets, key=lambda actor: (actor.distance, actor.id))
+        if not self._combat_pump_ready(state):
+            self._sighting_tap("deferred", target.id, "priority_yield")
+            return
+        if survivability_refusal(state, str(target.name), self.mob_db) is not None:
+            self._sighting_tap("deferred", target.id, "no_survivability")
+            return
+        intent = self._authorize_farm_target(state, target, renew=False)
+        self._sighting_intent = intent
+        self._sighting_tap("minted", target.id, "combat_intent")
+        if self._pending is not None:
+            self._note_sighting_deferred("pending_walk", target.id)
+            return
+        self._continue_farm_target(state, intent)
 
     @gameplay_serialized
     def authorize_field_travel(
@@ -1741,33 +1820,36 @@ class PlayingClient:
                 actor for actor in state.nearby_monsters if _melee_action(actor, state) == action
             ]
             if len(targets) == 1:
-                target = targets[0]
-                intent = self._combat_intent
-                if (
-                    not renew
-                    and intent is not None
-                    and (intent.target_id, intent.epoch, intent.map_name)
-                    == (target.id, state.native_epoch, state.map_name)
-                ):
-                    return
-                self._arrival_intent = None
-                self._combat_pump_at = self._now()
-                self._combat_intent = CombatIntent(
-                    target.id,
-                    state.native_epoch,
-                    state.map_name,
-                    self._now() + COMBAT_INTENT_SECONDS,
-                )
-                self._swing_tap().note(
-                    "combat_intent",
-                    tap="farm_target_authored",
-                    target_id=target.id,
-                    species=str(target.name),
-                    at=self._now(),
-                )
+                self._authorize_farm_target(state, targets[0], renew=renew)
                 return
         self._combat_intent = None
         self._arrival_intent = None
+
+    def _authorize_farm_target(
+        self, state: BotState, target: ActorRef, *, renew: bool
+    ) -> CombatIntent:
+        intent = self._combat_intent
+        if (
+            not renew
+            and intent is not None
+            and (intent.target_id, intent.epoch, intent.map_name)
+            == (target.id, state.native_epoch, state.map_name)
+        ):
+            return intent
+        self._arrival_intent = None
+        self._combat_pump_at = self._now()
+        self._combat_intent = CombatIntent(
+            target.id, state.native_epoch, state.map_name, self._now() + COMBAT_INTENT_SECONDS
+        )
+        self._swing_tap().note(
+            "combat_intent",
+            tap="farm_target_authored",
+            target_id=target.id,
+            species=str(target.name),
+            at=self._now(),
+        )
+
+        return self._combat_intent
 
     def _revoke_combat_for(self, action: GameAction) -> None:
         if not isinstance(action, (Attack, MoveTo, Say, PartyChat, WhisperTo)):
@@ -1810,6 +1892,7 @@ class PlayingClient:
         reason = self._combat_continuation_refusal(state, intent, now)
         if reason is not None:
             self._note_arrival_deferred(reason, intent.target_id)
+            self._note_sighting_deferred(reason, intent.target_id)
             self._combat_intent = self._arrival_intent = None
             self._swing_tap().note("combat_end", tap=f"farm_{reason}", at=now)
             return
@@ -1826,8 +1909,24 @@ class PlayingClient:
             return "invalid_clock"
         if not intent.valid(state, now):
             return "intent_expired"
+        reason = self._sighting_continuation_refusal(state, intent, now)
+        if reason is not None:
+            return reason
         if not self._combat_pump_ready(state):
             return "priority_yield"
+        return None
+
+    def _sighting_continuation_refusal(
+        self, state: BotState, intent: CombatIntent, now: float
+    ) -> str | None:
+        if intent is not self.__dict__.get("_sighting_intent"):
+            return None
+        sightings = self.__dict__.get("_farm_sightings")
+        if sightings is None or not sightings.valid(state, now):
+            return "plan_expired"
+        actor = next((a for a in state.nearby_monsters if a.id == intent.target_id), None)
+        if actor is not None and actor.name not in sightings.plan.target_mobs:
+            return "plan_species_changed"
         return None
 
     def _combat_pump_ready(self, state: BotState) -> bool:
@@ -1847,6 +1946,7 @@ class PlayingClient:
         actor = next((a for a in state.nearby_monsters if a.id == intent.target_id), None)
         if actor is None:
             self._note_arrival_deferred("target_not_visible", intent.target_id)
+            self._note_sighting_deferred("target_not_visible", intent.target_id)
             self._combat_intent = None
             self._swing_tap().note(
                 "combat_end",
@@ -1860,19 +1960,29 @@ class PlayingClient:
             self._note_arrival_deferred("out_of_melee_range", actor.id)
             self._continue_farm_approach(state, actor, action)
         elif isinstance(action, Attack):
+            self._continue_farm_swing(intent, actor, action)
+
+    def _continue_farm_swing(self, intent: CombatIntent, actor: ActorRef, action: Attack) -> None:
+        if (
+            intent is self.__dict__.get("_sighting_intent")
+            and self._tracker is not None
+            and not self._tracker.view.arrival_confirmed
+        ):
+            self._note_attack_gate("pending_walk", actor.id)
+            return
+        self._swing_tap().note(
+            "attack_authored",
+            tap="farm_pump_attack_authored",
+            target_id=actor.id,
+            species=str(actor.name),
+            at=self._now(),
+        )
+        before = self._farm_swing_at
+        self.perform_native(action)
+        if self._arrival_intent is intent and self._farm_swing_at != before:
             self._swing_tap().note(
-                "attack_authored",
-                tap="farm_pump_attack_authored",
-                target_id=actor.id,
-                species=str(actor.name),
-                at=self._now(),
+                "arrival_swing", tap="arrival_swing_minted", target_id=actor.id, at=self._now()
             )
-            before = self._farm_swing_at
-            self.perform_native(action)
-            if self._arrival_intent is intent and self._farm_swing_at != before:
-                self._swing_tap().note(
-                    "arrival_swing", tap="arrival_swing_minted", target_id=actor.id, at=self._now()
-                )
 
     def _continue_farm_approach(self, state: BotState, actor: ActorRef, action: MoveTo) -> None:
         if self._perform_disengage(state):
@@ -4308,6 +4418,7 @@ class PlayingClient:
             return ()
         self._pump_pending_arrival(tracker.view)
         self._resume_loot_unless_disengaging(state)
+        self._pump_farm_sightings(state)
         events: list[WorldEvent] = []
         dialog = self._npc.view
         if dialog is not None and dialog.sequence > self._npc_event_sequence:
@@ -4809,10 +4920,14 @@ class PlayingClient:
         try:
             self._pump_confirmed_stock()
             self._pump_field_travel()
+            if self.__dict__.get("_farm_sightings") is not None:
+                self._pump_farm_sightings(self.build_native_state(Goal.GRIND))
             self._pump_farm_combat()
         except Exception:
-            self._combat_intent = None
+            self._combat_intent = self._arrival_intent = None
             self._field_intent = None
+            self._farm_sightings = None
+            self._sighting_intent = None
             self._swing_tap().note("combat_end", tap="farm_pump_failed", at=self._now())
             logger.exception("farm_pump_failed: released combat intent")
         finally:
@@ -5208,6 +5323,8 @@ class PlayingClient:
         self._farm_swing_at = float("-inf")
         self._combat_intent = None
         self._arrival_intent = None
+        self._farm_sightings = None
+        self._sighting_intent = None
         self._expless_roam.reset()
         self._species_damage.clear()
         self._disengage.reset()

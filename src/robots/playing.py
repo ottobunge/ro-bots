@@ -171,9 +171,13 @@ def build_host(args: argparse.Namespace) -> AgentHost:
     catalog = ObservedMobDatabase.load(root / "db/pre-re/mob_db.yml")
     databases = {pid: ObservedMobDatabase(catalog.catalog.values()) for pid in entries}
 
-    from robots.adapters.spawn_species import spawn_species_index  # noqa: PLC0415
+    from robots.adapters.spawn_species import (  # noqa: PLC0415
+        spawn_cluster_index,
+        spawn_species_index,
+    )
 
     _spawn_index = spawn_species_index(Path("rathena/npc/pre-re/mobs/fields"))
+    _spawn_clusters = spawn_cluster_index(Path("rathena/npc/pre-re/mobs/fields"))
 
     def spawn_species_for(map_name: str) -> tuple[str, ...]:
         """Declared species for the map (criterion-10 knowledge; w59)."""
@@ -227,6 +231,7 @@ def build_host(args: argparse.Namespace) -> AgentHost:
             cache=cache,
             public_skill_knowledge=public_skill_knowledge,
             seed_zeny=seed_zeny_by_persona.get(entry.persona_id),
+            spawn_clusters=_spawn_clusters,
         )
 
     return AgentHost(
