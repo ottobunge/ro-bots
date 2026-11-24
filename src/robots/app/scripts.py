@@ -1490,6 +1490,8 @@ class FarmScript:
         if targets:
             return _engage(state, targets, self._commit_window, self._mob_db, self._trace)
         _release_commitment(state, self._commit_window)
+        if state.farm_roam_target is not None:
+            return ScriptOutcome((MoveTo(*state.farm_roam_target),), ScriptStatus.ACTIVE)
         # w59/w60 roam leg: an empty view must not stand still. Emit a bounded
         # patrol step near the current cell so the agent walks to find its
         # plan's species (the runtime's pending-walk pacing throttles the

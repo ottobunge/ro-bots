@@ -137,6 +137,8 @@ class BotState:
     occupied_cells: tuple[tuple[int, int], ...] = ()
     # Runtime-approved outward patrol after sustained received zero-EXP hits.
     roam_escape_target: tuple[int, int] | None = None
+    # Public declared region hint, never a live monster or a path claim.
+    farm_roam_target: tuple[int, int] | None = None
     # Recent received peak damage per species; runtime owns bounded expiry.
     recent_species_damage: tuple[tuple[str, int], ...] = ()
 

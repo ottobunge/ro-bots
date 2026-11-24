@@ -1185,6 +1185,12 @@ class ScheduledAgent:
     def _sync_farm_travel(self, state: BotState) -> None:
         if isinstance(self.client, PlayingClient) and isinstance(self.brain, EventDrivenBrain):
             self.client.authorize_field_travel(state, self.brain.farm_travel)
+            sightings = self.brain.farm_sightings
+            self.client.authorize_farm_sightings(
+                state,
+                sightings[0] if sightings is not None else None,
+                remaining_s=sightings[1] if sightings is not None else 0.0,
+            )
 
     def _authorize_farm_actions(self, state: BotState, actions: tuple[GameAction, ...]) -> None:
         if not isinstance(self.client, PlayingClient) or not isinstance(

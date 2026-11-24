@@ -16161,3 +16161,54 @@ exec-only — `docker run` client sidecar on the compose network works).
   or walk-release budget, then re-measure 20/29. Secondary: pop_0069_s01's pay_fild04
   roam reach (0 sightings; extend toward declared spawn cells or route to
   prt_fild08). Full readout: `run/reviews/leg127-verdict.md`.
+
+
+## [2026-11-25] sol | SIGHTING-SWING — plan-bound receive-side combat leases; declared-cluster roam bias
+- Based on `main ca786269` and the leg-127 verdict: the 12 roaming non-attackers
+  with mob sightings never armed combat approach leases, so arrival-swing had
+  no authority to consume. This change converts a fresh eligible sighting in
+  `drain_native_events` OR the independent keepalive pump, without a script
+  step, goal review, or decide call.
+- The host binds the active plan's declared species, native epoch and remaining
+  duration through `FarmSightings`. A matching received body uses the SAME
+  target-authoring helper and 30-second `CombatIntent` as decided farm actions.
+  It immediately swings if ready/in range, otherwise approaches the current
+  melee intercept. A PLAN-ROAM walk already in flight keeps its pending gate;
+  terminal standing truth lets the existing arrival-swing seam finish the
+  approach/swing. Projected positions and no-progress timeout releases cannot
+  authorize a sighting swing mid-walk.
+- Merchant, loot, recovery, NPC, standing, survivability and shared cooldown
+  gates remain in the ordinary runtime lanes. Plan drop/replacement/expiry,
+  map/epoch/life boundaries, unrelated actions and pump failures revoke the
+  relevant authority. A received actor changing to an undeclared species also
+  ends the sighting lease. The dedicated visibility cursor prevents repeated
+  drains from renewing expired/revoked leases and leaves host MonsterSpotted
+  delivery intact.
+- Receipt-side telemetry: `sighting_swing_minted` means a combat lease was
+  minted (`reason=combat_intent`), not a claimed wire hit; actual attack
+  authorship, swing sends and arrival mints retain their existing rows.
+  `sighting_swing_deferred` names pending-walk, cooldown, priority,
+  survivability, disappearance and expiry reasons.
+- Secondary: load fixed spawn-region centers from the same pinned field
+  declarations, expose the nearest runtime-reachable map cluster as a farm
+  roam hint, and prefer it over uniform offsets in an empty view. Inside
+  radius 12, retain local roaming rather than parking. Scripts still own no
+  grids. `0,0` declarations are map-wide random spawns, never a fabricated
+  cluster: pay_fild04's plan species use these; its honest fixed centers are
+  Shining Plant `(346,335)` and Green Plant `(254,193)`, the latter nearest to
+  s01's `(163,177)`. This is region coverage knowledge, not a live census or
+  authorization to attack plants/out-of-plan species. The next population
+  leg must measure whether the bias improves target sightings/participation.
+- TDD evidence: initial primary **RED 26 failed**, live species-change
+  regression **RED 1 failed / 28 passed**, lifecycle/telemetry regressions
+  **RED 2 failed / 33 passed**; secondary **RED 10 failed**. Final focused suite
+  **219 passed**, including an actual independent keepalive first-sighting
+  conversion while the host runs no tick. **45 new regressions** total.
+- Primary-only full required gate was GREEN: **7,716 passed / 65 subtests /
+  1 existing skip / 95.90% coverage**. Final combined required gate
+  `nix develop -c task --dir . check` **GREEN**: black, all six static checks,
+  **7,732 passed / 65 subtests passed / 1 existing skip / 95.91% coverage**
+  (360.11s).
+- Isolated branch `t3/sighting-swing`; local DB/config.log links supplied from
+  the main checkout. No `spikes/` edits, population launch, PR or merge to main.
+  Runtime, tests and this log entry ship in the same commit.

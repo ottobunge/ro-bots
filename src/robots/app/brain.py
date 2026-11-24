@@ -231,6 +231,14 @@ class EventDrivenBrain:
         return self._plan
 
     @property
+    def farm_sightings(self) -> tuple[FarmPlan, float] | None:
+        """Remaining active plan authority for the receive-side combat seam."""
+        remaining = self._plan_chat_deadline - time.monotonic()
+        if self._plan is None or self.is_recovering or remaining <= 0:
+            return None
+        return self._plan, remaining
+
+    @property
     def farm_travel(self) -> tuple[FarmPlan, FieldTravel] | None:
         """Existing decide-authored plan authority, detached from script cadence."""
         if self._plan is None or self._field_travel is None or self.is_recovering:

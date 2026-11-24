@@ -748,6 +748,7 @@ def test_cli_constructs_existing_host_with_real_providers(tmp_path, monkeypatch)
         monkeypatch.setattr(agent_runtime, "_BotClient", native)
         client = host.client_factory(host.manifest["one"])
         assert isinstance(client, runtime.PlayingClient)
+        assert client._spawn_clusters["pay_fild04"] == ((346, 335), (254, 193))
         assert captured["create_char"] is False
         monkeypatch.setattr(agent_runtime, "_BotClient", None)
         with pytest.raises(RuntimeError, match="refusing fake fallback"):
