@@ -16033,3 +16033,40 @@ exec-only — `docker run` client sidecar on the compose network works).
   **7,663 passed / 65 subtests passed / 1 existing skip / 95.86% coverage**
   (377.15s). No `spikes/` changes. This log and implementation ship in the
   same commit on `t3/pop0069-plan-quality`, based on main `2e5de5ea`.
+
+## 2026-11-24 — leg-126 verdict: plan targets fixed, chat dominance is the participation limiter
+
+- Launch 19:36:59 CET after preflight DECIDE-OK 0.57s answers=10 / :8092 health 200;
+  window 20:00-21:30 (`[[1,20.0,21.5]]`, 29 personas), duration 7,681s, RuntimeMaxSec
+  8,581, HEAD `d6d4fdb7`. Receipt `population-receipt-126-1795545427.json` on disk
+  21:30:38 while the unit was still active — close-write kill safety held again.
+- Runner health: 29/29 online the entire window, 15,744 steps, 0 step_errors; 22
+  one-shot keepalive transport transients, none exhausted. Decide health: 9,271
+  in-window `decide_response` rows, 28.5% capped, true-success p50 14.03s (leg-125:
+  26.7% / 13.97s) — same load-dependent band.
+- Bars: attackers 6/29 NOT MET (leg-125: 10/29); kills 15 NOT MET (<23) but pickups
+  4/6 RECOVERED (leg-125: 0/2); sells MET (fleet 2,457 -> 2,500, +43, three in-window
+  zenylog S-rows: PipinWalker +35, RinceNyan +5, SoraSama22 +3); close-write MET.
+- **The 8a8c5853 plan-target fix is CONFIRMED at the plan level**: 22 of 23
+  zero-authored agents now carry plans targeting the declared prt_fild08 species
+  `[Lunatic, Drops, Pupa, Poring]`. The one exception is pop_0069_s01 (xXHyupunchXx):
+  61 plans still on the pay_fild04 rare set (Deviling/Angeling/Ghostring/...) while on
+  prt_fild08 — 1,855 MoveTos chasing undeclared species (cross-map goal keys).
+- **The limiter moved to chat**: the zero-authored cohort is chat-bound — Say 15-261
+  per window vs MoveTo 0-11 and Attack 0 (g02m00 245/1/0; s00 208/1/0; g03m00 248/0/0).
+  Their heartbeat plans author correctly; the decide budget is spent on chat instead of
+  farm-script steps. This is the independent scheduling/chat signature flagged in the
+  8a8c5853 entry (6,566 ChatHeard vs 40 MonsterSpotted) — now dominant.
+- Funnel for the 6 engaged agents: 87 authored -> 61 swings -> 950 damage -> 15 kills ->
+  76/36 XP; drops 6, pickups 4/6. attack_refusals small (pending_walk 24, cooldown 9).
+  Merchant admission correctly refused a farm-less fleet (no_stock_below_zeny_floor 703);
+  `sell_contact_authored` taps 0 — the three sells came via decided/script contacts.
+- DB readback (docker run sidecar, secret inside container only): zenylog 39 -> 42,
+  picklog M155 -> 167 / P67 -> 73 / L100 -> 106 / S63 -> 66; close positions 26/29 on
+  prt_fild08, PipinWalker prontera, RinceNyan prt_fild06, xXHyupunchXx pay_fild04.
+- `seed-zeny.json` advanced to 2,500 (zeny CHANGED): exactly three personas moved,
+  the other 26 verified unchanged against the DB.
+- **Next signature: chat-dominated decide budget (primary)** — cap/gate the chat
+  governor under an active farm plan (chat only after the script stepped, or a
+  per-window Say budget) and re-measure participation. Secondary: pop_0069_s01's
+  cross-map plan targets. Full readout: `run/reviews/leg126-verdict.md`.
