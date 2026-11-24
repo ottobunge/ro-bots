@@ -606,7 +606,11 @@ def merchant_arm_drained(state: BotState) -> bool:
 
 
 def _merchant_batch_min(state: BotState) -> int:
-    return 1 if state.map_name in ("prontera", "prt_in") else MERCHANT_FIELD_BATCH_MIN
+    return (
+        1
+        if state.map_name in ("prontera", "prt_in") or state.merchant_loot_stock > 0
+        else MERCHANT_FIELD_BATCH_MIN
+    )
 
 
 def _merchant_inflight(state: BotState) -> int:

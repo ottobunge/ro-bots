@@ -144,6 +144,7 @@ class BotState:
     merchant_route_distance: tuple[int, int, int] | None = None
     # Runtime credit from this client's live, collectible floor presences.
     # Deferred and other visible units are disjoint and capped at trip_min.
+    merchant_loot_stock: int = 0  # attributed successful pickups still held, runtime bounded
     merchant_inflight_pending: int = 0
     merchant_inflight_visible: int = 0
     merchant_pickup_target: tuple[int, int] | None = None
