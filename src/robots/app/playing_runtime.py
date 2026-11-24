@@ -69,7 +69,10 @@ from robots.app.farm_combat import (
     CombatIntent,
     gameplay_serialized,
 )
+from robots.app.farm_travel import FieldTravelIntent
+from robots.app.field_travel import FieldTravel
 from robots.app.loot_attribution import LootAttribution
+from robots.app.loot_stock import LootStock
 from robots.app.merchant_buy_backoff import MerchantBuyBackoff
 from robots.app.merchant_counter_lease import MerchantCounterLease, at_counter
 from robots.app.merchant_staging import MerchantStaging, MerchantWarpCrossings, dealer_entry_cell
@@ -146,7 +149,7 @@ from robots.domain.events import (
     NpcDialogueReceived,
     WorldEvent,
 )
-from robots.domain.farm import MobInfo
+from robots.domain.farm import FarmPlan, MobInfo
 from robots.domain.model import ActorRef, BotState, ChatLine, Goal, PartyInvite, PartyObservation
 from robots.domain.npc import NpcDialogue
 from robots.domain.planning import (
@@ -514,6 +517,10 @@ class PlayingClient:
         self._swing_telemetry = SwingTelemetry()
         self._species_damage = SpeciesDamage()
         self._disengage = CombatDisengage()
+        self._field_intent: FieldTravelIntent | None = None
+        self._field_pump_at = float("-inf")
+        self._stock_pump_at = float("-inf")
+        self._loot_stock = LootStock()
         self._combat_intent: CombatIntent | None = None
         self._combat_pump_at = float("-inf")
         self._trip_walk_seq: int | None = None
@@ -962,6 +969,10 @@ class PlayingClient:
             progression_source=progression.base_source,
             recent_encounters=self._encounters.records if self._encounters is not None else (),
             recent_species_damage=self._species_damage.snapshot(self._now()),
+        )
+        state = replace(
+            state,
+            merchant_loot_stock=self._loot_stock.held(view, tracker.indexed_inventory, self._now()),
         )
         state = self._merchant_loot_state(state)
         state = replace(
@@ -1592,6 +1603,114 @@ class PlayingClient:
         if survivability_refusal(state, str(actor.name), self.mob_db) is not None:
             return "no_survivability"
         return None
+
+    @gameplay_serialized
+    def authorize_field_travel(
+        self, state: BotState, authority: tuple[FarmPlan, FieldTravel] | None
+    ) -> None:
+        if authority is None:
+            self._field_intent = None
+            return
+        plan, planner = authority
+        intent = self.__dict__.get("_field_intent")
+        if intent is None and state.map_name == plan.map_name:
+            return
+        if intent is None or (intent.plan.plan_id, intent.epoch) != (
+            plan.plan_id,
+            state.native_epoch,
+        ):
+            self._field_intent = FieldTravelIntent(plan, planner, state.native_epoch, self._now())
+
+    def field_travel_actions(self, state: BotState) -> tuple[GameAction, ...] | None:
+        intent = self.__dict__.get("_field_intent")
+        if (
+            intent is None
+            or not intent.valid(state, self._now())
+            or not self._field_travel_ready(state)
+        ):
+            return None
+        if state.map_name == intent.plan.map_name:
+            targets = [
+                actor
+                for actor in state.nearby_monsters
+                if actor.name in intent.plan.target_mobs
+                and survivability_refusal(state, str(actor.name), self.mob_db) is None
+            ]
+            return (
+                (_melee_action(min(targets, key=lambda actor: actor.distance), state),)
+                if targets
+                else ()
+            )
+        action = intent.action(state, self._now())
+        return (action,) if action is not None else None
+
+    def _field_travel_ready(self, state: BotState) -> bool:
+        return (
+            self.mechanical_recovery_allowed
+            and state.alive is True
+            and state.hp > 1
+            and state.hp_ratio >= 0.25
+            and self._rest_seq is None
+            and self._npc.view is None
+            and not self._npc.actuation_blocked
+            and state.shop_offer is None
+            and _merchant_stock(state) == 0
+            and not self._pickup_outranks_trip(state)
+        )
+
+    def _pump_confirmed_stock(self) -> None:
+        """Receive our pending pickup, then use the existing receipt-bound shop loop."""
+        if not self.mechanical_recovery_allowed or (
+            not self._loot_stock.active and self._loot_receipt.pending is None
+        ):
+            return
+        now = self._now()
+        if now < self._stock_pump_at + COMBAT_PUMP_INTERVAL_S:
+            return
+        self._stock_pump_at = now
+        state = self.build_native_state(Goal.GRIND)
+        if not state.merchant_loot_stock or self._pump_shop_recovery(now):
+            return
+        actions = self.shop_actions(state, ())
+        if actions:
+            for action in actions:
+                self.perform_native(action)
+            return
+        self._advance_merchant_approach_on_tick()
+
+    def _pump_field_travel(self) -> None:
+        if (
+            self.__dict__.get("_field_intent") is None
+            or self._now() < self._field_pump_at + COMBAT_PUMP_INTERVAL_S
+        ):
+            return
+        self._field_pump_at = self._now()
+        state = self.build_native_state(Goal.GRIND)
+        actions = self.field_travel_actions(state)
+        if not actions:
+            return
+        action = actions[0]
+        if isinstance(action, Attack):
+            self.authorize_farm_actions(state, actions)
+            self.perform_native(action)
+            return
+        if not isinstance(action, MoveTo):
+            return
+        if self._perform_disengage(state):
+            return
+        self._perform_move(state, (action.x, action.y))
+        logger.warning(
+            "goal_field_routed bot=%s map=%s destination=%s",
+            state.name,
+            state.map_name,
+            (action.x, action.y),
+        )
+        self._swing_tap().note(
+            "field_travel",
+            tap="goal_field_routed",
+            destination=[action.x, action.y],
+            at=self._now(),
+        )
 
     @gameplay_serialized
     def authorize_farm_actions(self, state: BotState, actions: tuple[GameAction, ...]) -> None:
@@ -3023,6 +3142,22 @@ class PlayingClient:
         for ack in view.pickup_acks:
             if ack.seq > self._loot_ack_cursor:
                 self._loot_receipt.consume(ack)
+                row = self._loot_receipt.rows[-1]
+                if (
+                    ack.success
+                    and str(ack.item_id) in DRIVE_SELLABLES
+                    and row["outcome"] == "succeeded"
+                ):
+                    self._loot_stock.admit(ack, self._now())
+                    logger.warning(
+                        "stock_admission_fired bot=%s ack_seq=%s index=%s item=%s amount=%s",
+                        self.wire.char_name,
+                        ack.seq,
+                        ack.inventory_index,
+                        ack.item_id,
+                        ack.amount,
+                    )
+                    self._swing_tap().note("stock_admission", tap="stock_admission_fired", **row)
                 self._loot_ack_cursor = ack.seq
 
     def _reset_loot_epoch(self, reason: str) -> None:
@@ -3637,6 +3772,8 @@ class PlayingClient:
         )
 
     def _merchant_owns_travel(self, state: BotState) -> bool:
+        if self.field_travel_actions(state) is not None:
+            return False
         return (
             (state.map_name == "prontera" or merchant_trip_active(state.name))
             and not merchant_pickup_required(state)
@@ -4232,6 +4369,21 @@ class PlayingClient:
         )
         if state is None or tracker is None:
             return
+        # Project already-consumed receipts; never consume another frame here.
+        # A second observe can steal a shop reply from its next pump step.
+        view = tracker.view
+        state = self._merchant_loot_state(
+            replace(
+                state,
+                inventory={str(item): count for item, count in (view.inventory_counts or ())},
+                inventory_known=view.inventory_known,
+                merchant_loot_stock=self._loot_stock.held(
+                    view, tracker.indexed_inventory, self._now()
+                ),
+            )
+        )
+        if self.field_travel_actions(state) is not None:
+            return
         if not self._merchant_approach_ready(state):
             return
         self._advance_admitted_trip(state, tracker)
@@ -4607,9 +4759,12 @@ class PlayingClient:
         if lock is None or not lock.acquire(blocking=False):
             return
         try:
+            self._pump_confirmed_stock()
+            self._pump_field_travel()
             self._pump_farm_combat()
         except Exception:
             self._combat_intent = None
+            self._field_intent = None
             self._swing_tap().note("combat_end", tap="farm_pump_failed", at=self._now())
             logger.exception("farm_pump_failed: released combat intent")
         finally:
@@ -4956,6 +5111,8 @@ class PlayingClient:
 
     def _reset_epoch(self, epoch: int, base: int) -> None:
         self._reset_loot_epoch("session_changed")
+        self._loot_stock = LootStock()
+        self._field_intent = None
         self._invalidate_self_slots()
         self._skills = None
         self._skill_wire = self.wire

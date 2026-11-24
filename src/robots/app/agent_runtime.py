@@ -862,7 +862,10 @@ class ScheduledAgent:
                 self._planning_binding = NpcHostBinding(
                     self.client, self.client.wire, self.client.planning_session
                 )
-        return brain.start(self.build_state())
+        state = self.build_state()
+        result = brain.start(state)
+        self._sync_farm_travel(state)
+        return result
 
     def _invalidate_planning_binding(self) -> None:
         self._planning_binding = None
@@ -1154,7 +1157,12 @@ class ScheduledAgent:
     def _script_actions(
         self, state: BotState, actions: tuple[GameAction, ...]
     ) -> tuple[GameAction, ...]:
+        self._sync_farm_travel(state)
         self._authorize_farm_actions(state, actions)
+        if isinstance(self.client, PlayingClient):
+            travel = self.client.field_travel_actions(state)
+            if travel is not None:
+                return travel
         if getattr(self.brain, "mechanical_fallback_allowed", True) is False:
             return actions
         if getattr(self.brain, "is_recovering", False):
@@ -1173,6 +1181,10 @@ class ScheduledAgent:
             if mechanical is not None
             else actions
         )
+
+    def _sync_farm_travel(self, state: BotState) -> None:
+        if isinstance(self.client, PlayingClient) and isinstance(self.brain, EventDrivenBrain):
+            self.client.authorize_field_travel(state, self.brain.farm_travel)
 
     def _authorize_farm_actions(self, state: BotState, actions: tuple[GameAction, ...]) -> None:
         if not isinstance(self.client, PlayingClient) or not isinstance(
@@ -1267,6 +1279,7 @@ class ScheduledAgent:
         else:
             result = self.brain.handle_event(state, event)
         self._apply_goal_notes(result.notes)
+        self._sync_farm_travel(state)
         self.execute_actions(result.actions)
 
     def _observe_wants(self, state: BotState) -> None:

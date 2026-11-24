@@ -15729,3 +15729,61 @@ FoundGuild 14, PartyChat 170, InviteToParty 26): the goal layer never sent them 
 (2) the loot->stock admission defect above. Suggested bar: >= 20/29 agents with >= 1 authored
 attack AND >= 1 sell conversion from in-window loot. Full verdict:
 `run/reviews/leg122-verdict.md`.
+
+## [2026-11-24] fix | Leg-123 farm participation and confirmed-loot admission (SOL)
+
+- Base `f20c8469`, branch `t3/farm-participation`; offline implementation only.
+  Read `run/reviews/leg122-verdict.md`, the leg-122 receipt, runner log and
+  UTC-filtered cumulative traces (21:30:34–23:07:18 on Nov 23) in the main checkout.
+- **Named participation layer: action execution / merchant preemption after plan
+  authoring, plus host event-drain starvation.** `pop_0003_g00m00` had eight
+  grind/farm reviews and field plans (e.g. Thief Bug on `prt_fild06`), but all 18
+  sampled script steps were `MerchantDrive`; `pop_0003_s00` had nine grind reviews
+  and all 15 samples were `MerchantDrive`. The other pop_0003 members likewise
+  had field plans and overwhelmingly merchant samples. The runner traceback
+  shows failed chat/heartbeat inference escaping `ScheduledAgent.tick` before
+  `_advance_script`; chat activity does not prove execution of the authored farm
+  plan. This evidence does not support a fleet-wide social-first decide diagnosis.
+- The existing brain's decide-authored `FarmPlan` and `FieldTravel` now authorize
+  a runtime continuation at startup and after reviews/events. The keepalive
+  gameplay pump follows fresh received position through the existing runtime
+  movement/walkability gates, ahead of buy-only travel, for at most 300 seconds
+  (or the shorter plan duration). Repeated synchronization of a plan cannot
+  renew its deadline. Arrival can author the plan's received, safe monster
+  target through the existing combat-intent/dispatch path. Actual sellable
+  stock, pickup, recovery, NPC, death, session and clock barriers still apply.
+  `goal_field_routed` is both a named warning-log tap and a cached swing event.
+- **Stock evidence refinement:** receipt attribution writes the tracker's indexed
+  `_inventory`; `inventory_counts` is its complete-baseline projection, and
+  `BotState.inventory` is copied from that projection. The merchant pump was
+  reading cached `last_built_state`, which can predate a consumed ACK. It now
+  projects stock from the already-consumed tracker before approach/admission;
+  it does not observe again and steal buffered NPC replies from the next step.
+  The actual leg-122 traces also show successful pickups surviving into inventory: g01m00's Jellopy after
+  21:56:37 and g03m01's Jellopy after 22:52:24 stayed below the two-unit field
+  batch minimum; s00's 909+713 reached Prontera near the window's end. Thus
+  `stock=0` log lines are not evidence that every successful ACK was lost.
+- A successful **attributed** pickup of a public sellable now gives a bounded
+  receipt admission for a one-unit field batch, reconciled against current,
+  complete indexed stock. It never adds inventory or infers ownership from
+  cumulative acquisition counts. Deletion, loss of baseline, index/item
+  replacement, session reset and expiry remove/deny the credit. Old seeded
+  stock retains the existing batch rule. `stock_admission_fired` names bot,
+  ACK sequence, inventory index, item and amount in warning logs and cached
+  telemetry. Pending own pickups and admitted loot sales use the independent
+  keepalive pump and the existing received C4/C7 owner mints/dispatch guards.
+- TDD RED→GREEN: initial regressions failed on absent field continuation and
+  stale pump stock; a separate keepalive sale regression failed before the
+  daemon continuation was added. Coverage includes town-to-field attack,
+  non-renewing lease, runtime barriers, pickup-to-admission, stock deletion,
+  received sale with zeny change, and C4→C5→C7→C9 without host script steps.
+  Existing assertions were retained; no `spikes/` changes, live probes, Docker
+  or heavengraph operations. The participation/sell live bars remain for the
+  coordinator's next bounded leg.
+- Final gate **GREEN before commit**: `nix develop -c task --dir . check`;
+  formatting, all static checks, **7,610 tests + 65 subtests passed**, one skipped,
+  95.83% coverage (434.18 s test phase). The three existing keepalive/NPC
+  regressions exposed by the first full run were fixed through the pure stock
+  projection above; all their assertions remain intact. Focused reconciliation:
+  111 passed. Worktree prerequisites use the main checkout's knowledge DB and
+  `rathena/config.log` links, with the pinned rAthena source initialized locally.

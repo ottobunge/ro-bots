@@ -220,6 +220,13 @@ class EventDrivenBrain:
         return self._plan
 
     @property
+    def farm_travel(self) -> tuple[FarmPlan, FieldTravel] | None:
+        """Existing decide-authored plan authority, detached from script cadence."""
+        if self._plan is None or self._field_travel is None or self.is_recovering:
+            return None
+        return self._plan, self._field_travel
+
+    @property
     def is_recovering(self) -> bool:
         """Pure host guard: empty recovery outcomes must not become patrol/loot."""
         return self._recovering or self._escape is not None
