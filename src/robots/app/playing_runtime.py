@@ -523,6 +523,7 @@ class PlayingClient:
         self._stock_pump_at = float("-inf")
         self._loot_stock = LootStock()
         self._combat_intent: CombatIntent | None = None
+        self._arrival_intent: CombatIntent | None = None
         self._combat_pump_at = float("-inf")
         self._trip_walk_seq: int | None = None
         self._trip_leg_cells_sent = 0
@@ -654,6 +655,7 @@ class PlayingClient:
         self._stand_pending = None
         self._pending = None
         self._combat_intent = None
+        self._arrival_intent = None
         self._epoch = None
         self._patrol = None
         self._keepalive_at = None
@@ -1542,6 +1544,18 @@ class PlayingClient:
             target_id=target,
             at=self._now(),
         )
+        self._note_arrival_deferred(reason, target)
+
+    def _note_arrival_deferred(self, reason: str, target: int) -> None:
+        arrival = self.__dict__.get("_arrival_intent")
+        if arrival is not None and arrival.target_id == target:
+            self._swing_tap().note(
+                "arrival_swing",
+                tap="arrival_swing_deferred",
+                reason=reason,
+                target_id=target,
+                at=self._now(),
+            )
 
     def _swing_tap(self) -> SwingTelemetry:
         telemetry = self.__dict__.get("_swing_telemetry")
@@ -1691,7 +1705,7 @@ class PlayingClient:
             return
         action = actions[0]
         if self._field_intent is not None and state.map_name == self._field_intent.plan.map_name:
-            self.authorize_farm_actions(state, actions)
+            self.authorize_farm_actions(state, actions, renew=False)
         if isinstance(action, Attack):
             self.perform_native(action)
             return
@@ -1714,19 +1728,29 @@ class PlayingClient:
         )
 
     @gameplay_serialized
-    def authorize_farm_actions(self, state: BotState, actions: tuple[GameAction, ...]) -> None:
+    def authorize_farm_actions(
+        self, state: BotState, actions: tuple[GameAction, ...], *, renew: bool = True
+    ) -> None:
         """Only a farm/grind script can authorize an approach continuation.
 
         Match the script's exact melee intercept, never infer a target from an
         arbitrary patrol destination. Pump work does not renew the deadline.
         """
-        self._combat_intent = None
         for action in actions:
             targets = [
                 actor for actor in state.nearby_monsters if _melee_action(actor, state) == action
             ]
             if len(targets) == 1:
                 target = targets[0]
+                intent = self._combat_intent
+                if (
+                    not renew
+                    and intent is not None
+                    and (intent.target_id, intent.epoch, intent.map_name)
+                    == (target.id, state.native_epoch, state.map_name)
+                ):
+                    return
+                self._arrival_intent = None
                 self._combat_pump_at = self._now()
                 self._combat_intent = CombatIntent(
                     target.id,
@@ -1742,10 +1766,13 @@ class PlayingClient:
                     at=self._now(),
                 )
                 return
+        self._combat_intent = None
+        self._arrival_intent = None
 
     def _revoke_combat_for(self, action: GameAction) -> None:
         if not isinstance(action, (Attack, MoveTo, Say, PartyChat, WhisperTo)):
             self._combat_intent = None
+            self._arrival_intent = None
 
     def _combat_action_boundary(self, state: BotState, action: GameAction) -> None:
         if isinstance(action, (Say, PartyChat, WhisperTo)):
@@ -1753,6 +1780,7 @@ class PlayingClient:
         intent = self._combat_intent
         if intent is not None and not self._continues_combat(state, action, intent):
             self._combat_intent = None
+            self._arrival_intent = None
 
     def _continues_combat(self, state: BotState, action: GameAction, intent: CombatIntent) -> bool:
         if isinstance(action, Attack):
@@ -1770,23 +1798,37 @@ class PlayingClient:
         intent = self._combat_intent
         now = self._now()
         if intent is None:
+            self._arrival_intent = None
             return
-        if not math.isfinite(now) or now < intent.until - COMBAT_INTENT_SECONDS:
-            self._combat_intent = None
+        state = self.build_native_state(Goal.GRIND)
+        if self._combat_intent is not intent:
             return
-        if now < self._combat_pump_at + COMBAT_PUMP_INTERVAL_S:
+        tracker = self._tracker
+        if tracker is not None and tracker.view.position is not None:
+            self._await_pending(tracker.view, tracker.view.position)
+        arrival = self._arrival_intent is intent
+        reason = self._combat_continuation_refusal(state, intent, now)
+        if reason is not None:
+            self._note_arrival_deferred(reason, intent.target_id)
+            self._combat_intent = self._arrival_intent = None
+            self._swing_tap().note("combat_end", tap=f"farm_{reason}", at=now)
+            return
+        if not arrival and now < self._combat_pump_at + COMBAT_PUMP_INTERVAL_S:
             return
         self._combat_pump_at = now
-        state = self.build_native_state(Goal.GRIND)
-        if not intent.valid(state, now):
-            self._combat_intent = None
-            self._swing_tap().note("combat_end", tap="farm_intent_expired", at=now)
-            return
-        if not self._combat_pump_ready(state):
-            self._combat_intent = None
-            self._swing_tap().note("combat_end", tap="farm_priority_yield", at=now)
-            return
         self._continue_farm_target(state, intent)
+        self._arrival_intent = None
+
+    def _combat_continuation_refusal(
+        self, state: BotState, intent: CombatIntent, now: float
+    ) -> str | None:
+        if not math.isfinite(now) or now < intent.until - COMBAT_INTENT_SECONDS:
+            return "invalid_clock"
+        if not intent.valid(state, now):
+            return "intent_expired"
+        if not self._combat_pump_ready(state):
+            return "priority_yield"
+        return None
 
     def _combat_pump_ready(self, state: BotState) -> bool:
         return (
@@ -1804,6 +1846,7 @@ class PlayingClient:
     def _continue_farm_target(self, state: BotState, intent: CombatIntent) -> None:
         actor = next((a for a in state.nearby_monsters if a.id == intent.target_id), None)
         if actor is None:
+            self._note_arrival_deferred("target_not_visible", intent.target_id)
             self._combat_intent = None
             self._swing_tap().note(
                 "combat_end",
@@ -1812,11 +1855,9 @@ class PlayingClient:
                 at=self._now(),
             )
             return
-        tracker = self._tracker
-        if tracker is not None and tracker.view.position is not None:
-            self._await_pending(tracker.view, tracker.view.position)
         action = _melee_action(actor, state)
         if isinstance(action, MoveTo):
+            self._note_arrival_deferred("out_of_melee_range", actor.id)
             self._continue_farm_approach(state, actor, action)
         elif isinstance(action, Attack):
             self._swing_tap().note(
@@ -1826,7 +1867,12 @@ class PlayingClient:
                 species=str(actor.name),
                 at=self._now(),
             )
+            before = self._farm_swing_at
             self.perform_native(action)
+            if self._arrival_intent is intent and self._farm_swing_at != before:
+                self._swing_tap().note(
+                    "arrival_swing", tap="arrival_swing_minted", target_id=actor.id, at=self._now()
+                )
 
     def _continue_farm_approach(self, state: BotState, actor: ActorRef, action: MoveTo) -> None:
         if self._perform_disengage(state):
@@ -4260,15 +4306,7 @@ class PlayingClient:
         tracker = self._tracker
         if tracker is None:
             return ()
-        pos = tracker.view.position
-        if pos is not None:
-            # Evaluate the pending walk on the received-frame path, not only
-            # inside action dispatch: window 3 starved because a host that
-            # stops dispatching never reached _await_pending, so the bounded
-            # re-request (unit.cpp187-192 zero-cell walkok release evidence)
-            # never fired and the single pending slot blocked every later
-            # send. Same budget, pacing and exhaustion semantics as dispatch.
-            self._await_pending(tracker.view, pos)
+        self._pump_pending_arrival(tracker.view)
         self._resume_loot_unless_disengaging(state)
         events: list[WorldEvent] = []
         dialog = self._npc.view
@@ -4289,6 +4327,15 @@ class PlayingClient:
             events.append(InviteReceived(state.pending_invites[0]))
         self._invite = self.wire.party_invite_pid
         return tuple(events)
+
+    def _pump_pending_arrival(self, view: NativeGameplayView) -> None:
+        # Advance walks even when the host stops dispatching (window 3).
+        # Only confirmed arrival earns a combat handoff; pending timeout
+        # releases retain the move primitive's existing exhaustion semantics.
+        if view.position is not None:
+            self._await_pending(view, view.position)
+        if self._arrival_intent is not None:
+            self._pump_farm_combat()
 
     def _pump_recovery(self, state: BotState) -> None:
         if self.mechanical_recovery_allowed:
@@ -4889,17 +4936,12 @@ class PlayingClient:
         pending = self._pending
         if pending is not None:
             point, seq, sent, retries = pending
-            if view.arrival_confirmed and pos.seq > seq and (pos.x, pos.y) == point:
+            if view.arrival_confirmed and pos.seq > seq:
+                # Only received standing truth earns the one-shot arrival
+                # handoff. A timeout release or projected endpoint cannot.
+                # A walk ending short also rechecks the live target geometry.
+                self._arrival_intent = self.__dict__.get("_combat_intent")
                 self._pending = None
-            elif view.arrival_confirmed and pos.seq > seq:
-                # The walk ENDED short of the point (its own walkok said so):
-                # mobs wander, so the scripted point is already stale.
-                # Release — the script's next step re-approaches from the
-                # current geometry. Re-moving to the stale point cancelled
-                # in-flight walks and crawled the approach to ~4
-                # walks/minute (w57).
-                self._pending = None
-                return False
             elif pos.seq != seq:
                 # The walk is progressing (the position frames advanced):
                 # wait for its own arrival proof, refreshing the progress
@@ -5165,6 +5207,7 @@ class PlayingClient:
     def _reset_combat_epoch(self) -> None:
         self._farm_swing_at = float("-inf")
         self._combat_intent = None
+        self._arrival_intent = None
         self._expless_roam.reset()
         self._species_damage.clear()
         self._disengage.reset()

@@ -15909,3 +15909,51 @@ exec-only — `docker run` client sidecar on the compose network works).
   swing in the same tick budget, then re-measure. Secondary: pop_0069 farm-plan target
   quality (the 8/29 split is group-shaped, not distance-shaped).
 - seed-zeny.json refreshed to the post-leg-124 fleet baseline 2,436 (zeny CHANGED).
+
+## 2026-11-24 — leg-124 arrival-swing authoring (offline implementation)
+
+- RED→GREEN: a terminal received walkok arriving 0.5s after the combat author
+  previously left both event draining and the keepalive pump with no swing.
+  Confirmed pending-walk release now hands the exact CombatIntent to the combat
+  pump once, bypassing its evaluation interval while retaining the ordinary
+  dispatch, standing, stop-and-swing, melee-range=1, survivability, cooldown,
+  rest, NPC, loot and merchant gates. Projected moving walkoks and no-progress
+  timeout releases cannot mint this arrival handoff. A moved target re-approaches
+  through the existing runtime pathfinder; a dead/vanished target ends the intent.
+- `arrival_swing_minted` names a converted arrival; `arrival_swing_deferred`
+  carries the refusing reason. Existing `attack_authored` and wire-swing telemetry
+  remain distinct. The host drain and the independently running keepalive daemon
+  share the serialized path; no new goal decision or script step is required.
+- Same-target field-pump authoring now preserves the current CombatIntent and its
+  pump clock instead of resetting both on every field beat. Arrival consumes the
+  existing 30s lease, without renewing its deadline. Host/script authorization
+  can renew it; field target changes remain explicit new authors under the finite
+  field-travel authority. Expiry, clock reversal, map/epoch changes, rest and
+  competing runtime priorities still end continuation.
+- Secondary inspection: window-filtered leg-124 `plan_authored` rows from
+  `.work/runtime/population-live/traces` (UTC 07:42:50–09:31:00) show 384 pop_0003
+  plans: Thief Bug 258, Lunatic 99, Poring 19, Green Plant 3, Pupa 3, Thief Bug Egg 2;
+  292 pop_0069 plans: Lunatic 140, Thief Bug 85, Deviling 65, Green Plant 1, Pupa 1.
+  All 65 Deviling plans belong to pop_0069_s01 on pay_fild04 (its first authoring
+  request has an empty view). Most non-attacking pop_0069 personas instead author
+  Lunatic on prt_fild08, with many empty views and some received Lunatics. The
+  traces do not establish unreachable targets, and expless plans are rare in
+  both groups. The pop_0069 plant author nevertheless had a received Lunatic
+  in its latest decision request. A second RED→GREEN regression reproduces
+  that authoring gap when the map catalog lags the received view: authoring now
+  feeds current-map plans through visible_farm_targets, replacing confirmed
+  expless species with received, survivable EXP alternatives. Destination plans,
+  unknown rewards, unsafe alternatives and plant-only views retain their prior
+  contracts. Walkability stays in runtime dispatch. Offline success does not
+  establish the next live attackers bar.
+- Focused verification includes existing rest-interrupt and stop-and-swing
+  assertions unchanged, lease/cooldown/foreign-context boundaries, and actual
+  keepalive-thread arrival while the host waits. No live probe, Docker action or
+  remote-host operation was run. Full pre-commit gate result recorded below.
+- Final pre-commit gate **GREEN**: `nix develop -c task --dir . check` passed
+  formatting and all static checks; **7,648 tests + 65 subtests passed**, one
+  skipped, **95.86% coverage** (368.78s test phase). Fresh-checkout dependencies
+  used the main checkout's iro-db.db, iro-wiki.db and rathena/config.log links;
+  the rAthena submodule stayed at its pinned revision. The earlier full test
+  run was interrupted to include the evidence-driven authoring fix in this
+  fresh complete gate.

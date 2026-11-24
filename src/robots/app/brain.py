@@ -19,6 +19,7 @@ from robots.adapters.chat_prompt import (
     should_send_chat,
 )
 from robots.app.escalation import EscalationPolicy
+from robots.app.farm_targets import visible_farm_targets
 from robots.app.farm_travel import FieldGoalPersistence
 from robots.app.field_travel import FieldTravel
 from robots.app.scripts import (
@@ -1310,11 +1311,11 @@ class EventDrivenBrain:
                 notes.append(f"travel: {state.map_name}->{map_name}")
         if not targets:
             return None
+        map_name = map_name if map_name != state.map_name else self._coordination_map() or map_name
+        targets = self._retarget_farm_plan(state, map_name, targets)
         plan = FarmPlan(
             plan_id=self._plan_seq,
-            map_name=(
-                map_name if map_name != state.map_name else self._coordination_map() or map_name
-            ),
+            map_name=map_name,
             target_mobs=tuple(targets),
             duration_s=duration,
             interrupt_level_above=state.base_level,
@@ -1323,6 +1324,21 @@ class EventDrivenBrain:
             f"plan#{plan.plan_id}: farm {plan.target_mobs} for {plan.duration_s / 60:.0f}min"
         )
         return plan
+
+    def _retarget_farm_plan(self, state: BotState, map_name: str, targets: list[str]) -> list[str]:
+        """Received EXP alternatives can repair a lagging exp-less map catalog.
+
+        Destination plans have no received view here; runtime alone owns paths.
+        The shared filter only introduces alternatives for confirmed zero EXP.
+        """
+        if map_name != state.map_name:
+            return targets
+        visible = visible_farm_targets(state, tuple(targets), self._mob_db, self._trace)
+        alternatives = {str(actor.name) for actor in visible if actor.name not in targets}
+        return (
+            sorted(alternatives, key=lambda name: (species_score(name, self._mob_db), name))[:2]
+            or targets
+        )
 
     def _farm_targets(self, map_name: str, target: str) -> list[str]:
         """Prefer EXP when authoring; an installed plan keeps its species."""
