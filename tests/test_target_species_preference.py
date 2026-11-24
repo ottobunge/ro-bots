@@ -226,6 +226,41 @@ def test_brain_authors_and_attacks_plant_only_view(catalog):
     assert brain.step_script(state).actions == (Attack(1),)
 
 
+def test_authoring_expless_catalog_plan_uses_received_exp_alternative(catalog):
+    # The map catalog can lag the received view (leg-124 pop_0069_g00m02).
+    catalog.observe("prt_fild08", (1,))
+    brain = make_brain(base_answers(), mob_db=catalog)
+    state = make_state(nearby=(actor("Green Plant", 1), actor("Thief Bug Egg", 2)))
+    brain.start(state)
+    assert brain.current_plan is not None
+    assert brain.current_plan.target_mobs == ("Thief Bug Egg",)
+    assert brain.step_script(state).actions == (Attack(2),)
+
+
+def test_authoring_expless_catalog_plan_keeps_plant_when_visible_exp_is_lethal(catalog):
+    catalog.observe("prt_fild08", (1,))
+    brain = make_brain(base_answers(), mob_db=catalog)
+    state = make_state(
+        nearby=(actor("Green Plant", 1), actor("Thief Bug Egg", 2)),
+        recent_species_damage=(("Thief Bug Egg", 1000),),
+    )
+    brain.start(state)
+    assert brain.current_plan is not None
+    assert brain.current_plan.target_mobs == ("Green Plant",)
+    assert brain.step_script(state).actions == (Attack(1),)
+
+
+def test_destination_plan_cannot_borrow_exp_alternatives_from_current_map(catalog, monkeypatch):
+    catalog.observe("prt_fild08", (1,))
+    brain = make_brain(base_answers(), mob_db=catalog)
+    monkeypatch.setattr(brain, "_coordination_map", lambda: "pay_fild04")
+    state = make_state(nearby=(actor("Thief Bug Egg", 2),))
+    brain.start(state)
+    assert brain.current_plan is not None
+    assert brain.current_plan.map_name == "pay_fild04"
+    assert brain.current_plan.target_mobs == ("Green Plant",)
+
+
 def test_new_plan_ranks_exp_amount_before_model_choice(catalog):
     catalog.observe("prt_fild08", (2, 3))
     brain = make_brain(base_answers(), mob_db=catalog)
