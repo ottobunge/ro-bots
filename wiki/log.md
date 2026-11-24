@@ -15787,3 +15787,38 @@ attack AND >= 1 sell conversion from in-window loot. Full verdict:
   projection above; all their assertions remain intact. Focused reconciliation:
   111 passed. Worktree prerequisites use the main checkout's knowledge DB and
   `rathena/config.log` links, with the pinned rAthena source initialized locally.
+
+## 2026-11-24 — leg-123: in-window-loot sell conversion MET (6 sales, +52z); field bar 16/29; receipt lost to RuntimeMaxSec drain (PARTIAL 1/2)
+
+Shepherded launch 02:20:26 CET from `cc56be53` (schedule [[1,3.0,4.5]], 29 personas).
+Preflight DECIDE-OK 0.59s warm; 29/29 online; window closed 04:30. **The receipt was
+NOT written**: the runner stepped ~265s past its `--duration` (t=8939 vs 8674) and the
+RuntimeMaxSec backstop (+300s) SIGTERM'd the unit at 04:50 before the receipt write.
+Verdict built from window-filtered traces + runner log + DB readback (no receipt
+artifact). **Infra carry for every future leg: RuntimeMaxSec = duration + 900.**
+
+Bar-2 **MET** — 6 sell conversions, fleet zeny 1746 -> 1798 (+52 = the 6 zenylog S-rows
+exactly, zero purchases): rune_walker +5, xXHyubladeXx +10, misu_drop +11, LunaHunter +6,
+zeny_hunter +10, xXAerofyXx +10. The strict in-window-loot link closed: 3
+`stock_admission_fired` taps, of which misu_drop (935 Clover) and zeny_hunter (909
+Jellopy) BOTH converted the admitted loot to sales in-window — the 205408c8 ACK-gated
+admission -> merchant arm -> dealer -> zenylog chain works on fresh loot. Dealer-ring
+healthy (11 clean counter yields, 0 gate refusals).
+
+Bar-1 **NOT MET** — 16/29 with >= 1 authored attack (need 20/29), up from 11/29 in
+leg-122; 140 attacks authored, 18,570 swings (200x leg-122's engagement among
+attackers). The 13 zero-attack agents are 11 chat-dominant town socializers (116-279
+chats each, 37-59 ticks, parked prontera) + 2 travelers. The keepalive field travel
+fired 3,140+ taps for only 9 distinct bots — chat premades re-claim the goal each
+heartbeat. Kills: floor 13-15 (picklog M rows / in-view drops; attributed count lost
+with the receipt) vs leg-122's 21; `target_species_skipped_expless` rejected ~600
+candidates (attack-authoring filter is the throttle, gates quiet at 8 refusals).
+Decide health: 16.4% capped (best since leg-110), TRUE p50 13.01s (6x slower cadence
+than legs 113-121 but stable and uniform).
+
+Named next: the **town-socializer field gate** — hold a bounded field-goal persistence
+window against chat re-claim once field-routed (and/or decay per-window chat quota);
+re-target farm plans off expless species on expless-heavy maps. `seed-zeny.json`
+advanced to post-window fleet (1798) per the zeny-changed rule. DB access gotcha
+recorded: `docker exec` fails with crun `oom_score_adj` EACCES (user manager at 800;
+exec-only — `docker run` client sidecar on the compose network works).
