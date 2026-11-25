@@ -63,10 +63,12 @@ class FarmSightings:
             and self.started <= now < self.until
         )
 
-    def fresh_targets(self, state: BotState) -> list[ActorRef]:
+    def fresh_targets(self, state: BotState, *, consume: bool = True) -> list[ActorRef]:
         visible = {actor.id for actor in state.nearby_monsters}
         fresh = visible - self.seen
-        self.seen = visible
+        # A pending walk retains a new sighting until release. Vanished
+        # bodies still leave the presence set, and live geometry is rechecked.
+        self.seen = visible if consume else self.seen & visible
         return [
             actor
             for actor in state.nearby_monsters

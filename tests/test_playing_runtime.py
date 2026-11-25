@@ -553,13 +553,11 @@ def test_no_route_with_a_sealed_pocket_names_the_gate_and_stops():
     assert any(reason == "target_unwalkable" for _, reason in client._move_gate_reasons)
 
 
-def test_own_unwalkable_cell_is_ground_corrected():
-    """leg 38: s00 logged into a cell the client grid calls a wall (the
-    server saved it there twice - the received entry/0x0087 stream is the
-    ONLY source of the tracked position, so it is server truth). The
-    runtime ground-corrects the cell so the roam machinery can engage; the
-    leg-28 direct send carries the walk and the server path-finds its own
-    side."""
+def test_own_unwalkable_cell_uses_direct_send_without_ground_correction():
+    """A saved cell proves position, not walkability (leg-128 s01).
+
+    Preserve the grid's blocked start and try the bounded leg-28 direct lane.
+    """
 
     wire = Wire()
     now = [0.0]
@@ -569,8 +567,9 @@ def test_own_unwalkable_cell_is_ground_corrected():
     assert client.cache is not None
     assert not client.cache.get("prontera").walkable((2, 2))
     client.perform_native(MoveTo(5, 5))
-    assert client.cache.get("prontera").walkable((2, 2))
-    assert any(reason == "ground_corrected_own_cell" for _, reason in client._move_gate_reasons)
+    assert not client.cache.get("prontera").walkable((2, 2))
+    assert wire.moves == [(5, 5)]
+    assert any(reason == "no_route_direct" for _, reason in client._move_gate_reasons)
 
 
 def test_no_route_attempts_reset_when_a_route_exists():
