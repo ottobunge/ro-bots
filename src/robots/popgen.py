@@ -21,6 +21,27 @@ adaptation:
 Everything is derived from ``random.Random`` keyed by spec+seed (string-keyed
 seeding is process/platform independent), so the same spec and seed always
 generate the identical population. No DB, docker, or server involved.
+
+Save points and seeded character last positions are checked against the packaged
+``popgen_map_cache.dat`` index. It contains the five seed maps' dimensions and
+zlib-compressed row-major GAT bytes, derived without cell edits from the pinned
+rAthena submodule (e985006171d2eb320ee512a653f4c83aea3d81b6). The runtime's
+MapCache parser and WALKABLE flags are the authority, common then pre-re overrides.
+Regenerate after updating the pin or FIELD_SAVES (from the repository root)::
+
+    git submodule update --init rathena
+    python -m robots.popgen --build-walkability-index rathena
+
+A blocked candidate moves to the nearest walkable Chebyshev ring within 32 cells,
+with a ``popgen_seed_relocated`` log naming owner, save/last role and both cells.
+No candidate in that bound (or an unknown map) fails generation closed. Geometry
+repair consumes no RNG draws, preserving the other identity/schedule choices.
+Sweep an existing summary without changing it or connecting to any database::
+
+    python -m robots.popgen --validate-save-points population.json
+
+Validation reports each unwalkable/unknown-map persona and exits 1 (0 when all
+pass). Existing trapped characters require a separate operator correction.
 """
 
 from __future__ import annotations
@@ -34,6 +55,7 @@ from dataclasses import dataclass, replace
 from pathlib import Path
 from typing import Any, Final, final
 
+from robots.popgen_walkability import INDEX_PATH, build_seed_index, seed_cache, seed_point
 from robots.society.models import CharacterIdentity
 from robots.society.wants import assign_personalities
 
@@ -411,6 +433,7 @@ def generate_population(spec: PopulationSpec, seed: int | None = None) -> Genera
         )
         personas.append(persona)
         occupied |= schedule_to_slots(persona.schedule)
+    personas = [_walkable_persona(persona) for persona in personas]
     # Every persona owns at least its primary character (roster slot 0); the
     # extras join on demand via extend_roster().
     rostered = [
@@ -475,7 +498,10 @@ def extend_roster(
         char_id=EXTRA_CHAR_ID_BASE
         + sum(max(0, len(p.characters) - 1) for p in population.personas),
     )
-    rostered = _with_extra_character(population.personas, persona_id, character)
+    rostered = tuple(
+        _walkable_persona(persona)
+        for persona in _with_extra_character(population.personas, persona_id, character)
+    )
     return (
         replace(
             population,
@@ -839,6 +865,15 @@ def _hex(value: str) -> str:
     return f"X'{value.encode().hex()}'"
 
 
+def _walkable_persona(persona: PersonaProfile) -> PersonaProfile:
+    return replace(
+        persona,
+        save_point=seed_point(
+            persona.save_map, persona.save_point, owner=persona.persona_id, role="save"
+        ),
+    )
+
+
 def _fixture_sql(personas: Sequence[PersonaProfile]) -> str:
     """The two-bot fixture.sql pattern: novice start, status 48, skill 9.
 
@@ -859,7 +894,12 @@ def _fixture_sql(personas: Sequence[PersonaProfile]) -> str:
             "UNIX_TIMESTAMP());"
         )
         for character in roster:
-            last_x = 150 + 2 * ((index + character.char_num) % 5)
+            last_x, last_y = seed_point(
+                "prontera",
+                (150 + 2 * ((index + character.char_num) % 5), 150),
+                owner=f"{persona.persona_id}/{character.name}",
+                role="last",
+            )
             save_x, save_y = persona.save_point
             lines.append(
                 # nosec B608: fixture-file text, never executed; generated ids only
@@ -870,7 +910,7 @@ def _fixture_sql(personas: Sequence[PersonaProfile]) -> str:
                 f"`online`, `status_point`, `skill_point`) VALUES "
                 f"({character.char_id}, {account_id}, {character.char_num}, "
                 f"{_hex(character.name)}, 0, 10, 10, 1, 1, 1, 1, "
-                f"1, 1, 40, 40, 11, 11, 'prontera', {last_x}, 150, "
+                f"1, 1, 40, 40, 11, 11, 'prontera', {last_x}, {last_y}, "
                 f"'{persona.save_map}', {save_x}, {save_y}, '{persona.sex}', "
                 "0, 48, 9);"
             )
@@ -927,6 +967,24 @@ def _manifest(personas: Sequence[PersonaProfile]) -> dict[str, Any]:
 # ---- CLI ---------------------------------------------------------------------
 
 
+def _validate_save_points(path: Path) -> int:
+    population = load_population(path)
+    maps = seed_cache().maps
+    invalid = 0
+    for persona in population.personas:
+        grid = maps.get(persona.save_map)
+        if grid is not None and grid.walkable(persona.save_point):
+            continue
+        invalid += 1
+        x, y = persona.save_point
+        reason = "unknown map" if grid is None else "unwalkable"
+        sys.stdout.write(
+            f"{persona.persona_id} {persona.name}: {persona.save_map} ({x},{y}) {reason}\n"
+        )
+    sys.stdout.write(f"{len(population.personas)} save points checked; {invalid} unwalkable\n")
+    return int(invalid > 0)
+
+
 def main(argv: Sequence[str] | None = None) -> int:
     """Write manifest.json + fixture.sql + population.json into --out-dir."""
     parser = argparse.ArgumentParser(
@@ -938,9 +996,20 @@ def main(argv: Sequence[str] | None = None) -> int:
     parser.add_argument("--friends-max", type=int, default=4)
     parser.add_argument("--solo", type=int, default=0)
     parser.add_argument("--seed", type=int, default=0)
-    parser.add_argument("--out-dir", required=True)
+    mode = parser.add_mutually_exclusive_group(required=True)
+    mode.add_argument("--out-dir")
+    mode.add_argument("--validate-save-points", type=Path)
+    mode.add_argument("--build-walkability-index", type=Path)
     args = parser.parse_args(argv)
     try:
+        if args.validate_save_points is not None:
+            return _validate_save_points(args.validate_save_points)
+        if args.build_walkability_index is not None:
+            names = ("prontera", *(name for name, _, _ in FIELD_SAVES))
+            INDEX_PATH.write_bytes(build_seed_index(args.build_walkability_index, names))
+            seed_cache.cache_clear()
+            sys.stdout.write(f"wrote {len(names)} seed maps to {INDEX_PATH}\n")
+            return 0
         population = generate_population(
             PopulationSpec(
                 friend_groups=args.friend_groups,
@@ -949,7 +1018,7 @@ def main(argv: Sequence[str] | None = None) -> int:
                 seed=args.seed,
             )
         )
-    except ValueError as error:
+    except (ValueError, OSError) as error:
         parser.error(str(error))
     out_dir = Path(args.out_dir)
     out_dir.mkdir(parents=True, exist_ok=True)

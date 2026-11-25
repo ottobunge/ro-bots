@@ -16434,3 +16434,47 @@ Readout: `run/reviews/leg130-verdict.md`.
 - seed-zeny.json advanced to 3,023 (16 rows changed) in the same commit as this
   entry. DB readback via the docker-run client sidecar (secret in-container only;
   pop_0069 chars live at 300100-300121, pop_0003 at 300000-300006 — query BOTH ranges).
+
+## [2026-11-25] fix | Walkable population seeds and prompt merchant lease release (SOL)
+
+- Read `run/reviews/leg130-verdict.md` in the main checkout before implementation;
+  based this slice on main `722f4c54`. Closed the generator class behind s01's
+  sealed pay_fild04 pocket and YuffieFy81's blocked save; no operator DB corrections
+  or live-window claims are part of this change.
+- Chose a packaged, generated subset of the runtime's pinned rAthena map caches:
+  `src/robots/popgen_map_cache.dat` (25,317 bytes, five seed maps). Native cache
+  headers retain map names/dimensions and zlib-compressed row-major GAT bytes;
+  `MapCache` reads common then pre-re overrides, using the runtime WALKABLE flags.
+  No hand-authored cells or runtime ground corrections enter the index. Rebuild
+  with `python -m robots.popgen --build-walkability-index rathena` after
+  `git submodule update --init rathena`; the module docstring records the pin and
+  commands. Tests compare every tile with the pinned source and reproduce the
+  index byte for byte. A built wheel includes the index and seeds independently
+  of the checkout's rAthena tree.
+- Every generated/extended persona save and each roster character's seeded last
+  position is verified. Blocked candidates move to the nearest walkable
+  Chebyshev ring within 32 cells, without consuming RNG; failure to find a cell
+  fails closed. `popgen_seed_relocated` names the owner, save/last role, map and
+  old/new cells. Existing population loading preserves its stored rows.
+- Added read-only `python -m robots.popgen --validate-save-points population.json`
+  (exit 1 for blocked or unknown-map saves, 0 for all valid). Sweeping the current
+  main-checkout `run/worlds/population-live/population.json` reports exactly two
+  of 29: pop_0003_s00/YuffieFy81 pay_fild04 (204,165) and
+  pop_0069_s01/xXHyupunchXx pay_fild04 (163,177). The pop105-only summary reports
+  s01 (1/22). Neither summary nor any DB state was changed.
+- Secondary: pump-only terminal refusals and runtime completion could leave an
+  outbound MerchantTrip alive until another script tick. Release that ownership
+  and its approach/travel memos immediately; add change-only
+  `merchant_trip_budget_released` with reason, route high-water marks and idle
+  seconds. Preserve transient inventory uncertainty, retry cooldowns, return
+  intent, stock/zeny thresholds and active sale authority. This is lease cleanup,
+  not evidence that the next window will regain attacker participation.
+- TDD: primary RED 20 failed/8 passed; secondary RED 5 failed/2 passed.
+  Combined targeted GREEN: 174 passed, including 32 new seed/index/CLI cases and
+  seven new pump completion/refusal/barrier cases. Wheel inclusion and isolated
+  seed-generation smoke check passed. Full gate result recorded below.
+- Final full gate GREEN: `nix develop -c task --dir . check` — formatting, all
+  static analysis and 7,798 passed / 1 existing optional wiki-corpus skip /
+  65 subtests passed; 96.40% coverage. No `spikes/` edits. The iro-db database
+  and rAthena config.log were linked from the main checkout; the existing
+  iro-wiki link remains unavailable and accounts for the optional corpus skip.
