@@ -16513,3 +16513,35 @@ chat :8092 health 200). Receipt `population-receipt-131-1795632018.json` close-w
   that feeds the seller count toward the both-≥15 rotation shape without touching the funnel.
 - Note: the runner did not rewrite `seed-zeny.json` at close (unchanged, sum 3,023); the
   baseline stays coordinator-owned — compare leg-132 against DB fleet 3,140 or a refreshed seed.
+
+## [2026-11-25] fix | Pickup-to-stock conversion (SOL slice)
+
+- Branch `t3/pickup-stock`, base `c9ed58f9`; evidence and failure-mode verdicts:
+  `run/reviews/pickup-stock.md`, `pickup-stock-leg131-evidence.json` and
+  `pickup-stock-validation.json` in the same reviews directory.
+- Threat and authored-action deferrals previously only logged, leaving no
+  received-tick continuation. Queue their owned, unattempted presences; resume
+  through the existing host and serialized combat/keepalive pumps. A held loot
+  approach retains the action budget against farm roam.
+- Six leg-131 picker ACK lanes were stuck after party-share delivery: each own
+  `0x08C8` type-1 collection named the sent floor ID while another party member
+  received the inventory ACK. Receipt that collection and free the lane without
+  inventing picker inventory; later inventory ACKs still admit stock and do not
+  count a second collection. The 27 attempts resolve to 24 wire collections and
+  three explicit refusals, rather than 18 picker inventory-ACK successes alone.
+- Keep standing/arrival/no-pending-walk, combat/threat/rest/NPC/passive, ownership,
+  map/presence and once-per-presence send barriers. Server refusals never retry.
+  Emit receipt-side `pickup_deferred_retried`, `pickup_race_expired` and
+  `drop_unattempted_reason` with floor identity and original deferral reason.
+- Exact nearby cohort: 59 sightings, 26 same-persona attempts, 33 unattempted;
+  13 ownership holds, 5 ack-lane, 3 walk/arrival, 1 rest, 11 legacy unknowns.
+  One additional attempt surfaced outside radius two, explaining the verdict's
+  `59 - 27 = 32` shortcut. Species admission is ruled out; the three refusals
+  occurred within 0–3.371 seconds of surfacing, not after long approaches.
+- TDD: initial regressions 9 failed / 1 passed; new focused suite 23 passed.
+  Same eight-case offline wire twin: attempted 50% → 75% (6/8), success 50% →
+  83.33% (5/6). Both offline conversion bars pass. Full gate GREEN: all static checks, 7,821 passed / 1 skipped / 65 subtests,
+  95.95% coverage. Fresh unchanged baseline: 7,798 passed / 1 skipped /
+  65 subtests, 95.94%; the historical 96.40% was not reproduced on baseline.
+  These are synthetic replay rates; post-change live acceptance remains for
+  coordinator leg-132. No live runner, SQL mutation, deployment or main merge.

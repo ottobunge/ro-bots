@@ -843,7 +843,7 @@ class PlayingClient:
             if not tracker.consume_snapshot(epoch, base, received):
                 return False
             self._observe_counter_queue(tracker.view, epoch)
-            if frame[2] == 0x0A37:
+            if frame[2] in (0x0A37, 0x08C8):
                 self._observe_loot_acks(tracker.view)
             if inventory_replaced:
                 # Retained auth must not rearm a pre-boundary inventory/WEIGHT barrier.
@@ -3173,6 +3173,8 @@ class PlayingClient:
             return
 
     def _loot_attempt(self, state: BotState, item: ObservedFloorItem) -> None:
+        if item.floor_item_id in self._loot_pickup_tried:
+            return
         if not self._loot_ready(item):
             return
         self.wire._send(pickup(item.floor_item_id))
@@ -3206,13 +3208,13 @@ class PlayingClient:
         self._refresh_loot_memo(self._tracker.view.floor_items)
         if not self._loot_receipt.deferred or not self._loot_runtime_ready(state):
             return
-        if (
-            state.alive is not True
-            or self._rest_seq is not None
-            or self._nearest_active_threat(state) is not None
-        ):
+        if not self._loot_continuation_safe(state):
             return
-        items = self._loot_candidates(state, self._loot_receipt.deferred)
+        items = tuple(
+            item
+            for item in self._loot_candidates(state, self._loot_receipt.deferred)
+            if item.floor_item_id not in self._loot_pickup_tried
+        )
         if not items:
             return
         item = items[0]
@@ -3220,6 +3222,20 @@ class PlayingClient:
             self._loot_approach(state, item)
         else:
             self._loot_attempt(state, item)
+
+    def _loot_continuation_safe(self, state: BotState) -> bool:
+        intent = self._combat_intent
+        combat = (
+            intent is not None
+            and intent.valid(state, self._now())
+            and any(actor.id == intent.target_id for actor in state.nearby_monsters)
+        )
+        return (
+            state.alive is True
+            and self._rest_seq is None
+            and self._nearest_active_threat(state) is None
+            and not combat
+        )
 
     def _loot_approach(self, state: BotState, item: ObservedFloorItem) -> None:
         if self._rest_seq is not None or self._pending is not None or self._tracker is None:
@@ -3314,7 +3330,7 @@ class PlayingClient:
                 if (
                     ack.success
                     and str(ack.item_id) in DRIVE_SELLABLES
-                    and row["outcome"] == "succeeded"
+                    and row["outcome"] in ("succeeded", "received")
                 ):
                     self._loot_stock.admit(ack, self._now())
                     logger.warning(
@@ -3327,6 +3343,8 @@ class PlayingClient:
                     )
                     self._swing_tap().note("stock_admission", tap="stock_admission_fired", **row)
                 self._loot_ack_cursor = ack.seq
+        for hit in view.damage:
+            self._loot_receipt.observe_take(hit, self.wire.aid)
 
     def _reset_loot_epoch(self, reason: str) -> None:
         self._ensure_loot_memos()
@@ -4137,6 +4155,10 @@ class PlayingClient:
                 move = self._loot_walk_mint(state, item)
                 if move is not None:
                     return (move,)
+                # A held approach owns this tick; farm roam cannot spend its
+                # budget while the received-tick continuation is converging.
+                if item.floor_item_id in self._loot_move_minted:
+                    return ()
                 continue
             return self._loot_pickup_mint(item)
         return None
@@ -4290,6 +4312,9 @@ class PlayingClient:
         live."""
         for item in self._loot_candidates(state, floor_items):
             fid = item.floor_item_id
+            if fid in self._loot_pickup_tried:
+                continue
+            self._loot_receipt.defer(item, "threat")
             if fid in self._loot_defer_tapped:
                 continue
             self._loot_defer_tapped.add(fid)
@@ -4316,6 +4341,9 @@ class PlayingClient:
         )
         for item in self._loot_candidates(state, floor_items):
             fid = item.floor_item_id
+            if fid in self._loot_pickup_tried:
+                continue
+            self._loot_receipt.defer(item, "authored_action")
             if fid in self._loot_authored_tapped:
                 continue
             self._loot_authored_tapped.add(fid)
@@ -5001,6 +5029,8 @@ class PlayingClient:
                     self._pump_pending_arrival(self._tracker.view)
                 self._pump_farm_sightings(state)
             self._pump_farm_combat()
+            if self._loot_receipt.deferred:
+                self._resume_loot_unless_disengaging(self.build_native_state(Goal.GRIND))
         except Exception:
             self._combat_intent = self._arrival_intent = None
             self._field_intent = None
