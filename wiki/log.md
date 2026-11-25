@@ -16315,3 +16315,73 @@ exec-only — `docker run` client sidecar on the compose network works).
 - Branch `t3/walk-landing`, base `bdde7e60`; runtime, regressions and this
   entry ship in one commit. No `spikes/` edits, live population launch, PR
   or merge to main.
+
+
+## [2026-11-25] leg | LEG-129 VERDICT — walk-landing recovery VALIDATED live; s01 escaped (60 cells) then died back into its unwalkable savepoint; attackers 26/29, kills 39, fleet zeny 2710->2789
+- Window Wed 09:00-10:30 Madrid on `206fa16c`; shepherd launched 08:41
+  (duration 7440 = close+900, RuntimeMaxSec 8340), preflight green
+  (DECIDE-OK 0.49s answers=10, chat 200, containers up, seed rebase 29/29
+  exact). Operator reset pre-launch: char 300119 xXHyupunchXx last position
+  pay_fild04 (163,177) -> (20,165) via the docker-run client sidecar with a
+  mounted SQL file (backtick-quoted `char`, secret expanded inside the
+  container only; verify SELECT read back the new cell). Sidecar gotcha for
+  the next shepherd: the `< /q.sql` redirect must sit INSIDE the `sh -c`
+  string — outside it the HOST shell resolves the path and the call fails
+  with "/reset.sql: No such file or directory" while the mount itself is
+  fine.
+- Bar 1 s01 escape: MET. Window-filtered traces: 60 distinct received cells,
+  first (20,165), 2,378 MoveTos, 7 attacks / 4 swings / 4 hits, 1 kill
+  (+2 exp), 1 pickup, 14 sightings. Then monster kill 09:04:45 local, rest
+  recovery, SELF-DEATH 09:09:59 (target 2210019 = own aid) -> respawn to its
+  SAVEPOINT, which IS the unwalkable (163,177) (popgen seeded the savepoint
+  there; the reset deliberately moved only last_map/x/y). The cell is in the
+  db33d1a2 lane's SEALED pocket (no walkable cell within radius 2 or 12;
+  nearest (182,158) Chebyshev 19), so both recovery stages find no candidate
+  and exhaust; the agent spent the remaining ~80 min re-trapped and logged
+  off at (163,177) — a respawn re-trap, not a recovery failure and not a
+  reset miss. Logout row matches.
+- Bar 2 attackers: MET, 26/29 (leg-128 21/29). Zero-authored collapsed to 3
+  (pop_0069_g00m03, pop_0069_g02m01, pop_0069_s03): roamers with 500-770
+  distinct cells but 1-4 sightings — mobless-patch coverage, not conversion.
+  The deferred-mint change did not regress participation.
+- Bar 3 economy: fleet zeny 2710 -> 2789 (+79, TEN distinct sellers — the
+  strongest sell window of the era; leg-128 was 3 sellers +36). zenylog 11
+  in-window `S` rows sum to exactly +79 (no purchase offsets; per-agent
+  deltas sum to the same figure). Kills 39 vs baseline 45 (-13%): per-attacker
+  rate fell 2.14 -> 1.5 as participation widened; picklog M rows +39 correlate
+  with kill_credits exactly. Picklog in-window M+39/P+23/L+18/S+16 (close
+  totals M269/P129/L183/S110, zenylog S 58 -> 69). Brief-baseline correction:
+  the brief's leg-128 picklog figures P73/L106/S66 were stale pre-leg-128
+  values; the staged readback was M230/P106/L165/S94 and deltas here use the
+  CURRENT pre-window readback.
+- Bar 4 stuck_cell: bounded. Log 29 detected / 13 escalated; receipt tail
+  gates reset 10 / exhausted 16 (rolling-deque ranking). Max per agent is
+  s01's 7+7 cycles; all other detections 1-3 on WALKABLE cells. Every s01
+  detection names cell=(163,177) own_walkable=False — the grid confirms the
+  detection is honest. No unbounded churn.
+- Bar 5 close-write: receipt on disk 10:31 with the unit still active
+  (kill-safe), clean exit `DONE: steps 23699, errors 0` at 10:50.
+- Health: decide 0.6% capped (3,900 answered / 23 capped), success p50
+  0.84-1.18 s per agent — healthiest regime of the era. TRANSPORT DOWN 29
+  lines = exactly one per agent (the shared open transient), 0 exhausted,
+  all recovered; pop_0069_g02m02 the end-transient offline (leg-128 shape).
+  Sell funnel: sell_contact_authored 10 firings / 8 distinct pump-contact
+  bots beside 10 realized sellers — the healthy two-arm shape (aero_song,
+  ZenySong sold via decide-authored talks; sora_sama, rince_ko authored holds
+  that did not complete; rince_ko closed dealer-adjacent in prt_in).
+- seed-zeny.json advanced to the closing values (10 rows changed, fleet
+  2789) in the same commit as this entry.
+- Next signature: the popgen savepoint of pop_0069_s01 sits ON the unwalkable
+  (163,177) — every death respawns it into the sealed pocket, and no runtime
+  path can extract an agent from an unwalkable own-cell (by design: no DB
+  writes from the runtime). The fix is OPERATOR-side: a savepoint correction
+  (Kafra save at a verified-walkable cell, the same class as today's reset,
+  extended to save_point_map/x/y) — or runtime-side survival gating that
+  avoids engaging near known-unwalkable own-cells. Do NOT iterate the
+  stuck-recovery further for this shape; its detection and bounding worked
+  exactly as designed. Secondary: the 3 zero-attack roamers' patches
+  (sighting counts 1-4 over 500-770 cells) remain the roam-reach class.
+- Readout: `run/reviews/leg129-verdict.md`; receipt
+  `run/plain_host_receipts/population-receipt-129-1795592488.json`; traces
+  window-filtered 08:00-09:30 UTC; DB readback via docker-run client sidecar.
+
