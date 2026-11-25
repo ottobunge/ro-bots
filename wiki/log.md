@@ -16212,3 +16212,55 @@ exec-only — `docker run` client sidecar on the compose network works).
 - Isolated branch `t3/sighting-swing`; local DB/config.log links supplied from
   the main checkout. No `spikes/` edits, population launch, PR or merge to main.
   Runtime, tests and this log entry ship in the same commit.
+
+## [2026-11-25] leg | LEG-128 VERDICT — sighting-swing VALIDATED 4/4 bars; attackers 21/29, 110 sighting mints, 45 kills, fleet zeny 2536->2710
+- Window Wed 03:00-04:30 Madrid, 29 personas `[[2, 3.0, 4.5]]`, launched
+  02:40:12 CET after preflight DECIDE-OK 0.47 s answers=10 + `:8092` 200.
+  `leg128-runner` duration 7,488 s, RuntimeMaxSec 8,388. HEAD at launch
+  `cd5e0fca` (validates the sighting-swing merge: plan-bound receive-side
+  combat leases + declared-cluster roam bias).
+- **Close-write MET** (third leg running): `population-receipt-128-1795570819.json`
+  on disk 04:30 CET while the unit was still active (ad3d2ce0 held).
+- **Bar 1 MET**: attackers **21/29** (299 authored -> 187 swings -> 174 damage
+  events -> 3,929 damage; leg-127: 16/29, 173->120->2,315); **110
+  `sighting_swing_minted` taps across 26 agents** including 5 taps on
+  still-zero-attack roamers (g00m02 5, g04m01 5, g03m00 4, g02m02 1, s02 1);
+  **16 `arrival_swing_minted`** (leg-127: 0 — the 223827d2 seam finally
+  exercised). Refusals fleet: pending_walk 144, cooldown 85,
+  target_not_visible 10, disengage_active 8 — minted authority does not
+  guarantee a landed swing mid-walk.
+- **Bar 2 MET**: **45 kill credits** (leg-126: 15 -> leg-127: 25 -> 45), 153/77
+  XP, drops_seen 75, pickups 9/21; picklog M 188 -> 230 (+42 server-side).
+- **Bar 3 MET**: fleet zeny 2,536 -> **2,710** (+174 = the 11 in-window
+  zenylog S-rows exactly); **10 sellers** (leg-127: 3; best of the era);
+  picklog S 74 -> 94; `sell_contact_authored` 3 (leg-127: 1). One visible
+  miss: `dealer_talk_out_of_range` chebyshev 2 — adjacency occasionally off
+  by one.
+- **Bar 4 MET** (see close-write).
+- Runner health: 22,813 steps, 0 step_errors, 29/29 online the whole window
+  (`offline_agents` empty — cleanest of the era). All 29 one-shot transport
+  transients (6-11 attempts, none exhausted). Decide health **0.7 % capped,
+  true p50 0.90 s, p90 3.20 s** (3,755 ok / 26 capped) — healthiest recorded;
+  the 26 capped = the 25 decide-path tick tracebacks, agents recovered.
+- **pop_0069_s01 CORRECTED — it never roams**: in-window trace shows **1
+  distinct cell** across 5,228 geo-tagged lines (pay_fild04 163,177) despite
+  2,513 `move_performed` and 5,026 MoveTos executed from that cell; DB close =
+  same cell as leg-127. Its plans are map-consistent; the 0-sightings streak
+  is a **walk-landing defect at the saved cell** (prime suspect: char saved on
+  an unwalkable cell — rAthena silently rejects every WalkTo from an
+  unwalkable start). The other two zero-sighting agents (s00 281 cells, g04m00
+  398 cells) roamed fine — ordinary mobless patches. 28/29 agents roamed
+  44-684 distinct cells.
+- DB readback (docker run sidecar, secret inside container only): zenylog
+  47 -> 58, picklog M 230 / P 106 / L 165 / S 94; 26/29 closed on prt_fild08,
+  3 post-sell dealer trips in prt_in (RinceNyan 172,129 / PoringMuffin14
+  169,129 / xXAerofyXx 170,128); base-11 trio unchanged.
+- `seed-zeny.json` advanced to **2,710** (zeny CHANGED): 10 personas moved,
+  19 verified unchanged, delta reconciles exactly against the zenylog rows.
+- **Next signature: s01's walk-landing defect (primary)** — confirm (163,177)
+  walkability in the pay_fild04 gat and add stuck-detection (N consecutive
+  `move_performed` with zero tracked-position change -> rebuild/reset);
+  secondary: minted-but-refused swings on the five roaming minters (defer the
+  mint to walk-release) and the dealer-adjacency off-by-one. Full readout:
+  `run/reviews/leg128-verdict.md`.
+
