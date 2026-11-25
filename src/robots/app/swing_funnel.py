@@ -68,9 +68,11 @@ class _AgentFunnel:
             if distance <= 2:
                 self.add("unknown", "drops_seen")
         elif row["kind"] == "loot_performed":
-            count = {"attempted": "pickup_attempts", "succeeded": "pickup_success"}.get(
-                row["outcome"]
-            )
+            count = {
+                "attempted": "pickup_attempts",
+                "succeeded": "pickup_success",
+                "collected": "pickup_success",
+            }.get(row["outcome"])
             if count:
                 self.add("unknown", count)
 

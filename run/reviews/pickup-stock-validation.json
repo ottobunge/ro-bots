@@ -1,0 +1,43 @@
+{
+  "kind": "offline_synthetic_wire_twin",
+  "scenario": "Eight cases: direct, threat clears, authored collision clears, received walk arrival, shared party collection, explicit refusal, nearer-agent ownership, threat-held expiry. Same byte fixtures run on baseline and implementation. Not a counterfactual replay of leg-131.",
+  "baseline_source": "/home/otto/dev/ro-bots at 12e249a1 (runtime matches c9ed58f9)",
+  "before": {
+    "drops_seen": 8,
+    "pickup_attempts": 4,
+    "pickup_success": 2,
+    "attempt_rate": 0.5,
+    "success_rate": 0.5
+  },
+  "after": {
+    "drops_seen": 8,
+    "pickup_attempts": 6,
+    "pickup_success": 5,
+    "attempt_rate": 0.75,
+    "success_rate": 0.8333333333333334
+  },
+  "live_acceptance": "Not measured; coordinator leg-132 required.",
+  "gate": {
+    "command": "nix develop -c task --dir . check",
+    "result": "GREEN",
+    "passed": 7821,
+    "skipped": 1,
+    "subtests_passed": 65,
+    "coverage_percent": 95.95,
+    "seconds": 377.31,
+    "new_regression_tests": 23,
+    "initial_red": {
+      "failed": 9,
+      "passed": 1
+    }
+  },
+  "fresh_unchanged_baseline": {
+    "source_matches": "c9ed58f9",
+    "passed": 7798,
+    "skipped": 1,
+    "subtests_passed": 65,
+    "coverage_percent": 95.94,
+    "seconds": 388.16
+  },
+  "coverage_reference_note": "Historical 96.40% in brief not reproduced on unchanged baseline. Fresh comparable change is +0.01 percentage point."
+}

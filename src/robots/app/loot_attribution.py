@@ -1,7 +1,7 @@
 """Bounded per-client loot attribution; no floor ID is present in an ack.
 
-Dispatch still holds a single ack lane, but receipts retain each attempt's
-identity. Success acks match that item and amount; raw refusals use
+Dispatch holds one wire lane until an ACK or an own take-item receipt.
+Receipts retain each attempt's identity. Success acks match that item and amount; raw refusals use
 send order. Identical items also require FIFO: the wire cannot prove a floor
 ID. A missed pending match may fall back to an unsettled attempt in the same
 presence epoch. Every other ack is explicitly unattributed, never success.
@@ -12,7 +12,7 @@ import logging
 from collections import deque
 from dataclasses import dataclass
 
-from robots.adapters.native_gameplay import ObservedFloorItem, ObservedPickupAck
+from robots.adapters.native_gameplay import ObservedDamage, ObservedFloorItem, ObservedPickupAck
 
 logger = logging.getLogger(__name__)
 
@@ -25,6 +25,8 @@ class _LootAttempt:
     context: dict[str, object]
     present: bool = True
     settled: bool = False
+    collected: bool = False
+    acknowledged: bool = False
 
 
 class LootAttribution:
@@ -63,8 +65,14 @@ class LootAttribution:
             attempt.present = attempt.present and attempt.item.floor_item_id in present
         for fid in tuple(self._deferred):
             if fid not in present:
-                item, _ = self._deferred.pop(fid)
-                self.note(item, "expired", reason="presence_epoch_expired")
+                item, reason = self._deferred.pop(fid)
+                self.note(
+                    item,
+                    "expired",
+                    reason="presence_epoch_expired",
+                    deferred_reason=reason,
+                    tap="pickup_race_expired",
+                )
         if present:
             self._missing = False
         self._held = {key for key in self._held if key[0] in present}
@@ -86,7 +94,7 @@ class LootAttribution:
         key = (item.floor_item_id, reason)
         if key not in self._held:
             self._held.add(key)
-            self.note(item, "deferred", reason=reason)
+            self.note(item, "deferred", reason=reason, tap="drop_unattempted_reason")
 
     def missing(self) -> None:
         if not self._missing:
@@ -113,17 +121,17 @@ class LootAttribution:
                 "awaiting_pickup_ack": "after_ack",
             }.get(deferred[1], "after_walk")
             self._note_attempt(
-                attempt, "refired", reason=f"loot_refired_{reason}", deferred_reason=deferred[1]
+                attempt,
+                "refired",
+                reason=f"loot_refired_{reason}",
+                deferred_reason=deferred[1],
+                tap="pickup_deferred_retried",
             )
         self._note_attempt(attempt, "attempted")
 
     def consume(self, ack: ObservedPickupAck) -> None:
         attempt = next(
-            (
-                a
-                for a in self._pending
-                if ack.seq > a.after_seq and (not ack.success or self._matches(a, ack))
-            ),
+            (a for a in self._attempts if self._ack_candidate(a, ack)),
             None,
         )
         reason = "pending_attempt"
@@ -141,12 +149,48 @@ class LootAttribution:
         if attempt is None:
             self._record({"outcome": "unattributed_ack", "floor_item_id": None, **detail})
         else:
+            if not ack.success and not attempt.present:
+                detail["tap"] = "pickup_race_expired"
             self._note_attempt(
                 attempt,
-                "succeeded" if ack.success else "refused-by-server",
+                (
+                    ("received" if attempt.collected else "succeeded")
+                    if ack.success
+                    else "refused-by-server"
+                ),
                 reason=reason,
                 **detail,
             )
+            attempt.acknowledged = True
+            self._settle(attempt)
+
+    def _ack_candidate(self, attempt: _LootAttempt, ack: ObservedPickupAck) -> bool:
+        return (
+            not attempt.acknowledged
+            and (attempt in self._pending or (attempt.collected and ack.success))
+            and ack.seq > attempt.after_seq
+            and (not ack.success or self._matches(attempt, ack))
+        )
+
+    def observe_take(self, hit: ObservedDamage, own_id: int) -> None:
+        """clif_takeitem confirms collection even when party_share_loot ACKs a peer.
+
+        This frees the wire lane, never credits inventory. A later matching
+        inventory ACK has its own receipt and cannot count collection twice.
+        """
+        if hit.damage_type != 1 or hit.source_id not in (own_id, (-own_id) & 0xFFFFFFFF):
+            return
+        attempt = next(
+            (
+                a
+                for a in self._pending
+                if a.item.floor_item_id == hit.target_id and hit.seq > a.after_seq
+            ),
+            None,
+        )
+        if attempt is not None:
+            attempt.collected = True
+            self._note_attempt(attempt, "collected", reason="received_takeitem", sequence=hit.seq)
             self._settle(attempt)
 
     @staticmethod
