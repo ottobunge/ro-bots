@@ -16478,3 +16478,38 @@ Readout: `run/reviews/leg130-verdict.md`.
   65 subtests passed; 96.40% coverage. No `spikes/` edits. The iro-db database
   and rAthena config.log were linked from the main checkout; the existing
   iro-wiki link remains unavailable and accounts for the optional corpus skip.
+
+## Leg 131 — dual s01 reset validated; combat peak; seller arm stock-starved (2026-11-25)
+
+Window Wed 20:00–21:30 Madrid, 29 personas, launched 19:40:11 CET (duration 7489s,
+RuntimeMaxSec 8389s) after a hard preflight (DECIDE-OK 0.53s answers=10 at heavengraph :8091,
+chat :8092 health 200). Receipt `population-receipt-131-1795632018.json` close-written at
+21:31:20 CET with the unit still active (8th consecutive). Full verdict:
+`run/reviews/leg131-verdict.md`.
+
+- Bar 1 PASS: xXHyupunchXx and YuffieFy81 both logged in exactly at pay_fild04 (20,165)
+  (trace first positions 19:04:09 and 19:00:37 UTC) and roamed — 871 and 110 distinct cells;
+  xXHyupunchXx crossed into moc_fild01 (1,301 move_performed, 207 decides). No stuck_cell
+  names their old sealed cells. The walkable-seed index + dual operator reset are confirmed
+  working together in a live window.
+- Bar 3 PASS: era-peak combat — 23/29 attackers, 418 attacks authored, 261 swings, 48 kill
+  credits (baseline 42) at 2.09 kills/attacker, 4,552 damage, base_exp +210 / job_exp +91.
+- Bar 4 PASS: fleet zeny 3,023 → 3,140; six zenylog rows (+56z, 5 distinct sellers including
+  xXHyupunchXx's first sell at 21:08 CET — farm → loot → sell on a reset char). Remainder of
+  the +117 is unlogged gain (zenylog coverage gap noted).
+- Bar 2 PARTIAL: attackers ≥15 met; in-window sellers only 5 distinct. The funnel's own gate
+  telemetry names the cause: `no_stock_below_zeny_floor` ×588 and
+  `merchant_stock_below_trip_minimum` ×320 — inventory below the sell floor after leg-130's
+  sell-out; this window's loot (59 drops seen → 27 pickup attempts → 18 successes) has not
+  rebuilt stock. Machinery side is healthy (17 sell_contact_authored, 22
+  merchant_trip_budget_released, 19 merchant_warp_crossings).
+- Bars 5–6 PASS: 22 budget-release taps; close-write verified.
+- Health: 29/29 online and standing at the final sample, decisions 4,151 with min 99 per
+  agent (median 128) — no decide starvation; 18,131 steps, 0 step_errors; TRANSPORT DOWN 29 =
+  exactly one per agent (shared transient, rebuild_exhausted 0); 34 decide tracebacks all
+  PlayingBackendError (known load-dependent class).
+- Next signature named: pickup-to-stock conversion — raise pickup success (attempt failures:
+  threat deferral / authored-action collision / expiry) and attempt coverage of seen drops;
+  that feeds the seller count toward the both-≥15 rotation shape without touching the funnel.
+- Note: the runner did not rewrite `seed-zeny.json` at close (unchanged, sum 3,023); the
+  baseline stays coordinator-owned — compare leg-132 against DB fleet 3,140 or a refreshed seed.
