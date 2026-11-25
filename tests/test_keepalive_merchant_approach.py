@@ -6,7 +6,7 @@ import struct
 import pytest
 
 from robots.adapters.native_navigation import MapCache, WalkMap
-from robots.app import merchant_staging, scripts
+from robots.app import merchant_staging, playing_runtime, scripts
 from robots.app.merchant_counter_lease import COUNTER_IDLE_SECONDS
 from robots.app.merchant_trip import MERCHANT_RETRY_COOLDOWN_S
 from robots.domain.actions import MoveTo, NpcShopSellOpen, TalkToNpc
@@ -309,6 +309,9 @@ def test_contact_ladder_falls_back_to_counter_cell_then_releases_to_farm(monkeyp
     lesson: a recovery must never end in a permanent parking lot).
     """
     caplog.set_level(logging.WARNING)
+    # Isolate the wall-clock contact ladder: its synthetic 270s of lost
+    # receipts would otherwise exhaust the faster walk-landing guard.
+    monkeypatch.setattr(playing_runtime, "STUCK_CELL_EPOCHS", 1000)
     client, now = _client(at=(168, 126))
     monkeypatch.setattr(scripts, "_merchant_now", lambda: now[0])
     client._zeny_seed = 80  # the buy budget re-admits a fresh trip on the field

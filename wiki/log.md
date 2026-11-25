@@ -1,7 +1,7 @@
 ---
 title: Current implementation log
 created: 2026-10-05
-updated: 2026-11-24
+updated: 2026-11-25
 type: guide
 status: accepted
 tags: [ops, testing]
@@ -16264,3 +16264,54 @@ exec-only — `docker run` client sidecar on the compose network works).
   mint to walk-release) and the dealer-adjacency off-by-one. Full readout:
   `run/reviews/leg128-verdict.md`.
 
+## [2026-11-25] implementation | Walk-landing guard, release-time sighting leases, dealer adjacency (SOL)
+- Read `run/reviews/leg128-verdict.md` first. The pinned common + pre-re
+  map cache confirms s01's pay_fild04 `(163,177)` is GAT **1 / blocked**.
+  There is no walkable cell within radius 2 or 12; the nearest in a bounded
+  radius-64 inspection is `(182,158)`, Chebyshev 19 away. This is public
+  geometry evidence, not a claim that the live server accepted a recovery.
+- Removed the own-cell ground correction: a received saved position proves
+  location, not walkability. Preserve the client grid and retain the bounded
+  leg-28 direct lane when routing from that cell fails.
+- Runtime counts **five completed dispatched walk lifecycles** without a
+  received SELF cell change, across changing targets and planner ticks.
+  Received entry/map coordinates and the **0x0087 FROM cell** reset the
+  counter; projected TO coordinates, sequence-only updates, idle/pending
+  ticks and same-cell session/map receipts cannot re-arm it.
+- Recovery names `stuck_cell_detected`, rechecks own-cell grid walkability,
+  and tries one nearest unoccupied walkable alternative within radius 2;
+  `stuck_cell_escalated` tries one different alternative within radius 12.
+  Both use the existing direct-send/pending lifecycle. Missing candidates
+  consume their stage too. `stuck_cell_exhausted` stops further walk sends
+  at that received cell; `stuck_cell_reset` re-arms on any received cell
+  change. At most two recovery sends per cell; state is per client.
+- For s01's sealed radius-12 pocket this stops the move churn and reports
+  exhaustion; it cannot promise a landed escape. A character DB position
+  reset remains an operator action. No SQL or char-row mutation was made.
+- Secondary sighting fix: keep new sightings unconsumed while walking;
+  mint their finite combat lease on walk release, after checking current
+  visibility, species, plan validity and existing priorities. The independent
+  keepalive pump advances pending arrival before checking deferred sightings.
+  Time spent in the pending walk no longer burns the combat lease.
+- Secondary range fix: `_dealer_adjacent` had used Euclidean <=3 while the
+  click/counter gates already required Chebyshev <=1. Shop continuation now
+  shares `DEALER_TALK_RANGE` (1), rejecting range-2 sell-open dispatches and
+  retaining diagonal-one adjacency. The range-2 talk diagnostic itself was
+  already a refusal, not evidence of an allowed click.
+- TDD: primary initial **12 failed (RED)**; final primary focused suite
+  **133 passed**, including **15 new regressions**. Secondary **8 failed /
+  39 passed (RED)**; combined focused suite **140 passed**, with **12 new
+  regressions** plus two updated walk-release cases. The long synthetic
+  contact-ladder test raises the stuck threshold to isolate its existing
+  270-second wall-clock escalation contract from the faster landing guard.
+- Final required gate `nix develop -c task --dir . check` **GREEN**:
+  black, all six static checks, **7,760 passed / 65 subtests passed /
+  95.93% coverage** (370.84s). Used isolated coverage output to avoid mixing
+  reports between runs; all seven runtime/test file digests were stable.
+- Fresh worktree: initialized the pinned rAthena submodule from the main
+  checkout and linked config.log / local knowledge fixtures. Main's wiki DB
+  link was self-referential; gate runs used an existing valid local snapshot
+  from `wt-mobpos` instead. No fixture data or links ship in this commit.
+- Branch `t3/walk-landing`, base `bdde7e60`; runtime, regressions and this
+  entry ship in one commit. No `spikes/` edits, live population launch, PR
+  or merge to main.

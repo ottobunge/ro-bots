@@ -314,6 +314,7 @@ NPC_RETRY_CADENCE_S = 5.0
 NPC_RETRY_EPOCH_S = 300.0
 RESPAWN_RETRY_CADENCE_S = 30.0
 NO_ROUTE_DIRECT_SENDS = 5
+STUCK_CELL_EPOCHS = 5
 # The server's pickup radius: a CZ_ITEM_PICKUP lands when the bot stands
 # within Chebyshev<=2 of the drop (pinned pc.cpp:6197).
 # leg 69: the once-per-position escalation latch (leg 39) left s00 dead-
@@ -404,6 +405,13 @@ class PlayingClient:
     _escalated_dead_count = 0
     _escalated_dead_pos: tuple[int, int] | None = None
     _reposition_sends = 0
+    # Count dispatches across targets, not plan ticks or packet sequence bumps.
+    # 0x0087's FROM cell is received truth; its TO cell is only a projection.
+    _stuck_cell: tuple[str, tuple[int, int]] | None = None
+    _stuck_epochs = 0
+    _stuck_walk_pending = False
+    _stuck_recoveries: tuple[tuple[int, int], ...] = ()
+    _stuck_recovery_stage = 0
 
     @property
     def _deadlock_cells(self) -> set[tuple[str, tuple[int, int]]]:
@@ -843,6 +851,7 @@ class PlayingClient:
             if self._skills is not None:
                 self._skills.consume(frame)
             self._capture_swing_frame(frame, tracker.view, epoch)
+            self._observe_walk_landing(frame, tracker.view)
             self._consume_metadata(received)
             self._validate_received_npc_context(tracker.view)
             self._npc.consume(received, now)
@@ -1680,7 +1689,7 @@ class PlayingClient:
         authority = self.__dict__.get("_farm_sightings")
         if authority is None or not authority.valid(state, self._now()):
             return
-        targets = authority.fresh_targets(state)
+        targets = authority.fresh_targets(state, consume=self._pending is None)
         if not targets or self._combat_intent is not None:
             return
         target = min(targets, key=lambda actor: (actor.distance, actor.id))
@@ -1690,12 +1699,12 @@ class PlayingClient:
         if survivability_refusal(state, str(target.name), self.mob_db) is not None:
             self._sighting_tap("deferred", target.id, "no_survivability")
             return
+        if self._pending is not None:
+            self._sighting_tap("deferred", target.id, "pending_walk")
+            return
         intent = self._authorize_farm_target(state, target, renew=False)
         self._sighting_intent = intent
         self._sighting_tap("minted", target.id, "combat_intent")
-        if self._pending is not None:
-            self._note_sighting_deferred("pending_walk", target.id)
-            return
         self._continue_farm_target(state, intent)
 
     @gameplay_serialized
@@ -2671,7 +2680,7 @@ class PlayingClient:
         return selection
 
     def _dealer_adjacent(self, tracker: NativeGameplayTracker, npc_id: int) -> bool:
-        """Tracked adjacency to the RECEIVED dealer — never the walk-arrival
+        """Chebyshev <= 1 to the RECEIVED dealer — never the walk-arrival
         flag (it stays False after every real walk; gating the shop limb on
         it is what kept leg 28's 32 sell-opens from ever sending). Same
         contract e06dc511 gave the click path. Fail closed: no received
@@ -2680,11 +2689,11 @@ class PlayingClient:
         if dealer is None or dealer.position is None or tracker.view.position is None:
             return False
         return (
-            math.hypot(
-                dealer.position.x - tracker.view.position.x,
-                dealer.position.y - tracker.view.position.y,
+            max(
+                abs(dealer.position.x - tracker.view.position.x),
+                abs(dealer.position.y - tracker.view.position.y),
             )
-            <= 3
+            <= DEALER_TALK_RANGE
         )
 
     def _send_sell_open(self, action: NpcShopSellOpen) -> None:
@@ -3572,6 +3581,15 @@ class PlayingClient:
         self._move_pending_release = {}
 
     def _move(self, state: BotState, target: tuple[int, int]) -> str:
+        reason = self._move_from_received(state, target)
+        if reason in ("dispatched", "occupied_west_rerouted") and self._pending_origin not in (
+            "stuck_cell_detected",
+            "stuck_cell_escalated",
+        ):
+            self._stuck_walk_pending = True
+        return reason
+
+    def _move_from_received(self, state: BotState, target: tuple[int, int]) -> str:
         gate = self._move_gate(state, target)
         if gate is not None:
             self._note_move_gate(gate)
@@ -3584,15 +3602,10 @@ class PlayingClient:
             return "gate_state_drift"
         pos = tracker.view.position
         grid = cache.get(state.map_name)
-        # leg 38: the tracked position comes ONLY from the received
-        # entry/0x0087 stream - it is server truth even when the client
-        # grid calls the cell a wall (s00 logged into pay_fild04 (204,165),
-        # a cell the server saved twice). Ground-correct the own cell so
-        # the roam/reroll machinery can engage; the leg-28 direct send then
-        # carries the walk and the server path-finds its own side.
-        if not grid.walkable((state.x, state.y)):
-            cache.mark_walkable(state.map_name, (state.x, state.y))
-            self._note_move_gate("ground_corrected_own_cell")
+        # A saved/received position does not prove that its cell is walkable.
+        # Preserve the grid; NoRoute still has the leg-28 direct-send lane.
+        if self._stuck_epochs >= STUCK_CELL_EPOCHS:
+            return self._recover_stuck_cell(state, grid, pos)
         # Allocation and dispatch must agree about received corridor blockers,
         # including the path home after a sale releases the counter.
         if dealer_entry_cell(state.map_name, target) or state.map_name == "prt_in":
@@ -3603,6 +3616,65 @@ class PlayingClient:
         except NoRoute:
             return self._move_no_route(state, target, pos)
         return self._move_path(state, target, path, grid, pos)
+
+    def _observe_walk_landing(
+        self, frame: tuple[int, float, int, bytes], view: NativeGameplayView
+    ) -> None:
+        """Reset only on a received SELF cell change, including within a batch."""
+        _, _, pid, raw = frame
+        if pid not in (0x02EB, 0x0091, 0x0087) or view.position is None:
+            return
+        point = (view.position.x, view.position.y)
+        if pid == 0x0087:
+            a, b, c = raw[6:9]
+            point = ((a << 2) | (b >> 6), ((b & 63) << 4) | (c >> 4))
+        cell = (view.map_name or self.wire.map_name, point)
+        if self._stuck_cell is not None and cell != self._stuck_cell:
+            if self._stuck_epochs:
+                self._note_move_gate("stuck_cell_reset")
+            self._stuck_epochs = self._stuck_recovery_stage = 0
+            self._stuck_walk_pending = False
+            self._stuck_recoveries = ()
+        self._stuck_cell = cell
+
+    def _recover_stuck_cell(self, state: BotState, grid: WalkMap, pos: ObservedPosition) -> str:
+        """Two direct attempts per received cell; no DB writes or invented landing."""
+        stage = self._stuck_recovery_stage
+        if stage >= 2:
+            self._note_move_gate("stuck_cell_exhausted")
+            self._fail_patrol()
+            return "stuck_cell_exhausted"
+        own = self._stuck_cell[1] if self._stuck_cell is not None else (state.x, state.y)
+        reason = "stuck_cell_detected" if stage == 0 else "stuck_cell_escalated"
+        self._stuck_recovery_stage += 1
+        self._note_move_gate(reason)
+        logger.warning(
+            "%s bot=%s map=%s cell=%s own_walkable=%s epochs=%s",
+            reason,
+            state.name,
+            state.map_name,
+            own,
+            grid.walkable(own),
+            self._stuck_epochs,
+        )
+        occupied = tuple(
+            (actor.x, actor.y)
+            for actor in state.nearby
+            if actor.x is not None and actor.y is not None
+        )
+        alt = nearest_walkable(
+            grid,
+            own,
+            radius=2 if stage == 0 else 12,
+            exclude=(own, *self._stuck_recoveries, *state.occupied_cells, *occupied),
+        )
+        if alt is None:
+            return reason
+        self._stuck_recoveries += (alt,)
+        self._send_walk(alt, pos.seq)
+        self._pending_origin = reason
+        self._pending = (alt, pos.seq, self._now(), 0)
+        return "dispatched"
 
     def _move_staging(
         self, state: BotState, target: tuple[int, int], grid: WalkMap, pos: ObservedPosition
@@ -3695,6 +3767,7 @@ class PlayingClient:
         return "dispatched"
 
     def _send_walk(self, point: tuple[int, int], after_seq: int) -> None:
+        self._stuck_walk_pending = False
         self._contact_walk_owned = False
         self.wire.move(*point)
         self._ensure_loot_memos()
@@ -4921,7 +4994,10 @@ class PlayingClient:
             self._pump_confirmed_stock()
             self._pump_field_travel()
             if self.__dict__.get("_farm_sightings") is not None:
-                self._pump_farm_sightings(self.build_native_state(Goal.GRIND))
+                state = self.build_native_state(Goal.GRIND)
+                if self._tracker is not None:
+                    self._pump_pending_arrival(self._tracker.view)
+                self._pump_farm_sightings(state)
             self._pump_farm_combat()
         except Exception:
             self._combat_intent = self._arrival_intent = None
@@ -5056,6 +5132,7 @@ class PlayingClient:
                 # handoff. A timeout release or projected endpoint cannot.
                 # A walk ending short also rechecks the live target geometry.
                 self._arrival_intent = self.__dict__.get("_combat_intent")
+                self._complete_walk_epoch()
                 self._pending = None
             elif pos.seq != seq:
                 # The walk is progressing (the position frames advanced):
@@ -5080,11 +5157,17 @@ class PlayingClient:
                     "pending_reason": f"no_progress({self._pending_origin})",
                     "pending_target": point,
                 }
+                self._complete_walk_epoch()
                 self._pending = None
                 return False
             else:
                 return True
         return False
+
+    def _complete_walk_epoch(self) -> None:
+        if self._stuck_walk_pending:
+            self._stuck_epochs = min(STUCK_CELL_EPOCHS, self._stuck_epochs + 1)
+            self._stuck_walk_pending = False
 
     def _field_target(self, state: BotState) -> tuple[int, int] | None:
         self._sync_patrol_context(state)
