@@ -673,6 +673,29 @@ def merchant_renew_contact_walk(bot: str) -> None:
         trip.progress_at = now
 
 
+def merchant_release_trip(bot: str, reason: str) -> None:
+    """End outbound ownership on a proved completion or terminal refusal.
+
+    This is also called by the pump: waiting for another goal-script tick
+    leaves stale travel ownership after a visit has already yielded. Keep
+    dialogue receipts and retry/return barriers at their existing seams.
+    """
+    trip = _MERCHANT_TRIPS.pop(bot, None)
+    if trip is None:
+        return
+    merchant_reset_dealer_approach(bot)
+    _MERCHANT_TRAVEL_WALKS.pop(bot, None)
+    logger.warning(
+        "merchant-drive: merchant_trip_budget_released "
+        "(bot=%s reason=%s remaining=%s best_distance=%s idle_s=%s)",
+        bot,
+        reason,
+        trip.remaining,
+        trip.distance,
+        max(0.0, _merchant_now() - trip.progress_at),
+    )
+
+
 def merchant_release_contact_walk(bot: str) -> bool:
     """Release an admitted trip after the contact-walk ladder exhausts.
 
@@ -737,10 +760,15 @@ def merchant_drive_cell(state: BotState) -> tuple[int, int] | None:
     refusal = merchant_admission_refusal(state)
     if refusal is not None:
         term, detail = refusal
+        if term not in (
+            "inventory_unknown",
+            "merchant_trip_retry_cooldown",
+            "merchant_post_trip_return",
+        ):
+            merchant_release_trip(state.name, term)
         if term in ("no_stock_below_zeny_floor", "merchant_stock_below_trip_minimum"):
             # An unfunded sale ends the old trip now; its retry clock must
             # not own the return leg. Received new stock can admit afresh.
-            _MERCHANT_TRIPS.pop(state.name, None)
             _DEALER_APPROACH_WALKS.pop(state.name, None)
             _DEALER_QUEUE_WAITS.pop(state.name, None)
             release = (

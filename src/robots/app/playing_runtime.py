@@ -103,6 +103,7 @@ from robots.app.scripts import (
     merchant_farm_returning,
     merchant_pickup_required,
     merchant_release_contact_walk,
+    merchant_release_trip,
     merchant_renew_contact_walk,
     merchant_reset_dealer_approach,
     merchant_return_cell,
@@ -2423,6 +2424,7 @@ class PlayingClient:
         return () if cell == (state.x, state.y) else (MoveTo(*cell),)
 
     def _rearm_farm_after_trip(self, reason: str | None) -> None:
+        merchant_release_trip(self.wire.char_name, reason or "drained")
         if not self._merchant_returning:
             logger.warning(
                 "merchant-drive: farm_arm_rearmed_post_trip (bot=%s reason=%s)",
