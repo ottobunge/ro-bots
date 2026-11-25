@@ -16385,3 +16385,52 @@ exec-only — `docker run` client sidecar on the compose network works).
   `run/plain_host_receipts/population-receipt-129-1795592488.json`; traces
   window-filtered 08:00-09:30 UTC; DB readback via docker-run client sidecar.
 
+
+
+## [2026-11-25] leg | LEG-130 VERDICT — economy peaks (16 sellers +234z -> 3023, kills 42 @ 2.0/attacker) but s01 re-traps at LOGIN (savepoint fix cannot fire without a death); attackers rotate down to 21/29
+
+Shepherd launch 13:40:46 (window 14:00-15:30 Madrid, 29 personas [[2,14.0,15.5]],
+main bf1dfa69), preflight green (DECIDE-OK 0.47s answers=10 warm, chat 200, e2e
+containers up). Bars **3 of 5**: kills MET, sells/zeny MET, close-write MET;
+attackers FAILED (21 vs bar 26); s01 FAILED-as-shaped. Receipt
+`population-receipt-130-1795592488` successor `population-receipt-130-1795610453.json`
+close-write on disk 15:30 with the unit active; `DONE: steps 22210, errors 0` 15:45.
+Readout: `run/reviews/leg130-verdict.md`.
+
+- **s01 correction validated as WRITTEN but WRONG LEVEL (bar 1)**: the coordinator's
+  pre-launch correction set save_map/x/y -> (20,165), but s01 logs in at LAST position,
+  which leg-129's logout had re-poisoned to (163,177). Pinned all window: 168 samples /
+  1 distinct cell / stuck_cell_exhausted 8 / 36 stuck lines naming (163,177) / 106
+  decisions / 0 moves / logout (163,177) zeny 0. No death => the corrected respawn
+  path NEVER RAN — the savepoint fix remains live-unvalidated and cannot validate
+  without a death, which a pinned agent cannot have. Class framing: every logout from
+  the pocket re-seeds the trap via last_map/x/y. Next signature (primary): operator
+  last-position reset (163,177 -> 20,165) before leg-131 + the class fix (popgen
+  savepoint walkability verification at seed time; optionally a runtime unwalkable-
+  login detection -> savepoint relocation request). Do NOT iterate stuck-recovery
+  again — its detection/bounding worked exactly as designed.
+- **Attackers 21/29 (bar 26) — rotation, not collapse (bar 2)**: leg-129's zero trio
+  improved (g00m03 -> 22 atk/4 kills, s03 -> 11 atk/3 kills; g02m01 still zero), but a
+  NEW zero cohort of 8: RinceNyan, YuffieFy81, zeny_hunter (all three = the window's
+  biggest sellers), g03m02 (a leg-129 killer, now 0), g03m00, g03m03, g04m00, s01
+  (pinned). Sell participation doubled (10 -> 16 sellers) while attackers fell —
+  merchant trips displace attacks in the decide budget (the chat-era competition
+  shape returning through the merchant lane). Secondary watch: cap trip duration or
+  author attacks immediately post-sale.
+- **Kills 42 (bar 30) at 2.0/attacker (leg-129 1.5) — funnel volume held (bar 3)**:
+  107 authored -> 180 swings -> 3,563 dealt -> 42 credits; drops_seen 82 but pickups
+  16 — floor-ingest->pickup conversion is the funnel's weakest link this window.
+  picklog M +42 == kill_credits exactly (picklog totals M311/P151/L238/S139,
+  deltas +42/+22/+55/+29 — every baseline advanced).
+- **Best sell window of the era (bar 4)**: 16 distinct sellers, 18 zenylog S-rows,
+  fleet zeny 2,789 -> 3,023; per-persona reconcile EXACT (16 movers sum +234, 13
+  unchanged). Top: zeny_wing +40, YuffieFy81 +35, RinceNyan +34, LunaHunter +29,
+  PoringMuffin14 +17 -> 787z (fleet's richest). Post-sell travel: 4 agents closed on
+  prt_fild06.
+- Health: step_errors 0; TRANSPORT DOWN 29 = one per agent, 0 exhausted, all
+  recovered (g02m02's connect RuntimeError recovered — finished top attacker 54 atk /
+  5 kills); 12 PlayingBackendError decide timeouts absorbed (small saturation
+  footprint, no wedge).
+- seed-zeny.json advanced to 3,023 (16 rows changed) in the same commit as this
+  entry. DB readback via the docker-run client sidecar (secret in-container only;
+  pop_0069 chars live at 300100-300121, pop_0003 at 300000-300006 — query BOTH ranges).
