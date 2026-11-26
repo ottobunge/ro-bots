@@ -13,6 +13,7 @@ from collections import deque
 from dataclasses import dataclass
 
 from robots.adapters.native_gameplay import ObservedDamage, ObservedFloorItem, ObservedPickupAck
+from robots.app.drop_coverage import defer_reason_class
 
 logger = logging.getLogger(__name__)
 
@@ -94,7 +95,13 @@ class LootAttribution:
         key = (item.floor_item_id, reason)
         if key not in self._held:
             self._held.add(key)
-            self.note(item, "deferred", reason=reason, tap="drop_unattempted_reason")
+            self.note(
+                item,
+                "deferred",
+                reason=reason,
+                reason_class=defer_reason_class(reason).value,
+                tap="drop_unattempted_reason",
+            )
 
     def missing(self) -> None:
         if not self._missing:

@@ -13,6 +13,8 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from typing import Any
 
+from robots.app.drop_coverage import DropCoverage
+
 FLOOR_LIFETIME_SECONDS = 60
 DRAIN_ALLOWANCE_SECONDS = 2
 
@@ -30,6 +32,7 @@ class _Presence:
     row: dict[str, Any]
     first: float
     last: float
+    generation: int = 0
     outcomes: set[str] = field(default_factory=set)
     ceded: bool = False
     expired: bool = False
@@ -49,6 +52,7 @@ class _Presence:
 
 class PickupFunnel:
     def __init__(self) -> None:
+        self.coverage = DropCoverage()
         self._sessions: dict[str, tuple[str, int]] = {}
         self._generations: Counter[str] = Counter()
         self._presences: dict[tuple[Any, ...], _Presence] = {}
@@ -56,6 +60,7 @@ class PickupFunnel:
         self._proofs: dict[tuple[str, int], list[dict[str, Any]]] = defaultdict(list)
 
     def consume(self, row: dict[str, Any], *, active: bool) -> None:
+        self.coverage.consume(row, active=active)
         self._session(row)
         if not active:
             return
@@ -78,7 +83,9 @@ class PickupFunnel:
         persona = row["persona"]
         identity = _identity(row)
         key = (persona, *identity, self._generations[persona], row.get("drop_seq"))
-        presence = self._presences.setdefault(key, _Presence(row, _at(row), _at(row)))
+        presence = self._presences.setdefault(
+            key, _Presence(row, _at(row), _at(row), generation=self._generations[persona])
+        )
         presence.update(row)
         if row["outcome"] in ("succeeded", "collected"):
             self._proofs[identity].append(row)
@@ -170,6 +177,7 @@ class PickupFunnel:
             "map": row.get("map"),
             "floor_item_id": row["floor_item_id"],
             "drop_seq": row.get("drop_seq"),
+            "presence_generation": presence.generation,
             "agent_attempted": "attempted" in presence.outcomes,
             "proof_persona": proof["persona"],
             "proof": proof.get("outcome", "collection_animation"),
@@ -203,10 +211,16 @@ def attach_pickup_summary(agents: dict[str, Any], funnel: PickupFunnel) -> dict[
     totals: Counter[str] = Counter()
     for persona, agent in agents.items():
         agent["pickup"] = pickup_summary(agent["totals"], converted[persona])
+        agent["pickup"]["drop_coverage"] = funnel.coverage.summary(
+            converted[persona], persona=persona
+        )
         totals.update(
             {k: agent["totals"][k] for k in ("drops_seen", "pickup_attempts", "pickup_success")}
         )
-    return pickup_summary(dict(totals), [row for rows in converted.values() for row in rows])
+    conversions = [row for rows in converted.values() for row in rows]
+    result = pickup_summary(dict(totals), conversions)
+    result["drop_coverage"] = funnel.coverage.summary(conversions)
+    return result
 
 
 def _collection_animation(row: dict[str, Any]) -> bool:
