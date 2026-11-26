@@ -16696,3 +16696,18 @@ chat :8092 health 200). Receipt `population-receipt-131-1795632018.json` close-w
   **7,867 passed, 1 skipped, 65 subtests passed, 96.00% coverage**. A first run
   started before vendored rAthena source was available; the final complete run
   used pinned `e985006171d2` and main's two DB/config.log symlinks and passed.
+
+## 2026-11-26 — leg-134 verdict (Thu [[3,20.0,21.5]] 20:00-21:30 Madrid)
+
+Shepherded end to end: preflight 19:38 (DECIDE-OK 0.71s answers=10; :8092 200; weekday() 3 verified), launch 19:38:54 under systemd-run leg134-runner (RuntimeMaxSec 7200 never fired), window 20:00-21:30, receipt close-write 11th consecutive (mtime 21:30, unit exit 21:34:00 Result=success exit 0). Receipt population-receipt-134-1795718339.json; verdict run/reviews/leg134-verdict.md.
+
+4/5 bars PASS —
+- BOTH-ARM: attackers 22/29 (>=15) + sellers 16/29 (>=12), 14 agents on both lists (best yet; leg-133 19+16/12). Fleet 546 authored, 367 swings, 22 killers.
+- KILLS 73 (>=41) — new peak (prior 56). Damage 7,196, exp +282/+126.
+- ZENY 3,567 -> 3,819 (+252): 21 zenylog S-rows reconcile EXACTLY, incl. one +38 sell session completing at 20:30:15Z in the drain (bound-by-UTC forensics; zero unlogged movement). Top earner rince_ko +73 (76->149z). No buys (all S rows).
+- DROP-COVERAGE RESOLUTION: FAIL on the instrument bar — reason classes ran live but UNKNOWN stayed 36/39 = 92% of unattempted (bar <50%; leg-133 replay 86%); despawn_before_observation 3, the three named approach/spawn/map classes all 0. The WATCH passed for the first time: fleet-attempted 83/118 = 70.3% >= 70% (success 98.8%), with 16 sellers leaving fewer agents parked on drops.
+- CLOSE-WRITE 11th consecutive: PASS.
+
+Decide health: 4,493 attempts, capped 30 = 0.67%, TRUE p50 1.16s / p90 3.55s / max 13.81s (leg-133 0.2%/0.94s). Transport: 29 one-shot events, 296 recoveries, none exhausted, offline [] at close. Stuck cells: 5 named bots, 1 escalation, all self-recovered. Steps 20,198 receipt / 20,796 DONE, errors 0. sell_contact_authored 20 through 2,278 ring-holds.
+
+Named next: (1) the drop-coverage classifier must consume its own per-drop gate evidence (authored_action/combat_priority/walk_arrival_gate + deferred outcomes) instead of defaulting 'unknown' — only then is >=70% a bar, not a watch; (2) buy-leg reach: PoringMuffin14 967z vs the 1,250z knife needs ~6-7 windows at +43/window solo — fleet zeny is diffuse (rince_ko next at 149z); (3) consider a designated purchaser persona to pool zeny for the first in-window purchase.
