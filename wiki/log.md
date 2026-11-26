@@ -1,7 +1,7 @@
 ---
 title: Current implementation log
 created: 2026-10-05
-updated: 2026-11-25
+updated: 2026-11-26
 type: guide
 status: accepted
 tags: [ops, testing]
@@ -16660,3 +16660,39 @@ chat :8092 health 200). Receipt `population-receipt-131-1795632018.json` close-w
   window at this rate; (3) verify the attacker dip (19 vs 27) is dealer-trip
   rotation, not plan-quality regression, when leg-134 stages.
 
+
+## 2026-11-26 — leg-133 drop-coverage reason split (measurement; bar still open)
+
+- On `t3/drop-coverage-split`, base `3b84e1f4`, added `DropReasonClass` and
+  receipt-only `reason_class` fields to existing unattempted-loot taps. Original
+  reasons, memo transitions, runtime dispatch, ownership and motion gates are
+  unchanged. Per-agent/fleet `drop_coverage` rows retain session boundaries,
+  timestamps, gate classes and the exact supporting loot receipts.
+- Audited the original traces at 13:00–14:30 UTC and replayed the complete
+  receipt lifetime (12:40:21.798941–14:30:00.085588 UTC). Both agree with the
+  portable 1,057-row `tests/fixtures/leg133_pickup.jsonl` capture: 87 nearby
+  sightings, 37 cohort local attempts, 14 credited sightings, **36 uncovered**,
+  and 6 sends outside the cohort. The verdict's **30 = 36 - 6** is a mixed-cohort
+  arithmetic residual, not 30 identifiable drops. Floor 572 was surfaced in
+  two sessions; only its second sighting has an attempt.
+- Exact loss classes over the 36 actual uncovered sightings: out-of-approach
+  range owned **0**, explicit far-kill spawn timeout **0**, map blindness **0**,
+  presence expiry logged before ItemDrop **5**, genuinely unknown cause **31**.
+  The five ordering cases do not prove natural TTL expiry. Last gates across
+  all 36: no receipt 12, nearer agent 11, authored action 5, threat 4, pending
+  walk 2, awaiting arrival 1, walking 1. Gate evidence is not proof of a later
+  safe opportunity. No class establishes approach starvation, so no speculative
+  runtime fix was added. `spawn_timeout` is reserved for explicit evidence;
+  current runtime emits no such receipt and disappearance cannot substitute.
+- Historical fleet replay remains **57/87 = 65.517%** and 57/57 success;
+  >=70% acceptance is explicitly **not met**. No invented counterfactual sends,
+  success credits, or arbitrary subtraction from unknown reason bins.
+- Evidence and limits: `run/reviews/drop-coverage-leg133-split.json`, adjacent
+  Markdown report, and `tests/fixtures/leg133_pickup.README.md` (hashes and
+  offline CLI). No live runner, DB mutation, main merge or `spikes/` formatting.
+- TDD RED: 19 initial contract failures, plus a separate RED for cross-session
+  fleet-credit borrowing in the new report. GREEN: **23 new cases, 123 focused
+  passes**. Full `nix develop -c task --dir . check` GREEN: all static checks,
+  **7,867 passed, 1 skipped, 65 subtests passed, 96.00% coverage**. A first run
+  started before vendored rAthena source was available; the final complete run
+  used pinned `e985006171d2` and main's two DB/config.log symlinks and passed.
