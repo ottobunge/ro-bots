@@ -27,7 +27,7 @@ def coverage(tmp_path: Path, rows: list[dict[str, Any]]) -> dict[str, Any]:
         ([drop(map_event="other.gat")], "map_transition_blindness"),
         ([loot("expired", reason="presence_epoch_expired"), drop()], "despawn_before_observation"),
         ([drop()], "unknown"),
-        ([drop(), loot("deferred", reason="threat")], "unknown"),
+        ([drop(), loot("deferred", reason="threat")], "combat_priority"),
     ],
 )
 def test_uncovered_sighting_requires_positive_reason_evidence(tmp_path, rows, reason):
@@ -48,7 +48,7 @@ def test_later_combat_gate_does_not_indict_an_earlier_approach(tmp_path):
     rows = [drop(), loot("deferred", reason="out_of_range"), loot("deferred", reason="threat")]
     result = coverage(tmp_path, rows)
     lost = result["unattempted_drops"][0]
-    assert lost["reason_class"] == "unknown"
+    assert lost["reason_class"] == "combat_priority"
     assert lost["last_gate"] == "threat"
     assert lost["gate_classes"] == ["combat_priority", "out_of_approach_range_owned"]
 
@@ -77,7 +77,7 @@ def test_reconnect_sighting_does_not_borrow_a_later_local_attempt(tmp_path):
     assert result["unattempted_count"] == 1
 
 
-def test_leg133_original_replay_preserves_the_missed_bar_and_partitions_sightings():
+def test_leg133_replay_resolves_gates_and_preserves_the_sighting_partition():
     path = Path(__file__).parent / "fixtures" / "leg133_pickup.jsonl"
     pickup = summarize_swing_traces([path])["pickup"]
     assert pickup["drops_seen"] == 87
@@ -95,7 +95,13 @@ def test_leg133_original_replay_preserves_the_missed_bar_and_partitions_sighting
         "spawn_timeout_far_kill": 0,
         "map_transition_blindness": 0,
         "despawn_before_observation": 5,
-        "unknown": 31,
+        "unknown": 12,
+        "ownership_ceded": 8,
+        "combat_priority": 2,
+        "authored_action": 5,
+        "walk_arrival_gate": 4,
+        "pose_gate": 0,
+        "pickup_ack_gate": 0,
     }
 
 

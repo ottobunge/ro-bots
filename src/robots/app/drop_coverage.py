@@ -5,6 +5,9 @@ subtraction is not a set of drops. Keep those counters intact and expose an
 independent, session-bound partition, including sends outside that cohort.
 Unknown is intentional: disappearance cannot prove TTL, a far kill, ownership,
 or a safe opportunity. Gate observations describe barriers, not lost revenue.
+After explicit observation/timeout evidence, the latest deferred gate names the
+barrier. An expiry's deferred_reason retains the first gate and is a fallback
+only when the original defer taps are missing.
 """
 
 from collections import Counter, defaultdict
@@ -27,7 +30,6 @@ class DropReasonClass(StrEnum):
     PICKUP_ACK_GATE = "pickup_ack_gate"
 
 
-TERMINAL_CLASSES = tuple(DropReasonClass)[:5]
 _GATE_CLASSES = {
     "out_of_range": DropReasonClass.OUT_OF_APPROACH_RANGE_OWNED,
     "spawn_timeout": DropReasonClass.SPAWN_TIMEOUT_FAR_KILL,
@@ -68,14 +70,17 @@ def _reason(sight: dict[str, Any], rows: list[dict[str, Any]]) -> DropReasonClas
         return DropReasonClass.DESPAWN_BEFORE_OBSERVATION
     if any(r.get("reason") == "spawn_timeout" for r in rows):
         return DropReasonClass.SPAWN_TIMEOUT_FAR_KILL
-    return _last_approach_class(rows)
+    gates = _gate_reasons(rows)
+    return defer_reason_class(gates[-1]) if gates else DropReasonClass.UNKNOWN
 
 
-def _last_approach_class(rows: list[dict[str, Any]]) -> DropReasonClass:
-    gates = [r for r in rows if r.get("outcome") == "deferred"]
-    if gates and gates[-1].get("reason") == "out_of_range":
-        return DropReasonClass.OUT_OF_APPROACH_RANGE_OWNED
-    return DropReasonClass.UNKNOWN
+def _gate_reasons(rows: list[dict[str, Any]]) -> list[str]:
+    gates = [r.get("reason", "") for r in rows if r.get("outcome") == "deferred"]
+    return gates or [
+        r["deferred_reason"]
+        for r in rows
+        if r.get("outcome") == "expired" and r.get("deferred_reason")
+    ]
 
 
 def _expired_before_observation(sight: dict[str, Any], rows: list[dict[str, Any]]) -> bool:
@@ -120,7 +125,7 @@ class DropCoverage:
             "unattempted_count": len(lost),
             "legacy_residual": len(lost) - counts["attempts_outside_cohort"],
             "unattempted_reason_counts": {
-                reason.value: reasons[reason] for reason in TERMINAL_CLASSES
+                reason.value: reasons[reason] for reason in DropReasonClass
             },
             "unattempted_drops": sorted(lost, key=lambda r: (r["t"], r["persona"])),
         }
@@ -191,7 +196,7 @@ def _converted(
 
 
 def _loss(sight: dict[str, Any], rows: list[dict[str, Any]], generation: int) -> dict[str, Any]:
-    gates = [r for r in rows if r.get("outcome") == "deferred"]
+    gates = _gate_reasons(rows)
     return {
         "tap": "drop_unattempted_reason",
         "t": sight["t"],
@@ -203,9 +208,22 @@ def _loss(sight: dict[str, Any], rows: list[dict[str, Any]], generation: int) ->
         "drop_x": sight["x_event"],
         "drop_y": sight["y_event"],
         "reason_class": _reason(sight, rows).value,
-        "last_gate": gates[-1].get("reason") if gates else None,
-        "gate_classes": sorted({defer_reason_class(r.get("reason", "")).value for r in gates}),
+        "last_gate": gates[-1] if gates else None,
+        "gate_classes": sorted({defer_reason_class(reason).value for reason in gates}),
         "evidence": [
-            {k: r[k] for k in ("t", "outcome", "reason", "drop_seq", "map") if k in r} for r in rows
+            {
+                k: r[k]
+                for k in (
+                    "t",
+                    "outcome",
+                    "reason",
+                    "reason_class",
+                    "deferred_reason",
+                    "drop_seq",
+                    "map",
+                )
+                if k in r
+            }
+            for r in rows
         ],
     }

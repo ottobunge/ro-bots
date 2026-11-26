@@ -27,6 +27,11 @@ nix develop -c uv run python scripts/swing_funnel.py \
 
 The original rate is **57/87 = 65.517%**, with 57/57 successes. Splitting
 reasons changes no sends, conversions, ownership, continuation or motion gates.
+The reason distribution below records the original instrument. With the
+leg-134 gate-consumption fix, the same replay resolves 8 `ownership_ceded`,
+5 `authored_action`, 4 `walk_arrival_gate`, 2 `combat_priority`, and leaves
+12 `unknown` plus the original 5 `despawn_before_observation`. Pickup rates
+and the cohort partition remain unchanged; see `leg134_pickup.README.md`.
 `pickup.drop_coverage` exposes the session-bound nearby-sighting partition:
 
 - 37 local attempts matched to nearby sightings;
