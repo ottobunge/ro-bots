@@ -16,6 +16,8 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
+from robots.app.pickup_funnel import PickupFunnel, attach_pickup_summary
+
 COUNTS = (
     "attacks_authored",
     "swings_sent",
@@ -215,15 +217,20 @@ def summarize_swing_traces(
     upper = datetime.fromisoformat(end).timestamp() if end else float("inf")
     for persona in _wire_personas(paths, lower, upper, limits):
         agents[persona].wire = True
+    pickup = PickupFunnel()
     for row in _trace_rows(paths, limits):
         at = datetime.fromisoformat(row["t"]).timestamp()
         if at < upper:
             agents[row["persona"]].consume(row, active=at >= lower)
+            pickup.consume(row, active=at >= lower)
+    summaries = {name: agent.summary() for name, agent in agents.items()}
+    pickup_result = attach_pickup_summary(summaries, pickup)
     return {
         "schema": "swing_conversion_v1",
         "start": start,
         "end": end,
-        "agents": {name: agent.summary() for name, agent in agents.items()},
+        "agents": summaries,
+        "pickup": pickup_result,
     }
 
 

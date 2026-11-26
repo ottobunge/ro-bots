@@ -16574,3 +16574,53 @@ chat :8092 health 200). Receipt `population-receipt-131-1795632018.json` close-w
   attempted-rate reconciliation (cede-then-peer-take = fleet success); joint
   kills+conversions rotation bar; buy leg reach (PoringMuffin14 831z vs
   1,250z knife at live prices).
+
+## [2026-11-26] fix | Fleet pickup denominator (SOL slice)
+
+- Branch `t3/fleet-pickup-denominator`, base `79172ed5`; read
+  `run/reviews/leg132-verdict.md` first. Receipt-only reconciliation lives in
+  `robots.app.pickup_funnel`, attached to both the fleet and each agent's
+  existing `swing_conversion_v1` summary as `pickup`. `agent_attempted` retains
+  the original attempts/success counts; `fleet_attempted` adds confirmed
+  unattempted cedes/consumes. Both expose `attempted`, `success`, `attempt_rate`
+  (attempts / nearby sightings) and `success_rate` (successes / attempts), with
+  null rates for an empty denominator.
+- Track `nearer_agent` and consumed/expired floor presences by persona, map,
+  floor ID, session generation and drop sequence. Confirm with another agent's
+  attributed inventory ACK / own take-item receipt, or the existing observed
+  type-1 collection animation naming that floor ID. Receipt matches also check
+  the drop cell and item. `pickup_fleet_converted` rows carry the reason,
+  original floor identity and confirming receipt persona/time/path. Bare expiry,
+  unbound ACKs and unmatched cedes do not prove collection. Bound correlation by
+  the pinned rAthena default 60-second floor lifetime, a two-second trace-drain
+  allowance and the next local presence. A reused presence needs its own nearby
+  sighting; local packet sequences are never compared across agents.
+- A peer-won attempted race adds one fleet success while retaining its existing
+  attempt. A successful own lane, repeated cede, inventory ACK after take-item,
+  or repeated observer animation cannot count the presence twice. The old
+  agent counters, including attempts outside radius two, stay intact. These are
+  converted opportunities against the original per-persona sighting cohort,
+  which can observe a physical item more than once; fleet success is not a new
+  claim about distinct inventory additions or DB picklog rows.
+- Exact leg-132 replay: **51 sightings; agent 23/51 attempted = 45.10%,
+  19/23 successful = 82.61%; fleet 38/51 attempted = 74.51%, 37/38 successful
+  = 97.37%**. Fifteen proven unattempted cedes add attempts and successes;
+  three peer-won attempted races add successes only. The fleet attempt bar
+  >=70% passes. Thirteen unattempted sightings and one attempted failure remain
+  unconverted. DB pickup delta +19 and original agent success +19 are unchanged.
+- Evidence: `run/reviews/fleet-pickup-denominator.json`; the portable 732-row
+  trace-shaped fixture `tests/fixtures/leg132_pickup.jsonl` preserves the exact
+  receipt window and pickup counts. Its adjacent README documents extraction,
+  source/fixture hashes and the offline CLI replay command. Keep session rows:
+  rebuilds reuse sequences, and dropping those rows can split an attempt from
+  its eventual success and falsely inflate fleet conversion.
+- TDD RED: initial 18 new regressions failed while all 23 existing pickup tests
+  passed; additional REDs caught reused-presence sighting leakage and legacy
+  drops without floor IDs. GREEN focused validation: **60 passed** (23 existing
+  pickup, 23 new fleet-accounting, 14 swing-funnel tests). Full gate
+  `nix develop -c task --dir . check` GREEN: all static checks, **7,844 passed,
+  1 skipped, 65 subtests passed, 95.98% coverage**. The isolated worktree uses
+  the exact pinned rAthena source and main's two knowledge DB/config.log fixtures.
+- No pickup dispatch, ownership (`eefb95c4`), stock admission, retry, runtime
+  telemetry or runner behavior changes; no `spikes/` formatting, live runner,
+  SQL mutation, deployment or main merge.
