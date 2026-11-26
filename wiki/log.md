@@ -16711,3 +16711,57 @@ Shepherded end to end: preflight 19:38 (DECIDE-OK 0.71s answers=10; :8092 200; w
 Decide health: 4,493 attempts, capped 30 = 0.67%, TRUE p50 1.16s / p90 3.55s / max 13.81s (leg-133 0.2%/0.94s). Transport: 29 one-shot events, 296 recoveries, none exhausted, offline [] at close. Stuck cells: 5 named bots, 1 escalation, all self-recovered. Steps 20,198 receipt / 20,796 DONE, errors 0. sell_contact_authored 20 through 2,278 ring-holds.
 
 Named next: (1) the drop-coverage classifier must consume its own per-drop gate evidence (authored_action/combat_priority/walk_arrival_gate + deferred outcomes) instead of defaulting 'unknown' — only then is >=70% a bar, not a watch; (2) buy-leg reach: PoringMuffin14 967z vs the 1,250z knife needs ~6-7 windows at +43/window solo — fleet zeny is diffuse (rince_ko next at 149z); (3) consider a designated purchaser persona to pool zeny for the first in-window purchase.
+
+## 2026-11-26 — leg-134 classifier consumes recorded gate evidence
+
+- On `t3/classifier-gates`, base `e38cb799`, fixed the receipt-only resolver in
+  `src/robots/app/drop_coverage.py`: after existing explicit map/observation/
+  timeout evidence, classify the latest associated `outcome=deferred` / `reason`
+  through the existing gate mapping. Emit all eleven reason classes in aggregate
+  counts, and retain `reason_class` and `deferred_reason` in supporting evidence.
+  Expiry's `deferred_reason` records the *first* defer (`setdefault`), so it is
+  used only if no actual defer tap survives; it cannot override a later gate.
+- Actual raw leg-134 conjuncts: `nearer_agent` (another observed body's distance/
+  AID ranks first) -> ownership ceded; `threat` (active attackable threat) ->
+  combat priority; `authored_action` (authored Attack/Loot owns the tick) ->
+  authored action; `pending_walk`, `walking`, `awaiting_walk_arrival`, and
+  `arrival_confirmation_exhausted` -> walk/received-arrival barrier; `resting`
+  -> pose gate. The rest gate is intermediate here, superseded by later gates.
+  Ceding does not prove collection, and presence expiry does not prove floor TTL
+  or a later safe opportunity. Unknown remains for missing/unrecognized evidence.
+- Replayed the verdict's actual receipt
+  `population-receipt-134-1795718339.json` (the requested `1795720872*` name is
+  absent), inclusive `18:38:59.534156` to exclusive `20:30:00.016649` UTC.
+  Before changing code, the portable 5,586-row raw fixture reproduced the
+  original pickup counters, conversions/proofs/generations and coverage exactly.
+  Before: **36 unknown, 3 despawn_before_observation**. After: **12 ownership
+  ceded, 7 combat priority, 4 authored action, 2 walk arrival, 3
+  despawn_before_observation, 11 unknown** (39 total; all other classes zero).
+  UNKNOWN **92.308% -> 28.205%**, passing <50%. Remaining unknown: ten without
+  associated loot rows, one with boundary-only `map_changed` expiry evidence.
+- Manually checked **ten gate-bearing sightings plus two controls** against
+  original JSONL filenames/line numbers, floor IDs, cells, presence sequences,
+  deferred outcomes and gate order. Examples: pop_0003_g01m01/600 ends at
+  authored_action despite expiry retaining threat; pop_0069_g03m01/634 changes
+  resting -> nearer_agent; /648 changes pending_walk -> walking ->
+  arrival_confirmation_exhausted. All twelve are pinned fixtures. Independently,
+  all **25 newly resolved sightings** match their latest raw live `reason_class`
+  tag. Full row table, hashes, extraction details and replay command:
+  `tests/fixtures/leg134_pickup.README.md` and adjacent verification JSON;
+  complete pickup-only report: `run/reviews/drop-coverage-leg134-gates.json`.
+- Coverage accounting is identical: 118 sightings = 50 cohort attempts + 29
+  fleet-credited + 39 unattempted; four sends outside cohort and legacy residual
+  35. Fleet-attempted remains **83/118 = 70.339%**, successes 82/83; local
+  attempted remains 54/118, successes 53/54. Leg-133 now resolves its existing
+  fixture to 12 unknown, 8 ownership, 5 authored, 4 walk, 2 combat, 5 observation
+  ordering, without changing its rates or partition.
+- TDD RED before production edits: **38 failed / 26 passed** across the new and
+  updated focused contracts. GREEN: **64 passed**, including **41 new cases**
+  covering every gate spelling, expiry-only retained evidence, latest-gate
+  precedence, unsupported/missing evidence and twelve raw-row checks.
+- Only drop-coverage measurement code changed in production. No loot dispatch,
+  ownership, pickup/continuation, runtime gate producers, SQL, live runner,
+  `spikes/` formatting, or main merge. Required knowledge DB/config.log fixtures
+  are symlinked from main; rAthena is pinned at `e985006171d2`.
+- Full gate `nix develop -c task --dir . check` **GREEN**: black and all static
+  checks, **7,908 passed, 1 skipped, 65 subtests passed, 96.00% coverage**.
