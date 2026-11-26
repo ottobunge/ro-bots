@@ -16545,3 +16545,32 @@ chat :8092 health 200). Receipt `population-receipt-131-1795632018.json` close-w
   65 subtests, 95.94%; the historical 96.40% was not reproduced on baseline.
   These are synthetic replay rates; post-change live acceptance remains for
   coordinator leg-132. No live runner, SQL mutation, deployment or main merge.
+
+## 2026-11-26 — leg-132 verdict (Thu [[3,9.0,10.5]] 09:00-10:30 Madrid)
+
+- Launch 08:36:33 CET via systemd unit `leg132-runner` (RuntimeMaxSec 7200),
+  natural drain 10:31:39 exit 0. Preflight hard gate: decide 0.57s warm
+  answers=10 at :8091, :8092 health 200, weekday 3 verified. Receipt
+  `population-receipt-132-1795678598.json` written 10:30 during unit lifetime
+  — 9th consecutive close-write proof. 21,025 steps, 0 step_errors,
+  offline_agents [] at close.
+- Bars: pickup success 19/23 = 82.6% PASS (== offline 83.3%); attempted
+  23/51 = 45.1% MISS as written — unattempted reasons dominated by
+  `nearer_agent` cedes (51) and consumed drops (`no_floor_item` 52 /
+  `presence_epoch_expired` 52), with DB picklog P +19 == receipt success 19
+  corroborating fleet-level conversion; the attempted-rate bar needs a
+  fleet-level denominator. Sellers 18 distinct (bar >=8; leg-131 was 5), all
+  18 zenylog rows type S spread 08:05→09:18, +78z fleet 3,140→3,218 PASS.
+  Kills 41 kill_credits vs 48 MISS (-7, rotation trade-off with the 18
+  sellers; 27/29 attackers, 197 swings, 3,505 damage). Close-write PASS.
+- All three new pickup taps exercised live: pickup_deferred_retried 17,
+  pickup_race_expired 52, drop_unattempted_reason 98.
+- Decide health (window-filtered, error-field split): TRUE p50 0.97s p90
+  2.52s, capped 15/3,764 = 0.4% — best-ever band; no agent under 20 ok
+  decides. Transport: 29 one-shot TRANSPORT DOWN, all recovered (exhausted
+  false, offline [] at close). Stuck cells: 2 named + escalated (prt_fild08
+  170,373 / 170,375), no stall.
+- Verdict: `run/reviews/leg132-verdict.md`. Named next: fleet-level
+  attempted-rate reconciliation (cede-then-peer-take = fleet success); joint
+  kills+conversions rotation bar; buy leg reach (PoringMuffin14 831z vs
+  1,250z knife at live prices).
