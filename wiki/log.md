@@ -16624,3 +16624,39 @@ chat :8092 health 200). Receipt `population-receipt-131-1795632018.json` close-w
 - No pickup dispatch, ownership (`eefb95c4`), stock admission, retry, runtime
   telemetry or runner behavior changes; no `spikes/` formatting, live runner,
   SQL mutation, deployment or main merge.
+
+## 2026-11-26 — leg-133 verdict (Thu [[3,14.0,15.5]] 14:00-15:30 Madrid)
+
+- Launched 13:40:07 CET inside the slot (`systemd-run --user
+  --unit=leg133-runner --property=RuntimeMaxSec=7200`); preflight hard gate
+  green with margin (DECIDE-OK 0.56s answers=10 warm; :8092 health 200;
+  weekday 3 verified). Window opened 14:00, 28/29 online by 14:06, 29/29 by
+  14:26. Runner drained naturally (exit 0, DONE 15:35:48); receipt
+  `population-receipt-133-1795696821.json` written 15:30 during unit lifetime
+  — 10th consecutive close-write proof.
+- BARS 4/5 PASS: (1) both-arm sustained PASS — 19/29 attackers AND 16/29
+  sellers, 12 agents on both lists (first single-window both-arms peak);
+  (2) kills 56 vs 41 — new peak (prior 48, leg-131), damage 6,068, exp
+  +179/+98; (3) fleet zeny 3,218 → 3,567 (+349, largest window gain; 20
+  zenylog S-rows reconcile to the zenny exactly); (4) fleet pickup FAIL on
+  attempted — fleet-attempted 57/87 = 65.5% < 70% (leg-132 replay 74.5%),
+  fleet success 57/57 = 100%; 14 fleet-credited conversions prove the new
+  denominator, the miss is 30 drops neither attempted nor credited;
+  (5) close-write PASS.
+- Decide health best-ever: 3,829 ok / 9 capped = 0.2% capped, TRUE p50 0.94s
+  p90 2.19s (error-field split; the 9 runner tracebacks == the 9 capped
+  decides). Transport: 337 recovery attempts, none exhausted, offline [] at
+  close; ~29 one-shot TRANSPORT DOWN absorbed by backoff. Stuck cells
+  self-recovered (11 resets; named: zeny_wing, LunaHunter (170,375),
+  HyuStar71 (208,358)).
+- Baselines read fresh pre-window: picklog M373/P194/L266/S183, zenylog 122,
+  per-char zeny == seed exactly; close deltas M+51/P+44/L+59/S+36, zenylog
+  +20 (all S, sum == fleet delta exactly). A baseline-parser artifact
+  (tab-less count line) briefly suggested zenylog 183 — corrected by direct
+  read + reconciliation; log tables are clean.
+- Verdict: `run/reviews/leg133-verdict.md`. Named next: (1) split
+  drop_unattempted_reason for the 30 uncovered drops before touching loot-arm
+  code; (2) buy-leg reach — PoringMuffin14 924z vs the 1,250z knife, one more
+  window at this rate; (3) verify the attacker dip (19 vs 27) is dealer-trip
+  rotation, not plan-quality regression, when leg-134 stages.
+
