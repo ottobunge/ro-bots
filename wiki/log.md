@@ -16765,3 +16765,38 @@ Named next: (1) the drop-coverage classifier must consume its own per-drop gate 
   are symlinked from main; rAthena is pinned at `e985006171d2`.
 - Full gate `nix develop -c task --dir . check` **GREEN**: black and all static
   checks, **7,908 passed, 1 skipped, 65 subtests passed, 96.00% coverage**.
+
+## 2026-11-27 — leg-135 verdict (Fri [[4,9.0,10.5]] 09:00-10:30 Madrid)
+
+Base `4f24a271`, schedule `3141875d`. Preflight PASS (DECIDE-OK 0.47/0.53 s answers=10,
+:8091/:8092 health 200). Launched 08:41:30 CET under `leg135-runner` (RuntimeMaxSec 7200).
+Launch trap: the /tmp launcher-script form died 203/EXEC — /tmp is visible but NOT
+executable for the systemd user manager; the leg-134 inline `bash -c` form launched cleanly.
+
+- Run: receipt `population-receipt-135-1795765275.json` written 10:30 with the unit active
+  (kill-safety **12th consecutive**), unit drained itself after `DONE: steps 21374, errors 0`.
+  Window figure **20,246 steps, 0 step_errors**, offline_agents [], 215 samples, 29/29 online
+  to close. Decide health: 3,946 windowed decide_response rows, **capped 0.6%** (24,
+  error-field split), TRUE success p50 **1.00 s**, max 13.9 s, 105-262 decides/agent.
+- Transport: 29 TRANSPORT DOWN lines, distribution exactly 1/agent (login burst, all rebuilt,
+  exhausted 0). One agent (pop_0069_g03m00) parked dealer-adjacent (172,129) with
+  stuck_cell_exhausted ×8 + post_trip_return/counter_not_selected gates.
+- Bars: **3/5 PASS.** (1) BOTH-ARM **FAIL** — attackers 12/29 (<15; leg-134 22), sellers
+  11/29 (<12; leg-134 16); 12 in-window zenylog S-rows by 11 sellers (CET 09:02-10:27, top
+  rince_ko 55+12). (2) kills **FAIL** — 19 kill_credits (<41 floor; leg-134 peak 73;
+  per-attacker 1.58 vs 3.3). (3) fleet zeny **PASS** — 3,819 → **3,973 (+154)**, 11
+  net-positive. (4) classifier LIVE **PASS** — UNKNOWN **1/7 = 14.3%** (<50) with gate
+  evidence consumed live (ownership_ceded 2, combat_priority 2, authored_action 1, despawn 1),
+  fleet-attempted **21/27 = 77.8%** (≥70); first live window (not replay) to pass both —
+  evidence `run/reviews/drop-coverage-leg135-gates.json` via scripts/swing_funnel.py over the
+  live traces with the receipt bounds. (5) close-write **PASS**.
+- Census (41,071 windowed actions): **MoveTo 40,159 (97.8%)**, GuildInvite 293, Attack 221,
+  Say 133, Rest 116, Loot 62, sell chain TalkToNpc 7 → SellOpen 7 → Sell 6. Chat NOT the
+  thief (3 agents >10 chat). Final samples nearby_n 0 fleet-wide — agents stood off-spawn.
+- **Named-next: movement-budget dominance with empty combat views** — a 17-agent zero-attack
+  cohort full of merchant admission/trip-cooldown/post-trip-return gates and roam walks while
+  12 agents carried all attacks. Next readout: split MoveTo purpose per agent (roam vs
+  merchant legs vs approach) from traces; no new targeting/chat/combat-dispatch slice before
+  the movement census routes it.
+- Buy-leg watch: PoringMuffin14 967 → 970 (+3) — 280z short of the 1,250z knife; small-sale
+  accumulation too slow; purchaser-pooling design stays flagged for Otto.
