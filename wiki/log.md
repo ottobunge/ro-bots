@@ -16835,3 +16835,48 @@ executable for the systemd user manager; the leg-134 inline `bash -c` form launc
 - Artifacts: `run/reviews/leg135-movement-census.{md,json}` (census + per-agent table +
   seam file:line + fix class). Route for leg-136 readout confirmed: the movement budget is
   an AUTHORING churn problem, not a backend/pacing problem.
+
+## 2026-11-27 — persistent patrol waypoint in the farm/grind roam legs (leg-135 fix class landed)
+
+Branch `t3/patrol-waypoint` (from main ccf7c104). The leg-135 census named the seam and the
+fix class; this slice implements it. BOTH roam legs hold the aimed cell in the script
+instance and re-author THE SAME absolute target each empty-view tick until arrival or
+invalidation — only then a fresh offset:
+
+- `src/robots/app/scripts.py`: new `_RoamWaypoint` (+ `ROAM_PATROL_OFFSETS`, the unchanged
+  draw set, and `ROAM_REAIM_HORIZON = 10`, the redraw valve for never-arrivable aims — the
+  runtime's unwalkable-reroll / stuck-cell classes the script layer cannot see; scripts
+  read no grid). A fresh draw happens only on: arrival (tracked position stands on the
+  aim), a map change, `displace()` (any higher-priority authored action over the roam leg:
+  rest/merchant/escape/travel/engage/`farm_roam_target` — every such site now calls it),
+  or the horizon. The aim is the ABSOLUTE cell drawn for the position at draw time (the
+  census law: never re-anchored on the drifted position). Twins: `GrindScript._roam_step`
+  and `FarmScript._farm_step` tail; draw rngs unchanged (FarmScript keeps the per-plan
+  seeded rng, GrindScript keeps module random). NOT touched: IdleTownScript's four-direction
+  cycle, the widen/_starved machinery, the spawn-cluster `farm_roam_target` path
+  (`playing_runtime._spawn_roam_target`), MerchantDrive. The runtime pacing
+  (`_await_pending`) is unchanged — the fix stops the AUTHORING churn, held re-aims are
+  idempotent.
+- `src/robots/app/movement_census.py` (measurement refinement, pinned additively):
+  abandoned-before-next now counts only authorings whose aim was REPLACED by a different
+  target before any arrival; a consecutive authoring of the SAME cell is the held waypoint
+  re-aiming, not a replaced walk. `repeat_churn` keeps its definition (repeat authorings
+  with no intervening arrival), so held re-aims still show there honestly. The leg-135
+  review's 99.09% figure was computed under the old definition — historical, not recomputed.
+- Census replay proof (`tests/test_roam_waypoint.py`): a 12-tick synthetic session at the
+  census's own ~2 s tick and pocket origin prt_fild08 (210,365), before-world = the old
+  per-tick fresh draw contract (walk replaced unreached, ~1 cell per authoring),
+  after-world = the real fixed FarmScript with walks that outlast one tick. Same 12
+  authorings, all roam_patrol-attributed in both worlds. **Abandoned-before-next:
+  11/11 (100.0%) before -> 0/11 (0.0%) after; dispatch 12 dispatched/0 held before ->
+  6 dispatched/6 held_pending after** (the pacing holds the idempotent re-aims while the
+  walk flies). Unit pins: hold-across-ticks, anchored absolute cell on short walks,
+  redraw-on-arrival, redraw-on-displacement (approach walk), redraw-on-map-change,
+  horizon expiry — each for BOTH twins.
+- Existing roam pins reconciled: none broke (the old suite pinned single-step draw-set
+  membership and roam-presence across streaks, both compatible with holding); the census
+  contract change is covered by the new `test_held_re_aim_is_not_abandonment` alongside the
+  unchanged abandonment pins.
+- Gate: `nix develop -c task --dir . check` green (7936 passed, 1 skipped, 65 subtests,
+  coverage 96.03%). Worktree preflight: rathena submodule cloned at the pinned sha from the
+  parent checkout + `rathena/config.log` symlink, `run/knowledge/iro-db` binaries symlinked.

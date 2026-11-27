@@ -7,7 +7,11 @@ throttle, so context is carried forward between samples), the paired
 ``move_performed`` dispatch reason, and the authored target's offset from the
 standing cell. Churn counts repeat authorings of one (map, target) with no
 intervening arrival, where an arrival is any position-bearing row standing on
-that exact cell. Empty-view positions interpolate the tracked position stream
+that exact cell. Abandoned-before-next counts authorings whose aim was
+REPLACED by a different target before any arrival at it; a consecutive
+authoring of the SAME cell is the held patrol waypoint re-aiming (leg-135
+fix), not a replaced walk. Empty-view positions interpolate the tracked
+position stream
 because ``script_step`` rows carry no coordinates.
 """
 
@@ -189,10 +193,17 @@ class _AgentCensus:
                 churn += 1
             previous[cell] = index
         abandoned = 0
-        for (prev_index, prev_cell), (this_index, _cell) in zip(
+        for (prev_index, prev_cell), (this_index, this_cell) in zip(
             self.authorings, self.authorings[1:], strict=False
         ):
-            if not self._arrived_between(prev_cell, prev_index, this_index):
+            # Leg-135 refinement: a consecutive authoring of the SAME cell is
+            # the held patrol waypoint re-aiming (the walk was not replaced -
+            # the runtime pacing holds the repeat), so it is not abandonment.
+            # Only a DIFFERENT next aim without an intervening arrival
+            # abandons the previous one ("walk replaced unreached").
+            if prev_cell != this_cell and not self._arrived_between(
+                prev_cell, prev_index, this_index
+            ):
                 abandoned += 1
         return churn, abandoned, max(0, len(self.authorings) - 1)
 
