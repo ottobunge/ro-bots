@@ -16910,3 +16910,26 @@ read 3,973z per-char exact vs seed.
 - Launch lesson: firing at the 19:32 wake with the fixed 6900 s duration ended the runner at
   21:27:04, ~3 min before the 21:30 close — for a 20.0-21.5 window launch in 19:40-19:55 so the
   duration reaches past close+drain.
+
+- **pending_walk attribution routed (leg-136 named-next, measurement-only slice, branch
+  `t3/pendingwalk-routing`):** all **1,427** `pending_walk` gates classified to their holding
+  walk (100%, bar was >=90%) — **96.0% sit behind NON-COMBAT movement walks**: field-route legs
+  467 (32.7%), merchant/loot/stuck 368 (25.8% — incl. the phantom post-warp trip-leg loop on
+  pop_0069_g04m01: `walk_released_no_progress(trip_leg)` x3 + 10 gates per 30 s bucket for 21
+  straight buckets while standing at the field spawn), movement-step 307 (21.5%), roam patrol
+  228 (16.0%); only 57 (4.0%) are the combat pump's own approach pacing. Three agents own 91.2%
+  of the loss (g02m02 616, g04m01 475, g01m02 210) — exactly the contested-route agents; pure
+  roam cadence (>1,100 held re-aims) gates almost never, so the hold alone is innocent, the
+  hold CONTESTED by combat authorship is the loss. Traced 137 timestamped gates split 52
+  authored-attack refusals (`_attack`, playing_runtime.py:1625) / 85 pump-swing refusals
+  (`_continue_farm_swing`, :1979); `farm_approach` authorships refused `await_pending` at
+  37.6% (213/566). **Route: fix shape (c) BOTH — one runtime displacement rule**: combat
+  authorship (attack or approach) releases a NON-COMBAT-held slot exactly as `_await_pending`
+  already releases on no-progress (:5183-5195), noting `walk_displaced_for_combat(<origin>)`;
+  preempt-only misses the 213 blocked approaches (out-of-range = no attack authored to
+  preempt), approach-priority-only misses the in-range attacks. Leg-137 signature: pending_walk
+  -> order 100 with own-approach dominant, fa-blocked <10%, executed ~370/swings ~330, cooldown
+  overtakes pending_walk, intent churn 3,436 -> ~1-2x engagements, kills up from 41.
+  Tool: `scripts/pendingwalk_attribution.py` + `src/robots/app/pendingwalk_attribution.py`
+  (21 synthetic-row tests), evidence `run/reviews/leg136-pendingwalk-attribution.{md,json}`.
+  NO production behavior changed in this slice.
