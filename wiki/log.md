@@ -16880,3 +16880,33 @@ invalidation — only then a fresh offset:
 - Gate: `nix develop -c task --dir . check` green (7936 passed, 1 skipped, 65 subtests,
   coverage 96.03%). Worktree preflight: rathena submodule cloned at the pinned sha from the
   parent checkout + `rathena/config.log` symlink, `run/knowledge/iro-db` binaries symlinked.
+
+## 2026-11-27 — leg-136 verdict (Fri [[4,20.0,21.5]] 20:00-21:30 Madrid)
+
+Base `1037bb94` (the leg-135 census fix — persistent patrol waypoint — merged pre-launch,
+validated live), schedule `a5b1cf4b`. Preflight PASS (DECIDE-OK 0.55 s answers=10, :8091/:8092
+health 200). Launched 19:32:04 CET under `leg136-runner` (RuntimeMaxSec 7200); pre-window DB
+read 3,973z per-char exact vs seed.
+
+- Run: receipt `population-receipt-136-1795804324.json` written 21:28 with the unit active
+  (kill-safety **13th consecutive**), unit drained itself after `DONE: steps 23684, errors 0`.
+  Receipt figure **23,684 steps, 0 step_errors**, offline_agents [], 229 samples, 29/29 online
+  to close. Decide health: 4,427 windowed decide_response rows, **capped 0.93%** (41, error-field
+  split), TRUE success p50 **1.05 s**, max 14.33 s, 111-388 decides/agent. Transport: 29
+  TRANSPORT DOWN = exactly 1/agent login burst, all rebuilt (exhausted 0), no mid-window repeats.
+- Bars: **5/5 PASS.** (1) BOTH-ARM **PASS** — attackers **17/29** (leg-135 12), sellers **12/29**
+  (leg-135 11); 18 zenylog S-rows (top SoraSama22 509z). (2) kills **PASS** — **41 kill_credits**
+  by 14 agents (floor was 30; leg-135 19). (3) fleet zeny **PASS** — 3,973 → **4,618 (+645)**,
+  exact S-sum reconciliation. (4) movement census **recorded** — MoveTo 26,777/27,877 = 96.1%;
+  purpose split roam 99.2% / approach 117 / loot 23 / merchant 16; fix-class split: held-waypoint
+  same-target MoveTos **84.3%** (22,575) vs retargeted 15.7%; 17/29 agents ever nearby_n>0
+  (leg-135 fleet-wide 0). (5) close-write **PASS**.
+- Census watch: `pending_walk` attack gates **1,427** vs 379 authored / 299 executed attacks —
+  approach walks are 0.4% of the MoveTo budget; chat rose (250 actions, 10 agents >10 vs 3).
+- Named-next: **pending_walk owns the attack loss** — decide displace-on-attack vs approach-walk
+  budget priority from per-agent pending_walk vs roam-waypoint cadence; no new chat slice first.
+- Buy-leg watch: PoringMuffin14 970 → 1,007 (+37) — 243z short of the 1,250z knife; purchaser-
+  pooling stays flagged for Otto.
+- Launch lesson: firing at the 19:32 wake with the fixed 6900 s duration ended the runner at
+  21:27:04, ~3 min before the 21:30 close — for a 20.0-21.5 window launch in 19:40-19:55 so the
+  duration reaches past close+drain.
