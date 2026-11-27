@@ -147,9 +147,19 @@ def test_native_attack_requires_standing_for_eligible_live_target():
 
 
 def test_attack_cannot_bypass_pending_movement_arrival():
+    """The stop-and-swing contract: a COMBAT-owned approach walk (the
+    production authorship layer mints it before performing the engage
+    approach) gates the swing until its arrival handoff - the mid-walk
+    swings are silently dropped by the server (the attack_fail_probe
+    evidence). A NON-COMBAT walk holding the slot is instead RELEASED for
+    the authored attack (leg-136: test_combat_displacement pins the counted
+    walk_displaced_for_combat release)."""
     wire, client, now = setup()
     wire.add(monster(at=(44, 37)))  # Legal melee geometry for the pose/walk gate.
+    state = client.build_native_state(Goal.GRIND)
+    client.authorize_farm_actions(state, (MoveTo(43, 37),))
     client.perform_native(MoveTo(43, 37))
+    assert client._pending_origin == "combat_approach"
     client.perform_native(Attack(123))
     assert not wire.sent
     wire.add(walk_ack((42, 37), (43, 37)))
@@ -157,13 +167,12 @@ def test_attack_cannot_bypass_pending_movement_arrival():
     client.perform_native(Attack(123))
     assert not wire.sent
     wire.add(walk_ack((43, 37), (43, 37)))
-    # the stop-and-swing contract: the arrival release clears the pending
-    # walk (the per-tick _await_pending does this in production) before the
-    # attack fires - the mid-walk swings are silently dropped by the server
-    # (the attack_fail_probe evidence)
-    client._pending = None
+    # the arrival release clears the pending walk (the per-tick
+    # _await_pending does this in production) before the attack fires
+    client.drain_native_events()
     client.perform_native(Attack(123))
     assert wire.sent == [bytes.fromhex("37047b00000000")]
+    assert getattr(client, "_walk_displacement_reasons", None) is None
 
 
 def test_explicit_flee_preempts_rest_until_received_escape_arrival():

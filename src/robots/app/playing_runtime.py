@@ -316,6 +316,14 @@ NPC_RETRY_EPOCH_S = 300.0
 RESPAWN_RETRY_CADENCE_S = 30.0
 NO_ROUTE_DIRECT_SENDS = 5
 STUCK_CELL_EPOCHS = 5
+# Walk dispatch origins naming COMBAT-authored walks (leg-136 displacement
+# rule): the melee-intercept approach the combat pipeline dispatched and the
+# combat-survival retreat step. Combat authorship releases every NON-COMBAT
+# hold on the pending-walk slot; these are never displaced by it.
+COMBAT_APPROACH_ORIGIN = "combat_approach"
+DISENGAGE_STEP_ORIGIN = "disengage_step"
+COMBAT_WALK_ORIGINS: frozenset[str] = frozenset({COMBAT_APPROACH_ORIGIN, DISENGAGE_STEP_ORIGIN})
+FIELD_ROUTE_ORIGIN = "field_route"
 # The server's pickup radius: a CZ_ITEM_PICKUP lands when the bot stands
 # within Chebyshev<=2 of the drop (pinned pc.cpp:6197).
 # leg 69: the once-per-position escalation latch (leg 39) left s00 dead-
@@ -1318,7 +1326,7 @@ class PlayingClient:
                 # a deal is open are ignored by the server (fx0's shop trap).
                 # Movement-only scope: NPC-interaction actions keep their deals.
                 self._close_open_npc_dialog(state)
-                self._perform_move(state, (x, y))
+                self._perform_move(state, (x, y), origin=self._script_move_origin())
             case _:
                 self._social(state, action)
 
@@ -1622,7 +1630,7 @@ class PlayingClient:
         if state.alive is not True:
             self._note_attack_gate("dead", target)
             return
-        if self._pending is not None:
+        if not self._combat_walk_gate():
             self._note_attack_gate("pending_walk", target)
             return
         actor = next((actor for actor in state.nearby_monsters if actor.id == target), None)
@@ -1700,7 +1708,7 @@ class PlayingClient:
         if survivability_refusal(state, str(target.name), self.mob_db) is not None:
             self._sighting_tap("deferred", target.id, "no_survivability")
             return
-        if self._pending is not None:
+        if self._pending is not None and self._displace_pending_for_combat() is None:
             self._sighting_tap("deferred", target.id, "pending_walk")
             return
         intent = self._authorize_farm_target(state, target, renew=False)
@@ -1802,7 +1810,11 @@ class PlayingClient:
             return
         if self._perform_disengage(state):
             return
-        self._perform_move(state, (action.x, action.y))
+        # A melee intercept minted above is the combat approach (its own
+        # swing must never displace it); the travel leg itself is the
+        # field-route class the displacement counter names (leg-136).
+        origin = COMBAT_APPROACH_ORIGIN if self._combat_intent is not None else FIELD_ROUTE_ORIGIN
+        self._perform_move(state, (action.x, action.y), origin=origin)
         logger.warning(
             "goal_field_routed bot=%s map=%s destination=%s",
             state.name,
@@ -1865,6 +1877,12 @@ class PlayingClient:
         if not isinstance(action, (Attack, MoveTo, Say, PartyChat, WhisperTo)):
             self._combat_intent = None
             self._arrival_intent = None
+
+    def _script_move_origin(self) -> str | None:
+        """A combat intent surviving the boundary means THIS MoveTo is the
+        melee-intercept approach (leg-136): dispatch it tagged
+        combat_approach - its own attack never displaces it."""
+        return COMBAT_APPROACH_ORIGIN if self._combat_intent is not None else None
 
     def _combat_action_boundary(self, state: BotState, action: GameAction) -> None:
         if isinstance(action, (Say, PartyChat, WhisperTo)):
@@ -1978,6 +1996,10 @@ class PlayingClient:
             and self._tracker is not None
             and not self._tracker.view.arrival_confirmed
         ):
+            # Both limbs feed the same fix (leg-136): release the non-combat
+            # hold, then still refuse on the unconfirmed arrival - the
+            # arrival_confirmed separation stays intact.
+            self._displace_pending_for_combat()
             self._note_attack_gate("pending_walk", actor.id)
             return
         self._swing_tap().note(
@@ -2006,7 +2028,7 @@ class PlayingClient:
                 at=self._now(),
             )
             return
-        self._perform_move(state, (action.x, action.y))
+        self._perform_move(state, (action.x, action.y), origin=COMBAT_APPROACH_ORIGIN)
         self._swing_tap().note(
             "combat_approach",
             tap="farm_approach",
@@ -2042,7 +2064,7 @@ class PlayingClient:
         if grid is not None:
             point = disengage_step(grid, state, source)
             if point is not None:
-                self._perform_move(state, point)
+                self._perform_move(state, point, origin=DISENGAGE_STEP_ORIGIN)
         return True
 
     def _equip_progression(self, state: BotState) -> None:
@@ -3558,10 +3580,14 @@ class PlayingClient:
             self._move_gate_reasons = reasons
         reasons.append((self._now(), reason))
 
-    def _move_gate(self, state: BotState, target: tuple[int, int]) -> str | None:
+    def _move_gate(
+        self, state: BotState, target: tuple[int, int], *, origin: str | None = None
+    ) -> str | None:
         """The blocked-MoveTo reason, or None when the move may proceed.
 
         ``target`` is part of the seam (the future per-target checks read it).
+        A combat-approach dispatch (leg-136) releases a NON-COMBAT hold
+        instead of refusing await_pending; any other author keeps queueing.
         """
         del target
         tracker = self._tracker
@@ -3573,16 +3599,26 @@ class PlayingClient:
         pos = view.position
         if not self._require_standing():
             return "not_standing"
-        if self._await_pending(view, pos):
+        if self._await_pending(view, pos) and (
+            origin is not COMBAT_APPROACH_ORIGIN or self._displace_pending_for_combat() is None
+        ):
             return "await_pending"
         if self.cache is None:
             return "no_map_cache"
         return None
 
-    def _perform_move(self, state: BotState, target: tuple[int, int]) -> None:
-        """Name the actual limb result, without treating author intent as a send."""
+    def _perform_move(
+        self, state: BotState, target: tuple[int, int], *, origin: str | None = None
+    ) -> None:
+        """Name the actual limb result, without treating author intent as a send.
+
+        ``origin`` names the combat-authored walk classes (leg-136): the
+        approach dispatch carries it into the pending-walk origin and the
+        ``_move_gate`` displacement seam; untagged dispatches keep the
+        movement origins they always had.
+        """
         self._trip_leg_cells_sent = 0
-        reason = self._move(state, target)
+        reason = self._move(state, target, origin=origin)
         outcome = {"not_standing": "standing-blocked", "await_pending": "pending"}.get(
             reason, "refused"
         )
@@ -3600,8 +3636,8 @@ class PlayingClient:
         self.last_move_outcome = detail | self._move_pending_release
         self._move_pending_release = {}
 
-    def _move(self, state: BotState, target: tuple[int, int]) -> str:
-        reason = self._move_from_received(state, target)
+    def _move(self, state: BotState, target: tuple[int, int], *, origin: str | None = None) -> str:
+        reason = self._move_from_received(state, target, origin=origin)
         if reason in ("dispatched", "occupied_west_rerouted") and self._pending_origin not in (
             "stuck_cell_detected",
             "stuck_cell_escalated",
@@ -3609,8 +3645,10 @@ class PlayingClient:
             self._stuck_walk_pending = True
         return reason
 
-    def _move_from_received(self, state: BotState, target: tuple[int, int]) -> str:
-        gate = self._move_gate(state, target)
+    def _move_from_received(
+        self, state: BotState, target: tuple[int, int], *, origin: str | None = None
+    ) -> str:
+        gate = self._move_gate(state, target, origin=origin)
         if gate is not None:
             self._note_move_gate(gate)
             return gate
@@ -3629,13 +3667,13 @@ class PlayingClient:
         # Allocation and dispatch must agree about received corridor blockers,
         # including the path home after a sale releases the counter.
         if dealer_entry_cell(state.map_name, target) or state.map_name == "prt_in":
-            return self._move_staging(state, target, grid, pos)
+            return self._move_staging(state, target, grid, pos, origin=origin)
         try:
             path = shortest_path(grid, (state.x, state.y), target)
             self._no_route_attempts = 0
         except NoRoute:
-            return self._move_no_route(state, target, pos)
-        return self._move_path(state, target, path, grid, pos)
+            return self._move_no_route(state, target, pos, origin=origin)
+        return self._move_path(state, target, path, grid, pos, origin=origin)
 
     def _observe_walk_landing(
         self, frame: tuple[int, float, int, bytes], view: NativeGameplayView
@@ -3697,7 +3735,13 @@ class PlayingClient:
         return "dispatched"
 
     def _move_staging(
-        self, state: BotState, target: tuple[int, int], grid: WalkMap, pos: ObservedPosition
+        self,
+        state: BotState,
+        target: tuple[int, int],
+        grid: WalkMap,
+        pos: ObservedPosition,
+        *,
+        origin: str | None = None,
     ) -> str:
         access = at_counter(state) or self._counter_lease.admits(state, self.wire.aid)
         path = self._merchant_staging.path(grid, state, target, counter_access=access)
@@ -3705,7 +3749,7 @@ class PlayingClient:
             self._note_move_gate("staging_occupied")
             return "staging_occupied"
         self._no_route_attempts = 0
-        return self._move_path(state, target, path, grid, pos)
+        return self._move_path(state, target, path, grid, pos, origin=origin)
 
     def _move_path(
         self,
@@ -3714,12 +3758,14 @@ class PlayingClient:
         path: tuple[tuple[int, int], ...],
         grid: WalkMap,
         pos: ObservedPosition,
+        *,
+        origin: str | None = None,
     ) -> str:
         if len(path) > 1:
             cells = self._trip_path_cells(state, target, path, grid)
             if cells > 1:
-                return self._dispatch_trip_leg(state, path[: cells + 1], pos)
-            return self._dispatch_path_step(state, target, path[1], grid, pos)
+                return self._dispatch_trip_leg(state, path[: cells + 1], pos, origin=origin)
+            return self._dispatch_path_step(state, target, path[1], grid, pos, origin=origin)
         self._note_move_gate("single_cell_path")
         return "single_cell_path"
 
@@ -3758,7 +3804,12 @@ class PlayingClient:
         return cells if shortest_path(grid, path[0], path[cells]) == path[: cells + 1] else 1
 
     def _dispatch_trip_leg(
-        self, state: BotState, path: tuple[tuple[int, int], ...], pos: ObservedPosition
+        self,
+        state: BotState,
+        path: tuple[tuple[int, int], ...],
+        pos: ObservedPosition,
+        *,
+        origin: str | None = None,
     ) -> str:
         """CZ_REQUEST_MOVE carries one destination; the server expands its path.
 
@@ -3773,7 +3824,7 @@ class PlayingClient:
             self._note_move_gate("occupied_west_no_route")
             return "occupied_west_no_route"
         self._send_walk(point, pos.seq)
-        self._pending_origin = "trip_leg"
+        self._pending_origin = origin or "trip_leg"
         self._pending = (point, pos.seq, self._now(), 0)
         self._trip_walk_seq = pos.seq
         self._trip_leg_cells_sent = cells
@@ -3794,7 +3845,12 @@ class PlayingClient:
         self._loot_motion_seq = after_seq
 
     def _move_no_route(
-        self, state: BotState, target: tuple[int, int], pos: ObservedPosition
+        self,
+        state: BotState,
+        target: tuple[int, int],
+        pos: ObservedPosition,
+        *,
+        origin: str | None = None,
     ) -> str:
         if self._occupied_west(state, target):
             self._note_move_gate("occupied_west_no_route")
@@ -3810,10 +3866,10 @@ class PlayingClient:
         # successful walk elsewhere resets the budget).
         self._no_route_attempts += 1
         if self._no_route_attempts > NO_ROUTE_DIRECT_SENDS:
-            return self._move_reroll(state, target, pos)
+            return self._move_reroll(state, target, pos, origin=origin)
         self._note_move_gate("no_route_direct")
         self._send_walk(target, pos.seq)
-        self._pending_origin = "direct"
+        self._pending_origin = origin or "direct"
         self._pending = (target, pos.seq, self._now(), 0)
         return "dispatched"
 
@@ -3832,6 +3888,8 @@ class PlayingClient:
         point: tuple[int, int],
         grid: WalkMap,
         pos: ObservedPosition,
+        *,
+        origin: str | None = None,
     ) -> str:
         reason = "dispatched"
         if self._occupied_west(state, point):
@@ -3844,7 +3902,7 @@ class PlayingClient:
             reason = "occupied_west_rerouted"
             self._note_move_gate(reason)
         self._send_walk(point, pos.seq)
-        self._pending_origin = "step"
+        self._pending_origin = origin or "step"
         self._pending = (point, pos.seq, self._now(), 0)
         return reason
 
@@ -3853,6 +3911,8 @@ class PlayingClient:
         state: BotState,
         target: tuple[int, int],
         pos: Any,
+        *,
+        origin: str | None = None,
     ) -> str:
         """The exhausted target gets ONE walkable re-roll (leg 37 defect 2).
 
@@ -3905,7 +3965,7 @@ class PlayingClient:
         self._rerolled_moves[key] = alt
         self._note_move_gate("target_unwalkable_rerolled")
         self._send_walk(alt, pos.seq)
-        self._pending_origin = "rerolled"
+        self._pending_origin = origin or "rerolled"
         self._pending = (alt, pos.seq, self._now(), 0)
         return "dispatched"
 
@@ -5154,6 +5214,56 @@ class PlayingClient:
                 )
         self.mob_db.observe(map_name, species)
         return tuple(nearby)
+
+    def _displace_pending_for_combat(self) -> str | None:
+        """Combat authorship releases the slot a NON-COMBAT walk holds (leg-136).
+
+        The release is `_await_pending`'s no-progress contract verbatim: the
+        retention record rides the next perform, the walk epoch completes,
+        the slot clears plain. Only the note differs:
+        ``walk_displaced_for_combat(<origin>)`` names the yielding class in
+        the trace + receipt counters. Combat's own approach walk and the
+        survival retreat are never displaced - the benign self-paced
+        approach keeps its slot until its own arrival handoff.
+        """
+        if self._pending is None:
+            return None
+        origin = self._pending_origin
+        if origin in COMBAT_WALK_ORIGINS:
+            return None
+        self._move_pending_release = {
+            "pending_outcome": "pending-cancelled",
+            "pending_reason": f"combat_displacement({origin})",
+            "pending_target": self._pending[0],
+        }
+        self._complete_walk_epoch()
+        self._pending = None
+        self._note_walk_displacement(origin)
+        return origin
+
+    def _note_walk_displacement(self, origin: str) -> None:
+        """The named displacement counter: trace tap + receipt deque, per class."""
+        reasons = getattr(self, "_walk_displacement_reasons", None)
+        if reasons is None:
+            reasons = deque(maxlen=64)
+            self._walk_displacement_reasons = reasons
+        reasons.append((self._now(), origin))
+        self._swing_tap().note(
+            "walk_displaced_for_combat",
+            tap=f"walk_displaced_for_combat({origin})",
+            origin=origin,
+            at=self._now(),
+        )
+
+    def _combat_walk_gate(self) -> bool:
+        """True when authored combat may proceed past the pending slot.
+
+        A free slot passes; a NON-COMBAT hold is released for combat
+        authorship; a COMBAT-owned hold keeps the slot.
+        """
+        if self._pending is None:
+            return True
+        return self._displace_pending_for_combat() is not None
 
     def _await_pending(self, view: NativeGameplayView, pos: ObservedPosition) -> bool:
         pending = self._pending

@@ -131,6 +131,11 @@ def _sample(
             # the attack-gate telemetry (leg 33: 516 approaches, 6
             # swings — the receipt must name the drop reason)
             "attack_gates": _reason_summary(getattr(client, "_attack_gate_reasons", None)),
+            # the walk-displacement counter (leg-136: combat authorship
+            # releasing a NON-COMBAT-held slot names the yielding class)
+            "walk_displaced_for_combat": _reason_summary(
+                getattr(client, "_walk_displacement_reasons", None)
+            ),
             # the move-gate telemetry (w58, leg 38: the unwalkable
             # deadlock + the ground correction must name themselves)
             "move_gates": _reason_summary(getattr(client, "_move_gate_reasons", None)),
