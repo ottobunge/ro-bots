@@ -1,7 +1,7 @@
 ---
 title: Current implementation log
 created: 2026-10-05
-updated: 2026-11-26
+updated: 2026-11-27
 type: guide
 status: accepted
 tags: [ops, testing]
@@ -16800,3 +16800,38 @@ executable for the systemd user manager; the leg-134 inline `bash -c` form launc
   the movement census routes it.
 - Buy-leg watch: PoringMuffin14 967 → 970 (+3) — 280z short of the 1,250z knife; small-sale
   accumulation too slow; purchaser-pooling design stays flagged for Otto.
+
+## [2026-11-27] census | Leg-135 movement census: empty-view roam patrol owns the 40k budget
+- Measurement-only slice (no behavior change). New offline tool `scripts/movement_census.py`
+  (`robots.app.movement_census`, schema `movement_census_v1`, 14 contract tests over synthetic
+  JSONL, TDD RED→GREEN) attributes every windowed authored MoveTo from trace evidence:
+  paired `move_performed` dispatch reason, carried-forward sampled `script_step` context,
+  and the target-offset signature. Windowed census reconciles EXACTLY with the verdict:
+  41,071 actions, **40,159 MoveTo**; attribution **99.61%** (>= 95% bar).
+- **Dominant class: per-tick empty-view roam patrol — 32,677 MoveTos (81.4%)** from the
+  w59/w60 roam legs (`scripts.py:1527` FarmScript._farm_step, twin `scripts.py:1376`
+  GrindScript._roam_step): a fresh ±8-cell random target every ~2 s tick while
+  `nearest_monster_d` is None. Merchant trips 5,400 (13.4%); approach/engage 1,747 (4.4%);
+  travel 166; runtime rerolls 12; other 157. Dispatch: 25,549 dispatched, 13,743
+  held_pending (never wire-sent), 867 refused.
+- **The churn that burns it: 99.09% of authorings (39,765/40,130) are abandoned before the
+  next authoring** — one aim costs ~1 cell of progress, the rest is re-drawn; repeat churn
+  (same map+target re-authored with no arrival between) 20,858 (51.9%).
+- Empty-view cohort (39.15% of sampled script_steps nearby_n=0) stands in a static
+  prt_fild08 corner pocket around (210,365) — (204-233, 343-371), ~35-45 cells NE of the
+  field entry (170,378); 4,800 of 5,466 empty samples. prt_fild06 (36,211) = one parked
+  attacker (pop_0003_g01m02, 72 samples); prontera 278 (the dealer-adjacent bottom-ten
+  walkers). The 17-agent zero-attack cohort owns 17,285 MoveTos (43.0%); its top five
+  sit at 98-100% empty view and 97.5-99.8% roam class. Attackers' own movement is also
+  61-99% roam — the churn taxes everyone.
+- **Named fix class (NOT implemented): persistent patrol waypoint in the roam legs,
+  script-layer** at `scripts.py:1523-1531` + twin `1370-1380` — hold the aimed cell
+  (absolute, `farm_roam_target` precedent at scripts.py:1521 / playing_runtime.py:1014)
+  until arrival / `walk_released_no_progress` / bounded horizon, redraw only then. Script
+  layer because scripts own mobility and the runtime pacing (`playing_runtime.py:5158`
+  `_await_pending`) is already correct; a runtime target-stickiness layer would double-own
+  the authoring contract. Expected next-leg gate: roam share falls, travel/approach rise,
+  `walk_released_no_progress(step)` becomes the honest stop counter.
+- Artifacts: `run/reviews/leg135-movement-census.{md,json}` (census + per-agent table +
+  seam file:line + fix class). Route for leg-136 readout confirmed: the movement budget is
+  an AUTHORING churn problem, not a backend/pacing problem.
