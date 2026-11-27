@@ -289,3 +289,21 @@ def test_attribution_threshold_holds_on_mixed_synthetic_fleet(tmp_path):
     path = write_trace(tmp_path, "solo", rows)
     result = summarize_movement_traces([path])
     assert result["fleet"]["attribution_pct"] >= 95.0
+
+
+def test_held_re_aim_is_not_abandonment(tmp_path):
+    """Leg-135 refinement: a consecutive authoring of the SAME cell is the
+    held patrol waypoint re-aiming (the walk was not replaced - the runtime
+    pacing holds the repeat), so it is not abandonment. Only a DIFFERENT next
+    aim without an intervening arrival abandons the previous one."""
+    rows = [
+        script_step("FarmScript"),
+        move_to(108, 100, at_x=100, at_y=100),
+        move_to(108, 100, at_x=100, at_y=100),
+        move_to(108, 100, at_x=100, at_y=100),
+    ]
+    path = write_trace(tmp_path, "solo", rows)
+    agent = fleet(summarize_movement_traces([path]))
+    assert agent["abandoned_before_next"] == 0
+    assert agent["abandoned_compared"] == 2
+    assert agent["repeat_churn"] == 2

@@ -7,7 +7,7 @@ completes/fails. No decision-model calls happen inside a script.
 
 import logging
 import random
-from collections.abc import Sequence
+from collections.abc import Callable, Sequence
 from enum import Enum, auto
 from time import monotonic as _merchant_now
 from typing import TYPE_CHECKING, Protocol, assert_never, final
@@ -126,6 +126,28 @@ again, and resets the streak whenever a plan target is observed."""
 
 
 KILL_COMMIT_WINDOW = 30
+
+
+ROAM_PATROL_OFFSETS = ((8, 0), (-8, 0), (0, 8), (0, -8), (5, 5), (-5, -5))
+"""The bounded empty-view patrol draw set (unchanged; the leg-135 census
+classifies roam MoveTos by exactly these offsets)."""
+
+ROAM_REAIM_HORIZON = 10
+"""Consecutive re-authorings of one held patrol aim allowed without arrival.
+
+The leg-135 census (run/reviews/leg135-movement-census.md) proved the per-tick
+fresh +/-8 draw churns the movement budget (32,677/40,159 MoveTos, 99.09%
+abandoned-before-next): every authored walk was replaced by the next ~2 s
+tick's fresh random draw before arriving, so one authoring bought ~1 cell and
+agents jitter-walked a static pocket. The roam legs therefore HOLD the aimed
+absolute cell and re-author THE SAME target each empty-view tick - the
+runtime's pending-walk pacing holds the idempotent re-aims - until arrival or
+invalidation. The horizon is the redraw valve for aims the agent can never
+stand on (the runtime's unwalkable-reroll / stuck-cell classes): the script
+layer reads no grid, so expiry is the honest trigger. ~10 ticks (~20 s) is
+generous against a real patrol walk (lands in 1-2 ticks) and bounded against
+the old churn.
+"""
 
 # Pinned mob HP (rathena e985006171d2 db/pre-re/mob_db.yml): a Novice deals
 # ~1 damage per hit, so kills only close on the lowest-HP species. The
@@ -1310,6 +1332,58 @@ class TravelScript:
         return ScriptOutcome((MoveTo(x=state.x + dx, y=state.y + dy),), ScriptStatus.ACTIVE)
 
 
+def _draw_roam_cell(
+    state: BotState, chooser: Callable[[Sequence[tuple[int, int]]], tuple[int, int]]
+) -> tuple[int, int]:
+    """One patrol draw as an ABSOLUTE cell (the leg-135 census law: the aim is
+    anchored at the cell it was drawn for, never re-anchored on the drifted
+    position; clamped at the map edge like the original w59 leg)."""
+    dx, dy = chooser(ROAM_PATROL_OFFSETS)
+    return (max(0, state.x + dx), max(0, state.y + dy))
+
+
+class _RoamWaypoint:
+    """The empty-view roam legs' persistent patrol aim (leg-135 census fix).
+
+    Holds the currently-aimed absolute cell so consecutive empty-view ticks
+    RE-AUTHOR THE SAME target - the runtime pacing holds the repeats while the
+    walk is in flight - instead of re-drawing a fresh offset every tick and
+    abandoning the walk after ~1 cell. A fresh offset is drawn only after:
+    arrival (the tracked position stands on the aim), a map change, a
+    higher-priority action replacing the walk (the script calls displace()
+    wherever it authors something over the roam leg), or the bounded re-aim
+    horizon (the never-arrivable cell class the script layer cannot see;
+    scripts read no grid).
+    """
+
+    def __init__(self, horizon: int = ROAM_REAIM_HORIZON) -> None:
+        self._cell: tuple[int, int] | None = None
+        self._map: str | None = None
+        self._aims = 0
+        self._horizon = max(1, int(horizon))
+
+    def displace(self) -> None:
+        """A higher-priority authored action replaced the held walk."""
+        self._cell = None
+        self._aims = 0
+
+    def aim(self, state: BotState, draw: Callable[[BotState], tuple[int, int]]) -> tuple[int, int]:
+        """The patrol cell to author this empty-view tick."""
+        cell = self._cell
+        if (
+            cell is None
+            or state.map_name != self._map
+            or (state.x, state.y) == cell
+            or self._aims >= self._horizon
+        ):
+            cell = draw(state)
+            self._cell = cell
+            self._map = state.map_name
+            self._aims = 0
+        self._aims += 1
+        return cell
+
+
 @final
 class GrindScript:
     """Prefer exp-yielding monsters, loot after kills, rest when hurt.
@@ -1341,20 +1415,25 @@ class GrindScript:
         self._travel_resolver = travel_resolver
         self._merchant_reachable = merchant_reachable
         self._merchant_travel_target = merchant_travel_target
+        self._roam = _RoamWaypoint()
 
     def step(self, state: BotState) -> ScriptOutcome:
         if state.hp_ratio < self._hp_rest_below:
             _release_commitment(state, self._commit_window)
+            self._roam.displace()
             return ScriptOutcome((Rest(),), ScriptStatus.ACTIVE)
         merchant = _merchant_step(
             state, self._travel_resolver, self._merchant_reachable, self._merchant_travel_target
         )  # window-29: want-driven dealer trip
         if merchant is not None:
+            self._roam.displace()
             return merchant
         if state.roam_escape_target is not None:
+            self._roam.displace()
             return ScriptOutcome((MoveTo(*state.roam_escape_target),), ScriptStatus.ACTIVE)
         monsters = sorted(state.nearby_monsters, key=lambda m: m.distance)
         if monsters:
+            self._roam.displace()
             return _engage(state, monsters, self._commit_window, self._mob_db, self._trace)
         _release_commitment(state, self._commit_window)
         # the travel leg (leg 20): a grind goal on a mobless map walks the
@@ -1364,6 +1443,7 @@ class GrindScript:
         if plan:
             leg = self._travel_leg(state, plan)
             if leg is not None:
+                self._roam.displace()
                 return ScriptOutcome((MoveTo(x=leg[0], y=leg[1]),), ScriptStatus.ACTIVE)
         return self._roam_step(state)
 
@@ -1372,10 +1452,12 @@ class GrindScript:
             return ScriptOutcome((), ScriptStatus.ACTIVE)
         # w65-69 roam leg (mirrors FarmScript): an empty view must not
         # complete as DONE — the goal-grind agent would churn DONE forever
-        # standing in a mobless patch. Patrol a bounded step instead.
-        dx, dy = random.choice(((8, 0), (-8, 0), (0, 8), (0, -8), (5, 5), (-5, -5)))
+        # standing in a mobless patch. Patrol a bounded step instead; the
+        # leg-135 census fix holds the aimed cell across ticks (per-tick
+        # fresh draws abandoned 99.09% of authored walks after ~1 cell).
+        cell = self._roam.aim(state, lambda s: _draw_roam_cell(s, random.choice))
         return ScriptOutcome(
-            (MoveTo(max(0, state.x + dx), max(0, state.y + dy)),),
+            (MoveTo(*cell),),
             ScriptStatus.ACTIVE,
         )
 
@@ -1473,6 +1555,7 @@ class FarmScript:
         self._commit_window = commit_window
         self._starved = max(0, int(initial_starved))
         self._roam_rng = random.Random(f"roam-{plan.plan_id}-{plan.map_name}")
+        self._roam = _RoamWaypoint()
         self._travel_resolver = travel_resolver
         self._merchant_reachable = merchant_reachable
         self._merchant_travel_target = merchant_travel_target
@@ -1480,16 +1563,20 @@ class FarmScript:
     def step(self, state: BotState) -> ScriptOutcome:
         if state.hp_ratio < self._hp_rest_below:
             _release_commitment(state, self._commit_window)
+            self._roam.displace()
             return ScriptOutcome((Rest(),), ScriptStatus.ACTIVE)
         merchant = _merchant_step(
             state, self._travel_resolver, self._merchant_reachable, self._merchant_travel_target
         )  # window-29: want-driven dealer trip
         if merchant is not None:
+            self._roam.displace()
             return merchant
         if state.roam_escape_target is not None:
+            self._roam.displace()
             return ScriptOutcome((MoveTo(*state.roam_escape_target),), ScriptStatus.ACTIVE)
         travel = self._travel_step(state)
         if travel is not None:
+            self._roam.displace()
             return travel
         return self._farm_step(state)
 
@@ -1516,17 +1603,22 @@ class FarmScript:
             if self._starved >= self._widen_steps:
                 targets = monsters
         if targets:
+            self._roam.displace()
             return _engage(state, targets, self._commit_window, self._mob_db, self._trace)
         _release_commitment(state, self._commit_window)
         if state.farm_roam_target is not None:
+            self._roam.displace()
             return ScriptOutcome((MoveTo(*state.farm_roam_target),), ScriptStatus.ACTIVE)
         # w59/w60 roam leg: an empty view must not stand still. Emit a bounded
-        # patrol step near the current cell so the agent walks to find its
-        # plan's species (the runtime's pending-walk pacing throttles the
-        # re-sends; deterministic per plan for testability).
-        dx, dy = self._roam_rng.choice(((8, 0), (-8, 0), (0, 8), (0, -8), (5, 5), (-5, -5)))
+        # patrol step so the agent walks to find its plan's species (the
+        # runtime's pending-walk pacing throttles the re-sends; deterministic
+        # per plan for testability). The leg-135 census fix holds the aimed
+        # cell across ticks (per-tick fresh draws abandoned 99.09% of authored
+        # walks after ~1 cell) and draws the next offset only after arrival
+        # or invalidation (_RoamWaypoint).
+        cell = self._roam.aim(state, lambda s: _draw_roam_cell(s, self._roam_rng.choice))
         return ScriptOutcome(
-            (MoveTo(max(0, state.x + dx), max(0, state.y + dy)),),
+            (MoveTo(*cell),),
             ScriptStatus.ACTIVE,
         )
 
