@@ -12,6 +12,7 @@ from typing import Any
 from robots.app.pendingwalk_attribution import (
     SCHEMA,
     FlightRegister,
+    _release_class,
     summarize_pendingwalk,
 )
 
@@ -357,3 +358,71 @@ class TestSummarize:
         ]
         result = summarize_pendingwalk(traces, samples=self._samples(), start=iso(0), end=iso(90))
         assert result["agents"] == {}
+
+
+def displacement(seconds: float, origin: str) -> dict:
+    return row(
+        seconds,
+        kind="swing_observation",
+        map="prt_fild08",
+        x=50,
+        y=50,
+        event="walk_displaced_for_combat",
+        tap=f"walk_displaced_for_combat({origin})",
+        origin=origin,
+    )
+
+
+class TestDisplacementGroundTruth:
+    """The leg-136 displacement rule's own rows are ground truth per class."""
+
+    def test_new_dispatch_origins_name_their_class(self) -> None:
+        register = FlightRegister()
+        register.consume([move_performed(1.0, 51, 50, "dispatched", "field_route")])
+        assert register.origin_at(epoch(1.5)) == "attack_deferred_behind_field_route"
+        register.consume([move_performed(3.0, 52, 50, "dispatched", "combat_approach")])
+        assert register.origin_at(epoch(3.5)) == "attack_deferred_behind_own_approach"
+        register.consume([move_performed(5.0, 53, 50, "dispatched", "disengage_step")])
+        assert register.origin_at(epoch(5.5)) == "attack_deferred_behind_other_walk"
+
+    def test_release_reason_names_the_new_origins(self) -> None:
+        assert _release_class("walk_released_no_progress(field_route)") == "field_route"
+        assert _release_class("walk_released_no_progress(combat_approach)") == "own_approach"
+        assert _release_class("walk_released_no_progress(disengage_step)") == "combat_survival"
+        assert _release_class("walk_released_no_progress(step)") == "movement"
+
+    def test_displacement_tap_counts_and_closes_the_hold(self) -> None:
+        register = FlightRegister()
+        register.consume([tap(1.0, "goal_field_routed", (51, 50))])
+        assert register.origin_at(epoch(1.5)) == "attack_deferred_behind_field_route"
+        register.consume([displacement(2.0, "field_route")])
+        assert register.displaced["field_route"] == 1
+        # the displacement RELEASED the slot: the hold is closed
+        assert register.origin_at(epoch(2.5)) == "unattributed"
+
+    def test_displacements_are_reported_per_class(self) -> None:
+        traces = [
+            tap(1.0, "goal_field_routed", (51, 50)),
+            displacement(2.0, "field_route"),
+            tap(3.0, "goal_field_routed", (52, 50)),
+            displacement(4.0, "trip_leg"),
+        ]
+        result = summarize_pendingwalk(traces, samples=[], start=iso(0), end=iso(90))
+        assert result["totals"]["displacements"] == {"field_route": 1, "trip_leg": 1}
+        agent = result["agents"]["pop_a"]
+        assert agent["displacements"] == {"field_route": 1, "trip_leg": 1}
+
+    def test_receipt_displacement_cells_are_reported(self) -> None:
+        samples = [
+            {
+                "t": 30.0,
+                "pop_a": {
+                    "walk_displaced_for_combat": {"field_route": 2, "trip_leg": 1},
+                },
+            }
+        ]
+        result = summarize_pendingwalk(
+            [displacement(2.0, "field_route")], samples=samples, start=iso(0), end=iso(90)
+        )
+        agent = result["agents"]["pop_a"]
+        assert agent["receipt_displacements"] == {"field_route": 2, "trip_leg": 1}

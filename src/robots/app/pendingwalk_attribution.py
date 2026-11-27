@@ -51,6 +51,25 @@ _LOOT_ORIGINS = frozenset({"loot_arrival_confirmation"})
 _STUCK_ORIGINS = frozenset(
     {"stuck_cell_detected", "stuck_cell_escalated", "escalated", "rerolled", "repositioned"}
 )
+#: Dispatch-origin strings the leg-136 displacement rule adds (the
+#: field-route tag and the two combat-authored walk classes).
+_FIELD_ORIGIN = "field_route"
+_APPROACH_ORIGIN = "combat_approach"
+_SURVIVAL_ORIGIN = "disengage_step"
+
+#: The displacement tap prefix: ``walk_displaced_for_combat(<origin>)``.
+_DISPLACEMENT_PREFIX = "walk_displaced_for_combat("
+
+#: The walk class each named dispatch origin maps to; the fallback is the
+#: unnamed movement class (step/direct).
+_NAMED_ORIGINS: dict[str, str] = {
+    **dict.fromkeys(_TRIP_ORIGINS, "merchant"),
+    **dict.fromkeys(_LOOT_ORIGINS, "loot"),
+    **dict.fromkeys(_STUCK_ORIGINS, "stuck"),
+    _FIELD_ORIGIN: "field_route",
+    _APPROACH_ORIGIN: "own_approach",
+    _SURVIVAL_ORIGIN: "combat_survival",
+}
 
 #: The slot is considered held for this long after the last evidence row: a
 #: release lands on the next 2 s pump tick following an arrival frame
@@ -73,14 +92,12 @@ def _release_class(reason: str) -> str | None:
     """
     if not reason.startswith(_RELEASE_REASON):
         return None
-    origin = reason[len(_RELEASE_REASON) :].rstrip(")")
-    if origin in _TRIP_ORIGINS:
-        return "merchant"
-    if origin in _LOOT_ORIGINS:
-        return "loot"
-    if origin in _STUCK_ORIGINS:
-        return "stuck"
-    return "movement"  # step/direct: a movement walk of unnamed exact class
+    return _origin_name(reason[len(_RELEASE_REASON) :].rstrip(")"))
+
+
+def _origin_name(origin: str) -> str | None:
+    """The walk class one dispatch-origin string names."""
+    return _NAMED_ORIGINS.get(origin, "movement")
 
 
 def _origin_for_class(cls: str | None) -> str:
@@ -90,7 +107,7 @@ def _origin_for_class(cls: str | None) -> str:
         return ORIGIN_FIELD
     if cls == "own_approach":
         return ORIGIN_APPROACH
-    if cls in ("merchant", "loot", "stuck"):
+    if cls in ("merchant", "loot", "stuck", "combat_survival"):
         return ORIGIN_OTHER
     return ORIGIN_ROAM
 
@@ -123,6 +140,7 @@ class FlightRegister:
         self._segments: list[tuple[float, float, str]] = []  # (start, end, cls)
         self._segment_start = 0.0
         self._last_attack_t: float | None = None
+        self.displaced: Counter[str] = Counter()
         self.hold_reissues = 0
         self.script_walks_dispatched = 0
         self.script_walks_blocked = 0
@@ -181,11 +199,14 @@ class FlightRegister:
             return []
         if row.get("event") == "attack_refused" and row.get("reason") == "pending_walk":
             return [self._on_gate_row(t)]
+        if isinstance(tap, str) and tap.startswith(_DISPLACEMENT_PREFIX):
+            origin = tap[len(_DISPLACEMENT_PREFIX) :].rstrip(")")
+            self.displaced[origin] += 1
+            self._close(t)  # the displacement RELEASED the slot it names
+            return []
         if tap == "goal_field_routed":
             return self._on_field_tap(t, row)
-        if tap == "farm_approach":
-            return self._on_approach_tap(t, row)
-        return []
+        return self._on_approach_tap(t, row) if tap == "farm_approach" else []
 
     def _on_gate_row(self, t: float) -> HoldEvent:
         origin = self.origin_at(t)
@@ -202,6 +223,9 @@ class FlightRegister:
         if self._flight is not None and dest == self._flight["target"] and self._alive(t):
             if self._flight["cls"] in (None, "roam"):
                 self._reclassify(t, "field_route")
+            # a same-target re-aim IS the hold continuing (the pump re-fires
+            # every 2 s): extend it like a move_performed reissue
+            self._extend(t)
         elif self._flight is None:
             # The field pump dispatches through _perform_move directly: its
             # authoring tap is the only trace evidence of the walk.
@@ -264,13 +288,9 @@ class FlightRegister:
 
     @staticmethod
     def _class_for_reason(reason: str | None) -> str | None:
-        if reason in _TRIP_ORIGINS:
-            return "merchant"
-        if reason in _LOOT_ORIGINS:
-            return "loot"
-        if reason in _STUCK_ORIGINS:
-            return "stuck"
-        return None
+        if reason is None:
+            return None
+        return _origin_name(reason) if reason not in ("step", "direct") else None
 
     def _alive(self, t: float) -> bool:
         return self._flight is not None and t - self._flight["t_last"] <= OPEN_TTL_S
@@ -380,6 +400,29 @@ def _bucket_releases(data: dict[str, Any] | None) -> tuple[int, dict[str, float]
     return gates, release_seconds
 
 
+def _receipt_displacements(samples: list[dict[str, Any]], persona: str) -> Counter[str]:
+    """The receipt's per-sample ``walk_displaced_for_combat`` cells, summed."""
+    counts: Counter[str] = Counter()
+    for sample in samples:
+        cell = sample.get(persona)
+        if isinstance(cell, dict):
+            for origin, count in (cell.get("walk_displaced_for_combat") or {}).items():
+                if isinstance(count, (int, float)) and count > 0:
+                    counts[str(origin)] += int(count)
+    return counts
+
+
+def _has_evidence(summary: dict[str, Any]) -> bool:
+    """Keep agents with attributed gates, traced gates or displacement rows."""
+    agent = summary["agent"]
+    return bool(
+        summary["total"]
+        or agent["traced_gates"]
+        or agent["displacements"]
+        or agent["receipt_displacements"]
+    )
+
+
 def _agent_summary(
     persona: str,
     rows: list[dict[str, Any]],
@@ -414,10 +457,15 @@ def _agent_summary(
         prev_t = sample_t
     traced_origins = Counter(e.origin for e in traced)
     traced_sites = Counter(e.site for e in traced if e.site)
+    receipt_displacements = _receipt_displacements(samples, persona)
     return {
         "agent": {
             "pending_walk": agent_total,
             "origins": {origin: allocated.get(origin, 0) for origin in ORIGIN_ORDER},
+            "displacements": {
+                origin: register.displaced.get(origin, 0) for origin in sorted(register.displaced)
+            },
+            "receipt_displacements": dict(receipt_displacements),
             "traced_gates": len(traced),
             "traced_origins": dict(traced_origins),
             "traced_sites": dict(traced_sites),
@@ -472,14 +520,16 @@ def summarize_pendingwalk(
     agents: dict[str, Any] = {}
     totals_origins: Counter[str] = Counter()
     totals_sites: Counter[str] = Counter()
+    totals_displaced: Counter[str] = Counter()
     grand_total = 0
     for persona in sorted(rows_by_persona):
         summary = _agent_summary(persona, rows_by_persona[persona], samples, origin_s)
-        if summary["total"] == 0 and not summary["agent"]["traced_gates"]:
+        if not _has_evidence(summary):
             continue
         agents[persona] = summary["agent"]
         totals_origins.update(summary["allocated"])
         totals_sites.update(summary["traced_sites"])
+        totals_displaced.update(summary["agent"]["displacements"])
         grand_total += summary["total"]
     return {
         "schema": SCHEMA,
@@ -488,6 +538,9 @@ def summarize_pendingwalk(
             "pending_walk": grand_total,
             "origins": {origin: totals_origins.get(origin, 0) for origin in ORIGIN_ORDER},
             "traced_sites": dict(totals_sites),
+            "displacements": {
+                origin: totals_displaced.get(origin, 0) for origin in sorted(totals_displaced)
+            },
         },
         "agents": agents,
     }

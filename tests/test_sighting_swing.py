@@ -52,66 +52,71 @@ def test_sighting_swings_in_observation_budget_without_decide(pump):
 
 
 @pytest.mark.parametrize("pump", ["drain", "keepalive"])
-def test_roam_walk_sighting_defers_lease_until_release_and_arrival_owns_swing(pump):
+def test_roam_walk_sighting_displaces_the_hold_and_arrival_still_owns_swing(pump):
+    """Leg-136: the contested roam hold releases at the mint (the tap names
+    it) instead of parking the sighting; the approach dispatches as the
+    combat approach and the swing still waits for its own arrival."""
     client, wire, now = _client(at=(47, 37))
     _arm(client)
     client.perform_native(MoveTo(45, 37))  # ordinary PLAN-ROAM, no combat author
     assert client._combat_intent is None
     wire.add(walk_ack((42, 37), (45, 37)))
     client.drain_native_events()
-    assert client.__dict__.get("_combat_intent") is None
-    assert wire.sent == []
-    assert any(
-        row.get("tap") == "sighting_swing_deferred" and row["reason"] == "pending_walk"
-        for row in client.drain_swing_telemetry()
-    )
-    wire.add(walk_ack((45, 37), (45, 37)))
-    now[0] = 0.25
+    intent = client.__dict__.get("_combat_intent")
+    assert intent is not None
+    assert intent.target_id == 123
+    assert client._pending_origin == "combat_approach"
+    assert client._pending is not None
+    assert client._pending[0] == (46, 37)  # the lease approaches the intercept
+    rows = client.drain_swing_telemetry()
+    assert any(row.get("tap") == "walk_displaced_for_combat(step)" for row in rows)
+    assert any(row.get("tap") == "sighting_swing_minted" for row in rows)
+    assert wire.sent == []  # still two cells away: the approach serves the lease
+    wire.add(walk_ack((46, 37), (46, 37)))
+    now[0] = 0.5
     if pump == "drain":
         client.drain_native_events()
     else:
         client._pump_farm_combat_safely()
-    intent = client.__dict__["_combat_intent"]
-    assert intent is not None
-    assert intent.target_id == 123
-    assert wire.sent == []  # still two cells away: the lease approaches the intercept
-    assert client._pending is not None
-    assert client._pending[0] == (46, 37)
-    wire.add(walk_ack((46, 37), (46, 37)))
-    now[0] = 0.5
-    client.drain_native_events()
     assert wire.sent == [attack(123)]
     assert client._combat_intent is intent
     assert any(row.get("tap") == "arrival_swing_minted" for row in client.drain_swing_telemetry())
 
 
-def test_pending_walk_does_not_spend_the_sighting_combat_lease():
+def test_displaced_hold_spends_the_sighting_lease_at_the_displacement():
+    """Leg-136: a held sighting mints THROUGH the displacement with its full
+    budget (named by the tap) instead of parking behind the walk; the spent
+    lease still ends honestly at expiry."""
     client, wire, now = _client(at=(46, 37))
     client._keepalive_interval_s = 1000
     _arm(client)
     client.perform_native(MoveTo(45, 37))
     wire.add(walk_ack((42, 37), (45, 37)))
     client.drain_native_events()
-    assert client.__dict__.get("_combat_intent") is None
-    assert not any(
-        row.get("tap") == "sighting_swing_minted" for row in client.drain_swing_telemetry()
-    )
-    now[0] = COMBAT_INTENT_SECONDS + 1
-    wire.add(walk_ack((45, 37), (45, 37)))
-    client.drain_native_events()
-    assert wire.sent == [attack(123)]
     intent = client.__dict__.get("_combat_intent")
     assert intent is not None
-    assert intent.until == now[0] + COMBAT_INTENT_SECONDS
+    assert intent.until == COMBAT_INTENT_SECONDS  # fresh budget at the displacement
+    rows = client.drain_swing_telemetry()
+    assert any(row.get("tap") == "walk_displaced_for_combat(step)" for row in rows)
+    assert wire.sent == []  # the arrival gate still owns the swing
+    now[0] = COMBAT_INTENT_SECONDS + 1
+    wire.add(walk_ack((45, 37), (45, 37)))
+    client._pump_farm_combat_safely()
+    assert client._combat_intent is None
+    assert wire.sent == []
 
 
 @pytest.mark.parametrize("boundary", ["vanished", "expired", "revoked", "species"])
-def test_deferred_walk_sighting_rechecks_live_authority_on_release(boundary):
+def test_displaced_sighting_rechecks_live_authority_on_continuation(boundary):
+    """The displacement-minted lease is a full lease: every continuation
+    tick still rechecks the LIVE authority (vanish, plan expiry, revoke,
+    species change) and ends it without a send."""
     client, wire, now = _client(at=(46, 37))
     _arm(client, duration=1)
     client.perform_native(MoveTo(45, 37))
     wire.add(walk_ack((42, 37), (45, 37)))
     client.drain_native_events()
+    assert client.__dict__.get("_combat_intent") is not None
     if boundary == "vanished":
         wire.add(struct.pack("<HIB", 0x80, 123, 0))
     elif boundary == "expired":
@@ -124,7 +129,8 @@ def test_deferred_walk_sighting_rechecks_live_authority_on_release(boundary):
         client.mob_db.catalog[1063] = MobInfo(1063, "Lunatic", 1)
         wire.add(bytes(raw))
     wire.add(walk_ack((45, 37), (45, 37)))
-    client.drain_native_events()
+    now[0] = 2.0  # the continuation cadence
+    client._pump_farm_combat_safely()
     assert client._combat_intent is None
     assert wire.sent == []
 

@@ -16933,3 +16933,55 @@ read 3,973z per-char exact vs seed.
   Tool: `scripts/pendingwalk_attribution.py` + `src/robots/app/pendingwalk_attribution.py`
   (21 synthetic-row tests), evidence `run/reviews/leg136-pendingwalk-attribution.{md,json}`.
   NO production behavior changed in this slice.
+
+## [2026-11-28] fix | combat displacement: authored combat releases a NON-COMBAT-held walk slot
+- **The rule (leg-136 named-next, branch `t3/combat-displacement`):** when
+  combat authorship arrives - the authored Attack at `_attack` (its
+  `_combat_walk_gate`), the pump's sighting mint (`_pump_farm_sightings`),
+  the pump swing limb (`_continue_farm_swing`), or the combat-approach
+  dispatch (`_move_gate` with a `combat_approach` origin) - and the
+  pending-walk slot is held by a NON-COMBAT walk, the slot releases exactly
+  as `_await_pending` releases on no-progress: the retention record rides
+  the next perform (`pending_reason: combat_displacement(<origin>)`), the
+  walk epoch completes, the slot clears plain. `_await_pending` itself, the
+  1 s no-progress contract and the arrival_confirmed separation are
+  untouched; the pump swing limb still refuses on an unconfirmed arrival
+  after releasing the hold.
+- **Named counter:** every release notes
+  `walk_displaced_for_combat(<origin>)` in the swing trace (tap
+  `walk_displaced_for_combat(<origin>)`) and in a new receipt counter (the
+  `_walk_displacement_reasons` deque lifted by the runner sample as
+  `walk_displaced_for_combat` per origin class). Combat's own walks are
+  NEVER displaced: the melee-intercept approach dispatches tagged
+  `combat_approach` (a live intent surviving the perform boundary - the
+  authorship layer mints it for every script engage batch; the field pump
+  tags its leg `field_route` unless the action IS a melee intercept), and
+  the survival retreat dispatches `disengage_step`; both are protected
+  classes, so the benign self-paced own-approach pacing (leg-136's 4%)
+  stays intact and leg-19's stop-and-swing still gates on their arrival.
+- **Reconciliation (honest):** stop-and-swing suppression re-scoped to the
+  combat-owned hold + the release case added; the two deferred-sighting
+  tests re-pinned to the displacement-mint (the lease spends fresh at the
+  displacement; live authority is still rechecked every continuation tick);
+  the widened-approach/rest-interrupt tests now mint the authorship the
+  production agent layer grants before performing (`_authorize_farm_actions`),
+  keeping leg-19's mid-walk swing ban intact for combat-owned walks.
+- **Tests:** 27 new unit pins (per-origin displacement incl.
+  field_route/trip_leg/trip-arrival/loot/stuck/reroll/reposition/step/direct,
+  combat-approach + disengage protected, free-slot pass-through, the
+  no-progress release contract, authorship tagging, mint/swing/approach
+  seams, counter shape) + a real-runtime A/B replay
+  (`test_combat_displacement_replay.py`): with the authority disabled the
+  contested window gates 3 pending_walks and executes 0 attacks; with the
+  rule, pending_walk collapses to 0, 4 field-route holds are named by the
+  counter and 4 attacks execute. TDD RED (22 failed) -> GREEN.
+- **Attribution tool extended** (`robots.app.pendingwalk_attribution`):
+  consumes the displacement taps as ground truth (counts per class, closes
+  the hold they released), classifies the new dispatch origins
+  (field_route/combat_approach/disengage_step), keeps agents that carry
+  displacement evidence, and reports `displacements` +
+  `receipt_displacements` per agent and in totals; same-target field taps
+  now extend a hold like move reissues. 5 new tool tests.
+- Env note for fresh worktrees: `rathena/config.log` (build artifact) must
+  be copied from the main checkout alongside the `run/knowledge` symlink or
+  the packet-oracle tests error at setup.

@@ -144,10 +144,14 @@ def test_widened_approach_reaches_adjacency_and_waits_for_walk_end(distance: int
         brain.handle_event(state, Heartbeat(seq=50 + state.x))
         next_action = brain.step_script(state).actions[0]
         assert next_action == move
+    # production grants the approach authorship for the script batch
+    # (agent_runtime._authorize_farm_actions) before performing it
+    client.authorize_farm_actions(state, (move,))
     client.perform_native(move)
     assert wire.moves[-1] == (move.x, move.y)
     pending = client._pending
     assert pending is not None
+    assert client._pending_origin == "combat_approach"
 
     wire.add(walk_ack((state.x, state.y), (move.x, move.y)))
     approaching = client.build_native_state(Goal.GRIND)
@@ -155,9 +159,11 @@ def test_widened_approach_reaches_adjacency_and_waits_for_walk_end(distance: int
     brain.handle_event(approaching, Heartbeat(seq=99))
     swing = brain.step_script(approaching).actions
     assert swing == (Attack(123),)
+    client.authorize_farm_actions(approaching, swing)
     client.perform_native(swing[0])
     assert wire.sent == []
     assert client._attack_gate_reasons[-1][1] == "pending_walk"
+    assert getattr(client, "_walk_displacement_reasons", None) is None
 
     wire.add(walk_ack((move.x, move.y), (move.x, move.y)))
     client.drain_native_events()
@@ -165,6 +171,7 @@ def test_widened_approach_reaches_adjacency_and_waits_for_walk_end(distance: int
     assert client._pending is None
     brain.handle_event(arrived, Heartbeat(seq=100))
     assert brain.step_script(arrived).actions == swing
+    client.authorize_farm_actions(arrived, swing)
     client.perform_native(swing[0])
     assert wire.sent == [attack(123)]
 

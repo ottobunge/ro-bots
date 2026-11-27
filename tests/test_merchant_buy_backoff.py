@@ -182,7 +182,7 @@ def test_give_up_allows_motion_instead_of_recovery_retry(monkeypatch):
         _evaluate(client)
     before = len(sent)
     moved = []
-    monkeypatch.setattr(client, "_move", lambda _state, cell: moved.append(cell))
+    monkeypatch.setattr(client, "_move", lambda _state, cell, **_kwargs: moved.append(cell))
     client.perform_native(MoveTo(43, 37))
     assert client._npc.view is None
     assert moved == [(43, 37)]
