@@ -58,12 +58,10 @@ class SwingLease:
         self, *, now: float, intent: Any, map_name: str, resting: bool, dead: bool
     ) -> str | None:
         """Why the reservation died: None while every arming condition holds."""
-        if self._origin is None:
+        if self._origin is None or self._until is None:
             return None
-        if resting:
-            return "rest"
-        if dead:
-            return "dead"
+        if resting or dead:
+            return "rest" if resting else "dead"
         if map_name != self._map_name:
             return "map"
         if intent is not self._intent:

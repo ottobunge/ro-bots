@@ -14,8 +14,10 @@ MoveTo revoke stays exactly as pinned (scripts own engagement).
 import struct
 from dataclasses import replace
 from types import SimpleNamespace
+from typing import Any
 
 from robots.adapters.native_gameplay import attack
+from robots.app.playing_runtime import PlayingClient
 from robots.app.swing_lease import SWING_LEASE_HORIZON_S, SwingLease
 from robots.domain.actions import MoveTo
 from robots.domain.farm import FarmPlan, MobInfo
@@ -27,16 +29,16 @@ from tests.test_playing_runtime import monster, walk_ack
 LEASE_HOLDER = "combat_approach"
 
 
-def _taps(client) -> list[str]:
+def _taps(client: PlayingClient) -> list[str]:
     return [str(row.get("tap")) for row in client.drain_swing_telemetry()]
 
 
-def _reason(client) -> str | None:
+def _reason(client: PlayingClient) -> str | None:
     reason = client.last_move_outcome.get("reason")
     return None if reason is None else str(reason)
 
 
-def _contested_lease(at: tuple[int, int] = (46, 37)):
+def _contested_lease(at: tuple[int, int] = (46, 37)) -> tuple[PlayingClient, Any, list[float]]:
     """A minted combat interaction that displaced a script walk: the lease is
     live, the authoring script walk is the displaced class, and the arrival is
     still unconfirmed (the leg-137 contest shape). The mob stands adjacent to
@@ -50,7 +52,7 @@ def _contested_lease(at: tuple[int, int] = (46, 37)):
     return client, wire, now
 
 
-def _approach_lease():
+def _approach_lease() -> tuple[PlayingClient, Any, list[float]]:
     """The out-of-melee contest: the mint dispatches the combat approach walk
     (combat_approach holds the slot) with the lease serving it."""
     client, wire, now = _contested_lease(at=(47, 37))  # distance 2: approach phase
@@ -60,18 +62,30 @@ def _approach_lease():
 
 # -- pure lease unit -------------------------------------------------------------
 
+
 def test_lease_expires_honestly_by_the_bounded_horizon():
     lease = SwingLease()
-    assert lease.expiry(now=0.0, intent=None, map_name="prontera", resting=False, dead=False) is None
+    assert (
+        lease.expiry(now=0.0, intent=None, map_name="prontera", resting=False, dead=False) is None
+    )
     lease.arm("step", intent := object(), "prontera", 5.0)
-    assert lease.expiry(
-        now=5.0 + SWING_LEASE_HORIZON_S - 0.1, intent=intent,
-        map_name="prontera", resting=False, dead=False,
-    ) is None
     assert (
         lease.expiry(
-            now=5.0 + SWING_LEASE_HORIZON_S + 0.1, intent=intent,
-            map_name="prontera", resting=False, dead=False,
+            now=5.0 + SWING_LEASE_HORIZON_S - 0.1,
+            intent=intent,
+            map_name="prontera",
+            resting=False,
+            dead=False,
+        )
+        is None
+    )
+    assert (
+        lease.expiry(
+            now=5.0 + SWING_LEASE_HORIZON_S + 0.1,
+            intent=intent,
+            map_name="prontera",
+            resting=False,
+            dead=False,
         )
         == "timeout"
     ), "the horizon, not hope, ends the reservation"
@@ -82,14 +96,34 @@ def test_lease_expires_honestly_by_the_bounded_horizon():
 def test_lease_expiry_names_each_release_cause():
     lease = SwingLease()
     lease.arm("step", intent := object(), "prontera", 0.0)
-    assert lease.expiry(now=1.0, intent=intent, map_name="prontera", resting=False, dead=False) is None
-    assert lease.expiry(now=1.0, intent=object(), map_name="prontera", resting=False, dead=False) == "intent"
-    assert lease.expiry(now=1.0, intent=intent, map_name="geffen", resting=False, dead=False) == "map"
-    assert lease.expiry(now=1.0, intent=intent, map_name="prontera", resting=True, dead=False) == "rest"
-    assert lease.expiry(now=1.0, intent=intent, map_name="prontera", resting=False, dead=True) == "dead"
+
+    bound: object = intent
+
+    def expiry(
+        *,
+        now: float = 1.0,
+        intent: object | None = None,
+        map_name: str = "prontera",
+        resting: bool = False,
+        dead: bool = False,
+    ) -> str | None:
+        return lease.expiry(
+            now=now,
+            intent=bound if intent is None else intent,
+            map_name=map_name,
+            resting=resting,
+            dead=dead,
+        )
+
+    assert expiry() is None
+    assert expiry(intent=object()) == "intent"
+    assert expiry(map_name="geffen") == "map"
+    assert expiry(resting=True) == "rest"
+    assert expiry(dead=True) == "dead"
 
 
 # -- the back-off: displaced re-authors are refused while the lease is live ------
+
 
 def test_displaced_reauthor_backs_off_while_the_combat_is_live():
     client, _wire, _now = _approach_lease()
@@ -106,7 +140,7 @@ def test_backoff_refusal_counts_each_attempt_and_names_the_holder():
     state = client.build_native_state(Goal.GRIND)
     client._perform_move(state, (44, 37))
     client._perform_move(state, (44, 37))
-    attempts = getattr(client, "_swing_lease_reasons", ())
+    attempts = list(getattr(client, "_swing_lease_reasons", ()))
     assert len(attempts) == 2
     assert attempts[-1][2] == LEASE_HOLDER, "the receipt deque names the serving class"
 
@@ -121,12 +155,13 @@ def test_field_route_reauthor_backs_off_with_its_own_class_named():
     client.field_travel_actions = lambda _state: (MoveTo(41, 37),)  # type: ignore[method-assign,assignment]
     client._pump_field_travel()
     assert (_reason(client) or "").startswith("swing_lease_hold(")
-    attempts = getattr(client, "_swing_lease_reasons", ())
+    attempts = list(getattr(client, "_swing_lease_reasons", ()))
     assert attempts[-1][1] == "field_route", "the refusal names the backing-off class"
     assert client.__dict__.get("_combat_intent") is not None
 
 
 # -- the release contract --------------------------------------------------------
+
 
 def test_the_swing_releases_the_lease_and_travel_resumes_next_tick():
     client, wire, now = _contested_lease()  # adjacent mob, arrival unconfirmed
@@ -193,13 +228,15 @@ def test_the_scripts_performed_move_still_revokes_and_the_lease_follows():
 
 # -- combat's own walks are never leased out --------------------------------------
 
+
 def test_combat_approach_dispatches_freely_during_the_lease():
     client, _wire, _now = _approach_lease()
     state = client.build_native_state(Goal.GRIND)
     client._perform_move(state, (46, 37), origin="combat_approach")
-    assert client.last_move_outcome["outcome"] in ("dispatched", "pending"), (
-        "the approach must not be lease-blocked: " + str(client.last_move_outcome)
-    )
+    assert client.last_move_outcome["outcome"] in (
+        "dispatched",
+        "pending",
+    ), "the approach must not be lease-blocked: " + str(client.last_move_outcome)
     assert client._pending_origin == "combat_approach"
 
 
@@ -217,12 +254,13 @@ def test_the_real_intercept_leg_still_dispatches_tagged_combat_approach():
     assert client.last_move_outcome["outcome"] == "dispatched"
     assert _reason(client) == "combat_approach", "the intercept keeps its class"
     state = client.build_native_state(Goal.GRIND)
-    assert client._swing_lease_held(state) is not None, (
-        "serving the intercept never lifts the lease early"
-    )
+    assert (
+        client._swing_lease_held(state) is not None
+    ), "serving the intercept never lifts the lease early"
 
 
 # -- a free-slot mint leases the slot too (the churn was the release windows) -----
+
 
 def test_mint_with_a_free_slot_still_reserves_until_the_swing():
     client, _wire, _now = _pump_client(at=(46, 37))
@@ -248,5 +286,6 @@ def test_intent_object_identity_gates_the_reservation():
     client.authorize_farm_sightings(state, plan, remaining_s=900)
     client._pump_farm_sightings(state)  # a fresh mint for the other target
     fresh = client.__dict__.get("_combat_intent")
-    assert fresh is not None and fresh.target_id == 124
+    assert fresh is not None
+    assert fresh.target_id == 124
     assert client._swing_lease_held(state) is not None, "the fresh mint re-reserves"

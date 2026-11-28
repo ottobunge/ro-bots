@@ -521,7 +521,5 @@ class TestDisplacementGroundTruth:
         # a gate bucket whose only hold evidence is the receipt's displacement
         # cell attributes to the displaced class instead of the register gap
         register = FlightRegister()
-        allocation = register.allocate_bucket(
-            epoch(0), epoch(30), 4, {"movement": 3.0}
-        )
+        allocation = register.allocate_bucket(epoch(0), epoch(30), 4, {"movement": 3.0})
         assert allocation["attack_deferred_behind_movement_walk"] == 4

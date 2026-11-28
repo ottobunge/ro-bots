@@ -54,6 +54,22 @@ class _InertLease:
         return None
 
 
+def _world() -> tuple[Wire, PlayingClient, list[float]]:
+    """The agent at (42, 37), an adjacent Poring, and a hand-driven clock."""
+    now = [0.0]
+    wire = Wire()
+    wire.frames = []
+    wire.add(entry_at(42, 37), map_frame_at(42, 37), monster(at=(43, 37)))
+    client = PlayingClient(
+        wire,
+        cache=MapCache(
+            tuple(WalkMap(name, 100, 100, bytes(10000)) for name in ("prontera", "prt_fild08"))
+        ),
+        monotonic=lambda: now[0],
+    )
+    return wire, client, now
+
+
 def _drive(monkeypatch, *, lease: bool) -> tuple[PlayingClient, Wire, list[dict]]:
     """One synthetic contest window through the real runtime."""
     if lease:
@@ -67,20 +83,10 @@ def _drive(monkeypatch, *, lease: bool) -> tuple[PlayingClient, Wire, list[dict]
             return _ORIGIN_AUTHORIZE(self, state, actions, renew=renew, revoke=True)
 
         monkeypatch.setattr(PlayingClient, "authorize_farm_actions", _revoking)
-        monkeypatch.setattr(PlayingClient, "_lease", lambda self: _InertLease())
-        monkeypatch.setattr(PlayingClient, "_swing_lease_refusal", lambda self, s, o: None)
+        monkeypatch.setattr(PlayingClient, "_lease", lambda *_: _InertLease())
+        monkeypatch.setattr(PlayingClient, "_swing_lease_refusal", lambda *_: None)
 
-    now = [0.0]
-    wire = Wire()
-    wire.frames = []
-    wire.add(entry_at(42, 37), map_frame_at(42, 37), monster(at=(43, 37)))
-    client = PlayingClient(
-        wire,
-        cache=MapCache(
-            tuple(WalkMap(name, 100, 100, bytes(10000)) for name in ("prontera", "prt_fild08"))
-        ),
-        monotonic=lambda: now[0],
-    )
+    wire, client, now = _world()
     rows: list[dict] = []
 
     def collect(t: float) -> None:
@@ -104,7 +110,10 @@ def _drive(monkeypatch, *, lease: bool) -> tuple[PlayingClient, Wire, list[dict]
 
     def field_tick(t: float, body: int) -> None:
         now[0] = t
-        pos = client._tracker.view.position
+        tracker = client._tracker
+        assert tracker is not None
+        pos = tracker.view.position
+        assert pos is not None
         # the previous walk completed server-side during the beat gap: its
         # end frame is the standing truth this beat starts from
         wire.add(walk_ack((pos.x, pos.y), (pos.x, pos.y)))

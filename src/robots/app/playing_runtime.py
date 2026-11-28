@@ -77,7 +77,6 @@ from robots.app.loot_attribution import LootAttribution
 from robots.app.loot_stock import LootStock
 from robots.app.merchant_buy_backoff import MerchantBuyBackoff
 from robots.app.merchant_counter_lease import MerchantCounterLease, at_counter
-from robots.app.swing_lease import SwingLease
 from robots.app.merchant_staging import MerchantStaging, MerchantWarpCrossings, dealer_entry_cell
 from robots.app.npc_planning_execution import LocalNpcDispatch, NpcHostBinding, NpcUiObservation
 from robots.app.party_roster import guild_candidate_aid
@@ -118,6 +117,7 @@ from robots.app.scripts import (
     shop_sell_entries,
     shop_sellable_stock,
 )
+from robots.app.swing_lease import SwingLease
 from robots.app.swing_telemetry import SwingTelemetry
 from robots.app.trip_navigation import TripNavigation, trip_chunk_cells
 from robots.domain.actions import (
@@ -3625,15 +3625,24 @@ class PlayingClient:
         pos = view.position
         if not self._require_standing():
             return "not_standing"
-        lease_refusal = self._swing_lease_refusal(state, origin)
-        if lease_refusal is not None:
-            return lease_refusal
+        gate = self._swing_lease_refusal(state, origin) or self._await_pending_gate(
+            view, pos, origin
+        )
+        if gate is not None:
+            return gate
+        if self.cache is None:
+            return "no_map_cache"
+        return None
+
+    def _await_pending_gate(
+        self, view: NativeGameplayView, pos: ObservedPosition, origin: str | None
+    ) -> str | None:
+        """The held slot refuses every author except combat's own approach,
+        which displaces the NON-COMBAT hold instead (the leg-136 seam)."""
         if self._await_pending(view, pos) and (
             origin is not COMBAT_APPROACH_ORIGIN or self._displace_pending_for_combat() is None
         ):
             return "await_pending"
-        if self.cache is None:
-            return "no_map_cache"
         return None
 
     def _perform_move(
@@ -5313,7 +5322,7 @@ class PlayingClient:
 
     def _release_swing_lease(self, reason: str) -> None:
         """The lease ends honestly: the tap names why; the slot frees plain."""
-        lease = self.__dict__.get("_swing_lease")
+        lease: SwingLease | None = self.__dict__.get("_swing_lease")
         if lease is None or lease.origin() is None:
             return
         lease.release()
@@ -5327,7 +5336,7 @@ class PlayingClient:
     def _swing_lease_held(self, state: BotState) -> str | None:
         """The reserved walk class while the combat it serves is still live;
         a dead reservation releases with its honest tap right here."""
-        lease = self.__dict__.get("_swing_lease")
+        lease: SwingLease | None = self.__dict__.get("_swing_lease")
         if lease is None:
             return None
         reason = lease.expiry(
