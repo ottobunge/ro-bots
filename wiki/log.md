@@ -17076,7 +17076,7 @@ Preflight PASS (DECIDE-OK 2.34 s answers=10, :8091/:8092 200, sab day-check). La
   budget each) across the displaced class. Re-run over the real leg-137
   window: unattributed **117 -> 0** (94.4% -> **100%** attributed; class
   mix unchanged in shape, field/own-approach still dominant).
-- Env note: fresh-worktree failures beyond the documented set - the world
-  prepare/task tests - fail identically on detached MAIN (checked); the
-  known artifacts (mob_spawns, pinned-compiler-oracle, protocol_rereview
-  x4) unchanged.
+- Env note: the known fresh-worktree artifacts (pinned-compiler-oracle,
+  protocol_rereview x4) clear by copying `rathena/config.log` from the main
+  checkout (the packet-oracle tests error at setup without it); with it the
+  full gate is GREEN: 8,013 passed / 0 failed, coverage 95.95%.
