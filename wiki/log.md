@@ -1,7 +1,7 @@
 ---
 title: Current implementation log
 created: 2026-10-05
-updated: 2026-11-27
+updated: 2026-11-28
 type: guide
 status: accepted
 tags: [ops, testing]
@@ -16985,3 +16985,41 @@ read 3,973z per-char exact vs seed.
 - Env note for fresh worktrees: `rathena/config.log` (build artifact) must
   be copied from the main checkout alongside the `run/knowledge` symlink or
   the packet-oracle tests error at setup.
+
+## 2026-11-28 — leg-137 verdict (Sat [[5,9.0,10.5]] 09:00-10:30 Madrid)
+
+Base `598f3e28` (combat displacement merged pre-launch — leg-137 was its live validation).
+Preflight PASS (DECIDE-OK 2.34 s answers=10, :8091/:8092 200, sab day-check). Launched
+08:40:13 CET in band under `leg137-runner`; pre-window DB read 4,618z exact.
+
+- Run: receipt `population-receipt-137-1795851617.json` written 10:30:17 with the unit active
+  (kill-safety **14th consecutive**), unit self-terminated by 10:39:06 before RuntimeMaxSec.
+  Receipt **16,901 steps, 0 step_errors** (DONE line 17,821 — drain advanced 920; receipt
+  figure authoritative), 215 samples, offline at close `pop_0069_g00m00` (1/29), transports
+  exhausted 0. Decide: capped **0%** (leg-136 0.93%), TRUE p50 1.20 s, 30 backend errors
+  (0.64%, p50 15.09 s).
+- Bars: **3/5 PASS.** (1) pending_walk **FAIL** — census **2,092** vs <300 bar (leg-136
+  1,427; projection order 100). (2) farm_approach blocked **FAIL** — **42.6%** await_pending
+  (395/927; leg-136 37.6%, bar <10%). (3) kills **PASS** — **56** kill_credits (floor 41).
+  (4) BOTH-ARM **PASS** — attackers **27/29**, sellers **20/29** (leg-136 17/12). (5)
+  close-write **PASS**.
+- Displacement verdict: the rule **fires at scale** — receipt census
+  `walk_displaced_for_combat` **1,846** (step 1,464 / trip-arrival 280 / rest small; traced
+  148), same order as the 1,370 non-combat mass it targets — but the instant release **does
+  not transfer the slot**: non-combat walks re-author immediately (field authorships 9,090),
+  so pending_walk ROSE +46% and await_pending share rose to 42.6%. The origin shift landed
+  the leg-136 prediction (behind_own_approach 57 -> 734, now dominant); tool unattributed
+  117 (5.6% — displacement taps close holds mid-flight).
+- Paradox recorded: combat economy IMPROVED while gate counters worsened — kills +37%,
+  attackers +10, sellers +8, fleet zeny 4,618 -> 4,935 (**+317, S-sum exact**: 31 S-rows by
+  20 chars). Swings 245 -> 263 (below the ~330 projection). Traced attack_refused 572
+  (no_survivability 224 / pending_walk 151 / cooldown 140 / ...) — the census counts
+  heartbeat-weighted waits, not refusal events; they diverge under displacement churn.
+- Watch: cooldown did NOT overtake pending_walk (2,092 vs 1,541); chat DOWN (68 actions,
+  1 agent >10 vs leg-136 250/10); purchaser-pooling stays flagged for Otto.
+- Named-next: **displacement lease until swing** — displaced walk backs off until the
+  authoring attack swings or timeout (extend the disengage swing-lease shape), close the
+  tool's 117 unattributed gates, and pin the next pending_walk bar to ONE method (census vs
+  traced events diverge under displacement churn).
+- Attribution: `run/reviews/leg137-pendingwalk-attribution.json`; verdict
+  `run/reviews/leg137-verdict.md`.
