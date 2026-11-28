@@ -60,6 +60,14 @@ _SURVIVAL_ORIGIN = "disengage_step"
 #: The displacement tap prefix: ``walk_displaced_for_combat(<origin>)``.
 _DISPLACEMENT_PREFIX = "walk_displaced_for_combat("
 
+#: The swing-lease taps (leg-137): the displacement ARMS a bounded combat
+#: reservation, the back-offs prove it alive, and the swing (or the honest
+#: release tap) ends it. The reservation serves the approach -> swing, so its
+#: register class is the combat approach.
+_LEASE_RELEASE_PREFIX = "swing_lease_release("
+_LEASE_BACKOFF_PREFIX = "swing_lease_hold("
+_LEASE_CLS = "own_approach"
+
 #: The walk class each named dispatch origin maps to; the fallback is the
 #: unnamed movement class (step/direct).
 _NAMED_ORIGINS: dict[str, str] = {
@@ -150,6 +158,7 @@ class FlightRegister:
         self.combat_intents = 0
         self.swings = 0
         self.attacks_executed_rows = 0
+        self.lease_backoffs = 0
 
     # -- row consumption ---------------------------------------------------
 
@@ -196,13 +205,25 @@ class FlightRegister:
             return []
         if row.get("event") == "swing":
             self.swings += 1
+            self._close(t)  # the swing ends the hold it served (slot proven free)
             return []
         if row.get("event") == "attack_refused" and row.get("reason") == "pending_walk":
             return [self._on_gate_row(t)]
         if isinstance(tap, str) and tap.startswith(_DISPLACEMENT_PREFIX):
             origin = tap[len(_DISPLACEMENT_PREFIX) :].rstrip(")")
             self.displaced[origin] += 1
-            self._close(t)  # the displacement RELEASED the slot it names
+            self._close(t)  # the displacement released the displaced walk's hold
+            self._open(t, (None, None), _LEASE_CLS)  # ... and LEASED the slot (leg-137)
+            return []
+        if isinstance(tap, str) and tap.startswith(_LEASE_RELEASE_PREFIX):
+            self._close(t)  # the honest release ends the reservation
+            return []
+        if isinstance(tap, str) and tap.startswith(_LEASE_BACKOFF_PREFIX):
+            self.lease_backoffs += 1
+            if self._flight is None:
+                self._open(t, (None, None), _LEASE_CLS)
+            else:
+                self._extend(t)
             return []
         if tap == "goal_field_routed":
             return self._on_field_tap(t, row)
@@ -387,7 +408,16 @@ def _largest_remainder(weights: dict[str, float], total: float, gates: int) -> d
 
 
 def _bucket_releases(data: dict[str, Any] | None) -> tuple[int, dict[str, float]]:
-    """One receipt sample cell's pending_walk count and release holder seconds."""
+    """One receipt sample cell's pending_walk count and holder seconds.
+
+    The holder seconds fold two receipt-side evidences: the no-progress
+    releases (each proves >= 1 s of the released walk's hold) and the
+    ``walk_displaced_for_combat`` census cells -- the trace taps under-sample
+    that census (leg-137: 148 traced taps vs 1,846 receipt cells), and each
+    displaced walk held the slot for at least the 1 s stall budget before its
+    displacement. Both allocate across the displaced class, conserving the
+    register-gap gates the sparse trace cannot see.
+    """
     if not isinstance(data, dict):
         return 0, {}
     gates = (data.get("attack_gates") or {}).get("pending_walk", 0)
@@ -396,6 +426,11 @@ def _bucket_releases(data: dict[str, Any] | None) -> tuple[int, dict[str, float]
         cls = _release_class(str(reason))
         if cls is not None and isinstance(count, (int, float)):
             # Each no-progress release proves >= 1 s of hold.
+            release_seconds[cls] = release_seconds.get(cls, 0.0) + float(count)
+    for origin, count in (data.get("walk_displaced_for_combat") or {}).items():
+        cls = _origin_name(str(origin))
+        if isinstance(count, (int, float)) and count > 0:
+            # Each displacement proves >= 1 s of the displaced walk's hold.
             release_seconds[cls] = release_seconds.get(cls, 0.0) + float(count)
     return gates, release_seconds
 
@@ -476,6 +511,7 @@ def _agent_summary(
                 "approach_dispatched": register.approach_dispatched,
                 "approach_refused": register.approach_refused,
                 "field_authorships": register.field_authorships,
+                "lease_backoffs": register.lease_backoffs,
                 "script_walks_dispatched": register.script_walks_dispatched,
                 "script_walks_held_reissues": register.hold_reissues,
                 "script_walks_blocked": register.script_walks_blocked,

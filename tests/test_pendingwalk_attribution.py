@@ -12,6 +12,7 @@ from typing import Any
 from robots.app.pendingwalk_attribution import (
     SCHEMA,
     FlightRegister,
+    _bucket_releases,
     _release_class,
     summarize_pendingwalk,
 )
@@ -373,6 +374,32 @@ def displacement(seconds: float, origin: str) -> dict:
     )
 
 
+def lease_backoff(seconds: float, held: str) -> dict:
+    return row(
+        seconds,
+        kind="swing_observation",
+        map="prt_fild08",
+        x=50,
+        y=50,
+        event="swing_lease_backoff",
+        tap=f"swing_lease_hold({held})",
+        origin="field_route",
+    )
+
+
+def lease_release(seconds: float, reason: str) -> dict:
+    return row(
+        seconds,
+        kind="swing_observation",
+        map="prt_fild08",
+        x=50,
+        y=50,
+        event="swing_lease_release",
+        tap=f"swing_lease_release({reason})",
+        reason=reason,
+    )
+
+
 class TestDisplacementGroundTruth:
     """The leg-136 displacement rule's own rows are ground truth per class."""
 
@@ -391,14 +418,62 @@ class TestDisplacementGroundTruth:
         assert _release_class("walk_released_no_progress(disengage_step)") == "combat_survival"
         assert _release_class("walk_released_no_progress(step)") == "movement"
 
-    def test_displacement_tap_counts_and_closes_the_hold(self) -> None:
+    def test_displacement_tap_counts_and_leases_the_slot(self) -> None:
         register = FlightRegister()
         register.consume([tap(1.0, "goal_field_routed", (51, 50))])
         assert register.origin_at(epoch(1.5)) == "attack_deferred_behind_field_route"
         register.consume([displacement(2.0, "field_route")])
         assert register.displaced["field_route"] == 1
-        # the displacement RELEASED the slot: the hold is closed
-        assert register.origin_at(epoch(2.5)) == "unattributed"
+        # the displacement released the displaced walk and LEASED the slot to
+        # the authoring combat (leg-137): the reservation is the hold the next
+        # gates sit behind - not a register gap (the 117 unattributed).
+        assert register.origin_at(epoch(2.5)) == "attack_deferred_behind_own_approach"
+
+    def test_backoff_tap_extends_the_lease_hold(self) -> None:
+        register = FlightRegister()
+        register.consume([displacement(2.0, "field_route")])
+        register.consume([lease_backoff(30.0, "combat_approach")])
+        assert register.lease_backoffs == 1
+        # the back-off proves the reservation alive far past the open TTL
+        assert register.origin_at(epoch(33.5)) == "attack_deferred_behind_own_approach"
+
+    def test_release_tap_closes_the_lease_hold(self) -> None:
+        register = FlightRegister()
+        register.consume([displacement(2.0, "field_route")])
+        register.consume([lease_release(3.0, "swing")])
+        assert register.origin_at(epoch(3.5)) == "unattributed"
+
+    def test_swing_event_closes_the_lease_hold(self) -> None:
+        register = FlightRegister()
+        register.consume(
+            [
+                displacement(2.0, "field_route"),
+                row(
+                    3.0,
+                    kind="swing_observation",
+                    map="prt_fild08",
+                    x=50,
+                    y=50,
+                    event="swing",
+                    target_id=110161864,
+                ),
+            ]
+        )
+        assert register.origin_at(epoch(3.5)) == "unattributed"
+
+    def test_gate_behind_the_lease_attributes(self) -> None:
+        register = FlightRegister()
+        events = register.consume(
+            [
+                displacement(2.0, "field_route"),
+                attack_action(2.9),
+                attack_gate(3.0),
+            ]
+        )
+        # the leg-137 unattributed class: gates that fired in the
+        # post-displacement window with no dispatch tap to attribute
+        assert events[0].origin == "attack_deferred_behind_own_approach"
+        assert events[0].site == "authored_attack"
 
     def test_displacements_are_reported_per_class(self) -> None:
         traces = [
@@ -426,3 +501,27 @@ class TestDisplacementGroundTruth:
         )
         agent = result["agents"]["pop_a"]
         assert agent["receipt_displacements"] == {"field_route": 2, "trip_leg": 1}
+
+    def test_receipt_displacement_cells_prove_holder_seconds(self) -> None:
+        # the trace taps under-sample the displacement census (leg-137: 148
+        # traced taps vs the 1,846 receipt census); the per-sample cells are
+        # the ground truth, and each displaced walk held the slot for at
+        # least the 1 s stall budget before its displacement.
+        gates, seconds = _bucket_releases(
+            {
+                "attack_gates": {"pending_walk": 2},
+                "walk_displaced_for_combat": {"step": 3, "field_route": 1},
+            }
+        )
+        assert gates == 2
+        assert seconds["movement"] == 3.0
+        assert seconds["field_route"] == 1.0
+
+    def test_unattributed_gaps_close_from_receipt_displacement_evidence(self) -> None:
+        # a gate bucket whose only hold evidence is the receipt's displacement
+        # cell attributes to the displaced class instead of the register gap
+        register = FlightRegister()
+        allocation = register.allocate_bucket(
+            epoch(0), epoch(30), 4, {"movement": 3.0}
+        )
+        assert allocation["attack_deferred_behind_movement_walk"] == 4
