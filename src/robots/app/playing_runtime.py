@@ -117,6 +117,7 @@ from robots.app.scripts import (
     shop_sell_entries,
     shop_sellable_stock,
 )
+from robots.app.swing_lease import SwingLease
 from robots.app.swing_telemetry import SwingTelemetry
 from robots.app.trip_navigation import TripNavigation, trip_chunk_cells
 from robots.domain.actions import (
@@ -688,6 +689,9 @@ class PlayingClient:
         return result
 
     _pending_origin: str = "step"
+    #: The swing lease (leg-137): the displaced slot's bounded combat
+    #: reservation; instance-set on first arm.
+    _swing_lease: SwingLease | None = None
     """Which walk class the current pending came from (the leg-68 release
     tap reads it); every send site re-tags it before arming a pending."""
 
@@ -1649,6 +1653,7 @@ class PlayingClient:
             self._note_attack_gate("cooldown", target)
             return
         self.wire._send(attack(target))
+        self._release_swing_lease("swing")
         self._farm_swing_at = self._now()
         self._disengage.engage(actor, self._now())
         tracker = self.__dict__.get("_tracker")
@@ -1802,7 +1807,7 @@ class PlayingClient:
             return
         action = actions[0]
         if self._field_intent is not None and state.map_name == self._field_intent.plan.map_name:
-            self.authorize_farm_actions(state, actions, renew=False)
+            self.authorize_farm_actions(state, actions, renew=False, revoke=False)
         if isinstance(action, Attack):
             self.perform_native(action)
             return
@@ -1813,7 +1818,7 @@ class PlayingClient:
         # A melee intercept minted above is the combat approach (its own
         # swing must never displace it); the travel leg itself is the
         # field-route class the displacement counter names (leg-136).
-        origin = COMBAT_APPROACH_ORIGIN if self._combat_intent is not None else FIELD_ROUTE_ORIGIN
+        origin = self._field_leg_origin(state, action)
         self._perform_move(state, (action.x, action.y), origin=origin)
         logger.warning(
             "goal_field_routed bot=%s map=%s destination=%s",
@@ -1830,12 +1835,21 @@ class PlayingClient:
 
     @gameplay_serialized
     def authorize_farm_actions(
-        self, state: BotState, actions: tuple[GameAction, ...], *, renew: bool = True
+        self,
+        state: BotState,
+        actions: tuple[GameAction, ...],
+        *,
+        renew: bool = True,
+        revoke: bool = True,
     ) -> None:
         """Only a farm/grind script can authorize an approach continuation.
 
         Match the script's exact melee intercept, never infer a target from an
         arbitrary patrol destination. Pump work does not renew the deadline.
+        ``revoke=False`` marks the field-travel pump's beat: it may MINT the
+        intercept, but a travel leg that is not one says nothing about the
+        engagement - the leg-137 churn was this beat revoking the live intent
+        every 2s (the swing died, the re-mint displaced, repeat).
         """
         for action in actions:
             targets = [
@@ -1844,8 +1858,9 @@ class PlayingClient:
             if len(targets) == 1:
                 self._authorize_farm_target(state, targets[0], renew=renew)
                 return
-        self._combat_intent = None
-        self._arrival_intent = None
+        if revoke:
+            self._combat_intent = None
+            self._arrival_intent = None
 
     def _authorize_farm_target(
         self, state: BotState, target: ActorRef, *, renew: bool
@@ -1863,6 +1878,7 @@ class PlayingClient:
         self._combat_intent = CombatIntent(
             target.id, state.native_epoch, state.map_name, self._now() + COMBAT_INTENT_SECONDS
         )
+        self._lease().bind(self._combat_intent, state.map_name, self._now())
         self._swing_tap().note(
             "combat_intent",
             tap="farm_target_authored",
@@ -1883,6 +1899,16 @@ class PlayingClient:
         melee-intercept approach (leg-136): dispatch it tagged
         combat_approach - its own attack never displaces it."""
         return COMBAT_APPROACH_ORIGIN if self._combat_intent is not None else None
+
+    def _field_leg_origin(self, state: BotState, action: MoveTo) -> str:
+        """The pump's travel leg is the combat approach ONLY when it
+        intercepts the live intent's target (leg-137): an unrelated leg
+        tagged combat_approach held the slot un-displaceably and refused the
+        very swing it served."""
+        intent = self._combat_intent
+        if intent is not None and self._continues_combat(state, action, intent):
+            return COMBAT_APPROACH_ORIGIN
+        return FIELD_ROUTE_ORIGIN
 
     def _combat_action_boundary(self, state: BotState, action: GameAction) -> None:
         if isinstance(action, (Say, PartyChat, WhisperTo)):
@@ -3599,12 +3625,24 @@ class PlayingClient:
         pos = view.position
         if not self._require_standing():
             return "not_standing"
+        gate = self._swing_lease_refusal(state, origin) or self._await_pending_gate(
+            view, pos, origin
+        )
+        if gate is not None:
+            return gate
+        if self.cache is None:
+            return "no_map_cache"
+        return None
+
+    def _await_pending_gate(
+        self, view: NativeGameplayView, pos: ObservedPosition, origin: str | None
+    ) -> str | None:
+        """The held slot refuses every author except combat's own approach,
+        which displaces the NON-COMBAT hold instead (the leg-136 seam)."""
         if self._await_pending(view, pos) and (
             origin is not COMBAT_APPROACH_ORIGIN or self._displace_pending_for_combat() is None
         ):
             return "await_pending"
-        if self.cache is None:
-            return "no_map_cache"
         return None
 
     def _perform_move(
@@ -5239,6 +5277,7 @@ class PlayingClient:
         self._complete_walk_epoch()
         self._pending = None
         self._note_walk_displacement(origin)
+        self._arm_swing_lease(origin)
         return origin
 
     def _note_walk_displacement(self, origin: str) -> None:
@@ -5264,6 +5303,78 @@ class PlayingClient:
         if self._pending is None:
             return True
         return self._displace_pending_for_combat() is not None
+
+    def _lease(self) -> SwingLease:
+        lease = self.__dict__.get("_swing_lease")
+        if lease is None:
+            lease = SwingLease()
+            self._swing_lease = lease
+        return lease
+
+    def _arm_swing_lease(self, origin: str) -> None:
+        """The displacement sticks: the slot stays leased to the live combat
+        until the swing (or the bounded horizon), so the displaced class backs
+        off instead of re-authoring into the release (the leg-137 churn)."""
+        intent = self.__dict__.get("_combat_intent")
+        if intent is None:
+            return  # a scripted swing lands in-call; no window to reserve
+        self._lease().arm(origin, intent, self.wire.map_name, self._now())
+
+    def _release_swing_lease(self, reason: str) -> None:
+        """The lease ends honestly: the tap names why; the slot frees plain."""
+        lease: SwingLease | None = self.__dict__.get("_swing_lease")
+        if lease is None or lease.origin() is None:
+            return
+        lease.release()
+        self._swing_tap().note(
+            "swing_lease_release",
+            tap=f"swing_lease_release({reason})",
+            reason=reason,
+            at=self._now(),
+        )
+
+    def _swing_lease_held(self, state: BotState) -> str | None:
+        """The reserved walk class while the combat it serves is still live;
+        a dead reservation releases with its honest tap right here."""
+        lease: SwingLease | None = self.__dict__.get("_swing_lease")
+        if lease is None:
+            return None
+        reason = lease.expiry(
+            now=self._now(),
+            intent=self._combat_intent,
+            map_name=state.map_name,
+            resting=self._rest_seq is not None,
+            dead=state.alive is False,
+        )
+        if reason is not None:
+            self._release_swing_lease(reason)
+            return None
+        return lease.origin()
+
+    def _swing_lease_refusal(self, state: BotState, origin: str | None) -> str | None:
+        """The lease holds the slot against NON-COMBAT re-authorship: the
+        displaced walk class backs off until the authoring combat swings."""
+        if origin in COMBAT_WALK_ORIGINS:
+            return None
+        held = self._swing_lease_held(state)
+        if held is None:
+            return None
+        self._note_swing_lease_backoff(origin, held)
+        return f"swing_lease_hold({held})"
+
+    def _note_swing_lease_backoff(self, origin: str | None, held: str) -> None:
+        """The backed-off re-author per attempt: trace tap + receipt deque."""
+        reasons = getattr(self, "_swing_lease_reasons", None)
+        if reasons is None:
+            reasons = deque(maxlen=64)
+            self._swing_lease_reasons = reasons
+        reasons.append((self._now(), origin, held))
+        self._swing_tap().note(
+            "swing_lease_backoff",
+            tap=f"swing_lease_hold({held})",
+            origin=origin,
+            at=self._now(),
+        )
 
     def _await_pending(self, view: NativeGameplayView, pos: ObservedPosition) -> bool:
         pending = self._pending

@@ -17023,3 +17023,60 @@ Preflight PASS (DECIDE-OK 2.34 s answers=10, :8091/:8092 200, sab day-check). La
   traced events diverge under displacement churn).
 - Attribution: `run/reviews/leg137-pendingwalk-attribution.json`; verdict
   `run/reviews/leg137-verdict.md`.
+
+## [2026-11-28] fix | swing lease: the displaced slot stays combat-reserved until the swing
+- **The fix (leg-137 named-next, branch `t3/swing-lease`):** displacement is
+  STICKY. The churn engine leg-137 caught was the field pump's beat: it fed
+  its travel leg to `authorize_farm_actions` every 2 s, and that call's
+  revoke tail killed the live intent whenever the leg was not the melee
+  intercept - the sightings pump re-minted, displaced the fresh field leg,
+  dispatched an approach whose arrival handoff handed off to an intent the
+  next beat would kill, and the whole window ping-ponged (9,090 field
+  authorships, 1,846 displacements, pending_walk census 2,092). Two changes:
+  (1) `authorize_farm_actions(..., revoke=False)` for the field pump - the
+  beat may MINT the intercept, but a travel leg that is not one says nothing
+  about the engagement; the script-performed MoveTo revoke stays exactly as
+  pinned (scripts own engagement). (2) the **swing lease**
+  (`robots.app.swing_lease.SwingLease`, the disengage-step lease shape:
+  arm/bounded-until/reset): every combat-authorship displacement ARMS a
+  bounded reservation (origin, the live intent, map, `now +
+  SWING_LEASE_HORIZON_S`), the mint binds the fresh intent, and the slot
+  refuses NON-COMBAT re-authorship with the named gate
+  `swing_lease_hold(<holder>)` (trace tap `swing_lease_backoff`, receipt
+  deque `_swing_lease_reasons`) until the **swing** lands
+  (`swing_lease_release(swing)` at the `_attack` send) or the reservation
+  dies honestly - timeout / intent-loss / map-change / rest / dead, each
+  with its own `swing_lease_release(<reason>)` tap. The horizon is 10 s (the
+  ROAM_REAIM_HORIZON pattern): a never-swinging intent cannot starve travel
+  forever. COMBAT_WALK_ORIGINS rides through untouched; `_await_pending`,
+  the no-progress contract, arrival_confirmed separation, merchant in-deal
+  and NPC-dialogue barriers untouched; the lease is per-agent client state
+  (`_swing_lease` class-attribute default, lazy instance).
+- **Origin hygiene (leg-137's masquerade):** `_field_leg_origin` tags the
+  field pump's leg `combat_approach` ONLY when the leg IS the live intent's
+  melee intercept - an unrelated leg tagged combat_approach held the slot
+  un-displaceably and refused the very swing it served.
+- **Tests:** 15 unit pins (`tests/test_swing_lease.py`): the pure lease
+  (horizon + every expiry cause), the displaced re-author back-off with the
+  named holder, the swing release with travel resuming next tick, honest
+  timeout, intent-loss/map/rest release, the script revoke staying pinned,
+  combat's own approach free, the intercept tag kept, free-slot mints
+  reserving, identity gating; plus the A/B replay
+  (`tests/test_swing_lease_replay.py`) through the real runtime over one
+  synthetic contest window: instant-release vs lease - pending_walk
+  refusals **4 -> 1**, displacement churn **4 -> 1**, lease back-offs
+  **0 -> 3** (named taps), swings **1 -> 3** (the engagement survives and
+  converts). TDD RED -> GREEN per cycle.
+- **Attribution tool closed the 117 (secondary):** the displacement tap now
+  LEASES the register hold (the slot stays combat-reserved; the 5.6%
+  register gap the taps created becomes the combat class it serves), the
+  `swing_lease_hold`/`swing_lease_release` taps extend/close it, and - the
+  big lever - the receipt's per-sample `walk_displaced_for_combat` census
+  cells (1,846 vs the 148 traced taps) feed holder seconds (>= 1 s stall
+  budget each) across the displaced class. Re-run over the real leg-137
+  window: unattributed **117 -> 0** (94.4% -> **100%** attributed; class
+  mix unchanged in shape, field/own-approach still dominant).
+- Env note: the known fresh-worktree artifacts (pinned-compiler-oracle,
+  protocol_rereview x4) clear by copying `rathena/config.log` from the main
+  checkout (the packet-oracle tests error at setup without it); with it the
+  full gate is GREEN: 8,013 passed / 0 failed, coverage 95.95%.

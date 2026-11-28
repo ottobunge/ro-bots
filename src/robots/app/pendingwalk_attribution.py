@@ -60,6 +60,14 @@ _SURVIVAL_ORIGIN = "disengage_step"
 #: The displacement tap prefix: ``walk_displaced_for_combat(<origin>)``.
 _DISPLACEMENT_PREFIX = "walk_displaced_for_combat("
 
+#: The swing-lease taps (leg-137): the displacement ARMS a bounded combat
+#: reservation, the back-offs prove it alive, and the swing (or the honest
+#: release tap) ends it. The reservation serves the approach -> swing, so its
+#: register class is the combat approach.
+_LEASE_RELEASE_PREFIX = "swing_lease_release("
+_LEASE_BACKOFF_PREFIX = "swing_lease_hold("
+_LEASE_CLS = "own_approach"
+
 #: The walk class each named dispatch origin maps to; the fallback is the
 #: unnamed movement class (step/direct).
 _NAMED_ORIGINS: dict[str, str] = {
@@ -95,7 +103,7 @@ def _release_class(reason: str) -> str | None:
     return _origin_name(reason[len(_RELEASE_REASON) :].rstrip(")"))
 
 
-def _origin_name(origin: str) -> str | None:
+def _origin_name(origin: str) -> str:
     """The walk class one dispatch-origin string names."""
     return _NAMED_ORIGINS.get(origin, "movement")
 
@@ -150,6 +158,7 @@ class FlightRegister:
         self.combat_intents = 0
         self.swings = 0
         self.attacks_executed_rows = 0
+        self.lease_backoffs = 0
 
     # -- row consumption ---------------------------------------------------
 
@@ -196,13 +205,11 @@ class FlightRegister:
             return []
         if row.get("event") == "swing":
             self.swings += 1
+            self._close(t)  # the swing ends the hold it served (slot proven free)
             return []
         if row.get("event") == "attack_refused" and row.get("reason") == "pending_walk":
             return [self._on_gate_row(t)]
-        if isinstance(tap, str) and tap.startswith(_DISPLACEMENT_PREFIX):
-            origin = tap[len(_DISPLACEMENT_PREFIX) :].rstrip(")")
-            self.displaced[origin] += 1
-            self._close(t)  # the displacement RELEASED the slot it names
+        if self._on_lease_tap(t, tap):
             return []
         if tap == "goal_field_routed":
             return self._on_field_tap(t, row)
@@ -216,6 +223,28 @@ class FlightRegister:
             # continuation limb refused on the unconfirmed arrival instead.
             site = SITE_PUMP
         return HoldEvent(t, "attack_gate", origin, origin, site)
+
+    def _on_lease_tap(self, t: float, tap: Any) -> bool:
+        """The swing-lease taps (leg-137): a displacement LEASES the register
+        hold to the combat it serves, the back-offs prove it alive, and the
+        swing or the honest release ends it. True when the row was one."""
+        if isinstance(tap, str) and tap.startswith(_DISPLACEMENT_PREFIX):
+            origin = tap[len(_DISPLACEMENT_PREFIX) :].rstrip(")")
+            self.displaced[origin] += 1
+            self._close(t)  # the displacement released the displaced walk's hold
+            self._open(t, (None, None), _LEASE_CLS)  # ... and LEASED the slot
+            return True
+        if isinstance(tap, str) and tap.startswith(_LEASE_RELEASE_PREFIX):
+            self._close(t)  # the honest release ends the reservation
+            return True
+        if isinstance(tap, str) and tap.startswith(_LEASE_BACKOFF_PREFIX):
+            self.lease_backoffs += 1
+            if self._flight is None:
+                self._open(t, (None, None), _LEASE_CLS)
+            else:
+                self._extend(t)
+            return True
+        return False
 
     def _on_field_tap(self, t: float, row: dict[str, Any]) -> list[HoldEvent]:
         self.field_authorships += 1
@@ -295,7 +324,7 @@ class FlightRegister:
     def _alive(self, t: float) -> bool:
         return self._flight is not None and t - self._flight["t_last"] <= OPEN_TTL_S
 
-    def _open(self, t: float, target: tuple[int, int], cls: str | None) -> None:
+    def _open(self, t: float, target: tuple[Any, Any], cls: str | None) -> None:
         self._flight = {"t_open": t, "t_last": t, "target": target, "cls": cls, "map": None}
         self._segment_start = t
 
@@ -387,7 +416,16 @@ def _largest_remainder(weights: dict[str, float], total: float, gates: int) -> d
 
 
 def _bucket_releases(data: dict[str, Any] | None) -> tuple[int, dict[str, float]]:
-    """One receipt sample cell's pending_walk count and release holder seconds."""
+    """One receipt sample cell's pending_walk count and holder seconds.
+
+    The holder seconds fold two receipt-side evidences: the no-progress
+    releases (each proves >= 1 s of the released walk's hold) and the
+    ``walk_displaced_for_combat`` census cells -- the trace taps under-sample
+    that census (leg-137: 148 traced taps vs 1,846 receipt cells), and each
+    displaced walk held the slot for at least the 1 s stall budget before its
+    displacement. Both allocate across the displaced class, conserving the
+    register-gap gates the sparse trace cannot see.
+    """
     if not isinstance(data, dict):
         return 0, {}
     gates = (data.get("attack_gates") or {}).get("pending_walk", 0)
@@ -397,7 +435,19 @@ def _bucket_releases(data: dict[str, Any] | None) -> tuple[int, dict[str, float]
         if cls is not None and isinstance(count, (int, float)):
             # Each no-progress release proves >= 1 s of hold.
             release_seconds[cls] = release_seconds.get(cls, 0.0) + float(count)
+    release_seconds.update(_displacement_seconds(data))
     return gates, release_seconds
+
+
+def _displacement_seconds(data: dict[str, Any]) -> dict[str, float]:
+    """Holder seconds the receipt's displacement census cells prove: each
+    displaced walk held the slot for at least the 1 s stall budget."""
+    seconds: dict[str, float] = {}
+    for origin, count in (data.get("walk_displaced_for_combat") or {}).items():
+        if isinstance(count, (int, float)) and count > 0:
+            cls = _origin_name(str(origin))
+            seconds[cls] = seconds.get(cls, 0.0) + float(count)
+    return seconds
 
 
 def _receipt_displacements(samples: list[dict[str, Any]], persona: str) -> Counter[str]:
@@ -476,6 +526,7 @@ def _agent_summary(
                 "approach_dispatched": register.approach_dispatched,
                 "approach_refused": register.approach_refused,
                 "field_authorships": register.field_authorships,
+                "lease_backoffs": register.lease_backoffs,
                 "script_walks_dispatched": register.script_walks_dispatched,
                 "script_walks_held_reissues": register.hold_reissues,
                 "script_walks_blocked": register.script_walks_blocked,
